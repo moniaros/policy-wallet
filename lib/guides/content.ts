@@ -258,8 +258,8 @@ export const guides: Guide[] = [
             en: "A coverage gap is the risk you think is insured but is not. The most common gaps in Greece, the average rule (pro-rata) and how to find yours in minutes.",
         },
         summary: {
-            el: "Κενό κάλυψης είναι η διαφορά ανάμεσα σε αυτό που νομίζετε ότι καλύπτει το ασφαλιστήριό σας και σε αυτό που πραγματικά καλύπτει. Εμφανίζεται σε εξαιρέσεις, σε ανεπαρκή κεφάλαια και σε κινδύνους που δεν προστέθηκαν ποτέ. Εντοπίζεται με προσεκτική ανάγνωση των όρων ή αυτόματα, με ένα εργαλείο ανάλυσης όπως το PolicyWallet — στο πλάνο Plus.",
-            en: "A coverage gap is the difference between what you think your policy covers and what it actually covers. It hides in exclusions, insufficient insured sums, and risks that were never added. You find it by carefully reading the terms — or automatically, with an analysis tool like PolicyWallet, on the Plus plan.",
+            el: "Κενό κάλυψης είναι η διαφορά ανάμεσα σε αυτό που νομίζετε ότι καλύπτει το ασφαλιστήριό σας και σε αυτό που πραγματικά καλύπτει. Εμφανίζεται σε εξαιρέσεις, σε ανεπαρκή κεφάλαια και σε κινδύνους που δεν προστέθηκαν ποτέ. Εντοπίζεται με προσεκτική ανάγνωση των όρων ή αυτόματα, με ένα εργαλείο ανάλυσης όπως το PolicyWallet — στο πλάνο Family.",
+            en: "A coverage gap is the difference between what you think your policy covers and what it actually covers. It hides in exclusions, insufficient insured sums, and risks that were never added. You find it by carefully reading the terms — or automatically, with an analysis tool like PolicyWallet, on the Family plan.",
         },
         datePublished: "2026-07-07",
         dateModified: "2026-07-07",
@@ -571,12 +571,12 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε προ τετελεσμένου με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των συμβολαίων σας σε ένα σημείο και — από το πλάνο Starter — σας ειδοποιεί εγκαίρως, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
-                        // The Greek says «από το πλάνο Starter»; the English had
+                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε προ τετελεσμένου με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των συμβολαίων σας σε ένα σημείο και — από το πλάνο Plus — σας ειδοποιεί εγκαίρως, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
+                        // The Greek says «από το πλάνο Plus»; the English had
                         // dropped it, so it promised renewal alerts on a page
                         // whose CTA is "Start free with one policy". Free has
                         // notifications off — reminders begin at Starter.
-                        en: "Thirty days before expiry. That leaves time to request quotes, negotiate, and avoid being locked into an automatic renewal on worse terms. PolicyWallet tracks the expiry dates of all your policies and — from the Starter plan — alerts you in time, with a ready coverage summary so you can compare quotes on equal footing.",
+                        en: "Thirty days before expiry. That leaves time to request quotes, negotiate, and avoid being locked into an automatic renewal on worse terms. PolicyWallet tracks the expiry dates of all your policies and — from the Plus plan — alerts you in time, with a ready coverage summary so you can compare quotes on equal footing.",
                     },
                 ],
             },
@@ -2254,8 +2254,8 @@ export const guides: Guide[] = [
                     en: "Can I pay my premium inside PolicyWallet?",
                 },
                 answer: {
-                    el: "Όχι. Το PolicyWallet δεν εισπράττει ασφάλιστρα και δεν είναι ίδρυμα πληρωμών. Η πληρωμή γίνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή σας· η εφαρμογή σάς θυμίζει πόσο και πότε — από το πλάνο Starter.",
-                    en: "No. PolicyWallet does not collect premiums and is not a payment institution. Payment happens with your insurer or intermediary; the app reminds you how much and when — from the Starter plan.",
+                    el: "Όχι. Το PolicyWallet δεν εισπράττει ασφάλιστρα και δεν είναι ίδρυμα πληρωμών. Η πληρωμή γίνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή σας· η εφαρμογή σάς θυμίζει πόσο και πότε — από το πλάνο Plus.",
+                    en: "No. PolicyWallet does not collect premiums and is not a payment institution. Payment happens with your insurer or intermediary; the app reminds you how much and when — from the Plus plan.",
                 },
             },
             {
@@ -2428,8 +2428,8 @@ export const guides: Guide[] = [
                         en: "You upload the PDF or a photo of each policy, from any insurer, and the AI reads it. Instead of one more file in a folder, you get plain-language answers on what is covered, what is excluded, what the limits and deductibles are, and which dates matter.",
                     },
                     {
-                        el: "Επειδή τα συμβόλαια βρίσκονται μαζί, με το πλάνο Family εντοπίζονται και τα κενά ανάμεσά τους: κατοικία χωρίς κάλυψη σεισμού, ασφαλιζόμενο κεφάλαιο κάτω από το κόστος ανακατασκευής, ή δύο συμβόλαια που πληρώνουν τον ίδιο κίνδυνο. Στο ίδιο πλάνο ανήκουν και οι ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο και η ασφαλής κοινοποίηση σε σύμβουλο· υπενθυμίσεις ανανέωσης υπάρχουν από το πλάνο Starter.",
-                        en: "Because the policies sit together, the Family plan surfaces the gaps between them too: a home with no earthquake cover, a sum insured below rebuild cost, or two policies paying for the same risk. AI questions about a specific policy and secure sharing with an advisor belong to the same plan; renewal reminders start from the Starter plan.",
+                        el: "Επειδή τα συμβόλαια βρίσκονται μαζί, με το πλάνο Family εντοπίζονται και τα κενά ανάμεσά τους: κατοικία χωρίς κάλυψη σεισμού, ασφαλιζόμενο κεφάλαιο κάτω από το κόστος ανακατασκευής, ή δύο συμβόλαια που πληρώνουν τον ίδιο κίνδυνο. Στο ίδιο πλάνο ανήκουν και οι ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο και η ασφαλής κοινοποίηση σε σύμβουλο· υπενθυμίσεις ανανέωσης υπάρχουν από το πλάνο Plus.",
+                        en: "Because the policies sit together, the Family plan surfaces the gaps between them too: a home with no earthquake cover, a sum insured below rebuild cost, or two policies paying for the same risk. AI questions about a specific policy and secure sharing with an advisor belong to the same plan; renewal reminders start from the Plus plan.",
                     },
                 ],
             },

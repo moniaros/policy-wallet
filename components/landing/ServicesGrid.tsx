@@ -44,8 +44,8 @@ const services = [
         titleEn: "When does it run out?",
         // Only promises what the product can do from documents: expiry
         // reminders and re-analysis findings — not price-change feeds.
-        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Starter — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
-        descEn: "We warn you before something runs out — from the Starter plan — and when we find something new in your documents, with Family.",
+        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
+        descEn: "We warn you before something runs out — from the Plus plan — and when we find something new in your documents, with Family.",
         benefitEl: "Δεν σας πιάνει ποτέ απροετοίμαστους",
         benefitEn: "It never catches you out",
         wide: false,

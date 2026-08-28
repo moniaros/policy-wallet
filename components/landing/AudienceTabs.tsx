@@ -145,10 +145,10 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
             en: "All your insurance — car, home, health — on one screen",
         },
         {
-            // Reminders start on the Starter plan (Free shows only the date),
+            // Reminders start on the Plus plan (Free shows only the date),
             // so the benefit names the plan instead of promising it to everyone.
-            el: "Υπενθύμιση πριν λήξει κάτι, για να μη μείνετε ακάλυπτοι — από το πλάνο Starter",
-            en: "A reminder before something runs out, so you are never left uncovered — from the Starter plan",
+            el: "Υπενθύμιση πριν λήξει κάτι, για να μη μείνετε ακάλυπτοι — από το πλάνο Plus",
+            en: "A reminder before something runs out, so you are never left uncovered — from the Plus plan",
         },
         {
             // Gap detection is a Family feature — the benefit names

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { NavigationGroup } from './AppShell'
 import { motion } from 'framer-motion'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { planTierName } from '@/lib/subscription-copy'
 
 export interface MainNavProps {
     navigation: NavigationGroup[]
@@ -24,7 +25,7 @@ const ROW_CLASSES = `
 `
 
 export function MainNav({ navigation, onNavigate }: MainNavProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     return (
         <nav aria-label={t.nav.primaryNavigation} className="px-3 space-y-6">
             {navigation.map((group, groupIndex) => (
@@ -73,13 +74,13 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                     {/* Badges */}
                                     {item.variant === 'pro' && !item.isLocked && (
                                         <span className="px-1.5 py-0.5 rounded-md bg-black text-white text-kicker font-bold uppercase tracking-widest shadow-sm">
-                                            Plus
+                                            {planTierName('pro', language)}
                                         </span>
                                     )}
 
                                     {item.variant === 'plus' && !item.isLocked && (
                                         <span className="px-1.5 py-0.5 rounded-md bg-primary/15 text-primary dark:text-mint text-kicker font-bold uppercase tracking-widest border border-primary/30">
-                                            Starter
+                                            {planTierName('plus', language)}
                                         </span>
                                     )}
 

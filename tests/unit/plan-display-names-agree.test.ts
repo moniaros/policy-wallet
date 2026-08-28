@@ -106,13 +106,22 @@ describe("nothing hardcodes a tier name", () => {
         // A tier LABEL MAP: `plus: "Something"` / `"ph-pro": "Something"`.
         // Matching only this shape keeps prose and aria-labels out of scope
         // while catching every place a name is assigned to a tier.
-        const LABEL_MAP = /["']?(?:ph-)?(?:free|plus|pro)["']?\s*:\s*["'`](Free|Starter|Plus|Family|Δωρεάν)["'`]/
+        // TWO shapes, because the first version caught only one. `PlanBadge`
+        // held `plus: "Starter"` (a map) and `MainNav` rendered `>Starter<` (a
+        // JSX text node) — same defect, and the map-only pattern was blind to
+        // the second. Both are "a tier name written by hand".
+        const SHAPES = [
+            /["']?(?:ph-)?(?:free|plus|pro)["']?\s*:\s*["'`](Free|Starter|Plus|Family|Δωρεάν)["'`]/,
+            />\s*(Starter|Family)\s*</,
+        ]
         for (const file of CONSUMERS) {
             const src = readFileSync(file, "utf-8")
                 .replace(/\/\*[\s\S]*?\*\//g, "")
                 .replace(/(^|[^:])\/\/.*$/gm, "$1")
-            const m = LABEL_MAP.exec(src)
-            if (m) offenders.push(`${file}: ${m[0].trim()}`)
+            for (const shape of SHAPES) {
+                const m = shape.exec(src)
+                if (m) offenders.push(`${file}: ${m[0].trim()}`)
+            }
         }
         expect(
             offenders,

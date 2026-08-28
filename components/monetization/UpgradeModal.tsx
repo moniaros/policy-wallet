@@ -5,10 +5,10 @@ import { planTierName } from "@/lib/subscription-copy"
  * Context-aware upgrade modal — the standard paid-conversion surface.
  * Opens IN PLACE at the trigger (no navigation), shows the benefit that
  * prompted it, and offers a DUAL choice: Plus (€7.99, recommended — unlocks
- * the AI feature) as the primary CTA, Starter (€2.99, basic organization) as
+ * the AI feature) as the primary CTA, Plus (basic organization) as
  * the cheaper secondary entry. Hands off to Stripe Checkout with a same-origin
  * return path so the user lands back on the exact feature after paying
- * (/upgrade/success). Plus is always the recommended tier; Starter is visible
+ * (/upgrade/success). Family is always the recommended tier; Plus is visible
  * but never positioned as best value.
  */
 
@@ -260,7 +260,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     </p>
                 )}
 
-                {/* Secondary CTA — Starter (cheaper entry) */}
+                {/* Secondary CTA — Plus (cheaper entry) */}
                 <button
                     type="button"
                     onClick={() => startCheckout(STARTER.planId, "plus", "starter_selected")}

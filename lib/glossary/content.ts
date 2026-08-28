@@ -251,8 +251,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, το ασφαλισμένο κεφάλαιο είναι το κύριο ποσό δίπλα σε κάθε κάλυψη. Συγκρίνετέ το με μια ρεαλιστική εκτίμηση: για την κατοικία, το κόστος ανακατασκευής ανά τετραγωνικό. Το PolicyWallet εντοπίζει το ασφαλισμένο κεφάλαιο και, αν το ασφαλιστήριο αναφέρει και κόστος ανακατασκευής, σας δείχνει αν το κεφάλαιο υπολείπεται — στο πλάνο Plus.",
-            en: "In your own policy, the sum insured is the main amount next to each cover. Compare it to a realistic estimate: for a home, the rebuild cost per square meter. PolicyWallet surfaces the sum insured and, if the policy also states a rebuild cost, shows you when the sum falls short — on the Plus plan.",
+            el: "Στο δικό σας ασφαλιστήριο, το ασφαλισμένο κεφάλαιο είναι το κύριο ποσό δίπλα σε κάθε κάλυψη. Συγκρίνετέ το με μια ρεαλιστική εκτίμηση: για την κατοικία, το κόστος ανακατασκευής ανά τετραγωνικό. Το PolicyWallet εντοπίζει το ασφαλισμένο κεφάλαιο και, αν το ασφαλιστήριο αναφέρει και κόστος ανακατασκευής, σας δείχνει αν το κεφάλαιο υπολείπεται — στο πλάνο Family.",
+            en: "In your own policy, the sum insured is the main amount next to each cover. Compare it to a realistic estimate: for a home, the rebuild cost per square meter. PolicyWallet surfaces the sum insured and, if the policy also states a rebuild cost, shows you when the sum falls short — on the Family plan.",
         },
         faq: [
             {
@@ -351,8 +351,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, συγκρίνετε το ασφαλισμένο κεφάλαιο με μια σημερινή εκτίμηση αξίας. Για την κατοικία, χρησιμοποιήστε κόστος ανακατασκευής ανά τετραγωνικό, όχι την τιμή αγοράς. Αν το ασφαλιστήριο αναφέρει κόστος ανακατασκευής, το PolicyWallet συγκρίνει τα δύο ποσά και επισημαίνει την υπασφάλιση — στο πλάνο Plus.",
-            en: "In your own policy, compare the sum insured to a current value estimate — Greek policies state it as «ασφαλιζόμενο κεφάλαιο», and the proportional cut appears as «αναλογικός κανόνας». For a home, use rebuild cost per square meter, not the purchase price. If the policy states a rebuild cost, PolicyWallet compares the two figures and flags the shortfall — on the Plus plan.",
+            el: "Στο δικό σας ασφαλιστήριο, συγκρίνετε το ασφαλισμένο κεφάλαιο με μια σημερινή εκτίμηση αξίας. Για την κατοικία, χρησιμοποιήστε κόστος ανακατασκευής ανά τετραγωνικό, όχι την τιμή αγοράς. Αν το ασφαλιστήριο αναφέρει κόστος ανακατασκευής, το PolicyWallet συγκρίνει τα δύο ποσά και επισημαίνει την υπασφάλιση — στο πλάνο Family.",
+            en: "In your own policy, compare the sum insured to a current value estimate — Greek policies state it as «ασφαλιζόμενο κεφάλαιο», and the proportional cut appears as «αναλογικός κανόνας». For a home, use rebuild cost per square meter, not the purchase price. If the policy states a rebuild cost, PolicyWallet compares the two figures and flags the shortfall — on the Family plan.",
         },
         faq: [
             {
@@ -438,8 +438,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο ζωής, βρείτε την ενότητα «δικαιούχοι» και επιβεβαιώστε ότι αντικατοπτρίζει τη σημερινή σας πρόθεση. Μετά από κάθε μεγάλη αλλαγή ζωής, ενημερώστε τη δήλωση εγγράφως. Το PolicyWallet εντοπίζει τους αναγραφόμενους δικαιούχους και σας υπενθυμίζει να τους επανελέγξετε — από το πλάνο Starter.",
-            en: "In your own life policy, find the “beneficiaries” section and confirm it reflects your current intent. After every major life change, update the designation in writing. PolicyWallet surfaces the named beneficiaries and reminds you to re-check them — from the Starter plan.",
+            el: "Στο δικό σας ασφαλιστήριο ζωής, βρείτε την ενότητα «δικαιούχοι» και επιβεβαιώστε ότι αντικατοπτρίζει τη σημερινή σας πρόθεση. Μετά από κάθε μεγάλη αλλαγή ζωής, ενημερώστε τη δήλωση εγγράφως. Το PolicyWallet εντοπίζει τους αναγραφόμενους δικαιούχους και σας υπενθυμίζει να τους επανελέγξετε — από το πλάνο Plus.",
+            en: "In your own life policy, find the “beneficiaries” section and confirm it reflects your current intent. After every major life change, update the designation in writing. PolicyWallet surfaces the named beneficiaries and reminds you to re-check them — from the Plus plan.",
         },
         faq: [
             {
@@ -574,8 +574,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, δείτε τη γεωγραφική ισχύ και ζητήστε πράσινη κάρτα από την εταιρεία σας πριν από ταξίδι στο εξωτερικό. Επιβεβαιώστε ότι οι χώρες προορισμού αναγράφονται ως έγκυρες. Το PolicyWallet εντοπίζει ημερομηνίες λήξης και σας υπενθυμίζει πριν ταξιδέψετε — από το πλάνο Starter.",
-            en: "In your own policy, check the territorial scope and request a Green Card from your insurer before travelling abroad. Confirm your destination countries are listed as valid. PolicyWallet surfaces expiry dates and reminds you before you travel — from the Starter plan.",
+            el: "Στο δικό σας ασφαλιστήριο, δείτε τη γεωγραφική ισχύ και ζητήστε πράσινη κάρτα από την εταιρεία σας πριν από ταξίδι στο εξωτερικό. Επιβεβαιώστε ότι οι χώρες προορισμού αναγράφονται ως έγκυρες. Το PolicyWallet εντοπίζει ημερομηνίες λήξης και σας υπενθυμίζει πριν ταξιδέψετε — από το πλάνο Plus.",
+            en: "In your own policy, check the territorial scope and request a Green Card from your insurer before travelling abroad. Confirm your destination countries are listed as valid. PolicyWallet surfaces expiry dates and reminds you before you travel — from the Plus plan.",
         },
         faq: [
             {
@@ -782,8 +782,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και δείτε αν αναφέρεται «αυτόματη ανανέωση» και με ποια προθεσμία προειδοποίησης. Αν δεν είστε βέβαιοι, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας πριν τη λήξη — όχι μετά. Το PolicyWallet σας θυμίζει τις επερχόμενες λήξεις ώστε να έχετε χρόνο να αποφασίσετε — από το πλάνο Starter.",
-            en: "In your own policy, find the expiry date and check whether it mentions “automatic renewal” and with what notice period. If you are unsure, ask your insurer or advisor before the expiry date — not after. PolicyWallet reminds you of upcoming expiries so you have time to decide — from the Starter plan.",
+            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και δείτε αν αναφέρεται «αυτόματη ανανέωση» και με ποια προθεσμία προειδοποίησης. Αν δεν είστε βέβαιοι, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας πριν τη λήξη — όχι μετά. Το PolicyWallet σας θυμίζει τις επερχόμενες λήξεις ώστε να έχετε χρόνο να αποφασίσετε — από το πλάνο Plus.",
+            en: "In your own policy, find the expiry date and check whether it mentions “automatic renewal” and with what notice period. If you are unsure, ask your insurer or advisor before the expiry date — not after. PolicyWallet reminds you of upcoming expiries so you have time to decide — from the Plus plan.",
         },
         faq: [
             {
@@ -841,8 +841,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και βεβαιωθείτε ότι το ασφάλιστρο έχει πληρωθεί και είναι ενήμερο. Αν πλησιάζει η λήξη ή έχετε αμφιβολία, επικοινωνήστε με την ασφαλιστική ή τον σύμβουλό σας πριν την ημερομηνία λήξης. Το PolicyWallet σας ειδοποιεί για τις επερχόμενες λήξεις ώστε να προλάβετε — από το πλάνο Starter.",
-            en: "In your own policy, find the expiry date and make sure the premium is paid and up to date. If the expiry is near or you are in any doubt, contact your insurer or advisor before the expiry date. PolicyWallet alerts you to upcoming expiries so you can act in time — from the Starter plan.",
+            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και βεβαιωθείτε ότι το ασφάλιστρο έχει πληρωθεί και είναι ενήμερο. Αν πλησιάζει η λήξη ή έχετε αμφιβολία, επικοινωνήστε με την ασφαλιστική ή τον σύμβουλό σας πριν την ημερομηνία λήξης. Το PolicyWallet σας ειδοποιεί για τις επερχόμενες λήξεις ώστε να προλάβετε — από το πλάνο Plus.",
+            en: "In your own policy, find the expiry date and make sure the premium is paid and up to date. If the expiry is near or you are in any doubt, contact your insurer or advisor before the expiry date. PolicyWallet alerts you to upcoming expiries so you can act in time — from the Plus plan.",
         },
         faq: [
             {

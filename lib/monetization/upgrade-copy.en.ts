@@ -14,8 +14,8 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         primaryCta: "Upgrade for more policies",
         secondaryCta: "Not now",
         benefits: [
-            "Up to 5 policies (Starter) or unlimited (Plus)",
-            "Full AI analysis for every policy (Plus)",
+            "Up to 10 policies (Plus) or up to 25 (Family)",
+            "Full AI analysis for every policy (Family)",
             "One view across all your insurers",
             "Smart renewal reminders",
         ],

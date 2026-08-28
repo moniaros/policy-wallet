@@ -225,7 +225,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                 </div>
             </div>
 
-            {/* Finding the gap is a Family job — Free and Starter
+            {/* Finding the gap is a Family job — Free and Plus
                 both sit at zero gap analyses. This mock renders in the hero,
                 inches from the free-tier reassurance line, so it has to say whose result
                 it is or it reads as a free-tier promise. It sits OUTSIDE the

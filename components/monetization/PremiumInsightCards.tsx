@@ -1,7 +1,7 @@
 "use client"
 
 /**
- * The post-parse "here's what Plus unlocks" grid. After a free/Starter user's
+ * The post-parse "here's what Family unlocks" grid. After a free/Plus user's
  * first policy is parsed, we show the basic summary plus these six locked
  * premium-insight cards. Each card is an honest teaser (clear title + the
  * feature's own value line) — no fake data, no fear — and opens the dual-CTA
