@@ -95,13 +95,30 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
    written down anywhere. Three options in `HALTS.md → H-011`; the cheapest is to accept it and fix
    the doc, because a future agent will trust the invariant as written.
 
-2. **The E2E suite has rotted, and it is the only thing that checks journeys.** `money-path.spec.ts`
-   — the PAID CONVERSION journey — fails at `#premium-insights`, an element removed on 2026-08-23 in
-   `5705289b` (the GOAL 2 restructure). It has been red for four days and nobody knew, because
-   **Playwright is not in CI**. This repo's own rule is that the gate checks code and journeys check
-   the product; the journey check is currently broken on the path that takes money. Found while
-   verifying the new upload UI — the failure is NOT a regression from that work, confirmed by
-   dating the removal.
+2. **The money path is measurable again — and it found more than a stale selector.** RUN
+   2026-08-28, the first since it rotted: **6 failed / 4 passed**, now **5 failed / 5 passed** after
+   the plumbing fix. The spec was internally contradictory and could not pass in ANY configuration:
+   its docblock said FREE tier, the config gave it the PRO session (and every assertion is about
+   gates that render only when `tier !== 'pro'`), and its fixture helper resolved the PRO user's
+   policy — a correct 404 under the free session. Fixed: a `money-free` project, the free user's own
+   policy, the pro session pinned on the one billing block that needs it, and `PremiumInsightCards`
+   carries its `id` on the component rather than a container. Playwright is still **not in CI**.
+
+   **The five remaining failures are product divergences, deliberately not papered over:**
+
+   a. **Risk 0 above** — `/upgrade` has no «Starter»; the modal invents one. (1 failure)
+
+   b. **Every free-tier upgrade surface on the policy page is inside a collapsed section.** (3
+      failures) `PolicySection id="documents"` is a catch-all holding DocumentsCard, AddDocumentCard,
+      InsuredPeopleCard, the agent block **and** `PremiumInsightCards` — the page's self-described
+      "only place that ADVERTISES" — plus the savings-report unlock CTA. It opens only when the
+      head's attention line names it (`openSection = forcedOpen ?? attention.target`), and the URL
+      hash does **not** open it. A free user with a healthy policy therefore sees none of the page's
+      upgrade surfaces without expanding a disclosure labelled «Έγγραφα». Whether that is intended
+      is a conversion decision; the tests assert they are visible.
+
+   c. **`/home` now lands on the rebuilt dashboard**, which does not carry the old usage meter
+      («N / 1» against the free cap) or the multi-insurer trigger the spec asserts. (1 failure)
 
 3. **SEC-01 — session objects reached the Vercel runtime logs. LAUNCH RISK, not post-GA debt.**
    **Contained, not closed**, and not closable by the agent. The middleware TypeError embedded the
