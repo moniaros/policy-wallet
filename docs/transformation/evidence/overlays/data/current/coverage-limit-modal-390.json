@@ -13,7 +13,7 @@
     "ids": []
   },
   "containers": {
-    "count": 28,
+    "count": 21,
     "maxDepth": 3,
     "deepestChain": [
       "div.min-h-screen bg-background pb-20",
@@ -26,29 +26,26 @@
     "valueScanDuplicates": [],
     "duplicateFactCount": 0
   },
-  "tapTargets": [
-    {
-      "tag": "button",
-      "text": "Κλείσιμο",
-      "w": 36,
-      "h": 44,
-      "chain": "div"
-    }
-  ],
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [],
   "contrast": {
     "text": [],
     "nonText": [
-      "[1.4.11:control] <select> \"Επιλέξτε τύποΑυτοκίνητοΜοτοσικλέτα\" boundary 1.04:1 (needs 3) inside=#ffffff outside=#f8fbf8",
-      "[1.4.11:subpixel] <select> \"Επιλέξτε ή αφήστε κενό2ος Αλληλασφ\" boundary 1.01:1 (needs 3) inside=#f9fafa outside=#ffffff — declared 3.35:1, rendered across two device rows",
-      "[1.4.11:subpixel] <input> \"\" boundary 1.19:1 (needs 3) inside=#dae5e2 outside=#e5edec — declared 3.26:1, rendered across two device rows",
-      "[1.4.11:control] <input> \"\" boundary 2.49:1 (needs 3) inside=#ffffff outside=#a1a4ac",
-      "[1.4.11:unmeasured] <input> \"\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"Προσθήκη στο πορτοφόλι\" boundary 1.00:1 (needs 3) inside=#f8fafc outside=#f7f9fc — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <a> \"Φάκελος\" boundary 1.11:1 (needs 3) inside=#ffffff outside=#f1f4f8",
-      "[1.4.11:control] <button> \"Κλείσιμο\" boundary 1.06:1 (needs 3) inside=#f7f9fb outside=#ffffff",
-      "[1.4.11:control] <button> \"Μηνιαία\" boundary 1.08:1 (needs 3) inside=#ffffff outside=#f8fafc",
-      "[1.4.11:control] <button> \"Ξεκινήστε με Starter — €4.99/μήνα\" boundary 1.18:1 (needs 3) inside=#fefefe outside=#f9fbfb",
-      "[1.4.11:surface] <header> \"PolicyWallet9+\" boundary 2.88:1 (needs 3) inside=#989898 outside=#ffffff"
+      "[1.4.11:control] <select> \"Επιλέξτε τύποΑυτοκίνητοΜοτοσικλέτα\" boundary 1.03:1 (needs 3) inside=#929793 outside=#929493",
+      "[1.4.11:unmeasured] <input> \"\" boundary 1.01:1 (needs 3) inside=#fefefe outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:subpixel] <input> \"\" boundary 1.07:1 (needs 3) inside=#dbdee3 outside=#ffffff — declared 3.35:1, rendered across two device rows",
+      "[1.4.11:subpixel] <input> \"\" boundary 1.02:1 (needs 3) inside=#d5d9de outside=#ffffff — declared 3.35:1, rendered across two device rows",
+      "[1.4.11:control] <button> \"Προσθήκη στο πορτοφόλι\" boundary 1.49:1 (needs 3) inside=#f1f5f9 outside=#ffffff",
+      "[1.4.11:control] <a> \"Φάκελος\" boundary 1.12:1 (needs 3) inside=#858b8a outside=#929493",
+      "[1.4.11:control] <button> \"Όχι τώρα\" boundary 1.49:1 (needs 3) inside=#f1f5f9 outside=#ffffff",
+      "[1.4.11:surface] <header> \"PolicyWallet\" boundary 2.88:1 (needs 3) inside=#989898 outside=#ffffff"
     ]
   },
   "pageOverflow": {
@@ -58,19 +55,25 @@
     "offenders": []
   },
   "probes": {
-    "truncation": [],
+    "truncation": [
+      {
+        "selector": "div.rounded-2xl.bg-primary-soft",
+        "text": "",
+        "scrollWidth": 36,
+        "clientWidth": 27,
+        "reason": "overflow"
+      }
+    ],
     "latinSentences": [],
     "nonTelPhoneNumbers": [],
     "dateFacts": {
       "dates": [],
-      "dayCounts": [
-        "top: \"14 ημέρες δωρεάν δοκιμή\""
-      ],
+      "dayCounts": [],
       "statusChips": []
     },
     "repeatedStrings": [],
     "internalTokenLeaks": [],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 14 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Προσθήκη ασφαλιστηρίου Μεταφόρτωση εγγράφου Πατήστε για μεταφόρτωση PDF ή σύρετε τα αρχεία σας εδώ policy.pdf 0.00 MB Η AI θα εξαγάγει αυτόματα τα στοιχεία. Λεπτομέρειες ασφάλισης ΕΙΔΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ * Επιλέξτε τύπο Αυτοκίνητο Μοτοσικλέτα Οδική Βοήθεια Κατοικία Υγεία Ζωή Προστασία Εισοδήματος Προσωπικό Ατύχημα Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Αστική ευθύνη Νομική Προστασία Σκάφος Σκάφος — Ίδιες Ζημιές Σκάφος — Αστική Ευθύνη Έργα Τέχνης & Τιμαλφή Επιχείρηση Επαγγελματική Αστική Ευθύνη Ευθύνη Εργοδότη Μεταφορές Σκάφη & Πλοία (Επαγγελματικά) Μεταφορές Εμπορευμάτων Πληρώματα Πλοίων Χρήματα Εμπιστοσύνη Υπαλλήλων Ομαδική Υγεία Ομαδική Ζωή Ομαδική Σύνταξη Άλλο ΑΣΦΑΛΙΣΤΙΚΟΣ ΠΑΡΟΧΟΣ Προαιρετικό Επιλέξτε ή αφήστε κενό 2ος Αλληλασφαλιστικός Συνεταιρισμός AIG Ελλάδος Allianz Ευρωπαϊκή Πίστη Anytime ERGO Ασφαλιστική EUROINS — Υποκατάστημα Ελλάδας Eurolife FFH Generali Hellas Groupama Ασφαλιστική Hellas Direct Interamerican INTERASCO INTERLIFE Ασφαλιστική NN Hellas NP Insurance — Νέος Ποσειδών Personal Insurance Prime Insurance Ατλαντική Ένωσις Γενική Πανελλαδική Συν.Π.Ε. ΔΥΝΑΜΙΣ Ασφαλιστική Εθνική Ασφαλιστική ΕΥΡΩΠΗ Ασφαλιστική ΙΝΤΕΡΣΑΛΟΝΙΚΑ ΜΙΝΕΤΤΑ Ασφαλιστική ΟΡΙΖΩΝ Ασφαλιστική Συνεταιριστική Ασφαλιστική ΥΔΡΟΓΕΙΟΣ Ασφαλιστική ΑΡΙΘΜΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ Προαιρετικό ΗΜΕΡΟΜΗΝΙΑ ΕΝΑΡΞΗΣ ΗΜΕΡΟΜΗΝΙΑ ΛΗΞΗΣ ΠΡΟΣΘΗΚΗ ΣΤΟ ΠΟΡΤΟΦΟΛΙ Τα δεδομένα σας είναι κρυπτογραφημένα και ασφαλή. Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις Οργάνωσε όλο το χαρτοφυλάκιό σου Έφτασες το όριο ασφαλιστηρίων του δωρεάν πλάνου. Αναβάθμισε για να οργανώσεις όλο το ασφαλιστικό σου χαρτοφυλάκιο σε ένα μέρος. Τρέχον πλάνο: FREE → PLUS ΠΡΟΤΕΙΝΕΤΑΙ · ΠΙΟ ΔΗΜΟΦΙΛΕΣ · ΚΑΛΥΤΕΡΗ ΑΞΙΑ Έως 5 ασφαλιστήρια (Starter) ή απεριόριστα (Plus) Πλήρης ανάλυση AI για κάθε ασφαλιστήριο (Plus) Συνολική εικόνα από όλες τις ασφαλιστικές Έξυπνες υπενθυμίσεις ανανέωσης Μηνιαία Ετήσια2 ΜΗΝΕΣ ΔΩΡΕΑΝ ΣΥΝΕΧΕΙΑ ΜΕ PLUS — €8.99/ΜΗΝΑ 14 ημέρες δωρεάν δοκιμή Ξεκινήστε με Starter — €4.99/μήνα Όχι τώρα Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή · Χωρίς κρυφές χρεώσεις"
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Προσθήκη ασφαλιστηρίου Μεταφόρτωση εγγράφου Πατήστε για μεταφόρτωση PDF ή σύρετε τα αρχεία σας εδώ policy.pdf 0.00 MB Η AI θα εξαγάγει αυτόματα τα στοιχεία. Λεπτομέρειες ασφάλισης ΕΙΔΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ * Επιλέξτε τύπο Αυτοκίνητο Μοτοσικλέτα Οδική Βοήθεια Κατοικία Υγεία Ζωή Προστασία Εισοδήματος Προσωπικό Ατύχημα Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Αστική ευθύνη Νομική Προστασία Σκάφος Σκάφος — Ίδιες Ζημιές Σκάφος — Αστική Ευθύνη Έργα Τέχνης & Τιμαλφή Επιχείρηση Επαγγελματική Αστική Ευθύνη Ευθύνη Εργοδότη Μεταφορές Σκάφη & Πλοία (Επαγγελματικά) Μεταφορές Εμπορευμάτων Πληρώματα Πλοίων Χρήματα Εμπιστοσύνη Υπαλλήλων Ομαδική Υγεία Ομαδική Ζωή Ομαδική Σύνταξη Άλλο ΑΣΦΑΛΙΣΤΙΚΟΣ ΠΑΡΟΧΟΣ Προαιρετικό Επιλέξτε ή αφήστε κενό 2ος Αλληλασφαλιστικός Συνεταιρισμός AIG Ελλάδος Allianz Ευρωπαϊκή Πίστη Anytime ERGO Ασφαλιστική EUROINS — Υποκατάστημα Ελλάδας Eurolife FFH Generali Hellas Groupama Ασφαλιστική Hellas Direct Interamerican INTERASCO INTERLIFE Ασφαλιστική NN Hellas NP Insurance — Νέος Ποσειδών Personal Insurance Prime Insurance Ατλαντική Ένωσις Γενική Πανελλαδική Συν.Π.Ε. ΔΥΝΑΜΙΣ Ασφαλιστική Εθνική Ασφαλιστική ΕΥΡΩΠΗ Ασφαλιστική ΙΝΤΕΡΣΑΛΟΝΙΚΑ ΜΙΝΕΤΤΑ Ασφαλιστική ΟΡΙΖΩΝ Ασφαλιστική Συνεταιριστική Ασφαλιστική ΥΔΡΟΓΕΙΟΣ Ασφαλιστική ΑΡΙΘΜΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ Προαιρετικό ΗΜΕΡΟΜΗΝΙΑ ΕΝΑΡΞΗΣ ΗΜΕΡΟΜΗΝΙΑ ΛΗΞΗΣ ΠΡΟΣΘΗΚΗ ΣΤΟ ΠΟΡΤΟΦΟΛΙ Τα δεδομένα σας είναι κρυπτογραφημένα και ασφαλή. Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις Συγκατάθεση για ανάλυση με AI Για να αναλύσουμε τα ασφαλιστήριά σας, το περιεχόμενο των εγγράφων σας — που ενδέχεται να περιλαμβάνει δεδομένα υγείας — αποστέλλεται σε πάροχο τεχνητής νοημοσύνης για επεξεργασία. Η συγκατάθεσή σας καταγράφεται και μπορείτε να την ανακαλέσετε ανά πάσα στιγμή από τις ρυθμίσεις απορρήτου. Όχι τώρα Συναινώ στην επεξεργασία με AI"
   },
   "tier": "paid",
   "trigger": "/wallet/add submit, POLICY_LIMIT_REACHED (29/25 policies)"

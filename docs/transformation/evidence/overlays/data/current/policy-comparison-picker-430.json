@@ -2,31 +2,22 @@
   "capture": "policy-comparison-picker",
   "width": 430,
   "url": "http://localhost:3000/wallet",
-  "scrollHeight": 5513,
-  "viewportsOfContent": 5.9,
+  "scrollHeight": 5660,
+  "viewportsOfContent": 6.1,
   "headingCounts": {
     "h1": 1,
     "mainLandmark": 1
   },
   "sections": {
-    "count": 12,
+    "count": 3,
     "ids": [
       "<div> Το πορτοφόλι μου",
       "<div> Σημαντικές ειδοποιήσεις",
-      "<div> Σύγκριση Ασφαλιστηρίων.",
-      "<div> Το πορτοφόλι μου",
-      "<div> Ενεργή προστασία1818/29 προστεθέντα",
-      "<div> ΛΗΓΕΙ ΣΥΝΤΟΜΑ5Εντός 30 ημερών",
-      "<div> Χρειάζεται προσοχή11Προς έλεγχο",
-      "<div> Ασφαλιστικό αποτύπωμα6.656 €1 ασφαλιστήρ",
-      "<div> Σημαντικές ειδοποιήσεις",
-      "<div> ΌλαΑυτοκίνητοΥγεία",
-      "<div> Σύγκριση Ασφαλιστηρίων.",
-      "<div> Κλείσιμο"
+      "<div> Σύγκριση Ασφαλιστηρίων."
     ]
   },
   "containers": {
-    "count": 196,
+    "count": 200,
     "maxDepth": 3,
     "deepestChain": [
       "div.flex flex-col sm:flex-row gap-4 justify-",
@@ -39,84 +30,379 @@
     "valueScanDuplicates": [],
     "duplicateFactCount": 0
   },
+  "identityDuplicates": {
+    "totalRows": 30,
+    "comparableRows": 30,
+    "duplicateRowCount": 20,
+    "largestGroupSize": 6,
+    "groups": [
+      {
+        "display": "Interamerican · Αυτοκίνητο · 09/02/2027 · ΕΝΕΡΓΟ",
+        "count": 6,
+        "rows": [
+          {
+            "index": 16,
+            "subject": "cmt5k18iy001puer6ke8xwcee"
+          },
+          {
+            "index": 17,
+            "subject": "cmt5z1g7k000i510sz2zqb2rw"
+          },
+          {
+            "index": 18,
+            "subject": "cmt5k1mp2001xuer60ate6z3q"
+          },
+          {
+            "index": 19,
+            "subject": "cmt5z1jku000q510sty78s2jd"
+          },
+          {
+            "index": 25,
+            "subject": "cmt5z18kx0001510sfrqkzbuj"
+          },
+          {
+            "index": 26,
+            "subject": "cmt5jyvgo0001121dx1ormp6a"
+          }
+        ]
+      },
+      {
+        "display": "Interamerican · Αυτοκίνητο · σε 10 ημέρες · ΛΗΓΕΙ ΣΥΝΤΟΜΑ",
+        "count": 3,
+        "rows": [
+          {
+            "index": 5,
+            "subject": "cmt5jzdf8000bmm5l9edtrj6h"
+          },
+          {
+            "index": 6,
+            "subject": "cmt5jzdf8000bx92v21nu15i6"
+          },
+          {
+            "index": 7,
+            "subject": "cmt5jzdhe000b121d71hd5728"
+          }
+        ]
+      },
+      {
+        "display": "Εθνική Ασφαλιστική · Υγεία · 09/02/2027 · ΕΝΕΡΓΟ",
+        "count": 3,
+        "rows": [
+          {
+            "index": 20,
+            "subject": "cmt5k0jtd000v121dwokv731m"
+          },
+          {
+            "index": 21,
+            "subject": "cmt5k1pd80025uer6pcdctp9e"
+          },
+          {
+            "index": 23,
+            "subject": "cmt5z1ml3000y510sywyxdwmm"
+          }
+        ]
+      },
+      {
+        "display": "Interamerican · Αυτοκίνητο · Έληξε στις 05/05/2026 · ΛΗΓΜΕΝΟ",
+        "count": 2,
+        "rows": [
+          {
+            "index": 0,
+            "subject": "cmt5jzrse000lmm5lhqsvetv3"
+          },
+          {
+            "index": 1,
+            "subject": "cmt5jzrsf000l121dc38kjdfx"
+          }
+        ]
+      },
+      {
+        "display": "Interamerican · Αυτοκίνητο · Έληξε στις 10/05/2026 · ΛΗΓΜΕΝΟ",
+        "count": 2,
+        "rows": [
+          {
+            "index": 2,
+            "subject": "cmt5jzrsh000lx92v96pokhrc"
+          },
+          {
+            "index": 3,
+            "subject": "cmt5jzquj000luer6sgm07f1c"
+          }
+        ]
+      },
+      {
+        "display": "Εθνική Ασφαλιστική · Υγεία · 04/02/2027 · ΕΝΕΡΓΟ",
+        "count": 2,
+        "rows": [
+          {
+            "index": 11,
+            "subject": "cmt5k0i8i000vuer6gyk0vihy"
+          },
+          {
+            "index": 12,
+            "subject": "cmt5k0j0q000vx92vzogjmtzc"
+          }
+        ]
+      },
+      {
+        "display": "Interamerican · Αυτοκίνητο · 05/02/2027 · ΕΝΕΡΓΟ",
+        "count": 2,
+        "rows": [
+          {
+            "index": 14,
+            "subject": "cmt5jyvgp0001uer6hrgvk4gw"
+          },
+          {
+            "index": 15,
+            "subject": "cmt5jyvgn0001x92v03hgqooh"
+          }
+        ]
+      }
+    ],
+    "unlocatable": []
+  },
   "tapTargets": [
     {
       "tag": "button",
       "text": "Κλείσιμο",
-      "w": 36,
+      "w": 18,
       "h": 44,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,1",
+      "w": 39,
+      "h": 372,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,1",
+      "w": 39,
+      "h": 372,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,1",
+      "w": 39,
+      "h": 372,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,1",
+      "w": 39,
+      "h": 372,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ1",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗Εθνική Ασφαλιστική64504715ΕΝΕΡΓΟ94,07 €/έτος",
+      "w": 39,
+      "h": 228,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτο",
+      "w": 39,
+      "h": 372,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτο",
+      "w": 39,
+      "h": 372,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτο",
+      "w": 39,
+      "h": 372,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-DEF-ENΕΝΕΡΓΟ94,07 €/έτος",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-DEF-REΕΝΕΡΓΟ275,00 €/έτος",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-DEF-XXΕΝΕΡΓΟ287,40 €/έτος",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-DEF-NPΕΝΕΡΓΟ",
+      "w": 39,
+      "h": 342,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-DEF-FAΕΝΕΡΓΟ1.138,27",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ250,00 €/έτος",
+      "w": 39,
+      "h": 76,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-DEF-NDΕΝΕΡΓΟ500,00 €",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελ",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-DEF-UGΕΝΕΡΓΟ301,00 €/έτος",
+      "w": 39,
+      "h": 356,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτο",
+      "w": 39,
+      "h": 372,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "❤️Εθνική Ασφαλιστική1651622-03ΕΝΕΡΓΟ1.567,33 €/έτο",
+      "w": 39,
+      "h": 260,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗Εθνική Ασφαλιστική63708952ΕΝΕΡΓΟ104,87 €/έτος",
+      "w": 39,
+      "h": 228,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "🚗InteramericanE2E-MOT-001ΕΝΕΡΓΟ420,00 €/έτος",
+      "w": 39,
+      "h": 276,
       "chain": "div < div < div < div"
     }
   ],
   "contrast": {
     "text": [],
     "nonText": [
-      "[1.4.11:control] <button> \"Σύγκριση ασφαλιστηρίων\" boundary 1.10:1 (needs 3) inside=#ffffff outside=#f3f4f6",
-      "[1.4.11:control] <input> \"Αναζήτηση ασφαλιστηρίων...\" boundary 1.06:1 (needs 3) inside=#ffffff outside=#fcf7f7",
-      "[1.4.11:unmeasured] <button> \"Όλα\" boundary 1.01:1 (needs 3) inside=#fcfcfc outside=#fdfdfd — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"Χειροκίνητη προσθήκη\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"Μεταφόρτωση εγγράφου\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"Μαζική μεταφόρτωση\" boundary 1.11:1 (needs 3) inside=#ffffff outside=#f1f4f8",
-      "[1.4.11:unmeasured] <button> \"+\" boundary 1.00:1 (needs 3) inside=#fdfefe outside=#fdfefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Σύγκριση ασφαλιστηρίων\" boundary 1.01:1 (needs 3) inside=#9d9d9d outside=#9e9e9e — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <input> \"Αναζήτηση ασφαλιστηρίων...\" boundary 1.00:1 (needs 3) inside=#626363 outside=#636363 — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Όλα\" boundary 1.00:1 (needs 3) inside=#f5f5f5 outside=#f5f5f5 — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Χειροκίνητη προσθήκη\" boundary 1.00:1 (needs 3) inside=#666060 outside=#666161 — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Μεταφόρτωση εγγράφου\" boundary 1.07:1 (needs 3) inside=#655f5f outside=#625a5a",
+      "[1.4.11:control] <button> \"Μαζική μεταφόρτωση\" boundary 1.03:1 (needs 3) inside=#666060 outside=#645e5e",
+      "[1.4.11:control] <button> \"+\" boundary 1.41:1 (needs 3) inside=#2b3b37 outside=#4c504f",
+      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗ\" boundary 1.01:1 (needs 3) inside=#fffafa outside=#fffbfb — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-E\" boundary 1.40:1 (needs 3) inside=#f1f5f9 outside=#ccd1d7",
-      "[1.4.11:control] <button> \"🚗Εθνική Ασφαλιστική64504715ΕΝΕΡΓΟ\" boundary 1.19:1 (needs 3) inside=#f2f3f4 outside=#dfe0e1",
-      "[1.4.11:unmeasured] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-A\" boundary 1.03:1 (needs 3) inside=#fefefe outside=#fcfdfd — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-A\" boundary 1.11:1 (needs 3) inside=#ffffff outside=#f1f4f8",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.37:1 (needs 3) inside=#e2e5e8 outside=#ffffff",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.00:1 (needs 3) inside=#fefefe outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.23:1 (needs 3) inside=#fcfdfe outside=#ffffff",
-      "[1.4.11:control] <button> \"🚗Δεύτερος Αλληλασφαλιστικός Συνετ\" boundary 1.03:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-NPΕΝΕ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"🚗ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ250,00 €/έτος\" boundary 1.24:1 (needs 3) inside=#eef0f2 outside=#fcfcfd",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-REΕΝΕ\" boundary 1.00:1 (needs 3) inside=#f1f4f8 outside=#ffffff",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.03:1 (needs 3) inside=#fbfbfb outside=#fcfcfd",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-UGΕΝΕ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-ENΕΝΕ\" boundary 1.15:1 (needs 3) inside=#f3f4f5 outside=#ffffff",
-      "[1.4.11:unmeasured] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-DEF-\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-A\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-XXΕΝΕ\" boundary 1.03:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:control] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-DEF-\" boundary 1.11:1 (needs 3) inside=#ffffff outside=#f1f4f8",
-      "[1.4.11:control] <button> \"🚗Εθνική Ασφαλιστική63708952ΕΝΕΡΓΟ\" boundary 1.14:1 (needs 3) inside=#eaecee outside=#fefeff",
-      "[1.4.11:control] <button> \"🚗InteramericanE2E-MOT-001ΕΝΕΡΓΟ42\" boundary 1.01:1 (needs 3) inside=#fbfcfc outside=#ffffff",
-      "[1.4.11:control] <button> \"Κλείσιμο\" boundary 1.23:1 (needs 3) inside=#f1f5f9 outside=#ffffff",
-      "[1.4.11:unmeasured] <div> \"Ενεργή προστασία1818/29 προστεθέντ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ5Εντός 30 ημερών\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:surface] <div> \"Χρειάζεται προσοχή11Προς έλεγχο\" boundary 1.78:1 (needs 3) inside=#e1cece outside=#aba0a6",
-      "[1.4.11:unmeasured] <div> \"Ασφαλιστικό αποτύπωμα6.656 €1 ασφα\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fafb",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:control] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-E\" boundary 1.01:1 (needs 3) inside=#fcfdfc outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"🚗Εθνική Ασφαλιστική64504715ΕΝΕΡΓΟ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-A\" boundary 1.02:1 (needs 3) inside=#f5f9f5 outside=#f2f8f1",
+      "[1.4.11:unmeasured] <button> \"❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-A\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.03:1 (needs 3) inside=#ffffff outside=#fffcf1",
+      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-ENΕΝΕ\" boundary 1.00:1 (needs 3) inside=#fafbfc outside=#fafbfc — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Κλείσιμο\" boundary 2.01:1 (needs 3) inside=#c3c4c8 outside=#ffffff",
+      "[1.4.11:surface] <div> \"Ενεργή προστασία1919/30 προστεθέντ\" boundary 1.10:1 (needs 3) inside=#b1b2b3 outside=#bbbbbb",
+      "[1.4.11:unmeasured] <div> \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ5Εντός 30 ημερών\" boundary 1.01:1 (needs 3) inside=#646565 outside=#646465 — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Χρειάζεται προσοχή11Προς έλεγχο\" boundary 1.00:1 (needs 3) inside=#bbbbbc outside=#bbbbbb — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Ασφαλιστικό αποτύπωμα8.224 €1 ασφα\" boundary 1.01:1 (needs 3) inside=#646465 outside=#646565 — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fafb",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΛΗΓΜΕΝΟΥγεία · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
-      "[1.4.11:unmeasured] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΛΗΓΕΙ ΣΥΝΤΟΜΑΥγε\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΛΗΓΕΙ ΣΥΝΤΟΜΑΥγε\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 05\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 05\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Δεύτερος Αλληλασφαλιστικός Συνεται\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
-      "[1.4.11:surface] <div> \"ΑυτοκίνητοΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑΑυτοκ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fbfbfc",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 09\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfd",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"ΑυτοκίνητοΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑΑυτοκ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
+      "[1.4.11:surface] <div> \"Δεύτερος Αλληλασφαλιστικός Συνεται\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 22\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fbfbfc",
       "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 01\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
-      "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dde6e5 outside=#fdfdfd"
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · IK\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
+      "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.24:1 (needs 3) inside=#d9e2e1 outside=#f8f8f8"
     ]
   },
   "pageOverflow": {
@@ -135,10 +421,423 @@
         "reason": "overflow"
       },
       {
-        "selector": "p.font-bold.text-foreground",
-        "text": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δη",
-        "scrollWidth": 1160,
-        "clientWidth": 262,
+        "selector": "div.relative.w-full",
+        "text": "Σύγκριση ασφαλιστηρίωνΣύγκριση Ασφαλιστηρίων.Επιλέξτε έως 3 ασφαλιστήρια του ίδι",
+        "scrollWidth": 163,
+        "clientWidth": 103,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.p-8.pb-0",
+        "text": "Σύγκριση ασφαλιστηρίωνΣύγκριση Ασφαλιστηρίων.Επιλέξτε έως 3 ασφαλιστήρια του ίδι",
+        "scrollWidth": 163,
+        "clientWidth": 103,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-center",
+        "text": "Σύγκριση ασφαλιστηρίων",
+        "scrollWidth": 131,
+        "clientWidth": 39,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-center",
+        "text": "Σύγκριση ασφαλιστηρίων",
+        "scrollWidth": 131,
+        "clientWidth": 21,
+        "reason": "overflow"
+      },
+      {
+        "selector": "span.text-kicker.font-black",
+        "text": "Σύγκριση ασφαλιστηρίων",
+        "scrollWidth": 118,
+        "clientWidth": 8,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-2.hover:bg-muted",
+        "text": "",
+        "scrollWidth": 28,
+        "clientWidth": 18,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.space-y-4",
+        "text": "Επιλέξτε το πρώτο ασφαλιστήριο για σύγκριση:🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕ",
+        "scrollWidth": 219,
+        "clientWidth": 39,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.grid.grid-cols-1",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος🚗InteramericanΣΥΜΒ-20",
+        "scrollWidth": 219,
+        "clientWidth": 39,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος",
+        "scrollWidth": 190,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος",
+        "scrollWidth": 174,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος",
+        "scrollWidth": 190,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος",
+        "scrollWidth": 174,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος",
+        "scrollWidth": 190,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος",
+        "scrollWidth": 174,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος",
+        "scrollWidth": 190,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ298,10 €/έτος",
+        "scrollWidth": 174,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ1.102,90 €/έτος",
+        "scrollWidth": 199,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-EXPΛΗΓΕΙ ΣΥΝΤΟΜΑ1.102,90 €/έτος",
+        "scrollWidth": 183,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗Εθνική Ασφαλιστική64504715ΕΝΕΡΓΟ94,07 €/έτος",
+        "scrollWidth": 139,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗Εθνική Ασφαλιστική64504715ΕΝΕΡΓΟ94,07 €/έτος",
+        "scrollWidth": 123,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27 €/έτος",
+        "scrollWidth": 153,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27 €/έτος",
+        "scrollWidth": 137,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27 €/έτος",
+        "scrollWidth": 153,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27 €/έτος",
+        "scrollWidth": 137,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτος",
+        "scrollWidth": 146,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτος",
+        "scrollWidth": 130,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτος",
+        "scrollWidth": 146,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτος",
+        "scrollWidth": 130,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτος",
+        "scrollWidth": 146,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτος",
+        "scrollWidth": 130,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-ENΕΝΕΡΓΟ94,07 €/έτος",
+        "scrollWidth": 139,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-ENΕΝΕΡΓΟ94,07 €/έτος",
+        "scrollWidth": 123,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-REΕΝΕΡΓΟ275,00 €/έτος",
+        "scrollWidth": 146,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-REΕΝΕΡΓΟ275,00 €/έτος",
+        "scrollWidth": 130,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-XXΕΝΕΡΓΟ287,40 €/έτος",
+        "scrollWidth": 146,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-XXΕΝΕΡΓΟ287,40 €/έτος",
+        "scrollWidth": 130,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-NPΕΝΕΡΓΟ",
+        "scrollWidth": 84,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-NPΕΝΕΡΓΟ",
+        "scrollWidth": 68,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27 €/έτος",
+        "scrollWidth": 153,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-HL-ACTΕΝΕΡΓΟ1.138,27 €/έτος",
+        "scrollWidth": 137,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-DEF-FAΕΝΕΡΓΟ1.138,27 €/έτος",
+        "scrollWidth": 153,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-DEF-FAΕΝΕΡΓΟ1.138,27 €/έτος",
+        "scrollWidth": 137,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ250,00 €/έτος",
+        "scrollWidth": 217,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ250,00 €/έτος",
+        "scrollWidth": 201,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-DEF-NDΕΝΕΡΓΟ500,00 €/έτος",
+        "scrollWidth": 147,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "❤️Εθνική ΑσφαλιστικήΣΥΜΒ-2025-DEF-NDΕΝΕΡΓΟ500,00 €/έτος",
+        "scrollWidth": 131,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων ",
+        "scrollWidth": 148,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων ",
+        "scrollWidth": 132,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-UGΕΝΕΡΓΟ301,00 €/έτος",
+        "scrollWidth": 146,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-DEF-UGΕΝΕΡΓΟ301,00 €/έτος",
+        "scrollWidth": 130,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτος",
+        "scrollWidth": 146,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝΕΡΓΟ312,40 €/έτος",
+        "scrollWidth": 130,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "❤️Εθνική Ασφαλιστική1651622-03ΕΝΕΡΓΟ1.567,33 €/έτος",
+        "scrollWidth": 154,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "❤️Εθνική Ασφαλιστική1651622-03ΕΝΕΡΓΟ1.567,33 €/έτος",
+        "scrollWidth": 138,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗Εθνική Ασφαλιστική63708952ΕΝΕΡΓΟ104,87 €/έτος",
+        "scrollWidth": 145,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗Εθνική Ασφαλιστική63708952ΕΝΕΡΓΟ104,87 €/έτος",
+        "scrollWidth": 129,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.p-4.rounded-2xl",
+        "text": "🚗InteramericanE2E-MOT-001ΕΝΕΡΓΟ420,00 €/έτος",
+        "scrollWidth": 147,
+        "clientWidth": 35,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.items-start",
+        "text": "🚗InteramericanE2E-MOT-001ΕΝΕΡΓΟ420,00 €/έτος",
+        "scrollWidth": 131,
+        "clientWidth": 3,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.p-8.pt-0",
+        "text": "Κλείσιμο",
+        "scrollWidth": 125,
+        "clientWidth": 103,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.flex-1.px-8",
+        "text": "Κλείσιμο",
+        "scrollWidth": 93,
+        "clientWidth": 64,
         "reason": "overflow"
       }
     ],
@@ -148,17 +847,18 @@
       "dates": [
         "top: 05/05/2026 — \"Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026.\"",
         "top: 05/05/2026 — \"Έληξε στις 05/05/2026\"",
-        "top: 07/05/2026 — \"Έληξε στις 07/05/2026\"",
+        "top: 10/05/2026 — \"Έληξε στις 10/05/2026\"",
         "top: 04/02/2027 — \"04/02/2027\"",
         "top: 05/02/2027 — \"05/02/2027\"",
-        "top: 06/02/2027 — \"06/02/2027\"",
+        "top: 09/02/2027 — \"09/02/2027\"",
+        "top: 22/05/2027 — \"22/05/2027\"",
         "top: 25/05/2027 — \"25/05/2027\"",
         "top: 01/06/2027 — \"01/06/2027\""
       ],
       "dayCounts": [
-        "top: \"σε 13 ημέρες\"",
+        "top: \"σε 10 ημέρες\"",
         "top: \"σε 15 ημέρες\"",
-        "top: \"σε 42 ημέρες\""
+        "top: \"σε 39 ημέρες\""
       ],
       "statusChips": [
         "top: \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ\"",
@@ -202,7 +902,7 @@
       },
       {
         "text": "Interamerican",
-        "count": 32,
+        "count": 18,
         "where": [
           "top <span>",
           "top <span>",
@@ -221,29 +921,13 @@
           "top <span>",
           "top <span>",
           "top <span>",
-          "top <span>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>"
+          "top <span>"
         ]
       },
       {
-        "text": "Αυτοκίνητο ·",
-        "count": 22,
+        "text": "Αυτοκίνητο · ·",
+        "count": 20,
         "where": [
-          "top <p>",
-          "top <p>",
           "top <p>",
           "top <p>",
           "top <p>",
@@ -268,6 +952,14 @@
       },
       {
         "text": "Έληξε στις 05/05/2026",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Έληξε στις 10/05/2026",
         "count": 3,
         "where": [
           "top <span>",
@@ -277,7 +969,7 @@
       },
       {
         "text": "Εθνική Ασφαλιστική",
-        "count": 17,
+        "count": 10,
         "where": [
           "top <span>",
           "top <span>",
@@ -287,27 +979,12 @@
           "top <span>",
           "top <span>",
           "top <span>",
-          "top <span>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>"
-        ]
-      },
-      {
-        "text": "Έληξε στις 07/05/2026",
-        "count": 2,
-        "where": [
           "top <span>",
           "top <span>"
         ]
       },
       {
-        "text": "σε 13 ημέρες",
+        "text": "σε 10 ημέρες",
         "count": 3,
         "where": [
           "top <span>",
@@ -324,10 +1001,10 @@
         ]
       },
       {
-        "text": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δη",
+        "text": "Αυτοκίνητο ·",
         "count": 2,
         "where": [
-          "top <span>",
+          "top <p>",
           "top <p>"
         ]
       },
@@ -338,79 +1015,10 @@
           "top <span>",
           "top <span>"
         ]
-      },
-      {
-        "text": "ΣΥΜΒ-2025-MOT-EXP",
-        "count": 4,
-        "where": [
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>"
-        ]
-      },
-      {
-        "text": "298,10 € /έτος",
-        "count": 4,
-        "where": [
-          "top <span>",
-          "top <span>",
-          "top <span>",
-          "top <span>"
-        ]
-      },
-      {
-        "text": "94,07 € /έτος",
-        "count": 2,
-        "where": [
-          "top <span>",
-          "top <span>"
-        ]
-      },
-      {
-        "text": "ΣΥΜΒ-2025-HL-ACT",
-        "count": 3,
-        "where": [
-          "top <p>",
-          "top <p>",
-          "top <p>"
-        ]
-      },
-      {
-        "text": "1.138,27 € /έτος",
-        "count": 4,
-        "where": [
-          "top <span>",
-          "top <span>",
-          "top <span>",
-          "top <span>"
-        ]
-      },
-      {
-        "text": "ΣΥΜΒ-2025-MOT-ACT",
-        "count": 4,
-        "where": [
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>"
-        ]
-      },
-      {
-        "text": "312,40 € /έτος",
-        "count": 4,
-        "where": [
-          "top <span>",
-          "top <span>",
-          "top <span>",
-          "top <span>"
-        ]
       }
     ],
-    "internalTokenLeaks": [
-      "E2E fixture identifier: \"E2E-MOT-001\""
-    ],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 14 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 18 18/29 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 5 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 11 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 6.656 € 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Σημαντικές ειδοποιήσεις 11 Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. +9 ακόμη Όλα Αυτοκίνητο Υγεία Τα ασφαλιστήρια μου Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Εθνική Ασφαλιστική ΛΗΓΜΕΝΟ Υγεία · Έληξε στις 07/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 07/05/2026 Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 15 ημέρες Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · σε 15 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · σε 42 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 05/02/2027 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Αυτοκίνητο ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · 25/05/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 01/06/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + ΣΥΓΚΡΙΣΗ ΑΣΦΑΛΙΣΤΗΡΙΩΝ Σύγκριση Ασφαλιστηρίων. Επιλέξτε έως 3 ασφαλιστήρια του ίδιου τύπου για σύγκριση δίπλα-δίπλα. Επιλέξτε το πρώτο ασφαλιστήριο για σύγκριση: 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-HL-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 1.102,90 €/έτος 🚗 Εθνική Ασφαλιστική 64504715 ΕΝΕΡΓΟ 94,07 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-HL-ACT ΕΝΕΡΓΟ 1.138,27 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-HL-ACT ΕΝΕΡΓΟ 1.138,27 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΣΥΜΒ-2025-DEF-LI ΕΝΕΡΓΟ 340,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-NP ΕΝΕΡΓΟ 🚗 ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ 250,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-RE ΕΝΕΡΓΟ 275,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-UG ΕΝΕΡΓΟ 301,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-EN ΕΝΕΡΓΟ 94,07 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-DEF-ND ΕΝΕΡΓΟ 500,00 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-HL-ACT ΕΝΕΡΓΟ 1.138,27 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-XX ΕΝΕΡΓΟ 287,40 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-DEF-FA ΕΝΕΡΓΟ 1.138,27 €/έτος 🚗 Εθνική Ασφαλιστική 63708952 ΕΝΕΡΓΟ 104,87 €/έτος 🚗 Interamerican E2E-MOT-001 ΕΝΕΡΓΟ 420,00 €/έτος ΚΛΕΙΣΙΜΟ Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 19 19/30 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 5 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 11 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 8.224 € 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Σημαντικές ειδοποιήσεις 11 Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. +9 ακόμη Όλα Αυτοκίνητο Υγεία Τα ασφαλιστήρια μου Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 10/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 10/05/2026 Εθνική Ασφαλιστική ΛΗΓΜΕΝΟ Υγεία · Έληξε στις 10/05/2026 Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 15 ημέρες Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · σε 15 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · IKZ3113 · σε 39 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Αυτοκίνητο ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 22/05/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · 25/05/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · IKZ-4821 · 01/06/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + ΣΥΓΚΡΙΣΗ ΑΣΦΑΛΙΣΤΗΡΙΩΝ Σύγκριση Ασφαλιστηρίων. Επιλέξτε έως 3 ασφαλιστήρια του ίδιου τύπου για σύγκριση δίπλα-δίπλα. Επιλέξτε το πρώτο ασφαλιστήριο για σύγκριση: 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-HL-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 1.102,90 €/έτος 🚗 Εθνική Ασφαλιστική 64504715 ΕΝΕΡΓΟ 94,07 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-HL-ACT ΕΝΕΡΓΟ 1.138,27 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-HL-ACT ΕΝΕΡΓΟ 1.138,27 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-EN ΕΝΕΡΓΟ 94,07 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-RE ΕΝΕΡΓΟ 275,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-XX ΕΝΕΡΓΟ 287,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-NP ΕΝΕΡΓΟ ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-HL-ACT ΕΝΕΡΓΟ 1.138,27 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-DEF-FA ΕΝΕΡΓΟ 1.138,27 €/έτος 🚗 ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ 250,00 €/έτος ❤️ Εθνική Ασφαλιστική ΣΥΜΒ-2025-DEF-ND ΕΝΕΡΓΟ 500,00 €/έτος 🚗 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΣΥΜΒ-2025-DEF-LI ΕΝΕΡΓΟ 340,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-UG ΕΝΕΡΓΟ 301,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος ❤️ Εθνική Ασφαλιστική 1651622-03 ΕΝΕΡΓΟ 1.567,33 €/έτος 🚗 Εθνική Ασφαλιστική 63708952 ΕΝΕΡΓΟ 104,87 €/έτος 🚗 Interamerican E2E-MOT-001 ΕΝΕΡΓΟ 420,00 €/έτος ΚΛΕΙΣΙΜΟ Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν επαγγελματική, νομική ή ασφαλιστική συμβουλή. Συζητήστε κάθε σημαντική απόφαση με τον ασφαλιστικό σας σύμβουλο. Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "paid",
   "trigger": "/wallet compare button, 0 selected"
