@@ -320,6 +320,13 @@ export interface IdentityRowRecord {
     /** the card's single date/expiry signal, or the table's end date. `""` when the row legitimately shows none. */
     date: string
     status: string | null
+    /**
+     * The plate / address short form / pet name the row renders to tell two
+     * policies apart (`data-fact="asset.identifier"`). `""` when the line has
+     * none — health, life, cyber, business and pension carry no identifier the
+     * extraction captures, so their rows legitimately keep colliding.
+     */
+    assetIdentifier: string
     missingFields: string[]
 }
 
@@ -364,6 +371,7 @@ export async function duplicateIdentityRows(page: Page): Promise<DuplicateIdenti
             lineOfBusiness: string | null
             date: string
             status: string | null
+            assetIdentifier: string
             missingFields: string[]
         }[] = []
 
@@ -415,7 +423,16 @@ export async function duplicateIdentityRows(page: Page): Promise<DuplicateIdenti
             const subjectEl = row.querySelector("[data-fact-subject]")
             const subject = subjectEl ? subjectEl.getAttribute("data-fact-subject") : null
 
-            out.push({ index, rowTag: row.tagName, subject, insurer, lineOfBusiness, date, status, missingFields })
+            // THE ASSET IDENTIFIER — the plate, address short form or pet name
+            // the row renders to tell two policies apart. It was not read at
+            // all, so two rows showing DIFFERENT plates counted as duplicates.
+            // Absent is "" rather than null: a health policy has no identifier
+            // by design, and must still be comparable (its absence is shared,
+            // which is exactly why health duplicates are expected).
+            const assetEl = row.querySelector('[data-fact="asset.identifier"]')
+            const assetIdentifier = assetEl ? (assetEl.textContent || "").trim() : ""
+
+            out.push({ index, rowTag: row.tagName, subject, insurer, lineOfBusiness, date, status, assetIdentifier, missingFields })
             index++
         })
         return out
@@ -425,7 +442,14 @@ export async function duplicateIdentityRows(page: Page): Promise<DuplicateIdenti
     const comparable = records.filter((r) => r.missingFields.length === 0)
     const byIdentity = new Map<string, IdentityRowRecord[]>()
     for (const r of comparable) {
-        const key = [r.insurer, r.lineOfBusiness, r.date, r.status].join(IDENTITY_SEP)
+        // The asset identifier joins the key. Without it this metric could not
+        // reach P5-wallet-01's acceptance ("motor, property, pet duplicates = 0")
+        // even on a wallet where every plate was distinct — it never read the
+        // field the work exists to add, so the target was unmeasurable by
+        // construction. Lines that carry no identifier contribute "" and keep
+        // colliding, which is the documented and expected outcome for health,
+        // life, cyber, business and pension.
+        const key = [r.insurer, r.lineOfBusiness, r.date, r.status, r.assetIdentifier].join(IDENTITY_SEP)
         const arr = byIdentity.get(key) || []
         arr.push(r)
         byIdentity.set(key, arr)

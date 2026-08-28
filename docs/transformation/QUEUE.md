@@ -1641,6 +1641,41 @@ the measured defect list. This turns that into a number. **The asset reframe sta
 lands** — and if the count is low, the reframe's premise is wrong and the phase should say so rather
 than build anyway.
 
+### MEASURED 2026-08-28 — the acceptance was UNMEASURABLE, and the fixture cannot meet it
+
+Two findings, both from reading the collector rather than the numbers.
+
+**1. The metric never read the asset identifier.** `metrics.ts`'s comparison key was
+
+    [insurer, lineOfBusiness, date, status]
+
+while the row renders the plate / address short form / pet name as
+`data-fact="asset.identifier"`. So *"motor, property, pet duplicates = 0"* could not be reached on a
+wallet where every plate was distinct — the number this item is graded on never looked at the field
+the item exists to add. All three "asset" mentions in `metrics.ts` were comments. Fixed: the
+identifier joins the key, and lines with none contribute `""` so health/life/cyber/business/pension
+keep colliding, which is the documented expected outcome.
+
+**2. The fixture gives every motor policy the SAME plate.** `tests/measure/fixtures.ts:241` sets
+`plateNumber: "ΙΚΖ-4821"` in a template shared by every motor policy it builds. That is a side
+effect of a deliberate choice — `wallet-identity-duplicates-baseline.spec.ts:56` wants a
+Greek/Latin homoglyph PAIR (`E2E-MOT-001` Latin «IKZ-4821» vs the ΣΥΜΒ-2025 fixtures' Greek
+«ΙΚΖ-4821») to prove the near-miss logging fires. The intent was one pair; the effect is N identical
+plates, so motor rows are genuinely alike in the fixture and the 0-target is unreachable there too.
+
+Measured effect of fixing only the metric — the identifier splits exactly one group everywhere,
+which is all it can do while the plates are identical:
+
+| capture | before | after |
+|---|---|---|
+| wallet-list populated-paid | 18 dup / largest 6 | 19 dup / largest 5 |
+| overlays batch-upload-modal | 20 | 19 |
+| overlays policy-comparison picker + table | 20 | 19 |
+
+**DECISION NEEDED, not taken here:** giving each fixture motor policy a distinct plate would make
+the acceptance measurable, but the homoglyph pair must survive it. That is a fixture change with a
+test depending on its current shape, so it is recorded rather than made.
+
 ## P5-wallet-01 — amended acceptance (2026-08-26) · `blocked_by: P5-wallet-01a`
 
 **Targets revised on the identifier-availability finding:**

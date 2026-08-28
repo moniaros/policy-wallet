@@ -2,7 +2,7 @@
   "capture": "varied-household",
   "width": 320,
   "url": "http://localhost:3000/wallet",
-  "scrollHeight": 2524,
+  "scrollHeight": 2534,
   "viewportsOfContent": 3.5,
   "headingCounts": {
     "h1": 1,
@@ -42,11 +42,11 @@
         "rows": [
           {
             "index": 0,
-            "subject": "cmta8b6ek000haa6aqf2rriib"
+            "subject": "cmtcqzh51000hfapgv28b9l2z"
           },
           {
             "index": 1,
-            "subject": "cmta8b4fd000daa6a8rv9q0k7"
+            "subject": "cmtcqzfab000dfapg43kz7i1i"
           }
         ]
       }
@@ -84,10 +84,10 @@
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · σε\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · σε\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"ERGO ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο ·\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΥγεία · 14/03/2\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 24\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe",
-      "[1.4.11:surface] <div> \"Generali HellasΕΝΕΡΓΟΚατοικία · 22\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
-      "[1.4.11:surface] <div> \"NN HellasΕΝΕΡΓΟΖωή · 30/09/2027\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΥγεία · 16/03/2\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΖ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Generali HellasΕΝΕΡΓΟΚατοικία · Λε\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"NN HellasΕΝΕΡΓΟΖωή · 02/10/2027\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
       "[1.4.11:surface] <div> \"Ξεκλείδωσε την πλήρη ανάλυσηΤο βασ\" boundary 1.20:1 (needs 3) inside=#f4f7f7 outside=#fbfcfd",
       "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff"
     ]
@@ -119,10 +119,10 @@
     "nonTelPhoneNumbers": [],
     "dateFacts": {
       "dates": [
-        "top: 14/03/2027 — \"14/03/2027\"",
-        "top: 24/03/2027 — \"24/03/2027\"",
-        "top: 22/06/2027 — \"22/06/2027\"",
-        "top: 30/09/2027 — \"30/09/2027\""
+        "top: 16/03/2027 — \"16/03/2027\"",
+        "top: 26/03/2027 — \"26/03/2027\"",
+        "top: 24/06/2027 — \"24/06/2027\"",
+        "top: 02/10/2027 — \"02/10/2027\""
       ],
       "dayCounts": [
         "top: \"σε 40 ημέρες\"",
@@ -151,7 +151,7 @@
         ]
       },
       {
-        "text": "Αυτοκίνητο ·",
+        "text": "Αυτοκίνητο · ·",
         "count": 2,
         "where": [
           "top <p>",
@@ -168,7 +168,7 @@
       }
     ],
     "internalTokenLeaks": [],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 7 7/7 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 0 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 0 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 3.880 € Όλα εντάξει — κανένα ασφαλιστήριο δεν χρειάζεται ενέργεια. Όλα Αυτοκίνητο Κατοικία Υγεία Ζωή Τα ασφαλιστήρια μου Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · σε 40 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · σε 40 ημέρες ERGO Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · σε 55 ημέρες Interamerican ΕΝΕΡΓΟ Υγεία · 14/03/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 24/03/2027 Generali Hellas ΕΝΕΡΓΟ Κατοικία · 22/06/2027 NN Hellas ΕΝΕΡΓΟ Ζωή · 30/09/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Ξεκλείδωσε την πλήρη ανάλυση Το βασικό summary είναι έτοιμο. Ξεκλείδωσε την πλήρη ανάλυση για να δεις κενά, εξαιρέσεις, όρια και προτεινόμενες ενέργειες. Ξεκλείδωμα πλήρους ανάλυσης Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 7 7/7 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 0 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 0 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 3.880 € Όλα εντάξει — κανένα ασφαλιστήριο δεν χρειάζεται ενέργεια. Όλα Αυτοκίνητο Κατοικία Υγεία Ζωή Τα ασφαλιστήρια μου Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · σε 40 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · σε 40 ημέρες ERGO Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · ΝΞΗ-7890 · σε 55 ημέρες Interamerican ΕΝΕΡΓΟ Υγεία · 16/03/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΖΤ-1234 · 26/03/2027 Generali Hellas ΕΝΕΡΓΟ Κατοικία · Λεωφόρος Κηφισίας 123 · 24/06/2027 NN Hellas ΕΝΕΡΓΟ Ζωή · 02/10/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Ξεκλείδωσε την πλήρη ανάλυση Το βασικό summary είναι έτοιμο. Ξεκλείδωσε την πλήρη ανάλυση για να δεις κενά, εξαιρέσεις, όρια και προτεινόμενες ενέργειες. Ξεκλείδωμα πλήρους ανάλυσης Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "unknown",
   "state": "varied-household-7-policies"
