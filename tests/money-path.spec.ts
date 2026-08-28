@@ -231,6 +231,11 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         await expect(qaSection).toBeVisible({ timeout: 15000 })
         await qaSection.scrollIntoViewIfNeeded()
 
+        // TWO steps, not one. The head control reveals the Q&A card; the card's
+        // own «Άνοιγμα συνομιλίας» opens the chat. Only the second reveals the
+        // locked state under test.
+        await qaSection.getByRole('button', { name: /Άνοιγμα συνομιλίας|Open chat/i }).first().click()
+
         // No enabled input for the free tier…
         await expect(qaSection.getByRole('textbox')).toHaveCount(0, { timeout: 15000 })
         // …and the upgrade pre-empt states what paid unlocks.
@@ -239,18 +244,30 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         ).toBeVisible()
     })
 
-    test('AI Q&A pre-empts with an upgrade nudge once the free questions are used up', async ({ page }) => {
+    test('the free tier lock is a PLAN gate, not a spent-question counter', async ({ page }) => {
+        // REWRITTEN 2026-08-28. This asserted an upgrade nudge appearing "once
+        // the free questions are used up", and spent three by writing
+        // POLICY_QUESTION_ASKED rows. FREE_LIFETIME_QUESTIONS is 0 — the free
+        // allowance was deliberately removed — so there was nothing to use up
+        // and the fixture wrote its rows against E2E_POLICYHOLDER while the
+        // page browsed as the free user, so it could not have affected the
+        // render either way.
+        //
+        // What is worth pinning is what replaced it: the lock is a property of
+        // the PLAN, so prior usage cannot change it. Spending questions still
+        // leaves exactly the same locked state as spending none — which is the
+        // difference between a gate and a meter, and the reason a free user is
+        // never shown a countdown they cannot influence.
         const db = await prismaClient()
         try {
             const owner = await db.user.findUniqueOrThrow({
-                where: { email: E2E_POLICYHOLDER.email },
+                where: { email: E2E_POLICYHOLDER_FREE.email },
                 select: { id: true },
             })
-            // Spend the lifetime free questions the way askPolicyQuestion counts them.
             await db.activityLog.createMany({
                 data: Array.from({ length: 3 }, () => ({
                     adminUserId: owner.id,
-                    adminEmail: E2E_POLICYHOLDER.email,
+                    adminEmail: E2E_POLICYHOLDER_FREE.email,
                     actionType: 'POLICY_QUESTION_ASKED',
                     description: `money-path fixture question for policy ${policyId}`,
                 })),
@@ -259,20 +276,23 @@ test.describe('Feature gates on the policy page (free tier)', () => {
             await page.goto(`/wallet/${policyId}`)
             await dismissCookieBanner(page)
 
+            await page
+                .getByRole('button', { name: /Ρωτήστε το AI|Ask the AI/i })
+                .first()
+                .click()
             const qaSection = page.locator('#policy-qa')
+            await expect(qaSection).toBeVisible({ timeout: 15000 })
             await qaSection.scrollIntoViewIfNeeded()
-            await qaSection.getByRole('button').first().click()
+            await qaSection.getByRole('button', { name: /Άνοιγμα συνομιλίας|Open chat/i }).first().click()
 
-            // Inline trigger variant renders body + CTA (no headline); input is gone.
-            await expect(
-                qaSection.getByText(/απεριόριστες ερωτήσεις|unlimited questions/i).first()
-            ).toBeVisible({ timeout: 15000 })
-            await expect(qaSection.getByRole('textbox')).toHaveCount(0)
+            // Identical to the no-usage case: locked, no input, no countdown.
+            await expect(qaSection.getByRole('textbox')).toHaveCount(0, { timeout: 15000 })
+            await expect(qaSection.getByText(/\d+\s*\/\s*\d+/)).toHaveCount(0)
         } finally {
             await db.activityLog.deleteMany({
                 where: {
                     actionType: 'POLICY_QUESTION_ASKED',
-                    adminEmail: E2E_POLICYHOLDER.email,
+                    adminEmail: E2E_POLICYHOLDER_FREE.email,
                 },
             })
             await db.$disconnect()
@@ -307,10 +327,11 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         await expectUpgradeModalOpen(page)
 
         await page.getByRole('radio', { name: /Ετήσια|Annual|Yearly/i }).click()
-        // The modal's primary CTA is "Συνέχεια με Plus — €x,xx/μήνα" (MODAL_COPY
-        // .plusPrefix + price). The old /Συνέχεια στην πληρωμή/ label no longer
-        // exists anywhere in the copy, so this never matched.
-        await page.getByRole('button', { name: /Συνέχεια με Plus|Continue with Plus/i }).click()
+        // The modal's primary CTA is "Συνέχεια με <plan> — €x,xx/μήνα": the verb
+        // is fixed copy, the plan name comes from `planTierName()`. Matching the
+        // verb keeps this test about what CHECKOUT CHARGES, which is its subject,
+        // rather than coupling it to a tier name it does not assert.
+        await page.getByRole('button', { name: /Συνέχεια με|Continue with/i }).first().click()
 
         await expect.poll(() => checkoutBody?.billingPeriod, { timeout: 15000 }).toBe('annual')
         // The gate that triggered the upgrade rides along for the success page.
