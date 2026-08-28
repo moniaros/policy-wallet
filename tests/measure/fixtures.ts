@@ -216,6 +216,58 @@ export function fixtureDates(state: FixtureSpec["state"], now = new Date()): { s
 
 const iso = (d: Date) => d.toISOString().slice(0, 10)
 
+/**
+ * A DISTINCT plate per motor fixture — and one DELIBERATE homoglyph pair.
+ *
+ * Every motor fixture used to carry the same «ΙΚΖ-4821». That made thirteen
+ * motor rows genuinely indistinguishable, so P5-wallet-01's acceptance
+ * ("motor, property, pet duplicates = 0") could not be met by this fixture no
+ * matter how correct the product was — the wallet was being asked to tell apart
+ * thirteen copies of one car.
+ *
+ * The single plate was a side effect of wanting a Greek/Latin homoglyph pair.
+ * That pair is now built HERE, between two named fixtures, instead of resting on
+ * `E2E-MOT-001` — which `wallet-identity-duplicates-baseline` describes as
+ * carrying Latin «IKZ-4821» and which in fact has no acordData at all, so the
+ * pair the spec documents did not exist in the data.
+ *
+ * «ΙΚΖ» (Greek Iota-Kappa-Zeta) and «IKZ» (Latin I-K-Z) render identically and
+ * are different registrations. `assetIdentityKey` deliberately does NOT fold
+ * one alphabet into the other — two different vehicles can legitimately produce
+ * that pair — so the wallet must render both rows unmerged and LOG the
+ * near-miss. Keeping the pair keeps that path exercised.
+ */
+const HOMOGLYPH_PAIR: Record<string, string> = {
+    // Greek half. Kept on the original value so existing evidence stays legible.
+    "motor-active": "ΙΚΖ-4821",
+    // Latin half — visually identical, a DIFFERENT vehicle.
+    "motor-expired": "IKZ-4821",
+}
+
+/** Greek triples drawn only from letters Greek plates actually use. */
+const PLATE_TRIPLES = [
+    "ΑΒΕ", "ΗΝΡ", "ΤΥΧ", "ΜΟΚ", "ΒΖΝ", "ΕΗΤ",
+    "ΚΜΥ", "ΝΟΧ", "ΡΤΑ", "ΧΑΒ", "ΖΕΗ", "ΟΚΜ",
+]
+
+/**
+ * Deterministic from the fixture key, so a capture is reproducible and a diff
+ * of two runs is about the product, not about a random plate.
+ * `tests/unit/measure-fixture-plates-are-distinct.test.ts` asserts the result is
+ * collision-free across every declared motor fixture.
+ */
+export function motorPlate(spec: FixtureSpec): string {
+    const pinned = HOMOGLYPH_PAIR[spec.key]
+    if (pinned) return pinned
+    let h = 0
+    for (const ch of spec.key) h = (h * 33 + ch.charCodeAt(0)) >>> 0
+    const triple = PLATE_TRIPLES[h % PLATE_TRIPLES.length]
+    // A second, independent slice of the hash for the digits, so two keys that
+    // land on the same triple do not also land on the same number.
+    const digits = 1000 + (Math.floor(h / PLATE_TRIPLES.length) % 9000)
+    return `${triple}-${digits}`
+}
+
 function motorAcord(spec: FixtureSpec, start: Date, end: Date) {
     return {
         _version: 3,
@@ -238,7 +290,7 @@ function motorAcord(spec: FixtureSpec, start: Date, end: Date) {
             make: "Toyota",
             model: "Yaris",
             usage: "Ε.Ι.Χ.",
-            plateNumber: "ΙΚΖ-4821",
+            plateNumber: motorPlate(spec),
             coverageTier: "third-party-fire",
             glassBreakage: false,
             ownVehicleDamage: false,

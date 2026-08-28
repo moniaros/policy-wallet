@@ -52,11 +52,21 @@ test.beforeAll(async () => {
 
 test("P5-wallet-00: duplicate-identity rows, heavy (29-policy) wallet", async ({ page }) => {
     test.setTimeout(6 * 60_000)
-    // P5-wallet-01 acceptance 3: the heavy account genuinely contains a
-    // Greek/Latin homoglyph plate pair (E2E-MOT-001 carries Latin «IKZ-4821»,
-    // the ΣΥΜΒ-2025 motor fixtures Greek «ΙΚΖ-4821»), so the wallet list is
-    // expected to LOG the near-miss and render both rows unmerged. Collect the
-    // browser-console warnings so the log's firing is evidence, not a claim.
+    // P5-wallet-01 acceptance 3: the wallet is expected to LOG the Greek/Latin
+    // homoglyph near-miss and render both rows unmerged.
+    //
+    // CORRECTED 2026-08-28. This said the pair came from `E2E-MOT-001` carrying
+    // Latin «IKZ-4821» against the ΣΥΜΒ-2025 fixtures' Greek «ΙΚΖ-4821».
+    // E2E-MOT-001 has no acordData at all (tests/global-setup.ts creates it with
+    // no vehicle), so that pair did not exist — and every ΣΥΜΒ-2025 motor
+    // fixture shared ONE plate, which is what made thirteen motor rows
+    // indistinguishable and P5-wallet-01's 0-target unreachable.
+    //
+    // The pair is now built deliberately and locally in `fixtures.ts`
+    // (`HOMOGLYPH_PAIR`): `motor-active` carries Greek «ΙΚΖ-4821» and
+    // `motor-expired` Latin «IKZ-4821». Every other motor fixture gets its own
+    // plate. Collect the browser-console warnings so the log's firing is
+    // evidence, not a claim.
     const homoglyphWarnings: string[] = []
     page.on("console", (msg) => {
         if (msg.type() === "warning" && msg.text().includes("[policy-identity]")) {

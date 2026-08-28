@@ -1672,9 +1672,29 @@ which is all it can do while the plates are identical:
 | overlays batch-upload-modal | 20 | 19 |
 | overlays policy-comparison picker + table | 20 | 19 |
 
-**DECISION NEEDED, not taken here:** giving each fixture motor policy a distinct plate would make
-the acceptance measurable, but the homoglyph pair must survive it. That is a fixture change with a
-test depending on its current shape, so it is recorded rather than made.
+**DONE 2026-08-28 (owner asked for it).** `motorPlate()` in `fixtures.ts` derives a distinct plate
+per fixture key — deterministic, so captures stay reproducible — and
+`tests/unit/measure-fixture-plates-are-distinct.test.ts` enumerates the exported spec lists and
+asserts the result is collision-free rather than assuming a hash does not collide.
+
+The homoglyph pair is now built DELIBERATELY and LOCALLY: `motor-active` keeps Greek «ΙΚΖ-4821»,
+`motor-expired` takes Latin «IKZ-4821». It previously rested on the spec's claim that `E2E-MOT-001`
+carried the Latin half — that policy has no `acordData` at all, so **the pair the spec documented
+did not exist in the data.** The comment is corrected.
+
+Measured effect, `wallet-list populated-paid`:
+
+| | duplicates | largest group |
+|---|---|---|
+| stored (metric blind to the plate, one shared plate) | 18 | 6 |
+| metric reads the plate | 19 | 5 |
+| + distinct plates | **12** | **3** |
+
+The group of six identical motor rows is gone. What remains is 3 health + 7 motor, and the motor
+ones are the SAME fixture spec seeded more than once — genuinely identical policies, which the
+account accumulates because `wallet-identity-duplicates-baseline` notes other specs are free to grow
+it. Reaching a true 0 for motor needs per-INSTANCE variation, not per-spec; that is a further
+decision, not a defect in this work.
 
 ## P5-wallet-01 — amended acceptance (2026-08-26) · `blocked_by: P5-wallet-01a`
 
