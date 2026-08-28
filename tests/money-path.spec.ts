@@ -85,9 +85,20 @@ async function fixturePolicyId(): Promise<string> {
  * is asserted where it is the subject (the dual-CTA test), not in the "is the
  * modal open" probe every other test leans on.
  */
+/**
+ * The modal's primary CTA always carries a PRICE — «Συνέχεια με Family —
+ * €79/έτος». The locked feature cards carry «Συνέχεια με απεριόριστες
+ * ερωτήσεις →», which matches a bare /Συνέχεια με/ and sits EARLIER in the
+ * DOM, so `.first()` on the loose pattern silently selects a card instead of
+ * the modal — passing this probe against a modal that never opened, and
+ * clicking the wrong control in the checkout test. Requiring the € is what
+ * makes it the modal's button.
+ */
+const MODAL_PRIMARY_CTA = /(Συνέχεια με|Continue with).*€/
+
 async function expectUpgradeModalOpen(page: Page) {
     await expect(
-        page.getByRole('button', { name: /Συνέχεια με|Continue with/i }).first()
+        page.getByRole('button', { name: MODAL_PRIMARY_CTA }).first()
     ).toBeVisible({ timeout: 15000 })
     await expect(page.getByRole('radio', { name: /Μηνιαία|Monthly/i })).toBeVisible()
 }
@@ -331,7 +342,7 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         // is fixed copy, the plan name comes from `planTierName()`. Matching the
         // verb keeps this test about what CHECKOUT CHARGES, which is its subject,
         // rather than coupling it to a tier name it does not assert.
-        await page.getByRole('button', { name: /Συνέχεια με|Continue with/i }).first().click()
+        await page.getByRole('button', { name: MODAL_PRIMARY_CTA }).first().click()
 
         await expect.poll(() => checkoutBody?.billingPeriod, { timeout: 15000 }).toBe('annual')
         // The gate that triggered the upgrade rides along for the success page.

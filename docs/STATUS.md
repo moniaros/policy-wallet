@@ -102,31 +102,30 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
    written down anywhere. Three options in `HALTS.md → H-011`; the cheapest is to accept it and fix
    the doc, because a future agent will trust the invariant as written.
 
-2. **The money path is measurable again — and it found more than a stale selector.** RUN
-   2026-08-28, the first since it rotted: **6 failed / 4 passed**, now **5 failed / 5 passed** after
-   the plumbing fix. The spec was internally contradictory and could not pass in ANY configuration:
-   its docblock said FREE tier, the config gave it the PRO session (and every assertion is about
-   gates that render only when `tier !== 'pro'`), and its fixture helper resolved the PRO user's
-   policy — a correct 404 under the free session. Fixed: a `money-free` project, the free user's own
-   policy, the pro session pinned on the one billing block that needs it, and `PremiumInsightCards`
-   carries its `id` on the component rather than a container. Playwright is still **not in CI**.
+2. ~~**The money path has rotted.**~~ **GREEN — 14/14, 2026-08-28.** It had been red for five days
+   and nobody knew, because Playwright is not in CI. Running it found far more than the one stale
+   selector STATUS knew about: **6 failed / 4 passed / 4 never ran**, and the spec could not pass in
+   ANY configuration — its docblock said FREE tier, the config gave it the PRO session (every
+   assertion is about gates that need `tier !== 'pro'`), and its fixture resolved the PRO user's
+   policy, a correct 404 under the free session.
 
-   **The five remaining failures are product divergences, deliberately not papered over:**
+   Nine iterations, because serial mode reveals one failure at a time. Fixed in the PRODUCT where
+   the product was wrong (plan naming, the upsell inside a collapsed section) and in the
+   ASSERTIONS where they described a page that had been deliberately replaced:
 
-   a. **Risk 0 above** — `/upgrade` has no «Starter»; the modal invents one. (1 failure)
+   - the `money-free` project, the free user's own fixture policy, the pro session pinned on the
+     one billing block that needs it;
+   - `PremiumInsightCards` carries its `id` on the component, not a container;
+   - the shared modal probe matched «Συνέχεια με Plus» — three unrelated tests went red at once
+     when the modal stopped calling `ph-pro` "Plus". It now requires the **price**, because the
+     locked feature cards carry «Συνέχεια με απεριόριστες ερωτήσεις →» and sit EARLIER in the DOM,
+     so a loose match with `.first()` selected a card and passed against a modal that never opened;
+   - assertions on a raw filename the product never persists, on a Q&A trigger that moved into the
+     head card in GOAL 2, and on a free-question allowance that was removed
+     (`FREE_LIFETIME_QUESTIONS = 0`) — the last rewritten to pin what replaced it: the lock is a
+     PLAN gate, so prior usage cannot change it.
 
-   b. **Every free-tier upgrade surface on the policy page is inside a collapsed section.** (3
-      failures) `PolicySection id="documents"` is a catch-all holding DocumentsCard, AddDocumentCard,
-      InsuredPeopleCard, the agent block **and** `PremiumInsightCards` — the page's self-described
-      "only place that ADVERTISES" — plus the savings-report unlock CTA. It opens only when the
-      head's attention line names it (`openSection = forcedOpen ?? attention.target`), and the URL
-      hash does **not** open it. A free user with a healthy policy therefore sees none of the page's
-      upgrade surfaces without expanding a disclosure labelled «Έγγραφα». Whether that is intended
-      is a conversion decision; the tests assert they are visible.
-
-   c. **`/home` now lands on the rebuilt dashboard**, which does not carry the old usage meter
-      («N / 1» against the free cap) or the multi-insurer trigger the spec asserts. (1 failure)
-
+   **Playwright is still not in CI.** Everything above was invisible to a fully green gate.
 3. **SEC-01 — session objects reached the Vercel runtime logs. LAUNCH RISK, not post-GA debt.**
    **Contained, not closed**, and not closable by the agent. The middleware TypeError embedded the
    whole session in its message; **8 occurrences confirmed** in production (2026-08-23 ×7,
