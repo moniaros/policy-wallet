@@ -75,11 +75,19 @@ async function fixturePolicyId(): Promise<string> {
 
 /**
  * UpgradeModal has no dialog role. Post Paid-Aha-Loop it is a dual-CTA modal:
- * the Plus primary CTA + the monthly billing toggle are the stable handles.
+ * the recommended-tier primary CTA + the monthly billing toggle are the stable
+ * handles.
+ *
+ * Deliberately matches the VERB, not the plan name. This helper hardcoded
+ * «Συνέχεια με Plus», so the moment the modal stopped calling `ph-pro` "Plus"
+ * — the fix for one word naming two plans — three unrelated tests went red at
+ * once for a reason that had nothing to do with what they assert. The plan name
+ * is asserted where it is the subject (the dual-CTA test), not in the "is the
+ * modal open" probe every other test leans on.
  */
 async function expectUpgradeModalOpen(page: Page) {
     await expect(
-        page.getByRole('button', { name: /Συνέχεια με Plus|Continue with Plus/i })
+        page.getByRole('button', { name: /Συνέχεια με|Continue with/i }).first()
     ).toBeVisible({ timeout: 15000 })
     await expect(page.getByRole('radio', { name: /Μηνιαία|Monthly/i })).toBeVisible()
 }
@@ -168,7 +176,7 @@ test.describe('Feature gates on the policy page (free tier)', () => {
 
         // Specific to the savings-report CTA — the post-parse locked-cards grid
         // also renders "Ξεκλείδωμα πλήρους ανάλυσης", so a bare /Ξεκλείδωμα/ is ambiguous.
-        const unlockCta = page.getByRole('button', { name: /Ξεκλείδωμα εξαγωγής|Unlock report/i })
+        const unlockCta = page.getByRole('button', { name: /Ξεκλείδωμα εξαγωγής|Unlock report/i }).first()
         await expect(unlockCta).toBeVisible({ timeout: 20000 })
         // The direct export link is Pro-only and must be absent for free users.
         await expect(page.locator(`a[href*="/savings-report"]`)).toHaveCount(0)

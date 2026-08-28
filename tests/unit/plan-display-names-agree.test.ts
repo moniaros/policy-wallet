@@ -33,14 +33,46 @@
  * hardcodes a tier name again.
  */
 import { describe, expect, it } from "vitest"
-import { readFileSync } from "node:fs"
+import { readFileSync, readdirSync } from "node:fs"
+import { join } from "node:path"
 import { planTierName } from "../../lib/subscription-copy"
 
-/** Every surface that may NOT hardcode a tier name. */
-const CONSUMERS = [
-    "components/monetization/UpgradeModal.tsx",
-    "components/monetization/CarriedPlanCard.tsx",
-]
+/**
+ * The universe is ENUMERATED, not listed.
+ *
+ * The first version of this guard named two files. `PlanBadge.tsx` held a third
+ * copy — `plus: "Starter", pro: "Plus"` — and was invisible to it, which is the
+ * exact failure this repo keeps re-learning: a guard scoped to known locations
+ * guards those locations, not the invariant.
+ *
+ * So: every component under `components/monetization/` plus the plan-facing
+ * shell and account surfaces is scanned for a tier LABEL MAP — an object whose
+ * keys are the code tiers and whose values are quoted names.
+ */
+function tsxFilesUnder(dirs: string[]): string[] {
+    const out: string[] = []
+    const walk = (dir: string) => {
+        let entries
+        try {
+            entries = readdirSync(dir, { withFileTypes: true })
+        } catch {
+            return
+        }
+        for (const e of entries) {
+            const full = join(dir, e.name)
+            if (e.isDirectory()) walk(full)
+            else if (/\.tsx?$/.test(e.name) && !e.name.includes(".test.")) out.push(full)
+        }
+    }
+    dirs.forEach(walk)
+    return out
+}
+
+const CONSUMERS = tsxFilesUnder([
+    "components/monetization",
+    "components/account",
+    "components/shell",
+])
 
 describe("the source of truth", () => {
     it("gives every tier a distinct name, in both languages", () => {
@@ -62,10 +94,8 @@ describe("the source of truth", () => {
 })
 
 describe("nothing hardcodes a tier name", () => {
-    it("the conversion surfaces resolve through planTierName", () => {
-        for (const file of CONSUMERS) {
-            expect.soft(readFileSync(file, "utf-8"), file).toMatch(/planTierName\(/)
-        }
+    it("the scan actually sees the monetization tree", () => {
+        expect(CONSUMERS.length).toBeGreaterThan(10)
     })
 
     it("no conversion surface contains a bare tier label", () => {
@@ -73,16 +103,16 @@ describe("nothing hardcodes a tier name", () => {
         // here while every other surface called ph-plus «Plus», and this file's
         // «Plus» meant ph-pro. Any bare label reintroduces that class.
         const offenders: string[] = []
+        // A tier LABEL MAP: `plus: "Something"` / `"ph-pro": "Something"`.
+        // Matching only this shape keeps prose and aria-labels out of scope
+        // while catching every place a name is assigned to a tier.
+        const LABEL_MAP = /["']?(?:ph-)?(?:free|plus|pro)["']?\s*:\s*["'`](Free|Starter|Plus|Family|Δωρεάν)["'`]/
         for (const file of CONSUMERS) {
             const src = readFileSync(file, "utf-8")
                 .replace(/\/\*[\s\S]*?\*\//g, "")
                 .replace(/(^|[^:])\/\/.*$/gm, "$1")
-            for (const label of ["Starter", "Family", "Plus"]) {
-                // A quoted literal, i.e. rendered copy — not an identifier.
-                if (new RegExp(`["'\`][^"'\`]*\\b${label}\\b`).test(src)) {
-                    offenders.push(`${file}: "${label}"`)
-                }
-            }
+            const m = LABEL_MAP.exec(src)
+            if (m) offenders.push(`${file}: ${m[0].trim()}`)
         }
         expect(
             offenders,

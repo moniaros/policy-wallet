@@ -2,6 +2,8 @@
 
 import { Crown } from "lucide-react"
 import type { PlanTier } from "@/types/subscription-entitlements"
+import { planTierName } from "@/lib/subscription-copy"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const TIER_STYLES: Record<PlanTier, string> = {
     free: "bg-muted text-muted-foreground",
@@ -9,22 +11,19 @@ const TIER_STYLES: Record<PlanTier, string> = {
     pro: "bg-primary text-primary-foreground",
 }
 
-// Display labels. NOTE the relabel-in-place mapping: code key `plus` is the
-// €2.99 "Starter" tier; code key `pro` is the €7.99 "Plus" (AI) tier.
-const TIER_LABELS: Record<PlanTier, string> = {
-    free: "Free",
-    plus: "Starter",
-    pro: "Plus",
-}
+// Labels come from `planTierName`, never from a map here. This file used to
+// hold its own — free/Starter/Plus — which made «Plus» the badge for `pro`
+// while every other surface calls `plus` «Plus». One word, two plans.
 
 /** Small pill showing the user's current plan. */
 export function PlanBadge({ tier, className = "" }: { tier: PlanTier; className?: string }) {
+    const { language } = useLanguage()
     return (
         <span
             className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-widest ${TIER_STYLES[tier]} ${className}`}
         >
             {tier !== "free" && <Crown className="h-3 w-3" />}
-            {TIER_LABELS[tier]}
+            {planTierName(tier, language)}
         </span>
     )
 }

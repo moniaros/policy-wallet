@@ -132,12 +132,16 @@ export const subscriptionCopy = {
     cta: {
         upgrade: { el: 'Αναβάθμιση', en: 'Upgrade' },
         processing: { el: 'ΠΕΡΙΜΕΝΕΤΕ...', en: 'PROCESSING...' },
+        // The KEY names the code tier, the VALUE must name the same tier.
+        // These four drifted: `upgradeToPlus` said «Starter» and `upgradeToPro`
+        // said «Plus», so the CTA for one plan carried the other plan's name —
+        // the same inversion that let «Plus» mean two different prices.
         basePlan: { el: 'Βασικό πλάνο', en: 'Base plan' },
-        upgradeToPlus: { el: 'Αναβάθμιση σε Starter', en: 'Upgrade to Starter' },
-        upgradeToPro: { el: 'Αναβάθμιση σε Plus', en: 'Upgrade to Plus' },
+        upgradeToPlus: { el: 'Αναβάθμιση σε Plus', en: 'Upgrade to Plus' },
+        upgradeToPro: { el: 'Αναβάθμιση σε Family', en: 'Upgrade to Family' },
         getStarted: { el: 'Ξεκινήστε Δωρεάν', en: 'Get Started Free' },
-        startPlus: { el: 'Ξεκινήστε Starter', en: 'Start Starter' },
-        startPro: { el: 'Ξεκινήστε Plus', en: 'Start Plus' },
+        startPlus: { el: 'Ξεκινήστε Plus', en: 'Start Plus' },
+        startPro: { el: 'Ξεκινήστε Family', en: 'Start Family' },
         currentPlan: { el: 'Τρέχον Πλάνο', en: 'Current Plan' },
         manage: { el: 'Διαχείριση Συνδρομής', en: 'Manage Subscription' },
         cancel: { el: 'Ακύρωση', en: 'Cancel' },
@@ -283,8 +287,8 @@ export const subscriptionCopy = {
             // {starterAnnual}/{plusAnnual} are interpolated at render time from
             // the live plan catalog (PricingComparison) — never hardcode € here.
             answer: {
-                el: 'Ναι — το Starter κοστίζει {starterAnnual}/έτος και το Plus {plusAnnual}/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση.',
-                en: 'Yes — Starter is {starterAnnual}/year and Plus is {plusAnnual}/year, both discounted versus paying monthly.'
+                el: 'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση.',
+                en: 'Yes — Plus is {starterAnnual}/year and Family is {plusAnnual}/year, both discounted versus paying monthly.'
             },
         },
         {

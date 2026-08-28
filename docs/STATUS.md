@@ -58,32 +58,39 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 
 ## Top risks, ranked
 
-0. **THE SAME WORD «Plus» NAMES TWO DIFFERENT PLANS AT TWO DIFFERENT PRICES, ON THE PATH THAT
-   TAKES MONEY. Launch-gating; found 2026-08-28 by running the money-path E2E for the first time
-   since it rotted.** Three surfaces disagree about what `ph-pro` is called, and one of the names
-   collides with a real, cheaper plan:
+0. **Plan naming — the APP is fixed; the EDITORIAL corpus is not, and it is not safe to bulk-rename.**
 
-   | plan code | live catalog (what Stripe charges) | `/upgrade`, landing, help (`lib/subscription-copy.ts`) | in-app `UpgradeModal` |
-   |---|---|---|---|
-   | `ph-plus` | **Plus**, €4.99/mo, €39/yr | **Plus**, €4.99 | **Starter**, €4.99 |
-   | `ph-pro`  | **Pro**, €8.99/mo, €79/yr  | **Family**, €8.99 | **Plus**, €8.99 |
+   *Fixed 2026-08-28.* «Plus» named two different plans at two different prices: the upgrade modal
+   offered «Συνέχεια με Plus — 8,99 €» for `ph-pro` while `/upgrade`, the public pricing page, the
+   landing page and the help centre call `ph-plus` «Plus» at €4.99 and `ph-pro` «Family». Three
+   components held their own label maps — `UpgradeModal`, `CarriedPlanCard` and `PlanBadge` (the
+   third was invisible to the first guard, which named files instead of enumerating). All three now
+   resolve through `planTierName()`; the four `subscription-copy` CTAs whose KEY named one tier and
+   whose VALUE named another are corrected, as is the `/upgrade` FAQ that priced «Starter» at €39
+   and «Plus» at €79 on the same page whose cards said «Plus €4.99» and «Family €8.99». The guard
+   now enumerates `components/{monetization,account,shell}` and is red-proved against `PlanBadge`.
 
-   So the modal renders «Συνέχεια με Plus — 8,99 €/μήνα» (`UpgradeModal.tsx:248`, price from
-   `tierPricing("pro")`) while `/upgrade` lists a plan *named* «Plus» at €4.99 and calls the €8.99
-   one «Family». A customer who has seen the upgrade page and then meets the modal can reasonably
-   believe «Plus» costs €4.99 and be charged €8.99. `ph-pro` additionally carries a THIRD name —
-   «Pro» — in the plan row that `/admin/plans` and the public pricing page read.
+   **STILL OPEN — three naming schemes coexist in editorial content, and one is a factual claim.**
+   42 policyholder «Starter» references remain in `lib/guides`, `lib/glossary`, `lib/landing`,
+   `app/(public)` and `lib/monetization/*-copy`. A blind rename would make things worse, because the
+   corpus is mixed:
 
-   Not a test artefact: the names are hardcoded in two places (`lib/subscription-copy.ts:20-36`,
-   `components/monetization/UpgradeModal.tsx:40-41`) and both are live. `money-path.spec.ts`'s own
-   comment predicted exactly this — *"how a genuine pricing contradiction elsewhere in this file
-   stayed hidden."*
+   - `app/(public)/product/marketing-content.ts:34` already uses the canonical pair —
+     «από το πλάνο Plus … με το Family».
+   - `lib/guides/content.ts:2431` uses a hybrid — «με το πλάνο **Family**» for gap detection and
+     «από το πλάνο **Starter**» for reminders.
+   - `lib/guides/content.ts:261` and `lib/glossary/content.ts:254,354` say automatic gap detection
+     and under-insurance analysis are «στο πλάνο **Plus**».
 
-   **Deliberately NOT fixed by the agent.** Which name is correct is a pricing decision, not a
-   defect with one right answer, and customer-facing price copy is the surface CLAUDE.md singles
-   out as a publication channel. Three candidate resolutions: (a) make everything follow the plan
-   rows (Plus / Pro), (b) make everything follow the marketing pair (Plus / Family) and rename the
-   row, (c) keep Starter/Plus and rename both the rows and the marketing copy. **Owner decision.**
+   Under the old scheme «Plus» meant the TOP tier; under the canonical one it means the ENTRY tier.
+   So renaming Starter→Plus without also deciding what each existing «Plus» meant would put two
+   different plans under one word again — the very defect just fixed.
+
+   **And it is not only naming.** `DEFAULT_ENTITLEMENT_LIMITS` gives `plus` `gapAnalysisPerDay: 0`
+   and `advancedAnalytics: false`; only `pro` has them. So a sentence promising gap detection on
+   «Plus» is a claim the code does not support if «Plus» now means the entry tier. Resolving this
+   needs a feature-by-feature gating audit, not a search-and-replace, so it was deliberately not
+   attempted — publishing a wrong plan claim is worse than an inconsistent one.
 
 1. **H-011 — a document reaches a model provider BEFORE anyone consents.** The agent scan path
    (`parsePolicyPdfWithGemini`, 93 lines, zero consent references) sends the document, and
@@ -153,8 +160,27 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
    dropped entry is a nested descendant of the six that remain — card titles inside «Προτάσεις
    κάλυψης», rows inside «Σύνοψη κάλυψης». `/account/history` held at 2 in the same run, so the
    collector did not simply start counting lower. **The ceiling concern was a measurement artefact;
-   the page needs no section reduction.** 137 stale capture files across 9 surfaces remain, and are
-   now known to be inflated by an unknown factor.
+   the page needs no section reduction.**
+
+   **The rest of the stale corpus was then re-run, and it is in far better shape than "inflated by
+   an unknown factor" implied.** Of 54 stale captures re-measured, **49 were already correct and 5
+   were wrong.** The inflation is not a factor applied to the corpus — it is a property of one page
+   SHAPE. Every capture that moved is a surface with nested card groupings, where the old collector
+   counted a grouping and its own contents separately, consistently 3.3–4.5×:
+
+   | capture | stored | true | factor |
+   |---|---|---|---|
+   | `/protection` ανά κλάδο | 20 | **6** | 3.3× |
+   | `/protection` ανά κίνδυνο | 26 | **6** | 4.3× |
+   | `overlays` batch-upload-modal | 12 | **3** | 4.0× |
+   | `wallet-list` populated-paid | 9 | **2** | 4.5× |
+
+   Everything unchanged was a page the collector scored 0 or 2 — nothing nested to double.
+
+   **Four stale surfaces can NEVER be corrected.** `branches`, `coverage-insights`, `risk-profile`
+   and `timeline` (31 captures) have no spec, because V2-P2-03 deleted their routes. Their inflated
+   numbers are the only surviving record of pages that no longer exist and must be read as
+   before-pictures, not measurements.
 4. **`verify:gap-catalogue` now runs in CI** (the secrets were a name mismatch, not missing) — but
    the loud-skip fallback has never actually fired, so the failure path is unproven.
 5. **The fix for a guard gap had the same gap.** The pooler lock shipped guarding `withDb` while
