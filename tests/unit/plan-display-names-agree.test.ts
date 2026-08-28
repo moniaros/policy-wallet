@@ -20,101 +20,73 @@
  * and its own comment had predicted the failure mode: "how a genuine pricing
  * contradiction elsewhere in this file stayed hidden."
  *
- * WHY THIS TEST PINS THE VIOLATION RATHER THAN FAILING ON IT: which name is
- * correct is a pricing decision with three defensible answers, not a defect with
- * one. The agent that found it deliberately did not choose. The exception below
- * is dated and must be DELETED — not edited — when the owner decides; deleting
- * it turns this into the plain invariant it is written as.
+ * RESOLVED 2026-08-28 (owner: fix it). The canonical customer-facing pair is
+ * «Plus» / «Family» — already used by the public pricing page, /upgrade, the
+ * landing page and the help centre. The two dissenters now resolve through
+ * `planTierName()` in `lib/subscription-copy.ts`, which is the single source.
+ * The plan ROW `name` column ("Plus"/"Pro") stays as it is: it is admin-side and
+ * no customer surface renders it, so no catalog write was needed — and writing
+ * one would have published to the live pricing page immediately.
+ *
+ * This guard therefore no longer pins a violation. It enforces two things: that
+ * the source of truth gives every tier a distinct name, and that nothing
+ * hardcodes a tier name again.
  */
 import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
+import { planTierName } from "../../lib/subscription-copy"
 
-/** The display name each code-side surface gives a plan code. */
-function subscriptionCopyNames(): Record<string, string> {
-    const src = readFileSync("lib/subscription-copy.ts", "utf-8")
-    const out: Record<string, string> = {}
-    for (const key of ["plus", "pro"]) {
-        // `plus: {\n  name: { el: 'X', en: 'X' },`
-        const m = new RegExp(`\\n\\s{8}${key}: \\{[\\s\\S]{0,200}?name: \\{ el: '([^']+)'`).exec(src)
-        if (m) out[`ph-${key}`] = m[1]
-    }
-    return out
-}
-
-function carriedPlanCardNames(): Record<string, string> {
-    const src = readFileSync("components/monetization/CarriedPlanCard.tsx", "utf-8")
-    const out: Record<string, string> = {}
-    const block = /const PLAN_LABEL: Record<string, string> = \{([\s\S]*?)\}/.exec(src)
-    if (block) {
-        for (const m of block[1].matchAll(/"(ph-[a-z]+)":\s*"([^"]+)"/g)) out[m[1]] = m[2]
-    }
-    return out
-}
-
-/**
- * The modal names its two tiers in the CTA prefixes, and maps them to codes in
- * the lines above: `tierPricing("pro")` is the one it calls Plus.
- */
-function upgradeModalNames(): Record<string, string> {
-    const src = readFileSync("components/monetization/UpgradeModal.tsx", "utf-8")
-    const out: Record<string, string> = {}
-    const plus = /plusPrefix: \{ el: "[^"]*?με ([A-Za-zΆ-ώ]+)/.exec(src)
-    const starter = /starterPrefix: \{ el: "[^"]*?με ([A-Za-zΆ-ώ]+)/.exec(src)
-    // PLUS = tierPricing("pro"); STARTER = tierPricing("plus")
-    if (plus && /const PLUS = tierPricing\("pro"\)/.test(src)) out["ph-pro"] = plus[1]
-    if (starter && /const STARTER = tierPricing\("plus"\)/.test(src)) out["ph-plus"] = starter[1]
-    return out
-}
-
-const SOURCES: Array<[string, Record<string, string>]> = [
-    ["lib/subscription-copy.ts", subscriptionCopyNames()],
-    ["components/monetization/CarriedPlanCard.tsx", carriedPlanCardNames()],
-    ["components/monetization/UpgradeModal.tsx", upgradeModalNames()],
+/** Every surface that may NOT hardcode a tier name. */
+const CONSUMERS = [
+    "components/monetization/UpgradeModal.tsx",
+    "components/monetization/CarriedPlanCard.tsx",
 ]
 
-/**
- * KNOWN, MEASURED CONTRADICTION — 2026-08-28. Owner decision pending; see the
- * docblock. DELETE this map when the names are unified; do not extend it.
- */
-const PINNED_DISAGREEMENT: Record<string, string[]> = {
-    "ph-plus": ["Plus", "Starter"],
-    "ph-pro": ["Family", "Plus"],
-}
-
-describe("plan display names", () => {
-    it("every source was actually parsed — a silent miss would pass this file vacuously", () => {
-        for (const [file, names] of SOURCES) {
-            expect.soft(Object.keys(names).sort(), file).toEqual(["ph-plus", "ph-pro"])
+describe("the source of truth", () => {
+    it("gives every tier a distinct name, in both languages", () => {
+        for (const language of ["el", "en"]) {
+            const names = (["free", "plus", "pro"] as const).map((t) => planTierName(t, language))
+            expect.soft(new Set(names).size, `${language}: ${names.join(" / ")}`).toBe(3)
         }
     })
 
-    it("one plan code resolves to ONE display name across every paying surface", () => {
-        const disagreements: Record<string, string[]> = {}
-        for (const code of ["ph-plus", "ph-pro"]) {
-            const names = [...new Set(SOURCES.map(([, m]) => m[code]).filter(Boolean))].sort()
-            if (names.length > 1) disagreements[code] = names
+    it("names ph-plus «Plus» and ph-pro «Family» — the pair the public pricing page publishes", () => {
+        // If these change, they must change in public-pricing-content.ts too,
+        // which is what a customer compares against before they click.
+        expect(planTierName("plus", "el")).toBe("Plus")
+        expect(planTierName("pro", "el")).toBe("Family")
+        const pricing = readFileSync("lib/pricing/public-pricing-content.ts", "utf-8")
+        expect(pricing).toContain('name: { el: "Plus", en: "Plus" }')
+        expect(pricing).toContain('name: { el: "Family", en: "Family" }')
+    })
+})
+
+describe("nothing hardcodes a tier name", () => {
+    it("the conversion surfaces resolve through planTierName", () => {
+        for (const file of CONSUMERS) {
+            expect.soft(readFileSync(file, "utf-8"), file).toMatch(/planTierName\(/)
+        }
+    })
+
+    it("no conversion surface contains a bare tier label", () => {
+        // «Starter» was the specific literal that collided: it named ph-plus
+        // here while every other surface called ph-plus «Plus», and this file's
+        // «Plus» meant ph-pro. Any bare label reintroduces that class.
+        const offenders: string[] = []
+        for (const file of CONSUMERS) {
+            const src = readFileSync(file, "utf-8")
+                .replace(/\/\*[\s\S]*?\*\//g, "")
+                .replace(/(^|[^:])\/\/.*$/gm, "$1")
+            for (const label of ["Starter", "Family", "Plus"]) {
+                // A quoted literal, i.e. rendered copy — not an identifier.
+                if (new RegExp(`["'\`][^"'\`]*\\b${label}\\b`).test(src)) {
+                    offenders.push(`${file}: "${label}"`)
+                }
+            }
         }
         expect(
-            disagreements,
-            "a plan code renders under more than one name on the purchase path — " +
-                "a customer can read one price against a name and be charged another:\n" +
-                JSON.stringify(disagreements, null, 2)
-        ).toEqual(PINNED_DISAGREEMENT)
-    })
-
-    it("no NAME is shared by two different plan codes", () => {
-        // «Plus» currently names ph-plus (€4.99) on /upgrade and ph-pro (€8.99)
-        // in the modal. This is the half that actually misprices the choice.
-        const collisions: Record<string, string[]> = {}
-        const byName: Record<string, Set<string>> = {}
-        for (const [, m] of SOURCES) {
-            for (const [code, name] of Object.entries(m)) (byName[name] ??= new Set()).add(code)
-        }
-        for (const [name, codes] of Object.entries(byName)) {
-            if (codes.size > 1) collisions[name] = [...codes].sort()
-        }
-        expect(collisions, `one name, two plans:\n${JSON.stringify(collisions, null, 2)}`).toEqual({
-            Plus: ["ph-plus", "ph-pro"],
-        })
+            offenders,
+            `tier names must come from planTierName(), never a literal:\n  ${offenders.join("\n  ")}`
+        ).toEqual([])
     })
 })

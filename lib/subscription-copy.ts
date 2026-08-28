@@ -330,6 +330,26 @@ export const subscriptionCopy = {
     },
 }
 
+/**
+ * The ONE customer-facing name for a plan tier.
+ *
+ * `UpgradeModal` and `CarriedPlanCard` used to hardcode their own pair —
+ * «Starter» for code key `plus` and «Plus» for code key `pro`. Every other
+ * surface (this file, the public pricing page, the landing page, the help
+ * centre) says «Plus» and «Family». So the word «Plus» named TWO different
+ * plans at two different prices on the same purchase path: the modal offered
+ * «Συνέχεια με Plus — 8,99 €» for `pro` while `/upgrade` listed a plan
+ * genuinely called «Plus» at €4.99. A customer could read one and be charged
+ * the other.
+ *
+ * Nothing may hardcode a tier name again. `tests/unit/plan-display-names-agree.test.ts`
+ * enumerates the name sources and fails if two disagree.
+ */
+export function planTierName(tier: 'free' | 'plus' | 'pro', language: string): string {
+    const name = subscriptionCopy.tiers[tier].name
+    return language === 'el' ? name.el : name.en
+}
+
 // Helper function to format messages with variables
 export function formatMessage(
     template: string,

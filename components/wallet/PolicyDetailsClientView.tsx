@@ -1255,6 +1255,20 @@ export function PolicyDetailsClient({
                         summary={detailsCopy.sectionDocumentsSummary}
                         icon={<FolderOpen className="h-5 w-5" />}
                         forceOpen={openSection === "documents"}
+                        // Open for the people the upsell is FOR.
+                        //
+                        // This section is the catch-all: documents, add-document, insured
+                        // people, the adviser block — and `PremiumInsightCards`, the page's
+                        // self-described "only place that ADVERTISES", plus the
+                        // savings-report unlock. It opens only when the head's attention
+                        // line names it, and the URL hash does not open it, so a free user
+                        // with a healthy policy met none of the page's upgrade surfaces
+                        // without expanding a disclosure labelled «Έγγραφα».
+                        //
+                        // `defaultOpen`, not a new top-level group: the page sits exactly at
+                        // its 8-section budget and the cards cost 0 only while they are
+                        // inside a `section[id]`. The reader can still collapse it.
+                        defaultOpen={isOwner && tier !== 'pro'}
                     >
                         <div className="space-y-6">
                             <DocumentsCard

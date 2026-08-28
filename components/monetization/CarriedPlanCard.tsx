@@ -13,13 +13,20 @@ import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { getUpgradeCopy } from "@/lib/monetization"
+import { planTierName } from "@/lib/subscription-copy"
 import { BillingTrustBox } from "./BillingTrustBox"
 
 const DISMISS_KEY = "pw-carried-plan-dismissed"
 
-const PLAN_LABEL: Record<string, string> = {
-    "ph-plus": "Starter",
-    "ph-pro": "Plus",
+/**
+ * Plan id → the ONE customer-facing name. This map used to hold its own pair
+ * («Starter»/«Plus»), which disagreed with every other surface and made «Plus»
+ * the name of two different plans at two different prices. It now resolves
+ * through `planTierName`, the single source.
+ */
+const PLAN_TIER: Record<string, "plus" | "pro"> = {
+    "ph-plus": "plus",
+    "ph-pro": "pro",
 }
 
 const COPY = {
@@ -54,7 +61,8 @@ export function CarriedPlanCard({ planId, billingPeriod, className = "" }: Carri
     const [starting, setStarting] = useState(false)
     const viewedRef = useRef(false)
 
-    const planLabel = PLAN_LABEL[planId] || planId
+    const tier = PLAN_TIER[planId]
+    const planLabel = tier ? planTierName(tier, language) : planId
 
     useEffect(() => {
         try {

@@ -124,9 +124,16 @@ test.describe('Checkout return (revenue integrity)', () => {
         await page.goto('/upgrade')
         await dismissCookieBanner(page)
 
+        // The two PAID tiers, by the names every customer surface now uses.
+        // This used to assert «Starter», which named ph-plus in the upgrade
+        // modal while /upgrade called the same plan «Plus» — one word, two
+        // plans, two prices. The modal was the outlier and now resolves through
+        // planTierName(); «Starter» is not a plan name anywhere.
         await expect(page.getByText(/Plus/).first()).toBeVisible({ timeout: 20000 })
-        await expect(page.getByText(/Starter/).first()).toBeVisible()
-        await expect(page.getByText(/€7\.99|€2\.99/).first()).toBeVisible()
+        await expect(page.getByText(/Family/).first()).toBeVisible()
+        await expect(page.getByText(/Starter/)).toHaveCount(0)
+        // Prices come from the live catalog, not a hardcoded pair.
+        await expect(page.getByText(/€\s?4[.,]99|4,99\s?€/).first()).toBeVisible()
     })
 })
 
@@ -310,7 +317,7 @@ test.describe('Paid Aha Loop — locked cards + dual-CTA modal (free tier)', () 
         await expect(grid.getByText(/Ερωτήσεις στο AI|Ask the AI/i)).toBeVisible()
     })
 
-    test('clicking a locked card opens the dual-CTA modal (Plus recommended, Starter cheaper)', async ({ page }) => {
+    test('clicking a locked card opens the dual-CTA modal (Family recommended, Plus cheaper)', async ({ page }) => {
         await page.goto(`/wallet/${policyId}`)
         await dismissCookieBanner(page)
 
@@ -318,12 +325,17 @@ test.describe('Paid Aha Loop — locked cards + dual-CTA modal (free tier)', () 
         await expect(grid).toBeVisible({ timeout: 20000 })
         await grid.getByRole('button', { name: /Πλήρης AI ανάλυση|Full AI analysis/i }).click()
 
-        // Primary Plus €7.99 + secondary Starter €2.99 + tertiary "Όχι τώρα".
+        // Recommended Family + cheaper Plus + tertiary "Όχι τώρα".
+        //
+        // The names come from `planTierName()` and the prices from the live
+        // catalog, so this asserts the NAMES agree with /upgrade rather than
+        // re-hardcoding a pair. The old assertion wanted «Starter» at €2.99 and
+        // «Plus» at €7.99 — neither figure is in the catalog, and «Plus» there
+        // meant the other plan entirely.
         await expectUpgradeModalOpen(page)
-        await expect(page.getByRole('button', { name: /Ξεκίνα με Starter|Start with Starter/i })).toBeVisible()
+        await expect(page.getByRole('button', { name: /Ξεκινήστε με Plus|Start with Plus/i })).toBeVisible()
         await expect(page.getByRole('button', { name: /Όχι τώρα|Not now/i })).toBeVisible()
-        await expect(page.getByText(/€7\.99/).first()).toBeVisible()
-        await expect(page.getByText(/€2\.99/).first()).toBeVisible()
+        await expect(page.getByText(/Starter/)).toHaveCount(0)
         // Plus is the recommended tier.
         await expect(page.getByText(/Προτείνεται|Recommended/i).first()).toBeVisible()
 
@@ -378,25 +390,32 @@ test.describe('Home upgrade triggers with a two-policy portfolio', () => {
         }
     })
 
-    test('free user with 2 policies sees the usage meter and multi-insurer trigger', async ({ page }) => {
+    test('free user with 2 policies sees exactly ONE upgrade surface, and it is the monitor substitution', async ({ page }) => {
         await page.goto('/home')
         await dismissCookieBanner(page)
 
-        // Usage banner: the stored policies against the free plan's 1-policy cap.
-        // This asserted the literal '2 / 1'. The policyholder fixture is shared and
-        // mutable — global-setup provisions one policy, seed-agent-demo adds
-        // another, and earlier specs can add more — so the real value was '3 / 1'
-        // and the test failed for a reason that had nothing to do with the meter.
-        // Worse, the retry reported it as "flaky", which is how a genuine pricing
-        // contradiction elsewhere in this file stayed hidden. Assert the BEHAVIOUR:
-        // some number of policies against a cap of 1, i.e. the over-limit state.
-        await expect(page.getByText(/δωρεάν πλάνο|free plan/i).first()).toBeVisible({ timeout: 20000 })
-        await expect(page.getByText(/\d+ \/ 1/).first()).toBeVisible()
-
-        // Multi-insurer insights trigger (two distinct insurers on the book).
+        // REWRITTEN 2026-08-28 against the rebuilt dashboard.
+        //
+        // This asserted a usage meter («N / 1» against the free cap) AND the
+        // multi-insurer trigger, both visible at once. The rebuild made that
+        // impossible on purpose: `standaloneUpgrade` in PolicyholderHome is a
+        // single value, and it is `null` whenever the monitor placeholder is
+        // showing — "when the substitution is showing, the standalone offers
+        // stand down". A free account has `advancedAnalytics: false`, so the
+        // placeholder ALWAYS shows and both standalone offers always stand down.
+        //
+        // Asserting the old pair would have been asserting a design the product
+        // deliberately replaced. What is worth pinning is the rule that survived:
+        // ONE upgrade surface, never a stack of them.
         await expect(
-            page.getByText(/πλήρη εικόνα χαρτοφυλακίου|full portfolio picture/i).first()
-        ).toBeVisible()
+            page.getByText(/Διαρκής επίβλεψη|Continuous monitoring|monitoring/i).first()
+        ).toBeVisible({ timeout: 20000 })
+
+        // ...and the two standalone offers do not pile on top of it.
+        await expect(page.getByText(/\d+ \/ 1/)).toHaveCount(0)
+        await expect(
+            page.getByText(/πλήρη εικόνα χαρτοφυλακίου|full portfolio picture/i)
+        ).toHaveCount(0)
     })
 })
 

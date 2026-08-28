@@ -1,4 +1,5 @@
 "use client"
+import { planTierName } from "@/lib/subscription-copy"
 
 /**
  * Context-aware upgrade modal — the standard paid-conversion surface.
@@ -37,8 +38,14 @@ const MODAL_COPY = {
     trial: { el: "14 ημέρες δωρεάν δοκιμή", en: "14-day free trial" },
     currentPlan: { el: "Τρέχον πλάνο", en: "Current plan" },
     recommendedTag: { el: "Προτείνεται · Πιο δημοφιλές · Καλύτερη αξία", en: "Recommended · Most popular · Best value" },
-    plusPrefix: { el: "Συνέχεια με Plus —", en: "Continue with Plus —" },
-    starterPrefix: { el: "Ξεκινήστε με Starter —", en: "Start with Starter —" },
+    // The TIER NAME is not written here. It used to be — «Plus» for code key
+    // `pro` and «Starter» for `plus` — which made «Plus» the name of two
+    // different plans at two different prices, because every other surface
+    // calls `plus` "Plus" and `pro` "Family". A customer could read €4.99
+    // against «Plus» on /upgrade and be charged €8.99 for «Plus» here.
+    // `planTierName` is the one source; these are only the verbs.
+    plusPrefix: { el: "Συνέχεια με {plan} —", en: "Continue with {plan} —" },
+    starterPrefix: { el: "Ξεκινήστε με {plan} —", en: "Start with {plan} —" },
     notNow: { el: "Όχι τώρα", en: "Not now" },
     checkoutError: { el: "Η μετάβαση στην πληρωμή απέτυχε. Δοκιμάστε ξανά.", en: "Could not start checkout. Please try again." },
     close: { el: "Κλείσιμο", en: "Close" },
@@ -245,7 +252,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold uppercase tracking-widest text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                 >
                     {redirectingPlan === PLUS.planId && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-                    {pick(MODAL_COPY.plusPrefix, language)} {formatEur(plusPrice)}{suffix}
+                    {pick(MODAL_COPY.plusPrefix, language).replace("{plan}", planTierName("pro", language))} {formatEur(plusPrice)}{suffix}
                 </button>
                 {PLUS.trialDays > 0 && (
                     <p className="mt-1.5 text-center text-xs font-semibold text-primary dark:text-mint">
@@ -262,7 +269,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-transparent py-3.5 text-sm font-bold text-foreground transition-all hover:bg-muted disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 >
                     {redirectingPlan === STARTER.planId && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-                    {pick(MODAL_COPY.starterPrefix, language)} {formatEur(starterPrice)}{suffix}
+                    {pick(MODAL_COPY.starterPrefix, language).replace("{plan}", planTierName("plus", language))} {formatEur(starterPrice)}{suffix}
                 </button>
 
                 {/* Tertiary — dismiss */}
