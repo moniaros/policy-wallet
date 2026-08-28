@@ -1695,6 +1695,33 @@ So the correction is **partly** derivable and not fully:
   list. Correcting by label-matching alone would be a *guess wearing a number's clothes* — the exact
   failure this item exists to undo.
 
+### MEASURED 2026-08-28 — the label-collision heuristic is far too weak to use
+
+`/protection` was re-captured with the unified collector once the session pooler recovered. The
+result settles this item empirically:
+
+| lens | stored (old collector) | re-measured | label-collision estimate |
+|---|---|---|---|
+| ανά κλάδο | 20 | **6** | ≤18 |
+| ανά κίνδυνο | 26 | **6** | ≤23 |
+| /account/history (control) | 2 | **2** | — |
+
+In both lenses the re-measured list is an exact **prefix** of the stored list, and every dropped
+entry is a nested descendant of one of the six that remain: the `<h1>` inside «Η προστασία μου»,
+each recommendation CARD inside «Προτάσεις κάλυψης», the rows inside «Σύνοψη κάλυψης».
+
+**So the lower bound is not merely loose, it is misleading.** Label collision can only catch doubles
+that SHARE a label — here «Προτάσεις κάλυψης» and «Σύνοψη κάλυψης», 2 of the 20 dropped. The other
+18 carry distinct labels because they are card titles. Publishing "at least 2 of 26 were doubles"
+against a truth of "20 of 26 were doubles" would have left the ceiling decision on a number wrong by
+an order of magnitude, while looking corrected.
+
+`/account/history` staying at 2 in the same run is the control: the collector did not simply start
+counting lower.
+
+**Conclusion: re-run the capture. Do not publish the heuristic as a correction.** The remaining
+stale captures are inflated by an unknown factor that the stored flat `ids` list cannot bound.
+
 **Proposed split, for the item to confirm:** publish the label-collision correction as a **lower
 bound** on the inflation ("at least N of the M counted were doubles"), re-run only the captures where
 a ceiling decision depends on the exact figure, and say per capture which of the two it is. That

@@ -95,14 +95,22 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
    Whether occurrences predate 2026-08-23 **cannot be established**: the 7-day aggregate times out
    and 30 days is rejected.
 
-2. **The local session pooler (5432) is wedged.** `verify:gap-catalogue` passed at 04:44 and failed
+2. ~~**The local session pooler (5432) is wedged.**~~ **RECOVERED, verified 2026-08-28** — connects
+   in ~1.8s, `global-setup` provisioned all five e2e users over SQL, and a full Playwright
+   measurement run completed. Local measurement is unblocked. Original note kept below.
+
+2. **(historical) The local session pooler (5432) was wedged.** `verify:gap-catalogue` passed at 04:44 and failed
    at 05:10 on the same invocation. TCP is healthy (~400ms, no IPv6 records) and the database is
    idle at 3 upstream connections, but new *session-mode* connections stall past the 20s pool
    timeout while transaction mode (6543) still answers. Follows two crashed provisioning runs.
    Blocks every local Playwright measurement.
-3. **`/protection` is the one unresolved capture.** A ceiling baseline, Phase-5-queued, stored
-   20/26 sections with 2 confirmed doubles — corrected ≤18/≤23 but **not re-run**, blocked on
-   risk 2. 137 more stale capture files across 9 surfaces are recorded, not urgent.
+3. ~~**`/protection` is the one unresolved capture.**~~ **RE-CAPTURED 2026-08-28: it is 6 sections,
+   not 20/26.** Both lenses. The re-measured id list is an exact PREFIX of the stored one and every
+   dropped entry is a nested descendant of the six that remain — card titles inside «Προτάσεις
+   κάλυψης», rows inside «Σύνοψη κάλυψης». `/account/history` held at 2 in the same run, so the
+   collector did not simply start counting lower. **The ceiling concern was a measurement artefact;
+   the page needs no section reduction.** 137 stale capture files across 9 surfaces remain, and are
+   now known to be inflated by an unknown factor.
 4. **`verify:gap-catalogue` now runs in CI** (the secrets were a name mismatch, not missing) — but
    the loud-skip fallback has never actually fired, so the failure path is unproven.
 5. **The fix for a guard gap had the same gap.** The pooler lock shipped guarding `withDb` while
@@ -117,8 +125,10 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
    `{expr.toFixed(2)} €` it structurally cannot see (swept separately, 0 matches).
 3. Confirm who can read the Vercel runtime logs — team `moniaros' projects` (Pro, no SAML) is the
    access boundary, and its member list could not be enumerated from the tooling here.
-2. Re-capture `/protection` once the session pooler recovers; it is the only measurement that
-   changes a ceiling.
+2. ~~Re-capture `/protection`.~~ **DONE** — see risk 3. The follow-on is that the label-collision
+   correction proposed in `P5-measure-00` is now measured as far too weak to publish: it catches only
+   doubles that SHARE a label (2 of the 20 dropped here), so it would have reported a number wrong by
+   an order of magnitude while looking corrected. Re-run captures instead.
 3. **P5-wallet-01** is unblocked: motor, property, pet and marine carry strong identifiers in
    `acordData`; health, life, travel, cyber, business and pension carry none, which is exactly why
    the duplicate rows measured were health. Rows without an identifier stand alone.
