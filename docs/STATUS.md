@@ -70,27 +70,23 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
    and «Plus» at €79 on the same page whose cards said «Plus €4.99» and «Family €8.99». The guard
    now enumerates `components/{monetization,account,shell}` and is red-proved against `PlanBadge`.
 
-   **STILL OPEN — three naming schemes coexist in editorial content, and one is a factual claim.**
-   42 policyholder «Starter» references remain in `lib/guides`, `lib/glossary`, `lib/landing`,
-   `app/(public)` and `lib/monetization/*-copy`. A blind rename would make things worse, because the
-   corpus is mixed:
+   **CLOSED 2026-08-28.** The gating audit turned out to be already written down:
+   `plan-defaults.ts` states the intent in its own comments — `plus` is "displayed Plus (the name
+   moved from Starter)", `pro` is "displayed Family (the name moved from Plus)". Every editorial
+   instance was then decidable and renamed MEANING-PRESERVINGLY: 8 «Starter»→«Plus» (all reminder
+   claims, and `notifications` is true on `plus`, so also factually right) and 3 «Plus»→«Family»
+   (all gap/under-insurance claims, and `portfolioGapView` is `pro`-only). The copy freeze confirms
+   it: 11 added, 11 removed, the only difference in each pair being the plan name.
 
-   - `app/(public)/product/marketing-content.ts:34` already uses the canonical pair —
-     «από το πλάνο Plus … με το Family».
-   - `lib/guides/content.ts:2431` uses a hybrid — «με το πλάνο **Family**» for gap detection and
-     «από το πλάνο **Starter**» for reminders.
-   - `lib/guides/content.ts:261` and `lib/glossary/content.ts:254,354` say automatic gap detection
-     and under-insurance analysis are «στο πλάνο **Plus**».
+   It also caught a **false claim at the point of sale**: `upgrade-copy` promised "Έως 5
+   ασφαλιστήρια (Starter) ή απεριόριστα (Plus)" to a free user hitting the policy cap. The catalog
+   says 10 and 25 — wrong on the numbers as well as the names, while the public pricing page had
+   said 10/25 all along.
 
-   Under the old scheme «Plus» meant the TOP tier; under the canonical one it means the ENTRY tier.
-   So renaming Starter→Plus without also deciding what each existing «Plus» meant would put two
-   different plans under one word again — the very defect just fixed.
+   A FOURTH hardcoded map was found by widening the guard: `MainNav` rendered "Plus" for `pro` and
+   "Starter" for `plus` on the nav badges. The guard covered its directory but matched only
+   `key: "value"` maps; a JSX text node was invisible to it. It now checks both shapes.
 
-   **And it is not only naming.** `DEFAULT_ENTITLEMENT_LIMITS` gives `plus` `gapAnalysisPerDay: 0`
-   and `advancedAnalytics: false`; only `pro` has them. So a sentence promising gap detection on
-   «Plus» is a claim the code does not support if «Plus» now means the entry tier. Resolving this
-   needs a feature-by-feature gating audit, not a search-and-replace, so it was deliberately not
-   attempted — publishing a wrong plan claim is worse than an inconsistent one.
 
 1. **H-011 — a document reaches a model provider BEFORE anyone consents.** The agent scan path
    (`parsePolicyPdfWithGemini`, 93 lines, zero consent references) sends the document, and
