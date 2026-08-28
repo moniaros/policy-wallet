@@ -2,18 +2,21 @@
   "capture": "default-free",
   "width": 430,
   "url": "http://localhost:3000/notifications",
-  "scrollHeight": 1262,
-  "viewportsOfContent": 1.4,
+  "scrollHeight": 1076,
+  "viewportsOfContent": 1.2,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
   "sections": {
-    "count": 3,
+    "count": 2,
     "ids": [
-      "<div> Ειδοποιήσεις",
-      "<div> ",
-      "<div> Ειδοποιήσεις"
+      "#history",
+      "<header> Ειδοποιήσεις"
     ]
   },
   "containers": {
-    "count": 15,
+    "count": 9,
     "maxDepth": 2,
     "deepestChain": [
       "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
@@ -25,67 +28,55 @@
     "valueScanDuplicates": [],
     "duplicateFactCount": 0
   },
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
   "tapTargets": [],
   "contrast": {
     "text": [],
     "nonText": [
-      "[1.4.11:control] <div> \"Νέο ερωτηματολόγιο από τον σύμβουλ\" boundary 1.37:1 (needs 3) inside=#f1f5f6 outside=#fcfdfe",
-      "[1.4.11:control] <div> \"Ο σύμβουλός σας ζήτησε ένα έγγραφο\" boundary 1.36:1 (needs 3) inside=#f3f6f6 outside=#fdfefe",
-      "[1.4.11:control] <div> \"Η ανανέωση του συμβολαίου σας πλησ\" boundary 1.37:1 (needs 3) inside=#f4f7f7 outside=#ffffff",
-      "[1.4.11:control] <div> \"Η ανανέωση του συμβολαίου σας πλησ\" boundary 1.37:1 (needs 3) inside=#f2f6f6 outside=#fefefe"
+      "[1.4.11:surface] <header> \"ΕιδοποιήσειςΤι σας έχουμε στείλει \" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:surface] <li> \"24/8/26, 2:03 μ.μ.9 νέες προτάσεις\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:unmeasured] <li> \"23/8/26, 6:59 μ.μ.Νέο ερωτηματολόγ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <li> \"23/8/26, 6:59 μ.μ.Ο σύμβουλός σας \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <li> \"23/8/26, 6:59 μ.μ.Η ανανέωση του σ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded"
     ]
   },
+  "pageOverflow": {
+    "documentScrollWidth": 430,
+    "viewportWidth": 430,
+    "overflowPx": 0,
+    "offenders": []
+  },
   "probes": {
-    "truncation": [
-      {
-        "selector": "div.relative",
-        "text": "2",
-        "scrollWidth": 30,
-        "clientWidth": 24,
-        "reason": "overflow"
-      }
-    ],
+    "truncation": [],
     "latinSentences": [],
     "nonTelPhoneNumbers": [],
     "dateFacts": {
       "dates": [],
       "dayCounts": [
-        "top: \"Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.\""
+        "#history: \"Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.\""
       ],
       "statusChips": []
     },
     "repeatedStrings": [
       {
         "text": "23/8/26, 6:59 μ.μ.",
-        "count": 4,
+        "count": 3,
         "where": [
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>"
-        ]
-      },
-      {
-        "text": "Η ανανέωση του συμβολαίου σας πλησιάζει",
-        "count": 2,
-        "where": [
-          "top <p>",
-          "top <p>"
-        ]
-      },
-      {
-        "text": "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
-        "count": 2,
-        "where": [
-          "top <p>",
-          "top <p>"
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
         ]
       }
     ],
-    "internalTokenLeaks": [
-      "snake_case enum token: \"in_app\""
-    ],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ειδοποιήσεις Τι σας έχουμε στείλει πρόσφατα. Προτιμήσεις Σήμανση όλων ως αναγνωσμένα Νέο ερωτηματολόγιο από τον σύμβουλό σας Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας. in_app 23/8/26, 6:59 μ.μ. Ο σύμβουλός σας ζήτησε ένα έγγραφο Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας. in_app 23/8/26, 6:59 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Push 23/8/26, 6:59 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Email 23/8/26, 6:59 μ.μ. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 3 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 3 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ειδοποιήσεις Τι σας έχουμε στείλει πρόσφατα. Προτιμήσεις Σήμανση όλων ως αναγνωσμένα 24/8/26, 2:03 μ.μ. 9 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. 23/8/26, 6:59 μ.μ. Νέο ερωτηματολόγιο από τον σύμβουλό σας Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας. 23/8/26, 6:59 μ.μ. Ο σύμβουλός σας ζήτησε ένα έγγραφο Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας. 23/8/26, 6:59 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "free",
   "state": "default"

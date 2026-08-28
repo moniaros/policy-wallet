@@ -1,25 +1,31 @@
 {
   "capture": "no-advisor-fixture-free",
   "width": 390,
-  "url": "http://localhost:3000/agent",
-  "scrollHeight": 988,
-  "viewportsOfContent": 1.2,
+  "url": "http://localhost:3000/dashboard",
+  "scrollHeight": 3642,
+  "viewportsOfContent": 4.3,
   "headingCounts": {
     "h1": 1,
     "mainLandmark": 1
   },
   "sections": {
-    "count": 0,
-    "ids": []
+    "count": 6,
+    "ids": [
+      "#overview",
+      "#attention",
+      "#plan",
+      "#coverage",
+      "#portfolio",
+      "#activity"
+    ]
   },
   "containers": {
-    "count": 14,
-    "maxDepth": 4,
+    "count": 65,
+    "maxDepth": 3,
     "deepestChain": [
-      "div.flex flex-col items-center rounded-2xl b",
-      "div.relative mt-7 w-full max-w-sm rounded-2x",
-      "div.flex items-center gap-3 rounded-xl bg-wh",
-      "div.grid h-10 w-10 flex-shrink-0 place-items"
+      "div.pw-card pw-pad lg:col-span-2",
+      "a.pw-control-boundary flex items-start gap",
+      "span.mt-1.5 h-2 w-2 flex-shrink-0 rounded-ful"
     ]
   },
   "duplicateFacts": {
@@ -27,41 +33,132 @@
     "valueScanDuplicates": [],
     "duplicateFactCount": 0
   },
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
   "tapTargets": [],
   "contrast": {
     "text": [],
     "nonText": [
-      "[1.4.11:control] <button> \"Αποστολή πρόσκλησης\" boundary 2.74:1 (needs 3) inside=#7ea49c outside=#ffffff",
-      "[1.4.11:control] <a> \"Σύμβουλος\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff"
+      "[1.4.11:subpixel] <a> \"Δεν εντοπίστηκε κέντρο συντονισμού\" boundary 1.09:1 (needs 3) inside=#f1f2f3 outside=#e6e8ea — declared 3.24:1, rendered across two device rows",
+      "[1.4.11:subpixel] <a> \"Κατοικία\" boundary 2.01:1 (needs 3) inside=#fafafa outside=#ffffff — declared 3.35:1, rendered across two device rows",
+      "[1.4.11:unmeasured] <a> \"Υγεία\" boundary 2.33:1 (needs 3) inside=#feffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:subpixel] <a> \"Ασφαλιστήριο Αυτοκίνητο · E2E-PDF-\" boundary 2.32:1 (needs 3) inside=#f5f5f5 outside=#fefefe — declared 3.35:1, rendered across two device rows",
+      "[1.4.11:surface] <section> \"Κατάσταση προστασίας2 ασφαλιστήρια\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fbfc",
+      "[1.4.11:unmeasured] <div> \"Χρειάζεται την προσοχή σαςΌλεςΠιθα\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Κενά κάλυψης1 υψηλά5 μέτρια3 χαμηλ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"Χρονοδιάγραμμα ανανεώσεων2 ασφαλισ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:unmeasured] <section> \"Το πλάνο προστασίας σας2 από 5 ολο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Διαρκής επίβλεψη της προστασίας σα\" boundary 1.23:1 (needs 3) inside=#f4f7f7 outside=#fefefe",
+      "[1.4.11:surface] <div> \"Χάρτης κάλυψηςΌλοι οι κλάδοιΑυτοκί\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfd",
+      "[1.4.11:unmeasured] <div> \"Χαρτοφυλάκιο ασφαλίσεωνΠροσθέστε ν\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:shell] <a> \"Αρχική\" boundary 1.24:1 (needs 3) inside=#dfe8e7 outside=#fefeff"
     ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 390,
+    "viewportWidth": 390,
+    "overflowPx": 0,
+    "offenders": []
   },
   "probes": {
     "truncation": [
       {
-        "selector": "p.truncate.text-body-sm",
-        "text": "Γιώργος Π. — Ασφαλιστικός σύμβουλος",
-        "scrollWidth": 248,
-        "clientWidth": 71,
+        "selector": "div.mt-5",
+        "text": "Πρόσφατα έγγραφαΑσφαλιστήριο Υγεία · E2E-PDF-HL-EXPΕθνική ΑσφαλιστικήΑσφαλιστήρι",
+        "scrollWidth": 332,
+        "clientWidth": 324,
         "reason": "overflow"
       },
       {
-        "selector": "div.relative",
-        "text": "2",
-        "scrollWidth": 30,
-        "clientWidth": 24,
+        "selector": "div.mt-2",
+        "text": "Ασφαλιστήριο Υγεία · E2E-PDF-HL-EXPΕθνική ΑσφαλιστικήΑσφαλιστήριο Αυτοκίνητο · E",
+        "scrollWidth": 332,
+        "clientWidth": 324,
+        "reason": "overflow"
+      },
+      {
+        "selector": "span.truncate.text-xs",
+        "text": "Ασφαλιστήριο Υγεία · E2E-PDF-HL-EXP",
+        "scrollWidth": 233,
+        "clientWidth": 170,
+        "reason": "overflow"
+      },
+      {
+        "selector": "span.truncate.text-xs",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · E2E-PDF-MOT-ACT",
+        "scrollWidth": 279,
+        "clientWidth": 170,
         "reason": "overflow"
       }
     ],
     "latinSentences": [],
     "nonTelPhoneNumbers": [],
     "dateFacts": {
-      "dates": [],
-      "dayCounts": [],
+      "dates": [
+        "#attention: 12/09/2026 — \"12/09/2026\"",
+        "#attention: 09/02/2027 — \"09/02/2027\""
+      ],
+      "dayCounts": [
+        "#overview: \"1 λήγει μέσα σε 30 ημέρες\"",
+        "#attention: \"Υγεία: ανανέωση σε 15 ημέρες\"",
+        "#attention: \"Αυτοκίνητο: ανανέωση σε 165 ημέρες\""
+      ],
       "statusChips": []
     },
-    "repeatedStrings": [],
-    "internalTokenLeaks": [],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ο ΣΥΜΒΟΥΛΟΣ ΜΟΥ Συνδεθείτε με τον ασφαλιστικό σας σύμβουλο Μοιραστείτε μόνο ό,τι επιλέγετε και αποκτήστε επαγγελματική ματιά στα κενά κάλυψής σας. ΠΑΡΑΔΕΙΓΜΑ Γ Γιώργος Π. — Ασφαλιστικός σύμβουλος Πιστοποιημένος συνεργάτης ΣΥΝΔΕΔΕΜΕΝΟΣ Εσείς ελέγχετε την πρόσβαση — μπορείτε να την ανακαλέσετε ανά πάσα στιγμή ΤΟ EMAIL ΤΟΥ ΣΥΜΒΟΥΛΟΥ ΣΑΣ Αποστολή πρόσκλησης Έχετε κωδικό πρόσκλησης; Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+    "repeatedStrings": [
+      {
+        "text": "Ζητήστε από τον ασφαλιστή σας γραπτή επιβεβαίωση του ορίου.",
+        "count": 2,
+        "where": [
+          "#attention <span>",
+          "#attention <span>"
+        ]
+      },
+      {
+        "text": "Μεσαία προτεραιότητα",
+        "count": 2,
+        "where": [
+          "#attention <span>",
+          "#attention <span>"
+        ]
+      },
+      {
+        "text": "Εθνική Ασφαλιστική",
+        "count": 2,
+        "where": [
+          "#attention <span>",
+          "#portfolio <p>"
+        ]
+      },
+      {
+        "text": "2 σημεία για έλεγχο",
+        "count": 2,
+        "where": [
+          "#attention <span>",
+          "#attention <span>"
+        ]
+      },
+      {
+        "text": "Interamerican",
+        "count": 2,
+        "where": [
+          "#attention <span>",
+          "#portfolio <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [
+      "E2E fixture identifier: \"E2E-PDF-HL-EXP\"",
+      "E2E fixture identifier: \"Ασφαλιστήριο Υγεία · E2E-PDF-HL-EXP\"",
+      "E2E fixture identifier: \"Ασφαλιστήριο Αυτοκίνητο · E2E-PDF-MOT-ACT\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 3 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 3 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση ΑΡΧΙΚΗ Η ασφαλιστική σας εικόνα ΚΑΤΑΣΤΑΣΗ ΠΡΟΣΤΑΣΙΑΣ 2 ασφαλιστήρια · 1 λήγει μέσα σε 30 ημέρες 9 ευρήματα ίσως χρειάζονται έλεγχο Έλεγχος της προστασίας μου Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν επαγγελματική, νομική ή ασφαλιστική συμβουλή. Συζητήστε κάθε σημαντική απόφαση με τον ασφαλιστικό σας σύμβουλο. ΧΡΕΙΑΖΕΤΑΙ ΤΗΝ ΠΡΟΣΟΧΗ ΣΑΣ Όλες Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή) Ζητήστε από τον ασφαλιστή σας γραπτή επιβεβαίωση του ορίου. Υψηλή προτεραιότητα Πιθανή έλλειψη απευθείας εξόφλησης νοσηλείας Ζητήστε από τον ασφαλιστή σας γραπτή επιβεβαίωση του ορίου. Μεσαία προτεραιότητα Δεν εντοπίστηκε κέντρο συντονισμού Υπολογίστε τη συμμετοχή σε ένα ρεαλιστικό σενάριο ζημιάς. Μεσαία προτεραιότητα Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. ΚΕΝΑ ΚΑΛΥΨΗΣ 1 υψηλά 5 μέτρια 3 χαμηλά ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ ΑΝΑΝΕΩΣΕΩΝ 2 ασφαλιστήρια με ανανέωση εντός 6 μηνών Υγεία: ανανέωση σε 15 ημέρες Εθνική Ασφαλιστική · E2E-PDF-HL-EXP · 12/09/2026 · 1.103 € 2 σημεία για έλεγχο Αυτοκίνητο: ανανέωση σε 165 ημέρες Interamerican · ΙΚΖ-4821 · 09/02/2027 · 312 € 2 σημεία για έλεγχο Μην περιμένεις τη λήξη για να ψάξεις το ασφαλιστήριό σου. Ξεκλείδωσε έξυπνες υπενθυμίσεις ανανέωσης. Ενεργοποίηση έξυπνων υπενθυμίσεων ΤΟ ΠΛΑΝΟ ΠΡΟΣΤΑΣΙΑΣ ΣΑΣ 2 από 5 ολοκληρωμένα Ανεβάστε ένα ασφαλιστήριο Δείτε την ανάλυση AI Ελέγξτε τα κενά κάλυψης Δείτε αν κάτι σημαντικό μένει ακάλυπτο. Συνδεθείτε με σύμβουλο Συνδέστε τον ασφαλιστικό σας σύμβουλο με το πορτοφόλι σας. Ενεργοποιήστε τις ειδοποιήσεις Λάβετε ειδοποιήσεις για ανανεώσεις και αλλαγές. +9 ακόμη στις προτάσεις σας Διαρκής επίβλεψη της προστασίας σας Το Plus συνεχίζει να παρακολουθεί ανάμεσα στις επισκέψεις σας — μετά από κάθε αλλαγή και σε τακτικούς ελέγχους — και σας ενημερώνει όταν κάτι αξίζει μια ματιά. Ενεργοποίηση παρακολούθησης προστασίας ΑΛΛΑΞΕ ΚΑΤΙ; Νέο σπίτι, παιδί, νέα δουλειά — οι αλλαγές της ζωής μετακινούν την προστασία σας. Πείτε μας και θα την επανεκτιμήσουμε. Γάμος ή σύμφωνο συμβίωσης Διαζύγιο Γέννηση παιδιού Ένα παιδί ανεξαρτητοποιήθηκε Δηλώστε μια αλλαγή ΧΑΡΤΗΣ ΚΑΛΥΨΗΣ Όλοι οι κλάδοι Αυτοκίνητο Κατοικία Υγεία Ζωή Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Επιχείρηση ΧΑΡΤΟΦΥΛΑΚΙΟ ΑΣΦΑΛΙΣΕΩΝ Προσθέστε νέο ασφαλιστήριο 1.415 € Συνολικό ετήσιο ασφάλιστρο Υγεία 1.103 € Αυτοκίνητο 312 € Πρόσφατα έγγραφα Ασφαλιστήριο Υγεία · E2E-PDF-HL-EXP Εθνική Ασφαλιστική Ασφαλιστήριο Αυτοκίνητο · E2E-PDF-MOT-ACT Interamerican ΤΙ ΑΛΛΑΞΕ ΠΡΟΣΦΑΤΑ Ανεπαρκή στοιχεία για βαθμολόγηση Δεν καταγράφεται τηλέφωνο αναγγελίας ατυχήματος Πιθανή έλλειψη κάλυψης προληπτικών εξετάσεων Δείτε όλο το χρονολόγιο ΚΑΤΑΣΤΑΣΗ ΣΥΜΒΟΥΛΟΥ Δεν υπάρχει σύνδεση συμβούλου. ΒΟΗΘΕΙΑ ΚΑΙ ΥΠΟΣΤΗΡΙΞΗ Άνοιγμα κέντρου βοήθειας Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "free",
   "state": "unmodified-relationship"

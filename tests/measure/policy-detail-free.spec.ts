@@ -117,7 +117,20 @@ async function open(page: import("@playwright/test").Page, key: string, width: n
  */
 const FREE_SURFACES = {
     reportLocked: (text: string) => /Ξεκλείδ/.test(text),
-    upgradeBanner: (text: string) => /Αναβάθμιση/.test(text),
+    /**
+     * The STEM, not the noun.
+     *
+     * This matched «Αναβάθμιση» exactly, and the product does not use the noun
+     * here — it uses the imperative. Measured 2026-08-28 on the free policy
+     * page: «Αναβάθμιση» appears 0 times while THREE «Αναβάθμισε …» affordances
+     * render, plus five «Ξεκλείδω…» ones. So the check reported "no upgrade
+     * affordance rendered" over a page carrying eight of them, and its own
+     * message would have sent someone hunting for a paywall that is not missing.
+     *
+     * `Αναβάθμι` covers Αναβάθμιση / Αναβάθμισε / Αναβαθμίστε — the whole word
+     * family, which is what "is there an upgrade affordance" actually asks.
+     */
+    upgradeBanner: (text: string) => /Αναβάθμι/.test(text),
     premiumInsightCards: (text: string) => /Κλειδωμ|Premium|Pro/i.test(text),
 }
 

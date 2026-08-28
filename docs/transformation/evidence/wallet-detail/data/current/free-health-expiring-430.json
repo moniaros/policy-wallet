@@ -2,14 +2,14 @@
   "capture": "free-health-expiring",
   "width": 430,
   "url": "http://localhost:3000/wallet/cmt4v4yhw000h6e05uhh7c17p",
-  "scrollHeight": 2509,
-  "viewportsOfContent": 2.7,
+  "scrollHeight": 5375,
+  "viewportsOfContent": 5.8,
   "headingCounts": {
     "h1": 1,
     "mainLandmark": 1
   },
   "sections": {
-    "count": 10,
+    "count": 8,
     "ids": [
       "#coverage",
       "#terms",
@@ -18,20 +18,19 @@
       "#claims",
       "#documents",
       "<header> Εθνική Ασφαλιστική",
-      "<button> Ρωτήστε το AI για αυτό το ασφαλιστήριο",
-      "<div> Το ασφαλιστήριό σας σε απλά ελληνικά",
       "<div> Το ασφαλιστήριό σας σε απλά ελληνικά"
     ]
   },
   "containers": {
-    "count": 31,
-    "maxDepth": 5,
+    "count": 61,
+    "maxDepth": 6,
     "deepestChain": [
       "div.mt-6 border-t border-black/10 dark:borde",
       "section.scroll-mt-20 border-b border-black/10 da",
-      "div.pw-card pw-pad sm:p-7",
-      "div.rounded-2xl border border-black/10 bg-bl",
-      "span.mt-1.5 block rounded-xl border border-bl"
+      "div.pw-card pw-pad",
+      "div.mt-6 border-t border-black/10 pt-5 dark:",
+      "div.border-2 border-dashed rounded-2xl p-8 t",
+      "div.w-16 h-16 bg-white dark:bg-slate-800 rou"
     ]
   },
   "duplicateFacts": {
@@ -40,47 +39,129 @@
       {
         "key": "policy.policyNumber",
         "value": "E2E-PDF-HL-EXP",
-        "count": 2,
+        "count": 3,
         "where": [
           "top <span> E2E-PDF-HL-EXP",
-          "top <dd> E2E-PDF-HL-EXP"
+          "top <dd> E2E-PDF-HL-EXP",
+          "#documents <p> Ασφαλιστήριο Υγεία · E2E-PDF-HL-EXP"
         ]
       }
     ],
     "duplicateFactCount": 1
   },
-  "tapTargets": [],
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [
+    {
+      "tag": "button",
+      "text": "Αναβαθμίστε σε Plus για προεπισκόπηση PDF",
+      "w": 42,
+      "h": 44,
+      "chain": "li < ul < div < div"
+    }
+  ],
   "contrast": {
     "text": [],
     "nonText": [
-      "[1.4.11:surface] <header> \"ΥγείαΕθνική ΑσφαλιστικήΑΡΙΘΜΟΣ ΣΥΜ\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fbfd",
+      "[1.4.11:unmeasured] <a> \"Ασφαλιστήριο Υγεία · E2E-PDF-HL-EX\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <select> \"Γενικοί όροιΒεβαίωση ασφάλισηςΠαρα\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Ξεκλείδωμα εξαγωγής αναφοράς\" boundary 2.19:1 (needs 3) inside=#dcebda outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Πλήρης AI ανάλυσηΤο βασικό summary\" boundary 1.25:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Πιθανά κενά κάλυψηςΕντοπίσαμε πιθα\" boundary 1.25:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ερωτήσεις στο AIΟι ερωτήσεις AI γι\" boundary 1.25:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Έξυπνες ενέργειες πριν την ανανέωσ\" boundary 1.25:1 (needs 3) inside=#feffff outside=#fdfefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Οδηγός προετοιμασίας ζημιάςΑν χρει\" boundary 1.25:1 (needs 3) inside=#feffff outside=#fdfefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ανάλυση ασφαλιστηρίων από διαφορετ\" boundary 1.25:1 (needs 3) inside=#fefeff outside=#fdfdfe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Διαγραφή ασφαλιστηρίου\" boundary 1.44:1 (needs 3) inside=#fafbfc outside=#fafbfc — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <header> \"ΥγείαΕθνική ΑσφαλιστικήΑΡΙΘΜΟΣ ΣΥΜ\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fafc",
       "[1.4.11:surface] <span> \"Λήγει σύντομα\" boundary 1.24:1 (needs 3) inside=#fffbeb outside=#ffffff",
       "[1.4.11:surface] <div> \"Χρειάζεται προσοχήΛήγει σε 15 ημέρ\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
-      "[1.4.11:surface] <div> \"Το ασφαλιστήριό σας σε απλά ελληνι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:unmeasured] <div> \"Βασικές ημερομηνίες & ανανέωσηΈναρ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:surface] <div> \"Έναρξη7/9/2025\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:surface] <div> \"Το ασφαλιστήριό σας σε απλά ελληνι\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfd",
+      "[1.4.11:surface] <div> \"Βασικές ημερομηνίες & ανανέωσηΈναρ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"Έναρξη12/9/2025\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
       "[1.4.11:surface] <div> \"Ετήσιο ασφάλιστρο1.102,90 €\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
-      "[1.4.11:surface] <div> \"Εικόνα ανανέωσηςΑξίζει έλεγχο πριν\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:shell] <a> \"Πορτοφόλι\" boundary 1.25:1 (needs 3) inside=#dee7e6 outside=#fefefe"
+      "[1.4.11:surface] <div> \"Εικόνα ανανέωσηςΑξίζει έλεγχο πριν\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:unmeasured] <div> \"Έγγραφα ασφαλιστηρίουΑσφαλιστήριο \" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Προσθήκη εγγράφουΤο έγγραφο αποθηκ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Ασφαλισμένα πρόσωπαE2E Policyholde\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Αναφορά εξοικονόμησηςΚατεβάστε μια\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dee7e6 outside=#fefefe"
     ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 430,
+    "viewportWidth": 430,
+    "overflowPx": 0,
+    "offenders": []
   },
   "probes": {
     "truncation": [
       {
-        "selector": "div.relative",
-        "text": "2",
-        "scrollWidth": 30,
-        "clientWidth": 24,
+        "selector": "p.truncate.text-sm",
+        "text": "Ασφαλιστήριο Υγεία · E2E-PDF-HL-EXP",
+        "scrollWidth": 267,
+        "clientWidth": 212,
         "reason": "overflow"
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Το βασικό summary είναι έτοιμο. Ξεκλείδωσε την πλήρη ανάλυση για να δεις κενά, ε",
+        "scrollWidth": 314,
+        "clientWidth": 314,
+        "reason": "css-truncation",
+        "scrollHeight": 59,
+        "clientHeight": 39
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Εντοπίσαμε πιθανό κενό κάλυψης. Αναβάθμισε για να δεις τι σημαίνει, από πού προκ",
+        "scrollWidth": 314,
+        "clientWidth": 314,
+        "reason": "css-truncation",
+        "scrollHeight": 59,
+        "clientHeight": 39
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Οι ερωτήσεις AI για τα ασφαλιστήριά σου περιλαμβάνονται στα επί πληρωμή πλάνα. Α",
+        "scrollWidth": 314,
+        "clientWidth": 314,
+        "reason": "css-truncation",
+        "scrollHeight": 78,
+        "clientHeight": 39
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Αν χρειαστεί να κάνεις δήλωση ζημιάς, ξεκλείδωσε έναν οδηγό βήμα-βήμα με βάση το",
+        "scrollWidth": 314,
+        "clientWidth": 314,
+        "reason": "css-truncation",
+        "scrollHeight": 78,
+        "clientHeight": 39
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Έχεις ασφαλιστήρια από διαφορετικές ασφαλιστικές. Αναβάθμισε για να δεις συνολικ",
+        "scrollWidth": 314,
+        "clientWidth": 314,
+        "reason": "css-truncation",
+        "scrollHeight": 59,
+        "clientHeight": 39
       }
     ],
     "latinSentences": [],
     "nonTelPhoneNumbers": [],
     "dateFacts": {
       "dates": [
-        "top: 7/9/2026 — \"Ισχύει έως 7/9/2026\"",
-        "#dates: 7/9/2025 — \"7/9/2025\"",
-        "#dates: 7/9/2026 — \"7/9/2026\""
+        "top: 12/9/2026 — \"Ισχύει έως 12/9/2026\"",
+        "#dates: 12/9/2025 — \"12/9/2025\"",
+        "#dates: 12/9/2026 — \"12/9/2026\""
       ],
       "dayCounts": [
         "top: \"Λήγει σε 15 ημέρες.\""
@@ -97,13 +178,30 @@
           "top <span>",
           "top <dd>"
         ]
+      },
+      {
+        "text": "E2E Policyholder",
+        "count": 2,
+        "where": [
+          "top <dd>",
+          "#documents <li>"
+        ]
+      },
+      {
+        "text": "PDF ή φωτογραφία, έως 15 MB",
+        "count": 2,
+        "where": [
+          "#documents <p>",
+          "#documents <p>"
+        ]
       }
     ],
     "internalTokenLeaks": [
       "E2E fixture identifier: \"E2E-PDF-HL-EXP\"",
-      "E2E fixture identifier: \"E2E Policyholder\""
+      "E2E fixture identifier: \"E2E Policyholder\"",
+      "E2E fixture identifier: \"Ασφαλιστήριο Υγεία · E2E-PDF-HL-EXP\""
     ],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου / E2E-PDF-HL-EXP ΥΓΕΙΑ Εθνική Ασφαλιστική ΑΡΙΘΜΟΣ ΣΥΜΒΟΛΑΙΟΥ E2E-PDF-HL-EXP ΑΣΦΑΛΙΣΜΕΝΟΣ E2E Policyholder ΛΗΓΕΙ ΣΥΝΤΟΜΑ Ισχύει έως 7/9/2026 ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ Λήγει σε 15 ημέρες. Ζητήστε προσφορά ανανέωσης Ρωτήστε το AI για αυτό το ασφαλιστήριο ΤΟ ΑΣΦΑΛΙΣΤΗΡΙΟ ΣΑΣ ΣΕ ΑΠΛΑ ΕΛΛΗΝΙΚΑ ΣΥΝΟΨΗ AI 35 ΕΛΕΓΧΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ στα 100 — δείκτης ανάγνωσης εγγράφου Πώς προκύπτει ο δείκτης; Αυτά τα στοιχεία διαβάστηκαν από το έγγραφό σας με AI και δεν έχουν επαληθευτεί. Ελέγξτε τα με το ασφαλιστήριό σας πριν βασιστείτε σε αυτά. Το πρόγραμμα καλύπτει νοσοκομειακή περίθαλψη με ετήσιο όριο €1.500.000 και απαλλαγή €1.500 ανά περιστατικό, διαγνωστικές εξετάσεις έως €2.000 τον χρόνο και έξοδα από ατύχημα. Δεν περιλαμβάνει εξωνοσοκομειακή περίθαλψη και δεν προβλέπει απευθείας κάλυψη χωρίς προέγκριση. Καλύψεις Τι καλύπτεται και τι όχι Όροι που μπορούν να επηρεάσουν μια αποζημίωση Εξαιρέσεις, προθεσμίες και ψιλά γράμματα Σημεία για έλεγχο Ενδείξεις από την αυτόματη ανάγνωση — όχι αξιολόγηση Ημερομηνίες & ανανέωση Έναρξη, λήξη, υπενθυμίσεις ΒΑΣΙΚΕΣ ΗΜΕΡΟΜΗΝΙΕΣ & ΑΝΑΝΕΩΣΗ ΕΝΑΡΞΗ 7/9/2025 ΕΤΗΣΙΟ ΑΣΦΑΛΙΣΤΡΟ 1.102,90 € ΗΜΕΡΟΜΗΝΙΑ ΑΝΑΝΕΩΣΗΣ 7/9/2026 96% της περιόδου ασφάλισης έχει περάσει Στην ανανέωση, πρόσεξε αλλαγές σε απαλλαγή, συμμετοχή και όρια — και ρωτήστε αν οι αναμονές που έχετε ήδη «χτίσει» μεταφέρονται. ΙΣΤΟΡΙΚΟ ΑΝΑΝΕΩΣΕΩΝ Δεν υπάρχει ακόμη ιστορικό ανανεώσεων. Ζήτησε προσφορά ανανέωσης ΕΙΚΟΝΑ ΑΝΑΝΕΩΣΗΣ Αξίζει έλεγχο πριν από την ανανέωση 4 ανοιχτά σημεία κάλυψης 1 προθεσμία στους όρους Δήλωση ζημιάς Βήματα, προθεσμίες και τηλέφωνα Έγγραφα, σημειώσεις & κοινοποίηση Το αρχείο σας, ο σύμβουλος και η πρόσβαση Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 3 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 3 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου / E2E-PDF-HL-EXP ΥΓΕΙΑ Εθνική Ασφαλιστική ΑΡΙΘΜΟΣ ΣΥΜΒΟΛΑΙΟΥ E2E-PDF-HL-EXP ΑΣΦΑΛΙΣΜΕΝΟΣ E2E Policyholder ΛΗΓΕΙ ΣΥΝΤΟΜΑ Ισχύει έως 12/9/2026 ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ Λήγει σε 15 ημέρες. Ζητήστε προσφορά ανανέωσης Ρωτήστε το AI για αυτό το ασφαλιστήριο ΤΟ ΑΣΦΑΛΙΣΤΗΡΙΟ ΣΑΣ ΣΕ ΑΠΛΑ ΕΛΛΗΝΙΚΑ ΣΥΝΟΨΗ AI 35 ΕΛΕΓΧΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ στα 100 — δείκτης ανάγνωσης εγγράφου Πώς προκύπτει ο δείκτης; Αυτά τα στοιχεία διαβάστηκαν από το έγγραφό σας με AI και δεν έχουν επαληθευτεί. Ελέγξτε τα με το ασφαλιστήριό σας πριν βασιστείτε σε αυτά. Το πρόγραμμα καλύπτει νοσοκομειακή περίθαλψη με ετήσιο όριο €1.500.000 και απαλλαγή €1.500 ανά περιστατικό, διαγνωστικές εξετάσεις έως €2.000 τον χρόνο και έξοδα από ατύχημα. Δεν περιλαμβάνει εξωνοσοκομειακή περίθαλψη και δεν προβλέπει απευθείας κάλυψη χωρίς προέγκριση. Καλύψεις Τι καλύπτεται και τι όχι Όροι που μπορούν να επηρεάσουν μια αποζημίωση Εξαιρέσεις, προθεσμίες και ψιλά γράμματα Σημεία για έλεγχο Ενδείξεις από την αυτόματη ανάγνωση — όχι αξιολόγηση Ημερομηνίες & ανανέωση Έναρξη, λήξη, υπενθυμίσεις ΒΑΣΙΚΕΣ ΗΜΕΡΟΜΗΝΙΕΣ & ΑΝΑΝΕΩΣΗ ΕΝΑΡΞΗ 12/9/2025 ΕΤΗΣΙΟ ΑΣΦΑΛΙΣΤΡΟ 1.102,90 € ΗΜΕΡΟΜΗΝΙΑ ΑΝΑΝΕΩΣΗΣ 12/9/2026 96% της περιόδου ασφάλισης έχει περάσει Στην ανανέωση, πρόσεξε αλλαγές σε απαλλαγή, συμμετοχή και όρια — και ρωτήστε αν οι αναμονές που έχετε ήδη «χτίσει» μεταφέρονται. ΙΣΤΟΡΙΚΟ ΑΝΑΝΕΩΣΕΩΝ Δεν υπάρχει ακόμη ιστορικό ανανεώσεων. Ζήτησε προσφορά ανανέωσης ΕΙΚΟΝΑ ΑΝΑΝΕΩΣΗΣ Αξίζει έλεγχο πριν από την ανανέωση 4 ανοιχτά σημεία κάλυψης 1 προθεσμία στους όρους Δήλωση ζημιάς Βήματα, προθεσμίες και τηλέφωνα Έγγραφα, σημειώσεις & κοινοποίηση Το αρχείο σας, ο σύμβουλος και η πρόσβαση ΕΓΓΡΑΦΑ ΑΣΦΑΛΙΣΤΗΡΙΟΥ Ασφαλιστήριο Υγεία · E2E-PDF-HL-EXP Έγγραφο PDF · 23 Αυγ 2026 ΠΡΟΣΘΗΚΗ ΕΓΓΡΑΦΟΥ Το έγγραφο αποθηκεύεται στον φάκελο του ασφαλιστηρίου για αναφορά — δεν αναλύεται ως ασφαλιστήριο. Τι είδους έγγραφο είναι; Γενικοί όροι Βεβαίωση ασφάλισης Παραστατικό πληρωμής Έγγραφο Επιλέξτε ή σύρετε ένα αρχείο PDF ή φωτογραφία, έως 15 MB ΑΝΑΝΕΩΣΑ — ΑΝΕΒΑΣΜΑ ΑΝΑΝΕΩΤΗΡΙΟΥ Ανεβάστε το νέο ανανεωτήριο και θα εκτελέσουμε ξανά την ανάλυση με τους ενημερωμένους όρους. Επιλέξτε ή σύρετε το ανανεωτήριο PDF ή φωτογραφία, έως 15 MB Κοινοποίηση σε σύμβουλο ή οικογένεια Λήψη ασφαλιστηρίου ΑΣΦΑΛΙΣΜΕΝΑ ΠΡΟΣΩΠΑ E2E Policyholder Μέλος Οικογένειας ΑΝΑΦΟΡΑ ΕΞΟΙΚΟΝΟΜΗΣΗΣ Κατεβάστε μια καθαρή σύνοψη καλύψεων, κενών και πιθανής εξοικονόμησης για αυτό το ασφαλιστήριο. Ξεκλείδωμα εξαγωγής αναφοράς Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν επαγγελματική, νομική ή ασφαλιστική συμβουλή. Συζητήστε κάθε σημαντική απόφαση με τον ασφαλιστικό σας σύμβουλο. Διαθέσιμα με το Plus Το βασικό σας summary είναι έτοιμο. Δείτε τι προσθέτει η πλήρης AI εμπειρία. Πλήρης AI ανάλυση Το βασικό summary είναι έτοιμο. Ξεκλείδωσε την πλήρη ανάλυση για να δεις κενά, εξαιρέσεις, όρια και προτεινόμενες ενέργειες. Ξεκλείδωμα πλήρους ανάλυσης → Πιθανά κενά κάλυψης Εντοπίσαμε πιθανό κενό κάλυψης. Αναβάθμισε για να δεις τι σημαίνει, από πού προκύπτει και τι μπορείς να κάνεις. Δες το κενό κάλυψης → Ερωτήσεις στο AI Οι ερωτήσεις AI για τα ασφαλιστήριά σου περιλαμβάνονται στα επί πληρωμή πλάνα. Αναβάθμισε για να ρωτάς ελεύθερα για καλύψεις, όρια και εξαιρέσεις. Συνέχεια με απεριόριστες ερωτήσεις → Έξυπνες ενέργειες πριν την ανανέωση Μην περιμένεις τη λήξη για να ψάξεις το ασφαλιστήριό σου. Ξεκλείδωσε έξυπνες υπενθυμίσεις ανανέωσης. Ενεργοποίηση έξυπνων υπενθυμίσεων → Οδηγός προετοιμασίας ζημιάς Αν χρειαστεί να κάνεις δήλωση ζημιάς, ξεκλείδωσε έναν οδηγό βήμα-βήμα με βάση το ασφαλιστήριό σου: τι να ετοιμάσεις, προθεσμίες και ποιον να ενημερώσεις. Άνοιγμα οδηγού ζημιάς → Ανάλυση ασφαλιστηρίων από διαφορετικές ασφαλιστικές Έχεις ασφαλιστήρια από διαφορετικές ασφαλιστικές. Αναβάθμισε για να δεις συνολική εικόνα, πιθανές επικαλύψεις και κενά. Δες πλήρη εικόνα χαρτοφυλακίου → Διαγραφή ασφαλιστηρίου Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "free",
   "fixtureState": "expiring",
