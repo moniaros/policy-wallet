@@ -2,28 +2,21 @@
   "capture": "populated-paid",
   "width": 320,
   "url": "http://localhost:3000/wallet",
-  "scrollHeight": 5667,
-  "viewportsOfContent": 7.9,
+  "scrollHeight": 5854,
+  "viewportsOfContent": 8.1,
   "headingCounts": {
     "h1": 1,
     "mainLandmark": 1
   },
   "sections": {
-    "count": 9,
+    "count": 2,
     "ids": [
       "<div> Το πορτοφόλι μου",
-      "<div> Σημαντικές ειδοποιήσεις",
-      "<div> Το πορτοφόλι μου",
-      "<div> Ενεργή προστασία1818/29 προστεθέντα",
-      "<div> ΛΗΓΕΙ ΣΥΝΤΟΜΑ5Εντός 30 ημερών",
-      "<div> Χρειάζεται προσοχή11Προς έλεγχο",
-      "<div> Ασφαλιστικό αποτύπωμα6.656 €1 ασφαλιστήρ",
-      "<div> Σημαντικές ειδοποιήσεις",
-      "<div> ΌλαΑυτοκίνητοΥγεία"
+      "<div> Σημαντικές ειδοποιήσεις"
     ]
   },
   "containers": {
-    "count": 142,
+    "count": 146,
     "maxDepth": 3,
     "deepestChain": [
       "div.flex flex-col sm:flex-row gap-4 justify-",
@@ -36,48 +29,168 @@
     "valueScanDuplicates": [],
     "duplicateFactCount": 0
   },
+  "identityDuplicates": {
+    "totalRows": 30,
+    "comparableRows": 30,
+    "duplicateRowCount": 18,
+    "largestGroupSize": 6,
+    "groups": [
+      {
+        "display": "Interamerican · Αυτοκίνητο · 09/02/2027 · ΕΝΕΡΓΟ",
+        "count": 6,
+        "rows": [
+          {
+            "index": 16,
+            "subject": "cmt5k18iy001puer6ke8xwcee"
+          },
+          {
+            "index": 17,
+            "subject": "cmt5z1g7k000i510sz2zqb2rw"
+          },
+          {
+            "index": 18,
+            "subject": "cmt5k1mp2001xuer60ate6z3q"
+          },
+          {
+            "index": 19,
+            "subject": "cmt5z1jku000q510sty78s2jd"
+          },
+          {
+            "index": 25,
+            "subject": "cmt5z18kx0001510sfrqkzbuj"
+          },
+          {
+            "index": 26,
+            "subject": "cmt5jyvgo0001121dx1ormp6a"
+          }
+        ]
+      },
+      {
+        "display": "Interamerican · Αυτοκίνητο · σε 10 ημέρες · ΛΗΓΕΙ ΣΥΝΤΟΜΑ",
+        "count": 3,
+        "rows": [
+          {
+            "index": 5,
+            "subject": "cmt5jzdf8000bx92v21nu15i6"
+          },
+          {
+            "index": 6,
+            "subject": "cmt5jzdhe000b121d71hd5728"
+          },
+          {
+            "index": 7,
+            "subject": "cmt5jzdf8000bmm5l9edtrj6h"
+          }
+        ]
+      },
+      {
+        "display": "Εθνική Ασφαλιστική · Υγεία · 09/02/2027 · ΕΝΕΡΓΟ",
+        "count": 3,
+        "rows": [
+          {
+            "index": 20,
+            "subject": "cmt5k0jtd000v121dwokv731m"
+          },
+          {
+            "index": 21,
+            "subject": "cmt5k1pd80025uer6pcdctp9e"
+          },
+          {
+            "index": 23,
+            "subject": "cmt5z1ml3000y510sywyxdwmm"
+          }
+        ]
+      },
+      {
+        "display": "Interamerican · Αυτοκίνητο · Έληξε στις 05/05/2026 · ΛΗΓΜΕΝΟ",
+        "count": 2,
+        "rows": [
+          {
+            "index": 0,
+            "subject": "cmt5jzrsf000l121dc38kjdfx"
+          },
+          {
+            "index": 1,
+            "subject": "cmt5jzrse000lmm5lhqsvetv3"
+          }
+        ]
+      },
+      {
+        "display": "Εθνική Ασφαλιστική · Υγεία · 04/02/2027 · ΕΝΕΡΓΟ",
+        "count": 2,
+        "rows": [
+          {
+            "index": 11,
+            "subject": "cmt5k0j0q000vx92vzogjmtzc"
+          },
+          {
+            "index": 12,
+            "subject": "cmt5k0i8i000vuer6gyk0vihy"
+          }
+        ]
+      },
+      {
+        "display": "Interamerican · Αυτοκίνητο · 05/02/2027 · ΕΝΕΡΓΟ",
+        "count": 2,
+        "rows": [
+          {
+            "index": 14,
+            "subject": "cmt5jyvgp0001uer6hrgvk4gw"
+          },
+          {
+            "index": 15,
+            "subject": "cmt5jyvgn0001x92v03hgqooh"
+          }
+        ]
+      }
+    ],
+    "unlocatable": []
+  },
   "tapTargets": [],
   "contrast": {
-    "text": [],
+    "text": [
+      "\"30\" 4.38:1 (needs 4.5) fg=#6d7a89 bg=#ffffff <SPAN> "
+    ],
     "nonText": [
       "[1.4.11:unmeasured] <button> \"Σύγκριση ασφαλιστηρίων\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:control] <input> \"Αναζήτηση ασφαλιστηρίων...\" boundary 1.31:1 (needs 3) inside=#f8fafc outside=#fdfefe",
       "[1.4.11:control] <button> \"Χειροκίνητη προσθήκη\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#e9ebed",
       "[1.4.11:control] <button> \"Μεταφόρτωση εγγράφου\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#e6e9eb",
       "[1.4.11:control] <button> \"Μαζική μεταφόρτωση\" boundary 1.23:1 (needs 3) inside=#fcfdfe outside=#ffffff",
-      "[1.4.11:surface] <div> \"Ενεργή προστασία1818/29 προστεθέντ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"Ενεργή προστασία1919/30 προστεθέντ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
       "[1.4.11:surface] <div> \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ5Εντός 30 ημερών\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"Χρειάζεται προσοχή11Προς έλεγχο\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
-      "[1.4.11:surface] <div> \"Ασφαλιστικό αποτύπωμα6.656 €1 ασφα\" boundary 1.21:1 (needs 3) inside=#fefefe outside=#fcfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"Ασφαλιστικό αποτύπωμα8.224 €1 ασφα\" boundary 1.21:1 (needs 3) inside=#fefefe outside=#fcfcfd",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΛΗΓΜΕΝΟΥγεία · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
-      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΛΗΓΕΙ ΣΥΝΤΟΜΑΥγε\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΛΗΓΕΙ ΣΥΝΤΟΜΑΥγε\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 05\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 05\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Δεύτερος Αλληλασφαλιστικός Συνεται\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
-      "[1.4.11:surface] <div> \"ΑυτοκίνητοΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑΑυτοκ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfbfc",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 09\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfd",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"ΑυτοκίνητοΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑΑυτοκ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfcfd",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
+      "[1.4.11:surface] <div> \"Δεύτερος Αλληλασφαλιστικός Συνεται\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fbfbfc",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 22\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
       "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 01\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · IK\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
       "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dee7e6 outside=#fefefe"
     ]
   },
@@ -119,13 +232,6 @@
       },
       {
         "selector": "span.truncate.text-body-sm",
-        "text": "Εθνική Ασφαλιστική",
-        "scrollWidth": 129,
-        "clientWidth": 85,
-        "reason": "overflow"
-      },
-      {
-        "selector": "span.truncate.text-body-sm",
         "text": "Interamerican",
         "scrollWidth": 88,
         "clientWidth": 85,
@@ -133,9 +239,9 @@
       },
       {
         "selector": "span.truncate.text-body-sm",
-        "text": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δη",
-        "scrollWidth": 945,
-        "clientWidth": 130,
+        "text": "Εθνική Ασφαλιστική",
+        "scrollWidth": 129,
+        "clientWidth": 85,
         "reason": "overflow"
       },
       {
@@ -143,6 +249,13 @@
         "text": "Αυτοκίνητο",
         "scrollWidth": 72,
         "clientWidth": 60,
+        "reason": "overflow"
+      },
+      {
+        "selector": "span.truncate.text-body-sm",
+        "text": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δη",
+        "scrollWidth": 945,
+        "clientWidth": 130,
         "reason": "overflow"
       }
     ],
@@ -152,17 +265,19 @@
       "dates": [
         "top: 05/05/2026 — \"Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026.\"",
         "top: 05/05/2026 — \"Έληξε στις 05/05/2026\"",
-        "top: 07/05/2026 — \"Έληξε στις 07/05/2026\"",
+        "top: 08/05/2026 — \"Έληξε στις 08/05/2026\"",
+        "top: 10/05/2026 — \"Έληξε στις 10/05/2026\"",
         "top: 04/02/2027 — \"04/02/2027\"",
         "top: 05/02/2027 — \"05/02/2027\"",
-        "top: 06/02/2027 — \"06/02/2027\"",
+        "top: 09/02/2027 — \"09/02/2027\"",
+        "top: 22/05/2027 — \"22/05/2027\"",
         "top: 25/05/2027 — \"25/05/2027\"",
         "top: 01/06/2027 — \"01/06/2027\""
       ],
       "dayCounts": [
-        "top: \"σε 13 ημέρες\"",
+        "top: \"σε 10 ημέρες\"",
         "top: \"σε 15 ημέρες\"",
-        "top: \"σε 42 ημέρες\""
+        "top: \"σε 39 ημέρες\""
       ],
       "statusChips": [
         "top: \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ\"",
@@ -216,11 +331,9 @@
         ]
       },
       {
-        "text": "Αυτοκίνητο ·",
-        "count": 22,
+        "text": "Αυτοκίνητο · ·",
+        "count": 20,
         "where": [
-          "top <p>",
-          "top <p>",
           "top <p>",
           "top <p>",
           "top <p>",
@@ -245,15 +358,14 @@
       },
       {
         "text": "Έληξε στις 05/05/2026",
-        "count": 3,
+        "count": 2,
         "where": [
-          "top <span>",
           "top <span>",
           "top <span>"
         ]
       },
       {
-        "text": "Έληξε στις 07/05/2026",
+        "text": "Έληξε στις 10/05/2026",
         "count": 2,
         "where": [
           "top <span>",
@@ -262,8 +374,9 @@
       },
       {
         "text": "Εθνική Ασφαλιστική",
-        "count": 9,
+        "count": 10,
         "where": [
+          "top <span>",
           "top <span>",
           "top <span>",
           "top <span>",
@@ -276,7 +389,7 @@
         ]
       },
       {
-        "text": "σε 13 ημέρες",
+        "text": "σε 10 ημέρες",
         "count": 3,
         "where": [
           "top <span>",
@@ -291,10 +404,18 @@
           "top <span>",
           "top <span>"
         ]
+      },
+      {
+        "text": "Αυτοκίνητο ·",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
       }
     ],
     "internalTokenLeaks": [],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 14 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 18 18/29 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 5 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 11 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 6.656 € 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Σημαντικές ειδοποιήσεις 11 Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. +9 ακόμη Όλα Αυτοκίνητο Υγεία Τα ασφαλιστήρια μου Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 07/05/2026 Εθνική Ασφαλιστική ΛΗΓΜΕΝΟ Υγεία · Έληξε στις 07/05/2026 Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · σε 15 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 15 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · σε 42 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 05/02/2027 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Αυτοκίνητο ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · 25/05/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 01/06/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 19 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 19 19/30 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 5 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 11 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 8.224 € 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Σημαντικές ειδοποιήσεις 11 Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. +9 ακόμη Όλα Αυτοκίνητο Υγεία Τα ασφαλιστήρια μου Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 08/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 10/05/2026 Εθνική Ασφαλιστική ΛΗΓΜΕΝΟ Υγεία · Έληξε στις 10/05/2026 Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 15 ημέρες Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · σε 15 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · IKZ3113 · σε 39 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Αυτοκίνητο ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 22/05/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · 25/05/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · IKZ-4821 · 01/06/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "paid",
   "state": "populated-15-policies"
