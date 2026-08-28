@@ -191,7 +191,13 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         await dismissCookieBanner(page)
 
         const documents = page.locator('#documents')
-        await expect(documents.getByText(/e2e-contract\.pdf/)).toBeVisible({ timeout: 20000 })
+        // The GENERATED label, not a filename. Uploaded names are never
+        // persisted (`storedDocumentLabel`, guarded by
+        // tests/unit/filename-never-persisted), so the row reads
+        // «Ασφαλιστήριο Αυτοκίνητο · E2E-PDF-MOT-ACT». Asserting
+        // `e2e-contract.pdf` was asserting something the product deliberately
+        // never renders — and it was the pro fixture's filename besides.
+        await expect(documents.getByText(new RegExp(FREE_FIXTURE_POLICY))).toBeVisible({ timeout: 20000 })
 
         // The locked preview button carries the upgrade hint as its label.
         const lockedPreview = documents.getByRole('button', { name: /Plus/i }).first()
@@ -211,10 +217,19 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         await page.goto(`/wallet/${policyId}`)
         await dismissCookieBanner(page)
 
+        // The Ask-AI trigger lives in the HEAD card, not in the Q&A block.
+        // GOAL 2 moved it there deliberately — "standing alone it was a ninth
+        // top-level grouping on a page budgeted for eight" — and `#policy-qa`
+        // does not exist in the DOM until it is toggled. This test used to look
+        // for the trigger inside a section that had not rendered yet.
+        await page
+            .getByRole('button', { name: /Ρωτήστε το AI|Ask the AI/i })
+            .first()
+            .click()
+
         const qaSection = page.locator('#policy-qa')
+        await expect(qaSection).toBeVisible({ timeout: 15000 })
         await qaSection.scrollIntoViewIfNeeded()
-        // The section header's only initial button toggles the chat open.
-        await qaSection.getByRole('button').first().click()
 
         // No enabled input for the free tier…
         await expect(qaSection.getByRole('textbox')).toHaveCount(0, { timeout: 15000 })
