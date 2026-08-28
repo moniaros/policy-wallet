@@ -58,6 +58,33 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 
 ## Top risks, ranked
 
+0. **THE SAME WORD «Plus» NAMES TWO DIFFERENT PLANS AT TWO DIFFERENT PRICES, ON THE PATH THAT
+   TAKES MONEY. Launch-gating; found 2026-08-28 by running the money-path E2E for the first time
+   since it rotted.** Three surfaces disagree about what `ph-pro` is called, and one of the names
+   collides with a real, cheaper plan:
+
+   | plan code | live catalog (what Stripe charges) | `/upgrade`, landing, help (`lib/subscription-copy.ts`) | in-app `UpgradeModal` |
+   |---|---|---|---|
+   | `ph-plus` | **Plus**, €4.99/mo, €39/yr | **Plus**, €4.99 | **Starter**, €4.99 |
+   | `ph-pro`  | **Pro**, €8.99/mo, €79/yr  | **Family**, €8.99 | **Plus**, €8.99 |
+
+   So the modal renders «Συνέχεια με Plus — 8,99 €/μήνα» (`UpgradeModal.tsx:248`, price from
+   `tierPricing("pro")`) while `/upgrade` lists a plan *named* «Plus» at €4.99 and calls the €8.99
+   one «Family». A customer who has seen the upgrade page and then meets the modal can reasonably
+   believe «Plus» costs €4.99 and be charged €8.99. `ph-pro` additionally carries a THIRD name —
+   «Pro» — in the plan row that `/admin/plans` and the public pricing page read.
+
+   Not a test artefact: the names are hardcoded in two places (`lib/subscription-copy.ts:20-36`,
+   `components/monetization/UpgradeModal.tsx:40-41`) and both are live. `money-path.spec.ts`'s own
+   comment predicted exactly this — *"how a genuine pricing contradiction elsewhere in this file
+   stayed hidden."*
+
+   **Deliberately NOT fixed by the agent.** Which name is correct is a pricing decision, not a
+   defect with one right answer, and customer-facing price copy is the surface CLAUDE.md singles
+   out as a publication channel. Three candidate resolutions: (a) make everything follow the plan
+   rows (Plus / Pro), (b) make everything follow the marketing pair (Plus / Family) and rename the
+   row, (c) keep Starter/Plus and rename both the rows and the marketing copy. **Owner decision.**
+
 1. **H-011 — a document reaches a model provider BEFORE anyone consents.** The agent scan path
    (`parsePolicyPdfWithGemini`, 93 lines, zero consent references) sends the document, and
    `commitScannedPolicy` takes `attestedAiConsent` as a parameter — consent is attested *after* the
