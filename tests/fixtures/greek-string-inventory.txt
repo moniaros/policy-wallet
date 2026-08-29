@@ -20,8 +20,8 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2820
-# inline entries: 4678 across 209 files
-# ternary entries: 286 across 45 files
+# inline entries: 4684 across 210 files
+# ternary entries: 287 across 46 files
 # call entries: 1152 across 72 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -5824,6 +5824,12 @@ inline	lib/insurance/content/travel.ts	'Τι ισχύει για απώλεια 
 inline	lib/insurance/content/travel.ts	'Τι καλύπτεται για απώλεια αποσκευών;'
 inline	lib/insurance/content/travel.ts	'Τι πρέπει να έχω μαζί μου από το συμβόλαιο στο ταξίδι;'
 inline	lib/insurance/content/travel.ts	'Χειμερινά σπορ, καταδύσεις ή ενοικίαση δικύκλου συχνά χρειάζονται ειδική επέκταση.'
+inline	lib/insurance/coverage-synonyms.ts	'Εξωνοσοκομειακή περίθαλψη'
+inline	lib/insurance/coverage-synonyms.ts	'Επίδομα νοσηλείας'
+inline	lib/insurance/coverage-synonyms.ts	'Ετήσιος προληπτικός έλεγχος'
+inline	lib/insurance/coverage-synonyms.ts	'Κάλυψη ανικανότητας'
+inline	lib/insurance/coverage-synonyms.ts	'Νοσοκομειακή περίθαλψη'
+inline	lib/insurance/coverage-synonyms.ts	'Οδοντιατρική περίθαλψη'
 inline	lib/insurance/taxonomy.ts	'Cyber'
 inline	lib/insurance/taxonomy.ts	'Άλλο'
 inline	lib/insurance/taxonomy.ts	'Έργα Τέχνης & Τιμαλφή'
@@ -7786,6 +7792,7 @@ ternary	lib/services/timeline/diff.ts	"κίνδυνος άνοιξε"
 ternary	lib/services/timeline/diff.ts	"κίνδυνος έκλεισε"
 ternary	lib/services/timeline/diff.ts	"και"
 ternary	lib/services/timeline/diff.ts	`${items.slice(0, -1).join(", ")} ${lang === "el" ? "και" : "and"} ${items[items.length - 1]}`
+ternary	lib/wallet/coverage-overlap.ts	[`${unmapped.length} καλύψεις δεν αναγνωρίστηκαν και δεν συγκρίθηκαν.`]
 ternary	lib/wallet/document-insights.ts	"ΑΓΝΩΣΤΗ ΔΙΑΡΚΕΙΑ"
 ternary	lib/wallet/document-insights.ts	"ΑΚΥΡΟ"
 ternary	lib/wallet/document-insights.ts	"ΑΝΑΛΥΣΗ"
