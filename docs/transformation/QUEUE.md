@@ -1641,6 +1641,35 @@ the measured defect list. This turns that into a number. **The asset reframe sta
 lands** — and if the count is low, the reframe's premise is wrong and the phase should say so rather
 than build anyway.
 
+### MET 2026-08-29 — varied-household reads 0 duplicates
+
+`| varied-household | motor, property, pet duplicates **= 0** |` — the acceptance now measures what
+it asks for:
+
+| fixture | before | after |
+|---|---|---|
+| varied-household | 2 | **0** |
+| single-line-concentration | 6 | **0** |
+| typical | rows 7, dup 0 | rows 3, dup 0 |
+| all-expired | 0 | 0 |
+
+Three separate defects had to go before the target could be EVALUATED at all, let alone met:
+
+1. **The metric never read the asset identifier** — its key was
+   `[insurer, lineOfBusiness, date, status]`, so no plate could ever move the number.
+2. **The fixture gave every motor policy one shared plate** — a side effect of wanting a
+   Greek/Latin homoglyph pair, which itself rested on a claim about `E2E-MOT-001` that was not true
+   of the data.
+3. **Two dashboard specs shared one wallet and neither cleaned up after the other** — `WH-VARIED-*`
+   accumulated forever because no clear covered it, so the DOM held 10 rows where a test expected 3
+   or 7.
+
+Health duplicates remain expected and unchanged, exactly as the amended acceptance says.
+
+**Run this project with `--workers=1`.** The two spec files rebuild the same account, and neither
+`fullyParallel: false` nor `describe.configure({ mode: "serial" })` prevents two FILES landing in
+two workers. Playwright's `workers` is global, so it cannot be pinned per project.
+
 ### MEASURED 2026-08-28 — the acceptance was UNMEASURABLE, and the fixture cannot meet it
 
 Two findings, both from reading the collector rather than the numbers.
