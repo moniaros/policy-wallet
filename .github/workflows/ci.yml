@@ -3,8 +3,39 @@ name: CI
 on:
   push:
     branches: [main, develop, NEW-UI]
+    # A docs-only commit cannot break a build, and this workflow costs ~17
+    # billable minutes across its five jobs. The status/queue/audit files change
+    # several times a day and were paying full price to lint code that had not
+    # moved. `paths-ignore` is evaluated per push, so a commit that touches BOTH
+    # docs and code still runs — it only skips when nothing outside these paths
+    # changed, which is the safe direction to be wrong in.
+    paths-ignore:
+      - 'docs/**'
+      - '.archive/**'
+      - '**/*.md'
+      - 'LICENSE'
   pull_request:
     branches: [main, develop, NEW-UI]
+    paths-ignore:
+      - 'docs/**'
+      - '.archive/**'
+      - '**/*.md'
+      - 'LICENSE'
+
+# Only the newest commit on a ref is worth testing. Without this, a run started
+# for a commit that was superseded thirty seconds later still occupied a runner
+# for its full ~17 minutes: 70 commits landed on NEW-UI in three days and the
+# account's Actions minutes ran out mid-month with most of them already
+# obsolete by the time their CI finished.
+#
+# `main` is deliberately EXEMPT. Cancelling a run on the production branch would
+# leave a merged commit with no verdict at all, and deploy.yml triggers on
+# `workflow_run: CI completed` — a cancelled CI is a silent non-deploy, which is
+# exactly the class of failure the deploy gate exists to prevent. Feature
+# branches can afford to lose a stale answer; the branch that ships cannot.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   lint-and-typecheck:
