@@ -168,3 +168,23 @@ Written here so Phase B recognises them fast rather than treating them as novel:
 - **Any output that is a personal recommendation rather than a prompt to review.**
 - **Any request for a microsite, geo-grid page, model-specific content, or a voice agent.** All
   struck by the brief; refuse and record.
+
+---
+
+## OPEN-3b — DETERMINED 2026-08-29: **additive. C3-0 is buildable.**
+
+Investigated before P-00 was written, because the answer defines `DocumentAnchor`.
+
+**Evidence:**
+- `ExtractionSourcesSchema` is `z.record(z.string(), {...})` (`lib/services/ai/extraction-citations.ts:48`) — it **already accepts any key**. No Zod response-schema change.
+- Citations persist at **`acordData.extraction.sources`** (`lib/services/ai/extraction-enrichment.ts:193-194`) — inside the JSON. **Not a DB column** (`prisma/schema.prisma` has neither `fieldSources` nor `extractionSources`). **No migration.**
+- The schema fragment is a conditional spread (`lib/services/ai/extraction-schema.ts:63`) — additive by construction.
+- The flag is `envOnly`, `defaultValue: false` (`lib/flags/registry.ts:154-168`), and **`EXTRACTION_CITATIONS=1` was restored in production in July 2026** after the Gemini schema-budget incident (`docs/status-archive-2026-07.md:131`).
+
+**So the extension needs only:** a key convention for array elements (`conditions[3]`, `coverages[0]`); `CITATION_FIELDS` to become a matcher rather than an exact-membership `Set`; the prompt section widened. **No schema change ⇒ C3 is not cut.**
+
+### The real limit, which is a backfill problem and not a schema one
+
+Widening the contract helps **future** extractions. Every policy already in the wallet was extracted under the narrow field set and carries no condition or coverage citation. For those, C3 returns `cannot_determine` with `no_evidence_anchor`.
+
+**That is correct behaviour, not a defect** — it is precisely what the discriminant exists for, and it is the honest answer: we have the wording but cannot show the reader where in their document it sits. It does mean **C3's coverage grows only as policies are re-analysed**, and the in-app copy must not imply otherwise. Recorded so nobody later reads the low answer-rate as a bug.
