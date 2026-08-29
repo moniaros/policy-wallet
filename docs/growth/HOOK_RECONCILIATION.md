@@ -59,3 +59,71 @@ holdings is a positioning question, not a factual one, so it is not mine to deci
 proceeds** — its statutory basis is verifiable and Track B will confirm it — but if Track B finds
 the ΕΛΓΑ scheme's scope does not map to the wallet's actual holdings, H6 becomes a CUT candidate on
 relevance rather than on truth.
+
+---
+---
+
+# PW-GROWTH-02 · extension to seventeen hooks
+
+**Run:** `PW-GROWTH-02`, Phase A, 2026-08-29. The register above stands as written for
+GROWTH-HOOKS-01's ten hooks; this section supersedes it **only where a row's decision changed**,
+and adds the seven hooks that brief did not carry.
+
+**H13 (hospital direct billing) is struck by the brief and has no row.** Reason recorded in the
+brief: it needs a provider-network dataset that cannot be derived from a policy PDF, and «δείτε τα
+ακριβή έξοδα» is a payout prediction made to someone about to go to hospital.
+
+**Gate: seventeen rows, no two claiming the same canonical URL.** Verified below.
+
+## The decisive change since G-02
+
+Four hooks the brief lists as CREATE **already have published articles** — three of them shipped by
+GROWTH-HOOKS-01 itself, under this very register. Creating them again would put two live URLs on one
+statutory claim, which §8 of the brief names as a halt condition, not a judgement call. All four are
+corrected to EXTEND-or-leave.
+
+| hook | brief says | corrected | canonical URL | why |
+|---|---|---|---|---|
+| **H1** αναλογικός κανόνας | CREATE, needs C2 | **EXISTS — leave** | `/guides/analogikos-kanonas-ypasfalisi-katoikias` | Shipped by GA-05 on SRC-001…004. Work moves in-app: C2a clause statement on the property policy view. C2b (shortfall estimate) gated on a €/τ.μ. source. |
+| **H2** πυρός δανείου | CREATE | **CUT, pending S-04** | — | HALT-G01: ν.2496/1997 + ν.4438/2016 unverifiable; et.gr serves no document to a fetcher. One bounded retry (S-04) before the cut is final. |
+| **H3** βραχυχρόνια μίσθωση *(absorbs H14)* | CREATE, needs C3 | **EXISTS — leave** | `/guides/vraxychronia-misthosi-asfalisi-katoikias` | Shipped by GA-05 on SRC-005…008. Its §5 states outright that the product does not detect the letting — C3 must not contradict that. Work moves in-app. |
+| **H4** ΑΑΔΕ ανασφάλιστο | EXTEND | **EXTEND — after Z-01** | `/guides/prostimo-anasfalistou-oximatos` | Unchanged decision, new precondition: HALT-G04's wrong fine amounts are corrected first. Extending an article whose money figures understate by €350 would publish the error further. |
+| **H5** αστική ευθύνη σκύλου | CREATE | **CREATE — rewritten form only** | `/guides/astiki-efthyni-idioktiti-skylou` | HALT-G03 killed the briefed premise: **no mandatory dog-owner liability insurance exists.** The surviving verified fact — ΑΚ 924 liability, and a home policy's αστική ευθύνη section may already respond — is a legitimate hook and is what the brief's own §2.4 describes. The mandatory-insurance framing must never return. |
+| **H6** ΕΛΓΑ | CREATE, §4.5 test | **EXISTS — guide only** | `/guides/elga-apozimiosi-kai-pragmatiko-kostos` | See the §4.5 result below. |
+| **H7** ομαδικό *(absorbs H15)* | EXTEND, needs C1 | **Guide stays CUT; C1 in-app only** | `/guides/omadiko-symvolaio-ergasias` *(untouched)* | HALT-G01 cut the guide extension for want of a source. C1 needs no statutory source — only the user's own two documents — so the capability ships to the comparison surface while the article is left alone. X-12 still applies to its «αξίζει να συμπληρώσετε» heading. |
+| **H8** επαγγελματική ευθύνη | CREATE, needs C5 | **CUT; C5 halted** | — | HALT-G01, plus per-profession minima needing one source per body. C5's registry is nothing but statute, so it halts with the hook. |
+| **H9** δωρεάν έλεγχος | CUT as guide | **Confirmed CUT.** Landing section only | — | Unchanged. Not a checkable statutory fact. |
+| **H10** agent compliance | CUT as guide | **Confirmed CUT.** Ticker slot on `/solutions/agents` | — | Unchanged. B2B audience; earns a slot, not an article. |
+| **H11** ΕΝΦΙΑ | CREATE, needs C5 | **EXISTS — extend when C5 is live** | `/guides/ekptosi-enfia-asfalisi-katoikias` | Pre-existing article, not from GA-05. Same two-URL halt applies. |
+| **H12** ολική καταστροφή | CREATE, needs C4 | **CREATE** | `/guides/oliki-katastrofi-vasi-apotimisis` | The only clean new guide with a live capability behind it. No model-specific content anywhere (brief, struck list). |
+| **H14** *(absorbed)* | — | **No row of its own** | → H3 | Absorbed by H3 per the brief. Recorded so the count reconciles. |
+| **H15** *(absorbed)* | — | **No row of its own** | → H7 | Absorbed by H7 per the brief. |
+| **H16** policy in English | CREATE, `en` primary | **CREATE** | `/en/guides/greek-policy-explained-in-english` | No capability needed. `en` primary with the `el` pair, inverting the corpus default. |
+| **H17** SME cyber | CREATE, blocked | **BLOCKED** — X-01 **and** C5 | — | Two independent blocks. `AcordData` has no cyber object (H-010), so there is nothing to check against, and C5 is halted anyway. |
+| **H18** οδική βοήθεια | CREATE | **CREATE** | `/guides/odiki-voitheia-echete-idi` | No capability needed. `roadside` is a real branch in the taxonomy, so an in-app surface exists. |
+
+### Canonical-URL uniqueness — the gate
+
+Seventeen rows. Nine name a URL: five already exist (H1, H3, H4, H6, H7, H11 — six, of which H7's is
+left untouched), four are new (H5, H12, H16, H18). Eight name none (H2, H8, H9, H10, H17, and the two
+absorbed rows). **No URL appears twice.** Gate holds.
+
+## §4.5 — the H6 relevance test, run and recorded
+
+The G-02 register left this open: *"if Track B finds the ΕΛΓΑ scheme's scope does not map to the
+wallet's actual holdings, H6 becomes a CUT candidate on relevance rather than on truth."*
+
+**Run 2026-08-29 against `lib/insurance/taxonomy.ts`.** 43 branches; 31 write-enabled
+(`WRITE_BRANCH_IDS`, `lib/insurance/taxonomy.ts:381-413`). The only agricultural match is `truck`
+— «Φορτηγό / Αγροτικό», `aliases: ['agricultural','van','lorry']`, `parentId: 'motor'` — which is a
+**farm vehicle**, not crop or livestock. ΕΛΓΑ covers agricultural *produce and capital*. No fixture
+holds one.
+
+**Result: the guide stays, the in-app surface cannot exist.** The article is verified, calm and
+well-sourced; there is no reason to withdraw it. But §4.3's mandatory third deliverable — "one
+in-app entry point where the hook's answer actually lives" — has no surface to land on, because the
+wallet cannot hold the kind of policy the hook is about. H6 is recorded as a **deliberate,
+evidenced exception to §4.3**, not an incomplete item.
+
+This is the honest form of the caveat G-02 raised: not a CUT on truth, not a CUT on relevance to
+readers, but an admission that the product has no place to answer the question it raises.
