@@ -2,8 +2,8 @@ import {
     CITABLE_ARRAYS,
     arrayCitationKey,
     type CitableArray,
-    type ExtractionSource,
-} from '@/lib/services/ai/extraction-citations'
+} from '@/lib/services/ai/citation-keys'
+import type { ExtractionSource } from '@/lib/services/ai/extraction-citations'
 import type { DocumentAnchor } from '@/lib/insurance/capability-result'
 
 /**
