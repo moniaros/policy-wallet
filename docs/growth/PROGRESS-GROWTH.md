@@ -200,3 +200,70 @@ assertion. `type-check` clean.
 | S-04 | not yet run |
 
 **Nothing has been merged. Nothing has been deployed. No production data touched.**
+
+## FINDING (escalated ahead of C3-0) — `sources-freshness` green over a corpus it never evaluates
+
+`docs/growth/FINDING-freshness-false-green.md`. **Report only, nothing fixed.**
+
+My first framing was wrong and the correction matters: the freshness check does not
+mis-evaluate the 29 bare origins, it **never looks at them**. `GuideSource = {label,url}` has no
+date field, so `findStale()` has nothing to read. Two checks, two universes — `:197` evaluates the
+**16 `SRC-###` records**; `:269` sees all 37 citations and classifies 29 as known debt, asserted in
+both directions so the list can only shrink.
+
+**The guard is internally honest. The assurance is false one level up.** A suite named
+*freshness* reports green while 78% of the corpus is unevaluable and that fact lives only in a
+`const` array. Nothing emits the ratio. Bare origins also defeat the only mechanism that could
+catch them — a homepage returns 200 for ever, so freshness is not a meaningful property of one.
+
+**Smallest change: not red** (the file's own reasoning — a guard red on twelve pre-existing
+articles gets muted within a week). State the number: one assertion pinning
+`{unevaluable: 29, total: 37, guidesBlind: 11}`, failing both ways, printed on every green run.
+Also found: the docblock says 30 citations; the array holds 29, as G-07 measured.
+
+## C3-0 — citations reach the arrays a capability queries
+
+`name[index]` keys over a declared `CITABLE_ARRAYS` (conditions, coverages, exclusions);
+membership becomes a predicate instead of an exact `Set`; prompt widened with an example.
+Additive, verified before writing: response schema already `z.record(z.string(), …)`, storage is
+`acordData.extraction.sources` not a column, feature stays behind the flag.
+
+**`getAnchor` is the single accessor and returns null for a page without a snippet** — a reader can
+check a sentence against their own document, not a page number.
+
+**`lib/insurance/anchor-coverage.ts` emits the coverage as a number** rather than asserting it will
+grow. `predatesCitations` separates "older than the contract" from "the model declined to cite";
+an empty corpus reports `rate: null`, never 0%. 17 tests; the probe reimplements the pre-change
+predicate and shows it dropped every member key.
+
+## C1 — cross-policy overlap
+
+`lib/insurance/coverage-synonyms.ts` (authored, versioned `2026-08-29.1`, **health only**, seeded
+from the ομαδικό article's own vocabulary) + `lib/wallet/coverage-overlap.ts`. Motor and home
+wordings are asserted to stay unmapped, so scope creep fails a test.
+
+**The two ways it could manufacture a false duplicate, both guarded:**
+1. `coverages[].status` — a benefit printed on both schedules but `optional_not_taken` or
+   `excluded` on one is **not** an overlap. The spec's own `OverlapReport` shape had no notion of
+   this.
+2. «Επίδομα νοσηλείας» vs «νοσηλεία» — both contain «νοσηλ», one indemnifies the bill and the other
+   pays cash per night. Separate keys; matching is longest-phrase-first across all keys.
+
+`unmapped` is rendered and its count enters the reader-facing assumptions. An absent coverage list
+returns `cannot_determine`, never an empty overlap. 14 tests, falsifiable by construction.
+
+## State after C1
+
+| item | status |
+|---|---|
+| Z-01, G-07, OPEN-3b, P-00, C3-0, C1 | **done** |
+| freshness finding | **reported** |
+| C2a | next |
+| C4 | after C2a |
+| new guides, H4 extension | **held on G-07** |
+| C2b | gated — one €/τ.μ. search permitted, then closed |
+| C5, H8, H11, H17 | **cut** (OPEN-4) |
+| S-04 | not run |
+
+Gate at this point: type-check, lint, utf8, **514 test files green**. Nothing merged, nothing
+deployed, no production data touched.
