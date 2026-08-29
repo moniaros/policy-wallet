@@ -61,8 +61,11 @@ test.beforeAll(async () => {
         if (!user) throw new Error(`${DASH_EMAIL} not provisioned — run global-setup first`)
         const removed = await db.policy.deleteMany({
             where: {
+                // The WHOLE wallet. This listed two families and omitted its
+                // own `WH-VARIED-*`, so those rows survived every run and
+                // inflated the count for whichever spec ran next. See the note
+                // in dashboard-fixtures.ts.
                 ownerUserId: user.id,
-                OR: [{ policyNumber: { startsWith: "ΣΥΜΒ-2026-" } }, { policyNumber: { startsWith: "E2E-DASH-UNK-MOT-" } }],
             },
         })
         if (removed.count > 0) {

@@ -215,6 +215,23 @@ export default defineConfig({
             // wallet between captures, which would destroy the policy-detail
             // fixtures if it ran against the shared policyholder.
             name: 'measure-dash',
+            // RUN THIS PROJECT WITH `--workers=1`.
+            //
+            // Every spec here rebuilds the SAME dedicated wallet.
+            // `test.describe.configure({ mode: 'serial' })` orders tests WITHIN
+            // a file, and `fullyParallel: false` below does the same — NEITHER
+            // stops two spec FILES landing in two workers, which is the case
+            // that actually breaks. Measured: with the files racing, `typical`
+            // and `varied-household` fail; run alone or with `--workers=1`, all
+            // four pass with duplicateRowCount=0.
+            //
+            // Playwright's `workers` is a global option, not a per-project one,
+            // so this cannot be enforced here — hence the instruction. The
+            // underlying fixture bug is fixed separately: both clears were
+            // family-scoped and neither removed the other's rows, so
+            // `WH-VARIED-*` accumulated forever and the DOM held 10 rows where
+            // a test expected 3 or 7.
+            fullyParallel: false,
             testMatch: /tests\/measure\/dashboard.*\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],

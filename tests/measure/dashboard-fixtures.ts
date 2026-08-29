@@ -247,10 +247,20 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
     const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
     if (!owner) throw new Error(`applyPortfolioState: ${ownerEmail} not provisioned — run global-setup first`)
 
-    // Clear only THIS fixture family's policies.
-    await db.policy.deleteMany({
-        where: { ownerUserId: owner.id, policyNumber: { startsWith: "ΣΥΜΒ-2026-" } },
-    })
+    // Clear the WHOLE wallet, not just this fixture family.
+    //
+    // This deleted only `ΣΥΜΒ-2026-*` while the household spec writes
+    // `WH-VARIED-*` to the SAME dedicated account and clears only ITS families.
+    // Neither removed the other's rows, so `WH-VARIED-*` accumulated and was
+    // never cleared by anyone: run both specs in one invocation and the DOM
+    // showed 10 rows while each test expected its own 3 or 7. Both then failed
+    // with "stale render or leftover policies?" — their own error message
+    // naming the cause, on every run where they were invoked together.
+    //
+    // A whole-wallet clear is the documented intent, not a widening:
+    // playwright.config.ts gives this matrix its own account precisely because
+    // "portfolio state is a property of the user's whole wallet".
+    await db.policy.deleteMany({ where: { ownerUserId: owner.id } })
 
     const specs = policiesFor(state)
     const created: string[] = []
