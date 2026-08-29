@@ -101,3 +101,6 @@ ds-bundle/
 .github/skills/
 .impeccable/
 .playwright-mcp/
+
+# Session scratchpads — never part of a commit.
+scratchpad/
