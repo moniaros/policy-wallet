@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { detectOverlap, type OverlapPolicyInput } from '@/lib/wallet/coverage-overlap'
+import {
+    detectOverlap,
+    MIN_COMPARABLE_RATIO,
+    type OverlapPolicyInput,
+} from '@/lib/wallet/coverage-overlap'
 import {
     canonicalCoverageKey,
     normaliseCoverageName,
@@ -142,5 +146,61 @@ describe('the map is accent- and case-insensitive, and honest about not knowing'
         for (const motorOrHome of ['Ίδιες ζημιές', 'Κλοπή οχήματος', 'Σεισμός', 'Αστική ευθύνη']) {
             expect(canonicalCoverageKey(motorOrHome), `${motorOrHome} must stay unmapped`).toBeNull()
         }
+    })
+})
+
+describe('the OTHER direction — missing an overlap that is really there', () => {
+    /**
+     * `status` and the «επίδομα νοσηλείας» split stop this manufacturing a
+     * duplicate. Nothing stops it MISSING one, and that is the failure a reader
+     * cannot detect: nothing appears on screen for them to doubt. The map is
+     * seeded from one article's vocabulary, so it under-matches other insurers
+     * by construction.
+     *
+     * Rendering `unmapped` is not a guard. A reader shown «2 καλύψεις δεν
+     * αναγνωρίστηκαν» beside an empty overlap list cannot tell whether those two
+     * were the duplicate. So the threshold is enforced in the product and
+     * asserted here.
+     */
+    const opaque: OverlapPolicyInput = {
+        policyId: 'pol_opaque',
+        coverages: [
+            { name: 'Πρόγραμμα ΑΛΦΑ Premium' },
+            { name: 'Παροχή ΒΗΤΑ 3' },
+            { name: 'Πακέτο ΓΑΜΑ' },
+            { name: 'Νοσοκομειακή περίθαλψη' },
+        ],
+    }
+
+    it('flags low comparability when most of a policy will not resolve', () => {
+        const r = detectOverlap(opaque, personal)
+        if (r.status !== 'determined') throw new Error('expected determined')
+        expect(r.value.mapping.find((m) => m.policyId === 'pol_opaque')!.ratio).toBeLessThan(
+            MIN_COMPARABLE_RATIO
+        )
+        expect(r.value.lowComparability).toBe(true)
+    })
+
+    it('and says so FIRST, in terms that forbid reading absence as safety', () => {
+        const r = detectOverlap(opaque, personal)
+        if (r.status !== 'determined') throw new Error('expected determined')
+        expect(r.assumptions[0]).toMatch(/ΔΕΝ σημαίνει ότι δεν υπάρχει διπλή κάλυψη/)
+    })
+
+    it('a well-resolved pair is NOT flagged, so the signal means something', () => {
+        const r = detectOverlap(group, personal)
+        if (r.status !== 'determined') throw new Error('expected determined')
+        // group: 3 of 4 mapped, personal: 2 of 3 — both above the floor.
+        expect(r.value.lowComparability).toBe(false)
+        expect(r.assumptions[0]).not.toMatch(/ΔΕΝ σημαίνει/)
+    })
+
+    it('reports the mapped/unmapped split per policy, so the blindness is sized', () => {
+        const r = detectOverlap(group, personal)
+        if (r.status !== 'determined') throw new Error('expected determined')
+        expect(r.value.mapping).toEqual([
+            { policyId: 'pol_group', mapped: 3, unmapped: 1, ratio: 0.75 },
+            { policyId: 'pol_personal', mapped: 2, unmapped: 1, ratio: 2 / 3 },
+        ])
     })
 })

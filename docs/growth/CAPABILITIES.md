@@ -190,3 +190,40 @@ registry.
 Written once, never copied (§0.2).
 
 **§2.8 holds:** none of the five requires `lib/gap-detection.ts`, and none may touch it.
+
+---
+
+## KNOWN LIMIT — the anchor-coverage metric is checkable by the repo, not operable
+
+**Recorded 2026-08-29 in answer to a direct question: where does C3's answer rate surface?**
+
+**Today: nowhere a person running the product can see.** `lib/insurance/anchor-coverage.ts` is a
+pure function with tests. Tests are checkable by the repo and invisible to an operator, which is a
+weaker version of the defect this run has been chasing — so it is recorded as a known limit rather
+than left for a test to stand in for monitoring.
+
+### Two candidate surfaces, and why the cheap one is wrong
+
+**(a) `admin/extraction-flags` — cheap and biased.** `getExtractionFlagQueue`
+(`app/(protected)/admin/actions.ts`) **already loads `acordData`** for its queue and already reads
+`acordData.extraction`, and its `logAdminRead` scope already declares `policy.extractedContent`. So
+adding coverage to its `summary` costs one aggregation and no new query, no new read scope, no new
+page.
+
+**It would still be wrong to publish.** That queue is `eventType: "extraction_flagged"`, capped at
+200 — *flagged* extractions, a sample selected for being problematic. Anchor coverage over it would
+systematically understate the corpus and carry no statement of its own scope. Publishing it as "the
+coverage" would be precisely the uncheckable-scope claim the run's other four findings are about.
+**Cheap, available, and rejected.**
+
+**(b) Emit at analysis-persist time.** The honest observation point: log per-policy coverage as each
+analysis lands, so growth over re-analysis is queryable rather than asserted. This measures the
+actual claim. It touches `policy-analysis-orchestrator.service.ts` — the money path — which is
+outside this item's declared file boundary (§0.3) and not a change to make in passing.
+
+### Recorded as
+
+**Not operable this run.** The metric exists, is tested, and has a named home (b) that was not
+taken because reaching it means editing the money path. **Do not treat the test as monitoring.**
+Until (b) lands, "coverage grows as policies are re-analysed" remains an assertion — the function
+can prove it for any input handed to it, and nothing hands it the corpus.

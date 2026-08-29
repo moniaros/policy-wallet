@@ -26,8 +26,12 @@ import { guides } from '@/lib/guides/content'
  * instance of each defect class and is asserted to turn every detector red.
  * Without it this file would be a guard nobody has seen fail.
  *
- * LEGACY DEBT. The 12 pre-existing guides carry 30 citations, all of them bare
- * origins (queue item GB-04). They are enumerated below EXACTLY, so the set can
+ * LEGACY DEBT. The 12 pre-existing guides carry 29 citations, all of them bare
+ * origins (queue item GB-04). (This said 30 until 2026-08-29, while the array
+ * below held 29 and an independent count measured 29 — the prose disagreed with
+ * its own data. Fifth instance in this programme of a claim whose scope nothing
+ * checks; see docs/growth/FINDING-freshness-false-green.md.)
+ * They are enumerated below EXACTLY, so the set can
  * only shrink: a new bare citation fails, and fixing one without removing it
  * from the list also fails. The list is debt, not an exemption.
  */

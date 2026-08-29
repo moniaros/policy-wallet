@@ -65,19 +65,29 @@ The smallest honest change is to **state the number instead of hiding it in an a
 assertion, no behaviour change, no red:
 
 ```ts
-it('reports how much of the corpus it cannot evaluate — 29 of 37 citations (GB-04)', () => {
+it('reports how much of the corpus it cannot evaluate — 29 of 37 citations, 11 of 15 guides (GB-04)', () => {
     const bare = allCitations.filter((c) => isBareOrigin(c.url))
-    const guidesWithNoResolvableCitation = /* … */
-    // Pinned exactly, both directions: the number moves only when the debt does,
-    // and it appears in CI output on every green run instead of nowhere.
-    expect({ unevaluable: bare.length, total: allCitations.length, guidesBlind: guidesWithNoResolvableCitation })
-        .toEqual({ unevaluable: 29, total: 37, guidesBlind: 11 })
+    const guidesBlind = guides.filter((g) => (g.sources ?? []).every((s) => isBareOrigin(s.url))).length
+    // BOTH DENOMINATORS ARE PINNED, not just the numerators. With only
+    // {unevaluable: 29, guidesBlind: 11} asserted, adding a citation or a guide
+    // leaves this green while the corpus has changed shape underneath it — and
+    // a metric that measures unsubstantiated claims must not itself have an
+    // uncheckable scope. That is the defect, not an instance of it.
+    expect({
+        unevaluable: bare.length,
+        citations: allCitations.length,
+        guidesBlind,
+        guides: guides.length,
+    }).toEqual({ unevaluable: 29, citations: 37, guidesBlind: 11, guides: 15 })
 })
 ```
 
 Three properties that matter:
 1. **The count is in the test name and the assertion**, so a green run prints it. The debt stops
    being a thing you must go looking for.
+   **Both denominators are pinned**, not only the numerators: `29 of 37` and `11 of 15`. Pinning
+   `29` alone leaves the assertion green when a citation or a guide is added, which is the same
+   uncheckable-scope defect the assertion exists to expose.
 2. **It fails in both directions** — debt grows, or debt shrinks without the number being updated.
    Same discipline `LEGACY_BARE_CITATIONS` already has, applied to the aggregate.
 3. **It renames nothing and reddens nothing**, so there is no incentive to mute it.
