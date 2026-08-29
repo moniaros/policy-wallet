@@ -27,6 +27,9 @@ import { readNeeds, saveNeeds } from "@/lib/needs/storage"
  * also why it can be honest: no server saw this, so no claim is being made
  * about anyone's cover.
  */
+/** Default wording for the renderer-drawn "none" pill; `noneLabel` overrides it. */
+const NONE_OF_THESE = { el: "Κανένα από αυτά", en: "None of these" } as const
+
 export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
     const t = (el: string, en: string) => (locale === "el" ? el : en)
     const [answers, setAnswers] = useState<NeedsAnswers>({})
@@ -69,6 +72,27 @@ export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
     const setValue = (id: keyof NeedsAnswers, value: unknown) =>
         setAnswers((prev) => ({ ...prev, [id]: value }))
 
+    /**
+     * "None of these", as a real answer rather than an absence.
+     *
+     * `isStepComplete` treats a multi question as answered when its array
+     * EXISTS — an empty array is the affirmative answer "none of these", which
+     * is also what `toRiskProfilePayload` documents. Nothing created that array
+     * until the visitor ticked something, so the only way to say "none" was to
+     * tick an option and untick it, and anyone who genuinely owned no boat and
+     * no business simply could not leave the step. The step's own intro told
+     * them to: «αν δεν ισχύει κανένα, προχωρήστε».
+     *
+     * Deliberately NOT fixed by making multi questions complete by default.
+     * This form's whole claim to honesty is that a visitor can tell "we asked
+     * and you said no" from "we never asked" — that is the stated reason it is
+     * six steps instead of one screen. Auto-completing would make someone who
+     * scrolled past look like they had answered, and the result would then say
+     * nothing about boats with confidence it had not earned.
+     */
+    const clearList = (id: keyof NeedsAnswers) =>
+        setAnswers((prev) => ({ ...prev, [id]: [] }))
+
     const toggleInList = (id: keyof NeedsAnswers, value: string) =>
         setAnswers((prev) => {
             const current = new Set((prev[id] as string[] | undefined) ?? [])
@@ -76,6 +100,12 @@ export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
             else current.add(value)
             return { ...prev, [id]: [...current] }
         })
+
+    /** The multi question has been answered, and the answer is "none of these". */
+    const noneChosen = (q: NeedsQuestion) => {
+        const v = answers[q.id]
+        return Array.isArray(v) && v.length === 0
+    }
 
     const isSelected = (q: NeedsQuestion, value: string | number | boolean) =>
         q.kind === "multi"
@@ -204,6 +234,38 @@ export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
                                             </label>
                                         )
                                     })}
+
+                                    {/* "None of these" — drawn by the RENDERER for
+                                        every multi question, not authored per
+                                        question, so a new one cannot ship without
+                                        it. An empty array is the affirmative
+                                        answer; the absence of the array is what
+                                        blocks the step, and before this there was
+                                        no way to produce the first without passing
+                                        through the second. Mutual exclusion comes
+                                        free: picking any real option makes the
+                                        array non-empty, which deselects this. */}
+                                    {q.kind === "multi" && (
+                                        <label
+                                            className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-body-sm font-semibold transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand-accent ${
+                                                noneChosen(q)
+                                                    ? "border-brand-accent bg-[#29685B] text-white"
+                                                    : "border-[#E2E8F0] bg-white text-[#334155] hover:border-[#29685B]/40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                            }`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                name={String(q.id)}
+                                                className="sr-only"
+                                                checked={noneChosen(q)}
+                                                onChange={() => clearList(q.id)}
+                                            />
+                                            {noneChosen(q) && (
+                                                <Check aria-hidden className="h-3.5 w-3.5 flex-shrink-0" />
+                                            )}
+                                            {(q.noneLabel ?? NONE_OF_THESE)[locale]}
+                                        </label>
+                                    )}
                                 </div>
                             </fieldset>
                         ))}

@@ -82,6 +82,14 @@ export interface NeedsQuestion {
     hint?: Bilingual
     choices: ReadonlyArray<NeedsChoice>
     kind: "single" | "multi"
+    /**
+     * The "none of these" label for a MULTI question. The renderer always draws
+     * this affordance — see NeedsCheck — so a question cannot forget it; this
+     * only overrides the wording, because Greek makes the default disagree:
+     * «Κανένα από αυτά» is neuter and the held-cover question asks about
+     * καλύψεις, which are feminine.
+     */
+    noneLabel?: Bilingual
 }
 
 export interface NeedsStep {
@@ -295,6 +303,7 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
             {
                 id: "held",
                 kind: "multi",
+                noneLabel: { el: "Καμία από αυτές", en: "None of these" },
                 prompt: { el: "Ποιες από αυτές τις καλύψεις έχετε ήδη;", en: "Which of these do you already have?" },
                 hint: {
                     el: "Μετράει και ό,τι σας έδωσε η δουλειά σας ή όρισε η τράπεζα.",

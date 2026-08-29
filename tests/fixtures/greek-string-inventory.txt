@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2820
-# inline entries: 4676 across 208 files
+# inline entries: 4678 across 209 files
 # ternary entries: 286 across 45 files
 # call entries: 1152 across 72 files
 
@@ -3393,6 +3393,7 @@ inline	components/monetization/UpgradeModal.tsx	"Ξεκινήστε με {plan} 
 inline	components/monetization/UpgradeModal.tsx	"Προτείνεται · Πιο δημοφιλές · Καλύτερη αξία"
 inline	components/monetization/UpgradeModal.tsx	"Συνέχεια με {plan} —"
 inline	components/monetization/UpgradeModal.tsx	"Τρέχον πλάνο"
+inline	components/needs/NeedsCheck.tsx	"Κανένα από αυτά"
 inline	components/onboarding/DashboardTour.tsx	"Αναζήτηση & Φίλτρα"
 inline	components/onboarding/DashboardTour.tsx	"Βρείτε γρήγορα οποιοδήποτε ασφαλιστήριο με αναζήτηση ή φίλτρα κατηγορίας."
 inline	components/onboarding/DashboardTour.tsx	"Εδώ βρίσκεται το νέο σας ασφαλιστήριο. Πατήστε για πλήρη στοιχεία, έγγραφα και AI ανάλυση."
@@ -6057,6 +6058,7 @@ inline	lib/needs/questions.ts	"Η οικογένειά σας"
 inline	lib/needs/questions.ts	"Η υπόλοιπη ζωή σας"
 inline	lib/needs/questions.ts	"Ισχύει κάτι από αυτά;"
 inline	lib/needs/questions.ts	"Κάτι άλλο"
+inline	lib/needs/questions.ts	"Καμία από αυτές"
 inline	lib/needs/questions.ts	"Κανένα"
 inline	lib/needs/questions.ts	"Κατοικίας"
 inline	lib/needs/questions.ts	"Μετράει και ό,τι σας έδωσε η δουλειά σας ή όρισε η τράπεζα."

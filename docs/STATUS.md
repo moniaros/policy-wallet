@@ -16,6 +16,22 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 
 ## Done since the last entry
 
+- **The needs check's multi-selects were the real dead end** (reported second, and
+  worse than the single-choice one). `isStepComplete` counts a multi question as
+  answered when its array EXISTS — an empty array is the affirmative "none of
+  these", exactly as `toRiskProfilePayload` documents. Nothing ever created that
+  array, so the only route to "none" was to tick an option and untick it. Anyone
+  with no boat, no business and no high-risk sport hit a disabled Continue on
+  step 5 while the step's own intro said «αν δεν ισχύει κανένα, προχωρήστε».
+  Fixed with an explicit control, NOT by loosening the gate: the form's claim to
+  honesty is that a reader can tell "asked and said no" from "never asked", so
+  auto-completing would let someone who scrolled past look like they had
+  answered. The renderer draws the pill for every multi question, so a new one
+  cannot ship without it; `noneLabel` exists only because Greek gender has to
+  agree («Καμία από αυτές» for καλύψεις). Guarded by a component test that
+  asserts the OUTCOME — Continue disabled with nothing ticked, enabled after
+  "none" — red-proved in both directions.
+
 - **The literal sweep: 456 -> 124 across 80 -> 29 files.** Four status roles
   (success/warning/danger/info) are now tokens with the same machine-read
   `@on <surface> @min <ratio>` contract as the brand accent. Measured first, and
