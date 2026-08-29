@@ -36,6 +36,28 @@ import { useRotation } from "@/components/growth/use-rotation"
  *  - inactive slides get `inert`, so a screen reader and the tab order see one
  *    headline rather than three.
  *
+ * COLOUR COMES FROM TOKENS, INCLUDING THE DARK HALF. Nothing here writes a
+ * hex literal or a `dark:` colour twin. `text-brand-accent` is the brand green
+ * on the light page and the mint on the dark one because the var flips
+ * underneath — and those two are not a style pair, they are a CONTRAST pair:
+ * the green measures 2.74:1 on slate-900 and is unusable there. Writing the
+ * light half as a token and the dark half as a literal, which is what four
+ * sibling landing files still do, buys a governed light theme and an
+ * ungoverned dark one; token work gets reviewed in light mode, so that is
+ * where drift hides. The values and the measurements live in app/globals.css,
+ * which is the only place a colour literal belongs, and
+ * tests/unit/token-contrast-contract.test.ts enforces them.
+ *
+ * (Values are named, not written, in this comment on purpose: the debt guard
+ * counts a hex run in prose as a literal, and it is right to.)
+ *
+ * The inactive dot was the one thing in this file that actually failed. At
+ * slate-300 it measured 1.48:1 on white — and slate-600 measured 2.36:1 on the
+ * dark page, so it failed harder in the theme nobody was checking. An inactive
+ * dot is the only thing telling a reader the control is there, which puts it
+ * under SC 1.4.11 at 3:1. It is now --dot-track: 3.61:1 light, 3.75:1 dark.
+ * Everything else on this page already passed and was migrated unchanged.
+ *
  * THE CLAIMS. Every slide states a benefit the product actually delivers, and
  * the one that depends on a paid plan says so on the slide rather than in a
  * footnote. Nothing here names a competitor, characterises anyone's motives, or
@@ -46,7 +68,7 @@ const INTERVAL_MS = 7000
 
 /** One ramp for both tags, so the swap can never change how a slide looks. */
 const HEADLINE =
-    "text-h1 leading-[1.03] font-semibold tracking-[-0.04em] text-balance text-[#0F172A] lg:text-display dark:text-white"
+    "text-h1 leading-[1.03] font-semibold tracking-[-0.04em] text-balance text-brand-text-primary lg:text-display"
 
 interface Slide {
     id: string
@@ -64,12 +86,12 @@ const SLIDES: Slide[] = [
             locale === "el" ? (
                 <>
                     Όλα τα ασφαλιστήρια, από όλες τις εταιρείες,{" "}
-                    <span className="text-[#29685B] dark:text-[#A7F3D0]">σε ένα ασφαλές σημείο.</span>
+                    <span className="text-brand-accent">σε ένα ασφαλές σημείο.</span>
                 </>
             ) : (
                 <>
                     Every policy, from every company,{" "}
-                    <span className="text-[#29685B] dark:text-[#A7F3D0]">in one place.</span>
+                    <span className="text-brand-accent">in one place.</span>
                 </>
             ),
         lead: (locale) =>
@@ -84,12 +106,12 @@ const SLIDES: Slide[] = [
             locale === "el" ? (
                 <>
                     Ούτε περισσότερα, ούτε λιγότερα{" "}
-                    <span className="text-[#29685B] dark:text-[#A7F3D0]">από όσα χρειάζεστε.</span>
+                    <span className="text-brand-accent">από όσα χρειάζεστε.</span>
                 </>
             ) : (
                 <>
                     No more, and no less,{" "}
-                    <span className="text-[#29685B] dark:text-[#A7F3D0]">than you actually need.</span>
+                    <span className="text-brand-accent">than you actually need.</span>
                 </>
             ),
         // Gap and duplicate detection is a Plus feature. Naming the plan is the
@@ -107,12 +129,12 @@ const SLIDES: Slide[] = [
             locale === "el" ? (
                 <>
                     Βρείτε τις παροχές που{" "}
-                    <span className="text-[#29685B] dark:text-[#A7F3D0]">κρύβονται στα μικρά γράμματα.</span>
+                    <span className="text-brand-accent">κρύβονται στα μικρά γράμματα.</span>
                 </>
             ) : (
                 <>
                     Find the benefits that are{" "}
-                    <span className="text-[#29685B] dark:text-[#A7F3D0]">buried in the small print.</span>
+                    <span className="text-brand-accent">buried in the small print.</span>
                 </>
             ),
         lead: (locale) =>
@@ -169,7 +191,7 @@ export function HeroSlides({ locale }: { locale: MarketingLocale }) {
                             ) : (
                                 <p className={HEADLINE}>{slide.headline(locale)}</p>
                             )}
-                            <p className="mx-auto mt-6 max-w-[620px] text-body-lg leading-relaxed text-[#475569] sm:text-lead dark:text-slate-300">
+                            <p className="mx-auto mt-6 max-w-[620px] text-body-lg leading-relaxed text-neutral-600 sm:text-lead dark:text-neutral-300">
                                 {slide.lead(locale)}
                             </p>
                         </div>
@@ -186,15 +208,15 @@ export function HeroSlides({ locale }: { locale: MarketingLocale }) {
                         type="button"
                         onClick={() => goTo(i)}
                         aria-current={i === index ? "true" : undefined}
-                        className="group inline-flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0]"
+                        className="group inline-flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent"
                     >
                         <span className="sr-only">{slide.dot[locale]}</span>
                         <span
                             aria-hidden
                             className={`block h-2.5 rounded-full transition-all duration-300 motion-reduce:transition-none ${
                                 i === index
-                                    ? "w-7 bg-[#29685B] dark:bg-[#A7F3D0]"
-                                    : "w-2.5 bg-[#CBD5E1] group-hover:bg-[#94A3B8] dark:bg-slate-600 dark:group-hover:bg-slate-500"
+                                    ? "w-7 bg-brand-accent"
+                                    : "w-2.5 bg-dot-track group-hover:bg-dot-track-hover"
                             }`}
                         />
                     </button>
@@ -207,7 +229,7 @@ export function HeroSlides({ locale }: { locale: MarketingLocale }) {
                     <button
                         type="button"
                         onClick={togglePaused}
-                        className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-[#5B6A7A] transition-colors hover:text-[#0F172A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:text-slate-400 dark:hover:text-white dark:focus-visible:outline-[#A7F3D0]"
+                        className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-brand-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent"
                     >
                         <span className="sr-only">
                             {paused

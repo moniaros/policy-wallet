@@ -16,6 +16,37 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 
 ## Done since the last entry
 
+- **Dark mode was ungoverned, and the token migration was about to make that permanent.**
+  `text-[#29685B] dark:text-[#A7F3D0]` across four landing files was never a style pair — the
+  brand green measures **2.74:1 on slate-900** and is unusable there, so the second literal was
+  the contrast fix, stored as a magic string with nothing recording why. Migrating the light half
+  to a token and leaving the dark half a literal (the pattern the already-migrated landing files
+  use) buys a governed light theme and an ungoverned dark one; token work gets reviewed in light
+  mode, which is exactly where drift hides. Owner chose to add the dark tokens FIRST.
+  `--brand-accent-on-light` / `--brand-accent-on-dark` are named by role and carry a machine-read
+  `@on <surface> @min <ratio>` contract; `tests/unit/token-contrast-contract.test.ts` enumerates
+  every `*-on-light`/`*-on-dark` token in `app/globals.css`, resolves its surface, measures the
+  ratio and fails below the floor — **including on a missing annotation**, so the contract cannot
+  be skipped by omission. Red-proved three ways against the real file, plus an 8-branch probe
+  fixture. This is the return on the decision: the literal-count ratchet became a contrast
+  ratchet, and the remaining 81 pinned files inherit it.
+- **HeroSlides fully migrated — 24 literals to 0**, and 11 `dark:` colour twins deleted rather
+  than tokenised one-sided. Debt guard total **489 → 465** literals across **82 → 81** files;
+  no other file's count moved. Two greys turned out to already have exact tokens
+  (`#5B6A7A` = `--muted-foreground`, `#0F172A`+`dark:text-white` = `--brand-text-primary`), so
+  those were zero-change swaps, not the trade-off they looked like.
+- **One real defect in HeroSlides, found by asking what the greys were doing.** The inactive
+  carousel dot measured **1.48:1** on white and **2.36:1** on slate-900 — a live SC 1.4.11
+  failure, and *worse* in the theme nobody was checking. An inactive dot is the only thing
+  telling a reader the control exists. Now `--dot-track`: **3.61:1** light, **3.75:1** dark.
+  Verified by pixel diff: **176 of 272,240 pixels changed, all inside the two dots, in both
+  themes** — nothing else on the hero moved.
+- **The auto-rotating hero audit came back clean apart from that dot.** 2.2.2 pause control
+  (visible, labelled, 44px), reduced-motion kills auto-advance entirely and removes the dead
+  control, hold on hover AND keyboard focus, `aria-live` off→polite on user control, inactive
+  slides `inert`+`aria-hidden` with only the active one an `<h1>`, focus ring at 6.51:1/13.92:1,
+  44px targets. Reported rather than assumed — it was the most likely Level A failure on the page.
+
 - **The gap engine was inventing duplicate motor cover.** `insuredSubject` kept a hand-rolled copy
   of the asset-identity map and never rejected the extractor's unreadable masks, so two different
   cars whose plates both read «(XXXX)» were reported as one vehicle insured twice — advice to drop a

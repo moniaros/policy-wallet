@@ -22,6 +22,15 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
 
+  /* Surface-aware roles: one utility per role, no `dark:` twin at the call
+     site. `text-brand-accent` is green on the light page and mint on the dark
+     one because the var flips, which is the whole point — a component cannot
+     forget the dark half if it never writes it. */
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-text-primary: var(--brand-text-primary);
+  --color-dot-track: var(--dot-track);
+  --color-dot-track-hover: var(--dot-track-hover);
+
   /* Mapping neutral to slate for premium feel */
   --color-neutral-50: #f8fafc;
   --color-neutral-100: #f1f5f9;
@@ -122,6 +131,53 @@
   --brand-accent-primary: #29685B;
   --brand-accent-cta: #29685B;
   --brand-accent-trust: #143B33;
+
+  /* ── ACCENT AND CONTROL COLOUR, BY SURFACE ────────────────────────────────
+     One role, two values, because the surface changes what is legible.
+
+     #29685B is the brand green and it is UNUSABLE as a foreground on the dark
+     page: 2.74:1 against --surface-dark, under every WCAG floor there is.
+     #A7F3D0 is therefore not a stylistic dark-mode variant of it — it is the
+     contrast fix, 13.92:1 on the same surface. It shipped as a bare
+     `dark:text-[#A7F3D0]` in four landing files with nothing anywhere
+     recording why, which is how a theme ends up governed in light and
+     ungoverned in dark: token work gets reviewed in light mode, so the dark
+     half drifts with nothing watching.
+
+     THE `@on <token> @min <ratio>` ANNOTATIONS ARE MACHINE-READ, NOT PROSE.
+     tests/unit/token-contrast-contract.test.ts enumerates every `*-on-light`
+     / `*-on-dark` token declared in this file, resolves the surface each one
+     names, measures the WCAG ratio and fails below the floor. A new token of
+     either shape carrying no annotation fails too, so the contract cannot be
+     opted out of by omission. Floors: 4.5 for text (SC 1.4.3), 3 for non-text
+     UI (SC 1.4.11) — and a 3 has to say `(non-text)` out loud, so choosing the
+     lower floor is a visible decision rather than a quiet one.
+
+     The surfaces are the real page grounds, not an idealisation: the landing
+     root is `bg-white dark:bg-slate-900` and the app body is --background. */
+  --surface-light: #FFFFFF;
+  --surface-dark: #0F172A;
+
+  --brand-accent-on-light: #29685B; /* @on --surface-light @min 4.5 */
+  --brand-accent-on-dark: #A7F3D0; /* @on --surface-dark @min 4.5 */
+
+  /* The carousel dot track. An inactive dot is the ONLY thing telling a reader
+     the control is there, so SC 1.4.11 governs it at 3:1 — and it failed in
+     BOTH themes: #CBD5E1 measured 1.48:1 on white and slate-600 measured
+     2.36:1 on slate-900. Hover keeps the direction it always had, darker on
+     light and lighter on dark. The active dot is --brand-accent and is also
+     2.8x wider, so the state is never carried by colour alone (SC 1.4.1). */
+  --dot-track-on-light: #7A8899; /* @on --surface-light @min 3 (non-text) */
+  --dot-track-on-dark: #64748B; /* @on --surface-dark @min 3 (non-text) */
+  --dot-track-hover-on-light: #5B6A7A; /* @on --surface-light @min 3 (non-text) */
+  --dot-track-hover-on-dark: #94A3B8; /* @on --surface-dark @min 3 (non-text) */
+
+  /* Resolved per theme — the .dark block re-points these three, and only
+     these three. The `*-on-*` pairs above stay constant so the contract has
+     something fixed to measure against. */
+  --brand-accent: var(--brand-accent-on-light);
+  --dot-track: var(--dot-track-on-light);
+  --dot-track-hover: var(--dot-track-hover-on-light);
 
   --pw-primary: #29685B;
   --pw-primary-hover: #1C4E44;
@@ -268,6 +324,13 @@
   --pw-border: rgba(255, 255, 255, 0.14);
   /* 4.5:1 on the dark page, 4.47:1 on a dark card — see the light note above. */
   --pw-border-control: rgba(255, 255, 255, 0.45);
+
+  /* The surface flipped, so the accent has to. See the contract block in
+     :root — these point at the SAME tokens the contrast test measures, which
+     is what makes the measurement mean something about what renders. */
+  --brand-accent: var(--brand-accent-on-dark);
+  --dot-track: var(--dot-track-on-dark);
+  --dot-track-hover: var(--dot-track-hover-on-dark);
 }
 
 body {

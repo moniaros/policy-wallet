@@ -1,0 +1,42 @@
+/*
+ * PROBE FIXTURE for tests/unit/token-contrast-contract.test.ts.
+ *
+ * Not imported by the application and not part of the design system. It exists
+ * so the contract guard has been SEEN to fail: every rejection branch below is
+ * asserted red by the test, against the same parser that reads app/globals.css.
+ * A guard nobody has watched turn red is not a guard.
+ *
+ * Each token here is deliberately wrong in exactly one way.
+ */
+:root {
+  --surface-light: #FFFFFF;
+  --surface-dark: #0F172A;
+
+  /* WRONG: the brand green as a foreground on the dark page — 2.74:1, the
+     precise defect the real tokens exist to stop. Annotated correctly; it is
+     the MEASUREMENT that must fail. */
+  --probe-fails-ratio-on-dark: #29685B; /* @on --surface-dark @min 4.5 */
+
+  /* WRONG: no annotation at all. Omission must not be an opt-out. */
+  --probe-unannotated-on-dark: #A7F3D0;
+
+  /* WRONG: names a surface token that does not exist. */
+  --probe-unknown-surface-on-light: #29685B; /* @on --surface-nope @min 4.5 */
+
+  /* WRONG: a floor that is neither 4.5 (text) nor 3 (non-text). */
+  --probe-invented-floor-on-light: #94A3B8; /* @on --surface-light @min 2 */
+
+  /* WRONG: takes the 3:1 non-text floor without declaring `(non-text)`, i.e.
+     quietly downgrades a text token to the control floor. */
+  --probe-silent-downgrade-on-light: #94A3B8; /* @on --surface-light @min 3 */
+
+  /* WRONG: non-hex value. The parser must refuse rather than skip — a skipped
+     token is an ungoverned token. */
+  --probe-non-hex-on-dark: rgba(255, 255, 255, 0.45); /* @on --surface-dark @min 4.5 */
+
+  /* WRONG: fails the 3:1 non-text floor (2.56:1 on white). */
+  --probe-fails-nontext-on-light: #94A3B8; /* @on --surface-light @min 3 (non-text) */
+
+  /* RIGHT, so the probe also proves the guard can pass: 13.92:1. */
+  --probe-passes-on-dark: #A7F3D0; /* @on --surface-dark @min 4.5 */
+}
