@@ -30,7 +30,22 @@ not. Tractable, not open-ended.
 
 ---
 
-## HALT-G02 — A misattributed statutory claim is LIVE on our own site
+## HALT-G02 — ~~A misattributed statutory claim is LIVE on our own site~~ · **CLOSED 2026-08-29**
+
+> **CLOSED — corrected between 2026-08-26 and 2026-08-29, verified on the live page.**
+> `/guides/prostimo-anasfalistou-oximatos` now contains **zero** occurrences of «ΑΑΔΕ» and
+> attributes the fine to «Γενική Διεύθυνση Σώματος Δίωξης Οικονομικού Εγκλήματος (Γ.Δ. Σ.Δ.Ο.Ε.)»
+> in three places. Confirmed in `lib/guides/content.ts` **and** by fetching
+> `https://www.policywallet.gr/guides/prostimo-anasfalistou-oximatos` — the source check alone
+> would not have been enough, per §0.2.
+> Pinned by `tests/unit/uninsured-vehicle-fines-fek-verified.test.ts`.
+>
+> **This entry was stale for three days and it cost real work.** PW-GROWTH-02's Phase A read the
+> halt, not the code, and planned an item to fix a defect that no longer existed. A halt file that
+> outlives its defect is not a neutral leftover — it is a false statement about the product, and it
+> is read by exactly the people with the least context to doubt it. **Close halts when they close.**
+
+### Original entry, kept for the record
 
 **Not raised by this goal. Found by it, and it is the most actionable thing in this report.**
 
@@ -77,7 +92,23 @@ it is recorded as a cut and a rewrite, not as a softening.
 
 ---
 
-## HALT-G04 — The published fine amounts are wrong, and wrong in the direction that costs the reader
+## HALT-G04 — ~~The published fine amounts are wrong~~ · **CLOSED 2026-08-29**
+
+> **CLOSED — corrected between 2026-08-26 and 2026-08-29, verified on the live page.**
+> The article now reads «κλιμακούμενο **ανά κατηγορία οχήματος και όχι ανά κυβισμό**: 250 ευρώ για
+> τα δίκυκλα, 500 ευρώ για τα επιβατηγά και κάθε άλλο όχημα, και 1.000 ευρώ για τα λεωφορεία και τα
+> φορτηγά δημόσιας χρήσης», citing άρθρο 23 του ν. 5113/2024. The live page carries the three
+> figures four times over and neither retired figure (€100, €150) appears anywhere in it.
+> SRC-010 already carried the verbatim ΦΕΚ excerpt, so no source work was owed.
+>
+> Pinned by `tests/unit/uninsured-vehicle-fines-fek-verified.test.ts`, which is a
+> **REGRESSION-GUARD** — it could not fail on pre-change code and is reported as such. Its probe
+> block runs the checker against the wording quoted below and asserts it red, which is the only way
+> a guard over an already-correct corpus can be shown to work.
+>
+> **H4 is unblocked.**
+
+### Original entry, kept for the record
 
 **Found while writing H4's extension. Second defect in the same article as HALT-G02, verified from a
 verbatim ΦΕΚ excerpt rather than by inference — so the evidence here is stronger than G02's.**
