@@ -72,12 +72,12 @@ type FieldSpec =
 export const PROFILE_FIELD_SPECS: Record<MappableProfileField, FieldSpec> = {
     maritalStatus: {
         kind: "enum",
-        values: ["single", "married", "divorced", "widowed", "partnered"],
+        values: ["single", "married", "divorced", "widowed", "partnered", "other"],
     },
     dependentsCount: { kind: "int", min: 0, max: 20 },
     employmentStatus: {
         kind: "enum",
-        values: ["employed", "self_employed", "unemployed", "retired", "student"],
+        values: ["employed", "self_employed", "unemployed", "retired", "student", "other"],
     },
     ownsHome: { kind: "bool" },
     mortgageAmount: { kind: "decimal", min: 0, max: 100_000_000 },
@@ -424,6 +424,7 @@ export const CANONICAL_RISK_QUESTIONS = [
             { value: "retired", label: "Retired", labelEl: "Συνταξιούχος" },
             { value: "unemployed", label: "Not working", labelEl: "Χωρίς εργασία" },
             { value: "student", label: "Student", labelEl: "Φοιτητής" },
+            { value: "other", label: "Something else", labelEl: "Κάτι άλλο" },
         ],
     },
     {

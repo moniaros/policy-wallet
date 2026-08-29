@@ -96,25 +96,52 @@ export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
             {!showingResult ? (
                 <>
                     {/* Progress. A real <ol> so the position is announced, not
-                        just drawn. */}
-                    <ol className="mb-8 flex flex-wrap items-center gap-2" aria-label={t("Βήματα", "Steps")}>
+                        just drawn.
+
+                        THE TAP TARGET IS THE BUTTON; THE BAR IS A CHILD. These
+                        segments are real controls — clicking one jumps to that
+                        step — so they need a 24px pointer target (WCAG 2.5.8),
+                        and app/globals.css enforces a 44px floor on every
+                        <button> under 768px. Sizing the BUTTON itself to the
+                        6px bar meant that floor had nothing to work with but the
+                        button's own box: on a phone the six segments inflated
+                        into 44px slabs of flat grey with no label in them, since
+                        the only text they carry is `sr-only`. It read exactly
+                        like six broken buttons, and on desktop — where the floor
+                        does not apply — it looked correct, which is why it
+                        survived.
+
+                        So the button owns the 44px target and the bar is a 6px
+                        child centred in it. Same shape as the hero carousel's
+                        dots (components/landing/HeroSlides.tsx), for the same
+                        reason. `-my-3.5` gives the row back the vertical space
+                        the taller target would otherwise add, so the strip sits
+                        where it always did. */}
+                    <ol
+                        className="-my-3.5 mb-4 flex items-center gap-2"
+                        aria-label={t("Βήματα", "Steps")}
+                    >
                         {NEEDS_STEPS.map((s, i) => {
                             const state = i === stepIndex ? "current" : isStepComplete(s, answers) ? "done" : "todo"
                             return (
-                                <li key={s.id} className="flex-1 basis-16">
+                                <li key={s.id} className="flex-1 basis-8">
                                     <button
                                         type="button"
                                         onClick={() => setStepIndex(i)}
                                         aria-current={state === "current" ? "step" : undefined}
-                                        className={`h-1.5 w-full rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
-                                            state === "todo"
-                                                ? "bg-[#E2E8F0] dark:bg-slate-700"
-                                                : "bg-[#29685B] dark:bg-[#A7F3D0]"
-                                        }`}
+                                        className="flex h-11 w-full items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent"
                                     >
                                         <span className="sr-only">
                                             {`${i + 1}. ${s.title[locale]}`}
                                         </span>
+                                        <span
+                                            aria-hidden
+                                            className={`h-1.5 w-full rounded-full transition-colors ${
+                                                state === "todo"
+                                                    ? "bg-[#E2E8F0] dark:bg-slate-700"
+                                                    : "bg-brand-accent"
+                                            }`}
+                                        />
                                     </button>
                                 </li>
                             )

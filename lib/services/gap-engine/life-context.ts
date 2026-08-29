@@ -80,7 +80,7 @@ export const CONTEXT_FACTORS = [
 export type ContextFactorKey = (typeof CONTEXT_FACTORS)[number]
 
 /** Residence arrangement. `owned` and `rented` carry different risks entirely. */
-export type ResidenceType = "owned" | "rented" | "family" | "company"
+export type ResidenceType = "owned" | "rented" | "family" | "company" | "other"
 
 /** Self-declared digital exposure. */
 export type CyberExposureLevel = "low" | "moderate" | "high"

@@ -16,6 +16,44 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 
 ## Done since the last entry
 
+- **The literal sweep: 456 -> 124 across 80 -> 29 files.** Four status roles
+  (success/warning/danger/info) are now tokens with the same machine-read
+  `@on <surface> @min <ratio>` contract as the brand accent. Measured first, and
+  the measurement changed the story: every shipping value already cleared 4.5:1,
+  so this was never remediation. It was ONE ROLE RENDERING MANY WAYS — warning
+  foreground in three ambers, warning tint in five, success in two mints — with
+  the light side of all four roles already uniform. Only the unreviewed half of
+  the theme had drifted. Light mode is now byte-identical (**0 of 15,111,680
+  pixels** on a full-page landing diff); 59 dark instances move and the worst
+  lands at 8.63:1 against a 4.5 floor. Edges left alone deliberately: amber-200
+  on the amber tint is 1.12:1 and looks like a 1.4.11 failure, but the chip is
+  already identified by its fill and text, so the border carries no information.
+- **A defect class found on the way: eleven elements set the same property twice
+  under the same variant.** Three named different values, and Tailwind emits both
+  at equal specificity — so stylesheet order decides, not class order, and the
+  rendered colour is one nobody chose. Eight fell out of the sweep; the other
+  three used palette classes no colour rule would ever reach.
+  `one-variant-one-declaration.test.ts` guards the shape and reads its colour
+  vocabulary from globals.css so `text-sm` is not mistaken for a colour.
+- **The needs check showed six blank grey slabs on a phone.** The step strip is a
+  6px progress bar whose only text is `sr-only`; the unlayered mobile control
+  floor (`button { min-height: 44px }` under 768px) had nothing to grow but the
+  button's own box, so each segment inflated into an empty 44px pill. It looked
+  correct on desktop, where the floor does not apply, which is why it survived.
+  The button now owns the 44px target and the bar is a 6px child — the hero
+  carousel's pattern — and `basis-8` keeps all six on one line down to 320px.
+- **Three required questions were dead ends, and one value was unsaveable.** The
+  needs check refuses to advance until every single-choice question is answered,
+  and «Πού μένετε / Πώς εργάζεστε / οικογενειακή κατάσταση» had no option for a
+  student, employer housing, or anything unlisted. Worse, `student` was already
+  a valid value in `profile-mapping.ts` and **rejected by the Zod schema** — so
+  anyone picking it in the questionnaire had their save refused. `partnered` was
+  accepted everywhere and missing from the wizard's own select. Four descriptions
+  of three fields, drifting in every direction;
+  `profile-choice-sets-agree.test.ts` now enumerates the option lists from source
+  and fails on any value the contract refuses, plus on a required question with
+  no way out. Red-proved three ways, one of them the exact live bug.
+
 - **Dark mode was ungoverned, and the token migration was about to make that permanent.**
   `text-[#29685B] dark:text-[#A7F3D0]` across four landing files was never a style pair — the
   brand green measures **2.74:1 on slate-900** and is unusable there, so the second literal was

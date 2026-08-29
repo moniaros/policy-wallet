@@ -20,9 +20,9 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2820
-# inline entries: 4673 across 208 files
+# inline entries: 4676 across 208 files
 # ternary entries: 286 across 45 files
-# call entries: 1147 across 72 files
+# call entries: 1152 across 72 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -6056,6 +6056,7 @@ inline	lib/needs/questions.ts	"Η κατοικία είναι ο μεγαλύτ�
 inline	lib/needs/questions.ts	"Η οικογένειά σας"
 inline	lib/needs/questions.ts	"Η υπόλοιπη ζωή σας"
 inline	lib/needs/questions.ts	"Ισχύει κάτι από αυτά;"
+inline	lib/needs/questions.ts	"Κάτι άλλο"
 inline	lib/needs/questions.ts	"Κανένα"
 inline	lib/needs/questions.ts	"Κατοικίας"
 inline	lib/needs/questions.ts	"Μετράει και ό,τι σας έδωσε η δουλειά σας ή όρισε η τράπεζα."
@@ -6076,6 +6077,7 @@ inline	lib/needs/questions.ts	"Πόσο ζείτε online;"
 inline	lib/needs/questions.ts	"Πώς εργάζεστε;"
 inline	lib/needs/questions.ts	"Πώς μετακινείστε"
 inline	lib/needs/questions.ts	"Σε δικό μου σπίτι"
+inline	lib/needs/questions.ts	"Σε κατοικία εργοδότη"
 inline	lib/needs/questions.ts	"Σε νοικιασμένο"
 inline	lib/needs/questions.ts	"Σε σπίτι της οικογένειας"
 inline	lib/needs/questions.ts	"Σε συμβίωση"
@@ -6093,6 +6095,7 @@ inline	lib/needs/questions.ts	"Τρία ή περισσότερα"
 inline	lib/needs/questions.ts	"Τραπεζικές συναλλαγές, αγορές και προσωπικά δεδομένα στο κινητό."
 inline	lib/needs/questions.ts	"Υγείας"
 inline	lib/needs/questions.ts	"Υπάρχουν παιδιά ή άλλα εξαρτώμενα άτομα;"
+inline	lib/needs/questions.ts	"Φοιτητής/τρια"
 inline	lib/needs/questions.ts	"Χήρος/α"
 inline	lib/needs/questions.ts	"Χωρίς εργασία τώρα"
 inline	lib/needs/questions.ts	value
@@ -8518,6 +8521,9 @@ call	components/coverage/RiskProfileWizard.tsx	"Ημερομηνία"
 call	components/coverage/RiskProfileWizard.tsx	"Ιδιόκτητη κατοικία"
 call	components/coverage/RiskProfileWizard.tsx	"Ιδιόκτητη"
 call	components/coverage/RiskProfileWizard.tsx	"Κάπνισμα"
+call	components/coverage/RiskProfileWizard.tsx	"Κάτι άλλο"
+call	components/coverage/RiskProfileWizard.tsx	"Κάτι άλλο"
+call	components/coverage/RiskProfileWizard.tsx	"Κάτι άλλο"
 call	components/coverage/RiskProfileWizard.tsx	"Καθαρό ιστορικό"
 call	components/coverage/RiskProfileWizard.tsx	"Καθιστικός"
 call	components/coverage/RiskProfileWizard.tsx	"Καπνιστής"
@@ -8544,6 +8550,7 @@ call	components/coverage/RiskProfileWizard.tsx	"Προσθήκη"
 call	components/coverage/RiskProfileWizard.tsx	"Προτιμώ να μην αναφέρω"
 call	components/coverage/RiskProfileWizard.tsx	"Προφίλ κινδύνου"
 call	components/coverage/RiskProfileWizard.tsx	"Πρώην καπνιστής"
+call	components/coverage/RiskProfileWizard.tsx	"Σε συμβίωση"
 call	components/coverage/RiskProfileWizard.tsx	"Σοβαρές παραβάσεις"
 call	components/coverage/RiskProfileWizard.tsx	"Στεγαστικό δάνειο (€)"
 call	components/coverage/RiskProfileWizard.tsx	"Συνταξιούχος"
@@ -8553,6 +8560,7 @@ call	components/coverage/RiskProfileWizard.tsx	"Ταξιδεύω συχνά"
 call	components/coverage/RiskProfileWizard.tsx	"Το προφίλ ενημερώθηκε"
 call	components/coverage/RiskProfileWizard.tsx	"Τύπος"
 call	components/coverage/RiskProfileWizard.tsx	"Υγεία & Τρόπος ζωής"
+call	components/coverage/RiskProfileWizard.tsx	"Φοιτητής/τρια"
 call	components/coverage/RiskProfileWizard.tsx	"Φύλο"
 call	components/coverage/RiskProfileWizard.tsx	"Χήρος/α"
 call	components/coverage/RiskProfileWizard.tsx	"Χρόνιες παθήσεις"

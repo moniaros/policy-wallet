@@ -21,9 +21,9 @@ export const RiskProfileSchema = z.object({
   // 'partnered' accepted here too: profile-mapping already allowed it from the
   // advisor questionnaire, so the same declaration was being accepted from one
   // intake and rejected by the other.
-  maritalStatus: z.enum(['single', 'married', 'divorced', 'widowed', 'partnered']).optional(),
+  maritalStatus: z.enum(['single', 'married', 'divorced', 'widowed', 'partnered', 'other']).optional(),
   dependentsCount: z.number().min(0).optional(),
-  employmentStatus: z.enum(['employed', 'self_employed', 'retired', 'unemployed']).optional(),
+  employmentStatus: z.enum(['employed', 'self_employed', 'retired', 'unemployed', 'student', 'other']).optional(),
   ownsHome: z.boolean().optional(),
   mortgageAmount: z.number().min(0).optional(),
   hasPets: z.boolean().optional(),
@@ -55,7 +55,7 @@ export const RiskProfileSchema = z.object({
 
   // ── Life Context factors ─────────────────────────────────────────────────
   childrenCount: z.number().int().min(0).max(20).optional(),
-  residenceType: z.enum(['owned', 'rented', 'family', 'company']).optional(),
+  residenceType: z.enum(['owned', 'rented', 'family', 'company', 'other']).optional(),
   propertiesOwned: z.number().int().min(0).max(100).optional(),
   rentsOutProperty: z.boolean().optional(),
   ownsBoat: z.boolean().optional(),

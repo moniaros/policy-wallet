@@ -52,15 +52,15 @@ export type HeldId = (typeof HELD_IDS)[number]
 
 export interface NeedsAnswers {
     // Step 1 — home
-    residence?: "owned" | "rented" | "family"
+    residence?: "owned" | "rented" | "family" | "company" | "other"
     properties?: number
     // Step 2 — family
-    marital?: "single" | "married" | "partnered" | "divorced" | "widowed"
+    marital?: "single" | "married" | "partnered" | "divorced" | "widowed" | "other"
     children?: number
     // Step 3 — getting around
     vehicles?: number
     // Step 4 — work and money
-    work?: "employed" | "self_employed" | "retired" | "unemployed"
+    work?: "employed" | "self_employed" | "retired" | "unemployed" | "student" | "other"
     loan?: boolean
     retirement?: boolean
     // Step 5 — the rest of life
@@ -95,6 +95,8 @@ export interface NeedsStep {
 const YES: Bilingual = { el: "Ναι", en: "Yes" }
 const NO: Bilingual = { el: "Όχι", en: "No" }
 const NONE: Bilingual = { el: "Κανένα", en: "None" }
+const OTHER: Bilingual = { el: "Κάτι άλλο", en: "Something else" }
+
 
 export const NEEDS_STEPS: readonly NeedsStep[] = [
     {
@@ -113,6 +115,8 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
                     { value: "owned", label: { el: "Σε δικό μου σπίτι", en: "In a home I own" } },
                     { value: "rented", label: { el: "Σε νοικιασμένο", en: "In a rented home" } },
                     { value: "family", label: { el: "Σε σπίτι της οικογένειας", en: "In a family home" } },
+                    { value: "company", label: { el: "Σε κατοικία εργοδότη", en: "In employer housing" } },
+                    { value: "other", label: OTHER },
                 ],
             },
             {
@@ -146,6 +150,7 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
                     { value: "partnered", label: { el: "Σε συμβίωση", en: "In a partnership" } },
                     { value: "divorced", label: { el: "Διαζευγμένος/η", en: "Divorced" } },
                     { value: "widowed", label: { el: "Χήρος/α", en: "Widowed" } },
+                    { value: "other", label: OTHER },
                 ],
             },
             {
@@ -203,6 +208,8 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
                     { value: "self_employed", label: { el: "Ελεύθερος επαγγελματίας", en: "Self-employed" } },
                     { value: "retired", label: { el: "Συνταξιούχος", en: "Retired" } },
                     { value: "unemployed", label: { el: "Χωρίς εργασία τώρα", en: "Not working right now" } },
+                    { value: "student", label: { el: "Φοιτητής/τρια", en: "Studying" } },
+                    { value: "other", label: OTHER },
                 ],
             },
             {

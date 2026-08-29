@@ -388,6 +388,8 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                             <option value="married">{t("Παντρεμένος/η", "Married")}</option>
                             <option value="divorced">{t("Διαζευγμένος/η", "Divorced")}</option>
                             <option value="widowed">{t("Χήρος/α", "Widowed")}</option>
+                            <option value="partnered">{t("Σε συμβίωση", "In a partnership")}</option>
+                            <option value="other">{t("Κάτι άλλο", "Something else")}</option>
                         </select>
                     </div>
                     <div>
@@ -409,6 +411,8 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                             <option value="self_employed">{t("Ελεύθερος επαγγελματίας", "Self-employed")}</option>
                             <option value="retired">{t("Συνταξιούχος", "Retired")}</option>
                             <option value="unemployed">{t("Άνεργος", "Unemployed")}</option>
+                            <option value="student">{t("Φοιτητής/τρια", "Studying")}</option>
+                            <option value="other">{t("Κάτι άλλο", "Something else")}</option>
                         </select>
                     </div>
                     <div>
@@ -673,6 +677,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 <option value="rented">{t("Ενοικιαζόμενη", "Rented")}</option>
                                 <option value="family">{t("Οικογενειακή", "Family-owned")}</option>
                                 <option value="company">{t("Παρέχεται από εργοδότη", "Provided by employer")}</option>
+                                <option value="other">{t("Κάτι άλλο", "Something else")}</option>
                             </select>
                         </div>
                         <div>
