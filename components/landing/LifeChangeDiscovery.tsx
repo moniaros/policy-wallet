@@ -103,7 +103,7 @@ ${LIFE_CHANGE_EFFECTS.map(
                         <input type="checkbox" id={`lc-${i}`} className="peer sr-only" />
                         <label
                             htmlFor={`lc-${i}`}
-                            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 text-body-sm font-semibold text-neutral-700 transition-colors select-none hover:border-[#29685B]/40 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary sm:px-4 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:peer-checked:border-[#A7F3D0] dark:peer-checked:bg-[#29685B] dark:peer-focus-visible:outline-[#A7F3D0]"
+                            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 text-body-sm font-semibold text-neutral-700 transition-colors select-none hover:border-brand-green/40 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary sm:px-4 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:peer-checked:border-[#A7F3D0] dark:peer-checked:bg-brand-green dark:peer-focus-visible:outline-[#A7F3D0]"
                         >
                             <span
                                 aria-hidden
@@ -131,7 +131,7 @@ ${LIFE_CHANGE_EFFECTS.map(
                     >
                         <span
                             aria-hidden
-                            className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]"
+                            className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand-green dark:bg-[#A7F3D0]"
                         />
                         <span>{pick(entry.effect, locale)}</span>
                     </li>

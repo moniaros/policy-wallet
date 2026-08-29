@@ -22,10 +22,10 @@ function formatDate(value: string | null) {
 
 function reviewStatePill(state: string | null, handled: boolean) {
     if (handled) {
-        return { label: "Handled", classes: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint" }
+        return { label: "Handled", classes: "bg-primary-soft text-status-success dark:bg-primary/15" }
     }
     if (state === "confirmed") {
-        return { label: "User confirmed", classes: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint" }
+        return { label: "User confirmed", classes: "bg-primary-soft text-status-success dark:bg-primary/15" }
     }
     if (state === "unconfirmed") {
         return { label: "Re-analyzed", classes: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" }
@@ -158,7 +158,7 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                                                         type="button"
                                                         disabled={busyId === item.id}
                                                         onClick={() => handleResolve(item.id)}
-                                                        className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
+                                                        className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-60"
                                                     >
                                                         {busyId === item.id ? (
                                                             <RefreshCw className="h-3 w-3 animate-spin" />

@@ -175,14 +175,14 @@ export function KeyDatesCard({
                     <div
                         className={`rounded-2xl border px-4 py-3 ${
                             isExpiringSoon
-                                ? "border-amber-200 bg-[#FEF3C7]/60 dark:border-amber-900/40 dark:bg-amber-950/20"
+                                ? "border-amber-200 bg-status-warning-tint/60 dark:border-amber-900/40"
                                 : "border-black/10 bg-black/[0.03] dark:border-white/15 dark:bg-white/5"
                         }`}
                     >
                         <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">{copy.expiresIn}</p>
                         <p
                             className={`text-sm font-bold ${
-                                isExpiringSoon ? "text-[#92400E] dark:text-amber-400" : "text-black dark:text-white"
+                                isExpiringSoon ? "text-status-warning" : "text-black dark:text-white"
                             }`}
                         >
                             {daysLeft} {copy.days}
@@ -228,9 +228,9 @@ export function KeyDatesCard({
             )}
 
             {hasAutoRenewal && (
-                <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 px-4 py-3 dark:border-amber-900/40 dark:bg-amber-950/20">
-                    <RefreshCw className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
-                    <p className="text-xs font-medium leading-relaxed text-[#92400E] dark:text-amber-300">{copy.autoRenewalNote}</p>
+                <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-status-warning-tint/60 px-4 py-3 dark:border-amber-900/40">
+                    <RefreshCw className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" />
+                    <p className="text-xs font-medium leading-relaxed text-status-warning">{copy.autoRenewalNote}</p>
                 </div>
             )}
 
@@ -283,7 +283,7 @@ export function KeyDatesCard({
                         disabled={isRequestingQuote}
                         className={
                             isExpired
-                                ? "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420] cursor-pointer disabled:cursor-default sm:w-auto"
+                                ? "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-60 cursor-pointer disabled:cursor-default sm:w-auto"
                                 : "inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[color:var(--pw-border-control)] bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-60 dark:bg-mint/10 dark:text-mint dark:hover:bg-mint/15 cursor-pointer disabled:cursor-default"
                         }
                     >

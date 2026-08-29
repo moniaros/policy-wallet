@@ -109,7 +109,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               <span className="text-muted-foreground">
                 {copy.used}: {fmt(pet.annualLimitUsed ?? 0)}
               </span>
-              <span className="font-semibold text-[#166534] dark:text-mint">
+              <span className="font-semibold text-status-success">
                 {copy.remaining}: {fmt(annualLimitValue - (pet.annualLimitUsed ?? 0))}
               </span>
             </div>
@@ -129,16 +129,16 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
                 ? "bg-primary-soft dark:bg-primary/15"
                 : "bg-red-100 dark:bg-red-900/30"
             }`}>
-              <Bug className={`w-4 h-4 ${pet.leishmaniaCovered ? "text-[#166534] dark:text-mint" : "text-red-700 dark:text-red-400"}`} />
+              <Bug className={`w-4 h-4 ${pet.leishmaniaCovered ? "text-status-success" : "text-red-700 dark:text-red-400"}`} />
             </div>
             <span className={`text-sm font-bold ${
               pet.leishmaniaCovered
-                ? "text-[#166534] dark:text-mint"
+                ? "text-status-success"
                 : "text-red-700 dark:text-red-300"
             }`}>{petCopy.leishmaniaCoverage}</span>
           </div>
           {pet.leishmaniaCovered ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
+            <span className="flex items-center gap-1 text-xs font-bold text-status-success">
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
@@ -176,7 +176,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.directVetPayment}</span>
           </div>
           {pet.directVetPayment ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
+            <span className="flex items-center gap-1 text-xs font-bold text-status-success">
               <CheckCircle2 className="w-4 h-4" /> {copy.available}
             </span>
           ) : (
@@ -191,7 +191,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Clock className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+              <Clock className="w-4 h-4 text-status-warning" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.waitingPeriods}</span>
           </div>

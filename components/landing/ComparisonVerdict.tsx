@@ -23,9 +23,9 @@ const VERDICT_ICON: Record<ComparisonVerdict, typeof Check> = {
 }
 
 const VERDICT_TONE: Record<ComparisonVerdict, string> = {
-    yes: "bg-[#ECFDF5] text-[#166534] dark:bg-[#29685B]/25 dark:text-[#A7F3D0]",
-    plus: "bg-[#ECFDF5] text-[#166534] dark:bg-[#29685B]/25 dark:text-[#A7F3D0]",
-    partial: "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-500/15 dark:text-amber-200",
+    yes: "bg-status-success-tint text-status-success",
+    plus: "bg-status-success-tint text-status-success",
+    partial: "bg-status-warning-tint text-status-warning",
     no: "bg-neutral-100 text-muted-foreground dark:bg-slate-800 dark:text-slate-400",
 }
 

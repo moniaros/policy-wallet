@@ -86,7 +86,7 @@ export default async function AiSettingsPage({
             </div>
 
             {saved === "1" && (
-                <div className="rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/15 p-3 text-sm font-medium text-[#166534] dark:text-mint">
+                <div className="rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/15 p-3 text-sm font-medium text-status-success">
                     Saved. The next AI call uses the new configuration.
                     {warn === "unknown-model" && (
                         <span className="block mt-1 text-amber-700 dark:text-amber-300">

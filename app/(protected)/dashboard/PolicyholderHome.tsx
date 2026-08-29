@@ -942,7 +942,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 // Upload stays one tab away (the wallet's own FAB) and inside
                 // the hero flow itself; on lg+ there is no bottom nav and no
                 // full-width CTA, so the quick-upload earns its corner back.
-                className="hidden lg:grid fixed bottom-8 right-8 z-30 h-14 w-14 place-items-center rounded-2xl bg-primary text-white dark:text-[#1A2420] shadow-xl transition hover:bg-primary-hover"
+                className="hidden lg:grid fixed bottom-8 right-8 z-30 h-14 w-14 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-xl transition hover:bg-primary-hover"
                 aria-label={home.quickUploadAria}
             >
                 <Upload className="h-6 w-6" />

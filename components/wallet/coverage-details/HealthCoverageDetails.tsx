@@ -89,7 +89,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <CreditCard className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+              <CreditCard className="w-4 h-4 text-status-warning" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.outOfPocketMax}</span>
           </div>
@@ -142,7 +142,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.annualCheckup}</span>
           </div>
           {health.annualCheckupIncluded ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
+            <span className="flex items-center gap-1 text-xs font-bold text-status-success">
               <CheckCircle2 className="w-4 h-4" /> {copy.included}
             </span>
           ) : (
@@ -162,7 +162,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.directBilling}</span>
           </div>
           {health.directBillingAvailable ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
+            <span className="flex items-center gap-1 text-xs font-bold text-status-success">
               <CheckCircle2 className="w-4 h-4" /> {copy.available}
             </span>
           ) : (
@@ -177,7 +177,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Clock className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+              <Clock className="w-4 h-4 text-status-warning" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">
               {hints?.waitingPeriod ? <GlossaryHint hint={hints.waitingPeriod} /> : healthCopy.waitingPeriods}

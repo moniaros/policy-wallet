@@ -75,7 +75,7 @@ export function ProductCategoryExplorer({
                                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
                                             <Icon className="h-5 w-5 text-neutral-900" />
                                         </div>
-                                        <span className="rounded-full bg-[#29685B] px-3 py-1 text-micro font-semibold uppercase tracking-wide text-white">
+                                        <span className="rounded-full bg-brand-green px-3 py-1 text-micro font-semibold uppercase tracking-wide text-white">
                                             {t("Τρέχουσα κατηγορία", "Current category")}
                                         </span>
                                     </div>

@@ -69,7 +69,7 @@ export function ProtectionPlanCard({
             <section className="pw-card pw-pad" aria-labelledby="protection-plan-heading">
                 <p className="pw-kicker" id="protection-plan-heading">{labels.kicker}</p>
                 <div className="mt-3 flex items-center gap-3">
-                    <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg bg-primary text-white dark:text-[#1A2420]">
+                    <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
                         <Check className="h-4 w-4" aria-hidden />
                     </span>
                     <p className="text-sm font-semibold text-black/80 dark:text-white/85">{labels.upToDate}</p>
@@ -119,7 +119,7 @@ export function ProtectionPlanCard({
                                 <span
                                     className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg ${
                                         done
-                                            ? "bg-primary text-white dark:text-[#1A2420]"
+                                            ? "bg-primary text-primary-foreground"
                                             : "bg-white text-black/60 dark:bg-black dark:text-white/60"
                                     }`}
                                 >

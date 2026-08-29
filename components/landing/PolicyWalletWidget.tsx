@@ -115,7 +115,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                 which was a number nobody could check and which read
                                 like every other fintech health grade. This one is
                                 the tiles below, added up. */}
-                            <div className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                            <div className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-status-success-tint px-2.5 py-1 dark:border-brand-green/50">
                                 <ShieldCheck className="h-3 w-3 text-primary dark:text-[#A7F3D0]" />
                                 <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
                                     {t(
@@ -135,7 +135,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                         key={cover.name}
                                         className={`flex items-center gap-3 rounded-xl border p-3 ${
                                             cover.type === "gap"
-                                                ? "border-[#FDE68A] dark:border-amber-500/40"
+                                                ? "border-status-warning-edge"
                                                 : "border-neutral-200 dark:border-slate-800"
                                         } ${anim.className}`}
                                         style={anim.style}
@@ -143,14 +143,14 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                         <div
                                             className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
                                                 cover.type === "gap"
-                                                    ? "bg-[#FEF3C7] dark:bg-amber-900/30"
-                                                    : "bg-primary-tint dark:bg-[#29685B]/15"
+                                                    ? "bg-status-warning-tint"
+                                                    : "bg-primary-tint dark:bg-brand-green/15"
                                             }`}
                                         >
                                             <cover.Icon
                                                 className={`h-5 w-5 ${
                                                     cover.type === "gap"
-                                                        ? "text-[#92400E] dark:text-amber-200"
+                                                        ? "text-status-warning"
                                                         : "text-primary dark:text-[#A7F3D0]"
                                                 }`}
                                             />
@@ -163,8 +163,8 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                                 <span
                                                     className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
                                                         cover.type === "gap"
-                                                            ? "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-500/15 dark:text-amber-200"
-                                                            : "bg-primary-tint text-[#166534] dark:bg-[#29685B]/15 dark:text-[#A7F3D0]"
+                                                            ? "bg-status-warning-tint text-status-warning"
+                                                            : "bg-primary-tint text-status-success dark:bg-brand-green/15"
                                                     }`}
                                                 >
                                                     {cover.status}
@@ -181,15 +181,15 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
 
                         {/* The finding */}
                         <div
-                            className={`mt-3 flex items-start gap-2.5 rounded-xl border border-[#FDE68A] bg-[#FFFBEB] p-3 dark:border-amber-500/40 dark:bg-amber-500/10 ${reveal(900).className}`}
+                            className={`mt-3 flex items-start gap-2.5 rounded-xl border border-status-warning-edge bg-[#FFFBEB] p-3  dark:bg-amber-500/10 ${reveal(900).className}`}
                             style={reveal(900).style}
                         >
-                            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-200" />
+                            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" />
                             <div className="min-w-0 flex-1">
-                                <p className="text-caption font-semibold text-[#92400E] dark:text-amber-200">
+                                <p className="text-caption font-semibold text-status-warning">
                                     {t("Βρήκαμε ένα κενό", "We found a gap")}
                                 </p>
-                                <p className="text-micro leading-snug text-[#92400E] dark:text-amber-200">
+                                <p className="text-micro leading-snug text-status-warning">
                                     {t(
                                         "Το σπίτι σας δεν καλύπτεται για πλημμύρα.",
                                         "Your home is not covered for flooding.",
@@ -207,7 +207,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                     className={`absolute top-0 right-0 flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 shadow-md dark:border-slate-800 dark:bg-slate-900 ${reveal(1100).className}`}
                     style={reveal(1100).style}
                 >
-                    <span className="h-2 w-2 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
+                    <span className="h-2 w-2 rounded-full bg-brand-green dark:bg-[#A7F3D0]" />
                     <span className="text-micro text-muted-foreground dark:text-slate-400">
                         {t("Η ανάλυση ολοκληρώθηκε", "Analysis complete")}
                     </span>
@@ -215,11 +215,11 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
 
                 {/* Floating: renewal warning */}
                 <div
-                    className={`absolute bottom-0 left-0 flex items-center gap-1.5 rounded-full border border-[#FDE68A] bg-white px-3 py-1.5 shadow-md dark:border-amber-500/40 dark:bg-slate-900 ${reveal(1300).className}`}
+                    className={`absolute bottom-0 left-0 flex items-center gap-1.5 rounded-full border border-status-warning-edge bg-white px-3 py-1.5 shadow-md  dark:bg-slate-900 ${reveal(1300).className}`}
                     style={reveal(1300).style}
                 >
-                    <Clock className="h-3.5 w-3.5 text-[#92400E] dark:text-amber-200" />
-                    <span className="text-micro font-semibold text-[#92400E] dark:text-amber-200">
+                    <Clock className="h-3.5 w-3.5 text-status-warning" />
+                    <span className="text-micro font-semibold text-status-warning">
                         {t("Λήγει σε 14 μέρες", "Runs out in 14 days")}
                     </span>
                 </div>

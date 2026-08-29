@@ -68,7 +68,7 @@ export default async function AiPromptOverridesPage({
             </div>
 
             {saved === "1" && (
-                <div className="rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/15 p-3 text-sm font-medium text-[#166534] dark:text-mint">
+                <div className="rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/15 p-3 text-sm font-medium text-status-success">
                     Saved. The guidance applies to the next AI call (cache revalidated).
                 </div>
             )}

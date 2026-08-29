@@ -70,20 +70,20 @@ const CONDITION_ICON: Record<string, typeof Clock> = {
 const RISK_STYLES: Record<string, { border: string; bg: string; badge: string; text: string }> = {
     info: {
         border: "border-blue-200/70 dark:border-blue-800/50",
-        bg: "bg-[#EFF6FF]/70 dark:bg-blue-950/20",
-        badge: "bg-blue-100 text-[#1E40AF] dark:bg-blue-900/30 dark:text-blue-300",
+        bg: "bg-status-info-tint/70",
+        badge: "bg-blue-100 text-status-info dark:bg-blue-900/30",
         text: "text-black/75 dark:text-white/80",
     },
     warning: {
         border: "border-amber-200 dark:border-amber-900/40",
-        bg: "bg-[#FEF3C7]/50 dark:bg-amber-950/15",
-        badge: "bg-amber-100 text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-300",
+        bg: "bg-status-warning-tint/50",
+        badge: "bg-amber-100 text-status-warning",
         text: "text-black/75 dark:text-white/80",
     },
     critical: {
         border: "border-red-200 dark:border-red-900/40",
-        bg: "bg-[#FEF2F2]/70 dark:bg-red-950/15",
-        badge: "bg-red-100 text-[#B91C1C] dark:bg-red-900/30 dark:text-red-300",
+        bg: "bg-status-danger-tint/70",
+        badge: "bg-red-100 text-status-danger dark:bg-red-900/30",
         text: "text-black/75 dark:text-white/80",
     },
 }
@@ -203,7 +203,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                                         </span>
                                                     )}
                                                     {condition.userActionRequired && (
-                                                        <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-300">
+                                                        <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-status-warning">
                                                             {copy.actionRequiredChip}
                                                         </span>
                                                     )}
@@ -252,9 +252,9 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                         </div>
                     )}
 
-                    <div className="flex items-start gap-2 rounded-xl border border-amber-200/50 bg-[#FEF3C7]/40 px-3 py-2.5 dark:border-amber-900/30 dark:bg-amber-950/10">
+                    <div className="flex items-start gap-2 rounded-xl border border-amber-200/50 bg-status-warning-tint/40 px-3 py-2.5 dark:border-amber-900/30">
                         <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-500 dark:text-amber-400" />
-                        <p className="text-xs leading-relaxed text-[#92400E] dark:text-amber-400">{disclaimer}</p>
+                        <p className="text-xs leading-relaxed text-status-warning">{disclaimer}</p>
                     </div>
                 </div>
             )}

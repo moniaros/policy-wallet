@@ -140,7 +140,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints, la
                 >
                   <div className="flex items-start gap-2.5">
                     <div className="w-6 h-6 rounded-md bg-primary-soft dark:bg-primary/15 flex items-center justify-center mt-0.5 flex-shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#166534] dark:text-mint" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-status-success" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-black dark:text-white">{coverage.name}</p>
@@ -155,12 +155,12 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints, la
                       {(coverage.limit || coverage.deductible) && (
                         <div className="flex flex-wrap gap-2 mt-1.5">
                           {coverage.limit && (
-                            <span className="px-2 py-0.5 rounded-full text-micro font-semibold bg-[#EFF6FF] dark:bg-blue-900/30 text-[#1E40AF] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                            <span className="px-2 py-0.5 rounded-full text-micro font-semibold bg-status-info-tint text-status-info border border-blue-200/60 dark:border-blue-800/60">
                               {copy.limit}: {formatExtractedAmount(coverage.limit, language)}
                             </span>
                           )}
                           {coverage.deductible && (
-                            <span className="px-2 py-0.5 rounded-full text-micro font-semibold bg-[#FEF3C7]/60 dark:bg-amber-900/30 text-[#92400E] dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
+                            <span className="px-2 py-0.5 rounded-full text-micro font-semibold bg-status-warning-tint/60 text-status-warning border border-amber-200/60 dark:border-amber-800/60">
                               {copy.deductible}: {formatExtractedAmount(coverage.deductible, language)}
                             </span>
                           )}
@@ -210,9 +210,9 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints, la
                   <p className="text-sm text-black/80 dark:text-white/85 font-medium">{exclusion}</p>
                 </div>
               ))}
-              <div className="flex items-start gap-2 p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/10 border border-amber-200/40 dark:border-amber-800/30">
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-status-warning-tint/60 border border-amber-200/40 dark:border-amber-800/30">
                 <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-[#92400E] dark:text-amber-400">{copy.exclusionsDisclaimer}</p>
+                <p className="text-xs text-status-warning">{copy.exclusionsDisclaimer}</p>
               </div>
             </>
           ) : (

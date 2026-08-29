@@ -463,7 +463,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
         open: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
         contacted: "bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint",
         quoted: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
-        won: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
+        won: "bg-primary-soft text-status-success dark:bg-primary/15",
         lost: "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400",
     }
 

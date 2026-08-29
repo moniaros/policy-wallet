@@ -98,7 +98,7 @@ export default function UsersClient({
     const getVerificationBadge = (status: string) => {
         switch (status) {
             case "approved":
-                return <span className="flex items-center gap-1 text-xs text-[#166534] dark:text-mint">
+                return <span className="flex items-center gap-1 text-xs text-status-success">
                     <CheckCircle className="w-3 h-3" /> Verified
                 </span>
             case "pending":
@@ -151,7 +151,7 @@ export default function UsersClient({
                                 key={role}
                                 onClick={() => handleRoleFilterChange(role)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${roleFilter === role
-                                    ? "bg-primary text-white dark:text-[#1A2420]"
+                                    ? "bg-primary text-primary-foreground"
                                     : "bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600"
                                     }`}
                             >
@@ -221,7 +221,7 @@ export default function UsersClient({
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-1">
                                                 {user.emailVerified ? (
-                                                    <span className="flex items-center gap-1 text-xs text-[#166534] dark:text-mint">
+                                                    <span className="flex items-center gap-1 text-xs text-status-success">
                                                         <CheckCircle className="w-3 h-3" /> Email Verified
                                                     </span>
                                                 ) : (
@@ -391,7 +391,7 @@ export default function UsersClient({
                                     }
                                 }}
                                 disabled={actionBusy}
-                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {actionBusy ? "Working…" : "Approve"}
                             </button>
@@ -496,7 +496,7 @@ export default function UsersClient({
                                     }
                                 }}
                                 disabled={actionBusy}
-                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {actionBusy ? "Working…" : "Save"}
                             </button>
@@ -558,7 +558,7 @@ export default function UsersClient({
                                         toast.error(res.error || "Failed to grant tokens.") // i18n-hardcoded-ignore
                                     }
                                 }}
-                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50"
+                                className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary-hover disabled:opacity-50"
                             >
                                 {tokenBusy ? "Working…" : "Grant"}
                             </button>

@@ -801,14 +801,14 @@ export function PolicyDetailsClient({
                     were read automatically" is one of the states the head's
                     attention line reports, so it competes with nothing. */}
                 {canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
-                    <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
-                        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
-                        <p className="min-w-0 flex-1 text-sm font-medium text-[#92400E] dark:text-amber-400">
+                    <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-status-warning-tint/60 p-4 dark:border-amber-900/40">
+                        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-status-warning" />
+                        <p className="min-w-0 flex-1 text-sm font-medium text-status-warning">
                             {t.wallet.review.agentBannerCta}
                         </p>
                         <Link
                             href={`/wallet/${policy.id}/review?returnTo=${encodeURIComponent(`/wallet/${policy.id}`)}`}
-                            className="flex-shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                            className="flex-shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
                         >
                             {t.wallet.review.reviewNow}
                         </Link>
@@ -1361,7 +1361,7 @@ export function PolicyDetailsClient({
                                             href={`/api/v1/policies/${policy.id}/savings-report`}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
                                         >
                                             <FileDown className="h-4 w-4" />
                                             {pickCopy(EXPORT_COPY.exportCta, lang)}
@@ -1419,7 +1419,7 @@ export function PolicyDetailsClient({
                                             <p className="mb-4 text-sm text-black/65 dark:text-white/70">{detailsCopy.agentLockedHint}</p>
                                             <a
                                                 href="/upgrade"
-                                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
+                                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
                                             >
                                                 <Crown className="h-4 w-4" />
                                                 {t.wallet.upgradePlan}

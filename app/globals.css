@@ -27,6 +27,17 @@
      one because the var flips, which is the whole point — a component cannot
      forget the dark half if it never writes it. */
   --color-brand-accent: var(--brand-accent);
+  --color-brand-green: var(--brand-green);
+  --color-status-success: var(--status-success);
+  --color-status-success-tint: var(--status-success-tint);
+  --color-status-warning: var(--status-warning);
+  --color-status-warning-tint: var(--status-warning-tint);
+  --color-status-warning-edge: var(--status-warning-edge);
+  --color-status-danger: var(--status-danger);
+  --color-status-danger-tint: var(--status-danger-tint);
+  --color-status-danger-edge: var(--status-danger-edge);
+  --color-status-info: var(--status-info);
+  --color-status-info-tint: var(--status-info-tint);
   --color-brand-text-primary: var(--brand-text-primary);
   --color-dot-track: var(--dot-track);
   --color-dot-track-hover: var(--dot-track-hover);
@@ -175,6 +186,86 @@
   /* Resolved per theme — the .dark block re-points these three, and only
      these three. The `*-on-*` pairs above stay constant so the contract has
      something fixed to measure against. */
+
+  /* ── STATUS ROLES ─────────────────────────────────────────────────────────
+     Four roles - success, warning, danger, info - each a foreground, a tint it
+     sits on, and (for two of them) an edge. Same `@on ... @min ...` contract as
+     the brand accent above, and the same reason: the LIGHT side of every one of
+     these was already uniform in the code, and the DARK side was not.
+
+     Measured before touching anything. One role, many dark values:
+       warning foreground : amber-200 x27, amber-400 x21, amber-300 x17
+       success foreground : mint x51, the landing mint x16
+       warning tint       : amber-950/20, amber-900/30, amber-500/15,
+                            amber-950/15, amber-900/10 - FIVE, for one role
+       info foreground    : blue-300 x4, blue-200 x1
+     None of it was an accessibility problem: every shipping value cleared 4.5:1
+     in both themes. It was one role rendering five ways because nobody could
+     see the other four, which is what an ungoverned half of a theme produces.
+     The canonical value per role is the one that was already most common, so
+     the consolidation moves the fewest pixels.
+
+     THE FOREGROUND IS PAIRED AGAINST ITS OWN TINT, not against the page. That
+     is the stricter measurement and the one that matches where the text lands:
+     warning is 7.09:1 on white but 6.37:1 on its own chip, and the chip is the
+     case that has to hold. Passing the tint therefore implies passing the page.
+
+     THE TINTS ARE SOLID, where the code used an alpha over whatever happened to
+     be behind. The dark values here are the dominant alpha expression composited
+     over --surface-dark, so a chip reads the same on the page and on a card
+     instead of drifting between them.
+
+     THE EDGES ARE DECORATION AND ARE UNCHANGED. amber-200 on the amber tint
+     measures 1.12:1 and red-200 on the red tint 1.32:1, which look like SC
+     1.4.11 failures and are not: the chip is already identified by its tinted
+     fill and its coloured text, so the border carries no information a reader
+     needs. 1.4.11 governs "visual information required to identify a component",
+     not every line in a design. Raising them to 3:1 would put a hard ring around
+     every status chip in the product to fix a problem that is not there. The
+     numbers are recorded here so the next person does not have to re-derive them
+     before deciding the same thing. */
+  --status-success-tint-light: #ECFDF5;
+  --status-success-tint-dark: #132331;
+  --status-success-on-light: #166534; /* @on --status-success-tint-light @min 4.5 */
+  --status-success-on-dark: #89D9B2; /* @on --status-success-tint-dark @min 4.5 */
+
+  --status-warning-tint-light: #FEF3C7;
+  --status-warning-tint-dark: #2E2022;
+  --status-warning-on-light: #92400E; /* @on --status-warning-tint-light @min 4.5 */
+  --status-warning-on-dark: #FDE68A; /* @on --status-warning-tint-dark @min 4.5 */
+  --status-warning-edge-light: #FDE68A;
+  --status-warning-edge-dark: #7E5219;
+
+  --status-danger-tint-light: #FEF2F2;
+  --status-danger-tint-dark: #311926;
+  --status-danger-on-light: #B91C1C; /* @on --status-danger-tint-light @min 4.5 */
+  --status-danger-on-dark: #FCA5A5; /* @on --status-danger-tint-dark @min 4.5 */
+  --status-danger-edge-light: #FECACA;
+  --status-danger-edge-dark: #7D2A32;
+
+  --status-info-tint-light: #EFF6FF;
+  --status-info-tint-dark: #142247;
+  --status-info-on-light: #1E40AF; /* @on --status-info-tint-light @min 4.5 */
+  --status-info-on-dark: #93C5FD; /* @on --status-info-tint-dark @min 4.5 */
+
+  /* The brand green as a TINT or an EDGE rather than a foreground - it does not
+     flip, because `dark:bg-[#29685B]/15` is deliberately still green on the dark
+     page. `bg-primary/15` is NOT the same thing: --primary is mint under .dark,
+     so the two spellings render differently and both were in use. This token is
+     the one that means "green, whatever the theme". */
+  --brand-green: #29685B;
+
+  /* Resolved per theme. */
+  --status-success: var(--status-success-on-light);
+  --status-success-tint: var(--status-success-tint-light);
+  --status-warning: var(--status-warning-on-light);
+  --status-warning-tint: var(--status-warning-tint-light);
+  --status-warning-edge: var(--status-warning-edge-light);
+  --status-danger: var(--status-danger-on-light);
+  --status-danger-tint: var(--status-danger-tint-light);
+  --status-danger-edge: var(--status-danger-edge-light);
+  --status-info: var(--status-info-on-light);
+  --status-info-tint: var(--status-info-tint-light);
   --brand-accent: var(--brand-accent-on-light);
   --dot-track: var(--dot-track-on-light);
   --dot-track-hover: var(--dot-track-hover-on-light);
@@ -329,6 +420,16 @@
      :root — these point at the SAME tokens the contrast test measures, which
      is what makes the measurement mean something about what renders. */
   --brand-accent: var(--brand-accent-on-dark);
+  --status-success: var(--status-success-on-dark);
+  --status-success-tint: var(--status-success-tint-dark);
+  --status-warning: var(--status-warning-on-dark);
+  --status-warning-tint: var(--status-warning-tint-dark);
+  --status-warning-edge: var(--status-warning-edge-dark);
+  --status-danger: var(--status-danger-on-dark);
+  --status-danger-tint: var(--status-danger-tint-dark);
+  --status-danger-edge: var(--status-danger-edge-dark);
+  --status-info: var(--status-info-on-dark);
+  --status-info-tint: var(--status-info-tint-dark);
   --dot-track: var(--dot-track-on-dark);
   --dot-track-hover: var(--dot-track-hover-on-dark);
 }

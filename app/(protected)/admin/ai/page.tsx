@@ -42,7 +42,7 @@ export default async function AiPerformancePage() {
         s.runs.successRatePct == null
             ? "text-stone-900 dark:text-stone-100"
             : s.runs.successRatePct >= 95
-              ? "text-[#166534] dark:text-mint"
+              ? "text-status-success"
               : s.runs.successRatePct >= 80
                 ? "text-amber-700 dark:text-amber-300"
                 : "text-red-700 dark:text-red-300"

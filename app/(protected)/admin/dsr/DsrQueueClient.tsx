@@ -74,7 +74,7 @@ function getStatusClasses(status: string) {
     switch (status) {
         case "completed":
         case "approved":
-            return "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
+            return "bg-primary-soft text-status-success dark:bg-primary/15"
         case "processing":
         case "in_review":
             return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
@@ -258,7 +258,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                             )
                                                         }
                                                         disabled={isBusy}
-                                                        className="px-3 py-1.5 text-xs rounded bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover disabled:opacity-60"
+                                                        className="px-3 py-1.5 text-xs rounded bg-primary text-primary-foreground hover:bg-primary-hover disabled:opacity-60"
                                                     >
                                                         {isBusy ? "Running..." : "Execute"}
                                                     </button>
@@ -337,7 +337,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                         <button
                                                             onClick={() => handleMoveToReview(request.id)}
                                                             disabled={busyAction === reviewKey}
-                                                            className="px-3 py-1.5 text-xs rounded bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover disabled:opacity-60"
+                                                            className="px-3 py-1.5 text-xs rounded bg-primary text-primary-foreground hover:bg-primary-hover disabled:opacity-60"
                                                         >
                                                             {busyAction === reviewKey ? "Working..." : "In Review"}
                                                         </button>
@@ -347,7 +347,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                         <button
                                                             onClick={() => handleApprove(request.id)}
                                                             disabled={busyAction === approveKey}
-                                                            className="px-3 py-1.5 text-xs rounded bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover disabled:opacity-60"
+                                                            className="px-3 py-1.5 text-xs rounded bg-primary text-primary-foreground hover:bg-primary-hover disabled:opacity-60"
                                                         >
                                                             {busyAction === approveKey ? "Working..." : "Approve"}
                                                         </button>

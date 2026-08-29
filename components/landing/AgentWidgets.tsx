@@ -91,7 +91,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                         <p className="text-body-sm font-semibold text-neutral-900 dark:text-white">{t("Οι πελάτες σας", "Your clients")}</p>
                         <p className="text-micro text-muted-foreground dark:text-slate-400">{t("Πρώτα όποιος σας χρειάζεται", "Whoever needs you first")}</p>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-full border border-[#A7F3D0] dark:border-[#29685B]/50 bg-[#ECFDF5] dark:bg-[#29685B]/15 px-2.5 py-1">
+                    <div className="flex items-center gap-1.5 rounded-full border border-[#A7F3D0] dark:border-brand-green/50 bg-status-success-tint px-2.5 py-1">
                         <Shield className="h-3 w-3 text-primary dark:text-[#A7F3D0]" />
                         <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">{t("Έλεγχος ενεργός", "Scan in progress")}</span>
                     </div>
@@ -104,9 +104,9 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                             key={i}
                             className={`flex items-center gap-3 rounded-xl border p-2.5 transition-all motion-reduce:transition-none motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:opacity-100 duration-500 ${
                                 c.type === "critical"
-                                    ? "border-[#FECACA] dark:border-red-500/40"
+                                    ? "border-status-danger-edge"
                                     : c.type === "warn"
-                                      ? "border-[#FDE68A] dark:border-amber-500/40"
+                                      ? "border-status-warning-edge"
                                       : "border-neutral-200 dark:border-slate-800"
                             } ${loaded ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
                             style={{ transitionDelay: `${i * 100 + 640}ms` }}
@@ -114,10 +114,10 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                             <div
                                 className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-micro font-bold ${
                                     c.type === "critical"
-                                        ? "bg-[#FEF2F2] dark:bg-red-500/15 text-[#B91C1C] dark:text-red-300"
+                                        ? "bg-status-danger-tint text-status-danger"
                                         : c.type === "warn"
-                                          ? "bg-[#FEF3C7] dark:bg-amber-500/15 text-[#92400E] dark:text-amber-200"
-                                          : "bg-primary-tint dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0]"
+                                          ? "bg-status-warning-tint text-status-warning"
+                                          : "bg-primary-tint dark:bg-brand-green/15 text-status-success"
                                 }`}
                             >
                                 {c.initial}
@@ -128,10 +128,10 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                                     <span
                                         className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
                                             c.type === "critical"
-                                                ? "bg-[#FEF2F2] dark:bg-red-500/15 text-[#B91C1C] dark:text-red-300"
+                                                ? "bg-status-danger-tint text-status-danger"
                                                 : c.type === "warn"
-                                                  ? "bg-[#FEF3C7] dark:bg-amber-500/15 text-[#92400E] dark:text-amber-200"
-                                                  : "bg-primary-tint dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0]"
+                                                  ? "bg-status-warning-tint text-status-warning"
+                                                  : "bg-primary-tint dark:bg-brand-green/15 text-status-success"
                                         }`}
                                     >
                                         {c.badge}
@@ -177,24 +177,24 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
     const gaps = [
         {
             severity: t("Επείγον", "Urgent"),
-            textColor: "text-[#B91C1C] dark:text-red-300",
-            bg: "bg-[#FEF2F2] dark:bg-red-500/15",
-            border: "border-[#FECACA] dark:border-red-500/40",
+            textColor: "text-status-danger",
+            bg: "bg-status-danger-tint",
+            border: "border-status-danger-edge",
             label: t("Χωρίς ασφάλεια ζωής (εξαρτώμενα άτομα)", "No life insurance (has dependents)"),
             delay: 1500,
         },
         {
             severity: t("Σημαντικό", "Important"),
-            textColor: "text-[#92400E] dark:text-amber-200",
+            textColor: "text-status-warning",
             bg: "bg-[#FFFBEB] dark:bg-amber-500/10",
-            border: "border-[#FDE68A] dark:border-amber-500/40",
+            border: "border-status-warning-edge",
             label: t("Κατοικία — λείπει σεισμική κάλυψη", "Home — missing earthquake cover"),
             delay: 1800,
         },
         {
             severity: t("Μέτριο", "Medium"),
-            textColor: "text-[#1E40AF] dark:text-blue-200",
-            bg: "bg-[#EFF6FF] dark:bg-blue-500/15",
+            textColor: "text-status-info",
+            bg: "bg-status-info-tint",
             border: "border-[#BFDBFE] dark:border-blue-500/40",
             label: t("Δεν υπάρχει ταξιδιωτική ασφάλεια", "No travel insurance"),
             delay: 2100,
@@ -220,7 +220,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                     >
                         <span
                             className={`h-2 w-2 rounded-full ${
-                                scanProgress < 100 ? "animate-pulse bg-[#29685B]" : "bg-[#22C55E]"
+                                scanProgress < 100 ? "animate-pulse bg-brand-green" : "bg-[#22C55E]"
                             }`}
                         />
                         <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
@@ -242,7 +242,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-slate-800">
                         <div
-                            className="h-full rounded-full bg-[#29685B] transition-all duration-100 ease-linear motion-reduce:transition-none"
+                            className="h-full rounded-full bg-brand-green transition-all duration-100 ease-linear motion-reduce:transition-none"
                             style={{ width: `${scanProgress}%` }}
                         />
                     </div>
@@ -281,7 +281,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                         47 was a portfolio we invented. The three is now the
                         three rows directly above it, which the reader can
                         count. */}
-                    <p className="text-micro font-semibold text-[#166534] dark:text-[#A7F3D0]">
+                    <p className="text-micro font-semibold text-status-success">
                         {t("3 κενά σε αυτόν τον πελάτη", "3 gaps on this client")}
                     </p>
                 </div>
@@ -315,9 +315,9 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
     ]
 
     const cfg = {
-        critical: { border: "border-[#FECACA] dark:border-red-500/40", chip: "bg-[#FEF2F2] dark:bg-red-500/15 text-[#B91C1C] dark:text-red-300" },
-        warn: { border: "border-[#FDE68A] dark:border-amber-500/40", chip: "bg-[#FEF3C7] dark:bg-amber-500/15 text-[#92400E] dark:text-amber-200" },
-        ok: { border: "border-neutral-200 dark:border-slate-800", chip: "bg-primary-tint dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0]" },
+        critical: { border: "border-status-danger-edge", chip: "bg-status-danger-tint text-status-danger" },
+        warn: { border: "border-status-warning-edge", chip: "bg-status-warning-tint text-status-warning" },
+        ok: { border: "border-neutral-200 dark:border-slate-800", chip: "bg-primary-tint dark:bg-brand-green/15 text-status-success" },
     }
 
     return (
@@ -334,9 +334,9 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
                         <p className="text-body-sm font-semibold text-neutral-900 dark:text-white">{t("Τι λήγει", "What is running out")}</p>
                         <p className="text-micro text-muted-foreground dark:text-slate-400">{t("Επόμενες 60 μέρες", "Next 60 days")}</p>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-full border border-[#FECACA] dark:border-red-500/40 bg-[#FEF2F2] dark:bg-red-500/15 px-2.5 py-1">
-                        <Clock className="h-3 w-3 text-[#B91C1C] dark:text-red-300" />
-                        <span className="text-micro font-semibold text-[#B91C1C] dark:text-red-300">1 {t("επείγον", "urgent")}</span>
+                    <div className="flex items-center gap-1.5 rounded-full border border-status-danger-edge bg-status-danger-tint px-2.5 py-1">
+                        <Clock className="h-3 w-3 text-status-danger" />
+                        <span className="text-micro font-semibold text-status-danger">1 {t("επείγον", "urgent")}</span>
                     </div>
                 </div>
 
@@ -364,8 +364,8 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
                                 <span
                                     className={`flex min-h-[24px] flex-shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-kicker font-semibold ${
                                         isSent
-                                            ? "bg-primary-tint dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0]"
-                                            : "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                            ? "bg-primary-tint dark:bg-brand-green/15 text-status-success"
+                                            : "bg-brand-green text-white hover:bg-[#1C4E44]"
                                     }`}
                                 >
                                     {isSent ? (
@@ -429,7 +429,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                     style={{ transitionDelay: "400ms" }}
                 >
                     {/* Branded header */}
-                    <div className="flex items-center justify-between bg-[#29685B] px-4 py-3">
+                    <div className="flex items-center justify-between bg-brand-green px-4 py-3">
                         <div className="flex items-center gap-2">
                             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white/20">
                                 <FileText className="h-4 w-4 text-white" />
@@ -472,7 +472,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">{r.premium}</p>
-                                    <span className="rounded-full bg-primary-tint dark:bg-[#29685B]/15 px-1.5 py-0.5 text-kicker font-semibold text-[#166534] dark:text-[#A7F3D0]">
+                                    <span className="rounded-full bg-primary-tint dark:bg-brand-green/15 px-1.5 py-0.5 text-kicker font-semibold text-status-success">
                                         {t("Ενεργό", "Active")}
                                     </span>
                                 </div>
@@ -492,7 +492,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                             <span className="text-micro font-semibold text-neutral-900 dark:text-white">{t("Σκορ Προστασίας", "Protection Score")}</span>
                             <span className="text-micro font-bold text-primary dark:text-[#A7F3D0]">87/100</span>
                         </div>
-                        <span className="rounded-full bg-[#29685B] px-3 py-1.5 text-kicker font-bold text-white">
+                        <span className="rounded-full bg-brand-green px-3 py-1.5 text-kicker font-bold text-white">
                             {t("Αποστολή →", "Send →")}
                         </span>
                     </div>
@@ -506,7 +506,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                     style={{ transitionDelay: "1450ms" }}
                 >
                     <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
-                    <p className="text-micro font-semibold text-[#166534] dark:text-[#A7F3D0]">
+                    <p className="text-micro font-semibold text-status-success">
                         {t("Έτοιμη να σταλεί με ένα κλικ", "Ready to send in one click")}
                     </p>
                 </div>

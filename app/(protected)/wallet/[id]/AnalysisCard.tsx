@@ -603,7 +603,7 @@ export function AnalysisCard({
                                         setRequestingConsent(false)
                                     }}
                                     disabled={requestingConsent}
-                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 dark:text-amber-200 transition-colors hover:bg-amber-100 disabled:opacity-50 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 disabled:opacity-50 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
                                 >
                                     {t.common.aiConsentRequestAction}
                                 </button>
@@ -652,19 +652,19 @@ export function AnalysisCard({
                 gate — upsell the AGENT plans (not the b2c UpgradeModal). */}
             {agentUpgradeRequired && !analysisInProgress && (
                 <div className="px-6 pt-5">
-                    <div className="rounded-xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
+                    <div className="rounded-xl border border-amber-200 bg-status-warning-tint/60 p-4 dark:border-amber-900/40">
                         <div className="flex items-start gap-3">
-                            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
+                            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" />
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-bold text-[#92400E] dark:text-amber-400">
+                                <p className="text-sm font-bold text-status-warning">
                                     {t.analysis.errors.agentUpgradeRequired}
                                 </p>
-                                <p className="mt-1 text-xs text-[#92400E] dark:text-amber-400/80">
+                                <p className="mt-1 text-xs text-status-warning">
                                     {t.analysis.errors.agentUpgradeRequiredHint}
                                 </p>
                                 <Link
                                     href="/agent/pricing"
-                                    className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                    className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
                                 >
                                     {t.analysis.actions.viewAgentPlans}
                                 </Link>
@@ -701,14 +701,14 @@ export function AnalysisCard({
                         <div className="flex items-start gap-3">
                             <Loader2 className="mt-0.5 h-4 w-4 animate-spin text-primary dark:text-mint" />
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-bold text-[#166534] dark:text-mint">
+                                <p className="text-sm font-bold text-status-success">
                                     {runStepLabel || statusCopy.inProgress}
                                 </p>
-                                <p className="mt-1 text-xs text-[#166534]/85 dark:text-mint/90">
+                                <p className="mt-1 text-xs text-status-success/85">
                                     {runStepHint || statusCopy.autoRefreshHint}
                                 </p>
                             </div>
-                            <span className="text-xs font-bold text-[#166534] dark:text-mint">
+                            <span className="text-xs font-bold text-status-success">
                                 {runProgress}%
                             </span>
                         </div>

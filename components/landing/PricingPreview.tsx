@@ -91,7 +91,7 @@ export function PricingPreview({
                                         {pick(plan.name)}
                                     </h3>
                                     {plan.badge ? (
-                                        <span className="rounded-full bg-[#ECFDF5] px-2.5 py-0.5 text-kicker font-bold uppercase tracking-wide text-[#166534] dark:bg-[#29685B]/25 dark:text-[#A7F3D0]">
+                                        <span className="rounded-full bg-status-success-tint px-2.5 py-0.5 text-kicker font-bold uppercase tracking-wide text-status-success">
                                             {pick(plan.badge)}
                                         </span>
                                     ) : null}

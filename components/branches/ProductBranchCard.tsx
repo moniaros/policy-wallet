@@ -23,7 +23,7 @@ export interface ProductBranchCardProps {
 
 const STATE_STYLES: Record<BranchTileState, { pill: string; dot: string }> = {
     covered: {
-        pill: 'bg-primary-tint text-[#166534] dark:bg-primary/15 dark:text-mint',
+        pill: 'bg-primary-tint text-status-success dark:bg-primary/15',
         dot: 'bg-primary dark:bg-mint',
     },
     attention: {

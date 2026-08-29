@@ -208,7 +208,7 @@ export default async function AdminPartnerVendorPage({
             </p>
 
             {saved === "1" && (
-                <div className="mb-6 rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/10 px-4 py-3 text-sm text-[#166534] dark:text-mint">
+                <div className="mb-6 rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/10 px-4 py-3 text-sm text-status-success">
                     Saved.
                 </div>
             )}
@@ -282,7 +282,7 @@ export default async function AdminPartnerVendorPage({
                                         <span className="text-sm font-medium text-stone-900 dark:text-stone-100">
                                             {localized(offer.title, "el") || offer.slug}
                                         </span>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${offer.isActive ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' : 'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'}`}>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${offer.isActive ? 'bg-primary-soft text-status-success dark:bg-primary/15' : 'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'}`}>
                                             {offer.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                     </summary>

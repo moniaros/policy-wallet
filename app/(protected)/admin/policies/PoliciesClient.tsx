@@ -13,7 +13,7 @@ import { displayInsurerName, policyLabel } from '@/lib/wallet/policy-identity'
 const STATUS_OPTIONS = ["all", "analyzing", "active", "action_needed", "incomplete", "expiring_soon", "cancelled", "deleted"]
 const inputClass = "pw-input pw-input-sm"
 const labelClass = "block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1"
-const primaryBtn = "px-4 py-2 text-sm bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50"
+const primaryBtn = "px-4 py-2 text-sm bg-primary text-primary-foreground rounded hover:bg-primary-hover disabled:opacity-50"
 const iconBtn = "p-2 text-primary dark:text-mint hover:bg-primary-tint dark:hover:bg-primary/15 rounded-lg transition-colors disabled:opacity-50"
 
 function fmt(iso: string | null) {

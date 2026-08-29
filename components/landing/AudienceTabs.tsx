@@ -86,7 +86,7 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         onKeyDown={handleKeyDown}
                         className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
                             activeTab === "policyholders"
-                                ? "bg-[#29685B] text-white shadow-sm"
+                                ? "bg-brand-green text-white shadow-sm"
                                 : "text-muted-foreground hover:text-neutral-900 dark:text-slate-400 dark:hover:text-white"
                         }`}
                     >
@@ -104,7 +104,7 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         onKeyDown={handleKeyDown}
                         className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
                             activeTab === "agents"
-                                ? "bg-[#29685B] text-white shadow-sm"
+                                ? "bg-brand-green text-white shadow-sm"
                                 : "text-muted-foreground hover:text-neutral-900 dark:text-slate-400 dark:hover:text-white"
                         }`}
                     >
@@ -233,7 +233,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     <p className="text-body-sm font-semibold text-neutral-900 dark:text-white">
                         {t("Τα συμβόλαιά μου", "My Policies")}
                     </p>
-                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-500/15 px-2.5 py-1 text-micro font-semibold text-[#92400E] dark:text-amber-200">
+                    <span className="rounded-full bg-status-warning-tint px-2.5 py-1 text-micro font-semibold text-status-warning">
                         1 {t("κενό", "gap")}
                     </span>
                 </div>
@@ -245,12 +245,12 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                         >
                             <div
                                 className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${
-                                    p.type === "warn" ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-primary-tint dark:bg-[#29685B]/15"
+                                    p.type === "warn" ? "bg-status-warning-tint" : "bg-primary-tint dark:bg-brand-green/15"
                                 }`}
                             >
                                 <p.Icon
                                     className={`h-4 w-4 ${
-                                        p.type === "warn" ? "text-[#92400E] dark:text-amber-200" : "text-primary dark:text-[#A7F3D0]"
+                                        p.type === "warn" ? "text-status-warning" : "text-primary dark:text-[#A7F3D0]"
                                     }`}
                                 />
                             </div>
@@ -259,8 +259,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                             </span>
                             {p.type === "warn" ? (
                                 <div className="flex items-center gap-1">
-                                    <AlertTriangle className="h-3.5 w-3.5 text-[#92400E] dark:text-amber-200" />
-                                    <span className="text-micro font-semibold text-[#92400E] dark:text-amber-200">
+                                    <AlertTriangle className="h-3.5 w-3.5 text-status-warning" />
+                                    <span className="text-micro font-semibold text-status-warning">
                                         {p.status}
                                     </span>
                                 </div>
@@ -272,9 +272,9 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                         </div>
                     ))}
                 </div>
-                <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#FDE68A] dark:border-amber-500/40 bg-[#FFFBEB] dark:bg-amber-500/10 p-3">
-                    <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-200" />
-                    <p className="text-caption font-medium text-[#92400E] dark:text-amber-200">
+                <div className="mt-3 flex items-center gap-2 rounded-xl border border-status-warning-edge bg-[#FFFBEB] dark:bg-amber-500/10 p-3">
+                    <AlertTriangle className="h-4 w-4 flex-shrink-0 text-status-warning" />
+                    <p className="text-caption font-medium text-status-warning">
                         {t(
                             "Σπίτι: λείπει κάλυψη πλημμύρας",
                             "Home: missing flood cover"
@@ -397,14 +397,14 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                             key={c.name}
                             className="flex items-center gap-3 rounded-xl border border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2.5"
                         >
-                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#29685B]/10 text-kicker font-bold text-primary dark:text-[#A7F3D0]">
+                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-brand-green/10 text-kicker font-bold text-primary dark:text-[#A7F3D0]">
                                 {c.initials}
                             </div>
                             <span className="flex-1 truncate text-caption font-medium text-neutral-900 dark:text-white">
                                 {c.name}
                             </span>
                             {c.alert ? (
-                                <span className="flex items-center gap-1 rounded-full bg-[#FEF3C7] dark:bg-amber-500/15 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:text-amber-200">
+                                <span className="flex items-center gap-1 rounded-full bg-status-warning-tint px-2 py-0.5 text-kicker font-semibold text-status-warning">
                                     <AlertTriangle className="h-2.5 w-2.5" />
                                     {t(`${c.renewal} ημ.`, `${c.renewal}d`)}
                                 </span>
@@ -421,9 +421,9 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 {/* Was indigo (#EEF2FF / #4F46E5) — a colour that appears
                     nowhere else on the public site, whose light border had no
                     dark-mode pair. Brand green, both themes. */}
-                <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] p-3 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-[#A7F3D0] bg-status-success-tint p-3 dark:border-brand-green/50">
                     <TrendingUp className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
-                    <p className="text-caption font-medium text-[#166534] dark:text-[#A7F3D0]">
+                    <p className="text-caption font-medium text-status-success">
                         {t(
                             "Πελάτης Α — του λείπει ασφάλεια ζωής",
                             "Client A — has no life cover"

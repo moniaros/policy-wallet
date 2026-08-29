@@ -134,7 +134,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     {access.canWrite && (
                         <Link
                             href={editHref}
-                            className="flex-1 md:flex-none px-6 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl text-xs font-black uppercase tracking-widest text-center shadow-lg shadow-primary/20 transition-all active:scale-95"
+                            className="flex-1 md:flex-none px-6 py-2.5 bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl text-xs font-black uppercase tracking-widest text-center shadow-lg shadow-primary/20 transition-all active:scale-95"
                         >
                             {pd.edit}
                         </Link>
@@ -155,7 +155,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                             {statusLabel}
                                         </span>
                                         {isManagedByViewer && (
-                                            <span className="px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
+                                            <span className="px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest bg-primary-soft text-status-success dark:bg-primary/15">
                                                 {pd.managedByYou}
                                             </span>
                                         )}

@@ -91,7 +91,7 @@ export function ClaimsGuidanceCard({
             <ol className="space-y-4">
                 {steps.map((step, i) => (
                     <li key={i} className="flex items-start gap-3.5">
-                        <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-black text-white dark:text-[#1A2420]">
+                        <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-black text-primary-foreground">
                             {i + 1}
                         </span>
                         <div className="min-w-0 flex-1">
@@ -142,7 +142,7 @@ export function ClaimsGuidanceCard({
                 the editorial steps above; this is data, not guidance. */}
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
                 <h3 className="mb-2.5 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
-                    <CalendarClock className="h-3.5 w-3.5 text-[#92400E] dark:text-amber-400" />
+                    <CalendarClock className="h-3.5 w-3.5 text-status-warning" />
                     {copy.claimDeadlinesTitle}
                 </h3>
                 {deadlines.length > 0 ? (
@@ -150,10 +150,10 @@ export function ClaimsGuidanceCard({
                         {deadlines.map((deadline, j) => (
                             <li
                                 key={j}
-                                className="flex items-start gap-2 rounded-xl border border-amber-200 bg-[#FEF3C7]/50 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/15"
+                                className="flex items-start gap-2 rounded-xl border border-amber-200 bg-status-warning-tint/50 px-3 py-2 dark:border-amber-900/40"
                             >
-                                <CalendarClock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
-                                <p className="text-xs leading-relaxed text-[#92400E] dark:text-amber-300">
+                                <CalendarClock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-status-warning" />
+                                <p className="text-xs leading-relaxed text-status-warning">
                                     {deadline.value && <span className="font-mono font-bold">{deadline.value} · </span>}
                                     {pickLang(deadline.summary, lang)}
                                 </p>

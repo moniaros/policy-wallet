@@ -59,11 +59,11 @@ export function MergeRequestBanner({
     }
 
     return (
-        <div className="mb-5 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
+        <div className="mb-5 rounded-2xl border border-amber-200 bg-status-warning-tint/60 p-4 dark:border-amber-900/40">
             <div className="flex items-start gap-3">
-                <GitMerge className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
+                <GitMerge className="mt-0.5 h-5 w-5 flex-shrink-0 text-status-warning" />
                 <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-[#92400E] dark:text-amber-300">{copy.title}</p>
+                    <p className="text-sm font-bold text-status-warning">{copy.title}</p>
                     <p className="mt-1 text-xs leading-relaxed text-amber-900/90 dark:text-amber-200/90">
                         {copy.body} {requestedByLabel} · {policyLabel}
                     </p>
@@ -72,7 +72,7 @@ export function MergeRequestBanner({
                             type="button"
                             onClick={() => decide("approved")}
                             disabled={pending !== null}
-                            className="inline-flex min-h-9 items-center gap-2 rounded-full bg-primary px-4 text-xs font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
+                            className="inline-flex min-h-9 items-center gap-2 rounded-full bg-primary px-4 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-60"
                         >
                             {pending === "approved" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                             {copy.approve}
@@ -81,7 +81,7 @@ export function MergeRequestBanner({
                             type="button"
                             onClick={() => decide("rejected")}
                             disabled={pending !== null}
-                            className="inline-flex min-h-9 items-center gap-2 rounded-full border border-amber-400/60 bg-white px-4 text-xs font-bold text-amber-900 dark:text-amber-200 transition-colors hover:bg-amber-100 disabled:opacity-60 dark:border-amber-700/60 dark:bg-amber-900/40 dark:text-amber-200"
+                            className="inline-flex min-h-9 items-center gap-2 rounded-full border border-amber-400/60 bg-white px-4 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 disabled:opacity-60 dark:border-amber-700/60 dark:bg-amber-900/40 dark:text-amber-200"
                         >
                             {pending === "rejected" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                             {copy.reject}

@@ -321,7 +321,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
 
     const getStatusBadge = (status: string, daysLeft: number) => {
         if (status === "completed") return (
-            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-[#166534] bg-primary-soft dark:text-mint dark:bg-primary/15 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-status-success bg-primary-soft dark:bg-primary/15 px-2.5 py-1 rounded-full">
                 <CheckCircle2 className="w-3 h-3" /> {t.completed}
             </span>
         )

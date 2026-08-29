@@ -136,7 +136,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     return (
         <footer className="border-t border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <div className="px-6 pb-14 pt-12 lg:px-12">
-                <div className="mx-auto max-w-page-wide rounded-3xl border border-primary-soft dark:border-[#29685B]/40 bg-primary-tint dark:bg-[#29685B]/15 px-6 py-7 md:px-8">
+                <div className="mx-auto max-w-page-wide rounded-3xl border border-primary-soft dark:border-brand-green/40 bg-primary-tint dark:bg-brand-green/15 px-6 py-7 md:px-8">
                     <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                         <div>
                             <h3 className="text-h3 font-medium leading-tight tracking-tight text-neutral-900 dark:text-white">
@@ -275,7 +275,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <button
                                     type="submit"
                                     disabled={status === "loading"}
-                                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#29685B] px-4 py-2.5 text-body font-semibold text-white transition-colors hover:bg-[#1C4E44] disabled:cursor-not-allowed disabled:opacity-70"
+                                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-brand-green px-4 py-2.5 text-body font-semibold text-white transition-colors hover:bg-[#1C4E44] disabled:cursor-not-allowed disabled:opacity-70"
                                 >
                                     <Mail className="h-4 w-4" />
                                     {status === "loading" ? t("Το στέλνουμε…", "Sending it…") : t("Εγγραφή", "Subscribe")}
@@ -285,7 +285,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <p
                                     id="footer-newsletter-status"
                                     className={`text-body-sm ${
-                                        status === "success" ? "text-[#166534] dark:text-[#A7F3D0]" : "text-[#B91C1C]"
+                                        status === "success" ? "text-status-success" : "text-status-danger"
                                     }`}
                                     role={status === "error" ? "alert" : "status"}
                                 >

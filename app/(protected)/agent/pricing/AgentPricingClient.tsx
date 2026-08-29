@@ -237,7 +237,7 @@ export function AgentPricingClient({
                                 }`}
                             >
                                 {plan.popular && !isCurrent && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white dark:text-[#1A2420] text-kicker font-black uppercase tracking-widest px-4 py-1 rounded-full">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-kicker font-black uppercase tracking-widest px-4 py-1 rounded-full">
                                         {t.popular}
                                     </div>
                                 )}
@@ -250,7 +250,7 @@ export function AgentPricingClient({
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                                         plan.popular
-                                            ? "bg-primary text-white dark:text-[#1A2420]"
+                                            ? "bg-primary text-primary-foreground"
                                             : "bg-muted text-neutral-600 dark:text-neutral-300"
                                     }`}>
                                         <Icon className="w-5 h-5" />
@@ -290,7 +290,7 @@ export function AgentPricingClient({
                                         isCurrent
                                             ? "bg-muted text-muted-foreground cursor-default"
                                             : plan.popular
-                                                ? "bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover shadow-lg shadow-primary/20"
+                                                ? "bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/20"
                                                 : priceFor(plan) === 0
                                                     ? "bg-muted text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                                                     : "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100"

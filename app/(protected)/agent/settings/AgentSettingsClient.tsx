@@ -103,7 +103,7 @@ export function AgentSettingsClient({
             <div
                 className={`flex items-start gap-3 rounded-xl border p-4 ${
                     verified
-                        ? "border-primary/20 bg-primary-soft text-[#166534] dark:border-primary/30 dark:bg-primary/15 dark:text-mint"
+                        ? "border-primary/20 bg-primary-soft text-status-success dark:border-primary/30 dark:bg-primary/15"
                         : rejected
                           ? "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300"
                           : "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300"

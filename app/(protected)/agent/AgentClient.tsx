@@ -212,7 +212,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                 previewLabel={NO_AGENT_COPY.previewLabel[lang]}
                 preview={
                     <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm dark:bg-black">
-                        <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-white dark:text-[#1A2420]">
+                        <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
                             Γ
                         </div>
                         <div className="min-w-0 flex-1 text-left">
@@ -224,7 +224,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                 {NO_AGENT_COPY.exampleMeta[lang]}
                             </p>
                         </div>
-                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#166534] dark:bg-primary/15 dark:text-mint">
+                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-status-success dark:bg-primary/15">
                             {NO_AGENT_COPY.exampleBadge[lang]}
                         </span>
                     </div>

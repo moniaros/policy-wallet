@@ -33,7 +33,7 @@ function OfferCard({
                         {offer.title[lang]}
                     </h3>
                 </div>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint whitespace-nowrap">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-primary-soft text-status-success dark:bg-primary/15 whitespace-nowrap">
                     {offerTypeLabel}
                 </span>
             </div>

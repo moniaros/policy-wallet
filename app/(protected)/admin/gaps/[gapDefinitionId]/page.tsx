@@ -52,7 +52,7 @@ export default async function GapDefinitionEditorPage({
             </div>
 
             {saved === "1" && (
-                <div className="rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/15 p-3 text-sm font-medium text-[#166534] dark:text-mint">
+                <div className="rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/15 p-3 text-sm font-medium text-status-success">
                     Saved. The new check criteria applies to the next analysis run (reads are uncached).
                 </div>
             )}

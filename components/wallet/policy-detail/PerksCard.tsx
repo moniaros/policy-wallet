@@ -103,7 +103,7 @@ export function PerksCard({ perks, lang, copy, sourceDocumentHref }: PerksCardPr
                                                 </span>
                                             )}
                                             {perk.reminderRecommended && (
-                                                <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-300">
+                                                <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-status-warning">
                                                     {copy.dontForgetChip}
                                                 </span>
                                             )}
@@ -120,7 +120,7 @@ export function PerksCard({ perks, lang, copy, sourceDocumentHref }: PerksCardPr
                                         {perk.contactPhone && (
                                             <a
                                                 href={`tel:${perk.contactPhone}`}
-                                                className="min-h-[44px] inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                                className="min-h-[44px] inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
                                             >
                                                 <Phone className="h-3 w-3" />
                                                 {copy.callServiceCta}

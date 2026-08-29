@@ -53,7 +53,7 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                         >
                             <span
                                 aria-hidden
-                                className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF5] text-body font-bold text-primary dark:bg-[#29685B]/20 dark:text-[#A7F3D0]"
+                                className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-status-success-tint text-body font-bold text-primary dark:text-[#A7F3D0]"
                             >
                                 {index + 1}
                             </span>

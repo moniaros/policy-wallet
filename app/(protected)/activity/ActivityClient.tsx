@@ -127,7 +127,7 @@ export function ActivityClient({ events, isAgent = false }: ActivityClientProps)
                 <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-6 lg:py-8 pt-8 relative z-10">
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
+                            <div className="relative bg-primary text-primary-foreground p-3 rounded-2xl shadow-lg shadow-primary/25">
                                 <Activity className="w-6 h-6" />
                             </div>
                             <div>
@@ -149,7 +149,7 @@ export function ActivityClient({ events, isAgent = false }: ActivityClientProps)
                                     className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
                                         filter === tab.id
                                             ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-sm"
-                                            : "bg-white text-neutral-600 border border-neutral-200 dark:border-white/10 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                                            : "bg-white text-neutral-600 border border-neutral-200 dark:border-white/10 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                                     }`}
                                 >
                                     {tab.label}

@@ -72,7 +72,7 @@ export function WorldClassLanding({
 
     return (
         <div
-            className={`${inter.className} min-h-screen bg-white text-neutral-900 selection:bg-[#29685B]/20 selection:text-neutral-900 dark:bg-slate-900 dark:text-white`}
+            className={`${inter.className} min-h-screen bg-white text-neutral-900 selection:bg-brand-green/20 selection:text-neutral-900 dark:bg-slate-900 dark:text-white`}
         >
             {/* The header floats 16px from the top and is 56px tall, so the
                 browser's scroll-on-focus could park a focused control right
@@ -109,9 +109,9 @@ export function WorldClassLanding({
                             formal category name still carries the SEO/AEO job in
                             the footer, the OG cards and the JSON-LD entity — it
                             is just not what a human reads first. */}
-                        <p className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3.5 py-1.5 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
-                            <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
-                            <span className="text-caption font-semibold text-[#166534] sm:text-body-sm dark:text-[#A7F3D0]">
+                        <p className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-[#A7F3D0] bg-status-success-tint px-3.5 py-1.5 dark:border-brand-green/50">
+                            <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand-green dark:bg-[#A7F3D0]" />
+                            <span className="text-caption font-semibold text-status-success sm:text-body-sm">
                                 {pick(CATEGORY, locale)}
                             </span>
                         </p>
@@ -227,7 +227,7 @@ export function WorldClassLanding({
                         here at full width; no shadow, because the design system
                         keeps depth as a response to interaction and not as
                         decoration. */}
-                    <div className="mx-auto max-w-[900px] space-y-7 rounded-3xl border border-[#A7F3D0] bg-[#ECFDF5] px-6 py-14 text-center sm:px-12 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                    <div className="mx-auto max-w-[900px] space-y-7 rounded-3xl border border-[#A7F3D0] bg-status-success-tint px-6 py-14 text-center sm:px-12 dark:border-brand-green/50">
                         <h2
                             id="coverage-heading"
                             className="mx-auto max-w-[720px] text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-balance text-neutral-900 lg:text-h2 dark:text-white"
@@ -244,7 +244,7 @@ export function WorldClassLanding({
                                 `${productCategories.length} types of insurance. We do not work with any insurance company — that is why we can tell you the truth.`,
                             )}
                         </p>
-                        <div className="mx-auto max-w-[640px] border-t border-[#A7F3D0]/70 pt-7 text-left dark:border-[#29685B]/50">
+                        <div className="mx-auto max-w-[640px] border-t border-[#A7F3D0]/70 pt-7 text-left dark:border-brand-green/50">
                             <TrustRow locale={locale} />
                         </div>
                     </div>
@@ -284,7 +284,7 @@ export function WorldClassLanding({
                                             the page's default container, used
                                             five times over. A numbered row needs
                                             no box to read as a step. */}
-                                        <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#ECFDF5] dark:bg-[#29685B]/20">
+                                        <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-status-success-tint">
                                             <Icon aria-hidden className="h-5 w-5 text-primary dark:text-[#A7F3D0]" />
                                         </span>
                                         <div>

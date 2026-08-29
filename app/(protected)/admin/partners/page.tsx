@@ -94,7 +94,7 @@ export default async function AdminPartnersPage() {
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${vendor.isActive ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' : 'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'}`}>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${vendor.isActive ? 'bg-primary-soft text-status-success dark:bg-primary/15' : 'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'}`}>
                                             {vendor.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                         <Link href={`/admin/partners/${vendor.id}`} className="text-primary hover:underline text-sm font-medium">

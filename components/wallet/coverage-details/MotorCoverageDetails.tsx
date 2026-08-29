@@ -115,7 +115,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                <CreditCard className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+                <CreditCard className="w-4 h-4 text-status-warning" />
               </div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.deductible}</span>
             </div>
@@ -179,20 +179,20 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.roadsideAssistancePhone && (
         <a
           href={`tel:${motor.roadsideAssistancePhone}`}
-          className="min-h-[44px] flex items-center justify-between p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/30 border border-amber-200/60 dark:border-amber-800/60 hover:shadow-md transition-shadow"
+          className="min-h-[44px] flex items-center justify-between p-3 rounded-xl bg-status-warning-tint/60 border border-amber-200/60 dark:border-amber-800/60 hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Car className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+              <Car className="w-4 h-4 text-status-warning" />
             </div>
             <div>
-              <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{hints?.roadside ? <GlossaryHint hint={hints.roadside} /> : motorCopy.roadsideAssistance}</span>
-              <p className="text-xs text-[#92400E] dark:text-amber-400/80">{copy.call}</p>
+              <span className="text-sm font-bold text-status-warning">{hints?.roadside ? <GlossaryHint hint={hints.roadside} /> : motorCopy.roadsideAssistance}</span>
+              <p className="text-xs text-status-warning">{copy.call}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <Phone className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
-            <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{motor.roadsideAssistancePhone}</span>
+            <Phone className="w-4 h-4 text-status-warning" />
+            <span className="text-sm font-bold text-status-warning">{motor.roadsideAssistancePhone}</span>
           </div>
         </a>
       )}
@@ -237,8 +237,8 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             greenCardStatus === "expired"
               ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
               : greenCardStatus === "expiring"
-                ? "bg-amber-100 dark:bg-amber-900/30 text-[#92400E] dark:text-amber-300 border-amber-200 dark:border-amber-800"
-                : "bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-primary/20 dark:border-primary/30"
+                ? "bg-amber-100 dark:bg-amber-900/30 text-status-warning border-amber-200 dark:border-amber-800"
+                : "bg-primary-soft dark:bg-primary/15 text-status-success border-primary/20 dark:border-primary/30"
           }`}>
             {greenCardStatus === "expired" ? copy.expired : greenCardStatus === "expiring" ? copy.expiringSoon : copy.valid}
           </span>
@@ -254,7 +254,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.ownVehicleDamage}</span>
           </div>
           {motor.ownVehicleDamage ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
+            <span className="flex items-center gap-1 text-xs font-bold text-status-success">
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
@@ -274,7 +274,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.glassBreakage}</span>
           </div>
           {motor.glassBreakage ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
+            <span className="flex items-center gap-1 text-xs font-bold text-status-success">
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (

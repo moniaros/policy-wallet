@@ -43,15 +43,15 @@ export default function InviteCustomerPage() {
     return (
         <div className="max-w-2xl mx-auto px-4 py-12">
             <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden">
-                <div className="bg-primary px-8 py-10 text-white dark:text-[#1A2420]">
+                <div className="bg-primary px-8 py-10 text-primary-foreground">
                     <h1 className="text-3xl font-bold">{inv_t.title}</h1>
-                    <p className="mt-2 text-white/80 dark:text-[#1A2420]/80 italic">{inv_t.subtitle}</p>
+                    <p className="mt-2 text-primary-foreground/80 dark:text-[#1A2420]/80 italic">{inv_t.subtitle}</p>
                 </div>
 
                 <div className="p-8">
                     {success ? (
                         <div className="text-center py-6">
-                            <div className="h-16 w-16 bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div className="h-16 w-16 bg-primary-soft text-status-success dark:bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
@@ -118,7 +118,7 @@ export default function InviteCustomerPage() {
                                 >
                                     {isPending ? (
                                         <>
-                                            <svg className="animate-spin h-5 w-5 text-white dark:text-[#1A2420]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <svg className="animate-spin h-5 w-5 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>

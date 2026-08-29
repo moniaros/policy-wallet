@@ -76,7 +76,7 @@ const getLobColor = (lob: string) => lobLabels[lob]?.color ?? "#64748b"
 const urgencyColor = (days: number) => {
     if (days <= 7)  return { border: "border-l-red-500", bg: "bg-red-50 dark:bg-red-950/20", text: "text-red-700 dark:text-red-400", badge: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300" }
     if (days <= 30) return { border: "border-l-amber-500", bg: "bg-amber-50 dark:bg-amber-950/20", text: "text-amber-700 dark:text-amber-400", badge: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300" }
-    return { border: "border-l-primary", bg: "bg-primary-tint dark:bg-primary/15", text: "text-[#166534] dark:text-mint", badge: "bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint" }
+    return { border: "border-l-primary", bg: "bg-primary-tint dark:bg-primary/15", text: "text-status-success", badge: "bg-primary-soft dark:bg-primary/15 text-status-success" }
 }
 
 const severityConfig: Record<string, { color: string; bg: string; label: { en: string; el: string } }> = {
@@ -224,7 +224,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 <div className="absolute inset-0 bg-primary/5" />
                 <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
                     <div className="flex items-center gap-4">
-                        <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
+                        <div className="relative bg-primary text-primary-foreground p-3 rounded-2xl shadow-lg shadow-primary/25">
                             <BarChart3 className="w-6 h-6" />
                         </div>
                         <div>
@@ -519,7 +519,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                 { label: p.tracked, value: data.renewalMetrics.totalTracked, color: "text-foreground" },
                                 { label: p.pending, value: data.renewalMetrics.pendingRenewals, color: "text-amber-700 dark:text-amber-400" },
                                 { label: p.overdue, value: data.renewalMetrics.overdueRenewals, color: "text-rose-600 dark:text-rose-400" },
-                                { label: p.renewed, value: data.renewalMetrics.renewedThisMonth, color: "text-[#166534] dark:text-mint" },
+                                { label: p.renewed, value: data.renewalMetrics.renewedThisMonth, color: "text-status-success" },
                                 { label: p.lapsed, value: data.renewalMetrics.lapsedThisMonth, color: "text-rose-600 dark:text-rose-400" },
                                 { label: p.renewalRate, value: `${data.renewalMetrics.renewalRate}%`, color: "text-primary dark:text-mint" },
                                 { label: p.premiumAtRisk, value: fmt(data.renewalMetrics.premiumAtRisk, lang), color: "text-orange-600 dark:text-orange-400" },

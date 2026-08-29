@@ -133,7 +133,7 @@ export function DashboardClient({
                         </div>
                         <div className="mt-3 flex items-center gap-3">
                             {resendSuccess && (
-                                <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1.5 text-xs font-semibold text-[#166534] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
+                                <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1.5 text-xs font-semibold text-status-success dark:border-primary/30 dark:bg-primary/15">
                                     <CheckCircle className="w-3.5 h-3.5" />
                                     {tb.verifyBannerSent}
                                 </span>

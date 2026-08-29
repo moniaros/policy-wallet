@@ -382,7 +382,7 @@ export function PolicyWallet({
                         <button
                             id="tour-fab"
                             onClick={() => setShowAddMenu((prev) => !prev)}
-                            className="flex items-center justify-center w-16 h-16 bg-primary text-white dark:text-[#1A2420] rounded-2xl shadow-2xl hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-primary/40"
+                            className="flex items-center justify-center w-16 h-16 bg-primary text-primary-foreground rounded-2xl shadow-2xl hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-primary/40"
                             aria-label={roleCopy.walletDashboard.addPolicyAria}
                             aria-expanded={showAddMenu}
                             aria-haspopup="menu"

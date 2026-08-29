@@ -74,7 +74,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.enfiaEligibility}</span>
           </div>
           {home.enfiaEligible ? (
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border border-primary/20 dark:border-primary/30">
+            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-status-success border border-primary/20 dark:border-primary/30">
               <CheckCircle2 className="w-3.5 h-3.5" /> {copy.eligible}
             </span>
           ) : (
@@ -99,7 +99,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
                 ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
-              <Flame className={`w-4 h-4 mb-1 ${home.catastropheCoverage.fire ? "text-[#166534] dark:text-mint" : "text-red-400 dark:text-red-500"}`} />
+              <Flame className={`w-4 h-4 mb-1 ${home.catastropheCoverage.fire ? "text-status-success" : "text-red-400 dark:text-red-500"}`} />
               <span className="text-xs font-semibold text-black/75 dark:text-white/80">{homeCopy.fire}</span>
               {home.catastropheCoverage.fire
                 ? <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E] mt-0.5" />
@@ -110,7 +110,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
                 ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
-              <Mountain className={`w-4 h-4 mb-1 ${home.catastropheCoverage.earthquake ? "text-[#166534] dark:text-mint" : "text-red-400 dark:text-red-500"}`} />
+              <Mountain className={`w-4 h-4 mb-1 ${home.catastropheCoverage.earthquake ? "text-status-success" : "text-red-400 dark:text-red-500"}`} />
               <span className="text-xs font-semibold text-black/75 dark:text-white/80">{homeCopy.earthquake}</span>
               {home.catastropheCoverage.earthquake
                 ? <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E] mt-0.5" />
@@ -121,7 +121,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
                 ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
-              <Waves className={`w-4 h-4 mb-1 ${home.catastropheCoverage.flood ? "text-[#166534] dark:text-mint" : "text-red-400 dark:text-red-500"}`} />
+              <Waves className={`w-4 h-4 mb-1 ${home.catastropheCoverage.flood ? "text-status-success" : "text-red-400 dark:text-red-500"}`} />
               <span className="text-xs font-semibold text-black/75 dark:text-white/80">{homeCopy.flood}</span>
               {home.catastropheCoverage.flood
                 ? <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E] mt-0.5" />
@@ -203,7 +203,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Lock className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+              <Lock className="w-4 h-4 text-status-warning" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.theftCoverageLimit}</span>
           </div>

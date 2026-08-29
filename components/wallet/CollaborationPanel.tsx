@@ -155,8 +155,8 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
         if (permission === "manage") {
             return (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft dark:bg-primary/15 border border-primary/30 dark:border-primary/40 rounded-full">
-                    <Shield className="w-3 h-3 text-[#166534] dark:text-mint" />
-                    <span className="text-kicker font-bold text-[#166534] dark:text-mint uppercase tracking-wider">{MANAGE_BADGE_COPY[language]}</span>
+                    <Shield className="w-3 h-3 text-status-success" />
+                    <span className="text-kicker font-bold text-status-success uppercase tracking-wider">{MANAGE_BADGE_COPY[language]}</span>
                 </div>
             )
         }
@@ -199,7 +199,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg">
-                            <Users className="w-5 h-5 text-white dark:text-[#1A2420]" />
+                            <Users className="w-5 h-5 text-primary-foreground" />
                         </div>
                         <div>
                             <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{copy.title}</h3>
@@ -220,7 +220,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                     {isOwner && (
                         <button
                             onClick={() => setShowInviteForm(!showInviteForm)}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl font-bold text-sm shadow-lg shadow-primary/25 transition-all duration-200 active:scale-95"
+                            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl font-bold text-sm shadow-lg shadow-primary/25 transition-all duration-200 active:scale-95"
                         >
                             <UserPlus className="w-4 h-4" />
                             <span className="hidden sm:inline">{copy.invite}</span>
@@ -236,7 +236,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                             <CheckCircle2 className="w-5 h-5 text-primary dark:text-mint" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-[#166534] dark:text-mint mb-2">{walletCopy.invitationLinkCreated}</p>
+                            <p className="text-sm font-bold text-status-success mb-2">{walletCopy.invitationLinkCreated}</p>
                             <div className="flex gap-2">
                                 <input
                                     readOnly
@@ -294,7 +294,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                             {copy.viewOnly}
                                         </span>
                                     </div>
-                                    <p className={`text-kicker font-medium ${permissions === "view" ? "text-[#166534] dark:text-mint" : "text-slate-500"}`}>
+                                    <p className={`text-kicker font-medium ${permissions === "view" ? "text-status-success" : "text-slate-500"}`}>
                                         {copy.readOnlyAccess}
                                     </p>
                                 </button>
@@ -363,7 +363,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                         {isOwner && !showInviteForm && (
                             <button
                                 onClick={() => setShowInviteForm(true)}
-                                className="mt-6 inline-flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl font-bold text-sm shadow-lg shadow-primary/25 transition-all duration-200 active:scale-95"
+                                className="mt-6 inline-flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl font-bold text-sm shadow-lg shadow-primary/25 transition-all duration-200 active:scale-95"
                             >
                                 <UserPlus className="w-4 h-4" />
                                 {copy.inviteCollaborator}
@@ -392,12 +392,12 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                                     className="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-slate-700"
                                                 />
                                             ) : (
-                                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white dark:text-[#1A2420] font-bold text-sm shadow-lg">
+                                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-lg">
                                                     {(displayPersonName(share.name)[0] || share.email[0]).toUpperCase()}
                                                 </div>
                                             )}
                                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white dark:border-slate-800 flex items-center justify-center">
-                                                <CheckCircle2 className="w-2.5 h-2.5 text-white dark:text-[#1A2420]" />
+                                                <CheckCircle2 className="w-2.5 h-2.5 text-primary-foreground" />
                                             </div>
                                         </div>
 

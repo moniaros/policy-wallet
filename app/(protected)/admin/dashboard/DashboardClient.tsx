@@ -270,7 +270,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                     <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                             <span className="text-stone-600 dark:text-stone-400">Active</span>
-                            <span className="font-medium text-[#166534] dark:text-mint">
+                            <span className="font-medium text-status-success">
                                 {metrics.policies.active}
                             </span>
                         </div>

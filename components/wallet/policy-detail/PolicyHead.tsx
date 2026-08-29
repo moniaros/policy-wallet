@@ -242,7 +242,7 @@ export function PolicyHead({
             <button
                 type="button"
                 onClick={() => onPrimaryAction(primaryAction)}
-                className="mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                className="mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
             >
                 <ActionIcon className="h-4 w-4" aria-hidden />
                 {copy.action[primaryAction.kind]}

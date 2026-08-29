@@ -49,7 +49,7 @@ export function PartnerPerksSection({
                                 <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground dark:text-slate-400">
                                     {offer.vendorName}
                                 </span>
-                                <span className="whitespace-nowrap rounded-full bg-[#ECFDF5] px-2 py-0.5 text-xs font-medium text-[#166534] dark:bg-[#29685B]/15 dark:text-[#A7F3D0]">
+                                <span className="whitespace-nowrap rounded-full bg-status-success-tint px-2 py-0.5 text-xs font-medium text-status-success">
                                     {(OFFER_TYPE_LABEL[offer.offerType] ?? OFFER_TYPE_LABEL.free_service)[lang]}
                                 </span>
                             </div>

@@ -389,7 +389,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                                 <Send className="h-5 w-5 text-primary dark:text-mint" />
                                 {PROFILE_COPY.proposals[language]}
                                 {proposals.filter(p => p.status === "pending").length > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold text-white dark:text-[#1A2420]">
+                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold text-primary-foreground">
                                         {proposals.filter(p => p.status === "pending").length}
                                     </span>
                                 )}

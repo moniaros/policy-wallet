@@ -286,7 +286,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         </p>
                         {CHIP_FIELDS.includes(field) && !isDirty && (
                             fieldFlagged ? (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-300">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-semibold text-status-warning">
                                     <AlertTriangle className="h-3 w-3" />
                                     {reviewCopy.confidenceInvalidated}
                                 </span>
@@ -295,13 +295,13 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                             )
                         )}
                         {isDirty && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-semibold text-[#166534] dark:bg-primary/15 dark:text-mint">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-semibold text-status-success dark:bg-primary/15">
                                 <Check className="h-3 w-3" />
                                 {reviewCopy.edit}
                             </span>
                         )}
                         {fieldFlagged && isSkipped && !isDirty && (
-                            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-kicker font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-kicker font-semibold text-slate-600 dark:text-slate-400">
                                 {reviewCopy.skippedChip}
                             </span>
                         )}
@@ -316,7 +316,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                                 type="button"
                                 onClick={() => setEditingField(null)}
                                 aria-label={reviewCopy.confirm}
-                                className="flex-shrink-0 rounded-xl bg-primary p-2 text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                className="flex-shrink-0 rounded-xl bg-primary p-2 text-primary-foreground transition-colors hover:bg-primary-hover"
                             >
                                 <Check className="h-4 w-4" />
                             </button>
@@ -351,7 +351,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         aria-label={`${reviewCopy.editField}: ${label}`}
                         className={`flex-shrink-0 rounded-lg p-1.5 transition-colors ${
                             fieldFlagged
-                                ? "bg-amber-100 text-[#92400E] dark:text-amber-200 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-900/50"
+                                ? "bg-amber-100 text-status-warning hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50"
                                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                         }`}
                     >
@@ -416,7 +416,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         <p className="text-sm text-slate-500 dark:text-slate-400">
                             {lobLabel(data.lineOfBusiness)}
                         </p>
-                        <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                        <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
                             {statusLabel}
                         </span>
                     </div>
@@ -434,8 +434,8 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
             </div>
 
             {/* AI-mistake microcopy */}
-            <div className="rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-3.5 dark:border-amber-900/40 dark:bg-amber-950/20">
-                <p className="flex items-start gap-2 text-xs font-medium leading-relaxed text-[#92400E] dark:text-amber-400">
+            <div className="rounded-2xl border border-amber-200 bg-status-warning-tint/60 p-3.5 dark:border-amber-900/40">
+                <p className="flex items-start gap-2 text-xs font-medium leading-relaxed text-status-warning">
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
                     {reviewCopy.aiMistakeNotice}
                 </p>
@@ -536,7 +536,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                                     </span>
                                 )}
                                 {condition.userActionRequired && (
-                                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-400">
+                                    <span className="rounded-full bg-status-warning-tint px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-status-warning">
                                         {reviewCopy.actionRequired}
                                     </span>
                                 )}
@@ -589,8 +589,8 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
             )}
 
             {flagged && (
-                <div className="rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-3.5 dark:border-amber-900/40 dark:bg-amber-950/20">
-                    <p className="flex items-start gap-2 text-xs font-medium leading-relaxed text-[#92400E] dark:text-amber-400">
+                <div className="rounded-2xl border border-amber-200 bg-status-warning-tint/60 p-3.5 dark:border-amber-900/40">
+                    <p className="flex items-start gap-2 text-xs font-medium leading-relaxed text-status-warning">
                         <Flag className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
                         {reviewCopy.flagSubmitted}
                     </p>
@@ -618,7 +618,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                     <button
                         type="button"
                         onClick={() => setFlagOpen(true)}
-                        className="w-full rounded-2xl border border-slate-200 dark:border-white/10 py-3.5 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                        className="w-full rounded-2xl border border-slate-200 dark:border-white/10 py-3.5 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
                     >
                         <span className="flex items-center justify-center gap-2">
                             <Flag className="h-4 w-4" />

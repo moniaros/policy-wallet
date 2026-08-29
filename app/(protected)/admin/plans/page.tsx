@@ -59,7 +59,7 @@ export default async function AdminPlansPage() {
                                 <td className="px-4 py-3">{euro(plan.annualPrice)}</td>
                                 <td className="px-4 py-3">{plan.trialDays > 0 ? `${plan.trialDays}d` : "—"}</td>
                                 <td className="px-4 py-3">
-                                    <span className={`text-xs px-2 py-0.5 rounded-full ${plan.isActive ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' : 'bg-red-100 dark:bg-rose-900/40 text-red-700 dark:text-rose-200'}`}>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${plan.isActive ? 'bg-primary-soft text-status-success dark:bg-primary/15' : 'bg-red-100 dark:bg-rose-900/40 text-red-700 dark:text-rose-200'}`}>
                                         {plan.isActive ? 'Active' : 'Retired'}
                                     </span>
                                     {!plan.isPublic && (

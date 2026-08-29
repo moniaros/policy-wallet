@@ -31,7 +31,7 @@ export function ImportantNotices({
         return (
             <div className="mb-5 flex items-center gap-2.5 rounded-2xl border border-primary/25 bg-primary-tint px-4 py-2.5 dark:border-primary/30 dark:bg-primary/10">
                 <Sparkles className="h-4 w-4 shrink-0 text-primary dark:text-mint" />
-                <p className="text-body-sm font-medium text-[#166534] dark:text-mint">
+                <p className="text-body-sm font-medium text-status-success">
                     {t.wallet.notices.allClear}
                 </p>
             </div>
@@ -43,10 +43,10 @@ export function ImportantNotices({
     const hiddenCount = notices.length - shown.length
 
     return (
-        <div className="mb-5 rounded-2xl border border-[#FECACA] bg-[#FEF2F2] px-4 py-3 dark:border-red-900/40 dark:bg-red-950/20">
+        <div className="mb-5 rounded-2xl border border-status-danger-edge bg-status-danger-tint px-4 py-3">
             <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 shrink-0 text-[#B91C1C] dark:text-red-300" />
-                <h2 className="text-body-sm font-semibold text-[#B91C1C] dark:text-red-300">
+                <AlertTriangle className="h-4 w-4 shrink-0 text-status-danger" />
+                <h2 className="text-body-sm font-semibold text-status-danger">
                     {t.wallet.notices.title}
                 </h2>
                 {/* The SAME fact as the KPI tile's «Χρειάζονται προσοχή»:
@@ -54,7 +54,7 @@ export function ImportantNotices({
                     isAttentionKey filter that produces attentionCount, so this
                     pill and the tile must always agree — same key, and the
                     count metric now checks it instead of a human arguing it. */}
-                <span data-count="portfolio.attentionCount" className="rounded-full bg-[#B91C1C]/10 px-1.5 py-0.5 text-kicker font-bold tabular-nums text-[#B91C1C] dark:bg-red-300/15 dark:text-red-300">
+                <span data-count="portfolio.attentionCount" className="rounded-full bg-[#B91C1C]/10 px-1.5 py-0.5 text-kicker font-bold tabular-nums text-status-danger dark:bg-red-300/15">
                     {notices.length}
                 </span>
             </div>
@@ -86,7 +86,7 @@ export function ImportantNotices({
                     type="button"
                     onClick={() => setExpanded((v) => !v)}
                     aria-expanded={expanded}
-                    className="mt-1.5 inline-flex cursor-pointer items-center gap-1 text-micro font-semibold text-[#B91C1C] hover:underline dark:text-red-300"
+                    className="mt-1.5 inline-flex cursor-pointer items-center gap-1 text-micro font-semibold text-status-danger hover:underline"
                 >
                     {expanded ? (
                         t.wallet.notices.showLess

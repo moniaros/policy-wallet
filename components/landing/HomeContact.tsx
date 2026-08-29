@@ -94,7 +94,7 @@ export function HomeContact({ locale }: { locale: "el" | "en" }) {
                 {sent ? (
                     <p
                         role="status"
-                        className="rounded-2xl border border-primary-soft bg-primary-tint px-5 py-6 text-center text-body-lg text-[#166534] dark:border-[#29685B]/40 dark:bg-[#29685B]/15 dark:text-[#A7F3D0]"
+                        className="rounded-2xl border border-primary-soft bg-primary-tint px-5 py-6 text-center text-body-lg text-status-success dark:border-brand-green/40 dark:bg-brand-green/15"
                     >
                         {t(
                             "Το μήνυμά σας στάλθηκε. Θα σας απαντήσουμε σύντομα.",
@@ -195,7 +195,7 @@ export function HomeContact({ locale }: { locale: "el" | "en" }) {
                         {error && (
                             <p
                                 role="alert"
-                                className="rounded-xl border border-[#FECACA] bg-[#FEF2F2] px-4 py-3 text-body-sm text-[#B91C1C] dark:border-red-500/40 dark:bg-red-500/15 dark:text-red-300"
+                                className="rounded-xl border border-status-danger-edge bg-status-danger-tint px-4 py-3 text-body-sm text-status-danger"
                             >
                                 {error}
                             </p>

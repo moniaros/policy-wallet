@@ -64,7 +64,7 @@ export default async function AdminPlanEditPage({
             </p>
 
             {saved === "1" && (
-                <div className="mb-6 rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/10 px-4 py-3 text-sm text-[#166534] dark:text-mint">
+                <div className="mb-6 rounded-lg border border-primary/30 bg-primary-soft dark:bg-primary/10 px-4 py-3 text-sm text-status-success">
                     Saved. Pricing surfaces are refreshing now; the cache backstop is ~5 minutes.
                 </div>
             )}

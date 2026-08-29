@@ -289,7 +289,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                                 <button
                                     onClick={() => onEdit(tpl.id)}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-600 dark:text-slate-400"
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-600"
                                 >
                                     <Eye className="w-3.5 h-3.5" />
                                 </button>
@@ -662,7 +662,7 @@ function SentList({ instances, t, language }: {
                                 <td data-label={t.template} className="p-4 text-slate-600 dark:text-slate-400">{inst.templateName}</td>
                                 <td data-label={t.status} className="p-4">
                                     {inst.status === "completed" ? (
-                                        <span className="inline-flex items-center gap-1 text-kicker font-black text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint px-2.5 py-1 rounded-full uppercase tracking-widest">
+                                        <span className="inline-flex items-center gap-1 text-kicker font-black text-status-success bg-primary-soft dark:bg-primary/15 px-2.5 py-1 rounded-full uppercase tracking-widest">
                                             <CheckCircle2 className="w-3 h-3" /> {t.completed}
                                         </span>
                                     ) : (
