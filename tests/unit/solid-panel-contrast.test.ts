@@ -144,10 +144,12 @@ describe("a panel that names its own foreground and background is readable", () 
     })
 
     it("the delete dialog's permanence warning is legible", () => {
+        // The banner sits on the action-danger/fg-on-brand token pair, whose
+        // ratio the generated contrast matrix measures in BOTH themes (the
+        // token build fails on a floor miss) — raw red-* may not return.
         const src = readFileSync("components/wallet/DeletePolicy.tsx", "utf-8")
-        expect(src, "bg-red-500 cannot carry normal text — even white is 3.81:1").not.toMatch(/bg-red-500/)
-        expect(src).toMatch(/bg-red-600/)
-        expect(ratio(PALETTE.white, PALETTE["red-600"])).toBeGreaterThanOrEqual(4.5)
+        expect(src, "bg-red-500 cannot carry normal text — even white is 3.81:1").not.toMatch(/bg-red-[0-9]/)
+        expect(src).toMatch(/bg-action-danger p-6 text-fg-on-brand/)
     })
 
     it("NotificationBell stays deleted — nothing imports it", () => {

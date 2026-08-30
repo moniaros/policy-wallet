@@ -95,7 +95,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
     // type — saving silently changed it.
     const policyTypes = WRITE_BRANCH_IDS
 
-    const inputClass = "pw-input pw-input-sm flex"
+    const inputClass = "flex min-h-11 w-full rounded-g-control border border-border-strong bg-surface-raised px-g-4 text-g-app-body text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none"
     const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground"
 
     return (
@@ -219,7 +219,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
                 <button
                     type="submit"
                     disabled={isPending}
-                    className="pw-primary-button flex-1 h-10"
+                    className="flex h-11 flex-1 items-center justify-center gap-2 rounded-g-control bg-action-primary-bg px-g-4 text-sm font-bold text-fg-on-brand transition-colors hover:bg-action-primary-hover disabled:opacity-60"
                 >
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isPending ? copy.saving : copy.save}

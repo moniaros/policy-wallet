@@ -23,21 +23,21 @@ function OfferCard({
 }) {
     const offerTypeLabel = t.offerTypes[offer.offerType]
     return (
-        <div className="pw-card pw-pad flex flex-col gap-3 h-full">
+        <div className="rounded-g-card bg-surface-raised p-g-5 shadow-g-raised flex h-full flex-col gap-3">
             <div className="flex items-start justify-between gap-3">
                 <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    <p className="text-xs tracking-wide text-fg-secondary">
                         {offer.vendorName}
                     </p>
-                    <h3 className="text-base font-semibold text-foreground mt-0.5">
+                    <h3 className="text-base font-semibold text-fg-primary mt-0.5">
                         {offer.title[lang]}
                     </h3>
                 </div>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-primary-soft text-status-success dark:bg-primary/15 whitespace-nowrap">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-primary-soft text-status-success whitespace-nowrap">
                     {offerTypeLabel}
                 </span>
             </div>
-            <p className="text-sm text-muted-foreground flex-1">{offer.description[lang]}</p>
+            <p className="text-sm text-fg-secondary flex-1">{offer.description[lang]}</p>
             {!locked && (
                 <div className="flex flex-wrap items-center gap-3 pt-1">
                     {offer.redemptionMethod === "link" && offer.redemptionUrl && (
@@ -45,7 +45,7 @@ function OfferCard({
                             href={offer.redemptionUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                            className="inline-flex items-center gap-1.5 text-sm font-medium text-fg-brand hover:underline"
                         >
                             <ExternalLink className="w-4 h-4" />
                             {t.visitPartner}
@@ -53,9 +53,9 @@ function OfferCard({
                     )}
                     {offer.redemptionMethod === "code" && offer.redemptionCode && (
                         <span className="inline-flex items-center gap-1.5 text-sm">
-                            <Ticket className="w-4 h-4 text-primary" />
+                            <Ticket className="w-4 h-4 text-fg-brand" />
                             {t.useCode}:{" "}
-                            <code className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs">
+                            <code className="px-1.5 py-0.5 rounded bg-surface-sunken font-mono text-xs">
                                 {offer.redemptionCode}
                             </code>
                         </span>
@@ -63,7 +63,7 @@ function OfferCard({
                     {offer.redemptionMethod === "phone" && offer.redemptionPhone && (
                         <a
                             href={`tel:${offer.redemptionPhone.replace(/ /g, "")}`}
-                            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                            className="inline-flex items-center gap-1.5 text-sm font-medium text-fg-brand hover:underline"
                         >
                             <Phone className="w-4 h-4" />
                             {t.callToRedeem}
@@ -74,7 +74,7 @@ function OfferCard({
                             href={offer.termsUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-muted-foreground hover:underline"
+                            className="text-xs text-fg-secondary hover:underline"
                         >
                             {t.terms}
                         </a>
@@ -94,23 +94,23 @@ export default async function BenefitsPage() {
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-foreground flex items-center gap-2.5">
-                    <Gift className="w-7 h-7 text-primary" />
+                <h1 className="text-3xl font-bold text-fg-primary flex items-center gap-2.5">
+                    <Gift className="w-7 h-7 text-fg-brand" />
                     {t.title}
                 </h1>
-                <p className="text-sm text-muted-foreground mt-2">{t.subtitle}</p>
+                <p className="text-sm text-fg-secondary mt-2">{t.subtitle}</p>
             </div>
 
             {unlocked.length === 0 && locked.length === 0 && (
-                <div className="pw-card pw-pad-roomy text-center">
-                    <p className="text-lg font-semibold text-foreground">{t.emptyTitle}</p>
-                    <p className="text-sm text-muted-foreground mt-2">{t.emptyBody}</p>
+                <div className="rounded-g-card bg-surface-raised p-g-6 text-center shadow-g-raised">
+                    <p className="text-lg font-semibold text-fg-primary">{t.emptyTitle}</p>
+                    <p className="text-sm text-fg-secondary mt-2">{t.emptyBody}</p>
                 </div>
             )}
 
             {unlocked.length > 0 && (
                 <section className="mb-10">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">
+                    <p className="text-xs tracking-wide text-fg-secondary mb-3">
                         {t.includedBadge}
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -123,8 +123,8 @@ export default async function BenefitsPage() {
 
             {locked.length > 0 && (
                 <section className="mb-10">
-                    <h2 className="text-lg font-semibold text-foreground mb-1">{t.lockedTitle}</h2>
-                    <p className="text-sm text-muted-foreground mb-4">{t.lockedSubtitle}</p>
+                    <h2 className="text-lg font-semibold text-fg-primary mb-1">{t.lockedTitle}</h2>
+                    <p className="text-sm text-fg-secondary mb-4">{t.lockedSubtitle}</p>
                     <LockedInsightPreview
                         featureKey="partner_offers"
                         triggerSource="benefits_page"
@@ -140,7 +140,7 @@ export default async function BenefitsPage() {
             )}
 
             {(unlocked.length > 0 || locked.length > 0) && (
-                <p className="text-xs text-muted-foreground">{t.partnerDisclosure}</p>
+                <p className="text-xs text-fg-secondary">{t.partnerDisclosure}</p>
             )}
         </div>
     )

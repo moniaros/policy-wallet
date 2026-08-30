@@ -50,9 +50,9 @@ export default async function EditPolicyPage({ params, searchParams }: Props) {
     }
 
     return (
-        <div className="min-h-screen bg-background pb-20">
+        <div className="pb-20">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-card border-b border-border px-4 py-3 flex items-center gap-3">
+            <div className="flex items-center gap-3 border-b border-border-hair px-4 py-3">
                 <Link href={safeReturnTo ?? `/wallet/${id}`} aria-label={t.common.back} className="p-2 -ml-2 hover:bg-muted rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
                     <ChevronLeft className="w-5 h-5 text-muted-foreground" />
                 </Link>

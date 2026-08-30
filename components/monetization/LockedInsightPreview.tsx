@@ -58,13 +58,13 @@ export function LockedInsightPreview({
     }
 
     return (
-        <div className={`relative overflow-hidden rounded-2xl ${className}`}>
+        <div className={`relative overflow-hidden rounded-g-card ${className}`}>
             <div className="pointer-events-none select-none blur-[6px] opacity-70" aria-hidden>
                 {children}
             </div>
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/40 p-4 text-center backdrop-blur-[2px] dark:bg-black/40">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary-soft dark:bg-primary/15">
-                    <Lock className="h-5 w-5 text-primary dark:text-mint" />
+                <span className="grid h-10 w-10 place-items-center rounded-g-control bg-surface-wash">
+                    <Lock className="h-5 w-5 text-fg-brand" />
                 </span>
                 <p className="max-w-xs text-sm font-semibold text-black/80 dark:text-white/85">
                     {copy.body}

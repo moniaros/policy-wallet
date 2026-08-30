@@ -123,8 +123,8 @@ export const subscriptionCopy = {
 
     // Free-trial affordances
     trial: {
-        badge: { el: '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ', en: '14-DAY FREE TRIAL' },
-        cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ', en: 'START 14-DAY FREE TRIAL' },
+        badge: { el: '14 ημέρες δωρεάν', en: '14-day free trial' },
+        cta: { el: 'Δωρεάν δοκιμή 14 ημερών', en: 'Start the 14-day free trial' },
         startCta: { el: 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών', en: 'Start 14-Day Free Trial' },
     },
 

@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client"
 import { createPolicy, getPolicyAnalysisStatus, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(protected)/wallet/actions"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Input } from "@/src/design-system/primitives"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
@@ -268,7 +269,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 {/* Header */}
                 <div className="border-b border-border-hair">
                     <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-center">
-                        <span className="font-bold text-foreground">
+                        <span className="font-bold text-fg-primary">
                             {t.wallet.addPolicy}
                         </span>
                     </div>
@@ -290,10 +291,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         <AlertTriangle className="w-7 h-7 text-state-gap" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-semibold text-foreground">
+                                        <p className="text-sm font-semibold text-fg-primary">
                                             {reviewCopy.discardedTitle}
                                         </p>
-                                        <p className="mt-1 text-xs text-muted-foreground">
+                                        <p className="mt-1 text-xs text-fg-secondary">
                                             {reviewCopy.discardedHint}
                                         </p>
                                     </div>
@@ -320,7 +321,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <button
                                         type="button"
                                         onClick={() => router.push('/wallet')}
-                                        className="text-xs text-muted-foreground hover:text-foreground underline transition-colors mt-2"
+                                        className="text-xs text-fg-secondary hover:text-fg-primary underline transition-colors mt-2"
                                     >
                                         {reviewCopy.skipForNow}
                                     </button>
@@ -334,10 +335,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         <AlertTriangle className="w-7 h-7 text-state-gap" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-semibold text-foreground">
+                                        <p className="text-sm font-semibold text-fg-primary">
                                             {blockedCopy.title}
                                         </p>
-                                        <p className="mt-1 text-xs text-muted-foreground">
+                                        <p className="mt-1 text-xs text-fg-secondary">
                                             {blockedCopy.hint}
                                         </p>
                                     </div>
@@ -384,7 +385,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <button
                                         type="button"
                                         onClick={() => router.push(createdPolicyId ? `/wallet/${createdPolicyId}` : '/wallet')}
-                                        className="text-xs text-muted-foreground hover:text-foreground underline transition-colors mt-2"
+                                        className="text-xs text-fg-secondary hover:text-fg-primary underline transition-colors mt-2"
                                     >
                                         {reviewCopy.skipForNow}
                                     </button>
@@ -396,14 +397,14 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 <div className="flex flex-col items-center gap-4 py-4">
                                     <div className="relative">
                                         <div className="w-16 h-16 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
-                                            <Sparkles className="w-7 h-7 text-primary dark:text-mint animate-pulse" />
+                                            <Sparkles className="w-7 h-7 text-fg-brand animate-pulse" />
                                         </div>
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-semibold text-foreground">
+                                        <p className="text-sm font-semibold text-fg-primary">
                                             {reviewCopy.analyzing}
                                         </p>
-                                        <p className="mt-1 text-xs text-muted-foreground animate-pulse">
+                                        <p className="mt-1 text-xs text-fg-secondary animate-pulse">
                                             {getAnalyzingStep(elapsedSecs, t)}
                                         </p>
                                     </div>
@@ -426,7 +427,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <button
                                         type="button"
                                         onClick={() => router.push(createdPolicyId ? `/wallet/${createdPolicyId}` : '/wallet')}
-                                        className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
+                                        className="text-xs text-fg-secondary hover:text-fg-primary underline transition-colors"
                                     >
                                         {reviewCopy.skipForNow}
                                     </button>
@@ -439,10 +440,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center gap-4 py-4">
                                     <div className="w-16 h-16 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
-                                        <BadgeCheck className="w-7 h-7 text-primary dark:text-mint" />
+                                        <BadgeCheck className="w-7 h-7 text-fg-brand" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-semibold text-foreground">
+                                        <p className="text-sm font-semibold text-fg-primary">
                                             {reviewCopy.success}
                                         </p>
                                     </div>
@@ -479,11 +480,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         // the h-16 header stretched it to 36x44 — measured on
                         // /wallet/add at 320/390/430. Explicit, like MainNav's rows,
                         // so a padding change cannot silently sink it again.
-                        className="grid min-h-11 min-w-11 place-items-center -ml-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="grid min-h-11 min-w-11 place-items-center -ml-2 text-fg-secondary hover:text-fg-primary transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <span className="font-bold text-foreground">{t.wallet.addPolicy}</span>
+                    <span className="font-bold text-fg-primary">{t.wallet.addPolicy}</span>
                     <div className="w-9" />
                 </div>
             </div>
@@ -521,7 +522,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 bg-primary-soft dark:bg-primary/15 rounded-xl flex items-center justify-center text-primary dark:text-mint">
+                                <div className="w-10 h-10 bg-primary-soft dark:bg-primary/15 rounded-xl flex items-center justify-center text-fg-brand">
                                     <UploadCloud className="w-5 h-5" />
                                 </div>
                                 {/* This is the page's primary heading in the state
@@ -529,7 +530,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     from several places and the sr-only headings added
                                     earlier both landed in a branch that never renders,
                                     so the route reported no <h1> at all. */}
-                                <h1 className="text-xl font-black text-foreground">
+                                <h1 className="text-xl font-black text-fg-primary">
                                     {t.wallet.uploadDocument}
                                 </h1>
                             </div>
@@ -552,17 +553,17 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             {selectedFiles.length > 0 && (
                                 <div className="mt-4 space-y-2">
                                     {selectedFiles.map((file, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-xl border border-border animate-in fade-in slide-in-from-bottom-2">
+                                        <div key={idx} className="flex items-center justify-between p-3 bg-surface-sunken rounded-xl border border-border animate-in fade-in slide-in-from-bottom-2">
                                             <div className="flex items-center gap-3 overflow-hidden">
                                                 <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-rose-200 rounded-lg flex items-center justify-center flex-shrink-0">
                                                     <FileText className="w-4 h-4" />
                                                 </div>
                                                 <div className="truncate">
-                                                    <p className="text-sm font-bold text-foreground truncate">{file.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                    <p className="text-sm font-bold text-fg-primary truncate">{file.name}</p>
+                                                    <p className="text-xs text-fg-secondary">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                                 </div>
                                             </div>
-                                            <button type="button" onClick={() => removeFile(idx)} aria-label={t.common.delete} className="p-2 text-muted-foreground hover:text-red-500 transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40">
+                                            <button type="button" onClick={() => removeFile(idx)} aria-label={t.common.delete} className="p-2 text-fg-secondary hover:text-red-500 transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40">
                                                 <X className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -571,8 +572,8 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             )}
 
                             <div className="mt-4 flex items-center gap-2 rounded-g-control border border-border-subtle bg-surface-wash p-3">
-                                <Shield className="w-4 h-4 text-primary dark:text-mint" />
-                                <p className="text-xs font-semibold text-primary dark:text-mint">
+                                <Shield className="w-4 h-4 text-fg-brand" />
+                                <p className="text-xs font-semibold text-fg-brand">
                                     {t.wallet.aiExtraction}
                                 </p>
                             </div>
@@ -582,10 +583,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     {/* Manual Details */}
                     <div className="rounded-g-sheet border border-border-subtle bg-surface-raised p-6 shadow-g-raised md:p-8">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
+                            <div className="w-10 h-10 bg-surface-sunken rounded-xl flex items-center justify-center text-fg-secondary">
                                 <FileText className="w-5 h-5" />
                             </div>
-                            <h2 className="text-xl font-black text-foreground">
+                            <h2 className="text-xl font-black text-fg-primary">
                                 {t.wallet.policyDetails}
                             </h2>
                         </div>
@@ -594,7 +595,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Type - REQUIRED */}
                                 <div className="space-y-2">
-                                    <label htmlFor="add-lineOfBusiness" className="text-xs font-bold uppercase tracking-wider text-foreground ml-1 block">
+                                    <label htmlFor="add-lineOfBusiness" className="text-xs font-bold uppercase tracking-wider text-fg-primary ml-1 block">
                                         {t.wallet.coverageType} <span className="text-red-500">*</span>
                                     </label>
                                     <select
@@ -623,16 +624,16 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 {/* Insurer - OPTIONAL */}
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center ml-1">
-                                        <label htmlFor="add-insurerName" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                        <label htmlFor="add-insurerName" className="text-xs font-bold uppercase tracking-wider text-fg-secondary">
                                             {t.wallet.insurerProvider}
                                         </label>
-                                        <span className="text-kicker font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
+                                        <span className="text-g-app-caption font-medium text-fg-secondary bg-surface-sunken px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                     </div>
                                     <div className="relative">
                                         <select
                                             id="add-insurerName"
                                             name="insurerName"
-                                            className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none appearance-none px-g-4"
+                                            className="pw-input appearance-none"
                                         >
                                             <option value="">{t.wallet.selectOrEmpty}</option>
                                             {insurers.map(i => (
@@ -640,7 +641,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             ))}
                                         </select>
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <Shield className="w-4 h-4 text-muted-foreground" />
+                                            <Shield className="w-4 h-4 text-fg-secondary" />
                                         </div>
                                     </div>
                                 </div>
@@ -649,19 +650,19 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             {/* Policy Number - OPTIONAL */}
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center ml-1">
-                                    <label htmlFor="add-policyNumber" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                    <label htmlFor="add-policyNumber" className="text-xs font-bold uppercase tracking-wider text-fg-secondary">
                                         {t.wallet.policyNumber}
                                     </label>
-                                    <span className="text-kicker font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
+                                    <span className="text-g-app-caption font-medium text-fg-secondary bg-surface-sunken px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                 </div>
                                 <div className="relative">
-                                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                    <input
+                                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-secondary" />
+                                    <Input
                                         id="add-policyNumber"
                                         type="text"
                                         name="policyNumber"
                                         placeholder={formCopy.policyNumberPlaceholder}
-                                        className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none pl-10 pr-4 pointer-events-auto"
+                                        className="pl-10 pr-4 pointer-events-auto"
                                     />
                                 </div>
                             </div>
@@ -669,21 +670,19 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             {/* Dates - OPTIONAL */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label htmlFor="add-startDate" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 block">{t.wallet.startDate}</label>
-                                    <input
+                                    <label htmlFor="add-startDate" className="ml-1 block text-g-app-caption font-semibold text-fg-secondary">{t.wallet.startDate}</label>
+                                    <Input
                                         id="add-startDate"
                                         type="date"
                                         name="startDate"
-                                        className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none px-g-4"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="add-endDate" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 block">{t.wallet.endDate}</label>
-                                    <input
+                                    <label htmlFor="add-endDate" className="ml-1 block text-g-app-caption font-semibold text-fg-secondary">{t.wallet.endDate}</label>
+                                    <Input
                                         id="add-endDate"
                                         type="date"
                                         name="endDate"
-                                        className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none px-g-4"
                                     />
                                 </div>
                             </div>
@@ -712,7 +711,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         </span>
                     </button>
 
-                    <p className="text-center text-xs text-muted-foreground">
+                    <p className="text-center text-xs text-fg-secondary">
                         {t.wallet.securityNote}
                     </p>
                 </form>

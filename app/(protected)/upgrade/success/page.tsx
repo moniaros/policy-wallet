@@ -138,10 +138,10 @@ export default async function UpgradeSuccessPage({
     return (
         <div className="flex min-h-[70vh] items-center justify-center px-4">
             <div className="pw-card w-full max-w-md p-8 text-center">
-                <div className={`mx-auto grid h-16 w-16 place-items-center rounded-full ${activated ? "bg-primary-soft dark:bg-primary/15" : "bg-amber-100 dark:bg-amber-900/30"}`}>
-                    <CheckCircle2 className={`h-8 w-8 ${activated ? "text-primary dark:text-mint" : "text-amber-700 dark:text-amber-400"}`} />
+                <div className={`mx-auto grid h-16 w-16 place-items-center rounded-full ${activated ? "bg-surface-wash" : "bg-amber-100 dark:bg-amber-900/30"}`}>
+                    <CheckCircle2 className={`h-8 w-8 ${activated ? "text-fg-brand" : "text-amber-700 dark:text-amber-400"}`} />
                 </div>
-                <h1 className="mt-5 text-2xl font-black text-foreground">
+                <h1 className="mt-5 text-2xl font-black text-fg-primary">
                     {reportUnlock
                         ? pick(COPY.reportTitle, language)
                         : tokenPurchase
@@ -150,7 +150,7 @@ export default async function UpgradeSuccessPage({
                                 ? pick(COPY.title, language)
                                 : pick(COPY.pendingTitle, language)}
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-2 text-sm leading-relaxed text-fg-secondary">
                     {reportUnlock
                         ? pick(COPY.reportBody, language)
                         : tokenPurchase
@@ -164,7 +164,7 @@ export default async function UpgradeSuccessPage({
                 </p>
                 <Link
                     href={returnPath}
-                    className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-bold uppercase tracking-widest text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-g-card bg-action-primary-bg py-3.5 text-sm font-bold text-fg-on-brand shadow-g-raised transition-all hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                 >
                     {activated && !tokenPurchase && !reportUnlock && featureCopy
                         ? featureCopy.successCta
@@ -173,8 +173,8 @@ export default async function UpgradeSuccessPage({
                 {activated && !tokenPurchase && !reportUnlock && (
                     <UpgradeSuccessTracker feature={featureKey ?? undefined} plan={activatedPlanId} />
                 )}
-                <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <ShieldCheck className="h-3.5 w-3.5 text-primary dark:text-mint" />
+                <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-fg-secondary">
+                    <ShieldCheck className="h-3.5 w-3.5 text-fg-brand" />
                     {pick(COPY.trust, language)}
                 </p>
             </div>

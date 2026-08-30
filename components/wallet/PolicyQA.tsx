@@ -10,6 +10,7 @@ import { usePolicyQaPrefill } from "@/components/wallet/policy-detail/PolicyQaPr
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatTime } from "@/lib/i18n/format"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { Input } from "@/src/design-system/primitives"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
@@ -201,13 +202,13 @@ export function PolicyQA({
             {showChat && inputEnabled && (
                 <div className="p-4 pt-0">
                     <form onSubmit={handleAsk} className="relative">
-                        <input
+                        <Input
                             type="text"
                             value={question}
                             onChange={(e) => setQuestion(e.target.value)}
                             placeholder={t.wallet.askAiPlaceholder}
                             disabled={isAsking}
-                            className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised px-g-4 pr-14 text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none"
+                            className="pr-14"
                         />
                         <button
                             type="submit"

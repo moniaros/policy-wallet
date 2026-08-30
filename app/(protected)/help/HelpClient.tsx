@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { Input } from '@/src/design-system/primitives'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { helpArticles } from '@/lib/help-content'
 import type { GuideSummary } from '@/lib/guides/content'
@@ -188,17 +189,17 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
     const hasFilters = query.trim().length > 0 || activeCategory !== 'all'
 
     return (
-        <div className="min-h-screen bg-background pb-20">
+        <div className="pb-20">
             <PageHeader title={t.help.pageTitle} subtitle={t.help.pageSubtitle} />
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
-                <section className="rounded-3xl border border-border bg-card p-5 sm:p-7 shadow-sm">
+                <section className="rounded-g-sheet border border-border-subtle bg-surface-raised p-5 sm:p-7 shadow-sm">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div>
-                            <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                            <h2 className="text-xl sm:text-2xl font-black text-fg-primary tracking-tight">
                                 {t.help.todayTitle}
                             </h2>
-                            <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
+                            <p className="mt-1 text-sm text-fg-secondary max-w-2xl">
                                 {t.help.todaySubtitle}
                             </p>
                         </div>
@@ -209,7 +210,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                 Support entry points live in the support band. */}
                             <button
                                 onClick={() => router.push('/wallet')}
-                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-g-control bg-action-primary-bg text-fg-on-brand text-sm font-bold hover:bg-action-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                             >
                                 {t.help.openWallet}
                                 <ArrowRight className="w-4 h-4" />
@@ -218,20 +219,20 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                     </div>
 
                     <div className="mt-6 relative">
-                        <Search className="w-5 h-5 text-muted-foreground absolute left-4 top-1/2 -translate-y-1/2" />
-                        <input
+                        <Search className="w-5 h-5 text-fg-secondary absolute left-4 top-1/2 -translate-y-1/2" />
+                        <Input
                             type="text"
                             aria-label={t.help.searchPlaceholder}
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder={t.help.searchPlaceholder}
-                            className="pw-input pl-12 pr-12"
+                            className="pl-12 pr-12"
                         />
                         {query && (
                             <button
                                 onClick={() => setQuery('')}
                                 aria-label={t.help.clearFilters}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-fg-secondary hover:text-fg-primary hover:bg-surface-sunken transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -248,10 +249,10 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                     key={category}
                                     onClick={() => setActiveCategory(category)}
                                     aria-pressed={isActive}
-                                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-g-control text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus ${
                                         isActive
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'bg-muted text-muted-foreground hover:bg-muted/70'
+                                            ? 'bg-action-primary-bg text-fg-on-brand'
+                                            : 'bg-surface-sunken text-fg-secondary hover:bg-surface-wash'
                                     }`}
                                 >
                                     <Icon className="w-3.5 h-3.5" />
@@ -264,7 +265,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
 
                 {!hasFilters && (
                     <section>
-                        <h2 className="text-lg font-black text-foreground tracking-tight mb-4">
+                        <h2 className="text-lg font-black text-fg-primary tracking-tight mb-4">
                             {t.help.quickActions}
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -272,13 +273,13 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                 <button
                                     key={task.id}
                                     onClick={() => router.push(task.href)}
-                                    className="text-left p-5 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-md transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                    className="text-left p-5 rounded-g-card bg-surface-raised border border-border-subtle hover:border-border-focus hover:shadow-g-raised transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center mb-3">
+                                    <div className="w-10 h-10 rounded-g-control bg-surface-wash text-fg-brand flex items-center justify-center mb-3">
                                         <task.icon className="w-5 h-5" />
                                     </div>
-                                    <p className="font-bold text-sm text-foreground mb-1">{task.label}</p>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">{task.desc}</p>
+                                    <p className="font-bold text-sm text-fg-primary mb-1">{task.label}</p>
+                                    <p className="text-xs text-fg-secondary leading-relaxed">{task.desc}</p>
                                 </button>
                             ))}
                         </div>
@@ -287,7 +288,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
 
                 <section>
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-black text-foreground tracking-tight">
+                        <h2 className="text-lg font-black text-fg-primary tracking-tight">
                             {hasFilters ? t.help.results : t.help.featuredGuides}
                         </h2>
                         {hasFilters && (
@@ -296,7 +297,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                     setActiveCategory('all')
                                     setQuery('')
                                 }}
-                                className="rounded text-xs font-bold text-primary dark:text-mint hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                className="rounded text-xs font-bold text-fg-brand hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                             >
                                 {t.help.clearFilters}
                             </button>
@@ -304,11 +305,11 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                     </div>
 
                     {filtered.length === 0 ? (
-                        <div className="bg-card rounded-2xl border border-border p-10 text-center">
-                            <p className="text-sm font-bold text-foreground mb-2">
+                        <div className="bg-surface-raised rounded-g-card border border-border-subtle p-10 text-center">
+                            <p className="text-sm font-bold text-fg-primary mb-2">
                                 {t.help.noArticles}
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-fg-secondary">
                                 {t.help.noArticlesHint}
                             </p>
                         </div>
@@ -318,19 +319,19 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                 <button
                                     key={article.id}
                                     onClick={() => router.push(article.href)}
-                                    className="text-left h-full p-5 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-md transition-all group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                    className="text-left h-full p-5 rounded-g-card bg-surface-raised border border-border-subtle hover:border-border-focus hover:shadow-g-raised transition-all group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                                 >
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-kicker font-bold uppercase tracking-widest">
+                                        <span className="rounded-full bg-surface-sunken px-2.5 py-1 text-g-app-caption font-semibold text-fg-secondary">
                                             {article.categoryLabel}
                                         </span>
-                                        <span className="text-kicker font-bold text-muted-foreground">{article.readTime}</span>
+                                        <span className="text-g-app-caption font-bold text-fg-secondary">{article.readTime}</span>
                                     </div>
-                                    <h3 className="text-base font-black text-foreground mb-2 leading-tight group-hover:text-primary dark:group-hover:text-mint transition-colors">
+                                    <h3 className="text-base font-black text-fg-primary mb-2 leading-tight group-hover:text-fg-brand  transition-colors">
                                         {article.title}
                                     </h3>
-                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{article.subtitle}</p>
-                                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary dark:text-mint">
+                                    <p className="text-sm text-fg-secondary line-clamp-2 mb-4">{article.subtitle}</p>
+                                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-fg-brand">
                                         {t.help.openGuide}
                                         <ChevronRight className="w-3.5 h-3.5" />
                                     </div>
@@ -341,51 +342,51 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                 </section>
 
                 <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <div className="rounded-2xl bg-card border border-border p-6">
+                    <div className="rounded-g-card bg-surface-raised border border-border-subtle p-6">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-g-control bg-surface-wash text-fg-brand flex items-center justify-center">
                                 <GraduationCap className="w-5 h-5" />
                             </div>
-                            <h3 className="text-base font-black text-foreground">{t.help.dictionaryTitle}</h3>
+                            <h3 className="text-base font-black text-fg-primary">{t.help.dictionaryTitle}</h3>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-5">{t.help.dictionaryDesc}</p>
+                        <p className="text-sm text-fg-secondary mb-5">{t.help.dictionaryDesc}</p>
                         <button
                             onClick={() => router.push('/lexiko')}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-g-control bg-action-primary-bg text-fg-on-brand text-sm font-bold hover:bg-action-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                         >
                             {t.help.openDictionary}
                             <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
 
-                    <div className="rounded-2xl bg-card border border-border p-6">
+                    <div className="rounded-g-card bg-surface-raised border border-border-subtle p-6">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-g-control bg-surface-wash text-fg-brand flex items-center justify-center">
                                 <Mail className="w-5 h-5" />
                             </div>
-                            <h3 className="text-base font-black text-foreground">{t.help.emailSupport}</h3>
+                            <h3 className="text-base font-black text-fg-primary">{t.help.emailSupport}</h3>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-5">{t.help.emailDesc}</p>
+                        <p className="text-sm text-fg-secondary mb-5">{t.help.emailDesc}</p>
                         <a
                             href={`mailto:${siteConfig.contactEmail}`}
-                            className="inline-flex min-h-11 items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                            className="inline-flex min-h-11 items-center gap-2 px-4 py-2.5 rounded-g-control border border-border-subtle text-fg-primary text-sm font-bold hover:bg-surface-sunken transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                         >
                             {t.help.sendEmail}
                             <ArrowRight className="w-4 h-4" />
                         </a>
                     </div>
 
-                    <div className="rounded-2xl bg-card border border-border p-6">
+                    <div className="rounded-g-card bg-surface-raised border border-border-subtle p-6">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-g-control bg-surface-wash text-fg-brand flex items-center justify-center">
                                 <MessageCircle className="w-5 h-5" />
                             </div>
-                            <h3 className="text-base font-black text-foreground">{t.help.communityChat}</h3>
+                            <h3 className="text-base font-black text-fg-primary">{t.help.communityChat}</h3>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-5">{t.help.communityDesc}</p>
+                        <p className="text-sm text-fg-secondary mb-5">{t.help.communityDesc}</p>
                         <button
                             onClick={() => router.push('/agent')}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-g-control border border-border-subtle text-fg-primary text-sm font-bold hover:bg-surface-sunken transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                         >
                             {t.help.openAdvisorPage}
                             <ArrowRight className="w-4 h-4" />

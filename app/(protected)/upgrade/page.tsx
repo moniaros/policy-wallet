@@ -99,12 +99,12 @@ export default function PricingPage() {
     const noHiddenFeesText = getSubscriptionCopy('trust.noHiddenFees', language)
 
     return (
-        <div className="min-h-screen bg-background pb-20 relative overflow-hidden">
+        <div className="relative overflow-hidden pb-20">
             {/* High-Fidelity Background Patterns */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
-                <div className="absolute top-[20%] -right-[10%] w-[30%] h-[50%] bg-primary/5 blur-[120px] rounded-full"></div>
-                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-muted/40"></div>
+                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-action-primary-bg/5 blur-[120px] rounded-full"></div>
+                <div className="absolute top-[20%] -right-[10%] w-[30%] h-[50%] bg-action-primary-bg/5 blur-[120px] rounded-full"></div>
+                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-surface-sunken/40"></div>
 
                 {/* Geometric Grid Overlay */}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
@@ -116,17 +116,17 @@ export default function PricingPage() {
             </div>
 
             {/* Header / Nav */}
-            <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+            <div className="sticky top-0 z-50 bg-surface-base/80 backdrop-blur-xl border-b border-border-subtle">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="flex items-center gap-2 text-fg-secondary hover:text-fg-primary transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                     >
                         <ChevronLeft className="w-5 h-5" />
                         <span className="font-bold text-sm">{t.common.back}</span>
                     </button>
-                    <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-widest">
-                        <ShieldCheck className="w-4 h-4 text-primary dark:text-mint" />
+                    <div className="flex items-center gap-2 text-fg-secondary text-xs font-bold">
+                        <ShieldCheck className="w-4 h-4 text-fg-brand" />
                         {secureText}
                     </div>
                 </div>
@@ -139,14 +139,14 @@ export default function PricingPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-soft dark:bg-primary/15 border border-primary/20 dark:border-primary/30 text-primary dark:text-mint text-xs font-black uppercase tracking-widest mb-8">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-wash border border-border-subtle text-fg-brand text-xs font-black mb-8">
                         <Zap className="w-3.5 h-3.5" />
                         {badgeText}
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-black text-foreground mb-8 tracking-tighter leading-none">
+                    <h1 className="text-5xl md:text-7xl font-black text-fg-primary mb-8 tracking-tighter leading-none">
                         {headingTitle}
                     </h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-bold">
+                    <p className="text-xl text-fg-secondary max-w-2xl mx-auto leading-relaxed font-bold">
                         {headingSubtitle}
                     </p>
                 </motion.div>
@@ -162,15 +162,15 @@ export default function PricingPage() {
             </div>
 
             {/* Honest trust signals (the fake insurer-logo wall is gone) */}
-            <div className="mt-20 border-t border-border pt-16 relative z-10">
+            <div className="mt-20 border-t border-border-subtle pt-16 relative z-10">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex flex-wrap justify-center items-center gap-3">
                         {[secureText, cancelAnytimeText, noHiddenFeesText].map((text) => (
                             <span
                                 key={text}
-                                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold text-muted-foreground"
+                                className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 py-2 text-xs font-bold text-fg-secondary"
                             >
-                                <ShieldCheck className="h-3.5 w-3.5 text-primary dark:text-mint" />
+                                <ShieldCheck className="h-3.5 w-3.5 text-fg-brand" />
                                 {text}
                             </span>
                         ))}
