@@ -8,6 +8,7 @@ import { render } from "@testing-library/react"
 
 vi.mock("@/app/(protected)/see/actions", () => ({ dismissFinding: vi.fn(async () => ({ ok: true })) }))
 vi.mock("@/app/(protected)/protection/quick-start-actions", () => ({ submitQuickStart: vi.fn() }))
+vi.mock("@/app/(protected)/updates/actions", () => ({ markUpdateRead: vi.fn(async () => ({ ok: true })), markStreamRead: vi.fn(async () => ({ ok: true })) }))
 vi.mock("@/lib/journey/funnel", () => ({ trackJourneyEvent: vi.fn() }))
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }), usePathname: () => "/see" }))
 
@@ -15,9 +16,13 @@ import { LanguageProvider } from "@/contexts/LanguageContext"
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
 import { SeeScreen } from "@/app/(protected)/see/SeeScreen"
 import { PoliciesScreen } from "@/app/(protected)/policies/PoliciesScreen"
+import { MoneyScreen } from "@/app/(protected)/money/MoneyScreen"
+import { UpdatesScreen } from "@/app/(protected)/updates/UpdatesScreen"
 import { toRenderableFinding, findingHash } from "@/lib/app/finding"
 import type { SeeModel } from "@/lib/app/see-model"
 import type { PoliciesModel, PolicyRow } from "@/lib/app/policies-model"
+import type { MoneyModel } from "@/lib/app/money-model"
+import type { UpdatesModel } from "@/lib/app/updates-model"
 import { collectSections } from "../measure/section-collector"
 
 const JSDOM_OPTS = { assumeVisible: true, boundedFallback: true } as const
@@ -89,5 +94,55 @@ describe("/policies — «Ο φάκελός σας»", () => {
         const { container } = wrap(<PoliciesScreen model={policiesModel({ rows: [], expired: [] })} />)
         expect(container.textContent).toContain("Δεν έχετε ανεβάσει ακόμη κανένα ασφαλιστήριο.")
         expect(container.querySelectorAll("a").length).toBeGreaterThanOrEqual(1)
+    })
+})
+
+describe("/money — «Τα χρήματά σας»", () => {
+    const moneyModel: MoneyModel = {
+        lang: "el",
+        money: { paidPerYear: 8224, protectsUpTo: { amount: 1_300_000, currency: "EUR", policyId: "p1", coverName: "Αστική ευθύνη" }, paidTwice: [{ policyId: "a", partnerPolicyId: "b" }] },
+        footprint: { total: 8224, countedPolicies: 20, otherCurrencyCount: 0, unknownPremiumCount: 2, unknownDurationCount: 1 },
+        byLine: [{ id: "motor", label: "Αυτοκίνητο", amount: 5000 }, { id: "health", label: "Υγεία", amount: 3224 }],
+        paidTwice: [{ label: "Interamerican (P-1)", partnerLabel: "ΕΘΝΙΚΗ (P-2)", asset: "Αυτοκίνητο · ΙΚΖ-4821", amountPerYear: null }],
+        benefits: [{ id: "b1", name: "Δωρεάν τεχνικός έλεγχος", policyLabel: "Interamerican (P-1)", contact: "210 000 0000" }],
+        offers: [], enfiaGuideHref: "/guides/ekptosi-enfia-asfalisi-katoikias", policyCount: 20,
+    }
+    it("renders ≤ 5 sections; the «έως» sentence; the pair without an invented amount; the not-counted line", () => {
+        const { container } = wrap(<MoneyScreen model={moneyModel} />)
+        const r = collectSections(JSDOM_OPTS)
+        expect(r.count, r.ids.join(", ")).toBeLessThanOrEqual(5)
+        expect(container.textContent).toContain("το μεγαλύτερο μεμονωμένο όριο")
+        expect(container.textContent).toContain("Interamerican (P-1) · ΕΘΝΙΚΗ (P-2)")
+        expect(container.textContent).not.toMatch(/≈/)
+        expect(container.textContent).toContain("3 ασφαλιστήρια δεν μετράνε εδώ")
+        expect(container.textContent).toContain("έκπτωση ΕΝΦΙΑ")
+        expect(container.textContent).not.toMatch(/κόψτε|αλλάξτε|αγοράστε|εξοικονομ/i)
+    })
+})
+
+describe("/updates — «Ενημερώσεις»", () => {
+    const item = (id: string, over: Partial<UpdatesModel["protection"][number]> = {}) => ({
+        id, eventType: "policy_expiring", stream: "protection" as const, title: "Λήγει σε 14 ημέρες", message: "Το ασφαλιστήριο λήγει.",
+        objectLabel: "Interamerican (P-1)", href: "/policies/p1", unread: true, at: new Date().toISOString(), failedReading: false, ...over,
+    })
+    const updatesModel: UpdatesModel = {
+        lang: "el",
+        protection: [item("e1"), item("e2", { eventType: "policy_analysis_failed", failedReading: true, title: "Η ανάλυση δεν ολοκληρώθηκε" })],
+        meanwhile: [item("e3", { stream: "meanwhile", eventType: "document_stored", unread: false, title: "Αποθηκεύτηκε" })],
+        badge: 2,
+    }
+    it("renders the two stream groups, every row naming its object, the failure worded as the analyst's limitation", () => {
+        const { container } = wrap(<UpdatesScreen model={updatesModel} />)
+        const r = collectSections(JSDOM_OPTS)
+        expect(r.count, r.ids.join(", ")).toBeLessThanOrEqual(2)
+        expect([...container.querySelectorAll("section[id]")].map((s) => s.id)).toEqual(["protection", "meanwhile"])
+        expect(container.textContent).toContain("Interamerican (P-1)")
+        expect(container.textContent).toContain("Δεν μπόρεσα να διαβάσω το έγγραφο.")
+        expect(container.textContent).toContain("Τα είδα όλα")
+    })
+    it("empty streams say so honestly", () => {
+        const { container } = wrap(<UpdatesScreen model={{ lang: "el", protection: [], meanwhile: [], badge: 0 }} />)
+        expect(container.textContent).toContain("Δεν έχω κάτι νέο για την προστασία σας.")
+        expect(container.textContent).toContain("Δεν έχω κάνει κάτι που να αξίζει να σας πω.")
     })
 })

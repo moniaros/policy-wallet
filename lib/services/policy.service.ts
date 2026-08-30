@@ -1063,6 +1063,8 @@ export class PolicyService extends BaseService {
                     en: 'The document you uploaded could not be analysed, so it was not saved. Please try again with a clearer copy.',
                 },
                 relatedObjectType: 'policy',
+                // One entry per day for discarded uploads: three blurry photos in a row are one message, not three.
+                dedupeKey: `policy_analysis_failed:discarded:${userId}:${new Date().toISOString().slice(0, 10)}`,
             })
         } catch (error) {
             logger('error', 'Failed to emit upload-discarded notification', {
@@ -1133,6 +1135,8 @@ export class PolicyService extends BaseService {
                 message,
                 relatedObjectType: 'policy',
                 relatedObjectId: policyId,
+                // A failed reading of one policy is one entry however many times it failed (Grafí G9).
+                dedupeKey: `policy_analysis_failed:${policyId}`,
             })
         } catch (error) {
             logger('error', 'Failed to emit analysis-failed notification', {

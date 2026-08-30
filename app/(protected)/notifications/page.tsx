@@ -1,12 +1,16 @@
 export const runtime = 'nodejs'
 
+import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { getPrimaryRole } from "@/lib/auth/role-routing"
 import { getTranslations } from "@/lib/i18n"
 import { getNotificationData } from "./actions"
 import { NotificationsClient } from "@/components/notifications/NotificationsClient"
 
 export default async function NotificationsPage() {
     const { dbUser } = await getAuthenticatedUser()
+    // Grafí G9: a policyholder's updates live at /updates (the proxy 301s first); agents keep this page.
+    if (getPrimaryRole(dbUser.roles) === "policyholder") redirect("/updates")
     const t = getTranslations((dbUser.preferredLanguage as 'en' | 'el') || 'en')
 
     const data = await getNotificationData()

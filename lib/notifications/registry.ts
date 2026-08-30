@@ -399,7 +399,7 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         businessEvent: "Someone proposed merging two policy records",
         copy: {
             title: { el: "Εντοπίστηκε διπλό ασφαλιστήριο", en: "Duplicate policy detected" },
-            message: { el: "Προτείναμε τη συγχώνευση δύο εγγραφών που μοιάζουν να είναι το ίδιο ασφαλιστήριο.", en: "We proposed merging two records that look like the same policy." },
+            message: { el: "Δύο εγγραφές μοιάζουν να είναι το ίδιο ασφαλιστήριο — αν ισχύει, μπορείτε να τις ενώσετε.", en: "Two records look like the same policy — if so, you can join them." },
         },
         triggerCondition: "PolicyMergeRequest created",
         category: "policy",
@@ -625,8 +625,8 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
     recommendation_generated: {
         businessEvent: "New recommendations were produced",
         copy: {
-            title: { el: "Νέες προτάσεις για εσάς", en: "New recommendations for you" },
-            message: { el: "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.", en: "Based on what we know about your life and your policies." },
+            title: { el: "Βρήκα κάτι που αξίζει να δείτε", en: "I found something worth seeing" },
+            message: { el: "Με βάση τα έγγραφά σας και όσα μου έχετε πει.", en: "Based on your documents and whar policies." },
         },
         triggerCondition: "syncRecommendations() reports created > 0",
         category: "risk",
@@ -647,8 +647,8 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
     recommendation_dismissed: {
         businessEvent: "The customer dismissed a recommendation",
         copy: {
-            title: { el: "Απορρίψατε μια πρόταση", en: "You dismissed a recommendation" },
-            message: { el: "Η πρόταση δεν θα εμφανίζεται πλέον στη λίστα σας.", en: "The recommendation will no longer appear in your list." },
+            title: { el: "Το σημειώσατε: δεν σας αφορά", en: "Noted: not for you" },
+            message: { el: "Δεν θα το ξαναδείτε — εκτός αν αλλάξει κάτι.", en: "You will not see it again — unless something changes list." },
         },
         triggerCondition: "PATCH /api/v1/recommendations/[id] with action=dismiss",
         category: "risk",
@@ -670,8 +670,8 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
     recommendation_accepted: {
         businessEvent: "The customer acted on a recommendation",
         copy: {
-            title: { el: "Προχωρήσατε μια πρόταση", en: "You actioned a recommendation" },
-            message: { el: "Η πρόταση σημειώθηκε ως δρομολογημένη.", en: "The recommendation was marked as actioned." },
+            title: { el: "Το σημειώσατε ως δρομολογημένο", en: "You marked it as in motion" },
+            message: { el: "Καταγράφηκε — θα το βλέπετε στον φάκελό σας.", en: "Recorded — you will see it in your folder." },
         },
         triggerCondition: "PATCH /api/v1/recommendations/[id] with action=actioned",
         category: "risk",
@@ -1493,7 +1493,7 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         businessEvent: "A sign-in happened",
         copy: {
             title: { el: "Νέα σύνδεση στον λογαριασμό σας", en: "New sign-in to your account" },
-            message: { el: "Έγινε σύνδεση στον λογαριασμό σας. Αν δεν ήσασταν εσείς, αλλάξτε κωδικό.", en: "Your account was signed in to. If this wasn't you, change your password." },
+            message: { el: "Έγινε σύνδεση στον λογαριασμό σας. Αν δεν ήσασταν εσείς, ορίστε νέο κωδικό αμέσως.", en: "Someone signed in to your account. If it was not you, set a new password immediately." },
         },
         triggerCondition: "A session is established",
         category: "security",

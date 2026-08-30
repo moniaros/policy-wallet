@@ -97,9 +97,14 @@ describe('proxy() role gate wiring', () => {
         expect((await run('/wallet/pol-1/edit')).status, '/wallet/pol-1/edit keeps serving').toBe(200)
         expect((await run('/protection/motor')).status, '/protection/[branch] keeps serving').toBe(200)
         expect((await run('/see')).status).toBe(200)
+        // G9: the bell moves with the policyholder; agents keep the legacy page.
+        expect((await run('/notifications')).status).toBe(301)
+        expect((await run('/notifications')).headers.get('location')).toBe('http://localhost:3000/updates')
+        expect((await run('/updates')).status).toBe(200)
         expect((await run('/policies/pol-1')).status).toBe(200)
         sessionFor('agent')
         expect((await run('/wallet')).status, 'an agent is not rewritten').not.toBe(301)
+        expect((await run('/notifications')).status, 'agents keep /notifications').not.toBe(301)
     })
 
     // ── Grafí (G7): the application home is `/` ──────────────────────────

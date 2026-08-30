@@ -8,6 +8,7 @@ import { getPrimaryRole } from "@/lib/auth/role-routing"
 import { ACTIVE_ROLE_COOKIE } from "@/lib/auth/active-role"
 import { AppShell } from "@/components/shell"
 import { Shell as GrafiShell } from "@/src/design-system/shell"
+import { badgeCount } from "@/lib/app/badge"
 import { PRIMARY_NAV, SECONDARY_NAV, SIDEBAR_NAV, ADD_POLICY } from "@/lib/app/navigation"
 import { formatPlural } from "@/lib/i18n/plural"
 import { planTierName } from "@/lib/subscription-copy"
@@ -55,9 +56,15 @@ export default async function ProtectedLayout({
     // On production that read 141 against a true count of 8. The `analytics`
     // channel is excluded by the same filter: the conversion mirror shares this
     // table and its rows were being counted too.
-    const unreadNotificationCount = await db.notificationEvent.count({
-        where: { userId: dbUser.id, channel: "in_app", readAt: null }
+    // Policyholders: the Grafí badge counts the PROTECTION stream's unread
+    // in-app rows only (lib/app/badge.ts) — «τι έκανα εν τω μεταξύ» never sits
+    // on the bell. Agents/admins keep the plain unread count.
+    const unreadRows = await db.notificationEvent.findMany({
+        where: { userId: dbUser.id, channel: "in_app", readAt: null },
+        select: { eventType: true, channel: true, readAt: true },
     })
+    const unreadNotificationCount = unreadRows.length
+    const protectionBadgeCount = badgeCount(unreadRows)
 
     // Construct navigation based on roles.
     //
@@ -164,7 +171,7 @@ export default async function ProtectedLayout({
             skip: t.app.nav.skip,
             brand: t.app.nav.brand,
             yourAccount: t.app.shell.yourAccount,
-            updates: formatPlural(t.app.nav.updatesBadge, { count: unreadNotificationCount }, lang),
+            updates: formatPlural(t.app.nav.updatesBadge, { count: protectionBadgeCount }, lang),
         }
         return (
             <TranslationsProvider>
@@ -174,7 +181,7 @@ export default async function ProtectedLayout({
                     sidebar={SIDEBAR_NAV.map(resolve)}
                     updates={resolve(SECONDARY_NAV[0])}
                     add={resolve(ADD_POLICY)}
-                    badge={unreadNotificationCount}
+                    badge={protectionBadgeCount}
                     labels={shellLabels}
                     user={{
                         name: displayPersonName(dbUser.name) || roleCopy.defaults.userName,

@@ -464,9 +464,12 @@ describe("stored notification content is bilingual customer copy", () => {
             if (f.startsWith("app/(protected)/admin/")) continue
             const src = strip(readFileSync(f, "utf-8"))
             if (!/\bnotificationEvent\s*\.\s*findMany\b/.test(src)) continue
-            // Reads that never render (dedupe lookups etc.) select neither
-            // title nor message into a response; displaying code does.
-            if (!/\btitle\b/.test(src)) continue
+            // Reads that never render (dedupe lookups, badge counts) select
+            // neither title nor message; displaying code reads `.title` off a
+            // row or selects `title: true`. The shell layout counts unread
+            // rows (eventType/channel/readAt only) and must not be forced to
+            // import a presenter it never uses.
+            if (!/\.(title|message)\b|title:\s*true/.test(src)) continue
             if (!/StoredNotification\b/.test(src)) {
                 offenders.push(f)
             }

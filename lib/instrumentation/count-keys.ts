@@ -132,6 +132,7 @@ export const FACT_KEYS: Record<string, string> = {
     "ledger.paidTwice": "Ledger line: € possibly paid twice, from same-subject overlaps with a tariff amount.",
     "ledger.questionsAnswered": "Ledger line: plain-words questions answered (question.answered).",
     "ledger.benefitsShown": "Ledger line: benefits surfaced on /money (benefit.surfaced).",
+    "money.byLine": "Premium per line («Πού πάνε τα N €») — in-force, premium-bearing policies only, summed by lib/app/lines.ts line.",
     "money.paidPerYear": "The premium footprint of in-force policies (calculatePremiumFootprint) — what the household pays per year; expired and unreadable premiums excluded and said so.",
     // policy.* — SUBJECT-SCOPED by policy id when rendered in a list.
     "policy.daysRemaining": "resolvePolicyLifecycle daysUntilExpiry — never re-derived client-side.",

@@ -119,6 +119,28 @@ is mostly reordering (Phase 2 spec), not reduction.
 
 ---
 
+## Ενημερώσεις — `/updates`
+
+Source: `app/(protected)/updates/page.tsx` → `UpdatesScreen.tsx` (Grafí G9). Replaces `/notifications`
+for policyholders (301; agents keep the legacy page). Two `<section id>` groups from `lib/app/streams.ts`.
+
+| Section | What it renders | Source of truth |
+|---|---|---|
+| `protection` | unread-first rows, each naming its policy; «Τα είδα όλα» stamps EVERY unread row of the stream | `loadUpdatesModel` (grouped on stored dedupeKey), `markStreamRead` |
+| `meanwhile` | tasks and confirmations; a failed reading is worded as the analyst's limitation with a re-upload | same; `policy_analysis_failed` now carries a dedupeKey |
+
+## Χρήματα — `/money`
+
+Source: `app/(protected)/money/page.tsx` → `MoneyScreen.tsx` (Grafí G9). ≤ 5 landmarks.
+
+| Section | What it renders | Source of truth |
+|---|---|---|
+| `triad` | paid / protects-up-to (largest single limit, said so) / possibly-paid-twice | `computeMoneyLine` (lib/app/money.ts) |
+| `twice` | the pairs, named, no invented amounts | `findSameSubjectOverlap` via `paidTwicePairs` |
+| `unused` | benefits the documents state + live offers in the plan + the sourced ΕΝΦΙΑ guide when a home policy is live | `acordData.perksAndBenefits[]`, `getOffersForUser`, `lib/guides/content.ts` |
+| `where` | premiums by line, largest first | `selectPremiumBearingPolicies` + `lib/app/lines.ts` |
+| `note` | never «κόψτε»/«αλλάξτε» | `app.money.noteBody` |
+
 ## Να δείτε — `/see`
 
 Source: `app/(protected)/see/page.tsx` → `SeeScreen.tsx` (Grafí G8). Replaces `/protection` (301). One

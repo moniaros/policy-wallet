@@ -27,7 +27,7 @@
 | `/account/plan` | `app/(protected)/account/plan/page.tsx` | Subpage | Free+ | policyholder | Account nav rail |
 | `/account/notifications` | `app/(protected)/account/notifications/page.tsx` | Subpage | None | policyholder | Account nav rail |
 | `/account/history` | `app/(protected)/account/history/page.tsx` | Subpage | None | policyholder | Account nav rail (relocated `/timeline`, V2-P2-02) |
-| `/notifications` | `app/(protected)/notifications/page.tsx` | Landing | None | policyholder | Top header bell icon (mobile) |
+| `/notifications` | `app/(protected)/notifications/page.tsx` | Redirect only | — | policyholder → 301 `/updates` (Grafí G9); agents keep it | Legacy URL |
 | `/help` | `app/(protected)/help/page.tsx` | Landing | None | all roles | Sidebar nav |
 | `/help/article/[slug]` | `app/(protected)/help/article/[slug]/page.tsx` | Subpage | None | all roles | Help index rows |
 | `/benefits` | `app/(protected)/benefits/page.tsx` | Landing | Paid+ | policyholder | Not discoverable in default nav (partner offers gated) |
@@ -37,10 +37,11 @@
 | `/upgrade/success` | `app/(protected)/upgrade/success/page.tsx` | Subpage | None | policyholder | Redirect after Stripe checkout success |
 | `/coverage` | `app/(protected)/coverage/page.tsx` | Redirect only | — | — | Redirects to `/protection` (legacy URL) |
 | `/home` | `app/(protected)/home/page.tsx` | Landing | None | policyholder | «Η προστασία σας» — served at `/` by the proxy rewrite (Grafí G7); a direct /home visit 301s to `/` |
-| `/money` | `app/(protected)/money/page.tsx` | Landing | None | policyholder | Grafí tab bar/rail/sidebar «Χρήματα» (G3; the triad, duplicates and unused benefits land in G9) |
+| `/money` | `app/(protected)/money/page.tsx` | Landing | None | policyholder | Grafí «Χρήματα» (G9) — triad, paid-twice pairs, stated benefits, ΕΝΦΙΑ guide link, premiums by line |
 | `/see` | `app/(protected)/see/page.tsx` | Landing | None | policyholder | Grafí tab bar «Να δείτε» (G8) — three tiers, one finding list; `?state=gap|review|expiry` from the verdict tiles |
 | `/policies` | `app/(protected)/policies/page.tsx` | Landing | None | policyholder | Grafí tab bar «Φάκελος» (G8) — search, three lenses, expired collapsed |
 | `/policies/[id]` | `app/(protected)/policies/[id]/page.tsx` | Subpage | Free+ | `getPolicyAccess(id)` | /policies rows, finding «Άνοιγμα», home expiry row (G8) |
+| `/updates` | `app/(protected)/updates/page.tsx` | Landing | None | policyholder | Grafí bell (G9) — protection stream (the badge) + meanwhile stream |
 
 **Total B2C routes:** 25 (including 2 redirects) — refreshed 2026-08-25 for V2-P2-03 (§4.2): `/coverage-insights`, `/timeline` and `/insights/risk-profile` removed; `/protection`, `/protection/[branch]` and `/account/history` are their homes  
 **Distinct landing surfaces:** 18
