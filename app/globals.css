@@ -1137,3 +1137,27 @@ pre {
   .g-ticker-track > [aria-hidden] { display: none; }
   .g-ticker-list { flex-wrap: wrap; row-gap: 12px; justify-content: center; }
 }
+
+/* ── Grafí scan-read choreography (§4.5) ───────────────────────────────
+   The ReadingDemo's sweep and staggered result rows. Entrances only; both
+   disappear entirely under prefers-reduced-motion (the component renders
+   its final state immediately, so nothing depends on these firing). */
+@keyframes g-scan {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(420%); }
+}
+.g-scan-sweep {
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--color-fg-brand, #29685b) 18%, transparent), transparent);
+  animation: g-scan 950ms cubic-bezier(0.2, 0.7, 0.2, 1) 1;
+}
+@keyframes g-row-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.g-row-in {
+  animation: g-row-rise 250ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-scan-sweep { display: none; }
+  .g-row-in { animation: none; }
+}

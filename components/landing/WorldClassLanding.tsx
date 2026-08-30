@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google"
 import Link from "next/link"
-import { ArrowRight, FileText, Search, Sparkles } from "lucide-react"
+import { ArrowRight, BellRing, FileText, Search, Sparkles } from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import type { LandingLocale } from "@/types/landing-content"
 import { LandingHeader } from "@/components/landing/LandingHeader"
@@ -17,6 +17,7 @@ import { GrafiHero } from "@/components/landing/GrafiHero"
 import { CoverageTicker } from "@/components/landing/grafi/CoverageTicker"
 import { AnswerBlock } from "@/components/landing/grafi/AnswerBlock"
 import { MarketNumbers } from "@/components/landing/grafi/MarketNumbers"
+import { ReadingDemo } from "@/src/design-system/reading-demo"
 import { PricingPreview } from "@/components/landing/PricingPreview"
 import { HomeFaq } from "@/components/landing/HomeFaq"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
@@ -71,7 +72,7 @@ export function WorldClassLanding({
     const l = (href: string) => localizeHref(href, locale)
 
     const steps = landingContent.howItWorks.steps
-    const stepIcons = [FileText, Search, Sparkles] as const
+    const stepIcons = [FileText, Search, Sparkles, BellRing] as const
 
     return (
         <div
@@ -230,7 +231,7 @@ export function WorldClassLanding({
                                 id="how-it-works-heading"
                                 className="text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-neutral-900 lg:text-h1 dark:text-white"
                             >
-                                {t("Τρία βήματα. Λίγα λεπτά.", "Three steps. A few minutes.")}
+                                {t("Τέσσερα βήματα. Λίγα λεπτά.", "Four steps. A few minutes.")}
                             </h2>
                         </div>
 
@@ -258,6 +259,13 @@ export function WorldClassLanding({
                                 )
                             })}
                         </ol>
+
+                        {/* §6: the four steps PLUS the ReadingDemo — the claim
+                            «το διαβάζουμε για εσάς», demonstrated on a stamped
+                            sample rather than asserted. */}
+                        <div className="mx-auto mt-14 max-w-[880px]">
+                            <ReadingDemo locale={locale} />
+                        </div>
                     </div>
                 </section>
 

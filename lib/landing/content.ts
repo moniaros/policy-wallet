@@ -64,6 +64,17 @@ export const landingContent: LandingContentModel = {
                     en: "We tell you if you are covered, in plain words. You decide.",
                 },
             },
+            {
+                // §6 asks four steps. The fourth is the one that keeps being
+                // true after day one: renewal reminders and change tracking
+                // are live capabilities, so the step promises exactly them.
+                id: "step-monitor",
+                title: { el: "Μένετε πάντα ενήμεροι", en: "You stay ahead" },
+                description: {
+                    el: "Σας ειδοποιούμε πριν από κάθε λήξη — και όταν έρθει το νέο συμβόλαιο, βλέπετε τι άλλαξε.",
+                    en: "We remind you before every expiry — and when the new policy arrives, you see what changed.",
+                },
+            },
         ],
     },
     /**
@@ -87,8 +98,13 @@ export const landingContent: LandingContentModel = {
                 id: "faq-do-you-sell-insurance",
                 question: { el: "Μου πουλάτε ασφάλεια;", en: "Are you going to sell me insurance?" },
                 answer: {
-                    el: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία, δεν πουλάμε συμβόλαια και δεν παίρνουμε προμήθεια από καμία εταιρεία. Πληρωνόμαστε μόνο από τη δική σας συνδρομή, γι' αυτό η απάντηση που παίρνετε δεν έχει λόγο να είναι μεροληπτική.",
-                    en: "No. We are not an insurance company, we sell no policies, and we take no commission from any company. We are paid only by you, through your subscription, which is why the answer you get has no reason to be biased.",
+                    // NOT «πληρωνόμαστε μόνο από εσάς»: that is the funding
+                    // claim deliverable 1 §5 retired — it breaks the day an
+                    // institution pays for an embedded deployment. The claims
+                    // that survive every scenario: no commission, identical
+                    // analysis whoever issued the policy.
+                    el: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία, δεν πουλάμε συμβόλαια και δεν παίρνουμε προμήθεια από καμία εταιρεία. Η ανάλυση είναι ίδια για κάθε συμβόλαιο, όποιος κι αν το εξέδωσε — η απάντηση που παίρνετε δεν έχει λόγο να είναι μεροληπτική.",
+                    en: "No. We are not an insurance company, we sell no policies, and we take no commission from any company. The analysis is the same for every policy, whoever issued it — the answer you get has no reason to be biased.",
                 },
             },
             {
