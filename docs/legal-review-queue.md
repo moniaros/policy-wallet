@@ -52,3 +52,16 @@ The data-location sentence used on marketing surfaces is:
 έγγραφά σας.» Any legal-page edit that changes this trilogy must ripple to
 `TRUST_FACTS` (lib/marketing/positioning.ts), the partners pages, and the FAQ
 — they all state it.
+
+## 5. DPO-reviewed wording for the per-document Article 9 gate (2026-08-30, Grafí G12, decision 3)
+
+**Blocks:** nothing today — the in-product gate renders `common.aiConsentBody`
+VERBATIM (the product's reviewed account-level wording) on `/add`, records one
+revocable `DocumentAiConsent` row per document, and offers per-document
+withdrawal on `/me/privacy`.
+
+**Ask:** confirm (or supply) DPO-approved wording specifically for the
+PER-DOCUMENT grant and withdrawal framing. Until then the account-level
+sentence is reused verbatim and marked `[verify]`; no paraphrase exists
+anywhere in the flow.
+

@@ -203,6 +203,24 @@ export async function createPolicy(formData: FormData) {
         return created
     })
 
+    // GDPR Art. 9 (Grafí G12, decision 3): one revocable consent row PER
+    // DOCUMENT, keyed to the verbatim reviewed sentence the /add gate showed.
+    // The gate stands before the dropzone, so reaching here IS the consent;
+    // best-effort outside the transaction — an environment that predates the
+    // table (prod DDL owed) must not lose the upload, and enforcement is
+    // flag-gated (app.document_consent) until the DDL lands.
+    if (validDocuments.length > 0) {
+        try {
+            const createdDocs = await db.policyDocument.findMany({ where: { policyId: policy.id }, select: { id: true } })
+            await db.documentAiConsent.createMany({
+                data: createdDocs.map((d) => ({ documentId: d.id, userId, textKey: "common.aiConsentBody", version: "2026-08-30" })),
+                skipDuplicates: true,
+            })
+        } catch (e) {
+            logger('warn', 'Document AI consent rows not stored (table may predate the feature)', { policyId: policy.id, error: e instanceof Error ? e.message : String(e) })
+        }
+    }
+
     // Trigger analysis if needed
     if (initialStatus === 'analyzing') {
         const policyService = new PolicyService()

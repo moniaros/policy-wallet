@@ -94,11 +94,18 @@ describe('Σύμβουλος speaks the wallet status vocabulary', () => {
         expect(resolvePolicyStatusKey(endsTomorrow, new Date('2026-08-24T21:30:00Z'))).toBe('expiring_soon')
     })
 
-    it('/agent ships the raw stored status and owns no pipeline of its own', () => {
-        const src = strip(readFileSync('app/(protected)/agent/page.tsx', 'utf-8'))
-        expect(src).toMatch(/status:\s*p\.status as Policy\['status'\]/)
-        expect(src, 'a second status pipeline is back').not.toMatch(/map-policy-card-status|mapPolicyCardStatus/)
-        expect(src, 'the page declares its own status mapper').not.toMatch(/function mapStatus\(/)
+    it('the adviser surface owns no status pipeline of its own (Grafí G10: /agent 301s to /adviser)', () => {
+        // The old /agent page shipped the RAW stored status to AgentClient. That
+        // surface is now a redirect stub; /adviser renders share state (who sees
+        // what) and no lifecycle vocabulary at all — so the invariant this guard
+        // exists for (no third status pipeline) holds by construction, and the
+        // assertions pin exactly that.
+        const stub = strip(readFileSync('app/(protected)/agent/page.tsx', 'utf-8'))
+        expect(stub).toMatch(/redirect\("\/adviser"\)/)
+        for (const f of ['app/(protected)/adviser/AdviserScreen.tsx', 'lib/app/adviser-model.ts']) {
+            const src = strip(readFileSync(f, 'utf-8'))
+            expect(src, `${f}: a status pipeline appeared on the adviser surface`).not.toMatch(/map-policy-card-status|mapPolicyCardStatus|function mapStatus\(|resolvePolicyStatusKey|getPolicyStatusView/)
+        }
     })
 })
 

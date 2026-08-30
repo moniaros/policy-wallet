@@ -56,6 +56,9 @@ export const ROUTE_OWNERSHIP: ReadonlyArray<readonly [pattern: string, owner: Ro
     ["/see", "policyholder"],
     ["/updates", "policyholder"],
     ["/adviser", "policyholder"],
+    ["/add", "policyholder"],
+    ["/life-event", "policyholder"],
+    ["/welcome", "policyholder"],
     // Agent-only extraction review under the policyholder's wallet tree.
     ["/wallet/*/review", "agent"],
     // §4.2: «Η προστασία μου» — absorbed /branches, /insights/risk-profile
@@ -399,6 +402,7 @@ export async function proxy(request: NextRequest) {
         if (legacy === "/protection") return NextResponse.redirect(new URL("/see", nextUrl), 301)
         if (legacy === "/notifications") return NextResponse.redirect(new URL("/updates", nextUrl), 301)
         if (legacy === "/agent") return NextResponse.redirect(new URL("/adviser", nextUrl), 301)
+        if (legacy === "/wallet/add") return NextResponse.redirect(new URL("/add", nextUrl), 301)
         if (legacy === "/wallet") return NextResponse.redirect(new URL(`/policies${nextUrl.search}`, nextUrl), 301)
         const detail = /^\/wallet\/([^/]+)$/.exec(legacy)
         if (detail && detail[1] !== "add") return NextResponse.redirect(new URL(`/policies/${detail[1]}`, nextUrl), 301)

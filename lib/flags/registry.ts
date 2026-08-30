@@ -88,6 +88,17 @@ export const FEATURE_FLAGS: Record<string, FlagDefinition> = {
     // ── Grafí application tier (B2C brief §11). Default OFF until the
     // production DDL for Finding / HouseholdPerson / AdviserShareAudit /
     // DocumentAiConsent is verified (docs/handover.md) — then flipped in the PR.
+    "app.document_consent": {
+        key: "app.document_consent",
+        kind: "boolean",
+        label: "App: per-document AI consent",
+        description:
+            "Enforce a per-document DocumentAiConsent row (revocable from /me/privacy) before any document reaches an AI provider; write rows at upload.",
+        category: "app",
+        envVar: "FF_APP_DOCUMENT_CONSENT",
+        defaultValue: false,
+        readAt: "lib/app/flags.ts appFlag",
+    },
     "app.findings": {
         key: "app.findings",
         kind: "boolean",

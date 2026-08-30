@@ -96,7 +96,7 @@ export async function getPlanData(): Promise<PlanData> {
                 include: { plan: true },
                 orderBy: { createdAt: "desc" },
             }),
-            db.policy.count({ where: { ownerUserId: dbUser.id } }),
+            db.policy.count({ where: { ownerUserId: dbUser.id, status: { not: "deleted" } } }),
             db.activityLog.count({
                 where: {
                     adminUserId: dbUser.id,

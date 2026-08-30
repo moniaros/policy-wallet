@@ -1,17 +1,8 @@
-import { getInsurers, getInsuranceTypes } from "../actions"
-import { AddPolicyClient } from "@/components/wallet/AddPolicyClient"
-import { getAuthenticatedUser } from "@/lib/auth-helpers"
+export const runtime = "nodejs"
 
-export default async function AddPolicyPage() {
-    const { dbUser } = await getAuthenticatedUser()
-    const insurers = await getInsurers()
-    const types = await getInsuranceTypes()
+import { redirect } from "next/navigation"
 
-    return (
-        <AddPolicyClient
-            insurers={insurers}
-            types={types}
-            hasAiConsent={Boolean(dbUser.aiProcessingConsentVersion)}
-        />
-    )
+/** /wallet/add → /add (Grafí G12). Proxy 301 first; this is the dead-link guard's arm. */
+export default function LegacyAddPolicyPage() {
+    redirect("/add")
 }

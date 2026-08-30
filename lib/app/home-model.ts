@@ -163,8 +163,7 @@ export async function loadHomeModel(userId: string, lang: "el" | "en", now: Date
         money: computeMoneyLine(moneyPolicies, new Map(), now),
         map,
         household,
-        // The re-check flow lives on /protection today (LifeEventsPanel); G12 flips this to /life-event/[type].
-        lifeChips: LIFE_EVENT_CHIPS.map((c) => ({ id: c.id, href: `/protection?event=${c.id}#life-events` })),
+        lifeChips: LIFE_EVENT_CHIPS.map((c) => ({ id: c.id, href: `/life-event/${c.id}` })),
         nextExpiry: next ? { policyId: next.id, assetLabel: next.assetLabel, days: next.daysUntilExpiry! } : null,
         lastDid: lastText && lastAt ? { text: lastText, at: lastAt } : null,
         notChecked: {

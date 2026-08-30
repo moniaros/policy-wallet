@@ -78,6 +78,7 @@ export async function disconnectAdviser(input: { relationshipId: string }): Prom
 }
 
 export async function inviteAdviser(input: { email: string }): Promise<{ ok: boolean }> {
+    await getAuthenticatedUser() // identity first — every "use server" export is a public endpoint
     const parsed = z.object({ email: z.string().email().max(200) }).safeParse(input)
     if (!parsed.success) return { ok: false }
     const result = await inviteAdvisorByEmail(parsed.data.email)

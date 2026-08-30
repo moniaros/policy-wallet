@@ -4,11 +4,13 @@
  */
 import React from "react"
 import { describe, it, expect, vi } from "vitest"
-import { render } from "@testing-library/react"
+import { fireEvent, render } from "@testing-library/react"
 
 vi.mock("@/app/(protected)/see/actions", () => ({ dismissFinding: vi.fn(async () => ({ ok: true })) }))
 vi.mock("@/app/(protected)/protection/quick-start-actions", () => ({ submitQuickStart: vi.fn() }))
 vi.mock("@/app/(protected)/updates/actions", () => ({ markUpdateRead: vi.fn(async () => ({ ok: true })), markStreamRead: vi.fn(async () => ({ ok: true })) }))
+vi.mock("@/app/(protected)/welcome/actions", () => ({ completeWelcome: vi.fn() }))
+vi.mock("@/app/(protected)/life-event/[type]/actions", () => ({ recordLifeEvent: vi.fn(async () => ({ ok: true, movedToNow: [], newFindings: [], profileChanged: true })) }))
 vi.mock("@/app/(protected)/adviser/actions", () => ({ setPolicyShared: vi.fn(async () => ({ ok: true })), disconnectAdviser: vi.fn(async () => ({ ok: true })), inviteAdviser: vi.fn(async () => ({ ok: true })), sendHelpRequest: vi.fn(async () => ({ ok: true })) }))
 vi.mock("@/lib/journey/funnel", () => ({ trackJourneyEvent: vi.fn() }))
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }), usePathname: () => "/see" }))
@@ -22,6 +24,8 @@ import { UpdatesScreen } from "@/app/(protected)/updates/UpdatesScreen"
 import { AdviserScreen } from "@/app/(protected)/adviser/AdviserScreen"
 import { HelpScreen } from "@/app/(protected)/adviser/help/[hash]/HelpScreen"
 import { MeScreen } from "@/app/(protected)/me/MeScreen"
+import { WelcomeScreen } from "@/app/(protected)/welcome/WelcomeScreen"
+import { LifeEventScreen } from "@/app/(protected)/life-event/[type]/LifeEventScreen"
 import { toRenderableFinding, findingHash } from "@/lib/app/finding"
 import type { SeeModel } from "@/lib/app/see-model"
 import type { PoliciesModel, PolicyRow } from "@/lib/app/policies-model"
@@ -220,5 +224,33 @@ describe("/me — «Εσείς»", () => {
         const empty = { policiesRead: 0, renewalsCaught: 0, findingsShown: 0, benefitsSurfaced: 0, questionsAnswered: 0, helpRequests: 0, year: 2026 }
         const { container } = wrap(<MeScreen ledger={empty} household={{ lang: "el", enabled: false, people: [] }} sections={sections} planLine="Πρόγραμμα: Free" />)
         expect(container.textContent).toContain("Δεν έχω κάνει ακόμη κάτι που να αξίζει να μετρήσω.")
+    })
+})
+
+describe("/welcome — three screens, first run only", () => {
+    it("walks what-I-do → what-I-never-do → first policy; the never screen denies selling, scoring and sharing", () => {
+        const { container } = wrap(<WelcomeScreen />)
+        expect(container.textContent).toContain("Τι κάνω")
+        fireEvent.click([...container.querySelectorAll("button")].find((b) => b.textContent === "Συνέχεια")!)
+        expect(container.textContent).toContain("Τι δεν κάνω ποτέ")
+        expect(container.textContent).toContain("δεν παίρνω προμήθεια")
+        expect(container.textContent).toContain("Δεν βαθμολογώ εσάς.")
+        fireEvent.click([...container.querySelectorAll("button")].find((b) => b.textContent === "Συνέχεια")!)
+        expect(container.textContent).toContain("Ανεβάστε ένα ασφαλιστήριο")
+        expect(container.textContent).not.toMatch(/\d\s?%/)
+    })
+})
+
+describe("/life-event/[type] — two questions, then the re-check delta", () => {
+    it("asks when (and the amount only when the engine needs one), never suggests", () => {
+        const { container } = wrap(<LifeEventScreen type="mortgage" magnitudeLabel="Ανεξόφλητο υπόλοιπο (€)" />)
+        const r = collectSections(JSDOM_OPTS)
+        expect(r.count).toBeLessThanOrEqual(2)
+        expect(container.textContent).toContain("Πότε έγινε;")
+        expect(container.textContent).toContain("Ανεξόφλητο υπόλοιπο (€)")
+        expect(container.textContent).toContain("Δεν αγοράζετε τίποτα εδώ.")
+        expect(container.textContent).not.toMatch(/προτείν|αγοράστε|αλλάξτε/i)
+        const noAmount = wrap(<LifeEventScreen type="marriage" magnitudeLabel={null} />)
+        expect(noAmount.container.querySelector('input[type="number"]')).toBeNull()
     })
 })

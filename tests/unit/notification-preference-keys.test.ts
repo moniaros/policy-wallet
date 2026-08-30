@@ -106,7 +106,7 @@ describe('the settings screen is driven by the registry', () => {
         // leave the others still sending. The expansion now happens server-side
         // (the screen passes only the group's key), so the assertion moved to
         // the action and the shared row builder.
-        const ACTIONS = strip(readFileSync('app/(protected)/account/actions.ts', 'utf-8'))
+        const ACTIONS = strip(readFileSync('app/(protected)/me/actions.ts', 'utf-8'))
         expect(ACTIONS).toMatch(/preferenceRowsForStream/)
         expect(UI).toMatch(/setNotificationStreamPreference\(/)
         for (const group of NOTIFICATION_PREFERENCE_GROUPS) {
@@ -255,7 +255,7 @@ describe('no preference surface hardcodes a channel', () => {
         // per-file checks can silently pass over an empty list.
         expect(writers.length).toBeGreaterThan(0)
         expect(writers, `writers found:\n${writers.join('\n')}`).toContain(
-            'app/(protected)/account/actions.ts'
+            'app/(protected)/me/actions.ts'
         )
         expect(writers).toContain('app/onboarding/actions.ts')
         expect(writers).toContain('app/api/v1/notifications/preferences/route.ts')

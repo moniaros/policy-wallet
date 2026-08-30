@@ -79,7 +79,7 @@ describe("the causal chain reaches every surface that shows a recommendation", (
         // And it links back to where the cause sits in context — the activity
         // history inside Ρυθμίσεις since V2-P2-02/03 relocated and removed
         // /timeline.
-        expect(card).toMatch(/href="\/account\/history"/)
+        expect(card).toMatch(/href="\/me\/history"/)
     })
 
     // Grafí G8: /wallet/[id] 301s to /policies/[id], whose findings come from the gate
@@ -106,7 +106,7 @@ describe("the causal chain reaches every surface that shows a recommendation", (
         // index and settings-ia.test.ts all render from — so this is the single
         // source that keeps the surface findable.
         const sections = readFileSync("lib/settings/sections.ts", "utf-8")
-        expect(sections).toMatch(/href: "\/account\/history"/)
+        expect(sections).toMatch(/href: "\/me\/history"/)
     })
 })
 

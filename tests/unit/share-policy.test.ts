@@ -13,6 +13,7 @@ vi.mock('@/lib/db', () => ({
         policy: { findUnique: vi.fn() },
         user: { findUnique: vi.fn() },
         accessGrant: { create: vi.fn(), update: vi.fn() },
+        adviserShareAudit: { create: vi.fn().mockResolvedValue({}) },
         invite: { create: vi.fn() },
         customerRelationship: { findUnique: vi.fn(), create: vi.fn() },
         notificationEvent: { create: vi.fn() },

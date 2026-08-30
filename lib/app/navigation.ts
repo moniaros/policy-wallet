@@ -39,7 +39,7 @@ export const SECONDARY_NAV: readonly NavEntry[] = [
     { id: "adviser", labelKey: "adviser", href: "/adviser", successor: "/adviser", aliases: ["/agent"], icon: "users" },
 ] as const
 
-export const ADD_POLICY: NavEntry = { id: "add", labelKey: "add", href: "/wallet/add", successor: "/add", aliases: ["/add"], icon: "plus" }
+export const ADD_POLICY: NavEntry = { id: "add", labelKey: "add", href: "/add", successor: "/add", aliases: ["/wallet/add"], icon: "plus" }
 
 /** The desktop sidebar order (§7): the five, then Ενημερώσεις, then Σύμβουλος. */
 export const SIDEBAR_NAV: readonly NavEntry[] = [...PRIMARY_NAV.slice(0, 4), SECONDARY_NAV[0], SECONDARY_NAV[1], PRIMARY_NAV[4]]

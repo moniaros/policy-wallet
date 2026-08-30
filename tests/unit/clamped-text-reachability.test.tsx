@@ -172,6 +172,12 @@ interface RegisterEntry {
 
 const REGISTER: RegisterEntry[] = [
     {
+        file: "app/(protected)/me/privacy/DocumentConsentRow.tsx",
+        clamps: { "line-clamp-1": 1 },
+        kind: "reachable",
+        note: "The clamped document label renders in full on /policies/[id] (the documents section names the same document unclamped); the row only needs to be recognisable to revoke.",
+    },
+    {
         file: "app/(protected)/agent/AgentClient.tsx",
         clamps: { truncate: 3 },
         kind: "debt",

@@ -119,6 +119,16 @@ is mostly reordering (Phase 2 spec), not reduction.
 
 ---
 
+## Προσθήκη / Γεγονότα ζωής / Καλωσόρισμα — `/add`, `/life-event/[type]`, `/welcome`
+
+Source: `app/(protected)/{add,life-event/[type],welcome}/*` (Grafí G12). `/wallet/add` 301s to `/add`.
+
+| Surface | What it renders | Source of truth |
+|---|---|---|
+| `/add` | the Article 9 gate BEFORE the dropzone: `common.aiConsentBody` VERBATIM + plain words + one switch (fail closed — no upload UI until on); then the existing AddPolicyClient; every created document gets a `DocumentAiConsent` row | `createPolicy` (writes rows), orchestrator (enforces behind `app.document_consent`) |
+| `/life-event/[type]` | the ten §8.10 chips only; two questions (when, amount where the engine needs one); «Ξαναείδα την προστασία σας» with exactly what moved — never a suggestion | `declareLifeEvent` + the same `loadFindingsContext` every screen reads, before/after |
+| `/welcome` | three screens (what I do / never do / first policy), first run only; completion recorded in the profile preferences JSON where onboarding has always lived (A-16: no new User column) | `firstRunDone` (lib/app/first-run.ts) |
+
 ## Εσείς — `/me` (+ household, appearance)
 
 Source: `app/(protected)/me/*` (Grafí G11 — the whole `/account` tree moved; `lib/settings/sections.ts`

@@ -272,12 +272,6 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "unlimited uploads mid-analysis. Whether deleted/cancelled rows should keep " +
             "consuming quota is a separate product question, not this invariant.",
     },
-    "app/(protected)/account/data.ts": {
-        count: 1,
-        reason:
-            "'policiesStored' usage stat on the account page — same stored-uploads semantics " +
-            "as lib/subscription-limits.ts, and the two must agree.",
-    },
     // ── Classifies liveness per policy in code (the sanctioned alternative) ──
     "lib/services/gap-engine/index.ts": {
         count: 5,

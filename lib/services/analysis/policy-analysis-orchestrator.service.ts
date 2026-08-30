@@ -143,6 +143,28 @@ type StepExecutionPayload<T> = {
     }
 }
 
+
+/**
+ * The per-document Article 9 gate (Grafí G12, flag `app.document_consent`).
+ * Fail closed: with the flag ON, a REVOKED row blocks the document outright,
+ * and an unreadable table blocks everything ("table_unavailable") — never
+ * fail-open. A document with NO row falls back to the account-level consent
+ * that was the recorded basis for uploads made before the feature (A-30);
+ * every upload since writes its row in createPolicy.
+ */
+async function assertDocumentAiConsent(documentIds: string[]): Promise<"ok" | "revoked" | "table_unavailable" | "off"> {
+    const { appFlag } = await import("@/lib/app/flags")
+    if (!(await appFlag("app.document_consent"))) return "off"
+    if (documentIds.length === 0) return "ok"
+    try {
+        const rows = await db.documentAiConsent.findMany({ where: { documentId: { in: documentIds } }, select: { documentId: true, revokedAt: true } })
+        if (rows.some((r) => r.revokedAt)) return "revoked"
+        return "ok"
+    } catch {
+        return "table_unavailable"
+    }
+}
+
 export class OrchestrationError extends Error {
     code: string
     retryable: boolean
@@ -371,6 +393,11 @@ export class PolicyAnalysisOrchestratorService {
             return { status: "failed", reason: "no_document" }
         }
 
+        const documentConsent = await assertDocumentAiConsent(policy.documents.map((d: { id: string }) => d.id))
+        if (documentConsent === "revoked" || documentConsent === "table_unavailable") {
+            return { status: "blocked", reason: documentConsent === "revoked" ? "document_consent_revoked" : "ai_consent_missing" }
+        }
+
         try {
             const prepared = await this.prepareDocument(policyId)
             const service = getAIService()
@@ -482,6 +509,23 @@ export class PolicyAnalysisOrchestratorService {
                     blockedReason: "ai_consent_missing",
                     failureCode: "AI_CONSENT_REQUIRED",
                     failureMessage: "Policy owner has not granted AI-processing consent",
+                    finishedAt: new Date(),
+                },
+            })
+        }
+
+        const documentConsent = await assertDocumentAiConsent((policy.documents ?? []).map((d: { id: string }) => d.id))
+        if (documentConsent === "revoked" || documentConsent === "table_unavailable") {
+            return db.policyAnalysisRun.create({
+                data: {
+                    policyId,
+                    userId,
+                    provider: primaryProvider,
+                    model: primaryRunModel,
+                    status: "blocked",
+                    blockedReason: documentConsent === "revoked" ? "document_consent_revoked" : "ai_consent_missing",
+                    failureCode: "AI_CONSENT_REQUIRED",
+                    failureMessage: documentConsent === "revoked" ? "AI consent for a document of this policy was withdrawn" : "Per-document consent could not be verified",
                     finishedAt: new Date(),
                 },
             })

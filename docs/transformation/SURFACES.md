@@ -16,7 +16,7 @@
 | `/wallet` | `app/(protected)/wallet/page.tsx` | Redirect only | — | policyholder → 301 `/policies` (Grafí G8) | Legacy URL |
 | `/wallet/[id]` | `app/(protected)/wallet/[id]/page.tsx` | Redirect only | — | → 301 `/policies/[id]` (Grafí G8) | Legacy URL |
 | `/wallet/[id]/edit` | `app/(protected)/wallet/[id]/edit/page.tsx` | Subpage | Free+ | `getPolicyAccess.canWrite` | Edit button on policy detail |
-| `/wallet/add` | `app/(protected)/wallet/add/page.tsx` | Landing | Free+ | policyholder | Dashboard CTA, portfolio summary CTA |
+| `/wallet/add` | `app/(protected)/wallet/add/page.tsx` | Redirect only | — | → 301 `/add` (Grafí G12) | Legacy URL |
 | `/protection` | `app/(protected)/protection/page.tsx` | Redirect only | — | policyholder → 301 `/see` (Grafí G8; `?lens=` dropped) | Legacy URL |
 | `/protection/[branch]` | `app/(protected)/protection/[branch]/page.tsx` | Subpage | Free+ | policyholder | Branch tiles on the ανά κλάδο lens |
 | `/agent` | `app/(protected)/agent/page.tsx` | Redirect only | — | policyholder → 301 `/adviser` (Grafí G10); `/agent/settings|pricing` stay agent-owned | Legacy URL |
@@ -46,6 +46,9 @@
 | `/me` | `app/(protected)/me/page.tsx` | Landing | None | any signed-in role | Grafí «Εσείς» (G11) — ledger, household, settings list |
 | `/me/household` | `app/(protected)/me/household/page.tsx` | Subpage | None | policyholder | /me index, home household section (G11) |
 | `/me/appearance` | `app/(protected)/me/appearance/page.tsx` | Subpage | None | any | /me settings list (G11) |
+| `/add` | `app/(protected)/add/page.tsx` | Landing | Free+ | policyholder | FAB / «Προσθήκη ασφαλιστηρίου» (G12) — the Article 9 gate stands before the dropzone |
+| `/life-event/[type]` | `app/(protected)/life-event/[type]/page.tsx` | Subpage | None | policyholder | «Άλλαξε κάτι στη ζωή σας;» chips on `/` (G12) |
+| `/welcome` | `app/(protected)/welcome/page.tsx` | Landing | None | policyholder | First run only: 0 policies and onboarding never completed (G12) |
 | `/adviser/help/[hash]` | `app/(protected)/adviser/help/[hash]/page.tsx` | Subpage | None | policyholder | «Ζητάω βοήθεια» on findings (G10) — consent sheet, one switch |
 
 **Total B2C routes:** 25 (including 2 redirects) — refreshed 2026-08-25 for V2-P2-03 (§4.2): `/coverage-insights`, `/timeline` and `/insights/risk-profile` removed; `/protection`, `/protection/[branch]` and `/account/history` are their homes  

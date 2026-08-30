@@ -70,9 +70,8 @@ describe('proxy() role gate wiring', () => {
         expect((await run('/wallet/pol-1/review')).status).toBe(200)
     })
 
-    it('keeps a policyholder out of the review child while their /wallet/add stays open', async () => {
+    it('keeps a policyholder out of the review child (G12: /wallet/add itself now 301s to /add)', async () => {
         sessionFor('policyholder')
-        expect((await run('/wallet/add')).status).toBe(200)
         const res = await run('/wallet/pol-1/review')
         expect(res.status).toBe(307)
         expect(res.headers.get('location')).toBe('http://localhost:3000/dashboard')
@@ -110,6 +109,12 @@ describe('proxy() role gate wiring', () => {
         expect(acc.status).toBe(301)
         expect(acc.headers.get('location')).toBe('http://localhost:3000/me/plan?x=1')
         expect((await run('/me/plan')).status).toBe(200)
+        // G12: the add flow moves behind the Article 9 gate at /add.
+        expect((await run('/wallet/add')).status).toBe(301)
+        expect((await run('/wallet/add')).headers.get('location')).toBe('http://localhost:3000/add')
+        expect((await run('/add')).status).toBe(200)
+        expect((await run('/life-event/marriage')).status).toBe(200)
+        expect((await run('/welcome')).status).toBe(200)
         expect((await run('/policies/pol-1')).status).toBe(200)
         sessionFor('agent')
         expect((await run('/wallet')).status, 'an agent is not rewritten').not.toBe(301)
