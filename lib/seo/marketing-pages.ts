@@ -197,9 +197,9 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     },
     "product-property": {
         path: "/product/property",
-        title: "Ασφάλεια κατοικίας: κενά, ΕΝΦΙΑ, ανακατασκευή",
+        title: "Ασφάλεια κατοικίας: κάλυψη και έκπτωση ΕΝΦΙΑ",
         description:
-            "Ελέγξτε αν το σπίτι σας είναι υπασφαλισμένο, αν δικαιούστε έκπτωση ΕΝΦΙΑ (σεισμός–φωτιά–πλημμύρα) και αν το κόστος ανακατασκευής είναι ενημερωμένο.",
+            "Σεισμός, πυρκαγιά, πλημμύρα: τι γράφει ο πίνακας καλύψεων και αν το συμβόλαιό σας πληροί τα κριτήρια της έκπτωσης ΕΝΦΙΑ. Με τον πλήρη οδηγό.",
         keywords: ["ασφάλεια κατοικίας", "έκπτωση ΕΝΦΙΑ ασφάλιση", "υπασφάλιση"],
         breadcrumb: "Κατοικία",
         en: {
@@ -211,15 +211,18 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     },
     "product-health": {
         path: "/product/health",
-        title: "Ασφάλεια υγείας: καλύψεις, απαλλαγές και όρια",
+        // Deliverable-4 diff (2026-08-30): the old description's «εντοπίζει τι
+        // σας λείπει» quietly implied gap detection, which is Family-gated —
+        // the new one promises only reading and questions.
+        title: "Ασφάλεια υγείας: τι καλύπτει το συμβόλαιό σας",
         description:
-            "Κατανοήστε απαλλαγές, ανώτατα όρια και απευθείας κάλυψη νοσηλείας. Η AI εξηγεί το συμβόλαιο υγείας σας σε απλά ελληνικά και εντοπίζει τι σας λείπει.",
-        keywords: ["ασφάλεια υγείας", "απαλλαγή ασφάλειας υγείας"],
+            "Όρια, εξαιρέσεις, περίοδοι αναμονής και η επιστολή αύξησης, εξηγημένα από το δικό σας συμβόλαιο. Οι ερωτήσεις που αξίζει να κάνετε πριν ανανεώσετε.",
+        keywords: ["ασφάλεια υγείας", "αύξηση ασφαλίστρων υγείας", "δείκτης αναπροσαρμογής", "περίοδος αναμονής ασφάλεια υγείας"],
         breadcrumb: "Υγεία",
         en: {
-            title: "Health insurance: deductibles and limits",
+            title: "Health insurance: what your policy covers",
             description:
-                "Understand deductibles, coverage caps and direct hospital billing. AI explains your health policy in plain language and shows what you are missing.",
+                "Limits, exclusions, waiting periods and the increase letter, all explained from your own policy. The questions worth asking before you renew.",
             breadcrumb: "Health",
         },
     },

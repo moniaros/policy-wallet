@@ -173,9 +173,9 @@ export const landingContent: LandingContentModel = {
         el: {
             locale: "el",
             path: "/",
-            title: "PolicyWallet | Δείτε τι δεν καλύπτει η ασφάλειά σας",
+            title: "Μάθετε τι πραγματικά καλύπτουν τα συμβόλαιά σας | PolicyWallet",
             description:
-                "Ανεξάρτητος έλεγχος ρίσκου με AI. Δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλειες. Δωρεάν πλήρης ανάλυση για 3 συμβόλαια.",
+                "Ανεβάστε κάθε ασφαλιστήριο, από κάθε εταιρεία. Η ανάλυση εξηγεί καλύψεις, εξαιρέσεις και κενά σε απλά ελληνικά — χωρίς πώληση, χωρίς προμήθεια.",
             keywords: [
                 "έλεγχος ασφάλισης",
                 "κενά κάλυψης",
@@ -183,7 +183,7 @@ export const landingContent: LandingContentModel = {
                 "ανεξάρτητος έλεγχος ρίσκου",
                 "PolicyWallet",
             ],
-            ogTitle: "PolicyWallet | Δείτε τι δεν καλύπτει η ασφάλειά σας",
+            ogTitle: "Μάθετε τι πραγματικά καλύπτουν τα συμβόλαιά σας | PolicyWallet",
             ogDescription:
                 "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι και πού όχι — και, με το Family, τι να διορθώσετε πρώτα.",
             twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",
@@ -192,9 +192,9 @@ export const landingContent: LandingContentModel = {
         en: {
             locale: "en",
             path: "/en",
-            title: "PolicyWallet | See what your insurance does not cover",
+            title: "Know what your policies actually cover | PolicyWallet",
             description:
-                "An independent risk check powered by AI. See where you are covered and where the gaps are. We do not sell insurance. Free full analysis for 3 policies.",
+                "Upload every policy, from every insurer. The analysis explains cover, exclusions and gaps in plain language — nothing sold, no commission taken.",
             keywords: [
                 "insurance check",
                 "coverage gaps",
@@ -202,7 +202,7 @@ export const landingContent: LandingContentModel = {
                 "independent risk check",
                 "PolicyWallet",
             ],
-            ogTitle: "PolicyWallet | See what your insurance does not cover",
+            ogTitle: "Know what your policies actually cover | PolicyWallet",
             ogDescription:
                 "We read your insurance and tell you where you are covered and where you are not — and, with Family, what to fix first.",
             twitterTitle: "PolicyWallet | An independent risk check",
