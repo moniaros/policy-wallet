@@ -16,6 +16,21 @@ seams and hostile review: `docs/handover.md`.
 
 ## Done since the last entry
 
+- **How-it-works band restyled onto Grafí** (2026-08-30, uncommitted): new
+  `components/landing/grafi/HowItWorks.tsx` — numbered icon tiles, one bold brand-green
+  phrase per step (`emphasis`, a verbatim substring of the JSON-LD description), per-step
+  44px arrows (1/4 → signup `source=landing_how_it_works`, 2 → `#reading-demo`,
+  3 → `#difference`), closing line «Εσείς αποφασίζετε.», ReadingDemo kept inside. Copy from
+  the owner's mock (accents fixed). Guard: `tests/unit/landing-how-it-works.test.ts`.
+  Verified 1280 + 390 (no h-scroll), HowTo JSON-LD plain, full unit set green.
+- **«Για ποιον» band restyled onto Grafí and moved under «Πώς λειτουργεί»** (2026-08-30,
+  uncommitted): new `components/landing/grafi/WhoItIsFor.tsx` (header with brush accent,
+  the shared «σωστή κάλυψη, τη σωστή στιγμή» strip) around a rewritten `AudienceTabs`
+  (same ARIA/keyboard contract, pill switch with icons, role cards with stamped phone
+  samples on the three-state chips — «Καλύπτεται»/«Κενό», no «Εντάξει»). Mock copy taken
+  in formal plural per the voice rule. Retired every hex literal in AudienceTabs and the
+  last one in WorldClassLanding (debt list shrunk). `BrushUnderline` promoted to
+  `src/design-system/layout.tsx`. Verified 1280 + 390, light + dark, both tabs.
 - **Grafí tokens → components → homepage**: fixed-promise H1 (carousel gone), coverage ticker,
   answer block joined to the glossary (guarded), sourced market numbers (ΕΔΑ + ΕΝΦΙΑ only),
   4 steps + ReadingDemo, broker band + BrokerScanPanel, comparison on /compare's source,
@@ -43,7 +58,7 @@ seams and hostile review: `docs/handover.md`.
 ## Next 3 actions
 
 1. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix).
-2. Restyle the remaining legacy bands (ServicesGrid, WhyDifferent, ClearLimits, FAQ, final CTA)
+2. Restyle the remaining legacy bands (WhyDifferent, ClearLimits, FAQ, final CTA — how-it-works and who-it-is-for done)
    onto Grafí and finish the G4 primitive remainder.
 3. When legal returns Terms §3 + IDD: de-noindex the partners pair and add its hreflang link.
 

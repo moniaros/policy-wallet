@@ -106,6 +106,27 @@ export function SectionHeading({
     )
 }
 
+/**
+ * One brand-green brush stroke under a word of a heading — the sanctioned
+ * accent device, used at most once per section. `currentColor` on `fg-brand`,
+ * so it recolours with the theme; aria-hidden, so it says nothing.
+ */
+export function BrushUnderline({ children, className }: { children: ReactNode; className?: string }) {
+    return (
+        <span className={cn("relative inline-block", className)}>
+            {children}
+            <svg
+                aria-hidden="true"
+                viewBox="0 0 100 8"
+                preserveAspectRatio="none"
+                className="pointer-events-none absolute inset-x-0 -bottom-1 h-[0.18em] w-full overflow-visible text-fg-brand"
+            >
+                <path d="M2 6C30 3 65 2 98 4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+            </svg>
+        </span>
+    )
+}
+
 export function SourceNote({ children, className }: { children: ReactNode; className?: string }) {
     // Sources are named and dated, in the caption step — never buried in a title attribute.
     return <p className={cn("text-g-caption text-fg-secondary", className)}>{children}</p>

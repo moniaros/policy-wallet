@@ -72,7 +72,7 @@ const chip = cva(
         },
     }
 )
-const CHIP_GLYPH = { covered: "✓", gap: "◆", review: "?" } as const
+export const CHIP_GLYPH = { covered: "✓", gap: "◆", review: "?" } as const
 /**
  * `review` is load-bearing honesty: a risk resting on facts the user has not
  * supplied stays "needs review" — it never silently becomes a gap. Icon+label

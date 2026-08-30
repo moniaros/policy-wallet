@@ -20,8 +20,9 @@ import { productCategories } from "@/lib/product/catalog"
  *     rendered it, which is exactly what made it dangerous — it was one
  *     import away from going live. It is gone. Verifiable facts only.
  *
- * This file carries ONLY what the homepage renders: the FAQ, the three
- * how-it-works steps, and the homepage SEO meta. A hero block, persona
+ * This file carries ONLY what the homepage renders: the FAQ, the four
+ * how-it-works steps (with their emphasis phrases and closing line), and
+ * the homepage SEO meta. A hero block, persona
  * tracks and half a dozen other sections used to sit here unrendered — a
  * second, contradicting hero headline one import away from going live.
  * Positioning copy lives in lib/marketing/positioning.ts and nowhere else.
@@ -33,18 +34,27 @@ export const landingContent: LandingContentModel = {
     productName: "PolicyWallet",
     /**
      * Rendered on the homepage as the "how it works" section AND emitted as
-     * HowTo JSON-LD. Three steps here means three steps on the page.
+     * HowTo JSON-LD. Four steps here means four steps on the page — the H2
+     * says «Τέσσερα», and tests/unit/landing-how-it-works.test.ts holds the
+     * count to it.
+     *
+     * `description` is the plain sentence that ships in the JSON-LD.
+     * `emphasis` is the phrase of that sentence the page renders in bold
+     * brand-green — it must be a verbatim substring in BOTH locales, or it
+     * silently renders plain. `closing` is the line under the list; it is
+     * not a step and never reaches the HowTo.
      */
     howItWorks: {
         title: { el: "Πώς λειτουργεί", en: "How it works" },
         steps: [
             {
                 id: "step-upload",
-                title: { el: "Στείλτε το συμβόλαιο", en: "Send us the policy" },
+                title: { el: "Ανεβάστε το συμβόλαιό σας", en: "Upload your policy" },
                 description: {
                     el: "PDF ή φωτογραφία, από οποιαδήποτε ασφαλιστική. Δεν χρειάζεται να το διαβάσετε.",
                     en: "A PDF or a photo, from any insurance company. You do not need to read it.",
                 },
+                emphasis: { el: "Δεν χρειάζεται", en: "You do not need" },
             },
             {
                 id: "step-read",
@@ -56,26 +66,32 @@ export const landingContent: LandingContentModel = {
             },
             {
                 id: "step-act",
-                title: { el: "Παίρνετε καθαρή απάντηση", en: "You get a clear answer" },
+                title: { el: "Σας δείχνουμε την αλήθεια", en: "We show you the truth" },
                 description: {
                     // Baseline verdict only — "fix first" is a Plus output and
                     // this text also ships inside the home HowTo JSON-LD.
-                    el: "Σας λέμε αν είστε καλυμμένοι, με απλά λόγια. Εσείς αποφασίζετε.",
-                    en: "We tell you if you are covered, in plain words. You decide.",
+                    el: "Σας εξηγούμε με απλά λόγια τι καλύπτουν τα ασφαλιστήριά σας και τι μπορεί να σας λείπει.",
+                    en: "We explain in plain words what your policies cover and what may be missing.",
                 },
+                emphasis: { el: "τι μπορεί να σας λείπει", en: "what may be missing" },
             },
             {
                 // §6 asks four steps. The fourth is the one that keeps being
                 // true after day one: renewal reminders and change tracking
                 // are live capabilities, so the step promises exactly them.
                 id: "step-monitor",
-                title: { el: "Μένετε πάντα ενήμεροι", en: "You stay ahead" },
+                title: { el: "Μένετε πάντα ενημερωμένοι", en: "You always stay informed" },
                 description: {
                     el: "Σας ειδοποιούμε πριν από κάθε λήξη — και όταν έρθει το νέο συμβόλαιο, βλέπετε τι άλλαξε.",
                     en: "We remind you before every expiry — and when the new policy arrives, you see what changed.",
                 },
+                emphasis: { el: "βλέπετε τι άλλαξε", en: "you see what changed" },
             },
         ],
+        closing: {
+            lead: { el: "Εσείς αποφασίζετε.", en: "You decide." },
+            rest: { el: "Εμείς σας δίνουμε τα δεδομένα.", en: "We give you the facts." },
+        },
     },
     /**
      * Rendered on the homepage AND emitted as FAQPage JSON-LD. Every question

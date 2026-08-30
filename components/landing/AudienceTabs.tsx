@@ -1,22 +1,53 @@
 "use client"
 
-import { useRef, useState } from "react"
-import {
-    CheckCircle2,
-    ArrowRight,
-    Car,
-    Home,
-    Heart,
-    AlertTriangle,
-    TrendingUp,
-} from "lucide-react"
+import { useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
+import {
+    ArrowRight,
+    BriefcaseBusiness,
+    CalendarClock,
+    Car,
+    CheckCircle2,
+    HeartPulse,
+    House,
+    TrendingUp,
+    UserRound,
+    type LucideIcon,
+} from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
+import { CHIP_GLYPH, STATE_LABELS } from "@/src/design-system/primitives"
+import { BrushUnderline, Eyebrow } from "@/src/design-system/layout"
+
+/**
+ * The «Για ποιον» tabs (§6): one pill switch, two role cards — copy on the
+ * left, a stamped product sample on the right. Grafí tokens throughout;
+ * dark mode comes from the token layer.
+ *
+ * Honesty rules this file carries (see tests/unit/marketing-mock-honesty):
+ * no scores, no portfolio sizes, no invented people — lettered clients only;
+ * every sample is described to assistive tech as an example AND captioned as
+ * one for sighted readers; plan-gated benefits name their plan; statuses use
+ * the three-state vocabulary (STATE_LABELS), never a softer «εντάξει».
+ */
 
 interface AudienceTabsProps {
     isGreek: boolean
 }
+
+const focusRing =
+    "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus"
+
+const TAB_BASE =
+    "inline-flex min-h-11 items-center gap-g-2 rounded-g-pill px-g-5 text-g-body-sm font-semibold " +
+    "transition-colors duration-200 [transition-timing-function:var(--ease-out-g)] " + focusRing
+const TAB_ACTIVE = "bg-action-primary-bg text-fg-on-brand"
+const TAB_IDLE = "text-fg-secondary hover:text-fg-primary"
+
+const PRIMARY_LINK =
+    "inline-flex min-h-11 items-center justify-center gap-g-2 rounded-g-pill bg-action-primary-bg px-g-6 py-g-3 " +
+    "text-g-body-sm font-semibold text-fg-on-brand transition-colors duration-200 hover:bg-action-primary-hover " +
+    "[-webkit-tap-highlight-color:transparent] " + focusRing
 
 export function AudienceTabs({ isGreek }: AudienceTabsProps) {
     const [activeTab, setActiveTab] = useState<"policyholders" | "agents">("policyholders")
@@ -30,20 +61,11 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
     const agPanelId = "audience-panel-agents"
 
     /**
-     * Arrow keys move the SELECTION and the focus together.
-     *
-     * This used to take the tab the key fired on as `current` — a constant per
-     * button — and flip away from it. Because the tablist has a roving
-     * tabindex, focus stays on the button you pressed, so after one ArrowRight
-     * from "Ιδιώτες" the selection was "Ασφαλιστές" while focus was still on
-     * "Ιδιώτες", now tabIndex=-1. Every further arrow recomputed from
-     * "policyholders" and set the selection to "Ασφαλιστές" again: no-ops.
-     * Measured — ArrowLeft, ArrowLeft, ArrowRight, Home and End each produced a
-     * byte-identical snapshot, and the only way back to the first panel was to
-     * Tab forward out of the tablist.
-     *
-     * Deriving the next tab from `activeTab` and focusing it keeps the two in
-     * step, which is what the APG tabs pattern requires.
+     * Arrow keys move the SELECTION and the focus together. The next tab is
+     * derived from `activeTab`, never from the button the key fired on: with
+     * a roving tabindex, focus stays where it was pressed, so a per-button
+     * `current` recomputed from the same constant and every arrow after the
+     * first was a no-op (measured; APG tabs pattern requires the pair to move).
      */
     const select = (next: "policyholders" | "agents") => {
         setActiveTab(next)
@@ -67,12 +89,11 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
 
     return (
         <div>
-            {/* Tab list */}
-            <div className="mb-10 flex justify-center">
+            <div className="flex justify-center">
                 <div
                     role="tablist"
                     aria-label={t("Επιλογή κοινού", "Audience selection")}
-                    className="flex rounded-full border border-neutral-200 dark:border-slate-800 bg-neutral-100 dark:bg-slate-800 p-1"
+                    className="flex rounded-g-pill border border-border-subtle bg-surface-raised p-g-1"
                 >
                     <button
                         type="button"
@@ -84,12 +105,9 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         tabIndex={activeTab === "policyholders" ? 0 : -1}
                         onClick={() => setActiveTab("policyholders")}
                         onKeyDown={handleKeyDown}
-                        className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
-                            activeTab === "policyholders"
-                                ? "bg-brand-green text-white shadow-sm"
-                                : "text-muted-foreground hover:text-neutral-900 dark:text-slate-400 dark:hover:text-white"
-                        }`}
+                        className={`${TAB_BASE} ${activeTab === "policyholders" ? TAB_ACTIVE : TAB_IDLE}`}
                     >
+                        <UserRound aria-hidden className="size-4" />
                         {t("Ιδιώτες", "Individuals")}
                     </button>
                     <button
@@ -102,23 +120,20 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         tabIndex={activeTab === "agents" ? 0 : -1}
                         onClick={() => setActiveTab("agents")}
                         onKeyDown={handleKeyDown}
-                        className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
-                            activeTab === "agents"
-                                ? "bg-brand-green text-white shadow-sm"
-                                : "text-muted-foreground hover:text-neutral-900 dark:text-slate-400 dark:hover:text-white"
-                        }`}
+                        className={`${TAB_BASE} ${activeTab === "agents" ? TAB_ACTIVE : TAB_IDLE}`}
                     >
+                        <BriefcaseBusiness aria-hidden className="size-4" />
                         {t("Ασφαλιστές", "Agents")}
                     </button>
                 </div>
             </div>
 
-            {/* Tab panels */}
             <div
                 role="tabpanel"
                 id={phPanelId}
                 aria-labelledby="audience-tab-policyholders"
                 hidden={activeTab !== "policyholders"}
+                className="mt-g-8"
             >
                 <PolicyholderPanel isGreek={isGreek} />
             </div>
@@ -127,6 +142,7 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                 id={agPanelId}
                 aria-labelledby="audience-tab-agents"
                 hidden={activeTab !== "agents"}
+                className="mt-g-8"
             >
                 <AgentPanel isGreek={isGreek} />
             </div>
@@ -134,202 +150,212 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
     )
 }
 
-/* ─── Policyholder Panel ──────────────────────────────────────── */
+/* ─── Shared card pieces ──────────────────────────────────────── */
 
-function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
-    const t = (el: string, en: string) => (isGreek ? el : en)
-
-    const benefits = [
-        {
-            el: "Όλες οι ασφάλειές σας — αυτοκίνητο, σπίτι, υγεία — σε μία οθόνη",
-            en: "All your insurance — car, home, health — on one screen",
-        },
-        {
-            // Reminders start on the Plus plan (Free shows only the date),
-            // so the benefit names the plan instead of promising it to everyone.
-            el: "Υπενθύμιση πριν λήξει κάτι, για να μη μείνετε ακάλυπτοι — από το πλάνο Plus",
-            en: "A reminder before something runs out, so you are never left uncovered — from the Plus plan",
-        },
-        {
-            // Gap detection is a Family feature — the benefit names
-            // the plan, same honesty rule as the Starter bullet above.
-            el: "Βρίσκουμε κενά που ίσως δεν είδε ούτε ο σύμβουλός σας — με το Family",
-            en: "We find gaps even your own advisor may have missed — with Family",
-        },
-    ]
-
-    const miniPolicies = [
-        // Mock app UI speaks consumer words ("Car"); the product taxonomy
-        // (catalog, footer) keeps the branch name "Motor".
-        //
-        // These tiles used to read 92% / 71% / 98%. This is the ONLY product
-        // illustration a phone visitor ever sees — PolicyWalletWidget is
-        // `hidden lg:block` — so the one mock they get was the one carrying
-        // scores that PolicyWalletWidget had already removed on the grounds
-        // that a stranger cannot check any of those numbers, which makes them
-        // decoration rather than evidence. Same verdicts as the desktop mock
-        // now: which cover is fine, which one has a hole.
-        { Icon: Car, name: t("Αυτοκίνητο", "Car"), status: t("Εντάξει", "All good"), type: "ok" as const },
-        { Icon: Home, name: t("Σπίτι", "Home"), status: t("Κενό", "Gap"), type: "warn" as const },
-        { Icon: Heart, name: t("Υγεία", "Health"), status: t("Εντάξει", "All good"), type: "ok" as const },
-    ]
-
+function RoleCard({ copy, sample }: { copy: ReactNode; sample: ReactNode }) {
     return (
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            {/* Copy */}
-            <div>
-                <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-neutral-900 dark:text-white lg:text-h2">
-                    {t(
-                        "Για ανθρώπους που θέλουν ηρεμία, όχι εκπλήξεις.",
-                        "For people who want peace of mind, not surprises."
-                    )}
-                </h3>
-                <p className="mb-7 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
-                    {t(
-                        "Τέλος το ψάξιμο στα συρτάρια. Όλα σε ένα μέρος, πάντα ενημερωμένα.",
-                        "No more digging through drawers. Everything in one place, always up to date."
-                    )}
-                </p>
-                <ul className="mb-8 space-y-3.5">
-                    {benefits.map((b, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                            <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
-                            <span className="text-body text-neutral-700 dark:text-slate-300">{t(b.el, b.en)}</span>
-                        </li>
-                    ))}
-                </ul>
-                {/* Reads PRIMARY_ACTION rather than its own wording. This
-                    button sits on the SAME page as the hero and the closing
-                    CTA, and it used to hard-code the label those two have since
-                    moved off — so the homepage showed two different primary
-                    promises, the older of which claimed a Family
-                    outcome on a free signup. */}
-                <Link
-                    href={authHref("/auth/signup?role=policyholder&source=landing_audience", isGreek ? "el" : "en")}
-                    className="pw-primary-button"
-                >
-                    {pick(PRIMARY_ACTION, isGreek ? "el" : "en")}
-                    <ArrowRight aria-hidden className="h-4 w-4" />
-                </Link>
+        <article className="rounded-g-lg border border-border-subtle bg-surface-raised p-g-6 md:p-g-8">
+            <div className="grid items-center gap-g-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-g-12">
+                <div>{copy}</div>
+                <div>{sample}</div>
             </div>
+        </article>
+    )
+}
 
-            {/* The illustration and its caption share one grid cell. As
-                siblings of the copy column they would be a third grid item and
-                the caption would drop beneath the text at lg, captioning
-                nothing. */}
-            <div>
-            {/* Illustration. One role="img" with a plain-language alternative,
-                so assistive tech hears a description instead of reading the
-                example data as if it were the visitor's own policies. */}
-            <div
-                role="img"
-                aria-label={t(
-                    "Παράδειγμα: τρεις ασφάλειες σε μία οθόνη — αυτοκίνητο και υγεία εντάξει, στην κατοικία λείπει η κάλυψη πλημμύρας.",
-                    "Example: three policies on one screen — car and health are fine, the home is missing flood cover."
-                )}
-                className="rounded-2xl border border-neutral-200 dark:border-slate-800 bg-neutral-50 dark:bg-slate-900 p-5"
-            >
-                <div className="mb-4 flex items-center justify-between">
-                    <p className="text-body-sm font-semibold text-neutral-900 dark:text-white">
-                        {t("Τα συμβόλαιά μου", "My Policies")}
-                    </p>
-                    <span className="rounded-full bg-status-warning-tint px-2.5 py-1 text-micro font-semibold text-status-warning">
-                        1 {t("κενό", "gap")}
-                    </span>
-                </div>
-                <div className="space-y-2">
-                    {miniPolicies.map((p) => (
-                        <div
-                            key={p.name}
-                            className="flex items-center gap-3 rounded-xl border border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2.5"
-                        >
-                            <div
-                                className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${
-                                    p.type === "warn" ? "bg-status-warning-tint" : "bg-primary-tint dark:bg-brand-green/15"
-                                }`}
-                            >
-                                <p.Icon
-                                    className={`h-4 w-4 ${
-                                        p.type === "warn" ? "text-status-warning" : "text-primary dark:text-[#A7F3D0]"
-                                    }`}
-                                />
-                            </div>
-                            <span className="flex-1 text-body-sm font-medium text-neutral-900 dark:text-white">
-                                {p.name}
-                            </span>
-                            {p.type === "warn" ? (
-                                <div className="flex items-center gap-1">
-                                    <AlertTriangle className="h-3.5 w-3.5 text-status-warning" />
-                                    <span className="text-micro font-semibold text-status-warning">
-                                        {p.status}
-                                    </span>
-                                </div>
-                            ) : (
-                                <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
-                                    {p.status}
-                                </span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-                <div className="mt-3 flex items-center gap-2 rounded-xl border border-status-warning-edge bg-[#FFFBEB] dark:bg-amber-500/10 p-3">
-                    <AlertTriangle className="h-4 w-4 flex-shrink-0 text-status-warning" />
-                    <p className="text-caption font-medium text-status-warning">
-                        {t(
-                            "Σπίτι: λείπει κάλυψη πλημμύρας",
-                            "Home: missing flood cover"
-                        )}
-                    </p>
-                </div>
-            </div>
+function BenefitList({ items }: { items: string[] }) {
+    return (
+        <ul className="mt-g-6 flex flex-col gap-g-3">
+            {items.map((text) => (
+                <li key={text} className="flex items-start gap-g-3">
+                    <CheckCircle2 aria-hidden className="mt-0.5 size-5 shrink-0 text-fg-brand" />
+                    <span className="text-g-body text-fg-primary">{text}</span>
+                </li>
+            ))}
+        </ul>
+    )
+}
 
-            {/* The caption a sighted visitor gets. Until now "Παράδειγμα" lived
-                only in the role="img" label above, so a screen-reader user was
-                told this was an example and everyone else was not — on the one
-                product illustration a phone visitor ever sees. It names the
-                plan for the same reason PolicyWalletWidget's does: finding the
-                gap is a Family job, and this renders near "free",
-                so an unattributed mock reads as a free-tier promise. It sits
-                OUTSIDE the role="img" wrapper so assistive tech hears it as a
-                caption instead of having it swallowed by the image label. */}
-            <p className="mt-3 text-center text-micro text-muted-foreground dark:text-slate-400">
-                {t(
-                    "Παράδειγμα αποτελέσματος με το Family.",
-                    "Example result with Family.",
-                )}
-            </p>
-            </div>
+/**
+ * A static phone frame for ONE sample screen. Not `DeviceFrame`: that one
+ * cycles screens, and a second rotator on the homepage is forbidden (D-G05).
+ * `role="img"` + a plain-language label, so assistive tech hears a
+ * description instead of reading the example rows as the visitor's own data.
+ */
+function PhoneSample({ label, children }: { label: string; children: ReactNode }) {
+    return (
+        <div
+            role="img"
+            aria-label={label}
+            className="mx-auto w-full max-w-[320px] rounded-[34px] border border-border-strong bg-surface-inverse p-g-2"
+        >
+            <div className="rounded-[26px] bg-surface-base p-g-3">{children}</div>
         </div>
     )
 }
 
-/* ─── Agent Panel ─────────────────────────────────────────────── */
+/**
+ * StatusChip at phone-row scale. A separate element rather than a className
+ * override: `cn()`'s merge does not pair `px-g-2` with `px-g-3`, so the
+ * override kept both and the primitive's size won — «Πελάτης Β» truncated
+ * beside a 112px chip at 390. Same state tokens, same glyphs, smaller box.
+ */
+const MINI_CHIP: Record<"covered" | "gap" | "review", string> = {
+    covered: "bg-state-covered-fill text-state-covered",
+    gap: "border border-state-gap-border bg-state-gap-fill text-state-gap",
+    review: "bg-state-review-fill text-state-review",
+}
+function MiniChip({ state, children }: { state: "covered" | "gap" | "review"; children: ReactNode }) {
+    return (
+        <span className={`inline-flex min-h-7 shrink-0 items-center gap-1 rounded-g-pill px-g-2 text-xs font-semibold ${MINI_CHIP[state]}`}>
+            <span aria-hidden>{CHIP_GLYPH[state]}</span>
+            {children}
+        </span>
+    )
+}
+
+function SampleCaption({ children }: { children: ReactNode }) {
+    // Sighted readers get the same "example" framing the role="img" label
+    // gives assistive tech — OUTSIDE the image, so it reads as a caption.
+    return <p className="mt-g-3 text-center text-g-caption text-fg-secondary">{children}</p>
+}
+
+/* ─── Policyholder panel ──────────────────────────────────────── */
+
+function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
+    const t = (el: string, en: string) => (isGreek ? el : en)
+    const locale = isGreek ? "el" : "en"
+
+    const benefits = [
+        t(
+            "Όλες οι ασφάλειές σας — αυτοκίνητο, σπίτι, υγεία — σε μία οθόνη",
+            "All your insurance — car, home, health — on one screen",
+        ),
+        // Reminders start on the Plus plan (Free shows only the date), so the
+        // benefit names the plan instead of promising it to everyone.
+        t(
+            "Υπενθύμιση πριν λήξει κάτι, για να μη μείνετε ακάλυπτοι — από το πλάνο Plus",
+            "A reminder before something runs out, so you are never left uncovered — from the Plus plan",
+        ),
+        // Gap detection is a Family feature — same honesty rule.
+        t(
+            "Βρίσκουμε κενά που ίσως δεν είδε ούτε ο σύμβουλός σας — με το Family",
+            "We find gaps even your own advisor may have missed — with Family",
+        ),
+    ]
+
+    // Consumer words in the mock («Αυτοκίνητο»); the catalogue keeps «Motor».
+    // States through the three-state system — which cover is fine, which one
+    // has a hole — never a score.
+    const rows: { Icon: LucideIcon; name: string; state: "covered" | "gap" }[] = [
+        { Icon: Car, name: t("Αυτοκίνητο", "Car"), state: "covered" },
+        { Icon: House, name: t("Σπίτι", "Home"), state: "gap" },
+        { Icon: HeartPulse, name: t("Υγεία", "Health"), state: "covered" },
+    ]
+
+    return (
+        <RoleCard
+            copy={
+                <>
+                    <Eyebrow>{t("Ιδιώτες", "Individuals")}</Eyebrow>
+                    <h3 className="mt-g-3 text-balance text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary">
+                        {t("Για εσάς που θέλετε ", "For those who want ")}
+                        <BrushUnderline>
+                            <span className="text-fg-brand">{t("ηρεμία", "peace of mind")}</span>
+                        </BrushUnderline>
+                        {t(", όχι εκπλήξεις.", ", not surprises.")}
+                    </h3>
+                    <p className="mt-g-4 max-w-[56ch] text-g-body-lg text-fg-secondary">
+                        {t(
+                            "Τέλος το ψάξιμο στα συρτάρια. Όλα τα συμβόλαιά σας, πάντα ενημερωμένα.",
+                            "No more digging through drawers. All your policies, always up to date.",
+                        )}
+                    </p>
+                    <BenefitList items={benefits} />
+                    {/* Reads PRIMARY_ACTION: this button shares the page with the
+                        hero and the closing CTA, and a hard-coded label here once
+                        left the homepage making two different primary promises. */}
+                    <Link
+                        href={authHref("/auth/signup?role=policyholder&source=landing_audience", locale)}
+                        className={`mt-g-8 ${PRIMARY_LINK}`}
+                    >
+                        {pick(PRIMARY_ACTION, locale)}
+                        <ArrowRight aria-hidden className="size-4" />
+                    </Link>
+                </>
+            }
+            sample={
+                <>
+                    <PhoneSample
+                        label={t(
+                            "Παράδειγμα: τρεις ασφάλειες σε μία οθόνη — αυτοκίνητο και υγεία καλύπτονται, στην κατοικία λείπει η κάλυψη πλημμύρας.",
+                            "Example: three policies on one screen — car and health are covered, the home is missing flood cover.",
+                        )}
+                    >
+                        <div className="flex items-center justify-between gap-g-2">
+                            <p className="text-sm font-semibold text-fg-primary">{t("Τα συμβόλαιά μου", "My policies")}</p>
+                            <MiniChip state="gap">1 {t("κενό", "gap")}</MiniChip>
+                        </div>
+                        <ul className="mt-g-3 flex flex-col gap-g-2">
+                            {rows.map((r) => (
+                                <li
+                                    key={r.name}
+                                    className="flex items-center gap-g-2 rounded-g-md border border-border-subtle bg-surface-raised px-g-3 py-g-2"
+                                >
+                                    <span
+                                        className={
+                                            r.state === "gap"
+                                                ? "flex size-8 shrink-0 items-center justify-center rounded-g-sm bg-state-gap-fill text-state-gap"
+                                                : "flex size-8 shrink-0 items-center justify-center rounded-g-sm bg-state-covered-fill text-state-covered"
+                                        }
+                                    >
+                                        <r.Icon aria-hidden className="size-4" />
+                                    </span>
+                                    <span className="flex-1 text-sm font-medium text-fg-primary">{r.name}</span>
+                                    <MiniChip state={r.state}>{pick(STATE_LABELS[r.state], locale)}</MiniChip>
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="mt-g-3 flex items-center gap-g-2 rounded-g-md border border-state-gap-border bg-state-gap-fill px-g-3 py-g-2 text-sm font-medium text-state-gap">
+                            <span aria-hidden>◆</span>
+                            {t("Σπίτι: λείπει κάλυψη πλημμύρας", "Home: missing flood cover")}
+                        </p>
+                    </PhoneSample>
+                    {/* Names the plan: finding the gap is a Family job, and this
+                        renders near "free", so an unattributed mock reads as a
+                        free-tier promise. */}
+                    <SampleCaption>{t("Παράδειγμα αποτελέσματος με το Family.", "Example result with Family.")}</SampleCaption>
+                </>
+            }
+        />
+    )
+}
+
+/* ─── Agent panel ─────────────────────────────────────────────── */
 
 function AgentPanel({ isGreek }: { isGreek: boolean }) {
     const t = (el: string, en: string) => (isGreek ? el : en)
+    const locale = isGreek ? "el" : "en"
 
     const benefits = [
-        {
-            el: "Όλοι οι πελάτες σας σε μία οθόνη — ποιος λήγει, ποιος έχει κενό",
-            en: "All your clients on one screen — who is running out, who has a gap",
-        },
-        {
-            el: "Προτάσεις για το τι λείπει σε κάθε πελάτη, βγαλμένες από τα ίδια του τα συμβόλαια",
-            en: "Suggestions for what each client is missing, taken from their own policies",
-        },
-        {
-            el: "Στέλνετε 100 αρχεία μαζί και τα διαβάζουμε όλα σε λίγα λεπτά",
-            en: "Send 100 files at once and we read every one of them in minutes",
-        },
+        t(
+            "Όλοι οι πελάτες σας σε μία οθόνη — ποιος λήγει, ποιος έχει κενό",
+            "All your clients on one screen — who is running out, who has a gap",
+        ),
+        t(
+            "Προτάσεις για το τι λείπει σε κάθε πελάτη, βγαλμένες από τα ίδια του τα συμβόλαια",
+            "Suggestions for what each client is missing, taken from their own policies",
+        ),
+        t(
+            "Στέλνετε 100 αρχεία μαζί και τα διαβάζουμε όλα σε λίγα λεπτά",
+            "Send 100 files at once and we read every one of them in minutes",
+        ),
     ]
 
-    // No scores here either. These rows used to end in 91% and 84% — the same
-    // uncheckable two-digit grade the policyholder mock above just lost, and
-    // the one PolicyWalletWidget removed on the record. A client whose cover is
-    // fine says so; a client with a renewal coming says how many days.
-    // Lettered placeholders, matching AgentWidgets and the «Ασφαλιστική Α»
-    // convention: a mock row needs a label, and an invented Greek surname reads
-    // as a real book of business a reader cannot check.
+    // Lettered placeholders («Πελάτης Α»), matching AgentWidgets: a mock row
+    // needs a label, and an invented surname reads as a real book of business.
+    // A client whose cover is fine says so; one with a renewal coming says how
+    // many days — never a grade.
     const clients = [
         { initials: t("Α", "A"), name: t("Πελάτης Α", "Client A"), renewal: 7, alert: true },
         { initials: t("Β", "B"), name: t("Πελάτης Β", "Client B"), renewal: 23, alert: false },
@@ -338,111 +364,73 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
     ]
 
     return (
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            {/* Copy */}
-            <div>
-                <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-neutral-900 dark:text-white lg:text-h2">
-    {t(
-        "Δείτε ολόκληρο το risk profile του πελάτη σας — όχι απλώς τα μεμονωμένα συμβόλαιά του.",
-        "See your client's entire risk profile — not just their individual policies."
-    )}
-</h3>
-<p className="mb-7 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
-    {t(
-        "Συγκεντρώστε τις καλύψεις του πελάτη σε μία ενιαία εικόνα, εντοπίστε κενά και επικαλύψεις και κατανοήστε τι πραγματικά χρειάζεται.",
-        "Bring your client's coverage into one complete view, identify gaps and overlaps, and understand what they actually need."
-    )}
-</p>
-                <ul className="mb-8 space-y-3.5">
-                    {benefits.map((b, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                            <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
-                            <span className="text-body text-neutral-700 dark:text-slate-300">{t(b.el, b.en)}</span>
-                        </li>
-                    ))}
-                </ul>
-                <Link
-                    href={localizeHref("/solutions/agents", isGreek ? "el" : "en")}
-                    className="pw-primary-button"
-                >
-                    {t("Δείτε τι παίρνετε", "See what you get")}
-                    <ArrowRight aria-hidden className="h-4 w-4" />
-                </Link>
-            </div>
-
-            {/* Illustration and caption share one grid cell — as siblings of
-                the copy column the caption becomes a third grid item and drops
-                beneath the text at lg. */}
-            <div>
-            {/* Illustration — described once for assistive tech, so the example
-                client names are never read out as real people. */}
-            <div
-                role="img"
-                aria-label={t(
-                    "Παράδειγμα: μία οθόνη με τους πελάτες σας, ποιανού η ασφάλεια λήγει σύντομα, και μια πρόταση για το τι λείπει σε έναν από αυτούς.",
-                    "Example: one screen with your clients, whose cover runs out soon, and a suggestion for what one of them is missing."
-                )}
-                className="rounded-2xl border border-neutral-200 dark:border-slate-800 bg-neutral-50 dark:bg-slate-900 p-5"
-            >
-                {/* The three KPI tiles that led this mock — "47 Πελάτες · 8
-                    Ανανεώσεις · 12 Ευκαιρίες" — are gone. They were a portfolio
-                    size we invented, set in the largest type on the panel, and
-                    a stranger could check none of it. The list below is the
-                    thing the agent actually came for. */}
-
-                {/* Client list */}
-                <div className="space-y-2">
-                    {clients.map((c) => (
-                        <div
-                            key={c.name}
-                            className="flex items-center gap-3 rounded-xl border border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2.5"
-                        >
-                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-brand-green/10 text-kicker font-bold text-primary dark:text-[#A7F3D0]">
-                                {c.initials}
-                            </div>
-                            <span className="flex-1 truncate text-caption font-medium text-neutral-900 dark:text-white">
-                                {c.name}
-                            </span>
-                            {c.alert ? (
-                                <span className="flex items-center gap-1 rounded-full bg-status-warning-tint px-2 py-0.5 text-kicker font-semibold text-status-warning">
-                                    <AlertTriangle className="h-2.5 w-2.5" />
-                                    {t(`${c.renewal} ημ.`, `${c.renewal}d`)}
-                                </span>
-                            ) : (
-                                <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
-                                    {t("Εντάξει", "All good")}
-                                </span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                {/* AI suggestion */}
-                {/* Was indigo (#EEF2FF / #4F46E5) — a colour that appears
-                    nowhere else on the public site, whose light border had no
-                    dark-mode pair. Brand green, both themes. */}
-                <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-[#A7F3D0] bg-status-success-tint p-3 dark:border-brand-green/50">
-                    <TrendingUp className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
-                    <p className="text-caption font-medium text-status-success">
+        <RoleCard
+            copy={
+                <>
+                    <Eyebrow>{t("Ασφαλιστές", "Agents")}</Eyebrow>
+                    <h3 className="mt-g-3 text-balance text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary">
+                        {t("Δείτε όλο το ", "See your client's whole ")}
+                        <BrushUnderline>
+                            <span className="text-fg-brand">{t("risk profile", "risk profile")}</span>
+                        </BrushUnderline>
+                        {t(" του πελάτη σας — όχι μόνο τα συμβόλαιά του.", " — not just their policies.")}
+                    </h3>
+                    <p className="mt-g-4 max-w-[56ch] text-g-body-lg text-fg-secondary">
                         {t(
-                            "Πελάτης Α — του λείπει ασφάλεια ζωής",
-                            "Client A — has no life cover"
+                            "Συγκεντρώστε τις καλύψεις του πελάτη σε μία ενιαία εικόνα, εντοπίστε κενά και επικαλύψεις και κατανοήστε τι πραγματικά χρειάζεται.",
+                            "Bring your client's coverage into one complete view, identify gaps and overlaps, and understand what they actually need.",
                         )}
                     </p>
-                </div>
-            </div>
-
-            {/* Same reason as the policyholder panel: "Παράδειγμα" was in the
-                role="img" label only, so the one group told it was an example
-                was the one that could not see it. The client names here are
-                invented, and this is the line that says so. */}
-            <p className="mt-3 text-center text-micro text-muted-foreground dark:text-slate-400">
-                {t(
-                    "Παράδειγμα οθόνης συμβούλου. Τα ονόματα είναι φανταστικά.",
-                    "Example advisor screen. The names are fictional.",
-                )}
-            </p>
-            </div>
-        </div>
+                    <BenefitList items={benefits} />
+                    <Link href={localizeHref("/solutions/agents", locale)} className={`mt-g-8 ${PRIMARY_LINK}`}>
+                        {t("Δείτε τι παίρνετε", "See what you get")}
+                        <ArrowRight aria-hidden className="size-4" />
+                    </Link>
+                </>
+            }
+            sample={
+                <>
+                    <PhoneSample
+                        label={t(
+                            "Παράδειγμα: μία οθόνη με τους πελάτες σας, ποιανού η ασφάλεια λήγει σύντομα, και μια πρόταση για το τι λείπει σε έναν από αυτούς.",
+                            "Example: one screen with your clients, whose cover runs out soon, and a suggestion for what one of them is missing.",
+                        )}
+                    >
+                        <ul className="flex flex-col gap-g-2">
+                            {clients.map((c) => (
+                                <li
+                                    key={c.name}
+                                    className="flex items-center gap-g-2 rounded-g-md border border-border-subtle bg-surface-raised px-g-3 py-g-2"
+                                >
+                                    <span className="flex size-6 shrink-0 items-center justify-center rounded-g-pill bg-state-covered-fill text-xs font-bold text-fg-brand">
+                                        {c.initials}
+                                    </span>
+                                    <span className="flex-1 truncate text-sm font-medium text-fg-primary">{c.name}</span>
+                                    {c.alert ? (
+                                        <span
+                                            className="inline-flex min-h-7 items-center gap-g-1 rounded-g-pill bg-state-review-fill px-g-2 text-xs font-semibold text-state-review"
+                                            style={{ fontVariantNumeric: "tabular-nums lining-nums" }}
+                                        >
+                                            <CalendarClock aria-hidden className="size-3.5" />
+                                            {t(`${c.renewal} ημ.`, `${c.renewal}d`)}
+                                        </span>
+                                    ) : (
+                                        <MiniChip state="covered">{pick(STATE_LABELS.covered, locale)}</MiniChip>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="mt-g-3 flex items-center gap-g-2 rounded-g-md bg-state-covered-fill px-g-3 py-g-2 text-sm font-medium text-state-covered">
+                            <TrendingUp aria-hidden className="size-4 shrink-0" />
+                            {t("Πελάτης Α — του λείπει ασφάλεια ζωής", "Client A — has no life cover")}
+                        </p>
+                    </PhoneSample>
+                    {/* The client names are invented, and this is the line that says so. */}
+                    <SampleCaption>
+                        {t("Παράδειγμα οθόνης συμβούλου. Τα ονόματα είναι φανταστικά.", "Example advisor screen. The names are fictional.")}
+                    </SampleCaption>
+                </>
+            }
+        />
     )
 }

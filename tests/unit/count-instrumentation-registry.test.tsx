@@ -45,7 +45,7 @@
  * a jsdom test cannot enumerate a Next.js page tree.
  */
 
-import { describe, it, expect } from "vitest"
+import { afterAll, beforeAll, describe, it, expect } from "vitest"
 import { render } from "@testing-library/react"
 import fs from "node:fs"
 import path from "node:path"
@@ -159,6 +159,23 @@ function scanRenderedCounts(container: HTMLElement): Map<string, Set<number>> {
 // unknown-duration policy, which no surface stated.
 
 const NOW = new Date("2026-08-25T10:00:00Z")
+
+/**
+ * Pin the system clock to NOW for every render in this file. The hero is
+ * HANDED NOW (derivePortfolioCounts(rows, NOW)), but PolicyWallet derives
+ * status from the real clock inside getPolicyStatusView — so with fixture
+ * expiries fixed relative to NOW, the file decayed: soon-0 expires NOW+5d
+ * (2026-08-30), and from 2026-08-31 the wallet counted it expired while the
+ * hero still said expiring (5 vs 4 — first went red the night the calendar
+ * rolled, with no code change). One portfolio, ONE INSTANT, is the §6.7
+ * invariant's own premise. Only Date is faked; timers stay real.
+ */
+beforeAll(() => {
+    vi.useFakeTimers({ now: NOW, toFake: ["Date"] })
+})
+afterAll(() => {
+    vi.useRealTimers()
+})
 const iso = (daysFromNow: number) => {
     const d = new Date(NOW.getTime() + daysFromNow * 86_400_000)
     return d.toISOString().slice(0, 10)

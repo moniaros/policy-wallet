@@ -34,7 +34,20 @@ export interface LandingContentModel {
     productName: string
     howItWorks: {
         title: LocalizedText
-        steps: Array<{ id: string; title: LocalizedText; description: LocalizedText }>
+        steps: Array<{
+            id: string
+            title: LocalizedText
+            description: LocalizedText
+            /**
+             * Phrase INSIDE `description` rendered bold brand-green. Must be a
+             * substring of the description in both locales (guarded by
+             * tests/unit/landing-how-it-works.test.ts); never emitted to the
+             * HowTo JSON-LD, which carries the plain description.
+             */
+            emphasis?: LocalizedText
+        }>
+        /** The line under the steps. `lead` renders bold. Not a HowTo step. */
+        closing: { lead: LocalizedText; rest: LocalizedText }
     }
     faq: {
         title: LocalizedText

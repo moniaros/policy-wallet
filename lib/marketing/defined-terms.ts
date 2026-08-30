@@ -68,6 +68,6 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
  * answer engine can quote whole).
  */
 export const ANSWER_PARAGRAPH: Bilingual = {
-    el: "Το PolicyWallet διαβάζει τα ασφαλιστήριά σας — από όποια εταιρεία κι αν είναι — και σας δείχνει σε απλά ελληνικά τι καλύπτει το καθένα, τι εξαιρεί, με ποια απαλλαγή και ποιες περιόδους αναμονής. Δεν πουλά ασφάλειες και δεν σας προτείνει προϊόντα· σας δίνει τις ερωτήσεις να κάνετε στον ασφαλιστή σας.",
+    el: "Το PolicyWallet διαβάζει τα ασφαλιστήριά σας — από όποια εταιρεία κι αν είναι — και σας δείχνει σε απλά ελληνικά τι καλύπτει το καθένα, τι εξαιρεί, με ποια απαλλαγή και ποιες περιόδους αναμονής. Δεν πουλά ασφάλειες και δεν σας προτείνει προϊόντα· σας προετοιμάζει τις ερωτήσεις προς τον ασφαλιστή σας.",
     en: "PolicyWallet reads your insurance policies — from any company — and shows you in plain language what each one covers, what it excludes, with what deductible and which waiting periods. It does not sell insurance and does not recommend products; it gives you the questions to ask your insurer.",
 }

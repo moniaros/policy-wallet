@@ -14,6 +14,7 @@ export function LandingCtaLink({
     locale,
     location,
     className,
+    "aria-label": ariaLabel,
     children,
 }: {
     href: string
@@ -21,12 +22,15 @@ export function LandingCtaLink({
     /** Analytics location tag, e.g. "hero" | "final_cta". */
     location: string
     className?: string
+    /** Accessible name for an icon-only CTA (the how-it-works arrows). */
+    "aria-label"?: string
     children: ReactNode
 }) {
     return (
         <Link
             href={href}
             className={className}
+            aria-label={ariaLabel}
             onClick={() =>
                 trackLandingEvent("cta_clicked_hero", {
                     locale,
