@@ -73,6 +73,7 @@
   --action-danger-hover: #7E2F24;
   --action-secondary-bg: #FFFFFF;
 
+  color-scheme: light;
   --space-section: clamp(66px, 7vw, 116px);
   /* App rhythm: iOS body 17px on phones, 16px from tablet up; section gap 26/32 */
   --text-g-app-base: 17px;
@@ -124,6 +125,7 @@
   --action-danger: #E39A8E;
   --action-danger-hover: #F0B9AF;
   --action-secondary-bg: #10312B;
+  color-scheme: dark;
 }
 
 @theme inline {

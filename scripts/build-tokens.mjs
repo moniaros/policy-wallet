@@ -144,6 +144,7 @@ ${shadowVars}
   /* Grafí semantic roles — light */
 ${cssVars('light')}
 
+  color-scheme: light;
   --space-section: clamp(66px, 7vw, 116px);
   /* App rhythm: iOS body 17px on phones, 16px from tablet up; section gap 26/32 */
   --text-g-app-base: ${rhythm['app-base']?.mobile ?? '17px'};
@@ -166,6 +167,7 @@ ${cssVars('light')}
 .dark {
   /* Grafí semantic roles — dark: a real second theme, not a dimmed light one */
 ${cssVars('dark')}
+  color-scheme: dark;
 }
 
 @theme inline {

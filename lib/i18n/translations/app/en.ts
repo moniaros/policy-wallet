@@ -268,6 +268,11 @@ export const appEn: typeof appEl = {
     },
     me: {
         theme: 'Theme',
+        themeOptions: {
+            auto: 'Automatic',
+            light: 'Light',
+            dark: 'Dark',
+        },
         language: 'Language',
         planLine: '{plan} · {price}{period}',
         ledgerTitle: 'What I did for you in {year}',

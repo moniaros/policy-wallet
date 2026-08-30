@@ -274,6 +274,11 @@ export const appEl = {
     },
     me: {
         theme: 'Θέμα',
+        themeOptions: {
+            auto: 'Αυτόματα',
+            light: 'Φωτεινό',
+            dark: 'Σκούρο',
+        },
         language: 'Γλώσσα',
         planLine: '{plan} · {price}{period}',
         ledgerTitle: 'Τι έκανα για εσάς το {year}',

@@ -99,3 +99,30 @@ test("/dashboard and /home 301 to / for a policyholder; / is the app home, not t
     await expect(page.locator("h1")).toHaveText(/Η προστασία σας|Your protection/)
     await ctx.close()
 })
+
+test.describe("theme choice — Αυτόματα/Φωτεινό/Σκούρο", () => {
+    test("auto follows the OS scheme in both directions", async ({ browser }) => {
+        for (const scheme of ["dark", "light"] as const) {
+            const ctx = await browser.newContext({ storageState: "playwright/.auth/user.json", locale: "el-GR", colorScheme: scheme })
+            const page = await ctx.newPage()
+            await page.addInitScript(() => { try { localStorage.setItem("theme", "system") } catch { /* private mode */ } })
+            await page.goto("/", { waitUntil: "networkidle" })
+            expect(await page.evaluate(() => document.documentElement.classList.contains("dark")), `system + ${scheme} OS`).toBe(scheme === "dark")
+            await ctx.close()
+        }
+    })
+
+    test("/me/appearance offers three options and Σκούρο applies", async ({ browser }) => {
+        const ctx = await browser.newContext({ storageState: "playwright/.auth/user.json", locale: "el-GR", colorScheme: "light" })
+        const page = await ctx.newPage()
+        await page.goto("/me/appearance", { waitUntil: "networkidle" })
+        const group = page.getByRole("radiogroup", { name: /Θέμα|Theme/ })
+        await expect(group.getByRole("radio")).toHaveCount(3)
+        // system is the default selection when nothing is stored
+        await expect(group.getByRole("radio", { name: /Αυτόματα|Automatic/ })).toHaveAttribute("aria-checked", "true")
+        await group.getByRole("radio", { name: /Σκούρο|Dark/ }).click()
+        await expect(page.locator("html")).toHaveClass(/dark/)
+        expect(await page.evaluate(() => { try { return localStorage.getItem("theme") } catch { return null } })).toBe("dark")
+        await ctx.close()
+    })
+})

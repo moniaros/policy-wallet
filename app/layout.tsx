@@ -60,7 +60,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#29685B",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#29685B" },
+    // dark --surface-base, so the browser chrome matches the page ground
+    { media: "(prefers-color-scheme: dark)", color: "#0C231F" },
+  ],
   /**
    * REQUIRED for env(safe-area-inset-*) to return anything but 0.
    *
