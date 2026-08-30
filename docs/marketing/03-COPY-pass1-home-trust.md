@@ -204,12 +204,14 @@ integration on one page and promise never to transfer data to them on another.
 The section is not wrong; it is **incomplete**. It states EU storage accurately and never mentions
 that analysis may leave. Keep both existing bullets verbatim and add:
 
-> **EL** Η ανάλυση με τεχνητή νοημοσύνη μπορεί να εκτελεστεί από παρόχους εκτός ΕΕ, με βάση τις εγκεκριμένες από την ΕΕ εγγυήσεις διαβίβασης (EU-U.S. Data Privacy Framework ή τυποποιημένες συμβατικές ρήτρες). Γίνεται μόνο αφού δώσετε ρητή συγκατάθεση, και κανένας πάροχος δεν επιτρέπεται να εκπαιδεύσει μοντέλα στα έγγραφά σας. Ποιοι είναι, αναλυτικά, στους **υπεργολάβους επεξεργασίας**.
+> **EL** Η ανάλυση με τεχνητή νοημοσύνη μπορεί να εκτελεστεί από παρόχους εκτός Ευρωπαϊκού Οικονομικού Χώρου· οι διαβιβάσεις αυτές καλύπτονται από απόφαση επάρκειας (EU-U.S. Data Privacy Framework) ή/και από τις Τυποποιημένες Συμβατικές Ρήτρες της Ευρωπαϊκής Επιτροπής. Γίνεται μόνο αφού δώσετε ρητή συγκατάθεση, και κανένας πάροχος δεν επιτρέπεται να εκπαιδεύσει μοντέλα στα έγγραφά σας. Ποιοι είναι, αναλυτικά, στους **υπεργολάβους επεξεργασίας**.
 >
 > **EN** AI analysis may run with providers outside the EU, under EU-approved transfer safeguards (the EU-U.S. Data Privacy Framework or standard contractual clauses). It happens only after you give explicit consent, and no provider is permitted to train models on your documents. Who they are, in full: **subprocessors**.
 
-Links to `/subprocessors`. `[verify]` the DPF/SCC characterisation against the subprocessors page's
-own wording before publishing — the two must not describe the same safeguard differently.
+Links to `/subprocessors`. **V10 RESOLVED 2026-08-30:** the wording above now matches
+`lib/legal/legal-content.ts:309/:794` exactly in the three places my draft had diverged — ΕΟΧ (not
+ΕΕ), «απόφαση επάρκειας» for the DPF (not a generic "safeguard"), and «ή/και» (not «ή»). One
+safeguard, one description, both pages.
 
 ## 2.2 `ai` — **add** a fallibility bullet
 

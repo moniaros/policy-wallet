@@ -38,8 +38,12 @@ The change moves the claim from a prediction («πόσα θα πληρώσετε
 > **EL — Λάβατε επιστολή αύξησης; Δεν είστε οι μόνοι.**
 >
 > Κάθε χρόνο, πριν από την ανανέωση, η ασφαλιστική σάς στέλνει μια επιστολή με το νέο ασφάλιστρο.
-> Η επιστολή οφείλει να εξηγεί με βάση τι υπολογίστηκε η αύξηση `[verify — ακριβής υποχρέωση και
-> νομική βάση]`. Στην πράξη, οι περισσότεροι τη διαβάζουν μέχρι το ποσό και σταματούν εκεί.
+> Οι περισσότεροι τη διαβάζουν μέχρι το ποσό και σταματούν εκεί.
+>
+> *(V9 CUT 2026-08-30: the claim that the letter «οφείλει να εξηγεί» its basis was an obligation
+> claim with no primary source attempted or found — cut, not hedged, per the standing rule. The
+> paragraph works without it. If ν.5170/2025 turns out to impose exactly this duty, the sentence
+> can return with the ΦΕΚ as its source.)*
 >
 > Αυτό που αξίζει να ελέγξετε δεν είναι μόνο το ποσό. Είναι αν άλλαξε κάτι άλλο μαζί του: όρια
 > κάλυψης, απαλλαγή, συμμετοχές, δίκτυο νοσοκομείων. Μια αύξηση 8% με ίδιους όρους και μια αύξηση
@@ -73,9 +77,19 @@ The change moves the claim from a prediction («πόσα θα πληρώσετε
 > itself determine your new premium, and it says nothing about what your policy covers. That second
 > part is our job.
 
-*(Every factual clause is separately `[verify]`-marked because none has a source on the site today.
-**The section ships only with sources, or not at all** — the repo's standing rule. Note the section
-is deliberately written to survive the figures being cut: the last two sentences carry it.)*
+**RESOLUTION 2026-08-30 — the facts resolve DIFFERENTLY from the brief, and the figures stay cut
+until a primary deep link is captured:**
+- The brief said "IOBE abolished January 2025; ΕΛΣΤΑΤ ΕΔΑ replaced it (first value 6.24%)."
+  Sourced narrative (converging press citing ΕΛΣΤΑΤ): the ΕΔΑ was established by **ν. 5170/2025**
+  as the unified framework replacing the IOBE index, and its **first value was published
+  26.06.2026 for reference year 2024** — not January 2025.
+- **6,24% is the with-age-effect variant; the without-age value is 1,25%.** Quoting 6,24% alone
+  would overstate what the index says about pricing, so any future use quotes the pair.
+- **No primary deep link captured yet** (the ΕΛΣΤΑΤ press-release URL 404'd; secondary coverage
+  converges but is not a source under the standing rule). **The three `[verify]` clauses above are
+  therefore CUT from shippable copy.** The section ships as its final two sentences — the index
+  does not set your premium and says nothing about what you are covered for — which carry it
+  honestly with no figure at all.
 
 ### §3 · Όρια, εξαιρέσεις, περίοδοι αναμονής
 
@@ -90,8 +104,7 @@ is deliberately written to survive the figures being cut: the last two sentences
 > **Περίοδοι αναμονής.** Το διάστημα από την έναρξη μέχρι να ισχύσει μια κάλυψη. Διαφέρει ανά
 > κάλυψη μέσα στο ίδιο συμβόλαιο.
 >
-> Ανεβάζετε το συμβόλαιό σας και τα βρίσκουμε και τα τρία — με παραπομπή στο σημείο του εγγράφου
-> όπου τα διαβάσαμε, ώστε να τα ελέγξετε και εσείς.
+> Ανεβάζετε το συμβόλαιό σας και τα βρίσκουμε και τα τρία.
 >
 > **EN — The three words that decide a claim.**
 >
@@ -104,12 +117,12 @@ is deliberately written to survive the figures being cut: the last two sentences
 > **Waiting periods.** The time between the start date and a cover taking effect. It differs per
 > cover within the same policy.
 >
-> Upload your policy and we find all three — with a reference to the part of the document where we
-> read them, so you can check them too.
+> Upload your policy and we find all three.
 
-*(The «με παραπομπή στο σημείο του εγγράφου» promise is load-bearing: it is the citation/anchor
-capability. It is true of the extraction-citation fields today; **confirm it renders on the health
-surfaces a reader lands on before shipping this sentence**, or drop the clause.)*
+*(V12 RESOLVED BY CUT 2026-08-30: the anchor clause is dropped. Member-level citations for
+conditions and coverages live on the held `feat/growth-extraction-citations` branch and do not
+reach production; even scalar citations are flag-dependent. The clause returns when the held
+branch ships and the anchors demonstrably render on the health surfaces — its own rule, applied.)*
 
 ### §4 · Ερωτήσεις πριν ανανεώσετε
 
@@ -155,7 +168,8 @@ Two additions:
 > **EL — Τι πρέπει να καλύπτει το συμβόλαιο για να μετρήσει;**
 >
 > Η έκπτωση προϋποθέτει ασφάλιση για φυσικές καταστροφές — και ο νόμος ορίζει ποιες: σεισμό,
-> πυρκαγιά και πλημμύρα `[verify — ακριβής περίληψη κινδύνων και νομική βάση στο ισχύον κείμενο]`.
+> πυρκαγιά και πλημμύρα *(ΡESOLVED: ν. 5162/2024 άρθρο 10, ΦΕΚ Α΄ 198/05.12.2024, verbatim «για
+> σεισμό, πυρκαγιά και πλημμύρα» — read from the ΑΑΔΕ-hosted ΦΕΚ PDF, 2026-08-30)*.
 > Εδώ κρύβεται η πιο συχνή παγίδα: ο σεισμός είναι σε πολλά συμβόλαια **προαιρετική** κάλυψη. Ένα
 > συμβόλαιο κατοικίας που δεν την περιλαμβάνει είναι κανονικό ασφαλιστήριο — απλώς δεν πληροί τα
 > κριτήρια της έκπτωσης.
@@ -177,9 +191,12 @@ Two additions:
 > **EL — Τι να έχετε πρόχειρο.**
 >
 > - Το ασφαλιστήριο, στην τρέχουσα περίοδο — όχι περσινό.
-> - Τον πίνακα καλύψεων: σεισμός, πυρκαγιά, πλημμύρα `[verify]` να αναφέρονται ρητά.
-> - Το ασφαλιζόμενο κεφάλαιο και τη διάρκεια — η κάλυψη πρέπει να ισχύει για την περίοδο που ζητά
->   η ΑΑΔΕ `[verify — ελάχιστη διάρκεια στο ισχύον κείμενο]`.
+> - Τον πίνακα καλύψεων: σεισμός, πυρκαγιά, πλημμύρα *(resolved — ΦΕΚ Α΄ 198)* να αναφέρονται ρητά.
+> - Το ασφαλιζόμενο κεφάλαιο: πρέπει να καλύπτει το σύνολο της αξίας του ακινήτου σε βάση
+>   ανακατασκευής, με ελάχιστο 1.000 €/τ.μ. *(ν. 5162/2024 άρθρο 10 — resolved)*.
+> - Τη διάρκεια: τουλάχιστον τρεις μήνες μέσα στο προηγούμενο έτος· κάτω από δώδεκα μήνες, η
+>   έκπτωση υπολογίζεται αναλογικά *(ίδια πηγή — the secondary sources said "full prior year",
+>   which the ΦΕΚ contradicts)*.
 > - Τον ΑΤΑΚ του ακινήτου, όπως εμφανίζεται στο Ε9.
 >
 > Ανεβάζοντας το συμβόλαιο στο PolicyWallet, βλέπετε αν οι τρεις καλύψεις αναφέρονται ρητά — και
@@ -188,9 +205,11 @@ Two additions:
 > **EN — What to have at hand.**
 >
 > - The policy, for the current period — not last year's.
-> - The schedule of covers: earthquake, fire and flood `[verify]` named explicitly.
-> - The sum insured and the term — cover must be in force for the period ΑΑΔΕ requires
->   `[verify — minimum term in the current text]`.
+> - The schedule of covers: earthquake, fire and flood *(resolved)* named explicitly.
+> - The sum insured: it must cover the whole property value on a reconstruction basis, floored
+>   at €1,000/sq.m. *(Law 5162/2024 art. 10 — resolved)*.
+> - The term: at least three months within the prior year; below twelve, the discount is pro-rated
+>   *(same source)*.
 > - The property's ΑΤΑΚ, as it appears on the Ε9.
 >
 > Upload the policy to PolicyWallet and you see whether the three covers are named explicitly — and
@@ -203,12 +222,14 @@ conformance with a statutory criterion is for the authority.)*
 ### 2.3 `/product/property` — new short section, linking
 
 > **EL — Έκπτωση ΕΝΦΙΑ: πληροί το συμβόλαιό σας τα κριτήρια;**
-> Κατοικία ασφαλισμένη για φυσικές καταστροφές σημαίνει έως 20% έκπτωση στον ΕΝΦΙΑ `[verify]`.
+> Κατοικία ασφαλισμένη για φυσικές καταστροφές σημαίνει έως 20% έκπτωση στον ΕΝΦΙΑ
+> *(resolved — ν. 5162/2024 άρθρο 10: 20% έως €500.000 φορολογητέα αξία, 10% άνω αυτής)*.
 > Το αν το δικό σας συμβόλαιο πληροί τα κριτήρια κρίνεται από τον πίνακα καλύψεων — και αυτόν τον
 > διαβάζουμε. **Δείτε τον πλήρη οδηγό →**
 >
 > **EN — ENFIA discount: does your policy qualify?**
-> A home insured for natural catastrophes means up to a 20% ENFIA discount `[verify]`. Whether your
+> A home insured for natural catastrophes means up to a 20% ENFIA discount *(resolved — Law
+> 5162/2024 art. 10: 20% up to €500,000 taxable value, 10% above)*. Whether your
 > policy meets the criteria is decided by its schedule of covers — and that is what we read.
 > **See the full guide →**
 

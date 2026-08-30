@@ -235,7 +235,6 @@ const LEGACY_BARE_CITATIONS = [
     'diaxeirisi-asfalistirion-se-ena-simeio::https://www.eaee.gr',
     'efarmoges-asfalistirion-apozimioseis::https://www.bankofgreece.gr',
     'efarmoges-asfalistirion-apozimioseis::https://www.eaee.gr',
-    'ekptosi-enfia-asfalisi-katoikias::https://www.aade.gr',
     'ekptosi-enfia-asfalisi-katoikias::https://www.eaee.gr',
     'kena-kalypsis-ti-einai-pos-ta-vriskete::https://www.bankofgreece.gr',
     'kena-kalypsis-ti-einai-pos-ta-vriskete::https://www.eaee.gr',

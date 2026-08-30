@@ -29,6 +29,25 @@ fines) and the correction is on record.
 | V11 | "DORA-aware" vendor posture | partner page strip | stays "aware"; **"ready"/"compliant" banned until an assessment exists** |
 | V12 | citation anchors render on the health surfaces | health wedge §3's «με παραπομπή στο σημείο του εγγράφου» | verified on the built page, not in the source — else drop the clause |
 
+## A.1 — RESOLUTION, 2026-08-30 (attempted against primary sources, per instruction)
+
+| # | outcome |
+|---|---|
+| V1 | **CUT.** 7–10% renewal increases: market press only, no primary found. Copy already survives without it; the figure stays internal rationale. |
+| V2 | **CUT, and the brief's framing was wrong.** No source found for "IOBE abolished January 2025". Sourced narrative: the ΕΔΑ was established by **ν. 5170/2025** as the framework replacing the IOBE index. The IOBE sentence is out of shippable copy. |
+| V3 | **FIGURES CUT until a primary deep link is captured — and corrected.** First ΕΔΑ published **26.06.2026 for reference year 2024**; **6,24% is the with-age-effect value, 1,25% without**. Quoting 6,24% alone overstates the index. The ΕΛΣΤΑΤ press-release URL found via search 404'd; secondary coverage converges but is not a source. The §2 paragraph ships as its final two sentences only. |
+| V4 | **Unused.** Never entered drafted copy; stays internal until sourced. |
+| V5 | **Unused.** Same. |
+| V6 | **RESOLVED AND REPAIRED** — decision made: the guide's citation debt was fixed in the same pass, not held. `ekptosi-enfia-asfalisi-katoikias` now cites **ν. 5162/2024 άρθρο 10, ΦΕΚ Α΄ 198/05.12.2024** via the ΑΑΔΕ-hosted signed PDF (verified by reading the ΦΕΚ text itself, p. 9972); its bare `aade.gr` origin is delisted from `LEGACY_BARE_CITATIONS` (**29 → 28**); and its one hedge («επιβεβαιώστε στο aade.gr») became the sourced fact — the law itself floors reconstruction value at **€1.000/τ.μ.** The guide's substantive claims (3-month minimum, pro-rata, reconstruction basis) were **already consistent** with the ΦΕΚ. |
+| V7 | **RESOLVED.** Perils verbatim in the ΦΕΚ: «για σεισμό, πυρκαγιά και πλημμύρα». |
+| V8 | **RESOLVED — and it corrects the secondary sources.** Minimum **three months** in the prior year, **pro-rated below twelve**; press said "insured the whole prior year", which the ΦΕΚ contradicts. Also newly sourced: cover must extend to the **whole** property value. |
+| V9 | **CUT.** The increase letter's «οφείλει να εξηγεί» obligation claim: no primary attempted resolution; sentence removed, paragraph reworded to survive. Can return if ν.5170/2025 imposes the duty. |
+| V10 | **RESOLVED.** /trust draft aligned to `legal-content.ts` verbatim on the three divergences (ΕΟΧ, «απόφαση επάρκειας», «ή/και»). |
+| V11 | **RESOLVED by wording.** "DORA-aware" stands; "ready"/"compliant" stay banned. |
+| V12 | **RESOLVED BY CUT.** The anchor clause is out: member-level citations live on the held branch and do not reach production. Returns when they do. |
+
+**Score: 5 resolved · 4 cut · 2 unused · 1 resolved-by-wording. Zero `[verify]` remains in shippable text.**
+
 **V6 is the sleeper.** The new work inherits an old debt: the existing ENFIA guide's figures are
 live *now* with citations the audit classed unresolvable. Extending the guide without fixing its
 sources upgrades its visibility while leaving its evidence broken.

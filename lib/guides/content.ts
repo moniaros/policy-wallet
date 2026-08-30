@@ -152,8 +152,8 @@ export const guides: Guide[] = [
                         en: "Minimum insured duration of three months within the previous year — for less than a full year, the discount is prorated.",
                     },
                     {
-                        el: "Το ασφαλιζόμενο κεφάλαιο πρέπει να καλύπτει την αξία ανακατασκευής του κτίσματος. Η ΑΑΔΕ ορίζει ελάχιστη αξία ανά τετραγωνικό μέτρο — επιβεβαιώστε το ισχύον όριο στο aade.gr.",
-                        en: "The insured sum must cover the building's reconstruction value. AADE sets a minimum value per square meter — confirm the current threshold at aade.gr.",
+                        el: "Το ασφαλιζόμενο κεφάλαιο πρέπει να καλύπτει το σύνολο της αξίας του ακινήτου, υπολογισμένης ως αξία ανακατασκευής του κτίσματος — και ο νόμος ορίζει ότι αυτή δεν υπολογίζεται κάτω από 1.000 ευρώ ανά τετραγωνικό μέτρο (ν. 5162/2024, άρθρο 10).",
+                        en: "The insured sum must cover the whole value of the property, calculated as the building's reconstruction value — and the law floors that calculation at €1,000 per square metre (Law 5162/2024, art. 10).",
                     },
                 ],
             },
@@ -228,11 +228,20 @@ export const guides: Guide[] = [
         ],
         sources: [
             {
+                // The statutory claim's PRIMARY source: ν. 5162/2024 άρθρο 10
+                // (ΦΕΚ Α΄ 198/05.12.2024), amending παρ. 7Ζ άρθρου 3 ν. 4223/2013 —
+                // the ΑΑΔΕ re-host of the signed ΦΕΚ PDF, verified against the
+                // text itself on 2026-08-30 (p. 9972): 20% for taxable value
+                // ≤ €500.000 from 2025, 10% above; perils σεισμός, πυρκαγιά,
+                // πλημμύρα; cover for the WHOLE value on a reconstruction basis
+                // with a €1.000/τ.μ. floor; minimum three months in the prior
+                // year, pro-rated below twelve. Replaces this guide's bare
+                // aade.gr origin (G-07 / GB-04 debt, one entry repaid).
                 label: {
-                    el: "ΑΑΔΕ — Ανεξάρτητη Αρχή Δημοσίων Εσόδων (ΕΝΦΙΑ)",
-                    en: "AADE — Independent Authority for Public Revenue (ENFIA)",
+                    el: "ν. 5162/2024, άρθρο 10 — ΦΕΚ Α΄ 198/05.12.2024 (ΑΑΔΕ)",
+                    en: "Law 5162/2024, art. 10 — Government Gazette A΄ 198/05.12.2024 (AADE)",
                 },
-                url: "https://www.aade.gr",
+                url: "https://www.aade.gr/sites/default/files/2024-12/%CE%9D%205162%202024%20%CE%A6%CE%95%CE%9A%20198.pdf",
             },
             {
                 label: {
