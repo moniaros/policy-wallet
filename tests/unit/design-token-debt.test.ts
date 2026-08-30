@@ -220,7 +220,7 @@ const HARDCODED_COLOUR_DEBT: Record<string, number> = {
     'components/landing/PolicyWalletWidget.tsx::#ff5f57': 1,
     'components/landing/PolicyWalletWidget.tsx::#ffbd2e': 1,
     'components/landing/PolicyWalletWidget.tsx::#fffbeb': 1,
-    'components/landing/PricingPreview.tsx::#a7f3d0': 3,
+    'components/landing/PricingPreview.tsx::#a7f3d0': 2,
     'components/landing/ProductCategoryExplorer.tsx::#29685b': 1,
     'components/landing/ProductCategoryExplorer.tsx::#475569': 2,
     'components/landing/ProductCategoryExplorer.tsx::#d5dee8': 1,

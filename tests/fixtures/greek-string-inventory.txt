@@ -22,7 +22,7 @@
 # bundle entries: 2820
 # inline entries: 4751 across 213 files
 # ternary entries: 285 across 44 files
-# call entries: 1175 across 77 files
+# call entries: 1177 across 77 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -8824,9 +8824,11 @@ call	components/landing/PolicyWalletWidget.tsx	"Σπίτι"
 call	components/landing/PolicyWalletWidget.tsx	"Το σπίτι σας δεν καλύπτεται για πλημμύρα."
 call	components/landing/PolicyWalletWidget.tsx	"Υγεία"
 call	components/landing/PricingPreview.tsx	"Δείτε όλα τα πλάνα"
+call	components/landing/PricingPreview.tsx	"Ετήσια"
 call	components/landing/PricingPreview.tsx	"Μία συνδρομή, όλα τα ασφαλιστήριά σας διαβασμένα."
-call	components/landing/PricingPreview.tsx	"Ξεκινήστε δωρεάν"
+call	components/landing/PricingPreview.tsx	"Μηνιαία"
 call	components/landing/PricingPreview.tsx	"Πλήρης ανάλυση, κενά κάλυψης και υπενθυμίσεις πριν λήξει κάτι. Καμία κρυφή χρέωση, ακυρώνετε όποτε θέλετε."
+call	components/landing/PricingPreview.tsx	"Συχνότητα χρέωσης"
 call	components/landing/ProductCategoryExplorer.tsx	"Όλες οι κατηγορίες"
 call	components/landing/ProductCategoryExplorer.tsx	"Δείτε και τις υπόλοιπες ασφαλιστικές κατηγορίες."
 call	components/landing/ProductCategoryExplorer.tsx	"Δείτε την κατηγορία"

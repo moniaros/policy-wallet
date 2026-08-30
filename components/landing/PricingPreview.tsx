@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import { ArrowRight, Check } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
@@ -13,7 +16,9 @@ import { PlanRecommender } from "@/src/design-system/plan-recommender"
  * the SAME live plan catalog that /pricing renders (read-only), so the two
  * surfaces cannot quote different numbers.
  *
- * Server component: static markup, no JS shipped.
+ * Client component since the §6 billing toggle — the one interaction the
+ * band owns. Everything it renders still comes in as serialisable props from
+ * the same live catalog /pricing reads.
  */
 export function PricingPreview({
     locale,
@@ -24,6 +29,11 @@ export function PricingPreview({
 }) {
     const t = (el: string, en: string) => (locale === "el" ? el : en)
     const pick = (value: { el: string; en: string }) => (locale === "el" ? value.el : value.en)
+    // §6: the billing toggle. Monthly is the DEFAULT — the base price, not the
+    // discounted anchor — and the annual option carries its own savings label.
+    const [billing, setBilling] = useState<"monthly" | "annual">("monthly")
+    const priceOf = (plan: PublicPricingPlan) =>
+        billing === "annual" && plan.pricing.annual ? plan.pricing.annual : plan.pricing.monthly
 
     // Contact-sales tiers have no public price and belong on /pricing, not here.
     //
@@ -44,7 +54,10 @@ export function PricingPreview({
     const bookable = plans.filter((plan) => !plan.isContactPlan)
     const freePlan = bookable.find((plan) => amountOf(plan) === 0)
     const paidPlans = bookable.filter((plan) => amountOf(plan) > 0).sort((a, b) => amountOf(a) - amountOf(b))
-    const visiblePlans = paidPlans
+    // §6: the Free card is a CARD — same grid, same stature as the paid two.
+    // The quiet-row treatment undersold a plan that really exists; a plan the
+    // page half-hides reads as a trick, not a floor.
+    const visiblePlans = freePlan ? [freePlan, ...paidPlans] : paidPlans
     if (visiblePlans.length === 0) return null
 
     return (
@@ -76,7 +89,40 @@ export function PricingPreview({
                     ceilings come from the enforced entitlement source. */}
                 <PlanRecommender locale={locale} plans={plans} className="mb-12" />
 
-                <ul className="grid gap-5 md:grid-cols-2">
+                <div className="mb-8 flex justify-center">
+                    <div
+                        role="group"
+                        aria-label={t("Συχνότητα χρέωσης", "Billing frequency")}
+                        className="inline-flex rounded-full border border-neutral-200 p-1 dark:border-slate-700"
+                    >
+                        <button
+                            type="button"
+                            aria-pressed={billing === "monthly"}
+                            onClick={() => setBilling("monthly")}
+                            className={`min-h-11 rounded-full px-5 text-body-sm font-semibold transition-colors ${
+                                billing === "monthly"
+                                    ? "bg-primary text-white dark:bg-mint dark:text-slate-900"
+                                    : "text-neutral-600 dark:text-slate-300"
+                            }`}
+                        >
+                            {t("Μηνιαία", "Monthly")}
+                        </button>
+                        <button
+                            type="button"
+                            aria-pressed={billing === "annual"}
+                            onClick={() => setBilling("annual")}
+                            className={`min-h-11 rounded-full px-5 text-body-sm font-semibold transition-colors ${
+                                billing === "annual"
+                                    ? "bg-primary text-white dark:bg-mint dark:text-slate-900"
+                                    : "text-neutral-600 dark:text-slate-300"
+                            }`}
+                        >
+                            {t("Ετήσια", "Annual")}
+                        </button>
+                    </div>
+                </div>
+
+                <ul className="grid gap-5 md:grid-cols-3">
                     {visiblePlans.map((plan) => {
                         const topFeature = plan.features.find((feature) => feature.included)
                         return (
@@ -102,13 +148,18 @@ export function PricingPreview({
                                     ) : null}
                                 </div>
 
-                                <p className="mb-4 flex items-baseline gap-1">
+                                <p className="mb-1 flex items-baseline gap-1">
                                     <span className="text-h2 font-bold tracking-tight text-neutral-900 dark:text-white">
-                                        {plan.pricing.monthly.amount}
+                                        {priceOf(plan).amount}
                                     </span>
                                     <span className="text-body text-muted-foreground dark:text-slate-400">
-                                        {pick(plan.pricing.monthly.period)}
+                                        {pick(priceOf(plan).period)}
                                     </span>
+                                </p>
+                                <p className="mb-4 min-h-5 text-body-sm text-neutral-500 dark:text-slate-400">
+                                    {billing === "annual" && plan.pricing.annual
+                                        ? pick(plan.pricing.annual.savings)
+                                        : "\u00a0"}
                                 </p>
 
                                 <p className="mb-4 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
@@ -128,31 +179,6 @@ export function PricingPreview({
                         )
                     })}
                 </ul>
-
-                {/* The free tier, underneath and deliberately quiet: one row,
-                    no card, a text link rather than a button. It stays fully
-                    stated — the price and what it covers — because a plan that
-                    exists has to be findable, and the honesty rule does not
-                    bend for conversion. */}
-                {freePlan ? (
-                    <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-2xl border border-dashed border-neutral-200 px-6 py-5 dark:border-slate-700">
-                        <p className="text-body text-neutral-600 dark:text-slate-300">
-                            <span className="font-semibold text-neutral-900 dark:text-white">
-                                {pick(freePlan.name)}
-                            </span>{" "}
-                            · {freePlan.pricing.monthly.amount}
-                            {pick(freePlan.pricing.monthly.period)} ·{" "}
-                            {pick(freePlan.description)}
-                        </p>
-                        <Link
-                            href={localizeHref("/pricing", locale)}
-                            className="inline-flex min-h-11 items-center gap-1.5 text-body font-semibold text-primary underline-offset-4 hover:underline dark:text-[#A7F3D0]"
-                        >
-                            {t("Ξεκινήστε δωρεάν", "Start free")}
-                            <ArrowRight aria-hidden className="h-4 w-4" />
-                        </Link>
-                    </div>
-                ) : null}
 
                 <div className="mt-10 text-center">
                     <Link href={localizeHref("/pricing", locale)} className="pw-secondary-button pw-btn-lg">
