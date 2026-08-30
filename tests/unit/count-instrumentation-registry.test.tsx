@@ -158,7 +158,12 @@ function scanRenderedCounts(container: HTMLElement): Map<string, Set<number>> {
 // fact from a lifecycle partition; the real residual was the 1
 // unknown-duration policy, which no surface stated.
 
-const NOW = new Date("2026-08-25T10:00:00Z")
+// Anchored to the REAL clock (10:00 UTC today): the offsets below stay inside
+// their windows forever. The previous pinned date (2026-08-25) was a time
+// bomb — five days after it, the +5-day "expiring" fixture crossed into
+// "expired" against any component reading the live clock, and the agreement
+// test failed on an unchanged tree (first tripped 2026-08-31).
+const NOW = (() => { const d = new Date(); d.setUTCHours(10, 0, 0, 0); return d })()
 const iso = (daysFromNow: number) => {
     const d = new Date(NOW.getTime() + daysFromNow * 86_400_000)
     return d.toISOString().slice(0, 10)

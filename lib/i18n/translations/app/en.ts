@@ -54,6 +54,10 @@ export const appEn: typeof appEl = {
         householdAdd: 'Add a person',
         lastDid: 'The last thing I did',
         nextExpiry: 'The next expiry',
+        checkedJustNow: 'checked again just now',
+        checkedHoursAgo: 'checked again {count, plural, one {# hour} other {# hours}} ago',
+        checkedDaysAgo: 'checked again {count, plural, one {# day} other {# days}} ago',
+        moneyThinkPair: "I found the same cover for {asset} on two policies — I don't know if one can come off. You can ask.",
         checklist: '{count, plural, one {You have # policy. Upload two more and I show you the whole picture.} other {You have # policies. Upload one more and I show you the whole picture.}}',
         emptyTitle: 'Upload the first one and I will tell you what I saw.',
         emptyBody: 'I read every policy — any insurer, any line — and tell you what it covers, what it does not, and when it expires.',
@@ -101,6 +105,7 @@ export const appEn: typeof appEl = {
         nextExpiry: '{count, plural, =0 {The next expiry is today.} one {The next expiry is in # day.} other {The next expiry is in # days.}}',
         noExpiry: 'No expiry on the horizon.',
         sentence: '{covered, plural, one {# of your {active} covers you.} other {# of your {active} cover you.}}',
+        watching: "The other {count, plural, one {# I watch} other {# I watch}}. If anything changes, you'll hear it from me first.",
         thingsToSee: '{count, plural, =0 {I found nothing worth a look this week.} one {One thing is worth a look this week.} other {# things are worth a look this week.}}',
         notChecked: {
             gap_detection_not_in_plan: 'I did not check for cover gaps — that is part of {plan}.',
@@ -119,7 +124,8 @@ export const appEn: typeof appEl = {
         twiceNote: '{count, plural, =0 {I found no cover paid twice for the same thing.} one {# pair with the same cover for the same thing.} other {# pairs with the same cover for the same thing.}}',
         twiceAmountNote: 'Amount from the insurer tariff; without a tariff I do not estimate it.',
     },
-    coverageMap: { title: 'The 16 lines', none: 'you do not have' },
+    coverageMap: {
+        activeCount: '{count, plural, one {# active} other {# active}}', title: 'The 16 lines', none: 'you do not have' },
     household: { title: 'Your household', add: 'Add a person', policies: '{count, plural, =0 {no policy} one {# policy} other {# policies}}' },
     checklist: { ok: 'Covered', not: 'Not covered', review: 'I am not sure', notStated: 'not stated', notFound: 'not found' },
     questions: { title: 'Ready-to-ask questions', ask: 'Ask your adviser in one tap' },
@@ -135,6 +141,7 @@ export const appEn: typeof appEl = {
     },
     life: { marriage: 'Marriage', child: 'A child', newHome: 'New home', newCar: 'New car', newJob: 'New job', loan: 'A loan', divorce: 'Divorce', move: 'Moved house', retirement: 'Retirement', other: 'Something else' },
     see: {
+        tierCounts: '{now} now · {month} this month · {later} when you have time',
         filterAll: 'All',
         filterLabel: 'Finding filter',
         title: 'Worth seeing',
@@ -262,6 +269,7 @@ export const appEn: typeof appEl = {
     me: {
         theme: 'Theme',
         language: 'Language',
+        planLine: '{plan} · {price}{period}',
         ledgerTitle: 'What I did for you in {year}',
         ledgerEmpty: "I haven't done anything worth counting yet. As soon as I read your first policy, you'll see it here.",
         ledger: {
@@ -300,7 +308,7 @@ export const appEn: typeof appEl = {
         card: { call: 'Call', email: 'Email' },
         since: 'Working together since {date}',
         shares: 'What they can see',
-        sharesHint: 'You decide per policy. What you switch on, they see; what you switch off, they do not.',
+        sharesHint: "You decide per policy. Whatever you switch off they stop seeing immediately — no need to tell them, I do.",
         addedByAdviser: 'added by your adviser',
         sharedSince: 'sees it since {date}',
         notShared: 'cannot see it',
@@ -321,7 +329,7 @@ export const appEn: typeof appEl = {
         help: {
             title: 'I want help',
             what: 'What will be sent',
-            sentence: "I'll send {name} this finding, with its source.",
+            sentence: "I'm sending {name} what I found — not your whole folder.",
             plainWords: "Meaning: the one sentence you saw, which document it came from, and — if you switch it on — which profile fact makes it yours. Nothing else.",
             includeOthers: 'Let them see the other {count, plural, one {# policy} other {# policies}}',
             confirm: 'Send it',

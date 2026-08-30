@@ -41,9 +41,9 @@ function model(over: Partial<PolicyDetailModel> = {}): PolicyDetailModel {
         premium: { amount: 412, currency: "EUR" }, insured: "Γ. Παπαδόπουλος",
         summary: { text: "Καλύπτει σωματικές βλάβες τρίτων έως 1.300.000 €.", state: "ok" },
         checklist: [
-            { id: "cov-0", label: "Σωματικές βλάβες τρίτων", state: "ok", citation: { document: "Ασφαλιστήριο αυτοκινήτου · 64504715", page: 2, snippet: null } },
-            { id: "cov-1", label: "Θραύση κρυστάλλων", state: "not", citation: { document: "Ασφαλιστήριο αυτοκινήτου · 64504715", page: null, snippet: null } },
-            { id: "cov-2", label: "Οδική βοήθεια", state: "review", citation: { document: null, page: null, snippet: null } },
+            { id: "cov-0", label: "Σωματικές βλάβες τρίτων", state: "ok", detail: null, citation: { document: "Ασφαλιστήριο αυτοκινήτου · 64504715", page: 2, snippet: null } },
+            { id: "cov-1", label: "Θραύση κρυστάλλων", state: "not", detail: null, citation: { document: "Ασφαλιστήριο αυτοκινήτου · 64504715", page: null, snippet: null } },
+            { id: "cov-2", label: "Οδική βοήθεια", state: "review", detail: null, citation: { document: null, page: null, snippet: null } },
         ],
         findings: [gap],
         questions: [{ id: "q1", kind: "cover", params: { cover: "θραύση κρυστάλλων" } }, { id: "q2", kind: "deductible", params: { cover: "ίδιες ζημιές" } }],

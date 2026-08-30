@@ -7,7 +7,7 @@ import { formatPlural } from "@/lib/i18n/plural"
 import { LEGACY_TAB_REDIRECTS, settingsSectionsFor } from "@/lib/settings/sections"
 import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
-import { planTierName } from "@/lib/subscription-copy"
+import { planTierName, subscriptionCopy } from "@/lib/subscription-copy"
 import { loadLedgerCounts } from "@/lib/app/ledger"
 import { loadHouseholdModel } from "@/lib/app/household-model"
 import { MeScreen } from "./MeScreen"
@@ -34,5 +34,5 @@ export default async function MePage({ searchParams }: { searchParams: Promise<{
     const sections = settingsSectionsFor(dbUser.roles ?? "", { hasLiveOffers })
         .filter((s) => s.id !== "household")
         .map((s) => ({ id: s.id, href: s.href, label: t.settings.nav[s.labelKey].label, description: t.settings.nav[s.labelKey].description }))
-    return <MeScreen ledger={ledger} household={household} sections={sections} planLine={formatPlural(t.app.shell.plan, { plan: planTierName(entitlements.tier, lang) }, lang)} />
+    return <MeScreen ledger={ledger} household={household} sections={sections} planLine={formatPlural(t.app.me.planLine, { plan: planTierName(entitlements.tier, lang), price: subscriptionCopy.tiers[entitlements.tier as "free" | "plus" | "pro"].price[lang], period: subscriptionCopy.tiers[entitlements.tier as "free" | "plus" | "pro"].period[lang] }, lang)} />
 }

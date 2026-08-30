@@ -6,6 +6,8 @@ export interface CoverageCell {
     label: string
     /** null = «δεν έχετε» — no policy in this line. */
     state: ProtectionState | null
+    /** Replaces the legend word when present («3 ενεργά», prototype texture); the glyph stays. */
+    detail?: string
     href?: string
 }
 
@@ -32,7 +34,7 @@ export function CoverageMap({
                     <>
                         <span className="block min-w-0 break-words text-g-app-body-sm font-medium text-fg-primary">{c.label}</span>
                         <span className={cn("mt-g-1 block text-g-app-body-sm", c.state === "covered" && "text-state-covered", c.state === "gap" && "text-state-gap", c.state === "review" && "text-state-review", c.state === null && "text-fg-faint")}>
-                            {c.state ? `${GLYPH[c.state]} ${legend[c.state]}` : legend.none}
+                            {c.state ? `${GLYPH[c.state]} ${c.detail ?? legend[c.state]}` : legend.none}
                         </span>
                     </>
                 )

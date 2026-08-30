@@ -28,11 +28,12 @@ function model(over: Partial<HomeModel> = {}): HomeModel {
         verdict: { counts: { covered: 2, gap: 1, review: 0 }, active: 3, expired: 0, quiet: false, nextExpiryDays: 40, nextExpiryPolicyId: "p2", nowCount: 1, notChecked: [], perPolicy: { p1: "gap", p2: "covered", p3: "covered" } },
         findings: [finding], now: { shown: [finding], overflow: 0 },
         money: { paidPerYear: 1234, protectsUpTo: { amount: 1_300_000, currency: "EUR", policyId: "p2", coverName: "Αστική ευθύνη" }, paidTwice: [] },
-        map: [{ id: "home", label: "Κατοικία", state: "gap" }, { id: "motor", label: "Αυτοκίνητο", state: "covered" }, { id: "pet", label: "Κατοικίδιο", state: null }],
+        map: [{ id: "home", label: "Κατοικία", state: "gap", count: 1 }, { id: "motor", label: "Αυτοκίνητο", state: "covered", count: 2 }, { id: "pet", label: "Κατοικίδιο", state: null, count: 0 }],
         household: [], lifeChips: [{ id: "marriage", href: "/life-event/marriage" }],
         nextExpiry: { policyId: "p2", assetLabel: "Αυτοκίνητο · ΙΚΖ-4821", days: 40 }, lastDid: null,
         notChecked: { gapDetection: false, notAnalysed: 0, failed: 0 },
         policies: [],
+        lastCheckedAt: new Date(Date.now() - 2 * 3_600_000).toISOString(), watchedCount: 24, paidTwiceFirstAsset: null,
         ...over,
     }
 }
@@ -51,6 +52,9 @@ describe("/ — the home screen", () => {
         expect(container.textContent).toContain("Ασφαλιστήριο κατοικίας · P-1 · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 2 — πουθενά.")
         expect(container.textContent).not.toMatch(/%/)
         expect(container.textContent).toContain("2/3")
+        // The map's covered cells carry counts (prototype texture, P1)
+        expect(container.textContent).toContain("2 ενεργά")
+        expect(container.textContent).toContain("έλεγξα ξανά")
     })
     it("the quiet variant says the §6 sentence and replaces the actions with the next expiry", () => {
         const { container } = render(<HomeScreen model={model({ findings: [], now: { shown: [], overflow: 0 }, verdict: { counts: { covered: 3, gap: 0, review: 0 }, active: 3, expired: 0, quiet: true, nextExpiryDays: 37, nextExpiryPolicyId: "p2", nowCount: 0, notChecked: [], perPolicy: { p1: "covered", p2: "covered", p3: "covered" } }, nextExpiry: { policyId: "p2", assetLabel: "Αυτοκίνητο · ΙΚΖ-4821", days: 37 } })} />)

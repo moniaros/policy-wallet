@@ -36,7 +36,7 @@ export interface PolicyDetailModel {
     insured: string | null
     /** The plain-language summary, only when it was written in the viewer's language (lib/wallet/summary-language). */
     summary: { text: string | null; state: "ok" | "absent" | "language_mismatch" }
-    checklist: Array<{ id: string; label: string; state: ChecklistState; citation: { document: string | null; page: number | null; snippet: string | null } }>
+    checklist: Array<{ id: string; label: string; state: ChecklistState; detail: string | null; citation: { document: string | null; page: number | null; snippet: string | null } }>
     findings: RenderableFinding[]
     questions: Array<{ id: string; kind: "cover" | "excluded" | "clause" | "deductible"; params: Record<string, string> }>
     documents: Array<{ id: string; fileName: string; mimeType: string | null; uploadedAt: string; documentKind: string | null }>
@@ -55,7 +55,7 @@ export interface PolicyDetailModel {
     exclusionHint: GlossaryHintData | null
 }
 
-type CoverageItem = { name?: string; type?: string; status?: string; limit?: string; deductible?: string }
+type CoverageItem = { name?: string; type?: string; status?: string; limit?: string; deductible?: string; description?: string; explanation?: { el?: string; en?: string } }
 
 function checklistState(status: string | undefined): ChecklistState {
     if (status === "included" || status === "optional_taken") return "ok"
@@ -98,9 +98,11 @@ export async function loadPolicyDetailModel(policyId: string, viewer: { id: stri
         .filter(({ name }) => name.readable && name.value)
         .map(({ c, i, name }) => {
             const src = sources[`coverages[${i}]`] ?? sources[`coverages[${i}].status`]
+            const detailField = extractedField(typeof c.explanation?.[lang] === "string" ? c.explanation[lang] : typeof c.description === "string" ? c.description : null)
             return {
                 id: `cov-${i}`,
                 label: name.value!,
+                detail: detailField.readable && detailField.value ? detailField.value.slice(0, 220) : null,
                 state: checklistState(c.status),
                 citation: { document: documentLabel, page: src?.page ?? null, snippet: src?.snippet ?? null },
             }

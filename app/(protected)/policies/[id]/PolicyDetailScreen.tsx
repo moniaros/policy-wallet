@@ -113,7 +113,7 @@ export function PolicyDetailScreen({ model, hasAiConsent = true }: { model: Poli
                     <p className="text-g-app-body text-fg-secondary">{t.app.policy.checklistEmpty}</p>
                 ) : (
                     <>
-                        <CoverageChecklist lines={model.checklist.map((c) => ({ id: c.id, label: c.label, state: c.state, citation: citation(c) }))} stateLabels={{ ok: t.app.checklist.ok, not: t.app.checklist.not, review: t.app.checklist.review }} />
+                        <CoverageChecklist lines={model.checklist.map((c) => ({ id: c.id, label: c.label, state: c.state, detail: c.detail ?? undefined, citation: citation(c) }))} stateLabels={{ ok: t.app.checklist.ok, not: t.app.checklist.not, review: t.app.checklist.review }} />
                         {model.exclusionHint && model.checklist.some((c) => c.state === "not") && (
                             <p className="mt-g-3 text-g-app-body-sm text-fg-secondary">
                                 {t.app.policy.exclusionLead} <GlossaryHint hint={model.exclusionHint} />

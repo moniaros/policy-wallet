@@ -54,3 +54,29 @@ Plan of record: the approved execution plan (2026-08-30); assumptions in `docs/A
 - **D-B2C-27** — The plan's claim that `User.onboardingCompletedAt` exists was wrong (that column is AgentProfile's); policyholder first-run state lives in `PolicyholderProfile.preferences` JSON and always has. `/welcome` reads and writes it there (`lib/app/first-run.ts`) — A-16 (no new User column) upheld.
 - **D-B2C-28** — `/api/policies/extract` turned out to be called only by the retired BatchUploadModal (A-25); the LIVE upload path is `createPolicy` → orchestrator, so the per-document gate enforcement lives in the orchestrator's two provider sites and the write in `createPolicy`. The extract route keeps its account-level check and dies with the legacy cleanup.
 
+## P1 — reference-prototype reconciliation (2026-08-31)
+
+The owner supplied the reference prototype (`PolicyWallet_App_Prototype.html` v2) and its UX
+assessment after the ladder closed. The assessment is the document the brief was distilled from —
+its Pass-2 conclusions are the build; its three "open items" (tier rules, protects-up-to, the
+specificity gate) were all already closed by G1/G7. The prototype delta was TEXTURE; adopted where
+real data supports it, rejected where it would fabricate:
+
+| Adopted | Where |
+|---|---|
+| Freshness line «έλεγξα ξανά πριν από N ώρες» (max `lastAnalyzedAt`) | `/` nav subtitle |
+| «Τα υπόλοιπα N τα παρακολουθώ. Αν αλλάξει κάτι, θα σας το πω πρώτος.» | verdict reassurance |
+| The think line names the first paid-twice pair's asset when one exists | `/` money section |
+| Map cells carry counts («✓ 3 ενεργά») | `/` CoverageMap |
+| Checklist lines carry the document's own explanation of each cover | `/policies/[id]` — the line that actually answers «καλύπτομαι;» |
+| `/see` subtitle = tier counts («3 τώρα · 2 αυτόν τον μήνα · …») | `/see` nav |
+| «Στέλνω στον {name} αυτό που βρήκα — όχι όλο τον φάκελό σας.» | help sheet lead |
+| «Ό,τι σβήσετε παύει να το βλέπει αμέσως — του το λέω εγώ.» | adviser shares hint |
+| The ledger plan line states the PRICE (`subscriptionCopy.tiers`), as §8.8 asks — the name alone was a miss | `/me` ledger |
+
+Rejected as fabrication or demo affordance (D-B2C-29): payment-detection texture («δεν είδα
+πληρωμή» — no payment data exists), the quiet-state preview toggle on the ring (a prototype demo
+control, not a product feature), «πόσο κοστίζει να προσθέσω…» ready questions (cost-framing nudges
+purchase), ≈ duplicate amounts (no tariff data — §9 forbids invented ≈), geographic why-you
+(«κοντά στον Ποδονίφτη» — no flood-zone data source exists).
+

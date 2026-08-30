@@ -7,6 +7,8 @@ export interface ChecklistLine {
     state: ChecklistState
     /** «άρθρο 4.2» / «σελ. 3» / «δεν αναφέρεται» / «δεν εντοπίστηκε» — never empty. */
     citation: string
+    /** The document's own explanation of the cover, when it wrote one — the line that answers «καλύπτομαι;» in words. */
+    detail?: string
     href?: string
 }
 
@@ -26,6 +28,7 @@ export function CoverageChecklist({ lines, stateLabels, className }: { lines: Ch
                             <span className="sr-only">{stateLabels[l.state]}: </span>
                             {l.label}
                         </span>
+                        {l.detail && <span className="mt-0.5 block text-g-app-body-sm text-fg-secondary">{l.detail}</span>}
                         <span className="block text-g-app-caption text-fg-faint">
                             {l.href ? <a href={l.href} className="underline underline-offset-2 hover:text-fg-secondary">{l.citation}</a> : l.citation}
                         </span>

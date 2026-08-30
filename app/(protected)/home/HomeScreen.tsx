@@ -40,8 +40,17 @@ export function HomeScreen({ model }: { model: HomeModel }) {
     }
 
     const nextLine = model.nextExpiry ? formatPlural(t.app.verdict.nextExpiry, { count: model.nextExpiry.days }, lang) : t.app.verdict.noExpiry
+    const checkedLine = (() => {
+        if (!model.lastCheckedAt) return null
+        const hours = Math.floor((Date.now() - new Date(model.lastCheckedAt).getTime()) / 3_600_000)
+        if (hours < 1) return t.app.home.checkedJustNow
+        if (hours < 48) return formatPlural(t.app.home.checkedHoursAgo, { count: hours }, lang)
+        return formatPlural(t.app.home.checkedDaysAgo, { count: Math.floor(hours / 24) }, lang)
+    })()
+    const subtitle = [formatDate(new Date(), lang), checkedLine].filter(Boolean).join(" · ")
     const sentence = verdict.quiet ? t.app.verdict.quietSentence : formatPlural(t.app.verdict.sentence, { covered: verdict.counts.covered, active: verdict.active }, lang)
     const reassurance = verdict.quiet ? formatPlural(t.app.verdict.quietReassurance, { next: nextLine }, lang) : formatPlural(t.app.verdict.thingsToSee, { count: model.findings.filter((f) => f.tier !== "later").length }, lang)
+    const watchingLine = !verdict.quiet && model.watchedCount > 0 ? ` ${formatPlural(t.app.verdict.watching, { count: model.watchedCount }, lang)}` : ""
     const mood = verdict.quiet ? t.app.verdict.moodQuiet : verdict.counts.gap > 0 ? t.app.verdict.moodGap : verdict.counts.review > 0 ? t.app.verdict.moodReview : t.app.verdict.moodQuiet
     const seeHref = PRIMARY_NAV[1].href
     const householdHref = `${PRIMARY_NAV[4].href}/household`
@@ -56,7 +65,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
 
     return (
         <>
-            <LargeTitleNav title={t.app.home.title} brand={brand} />
+            <LargeTitleNav title={t.app.home.title} brand={brand} subtitle={subtitle} />
             <MomentOfTruthBeacon findings={model.now.shown.map((f) => ({ id: f.id, tier: f.tier, kind: f.kind }))} />
             <AppSection id="verdict" className="[padding-block-start:var(--spacing-g-4)]">
                 <VerdictCard
@@ -65,7 +74,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
                     quiet={verdict.quiet}
                     mood={mood}
                     sentence={sentence}
-                    reassurance={reassurance}
+                    reassurance={reassurance + watchingLine}
                     ringLabel={formatPlural(t.app.verdict.ringLabel, { covered: verdict.counts.covered, active: verdict.active, gap: verdict.counts.gap, review: verdict.counts.review }, lang)}
                     tiles={(["covered", "gap", "review"] as const).map((state) => ({ state, label: t.app.verdict.tiles[state], count: verdict.counts[state], href: `${seeHref}?state=${state}` }))}
                 />
@@ -110,7 +119,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
                             protects={{ label: t.app.moneyLine.protects, value: money.protectsUpTo ? formatCurrency(money.protectsUpTo.amount, lang) : null, note: money.protectsUpTo ? t.app.moneyLine.protectsNote : t.app.moneyLine.protectsNone, factKey: "money.protectsUpTo" }}
                             twice={{ label: t.app.moneyLine.twice, value: twiceAmount > 0 ? formatCurrency(twiceAmount, lang) : null, note: formatPlural(t.app.moneyLine.twiceNote, { count: twiceCount }, lang), factKey: "money.paidTwice" }}
                         />
-                        <p className="mt-g-2 text-g-app-caption text-fg-faint">{t.app.home.moneyThink}</p>
+                        <p className="mt-g-2 text-g-app-body-sm text-fg-secondary">{model.paidTwiceFirstAsset ? formatPlural(t.app.home.moneyThinkPair, { asset: model.paidTwiceFirstAsset }, lang) : t.app.home.moneyThink}</p>
                     </AppSection>
 
                     <AppSection id="life" title={t.app.home.life}>
@@ -121,7 +130,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
 
                 <div>
                     <AppSection id="map" title={t.app.home.map}>
-                        <CoverageMap legend={{ ...stateLabels, none: t.app.coverageMap.none }} cells={model.map.map((c) => ({ id: c.id, label: c.label, state: c.state, href: c.state ? PRIMARY_NAV[2].href : ADD_POLICY.href }))} />
+                        <CoverageMap legend={{ ...stateLabels, none: t.app.coverageMap.none }} cells={model.map.map((c) => ({ id: c.id, label: c.label, state: c.state, detail: c.state === "covered" ? formatPlural(t.app.coverageMap.activeCount, { count: c.count }, lang) : undefined, href: c.state ? PRIMARY_NAV[2].href : ADD_POLICY.href }))} />
                     </AppSection>
 
                     <AppSection id="household" title={t.app.home.household}>

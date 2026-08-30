@@ -8,7 +8,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { LINES, lineOf } from "./lines"
 import { deriveInsuredNames } from "@/lib/wallet/insured-people"
 import { getTimeline } from "@/lib/services/timeline/service"
-import { composePolicies, composeFindings, composeRenderable, type ComposePolicy, type ComposeGap, type ComposeProfile, type ComposedPolicy } from "./compose"
+import { composePolicies, composeFindings, composeRenderable, type ComposePolicy, type ComposeGap, type ComposeProfile, type ComposedPolicy, assetLabelFor } from "./compose"
 import { computeVerdict, type Verdict } from "./verdict"
 import { capNow, sortByTier } from "./tier"
 import { computeMoneyLine, type MoneyLine, type MoneyPolicy } from "./money"
@@ -28,9 +28,15 @@ export interface HomeModel {
     findings: RenderableFinding[]
     now: { shown: RenderableFinding[]; overflow: number }
     money: MoneyLine
-    map: Array<{ id: string; label: string; state: ProtectionState | null }>
+    map: Array<{ id: string; label: string; state: ProtectionState | null; count: number }>
     household: Array<{ id: string; name: string; state: ProtectionState; policyCount: number }>
     lifeChips: Array<{ id: string; href: string }>
+    /** The engine's most recent read across live policies — the header's «έλεγξα ξανά …» line. */
+    lastCheckedAt: string | null
+    /** active − the now-tier count: what the analyst is watching rather than raising. */
+    watchedCount: number
+    /** The first possibly-paid-twice pair's asset — the home think line names it (prototype texture). */
+    paidTwiceFirstAsset: string | null
     nextExpiry: { policyId: string; assetLabel: string; days: number } | null
     lastDid: { text: string; at: Date } | null
     notChecked: { gapDetection: boolean; notAnalysed: number; failed: number }
@@ -155,7 +161,7 @@ export async function loadHomeModel(userId: string, lang: "el" | "en", now: Date
     const map = LINES.map((line) => {
         const states = live.filter((p) => lineOf(p.lineOfBusiness) === line.id).map((p) => verdict.perPolicy[p.id])
         const state: ProtectionState | null = states.length === 0 ? null : states.includes("gap") ? "gap" : states.includes("review") ? "review" : "covered"
-        return { id: line.id, label: line.label[lang], state }
+        return { id: line.id, label: line.label[lang], state, count: states.length }
     })
 
     const namesByPolicy = new Map(raw.map((p) => [p.id, deriveInsuredNames(p.acordData).map(fold)]))
@@ -171,6 +177,9 @@ export async function loadHomeModel(userId: string, lang: "el" | "en", now: Date
     const lastText = last?.title?.[lang] ?? last?.summary?.[lang] ?? null
     const lastAt = last?.at ?? last?.occurredAt ?? null
 
+    const lastChecked = raw.reduce<Date | null>((acc, p) => (p.lastAnalyzedAt && (!acc || p.lastAnalyzedAt > acc) ? p.lastAnalyzedAt : acc), null)
+    const money = computeMoneyLine(moneyPolicies, new Map(), now)
+    const firstPair = money.paidTwice[0] ? ctx.rawById.get(money.paidTwice[0].policyId) : undefined
     return {
         lang,
         tier: entitlements.tier as PlanTier,
@@ -178,10 +187,13 @@ export async function loadHomeModel(userId: string, lang: "el" | "en", now: Date
         verdict,
         findings,
         now: foldIdenticalRows(findings),
-        money: computeMoneyLine(moneyPolicies, new Map(), now),
+        money,
         map,
         household,
         lifeChips: LIFE_EVENT_CHIPS.map((c) => ({ id: c.id, href: `/life-event/${c.id}` })),
+        lastCheckedAt: lastChecked ? lastChecked.toISOString() : null,
+        watchedCount: Math.max(verdict.active - verdict.nowCount, 0),
+        paidTwiceFirstAsset: firstPair ? assetLabelFor(firstPair, lang) : null,
         nextExpiry: next ? { policyId: next.id, assetLabel: next.assetLabel, days: next.daysUntilExpiry! } : null,
         lastDid: lastText && lastAt ? { text: lastText, at: lastAt } : null,
         notChecked: {
