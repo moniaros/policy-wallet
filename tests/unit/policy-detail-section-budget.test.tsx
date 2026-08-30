@@ -37,7 +37,7 @@ const gap = toRenderableFinding({
 function model(over: Partial<PolicyDetailModel> = {}): PolicyDetailModel {
     return {
         lang: "el", id: "p1", isOwner: true, canWrite: true, label: "Interamerican (64504715)", insurer: "Interamerican", number: "64504715",
-        asset: "ΙΚΖ-4821", lineLabel: "Αυτοκίνητο", lineOfBusiness: "motor", state: "gap", lifecycle: "active", daysUntilExpiry: 165, endDate: "12/02/2027",
+        asset: "ΙΚΖ-4821", lineLabel: "Αυτοκίνητο", lineId: "motor", lineOfBusiness: "motor", state: "gap", lifecycle: "active", daysUntilExpiry: 165, endDate: "12/02/2027",
         premium: { amount: 412, currency: "EUR" }, insured: "Γ. Παπαδόπουλος",
         summary: { text: "Καλύπτει σωματικές βλάβες τρίτων έως 1.300.000 €.", state: "ok" },
         checklist: [
