@@ -21,10 +21,10 @@ export const PRODUCT_STEPS = [
         icon: Sparkles,
         titleEl: "Τα διαβάζουμε για εσάς",
         titleEn: "We read them for you",
-        // Gap & duplicate detection is Plus-only — the step names the plan.
+        // Gap detection is Family-gated; duplicate detection runs on every plan (D1 amended 2026-08-30) — the step names the plan.
         // This text also ships verbatim inside the HowTo JSON-LD.
-        descEl: "Σας εξηγούμε τι καλύπτει και τι όχι, σε γλώσσα που καταλαβαίνετε, και εντοπίζουμε τα κενά του — και, με το Family, τις διπλές καλύψεις ανάμεσα στα ασφαλιστήριά σας.",
-        descEn: "We explain what is covered and what is not, in words you actually understand, and we find its gaps — and, with Family, the cover you are paying for twice across policies.",
+        descEl: "Σας εξηγούμε τι καλύπτει και τι όχι, σε γλώσσα που καταλαβαίνετε, και εντοπίζουμε τις διπλές καλύψεις που ίσως πληρώνετε — και, με το Family, τα κενά της κάλυψής σας",
+        descEn: "We explain what is covered and what is not, in words you actually understand, and we find the cover you may be paying for twice — and, with Family, the gaps in your protection",
     },
     {
         n: "03",

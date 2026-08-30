@@ -106,7 +106,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 features: [
                     { label: { el: "3 ασφαλιστήρια", en: "3 policies" }, included: true, highlight: true },
                     { label: { el: "Πλήρης ανάλυση AI σε κάθε ασφαλιστήριο", en: "Full AI analysis on every policy" }, included: true, highlight: true },
-                    { label: { el: "Εντοπισμός κενών κάλυψης", en: "Coverage-gap detection" }, included: true },
+                    { label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
                     { label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
                     { label: { el: "Υπενθυμίσεις ανανέωσης", en: "Renewal reminders" }, included: false },
                 ],
@@ -130,7 +130,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 features: [
                     { label: { el: "Έως 10 ασφαλιστήρια", en: "Up to 10 policies" }, included: true, highlight: true },
                     { label: { el: "Πλήρης ανάλυση AI σε κάθε ασφαλιστήριο", en: "Full AI analysis on every policy" }, included: true },
-                    { label: { el: "Εντοπισμός κενών & διπλών καλύψεων", en: "Gap & duplicate-coverage detection" }, included: true },
+                    { label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
                     { label: { el: "Υπενθυμίσεις ανανέωσης (email)", en: "Renewal reminders (email)" }, included: true },
                     { label: { el: "Ανάλυση από πολλές ασφαλιστικές", en: "Multi-insurer insights" }, included: true },
                 ],
@@ -196,8 +196,17 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 values: { free: false, plus: false, pro: true },
             },
             {
-                name: { el: "Εντοπισμός κενών & διπλών καλύψεων", en: "Gap & duplicate-coverage detection" },
+                // Split from one combined gap-&-duplicate row (D1 as amended
+                // 2026-08-30): the two halves have different truths, and a
+                // combined row forces one of them to lie. Gap detection is the
+                // enforced Family gate; duplicate detection runs on every plan,
+                // bounded only by the plan's policy ceiling.
+                name: { el: "Εντοπισμός κενών κάλυψης", en: "Coverage-gap detection" },
                 values: { free: false, plus: false, pro: true },
+            },
+            {
+                name: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" },
+                values: { free: true, plus: true, pro: true },
             },
             {
                 name: { el: "Υπενθυμίσεις ανανέωσης (email)", en: "Renewal reminders (email)" },

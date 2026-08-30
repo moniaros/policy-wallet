@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2820
-# inline entries: 4678 across 209 files
+# inline entries: 4679 across 209 files
 # ternary entries: 285 across 44 files
 # call entries: 1152 across 72 files
 
@@ -3347,7 +3347,7 @@ inline	components/landing/AudienceTabs.tsx	"Υπενθύμιση πριν λήξ
 inline	components/landing/ComparisonVerdict.tsx	"Όχι"
 inline	components/landing/ComparisonVerdict.tsx	"Εν μέρει"
 inline	components/landing/ComparisonVerdict.tsx	"Ναι"
-inline	components/landing/ComparisonVerdict.tsx	"Ναι, με το Plus"
+inline	components/landing/ComparisonVerdict.tsx	"Ναι, με το Family"
 inline	components/landing/HeroSlides.tsx	"Όλα σε ένα σημείο"
 inline	components/landing/HeroSlides.tsx	"Διπλές καλύψεις και κενά"
 inline	components/landing/HeroSlides.tsx	"Κρυμμένες παροχές"
@@ -6357,8 +6357,9 @@ inline	lib/pricing/public-pricing-content.ts	"Διαδραστικές ερωτ�
 inline	lib/pricing/public-pricing-content.ts	"Διατηρείτε πρόσβαση μέχρι το τέλος της ήδη πληρωμένης περιόδου χρέωσης."
 inline	lib/pricing/public-pricing-content.ts	"Δωρεάν"
 inline	lib/pricing/public-pricing-content.ts	"Είναι το PolicyWallet CRM για ασφαλιστικά γραφεία;"
-inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός κενών & διπλών καλύψεων"
-inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός κενών & διπλών καλύψεων"
+inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός διπλών καλύψεων"
+inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός διπλών καλύψεων"
+inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός διπλών καλύψεων"
 inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός κενών & διπλών καλύψεων"
 inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός κενών κάλυψης"
 inline	lib/pricing/public-pricing-content.ts	"Εξοικονομείτε 3 μήνες"
@@ -7869,7 +7870,7 @@ call	app/(public)/lexiko/[term]/GlossaryTermClient.tsx	"Συχνές ερωτή�
 call	app/(public)/lexiko/[term]/GlossaryTermClient.tsx	"Σχετικά"
 call	app/(public)/needs/NeedsPageBody.tsx	"Δεν χρειάζεται λογαριασμό, ούτε να ανεβάσετε ασφαλιστήριο. Απαντήστε ό,τι ξέρετε απ' έξω και θα σας πούμε ποια σημεία έχουν σημασία για κάποιον στη δική σας κατάσταση — και τι ακριβώς να κοιτάξετε."
 call	app/(public)/product/ProductSections.tsx	"Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων."
-call	app/(public)/product/ProductSections.tsx	"Βρίσκουμε κενά και διπλές καλύψεις — με το Plus"
+call	app/(public)/product/ProductSections.tsx	"Βρίσκουμε διπλές καλύψεις σε κάθε πλάνο — και κενά κάλυψης με το Family"
 call	app/(public)/product/ProductSections.tsx	"Γεια σου, Νίκο"
 call	app/(public)/product/ProductSections.tsx	"Δείτε πώς ακριβώς"
 call	app/(public)/product/ProductSections.tsx	"Δείτε τι αναλύουμε"
@@ -7881,11 +7882,11 @@ call	app/(public)/product/ProductSections.tsx	"Διαβάζουμε κάθε σ�
 call	app/(public)/product/ProductSections.tsx	"Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα."
 call	app/(public)/product/ProductSections.tsx	"Κάθε ασφάλειά σας, διαβασμένη για εσάς."
 call	app/(public)/product/ProductSections.tsx	"Καθαρές απαντήσεις, χωρίς να διαβάσετε ούτε μία σελίδα."
-call	app/(public)/product/ProductSections.tsx	"Με το Family, σας λέμε τι λείπει από την κάλυψή σας, τι πληρώνετε δύο φορές και τι αξίζει να διορθώσετε πρώτα."
 call	app/(public)/product/ProductSections.tsx	"Οι ασφάλειές σας"
 call	app/(public)/product/ProductSections.tsx	"Παράδειγμα: τρεις ασφάλειες με τις ημερομηνίες λήξης τους, και μια επισήμανση ότι το σπίτι είναι ασφαλισμένο για λιγότερα από όσα κοστίζει να ξαναχτιστεί."
 call	app/(public)/product/ProductSections.tsx	"Πώς λειτουργεί"
 call	app/(public)/product/ProductSections.tsx	"Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus"
+call	app/(public)/product/ProductSections.tsx	"Σας λέμε τι πληρώνετε δύο φορές — σε κάθε πλάνο — και, με το Family, τι λείπει από την κάλυψή σας και τι αξίζει να διορθώσετε πρώτα."
 call	app/(public)/product/ProductSections.tsx	"Στείλτε ένα συμβόλαιο και δείτε τι βρίσκουμε."
 call	app/(public)/product/ProductSections.tsx	"Συχνές ερωτήσεις"
 call	app/(public)/product/ProductSections.tsx	"Τι βρήκαμε"

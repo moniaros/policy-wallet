@@ -12,7 +12,13 @@ const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\
  * should sit behind a plan is a pricing decision, not a cleanup, so the unused
  * gate stays and is declared here rather than silently tolerated.
  */
-const KNOWN_UNGATED = new Set(['duplicate_coverage_detection'])
+// EMPTY, and keep it that way. `duplicate_coverage_detection` lived here from
+// the day this guard shipped: a declared gate nothing checked, whitelisted as
+// known. On 2026-08-30 the pricing decision landed the other way — the feature
+// is ungated by design — so the declaration was deleted rather than enforced,
+// and this set went to zero. A new entry here means a new declared-but-
+// unenforced paywall, which is a false public claim waiting for a renderer.
+const KNOWN_UNGATED = new Set<string>([])
 
 /**
  * `family_portfolio` was a gate with full sales copy — "See and organize your

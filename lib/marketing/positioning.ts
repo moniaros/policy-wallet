@@ -397,7 +397,7 @@ export const SPEED_CLAIM: Bilingual = {
 // "plus" = yes, on the Family plan. Plus-only capabilities (gap &
 // duplicate detection per the pricing matrix) must not read as an unqualified
 // "yes" to a Free reader — the cell itself carries the plan attribution.
-export type ComparisonVerdict = "yes" | "plus" | "partial" | "no"
+export type ComparisonVerdict = "yes" | "family" | "partial" | "no"
 
 export const COMPARISON_COLUMNS: readonly {
     key: "folder" | "insurer" | "advisor" | "policywallet"
@@ -455,14 +455,14 @@ export const COMPARISON_ROWS: readonly {
         folder: "no",
         insurer: "no",
         advisor: "partial",
-        policywallet: "plus",
+        policywallet: "family",
     },
     {
         job: { el: "Βρίσκει αν πληρώνετε δύο φορές", en: "Finds if you are paying twice" },
         folder: "no",
         insurer: "no",
         advisor: "partial",
-        policywallet: "plus",
+        policywallet: "yes",
     },
     {
         // Worded on what every plan delivers: even Free shows each policy's

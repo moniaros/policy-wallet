@@ -23,7 +23,6 @@ export type FeatureKey =
     | "advanced_renewal_reminders"
     | "pdf_preview"
     | "token_topup"
-    | "duplicate_coverage_detection"
     | "claims_preparation_assistant"
     | "partner_offers"
     | "protection_monitoring"
@@ -61,10 +60,12 @@ export interface FeatureGate {
  * `<UpgradePrompt featureKey="family_portfolio">` would have rendered a paid
  * promise for a feature that does not exist. Removed rather than left loaded.
  *
- * `duplicate_coverage_detection` is a different case and stays: the capability
- * is real (see gap-engine portfolio-rules), it currently runs for every user,
- * and the gate is simply not applied anywhere. Whether that finding should sit
- * behind a plan is a pricing decision, not a cleanup.
+ * `duplicate_coverage_detection` sat here from then until 2026-08-30 with the
+ * note that whether it should be gated "is a pricing decision, not a cleanup".
+ * The pricing decision was made: it is NOT gated. The capability runs for every
+ * plan, bounded only by the plan's policy ceiling — so the `pro` declaration
+ * misdescribed the product and was deleted, and plan-gating-parity.test.ts pins
+ * the deletion so a paywall cannot quietly return by re-adding a key.
  */
 export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     policy_upload_limit: {
@@ -125,12 +126,6 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
         featureKey: "token_topup",
         requiredPlan: "plus",
         upgradeReason: "token_limit",
-        lockedViewedEvent: "feature_locked_viewed",
-    },
-    duplicate_coverage_detection: {
-        featureKey: "duplicate_coverage_detection",
-        requiredPlan: "pro",
-        upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",
     },
     claims_preparation_assistant: {

@@ -92,10 +92,14 @@ is Family. The slide must not gate the whole sentence:
 - EL  Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και ασφαλιστικά κενά που
 -     δεν ξέρατε ότι έχετε ή δεν είχατε όταν κάνατε το ασφαλιστήριό σας — με το Family.
 + EL  Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές — σε κάθε πλάνο. Και, με το
-+     Family, τα ασφαλιστικά κενά που δεν ξέρατε ότι έχετε, σε όλο το νοικοκυριό.
++     Family, τα ασφαλιστικά κενά που δεν ξέρατε ότι έχετε.
 - EN  Spot cover you are paying for twice, and gaps you did not know you had — with Family.
 + EN  Spot cover you are paying for twice — on every plan. And, with Family, the
-+     coverage gaps you did not know you had, across your household.
++     coverage gaps you did not know you had.
+
+*(«σε όλο το νοικοκυριό» / "across your household" was in the amended draft and is REMOVED:
+code verification showed duplicate detection is same-subject only and never compares across
+persons — see deliverable 1. SHIPPED to HeroSlides.tsx 2026-08-30 in this wording.)*
 ```
 
 ## 1.5 The neutrality sentence — replace

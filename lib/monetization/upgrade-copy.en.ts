@@ -160,21 +160,6 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         successMessage: "Upgrade complete. Your AI tokens have been renewed.",
         successCta: "Continue to analysis",
     },
-    duplicate_coverage_detection: {
-        headline: "See if you're paying twice for the same cover",
-        body: "Based on your policies, some coverages may overlap. Unlock duplicate-coverage detection to check.",
-        primaryCta: "Check duplicate coverage",
-        secondaryCta: "Not now",
-        benefits: [
-            "Spot coverages that overlap between policies",
-            "See where you might be paying twice for the same thing",
-            "Make better use of the insurance you already pay for",
-            "Discuss it with your insurer or advisor",
-        ],
-        trust: TRUST,
-        successMessage: "Upgrade complete. Duplicate-coverage detection is available.",
-        successCta: "See the overlaps",
-    },
     claims_preparation_assistant: {
         headline: "Claim preparation guide",
         body: "If you ever need to file a claim, unlock a step-by-step guide based on your policy: what to prepare, deadlines and who to notify.",

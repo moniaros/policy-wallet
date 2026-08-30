@@ -22,7 +22,7 @@ access, no GA claim.
 | Email renewal reminders | — | ✅ | ✅ | ✅ `notifications` |
 | Smart reminders | — | — | ✅ | ✅ `advanced_renewal_reminders` |
 | **Gap detection** | — | — | ✅ | ✅ `gapAnalysisPerDay: 0/0/null` |
-| **Duplicate-cover detection** *(D1-amended)* | ✅ *within your 3 policies* | ✅ *within 10* | ✅ *household-wide, 25* | ✅ **bounded by the policy ceiling — no gate; the dead declaration is deleted** |
+| **Duplicate-cover detection** *(D1-amended)* | ✅ *within your 3 policies* | ✅ *within 10* | ✅ *within 25* | ✅ **bounded by the policy ceiling — no gate; the dead declaration deleted. Same-subject only (plate/address/pet/vessel); never health, never cross-person** |
 | Unlimited questions | — | — | ✅ | ✅ `interactiveQA` |
 | Claims guide · report export · agent collaboration | — | — | ✅ | ✅ |
 

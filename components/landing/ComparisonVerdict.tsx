@@ -17,21 +17,21 @@ import { pick, type ComparisonVerdict, type MarketingLocale } from "@/lib/market
 
 const VERDICT_ICON: Record<ComparisonVerdict, typeof Check> = {
     yes: Check,
-    plus: Check,
+    family: Check,
     partial: Minus,
     no: X,
 }
 
 const VERDICT_TONE: Record<ComparisonVerdict, string> = {
     yes: "bg-status-success-tint text-status-success",
-    plus: "bg-status-success-tint text-status-success",
+    family: "bg-status-success-tint text-status-success",
     partial: "bg-status-warning-tint text-status-warning",
     no: "bg-neutral-100 text-muted-foreground dark:bg-slate-800 dark:text-slate-400",
 }
 
 const VERDICT_LABEL: Record<ComparisonVerdict, { el: string; en: string }> = {
     yes: { el: "Ναι", en: "Yes" },
-    plus: { el: "Ναι, με το Plus", en: "Yes, with Plus" },
+    family: { el: "Ναι, με το Family", en: "Yes, with Family" },
     partial: { el: "Εν μέρει", en: "Partly" },
     no: { el: "Όχι", en: "No" },
 }

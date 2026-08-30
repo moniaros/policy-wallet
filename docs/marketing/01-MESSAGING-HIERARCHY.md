@@ -239,8 +239,14 @@ that finding should sit behind a plan is a pricing decision, not a cleanup."*
 
 **The decided truth:**
 - **Gap detection: Family**, as enforced today. Copy changes only.
-- **Duplicate detection: available on Free, limited rather than gated.** Household-wide scope is
-  Family. Copy corrects to match this, not the reverse.
+- **Duplicate detection: available on Free, limited rather than gated.** Copy corrects to match
+  this, not the reverse. **The household-wide qualifier is DROPPED (verified in code 2026-08-30):**
+  `duplicateCoverageRules → insuredSubject → policyAssetSubjectKey` fires only where two documents
+  name the SAME subject — plate, address, pet, vessel. Health, life, cyber, business and pension
+  have no subject and are never compared, so detection cannot traverse persons and no surface may
+  claim a household-wide duplicate tier. Proof 3 (the household MAP, per-person consent) survives —
+  it is an organisational claim, not a detection claim — but it must never imply cross-person
+  duplicate detection.
 - **OQ9 is closed with no rollout, no grandfathering and no release note** — nobody loses anything.
 - The parity test remains non-negotiable and now asserts **the limit as well as the gate**.
 

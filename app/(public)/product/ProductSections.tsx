@@ -116,14 +116,14 @@ export function ProductSections({ language }: { language: Language }) {
                         </h2>
                         <p className="mb-8 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Με το Family, σας λέμε τι λείπει από την κάλυψή σας, τι πληρώνετε δύο φορές και τι αξίζει να διορθώσετε πρώτα.",
-                                "With Family, we tell you what your cover is missing, what you are paying for twice, and what is worth fixing first."
+                                "Σας λέμε τι πληρώνετε δύο φορές — σε κάθε πλάνο — και, με το Family, τι λείπει από την κάλυψή σας και τι αξίζει να διορθώσετε πρώτα.",
+                                "We tell you what you are paying for twice — on every plan — and, with Family, what your cover is missing, and what is worth fixing first."
                             )}
                         </p>
                         <ul className="space-y-3">
                             {[
                                 t("Διαβάζουμε κάθε συμβόλαιο σε λίγα λεπτά", "We read every policy in minutes"),
-                                t("Βρίσκουμε κενά και διπλές καλύψεις — με το Plus", "We find gaps and doubled-up cover — with Plus"),
+                                t("Βρίσκουμε διπλές καλύψεις σε κάθε πλάνο — και κενά κάλυψης με το Family", "We find doubled-up cover on every plan — and coverage gaps with Family"),
                                 t("Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus", "We warn you before something runs out — from the Plus plan"),
                                 // `agentCollaboration` is false on free AND on
                                 // Starter, true only on pro — the plan displayed

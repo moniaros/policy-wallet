@@ -161,10 +161,12 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
             'advanced_gap_detection',
             'unlimited_ai_questions',
             'multi_insurer_insights',
-            'duplicate_coverage_detection',
             'claims_preparation_assistant',
             // family_portfolio was removed — a Pro-gated promise with full sales
             // copy that nothing implemented and nothing could reach.
+            // duplicate_coverage_detection was removed 2026-08-30 the other way
+            // round: the capability is real and runs for EVERY plan by decision;
+            // the pro declaration was never enforced and misdescribed it.
         ] as const
         for (const key of aiGates) {
             expect(FEATURE_GATES[key].requiredPlan, `${key} should require pro`).toBe('pro')
