@@ -38,7 +38,7 @@ export function SettingsSection({
     return (
         <section
             aria-labelledby={headingId}
-            className={`pw-card pw-pad ${
+            className={`pw-card pw-pad mx-g-4 tablet:mx-0 ${
                 tone === "danger" ? "border-red-500/30 dark:border-red-500/25" : ""
             } ${className}`}
         >

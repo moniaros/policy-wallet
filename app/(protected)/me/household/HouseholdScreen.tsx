@@ -32,7 +32,7 @@ export function HouseholdScreen({ model }: { model: HouseholdModel }) {
 
     if (!model.enabled) {
         return (
-            <AppSection id="household" title={t.settings.nav.household.label}>
+            <AppSection id="household">
                 <p className="text-g-app-body text-fg-secondary">{me.unavailable}</p>
             </AppSection>
         )
@@ -40,7 +40,7 @@ export function HouseholdScreen({ model }: { model: HouseholdModel }) {
 
     return (
         <>
-            <AppSection id="household" title={t.settings.nav.household.label}>
+            <AppSection id="household">
                 <p className="mb-g-3 text-g-app-body-sm text-fg-secondary">{me.intro}</p>
                 {model.people.length === 0 ? (
                     <p className="text-g-app-body text-fg-secondary">{me.empty}</p>

@@ -17,17 +17,15 @@ interface SettingsShellProps {
 }
 
 /**
- * The frame every settings route renders inside.
+ * The frame every settings route renders inside — Grafí tokens on GrafiShell's
+ * own ground, container and tab-bar clearance included, so this adds no page
+ * shell of its own (the old pw-page-shell here doubled both).
  *
- * Layout follows the dashboard rebuild (`PolicyholderHome`) rather than the
- * shared `PageHeader`: that header is `sticky top-0 z-40` and the app shell
- * already pins its own mobile header there, so using it stacked two sticky bars
- * and ate a third of a phone screen before any content.
- *
- * Mobile and desktop headers are both rendered and toggled in CSS — on a phone
- * the section name is the h1 with a back link above it (you arrived by drilling
- * in, so the section is the page), while on a wide screen "Settings" is the h1
- * and the rail beside it says where you are.
+ * ONE header at every width: on a sub-page the section name is the h1 (you
+ * arrived by drilling in, so the section is the page) with a back link below
+ * the desk breakpoint; on the index the page title is. Desktop (≥1100) adds
+ * the rail beside the content — the index's own list stays for narrower
+ * widths, so neither duplicates the other.
  */
 export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellProps) {
     const { t } = useLanguage()
@@ -37,44 +35,30 @@ export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellP
     const copy = t.settings.nav
 
     return (
-        <div className="pw-page-shell">
-            <div className="mx-auto max-w-page px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-12 lg:pt-8">
-                {/* Mobile header */}
-                <header className="mb-4 lg:hidden">
-                    {!isIndex && (
-                        <Link
-                            href="/me"
-                            className="pw-inline-action -ml-1 mb-2 inline-flex min-h-11 items-center gap-1 pr-2 text-xs font-semibold text-primary hover:underline dark:text-mint"
-                        >
-                            <ChevronLeft aria-hidden="true" className="h-4 w-4" />
-                            {t.settings.pageTitle}
-                        </Link>
-                    )}
-                    <h1 className="text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
-                        {isIndex || !active ? t.settings.pageTitle : copy[active].label}
-                    </h1>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        {isIndex || !active ? t.settings.pageSubtitle : copy[active].description}
-                    </p>
-                </header>
-
-                {/* Desktop header */}
-                <header className="mb-6 hidden lg:block">
-                    <p className="pw-kicker">{t.nav.account}</p>
-                    {/* Visual duplicate of the mobile h1 (one of the two headers is CSS-hidden
-                        at any width) — aria-hidden so the document keeps exactly one h1. */}
-                    <p aria-hidden="true" className="mt-1.5 text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
+        <div className="pt-g-2">
+            <header className="mb-g-4 px-g-4 tablet:px-0">
+                {!isIndex && (
+                    <Link
+                        href="/me"
+                        className="-ml-1 mb-g-1 inline-flex min-h-11 items-center gap-1 pr-g-2 text-g-app-body-sm font-semibold text-fg-brand hover:underline desk:hidden"
+                    >
+                        <ChevronLeft aria-hidden="true" className="h-4 w-4" />
                         {t.settings.pageTitle}
-                    </p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.settings.pageSubtitle}</p>
-                </header>
+                    </Link>
+                )}
+                <h1 className="text-g-title text-fg-primary">
+                    {isIndex || !active ? t.settings.pageTitle : copy[active].label}
+                </h1>
+                <p className="mt-1 text-g-app-body-sm leading-relaxed text-fg-secondary">
+                    {isIndex || !active ? t.settings.pageSubtitle : copy[active].description}
+                </p>
+            </header>
 
-                <div className="lg:grid lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-8">
-                    <div className="hidden lg:block">
-                        <SettingsNav roles={roles} hasLiveOffers={hasLiveOffers} variant="rail" />
-                    </div>
-                    <div className="min-w-0 space-y-4">{children}</div>
+            <div className="desk:grid desk:grid-cols-[250px_minmax(0,1fr)] desk:gap-g-6">
+                <div className="hidden desk:block">
+                    <SettingsNav roles={roles} hasLiveOffers={hasLiveOffers} variant="rail" />
                 </div>
+                <div className="min-w-0 space-y-g-4">{children}</div>
             </div>
         </div>
     )

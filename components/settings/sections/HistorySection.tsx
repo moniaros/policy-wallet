@@ -16,5 +16,9 @@ interface HistorySectionProps {
 }
 
 export function HistorySection({ entries, language }: HistorySectionProps) {
-    return <LifeTimeline entries={entries} language={language} />
+    return (
+        <div className="px-g-4 tablet:px-0">
+            <LifeTimeline entries={entries} language={language} />
+        </div>
+    )
 }

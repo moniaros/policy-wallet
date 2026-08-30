@@ -61,7 +61,7 @@ export function MeScreen({ ledger, household, sections, planLine }: { ledger: Le
                 </AppSection>
             )}
 
-            <AppSection id="sections" title={me.sections}>
+            <AppSection id="sections" title={me.sections} className="desk:hidden">
                 <GroupedList label={me.sections}>
                     {sections.map((s) => (
                         <Row key={s.id} href={s.href} primary={s.label} secondary={s.description} />

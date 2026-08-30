@@ -9,7 +9,7 @@ import { AppSection } from "@/src/design-system/app-layout"
 export function AppearanceSection() {
     const { t } = useLanguage()
     return (
-        <AppSection id="appearance" title={t.settings.nav.appearance.label}>
+        <AppSection id="appearance">
             <div className="flex flex-col gap-g-4">
                 <div className="flex flex-col gap-g-2">
                     <span className="text-g-app-body text-fg-primary">{t.app.me.theme}</span>

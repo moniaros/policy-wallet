@@ -2,8 +2,10 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, Building2, ChevronRight, CreditCard, Gift, History, Lock, Palette, ShieldCheck, User, Users, type LucideIcon } from "lucide-react"
+import { Bell, Building2, CreditCard, Gift, History, Lock, Palette, ShieldCheck, User, Users, type LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { GroupedList, Row } from "@/src/design-system/app-layout"
 import { activeSectionFor, settingsSectionsFor, type SettingsSectionId } from "@/lib/settings/sections"
 
 const ICONS: Record<SettingsSectionId, LucideIcon> = {
@@ -38,82 +40,58 @@ interface SettingsNavProps {
 export function SettingsNav({ roles, hasLiveOffers, variant }: SettingsNavProps) {
     const { t } = useLanguage()
     const pathname = usePathname()
-    const active = activeSectionFor(pathname)
+    // The registry maps the index to "profile" (its historic desktop content);
+    // the rail must not claim a section is current when you are on the index.
+    const isIndex = pathname === "/me" || pathname === "/me/"
+    const active = isIndex ? null : activeSectionFor(pathname)
     const sections = settingsSectionsFor(roles, { hasLiveOffers })
     const copy = t.settings.nav
 
     if (variant === "index") {
         return (
             <nav aria-label={t.settings.pageTitle}>
-                <ul className="pw-card divide-y divide-black/5 dark:divide-white/10">
+                <GroupedList>
                     {sections.map((section) => {
                         const Icon = ICONS[section.id]
                         return (
-                            <li key={section.id}>
-                                <Link
-                                    href={section.href}
-                                    className="flex min-h-11 items-center gap-3 px-4 py-3.5 transition hover:bg-black/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset dark:hover:bg-white/[0.04]"
-                                >
-                                    <span
-                                        aria-hidden="true"
-                                        className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
-                                    >
-                                        <Icon className="h-4 w-4" />
-                                    </span>
-                                    <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-semibold text-black dark:text-white">
-                                            {copy[section.labelKey].label}
-                                        </span>
-                                        <span className="mt-0.5 block text-caption leading-snug text-muted-foreground">
-                                            {copy[section.labelKey].description}
-                                        </span>
-                                    </span>
-                                    <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground" />
-                                </Link>
-                            </li>
+                            <Row
+                                key={section.id}
+                                href={section.href}
+                                icon={<Icon className="h-4 w-4" />}
+                                primary={copy[section.labelKey].label}
+                                secondary={copy[section.labelKey].description}
+                            />
                         )
                     })}
-                </ul>
+                </GroupedList>
             </nav>
         )
     }
 
     return (
-        <nav aria-label={t.settings.pageTitle} className="sticky top-6 self-start">
+        <nav aria-label={t.settings.pageTitle} className="sticky top-g-4 self-start">
             <ul className="space-y-1">
                 {sections.map((section) => {
                     const Icon = ICONS[section.id]
                     const isActive = active === section.id
                     return (
                         <li key={section.id}>
-                            {/* Active state is a left bar + a weight change + aria-current,
+                            {/* Active state is a raised pill + a weight change + aria-current,
                                 never colour on its own. */}
                             <Link
                                 href={section.href}
                                 aria-current={isActive ? "page" : undefined}
-                                className={`flex min-h-11 items-start gap-3 rounded-xl border-l-2 py-2.5 pl-3 pr-3 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                                    isActive
-                                        ? "border-l-primary bg-primary-soft/60 dark:border-l-mint dark:bg-primary/15"
-                                        : "border-l-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
-                                }`}
+                                className={cn(
+                                    "flex min-h-11 items-start gap-g-3 rounded-g-control px-g-3 py-g-2 transition-colors duration-200 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[-3px] focus-visible:outline-border-focus",
+                                    isActive ? "bg-surface-raised shadow-g-raised" : "hover:bg-surface-sunken"
+                                )}
                             >
-                                <Icon
-                                    aria-hidden="true"
-                                    className={`mt-0.5 h-4 w-4 shrink-0 ${
-                                        isActive ? "text-primary dark:text-mint" : "text-muted-foreground"
-                                    }`}
-                                />
+                                <Icon aria-hidden="true" className={cn("mt-0.5 h-4 w-4 shrink-0", isActive ? "text-fg-brand" : "text-fg-secondary")} />
                                 <span className="min-w-0">
-                                    <span
-                                        className={`block text-sm ${
-                                            isActive
-                                                ? "font-semibold text-black dark:text-white"
-                                                : "font-medium text-black/80 dark:text-white/80"
-                                        }`}
-                                    >
+                                    <span className={cn("block text-g-app-body-sm text-fg-primary", isActive ? "font-semibold" : "font-medium")}>
                                         {copy[section.labelKey].label}
                                     </span>
-                                    <span className="mt-0.5 block text-caption leading-snug text-muted-foreground">
+                                    <span className="mt-0.5 block text-g-app-caption leading-snug text-fg-secondary">
                                         {copy[section.labelKey].description}
                                     </span>
                                 </span>
