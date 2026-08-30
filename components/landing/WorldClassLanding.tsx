@@ -18,6 +18,8 @@ import { CoverageTicker } from "@/components/landing/grafi/CoverageTicker"
 import { AnswerBlock } from "@/components/landing/grafi/AnswerBlock"
 import { MarketNumbers } from "@/components/landing/grafi/MarketNumbers"
 import { ReadingDemo } from "@/src/design-system/reading-demo"
+import { ComparisonBand } from "@/components/landing/grafi/ComparisonBand"
+import { BrokerBand } from "@/components/landing/grafi/BrokerBand"
 import { PricingPreview } from "@/components/landing/PricingPreview"
 import { HomeFaq } from "@/components/landing/HomeFaq"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
@@ -308,6 +310,13 @@ export function WorldClassLanding({
                         <AudienceTabs isGreek={isGreek} />
                     </div>
                 </section>
+
+                {/* ── 7a. BROKER BAND (§6) — the agent promise beside its
+                    stamped sample; mirrors /solutions/agents, never exceeds it. */}
+                <BrokerBand locale={locale} />
+
+                {/* ── 7b. COMPARISON (§6) — same single source as /compare. */}
+                <ComparisonBand locale={locale} />
 
                 {/* ── 7b. PARTNER PERKS (renders only with live partners) ── */}
                 <PartnerPerksSection offers={partnerOffers} isGreek={isGreek} />

@@ -87,10 +87,4 @@ export const READING_DEMO_STRINGS = {
         en: "Sample analysis complete — 4 findings.",
     },
     replay: { el: "Δείτε το ξανά", en: "Replay" },
-    /** Spoken state names — the chip glyph alone says nothing to AT. */
-    stateLabels: {
-        covered: { el: "Καλύπτεται", en: "Covered" },
-        gap: { el: "Κενό", en: "Gap" },
-        review: { el: "Για έλεγχο", en: "Needs review" },
-    },
 } as const

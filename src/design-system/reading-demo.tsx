@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { READING_DEMO_STRINGS, READING_DEMO_TABS } from "@/lib/marketing/reading-demo"
 import { pick, type MarketingLocale } from "@/lib/marketing/positioning"
-import { StatusChip } from "./primitives"
+import { STATE_LABELS, StatusChip } from "./primitives"
 import { cn } from "@/lib/utils"
 
 /**
@@ -130,7 +130,7 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
                                         style={{ animationDelay: `${Math.min(i, 3) * 70}ms` }}
                                     >
                                         <StatusChip state={r.state} className="flex-none">
-                                            {pick(S.stateLabels[r.state], locale)}
+                                            {pick(STATE_LABELS[r.state], locale)}
                                         </StatusChip>
                                         <span className="text-g-body-sm text-fg-primary">{pick(r.text, locale)}</span>
                                     </li>

@@ -2,3 +2,5 @@ export { Button, StatusChip, Tag, Input, EmailCapture, Divider, Skeleton, Spinne
 export { Section, Container, Stack, Eyebrow, SectionHeading, SourceNote } from "./layout"
 export { ProtectionRing, PolicyStrip, DeviceFrame, type PolicyStripItem } from "./product"
 export * from "./reading-demo"
+export * from "./broker-scan"
+export * from "./plan-recommender"

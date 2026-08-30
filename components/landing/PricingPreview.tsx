@@ -3,6 +3,7 @@ import { ArrowRight, Check } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
 import type { PublicPricingPlan } from "@/lib/pricing/public-pricing-content"
 import type { MarketingLocale } from "@/lib/marketing/positioning"
+import { PlanRecommender } from "@/src/design-system/plan-recommender"
 
 /**
  * Homepage price band.
@@ -70,6 +71,10 @@ export function PricingPreview({
                         )}
                     </p>
                 </div>
+
+                {/* §6: the recommender rides with the price — the slider's
+                    ceilings come from the enforced entitlement source. */}
+                <PlanRecommender locale={locale} plans={plans} className="mb-12" />
 
                 <ul className="grid gap-5 md:grid-cols-2">
                     {visiblePlans.map((plan) => {

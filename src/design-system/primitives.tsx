@@ -78,13 +78,24 @@ const CHIP_GLYPH = { covered: "✓", gap: "◆", review: "?" } as const
  * supplied stays "needs review" — it never silently becomes a gap. Icon+label
  * always; colour never carries the meaning alone.
  */
+/**
+ * The spoken names of the three states — beside the chip so every surface
+ * says the same thing. `review` is «για έλεγχο», never a softer «εντάξει»:
+ * absence of a verdict must not read as reassurance.
+ */
+export const STATE_LABELS: Record<"covered" | "gap" | "review", { el: string; en: string }> = {
+    covered: { el: "Καλύπτεται", en: "Covered" },
+    gap: { el: "Κενό", en: "Gap" },
+    review: { el: "Για έλεγχο", en: "Needs review" },
+}
+
 export function StatusChip({
     state,
     children,
     className,
 }: {
     state: "covered" | "gap" | "review"
-    children: ReactNode
+    children?: ReactNode
     className?: string
 }) {
     return (
