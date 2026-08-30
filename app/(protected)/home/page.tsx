@@ -1,14 +1,18 @@
-export const runtime = 'nodejs'
+export const runtime = "nodejs"
 
-import { redirect } from "next/navigation"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { loadHomeModel } from "@/lib/app/home-model"
+import { HomeScreen } from "./HomeScreen"
 
 /**
- * `/home` and `/dashboard` both rendered the policyholder dashboard — the same
- * screen on two URLs. That split analytics and broke nav active-state for anyone
- * who arrived on `/home` (the sidebar links to `/dashboard`). `/dashboard` is the
- * canonical URL; the page implementation now lives beside it as
- * `dashboard/PolicyholderHome.tsx`, and this route only redirects.
+ * / — «Η προστασία σας» (§8.1). Served at `/` for a signed-in policyholder by
+ * the proxy rewrite (`/` stays the static marketing homepage for everyone
+ * else); a direct visit to /home is 301'd to `/`. The page reads; HomeScreen
+ * renders.
  */
 export default async function HomePage() {
-    redirect("/dashboard")
+    const { dbUser } = await getAuthenticatedUser()
+    const lang = (dbUser.preferredLanguage as "el" | "en") || "el"
+    const model = await loadHomeModel(dbUser.id, lang)
+    return <HomeScreen model={model} />
 }

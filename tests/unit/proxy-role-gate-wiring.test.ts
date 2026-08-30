@@ -78,6 +78,27 @@ describe('proxy() role gate wiring', () => {
         expect(res.headers.get('location')).toBe('http://localhost:3000/dashboard')
     })
 
+    // ── Grafí (G7): the application home is `/` ──────────────────────────
+    it('rewrites `/` to the app home for a policyholder — URL unchanged, marketing untouched for everyone else', async () => {
+        sessionFor('policyholder')
+        const res = await run('/')
+        expect(res.status).toBe(200)
+        expect(res.headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/home')
+        sessionFor('agent')
+        expect((await run('/')).headers.get('x-middleware-rewrite')).toBeNull()
+        sessionFor(null)
+        expect((await run('/')).headers.get('x-middleware-rewrite')).toBeNull()
+    })
+
+    it('301s the old policyholder home and the internal path to `/`', async () => {
+        sessionFor('policyholder')
+        for (const path of ['/dashboard', '/home']) {
+            const res = await run(path)
+            expect(res.status, path).toBe(301)
+            expect(res.headers.get('location'), path).toBe('http://localhost:3000/')
+        }
+    })
+
     it('keeps /dashboard vs /dashboard/agent loop-free for agents', async () => {
         sessionFor('agent')
         const res = await run('/dashboard')

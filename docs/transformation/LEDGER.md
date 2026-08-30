@@ -401,7 +401,8 @@ unreadable-value work: a value that could not be read must link here.
 | `/activity` | activity feed | **KEEP, FIX** — English internal prose falls through for every event type except `policy_analyzed` (P1-05) |
 | `/insights/risk-profile` | view and complete the risk profile | **KEEP** — B2C, reads the caller's own `policyholderProfile` |
 | `/upgrade`, `/upgrade/success` | plan purchase | **KEEP** — pricing/entitlements are §12.4 out of scope; display only |
-| `/coverage`, `/home` | legacy redirects | **KEEP** — no capability |
+| `/coverage` | legacy redirect | **KEEP** — no capability |
+| `/home` | «Η προστασία σας» — the verdict, the next action, the money line (Grafí app tier, G7; served at `/`) | **NEW** — replaces `/dashboard` for policyholders; counts, never a score |
 | `/money` | the money line — what is paid, what it protects up to, what may be paid twice (Grafí app tier, G3→G9) | **NEW** — renders only figures the wallet already computes honestly; nothing invented |
 
 | overlay | disposition |

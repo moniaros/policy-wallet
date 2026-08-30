@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server"
 import { rateLimit } from "@/lib/rate-limit"
 import { getPostLoginRedirectByRole, getPrimaryRole, type AppRole } from "@/lib/auth/role-routing"
 import { isIndexableDeployment } from "@/lib/seo/site"
+import { ACTIVE_ROLE_COOKIE } from "@/lib/auth/active-role"
 import { redactCredentials } from "@/lib/observability/sentry-scrub"
 
 // ---------------------------------------------------------------------------
@@ -350,12 +351,36 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl))
     }
 
-    // Canonical dashboard URL. /home and /dashboard rendered the SAME policyholder
-    // dashboard, splitting analytics and breaking nav active-state (the sidebar
-    // links to /dashboard, so /home visitors saw nothing highlighted). The page
-    // component now lives at dashboard/PolicyholderHome.tsx. Doing this here
-    // rather than with redirect() in the page gives a real 307 before any render
-    // — a page-level redirect streams inside the RSC payload as a 200.
+    // ── The application home is `/` (Grafí, §7 — user decision 2026-08-30). ──
+    //
+    // `/` stays the STATIC marketing homepage for everyone else: a signed-in
+    // policyholder's request is REWRITTEN to the app home (URL unchanged), so
+    // the marketing page keeps its ISR and the app owns the address. The
+    // effective role is the layout's rule — the active-role cookie when a
+    // multi-role user has chosen, else the primary role — so an adviser acting
+    // as adviser is not rewritten into the customer's screen.
+    //
+    // A rewrite is a NEW response: the refreshed Supabase cookies `setAll`
+    // wrote onto `response` are copied across, or a token refresh on `/` is lost.
+    const effectiveRole = (() => {
+        const chosen = request.cookies.get(ACTIVE_ROLE_COOKIE)?.value
+        if (chosen === "agent" || chosen === "admin" || chosen === "policyholder") return chosen
+        return getPrimaryRole((user?.user_metadata?.role as string) || "")
+    })()
+    if (isLoggedIn && user && effectiveRole === "policyholder" && nextUrl.pathname === "/") {
+        const target = nextUrl.clone()
+        target.pathname = "/home"
+        const rewritten = NextResponse.rewrite(target, { request })
+        for (const cookie of response.cookies.getAll()) rewritten.cookies.set(cookie)
+        return rewritten
+    }
+    // The old policyholder home and the internal path both answer at `/` now —
+    // a real 301 here, never a page-level redirect (the /coverage lesson below).
+    if (isLoggedIn && user && effectiveRole === "policyholder" && /^\/(home|dashboard)\/?$/.test(nextUrl.pathname)) {
+        return NextResponse.redirect(new URL(`/${nextUrl.search}`, nextUrl), 301)
+    }
+    // Legacy: /home for a non-policyholder session still canonicalises to /dashboard
+    // (which the role gate then routes), so an adviser's bookmark keeps working.
     if (nextUrl.pathname === "/home" || nextUrl.pathname === "/home/") {
         return NextResponse.redirect(new URL(`/dashboard${nextUrl.search}`, nextUrl))
     }

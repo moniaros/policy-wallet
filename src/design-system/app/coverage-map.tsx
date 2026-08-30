@@ -26,11 +26,11 @@ export function CoverageMap({
     className?: string
 }) {
     return (
-        <ul className={cn("grid grid-cols-2 gap-g-2 tablet:grid-cols-4", className)}>
+        <ul className={cn("grid grid-cols-2 gap-g-2 tablet:grid-cols-4 desk:grid-cols-2", className)}>
             {cells.map((c) => {
                 const inner = (
                     <>
-                        <span className="block truncate text-g-app-body-sm font-medium text-fg-primary">{c.label}</span>
+                        <span className="block min-w-0 break-words text-g-app-body-sm font-medium text-fg-primary">{c.label}</span>
                         <span className={cn("mt-g-1 block text-g-app-caption", c.state === "covered" && "text-state-covered", c.state === "gap" && "text-state-gap", c.state === "review" && "text-state-review", c.state === null && "text-fg-faint")}>
                             {c.state ? `${GLYPH[c.state]} ${legend[c.state]}` : legend.none}
                         </span>

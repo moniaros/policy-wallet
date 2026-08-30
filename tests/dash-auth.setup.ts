@@ -27,7 +27,7 @@ setup('authenticate as dashboard policyholder', async ({ page }) => {
     await page.fill('#signin-password', E2E_POLICYHOLDER_DASH.password);
     await page.click('button[type="submit"]');
 
-    await page.waitForURL(/\/(dashboard|home|wallet|onboarding)/, { timeout: 30000 });
+    await page.waitForURL(/\/(dashboard|home|wallet|onboarding)|\/$/, { timeout: 30000 });
     console.log('✅ Free policyholder signed in. URL:', page.url());
 
     await page.context().storageState({ path: authFile });

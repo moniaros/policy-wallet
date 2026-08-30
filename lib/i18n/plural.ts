@@ -13,8 +13,8 @@
  */
 export type PluralParams = Record<string, string | number>
 
-const PLURAL_RE = /\{(\w+),\s*plural,\s*((?:=\d+\s*\{[^{}]*\}\s*|\w+\s*\{[^{}]*\}\s*)+)\}/g
-const BRANCH_RE = /(=\d+|\w+)\s*\{([^{}]*)\}/g
+const PLURAL_RE = /\{(\w+),\s*plural,\s*((?:=\d+\s*\{(?:[^{}]|\{[^{}]*\})*\}\s*|\w+\s*\{(?:[^{}]|\{[^{}]*\})*\}\s*)+)\}/g
+const BRANCH_RE = /(=\d+|\w+)\s*\{((?:[^{}]|\{[^{}]*\})*)\}/g
 
 export function formatPlural(template: string, params: PluralParams = {}, locale: "el" | "en" = "el"): string {
     const rules = new Intl.PluralRules(locale === "el" ? "el-GR" : "en-GB")

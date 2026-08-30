@@ -88,7 +88,7 @@ export function VerdictCard({
                         <Link
                             href={t.href}
                             className={cn(
-                                "g-row-press flex min-h-16 flex-col justify-center rounded-g-control border px-g-3 py-g-2 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[2px] focus-visible:outline-border-focus",
+                                "g-row-press flex min-h-16 min-w-0 flex-col justify-center rounded-g-control border px-g-2 py-g-2 tablet:px-g-3 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[2px] focus-visible:outline-border-focus",
                                 t.state === "covered" && "border-state-covered-fill bg-state-covered-fill/40",
                                 t.state === "gap" && "border-state-gap-border bg-state-gap-fill",
                                 t.state === "review" && "border-border-subtle bg-state-review-fill"
@@ -97,7 +97,7 @@ export function VerdictCard({
                             <span className={cn("font-display text-g-heading tabular-nums", t.state === "covered" && "text-state-covered", t.state === "gap" && "text-state-gap", t.state === "review" && "text-state-review")} data-count={`verdict.${t.state}Count`}>
                                 {t.count}
                             </span>
-                            <span className="text-g-app-caption text-fg-secondary">{t.label}</span>
+                            <span className="text-g-app-caption leading-tight text-fg-secondary">{t.label}</span>
                         </Link>
                     </li>
                 ))}

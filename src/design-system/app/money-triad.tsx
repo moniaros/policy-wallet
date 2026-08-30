@@ -13,7 +13,8 @@ export interface MoneyCell {
 export function MoneyTriad({ paid, protects, twice, className }: { paid: MoneyCell; protects: MoneyCell; twice: MoneyCell; className?: string }) {
     const cells = [paid, protects, twice]
     return (
-        <dl className={cn("grid gap-g-2 tablet:grid-cols-3", className)}>
+        <div className={cn("@container", className)}>
+        <dl className="grid gap-g-2 @md:grid-cols-3">
             {cells.map((c) => (
                 <div key={c.factKey} className="rounded-g-card border border-border-hair bg-surface-raised p-g-4 shadow-g-raised">
                     <dt className="text-g-app-caption text-fg-secondary">{c.label}</dt>
@@ -26,5 +27,6 @@ export function MoneyTriad({ paid, protects, twice, className }: { paid: MoneyCe
                 </div>
             ))}
         </dl>
+        </div>
     )
 }

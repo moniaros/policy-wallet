@@ -16,5 +16,7 @@ export function getPostLoginRedirectByRole(roleValue: string | null | undefined)
     const role = getPrimaryRole(roleValue)
     if (role === "agent") return "/dashboard/agent"
     if (role === "admin") return "/admin/dashboard"
-    return "/dashboard"
+    // Grafí (G7): the policyholder home is `/` — the proxy rewrites it to the
+    // app screen for a signed-in session; /dashboard 301s here.
+    return "/"
 }

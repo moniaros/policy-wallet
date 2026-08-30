@@ -30,7 +30,7 @@ setup('authenticate as policyholder', async ({ page }) => {
     await page.click('button[type="submit"]');
 
     // Policyholders land on /dashboard (role from Supabase user_metadata)
-    await page.waitForURL(/\/(dashboard|home|wallet)/, { timeout: 30000 });
+    await page.waitForURL(/\/(dashboard|home|wallet)|\/$/, { timeout: 30000 });
     console.log('✅ Policyholder signed in. URL:', page.url());
 
     await page.context().storageState({ path: authFile });

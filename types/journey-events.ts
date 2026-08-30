@@ -49,6 +49,17 @@ export type JourneyEventName =
     | "free_ai_call_blocked"
     | "paid_ai_call_started"
     | "paid_ai_call_completed"
+    // ── Grafí application tier (§11, the revenue equation) ──────────────────
+    | "activation.first_policy_read"
+    | "moment_of_truth.shown"
+    | "finding.dismissed"
+    | "help.requested"
+    | "help.consented"
+    | "life_event.recorded"
+    | "household.person_added"
+    | "plan.viewed_ledger"
+    | "plan.upgraded"
+    | "notification.opened"
 
 /**
  * Standard payload for conversion-funnel events. All fields optional —
@@ -215,4 +226,16 @@ export interface JourneyEventPayloadMap {
     free_ai_call_blocked: ConversionPayload
     paid_ai_call_started: ConversionPayload
     paid_ai_call_completed: ConversionPayload
+    // ── Grafí application tier ──────────────────────────────────────────────
+    "activation.first_policy_read": { policy_id?: string; line?: string }
+    "moment_of_truth.shown": { finding_id: string; tier: string; kind: string }
+    "finding.dismissed": { finding_id: string; reason: "chosen" | "renewed" | "not_relevant" }
+    "help.requested": { finding_id: string }
+    "help.consented": { finding_id: string; policies_shared: number }
+    "life_event.recorded": { event_id: string }
+    "household.person_added": { relation: string; is_dependant: boolean }
+    "plan.viewed_ledger": { tier: string }
+    "plan.upgraded": { from: string; to: string }
+    "notification.opened": { stream: "protection" | "meanwhile"; event_type: string }
+
 }
