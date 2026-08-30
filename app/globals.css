@@ -1114,3 +1114,26 @@ pre {
 .pw-clear-consent {
     padding-bottom: var(--pw-bottom-obstruction, 0px);
 }
+
+/* ── Grafí coverage ticker ─────────────────────────────────────────────
+   The one looping animation the motion system allows (§4.5). Pure CSS so
+   the section ships no JS. Pauses on hover and on keyboard focus within;
+   under prefers-reduced-motion the track stands still and WRAPS, so every
+   line stays visible — a stopped marquee that clips its tail would hide
+   content from exactly the users who asked for less motion. */
+@keyframes g-ticker-roll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.g-ticker-track {
+  animation: g-ticker-roll 42s linear infinite;
+}
+.g-ticker:hover .g-ticker-track,
+.g-ticker:focus-within .g-ticker-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-ticker-track { animation: none; flex-wrap: wrap; width: auto; }
+  .g-ticker-track > [aria-hidden] { display: none; }
+  .g-ticker-list { flex-wrap: wrap; row-gap: 12px; justify-content: center; }
+}

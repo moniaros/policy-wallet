@@ -209,6 +209,19 @@ export const HERO_SUBHEAD: Bilingual = {
  * thing we can say and it used to be buried in the third paragraph of
  * /company. It now runs on the homepage, above the fold.
  */
+/**
+ * The neutrality argument, grounded in how we are paid and how the analysis
+ * works — never in an absence of relationships. The retired sentence («Δεν
+ * συνεργαζόμαστε με καμία ασφαλιστική — γι' αυτό μπορούμε να σας πούμε την
+ * αλήθεια») grounded trust in our contact list, and became false the day any
+ * pilot was signed. Four clauses, each independently checkable, each true
+ * standalone and embedded.
+ */
+export const NEUTRALITY_STATEMENT: Bilingual = {
+    el: "Καμία ασφαλιστική και καμία τράπεζα δεν μας πληρώνει για να σας προτείνουμε κάτι. Δεν παίρνουμε προμήθεια. Η ανάλυση είναι ίδια για κάθε συμβόλαιο, όποιος κι αν το εξέδωσε — και τίποτα από όσα ανεβάζετε δεν κοινοποιείται χωρίς τη δική σας, ξεχωριστή και ανακλητή συγκατάθεση.",
+    en: "No insurer and no bank pays us to recommend anything. We take no commission. The analysis is the same for every policy, whoever issued it — and nothing you upload is shared without your separate, revocable consent.",
+}
+
 export const DIFFERENTIATORS: readonly { title: Bilingual; body: Bilingual }[] = [
     {
         title: {
@@ -226,8 +239,12 @@ export const DIFFERENTIATORS: readonly { title: Bilingual; body: Bilingual }[] =
             en: "We take no commission",
         },
         body: {
-            el: "Πληρωνόμαστε μόνο από εσάς, με συνδρομή. Δεν κερδίζουμε τίποτα αν αλλάξετε εταιρεία.",
-            en: "We are paid only by you, with a subscription. We earn nothing if you switch insurer.",
+            // NOT «πληρωνόμαστε μόνο από εσάς»: that claims who funds us, and
+            // becomes false the day an institution pays for an embedded
+            // deployment. The commission claim is the one a reader actually
+            // cares about, and it survives every scenario.
+            el: "Δεν παίρνουμε προμήθεια από καμία ασφαλιστική. Δεν κερδίζουμε τίποτα αν αλλάξετε εταιρεία — ούτε αν δεν αλλάξετε.",
+            en: "We take no commission from any insurer. We earn nothing if you switch insurer — and nothing if you stay.",
         },
     },
     {
@@ -236,8 +253,8 @@ export const DIFFERENTIATORS: readonly { title: Bilingual; body: Bilingual }[] =
             en: "We do not sell your data",
         },
         body: {
-            el: "Τα συμβόλαιά σας είναι δικά σας. Κανείς δεν τα βλέπει αν δεν το ζητήσετε εσείς.",
-            en: "Your policies are yours. Nobody else sees them unless you ask us to share.",
+            el: "Τα συμβόλαιά σας είναι δικά σας. Κανείς άλλος δεν τα βλέπει — ούτε ασφαλιστική, ούτε τράπεζα — παρά μόνο αν το επιλέξετε εσείς, ξεχωριστά για κάθε έγγραφο.",
+            en: "Your policies are yours. Nobody else sees them — not an insurer, not a bank — unless you choose it, separately for each document.",
         },
     },
 ]
@@ -255,10 +272,14 @@ export const TRUST_FACTS: readonly { label: Bilingual; detail: Bilingual }[] = [
         },
     },
     {
-        label: { el: "Διακομιστές στην ΕΕ", en: "Servers in the EU" },
+        // NOT «τα δεδομένα σας μένουν στην Ευρώπη»: storage does, but AI
+        // analysis may involve providers outside the EU under EU-approved
+        // safeguards, and /trust says so. A trust fact that the privacy
+        // policy contradicts is worse than no fact at all.
+        label: { el: "Αποθήκευση στην ΕΕ", en: "Storage in the EU" },
         detail: {
-            el: "Τα δεδομένα σας μένουν στην Ευρώπη.",
-            en: "Your data stays in Europe.",
+            el: "Τα αρχεία σας αποθηκεύονται κρυπτογραφημένα στην Ευρώπη. Η ανάλυση AI γίνεται μόνο με τη συγκατάθεσή σας — και κανένας πάροχος δεν εκπαιδεύει μοντέλα στα έγγραφά σας.",
+            en: "Your files are stored encrypted in Europe. AI analysis runs only with your consent — and no provider trains models on your documents.",
         },
     },
     {

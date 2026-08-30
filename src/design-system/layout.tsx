@@ -74,7 +74,7 @@ export function Stack({
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
     // The `label` type step: uppercase is permitted ONLY here, only short words.
     return (
-        <p className={cn("text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-fg-brand", className)}>
+        <p className={cn("text-g-label font-semibold uppercase tracking-[0.1em] text-fg-brand", className)}>
             {children}
         </p>
     )
@@ -98,15 +98,15 @@ export function SectionHeading({
     return (
         <header className={cn("max-w-[56ch]", align === "center" && "mx-auto text-center", className)}>
             {eyebrow && <Eyebrow className="mb-g-3">{eyebrow}</Eyebrow>}
-            <h2 id={id} className="text-balance text-[clamp(1.85rem,3.4vw,2.85rem)] font-bold leading-[1.12] tracking-[-0.01em] text-fg-primary">
+            <h2 id={id} className="text-balance text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary">
                 {title}
             </h2>
-            {lead && <p className="mt-g-4 text-[1.08rem] leading-[1.45] text-fg-secondary">{lead}</p>}
+            {lead && <p className="mt-g-4 text-g-body-lg text-fg-secondary">{lead}</p>}
         </header>
     )
 }
 
 export function SourceNote({ children, className }: { children: ReactNode; className?: string }) {
     // Sources are named and dated, in the caption step — never buried in a title attribute.
-    return <p className={cn("text-[0.83rem] leading-relaxed text-fg-secondary", className)}>{children}</p>
+    return <p className={cn("text-g-caption text-fg-secondary", className)}>{children}</p>
 }

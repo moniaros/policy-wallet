@@ -14,6 +14,9 @@ import { ClearLimits } from "@/components/landing/ClearLimits"
 import { HomeContact } from "@/components/landing/HomeContact"
 import { HookTicker } from "@/components/growth/HookTicker"
 import { GrafiHero } from "@/components/landing/GrafiHero"
+import { CoverageTicker } from "@/components/landing/grafi/CoverageTicker"
+import { AnswerBlock } from "@/components/landing/grafi/AnswerBlock"
+import { MarketNumbers } from "@/components/landing/grafi/MarketNumbers"
 import { PricingPreview } from "@/components/landing/PricingPreview"
 import { HomeFaq } from "@/components/landing/HomeFaq"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
@@ -24,7 +27,7 @@ import { ServicesGrid } from "@/components/landing/ServicesGrid"
 import { AudienceTabs } from "@/components/landing/AudienceTabs"
 import { landingContent } from "@/lib/landing/content"
 import { productCategories } from "@/lib/product/catalog"
-import { CATEGORY, CTA_REASSURANCE, PRIMARY_ACTION, PROMISE, STORY, pick } from "@/lib/marketing/positioning"
+import { CATEGORY, CTA_REASSURANCE, NEUTRALITY_STATEMENT, PRIMARY_ACTION, PROMISE, STORY, pick } from "@/lib/marketing/positioning"
 
 const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
@@ -102,8 +105,9 @@ export function WorldClassLanding({
                     gone (see GrafiHero's docblock). */}
                 <GrafiHero locale={locale} />
 
-                {/* ── 2. WHY IT MATTERS ────────────────────────────── */}
-                <WhyNow locale={locale} />
+                {/* ── 2. COVERAGE-LINES TICKER (§6) — every line we read,
+                    straight from the taxonomy-joined catalogue. */}
+                <CoverageTicker locale={locale} />
 
                 {/* ── 3. WHAT YOU GET ──────────────────────────────── */}
                 <section
@@ -177,11 +181,19 @@ export function WorldClassLanding({
                             )}
                         </h2>
                         <TrustBadges isGreek={isGreek} />
+                        {/* The old line here — «Δεν συνεργαζόμαστε με καμία
+                            ασφαλιστική — γι' αυτό μπορούμε να σας πούμε την
+                            αλήθεια» — is RETIRED (deliverable 1 §5): it grounded
+                            trust in an absence of relationships, a fact about our
+                            contact list that dies the day a pilot is signed. The
+                            replacement argues from how we are paid and how the
+                            analysis works, and survives partnership. */}
                         <p className="mx-auto max-w-[620px] text-body-lg leading-relaxed text-neutral-700 dark:text-slate-300">
                             {t(
-                                `${productCategories.length} είδη ασφάλισης. Δεν συνεργαζόμαστε με καμία ασφαλιστική — γι' αυτό μπορούμε να σας πούμε την αλήθεια.`,
-                                `${productCategories.length} types of insurance. We do not work with any insurance company — that is why we can tell you the truth.`,
+                                `${productCategories.length} είδη ασφάλισης. `,
+                                `${productCategories.length} types of insurance. `,
                             )}
+                            {pick(NEUTRALITY_STATEMENT, locale)}
                         </p>
                         <div className="mx-auto max-w-[640px] border-t border-[#A7F3D0]/70 pt-7 text-left dark:border-brand-green/50">
                             <TrustRow locale={locale} />
@@ -189,7 +201,15 @@ export function WorldClassLanding({
                     </div>
                 </section>
 
-                {/* ── 5. OUR APPROACH ──────────────────────────────── */}
+                {/* ── 5. THE ANSWER BLOCK (§6) — one extractable paragraph
+                    plus the four defined terms it leans on. */}
+                <AnswerBlock locale={locale} />
+
+                {/* ── 5a. MARKET NUMBERS (§6) — only the two claims that
+                    resolve to a read primary source (ΕΔΑ, ΕΝΦΙΑ). */}
+                <MarketNumbers locale={locale} />
+
+                {/* ── 5b. OUR APPROACH ─────────────────────────────── */}
                 <WhyDifferent locale={locale} />
 
                 {/* The product shot, once, where it is evidence for the claim
@@ -292,7 +312,11 @@ export function WorldClassLanding({
                     subscription while they are still deciding what this is. */}
                 <PricingPreview locale={locale} plans={pricingPlans} />
 
-                {/* ── 9b. CONTACT ──────────────────────────────────── */}
+                {/* ── 9b. WHY NOW (§6 institutions-band slot) — the three
+                    why-now facts; the full institutions band lands with G8. */}
+                <WhyNow locale={locale} />
+
+                {/* ── 9c. CONTACT ──────────────────────────────────── */}
                 <HomeContact locale={locale} />
 
                 {/* ── 10. WHAT TO DO NEXT ──────────────────────────── */}
