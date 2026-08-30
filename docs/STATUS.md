@@ -1,18 +1,53 @@
 # STATUS
 
-**Production: `7425ef9b`** — deployed 2026-08-28, CI green, Vercel `READY`. Three owner-reported
-defects fixed and verified live (see below).
-Public surface smoked; `/wallet`, `/dashboard`, `/account` all redirect anonymous callers to
-signin. **All five halts answered and implemented.**
+**Production: `7425ef9b`** — deployed 2026-08-28. The Grafí work below is committed on `NEW-UI`
+but **NOT yet deployed**; the live site still renders the carousel hero.
 
 ## Current phase
 
-`PW-MOBILE-TRANSFORM-02`, **Phases 0–4 complete, Phase 6's guard audit done, Phase 5 in progress**.
-Phase 4 did not need building — the design system already existed and was adopted (1,186 utility
-references); its defects were 754 hardcoded literals bypassing it and a legacy `--pw-*`/`--brand-*`
-path. 274 landing literals migrated with a shrink-only debt guard over the rest. Phase 5's first two
-surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, still true:
-`P5-wallet-00/01a` measured, `P5-infra-00` and `P5-measure-00` landed.
+**Grafí design-system build + marketing rebuild — ladder G0–G12 walked** (2026-08-30, 18 commits
+`a4aae9f2..`). Ledger: `docs/DS_PROGRESS.md`. G0–G3, G7, G11, G12 done; G4/G5/G6/G8/G9/G10
+partial with the remainder named per-goal in the ledger. Written system: `docs/design-system.md`;
+seams and hostile review: `docs/handover.md`.
+
+## Done since the last entry
+
+- **Grafí tokens → components → homepage**: fixed-promise H1 (carousel gone), coverage ticker,
+  answer block joined to the glossary (guarded), sourced market numbers (ΕΔΑ + ΕΝΦΙΑ only),
+  4 steps + ReadingDemo, broker band + BrokerScanPanel, comparison on /compare's source,
+  Free card + billing toggle + PlanRecommender on the enforced entitlement ceilings.
+- **Accepted-but-never-applied marketing decisions landed**: NEUTRALITY_STATEMENT replaces the
+  retired «δεν συνεργαζόμαστε» sentence; TRUST_FACTS stops claiming data "stays in Europe";
+  FAQ funding claim retired; deliverable-4 titles/descriptions applied.
+- **Three production-grade defects found by the G12 passes**: tailwind-merge silently deleting
+  `text-fg-on-brand` (hero CTA at 2.74:1 → cn() group registration, a11y 97→100); triple Inter
+  loading (un-preloaded H1 font); `/_vercel` analytics scripts 307'd to signin by proxy.ts.
+- **/solutions/partners + /synergates** created noindex per A-04; «Κάλυψη» glossary entry;
+  health/property wedge sections with primary sources.
+
+## Blocked
+
+- Partners de-noindexing: Terms §3 qualification + IDD opinion (legal — `docs/legal-review-queue.md`).
+- Guides 6–8: citation debt (A-03: citation-clean or not at all).
+
+## Top risks, ranked
+
+1. **Grafí work undeployed** — the longer NEW-UI sits ahead of prod, the bigger the cutover.
+2. **Marketing routes ship the app bundle** (602KB: Sentry 172KB, Supabase 46KB) — mobile LCP 4.8s
+   vs the 2.0s budget; the split is the named fix (`docs/perf-report.md`).
+3. **Visual seam mid-homepage** — legacy-styled bands below the Grafí upper page until G6 polish.
+
+## Next 3 actions
+
+1. Deploy NEW-UI (CI green gate → deploy.yml auto-deploys) and smoke the hero/ticker/numbers live.
+2. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix).
+3. Restyle the remaining legacy bands (ServicesGrid, WhyDifferent, ClearLimits, FAQ, final CTA)
+   onto Grafí and finish the G4 primitive remainder.
+
+---
+
+<details>
+<summary>Previous entry (2026-08-28, PW-MOBILE-TRANSFORM-02)</summary>
 
 ## Done since the last entry
 
@@ -282,3 +317,5 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 3. **P5-wallet-01** is unblocked: motor, property, pet and marine carry strong identifiers in
    `acordData`; health, life, travel, cyber, business and pension carry none, which is exactly why
    the duplicate rows measured were health. Rows without an identifier stand alone.
+
+</details>
