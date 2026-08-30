@@ -1,5 +1,5 @@
 /**
- * V2-P2-02 — the timeline relocates into Ρυθμίσεις (`/account/history`).
+ * V2-P2-02 — the timeline relocates into Ρυθμίσεις (`/me/history`).
  *
  * The ledger calls this a RELOCATION, NOT A DELETION (T-01 note): T-02 (filter
  * by kind) and T-03 (the cause link, which clears the filter first because the
@@ -206,9 +206,9 @@ describe("T-06 — identical consecutive rows render as one group, not eighteen 
 
 // ── T-01: the relocation target exists and reads the same source ─────
 
-describe("T-01 — /account/history is a real settings route over the same timeline", () => {
+describe("T-01 — /me/history is a real settings route over the same timeline", () => {
     it("the settings route exists and builds on getTimeline", () => {
-        const page = readFileSync("app/(protected)/account/history/page.tsx", "utf-8")
+        const page = readFileSync("app/(protected)/me/history/page.tsx", "utf-8")
         expect(page).toMatch(/getTimeline/)
         expect(page).toMatch(/HistorySection/)
     })

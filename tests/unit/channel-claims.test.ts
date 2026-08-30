@@ -72,7 +72,7 @@ describe('the product describes only the channels it can deliver', () => {
     it('and that screen is reachable — it is a real route, not a tab in state', () => {
         expect(
             SETTINGS_SECTIONS.find((s) => s.id === 'notifications')?.href
-        ).toBe('/account/notifications')
-        expect(existsSync('app/(protected)/account/notifications/page.tsx')).toBe(true)
+        ).toBe('/me/notifications')
+        expect(existsSync('app/(protected)/me/notifications/page.tsx')).toBe(true)
     })
 })

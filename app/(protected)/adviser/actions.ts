@@ -11,6 +11,7 @@ import { collaborationService } from "@/lib/services/collaboration.service"
 import { loadFindingsContext } from "@/lib/app/home-model"
 import { resolveSentence, resolveSource } from "@/lib/app/render-copy"
 import { disconnectFromAgent, inviteAdvisorByEmail } from "@/app/(protected)/agent/relationship-actions"
+import { getPolicyAccess } from "@/lib/policy-access"
 
 /** The customer's one active adviser, or null. The subject is always the session's user. */
 async function activeAdviser(userId: string) {
@@ -39,8 +40,9 @@ export async function setPolicyShared(input: { policyId: string; shared: boolean
     if (!parsed.success) return { ok: false }
     const rel = await activeAdviser(dbUser.id)
     if (!rel) return { ok: false }
-    const owned = await db.policy.findFirst({ where: { id: parsed.data.policyId, ownerUserId: dbUser.id }, select: { id: true } })
-    if (!owned) return { ok: false }
+    // The one authorization path (lib/policy-access) — only the OWNER shares a policy.
+    const access = await getPolicyAccess(parsed.data.policyId, { id: dbUser.id, roles: dbUser.roles })
+    if (!access.isOwner) return { ok: false }
     const scope = `policy:${parsed.data.policyId}`
 
     if (parsed.data.shared) {

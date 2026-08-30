@@ -25,11 +25,11 @@ describe('every email offers the opt-out the privacy policy promises', () => {
 
     it('the footer links straight to the preferences screen in both languages', () => {
         const el = getBaseEmailTemplate('<p>x</p>', 'el')
-        expect(el).toMatch(/\/account\/notifications/)
+        expect(el).toMatch(/\/me\/notifications/)
         expect(el).toMatch(/Διαχείριση ειδοποιήσεων/)
 
         const en = getBaseEmailTemplate('<p>x</p>', 'en')
-        expect(en).toMatch(/\/account\/notifications/)
+        expect(en).toMatch(/\/me\/notifications/)
         expect(en).toMatch(/Manage notifications/)
     })
 
@@ -53,17 +53,17 @@ describe('every email offers the opt-out the privacy policy promises', () => {
  * old query form still resolves, because those links sit in inboxes forever.
  */
 describe('the preferences link opens the preferences screen', () => {
-    const PAGE = strip(readFileSync('app/(protected)/account/page.tsx', 'utf-8'))
+    const PAGE = strip(readFileSync('app/(protected)/me/page.tsx', 'utf-8'))
 
     it('every legacy tab still resolves to a real section', () => {
-        const routes = new Set<string>(['/account', ...SETTINGS_SECTIONS.map((s) => s.href)])
+        const routes = new Set<string>(['/me', ...SETTINGS_SECTIONS.map((s) => s.href)])
         for (const [tab, target] of Object.entries(LEGACY_TAB_REDIRECTS)) {
             expect(routes.has(target), `?tab=${tab} → ${target}`).toBe(true)
         }
     })
 
     it('?tab=settings lands on the notification preferences, not an overview', () => {
-        expect(LEGACY_TAB_REDIRECTS.settings).toBe('/account/notifications')
+        expect(LEGACY_TAB_REDIRECTS.settings).toBe('/me/notifications')
     })
 
     it('the index redirects those legacy tabs server-side', () => {

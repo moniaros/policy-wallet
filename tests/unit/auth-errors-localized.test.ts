@@ -17,7 +17,7 @@ const SRC =
     '\n' +
     readFileSync('app/auth/verify-email/actions.ts', 'utf-8') +
     '\n' +
-    readFileSync('app/(protected)/account/actions.ts', 'utf-8')
+    readFileSync('app/(protected)/me/actions.ts', 'utf-8')
 
 const LOCALIZED_MESSAGES = [
     'Too many signup attempts. Please try again in a few minutes.',

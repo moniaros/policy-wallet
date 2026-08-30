@@ -174,7 +174,7 @@ export function getBaseEmailTemplate(content: string, language: 'el' | 'en' = 'e
         <a href="${origin}/privacy">${f.privacy}</a>
       </p>
       <p>
-        <a href="${origin}/account/notifications">${f.preferences}</a>
+        <a href="${origin}/me/notifications">${f.preferences}</a>
       </p>
       <p>
         <a href="mailto:${siteConfig.contactEmail}">${siteConfig.contactEmail}</a>
