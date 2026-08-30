@@ -39,8 +39,13 @@ export function AnswerBlock({ locale }: { locale: MarketingLocale }) {
                             key={t.id}
                             className="rounded-g-lg border border-border-subtle bg-surface-raised p-g-5"
                         >
-                            <dt className="text-g-display-sm font-semibold text-fg-brand">
-                                {pick(t.term, locale)}
+                            <dt className="text-g-display-sm font-semibold">
+                                <Link
+                                    href={localizeHref(`/lexiko/${t.glossarySlug}`, locale)}
+                                    className="text-fg-brand underline decoration-border-strong underline-offset-4 hover:decoration-current"
+                                >
+                                    {pick(t.term, locale)}
+                                </Link>
                             </dt>
                             <dd className="mt-g-2 text-g-body-sm text-fg-secondary">
                                 {pick(t.definition, locale)}

@@ -14,6 +14,11 @@ import type { Bilingual } from "@/lib/marketing/positioning"
  */
 export type DefinedTerm = {
     id: string
+    /** The /lexiko entry this term is the short form OF. The join is guarded
+     *  (defined-terms-join-glossary.test.ts): a slug that stops resolving in
+     *  lib/glossary/content.ts fails CI, so this can never drift into a
+     *  parallel registry — the glossary stays the authority. */
+    glossarySlug: string
     term: Bilingual
     definition: Bilingual
 }
@@ -21,6 +26,7 @@ export type DefinedTerm = {
 export const DEFINED_TERMS: readonly DefinedTerm[] = [
     {
         id: "kalypsi",
+        glossarySlug: "kalypsi",
         term: { el: "κάλυψη", en: "coverage" },
         definition: {
             el: "Ο κίνδυνος που το συμβόλαιο αναλαμβάνει να πληρώσει — με τα όρια και τις προϋποθέσεις που γράφει, όχι με όσα υποθέτετε.",
@@ -29,6 +35,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
     },
     {
         id: "exairesi",
+        glossarySlug: "exairesi",
         term: { el: "εξαίρεση", en: "exclusion" },
         definition: {
             el: "Ό,τι το συμβόλαιο ρητά δεν πληρώνει. Συνήθως βρίσκεται στα ψιλά γράμματα — και είναι ο λόγος που δύο «ίδιες» καλύψεις διαφέρουν.",
@@ -37,6 +44,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
     },
     {
         id: "apallagi",
+        glossarySlug: "apallagi",
         term: { el: "απαλλαγή", en: "deductible" },
         definition: {
             el: "Το ποσό της ζημιάς που πληρώνετε εσείς πριν πληρώσει η εταιρεία. Μικρότερο ασφάλιστρο σημαίνει συχνά μεγαλύτερη απαλλαγή.",
@@ -45,6 +53,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
     },
     {
         id: "periodos-anamonis",
+        glossarySlug: "chronos-anamonis",
         term: { el: "περίοδος αναμονής", en: "waiting period" },
         definition: {
             el: "Το διάστημα μετά την έναρξη στο οποίο μια κάλυψη δεν ισχύει ακόμη. Στην υγεία μπορεί να φτάνει μήνες ή και χρόνια για συγκεκριμένες παθήσεις.",

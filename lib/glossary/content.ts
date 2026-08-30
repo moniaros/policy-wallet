@@ -106,6 +106,65 @@ export const glossaryTerms: GlossaryTerm[] = [
         dateModified: "2026-07-21",
     },
     {
+        slug: "kalypsi",
+        term: { el: "Κάλυψη", en: "Coverage (kalypsi)" },
+        aliases: [{ el: "Ασφαλιστική κάλυψη", en: "Insurance cover" }],
+        metaTitle: {
+            el: "Τι είναι η ασφαλιστική κάλυψη;",
+            en: "What is insurance coverage (kalypsi)?",
+        },
+        metaDescription: {
+            el: "Κάλυψη είναι ο κίνδυνος που αναλαμβάνει να πληρώσει το ασφαλιστήριο, με τα όρια και τις προϋποθέσεις που γράφει. Δείτε πώς να βρείτε τις καλύψεις στο συμβόλαιό σας.",
+            en: "Coverage is the risk your policy undertakes to pay for, within the limits and conditions it states. See how to find the covers in your own policy.",
+        },
+        shortDefinition: {
+            el: "Κάλυψη είναι ο συγκεκριμένος κίνδυνος που το ασφαλιστήριο αναλαμβάνει να πληρώσει — πυρκαγιά, νοσηλεία, αστική ευθύνη — με τα όρια, τις απαλλαγές και τις προϋποθέσεις που ορίζει το ίδιο το συμβόλαιο. Ό,τι δεν αναφέρεται ως κάλυψη, ή αναφέρεται ως εξαίρεση, δεν πληρώνεται.",
+            en: "A coverage is the specific risk your policy undertakes to pay for — fire, hospitalisation, liability — within the limits, deductibles and conditions the contract itself sets. Whatever is not named as a cover, or is named as an exclusion, is not paid.",
+        },
+        body: [
+            {
+                el: "Οι καλύψεις ζουν στον πίνακα καλύψεων, αλλά το τι σημαίνουν στην πράξη κρίνεται στους όρους: μια «κάλυψη σεισμού» με απαλλαγή 2% επί του κεφαλαίου και μια χωρίς, είναι δύο πολύ διαφορετικά πράγματα με το ίδιο όνομα.",
+                en: "Covers live in the schedule, but what they mean in practice is decided in the terms: an 'earthquake cover' with a 2%-of-sum deductible and one without are two very different things with the same name.",
+            },
+            {
+                el: "Προσοχή και στη διάκριση βασικών και προαιρετικών καλύψεων: μια προαιρετική κάλυψη που δεν επιλέχθηκε φαίνεται συχνά στο έγγραφο — ως διαθέσιμη, όχι ως ενεργή. Το αν την έχετε κρίνεται από τον πίνακα, όχι από τον τίτλο της ενότητας.",
+                en: "Mind the split between standard and optional covers too: an optional cover you did not take often still appears in the document — as available, not as active. Whether you hold it is decided by the schedule, not the section heading.",
+            },
+        ],
+        howToCheck: {
+            el: "Ανοίξτε τον πίνακα καλύψεων και σημειώστε για καθεμία το όριο και την απαλλαγή της. Μετά διαβάστε τις εξαιρέσεις της ίδιας ενότητας. Στο PolicyWallet, οι καλύψεις κάθε συμβολαίου εμφανίζονται με τα όριά τους και την κατάστασή τους — ενεργή, προαιρετική που δεν επιλέχθηκε, ή εξαιρούμενη.",
+            en: "Open the schedule of cover and note each cover's limit and deductible. Then read the exclusions of the same section. In PolicyWallet, each policy's covers appear with their limits and their status — active, optional-not-taken, or excluded.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Αν κάτι δεν αναφέρεται καθόλου, καλύπτεται;",
+                    en: "If something is not mentioned at all, is it covered?",
+                },
+                answer: {
+                    el: "Κατά κανόνα όχι: στα περισσότερα συμβόλαια πληρώνονται μόνο οι κατονομασμένοι κίνδυνοι. Αν δεν είστε βέβαιοι, είναι ακριβώς η ερώτηση που αξίζει να κάνετε γραπτώς στον ασφαλιστή σας.",
+                    en: "As a rule, no: most policies pay only the named risks. If you are unsure, that is exactly the question worth putting to your insurer in writing.",
+                },
+            },
+            {
+                question: {
+                    el: "Τι διαφέρει η κάλυψη από το ασφαλιζόμενο κεφάλαιο;",
+                    en: "How does a cover differ from the sum insured?",
+                },
+                answer: {
+                    el: "Η κάλυψη λέει ΤΙ πληρώνεται· το κεφάλαιο λέει ΜΕΧΡΙ ΠΟΣΟ. Μια κάλυψη με πολύ χαμηλό κεφάλαιο μπορεί να ισχύει και να μη φτάνει.",
+                    en: "The cover says WHAT is paid; the sum insured says UP TO HOW MUCH. A cover with a very low sum can be in force and still fall short.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Εξαίρεση", en: "Exclusion" }, href: "/lexiko/exairesi" },
+            { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
+            { label: { el: "Ασφαλιζόμενο κεφάλαιο", en: "Sum insured" }, href: "/lexiko/asfalismeno-kefalaio" },
+        ],
+        dateModified: "2026-08-30",
+    },
+    {
         slug: "apallagi",
         term: { el: "Απαλλαγή", en: "Deductible (apallagi)" },
         aliases: [{ el: "Ίδια κράτηση", en: "Excess" }],
