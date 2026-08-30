@@ -80,3 +80,36 @@ control, not a product feature), «πόσο κοστίζει να προσθέσ
 purchase), ≈ duplicate amounts (no tariff data — §9 forbids invented ≈), geographic why-you
 («κοντά στον Ποδονίφτη» — no flood-zone data source exists).
 
+
+## R — B2C restyle pass (2026-08-31)
+
+The legacy-styled islands inside the B2C tree moved onto Grafí, functionality intact, plus the
+explicit three-way theme choice. Commits R1–R6 on `feat/grafi-b2c`:
+
+- **R1 theme**: Αυτόματα/Φωτεινό/Σκούρο via `ThemeChoice` (SegmentedControl over next-themes
+  `theme` — «system» is now representable; the shell's binary toggle stays for agent chrome, pinned
+  by shell-chrome-invariants). Generator now emits `color-scheme` per theme; viewport `themeColor`
+  is a light/dark media pair. Spec: auto-follows-OS both directions + 3-option radiogroup.
+- **R2 chrome**: SettingsShell/SettingsNav rebuilt — pw-page-shell, «ΛΟΓΑΡΙΑΣΜΟΣ» kicker, the
+  desktop double list and the doubled sub-page titles are gone; one route-switched h1; grid on
+  `desk:`; children own their inset (double phone padding fixed).
+- **R3 primitives**: SettingsSection/RowList/SettingRow/InlineEditRow/Fallbacks/modal + the four
+  sections' residue onto tokens; InlineEditRow's idle branch IS SettingRow now; the raw red delete
+  button became the danger Button variant.
+- **R4 embedded**: PolicyQA (black `#111111` banner → action-primary, debt delisted),
+  Documents/AddDocument cards, UploadDropzone (slate ramp gone), DeletePolicy, GlossaryHint,
+  AddPolicyClient (own page frame + sticky-bar fight with LargeTitleNav fixed, uppercase CTAs
+  gone). Found+fixed: `<details>` inside `<p>` hydration error on the policy detail.
+- **R5 secondary routes**: help(+article), upgrade(+success, PricingComparison), benefits,
+  wallet/[id]/edit, wallet/[id]/review, collaboration — double `min-h-screen` frames removed,
+  legacy semantic vars mapped to Grafí, trial badge copy de-uppercased. Inputs → design-system
+  `Input`; selects/textarea stay on `pw-input` (D-B2C-30: no Grafí Select/Textarea primitive yet —
+  create them before deleting pw-input from globals).
+- **R6 heavyweights**: BranchDetail + CollaborationTimeline mechanical class substitution,
+  structure untouched.
+
+Guard maintenance recorded: PolicyQA left `always-dark-surfaces`; the DeletePolicy contrast pin
+re-pointed to the measured `action-danger`/`fg-on-brand` pair (6.87:1 light / 7.27:1 dark);
+`design-token-debt` shrank by the PolicyQA entry. Leftover, deliberate: uppercase lifecycle chips
+on /protection/[branch] come from the stored V5 catalogue labels shared with agent surfaces —
+they retire with the legacy deletion commit (A-25), not with a class pass.

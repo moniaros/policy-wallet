@@ -4,7 +4,7 @@
 
 **Done:** the signed-in product rebuilt on Grafí at `/`, /see, /policies(+id), /money, /updates, /adviser(+help), /me(+household/appearance — the whole /account tree moved), /add (verbatim Art. 9 gate, per-document consent write+enforcement+revocation), /life-event/[type], /welcome. Ledger docs/B2C_PROGRESS.md (G0–G14 + D-B2C-01..28), ASSUMPTIONS A-09..A-30. Three hostile reader passes ran against the live build; every code finding fixed (updates disclosure + steering copy, self-paired money rows, per-contract finding dedupe, never-read ⇒ «για έλεγχο», mute map cells, QA consent dead-end, axe clean both themes). Rendered gate 22/22; suite ~6,1xx tests green at each commit; build exit 0.
 
-**In progress:** nothing — PR #287 open (https://github.com/moniaros/policy-wallet/pull/287), awaiting the prod DDL + owner merge.
+**In progress:** R restyle pass shipped 2026-08-31 (settings chrome + embedded components + all seven secondary routes onto Grafí; light/dark/auto theme choice) — PR #287 open (https://github.com/moniaros/policy-wallet/pull/287), awaiting the prod DDL + owner merge.
 
 **Blocked:** prod DDL (classifier denies MCP DDL — SQL in docs/handover.md); flags stay off until it lands.
 

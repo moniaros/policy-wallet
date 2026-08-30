@@ -161,3 +161,17 @@ closed — production behaviour is unchanged by the merge.
 6. **DPO wording** for the per-document consent framing (legal queue item 5);
    **tariff data** before any paid-twice € renders.
 
+
+### R restyle pass addendum (2026-08-31)
+
+- Theme: `defaultTheme="system"` was already set; the ONLY control that may write the stored theme
+  on B2C surfaces is `components/settings/ThemeChoice.tsx` (writes `system|light|dark`). The shell
+  `ThemeToggle` (agent/public chrome) still writes bare light/dark and destroys «system» — replace
+  it when the agent shell moves to Grafí; `shell-chrome-invariants.test.tsx:290` pins its import.
+- `pw-input` survives on: AddPolicyClient's two selects, EditPolicyForm's shared `inputClass`
+  consumers, CollaborationTimeline's composer controls (D-B2C-30). Build Grafí Select/Textarea
+  primitives first, then delete `.pw-input` from globals and `button-consistency.test.ts` together.
+- LocaleToggle + the `components/ui` debt entries deliberately untouched (listed in
+  design-token-debt; shrink when those files are next opened).
+- /protection/[branch] still renders the stored-uppercase V5 lifecycle labels (shared with agent
+  surfaces) — they go with the legacy deletion commit (A-25), not a restyle.
