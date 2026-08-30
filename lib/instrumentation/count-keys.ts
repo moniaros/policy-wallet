@@ -24,6 +24,11 @@
 
 /** Page-level counts: at most ONE value per page, however many render sites. */
 export const COUNT_KEYS: Record<string, string> = {
+    // verdict.* — the Grafí VerdictCard (lib/app/verdict.ts): counts of documents, never a score.
+    "verdict.coveredOfActive": "«22/30» in the ring — covered policies over active policies (expired excluded).",
+    "verdict.coveredCount": "Active policies with no gap and nothing under review.",
+    "verdict.gapCount": "Active policies with a found gap or an expiry within 14 days.",
+    "verdict.reviewCount": "Active policies with at least one unresolved field or review finding.",
     // portfolio.* — the wallet's contents. "Held" = every stored row except
     // status 'deleted' (a soft-deleted policy must neither render nor count).
     "portfolio.policyCount": "Policies held (status ≠ deleted), whatever their lifecycle state.",
@@ -116,6 +121,17 @@ export const COUNT_KEYS: Record<string, string> = {
 /** Facts that are quantities but not cardinalities (money, days, indices). */
 export const FACT_KEYS: Record<string, string> = {
     // money.* — the Grafí money line (lib/app/money.ts). One figure, one element.
+    "money.protectsUpTo": "The LARGEST SINGLE limit found on an active policy (lib/app/money.ts largestSingleLimit) — labelled as such, never a sum.",
+    "money.paidTwice": "The yearly amount of cover found on two active policies for the SAME insured subject, only when an insurer tariff supplies it.",
+    "finding.source": "A finding's source line — document label + page/section — composed from the stored source pointer; never invented.",
+    "consent.sentence": "The consent sentence rendered verbatim from its catalogue key (Art. 9: common.aiConsentBody).",
+    "ledger.plan": "The plan name and price beside the ledger, from planTierName + the plan catalogue.",
+    "ledger.policiesRead": "Ledger line: policies the engine read this year (BusinessEvent policy.analysis_completed).",
+    "ledger.renewalsCaught": "Ledger line: expiries the product surfaced before they passed (policy.renewal_approaching).",
+    "ledger.gapsFound": "Ledger line: gaps opened this year (coverage_gap.opened).",
+    "ledger.paidTwice": "Ledger line: € possibly paid twice, from same-subject overlaps with a tariff amount.",
+    "ledger.questionsAnswered": "Ledger line: plain-words questions answered (question.answered).",
+    "ledger.benefitsShown": "Ledger line: benefits surfaced on /money (benefit.surfaced).",
     "money.paidPerYear": "The premium footprint of in-force policies (calculatePremiumFootprint) — what the household pays per year; expired and unreadable premiums excluded and said so.",
     // policy.* — SUBJECT-SCOPED by policy id when rendered in a list.
     "policy.daysRemaining": "resolvePolicyLifecycle daysUntilExpiry — never re-derived client-side.",

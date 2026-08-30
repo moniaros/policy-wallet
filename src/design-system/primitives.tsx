@@ -45,6 +45,9 @@ export interface ButtonProps
         VariantProps<typeof button> {
     loading?: boolean
 }
+/** The button classes for a NON-button element (a Link) — never nest an <a> in a <button>. */
+export const buttonClassName = (opts?: VariantProps<typeof button>, className?: string) => cn(button(opts ?? {}), className)
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className, variant, size, loading, children, disabled, ...rest }, ref) => (
         <button

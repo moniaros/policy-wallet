@@ -69,7 +69,12 @@ for (const [file, src] of source) {
     }
 }
 
-const rendersDisclosure = (f: string) => /AiDisclaimer|aiAdviceDisclaimer/.test(source.get(f) ?? "")
+// The Grafí application tier renders its disclosure as `PlatformNote` (the
+// «Σημείωση» block in the product's voice, src/design-system/app/platform-note.tsx);
+// `app.note.body` is the sentence it carries. Both count, and the probe below
+// proves the new name is actually recognised rather than assumed.
+const DISCLOSURE_RE = /AiDisclaimer|aiAdviceDisclaimer|PlatformNote|app\.note\.body/
+const rendersDisclosure = (f: string) => DISCLOSURE_RE.test(source.get(f) ?? "")
 const isPage = (f: string) => /\/(page|layout)\.tsx$/.test(f)
 
 /** Everything this file can pull into one render tree. */
@@ -144,6 +149,20 @@ describe("AI output says what it is, on every B2C surface that shows it", () => 
         expect(prose.length).toBeGreaterThan(5)
         // The import graph resolved, or every file would look uncovered.
         expect(importedBy.size).toBeGreaterThan(50)
+    })
+
+    it("the Grafí note is recognised as a disclosure, and says what the legacy one says", () => {
+        expect(DISCLOSURE_RE.test('import { PlatformNote } from "@/src/design-system/app"')).toBe(true)
+        expect(DISCLOSURE_RE.test("const x = t.app.note.body")).toBe(true)
+        expect(DISCLOSURE_RE.test("const x = t.app.note.title")).toBe(false)
+        for (const lang of ["el", "en"]) {
+            const dict = readFileSync(`lib/i18n/translations/app/${lang}.ts`, "utf-8")
+            const line = dict.match(/body:[^\n]*/)?.[0] ?? ""
+            expect(line, `${lang}: app.note.body missing`).toBeTruthy()
+            expect(/AI/.test(line), `${lang}: must say AI read it (Art. 50)`).toBe(true)
+            expect(/not insurance advice|δεν είναι ασφαλιστική συμβουλή/i.test(line), `${lang}: must deny insurance advice`).toBe(true)
+            expect(/adviser|σύμβουλ/i.test(line), `${lang}: must point at the customer's own adviser`).toBe(true)
+        }
     })
 
     it("the disclosure names the adviser and denies professional advice", () => {
