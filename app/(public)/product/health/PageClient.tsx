@@ -6,6 +6,8 @@ import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExp
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { PRIMARY_ACTION, pick, CTA_REASSURANCE } from "@/lib/marketing/positioning"
+import { MARKET_NUMBERS } from "@/lib/marketing/market-numbers"
+import { localizeHref } from "@/lib/seo/locale-links"
 
 export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
     const isGreek = locale === "el"
@@ -87,6 +89,70 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* THE INCREASE LETTER (§6) — the reason this page is the wedge.
+                The ΕΔΑ paragraph reads the SAME sourced entry the homepage
+                market numbers render, so the two surfaces cannot quote
+                different figures. No renewal advice anywhere: the output is
+                the questions to ask, never a verdict on the increase. */}
+            <section className="px-6 lg:px-12 py-24">
+                <div className="mx-auto max-w-reading">
+                    <h2 className="text-h2 font-semibold tracking-[-0.03em] leading-[1.1] text-[#0F172A] dark:text-white text-balance mb-6">
+                        {t("Ήρθε το γράμμα της αύξησης;", "Did the increase letter arrive?")}
+                    </h2>
+                    {(() => {
+                        const eda = MARKET_NUMBERS.find((n) => n.id === "eda-2024")
+                        if (!eda) return null
+                        return (
+                            <>
+                                <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300 mb-6">
+                                    {t(
+                                        `Το 2024 τα ασφάλιστρα υγείας αυξήθηκαν κατά μέσο όρο ${eda.value} με την ηλικιακή επίδραση — και κατά +1,25% χωρίς αυτήν. Είναι ο επίσημος Ετήσιος Δείκτης Ασφαλίστρων της ΕΛΣΤΑΤ, όχι εκτίμηση.`,
+                                        `In 2024 health premiums rose by ${eda.value} on average including the age effect — and by +1.25% without it. That is ELSTAT's official Annual Premium Index, not an estimate.`,
+                                    )}
+                                </p>
+                                <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300 mb-4">
+                                    {t(
+                                        "Το γράμμα της αύξησης όμως δεν εξηγεί τι παίρνετε για το νέο ασφάλιστρο. Το PolicyWallet διαβάζει το συμβόλαιό σας και σας δείχνει τα όρια, τις εξαιρέσεις και τις περιόδους αναμονής που ήδη έχετε — ώστε το τηλεφώνημα στον ασφαλιστή σας να γίνει με τα δεδομένα μπροστά σας.",
+                                        "The increase letter, though, does not explain what you get for the new premium. PolicyWallet reads your policy and shows you the limits, exclusions and waiting periods you already hold — so the call to your insurer happens with the facts in front of you.",
+                                    )}
+                                </p>
+                                <p className="text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                                    {t("Πηγή: ", "Source: ")}
+                                    <a href={eda.source.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                                        {pick(eda.source.name, locale)}
+                                    </a>
+                                    {" · "}{eda.source.dated}
+                                </p>
+                            </>
+                        )
+                    })()}
+                </div>
+            </section>
+
+            {/* QUESTIONS BEFORE RENEWAL (§6) — the product's honest output
+                shape: facts from the document, then questions for the
+                professional. Understanding, never regulated advice. */}
+            <section className="px-6 lg:px-12 py-24 bg-[#F8FAFC] dark:bg-slate-900">
+                <div className="mx-auto max-w-reading">
+                    <h2 className="text-h2 font-semibold tracking-[-0.03em] leading-[1.1] text-[#0F172A] dark:text-white text-balance mb-6">
+                        {t("Πέντε ερωτήσεις πριν ανανεώσετε", "Five questions before you renew")}
+                    </h2>
+                    <ol className="list-decimal space-y-4 pl-6 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                        <li>{t("Τι ακριβώς άλλαξε σε σχέση με το περσινό συμβόλαιο — στις καλύψεις, όχι μόνο στο ασφάλιστρο;", "What exactly changed from last year's policy — in the covers, not just the premium?")}</li>
+                        <li>{t("Άλλαξαν τα όρια κάλυψης ή η απαλλαγή μου;", "Did my limits or my deductible change?")}</li>
+                        <li>{t("Προστέθηκαν ή αφαιρέθηκαν εξαιρέσεις;", "Were any exclusions added or removed?")}</li>
+                        <li>{t("Ισχύουν ακόμη περίοδοι αναμονής για κάποια κάλυψη;", "Do waiting periods still apply to any cover?")}</li>
+                        <li>{t("Το νοσοκομείο που με ενδιαφέρει παραμένει συμβεβλημένο με απευθείας χρέωση;", "Is the hospital I care about still in-network with direct billing?")}</li>
+                    </ol>
+                    <p className="mt-6 text-body text-[#5B6A7A] dark:text-slate-400">
+                        {t("Κάποιος όρος σας μπερδεύει; ", "Unsure about a term? ")}
+                        <Link href={localizeHref("/lexiko", locale)} className="font-semibold text-[#29685B] dark:text-[#A7F3D0] underline underline-offset-4">
+                            {t("Δείτε το λεξικό ασφαλιστικών όρων.", "See the insurance glossary.")}
+                        </Link>
+                    </p>
                 </div>
             </section>
 

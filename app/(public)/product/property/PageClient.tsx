@@ -5,6 +5,8 @@ import { Shield, CheckCircle2 } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
+import { MARKET_NUMBERS } from "@/lib/marketing/market-numbers"
+import { localizeHref } from "@/lib/seo/locale-links"
 import { PRIMARY_ACTION, pick, CTA_REASSURANCE } from "@/lib/marketing/positioning"
 
 export default function PropertyProductPage({ locale }: { locale: "el" | "en" }) {
@@ -99,6 +101,54 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                             </li>
                         </ul>
                     </div>
+                </div>
+            </section>
+
+            {/* ENFIA QUALIFICATION + EVIDENCE (§6) — the statutory facts from
+                the same sourced entry the homepage renders (ν.5162/2024
+                άρθρο 10), then the checklist of what to keep. The page
+                explains qualification; it never promises the discount — the
+                assessment is ΑΑΔΕ's, not ours. */}
+            <section className="px-6 lg:px-12 py-24">
+                <div className="mx-auto max-w-reading">
+                    <h2 className="text-h2 font-semibold tracking-[-0.03em] leading-[1.1] text-[#0F172A] dark:text-white text-balance mb-6">
+                        {t("Η έκπτωση ΕΝΦΙΑ, με αριθμούς", "The ENFIA discount, in numbers")}
+                    </h2>
+                    {(() => {
+                        const enfia = MARKET_NUMBERS.find((n) => n.id === "enfia-2025")
+                        if (!enfia) return null
+                        return (
+                            <>
+                                <ul className="space-y-4 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                                    <li>{t("Έκπτωση 20% για κατοικίες με φορολογητέα αξία έως €500.000 — 10% πάνω από αυτήν. Ισχύει από το 2025.", "A 20% discount for homes with taxable value up to €500,000 — 10% above that. In force from 2025.")}</li>
+                                    <li>{t("Χρειάζονται και οι τρεις κίνδυνοι στο ίδιο συμβόλαιο: σεισμός, πυρκαγιά και πλημμύρα.", "All three perils must be on the same policy: earthquake, fire and flood.")}</li>
+                                    <li>{t("Το κεφάλαιο πρέπει να καλύπτει όλη την αξία του κτίσματος σε βάση ανακατασκευής — ο νόμος δεν τη δέχεται κάτω από €1.000 ανά τετραγωνικό.", "The sum insured must cover the building's whole value on a reconstruction basis — the law floors it at €1,000 per square metre.")}</li>
+                                    <li>{t("Ελάχιστη διάρκεια ασφάλισης: τρεις μήνες μέσα στο έτος, με αναλογική έκπτωση.", "Minimum insured period: three months in the year, with the discount pro-rated.")}</li>
+                                </ul>
+                                <p className="mt-6 text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                                    {t("Πηγή: ", "Source: ")}
+                                    <a href={enfia.source.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                                        {pick(enfia.source.name, locale)}
+                                    </a>
+                                </p>
+                            </>
+                        )
+                    })()}
+
+                    <h3 className="mt-12 mb-4 text-title font-semibold text-[#0F172A] dark:text-white">
+                        {t("Τι να έχετε πρόχειρο", "What to keep at hand")}
+                    </h3>
+                    <ul className="space-y-3 text-lead leading-relaxed text-[#475569] dark:text-slate-300 list-disc pl-6">
+                        <li>{t("Τον πίνακα καλύψεων με τους τρεις κινδύνους ονομαστικά.", "The schedule of covers naming all three perils.")}</li>
+                        <li>{t("Το ασφαλιζόμενο κεφάλαιο και τα τετραγωνικά του κτίσματος.", "The sum insured and the building's square metres.")}</li>
+                        <li>{t("Τις ημερομηνίες έναρξης και λήξης της κάλυψης.", "The cover's start and end dates.")}</li>
+                    </ul>
+                    <p className="mt-8 text-body text-[#5B6A7A] dark:text-slate-400">
+                        {t("Όλη η διαδικασία, βήμα προς βήμα: ", "The whole process, step by step: ")}
+                        <Link href={localizeHref("/guides/ekptosi-enfia-asfalisi-katoikias", locale)} className="font-semibold text-[#29685B] dark:text-[#A7F3D0] underline underline-offset-4">
+                            {t("ο οδηγός για την έκπτωση ΕΝΦΙΑ.", "the ENFIA discount guide.")}
+                        </Link>
+                    </p>
                 </div>
             </section>
 
