@@ -1,4 +1,5 @@
 import { StatusChip, Button } from "@/src/design-system"
+import { StyleguideInteractive } from "./StyleguideInteractive"
 
 /**
  * The token sheets, rendered once per theme by the page. Server component —
@@ -76,6 +77,10 @@ export function StyleguideSheets({ theme }: { theme: "light" | "dark" }) {
                     <li className="min-h-16 border-t border-border-hair px-g-4 py-g-3 [border-top-width:0.5px]">Row two — 0.5px hairline</li>
                     <li className="min-h-16 border-t border-border-hair px-g-4 py-g-3 [border-top-width:0.5px]">Row three</li>
                 </ul>
+            </Sheet>
+
+            <Sheet title="Components — every state">
+                <StyleguideInteractive />
             </Sheet>
 
             <Sheet title="Motion">

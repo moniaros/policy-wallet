@@ -147,7 +147,22 @@ export default function RootLayout({
           </OfflineProvider>
           </MotionProvider>
         </LanguageProvider>
-        <Toaster richColors position="top-right" />
+        {/* One toast style, on the token layer (Grafí G4): the roles do the
+            theming, so richColors (its own palette) is off. Top-centre clears
+            the phone's tab bar and the desktop sidebar alike. */}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            classNames: {
+              toast: "!rounded-g-card !border !border-border-subtle !bg-surface-raised !text-fg-primary !shadow-g-overlay",
+              title: "!text-g-app-body !font-semibold",
+              description: "!text-g-app-body-sm !text-fg-secondary",
+              actionButton: "!rounded-g-pill !bg-action-primary-bg !text-fg-on-brand",
+              cancelButton: "!rounded-g-pill !bg-surface-sunken !text-fg-primary",
+              closeButton: "!border-border-subtle !bg-surface-raised !text-fg-secondary",
+            },
+          }}
+        />
         <Suspense fallback={null}>
           <GoogleAnalytics />
         </Suspense>
