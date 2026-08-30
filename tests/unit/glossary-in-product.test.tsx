@@ -42,7 +42,9 @@ describe('glossary hints inside the product', () => {
     it('is actually wired into the exclusions card', () => {
         const card = readFileSync('components/wallet/policy-detail/ExclusionsCard.tsx', 'utf-8')
         expect(card).toContain('GlossaryHint')
-        const page = readFileSync('app/(protected)/wallet/[id]/page.tsx', 'utf-8')
-        expect(page).toContain("resolveGlossaryHint('exairesi'")
+        // Grafí G8: resolved in lib/app/policy-detail-model.ts, rendered under the checklist on PolicyDetailScreen.
+        const page = readFileSync('lib/app/policy-detail-model.ts', 'utf-8')
+        expect(page).toContain('resolveGlossaryHint("exairesi"')
+        expect(readFileSync('app/(protected)/policies/[id]/PolicyDetailScreen.tsx', 'utf-8')).toContain('GlossaryHint')
     })
 })

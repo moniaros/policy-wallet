@@ -177,11 +177,27 @@ describe("AI output says what it is, on every B2C surface that shows it", () => 
         }
     })
 
+    // Grafí G8 (A-25): legacy components no route mounts any more. Each stays
+    // listed until the cleanup commit deletes it — an entry goes stale (fails)
+    // the moment the file is gone OR a page mounts it again, so this is a
+    // ratchet, not an exemption.
+    const RETIRED_UNREACHABLE = [
+        "components/wallet/BatchUploadModal.tsx",
+        "components/wallet/policy-detail/SummaryCard.tsx",
+    ]
+    const UNREACHABLE = "(mounted by no page — unreachable?)"
     it("every surface rendering model prose is covered by a disclosure", () => {
         const uncovered = prose
             .map((f) => ({ f, ...coverage(f) }))
             .filter((r) => !r.covered)
+            .filter((r) => !(RETIRED_UNREACHABLE.includes(r.f) && r.bare.length === 1 && r.bare[0] === UNREACHABLE))
             .map((r) => `${r.f}  ← page(s) without one: ${r.bare.join(", ")}`)
         expect(uncovered).toEqual([])
+    })
+    it("retired legacy components are still on disk and still mounted by no page — either change makes the entry stale", () => {
+        for (const f of RETIRED_UNREACHABLE) {
+            expect(source.has(f), `${f} was deleted — remove its RETIRED_UNREACHABLE entry`).toBe(true)
+            expect([...mountingPages(f)], `${f} is mounted by a page again — it needs a disclosure, not a retirement entry`).toEqual([])
+        }
     })
 })

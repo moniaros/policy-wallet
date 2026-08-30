@@ -13,11 +13,11 @@
 | Route Path | Component File | Landing / Subpage | Tier Gating | Role Gating | How Reached |
 |---|---|---|---|---|---|
 | `/dashboard` | `app/(protected)/dashboard/page.tsx` | Redirect only | — | policyholder → 301 `/` (Grafí G7); agent/admin still route through it | Legacy URL |
-| `/wallet` | `app/(protected)/wallet/page.tsx` | Landing | None | policyholder | Tab bar |
-| `/wallet/[id]` | `app/(protected)/wallet/[id]/page.tsx` | Subpage | Free+ | `getPolicyAccess(id)` | Policy list rows, in-page navigation |
+| `/wallet` | `app/(protected)/wallet/page.tsx` | Redirect only | — | policyholder → 301 `/policies` (Grafí G8) | Legacy URL |
+| `/wallet/[id]` | `app/(protected)/wallet/[id]/page.tsx` | Redirect only | — | → 301 `/policies/[id]` (Grafí G8) | Legacy URL |
 | `/wallet/[id]/edit` | `app/(protected)/wallet/[id]/edit/page.tsx` | Subpage | Free+ | `getPolicyAccess.canWrite` | Edit button on policy detail |
 | `/wallet/add` | `app/(protected)/wallet/add/page.tsx` | Landing | Free+ | policyholder | Dashboard CTA, portfolio summary CTA |
-| `/protection` | `app/(protected)/protection/page.tsx` | Landing | Free+ | policyholder | Tab bar («Η προστασία μου», §4.2 — absorbed `/coverage-insights`, `/branches`, `/insights/risk-profile`) |
+| `/protection` | `app/(protected)/protection/page.tsx` | Redirect only | — | policyholder → 301 `/see` (Grafí G8; `?lens=` dropped) | Legacy URL |
 | `/protection/[branch]` | `app/(protected)/protection/[branch]/page.tsx` | Subpage | Free+ | policyholder | Branch tiles on the ανά κλάδο lens |
 | `/agent` | `app/(protected)/agent/page.tsx` | Landing | Free+ | policyholder | Tab bar (customer's adviser view) |
 | `/account` | `app/(protected)/account/page.tsx` | Landing | None | policyholder | Tab bar, bottom nav, settings rail |
@@ -38,6 +38,9 @@
 | `/coverage` | `app/(protected)/coverage/page.tsx` | Redirect only | — | — | Redirects to `/protection` (legacy URL) |
 | `/home` | `app/(protected)/home/page.tsx` | Landing | None | policyholder | «Η προστασία σας» — served at `/` by the proxy rewrite (Grafí G7); a direct /home visit 301s to `/` |
 | `/money` | `app/(protected)/money/page.tsx` | Landing | None | policyholder | Grafí tab bar/rail/sidebar «Χρήματα» (G3; the triad, duplicates and unused benefits land in G9) |
+| `/see` | `app/(protected)/see/page.tsx` | Landing | None | policyholder | Grafí tab bar «Να δείτε» (G8) — three tiers, one finding list; `?state=gap|review|expiry` from the verdict tiles |
+| `/policies` | `app/(protected)/policies/page.tsx` | Landing | None | policyholder | Grafí tab bar «Φάκελος» (G8) — search, three lenses, expired collapsed |
+| `/policies/[id]` | `app/(protected)/policies/[id]/page.tsx` | Subpage | Free+ | `getPolicyAccess(id)` | /policies rows, finding «Άνοιγμα», home expiry row (G8) |
 
 **Total B2C routes:** 25 (including 2 redirects) — refreshed 2026-08-25 for V2-P2-03 (§4.2): `/coverage-insights`, `/timeline` and `/insights/risk-profile` removed; `/protection`, `/protection/[branch]` and `/account/history` are their homes  
 **Distinct landing surfaces:** 18

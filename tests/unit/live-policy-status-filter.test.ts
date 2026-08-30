@@ -384,20 +384,6 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "cancelled policies count toward the summary. P1-03's fix scope was outbound " +
             "counts and scoring; this needs a per-surface decision.",
     },
-    "app/(protected)/protection/page.tsx": {
-        count: 1,
-        reason:
-            "The findings surface (formerly /coverage-insights, removed by V2-P2-03): the gap " +
-            "fetch is scoped by GAP status and post-filtered through gapsOnActiveCoverage " +
-            "(the page's policy fetch itself carries status ≠ 'deleted').",
-    },
-    "app/(protected)/wallet/[id]/page.tsx": {
-        count: 1,
-        reason:
-            "DEBT (P1-03 enumeration): double-insurance overlap scan over the owner's other " +
-            "policies compares coverage windows from the rows themselves; whether a cancelled " +
-            "sibling should still raise the overlap notice is undecided.",
-    },
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

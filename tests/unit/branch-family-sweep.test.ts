@@ -85,12 +85,18 @@ describe('every branch has a label, from one place', () => {
  */
 describe('the wallet identifies what a child-branch policy insures', () => {
     it('resolves the family before choosing the card', () => {
-        const src = read('app/(protected)/wallet/page.tsx')
-        expect(src).toMatch(/const branch = normalizeBranch\(p\.lineOfBusiness\)/)
-        expect(src).toMatch(/family === 'motor'/)
-        expect(src).toMatch(/family === 'home'/)
-        expect(src).not.toMatch(/p\.lineOfBusiness === 'motor'/)
-        expect(src).not.toMatch(/p\.lineOfBusiness === 'home'/)
+        // Grafí G8: /policies groups through lib/app/lines.ts — the taxonomy's 31
+        // write branches fold onto the 16 lines by NAME, never by comparing the raw
+        // lineOfBusiness string.
+        const src = read('lib/app/lines.ts')
+        expect(src).toMatch(/normalizeBranch\(lineOfBusiness\)\.id/)
+        expect(src).toMatch(/motorbike: "motor"/)
+        expect(src).toMatch(/home: "property"/)
+        expect(src).not.toMatch(/lineOfBusiness === ['"]motor['"]/)
+        expect(src).not.toMatch(/lineOfBusiness === ['"]home['"]/)
+        const model = read('lib/app/policies-model.ts')
+        expect(model).toMatch(/lineOf\(p\.lineOfBusiness\)/)
+        expect(model).not.toMatch(/lineOfBusiness === ['"]motor['"]/)
     })
 
     it('and a motorbike resolves to the motor family', () => {

@@ -116,7 +116,8 @@ describe('document presentation', () => {
     it('is ordered newest-first at the source', () => {
         // The card renders in the order given; the ordering guarantee lives in
         // the page query, so assert it there rather than re-sorting in the UI.
-        const page = readFileSync('app/(protected)/wallet/[id]/page.tsx', 'utf-8')
-        expect(page).toMatch(/documents: \{\s*orderBy: \{ uploadedAt: 'desc' \}/)
+        // Grafí G8: /policies/[id] reads its documents through lib/app/policy-detail-model.ts.
+        const page = readFileSync('lib/app/policy-detail-model.ts', 'utf-8')
+        expect(page).toMatch(/policyDocument\.findMany\(\{ where: \{ policyId \}, orderBy: \{ uploadedAt: "desc" \}/)
     })
 })

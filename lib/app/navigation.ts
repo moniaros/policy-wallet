@@ -28,8 +28,8 @@ export interface NavEntry {
 
 export const PRIMARY_NAV: readonly NavEntry[] = [
     { id: "protection", labelKey: "protection", href: "/", successor: "/", aliases: ["/home", "/dashboard"], icon: "shield" },
-    { id: "see", labelKey: "see", href: "/protection", successor: "/see", aliases: ["/see"], icon: "eye" },
-    { id: "policies", labelKey: "policies", href: "/wallet", successor: "/policies", aliases: ["/policies"], icon: "folder" },
+    { id: "see", labelKey: "see", href: "/see", successor: "/see", aliases: ["/protection"], icon: "eye" },
+    { id: "policies", labelKey: "policies", href: "/policies", successor: "/policies", aliases: ["/wallet"], icon: "folder" },
     { id: "money", labelKey: "money", href: "/money", successor: "/money", aliases: [], icon: "coins" },
     { id: "me", labelKey: "me", href: "/account", successor: "/me", aliases: ["/me"], icon: "user" },
 ] as const

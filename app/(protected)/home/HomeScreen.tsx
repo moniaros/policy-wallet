@@ -1,12 +1,11 @@
 import Link from "next/link"
 import { getTranslations } from "@/lib/i18n"
 import { formatPlural } from "@/lib/i18n/plural"
+import { resolveSentence, resolveSource, resolveWhyYou } from "@/lib/app/render-copy"
 import { formatCurrency, formatDate } from "@/lib/i18n/format"
 import { planTierName } from "@/lib/subscription-copy"
-import { gapSentenceTemplate } from "@/lib/app/compose"
 import { PRIMARY_NAV, ADD_POLICY } from "@/lib/app/navigation"
 import type { HomeModel } from "@/lib/app/home-model"
-import type { RenderableFinding } from "@/lib/app/finding"
 import { LargeTitleNav } from "@/src/design-system/shell"
 import { AppSection, GroupedList, Row } from "@/src/design-system/app-layout"
 import { Button, buttonClassName } from "@/src/design-system/primitives"
@@ -20,35 +19,6 @@ import { MomentOfTruthBeacon } from "@/components/app/MomentOfTruthBeacon"
  * (tests/unit/home-section-budget.test.tsx). Desktop: the verdict full
  * width, then two columns 1.35fr / 0.85fr.
  */
-export function resolveSentence(f: RenderableFinding, lang: "el" | "en", t: ReturnType<typeof getTranslations>): string {
-    const authored = gapSentenceTemplate(f.sentence.key, lang)
-    if (authored) return formatPlural(authored, f.sentence.params, lang)
-    const key = f.sentence.key.replace(/^app\./, "").split(".")
-    let node: unknown = t.app
-    for (const k of key) node = (node as Record<string, unknown> | undefined)?.[k]
-    const template = typeof node === "string" ? node : f.sentence.key
-    const params = { ...f.sentence.params }
-    if (typeof params.date === "string" && params.date) params.date = formatDate(new Date(params.date), lang)
-    return formatPlural(template, params, lang)
-}
-
-export function resolveSource(f: RenderableFinding, lang: "el" | "en", t: ReturnType<typeof getTranslations>): string {
-    const s = f.source
-    if (s.locator.kind === "page") return formatPlural(t.app.finding.source.page, { document: s.documentLabel, page: s.locator.page }, lang)
-    const section = t.app.finding.section[s.locator.section]
-    const base = formatPlural(s.locator.found ? t.app.finding.source.sectionFound : t.app.finding.source.section, { document: s.documentLabel, section }, lang)
-    const others = s.othersSearched ? ` ${formatPlural(t.app.finding.othersSearched, { count: s.othersSearched }, lang)}` : ""
-    return base + others
-}
-
-export function resolveWhyYou(f: RenderableFinding, lang: "el" | "en", t: ReturnType<typeof getTranslations>): string | undefined {
-    if (!f.whyYou) return undefined
-    const key = f.whyYou.key.replace(/^app\./, "").split(".")
-    let node: unknown = t.app
-    for (const k of key) node = (node as Record<string, unknown> | undefined)?.[k]
-    return typeof node === "string" ? formatPlural(node, f.whyYou.params, lang) : undefined
-}
-
 export function HomeScreen({ model }: { model: HomeModel }) {
     const { lang, verdict } = model
     const t = getTranslations(lang)

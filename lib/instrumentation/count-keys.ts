@@ -140,6 +140,9 @@ export const FACT_KEYS: Record<string, string> = {
     "policy.insurer": "Insurer display name (via policy-identity).",
     "policy.number": "Policy number (via policy-identity).",
     "policy.startDate": "Extracted start date.",
+    "policy.summary": "The plain-language summary, rendered only in the language it was written in (lib/wallet/summary-language) — /policies/[id] lede.",
+    "policy.unverifiedNote": "The owner's unverified-extraction note (t.wallet.review.ownerUnverifiedNote) — /policies/[id] hero, once, when reviewState is unconfirmed|flagged.",
+    "policy.insured": "First insured name read from the document (deriveInsuredNames) — /policies/[id] facts.",
 
     // portfolio.*
     "portfolio.totalAnnualPremium": "calculatePremiumFootprintDetailed total, majority currency.",

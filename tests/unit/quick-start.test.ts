@@ -182,8 +182,10 @@ describe("the opener is mobile-first and honest on screen", () => {
         // out of twenty-four factors is about a fifth of the picture, and the
         // index refuses to report below a third — so the customer answered,
         // the page reloaded, and asked them the same three questions again.
-        const page = readFileSync("app/(protected)/protection/page.tsx", "utf-8")
+        // Grafí G8: the three questions moved with the findings to /see (lib/app/see-model.ts decides; SeeScreen mounts).
+        const page = readFileSync("lib/app/see-model.ts", "utf-8")
         expect(page).toMatch(/quickStartComplete/)
+        expect(readFileSync("app/(protected)/see/SeeScreen.tsx", "utf-8")).toMatch(/<QuickStart/)
         expect(page).not.toMatch(/needsQuickStart = intelligence\.health\.index === null/)
 
         const answered = toLifeContext(

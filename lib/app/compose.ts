@@ -63,6 +63,8 @@ export interface ComposeProfile {
 
 export interface ComposedPolicy {
     id: string
+    /** Scrubbed by documentDisplayLabel — sentinels never reach a label. */
+    policyNumber: string | null
     lifecycle: PolicyStatus | "analyzing"
     daysUntilExpiry: number | null
     endDate: Date | null
@@ -109,6 +111,7 @@ export function composePolicies(policies: ComposePolicy[], lang: "el" | "en", no
                 family: branchFamilyId(p.lineOfBusiness),
                 lineOfBusiness: p.lineOfBusiness,
                 document: currentDocument(p.documents),
+                policyNumber: p.policyNumber ?? null,
                 neverAnalysed: !p.lastAnalyzedAt,
                 analysisFailed: Boolean(acord.processingError),
                 unresolvedFields: unresolved,
@@ -130,7 +133,7 @@ function sourceFor(policy: ComposedPolicy, acordData: unknown, fields: string[],
     if (!policy.document) return null
     const sources = ((acordData as { extraction?: { sources?: Record<string, { page?: number; snippet?: string }> } })?.extraction?.sources) ?? {}
     const hit = fields.map((f) => sources[f]).find((s) => s && typeof s.page === "number")
-    const documentLabel = documentDisplayLabel({ documentKind: policy.document.documentKind, lineOfBusiness: policy.lineOfBusiness, policyNumber: null, effectiveFrom: policy.document.effectiveFrom, effectiveTo: policy.document.effectiveTo }, lang)
+    const documentLabel = documentDisplayLabel({ documentKind: policy.document.documentKind, lineOfBusiness: policy.lineOfBusiness, policyNumber: policy.policyNumber, effectiveFrom: policy.document.effectiveFrom, effectiveTo: policy.document.effectiveTo }, lang)
     return {
         documentId: policy.document.id,
         documentLabel,

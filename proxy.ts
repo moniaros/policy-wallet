@@ -52,6 +52,8 @@ export const ROUTE_OWNERSHIP: ReadonlyArray<readonly [pattern: string, owner: Ro
     // agent takes two hops: /home → /dashboard → /dashboard/agent).
     ["/home", "policyholder"],
     ["/wallet", "policyholder"],
+    ["/policies", "policyholder"],
+    ["/see", "policyholder"],
     // Agent-only extraction review under the policyholder's wallet tree.
     ["/wallet/*/review", "agent"],
     // §4.2: «Η προστασία μου» — absorbed /branches, /insights/risk-profile
@@ -376,6 +378,20 @@ export async function proxy(request: NextRequest) {
     }
     // The old policyholder home and the internal path both answer at `/` now —
     // a real 301 here, never a page-level redirect (the /coverage lesson below).
+    // Grafí G8: the three legacy surfaces 301 to their successors for a
+    // policyholder — /protection → /see (its ?lens= is dropped), /wallet →
+    // /policies, /wallet/[id] → /policies/[id]. /wallet/add and the deeper
+    // /wallet/[id]/edit|review keep serving until G12. Proxy-level so the
+    // old URL never renders (the /coverage lesson); the page files also
+    // redirect() for the dead-link guard.
+    if (isLoggedIn && user && effectiveRole === "policyholder") {
+        const legacy = nextUrl.pathname.replace(/\/$/, "")
+        if (legacy === "/protection") return NextResponse.redirect(new URL("/see", nextUrl), 301)
+        if (legacy === "/wallet") return NextResponse.redirect(new URL(`/policies${nextUrl.search}`, nextUrl), 301)
+        const detail = /^\/wallet\/([^/]+)$/.exec(legacy)
+        if (detail && detail[1] !== "add") return NextResponse.redirect(new URL(`/policies/${detail[1]}`, nextUrl), 301)
+    }
+
     if (isLoggedIn && user && effectiveRole === "policyholder" && /^\/(home|dashboard)\/?$/.test(nextUrl.pathname)) {
         return NextResponse.redirect(new URL(`/${nextUrl.search}`, nextUrl), 301)
     }

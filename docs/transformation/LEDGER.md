@@ -25,6 +25,9 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 
 - [x] Ειδοποιήσεις `/notifications`
 - [x] Αρχική `/dashboard`
+- [x] Να δείτε `/see` (Grafí G8 — replaces `/protection`; one list from lib/app/finding.ts)
+- [x] Φάκελος `/policies` (Grafí G8 — replaces `/wallet`)
+- [x] Ασφαλιστήριο `/policies/[id]` (Grafí G8 — replaces `/wallet/[id]`; ≤8 sections, ≤2 AI entry points)
 - [x] Πορτοφόλι `/wallet`
 - [x] Ασφαλιστήριο `/wallet/[id]`
 - [x] Αναλύσεις `/coverage-insights`
@@ -115,6 +118,48 @@ is mostly reordering (Phase 2 spec), not reduction.
 
 
 ---
+
+## Να δείτε — `/see`
+
+Source: `app/(protected)/see/page.tsx` → `SeeScreen.tsx` (Grafí G8). Replaces `/protection` (301). One
+finding type (`lib/app/finding.ts`), three tiers, ≤ 5 `<section id>` landmarks.
+
+| Section | What it renders | Source of truth |
+|---|---|---|
+| `now` / `month` | FindingCard: sentence · source line · why-you · «Άνοιγμα / Ζητάω βοήθεια / Δεν με αφορά» | `loadSeeModel` → `loadFindingsContext` (GapInstance rows through the gate) |
+| `later` | ActionRow list | same |
+| `memory` | dismissal memory, not-checked line, expired labels | `Finding` rows (flag `app.findings`), entitlements, lifecycle |
+| `note` | «Σημείωση» + the definition of «κενό» + ordering ≠ risk | `app.note.*`, `app.see.*` |
+
+## Φάκελος — `/policies`
+
+Source: `app/(protected)/policies/page.tsx` → `PoliciesScreen.tsx` (Grafí G8). Replaces `/wallet` (301).
+Search, three lenses (κλάδο / λήξη / άτομο), grouped rows with the asset on the row, expired collapsed,
+≤ 4 landmarks.
+
+| Section | What it renders | Source of truth |
+|---|---|---|
+| `tools` | SearchField + SegmentedControl | client state |
+| `list` | GroupHeader + GroupedList/Row; StatusChip trailing; «N έγγραφα» when merged | `loadPoliciesModel` (policyLabel, policyAssetIdentifier, policyState) |
+| `expired` | `<details>` «Έληξαν · N» | lifecycle = expired |
+| `note` | «Σημείωση» | `app.note.*` |
+
+## Ασφαλιστήριο — `/policies/[id]`
+
+Source: `app/(protected)/policies/[id]/page.tsx` → `PolicyDetailScreen.tsx` (Grafí G8). Replaces
+`/wallet/[id]` (301); `/wallet/[id]/edit` and `/review` keep serving. ≤ 8 landmarks, ≤ 2 AI entry points
+(`tests/unit/policy-detail-section-budget.test.tsx`).
+
+| Section | What it renders | Source of truth |
+|---|---|---|
+| `hero` | state chip · verdict sentence · plain-language lede · facts (`data-fact="policy.*"`) · «Το πλήρωσα / Ρωτάτε / Ζητάω βοήθεια» | `loadPolicyDetailModel` (getPolicyAccess, resolvePolicyLifecycle via compose, summary-language) |
+| `checklist` | CoverageChecklist, each line citing document + page or «δεν αναφέρεται» / «δεν εντοπίστηκε» | `acordData.coverages[].status`, `extraction.sources` |
+| `findings` | ActionRows for this policy | the gate |
+| `questions` | QuestionList | gaps + fine-print clauses + deductibles (typed templates `app.policy.q.*`) |
+| `qa` | existing `PolicyQA` | — |
+| `documents` | existing `DocumentsCard` + `AddDocumentCard` | — |
+| `manage` | edit / delete rows | `getPolicyAccess.canWrite` |
+| `note` | «Σημείωση» | `app.note.*` |
 
 ## Πορτοφόλι — `/wallet`
 

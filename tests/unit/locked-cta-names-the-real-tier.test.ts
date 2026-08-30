@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { DEFAULT_ENTITLEMENT_LIMITS, tierThatRuns } from "@/lib/app/entitlements"
 
 /**
  * A locked feature's CTA must name the plan that actually unlocks it.
@@ -27,57 +28,39 @@ import { readFileSync } from "node:fs"
  * and requires the CTA to name the CHEAPEST unlocking tier. Naming a dearer
  * one is not a lie, but it sells an upgrade the customer does not need.
  */
-const PAGE = "app/(protected)/protection/page.tsx"
+// Grafí G8: the gate no longer lives on a page. The single source is
+// plan-defaults (`gapAnalysisPerDay` 0 = the plan does not run gap detection);
+// lib/app/entitlements.ts derives the cheapest tier that does (`tierThatRuns`)
+// and /see names it through `planTierName`, never as a literal.
 const CLIENT = "components/coverage/CoverageInsightsClient.tsx"
-
-/** Cheapest first — the order a customer would be asked to pay in. */
+const SEE_MODEL = "lib/app/see-model.ts"
+const SEE_SCREEN = "app/(protected)/see/SeeScreen.tsx"
 const PAID_TIERS = ["plus", "pro"] as const
 
 describe("the deep-analysis lock names the tier its gate requires", () => {
-    const page = readFileSync(PAGE, "utf-8")
     const client = readFileSync(CLIENT, "utf-8")
-
-    /** Tiers that clear the gate, derived from the gate expression itself. */
-    const unlocking = (() => {
-        const excl = page.match(/isDeepAnalysisLocked:\s*entitlements\.tier\s*!==\s*['"](\w+)['"]/)
-        if (excl) return [excl[1]]
-        const only = page.match(/isDeepAnalysisLocked:\s*entitlements\.tier\s*===\s*['"](\w+)['"]/)
-        if (only) return PAID_TIERS.filter((t) => t !== only[1])
-        return null
-    })()
+    const unlocking = PAID_TIERS.filter((t) => DEFAULT_ENTITLEMENT_LIMITS[t].gapAnalysisPerDay !== 0)
 
     it("finds the gate it claims to check", () => {
-        expect(
-            unlocking,
-            `no isDeepAnalysisLocked gate found in ${PAGE} — if it moved, re-point this guard rather than deleting it`
-        ).toBeTruthy()
-        expect(unlocking!.length).toBeGreaterThan(0)
+        expect(unlocking.length).toBeGreaterThan(0)
+        expect(tierThatRuns("gap_detection")).toBe(unlocking[0])
+        expect(readFileSync(SEE_MODEL, "utf-8")).toMatch(/gapDetectionTier: tierThatRuns\("gap_detection"\)/)
     })
 
-    it("the CTA names the cheapest tier that actually unlocks it", () => {
-        const cta = client.match(/notAnalyzedLockedCta:[^\n]*/)?.[0] ?? ""
-        expect(cta, "notAnalyzedLockedCta not found").toContain("Unlock")
-
-        const cheapest = PAID_TIERS.find((t) => unlocking!.includes(t))!
-        expect(
-            cta.toLowerCase(),
-            `CTA must name "${cheapest}" — the cheapest tier clearing this gate`
-        ).toContain(cheapest)
-
-        for (const other of PAID_TIERS.filter((t) => t !== cheapest)) {
-            expect(
-                new RegExp(`\\b${other}\\b`, "i").test(cta),
-                unlocking!.includes(other)
-                    ? `CTA names "${other}", which unlocks but is dearer than "${cheapest}" — it sells an upgrade the customer does not need`
-                    : `CTA names "${other}", which does NOT clear this gate — that promises an upgrade that changes nothing`
-            ).toBe(false)
+    it("/see names the plan through planTierName from the same source — never a literal tier name in the copy", () => {
+        expect(readFileSync(SEE_SCREEN, "utf-8")).toMatch(/planTierName\(model\.gapDetectionTier, lang\)/)
+        for (const lang of ["el", "en"]) {
+            const dict = readFileSync(`lib/i18n/translations/app/${lang}.ts`, "utf-8")
+            const line = dict.match(/see: \{[\s\S]*?\n\s*notChecked: [^\n]*/)?.[0].split("\n").pop() ?? ""
+            expect(line, `${lang}: app.see.notChecked missing`).toBeTruthy()
+            expect(line).toContain("{plan}")
+            expect(/\b(Plus|Family|Pro)\b/.test(line), `${lang}: the plan name must come from planTierName, not the copy`).toBe(false)
         }
     })
 
-    it("both languages say the same tier", () => {
-        const cta = client.match(/notAnalyzedLockedCta:[^\n]*/)?.[0] ?? ""
-        const mentions = (cta.match(/\b(plus|pro)\b/gi) ?? []).map((m) => m.toLowerCase())
-        expect(mentions.length, "expected the tier named in both el and en").toBeGreaterThanOrEqual(2)
-        expect(new Set(mentions).size, `el and en name different tiers: ${mentions.join(", ")}`).toBe(1)
+    it("the retired legacy client is not mounted by any route (A-25) — its CTA is no longer a surface", () => {
+        expect(client).toContain("notAnalyzedLockedCta")
+        const pages = readFileSync("app/(protected)/protection/page.tsx", "utf-8")
+        expect(pages).not.toContain("CoverageInsightsClient")
     })
 })

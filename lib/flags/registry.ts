@@ -55,7 +55,7 @@ export interface FlagDefinition {
     /** What turning this on actually does, in one sentence. */
     description: string
     /** Grouping in the console. */
-    category: "ai" | "auth" | "extraction"
+    category: "ai" | "auth" | "extraction" | "app"
     /**
      * The environment variable this flag has been read from until now. Kept as
      * the fallback layer AND as the break-glass path when the database is the
@@ -85,6 +85,31 @@ export interface FlagDefinition {
 }
 
 export const FEATURE_FLAGS: Record<string, FlagDefinition> = {
+    // ── Grafí application tier (B2C brief §11). Default OFF until the
+    // production DDL for Finding / HouseholdPerson / AdviserShareAudit /
+    // DocumentAiConsent is verified (docs/handover.md) — then flipped in the PR.
+    "app.findings": {
+        key: "app.findings",
+        kind: "boolean",
+        label: "App: finding dismissals",
+        description:
+            "Persist «δεν το θέλω» choices on findings in the Finding table and honour them on /see and /.",
+        category: "app",
+        envVar: "FF_APP_FINDINGS",
+        defaultValue: false,
+        readAt: "lib/app/flags.ts appFlag",
+    },
+    "app.household": {
+        key: "app.household",
+        kind: "boolean",
+        label: "App: household",
+        description:
+            "Read and write HouseholdPerson rows for the household strip on / and the people lens on /policies.",
+        category: "app",
+        envVar: "FF_APP_HOUSEHOLD",
+        defaultValue: false,
+        readAt: "lib/app/flags.ts appFlag",
+    },
     "ai.failover_openai": {
         key: "ai.failover_openai",
         kind: "boolean",

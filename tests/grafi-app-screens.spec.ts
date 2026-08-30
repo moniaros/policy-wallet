@@ -13,8 +13,15 @@ import fs from "node:fs"
  */
 const WIDTHS = [375, 393, 768, 1100, 1440] as const
 const THEMES = ["light", "dark"] as const
-const ROUTES: Array<{ path: string; dir: string; sectionCeiling: number; h1: string }> = [
+type Route = { path: string; dir: string; sectionCeiling: number; h1: string; resolve?: (page: Page) => Promise<string | null> }
+const ROUTES: Route[] = [
     { path: "/", dir: "home", sectionCeiling: 7, h1: "Η προστασία σας|Your protection" },
+    { path: "/see", dir: "see", sectionCeiling: 5, h1: "Να δείτε|Worth seeing" },
+    { path: "/policies", dir: "policies", sectionCeiling: 4, h1: "Ο φάκελός σας|Your folder" },
+    {
+        path: "/policies/[id]", dir: "policy", sectionCeiling: 8, h1: ".",
+        resolve: async (page) => { await page.goto("/policies", { waitUntil: "networkidle" }); return page.evaluate(() => document.querySelector('section#list a[href^="/policies/"]')?.getAttribute("href") ?? null) },
+    },
 ]
 
 async function withTheme(page: Page, theme: (typeof THEMES)[number]) {
@@ -27,7 +34,9 @@ for (const route of ROUTES) {
             const ctx = await browser.newContext({ storageState: "playwright/.auth/user.json", locale: "el-GR", colorScheme: theme })
             const page = await ctx.newPage()
             await withTheme(page, theme)
-            await page.goto(route.path, { waitUntil: "networkidle" })
+            const target = route.resolve ? await route.resolve(page) : route.path
+            expect(target, `${route.path}: nothing to resolve`).not.toBeNull()
+            await page.goto(target!, { waitUntil: "networkidle" })
             await expect(page.locator("h1")).toHaveCount(1)
             // A stale storage state lands on the marketing page (also one h1) — fail loudly on the wrong page, not on its section count.
             await expect(page.locator("h1"), "signed-in app home expected — refresh playwright/.auth/user.json").toHaveText(new RegExp(route.h1))
@@ -42,7 +51,7 @@ for (const route of ROUTES) {
                         .filter((e) => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0 && (b.height < 44 || b.width < 44) })
                         .map((e) => (e.textContent || "").trim().slice(0, 30)),
                     percent: (document.body.innerText.match(/\d\s?%/g) || []).length,
-                    upper: [...document.querySelectorAll("section *")].filter((e) => e.children.length === 0 && getComputedStyle(e).textTransform === "uppercase" && /[Α-Ωα-ω]/.test(e.textContent || "")).length,
+                    upper: [...document.querySelectorAll("section *")].filter((e) => getComputedStyle(e).textTransform === "uppercase" && [...e.childNodes].some((n) => n.nodeType === 3 && /[Α-Ωα-ω]/.test(n.textContent || ""))).length,
                 }))
                 expect(r.overflow, `${w}px horizontal overflow`).toBe(false)
                 expect(r.sections.length, `${w}px sections: ${r.sections.join(",")}`).toBeLessThanOrEqual(route.sectionCeiling)

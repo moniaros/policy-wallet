@@ -4,7 +4,9 @@ import { el } from '@/lib/i18n/translations/el'
 import { en } from '@/lib/i18n/translations/en'
 
 const view = readFileSync('components/wallet/PolicyDetailsClientView.tsx', 'utf-8')
-const page = readFileSync('app/(protected)/wallet/[id]/page.tsx', 'utf-8')
+// Grafí G8: the decision moved to lib/app/policy-detail-model.ts; the note renders on PolicyDetailScreen.
+const page = readFileSync('lib/app/policy-detail-model.ts', 'utf-8')
+const screen = readFileSync('app/(protected)/policies/[id]/PolicyDetailScreen.tsx', 'utf-8')
 
 /**
  * Every analysed policy is written with reviewState "unconfirmed" (see the
@@ -39,7 +41,10 @@ describe('an unverified extraction says so to the person relying on it', () => {
     it('does not offer them the agent’s confirm action', () => {
         // The review CTA stays behind canReviewExtraction.
         expect(view).toMatch(/\{canReviewExtraction && \(policy\.reviewState === 'unconfirmed'/)
-        expect(page).toMatch(/canReviewExtraction=\{isAgentRole\(dbUser\.roles\) && access\.canWrite\}/)
+        expect(page).toMatch(/canReviewExtraction: isAgentRole\(viewer\.roles\) && access\.canWrite/)
+        expect(screen).toMatch(/!model\.canReviewExtraction && \(model\.reviewState === "unconfirmed" \|\| model\.reviewState === "flagged"\)/)
+        expect(screen).toMatch(/t\.wallet\.review\.ownerUnverifiedNote/)
+        expect(screen).toMatch(/model\.canReviewExtraction && \(model\.reviewState === "unconfirmed"/)
     })
 
     it('tells them what to do about it, in both languages', () => {

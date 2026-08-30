@@ -42,10 +42,10 @@ export function AppSection({
     )
 }
 
-/** The month/tier-style group header — the ONLY place uppercase is permitted, single short words. */
+/** The month/tier-style group header — sentence case («Αυτοκίνητο · 3»); the app tier renders no uppercase Greek. */
 export function GroupHeader({ children, count, className }: { children: ReactNode; count?: number; className?: string }) {
     return (
-        <div className={cn("flex items-baseline gap-g-2 px-g-4 pb-g-2 pt-g-4 text-g-app-label font-semibold uppercase tracking-[0.06em] text-fg-faint tablet:px-0", className)}>
+        <div className={cn("flex items-baseline gap-g-2 px-g-4 pb-g-2 pt-g-4 text-g-app-body-sm font-semibold text-fg-secondary tablet:px-0", className)}>
             <span>{children}</span>
             {typeof count === "number" && <span className="tabular-nums">· {count}</span>}
         </div>
@@ -78,8 +78,8 @@ export function Row({ icon, primary, secondary, trailing, href, onClick, classNa
         <>
             {icon && <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-g-control bg-surface-sunken text-fg-brand">{icon}</span>}
             <span className="min-w-0 flex-1">
-                <span className="block truncate text-g-row text-fg-primary">{primary}</span>
-                {secondary && <span className="mt-0.5 block text-g-app-body-sm text-fg-secondary">{secondary}</span>}
+                <span className="line-clamp-2 block text-g-row text-fg-primary">{primary}</span>
+                {secondary && <span className="mt-0.5 line-clamp-2 block text-g-app-body-sm text-fg-secondary">{secondary}</span>}
             </span>
             {trailing && <span className="flex shrink-0 items-center gap-g-2 text-g-app-body-sm tabular-nums text-fg-secondary">{trailing}</span>}
         </>

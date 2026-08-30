@@ -5,7 +5,8 @@ import { en } from '@/lib/i18n/translations/en'
 import { resolveCoverageAbsence } from '@/lib/wallet/policy-detail'
 
 const view = readFileSync('components/wallet/PolicyDetailsClientView.tsx', 'utf-8')
-const page = readFileSync('app/(protected)/wallet/[id]/page.tsx', 'utf-8')
+// Grafí G8: /policies/[id] loads through lib/app/policy-detail-model.ts (the old page 301s there).
+const page = readFileSync('lib/app/policy-detail-model.ts', 'utf-8')
 const elCopy = el.wallet.policyDetailsPage
 const enCopy = en.wallet.policyDetailsPage
 
@@ -27,11 +28,12 @@ const enCopy = en.wallet.policyDetailsPage
  */
 describe('the coverage-absence message says which happened', () => {
     it('loads the latest run — with blockedReason — so the state is knowable at all', () => {
-        expect(page).toMatch(/analysisRuns: \{/)
-        expect(page).toMatch(/orderBy: \{ createdAt: 'desc' \}/)
+        expect(page).toMatch(/policyAnalysisRun\.findFirst\(\{ where: \{ policyId \}/)
+        expect(page).toMatch(/orderBy: \{ createdAt: "desc" \}/)
         // blockedReason must travel with the run, else a gated run cannot be told
         // apart from a failure (the whole point of the blocked state).
         expect(page).toMatch(/select: \{ status: true, createdAt: true, blockedReason: true \}/)
+        expect(page).toMatch(/absence: resolveCoverageAbsence\(latestRun\?\.status/)
     })
 
     it('maps every AnalysisRunStatus to a state', () => {

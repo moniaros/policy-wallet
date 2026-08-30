@@ -131,6 +131,6 @@ describe("GroupedList and Row — whole-row targets", () => {
         fireEvent.click(within(list).getByRole("button", { name: /Κατοικία/ }))
         expect(onClick).toHaveBeenCalled()
         expect(within(list).queryByRole("button", { name: /Στατική/ })).toBeNull()
-        expect(screen.getByText("Αυτοκίνητο").parentElement!.className).toMatch(/uppercase/)
+        expect(screen.getByText("Αυτοκίνητο").parentElement!.className).not.toMatch(/uppercase/)
     })
 })

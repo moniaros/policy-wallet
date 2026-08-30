@@ -60,36 +60,65 @@ export function foldIdenticalRows(findings: readonly RenderableFinding[]): { sho
     return { shown: capped.shown, overflow: capped.overflow + folded }
 }
 
-export async function loadHomeModel(userId: string, lang: "el" | "en", now: Date = new Date()): Promise<HomeModel> {
-    const [policies, gaps, profile, entitlements, people, timeline] = await Promise.all([
-        db.policy.findMany({
-            where: { ownerUserId: userId, status: { not: "deleted" } },
-            select: {
-                id: true, lineOfBusiness: true, insurerName: true, policyNumber: true, status: true, endDate: true, startDate: true,
-                premiumAmount: true, premiumCurrency: true, acordData: true, lastAnalyzedAt: true,
-                documents: { select: { id: true, documentKind: true, effectiveFrom: true, effectiveTo: true, uploadedAt: true, supersededById: true } },
-            },
-            orderBy: { endDate: "asc" },
-        }),
+export interface FindingsContext {
+    policies: Awaited<ReturnType<typeof loadPolicyRows>>
+    /** The same rows by id — premium, summary and dates live here, not on ComposePolicy. */
+    policyRows: Map<string, Awaited<ReturnType<typeof loadPolicyRows>>[number]>
+    raw: ComposePolicy[]
+    rawById: Map<string, ComposePolicy>
+    composed: ReturnType<typeof composePolicies>
+    findings: RenderableFinding[]
+    entitlements: Awaited<ReturnType<typeof resolveUserEntitlements>>
+}
+
+async function loadPolicyRows(userId: string) {
+    return db.policy.findMany({
+        where: { ownerUserId: userId, status: { not: "deleted" } },
+        select: {
+            id: true, lineOfBusiness: true, insurerName: true, policyNumber: true, status: true, endDate: true, startDate: true,
+            premiumAmount: true, premiumCurrency: true, acordData: true, lastAnalyzedAt: true, coverageSummary: true,
+            documents: { select: { id: true, documentKind: true, effectiveFrom: true, effectiveTo: true, uploadedAt: true, supersededById: true, fileName: true } },
+        },
+        orderBy: { endDate: "asc" },
+    })
+}
+
+/**
+ * The one composition every app screen reads from: this person's policies,
+ * the engine's open gap rows, the profile facts they entered, their plan —
+ * composed into policies-with-lifecycle and gate-passing findings. `/`, `/see`
+ * and `/policies` all call this so no screen can disagree with another about
+ * what a finding is.
+ */
+export async function loadFindingsContext(userId: string, lang: "el" | "en", now: Date = new Date()): Promise<FindingsContext> {
+    const [policies, gaps, profile, entitlements] = await Promise.all([
+        loadPolicyRows(userId),
         db.gapInstance.findMany({
             where: { policy: { ownerUserId: userId, status: { notIn: [...NON_LIVE_POLICY_STATUSES] } }, status: { in: ["open", "detected", "acknowledged"] } },
             select: { id: true, policyId: true, ruleId: true, ruleInputs: true, engineVersion: true, definition: { select: { slug: true, detectionLogic: true, lineOfBusiness: true } } },
         }),
         db.policyholderProfile.findUnique({ where: { userId }, select: { answeredFields: true, ownsHome: true, vehiclesCount: true, dependentsCount: true } }),
         resolveUserEntitlements(userId),
-        // The table may not exist in an environment yet (prod DDL owed) — degrade to nobody.
-        db.householdPerson.findMany({ where: { userId }, select: { id: true, name: true, isDependant: true, relation: true } }).catch(() => []),
-        getTimeline(userId, { limit: 1 }).catch(() => []),
     ])
-
     const raw: ComposePolicy[] = policies.map((p) => ({ ...p, documents: p.documents }))
     const rawById = new Map(raw.map((p) => [p.id, p]))
     const composed = composePolicies(raw, lang, now)
     const composeProfile: ComposeProfile | null = profile
         ? { answeredFields: Array.isArray(profile.answeredFields) ? (profile.answeredFields as string[]) : [], ownsHome: profile.ownsHome, vehiclesCount: profile.vehiclesCount, dependentsCount: profile.dependentsCount }
         : null
-    const all = composeFindings(composed, rawById, gaps as ComposeGap[], composeProfile, lang, (msg, meta) => logger("info", `[home] ${msg}`, meta))
+    const all = composeFindings(composed, rawById, gaps as ComposeGap[], composeProfile, lang, (msg, meta) => logger("info", `[app] ${msg}`, meta))
     const findings = sortByTier(composeRenderable(all))
+    return { policies, policyRows: new Map(policies.map((p) => [p.id, p])), raw, rawById, composed, findings, entitlements }
+}
+
+export async function loadHomeModel(userId: string, lang: "el" | "en", now: Date = new Date()): Promise<HomeModel> {
+    const [ctx, people, timeline] = await Promise.all([
+        loadFindingsContext(userId, lang, now),
+        // The table may not exist in an environment yet (prod DDL owed) — degrade to nobody.
+        db.householdPerson.findMany({ where: { userId }, select: { id: true, name: true, isDependant: true, relation: true } }).catch(() => []),
+        getTimeline(userId, { limit: 1 }).catch(() => []),
+    ])
+    const { policies, raw, composed, findings, entitlements } = ctx
 
     const verdict = computeVerdict(
         composed.map((p) => ({ id: p.id, lifecycle: p.lifecycle, daysUntilExpiry: p.daysUntilExpiry, neverAnalysed: p.neverAnalysed, analysisFailed: p.analysisFailed, unresolvedFields: p.unresolvedFields })),

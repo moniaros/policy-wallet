@@ -54,7 +54,7 @@ describe('design-system foundations', () => {
         // A decorative aria-hidden bar meter is legitimately 3-up at any width;
         // anything with text needs a responsive prefix.
         const hits = grep(String.raw`grid-cols-[3-9]`)
-            .filter((l) => !/(sm|md|lg|xl):grid-cols/.test(l))
+            .filter((l) => !/(sm|md|lg|xl|tablet|desk):grid-cols/.test(l))
             .filter((l) => !/gap-1\.5/.test(l)) // password-strength meter
         expect(
             hits,

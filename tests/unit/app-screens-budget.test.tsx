@@ -1,0 +1,93 @@
+/**
+ * /see and /policies — section budgets on the CI path (≤ 5 and ≤ 4), the
+ * gate's guarantee that nothing generic renders, and the honest empty states.
+ */
+import React from "react"
+import { describe, it, expect, vi } from "vitest"
+import { render } from "@testing-library/react"
+
+vi.mock("@/app/(protected)/see/actions", () => ({ dismissFinding: vi.fn(async () => ({ ok: true })) }))
+vi.mock("@/app/(protected)/protection/quick-start-actions", () => ({ submitQuickStart: vi.fn() }))
+vi.mock("@/lib/journey/funnel", () => ({ trackJourneyEvent: vi.fn() }))
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }), usePathname: () => "/see" }))
+
+import { LanguageProvider } from "@/contexts/LanguageContext"
+import { TranslationsProvider } from "@/contexts/TranslationsProvider"
+import { SeeScreen } from "@/app/(protected)/see/SeeScreen"
+import { PoliciesScreen } from "@/app/(protected)/policies/PoliciesScreen"
+import { toRenderableFinding, findingHash } from "@/lib/app/finding"
+import type { SeeModel } from "@/lib/app/see-model"
+import type { PoliciesModel, PolicyRow } from "@/lib/app/policies-model"
+import { collectSections } from "../measure/section-collector"
+
+const JSDOM_OPTS = { assumeVisible: true, boundedFallback: true } as const
+const wrap = (node: React.ReactNode) => render(<LanguageProvider><TranslationsProvider>{node}</TranslationsProvider></LanguageProvider>)
+
+const finding = (id: string, kind: "gap" | "review" | "expiry", tier: "now" | "month" | "later") =>
+    toRenderableFinding({
+        id, hash: findingHash("p1", id, "no_flood_cover"), kind, tier,
+        object: { policyId: "p1", assetLabel: "Κατοικία · Κηφισιάς 12" },
+        sentence: kind === "expiry" ? { key: "app.finding.sentence.expiry", params: { asset: "Κατοικία · Κηφισιάς 12", days: 8 } } : { key: "gap:no_flood_cover", params: { asset: "Κατοικία · Κηφισιάς 12" } },
+        source: { documentId: "d1", documentLabel: "Ασφαλιστήριο κατοικίας · P-1", locator: { kind: "section", section: "coverages", found: false } },
+        ruleId: "no_flood_cover", daysUntilExpiry: kind === "expiry" ? 8 : undefined,
+    })!
+
+function seeModel(over: Partial<SeeModel> = {}): SeeModel {
+    return {
+        lang: "el",
+        tiers: { now: [finding("f1", "expiry", "now")], month: [finding("f2", "gap", "month")], later: [finding("f3", "review", "later")] },
+        dismissedCount: 1, dismissalsOn: true, expiredLabels: ["Interamerican (P-9)"], nextExpiryDays: 8, gapsNotChecked: false, gapDetectionTier: "pro", policyCount: 3, quickStart: null,
+        ...over,
+    }
+}
+
+const row = (id: string, over: Partial<PolicyRow> = {}): PolicyRow => ({
+    id, href: `/policies/${id}`, label: "Interamerican (P-1)", asset: "ΙΚΖ-4821", insurer: "Interamerican", number: "P-1", line: "motor", lineLabel: "Αυτοκίνητο",
+    covers: ["Αστική ευθύνη", "Θραύση κρυστάλλων"], premium: { amount: 412, currency: "EUR" }, person: "Γ. Παπαδόπουλος", state: "covered", lifecycle: "active",
+    daysUntilExpiry: 165, endDate: "12/02/2027", documentCount: 1, mergedFrom: [], ...over,
+})
+
+function policiesModel(over: Partial<PoliciesModel> = {}): PoliciesModel {
+    return { lang: "el", rows: [row("a"), row("b", { line: "property", lineLabel: "Κατοικία", asset: "Κηφισιάς 12", state: "gap", documentCount: 2 })], expired: [row("x", { lifecycle: "expired", state: null, daysUntilExpiry: -30 })], lineLabels: { motor: "Αυτοκίνητο", property: "Κατοικία" }, ...over }
+}
+
+describe("/see — «Να δείτε»", () => {
+    it("renders ≤ 5 sections: the three tiers, the memory line and the note", () => {
+        const { container } = wrap(<SeeScreen model={seeModel()} />)
+        const r = collectSections(JSDOM_OPTS)
+        expect(r.count, r.ids.join(", ")).toBeLessThanOrEqual(5)
+        expect([...container.querySelectorAll("section[id]")].map((s) => s.id)).toEqual(["now", "month", "later", "memory", "note"])
+        expect(container.textContent).toContain("Στο Κατοικία · Κηφισιάς 12 δεν βρήκα κάλυψη πλημμύρας.")
+        expect(container.textContent).toContain("Ό,τι επιλέξατε να μη βλέπετε το θυμάμαι.")
+        expect(container.textContent).toContain("Δεν τα ελέγχω πια: Interamerican (P-9).")
+        expect(container.textContent).not.toMatch(/\d\s?%/)
+    })
+    it("filters to one kind and states the empty tiers honestly", () => {
+        const { container } = wrap(<SeeScreen model={seeModel()} filter="gap" />)
+        expect([...container.querySelectorAll("section[id]")].map((s) => s.id)).toEqual(["month", "memory", "note"])
+    })
+    it("with nothing to see: the §6 sentence and the next expiry, never an all-clear", () => {
+        const { container } = wrap(<SeeScreen model={seeModel({ tiers: { now: [], month: [], later: [] }, nextExpiryDays: 37, gapsNotChecked: true })} />)
+        expect(container.textContent).toContain("Δεν βρήκα κάτι που να αξίζει να δείτε αυτή τη στιγμή.")
+        expect(container.textContent).toContain("Η επόμενη λήξη είναι σε 37 ημέρες.")
+        expect(container.textContent).toContain("Κενά κάλυψης δεν τα έλεγξα")
+    })
+})
+
+describe("/policies — «Ο φάκελός σας»", () => {
+    it("renders ≤ 4 sections, one title, the asset on the row, «2 έγγραφα», expired collapsed", () => {
+        const { container } = wrap(<PoliciesScreen model={policiesModel()} />)
+        const r = collectSections(JSDOM_OPTS)
+        expect(r.count, r.ids.join(", ")).toBeLessThanOrEqual(4)
+        expect(container.querySelectorAll("h1").length).toBe(1)
+        expect(container.textContent).toContain("Interamerican (P-1) · ΙΚΖ-4821")
+        expect(container.textContent).toContain("2 έγγραφα")
+        expect(container.textContent).toContain("Έληξαν · 1")
+        expect(container.querySelector("details")?.hasAttribute("open")).toBe(false)
+    })
+    it("empty folder: one sentence and one action", () => {
+        const { container } = wrap(<PoliciesScreen model={policiesModel({ rows: [], expired: [] })} />)
+        expect(container.textContent).toContain("Δεν έχετε ανεβάσει ακόμη κανένα ασφαλιστήριο.")
+        expect(container.querySelectorAll("a").length).toBeGreaterThanOrEqual(1)
+    })
+})

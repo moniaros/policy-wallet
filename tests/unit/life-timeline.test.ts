@@ -82,12 +82,14 @@ describe("the causal chain reaches every surface that shows a recommendation", (
         expect(card).toMatch(/href="\/account\/history"/)
     })
 
-    it("reaches the wallet and branch pages too", () => {
+    // Grafí G8: /wallet/[id] 301s to /policies/[id], whose findings come from the gate
+    // (lib/app/finding.ts), not RecommendationInstance rows; the life-event cause returns
+    // there with G12's re-check delta (docs/B2C_PROGRESS.md D-B2C-22).
+    it("reaches the branch page too", () => {
         // Both read through the enriched entry point, which is what attaches
         // the cause — a card that silently lost it on two of three surfaces is
         // the drift this guard exists to stop.
         for (const page of [
-            "app/(protected)/wallet/[id]/page.tsx",
             // The branch detail was extracted from app/(protected)/branches/[branch]/
             // page.tsx in V2-P2-01; BOTH mounts (/branches/[branch] and
             // /protection/[branch]) render through this component.

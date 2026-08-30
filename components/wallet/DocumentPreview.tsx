@@ -118,7 +118,7 @@ export function DocumentPreviewButton({ onClick, isLocked, label, lockedLabel, o
                     e.stopPropagation()
                     onLockedClick?.()
                 }}
-                className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/55 transition-colors hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white/70"
+                className="flex min-h-11 items-center gap-1 rounded-md px-3 py-1 text-xs text-black/55 transition-colors hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white/70"
                 title={lockedLabel}
                 aria-label={lockedLabel}
             >
@@ -136,7 +136,7 @@ export function DocumentPreviewButton({ onClick, isLocked, label, lockedLabel, o
                 e.stopPropagation()
                 onClick()
             }}
-            className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/60 transition-colors hover:bg-black/5 hover:text-black/80 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white/80"
+            className="flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-md px-3 py-1 text-xs text-black/60 transition-colors hover:bg-black/5 hover:text-black/80 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white/80"
             title={label}
             aria-label={label}
         >

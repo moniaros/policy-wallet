@@ -361,7 +361,6 @@ describe("§2.2 — every ownership-state surface is known to this guard", () =>
                 // Pass data/labels into the components asserted above; they
                 // render no ownership state of their own.
                 "app/(protected)/dashboard/PolicyholderHome.tsx",
-                "app/(protected)/protection/page.tsx",
                 // /protection lenses (V2-P2-01): render THROUGH ProductBranchCard
                 // and RiskGraphPanel (both asserted above); their own §2.2
                 // behaviour — not-held vs never-assessed registers, no finding

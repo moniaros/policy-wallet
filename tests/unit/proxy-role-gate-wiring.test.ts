@@ -43,11 +43,11 @@ beforeEach(() => {
 })
 
 describe('proxy() role gate wiring', () => {
-    it('lets a policyholder reach /protection (the §4.2 consolidated surface)', async () => {
+    it('301s a policyholder from /protection to /see (Grafí G8) — the §4.2 surface moved, its URL did not die', async () => {
         sessionFor('policyholder')
         const res = await run('/protection')
-        expect(res.status).toBe(200)
-        expect(res.headers.get('location')).toBeNull()
+        expect(res.status).toBe(301)
+        expect(res.headers.get('location')).toBe('http://localhost:3000/see')
     })
 
     it('bounces an agent off /protection to their own home', async () => {
@@ -70,12 +70,36 @@ describe('proxy() role gate wiring', () => {
         expect((await run('/wallet/pol-1/review')).status).toBe(200)
     })
 
-    it('keeps a policyholder out of the review child while their /wallet stays open', async () => {
+    it('keeps a policyholder out of the review child while their /wallet/add stays open', async () => {
         sessionFor('policyholder')
-        expect((await run('/wallet/pol-1')).status).toBe(200)
+        expect((await run('/wallet/add')).status).toBe(200)
         const res = await run('/wallet/pol-1/review')
         expect(res.status).toBe(307)
         expect(res.headers.get('location')).toBe('http://localhost:3000/dashboard')
+    })
+
+    // ── Grafí (G8): /protection, /wallet, /wallet/[id] 301 to their successors ──
+    it('301s the three legacy policyholder surfaces to /see, /policies and /policies/[id] — deeper /wallet paths untouched', async () => {
+        sessionFor('policyholder')
+        const cases: Array<[string, string]> = [
+            ['/protection', '/see'],
+            ['/protection/', '/see'],
+            ['/protection?lens=risk', '/see'],
+            ['/wallet', '/policies'],
+            ['/wallet?q=x', '/policies?q=x'],
+            ['/wallet/pol-1', '/policies/pol-1'],
+        ]
+        for (const [from, to] of cases) {
+            const res = await run(from)
+            expect(res.status, from).toBe(301)
+            expect(res.headers.get('location'), from).toBe(`http://localhost:3000${to}`)
+        }
+        expect((await run('/wallet/pol-1/edit')).status, '/wallet/pol-1/edit keeps serving').toBe(200)
+        expect((await run('/protection/motor')).status, '/protection/[branch] keeps serving').toBe(200)
+        expect((await run('/see')).status).toBe(200)
+        expect((await run('/policies/pol-1')).status).toBe(200)
+        sessionFor('agent')
+        expect((await run('/wallet')).status, 'an agent is not rewritten').not.toBe(301)
     })
 
     // ── Grafí (G7): the application home is `/` ──────────────────────────
