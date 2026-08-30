@@ -78,10 +78,7 @@ export function GrafiHero({ locale }: { locale: MarketingLocale }) {
         <section className="px-g-6 lg:px-g-12 [padding-block:var(--space-section)]">
             <div className="mx-auto grid max-w-[1180px] items-center gap-g-10 lg:grid-cols-[1.15fr_0.85fr]">
                 <div>
-                    <p className="mb-g-4 inline-flex items-center gap-g-2 rounded-g-pill border border-state-covered-fill bg-state-review-fill px-g-3 py-g-1">
-                        <span className="size-1.5 rounded-g-pill bg-fg-brand" aria-hidden />
-                        <span className="text-sm font-semibold text-fg-brand">{pick(CATEGORY, locale)}</span>
-                    </p>
+                   
                     <h1 className="max-w-[15ch] text-balance text-g-display-xl font-extrabold tracking-[-0.024em] text-fg-primary">
                         {pick(PROMISE.lead, locale)}{" "}
                         <span className="text-fg-brand">{pick(PROMISE.accent, locale)}</span>
