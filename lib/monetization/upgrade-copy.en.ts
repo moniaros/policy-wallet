@@ -191,15 +191,15 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         successCta: "Open guide",
     },
     partner_offers: {
-        headline: "Partner benefits with Plus",
-        body: "Plus includes benefits from selected partners — prevention services and discounts worth more than the subscription itself.",
-        primaryCta: "Unlock benefits with Plus",
+        headline: "Partner benefits with Family",
+        body: "Family includes benefits from selected partners — prevention services and discounts worth more than the subscription itself.",
+        primaryCta: "Unlock benefits with Family",
         secondaryCta: "Not now",
         benefits: [
             "Free or discounted prevention services",
             "Offers matched to your profile",
             "New benefits added at no extra cost",
-            "Alongside the full Plus AI analysis",
+            "Alongside the full Family AI analysis",
         ],
         trust: TRUST,
         successMessage: "Upgrade complete. Partner benefits are available.",
@@ -210,7 +210,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
     // already happened or promise a cadence the jobs do not keep.
     protection_monitoring: {
         headline: "A standing watch over your protection",
-        body: "Plus keeps watching between your visits — after every change and on regular checks — and tells you when something deserves a look.",
+        body: "Family keeps watching between your visits — after every change and on regular checks — and tells you when something deserves a look.",
         primaryCta: "Turn on the protection monitor",
         secondaryCta: "Not now",
         benefits: [

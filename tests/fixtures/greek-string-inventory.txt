@@ -3373,7 +3373,7 @@ inline	components/monetization/CarriedPlanCard.tsx	"Κατά την εγγραφ
 inline	components/monetization/CarriedPlanCard.tsx	"Το πλάνο που επέλεξες σε περιμένει"
 inline	components/monetization/PremiumInsightCards.tsx	"Έξυπνες ενέργειες πριν την ανανέωση"
 inline	components/monetization/PremiumInsightCards.tsx	"Ανάλυση ασφαλιστηρίων από διαφορετικές ασφαλιστικές"
-inline	components/monetization/PremiumInsightCards.tsx	"Διαθέσιμα με το Plus"
+inline	components/monetization/PremiumInsightCards.tsx	"Διαθέσιμα με το Family"
 inline	components/monetization/PremiumInsightCards.tsx	"Ερωτήσεις στο AI"
 inline	components/monetization/PremiumInsightCards.tsx	"Οδηγός προετοιμασίας ζημιάς"
 inline	components/monetization/PremiumInsightCards.tsx	"Πιθανά κενά κάλυψης"

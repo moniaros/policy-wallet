@@ -366,7 +366,7 @@ test.describe('Paid Aha Loop — locked cards + dual-CTA modal (free tier)', () 
 
         const grid = page.locator('#premium-insights')
         await expect(grid).toBeVisible({ timeout: 20000 })
-        await expect(grid.getByText(/Διαθέσιμα με το Plus|Available with Plus/i)).toBeVisible()
+        await expect(grid.getByText(/Διαθέσιμα με το Family|Available with Family/i)).toBeVisible()
         // A couple of the six required locked-card titles.
         await expect(grid.getByText(/Πλήρης AI ανάλυση|Full AI analysis/i)).toBeVisible()
         await expect(grid.getByText(/Ερωτήσεις στο AI|Ask the AI/i)).toBeVisible()

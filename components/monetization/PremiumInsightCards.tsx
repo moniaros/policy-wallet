@@ -5,7 +5,11 @@
  * first policy is parsed, we show the basic summary plus these six locked
  * premium-insight cards. Each card is an honest teaser (clear title + the
  * feature's own value line) — no fake data, no fear — and opens the dual-CTA
- * UpgradeModal for that feature. Plus is the tier that unlocks them.
+ * UpgradeModal for that feature. Family is the tier that unlocks them —
+ * every card below is gated `pro`, and the heading is asserted against the
+ * gate registry by upgrade-copy-names-the-enforced-tier.test.ts, because this
+ * heading once said "Plus" over six Family features, post-signup, beside an
+ * upgrade button.
  */
 
 import { useEffect, useState } from "react"
@@ -19,7 +23,7 @@ const pick = (pair: { el: string; en: string }, language: string) =>
     language === "el" ? pair.el : pair.en
 
 const SECTION = {
-    heading: { el: "Διαθέσιμα με το Plus", en: "Available with Plus" },
+    heading: { el: "Διαθέσιμα με το Family", en: "Available with Family" },
     sub: {
         el: "Το βασικό σας summary είναι έτοιμο. Δείτε τι προσθέτει η πλήρης AI εμπειρία.",
         en: "Your basic summary is ready. Here's what the full AI experience adds.",
