@@ -1,0 +1,7 @@
+# ASSUMPTIONS — Grafí build
+
+`A-nn | goal | assumption | why safe | what would change it`
+A-01 | G0 | `PolicyWallet_Homepage_Premium.html` was named as attached but exists neither in the repo nor ~/Downloads | §6 spells out the target structure section-by-section, and §6 itself says "port its structure, not its raw CSS" — the structure list is the contract | The file appearing; then diff the build against it
+A-02 | G2 | Brief says `pnpm tokens`; repo is npm (package-lock.json, no pnpm-lock) | Same script, different runner: `npm run tokens` | A repo-wide package-manager migration, which is not this brief's scope
+A-03 | G10 | The standing owner decision held new guides behind the citation debt "repaired, or at minimum sized and scheduled". Debt is sized (G-07), one entry repaid (28 left), and this brief orders 6–8 guides. Read: proceed ONLY with guides whose every statutory claim carries a primary deep link at the SOURCES.md standard, so the debt cannot grow; the 28 stay scheduled | New guides at the higher standard shrink nothing but add nothing to the debt; the hold's purpose (don't dilute «Πηγές») is preserved | The owner restating the hold as absolute
+A-04 | G8 | /solutions/partners remains blocked on Terms §3 + IDD opinion (both in flight). Build it behind noindex + excluded from sitemap, copy per the approved pass-2 draft | Building ≠ publishing; the blocker is on publication | The legal answers landing — flip to indexed
