@@ -35,7 +35,8 @@ export function SeeScreen({ model, filter = "all" }: { model: SeeModel; filter?:
     const router = useRouter()
     const brand = { href: PRIMARY_NAV[0].href, label: t.app.nav.brand }
     const openHref = (f: RenderableFinding) => (f.object.policyId ? `${PRIMARY_NAV[2].href}/${f.object.policyId}` : PRIMARY_NAV[2].href)
-    const helpHref = SECONDARY_NAV.find((e) => e.id === "adviser")?.href ?? PRIMARY_NAV[4].href
+    const adviserHref = SECONDARY_NAV.find((e) => e.id === "adviser")?.href ?? "/adviser"
+    const helpHref = (f: RenderableFinding) => `${adviserHref}/help/${encodeURIComponent(f.hash)}`
     const seeHref = PRIMARY_NAV[1].href
 
     const labels: FindingCardLabels = {
@@ -119,7 +120,7 @@ export function SeeScreen({ model, filter = "all" }: { model: SeeModel; filter?:
                                                 whyYou={resolveWhyYou(f, lang, t)}
                                                 trailing={typeof f.daysUntilExpiry === "number" ? formatPlural(t.app.finding.daysUntil, { count: f.daysUntilExpiry }, lang) : undefined}
                                                 openHref={openHref(f)}
-                                                helpHref={helpHref}
+                                                helpHref={helpHref(f)}
                                                 onDismiss={onDismiss?.(f)}
                                                 labels={{ ...labels, kind: t.app.finding.kind[f.kind] }}
                                             />

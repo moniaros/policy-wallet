@@ -30,7 +30,8 @@ export function PolicyDetailScreen({ model }: { model: PolicyDetailModel }) {
     const [deleting, setDeleting] = useState(false)
     const brand = { href: PRIMARY_NAV[0].href, label: t.app.nav.brand }
     const back = { href: PRIMARY_NAV[2].href, label: t.app.policy.back }
-    const helpHref = SECONDARY_NAV.find((e) => e.id === "adviser")?.href ?? PRIMARY_NAV[4].href
+    const adviserHref = SECONDARY_NAV.find((e) => e.id === "adviser")?.href ?? "/adviser"
+    const helpHref = model.findings[0] ? `${adviserHref}/help/${encodeURIComponent(model.findings[0].hash)}` : adviserHref
     const editHref = `/wallet/${model.id}/edit`
     const stateLabels = { covered: t.app.state.covered, gap: t.app.state.gap, review: t.app.state.review }
     const detailsCopy = t.wallet.policyDetailsPage

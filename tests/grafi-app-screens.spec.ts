@@ -20,6 +20,7 @@ const ROUTES: Route[] = [
     { path: "/policies", dir: "policies", sectionCeiling: 4, h1: "Ο φάκελός σας|Your folder" },
     { path: "/money", dir: "money", sectionCeiling: 5, h1: "Τα χρήματά σας|Your money" },
     { path: "/updates", dir: "updates", sectionCeiling: 2, h1: "Ενημερώσεις|Updates" },
+    { path: "/adviser", dir: "adviser", sectionCeiling: 4, h1: "Ο σύμβουλός σας|Your adviser" },
     {
         path: "/policies/[id]", dir: "policy", sectionCeiling: 8, h1: ".",
         resolve: async (page) => { await page.goto("/policies", { waitUntil: "networkidle" }); return page.evaluate(() => document.querySelector('section#list a[href^="/policies/"]')?.getAttribute("href") ?? null) },

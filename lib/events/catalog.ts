@@ -588,8 +588,8 @@ export const BUSINESS_EVENTS: Record<string, EventDefinition> = {
         trigger: "The help flow's ConsentSheet switch (/adviser/help/[findingId]) writes AdviserShareAudit{help_sent}",
         payloadFields: ["findingId", "advisorUserId", "policyIds", "profileFields"],
         actions: ["advisor_notification", "in_app", "audit_log", "analytics"],
-        status: "planned",
-        note: "Emitted by the help flow (G10) once it ships.",
+        status: "live",
+        note: "Emitted by app/(protected)/adviser/actions.ts sendHelpRequest (Grafí G10).",
     }),
 
     "household.person_added": def({

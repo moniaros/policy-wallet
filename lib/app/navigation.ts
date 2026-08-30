@@ -36,7 +36,7 @@ export const PRIMARY_NAV: readonly NavEntry[] = [
 
 export const SECONDARY_NAV: readonly NavEntry[] = [
     { id: "updates", labelKey: "updates", href: "/updates", successor: "/updates", aliases: ["/notifications"], icon: "bell" },
-    { id: "adviser", labelKey: "adviser", href: "/agent", successor: "/adviser", aliases: ["/adviser"], icon: "users" },
+    { id: "adviser", labelKey: "adviser", href: "/adviser", successor: "/adviser", aliases: ["/agent"], icon: "users" },
 ] as const
 
 export const ADD_POLICY: NavEntry = { id: "add", labelKey: "add", href: "/wallet/add", successor: "/add", aliases: ["/add"], icon: "plus" }

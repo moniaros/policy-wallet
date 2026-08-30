@@ -361,13 +361,6 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "Authorization check — does this client-supplied gapInstanceId belong to this " +
             "customer. A gap on any of the customer's rows is theirs, live or not.",
     },
-    // ── Display surfaces that show non-live rows on purpose ─────────────────
-    "app/(protected)/agent/page.tsx": {
-        count: 1,
-        reason:
-            "Navigation context over the user's own uploads, same universe as the wallet — " +
-            "per-policy display, not a portfolio verdict.",
-    },
     "app/(protected)/dashboard/PolicyholderHome.tsx": {
         count: 1,
         reason:

@@ -9,6 +9,7 @@ import { render } from "@testing-library/react"
 vi.mock("@/app/(protected)/see/actions", () => ({ dismissFinding: vi.fn(async () => ({ ok: true })) }))
 vi.mock("@/app/(protected)/protection/quick-start-actions", () => ({ submitQuickStart: vi.fn() }))
 vi.mock("@/app/(protected)/updates/actions", () => ({ markUpdateRead: vi.fn(async () => ({ ok: true })), markStreamRead: vi.fn(async () => ({ ok: true })) }))
+vi.mock("@/app/(protected)/adviser/actions", () => ({ setPolicyShared: vi.fn(async () => ({ ok: true })), disconnectAdviser: vi.fn(async () => ({ ok: true })), inviteAdviser: vi.fn(async () => ({ ok: true })), sendHelpRequest: vi.fn(async () => ({ ok: true })) }))
 vi.mock("@/lib/journey/funnel", () => ({ trackJourneyEvent: vi.fn() }))
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }), usePathname: () => "/see" }))
 
@@ -18,11 +19,14 @@ import { SeeScreen } from "@/app/(protected)/see/SeeScreen"
 import { PoliciesScreen } from "@/app/(protected)/policies/PoliciesScreen"
 import { MoneyScreen } from "@/app/(protected)/money/MoneyScreen"
 import { UpdatesScreen } from "@/app/(protected)/updates/UpdatesScreen"
+import { AdviserScreen } from "@/app/(protected)/adviser/AdviserScreen"
+import { HelpScreen } from "@/app/(protected)/adviser/help/[hash]/HelpScreen"
 import { toRenderableFinding, findingHash } from "@/lib/app/finding"
 import type { SeeModel } from "@/lib/app/see-model"
 import type { PoliciesModel, PolicyRow } from "@/lib/app/policies-model"
 import type { MoneyModel } from "@/lib/app/money-model"
 import type { UpdatesModel } from "@/lib/app/updates-model"
+import type { AdviserModel } from "@/lib/app/adviser-model"
 import { collectSections } from "../measure/section-collector"
 
 const JSDOM_OPTS = { assumeVisible: true, boundedFallback: true } as const
@@ -144,5 +148,55 @@ describe("/updates — «Ενημερώσεις»", () => {
         const { container } = wrap(<UpdatesScreen model={{ lang: "el", protection: [], meanwhile: [], badge: 0 }} />)
         expect(container.textContent).toContain("Δεν έχω κάτι νέο για την προστασία σας.")
         expect(container.textContent).toContain("Δεν έχω κάνει κάτι που να αξίζει να σας πω.")
+    })
+})
+
+describe("/adviser — «Ο σύμβουλός σας»", () => {
+    const adviserModel: AdviserModel = {
+        lang: "el",
+        adviser: { id: "ag1", name: "Νίκος Οικονόμου", company: "Οικονόμου Ασφάλειες", phone: "2100000000", email: "nikos@example.com", photoUrl: null, relationshipId: "rel1", since: "12/03/2025" },
+        policies: [
+            { id: "p1", label: "Interamerican (P-1)", asset: "ΙΚΖ-4821", grantId: "g1", sharedSince: "12/03/2025", addedByAdviser: false },
+            { id: "p2", label: "ΕΘΝΙΚΗ (P-2)", asset: null, grantId: null, sharedSince: null, addedByAdviser: true },
+        ],
+        threads: [{ id: "th1", subject: "Στο Κατοικία δεν βρήκα κάλυψη πλημμύρας.", status: "open", at: new Date().toISOString(), policyId: "p1" }],
+    }
+    it("renders ≤ 4 sections; one switch per policy; the note names the adviser as the customer's own", () => {
+        const { container } = wrap(<AdviserScreen model={adviserModel} />)
+        const r = collectSections(JSDOM_OPTS)
+        expect(r.count, r.ids.join(", ")).toBeLessThanOrEqual(4)
+        expect(container.querySelectorAll('[role="switch"]').length).toBe(2)
+        expect(container.textContent).toContain("το βλέπει από 12/03/2025")
+        expect(container.textContent).toContain("δεν το βλέπει")
+        expect(container.textContent).toContain("Ο Νίκος Οικονόμου είναι ο δικός σας σύμβουλος, όχι δικός μας.")
+    })
+    it("no adviser: the invite flow, never a directory", () => {
+        const { container } = wrap(<AdviserScreen model={{ ...adviserModel, adviser: null, threads: [] }} />)
+        expect(container.textContent).toContain("Δεν έχετε συνδέσει σύμβουλο.")
+        expect(container.textContent).toContain("Δεν προτείνουμε εμείς συμβούλους.")
+        expect(container.querySelector('input[type="email"]')).toBeTruthy()
+    })
+})
+
+describe("/adviser/help/[hash] — the consent is one switch", () => {
+    const helpFinding = toRenderableFinding({
+        id: "gap:g9", hash: findingHash("p1", "no_flood_cover", "no_flood_cover"), kind: "gap", tier: "now",
+        object: { policyId: "p1", assetLabel: "Κατοικία · Κηφισιάς 12" },
+        sentence: { key: "gap:no_flood_cover", params: { asset: "Κατοικία · Κηφισιάς 12" } },
+        source: { documentId: "d1", documentLabel: "Ασφαλιστήριο κατοικίας · P-1", locator: { kind: "section", section: "coverages", found: false } },
+        whyYou: { profileField: "ownsHome", key: "app.finding.why.ownsHome", params: {} },
+        ruleId: "no_flood_cover",
+    })!
+    it("chips say exactly what is sent; «τα άλλα N» is off by default; the send is disabled until the one switch consents", () => {
+        const { container } = wrap(<HelpScreen finding={helpFinding} adviserName="Νίκος Οικονόμου" otherPolicies={17} />)
+        expect(container.textContent).toContain("Το εύρημα")
+        expect(container.textContent).toContain("Η πηγή: Ασφαλιστήριο κατοικίας · P-1")
+        expect(container.textContent).toContain("Το στοιχείο προφίλ: ownsHome")
+        const othersChip = [...container.querySelectorAll("button")].find((b) => b.textContent?.includes("τα άλλα 17"))
+        expect(othersChip?.getAttribute("aria-pressed")).toBe("false")
+        expect(container.querySelectorAll('[role="switch"]').length).toBe(1)
+        const send = [...container.querySelectorAll("button")].find((b) => b.textContent === "Στείλτε το")
+        expect(send?.hasAttribute("disabled")).toBe(true)
+        expect(container.textContent).not.toMatch(/\d\s?%/)
     })
 })

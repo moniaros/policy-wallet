@@ -1186,13 +1186,25 @@ export async function revokeShare(grantId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    await db.accessGrant.update({
+    const grant = await db.accessGrant.update({
         where: { id: grantId, granterUserId: authResult.dbUser.id },
         data: { status: 'revoked', revokedAt: new Date() }
     })
 
-    revalidatePath("/wallet")
-    revalidatePath("/wallet")
+    // Every share change leaves a trace the customer can read back (Grafí G10).
+    // Best-effort on environments that predate the table (prod DDL owed).
+    await db.adviserShareAudit.create({
+        data: {
+            userId: authResult.dbUser.id,
+            adviserUserId: grant.granteeUserId,
+            grantId: grant.id,
+            action: 'revoked',
+            payloadJson: { scope: grant.scope },
+        },
+    }).catch(() => undefined)
+
+    revalidatePath("/policies")
+    revalidatePath("/adviser")
     return { success: true }
 }
 

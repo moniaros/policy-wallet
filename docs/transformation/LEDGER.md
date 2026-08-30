@@ -119,6 +119,18 @@ is mostly reordering (Phase 2 spec), not reduction.
 
 ---
 
+## Σύμβουλος — `/adviser` (+ `/adviser/help/[hash]`)
+
+Source: `app/(protected)/adviser/*` (Grafí G10). Replaces `/agent` (301) for policyholders;
+`/agent/settings` and `/agent/pricing` stay agent-owned. ≤ 4 landmarks.
+
+| Section | What it renders | Source of truth |
+|---|---|---|
+| `adviser` | the customer's OWN adviser card (call/email/since), or the invite flow — never a directory | `CustomerRelationship` + `inviteAdvisorByEmail` |
+| `shares` | one Switch per live policy («το βλέπει από {date}» / «δεν το βλέπει»); every flip writes `AdviserShareAudit` | `AccessGrant` (policy:scoped) + `setPolicyShared` |
+| `threads` | requests with status + disconnect (access dies with the relationship) | `CollaborationThread`, `terminateRelationship` |
+| help flow | chips of exactly what is sent; «τα άλλα N» a toggle chip OFF by default; one consent switch; on send → `AdviserShareAudit{help_sent}` + one thread + `advisor.help_requested` | `sendHelpRequest` (re-derives the finding by hash server-side) |
+
 ## Ενημερώσεις — `/updates`
 
 Source: `app/(protected)/updates/page.tsx` → `UpdatesScreen.tsx` (Grafí G9). Replaces `/notifications`

@@ -19,7 +19,7 @@
 | `/wallet/add` | `app/(protected)/wallet/add/page.tsx` | Landing | Free+ | policyholder | Dashboard CTA, portfolio summary CTA |
 | `/protection` | `app/(protected)/protection/page.tsx` | Redirect only | — | policyholder → 301 `/see` (Grafí G8; `?lens=` dropped) | Legacy URL |
 | `/protection/[branch]` | `app/(protected)/protection/[branch]/page.tsx` | Subpage | Free+ | policyholder | Branch tiles on the ανά κλάδο lens |
-| `/agent` | `app/(protected)/agent/page.tsx` | Landing | Free+ | policyholder | Tab bar (customer's adviser view) |
+| `/agent` | `app/(protected)/agent/page.tsx` | Redirect only | — | policyholder → 301 `/adviser` (Grafí G10); `/agent/settings|pricing` stay agent-owned | Legacy URL |
 | `/account` | `app/(protected)/account/page.tsx` | Landing | None | policyholder | Tab bar, bottom nav, settings rail |
 | `/account/profile` | `app/(protected)/account/profile/page.tsx` | Subpage | None | policyholder | Account nav rail |
 | `/account/security` | `app/(protected)/account/security/page.tsx` | Subpage | None | policyholder | Account nav rail |
@@ -42,6 +42,8 @@
 | `/policies` | `app/(protected)/policies/page.tsx` | Landing | None | policyholder | Grafí tab bar «Φάκελος» (G8) — search, three lenses, expired collapsed |
 | `/policies/[id]` | `app/(protected)/policies/[id]/page.tsx` | Subpage | Free+ | `getPolicyAccess(id)` | /policies rows, finding «Άνοιγμα», home expiry row (G8) |
 | `/updates` | `app/(protected)/updates/page.tsx` | Landing | None | policyholder | Grafí bell (G9) — protection stream (the badge) + meanwhile stream |
+| `/adviser` | `app/(protected)/adviser/page.tsx` | Landing | None | policyholder | Grafí «Σύμβουλος» (G10) — per-policy share switches with audit, threads, disconnect, invite |
+| `/adviser/help/[hash]` | `app/(protected)/adviser/help/[hash]/page.tsx` | Subpage | None | policyholder | «Ζητάω βοήθεια» on findings (G10) — consent sheet, one switch |
 
 **Total B2C routes:** 25 (including 2 redirects) — refreshed 2026-08-25 for V2-P2-03 (§4.2): `/coverage-insights`, `/timeline` and `/insights/risk-profile` removed; `/protection`, `/protection/[branch]` and `/account/history` are their homes  
 **Distinct landing surfaces:** 18

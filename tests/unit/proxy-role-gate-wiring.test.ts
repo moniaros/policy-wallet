@@ -101,6 +101,10 @@ describe('proxy() role gate wiring', () => {
         expect((await run('/notifications')).status).toBe(301)
         expect((await run('/notifications')).headers.get('location')).toBe('http://localhost:3000/updates')
         expect((await run('/updates')).status).toBe(200)
+        // G10: the adviser surface moves; the agent's own tools do not.
+        expect((await run('/agent')).status).toBe(301)
+        expect((await run('/agent')).headers.get('location')).toBe('http://localhost:3000/adviser')
+        expect((await run('/adviser')).status).toBe(200)
         expect((await run('/policies/pol-1')).status).toBe(200)
         sessionFor('agent')
         expect((await run('/wallet')).status, 'an agent is not rewritten').not.toBe(301)
