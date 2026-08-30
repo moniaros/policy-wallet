@@ -25,6 +25,8 @@ export interface PolicyDetailModel {
     number: string | null
     asset: string | null
     lineLabel: string
+    /** The folded line id (lib/app/lines) — stable, for analytics payloads; never rendered. */
+    lineId: string
     lineOfBusiness: string
     state: ProtectionState | null
     lifecycle: string
@@ -146,6 +148,7 @@ export async function loadPolicyDetailModel(policyId: string, viewer: { id: stri
         number: displayPolicyNumber(raw.policyNumber),
         asset: policyAssetIdentifier({ lineOfBusiness: raw.lineOfBusiness, acordData: raw.acordData }),
         lineLabel: line ? lineLabels[line] : lineLabels.business,
+        lineId: line ?? "other",
         lineOfBusiness: raw.lineOfBusiness,
         state,
         lifecycle: composed.lifecycle,

@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatPlural } from "@/lib/i18n/plural"
 import { formatCurrency } from "@/lib/i18n/format"
+import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveSentence, resolveSource } from "@/lib/app/render-copy"
 import { PRIMARY_NAV, SECONDARY_NAV } from "@/lib/app/navigation"
 import type { PolicyDetailModel } from "@/lib/app/policy-detail-model"
@@ -28,6 +29,17 @@ import { resolveCoverageAbsenceCopy } from "@/lib/wallet/policy-detail"
 export function PolicyDetailScreen({ model }: { model: PolicyDetailModel }) {
     const { t, language: lang } = useLanguage()
     const [deleting, setDeleting] = useState(false)
+
+    // §11 activation: the FIRST time this person reads an analysed policy —
+    // once ever per browser, only when the engine actually produced a summary.
+    useEffect(() => {
+        if (model.summary.state !== "ok") return
+        try {
+            if (localStorage.getItem("pw:first-policy-read")) return
+            localStorage.setItem("pw:first-policy-read", "1")
+        } catch { return }
+        trackJourneyEvent("activation.first_policy_read", { policy_id: model.id, line: model.lineId })
+    }, [model.summary.state, model.id, model.lineId])
     const brand = { href: PRIMARY_NAV[0].href, label: t.app.nav.brand }
     const back = { href: PRIMARY_NAV[2].href, label: t.app.policy.back }
     const adviserHref = SECONDARY_NAV.find((e) => e.id === "adviser")?.href ?? "/adviser"
