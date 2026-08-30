@@ -22,7 +22,7 @@
 # bundle entries: 2820
 # inline entries: 4751 across 213 files
 # ternary entries: 285 across 44 files
-# call entries: 1200 across 77 files
+# call entries: 1212 across 78 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -8829,6 +8829,18 @@ call	components/landing/LobFaq.tsx	"Σχετικοί οδηγοί και όρο�
 call	components/landing/PartnerPerksSection.tsx	"Οι παροχές προσφέρονται από τρίτους συνεργάτες και ενδέχεται να αλλάξουν."
 call	components/landing/PartnerPerksSection.tsx	"Περισσότερα από ένα πορτοφόλι"
 call	components/landing/PartnerPerksSection.tsx	"Τα πληρωμένα πλάνα περιλαμβάνουν υπηρεσίες πρόληψης και προνόμια από επιλεγμένους συνεργάτες."
+call	components/landing/PartnersSections.tsx	"Αποθήκευση κρυπτογραφημένη στην ΕΕ. Η ανάλυση AI μπορεί να εμπλέκει παρόχους εκτός ΕΕ με εγκεκριμένες δικλείδες. Κανένας πάροχος δεν εκπαιδεύει μοντέλα στα έγγραφα πελατών. "
+call	components/landing/PartnersSections.tsx	"Ας μιλήσουμε."
+call	components/landing/PartnersSections.tsx	"Γι' αυτό τα δεδομένα είναι αξιόπιστα: η ίδια ανάλυση για κάθε συμβόλαιο σημαίνει εικόνα χωρίς μεροληψία καναλιού."
+call	components/landing/PartnersSections.tsx	"Για τράπεζες και θεσμικούς συνεργάτες — πρώιμη διάθεση"
+call	components/landing/PartnersSections.tsx	"Δεν βαθμολογούμε τη συμμόρφωσή μας μόνοι μας — σας δίνουμε την τεκμηρίωση για να την αξιολογήσετε εσείς."
+call	components/landing/PartnersSections.tsx	"Επικοινωνήστε μαζί μας"
+call	components/landing/PartnersSections.tsx	"Η ουδετερότητα είναι το επιχείρημα των δεδομένων."
+call	components/landing/PartnersSections.tsx	"Κατάλογος υποεπεξεργαστών →"
+call	components/landing/PartnersSections.tsx	"Κατανόηση καλύψεων, ενσωματωμένη."
+call	components/landing/PartnersSections.tsx	"Οι πελάτες σας έχουν ήδη ασφαλιστήρια. Με τη δική τους συγκατάθεση, γίνονται δομημένη εικόνα προστασίας — μέσα στα δικά σας κανάλια."
+call	components/landing/PartnersSections.tsx	"Σε πρώιμη διάθεση, με περιορισμένους συνεργάτες. Χωρίς ονόματα στη σελίδα — και το δικό σας δεν θα εμφανιστεί χωρίς να το εγκρίνετε."
+call	components/landing/PartnersSections.tsx	"Φτιαγμένο για τον έλεγχό σας"
 call	components/landing/PolicyWalletWidget.tsx	"3 ασφάλειες, 1 κενό"
 call	components/landing/PolicyWalletWidget.tsx	"Αυτοκίνητο"
 call	components/landing/PolicyWalletWidget.tsx	"Βρήκαμε ένα κενό"
