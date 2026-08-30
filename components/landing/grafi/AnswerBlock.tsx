@@ -42,7 +42,7 @@ export function AnswerBlock({ locale }: { locale: MarketingLocale }) {
                             <dt className="text-g-display-sm font-semibold">
                                 <Link
                                     href={localizeHref(`/lexiko/${t.glossarySlug}`, locale)}
-                                    className="text-fg-brand underline decoration-border-strong underline-offset-4 hover:decoration-current"
+                                    className="inline-block py-1 text-fg-brand underline decoration-border-strong underline-offset-4 hover:decoration-current"
                                 >
                                     {pick(t.term, locale)}
                                 </Link>
@@ -57,7 +57,7 @@ export function AnswerBlock({ locale }: { locale: MarketingLocale }) {
                 <p className="mt-g-6 text-g-caption text-fg-secondary">
                     <Link
                         href={localizeHref("/lexiko", locale)}
-                        className="font-semibold text-fg-brand underline decoration-border-strong underline-offset-4 hover:decoration-current"
+                        className="inline-block py-1 font-semibold text-fg-brand underline decoration-border-strong underline-offset-4 hover:decoration-current"
                     >
                         {t("Όλο το λεξικό ασφαλιστικών όρων →", "The full insurance glossary →")}
                     </Link>
