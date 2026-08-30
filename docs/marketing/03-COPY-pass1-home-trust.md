@@ -83,15 +83,19 @@ lead
 
 No figure, no index name, no claim about whether to renew. The mechanism carries it.
 
-**Slide 2 (`duplicates`) — remove the plan qualifier from the sentence and let the gating language
-live in one place (§1.7):**
+**Slide 2 (`duplicates`) — AMENDED under D1-as-amended (2026-08-30).** *This surface was not in the
+owner's amendment list (1, 2, 4, 5); it states a duplicate-detection plan fact, so it is amended
+under the same rule, and named here as required.* Duplicates are on every plan; only the gap half
+is Family. The slide must not gate the whole sentence:
 
 ```diff
-- EL  …ασφαλιστικά κενά που δεν ξέρατε ότι έχετε ή δεν είχατε όταν κάνατε το
--     ασφαλιστήριό σας — με το Family.
-+ EL  …και ασφαλιστικά κενά που δεν ξέρατε ότι έχετε. Διαθέσιμο στο πλάνο Family.
+- EL  Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και ασφαλιστικά κενά που
+-     δεν ξέρατε ότι έχετε ή δεν είχατε όταν κάνατε το ασφαλιστήριό σας — με το Family.
++ EL  Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές — σε κάθε πλάνο. Και, με το
++     Family, τα ασφαλιστικά κενά που δεν ξέρατε ότι έχετε, σε όλο το νοικοκυριό.
 - EN  Spot cover you are paying for twice, and gaps you did not know you had — with Family.
-+ EN  Spot cover you are paying for twice, and gaps you did not know you had. Available on Family.
++ EN  Spot cover you are paying for twice — on every plan. And, with Family, the
++     coverage gaps you did not know you had, across your household.
 ```
 
 ## 1.5 The neutrality sentence — replace
@@ -172,7 +176,7 @@ Every consumer-facing plan claim becomes **Family** for gap and duplicate detect
 | `ServicesGrid.tsx:25-26` | already says Family — **fix the comment at :23** that says "Plus-only" |
 | `AudienceTabs.tsx:156-157` | already says Family — no copy change |
 | `HeroSlides.tsx` | §1.4 above — **fix the comment at :117** |
-| `public-pricing-content.ts:109,133` | remove the gap bullet from Free and Plus cards |
+| `public-pricing-content.ts:109,133` | Free card: gap bullet becomes the truthful «Εντοπισμός διπλών καλύψεων» (D1-amended); Plus card keeps duplicates, loses the gap half |
 
 ## 1.9 Partner teaser — new, above the footer
 

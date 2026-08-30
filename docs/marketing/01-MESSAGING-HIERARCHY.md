@@ -229,18 +229,30 @@ marketing page, and it should be fixed on its own timeline rather than waiting f
 
 ## 8. Decisions taken (2026-08-30) — binding on deliverables 2–5
 
-**D1 · Plan gating: copy follows code. Gap AND duplicate detection are Family.**
-- Gap detection already enforces as Family. Copy changes only.
-- **Duplicate detection does not.** The gate exists (`feature-gates.ts:130-135`, `requiredPlan: "pro"`)
-  and is applied nowhere. Making the copy true means **applying it** — and removing
-  `duplicate_coverage_detection` from `KNOWN_UNGATED` in
-  `tests/unit/feature-gate-reachability.test.ts:15`, which is what currently certifies the gap.
-- **Consequence to decide separately, not silently:** Free and Plus users have duplicate detection
-  today and will lose it. That is a live entitlement removal on existing accounts, not a copy edit.
-  It needs a position on whether to grandfather, announce, or apply quietly. **Raised, not assumed —
-  see Open Question 9.**
-- **Ships with the parity test** (§7C), or it re-drifts. Non-negotiable: there is currently nothing
-  tying `public-pricing-content.ts` to `plan-defaults.ts`.
+**D1 · Plan gating — AMENDED 2026-08-30.** The original D1 ("copy follows code, both Family")
+was overturned by the owner before implementation, on a distinction the first framing missed: for
+gap detection, code enforces Family and the copy lied — copy-follows-code is a genuine consistency
+fix. For duplicate detection **nothing enforces anything**; there is a declaration nobody
+implemented, and enforcing it now would have been a **new pricing decision dressed as a consistency
+fix**, made as a side effect of a copy cleanup. The gate registry's own comment agrees: *"Whether
+that finding should sit behind a plan is a pricing decision, not a cleanup."*
+
+**The decided truth:**
+- **Gap detection: Family**, as enforced today. Copy changes only.
+- **Duplicate detection: available on Free, limited rather than gated.** Household-wide scope is
+  Family. Copy corrects to match this, not the reverse.
+- **OQ9 is closed with no rollout, no grandfathering and no release note** — nobody loses anything.
+- The parity test remains non-negotiable and now asserts **the limit as well as the gate**.
+
+**Sizing of "limited", stated before building (per instruction):** the bound already exists
+structurally — duplicate detection compares policies inside one wallet, and the wallet is capped by
+the plan's policy ceiling (3 / 10 / 25), enforced at upload. Family's 25-policy ceiling *is* the
+household-wide set. **No new enforcement code is required.** The remaining Gate-1 code work is
+deletion: the dead `duplicate_coverage_detection` gate declaration and its `KNOWN_UNGATED`
+whitelist line, both of which now misdescribe the decided truth. **Caveat, named rather than
+assumed:** if "household-wide scope" is meant as a distinct multi-person feature beyond the policy
+ceiling, no such gate exists today and building one is new work — that reading would need its own
+decision.
 
 **D2 · /trust pledge: qualify with consent.** Legal to add «χωρίς τη ρητή, ανακλητή σας συγκατάθεση»
 (and the English pair) to the pledge and to Terms §3. Keeps the promise absolute in the sense a

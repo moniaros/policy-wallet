@@ -3,8 +3,9 @@
 **PolicyWallet repositioning, 2026-08-30.** Companion to deliverable 1 (messaging hierarchy).
 Every row: what changes, why, and the page's primary CTA after the change.
 
-Decisions binding this document: **D1** copy follows code, gap *and* duplicate detection are
-Family · **D2** the /trust pledge is qualified with consent (legal) · **D3** soft launch / early
+Decisions binding this document: **D1 as amended 2026-08-30** — gap detection Family (enforced);
+duplicate detection **Free, limited by the plan's policy ceiling**, household-wide scope Family ·
+**D2** the /trust pledge is qualified with consent (legal) · **D3** soft launch / early
 access, no GA claim.
 
 ---
@@ -21,19 +22,18 @@ access, no GA claim.
 | Email renewal reminders | — | ✅ | ✅ | ✅ `notifications` |
 | Smart reminders | — | — | ✅ | ✅ `advanced_renewal_reminders` |
 | **Gap detection** | — | — | ✅ | ✅ `gapAnalysisPerDay: 0/0/null` |
-| **Duplicate-cover detection** | — | — | ✅ | ❌ **gate exists, applied nowhere** |
+| **Duplicate-cover detection** *(D1-amended)* | ✅ *within your 3 policies* | ✅ *within 10* | ✅ *household-wide, 25* | ✅ **bounded by the policy ceiling — no gate; the dead declaration is deleted** |
 | Unlimited questions | — | — | ✅ | ✅ `interactiveQA` |
 | Claims guide · report export · agent collaboration | — | — | ✅ | ✅ |
 
 ### The two things that are not copy edits
 
-**A1 · Apply the duplicate-detection gate.** `feature-gates.ts:130-135` declares
-`duplicate_coverage_detection → requiredPlan: "pro"` and **nothing checks it**;
-`tests/unit/feature-gate-reachability.test.ts:15` whitelists it in `KNOWN_UNGATED`. Applying it
-means gating `duplicateCoverageRules()` output (`lib/services/gap-engine/portfolio-rules.ts:280`)
-and **removing the whitelist entry** — the whitelist is what currently certifies the hole, so
-leaving it would let the gap silently return.
-**This removes a capability Free and Plus users have today.** Open Question 9 — not mine to decide.
+**A1 · (AMENDED) Delete the dead gate, keep the behaviour.** `feature-gates.ts:130-135` declares
+`duplicate_coverage_detection → requiredPlan: "pro"` and nothing checks it. Under amended D1 the
+*behaviour* (runs for every plan, bounded by the policy ceiling) is the decided truth — so the fix
+is **deletion, not application**: remove the declaration and its `KNOWN_UNGATED` whitelist line in
+`tests/unit/feature-gate-reachability.test.ts:15`, both of which now misdescribe the product.
+**No entitlement change, no rollout, nobody loses anything.** OQ9 is closed.
 
 **A2 · Add the parity test that does not exist.** `lib/pricing/public-pricing-content.ts` is a
 git-tracked file with **no code path tying it to** `plan-defaults.ts` or the DB `entitlements` JSON.
@@ -46,14 +46,14 @@ by any check. Every copy fix below is undone by the next careless edit unless a 
 
 | Surface | Says | Should say |
 |---|---|---|
-| `public-pricing-content.ts:109` Free card | gap detection **included** | remove the bullet |
-| `public-pricing-content.ts:133` Plus card | gap & duplicate **included** | remove the bullet |
-| `positioning.ts:452,459` → homepage + /compare | verdict `plus` → renders **"Ναι, με το Plus"** | verdict must render **Family** |
+| `public-pricing-content.ts:109` Free card | gap detection **included** | replace with the truthful «Εντοπισμός διπλών καλύψεων» — duplicates ARE Free (D1-amended) |
+| `public-pricing-content.ts:133` Plus card | gap & duplicate **included** | duplicates stay (true); the gap half goes |
+| `positioning.ts:452` gap row → homepage + /compare | verdict `plus` → renders **"Ναι, με το Plus"** | must render **Family** |
+| `positioning.ts:459` duplicate row → homepage + /compare | verdict `plus` | must render plain **«Ναι»** — duplicates are on every plan (D1-amended); household-wide framing belongs to Family copy, not this cell |
 | `ProductSections.tsx:126` | «— με το Plus» | «— με το Family» |
 | `marketing-content.ts:26-27` → **HowTo JSON-LD** | gap unqualified, duplicate Family | both Family |
 | `ServicesGrid.tsx:23`, `HeroSlides.tsx:117`, `marketing-content.ts:24` | comments say "Plus-only" | correct the comments too, or the next author re-drifts |
-| **`PremiumInsightCards.tsx:21`** *(in-app)* | «Διαθέσιμα με το Plus» over 6 Family features | **escalate separately — billing risk** |
-| **`upgrade-copy.el.ts:209-211`** *(in-app)* | partner offers "with Plus", gate says Family | same escalation |
+| ~~`PremiumInsightCards.tsx:21`~~ | ~~«Διαθέσιμα με το Plus»~~ | **SHIPPED separately, `c6f6ca7b`** — heading, `partner_offers`, `protection_monitoring` (both locales), with the tier-mislabel guard red-proved first |
 
 ---
 
@@ -305,6 +305,5 @@ Routed to DPO/legal, not drafted:
 8. **/solutions/partners** — last, blocked on D2 legal and Open Question 2.
 9. **Guides** — gated on the citation-debt decision.
 
-**Not in this list, escalated separately:** the in-app `PremiumInsightCards` / `upgrade-copy`
-Plus-vs-Family mislabel. It is shown post-signup next to an upgrade button and should not wait for
-a marketing repositioning.
+**The in-app Plus-vs-Family mislabel is no longer pending: shipped `c6f6ca7b`, ahead of every
+gate, with `upgrade-copy-names-the-enforced-tier.test.ts` enforcing the rule registry-wide.**

@@ -23,7 +23,9 @@ The homepage's metadata comes from `lib/seo/site.ts`, not the registry. Aligned 
 | description (en) | `Upload every policy, from every insurer. The analysis explains cover, exclusions and gaps in plain language — nothing sold, no commission taken.` *(144)* |
 
 **Target queries (el):** «τι καλύπτει το συμβόλαιό μου» · «ασφαλιστήρια σε ένα μέρος»
-**Secondary:** «κενά ασφαλιστικής κάλυψης» · «διπλές καλύψεις» · «ανάλυση ασφαλιστηρίου»
+**Secondary:** «κενά ασφαλιστικής κάλυψης» · «διπλές καλύψεις» *(a Free feature under amended D1 —
+the homepage may now claim it unconditionally, which strengthens this query's landing)* ·
+«ανάλυση ασφαλιστηρίου»
 **Target (en):** "what does my insurance policy cover" · "insurance policy analyser Greece"
 
 **JSON-LD:** `Organization`, `WebSite` and `SoftwareApplication` already emit from
@@ -59,7 +61,8 @@ Registry diff, `marketing-pages.ts` key `product-health`:
 **Secondary:** «δείκτης αναπροσαρμογής ασφαλίστρων» · «ΕΔΑ ΕΛΣΤΑΤ» *(only once §2's sources land)* ·
 «περίοδος αναμονής» · «εξαιρέσεις ασφάλειας υγείας» · «προϋπάρχουσες παθήσεις ασφάλιση»
 **Note:** the old description's «εντοπίζει τι σας λείπει» quietly implied gap detection, which is
-Family-gated (D1) — the new one promises only reading and questions. SEO copy is bound by the
+Family-gated (D1 as amended 2026-08-30 — gap detection stays Family; duplicate detection is Free,
+limited by the plan's policy ceiling) — the new one promises only reading and questions. SEO copy is bound by the
 plan-gating truth like every other surface.
 
 **JSON-LD:** page keeps `BreadcrumbList`. **Do not add `FAQPage` here** — the renewal-questions

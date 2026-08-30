@@ -12,8 +12,14 @@ the numbering does not read as gaps).
 | 3 | GA or soft launch | **D3**: early access («σε πρώιμη διάθεση»). No GA claim anywhere. |
 | 6 | ENFIA guide create-vs-exists | **Corrected to EXTEND** — `ekptosi-enfia-asfalisi-katoikias` exists; the brief's slug was a permutation. Two URLs on one statutory claim is a halt condition. |
 | 7 | /trust pledge direction | **D2**: qualify with consent; Terms §3 to legal. |
+| 9 | Duplicate-detection rollout | **Closed 2026-08-30 by the D1 amendment — the question was wrong as posed.** All three offered options were ways to remove the feature; none asked whether it should go. Enforcing an unimplemented declaration would have been a new pricing decision dressed as a consistency fix. Duplicates stay Free-limited; household-wide is Family; nobody loses anything. |
+| 5 | Eyebrow English | **Resolved: option A, shipped `d4cf4b97`** — CATEGORY.en mirrors the Greek; JSON-LD slogan and both OG alt paths verified to follow (site.ts carried a hardcoded THIRD Greek variant, now derived from CATEGORY). |
 
 ## Open — each names what it blocks
+
+*(OQ2 and OQ4 are routed — the asks are drafted in `07-REVIEW-ASKS.md`, leaving today. This file
+was not in the amendment list; it records resolutions, so it is updated under the same rule and
+named as such.)*
 
 **OQ2 · Intermediary registration and the IDD / ν.4583/2018 opinion.** INPUTS asks to confirm no
 registration exists or is planned, and whether a legal opinion has been obtained. **Blocks:** the
@@ -24,7 +30,8 @@ does not make it an intermediary", which ships only against the opinion.
 **Blocks:** Gate 4 — trust bullet 3, the /trust consent copy, and the partner page's consent
 architecture section must *match* the reviewed product wording, never paraphrase it.
 
-**OQ5 · The eyebrow's English.** Greek says «Δεν αξιολογούμε συμβόλαια. Αξιολογούμε την προστασία
+**~~OQ5~~ — resolved, see table above.** Original text kept for the record:
+The eyebrow's English. Greek says «Δεν αξιολογούμε συμβόλαια. Αξιολογούμε την προστασία
 σας.»; English says "AI Personal Risk Intelligence" — a different claim. One constant feeds the hero
 chip, the footer, the JSON-LD `slogan` and the OG card. **Blocks:** nothing structurally, but every
 page's top line and the structured data carry the mismatch until answered.
@@ -37,7 +44,8 @@ ENFIA rule re-verification, the peril set, the minimum term, the increase-letter
 has a source on the site. **Blocks:** the specific sentences marked `[verify]`; the pages ship
 without the figures if unresolved — the copy was written to survive the cut.
 
-**OQ9 · The duplicate-detection rollout on existing accounts** *(spawned by D1)*. Free and Plus
+**~~OQ9~~ — closed by the D1 amendment, see table above.** Original text kept for the record:
+The duplicate-detection rollout on existing accounts *(spawned by the original D1)*. Free and Plus
 users have it today and lose it when the gate is applied. Grandfather, announce, or quiet?
 **Blocks:** Gate 1's first box, and therefore every plan-gating copy change.
 *Recommendation on file: apply and announce — a silently removed feature returns as a support

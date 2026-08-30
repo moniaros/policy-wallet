@@ -37,17 +37,19 @@ sources upgrades its visibility while leaving its evidence broken.
 
 ## B. The five gates, in order
 
-### Gate 1 — plan-gating truth (deliverable 2, Part A)
-- [ ] **Owner decision recorded: Open Question 9** — Free/Plus users lose duplicate detection;
-      grandfather / announce / quiet. *(Recommendation on file: announce.)*
-- [ ] Duplicate gate **applied** — `duplicateCoverageRules()` gated; `duplicate_coverage_detection`
-      **removed from `KNOWN_UNGATED`** in `feature-gate-reachability.test.ts:15`
-- [ ] Parity test exists: `public-pricing-content.ts` bullets asserted against
-      `DEFAULT_ENTITLEMENT_LIMITS` — **red-proved before the copy lands**
-- [ ] The seven wrong surfaces from the truth table corrected, comments included
-- [ ] `COMPARISON_ROWS` verdict key **renamed**, not relabelled
-- [ ] In-app `PremiumInsightCards` / `upgrade-copy` escalation acknowledged as its own ticket —
-      **not silently absorbed into this launch, not silently dropped**
+### Gate 1 — plan-gating truth (deliverable 2 Part A, as amended 2026-08-30)
+- [x] ~~OQ9 rollout decision~~ — **closed by the D1 amendment: duplicates stay Free-limited; no
+      entitlement removal, no grandfathering, no release note**
+- [ ] Dead gate **deleted**: `duplicate_coverage_detection` removed from `FEATURE_GATES` and its
+      `KNOWN_UNGATED` whitelist line removed — both now misdescribe the decided truth
+- [ ] Parity test exists and asserts **the limit as well as the gate**: gap detection Family-gated;
+      duplicate detection present on every plan, bounded by the policy ceiling (3/10/25) —
+      **red-proved before the copy lands**
+- [ ] The wrong surfaces from the amended truth table corrected — including the Free card gaining
+      the truthful «Εντοπισμός διπλών καλύψεων» and the duplicate `COMPARISON_ROWS` cell becoming
+      plain «Ναι»
+- [ ] `COMPARISON_ROWS` gap-row verdict key **renamed**, not relabelled
+- [x] In-app tier mislabel — **shipped `c6f6ca7b`** with the registry-wide guard
 
 ### Gate 2 — data-location accuracy (independent; the claim is wrong today)
 - [ ] `TRUST_FACTS[1]` narrowed to storage-only
@@ -106,6 +108,6 @@ Stated so absence reads as decision, not omission:
 - The 6–8 new guides (citation debt first — G-07).
 - Any user count, testimonial, logo, accuracy figure (none exists; none is invented).
 - Any GA claim (D3: early access).
-- The in-app Plus/Family mislabel fix (escalated separately — it must not wait for marketing, and
-  marketing must not wait for it).
+- ~~The in-app Plus/Family mislabel fix~~ — **shipped, `c6f6ca7b`**, ahead of every gate, as
+  directed.
 - Motor anywhere above the fold. Supporting content only.
