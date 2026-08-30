@@ -63,33 +63,44 @@ The change moves the claim from a prediction («πόσα θα πληρώσετε
 
 > **EL — Τι είναι ο «δείκτης αναπροσαρμογής»;**
 >
-> Από το 2025, οι αναπροσαρμογές των μακροχρόνιων συμβολαίων υγείας συνδέονται με τον Ετήσιο Δείκτη
-> Αναπροσαρμογής (ΕΔΑ) που καταρτίζει η ΕΛΣΤΑΤ `[verify]`. Αντικατέστησε τον προηγούμενο δείκτη του
-> ΙΟΒΕ `[verify]`. Η πρώτη τιμή του ορίστηκε σε 6,24% `[verify]`. Ο δείκτης βάζει ένα πλαίσιο στο
-> *πώς* υπολογίζεται μια αναπροσαρμογή — δεν καθορίζει μόνος του το δικό σας νέο ασφάλιστρο, και δεν
-> λέει τίποτα για το τι καλύπτει το συμβόλαιό σας. Αυτό το δεύτερο είναι η δική μας δουλειά.
+> Ο Ετήσιος Δείκτης Αναπροσαρμογής (ΕΔΑ) καταρτίζεται από την ΕΛΣΤΑΤ, σύμφωνα με τον ν. 5170/2025.
+> Για το 2024 — την πρώτη χρονιά που δημοσιεύθηκε — ο ΕΔΑ, που καλύπτει μαζί τις μακροχρόνιες και
+> τις ετησίως ανανεούμενες συμβάσεις υγείας, παρουσίασε αύξηση 6,24% με την επίδραση της ηλικίας
+> και 1,25% χωρίς αυτήν. Ειδικά για τις μακροχρόνιες συμβάσεις, η μεταβολή ήταν 7,23% με την
+> επίδραση της ηλικίας και 1,76% χωρίς. Ο δείκτης βάζει ένα πλαίσιο στο *πώς* υπολογίζεται μια
+> αναπροσαρμογή — δεν καθορίζει μόνος του το δικό σας νέο ασφάλιστρο, και δεν λέει τίποτα για το τι
+> καλύπτει το συμβόλαιό σας. Αυτό το δεύτερο είναι η δική μας δουλειά.
 >
 > **EN — What is the "adjustment index"?**
 >
-> Since 2025, adjustments to long-term health policies are tied to the Annual Adjustment Index (ΕΔΑ)
-> compiled by ELSTAT `[verify]`. It replaced the previous IOBE index `[verify]`. Its first value was
-> set at 6.24% `[verify]`. The index frames *how* an adjustment is calculated — it does not by
-> itself determine your new premium, and it says nothing about what your policy covers. That second
-> part is our job.
+> The Annual Adjustment Index (ΕΔΑ) is compiled by ELSTAT under Law 5170/2025. For 2024 — its first
+> published year — the ΕΔΑ, which covers long-term and annually renewed health contracts together,
+> rose 6.24% with the effect of policyholder age and 1.25% without it. For long-term contracts
+> specifically, the change was 7.23% with the age effect and 1.76% without. The index frames *how*
+> an adjustment is calculated — it does not by itself determine your new premium, and it says
+> nothing about what your policy covers. That second part is our job.
 
-**RESOLUTION 2026-08-30 — the facts resolve DIFFERENTLY from the brief, and the figures stay cut
-until a primary deep link is captured:**
-- The brief said "IOBE abolished January 2025; ΕΛΣΤΑΤ ΕΔΑ replaced it (first value 6.24%)."
-  Sourced narrative (converging press citing ΕΛΣΤΑΤ): the ΕΔΑ was established by **ν. 5170/2025**
-  as the unified framework replacing the IOBE index, and its **first value was published
-  26.06.2026 for reference year 2024** — not January 2025.
-- **6,24% is the with-age-effect variant; the without-age value is 1,25%.** Quoting 6,24% alone
-  would overstate what the index says about pricing, so any future use quotes the pair.
-- **No primary deep link captured yet** (the ΕΛΣΤΑΤ press-release URL 404'd; secondary coverage
-  converges but is not a source under the standing rule). **The three `[verify]` clauses above are
-  therefore CUT from shippable copy.** The section ships as its final two sentences — the index
-  does not set your premium and says nothing about what you are covered for — which carry it
-  honestly with no figure at all.
+**RESOLVED 2026-08-30 — the primary was read, and it settled what the press could not:**
+
+- **Source:** ΕΛΣΤΑΤ, «Ετήσιος Δείκτης Αναπροσαρμογής μακροχρονίων ασφαλίσεων υγείας (ΕΔΑ) 2024»,
+  δελτίο τύπου **29.07.2026** (2024 values as first published **26.06.2026**; the July release
+  revises 2022–23 for one insurer's previously missing data). Publication page (stable):
+  `https://www.statistics.gr/el/statistics/-/publication/DKT58/-` · canonical filename
+  **`A0903_DKT58_DT_AN_00_2024_01_F_GR.pdf`** (documentID 597880 — the direct portlet URL is a JSF
+  resource keyed on that ID and **will rot**; the DKT58 page plus the filename is what makes it
+  re-findable, which is how this citation passes the G-07 rule without re-hosting).
+- **The «5170» collision is a coincidence, not a transcription error.** The release cites BOTH:
+  the ΕΔΑ is compiled «σύμφωνα με τον **νόμο 5170/2025**», and the calculation factors follow the
+  **Κοινή Απόφαση αρ. 74816 (ΦΕΚ Β΄ 5170/2025)** of the Ministers of National Economy & Finance,
+  Health, Development and the President of ΕΛΣΤΑΤ. A law numbered 5170/2025 and a ΚΥΑ published in
+  ΦΕΚ series-Β issue 5170/2025 both exist; nextdeal cited the former, mononews the latter, neither
+  wrongly.
+- **6,24% is the AGGREGATE** across both contract types (με την επίδραση της ηλικίας; 1,25%
+  χωρίς). **Long-term contracts specifically: 7,23% / 1,76%** — quoting 6,24% for the long-term
+  subset would cite the aggregate for a claim about the subset, which is why the shipped copy
+  names both figures with their scopes and the age-effect variant in the sentence.
+- **The release says nothing about IOBE.** V2 stays CUT; the "replaced the IOBE index" narrative
+  remains press-only and out of shippable copy.
 
 ### §3 · Όρια, εξαιρέσεις, περίοδοι αναμονής
 
