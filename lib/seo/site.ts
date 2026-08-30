@@ -1,3 +1,5 @@
+import { CATEGORY } from "@/lib/marketing/positioning"
+
 /**
  * Central site identity for SEO / GEO / AEO.
  *
@@ -111,10 +113,10 @@ export function ogImagesFor(locale: "el" | "en") {
             url: locale === "en" ? "/opengraph-image-en" : "/opengraph-image",
             width: 1200,
             height: 630,
-            alt:
-                locale === "en"
-                    ? "PolicyWallet — AI Personal Risk Intelligence"
-                    : "PolicyWallet — Δεν αξιολογούμε τα συμβόλαιά σας. Αξιολογούμε την προστασία της ζωής σας.",
+            // One decode sentence, not a third variant: this alt had drifted to its
+            // own Greek wording while the eyebrow and og-card carried the canonical
+            // one. CATEGORY is the single source; alt must not contradict the image.
+            alt: `PolicyWallet — ${CATEGORY[locale]}`,
         },
     ]
 }

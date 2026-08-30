@@ -67,7 +67,13 @@ export const CATEGORY_NAME: Bilingual = {
  */
 export const CATEGORY: Bilingual = {
     el: "Δεν αξιολογούμε συμβόλαια. Αξιολογούμε την προστασία σας.",
-    en: "AI Personal Risk Intelligence",
+    // OQ5, decided 2026-08-30: the English mirrors the Greek PROMISE. It had
+    // been "AI Personal Risk Intelligence" — a category label, i.e. a different
+    // claim — violating this module's own rule that en carries identical
+    // meaning. The label still does its SEO work via CATEGORY_NAME; this
+    // constant also feeds the JSON-LD `slogan` and both OG alt paths, so the
+    // mismatch was living in structured data too.
+    en: "We do not rate policies. We rate your protection.",
 }
 
 /**

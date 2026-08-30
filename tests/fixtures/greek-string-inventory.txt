@@ -21,7 +21,7 @@
 #
 # bundle entries: 2820
 # inline entries: 4678 across 209 files
-# ternary entries: 286 across 45 files
+# ternary entries: 285 across 44 files
 # call entries: 1152 across 72 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -7657,7 +7657,6 @@ ternary	lib/i18n/amount-format.ts	'Μεταβλητό'
 ternary	lib/i18n/role-copy.ts	"1 στοιχείο που χρειάζεται προσοχή."
 ternary	lib/i18n/role-copy.ts	`${n} στοιχεία που χρειάζονται προσοχή.`
 ternary	lib/notifications/risk-events.ts	`${first.el} και ${changed.length - 1} ακόμη αλλαγές.`
-ternary	lib/seo/site.ts	"PolicyWallet — Δεν αξιολογούμε τα συμβόλαιά σας. Αξιολογούμε την προστασία της ζωής σας."
 ternary	lib/services/ai/mock-ai.service.ts	{ extractionSources: { insurerName: { page: 1, snippet: 'Mock Insurance Co. — Ασφαλιστήριο Συμβόλαιο' }, endDate: { page: 2, snippet: 'Λήξη ασφάλισης: όπως ορίζεται στον πίνακα καλύψεων' }, premiumAmount: { page: 2, snippet: 'Ετήσια ολικά ασφάλιστρα: €500,00' }, }, }
 ternary	lib/services/collaboration-reminders.service.ts	"ανοιχτές συζητήσεις"
 ternary	lib/services/collaboration-reminders.service.ts	"ανοιχτή συζήτηση"
