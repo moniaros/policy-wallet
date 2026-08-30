@@ -45,7 +45,7 @@
  * a jsdom test cannot enumerate a Next.js page tree.
  */
 
-import { afterAll, beforeAll, describe, it, expect } from "vitest"
+import { afterAll, beforeAll, describe, it, expect, vi } from "vitest"
 import { render } from "@testing-library/react"
 import fs from "node:fs"
 import path from "node:path"
