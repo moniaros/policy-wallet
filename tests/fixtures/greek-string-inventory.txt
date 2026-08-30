@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2820
-# inline entries: 4766 across 213 files
+# inline entries: 4772 across 213 files
 # ternary entries: 285 across 44 files
 # call entries: 1212 across 78 files
 
@@ -7174,6 +7174,7 @@ inline	lib/services/gap-engine/risk-catalog.ts	ctx.propertiesOwned > 1 ? `Σας
 inline	lib/services/gap-engine/risk-catalog.ts	ctx.rentsOutProperty ? "Εκμισθώνετε ακίνητο σε ενοικιαστές, από όπου ξεκινούν οι περισσότερες ιδιωτικές διαφορές ακινήτων." : `Σας ανήκουν ${ctx.propertiesOwned} ακίνητα, γεγονός που αυξάνει την πιθανότητα διαφοράς ορίων, εργασιών ή κοινοχρήστων.`
 inline	lib/services/gap-engine/risk-catalog.ts	n && n > 0 ? `Έχετε ${n} ${plural(n, "κατοικίδιο", "κατοικίδια")}, και η έκθεση αυξάνεται με κάθε ένα.` : "Μας δηλώσατε ότι έχετε κατοικίδια."
 inline	lib/services/gap-engine/risk-catalog.ts	occ ? `Οι αξιώσεις που προκύπτουν από ${occ.el} στρέφονται εναντίον σας προσωπικά, και τα έξοδα υπεράσπισης τρέχουν πολύ πριν κριθεί η ευθύνη.` : "Ένας πελάτης που ισχυρίζεται ότι η εργασία σας του προκάλεσε ζημιά σας ενάγει προσωπικά. Τα έξοδα υπεράσπισης τρέχουν πολύ πριν κριθεί η ευθύνη."
+inline	lib/services/life-events/registry.ts	"Άλλαξε κάτι που δεν το περιγράφει καμία επιλογή. Ξαναβλέπω την προστασία σας με βάση αυτό που περιγράφετε και ρωτάω ό,τι χρειάζεται."
 inline	lib/services/life-events/registry.ts	"Ένα ασφαλιστήριο ιδιοκατοίκησης συνήθως δεν καλύπτει εκμισθωμένο ακίνητο, και η απώλεια μισθωμάτων καλύπτεται ξεχωριστά."
 inline	lib/services/life-events/registry.ts	"Ένα εκχωρημένο ασφαλιστήριο ζωής μπορεί πλέον να περισσεύει — ή να αξίζει να διατηρηθεί, καθώς η αντικατάστασή του στην ηλικία σας ίσως κοστίζει περισσότερο."
 inline	lib/services/life-events/registry.ts	"Ένα παιδί ανεξαρτητοποιήθηκε"
@@ -7197,6 +7198,7 @@ inline	lib/services/life-events/registry.ts	"Δημιουργία επιχείρ
 inline	lib/services/life-events/registry.ts	"Διαζύγιο"
 inline	lib/services/life-events/registry.ts	"Εντός ΕΕ η ΕΚΑΑ καλύπτει τη δημόσια περίθαλψη· εκτός ΕΕ πληρώνετε εξ ολοκλήρου, και ο επαναπατρισμός δεν καλύπτεται σε καμία περίπτωση."
 inline	lib/services/life-events/registry.ts	"Εξόφληση στεγαστικού δανείου"
+inline	lib/services/life-events/registry.ts	"Η αλλαγή εργοδότη συνήθως αλλάζει την ομαδική κάλυψη: ό,τι πλήρωνε το πρόγραμμα του προηγούμενου εργοδότη μπορεί να μην το πληρώνει πια κανείς."
 inline	lib/services/life-events/registry.ts	"Η αξίωση εργαζομένου για ό,τι δεν καλύπτει ο ΕΦΚΑ βαρύνει προσωπικά εσάς ως εργοδότη, και ένα γενικό ασφαλιστήριο επιχείρησης δεν την καλύπτει εξ ορισμού."
 inline	lib/services/life-events/registry.ts	"Η αστική ευθύνη είναι υποχρεωτική για σκάφη αναψυχής, και η ναυαγιαίρεση με την ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν."
 inline	lib/services/life-events/registry.ts	"Η αστική ευθύνη οχήματος προστατεύει τους άλλους, όχι τον αναβάτη — η έκθεση σε τραυματισμό είναι αυτό που συνήθως μένει ακάλυπτο."
@@ -7207,9 +7209,12 @@ inline	lib/services/life-events/registry.ts	"Η κάλυψη που τιμολο
 inline	lib/services/life-events/registry.ts	"Η κάλυψη που υπολογίστηκε στο παλιό σας εισόδημα αναπληρώνει πλέον λιγότερα. Δεν αλλάζει καμία εφαρμοσιμότητα — είναι καθαρά ζήτημα επάρκειας."
 inline	lib/services/life-events/registry.ts	"Η περίοδος διακοπής μετά από ζημιά είναι συνήθως μεγαλύτερη ζημιά από την ίδια την υλική βλάβη, και καλύπτεται ξεχωριστά."
 inline	lib/services/life-events/registry.ts	"Η στιγμή μέγιστης δεκτικότητας — και μέγιστης αδράνειας μετά, οπότε το σωστό ύψος κάλυψης έχει εδώ μεγαλύτερη σημασία από οπουδήποτε αλλού."
+inline	lib/services/life-events/registry.ts	"Κάτι άλλο"
 inline	lib/services/life-events/registry.ts	"Λήψη στεγαστικού δανείου"
 inline	lib/services/life-events/registry.ts	"Με κατάθεση πινακίδων δεν απαιτείται ασφάλιση όσο το όχημα μένει εκτός κυκλοφορίας, και τα μη δεδουλευμένα ασφάλιστρα ίσως επιστρέφονται."
 inline	lib/services/life-events/registry.ts	"Μεταβολή στην υγεία σας"
+inline	lib/services/life-events/registry.ts	"Μετακόμιση"
+inline	lib/services/life-events/registry.ts	"Νέα δουλειά"
 inline	lib/services/life-events/registry.ts	"Νέο ετήσιο εισόδημα (€)"
 inline	lib/services/life-events/registry.ts	"Οι ελληνικές ασφαλιστικές υγείας εξαιρούν συστηματικά τις προϋπάρχουσες παθήσεις, συχνά μόνιμα — ένα νέο ασφαλιστήριο είναι απίθανο να καλύψει πάθηση που έχει ήδη δηλωθεί."
 inline	lib/services/life-events/registry.ts	"Οι ελληνικές τράπεζες συνήθως απαιτούν ασφάλιση πυρός και συχνά περιλαμβάνουν ασφάλιση ζωής δανειολήπτη — ελέγξτε τι έχει ήδη κανονίσει η τράπεζα πριν συνάψετε κάτι."
@@ -7221,6 +7226,7 @@ inline	lib/services/life-events/registry.ts	"Πώληση ακινήτου"
 inline	lib/services/life-events/registry.ts	"Σημαντική αύξηση εισοδήματος"
 inline	lib/services/life-events/registry.ts	"Συνταξιοδότηση"
 inline	lib/services/life-events/registry.ts	"Τα ασφαλιστήρια περιεχομένου θέτουν χαμηλό όριο ανά αντικείμενο, και συχνά τα εξαιρούν εκτός κατοικίας."
+inline	lib/services/life-events/registry.ts	"Το ασφαλιστήριο κατοικίας αναφέρει μια διεύθυνση. Μετά τη μετακόμιση μπορεί να ασφαλίζει ακόμη την παλιά, και τη νέα να μην την ασφαλίζει κανείς."
 inline	lib/services/life-events/registry.ts	"Το ασφαλιστήριο του ιδιοκτήτη καλύπτει το κτίριο, όχι τα υπάρχοντά σας — ούτε εσάς αν μια διαρροή φτάσει στο από κάτω διαμέρισμα."
 inline	lib/services/life-events/registry.ts	"Υιοθεσία κατοικιδίου"
 inline	lib/services/life-events/service.ts	"Καταγράψαμε την αλλαγή σας"

@@ -396,6 +396,18 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                     where: { OR: [{ policyholderUserId: userId }, { agentUserId: userId }] },
                     data: { status: "terminated" },
                 }),
+                // ── Grafí application tier stores ──────────────────────────
+                // The User row survives (anonymise-in-place), so none of these
+                // cascade. Findings and their dismissal reasons are conclusions
+                // about the person; household people are names they entered;
+                // the share audit is THEIR record of what an adviser saw (rows
+                // where they are the adviser stay — they are the customer's
+                // record, and the adviser's anonymised User row still resolves);
+                // per-document Art. 9 consent goes with the documents.
+                tx.finding.deleteMany({ where: { userId } }),
+                tx.householdPerson.deleteMany({ where: { userId } }),
+                tx.adviserShareAudit.deleteMany({ where: { userId } }),
+                tx.documentAiConsent.deleteMany({ where: { userId } }),
             ])
 
             // Profile-level gaps survive the policy cascade (policyId null) and

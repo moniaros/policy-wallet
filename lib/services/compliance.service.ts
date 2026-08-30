@@ -34,6 +34,10 @@ export async function buildUserDataExportPayload(userId: string) {
         collaborationThreads,
         referralsMade,
         exportRequests,
+        findings,
+        householdPeople,
+        adviserShareAudits,
+        documentAiConsents,
     ] = await Promise.all([
         db.user.findUnique({
             where: { id: userId },
@@ -531,6 +535,38 @@ export async function buildUserDataExportPayload(userId: string) {
             orderBy: { requestedAt: "desc" },
             take: 200,
         }),
+        // ── Grafí application tier stores ──────────────────────────────
+        // Findings are conclusions drawn about this person's cover, with the
+        // reason they were dismissed in the person's own words; household
+        // people are names they entered; the share audit is what they let an
+        // adviser see and when; per-document consent is an Art. 9 record.
+        // All four are Art. 15 material and are erased by the eraser's twin.
+        db.finding.findMany({
+            where: { userId },
+            select: {
+                id: true, policyId: true, hash: true, kind: true, tier: true, objectJson: true, sourceJson: true,
+                sentenceJson: true, whyYouJson: true, ruleId: true, engineVersion: true, daysUntilExpiry: true,
+                firstSeenAt: true, lastSeenAt: true, dismissedReason: true, dismissedAt: true, reopenedAt: true,
+            },
+            orderBy: { lastSeenAt: "desc" },
+            take: 500,
+        }),
+        db.householdPerson.findMany({
+            where: { userId },
+            select: { id: true, name: true, relation: true, dateOfBirth: true, isDependant: true, confirmedAt: true, createdAt: true, updatedAt: true },
+            orderBy: { createdAt: "asc" },
+        }),
+        db.adviserShareAudit.findMany({
+            where: { userId },
+            select: { id: true, adviserUserId: true, grantId: true, action: true, payloadJson: true, at: true },
+            orderBy: { at: "desc" },
+            take: 500,
+        }),
+        db.documentAiConsent.findMany({
+            where: { userId },
+            select: { id: true, documentId: true, textKey: true, version: true, grantedAt: true, revokedAt: true },
+            orderBy: { grantedAt: "desc" },
+        }),
     ])
 
     if (!user) {
@@ -708,5 +744,26 @@ export async function buildUserDataExportPayload(userId: string) {
                 createdAt: toIso(request.createdAt),
             })),
         },
+        // Grafí application tier stores (see the query block above).
+        findings: findings.map((f) => ({
+            ...f,
+            firstSeenAt: toIso(f.firstSeenAt),
+            lastSeenAt: toIso(f.lastSeenAt),
+            dismissedAt: toIso(f.dismissedAt),
+            reopenedAt: toIso(f.reopenedAt),
+        })),
+        householdPeople: householdPeople.map((p) => ({
+            ...p,
+            dateOfBirth: toIso(p.dateOfBirth),
+            confirmedAt: toIso(p.confirmedAt),
+            createdAt: toIso(p.createdAt),
+            updatedAt: toIso(p.updatedAt),
+        })),
+        adviserShareAudits: adviserShareAudits.map((a) => ({ ...a, at: toIso(a.at) })),
+        documentAiConsents: documentAiConsents.map((c) => ({
+            ...c,
+            grantedAt: toIso(c.grantedAt),
+            revokedAt: toIso(c.revokedAt),
+        })),
     }
 }

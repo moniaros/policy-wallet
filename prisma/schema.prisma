@@ -148,6 +148,12 @@ model User {
   lifeEventInstances              LifeEventInstance[]
   riskProfileVersions             RiskProfileVersion[]
 
+  findings             Finding[]
+  householdPeople      HouseholdPerson[]
+  shareAuditsAsSubject AdviserShareAudit[] @relation("ShareAuditSubject")
+  shareAuditsAsAdviser AdviserShareAudit[] @relation("ShareAuditAdviser")
+  documentAiConsents   DocumentAiConsent[]
+
   @@index([taxId])
   @@map("users")
 }
@@ -402,6 +408,8 @@ model Policy {
   mergeRequestsAsExisting PolicyMergeRequest[]   @relation("MergeExisting")
   mergeRequestsAsIncoming PolicyMergeRequest[]   @relation("MergeIncoming")
 
+  findings Finding[]
+
   @@index([ownerUserId])
   @@index([createdByUserId])
   @@index([endDate])
@@ -469,6 +477,8 @@ model PolicyDocument {
 
   policy   Policy @relation(fields: [policyId], references: [id], onDelete: Cascade)
   uploader User   @relation(fields: [uploadedByUserId], references: [id])
+
+  aiConsent DocumentAiConsent?
 
   @@index([policyId])
   @@index([uploadedByUserId])
@@ -601,6 +611,8 @@ model AccessGrant {
   // Hot path: getGrantedPolicyIds / getPolicyAccess filter by
   // granteeUserId + status + scope on every non-owner policy read and every
   // agent-visibility query. Without this the table was full-scanned each time.
+  shareAudits AdviserShareAudit[]
+
   @@index([granteeUserId, status, scope])
   // Granter-side lookups (share/revoke paths).
   @@index([granterUserId])
@@ -2455,4 +2467,120 @@ model FeatureFlagRevision {
 
   @@index([flagId, createdAt])
   @@map("feature_flag_revisions")
+}
+
+// ── Grafí application tier (B2C rebuild, 2026-08-30) ─────────────────────────
+//
+// Four stores the personal protection system needs and the wallet never had.
+// Every one is personal data: all four are wired into the DSR export
+// (lib/services/compliance.service.ts) and the eraser
+// (lib/services/gdpr-erasure.service.ts) in the same change — the User row
+// survives erasure, so ON DELETE CASCADE never fires for them.
+
+/// A finding as the product may show it (lib/app/finding.ts).
+///
+/// Materialised so dismissal memory has something to attach to and so the
+/// three surfaces that render findings (/, /see, /policies/[id]) read one row
+/// rather than re-deriving three answers. `hash` is the dismissal key
+/// (policy + cover type + rule); `source_json` is NOT NULL because a finding
+/// without a source pointer may not exist — the specificity gate is a column.
+model Finding {
+  id              String    @id @default(cuid()) @map("finding_id")
+  userId          String    @map("user_id")
+  policyId        String?   @map("policy_id")
+  hash            String
+  /// gap | review | expiry — never a severity.
+  kind            String
+  /// now | month | later — WHEN to look, never how bad.
+  tier            String
+  objectJson      Json      @map("object_json")
+  sourceJson      Json      @map("source_json")
+  sentenceJson    Json      @map("sentence_json")
+  whyYouJson      Json?     @map("why_you_json")
+  ruleId          String    @map("rule_id")
+  engineVersion   String?   @map("engine_version")
+  daysUntilExpiry Int?      @map("days_until_expiry")
+  firstSeenAt     DateTime  @default(now()) @map("first_seen_at")
+  lastSeenAt      DateTime  @default(now()) @map("last_seen_at")
+  /// chosen | renewed | not_relevant — the user's own words for «δεν με αφορά».
+  dismissedReason String?   @map("dismissed_reason")
+  dismissedAt     DateTime? @map("dismissed_at")
+  reopenedAt      DateTime? @map("reopened_at")
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  policy          Policy?   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, hash])
+  @@index([userId, tier])
+  @@index([policyId])
+  @@map("findings")
+}
+
+/// A person in the household (lib/app/household.ts).
+///
+/// The wallet held only counts (`dependentsCount`, `childrenCount`); a count
+/// cannot be «εντάξει» or under review, and a future preventive opportunity
+/// cannot be addressed to a count. Names are the customer's own entry.
+model HouseholdPerson {
+  id          String    @id @default(cuid()) @map("household_person_id")
+  userId      String    @map("user_id")
+  name        String
+  /// self | partner | child | parent | other
+  relation    String
+  dateOfBirth DateTime? @map("date_of_birth")
+  isDependant Boolean   @default(false) @map("is_dependant")
+  /// Set when the customer answered the dependants question for this person.
+  confirmedAt DateTime? @map("confirmed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("household_people")
+}
+
+/// What was shared with an adviser, when, and when it was taken back (§10).
+///
+/// Append-only. `AccessGrant.revokedAt` is mutated in place and the two server
+/// actions that revoke wrote no audit row at all — only the API DELETE did.
+/// `payload_json` names the objects: policy ids, a finding id, the profile
+/// fields sent with a help request.
+model AdviserShareAudit {
+  id            String       @id @default(cuid()) @map("share_audit_id")
+  userId        String       @map("user_id")
+  adviserUserId String       @map("adviser_user_id")
+  grantId       String?      @map("grant_id")
+  /// granted | revoked | help_sent
+  action        String
+  payloadJson   Json         @map("payload_json")
+  at            DateTime     @default(now())
+  user          User         @relation("ShareAuditSubject", fields: [userId], references: [id], onDelete: Cascade)
+  adviser       User         @relation("ShareAuditAdviser", fields: [adviserUserId], references: [id], onDelete: Cascade)
+  grant         AccessGrant? @relation(fields: [grantId], references: [id], onDelete: SetNull)
+
+  @@index([userId, at])
+  @@index([adviserUserId])
+  @@map("adviser_share_audits")
+}
+
+/// Article 9 consent, per DOCUMENT and revocable (§3, §8.9).
+///
+/// `User.aiProcessingConsentVersion` is one boolean per account and the
+/// product copy promised a withdrawal no code path implemented. This row is
+/// written BEFORE any byte of the document reaches a model provider and is
+/// checked on every provider path; `revoked_at` set means the document is no
+/// longer processed. `text_key` names the exact catalogue key rendered, so
+/// what the person consented to is reproducible.
+model DocumentAiConsent {
+  id         String         @id @default(cuid()) @map("document_ai_consent_id")
+  documentId String         @unique @map("document_id")
+  userId     String         @map("user_id")
+  textKey    String         @map("text_key")
+  version    String
+  grantedAt  DateTime       @default(now()) @map("granted_at")
+  revokedAt  DateTime?      @map("revoked_at")
+  document   PolicyDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("document_ai_consents")
 }

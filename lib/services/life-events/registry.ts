@@ -540,6 +540,77 @@ export const LIFE_EVENT_REGISTRY: LifeEventDefinition[] = [
         reversedBy: [],
         repeatable: true,
     },
+    // ── Grafí application tier chips (A-15) ───────────────────────────────
+    // The brief's §8.10 chips name three situations the registry did not:
+    // a new job, a move, and «κάτι άλλο». Each is deliberately INERT in the
+    // risk model (no `introduces`, no `retires`) — the chip's job is to
+    // re-check protection against the situation the customer describes, and
+    // the follow-up questions settle the factor the engine cares about
+    // (`mark_known`), so a risk resting on it leaves needs_review honestly.
+    {
+        id: "job_change",
+        domain: "work",
+        kind: "status_change",
+        label: { en: "New job", el: "Νέα δουλειά" },
+        description: {
+            en: "A change of employer usually changes group cover: what the old employer's scheme paid for may no longer be paid for by anyone.",
+            el: "Η αλλαγή εργοδότη συνήθως αλλάζει την ομαδική κάλυψη: ό,τι πλήρωνε το πρόγραμμα του προηγούμενου εργοδότη μπορεί να μην το πληρώνει πια κανείς.",
+        },
+        contextDelta: [
+            { column: "employmentStatus", factor: "selfEmployed", operation: "mark_known" },
+        ],
+        introduces: [],
+        retires: [],
+        urgency: "medium",
+        window: W(90),
+        sensitivity: "standard",
+        dependsOn: [],
+        detection: DECLARED_ONLY,
+        reversedBy: [],
+        repeatable: true,
+    },
+    {
+        id: "relocation",
+        domain: "residence",
+        kind: "status_change",
+        label: { en: "Moved house", el: "Μετακόμιση" },
+        description: {
+            en: "A home policy names an address. After a move it may still insure the old one, and the new one may be insured by nobody.",
+            el: "Το ασφαλιστήριο κατοικίας αναφέρει μια διεύθυνση. Μετά τη μετακόμιση μπορεί να ασφαλίζει ακόμη την παλιά, και τη νέα να μην την ασφαλίζει κανείς.",
+        },
+        contextDelta: [
+            { column: "residenceType", factor: "residence", operation: "mark_known" },
+        ],
+        introduces: [],
+        retires: [],
+        urgency: "medium",
+        window: W(90),
+        sensitivity: "standard",
+        dependsOn: [],
+        detection: DECLARED_ONLY,
+        reversedBy: [],
+        repeatable: true,
+    },
+    {
+        id: "other",
+        domain: "lifestyle",
+        kind: "status_change",
+        label: { en: "Something else", el: "Κάτι άλλο" },
+        description: {
+            en: "Something changed that no chip names. The product re-reads protection against what you describe and asks what it needs.",
+            el: "Άλλαξε κάτι που δεν το περιγράφει καμία επιλογή. Ξαναβλέπω την προστασία σας με βάση αυτό που περιγράφετε και ρωτάω ό,τι χρειάζεται.",
+        },
+        contextDelta: [],
+        introduces: [],
+        retires: [],
+        urgency: "low",
+        window: W(90),
+        sensitivity: "standard",
+        dependsOn: [],
+        detection: DECLARED_ONLY,
+        reversedBy: [],
+        repeatable: true,
+    },
 ]
 
 const BY_ID = new Map(LIFE_EVENT_REGISTRY.map((e) => [e.id, e]))

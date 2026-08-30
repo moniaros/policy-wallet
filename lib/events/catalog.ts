@@ -41,6 +41,12 @@ export const AGGREGATES = [
     "payment",
     "ai",
     "platform",
+    // Grafí application tier: a finding shown, a benefit surfaced, a question
+    // answered — facts about what the product did for a customer, which the
+    // «Τι έκανα για εσάς φέτος» ledger projects (lib/app/ledger.ts).
+    "finding",
+    "benefit",
+    "question",
 ] as const
 export type Aggregate = (typeof AGGREGATES)[number]
 
@@ -527,6 +533,78 @@ export const BUSINESS_EVENTS: Record<string, EventDefinition> = {
         status: "planned",
         note: "Blocked on a Claim aggregate. Settlement is the only ground truth the risk engine would ever get about whether cover was adequate — the data the prediction seam has been waiting for.",
     }),
+
+    // ── Grafí application tier (B2C rebuild) ─────────────────────────────────
+    // Declared here so the ledger («Τι έκανα για εσάς φέτος») is a projection
+    // over facts and never a hand-typed list. Each flips to `live` in the goal
+    // that wires its emitter (G7 findings, G9 benefits, G8 questions, G10 help,
+    // G11 household) — a planned event that nothing publishes is stated as such.
+
+    "finding.shown": def({
+        name: "finding.shown",
+        aggregate: "finding",
+        kind: "derived",
+        priority: "P2",
+        description: "A specific, source-backed finding was shown to the customer",
+        trigger: "The specificity gate passes a finding and a surface renders it (lib/app/finding.ts)",
+        payloadFields: ["findingId", "hash", "kind", "tier", "policyId", "ruleId"],
+        actions: ["analytics", "audit_log"],
+        status: "planned",
+        note: "Emitted by the Grafí app tier's / and /see routes (G7/G8) once they ship.",
+    }),
+
+    "benefit.surfaced": def({
+        name: "benefit.surfaced",
+        aggregate: "benefit",
+        kind: "derived",
+        priority: "P3",
+        description: "A benefit the customer already pays for was surfaced on /money",
+        trigger: "The /money route lists a perk, check-up, roadside or ENFIA item from the customer's own policies",
+        payloadFields: ["policyId", "benefitKind", "benefitKey"],
+        actions: ["analytics", "audit_log"],
+        status: "planned",
+        note: "Emitted by /money (G9) once it ships.",
+    }),
+
+    "question.answered": def({
+        name: "question.answered",
+        aggregate: "question",
+        kind: "fact",
+        priority: "P2",
+        description: "The customer asked about a policy in plain words and received an answer",
+        trigger: "PolicyQA completes an answer on /policies/[id]",
+        payloadFields: ["policyId", "questionKey"],
+        actions: ["analytics", "audit_log"],
+        status: "planned",
+        note: "Emitted by /policies/[id] (G8) once it ships.",
+    }),
+
+    "advisor.help_requested": def({
+        name: "advisor.help_requested",
+        aggregate: "advisor",
+        kind: "fact",
+        priority: "P1",
+        description: "The customer sent a finding to their own adviser with explicit consent",
+        trigger: "The help flow's ConsentSheet switch (/adviser/help/[findingId]) writes AdviserShareAudit{help_sent}",
+        payloadFields: ["findingId", "advisorUserId", "policyIds", "profileFields"],
+        actions: ["advisor_notification", "in_app", "audit_log", "analytics"],
+        status: "planned",
+        note: "Emitted by the help flow (G10) once it ships.",
+    }),
+
+    "household.person_added": def({
+        name: "household.person_added",
+        aggregate: "household",
+        kind: "fact",
+        priority: "P2",
+        description: "A person was added to the customer's household",
+        trigger: "/me/household writes a HouseholdPerson row",
+        payloadFields: ["householdPersonId", "relation", "isDependant"],
+        actions: ["risk_recalculation", "audit_log", "analytics"],
+        status: "planned",
+        note: "Emitted by /me/household (G11) once it ships.",
+    }),
+
 }
 
 export type BusinessEventName = keyof typeof BUSINESS_EVENTS

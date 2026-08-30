@@ -47,6 +47,12 @@ const tx = {
     businessEvent: { deleteMany: vi.fn(async (_a?: any) => count(5)) },
     riskReview: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     userNotificationSettings: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
+    // Grafí application tier stores (findings, household, adviser-share audit,
+    // per-document Art. 9 consent) — see the eraser's block of the same name.
+    finding: { deleteMany: vi.fn(async (_a?: any) => count(2)) },
+    householdPerson: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
+    adviserShareAudit: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
+    documentAiConsent: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     user: { update: vi.fn(async (_a?: any) => ({})) },
 }
 

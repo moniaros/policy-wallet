@@ -96,3 +96,41 @@ nav rebuilds) · G5 remainder (none — ReadingDemo, PlanRecommender,
 BrokerScanPanel, DeviceFrame, ProtectionRing all shipped) · G6 polish (legacy
 bands onto Grafí; mobile perf) · G9 full-route restyle · `/solutions/agents`
 restyle · screen-reader + forced-colors passes.
+
+---
+
+# B2C application tier — handover (in progress; `feat/grafi-b2c`)
+
+## B2C — production migration owed (D-B2C-04)
+
+`20260830200000_grafi_app_tier` is applied and verified on dev. The attempt to apply it on
+production through the Supabase MCP was denied by the permission classifier (a guardrail chat
+authorisation does not lift). Run the following from the Supabase SQL editor on
+**PolicyWallet-Prod** (`cquudefwfwrmvpftuhyl`), in one session:
+
+1. The whole of `prisma/migrations/20260830200000_grafi_app_tier/migration.sql` (additive; every
+   `CREATE` is `IF NOT EXISTS`; the FKs are added once).
+2. Prisma's own ledger row, so `prisma migrate status` against production reports it applied:
+
+```sql
+INSERT INTO "_prisma_migrations" ("id","checksum","finished_at","migration_name","logs","rolled_back_at","started_at","applied_steps_count")
+SELECT gen_random_uuid(), 'c6f4904cc605a985c43862bf935795d5805e0ed7bff06fe0b4c1851475622096', now(),
+       '20260830200000_grafi_app_tier', NULL, NULL, now(), 1
+WHERE NOT EXISTS (SELECT 1 FROM "_prisma_migrations" WHERE "migration_name" = '20260830200000_grafi_app_tier');
+```
+
+3. Verify (expect 4 tables — 18/9/7/7 columns — 8 FKs with `confdeltype = 'c'` except the
+   `grant_id` one (`'n'`), 12 indexes, and the migration row):
+
+```sql
+SELECT table_name, (SELECT count(*) FROM information_schema.columns c WHERE c.table_name = t.table_name) AS cols
+FROM information_schema.tables t WHERE table_schema = 'public'
+  AND table_name IN ('findings','household_people','adviser_share_audits','document_ai_consents') ORDER BY 1;
+SELECT conname, confdeltype FROM pg_constraint
+ WHERE conrelid::regclass::text IN ('findings','household_people','adviser_share_audits','document_ai_consents') AND contype = 'f' ORDER BY 1;
+SELECT count(*) FROM pg_indexes WHERE tablename IN ('findings','household_people','adviser_share_audits','document_ai_consents');
+SELECT migration_name, finished_at FROM "_prisma_migrations" WHERE migration_name = '20260830200000_grafi_app_tier';
+```
+
+Until this lands, the `FF_APP_*` feature flags stay `false` (A-19) and the Article 9 gate fails
+closed — production behaviour is unchanged by the merge.
