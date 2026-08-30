@@ -5,6 +5,7 @@ import { ArrowRight, CalendarClock, CircleAlert, Gift, Lightbulb, MessageCircle,
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getTranslations } from "@/lib/i18n"
+import { buttonClassName } from "@/src/design-system/primitives"
 import { getBranch, getBranchFamily, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { getBranchContent, type BranchAction } from "@/lib/insurance/content"
@@ -38,12 +39,12 @@ function SectionCard({
     children: React.ReactNode
 }) {
     return (
-        <section className="pw-card pw-pad">
+        <section className="rounded-g-card bg-surface-raised p-g-5 shadow-g-raised">
             <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-mint/10 dark:text-mint">
+                <div className="flex h-9 w-9 items-center justify-center rounded-g-control bg-surface-sunken text-fg-brand">
                     <Icon className="h-4 w-4" aria-hidden />
                 </div>
-                <h2 className="text-sm font-black uppercase tracking-wide text-black dark:text-white">{title}</h2>
+                <h2 className="text-g-app-body-sm font-bold text-fg-primary">{title}</h2>
             </div>
             {children}
         </section>
@@ -54,8 +55,8 @@ function BulletList({ items }: { items: string[] }) {
     return (
         <ul className="space-y-3">
             {items.map((item, index) => (
-                <li key={index} className="flex items-start gap-3 text-sm leading-relaxed text-black/70 dark:text-white/75">
-                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary dark:bg-mint" aria-hidden />
+                <li key={index} className="flex items-start gap-3 text-g-app-body-sm leading-relaxed text-fg-secondary">
+                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-action-primary-bg" aria-hidden />
                     {item}
                 </li>
             ))}
@@ -169,31 +170,31 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
     return (
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
             {/* Header */}
-            <nav className="mb-4 text-xs font-bold text-black/60 dark:text-white/55">
+            <nav className="mb-4 text-g-app-caption font-semibold text-fg-secondary">
                 <Link
                     href="/protection"
-                    className="hover:text-primary dark:hover:text-mint"
+                    className="hover:text-fg-brand"
                 >
                     {t.protection.title}
                 </Link>
                 <span className="mx-2" aria-hidden>/</span>
-                <span className="text-black/75 dark:text-white/80">{branchTitle}</span>
+                <span className="text-fg-secondary">{branchTitle}</span>
             </nav>
             <header className="mb-8 flex items-start gap-4">
-                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary dark:bg-mint/10 dark:text-mint">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-g-card bg-surface-sunken text-fg-brand">
                     <BranchIcon className="h-7 w-7" aria-hidden />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-black text-black dark:text-white sm:text-3xl">{branchTitle}</h1>
+                    <h1 className="text-g-title text-fg-primary">{branchTitle}</h1>
                     {/* The FULL tagline — the one-line promise the /protection card
                         clamps to two lines (ledger B-03). This header is the page that
                         card links to, and V2-P3-01 made it the tagline's full render:
                         before this line the cut half existed nowhere in the product.
                         Guarded on rendered DOM by clamped-text-reachability. */}
-                    <p className="mt-2 max-w-2xl text-sm font-semibold leading-relaxed text-black/80 dark:text-white/85">
+                    <p className="mt-2 max-w-2xl text-g-app-body-sm font-semibold leading-relaxed text-fg-primary">
                         {content.tagline[lang]}
                     </p>
-                    <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-black/60 dark:text-white/65">
+                    <p className="mt-1.5 max-w-2xl text-g-app-body-sm leading-relaxed text-fg-secondary">
                         {content.shortDescription[lang]}
                     </p>
                 </div>
@@ -228,10 +229,10 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                     <Link
                                         key={policy.id}
                                         href={`/wallet/${policy.id}`}
-                                        className="flex items-center justify-between gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40"
+                                        className="flex items-center justify-between gap-3 rounded-g-control border border-border-subtle bg-surface-raised px-4 py-3 transition-colors hover:border-border-focus"
                                     >
                                         <div className="min-w-0">
-                                            <p className="truncate text-sm font-bold text-black dark:text-white">
+                                            <p className="truncate text-g-app-body-sm font-bold text-fg-primary">
                                                 {displayInsurerName(policy.insurerName) || "—"}
                                             </p>
                                             <p className="truncate text-xs text-muted-foreground">
@@ -239,7 +240,7 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                             </p>
                                         </div>
                                         <div className="flex flex-shrink-0 items-center gap-3">
-                                            <span className="rounded-full bg-black/5 px-2.5 py-1 text-kicker font-bold text-black/60 dark:bg-white/10 dark:text-white/65">
+                                            <span className="rounded-full bg-surface-sunken px-2.5 py-1 text-g-app-caption font-semibold text-fg-secondary">
                                                 {statusLabel}
                                             </span>
                                             <ArrowRight className="h-4 w-4 text-muted-foreground" aria-hidden />
@@ -286,17 +287,17 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                             return (
                                 <div
                                     key={gap.id}
-                                    className="rounded-xl border border-black/10 bg-white p-4 dark:border-white/15 dark:bg-black"
+                                    className="rounded-g-control border border-border-subtle bg-surface-raised p-4"
                                 >
                                     <div className="flex items-start justify-between gap-2">
-                                        <h3 className="text-sm font-bold text-black dark:text-white">{gap.title[lang]}</h3>
+                                        <h3 className="text-g-app-body-sm font-bold text-fg-primary">{gap.title[lang]}</h3>
                                         {detected && (
-                                            <span className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-kicker font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
+                                            <span className="flex-shrink-0 rounded-full bg-state-gap-fill px-2.5 py-1 text-g-app-caption font-semibold text-state-gap">
                                                 {t.branches.detectedInPortfolio}
                                             </span>
                                         )}
                                     </div>
-                                    <p className="mt-1.5 text-xs leading-relaxed text-black/60 dark:text-white/65">
+                                    <p className="mt-1.5 text-g-app-caption leading-relaxed text-fg-secondary">
                                         {gap.description[lang]}
                                     </p>
                                 </div>
@@ -318,10 +319,10 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                 <Link
                                     key={`${policyId}-${index}`}
                                     href={`/wallet/${policyId}#coverage`}
-                                    className="block rounded-xl border border-black/10 bg-white px-4 py-3 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40"
+                                    className="block rounded-g-control border border-border-subtle bg-surface-raised px-4 py-3 transition-colors hover:border-border-focus"
                                 >
-                                    <p className="text-sm font-bold text-black dark:text-white">{pickLang(perk.name, lang)}</p>
-                                    <p className="mt-0.5 line-clamp-2 text-xs text-black/60 dark:text-white/65">
+                                    <p className="text-g-app-body-sm font-bold text-fg-primary">{pickLang(perk.name, lang)}</p>
+                                    <p className="mt-0.5 line-clamp-2 text-g-app-caption text-fg-secondary">
                                         {pickLang(perk.description, lang)}
                                         {insurerName ? ` — ${insurerName}` : ""}
                                     </p>
@@ -343,9 +344,9 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                     <Link
                                         key={policy.id}
                                         href={`/wallet/${policy.id}#dates`}
-                                        className="flex items-center justify-between gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40"
+                                        className="flex items-center justify-between gap-3 rounded-g-control border border-border-subtle bg-surface-raised px-4 py-3 transition-colors hover:border-border-focus"
                                     >
-                                        <p className="truncate text-sm font-bold text-black dark:text-white">
+                                        <p className="truncate text-g-app-body-sm font-bold text-fg-primary">
                                             {/* Insurer + asset identifier through the shared
                                                 primitive — two same-insurer renewals in one
                                                 branch are otherwise the same row twice. */}
@@ -354,7 +355,7 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                                 .join(' · ') || "—"}
                                         </p>
                                         <span
-                                            className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-kicker font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300"
+                                            className="flex-shrink-0 rounded-full bg-state-gap-fill px-2.5 py-1 text-g-app-caption font-semibold text-state-gap"
                                             data-fact="policy.daysRemaining"
                                             data-fact-subject={policy.id}
                                         >
@@ -377,7 +378,7 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                 <Link
                                     key={action.id}
                                     href={target}
-                                    className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-bold text-black/75 transition-colors hover:border-primary/40 hover:text-primary dark:border-white/15 dark:bg-black dark:text-white/80 dark:hover:border-mint/40 dark:hover:text-mint"
+                                    className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 py-2 text-g-app-caption font-semibold text-fg-secondary transition-colors hover:border-border-focus hover:text-fg-brand"
                                 >
                                     {action.label[lang]}
                                     <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -395,9 +396,9 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                 <Link
                                     key={index}
                                     href={questionHref(question)}
-                                    className="flex items-center gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm text-black/75 transition-colors hover:border-primary/40 hover:text-primary dark:border-white/15 dark:bg-black dark:text-white/80 dark:hover:border-mint/40 dark:hover:text-mint"
+                                    className="flex items-center gap-3 rounded-g-control border border-border-subtle bg-surface-raised px-4 py-3 text-g-app-body-sm text-fg-secondary transition-colors hover:border-border-focus hover:text-fg-brand"
                                 >
-                                    <MessageCircle className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" aria-hidden />
+                                    <MessageCircle className="h-4 w-4 flex-shrink-0 text-fg-brand" aria-hidden />
                                     {question[lang]}
                                 </Link>
                             ))}
@@ -408,14 +409,14 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                 {/* Agent CTA */}
                 <SectionCard icon={Users} title={t.branches.askAgent}>
                     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                        <p className="text-sm leading-relaxed text-black/60 dark:text-white/65">
+                        <p className="text-g-app-body-sm leading-relaxed text-fg-secondary">
                             {relationship?.agent?.name
                                 ? t.branches.agentConnectedHint.replace('{name}', relationship.agent.name)
                                 : t.branches.agentDisconnectedHint}
                         </p>
                         <Link
                             href="/agent"
-                            className="pw-primary-button inline-flex flex-shrink-0 items-center gap-2 px-5 py-2.5 text-sm font-bold"
+                            className={buttonClassName({ variant: "primary", size: "sm" }, "flex-shrink-0 gap-2 font-bold")}
                         >
                             {t.branches.askAgent}
                             <ArrowRight className="h-4 w-4" aria-hidden />

@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { FileText, MessageSquare, FileUp, Lock } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { buttonClassName } from "@/src/design-system/primitives"
 import { apiErrorMessage } from "@/lib/api-error-copy"
 import { threadStatusLabel, threadPriorityLabel, actionStatusLabel } from "@/lib/collaboration/status-labels"
 import type { ViewerRole, ThreadType } from "./types"
@@ -49,9 +50,9 @@ type ThreadDetail = Thread & {
 // Icon/color only — the localized label is resolved at render time via
 // t.collaboration.timeline.threadType[type] (a module const can't access `t`).
 const THREAD_TYPE_CONFIG: Record<ThreadType, { icon: React.ElementType; color: string }> = {
-    message: { icon: MessageSquare, color: "text-primary dark:text-mint" },
-    document_request: { icon: FileUp, color: "text-amber-500" },
-    proposal: { icon: FileText, color: "text-primary dark:text-mint" },
+    message: { icon: MessageSquare, color: "text-fg-brand" },
+    document_request: { icon: FileUp, color: "text-state-gap" },
+    proposal: { icon: FileText, color: "text-fg-brand" },
 }
 
 interface CollaborationTimelineProps {
@@ -297,10 +298,10 @@ export function CollaborationTimeline({
     }, [selectedId])
 
     return (
-        <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-sm">
-            <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
+        <div className="rounded-g-card border border-border-subtle bg-surface-raised shadow-g-raised">
+            <div className="border-b border-border-hair p-4">
                 <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
+                    <h3 className="text-g-app-body-sm font-semibold text-fg-secondary">
                         {t.collaboration.timeline.heading}
                     </h3>
                     {loading ? <Skeleton className="h-4 w-16" /> : null}
@@ -328,7 +329,7 @@ export function CollaborationTimeline({
                     <button
                         onClick={() => runMutation(createThread)}
                         disabled={busy || !threadSubject.trim()}
-                        className="pw-primary-button"
+                        className={buttonClassName({ variant: "primary" })}
                     >
                         {t.collaboration.timeline.create}
                     </button>
@@ -336,10 +337,10 @@ export function CollaborationTimeline({
             </div>
 
             <div className={`grid gap-0 ${compact ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"}`}>
-                <div className={`p-4 ${compact ? "" : "border-r border-neutral-200 dark:border-neutral-700"}`}>
+                <div className={`p-4 ${compact ? "" : "border-r border-border-hair"}`}>
                     <div className="space-y-2 max-h-[380px] overflow-auto">
                         {threads.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">{t.collaboration.timeline.noThreads}</p>
+                            <p className="text-g-app-body-sm text-fg-secondary">{t.collaboration.timeline.noThreads}</p>
                         ) : (
                             threads.map((thread) => {
                                 const waitingOnYou = isWaitingOnYou(thread.status, viewerRole)
@@ -355,24 +356,24 @@ export function CollaborationTimeline({
                                         className={`w-full text-left p-3 rounded-lg border transition ${
                                             selectedId === thread.id
                                                 ? "border-primary bg-primary-tint dark:bg-primary/15"
-                                                : "border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                : "border-border-subtle hover:bg-surface-sunken"
                                         }`}
                                     >
                                         <div className="flex items-center justify-between gap-2">
                                             <div className="flex items-center gap-2 min-w-0">
                                                 <TypeIcon className={`w-4 h-4 flex-shrink-0 ${typeConfig.color}`} />
-                                                <p className="text-sm font-semibold text-foreground truncate">{thread.subject}</p>
+                                                <p className="truncate text-g-app-body-sm font-semibold text-fg-primary">{thread.subject}</p>
                                             </div>
-                                            <span className="text-kicker uppercase font-bold text-neutral-500 dark:text-neutral-400">{threadPriorityLabel(thread.priority)[language]}</span>
+                                            <span className="text-g-app-caption font-semibold text-fg-secondary">{threadPriorityLabel(thread.priority)[language]}</span>
                                         </div>
                                         <div className="mt-1 flex gap-2 items-center flex-wrap">
-                                            <span className={`text-kicker px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-muted`}>{t.collaboration.timeline.threadType[threadTypeKey]}</span>
-                                            <span className="text-xs text-neutral-500 dark:text-neutral-400">{threadStatusLabel(thread.status)[language]}</span>
+                                            <span className={`text-g-app-caption px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-surface-sunken`}>{t.collaboration.timeline.threadType[threadTypeKey]}</span>
+                                            <span className="text-xs text-fg-secondary">{threadStatusLabel(thread.status)[language]}</span>
                                             {waitingOnYou ? (
-                                                <span className="text-kicker px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-200 font-bold">{t.collaboration.timeline.waitingOnYou}</span>
+                                                <span className="rounded-full bg-state-gap-fill px-2 py-0.5 text-g-app-caption font-bold text-state-gap">{t.collaboration.timeline.waitingOnYou}</span>
                                             ) : null}
                                             {overdue ? (
-                                                <span className="text-kicker px-2 py-0.5 rounded-full bg-red-100 dark:bg-rose-900/40 text-red-700 dark:text-rose-200 font-bold">{t.collaboration.timeline.overdue}</span>
+                                                <span className="rounded-full bg-action-danger/15 px-2 py-0.5 text-g-app-caption font-bold text-action-danger">{t.collaboration.timeline.overdue}</span>
                                             ) : null}
                                         </div>
                                     </button>
@@ -384,15 +385,15 @@ export function CollaborationTimeline({
 
                 <div className="p-4">
                     {!selected ? (
-                        <p className="text-sm text-muted-foreground">{t.collaboration.timeline.selectThread}</p>
+                        <p className="text-g-app-body-sm text-fg-secondary">{t.collaboration.timeline.selectThread}</p>
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between gap-2">
-                                <h4 className="text-sm font-bold text-foreground">{selected.subject}</h4>
+                                <h4 className="text-g-app-body-sm font-bold text-fg-primary">{selected.subject}</h4>
                                 <div className="flex gap-2">
-                                    <button onClick={() => runMutation(() => patchThreadStatus("open"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-neutral-300 disabled:opacity-50 dark:border-neutral-600">{t.collaboration.timeline.statusOpen}</button>
-                                    <button onClick={() => runMutation(() => patchThreadStatus("resolved"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-primary text-primary disabled:opacity-50 dark:text-mint">{t.collaboration.timeline.statusResolve}</button>
-                                    <button onClick={() => runMutation(() => patchThreadStatus("closed"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-neutral-400 disabled:opacity-50">{t.collaboration.timeline.statusClose}</button>
+                                    <button onClick={() => runMutation(() => patchThreadStatus("open"))} disabled={busy} className="text-xs px-2 py-1 rounded-g-control border border-border-strong disabled:opacity-50">{t.collaboration.timeline.statusOpen}</button>
+                                    <button onClick={() => runMutation(() => patchThreadStatus("resolved"))} disabled={busy} className="text-xs px-2 py-1 rounded-g-control border border-border-focus text-fg-brand disabled:opacity-50">{t.collaboration.timeline.statusResolve}</button>
+                                    <button onClick={() => runMutation(() => patchThreadStatus("closed"))} disabled={busy} className="text-xs px-2 py-1 rounded-g-control border border-border-strong disabled:opacity-50">{t.collaboration.timeline.statusClose}</button>
                                 </div>
                             </div>
 
@@ -400,7 +401,7 @@ export function CollaborationTimeline({
                             {selected.threadType && selected.threadType !== "message" && (
                                 <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
                                     selected.threadType === "document_request"
-                                        ? "bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40"
+                                        ? "border border-state-gap-border bg-state-gap-fill"
                                         : "bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/40"
                                 }`}>
                                     {(() => {
@@ -424,29 +425,29 @@ export function CollaborationTimeline({
                                 role="log"
                                 aria-live="polite"
                                 aria-relevant="additions"
-                                className="rounded-lg border border-neutral-200 dark:border-neutral-700 p-3 max-h-[220px] overflow-auto space-y-2"
+                                className="max-h-[220px] space-y-2 overflow-auto rounded-g-control border border-border-subtle p-3"
                             >
                                 {visibleMessages.length === 0 ? (
-                                    <p className="text-xs text-neutral-500 dark:text-neutral-400">{t.collaboration.timeline.noMessages}</p>
+                                    <p className="text-xs text-fg-secondary">{t.collaboration.timeline.noMessages}</p>
                                 ) : (
                                     visibleMessages.map((item) => (
                                         <div
                                             key={item.id}
-                                            className={`text-sm ${item.isPrivate ? "border-l-2 border-amber-400 pl-2 bg-amber-50/50 dark:bg-amber-950/10 rounded-r" : ""}`}
+                                            className={`text-sm ${item.isPrivate ? "rounded-r border-l-2 border-state-gap-border bg-state-gap-fill/50 pl-2" : ""}`}
                                         >
                                             <div className="flex items-center gap-1.5">
-                                                <p className="font-semibold text-neutral-800 dark:text-neutral-200">{displayPersonName(item.sender.name) || item.sender.email}</p>
+                                                <p className="font-semibold text-fg-primary">{displayPersonName(item.sender.name) || item.sender.email}</p>
                                                 {item.isPrivate && (
-                                                    <span className="inline-flex items-center gap-0.5 text-kicker font-bold text-amber-700 dark:text-amber-400">
+                                                    <span className="inline-flex items-center gap-0.5 text-g-app-caption font-semibold text-state-gap">
                                                         <Lock className="w-3 h-3" />
                                                         {t.collaboration.timeline.privateLabel}
                                                     </span>
                                                 )}
                                                 {item.messageType === "system" && (
-                                                    <span className="text-kicker font-bold text-neutral-500 dark:text-neutral-400 uppercase">{t.collaboration.timeline.system}</span>
+                                                    <span className="text-g-app-caption font-semibold text-fg-secondary">{t.collaboration.timeline.system}</span>
                                                 )}
                                             </div>
-                                            <p className="text-neutral-600 dark:text-neutral-300">{item.body}</p>
+                                            <p className="text-fg-secondary">{item.body}</p>
                                         </div>
                                     ))
                                 )}
@@ -456,13 +457,13 @@ export function CollaborationTimeline({
                             <div className="space-y-2">
                                 {/* Templates dropdown (agent only) */}
                                 {viewerRole === "agent" && showTemplates && (
-                                    <div className="grid grid-cols-2 gap-1.5 p-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50">
+                                    <div className="grid grid-cols-2 gap-1.5 rounded-g-control border border-border-subtle bg-surface-sunken p-2">
                                         {t.collaboration.timeline.templateItems.map((tpl) => (
                                             <button
                                                 key={tpl.label}
                                                 type="button"
                                                 onClick={() => { setMessage(tpl.body); setShowTemplates(false) }}
-                                                className="text-left text-xs px-2 py-1.5 rounded hover:bg-white dark:hover:bg-neutral-700 transition text-neutral-600 dark:text-neutral-300 font-medium"
+                                                className="rounded-g-control px-2 py-1.5 text-left text-xs font-medium text-fg-secondary transition hover:bg-surface-raised"
                                             >
                                                 {tpl.label}
                                             </button>
@@ -485,7 +486,7 @@ export function CollaborationTimeline({
                                             rows={2}
                                             placeholder={isPrivateMessage ? t.collaboration.timeline.privateNotePlaceholder : t.collaboration.timeline.postUpdatePlaceholder}
                                             className={`pw-input pw-input-sm min-h-0 resize-y ${
-                                                isPrivateMessage ? "!border !border-amber-300 dark:border-amber-800/40 dark:!border-amber-700" : ""
+                                                isPrivateMessage ? "!border !border-state-gap-border" : ""
                                             }`}
                                         />
                                         {viewerRole === "agent" && (
@@ -493,7 +494,7 @@ export function CollaborationTimeline({
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowTemplates(!showTemplates)}
-                                                    className="text-kicker font-semibold text-primary dark:text-mint hover:underline"
+                                                    className="text-g-app-caption font-semibold text-fg-brand hover:underline"
                                                 >
                                                     {showTemplates ? t.collaboration.timeline.hideTemplates : t.collaboration.timeline.templates}
                                                 </button>
@@ -502,9 +503,9 @@ export function CollaborationTimeline({
                                                         type="checkbox"
                                                         checked={isPrivateMessage}
                                                         onChange={(e) => setIsPrivateMessage(e.target.checked)}
-                                                        className="h-4 w-4 rounded border-neutral-300 accent-amber-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                                                        className="h-4 w-4 rounded border-border-strong accent-state-gap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                                                     />
-                                                    <span className="text-kicker font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
+                                                    <span className="flex items-center gap-0.5 text-g-app-caption font-semibold text-state-gap">
                                                         <Lock className="w-3 h-3" />
                                                         {t.collaboration.timeline.privateNote}
                                                     </span>
@@ -512,18 +513,18 @@ export function CollaborationTimeline({
                                             </div>
                                         )}
                                     </div>
-                                    <button type="button" onClick={() => runMutation(addMessage)} disabled={busy || !message.trim()} className="pw-primary-button pw-btn-sm self-start">{t.collaboration.timeline.send}</button>
+                                    <button type="button" onClick={() => runMutation(addMessage)} disabled={busy || !message.trim()} className={buttonClassName({ variant: "primary", size: "sm" }, "self-start")}>{t.collaboration.timeline.send}</button>
                                 </div>
                             </div>
 
-                            <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 p-3">
-                                <p className="text-xs font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">{t.collaboration.timeline.actions}</p>
+                            <div className="rounded-g-control border border-border-subtle p-3">
+                                <p className="mb-2 text-g-app-caption font-semibold text-fg-secondary">{t.collaboration.timeline.actions}</p>
                                 <div className="space-y-2 mb-3">
                                     {selected.actions.map((item) => (
-                                        <div key={item.id} className="flex items-center justify-between gap-2 border border-neutral-200 dark:border-neutral-700 rounded p-2">
+                                        <div key={item.id} className="flex items-center justify-between gap-2 rounded-g-control border border-border-subtle p-2">
                                             <div>
-                                                <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                                                <p className="text-xs text-neutral-500 dark:text-neutral-400">{t.collaboration.timeline.assignee}: {displayPersonName(item.assignee.name) || item.assignee.email}</p>
+                                                <p className="text-g-app-body-sm font-semibold text-fg-primary">{item.title}</p>
+                                                <p className="text-xs text-fg-secondary">{t.collaboration.timeline.assignee}: {displayPersonName(item.assignee.name) || item.assignee.email}</p>
                                             </div>
                                             <select
                                                 aria-label={t.collaboration.timeline.selectActionStatus}
@@ -566,7 +567,7 @@ export function CollaborationTimeline({
                                         className="pw-input pw-input-sm"
                                     />
                                 </div>
-                                <button onClick={() => runMutation(addAction)} disabled={busy || !actionTitle.trim() || !actionAssigneeId} className="pw-primary-button mt-2">
+                                <button onClick={() => runMutation(addAction)} disabled={busy || !actionTitle.trim() || !actionAssigneeId} className={buttonClassName({ variant: "primary" }, "mt-2")}>
                                     {t.collaboration.timeline.addAction}
                                 </button>
                             </div>
