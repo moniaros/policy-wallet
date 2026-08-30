@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PolicyWallet">
+  <!-- Grafí logomark v2: a policy card whose right edge opens into a rounded
+       slot, with a bead seated IN the slot — card and wallet in one gesture.
+       v1's slot collapsed at the edge and the bead floated outside the
+       silhouette (caught on the 16px sheet); the slot is now a full capsule
+       cut breaking the edge, bead inside it. Filled so it holds at 16px. -->
+  <path fill="currentColor" fill-rule="evenodd" d="
+    M6 2.5 h12 A3.5 3.5 0 0 1 21.5 6 v12 a3.5 3.5 0 0 1 -3.5 3.5 H6
+    A3.5 3.5 0 0 1 2.5 18 V6 A3.5 3.5 0 0 1 6 2.5 Z
+    M21.5 9 H15 a3 3 0 0 0 0 6 h6.5 Z" />
+  <circle cx="16.4" cy="12" r="2" fill="var(--fg-brand, #3E8C79)" />
+</svg>
