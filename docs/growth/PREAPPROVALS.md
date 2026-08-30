@@ -29,7 +29,12 @@ Two of GD-03's six items carry into the build unconditionally, because C2's own 
 requires them: always a range, never a point estimate; the band and its source render beside the
 number.
 
-### D2 — `DocumentAnchor` · `DECIDED: extracted-text quote, no page number`
+### D2 — `DocumentAnchor` · ~~`DECIDED: extracted-text quote`~~ **SUPERSEDED BY OPEN-3b (2026-08-29)**
+
+> **This decision was overturned by the owner before any code was written.** The relaxed
+> extracted-text anchor is **not** to be used. C3 blocks on real citation coverage instead —
+> see OPEN-3b. The reasoning below is kept because it explains the problem OPEN-3b solves
+> differently, not because it is in force.
 
 `DocumentAnchor` does not exist. `ExtractionSource {page?, snippet?}` is flag-gated behind
 `EXTRACTION_CITATIONS=1` and covers 9 top-level scalars — not `coverages[]`, not `conditions[]`.
@@ -70,7 +75,7 @@ documents.
 
 ## Open — Phase B is blocked on these
 
-### OPEN-1 · The €/τ.μ. construction-cost source for C2b — **blocks P-02b**
+### OPEN-1 · The €/τ.μ. source for C2b — **DECIDED: C2a only; C2b stays GATED, not cut**
 
 D1 says build; nobody has yet named a source that survives §6. It must be primary, deep-linkable,
 datable, and carry a defensible `reverify_after`.
@@ -84,9 +89,9 @@ datable, and carry a defensible `reverify_after`.
 **Recommendation: C unless you can name a source.** C2a alone already answers the question H1's
 guide raises, and it carries no estimate risk at all.
 
-**DECISION:** _______________
+**DECISION:** see the binding block at the foot of this file.
 
-### OPEN-2 · C1's synonym map — initial coverage set, and whether benefits count — **blocks P-01**
+### OPEN-2 · C1's synonym map — **DECIDED: health only, authored, narrow**
 
 `coverage-synonyms.ts` is authored and versioned, never inferred. Two questions:
 
@@ -98,9 +103,9 @@ guide raises, and it carries no estimate risk at all.
    person covered twice versus two people each covered once — and conflating them would produce
    exactly the false "paying twice" finding C1 exists to avoid.
 
-**DECISION:** _______________
+**DECISION:** see the binding block at the foot of this file.
 
-### OPEN-3 · C3 — may `explicitly_permitted` be shown at all? — **blocks P-03 copy**
+### OPEN-3 · C3 `explicitly_permitted` — **DECIDED: show it, anchor mandatory**
 
 The tri-state is `explicitly_permitted | explicitly_excluded | not_addressed`.
 
@@ -117,9 +122,9 @@ outcome that actually protects someone.
 reader can never identify for themselves. Its copy must say the policy does not address it **and
 that silence is not permission** (§2.3).
 
-**DECISION:** _______________
+**DECISION:** see the binding block at the foot of this file.
 
-### OPEN-4 · C5 — may an authority's requirement be quoted verbatim, and in which locales? — **blocks P-05, currently HALTED anyway**
+### OPEN-4 · C5 quoting — **DECIDED: C5 HALTED this run; H8, H11, H17 CUT**
 
 Quoting is the most accurate rendering and the clearest provenance. It also reproduces third-party
 text, and a Greek statutory quote has no official English version — a translation would be ours,
@@ -131,17 +136,17 @@ translated quote as the authority's text.
 
 **Moot until S-04 resolves.** Answer it anyway so C5 is not blocked twice.
 
-**DECISION:** _______________
+**DECISION:** see the binding block at the foot of this file.
 
-### OPEN-5 · X-01 — the H-010 schema decision — **blocks H17**
+### OPEN-5 · X-01 — **DECIDED: deferred; nothing in GROWTH-02 waits on it**
 
 Insured-person name **and** the missing cyber / business / pension `AcordData` objects, decided as
 one unit. Human item, pre-existing, unchanged by this run. Until it lands there is nothing for a
 cyber conformance check to read.
 
-**DECISION:** _______________
+**DECISION:** see the binding block at the foot of this file.
 
-### OPEN-6 · HALT-G02 — who owns the ΦΕΚ read? — **does not block, but should not lapse**
+### OPEN-6 · HALT-G02 — **DECIDED: Product-Truth owns it, verbatim beats inferential**
 
 D3 left the ΑΑΔΕ attribution in place. It is still, on the verified reading, wrong, and the article
 currently tells readers to object to the wrong body. It needs someone accountable to read
@@ -149,7 +154,7 @@ currently tells readers to object to the wrong body. It needs someone accountabl
 
 Not a Phase B blocker. Recorded so it does not quietly become permanent.
 
-**DECISION / OWNER:** _______________
+**DECISION:** see the binding block at the foot of this file.
 
 ---
 
@@ -168,3 +173,66 @@ Written here so Phase B recognises them fast rather than treating them as novel:
 - **Any output that is a personal recommendation rather than a prompt to review.**
 - **Any request for a microsite, geo-grid page, model-specific content, or a voice agent.** All
   struck by the brief; refuse and record.
+
+
+---
+
+# DECISIONS AS FILLED BY THE OWNER — 2026-08-29
+
+Phase B is unblocked. These are binding and supersede anything above them.
+
+## OPEN-1 · C2a only. C2b GATED, not cut.
+No verified URL can be named, and asserting one would be the exact failure §6 forbids.
+**One** search is permitted before closing — TEE published construction-cost figures; the ΑΑΔΕ
+«ελάχιστο κόστος οικοδομικών εργασιών»; the ΕΛΣΤΑΤ construction cost index. If none resolves to a
+current, citable €/τ.μ. with a date and a `reverify_after`, **C2b does not ship this run**.
+GD-03 already searched once — **do not spend a second agent-hour on it**.
+H1 ships on C2a alone. **Copy must not imply a shortfall figure is coming.**
+
+## OPEN-2 · C1: health only, authored, narrow.
+Seed **exactly** the benefit set appearing in the ομαδικό/ατομικό overlap. Nothing else, no other
+branch. Render `unmapped` **prominently** — a long unmapped list is the signal the map is not
+ready, and hiding it converts an honest gap into a silent one. Never infer a synonym at runtime.
+Expanding the map is a later item with its own review, never opportunistic.
+
+## OPEN-3 · C3: show `explicitly_permitted`, anchor mandatory.
+Suppressing it makes the tri-state a bi-state and tells someone their policy is silent when it is
+not — worse than the risk of showing it. Copy: *the policy addresses this and appears to permit it;
+confirm with your insurer before relying on it.* **Never clearance to act.**
+
+## OPEN-3b · C3 blocks on real citation coverage. **This supersedes D2.**
+A capability returning `cannot_determine` for every query it will ever answer is shipped, correct
+and useless. That finding must not be worked around.
+- **Additive within the existing flag** → build it as **C3-0**; C3 blocks on it.
+- **Requires a schema change** → **C3 does not ship this run.**
+**Do not relax the anchor requirement to make it shippable.** A stance without evidence is an
+assertion about someone's cover.
+
+## OPEN-4 · C5 HALTED. H8, H11, H17 CUT from the queue.
+Not blocked-and-open — that reads as pending work. **Cut, with the reason recorded.**
+Rule for whenever C5 unblocks: short verbatim quotation of statutory or licensing text is
+**permitted and preferred over paraphrase** — a paraphrased limit is how a number drifts — always
+attributed, always beside its source link, both locales, **never re-expressed as a different
+figure**.
+
+## OPEN-5 · X-01 deferred.
+No insured-person name, no cyber/business/pension `AcordData` this run. H17 is cut anyway.
+Revisit when a real capture shows non-zero health duplicates, or a real cyber/business/pension
+policy is uploaded.
+
+## OPEN-6 · HALT-G02 owned by Product-Truth (Opus 5).
+**One rule: a verbatim excerpt beats an inferential reading, always.** Where the two conflict and
+the verbatim text does not settle the attribution, **CUT that specific claim** with the reason
+recorded. Do not hedge. Do not carry both readings. Do not escalate.
+
+## REGISTER CORRECTION · binding on the queue
+H1, H3, H6, H11 convert from CREATE to **EXTEND or NO-OP** against their published guides.
+**Any CREATE row whose slug already exists is a halt condition, not a judgement call.**
+H11 is cut under OPEN-4 regardless.
+
+## Z-01 · first item, ahead of every capability and every hook
+Replace the figures with the ΦΕΚ-verified ones **and add the `SOURCES.md` entry with the verbatim
+excerpt**. **Do not remove the numbers.** H4 blocks on it.
+Then: the defect was published *under a sources heading*, so **G-07 is not queued debt** — run it
+immediately after Z-01 and report the UNRESOLVABLE count **before any new guide ships**.
+Fifteen guides, not twelve.

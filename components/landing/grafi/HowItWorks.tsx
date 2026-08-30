@@ -171,9 +171,6 @@ export function HowItWorks({ locale }: { locale: LandingLocale }) {
                 {/* §6: the four steps PLUS the ReadingDemo — «το διαβάζουμε για
                     εσάς» demonstrated on a stamped sample rather than asserted.
                     Step two's arrow lands here. */}
-                <div id="reading-demo" className="mx-auto mt-g-16 max-w-[880px] scroll-mt-28 lg:scroll-mt-36">
-                    <ReadingDemo locale={locale} />
-                </div>
             </div>
         </section>
     )

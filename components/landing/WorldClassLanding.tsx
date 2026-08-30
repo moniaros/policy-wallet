@@ -123,11 +123,48 @@ export function WorldClassLanding({
                     steps: once a visitor knows what happens to a policy, the
                     next question is whether this is for them. */}
                 <WhoItIsFor locale={locale} />
-
+                    
                    {/* ── 9b. WHY NOW (§6 institutions-band slot) — the three
                     why-now facts; the full institutions band lands with G8. */}
                 <WhyNow locale={locale} />
+  {/* ── 10. WHAT TO DO NEXT ──────────────────────────── */}
+                <section className="px-6 pb-24 lg:px-12">
+                    <div className="relative mx-auto max-w-page overflow-hidden rounded-2xl bg-[#0F172A] px-6 py-20 text-center sm:px-8 lg:py-28">
+                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(41,104,91,0.30),transparent)]" />
 
+                        <div className="relative">
+                            <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-mint">
+                                PolicyWallet
+                            </p>
+                            <h2 className="mb-4 text-h2 leading-tight font-semibold tracking-[-0.03em] text-balance text-white lg:text-h1">
+                                {t(
+                                    "Μάθετε σήμερα αν είστε ακόμη προστατευμένοι.",
+                                    "Find out today whether you are still protected.",
+                                )}
+                            </h2>
+                            <p className="mx-auto mb-10 max-w-[460px] text-lead text-white/80">
+                                {pick(CTA_REASSURANCE, locale)}
+                            </p>
+                            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                                <LandingCtaLink
+                                    href={authHref("/auth/signup?role=policyholder&source=landing_cta", locale)}
+                                    locale={locale}
+                                    location="final_cta"
+                                    className="pw-primary-button-inverse pw-btn-lg"
+                                >
+                                    {pick(PRIMARY_ACTION, locale)}
+                                    <ArrowRight aria-hidden className="h-4 w-4" />
+                                </LandingCtaLink>
+                                <Link
+                                    href={l("/solutions/agents")}
+                                    className="pw-secondary-button-inverse pw-btn-lg"
+                                >
+                                    {t("Είμαι ασφαλιστής", "I am an insurance agent")}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </section>
                 {/* ── 5a. MARKET NUMBERS (§6) — only the two claims that
                     resolve to a read primary source (ΕΔΑ, ΕΝΦΙΑ). */}
                 <MarketNumbers locale={locale} />
@@ -173,44 +210,7 @@ export function WorldClassLanding({
               {/* ── 8. QUESTIONS ─────────────────────────────────── */}
                 <HomeFaq locale={locale} />
 
-                {/* ── 10. WHAT TO DO NEXT ──────────────────────────── */}
-                <section className="px-6 pb-24 lg:px-12">
-                    <div className="relative mx-auto max-w-page overflow-hidden rounded-2xl bg-[#0F172A] px-6 py-20 text-center sm:px-8 lg:py-28">
-                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(41,104,91,0.30),transparent)]" />
-
-                        <div className="relative">
-                            <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-mint">
-                                PolicyWallet
-                            </p>
-                            <h2 className="mb-4 text-h2 leading-tight font-semibold tracking-[-0.03em] text-balance text-white lg:text-h1">
-                                {t(
-                                    "Μάθετε σήμερα αν είστε ακόμη προστατευμένοι.",
-                                    "Find out today whether you are still protected.",
-                                )}
-                            </h2>
-                            <p className="mx-auto mb-10 max-w-[460px] text-lead text-white/80">
-                                {pick(CTA_REASSURANCE, locale)}
-                            </p>
-                            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                                <LandingCtaLink
-                                    href={authHref("/auth/signup?role=policyholder&source=landing_cta", locale)}
-                                    locale={locale}
-                                    location="final_cta"
-                                    className="pw-primary-button-inverse pw-btn-lg"
-                                >
-                                    {pick(PRIMARY_ACTION, locale)}
-                                    <ArrowRight aria-hidden className="h-4 w-4" />
-                                </LandingCtaLink>
-                                <Link
-                                    href={l("/solutions/agents")}
-                                    className="pw-secondary-button-inverse pw-btn-lg"
-                                >
-                                    {t("Είμαι ασφαλιστής", "I am an insurance agent")}
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+              
             </main>
 
             <PublicMegaFooter locale={locale} />
