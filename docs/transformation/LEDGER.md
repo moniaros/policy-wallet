@@ -402,6 +402,7 @@ unreadable-value work: a value that could not be read must link here.
 | `/insights/risk-profile` | view and complete the risk profile | **KEEP** — B2C, reads the caller's own `policyholderProfile` |
 | `/upgrade`, `/upgrade/success` | plan purchase | **KEEP** — pricing/entitlements are §12.4 out of scope; display only |
 | `/coverage`, `/home` | legacy redirects | **KEEP** — no capability |
+| `/money` | the money line — what is paid, what it protects up to, what may be paid twice (Grafí app tier, G3→G9) | **NEW** — renders only figures the wallet already computes honestly; nothing invented |
 
 | overlay | disposition |
 |---|---|

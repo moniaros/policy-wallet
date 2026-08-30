@@ -115,6 +115,8 @@ export const COUNT_KEYS: Record<string, string> = {
 
 /** Facts that are quantities but not cardinalities (money, days, indices). */
 export const FACT_KEYS: Record<string, string> = {
+    // money.* — the Grafí money line (lib/app/money.ts). One figure, one element.
+    "money.paidPerYear": "The premium footprint of in-force policies (calculatePremiumFootprint) — what the household pays per year; expired and unreadable premiums excluded and said so.",
     // policy.* — SUBJECT-SCOPED by policy id when rendered in a list.
     "policy.daysRemaining": "resolvePolicyLifecycle daysUntilExpiry — never re-derived client-side.",
     "policy.endDate": "resolvePolicyLifecycle endDate, Athens-formatted.",

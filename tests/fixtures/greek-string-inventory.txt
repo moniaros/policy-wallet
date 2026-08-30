@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2820
+# bundle entries: 2848
 # inline entries: 4772 across 213 files
 # ternary entries: 285 across 44 files
 # call entries: 1212 across 78 files
@@ -562,6 +562,34 @@ bundle	apiErrors.notFound	"Δεν βρέθηκε. Μπορεί να διαγρά
 bundle	apiErrors.unauthorized	"Πρέπει να συνδεθείτε ξανά για να συνεχίσετε."
 bundle	apiErrors.unavailable	"Η υπηρεσία δεν είναι διαθέσιμη προσωρινά. Δοκιμάστε ξανά σε λίγο."
 bundle	apiErrors.validation	"Κάποια στοιχεία δεν είναι έγκυρα. Ελέγξτε τα και δοκιμάστε ξανά."
+bundle	app.money.interim	"Πληρώνετε {amount} τον χρόνο για τα ασφαλιστήρια που ισχύουν σήμερα."
+bundle	app.money.interimNote	"Αυτή η σελίδα χτίζεται ακόμη — τα υπόλοιπα ποσά θα εμφανιστούν μόλις τα ελέγξω."
+bundle	app.money.title	"Τα χρήματά σας"
+bundle	app.nav.add	"Προσθήκη ασφαλιστηρίου"
+bundle	app.nav.adviser	"Σύμβουλος"
+bundle	app.nav.back	"Πίσω"
+bundle	app.nav.brand	"PolicyWallet — αρχική"
+bundle	app.nav.me	"Εσείς"
+bundle	app.nav.money	"Χρήματα"
+bundle	app.nav.moreThanNine	"9+"
+bundle	app.nav.policies	"Φάκελος"
+bundle	app.nav.primary	"Κύρια πλοήγηση"
+bundle	app.nav.protection	"Προστασία"
+bundle	app.nav.see	"Να δείτε"
+bundle	app.nav.skip	"Μετάβαση στο περιεχόμενο"
+bundle	app.nav.updates	"Ενημερώσεις"
+bundle	app.nav.updatesBadge	"{count, plural, =0 {Ενημερώσεις} one {Ενημερώσεις — # νέα} other {Ενημερώσεις — # νέες}}"
+bundle	app.shell.plan	"Πρόγραμμα: {plan}"
+bundle	app.shell.yourAccount	"Ο λογαριασμός σας"
+bundle	app.state.covered	"Καλύπτεται"
+bundle	app.state.gap	"Κενό"
+bundle	app.state.review	"Για έλεγχο"
+bundle	app.tier.later.definition	"Ό,τι αξίζει μια ματιά, χωρίς ημερομηνία."
+bundle	app.tier.later.title	"Όταν έχετε χρόνο"
+bundle	app.tier.month.definition	"Λήγει μέσα σε 45 ημέρες, ή άλλαξε τιμή πάνω από τον δείκτη, ή λείπει ένα όριο που θα έπρεπε να αναφέρεται."
+bundle	app.tier.month.title	"Αυτόν τον μήνα"
+bundle	app.tier.now.definition	"Λήγει μέσα σε 14 ημέρες, ή είναι κενό σε κάτι βασικό που μου έχετε πει ότι έχετε."
+bundle	app.tier.now.title	"Να το δείτε τώρα"
 bundle	auth.accountCreated	"Ο λογαριασμός δημιουργήθηκε!"
 bundle	auth.alreadyHaveAccount	"Έχετε ήδη λογαριασμό;"
 bundle	auth.and	"και την"

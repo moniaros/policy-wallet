@@ -175,6 +175,10 @@
   --spacing-g-20: 80px;
   --spacing-g-24: 96px;
   --spacing-g-28: 112px;
+  --spacing-g-rail: 76px;
+  --spacing-g-sidebar: 248px;
+  --spacing-g-tabbar: 64px;
+  --spacing-g-bar: 56px;
   --radius-g-sm: 9px;
   --radius-g-md: 14px;
   --radius-g-lg: 22px;
@@ -187,6 +191,10 @@
   /* Elevation utilities: shadow-g-raised, shadow-g-overlay */
   --shadow-g-raised: var(--shadow-g-raised);
   --shadow-g-overlay: var(--shadow-g-overlay);
+
+  /* Shell breakpoints: tablet: (768px, the rail) and desk: (1100px, the sidebar) */
+  --breakpoint-tablet: 768px;
+  --breakpoint-desk: 1100px;
 
   /* Motion: ease-g-out (everything), ease-g-spring (presses) */
   --ease-g-out: var(--ease-out-g);

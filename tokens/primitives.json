@@ -39,7 +39,11 @@
     "16": "64px",
     "20": "80px",
     "24": "96px",
-    "28": "112px"
+    "28": "112px",
+    "rail": "76px",
+    "sidebar": "248px",
+    "tabbar": "64px",
+    "bar": "56px"
   },
   "radius": {
     "sm": "9px",
@@ -160,5 +164,9 @@
       "mobile": "26px",
       "desktop": "32px"
     }
+  },
+  "breakpoint": {
+    "tablet": "768px",
+    "desk": "1100px"
   }
 }

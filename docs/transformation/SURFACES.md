@@ -37,6 +37,7 @@
 | `/upgrade/success` | `app/(protected)/upgrade/success/page.tsx` | Subpage | None | policyholder | Redirect after Stripe checkout success |
 | `/coverage` | `app/(protected)/coverage/page.tsx` | Redirect only | — | — | Redirects to `/protection` (legacy URL) |
 | `/home` | `app/(protected)/home/page.tsx` | Redirect only | — | — | Redirects to `/dashboard` (legacy URL) |
+| `/money` | `app/(protected)/money/page.tsx` | Landing | None | policyholder | Grafí tab bar/rail/sidebar «Χρήματα» (G3; the triad, duplicates and unused benefits land in G9) |
 
 **Total B2C routes:** 25 (including 2 redirects) — refreshed 2026-08-25 for V2-P2-03 (§4.2): `/coverage-insights`, `/timeline` and `/insights/risk-profile` removed; `/protection`, `/protection/[branch]` and `/account/history` are their homes  
 **Distinct landing surfaces:** 18

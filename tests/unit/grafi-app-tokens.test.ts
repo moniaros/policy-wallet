@@ -68,6 +68,11 @@ describe("primitives the app needs", () => {
         expect(css).toMatch(/--text-g-app-base: 17px;[\s\S]*@media \(min-width: 768px\)[\s\S]*--text-g-app-base: 16px;/)
         expect(css).toMatch(/--space-app-section: 26px;[\s\S]*--space-app-section: 32px;/)
     })
+    it("the shell's two breakpoints are tokens: tablet 768, desk 1100", () => {
+        expect(prim.breakpoint).toEqual({ tablet: "768px", desk: "1100px" })
+        expect(css).toContain("--breakpoint-tablet: 768px;")
+        expect(css).toContain("--breakpoint-desk: 1100px;")
+    })
     it("the alpha hairline is the brief's rgba(16,49,43,.12)", () => {
         expect(prim.alpha.hairline.replace(/\s/g, "")).toBe("rgba(16,49,43,0.12)")
     })

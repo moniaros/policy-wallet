@@ -1,5 +1,9 @@
 // Greek translations
+import { appEl } from './app/el'
+
 export const el = {
+    // The Grafí application tier — lib/i18n/translations/app/el.ts
+    app: appEl,
     // Common
     common: {
         removeCustomer: 'Αφαίρεση πελάτη',

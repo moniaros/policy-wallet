@@ -7,6 +7,11 @@ import { parseRoles } from "@/lib/api-auth"
 import { getPrimaryRole } from "@/lib/auth/role-routing"
 import { ACTIVE_ROLE_COOKIE } from "@/lib/auth/active-role"
 import { AppShell } from "@/components/shell"
+import { Shell as GrafiShell } from "@/src/design-system/shell"
+import { PRIMARY_NAV, SECONDARY_NAV, SIDEBAR_NAV, ADD_POLICY } from "@/lib/app/navigation"
+import { formatPlural } from "@/lib/i18n/plural"
+import { planTierName } from "@/lib/subscription-copy"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { NotificationWatcher } from "@/components/notifications/NotificationWatcher"
 import { NeedsClaim } from "@/components/needs/NeedsClaim"
 import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
@@ -145,6 +150,44 @@ export default async function ProtectedLayout({
     }
 
     const userRoleObj = { role: currentRole, label: t.roles[currentRole] || currentRole }
+
+    // The policyholder shell is Grafí (§5.2): one component tree, three chromes.
+    // Agent and admin keep the legacy AppShell — out of this rebuild's scope
+    // (PRODUCT.md priority: marketing → policyholder → advisor).
+    if (currentRole === "policyholder") {
+        const lang = (dbUser.preferredLanguage as "el" | "en") || "el"
+        const entitlements = await resolveUserEntitlements(dbUser.id)
+        const resolve = (e: (typeof PRIMARY_NAV)[number]) => ({ ...e, label: t.app.nav[e.labelKey] })
+        const shellLabels = {
+            primary: t.app.nav.primary,
+            skip: t.app.nav.skip,
+            brand: t.app.nav.brand,
+            yourAccount: t.app.shell.yourAccount,
+            updates: formatPlural(t.app.nav.updatesBadge, { count: unreadNotificationCount }, lang),
+        }
+        return (
+            <TranslationsProvider>
+                <GrafiShell
+                    primary={PRIMARY_NAV.map(resolve)}
+                    sidebar={SIDEBAR_NAV.map(resolve)}
+                    updates={resolve(SECONDARY_NAV[0])}
+                    add={resolve(ADD_POLICY)}
+                    badge={unreadNotificationCount}
+                    labels={shellLabels}
+                    user={{
+                        name: displayPersonName(dbUser.name) || roleCopy.defaults.userName,
+                        href: PRIMARY_NAV[4].href,
+                        planLine: formatPlural(t.app.shell.plan, { plan: planTierName(entitlements.tier, lang) }, lang),
+                    }}
+                    brandHref={PRIMARY_NAV[0].href}
+                    saturated={t.app.nav.moreThanNine}
+                >
+                    <NeedsClaim />
+                    <PlanFactsProvider facts={planFacts}>{children}</PlanFactsProvider>
+                </GrafiShell>
+            </TranslationsProvider>
+        )
+    }
 
     return (
         // Mounts the EL+EN dictionary for the whole protected tree. It wraps

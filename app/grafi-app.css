@@ -59,3 +59,27 @@
   .g-row-press { transition: none; }
   .g-row-press:active { transform: none; }
 }
+
+/* ── Shell chrome (§5.2) ────────────────────────────────────────────────
+   Translucent, blurred header and tab bar with a SOLID fallback where
+   backdrop-filter is unsupported, and solid again for anyone who asked for
+   reduced transparency. Colours are roles; no literal lives here. */
+.g-chrome {
+  background-color: var(--surface-blur);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .g-chrome { background-color: var(--surface-base); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .g-chrome {
+    background-color: var(--surface-base);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+/* Hover affordances only where a pointer can hover — never on touch. */
+@media (hover: hover) and (pointer: fine) {
+  .g-nav-item:hover { background-color: var(--surface-sunken); }
+}

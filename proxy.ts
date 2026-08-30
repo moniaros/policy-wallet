@@ -56,6 +56,9 @@ export const ROUTE_OWNERSHIP: ReadonlyArray<readonly [pattern: string, owner: Ro
     // §4.2: «Η προστασία μου» — absorbed /branches, /insights/risk-profile
     // and /coverage-insights (all removed by V2-P2-03).
     ["/protection", "policyholder"],
+    // Grafí application tier (G3): the money screen; the other rebuilt routes
+    // join here in the goal that creates them (G7 /, G8 /see + /policies …).
+    ["/money", "policyholder"],
     // Shared /agent tree: the exact page is the customer's "My Agent" view;
     // the children are the agent's own tools.
     ["/agent", "policyholder"],

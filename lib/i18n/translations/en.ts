@@ -1,7 +1,9 @@
 import type { TranslationKeys } from './el'
+import { appEn } from './app/en'
 
 // English translations
 export const en: TranslationKeys = {
+    app: appEn,
     // Common
     common: {
         removeCustomer: 'Remove Customer',
