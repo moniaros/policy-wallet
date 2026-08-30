@@ -16,6 +16,7 @@ import { NotificationWatcher } from "@/components/notifications/NotificationWatc
 import { NeedsClaim } from "@/components/needs/NeedsClaim"
 import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
+import { LanguageSeed } from "@/components/app/LanguageSeed"
 import { getClientPlanFacts } from "@/lib/pricing/plan-catalog"
 import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
@@ -167,6 +168,7 @@ export default async function ProtectedLayout({
         }
         return (
             <TranslationsProvider>
+                <LanguageSeed language={lang} />
                 <GrafiShell
                     primary={PRIMARY_NAV.map(resolve)}
                     sidebar={SIDEBAR_NAV.map(resolve)}
@@ -194,6 +196,7 @@ export default async function ProtectedLayout({
         // AppShell rather than sitting inside it because the shell itself
         // (AppShell/MainNav/UserMenu) reads `t`.
         <TranslationsProvider>
+        <LanguageSeed language={(dbUser.preferredLanguage as "el" | "en") || "el"} />
         <AppShell
             user={{
                 name: displayPersonName(dbUser.name) || roleCopy.defaults.userName,

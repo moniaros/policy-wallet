@@ -14,6 +14,8 @@ export type Translations = ReturnType<typeof getTranslations>
 interface LanguageStateContextType {
     language: Language
     setLanguage: (lang: Language) => void
+    /** Seed from the server-known preference — state + localStorage only, no API call. */
+    adoptLanguage?: (lang: Language) => void
 }
 
 const LanguageStateContext = createContext<LanguageStateContextType | undefined>(undefined)
@@ -125,8 +127,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }).catch(console.error)
     }
 
+    // The server already knows the preference (User.preferredLanguage) and
+    // renders with it; the client used to seed from 'el' + localStorage only,
+    // so a fresh device rendered English server strings under Greek client
+    // chrome until the user toggled. `adoptLanguage` lets the protected layout
+    // hand the client the same value with no API round-trip and no refresh.
+    const adoptLanguage = (lang: Language) => {
+        setLanguageState(lang)
+        try { localStorage.setItem('language', lang) } catch { /* private mode */ }
+    }
+
     return (
-        <LanguageStateContext.Provider value={{ language, setLanguage }}>
+        <LanguageStateContext.Provider value={{ language, setLanguage, adoptLanguage }}>
             {children}
         </LanguageStateContext.Provider>
     )

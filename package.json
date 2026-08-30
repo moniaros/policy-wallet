@@ -17,6 +17,7 @@
     "test:e2e:headed": "playwright test --headed",
     "type-check": "tsc --noEmit",
     "lint:utf8": "node scripts/check-utf8.js",
+    "lint:voice": "vitest --run tests/unit/voice-banned-words.test.ts",
     "lint:encoding": "node scripts/check-mojibake.js",
     "audit:api-auth": "node scripts/audit-api-auth.js",
     "verify:migrations": "node scripts/verify-migration-sync.js",

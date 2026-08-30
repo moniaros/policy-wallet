@@ -83,6 +83,14 @@ jobs:
         run: npm run lint:utf8
         continue-on-error: false
 
+      # The analyst's voice (Grafí app tier, §3/§6): no «προτείνω», «αγοράστε»,
+      # «εξοικονομήστε» … in the app catalogue (strict) or new in the legacy
+      # one (ratchet). Also part of the unit suite; named here so a red run
+      # says WHICH rule failed.
+      - name: Run banned-word (voice) lint over the message catalogues
+        run: npm run lint:voice
+        continue-on-error: false
+
       - name: Run TypeScript type check
         run: npm run type-check
         continue-on-error: false
