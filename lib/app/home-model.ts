@@ -103,10 +103,28 @@ export async function loadFindingsContext(userId: string, lang: "el" | "en", now
     const raw: ComposePolicy[] = policies.map((p) => ({ ...p, documents: p.documents }))
     const rawById = new Map(raw.map((p) => [p.id, p]))
     const composed = composePolicies(raw, lang, now)
+
+    // Two live rows with the same insurer + policy number are the same CONTRACT
+    // seen through two uploads (the /policies merge rule, A-26). Findings
+    // compose over the newest of each contract only, so a re-upload cannot
+    // triple a gap on /see, /, or the badge — the reader passes caught exactly
+    // that. The full composed list still feeds the verdict and the map.
+    const newestOfContract = new Map<string, string>()
+    for (const p of raw) {
+        // A comparison key, never rendered — built without interpolation so the
+        // sentinel guard can prove no identity column reaches customer text.
+        const key = [p.insurerName ?? "", p.policyNumber ?? ""].join("\u0000")
+        if (!p.policyNumber) { newestOfContract.set(`solo:${p.id}`, p.id); continue }
+        const current = newestOfContract.get(key)
+        const currentEnd = current ? rawById.get(current)?.endDate?.getTime() ?? 0 : -1
+        if ((p.endDate?.getTime() ?? 0) >= currentEnd) newestOfContract.set(key, p.id)
+    }
+    const contractLeads = new Set(newestOfContract.values())
+    const composedForFindings = composed.filter((p) => contractLeads.has(p.id))
     const composeProfile: ComposeProfile | null = profile
         ? { answeredFields: Array.isArray(profile.answeredFields) ? (profile.answeredFields as string[]) : [], ownsHome: profile.ownsHome, vehiclesCount: profile.vehiclesCount, dependentsCount: profile.dependentsCount }
         : null
-    const all = composeFindings(composed, rawById, gaps as ComposeGap[], composeProfile, lang, (msg, meta) => logger("info", `[app] ${msg}`, meta))
+    const all = composeFindings(composedForFindings, rawById, (gaps as ComposeGap[]).filter((g) => !g.policyId || contractLeads.has(g.policyId)), composeProfile, lang, (msg, meta) => logger("info", `[app] ${msg}`, meta))
     const findings = sortByTier(composeRenderable(all))
     return { policies, policyRows: new Map(policies.map((p) => [p.id, p])), raw, rawById, composed, findings, entitlements }
 }

@@ -58,3 +58,30 @@ npm run build && npx next start -p 3001 &
 CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
 npx lighthouse http://localhost:3001/ --chrome-flags="--headless=new" --output=json
 ```
+
+---
+
+# B2C application tier — G14 perf notes (2026-08-30)
+
+**Fonts:** one Inter + Commissioner (600–800) = **116.7 KB** — inside the
+120 KB budget (§5.5), measured at G2.
+
+**Route JS.** All app routes are dynamic (`ƒ`) server-rendered pages; this
+Next 16 build log does not emit per-route first-load columns. Indicative
+dev-server measurement on `/`: 39 scripts. The dominant, KNOWN weight is the
+same one the marketing pass named (perf-report §4.10): the Sentry client
+(~172 KB) and the Supabase client (~46 KB) ride the shared shell. The named
+fix — splitting them off routes that do not need them — is unchanged and
+remains the single biggest lever; it is a shell-level change, deliberately
+out of this branch's scope (docs/handover.md).
+
+**What the tier itself adds:** server components everywhere except the
+interactive screens; the screens ship no charting/date libraries (Intl +
+tokens only); the ring is CSS; images: none. Skeletons mirror final layouts
+(no CLS from loading swaps); the fold test pins the verdict + first action
+inside 393×852.
+
+**Owed measurements (with the device pass):** Lighthouse on `/`, `/see`,
+`/policies/[id]` over throttled 4G against a production build — the dev
+server numbers above are not comparable and are recorded only as an
+inventory.

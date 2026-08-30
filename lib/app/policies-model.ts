@@ -62,7 +62,12 @@ export async function loadPoliciesModel(userId: string, lang: "el" | "en", now: 
         const raw = ctx.rawById.get(p.id)!
         const line = lineOf(p.lineOfBusiness)
         const findings = ctx.findings.filter((f) => f.object.policyId === p.id)
-        const state = policyState({ lifecycle: p.lifecycle, daysUntilExpiry: p.daysUntilExpiry, findings: findings.map((f) => ({ kind: f.kind })), unresolvedFields: p.unresolvedFields })
+        // A policy the engine never read cannot claim «Καλύπτεται» (reader-pass:
+        // a ✓ chip sat beside «δεν το έχω διαβάσει ακόμη») — absence of a check
+        // is never reassurance.
+        const state = p.neverAnalysed || p.analysisFailed
+            ? "review"
+            : policyState({ lifecycle: p.lifecycle, daysUntilExpiry: p.daysUntilExpiry, findings: findings.map((f) => ({ kind: f.kind })), unresolvedFields: p.unresolvedFields })
         const status = p.lifecycle
         const lifecycle: PolicyRow["lifecycle"] = status === "expired" ? "expired" : status === "expiring_soon" ? "expiring" : status === "active" || status === "action_needed" ? "active" : "other"
         const row = ctx.policyRows.get(p.id)

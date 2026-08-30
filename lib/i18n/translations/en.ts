@@ -264,7 +264,7 @@ export const en: TranslationKeys = {
         starts: 'Starts',
         ends: 'Ends',
         actionItems: "Items requiring attention",
-        reviewRenewal: "Review renewal terms",
+        reviewRenewal: "If you renew it, upload the new document and I will read it again.",
         downloadContract: "Download policy",
         dangerZone: 'Danger Zone',
         deletePolicy: 'Delete Policy',

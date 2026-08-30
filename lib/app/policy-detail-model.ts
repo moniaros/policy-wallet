@@ -84,7 +84,10 @@ export async function loadPolicyDetailModel(policyId: string, viewer: { id: stri
     if (!composed || !raw) return null
 
     const findings = ctx.findings.filter((f) => f.object.policyId === policyId)
-    const state = policyState({ lifecycle: composed.lifecycle, daysUntilExpiry: composed.daysUntilExpiry, findings: findings.map((f) => ({ kind: f.kind })), unresolvedFields: composed.unresolvedFields })
+    const rawState = policyState({ lifecycle: composed.lifecycle, daysUntilExpiry: composed.daysUntilExpiry, findings: findings.map((f) => ({ kind: f.kind })), unresolvedFields: composed.unresolvedFields })
+    // Never-read ⇒ review; and a checklist whose EVERY line is unreadable cannot
+    // sit under a «Καλύπτεται» chip (the reader-pass contradiction).
+    const state = composed.neverAnalysed || composed.analysisFailed ? "review" : rawState
     const acord = (raw.acordData ?? null) as Record<string, unknown> | null
     const coverages = Array.isArray(acord?.coverages) ? (acord!.coverages as CoverageItem[]) : []
     const sources = ((acord?.extraction as { sources?: Record<string, { page?: number; snippet?: string }> } | undefined)?.sources) ?? {}
@@ -132,6 +135,7 @@ export async function loadPolicyDetailModel(policyId: string, viewer: { id: stri
     }
 
     const extraction = (acord?.extraction ?? null) as { reviewState?: string } | null
+    const allReview = checklist.length > 0 && checklist.every((c) => c.state === "review")
     return {
         absence: resolveCoverageAbsence(latestRun?.status ?? null),
         latestRunStatus: latestRun?.status ?? null,
@@ -150,7 +154,7 @@ export async function loadPolicyDetailModel(policyId: string, viewer: { id: stri
         lineLabel: line ? lineLabels[line] : lineLabels.business,
         lineId: line ?? "other",
         lineOfBusiness: raw.lineOfBusiness,
-        state,
+        state: allReview && state === "covered" ? "review" : state,
         lifecycle: composed.lifecycle,
         daysUntilExpiry: composed.daysUntilExpiry,
         endDate: composed.endDate ? formatPolicyDate(composed.endDate, lang === "el" ? "el-GR" : "en-GB") : null,

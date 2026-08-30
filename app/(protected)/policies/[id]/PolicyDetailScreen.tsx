@@ -26,7 +26,7 @@ import { resolveCoverageAbsenceCopy } from "@/lib/wallet/policy-detail"
  * entry points (the plain-language lede and «Ρωτάτε με απλά λόγια»). Every
  * checklist line cites its document or says «δεν αναφέρεται».
  */
-export function PolicyDetailScreen({ model }: { model: PolicyDetailModel }) {
+export function PolicyDetailScreen({ model, hasAiConsent = true }: { model: PolicyDetailModel; hasAiConsent?: boolean }) {
     const { t, language: lang } = useLanguage()
     const [deleting, setDeleting] = useState(false)
 
@@ -143,7 +143,16 @@ export function PolicyDetailScreen({ model }: { model: PolicyDetailModel }) {
             )}
 
             <AppSection id="qa" title={t.app.policy.qa}>
-                <PolicyQA policyId={model.id} tier={model.tier} lineOfBusiness={model.lineOfBusiness} freeQuestionsRemaining={model.freeQuestionsRemaining} />
+                {hasAiConsent ? (
+                    <PolicyQA policyId={model.id} tier={model.tier} lineOfBusiness={model.lineOfBusiness} freeQuestionsRemaining={model.freeQuestionsRemaining} />
+                ) : (
+                    /* Without consent the chat would swallow the question after the
+                       fact (reader-pass dead end) — say it up front and point at the
+                       gate instead of rendering an input that cannot answer. */
+                    <p className="text-g-app-body text-fg-secondary">
+                        {t.app.policy.qaNoConsent} <Link href="/add" className="inline-flex min-h-11 items-center font-medium text-fg-brand">{t.app.policy.qaNoConsentAction}</Link>
+                    </p>
+                )}
             </AppSection>
 
             <AppSection id="documents" title={t.app.policy.documents}>

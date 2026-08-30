@@ -12,5 +12,5 @@ export default async function PolicyPage({ params }: { params: Promise<{ id: str
     const lang = (dbUser.preferredLanguage as "el" | "en") || "el"
     const model = await loadPolicyDetailModel(id, { id: dbUser.id, roles: dbUser.roles }, lang)
     if (!model) notFound()
-    return <PolicyDetailScreen model={model} />
+    return <PolicyDetailScreen model={model} hasAiConsent={Boolean(dbUser.aiProcessingConsentVersion)} />
 }

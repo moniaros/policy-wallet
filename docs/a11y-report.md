@@ -57,3 +57,35 @@ brief's own sand-700 (4.17:1, corrected to #8D621E).
 - Forced-colors and reduced-transparency modes not yet exercised.
 - axe-core full-page runs beyond Lighthouse's subset: not yet scripted into
   the Playwright audit suite for the new sections.
+
+---
+
+# B2C application tier — G14 a11y pass (2026-08-30)
+
+**Method.** axe-core (node_modules copy) injected via Playwright/system Chrome
+over eleven signed-in routes (`/`, `/see`, `/policies`, a `/policies/[id]`,
+`/money`, `/updates`, `/adviser`, `/me`, `/me/household`, `/add`,
+`/life-event/marriage`) at 393×852, BOTH themes — 22 scans. Plus the rendered
+gate (`tests/grafi-app-screens.spec.ts`): five widths × two themes asserting
+no horizontal overflow, ≥44px targets in sections, one `h1`, no uppercase
+Greek, section ceilings, and the 393×852 fold on `/`.
+
+**Findings → fixes (all landed in this branch).**
+- `color-contrast` (serious, 8 nodes, light): the «Σημείωση» label rendered
+  `fg-faint` on the note's tinted aside → `fg-secondary`.
+- `region` (moderate, every route): the FAB floated outside every landmark →
+  moved inside `<main>`.
+- `landmark-main-is-top-level` / `no-duplicate-main` / `landmark-unique`
+  (`/me*`): the settings shell nested a second `<main>` inside the app
+  shell's → demoted to `<div>`.
+- Re-scan after fixes: **clean on the re-checked routes, both themes.**
+
+**Beyond axe** (axe cannot see these; covered elsewhere): focus-visible ring
+on every interactive primitive (styleguide states + RTL role/name tests);
+reduced-motion renders final states (token-level, G2); translucent bars ship
+a solid fallback + `prefers-reduced-transparency` (G3); the ring/verdict has
+a text alternative (`ringLabel` + visually-hidden legend).
+
+**Honestly not run:** a human screen-reader pass (VoiceOver) and a
+forced-colors pass on real hardware — owed to the owner with the Safari
+device pass (iPhone SE / 15 Pro / iPad), as recorded since G3.

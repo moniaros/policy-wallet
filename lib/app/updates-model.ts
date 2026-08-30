@@ -2,6 +2,7 @@ import { db } from "@/lib/db"
 import { groupNotificationEventRows } from "@/lib/notifications/event-grouping"
 import { resolveStoredNotification } from "@/lib/notifications/stored-content"
 import { getEventDefinition } from "@/lib/notifications/registry"
+import { getTranslations } from "@/lib/i18n"
 import { policyLabel, scrubRenderableText } from "@/lib/wallet/policy-identity"
 import { badgeCount } from "./badge"
 import { streamOf, STREAM_OF_EVENT, type NotificationStream } from "./streams"
@@ -29,7 +30,7 @@ export interface UpdatesModel {
     badge: number
 }
 
-const RESOLVE_FROM_REGISTRY = new Set(["recommendation_generated", "recommendation_dismissed", "recommendation_accepted"])
+const RESOLVE_FROM_REGISTRY = new Set(["recommendation_generated", "recommendation_dismissed", "recommendation_accepted", "policy_renewal_approaching", "policy_renewal_reminder", "renewal_quote_requested"])
 
 /** Event types that belong to a stream — the universe is lib/app/streams.ts, guarded against the registry. */
 export function eventTypesOf(stream: NotificationStream): string[] {
@@ -69,9 +70,15 @@ export async function loadUpdatesModel(userId: string, lang: "el" | "en"): Promi
         // prose. For these types the CURRENT registry copy speaks, never the
         // stored text — the words changed, the event did not.
         const def = RESOLVE_FROM_REGISTRY.has(e.eventType) ? getEventDefinition(e.eventType) : null
-        const raw = def?.copy
-            ? { title: def.copy.title[lang], message: def.copy.message[lang] }
-            : resolveStoredNotification(e.eventType, e.title, e.message, lang)
+        const defCopy = (def as { copy?: { title?: Record<string, string>; message?: Record<string, string> } } | null)?.copy
+        // `policy_renewal_reminder` predates the registry entirely — its stored
+        // prose steered («Ελέγξτε τις επιλογές ανανέωσης»). The fact stands, the
+        // words come from the current catalogue.
+        const raw = e.eventType === "policy_renewal_reminder"
+            ? { title: getTranslations(lang).app.updates.legacyRenewal.title, message: getTranslations(lang).app.updates.legacyRenewal.body }
+            : defCopy?.title && defCopy?.message
+              ? { title: defCopy.title[lang], message: defCopy.message[lang] }
+              : resolveStoredNotification(e.eventType, e.title, e.message, lang)
         const policyId = e.relatedObjectType === "policy" ? e.relatedObjectId : null
         const label = policyId ? labelOf.get(policyId) ?? null : null
         if (isRetiredScoreRow(scrubRenderableText(raw.title), scrubRenderableText(raw.message), e.eventType)) {

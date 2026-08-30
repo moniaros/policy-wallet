@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3183
+# bundle entries: 3187
 # inline entries: 4801 across 214 files
 # ternary entries: 285 across 44 files
 # call entries: 1212 across 78 files
@@ -826,6 +826,8 @@ bundle	app.policy.q.cover	"Καλύπτεται {cover} στο συμβόλαι�
 bundle	app.policy.q.deductible	"Ποια είναι η απαλλαγή στην κάλυψη {cover} και πότε ισχύει;"
 bundle	app.policy.q.excluded	"Η κάλυψη «{cover}» δεν περιλαμβάνεται — τι θα σήμαινε για μένα μια ζημιά εκεί;"
 bundle	app.policy.qa	"Ρωτήστε το ασφαλιστήριό σας"
+bundle	app.policy.qaNoConsent	"Για να ρωτήσετε το ασφαλιστήριό σας, χρειάζεται πρώτα η συγκατάθεση ανάγνωσης με AI."
+bundle	app.policy.qaNoConsentAction	"Δώστε την εδώ"
 bundle	app.policy.questions	"Έτοιμες ερωτήσεις"
 bundle	app.policy.questionsHint	"Ρωτήστε τον σύμβουλο ή την ασφαλιστική σας — ή εμένα, με απλά λόγια."
 bundle	app.policy.reviewExtraction	"Επιβεβαίωση ανάγνωσης"
@@ -839,7 +841,7 @@ bundle	app.policy.verdictReview	"{count, plural, one {# σημείο θέλει 
 bundle	app.privacyDocs.failed	"Δεν μπόρεσα να το αποθηκεύσω."
 bundle	app.privacyDocs.granted	"ενεργή συγκατάθεση"
 bundle	app.privacyDocs.intro	"Η ανάκληση ισχύει από τον επόμενο έλεγχο: το έγγραφο δεν ξαναδιαβάζεται από AI."
-bundle	app.privacyDocs.legacy	"συγκατάθεση λογαριασμού (πριν την ανά-έγγραφο καταγραφή)"
+bundle	app.privacyDocs.legacy	"πριν την ανά-έγγραφο καταγραφή — ισχύει ό,τι έχει δηλωθεί στον λογαριασμό"
 bundle	app.privacyDocs.revoke	"Ανάκληση"
 bundle	app.privacyDocs.revoked	"Εντάξει — δεν θα ξαναδιαβαστεί."
 bundle	app.privacyDocs.revokedTag	"ανακλήθηκε"
@@ -878,6 +880,8 @@ bundle	app.updates.daysAgo	"{count, plural, one {πριν από # ημέρα} o
 bundle	app.updates.emptyMeanwhile	"Δεν έχω κάνει κάτι που να αξίζει να σας πω."
 bundle	app.updates.emptyProtection	"Δεν έχω κάτι νέο για την προστασία σας."
 bundle	app.updates.failedReading	"Δεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρότερο αντίγραφο και ξαναπροσπαθώ."
+bundle	app.updates.legacyRenewal.body	"Το συμβόλαιό σας λήγει σύντομα. Αν το ανανεώσετε, ανεβάστε το νέο έγγραφο και το ξαναδιαβάζω."
+bundle	app.updates.legacyRenewal.title	"Η ανανέωση πλησιάζει"
 bundle	app.updates.markAll	"Τα είδα όλα"
 bundle	app.updates.markFailed	"Δεν μπόρεσα να τα σημειώσω. Δοκιμάστε ξανά."
 bundle	app.updates.marked	"Εντάξει — τα σημείωσα ως διαβασμένα."
@@ -3158,7 +3162,7 @@ bundle	wallet.review.title	"Επισκόπηση ασφαλιστηρίου"
 bundle	wallet.review.tryAgain	"Δοκιμάστε ξανά"
 bundle	wallet.review.uploadAgain	"Νέα μεταφόρτωση"
 bundle	wallet.review.viewPolicy	"Προβολή ασφαλιστηρίου"
-bundle	wallet.reviewRenewal	"Ελέγξτε τις επιλογές ανανέωσης σύντομα"
+bundle	wallet.reviewRenewal	"Αν το ανανεώσετε, ανεβάστε το νέο έγγραφο και το ξαναδιαβάζω."
 bundle	wallet.revoke	"Ανάκληση"
 bundle	wallet.revokeAccess	"Ανάκληση πρόσβασης;"
 bundle	wallet.runAnalysisDesc	"Κάντε κλικ στο \"Κατανόηση\" για να δείτε τι καλύπτεται"
@@ -6625,8 +6629,8 @@ inline	lib/notifications/registry.ts	"Επαναλαμβανόμενες απο�
 inline	lib/notifications/registry.ts	"Επαναλαμβανόμενες αποτυχίες πληρωμής"
 inline	lib/notifications/registry.ts	"Ευχαριστούμε — η αξιολόγησή σας καταγράφηκε."
 inline	lib/notifications/registry.ts	"Ευχαριστούμε — η γνώμη σας καταγράφηκε."
-inline	lib/notifications/registry.ts	"Ζητήθηκε προσφορά ανανέωσης"
-inline	lib/notifications/registry.ts	"Ζητήθηκε προσφορά για την ανανέωση ενός ασφαλιστηρίου."
+inline	lib/notifications/registry.ts	"Ζητήσατε προσφορά ανανέωσης"
+inline	lib/notifications/registry.ts	"Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου."
 inline	lib/notifications/registry.ts	"Η αλλαγή στη ζωή σας καταγράφηκε και θα ληφθεί υπόψη στην εικόνα της κάλυψής σας."
 inline	lib/notifications/registry.ts	"Η αλλαγή του πλάνου σας ολοκληρώθηκε."
 inline	lib/notifications/registry.ts	"Η ανάλυση αποτυγχάνει επανειλημμένα για έναν πελάτη."

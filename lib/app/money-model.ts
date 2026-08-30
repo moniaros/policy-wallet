@@ -54,16 +54,18 @@ export async function loadMoneyModel(userId: string, lang: "el" | "en", now: Dat
     }
     const byLine = [...sums.entries()].map(([id, amount]) => ({ id, label: lineLabels[id], amount })).sort((a, b) => b.amount - a.amount)
 
-    const paidTwice = money.paidTwice.map((pair) => {
+    const paidTwice = money.paidTwice.flatMap((pair) => {
         const a = ctx.rawById.get(pair.policyId)
         const b = ctx.rawById.get(pair.partnerPolicyId)
-        return {
-            label: a ? policyLabel(a, "") : "",
-            partnerLabel: b ? policyLabel(b, "") : "",
-            asset: a ? assetLabelFor(a, lang) : null,
-            amountPerYear: pair.amountPerYear ?? null,
-        }
-    }).filter((p) => p.label && p.partnerLabel)
+        if (!a || !b) return []
+        // Two documents of the SAME contract (same insurer + number) are a
+        // re-upload, not double cover — the reader-pass caught self-paired rows.
+        if ((a.policyNumber ?? "") === (b.policyNumber ?? "") && (a.insurerName ?? "") === (b.insurerName ?? "")) return []
+        const label = policyLabel(a, "")
+        const partnerLabel = policyLabel(b, "")
+        if (!label || !partnerLabel) return []
+        return [{ label, partnerLabel, asset: assetLabelFor(a, lang), amountPerYear: pair.amountPerYear ?? null }]
+    })
 
     const live = ctx.composed.filter((p) => p.lifecycle !== "expired" && p.lifecycle !== "cancelled")
     const liveIds = new Set(live.map((p) => p.id))

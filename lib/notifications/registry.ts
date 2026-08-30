@@ -760,8 +760,8 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
     renewal_quote_requested: {
         businessEvent: "The customer asked for a renewal quote",
         copy: {
-            title: { el: "Ζητήθηκε προσφορά ανανέωσης", en: "Renewal quote requested" },
-            message: { el: "Ζητήθηκε προσφορά για την ανανέωση ενός ασφαλιστηρίου.", en: "A quote was requested for a policy renewal." },
+            title: { el: "Ζητήσατε προσφορά ανανέωσης", en: "You requested a renewal quote" },
+            message: { el: "Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.", en: "You requested a quote for a policy renewal." },
         },
         triggerCondition: "A renewal quote request is submitted",
         category: "advisory",

@@ -53,8 +53,8 @@ export function Shell({
                 style={{ paddingBottom: "calc(var(--spacing-g-tabbar) + env(safe-area-inset-bottom) + var(--spacing-g-6))" }}
             >
                 <div className="min-h-screen pb-g-8 tablet:px-g-6 desk:px-g-8">{children}</div>
+                <Fab add={add} />
             </main>
-            <Fab add={add} />
             <TabBar items={primary} label={labels.primary} />
         </div>
     )

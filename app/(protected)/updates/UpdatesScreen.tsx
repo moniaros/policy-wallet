@@ -13,6 +13,7 @@ import type { NotificationStream } from "@/lib/app/streams"
 import { LargeTitleNav } from "@/src/design-system/shell"
 import { AppSection, GroupedList, Row } from "@/src/design-system/app-layout"
 import { Button, Badge } from "@/src/design-system/primitives"
+import { PlatformNote } from "@/src/design-system/app"
 import { markStreamRead, markUpdateRead } from "./actions"
 
 const DAY = 86_400_000
@@ -81,6 +82,9 @@ export function UpdatesScreen({ model }: { model: UpdatesModel }) {
             <LargeTitleNav title={t.app.updates.title} brand={brand} />
             {group("protection", model.protection, t.app.updates.protection, t.app.updates.protectionHint, t.app.updates.emptyProtection)}
             {group("meanwhile", model.meanwhile, t.app.updates.meanwhile, t.app.updates.meanwhileHint, t.app.updates.emptyMeanwhile)}
+            <AppSection id="note">
+                <PlatformNote title={t.app.note.title} body={t.app.note.body} />
+            </AppSection>
         </>
     )
 }

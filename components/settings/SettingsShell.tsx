@@ -73,7 +73,7 @@ export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellP
                     <div className="hidden lg:block">
                         <SettingsNav roles={roles} hasLiveOffers={hasLiveOffers} variant="rail" />
                     </div>
-                    <main className="min-w-0 space-y-4">{children}</main>
+                    <div className="min-w-0 space-y-4">{children}</div>
                 </div>
             </div>
         </div>

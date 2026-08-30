@@ -143,8 +143,8 @@ describe("/updates — «Ενημερώσεις»", () => {
     it("renders the two stream groups, every row naming its object, the failure worded as the analyst's limitation", () => {
         const { container } = wrap(<UpdatesScreen model={updatesModel} />)
         const r = collectSections(JSDOM_OPTS)
-        expect(r.count, r.ids.join(", ")).toBeLessThanOrEqual(2)
-        expect([...container.querySelectorAll("section[id]")].map((s) => s.id)).toEqual(["protection", "meanwhile"])
+        expect(r.count, r.ids.join(", ")).toBeLessThanOrEqual(3)
+        expect([...container.querySelectorAll("section[id]")].map((s) => s.id)).toEqual(["protection", "meanwhile", "note"])
         expect(container.textContent).toContain("Interamerican (P-1)")
         expect(container.textContent).toContain("Δεν μπόρεσα να διαβάσω το έγγραφο.")
         expect(container.textContent).toContain("Τα είδα όλα")

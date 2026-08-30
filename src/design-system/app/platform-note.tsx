@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 export function PlatformNote({ title, body, extra, className }: { title: string; body: string; extra?: string; className?: string }) {
     return (
         <aside role="note" aria-label={title} className={cn("rounded-g-card border border-border-subtle bg-surface-sunken px-g-4 py-g-3", className)}>
-            <p className="text-g-app-label font-semibold text-fg-faint">{title}</p>
+            <p className="text-g-app-label font-semibold text-fg-secondary">{title}</p>
             <p className="mt-g-1 text-g-app-body-sm text-fg-secondary">{body}</p>
             {extra && <p className="mt-g-1 text-g-app-body-sm text-fg-secondary">{extra}</p>}
         </aside>

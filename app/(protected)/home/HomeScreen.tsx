@@ -121,7 +121,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
 
                 <div>
                     <AppSection id="map" title={t.app.home.map}>
-                        <CoverageMap legend={{ ...stateLabels, none: t.app.coverageMap.none }} cells={model.map.map((c) => ({ id: c.id, label: c.label, state: c.state }))} />
+                        <CoverageMap legend={{ ...stateLabels, none: t.app.coverageMap.none }} cells={model.map.map((c) => ({ id: c.id, label: c.label, state: c.state, href: c.state ? PRIMARY_NAV[2].href : ADD_POLICY.href }))} />
                     </AppSection>
 
                     <AppSection id="household" title={t.app.home.household}>

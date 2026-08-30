@@ -263,7 +263,7 @@ export const el = {
         starts: 'Έναρξη',
         ends: 'Λήξη',
         actionItems: 'Ενέργειες',
-        reviewRenewal: 'Ελέγξτε τις επιλογές ανανέωσης σύντομα',
+        reviewRenewal: 'Αν το ανανεώσετε, ανεβάστε το νέο έγγραφο και το ξαναδιαβάζω.',
         downloadContract: 'Λήψη ασφαλιστηρίου',
         dangerZone: 'Περιοχή κινδύνου',
         deletePolicy: 'Διαγραφή ασφάλισης',

@@ -19,7 +19,7 @@ const ROUTES: Route[] = [
     { path: "/see", dir: "see", sectionCeiling: 5, h1: "Να δείτε|Worth seeing" },
     { path: "/policies", dir: "policies", sectionCeiling: 4, h1: "Ο φάκελός σας|Your folder" },
     { path: "/money", dir: "money", sectionCeiling: 5, h1: "Τα χρήματά σας|Your money" },
-    { path: "/updates", dir: "updates", sectionCeiling: 2, h1: "Ενημερώσεις|Updates" },
+    { path: "/updates", dir: "updates", sectionCeiling: 3, h1: "Ενημερώσεις|Updates" },
     { path: "/adviser", dir: "adviser", sectionCeiling: 4, h1: "Ο σύμβουλός σας|Your adviser" },
     { path: "/me", dir: "me", sectionCeiling: 4, h1: "." },
     { path: "/add", dir: "add", sectionCeiling: 3, h1: "Προσθήκη ασφαλιστηρίου|Add a policy" },
