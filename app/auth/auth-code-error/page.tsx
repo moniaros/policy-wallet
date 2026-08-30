@@ -5,12 +5,7 @@ import { AlertTriangle } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { authHref } from "@/lib/seo/locale-links"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { IBM_Plex_Sans } from "next/font/google"
 
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 export default function AuthCodeErrorPage() {
     const { language } = useLanguage()
@@ -20,7 +15,7 @@ export default function AuthCodeErrorPage() {
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
+        <div className={`relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
             <div className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-white/10 dark:bg-[#111111] sm:p-10 text-center">
                 <Link href="/" className="inline-block mb-8">
                     <PolicyWalletLogo size="md" language={language} />

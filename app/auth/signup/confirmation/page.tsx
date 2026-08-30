@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Inter } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowRight, CheckCircle2, CreditCard, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
@@ -18,10 +17,6 @@ import { isSyntheticPhoneEmail } from "@/lib/auth/phone-auth"
 import { BillingPeriod, VALID_PLAN_IDS, ValidPlanId, publicPricingContent } from "@/lib/pricing/public-pricing-content"
 import { getSignupCheckpointState } from "./actions"
 
-const inter = Inter({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 function resolvePlanDisplayName(planId: string, language: "el" | "en"): string | null {
     for (const audience of Object.values(publicPricingContent)) {
@@ -247,7 +242,7 @@ function SignupConfirmationContent() {
     const busy = isContinuing || isCheckingVerification || isResending
 
     return (
-        <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
+        <div className={`flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
             {/* Header bar */}
             <header className="flex items-center justify-between px-6 py-4">
                 <Link
@@ -435,7 +430,7 @@ export default function SignUpConfirmationPage() {
     return (
         <Suspense
             fallback={
-                <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
+                <div className={`flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
                     <Loader2 className="h-7 w-7 animate-spin text-primary" />
                 </div>
             }

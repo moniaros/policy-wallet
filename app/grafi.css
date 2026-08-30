@@ -21,6 +21,25 @@
   --g-line-300: #BFD4CC;
   --g-neutral-0: #FFFFFF;
   --g-neutral-1000: #071512;
+  --g-green-400: #6AAE9A;
+  --g-slate-350: #5A746D;
+  --g-slate-300: #7C948E;
+  --g-rust-800: #7E2F24;
+  --g-rust-700: #9B3B2E;
+  --g-rust-300: #E39A8E;
+  --g-rust-200: #F0B9AF;
+
+  /* Grafí alpha primitives — composited hairlines, scrims, translucent chrome */
+  --g-alpha-hairline: rgba(16, 49, 43, 0.12);
+  --g-alpha-hairline-dark: rgba(143, 203, 185, 0.16);
+  --g-alpha-scrim: rgba(12, 35, 31, 0.55);
+  --g-alpha-scrim-dark: rgba(7, 21, 18, 0.72);
+  --g-alpha-blur: rgba(244, 248, 246, 0.72);
+  --g-alpha-blur-dark: rgba(12, 35, 31, 0.72);
+
+  /* Grafí elevation — flat is the default; these are the only two shadows */
+  --shadow-g-raised: 0 1px 2px rgba(16, 49, 43, 0.06), 0 10px 30px -18px rgba(16, 49, 43, 0.18);
+  --shadow-g-overlay: 0 2px 4px rgba(12, 35, 31, 0.05), 0 30px 70px -28px rgba(12, 35, 31, 0.32);
 
   /* Grafí semantic roles — light */
   --surface-base: #F4F8F6;
@@ -45,13 +64,32 @@
   --action-primary-bg: #29685B;
   --action-primary-hover: #1E4F45;
   --action-secondary-border: #BFD4CC;
+  --fg-faint: #5A746D;
+  --fg-disabled: #7C948E;
+  --border-hair: rgba(16, 49, 43, 0.12);
+  --surface-overlay: rgba(12, 35, 31, 0.55);
+  --surface-blur: rgba(244, 248, 246, 0.72);
+  --action-danger: #9B3B2E;
+  --action-danger-hover: #7E2F24;
+  --action-secondary-bg: #FFFFFF;
 
   --space-section: clamp(66px, 7vw, 116px);
+  /* App rhythm: iOS body 17px on phones, 16px from tablet up; section gap 26/32 */
+  --text-g-app-base: 17px;
+  --space-app-section: 26px;
   --dur-fast: 160ms;
   --dur-base: 250ms;
   --dur-slow: 450ms;
   --dur-entrance: 750ms;
   --ease-out-g: cubic-bezier(.2,.7,.2,1);
+  --ease-spring-g: cubic-bezier(.34,1.3,.64,1);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --text-g-app-base: 16px;
+    --space-app-section: 32px;
+  }
 }
 
 .dark {
@@ -78,6 +116,14 @@
   --action-primary-bg: #8FCBB9;
   --action-primary-hover: #CFE4DC;
   --action-secondary-border: #3E8C79;
+  --fg-faint: #6AAE9A;
+  --fg-disabled: #1E4F45;
+  --border-hair: rgba(143, 203, 185, 0.16);
+  --surface-overlay: rgba(7, 21, 18, 0.72);
+  --surface-blur: rgba(12, 35, 31, 0.72);
+  --action-danger: #E39A8E;
+  --action-danger-hover: #F0B9AF;
+  --action-secondary-bg: #10312B;
 }
 
 @theme inline {
@@ -106,8 +152,16 @@
   --color-action-primary-bg: var(--action-primary-bg);
   --color-action-primary-hover: var(--action-primary-hover);
   --color-action-secondary-border: var(--action-secondary-border);
+  --color-fg-faint: var(--fg-faint);
+  --color-fg-disabled: var(--fg-disabled);
+  --color-border-hair: var(--border-hair);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-blur: var(--surface-blur);
+  --color-action-danger: var(--action-danger);
+  --color-action-danger-hover: var(--action-danger-hover);
+  --color-action-secondary-bg: var(--action-secondary-bg);
 
-  /* Namespaced scales — rounded-g-lg, p-g-6 … legacy --radius-* stays intact. */
+  /* Namespaced scales — rounded-g-lg, rounded-g-card, p-g-6 … legacy --radius-* stays intact. */
   --spacing-g-1: 4px;
   --spacing-g-2: 8px;
   --spacing-g-3: 12px;
@@ -125,9 +179,22 @@
   --radius-g-md: 14px;
   --radius-g-lg: 22px;
   --radius-g-pill: 999px;
+  --radius-g-control: 12px;
+  --radius-g-card: 16px;
+  --radius-g-sheet: 20px;
+  --radius-g-hero: 26px;
 
-  /* Grafi type ladder - text-g-display-xl ... text-g-label. Fluid where the
-   * brief specifies; line-heights ride along per Tailwind 4 convention. */
+  /* Elevation utilities: shadow-g-raised, shadow-g-overlay */
+  --shadow-g-raised: var(--shadow-g-raised);
+  --shadow-g-overlay: var(--shadow-g-overlay);
+
+  /* Motion: ease-g-out (everything), ease-g-spring (presses) */
+  --ease-g-out: var(--ease-out-g);
+  --ease-g-spring: var(--ease-spring-g);
+
+  /* Grafi type ladder - text-g-display-xl ... text-g-label, and the app steps
+   * text-g-title-lg / title / heading / row / app-body … Line-heights, weights
+   * and tracking ride along per Tailwind 4 convention. */
   --text-g-display-xl: clamp(2.35rem, 5.5vw, 4.4rem);
   --text-g-display-xl--line-height: 1.04;
   --text-g-display-lg: clamp(1.85rem, 3.4vw, 2.85rem);
@@ -146,4 +213,28 @@
   --text-g-caption--line-height: 1.5;
   --text-g-label: 0.72rem;
   --text-g-label--line-height: 1.4;
+  --text-g-title-lg: 2.1rem;
+  --text-g-title-lg--line-height: 1.15;
+  --text-g-title-lg--font-weight: 800;
+  --text-g-title-lg--letter-spacing: -0.02em;
+  --text-g-title: 1.5rem;
+  --text-g-title--line-height: 1.2;
+  --text-g-title--font-weight: 800;
+  --text-g-title--letter-spacing: -0.015em;
+  --text-g-heading: 1.15rem;
+  --text-g-heading--line-height: 1.3;
+  --text-g-heading--font-weight: 700;
+  --text-g-row: 1.02rem;
+  --text-g-row--line-height: 1.4;
+  --text-g-row--font-weight: 600;
+  --text-g-app-body: calc(var(--text-g-app-base) * 0.95);
+  --text-g-app-body--line-height: 1.55;
+  --text-g-app-body-sm: calc(var(--text-g-app-base) * 0.84);
+  --text-g-app-body-sm--line-height: 1.5;
+  --text-g-app-caption: calc(var(--text-g-app-base) * 0.78);
+  --text-g-app-caption--line-height: 1.45;
+  --text-g-app-label: calc(var(--text-g-app-base) * 0.74);
+  --text-g-app-label--line-height: 1.3;
+  --text-g-app-label--font-weight: 600;
+  --text-g-app-label--letter-spacing: 0.06em;
 }

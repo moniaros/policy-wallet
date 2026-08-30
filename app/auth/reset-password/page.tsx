@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { Suspense, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { IBM_Plex_Sans } from "next/font/google"
 import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -14,10 +13,6 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { authHref } from "@/lib/seo/locale-links"
 import { resetPasswordWithToken } from "../actions"
 
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 // Lang-aware so the Zod messages the form renders (errors.*.message) are
 // localised — they were hardcoded English, so a Greek user resetting their
@@ -136,7 +131,7 @@ function ResetPasswordContent() {
     }
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-10 dark:bg-black`}>
+        <div className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-10 dark:bg-black`}>
             <div className="pointer-events-none absolute left-0 top-0 z-0 h-full w-full overflow-hidden">
                 <div className="absolute left-[20%] top-[-10%] h-[60%] w-[60%] rounded-full bg-slate-100/50 blur-[120px] dark:bg-slate-800/20" />
             </div>
@@ -264,7 +259,7 @@ const COPY = {
 
 export default function ResetPasswordPage() {
     return (
-        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>}>
+        <Suspense fallback={<div className={`flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>}>
             <ResetPasswordContent />
         </Suspense>
     )

@@ -72,6 +72,9 @@ const SCOPE_ROOTS = [
     'components/gaps',
     'components/landing',
     'components/wallet',
+    // G2 (Grafí app tier): the primitives directory joins the ratchet with its
+    // debt enumerated — the largest raw-palette source in the app surface.
+    'components/ui',
 ]
 
 /** Every .tsx under the given roots, enumerated from disk. */
@@ -177,6 +180,28 @@ function diffAgainstDebt(found: Map<string, number>, debt: Record<string, number
  * migration recorded in docs/transformation/PHASE4-ASSESSMENT.md.
  */
 const HARDCODED_COLOUR_DEBT: Record<string, number> = {
+    // components/ui — enumerated 2026-08-30 when the root joined the ratchet (G2)
+    'components/ui/ConfidenceBadge.tsx::#166534': 1,
+    'components/ui/ConfidenceBadge.tsx::#92400e': 1,
+    'components/ui/ConfidenceBadge.tsx::#fef3c7': 1,
+    'components/ui/ConfirmDialog.tsx::#1a2420': 1,
+    'components/ui/ConsentStatusBadge.tsx::#166534': 1,
+    'components/ui/EmptyState.tsx::#166534': 1,
+    'components/ui/EmptyState.tsx::#92400e': 4,
+    'components/ui/EmptyState.tsx::#f59e0b': 1,
+    'components/ui/EmptyState.tsx::#fef3c7': 4,
+    'components/ui/FloatingActionButton.tsx::#1a2420': 3,
+    'components/ui/form/ChipToggle.tsx::#29685b': 1,
+    'components/ui/form/ChipToggle.tsx::#a7f3d0': 1,
+    'components/ui/LocaleToggle.tsx::#0f172a': 2,
+    'components/ui/LocaleToggle.tsx::#5b6a7a': 1,
+    'components/ui/LocaleToggle.tsx::#e2e8f0': 1,
+    'components/ui/PlanGate.tsx::#1a2420': 1,
+    'components/ui/skeleton.tsx::#f1f5f9': 1,
+    'components/ui/StatTile.tsx::#92400e': 2,
+    'components/ui/StatTile.tsx::#b91c1c': 2,
+    'components/ui/StatTile.tsx::#fef2f2': 1,
+    'components/ui/StatTile.tsx::#fef3c7': 1,
     'app/(protected)/admin/users/UsersClient.tsx::#22c55e': 1,
     'app/(protected)/agent/AgentClient.tsx::#0f172a': 1,
     'app/(protected)/agent/AgentClient.tsx::#29685b': 5,

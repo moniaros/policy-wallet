@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Inter } from "next/font/google"
 import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -18,7 +17,6 @@ import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
 
-const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
 const signupSchema = z.object({
     mobileNumber: z.string().min(1, "mobile_required").refine((value) => Boolean(normalizeGreekMobile(value)), "mobile_invalid"),
@@ -205,7 +203,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     const strengthLabel = strength === 0 ? "" : strength === 1 ? t("Αδύναμος", "Weak") : strength === 2 ? t("Μέτριος", "Fair") : t("Ισχυρός", "Strong")
 
     return (
-        <div className={`${inter.className} pw-clear-consent flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
+        <div className={`pw-clear-consent flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
             <div className="w-full max-w-[420px]">
 
                 {/* Back + language */}
@@ -416,7 +414,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 export function SignUpFormPage({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     return (
         <Suspense fallback={
-            <div className={`${inter.className} pw-clear-consent flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
+            <div className={`pw-clear-consent flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
                 <Loader2 className="h-7 w-7 animate-spin text-primary" />
             </div>
         }>

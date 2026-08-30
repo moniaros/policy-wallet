@@ -18,6 +18,17 @@ so a value change that breaks a floor cannot produce a stylesheet. Floors: 4.5 t
 | light | state-review `#4A6660` | state-review-fill `#E7F1EC` | **5.41:1** | 4.5 | PASS |
 | light | border-strong `#BFD4CC` | surface-base `#F4F8F6` | **1.45:1** | 1.2 (non-text) *decorative* | PASS |
 | light | border-focus `#3E8C79` | surface-base `#F4F8F6` | **3.75:1** | 3 (non-text) | PASS |
+| light | fg-faint `#5A746D` | surface-base `#F4F8F6` | **4.72:1** | 4.5 | PASS |
+| light | fg-faint `#5A746D` | surface-raised `#FFFFFF` | **5.06:1** | 4.5 | PASS |
+| light | fg-disabled `#7C948E` | surface-base `#F4F8F6` | **3.02:1** | 1.2 (non-text) *decorative* | PASS |
+| light | fg-on-brand `#FFFFFF` | action-danger `#9B3B2E` | **6.87:1** | 4.5 | PASS |
+| light | fg-on-brand `#FFFFFF` | action-danger-hover `#7E2F24` | **9.05:1** | 4.5 | PASS |
+| light | fg-primary `#10312B` | action-secondary-bg `#FFFFFF` | **14.04:1** | 4.5 | PASS |
+| light | fg-secondary `#4A6660` | action-secondary-bg `#FFFFFF` | **6.25:1** | 4.5 | PASS |
+| light | state-covered `#29685B` | state-covered-fill `#CFE4DC` | **4.89:1** | 4.5 | PASS |
+| light | state-review `#4A6660` | surface-base `#F4F8F6` | **5.83:1** | 4.5 | PASS |
+| light | state-gap `#8D621E` | surface-raised `#FFFFFF` | **5.39:1** | 4.5 | PASS |
+| light | border-strong `#BFD4CC` | surface-raised `#FFFFFF` | **1.56:1** | 1.2 (non-text) *decorative* | PASS |
 | dark | fg-primary `#E7F1EC` | surface-base `#0C231F` | **14.26:1** | 4.5 | PASS |
 | dark | fg-primary `#E7F1EC` | surface-raised `#10312B` | **12.16:1** | 4.5 | PASS |
 | dark | fg-secondary `#8FCBB9` | surface-base `#0C231F` | **8.94:1** | 4.5 | PASS |
@@ -30,3 +41,24 @@ so a value change that breaks a floor cannot produce a stylesheet. Floors: 4.5 t
 | dark | state-review `#8FCBB9` | state-review-fill `#10312B` | **7.63:1** | 4.5 | PASS |
 | dark | border-strong `#3E8C79` | surface-base `#0C231F` | **4.10:1** | 1.2 (non-text) *decorative* | PASS |
 | dark | border-focus `#8FCBB9` | surface-base `#0C231F` | **8.94:1** | 3 (non-text) | PASS |
+| dark | fg-faint `#6AAE9A` | surface-base `#0C231F` | **6.38:1** | 4.5 | PASS |
+| dark | fg-faint `#6AAE9A` | surface-raised `#10312B` | **5.44:1** | 4.5 | PASS |
+| dark | fg-disabled `#1E4F45` | surface-base `#0C231F` | **1.77:1** | 1.2 (non-text) *decorative* | PASS |
+| dark | fg-on-brand `#0C231F` | action-danger `#E39A8E` | **7.27:1** | 4.5 | PASS |
+| dark | fg-on-brand `#0C231F` | action-danger-hover `#F0B9AF` | **9.61:1** | 4.5 | PASS |
+| dark | fg-primary `#E7F1EC` | action-secondary-bg `#10312B` | **12.16:1** | 4.5 | PASS |
+| dark | fg-secondary `#8FCBB9` | action-secondary-bg `#10312B` | **7.63:1** | 4.5 | PASS |
+| dark | state-covered `#8FCBB9` | state-covered-fill `#1E4F45` | **5.05:1** | 4.5 | PASS |
+| dark | state-review `#8FCBB9` | surface-base `#0C231F` | **8.94:1** | 4.5 | PASS |
+| dark | state-gap `#EBD9B8` | surface-raised `#10312B` | **10.13:1** | 4.5 | PASS |
+| dark | border-strong `#3E8C79` | surface-raised `#10312B` | **3.50:1** | 1.2 (non-text) *decorative* | PASS |
+
+## Composited roles — not measured, never text
+
+- `border-hair`: light `rgba(16, 49, 43, 0.12)`, dark `rgba(143, 203, 185, 0.16)`
+- `surface-overlay`: light `rgba(12, 35, 31, 0.55)`, dark `rgba(7, 21, 18, 0.72)`
+- `surface-blur`: light `rgba(244, 248, 246, 0.72)`, dark `rgba(12, 35, 31, 0.72)`
+
+A translucent chrome or scrim takes its contrast from whatever it composites over; the build
+refuses a contrast check on one, and every component that uses one carries a solid fallback
+(`@supports not (backdrop-filter: blur(1px))`) and honours `prefers-reduced-transparency`.

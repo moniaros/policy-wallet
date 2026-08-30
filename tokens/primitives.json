@@ -1,5 +1,5 @@
 {
-  "$schema": "grafi primitives v1 — raw scales, no meaning. Consumed ONLY by tokens/semantic.json.",
+  "$schema": "grafi primitives v1 — raw scales, no meaning. Consumed ONLY by tokens/semantic.json. App tier (2026-08-30) adds alpha (composited, never contrast-measured), shadow, spring ease, purpose-named radii, the app type steps (with weights) and the app rhythm; every colour stays 6-digit hex.",
   "color": {
     "green-900": "#0C231F",
     "green-800": "#10312B",
@@ -17,7 +17,14 @@
     "line-200": "#D9E5E0",
     "line-300": "#BFD4CC",
     "neutral-0": "#FFFFFF",
-    "neutral-1000": "#071512"
+    "neutral-1000": "#071512",
+    "green-400": "#6AAE9A",
+    "slate-350": "#5A746D",
+    "slate-300": "#7C948E",
+    "rust-800": "#7E2F24",
+    "rust-700": "#9B3B2E",
+    "rust-300": "#E39A8E",
+    "rust-200": "#F0B9AF"
   },
   "space": {
     "1": "4px",
@@ -38,7 +45,11 @@
     "sm": "9px",
     "md": "14px",
     "lg": "22px",
-    "pill": "999px"
+    "pill": "999px",
+    "control": "12px",
+    "card": "16px",
+    "sheet": "20px",
+    "hero": "26px"
   },
   "duration": {
     "fast": "160ms",
@@ -47,7 +58,8 @@
     "entrance": "750ms"
   },
   "ease": {
-    "out": "cubic-bezier(.2,.7,.2,1)"
+    "out": "cubic-bezier(.2,.7,.2,1)",
+    "spring": "cubic-bezier(.34,1.3,.64,1)"
   },
   "type": {
     "display-xl": {
@@ -85,6 +97,68 @@
     "label": {
       "size": "0.72rem",
       "lh": "1.4"
+    },
+    "title-lg": {
+      "size": "2.1rem",
+      "lh": "1.15",
+      "weight": "800",
+      "tracking": "-0.02em"
+    },
+    "title": {
+      "size": "1.5rem",
+      "lh": "1.2",
+      "weight": "800",
+      "tracking": "-0.015em"
+    },
+    "heading": {
+      "size": "1.15rem",
+      "lh": "1.3",
+      "weight": "700"
+    },
+    "row": {
+      "size": "1.02rem",
+      "lh": "1.4",
+      "weight": "600"
+    },
+    "app-body": {
+      "size": "calc(var(--text-g-app-base) * 0.95)",
+      "lh": "1.55"
+    },
+    "app-body-sm": {
+      "size": "calc(var(--text-g-app-base) * 0.84)",
+      "lh": "1.5"
+    },
+    "app-caption": {
+      "size": "calc(var(--text-g-app-base) * 0.78)",
+      "lh": "1.45"
+    },
+    "app-label": {
+      "size": "calc(var(--text-g-app-base) * 0.74)",
+      "lh": "1.3",
+      "weight": "600",
+      "tracking": "0.06em"
+    }
+  },
+  "alpha": {
+    "hairline": "rgba(16, 49, 43, 0.12)",
+    "hairline-dark": "rgba(143, 203, 185, 0.16)",
+    "scrim": "rgba(12, 35, 31, 0.55)",
+    "scrim-dark": "rgba(7, 21, 18, 0.72)",
+    "blur": "rgba(244, 248, 246, 0.72)",
+    "blur-dark": "rgba(12, 35, 31, 0.72)"
+  },
+  "shadow": {
+    "raised": "0 1px 2px rgba(16, 49, 43, 0.06), 0 10px 30px -18px rgba(16, 49, 43, 0.18)",
+    "overlay": "0 2px 4px rgba(12, 35, 31, 0.05), 0 30px 70px -28px rgba(12, 35, 31, 0.32)"
+  },
+  "rhythm": {
+    "app-base": {
+      "mobile": "17px",
+      "desktop": "16px"
+    },
+    "app-section": {
+      "mobile": "26px",
+      "desktop": "32px"
     }
   }
 }

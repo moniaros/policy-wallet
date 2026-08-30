@@ -1,65 +1,192 @@
 {
-  "$schema": "grafi semantic v1 — roles per theme. Values are PRIMITIVE NAMES, never hex; the generator resolves and the guard rejects raw hex here.",
+  "$schema": "grafi semantic v1 — roles per theme. Values are PRIMITIVE NAMES, never hex; `alpha:<name>` references the alpha tier (composited — never contrast-measured, never a text colour). The generator resolves and the guard rejects raw hex here.",
   "light": {
-    "surface-base":    "green-50",
-    "surface-raised":  "neutral-0",
-    "surface-sunken":  "green-100",
-    "surface-wash":    "green-100",
+    "surface-base": "green-50",
+    "surface-raised": "neutral-0",
+    "surface-sunken": "green-100",
+    "surface-wash": "green-100",
     "surface-inverse": "green-900",
-    "fg-primary":      "green-800",
-    "fg-secondary":    "slate-400",
-    "fg-brand":        "green-600",
-    "fg-on-brand":     "neutral-0",
-    "border-subtle":   "line-200",
-    "border-strong":   "line-300",
-    "border-focus":    "green-500",
-    "state-covered":       "green-600",
-    "state-covered-fill":  "green-200",
-    "state-gap":           "sand-700",
-    "state-gap-fill":      "sand-50",
-    "state-gap-border":    "sand-200",
-    "state-review":        "slate-400",
-    "state-review-fill":   "green-100",
-    "action-primary-bg":     "green-600",
-    "action-primary-hover":  "green-700",
-    "action-secondary-border": "line-300"
+    "fg-primary": "green-800",
+    "fg-secondary": "slate-400",
+    "fg-brand": "green-600",
+    "fg-on-brand": "neutral-0",
+    "border-subtle": "line-200",
+    "border-strong": "line-300",
+    "border-focus": "green-500",
+    "state-covered": "green-600",
+    "state-covered-fill": "green-200",
+    "state-gap": "sand-700",
+    "state-gap-fill": "sand-50",
+    "state-gap-border": "sand-200",
+    "state-review": "slate-400",
+    "state-review-fill": "green-100",
+    "action-primary-bg": "green-600",
+    "action-primary-hover": "green-700",
+    "action-secondary-border": "line-300",
+    "fg-faint": "slate-350",
+    "fg-disabled": "slate-300",
+    "border-hair": "alpha:hairline",
+    "surface-overlay": "alpha:scrim",
+    "surface-blur": "alpha:blur",
+    "action-danger": "rust-700",
+    "action-danger-hover": "rust-800",
+    "action-secondary-bg": "neutral-0"
   },
   "dark": {
-    "surface-base":    "green-900",
-    "surface-raised":  "green-800",
-    "surface-sunken":  "neutral-1000",
-    "surface-wash":    "green-800",
+    "surface-base": "green-900",
+    "surface-raised": "green-800",
+    "surface-sunken": "neutral-1000",
+    "surface-wash": "green-800",
     "surface-inverse": "green-50",
-    "fg-primary":      "green-100",
-    "fg-secondary":    "green-300",
-    "fg-brand":        "green-300",
-    "fg-on-brand":     "green-900",
-    "border-subtle":   "green-700",
-    "border-strong":   "green-500",
-    "border-focus":    "green-300",
-    "state-covered":       "green-300",
-    "state-covered-fill":  "green-700",
-    "state-gap":           "sand-200",
-    "state-gap-fill":      "green-800",
-    "state-gap-border":    "sand-700",
-    "state-review":        "green-300",
-    "state-review-fill":   "green-800",
-    "action-primary-bg":     "green-300",
-    "action-primary-hover":  "green-200",
-    "action-secondary-border": "green-500"
+    "fg-primary": "green-100",
+    "fg-secondary": "green-300",
+    "fg-brand": "green-300",
+    "fg-on-brand": "green-900",
+    "border-subtle": "green-700",
+    "border-strong": "green-500",
+    "border-focus": "green-300",
+    "state-covered": "green-300",
+    "state-covered-fill": "green-700",
+    "state-gap": "sand-200",
+    "state-gap-fill": "green-800",
+    "state-gap-border": "sand-700",
+    "state-review": "green-300",
+    "state-review-fill": "green-800",
+    "action-primary-bg": "green-300",
+    "action-primary-hover": "green-200",
+    "action-secondary-border": "green-500",
+    "fg-faint": "green-400",
+    "fg-disabled": "green-700",
+    "border-hair": "alpha:hairline-dark",
+    "surface-overlay": "alpha:scrim-dark",
+    "surface-blur": "alpha:blur-dark",
+    "action-danger": "rust-300",
+    "action-danger-hover": "rust-200",
+    "action-secondary-bg": "green-800"
   },
   "contrastChecks": [
-    { "fg": "fg-primary",   "bg": "surface-base",   "min": 4.5 },
-    { "fg": "fg-primary",   "bg": "surface-raised", "min": 4.5 },
-    { "fg": "fg-secondary", "bg": "surface-base",   "min": 4.5 },
-    { "fg": "fg-secondary", "bg": "surface-raised", "min": 4.5 },
-    { "fg": "fg-brand",     "bg": "surface-base",   "min": 4.5 },
-    { "fg": "fg-on-brand",  "bg": "action-primary-bg", "min": 4.5 },
-    { "fg": "state-gap",    "bg": "state-gap-fill", "min": 4.5 },
-    { "fg": "state-gap",    "bg": "surface-base",   "min": 4.5 },
-    { "fg": "state-covered","bg": "surface-base",   "min": 3,  "nonText": true },
-    { "fg": "state-review", "bg": "state-review-fill", "min": 4.5 },
-    { "fg": "border-strong","bg": "surface-base",   "min": 1.2, "nonText": true, "note": "decorative hairline — structure, not identification" },
-    { "fg": "border-focus", "bg": "surface-base",   "min": 3,  "nonText": true }
+    {
+      "fg": "fg-primary",
+      "bg": "surface-base",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-primary",
+      "bg": "surface-raised",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-secondary",
+      "bg": "surface-base",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-secondary",
+      "bg": "surface-raised",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-brand",
+      "bg": "surface-base",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-on-brand",
+      "bg": "action-primary-bg",
+      "min": 4.5
+    },
+    {
+      "fg": "state-gap",
+      "bg": "state-gap-fill",
+      "min": 4.5
+    },
+    {
+      "fg": "state-gap",
+      "bg": "surface-base",
+      "min": 4.5
+    },
+    {
+      "fg": "state-covered",
+      "bg": "surface-base",
+      "min": 3,
+      "nonText": true
+    },
+    {
+      "fg": "state-review",
+      "bg": "state-review-fill",
+      "min": 4.5
+    },
+    {
+      "fg": "border-strong",
+      "bg": "surface-base",
+      "min": 1.2,
+      "nonText": true,
+      "note": "decorative hairline — structure, not identification"
+    },
+    {
+      "fg": "border-focus",
+      "bg": "surface-base",
+      "min": 3,
+      "nonText": true
+    },
+    {
+      "fg": "fg-faint",
+      "bg": "surface-base",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-faint",
+      "bg": "surface-raised",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-disabled",
+      "bg": "surface-base",
+      "min": 1.2,
+      "nonText": true,
+      "note": "inactive control — exempt under WCAG 1.4.3; recorded, not claimed"
+    },
+    {
+      "fg": "fg-on-brand",
+      "bg": "action-danger",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-on-brand",
+      "bg": "action-danger-hover",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-primary",
+      "bg": "action-secondary-bg",
+      "min": 4.5
+    },
+    {
+      "fg": "fg-secondary",
+      "bg": "action-secondary-bg",
+      "min": 4.5
+    },
+    {
+      "fg": "state-covered",
+      "bg": "state-covered-fill",
+      "min": 4.5
+    },
+    {
+      "fg": "state-review",
+      "bg": "surface-base",
+      "min": 4.5
+    },
+    {
+      "fg": "state-gap",
+      "bg": "surface-raised",
+      "min": 4.5
+    },
+    {
+      "fg": "border-strong",
+      "bg": "surface-raised",
+      "min": 1.2,
+      "nonText": true,
+      "note": "decorative hairline — structure, not identification"
+    }
   ]
 }

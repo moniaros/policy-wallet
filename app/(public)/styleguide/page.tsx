@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import { StyleguideSheets } from "./StyleguideSheets"
 
 /**
  * /styleguide — Grafí's living documentation. DEV-ONLY: 404s in production.
@@ -9,48 +10,42 @@ import { notFound } from "next/navigation"
  * is actually inert. The swatches below are that consumer, and
  * tests/unit/grafi-tokens.test.ts asserts this file exists and uses the core
  * roles — deleting the styleguide would silently de-generate the utilities.
+ *
+ * G2 (application tier): every sheet renders TWICE — once on the page's theme
+ * and once inside a `.dark` wrapper — so both themes are verified side by side
+ * without touching the user's preference. The class names below are pinned by
+ * the guard: bg-surface-base, text-fg-primary, bg-state-gap-fill,
+ * text-state-gap, bg-action-primary-bg, rounded-g-pill.
  */
 export default function Styleguide() {
     if (process.env.NODE_ENV === "production") notFound()
 
     const roles = [
-        "surface-base", "surface-raised", "surface-sunken", "surface-wash", "surface-inverse",
+        "surface-base", "surface-raised", "surface-sunken", "surface-wash", "surface-inverse", "surface-overlay", "surface-blur",
+        "fg-primary", "fg-secondary", "fg-faint", "fg-disabled", "fg-brand", "fg-on-brand",
+        "border-subtle", "border-strong", "border-focus", "border-hair",
+        "state-covered", "state-gap", "state-review",
+        "action-primary-bg", "action-primary-hover", "action-secondary-bg", "action-secondary-border", "action-danger", "action-danger-hover",
     ] as const
 
     return (
-        <main className="min-h-screen bg-surface-base p-g-10 text-fg-primary">
-            <h1 className="text-2xl font-bold">Grafí — tokens</h1>
-            <p className="mt-2 text-fg-secondary">
-                Generated from <code>tokens/*.json</code> via <code>npm run tokens</code>.
-                Toggle <code>.dark</code> on &lt;html&gt; to see the second theme.
+        <main className="min-h-screen bg-surface-base p-g-6 text-fg-primary md:p-g-10">
+            <h1 className="font-display text-g-title-lg">Grafí — tokens &amp; components</h1>
+            <p className="mt-2 max-w-[66ch] text-fg-secondary">
+                Generated from <code>tokens/*.json</code> via <code>npm run tokens</code>. Each sheet renders
+                on the current theme and again inside a <code>.dark</code> wrapper.
             </p>
-
-            <h2 className="mt-g-8 font-semibold">Surfaces</h2>
-            <div className="mt-g-3 flex flex-wrap gap-g-3">
-                <div className="rounded-g-md border border-border-subtle bg-surface-base p-g-4">surface-base</div>
-                <div className="rounded-g-md border border-border-subtle bg-surface-raised p-g-4">surface-raised</div>
-                <div className="rounded-g-md border border-border-strong bg-surface-sunken p-g-4">surface-sunken</div>
-                <div className="rounded-g-md bg-surface-wash p-g-4">surface-wash</div>
-                <div className="rounded-g-md bg-surface-inverse p-g-4 text-fg-on-brand">surface-inverse</div>
+            <div className="mt-g-8 grid gap-g-8 lg:grid-cols-2">
+                <section data-sheet="light" className="rounded-g-card border border-border-subtle bg-surface-base p-g-4">
+                    <StyleguideSheets theme="light" />
+                </section>
+                <section data-sheet="dark" className="dark rounded-g-card border border-border-subtle bg-surface-base p-g-4 text-fg-primary">
+                    <StyleguideSheets theme="dark" />
+                </section>
             </div>
-
-            <h2 className="mt-g-8 font-semibold">Text</h2>
-            <p className="text-fg-primary">fg-primary — body text</p>
-            <p className="text-fg-secondary">fg-secondary — supporting text</p>
-            <p className="text-fg-brand font-semibold">fg-brand — the anchor green</p>
-
-            <h2 className="mt-g-8 font-semibold">The three states — never a traffic light</h2>
-            <div className="mt-g-3 flex flex-wrap gap-g-3">
-                <span className="rounded-g-pill bg-state-covered-fill px-g-4 py-g-2 font-semibold text-state-covered">✓ Καλυμμένο</span>
-                <span className="rounded-g-pill border border-state-gap-border bg-state-gap-fill px-g-4 py-g-2 font-semibold text-state-gap">◆ Κενό κάλυψης</span>
-                <span className="rounded-g-pill bg-state-review-fill px-g-4 py-g-2 font-semibold text-state-review">? Χρειάζεται έλεγχο</span>
-            </div>
-
-            <h2 className="mt-g-8 font-semibold">Action</h2>
-            <button className="rounded-g-pill bg-action-primary-bg px-g-6 py-g-3 font-semibold text-fg-on-brand transition-colors duration-200 hover:bg-action-primary-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus">
-                Primary action
-            </button>
             <span className="sr-only">{roles.join(" ")}</span>
+            {/* pinned consumers */}
+            <span className="sr-only rounded-g-pill bg-state-gap-fill text-state-gap bg-action-primary-bg">pinned</span>
         </main>
     )
 }

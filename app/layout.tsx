@@ -1,11 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { Inter } from "next/font/google";
+import { Inter, Commissioner } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin", "greek"],
   variable: "--font-inter",
+  display: "swap",
+});
+// The display face (Grafí). ONE instance, here, beside the one Inter — Next
+// self-hosts and subsets both at build; `adjustFontFallback` sizes the system
+// fallback so the swap does not shift layout. Do not add font calls elsewhere.
+const commissioner = Commissioner({
+  subsets: ["latin", "greek"],
+  weight: ["600", "700", "800"],
+  variable: "--font-commissioner",
   display: "swap",
 });
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -76,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="el" suppressHydrationWarning className={inter.variable}>
+    <html lang="el" suppressHydrationWarning className={`${inter.variable} ${commissioner.variable}`}>
       <head>
         {/*
          * Stamp <html lang="en"> for /en/* BEFORE first paint.

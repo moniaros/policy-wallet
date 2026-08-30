@@ -1,0 +1,61 @@
+/* Grafí application tier — named choreographies (§5.1 motion).
+ *
+ * Keyframes only: every duration and curve comes from grafi.css (--dur-*,
+ * --ease-out-g, --ease-spring-g). Entrances only; nothing here loops. Under
+ * prefers-reduced-motion every choreography renders its FINAL state at once
+ * (the global rule in globals.css shortens durations to 0.01ms; these blocks
+ * remove the motion outright so nothing depends on it firing).
+ */
+
+/* screen-enter — a staggered rise of at most six children */
+@keyframes g-screen-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.g-screen-enter > * {
+  animation: g-screen-rise var(--dur-slow) var(--ease-out-g) both;
+}
+.g-screen-enter > :nth-child(2) { animation-delay: 60ms; }
+.g-screen-enter > :nth-child(3) { animation-delay: 120ms; }
+.g-screen-enter > :nth-child(4) { animation-delay: 180ms; }
+.g-screen-enter > :nth-child(5) { animation-delay: 240ms; }
+.g-screen-enter > :nth-child(6) { animation-delay: 300ms; }
+.g-screen-enter > :nth-child(n + 7) { animation-delay: 300ms; }
+
+/* ring-draw — the three arcs draw in sequence (the arc's dasharray is set by
+   the component; the transition is what animates it) */
+.g-ring-arc {
+  transition: stroke-dasharray var(--dur-entrance) var(--ease-out-g);
+}
+.g-ring-arc:nth-of-type(2) { transition-delay: var(--dur-fast); }
+.g-ring-arc:nth-of-type(3) { transition-delay: calc(var(--dur-fast) * 2); }
+
+/* row-press — a real pressed state on the spring curve, never a hover-only cue */
+.g-row-press {
+  transition: transform var(--dur-fast) var(--ease-spring-g), background-color var(--dur-fast) var(--ease-out-g);
+  -webkit-tap-highlight-color: transparent;
+}
+.g-row-press:active { transform: scale(0.985); }
+
+/* sheet-present — a bottom sheet rising on phones, a modal settling on desktop */
+@keyframes g-sheet-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.g-sheet-present { animation: g-sheet-up var(--dur-slow) var(--ease-out-g) both; }
+
+/* tier-reveal — a tier's rows appear after its header */
+@keyframes g-tier-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.g-tier-reveal { animation: g-tier-reveal var(--dur-base) var(--ease-out-g) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .g-screen-enter > *,
+  .g-sheet-present,
+  .g-tier-reveal { animation: none; }
+  .g-ring-arc { transition: none; }
+  .g-row-press { transition: none; }
+  .g-row-press:active { transform: none; }
+}

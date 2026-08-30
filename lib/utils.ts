@@ -54,6 +54,14 @@ const twMerge = extendTailwindMerge({
                     ],
                 },
             ],
+            // Application tier (G2): purpose-named radii (rounded-g-card …), the two
+            // elevations (shadow-g-raised/-overlay) and the eases (ease-g-out/-spring).
+            // Unregistered, merge would treat `shadow-g-raised` as a shadow COLOUR and
+            // `rounded-g-card` as an unknown — the same silent deletion that shipped a
+            // 2.74:1 CTA. Registered here first, then used.
+            rounded: [{ rounded: [(value: string) => value.startsWith("g-")] }],
+            shadow: [{ shadow: [(value: string) => value.startsWith("g-")] }],
+            ease: [{ ease: [(value: string) => value.startsWith("g-")] }],
         },
     },
 })

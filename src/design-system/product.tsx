@@ -137,7 +137,7 @@ export function DeviceFrame({
             onFocusCapture={() => (hold.current = true)}
             onBlurCapture={() => (hold.current = false)}
         >
-            <div className="w-[248px] rounded-[38px] border border-border-strong bg-surface-inverse p-g-2 shadow-[0_2px_4px_rgb(12_35_31/0.05),0_30px_70px_-28px_rgb(12_35_31/0.32)]">
+            <div className="w-[248px] rounded-[38px] border border-border-strong bg-surface-inverse p-g-2 shadow-g-overlay">
                 <div className="relative aspect-[9/19] overflow-hidden rounded-[30px] bg-surface-base" aria-live={reduced ? undefined : "off"}>
                     {screens.map((s, i) => (
                         <div

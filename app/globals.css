@@ -1,6 +1,8 @@
 @import "tailwindcss";
 /* Grafí design-system tokens — GENERATED from tokens/*.json via `npm run tokens`. */
 @import "./grafi.css";
+/* Grafí application-tier choreographies (keyframes only; tokens stay in grafi.css). */
+@import "./grafi-app.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
@@ -107,6 +109,8 @@
   --text-display--line-height: 1.05;
 
   --font-heading: var(--font-inter), 'Inter', system-ui, sans-serif;
+  /* Grafí display face — Commissioner, self-hosted by next/font in app/layout.tsx */
+  --font-display: var(--font-commissioner), var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-body: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
@@ -436,24 +440,30 @@
   --dot-track-hover: var(--dot-track-hover-on-dark);
 }
 
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-body);
-}
+/* Typography defaults live in @layer base so a utility can override them.
+   Unlayered, these element rules outranked EVERY Tailwind utility (utilities
+   are layered), which is why `font-display` on an <h1> silently rendered Inter
+   — the Grafí display face could not be applied to a heading at all. */
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+  }
 
-code,
-pre {
-  font-family: var(--font-mono);
+  code,
+  pre {
+    font-family: var(--font-mono);
+  }
 }
 
 /* Utilities for shadcn */

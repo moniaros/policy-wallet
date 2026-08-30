@@ -4,14 +4,9 @@ import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { IBM_Plex_Sans } from "next/font/google"
 import { Loader2 } from "lucide-react"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 function HandoverContent() {
     const searchParams = useSearchParams()
@@ -48,7 +43,7 @@ function HandoverContent() {
     }
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
+        <div className={`relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
             <div className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-white/10 dark:bg-[#111111] sm:p-10 text-center">
                 <div className="inline-block mb-8">
                     <PolicyWalletLogo size="md" language={language} />
@@ -117,7 +112,7 @@ function HandoverContent() {
 export default function HandoverPage() {
     return (
         <Suspense fallback={
-            <div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
+            <div className={`flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
                 <Loader2 className="h-7 w-7 animate-spin text-primary" />
             </div>
         }>
