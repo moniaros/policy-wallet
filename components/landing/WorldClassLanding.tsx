@@ -1,4 +1,3 @@
-import { Inter } from "next/font/google"
 import Link from "next/link"
 import { ArrowRight, BellRing, FileText, Search, Sparkles } from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
@@ -31,8 +30,6 @@ import { AudienceTabs } from "@/components/landing/AudienceTabs"
 import { landingContent } from "@/lib/landing/content"
 import { productCategories } from "@/lib/product/catalog"
 import { CATEGORY, CTA_REASSURANCE, NEUTRALITY_STATEMENT, PRIMARY_ACTION, PROMISE, STORY, pick } from "@/lib/marketing/positioning"
-
-const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
 interface WorldClassLandingProps {
     locale: LandingLocale
@@ -78,7 +75,7 @@ export function WorldClassLanding({
 
     return (
         <div
-            className={`${inter.className} min-h-screen bg-white text-neutral-900 selection:bg-brand-green/20 selection:text-neutral-900 dark:bg-slate-900 dark:text-white`}
+            className={`min-h-screen bg-white text-neutral-900 selection:bg-brand-green/20 selection:text-neutral-900 dark:bg-slate-900 dark:text-white`}
         >
             {/* The header floats 16px from the top and is 56px tall, so the
                 browser's scroll-on-focus could park a focused control right

@@ -12,6 +12,13 @@ import { extendTailwindMerge } from "tailwind-merge"
  * Registering the ladder makes merge resolve conflicts within it instead of
  * discarding it, and keeps a later size in `className` correctly overriding an
  * earlier one in the base string.
+ *
+ * The Grafí tier repeats the lesson: `text-g-*` is its generated type ladder
+ * and `text-fg-*` / `text-state-*` are its COLOR roles. Unregistered, merge
+ * threw them into one group and deleted whichever came first — the hero's
+ * primary Button shipped dark-on-green at 2.74:1 because `text-g-body-sm`
+ * (the md size) silently removed `text-fg-on-brand` (the color). Lighthouse
+ * caught it; this registration is the fix, not the component.
  */
 const twMerge = extendTailwindMerge({
     extend: {
@@ -31,6 +38,19 @@ const twMerge = extendTailwindMerge({
                         "caption",
                         "kicker",
                         "micro",
+                        // The generated Grafí ladder (text-g-display-xl … text-g-label)
+                        (value: string) => value.startsWith("g-"),
+                    ],
+                },
+            ],
+            "text-color": [
+                {
+                    // Grafí colour roles: text-fg-primary/-secondary/-brand/-on-brand,
+                    // text-state-covered/-gap/-review, text-surface-* (on-inverse text).
+                    text: [
+                        (value: string) => value.startsWith("fg-"),
+                        (value: string) => value.startsWith("state-"),
+                        (value: string) => value.startsWith("surface-"),
                     ],
                 },
             ],

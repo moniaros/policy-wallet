@@ -214,6 +214,11 @@ export async function proxy(request: NextRequest) {
     const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
 
     const publicPrefixes = [
+        // Vercel's own injected assets (/_vercel/insights/script.js,
+        // /_vercel/speed-insights/…). Unallowlisted they 307 to signin and
+        // analytics silently never loads — same failure shape as the cron
+        // 307 trap, only visible in a real browser against production.
+        "/_vercel",
         "/product",
         "/solutions",
         "/guides",

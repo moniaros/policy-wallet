@@ -1,6 +1,5 @@
 import React from "react"
 import Link from "next/link"
-import { Inter } from "next/font/google"
 import { ArrowRight } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { PublicHeader } from "@/components/public/PublicHeader"
@@ -26,8 +25,6 @@ const AGENT_FUNNEL_PLANS = (() => {
     const pro = DEFAULT_PLAN_FACTS.find((p) => p.id === "agent-pro")
     return starter && pro ? { starter, pro } : null
 })()
-
-const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
 interface LoBPageShellProps {
     children: React.ReactNode
@@ -62,7 +59,7 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
     const isAgentAudience = audience === "agent"
 
     return (
-        <div className={`${inter.className} min-h-screen bg-white text-neutral-900 selection:bg-brand-green/20 selection:text-neutral-900 dark:bg-slate-950 dark:text-white`}>
+        <div className={`min-h-screen bg-white text-neutral-900 selection:bg-brand-green/20 selection:text-neutral-900 dark:bg-slate-950 dark:text-white`}>
             <PublicHeader locale={locale} />
 
             <main id={SKIP_LINK_TARGET_ID} tabIndex={-1} className="pt-28 lg:pt-36">
