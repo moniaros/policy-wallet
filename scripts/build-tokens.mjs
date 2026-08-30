@@ -74,6 +74,7 @@ const cssVars = (theme, indent = '  ') =>
   Object.entries(sem[theme]).map(([k, v]) => `${indent}--${k}: ${hexOf(v)};`).join('\n')
 const primVars = Object.entries(prim.color).map(([k, v]) => `  --g-${k}: ${v};`).join('\n')
 const spaceVars = Object.entries(prim.space).map(([k, v]) => `  --spacing-g-${k}: ${v};`).join('\n')
+const typeVars = Object.entries(prim.type).map(([k, v]) => `  --text-g-${k}: ${v.size};\n  --text-g-${k}--line-height: ${v.lh};`).join('\n')
 const radiusVars = Object.entries(prim.radius).map(([k, v]) => `  --radius-g-${k}: ${v};`).join('\n')
 const themeColors = Object.keys(sem.light).map((k) => `  --color-${k}: var(--${k});`).join('\n')
 
@@ -110,6 +111,10 @@ ${themeColors}
   /* Namespaced scales — rounded-g-lg, p-g-6 … legacy --radius-* stays intact. */
 ${spaceVars}
 ${radiusVars}
+
+  /* Grafi type ladder - text-g-display-xl ... text-g-label. Fluid where the
+   * brief specifies; line-heights ride along per Tailwind 4 convention. */
+${typeVars}
 }
 `
 writeFileSync('app/grafi.css', css)

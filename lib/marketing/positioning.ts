@@ -182,11 +182,27 @@ export const LIFE_CHANGE_EFFECTS: readonly {
  * Split in two so the hero can colour the question without re-typing the copy.
  */
 export const PROMISE: { lead: Bilingual; accent: Bilingual } = {
-    lead: { el: "Η ζωή σας άλλαξε.", en: "Your life changed." },
-    // The no-break spaces keep "ασφάλειά σας" / "your insurance" from
-    // splitting across lines when the hero headline wraps.
-    accent: { el: "Η ασφάλειά σας το ξέρει;", en: "Does your insurance know?" },
+    // The fixed hero H1 — the PROMISE, not the feature. Was a dead import for
+    // months («Η ζωή σας άλλαξε…»); rewritten and wired 2026-08-30 per the
+    // approved repositioning (docs/marketing/03-COPY-pass1 §1.2). The storage
+    // line demotes to HERO_SUBHEAD below, and the rotating headline is gone:
+    // one visitor, one value proposition, one <h1>.
+    lead: { el: "Μάθετε τι πραγματικά", en: "Know what your policies" },
+    accent: { el: "καλύπτουν τα συμβόλαιά σας.", en: "actually cover." },
 }
+
+/** The hero email-capture CTA — same single-source rule as PRIMARY_ACTION. */
+export const HERO_EMAIL_CTA: Bilingual = {
+    el: "Ξεκινήστε δωρεάν",
+    en: "Start free",
+}
+
+/** The demoted feature line — the old slide-1 headline, now the fixed sub-head. */
+export const HERO_SUBHEAD: Bilingual = {
+    el: "Όλα τα ασφαλιστήρια, από όλες τις εταιρείες, σε ένα σημείο — διαβασμένα και εξηγημένα στα ελληνικά.",
+    en: "Every policy, from every company, in one place — read and explained in plain language.",
+}
+
 
 /**
  * Why we are different — the neutrality story. This is the single strongest

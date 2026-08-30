@@ -232,7 +232,7 @@ const HARDCODED_COLOUR_DEBT: Record<string, number> = {
     'components/landing/TrustRow.tsx::#a7f3d0': 2,
     'components/landing/WhyNow.tsx::#a7f3d0': 2,
     'components/landing/WorldClassLanding.tsx::#0f172a': 1,
-    'components/landing/WorldClassLanding.tsx::#a7f3d0': 8,
+    'components/landing/WorldClassLanding.tsx::#a7f3d0': 6,
     'components/wallet/ImportantNotices.tsx::#7f1d1d': 2,
     'components/wallet/ImportantNotices.tsx::#b91c1c': 2,
     'components/wallet/PolicyQA.tsx::#111111': 1,

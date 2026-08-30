@@ -9,18 +9,82 @@
     "green-300": "#8FCBB9",
     "green-200": "#CFE4DC",
     "green-100": "#E7F1EC",
-    "green-50":  "#F4F8F6",
-    "sand-700":  "#8D621E",
-    "sand-200":  "#EBD9B8",
-    "sand-50":   "#FBF1E1",
+    "green-50": "#F4F8F6",
+    "sand-700": "#8D621E",
+    "sand-200": "#EBD9B8",
+    "sand-50": "#FBF1E1",
     "slate-400": "#4A6660",
-    "line-200":  "#D9E5E0",
-    "line-300":  "#BFD4CC",
+    "line-200": "#D9E5E0",
+    "line-300": "#BFD4CC",
     "neutral-0": "#FFFFFF",
     "neutral-1000": "#071512"
   },
-  "space": { "1": "4px", "2": "8px", "3": "12px", "4": "16px", "5": "20px", "6": "24px", "8": "32px", "10": "40px", "12": "48px", "16": "64px", "20": "80px", "24": "96px", "28": "112px" },
-  "radius": { "sm": "9px", "md": "14px", "lg": "22px", "pill": "999px" },
-  "duration": { "fast": "160ms", "base": "250ms", "slow": "450ms", "entrance": "750ms" },
-  "ease": { "out": "cubic-bezier(.2,.7,.2,1)" }
+  "space": {
+    "1": "4px",
+    "2": "8px",
+    "3": "12px",
+    "4": "16px",
+    "5": "20px",
+    "6": "24px",
+    "8": "32px",
+    "10": "40px",
+    "12": "48px",
+    "16": "64px",
+    "20": "80px",
+    "24": "96px",
+    "28": "112px"
+  },
+  "radius": {
+    "sm": "9px",
+    "md": "14px",
+    "lg": "22px",
+    "pill": "999px"
+  },
+  "duration": {
+    "fast": "160ms",
+    "base": "250ms",
+    "slow": "450ms",
+    "entrance": "750ms"
+  },
+  "ease": {
+    "out": "cubic-bezier(.2,.7,.2,1)"
+  },
+  "type": {
+    "display-xl": {
+      "size": "clamp(2.35rem, 5.5vw, 4.4rem)",
+      "lh": "1.04"
+    },
+    "display-lg": {
+      "size": "clamp(1.85rem, 3.4vw, 2.85rem)",
+      "lh": "1.12"
+    },
+    "display-md": {
+      "size": "1.35rem",
+      "lh": "1.25"
+    },
+    "display-sm": {
+      "size": "1.1rem",
+      "lh": "1.3"
+    },
+    "body-lg": {
+      "size": "1.08rem",
+      "lh": "1.45"
+    },
+    "body": {
+      "size": "1.0625rem",
+      "lh": "1.62"
+    },
+    "body-sm": {
+      "size": "0.94rem",
+      "lh": "1.55"
+    },
+    "caption": {
+      "size": "0.83rem",
+      "lh": "1.5"
+    },
+    "label": {
+      "size": "0.72rem",
+      "lh": "1.4"
+    }
+  }
 }

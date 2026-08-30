@@ -13,7 +13,7 @@ import { WhyNow } from "@/components/landing/WhyNow"
 import { ClearLimits } from "@/components/landing/ClearLimits"
 import { HomeContact } from "@/components/landing/HomeContact"
 import { HookTicker } from "@/components/growth/HookTicker"
-import { HeroSlides } from "@/components/landing/HeroSlides"
+import { GrafiHero } from "@/components/landing/GrafiHero"
 import { PricingPreview } from "@/components/landing/PricingPreview"
 import { HomeFaq } from "@/components/landing/HomeFaq"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
@@ -97,71 +97,10 @@ export function WorldClassLanding({
                 spare. The old pt-24 left 24px of nothing on phones — cheap to
                 give back now that the first screen has to hold an interaction. */}
             <main id="main-content" tabIndex={-1} className="pt-20 sm:pt-28 lg:pt-36">
-                {/* ── 1. HERO ──────────────────────────────────────── */}
-                {/* The first screen IS the product. Badge, headline, then the
-                    visitor's own answer — nothing between arriving and doing.
-                    What used to sit here (a paragraph restating the story, and
-                    the security row) moved down: both were us talking, and both
-                    pushed the one interactive thing below the fold. */}
-                <section className="px-6 pb-20 lg:px-12 lg:pb-28">
-                    <div className="mx-auto max-w-[820px] text-center">
-                        {/* What we are, in the words a person would use. The
-                            formal category name still carries the SEO/AEO job in
-                            the footer, the OG cards and the JSON-LD entity — it
-                            is just not what a human reads first. */}
-                        <p className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-[#A7F3D0] bg-status-success-tint px-3.5 py-1.5 dark:border-brand-green/50">
-                            <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand-green dark:bg-[#A7F3D0]" />
-                            <span className="text-caption font-semibold text-status-success sm:text-body-sm">
-                                {pick(CATEGORY, locale)}
-                            </span>
-                        </p>
-
-                        {/* Three angles on the same argument, taken from
-                            /compare. ONLY the headline and lead rotate — the
-                            chip above and everything below stays put, so the
-                            primary action never moves under a cursor. */}
-                        <HeroSlides locale={locale} />
-
-                        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                            <LandingCtaLink
-                                href={authHref("/auth/signup?role=policyholder&source=landing_hero", locale)}
-                                locale={locale}
-                                location="hero"
-                                className="pw-primary-button pw-btn-lg"
-                            >
-                                {pick(PRIMARY_ACTION, locale)}
-                                <ArrowRight aria-hidden className="h-4 w-4" />
-                            </LandingCtaLink>
-                            {/* The second action is now the ungated tool rather
-                                than a jump link. Someone who is not ready to
-                                hand over an email can still get something out of
-                                the site, which is the whole reason /needs was
-                                built. */}
-                            <Link href={l("/needs")} className="pw-secondary-button pw-btn-lg">
-                                {t("Έλεγχος αναγκών σε 6 βήματα", "Needs check in 6 steps")}
-                            </Link>
-                        </div>
-
-                        {/* What the paid product actually does, directly under
-                            the action. The free tier is real and still stated
-                            below — but it is the floor, not the offer, and
-                            leading with it sold the floor. No price here: the
-                            plan catalog is admin-managed and PricingPreview
-                            renders the live figures a few sections down. */}
-                        <p className="mx-auto mt-5 max-w-[540px] text-body-lg font-medium leading-relaxed text-neutral-700 dark:text-slate-200">
-                            {t(
-                                "Με το Family διαβάζουμε κάθε ασφαλιστήριό σας, βρίσκουμε τι δεν καλύπτεται και σας ειδοποιούμε πριν λήξει κάτι.",
-                                "With Family we read every one of your policies, find what is not covered, and warn you before something runs out.",
-                            )}
-                        </p>
-
-                        {/* The free tier, kept accurate and kept findable, in the
-                            size it earns. */}
-                        <p className="mt-4 text-micro text-muted-foreground dark:text-slate-400">
-                            {pick(CTA_REASSURANCE, locale)}
-                        </p>
-                    </div>
-                </section>
+                {/* ── 1. HERO — Grafí. One fixed promise as the H1, the storage line as
+                    the sub-head, product visible immediately. The rotating headline is
+                    gone (see GrafiHero's docblock). */}
+                <GrafiHero locale={locale} />
 
                 {/* ── 2. WHY IT MATTERS ────────────────────────────── */}
                 <WhyNow locale={locale} />
