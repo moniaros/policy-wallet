@@ -2381,6 +2381,8 @@ export const el = {
 
         nav: {
             profile: { label: 'Προφίλ', description: 'Όνομα, email, τηλέφωνο, γλώσσα' },
+            household: { label: 'Το νοικοκυριό σας', description: 'Ποιοι είναι στο σπίτι και ποιος καλύπτεται' },
+            appearance: { label: 'Εμφάνιση και γλώσσα', description: 'Φωτεινό ή σκούρο, ελληνικά ή αγγλικά' },
             plan: { label: 'Συνδρομή και χρέωση', description: 'Πρόγραμμα, χρήση, τιμολόγια' },
             security: { label: 'Ασφάλεια', description: 'Κωδικός πρόσβασης και συσκευές' },
             notifications: { label: 'Ειδοποιήσεις', description: 'Τι σας στέλνουμε και πότε' },

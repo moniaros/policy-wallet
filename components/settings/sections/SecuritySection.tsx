@@ -10,8 +10,8 @@ import { SettingsSection, SettingsRowList } from "@/components/settings/Settings
 import { SettingRow } from "@/components/settings/SettingRow"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { ChangePasswordModal } from "@/components/settings/ChangePasswordModal"
-import { signOutEverywhere, signOutOtherDevices } from "@/app/(protected)/account/security-actions"
-import type { SecurityData } from "@/app/(protected)/account/data"
+import { signOutEverywhere, signOutOtherDevices } from "@/app/(protected)/me/security-actions"
+import type { SecurityData } from "@/app/(protected)/me/data"
 
 /**
  * What we can honestly say about this account's security.

@@ -129,7 +129,7 @@ export async function cancelSubscription() {
         data: { autoRenew: false }
     })
 
-    revalidatePath("/account")
+    revalidatePath("/me")
     return { success: true }
 }
 
@@ -234,7 +234,7 @@ export async function cancelDeletionRequest() {
         }
     })
 
-    revalidatePath("/account")
+    revalidatePath("/me")
     return { success: true }
 }
 
@@ -250,7 +250,7 @@ export async function updateProfile({ name, phone }: { name?: string; phone?: st
         }
     })
 
-    revalidatePath("/account")
+    revalidatePath("/me")
     return { success: true }
 }
 
@@ -291,7 +291,7 @@ export async function updateEmail(newEmail: string) {
         }
     })
 
-    revalidatePath("/account")
+    revalidatePath("/me")
     return { success: true }
 }
 
@@ -339,6 +339,6 @@ export async function setNotificationStreamPreference(eventType: string, enabled
         )
     )
 
-    revalidatePath("/account/notifications")
+    revalidatePath("/me/notifications")
     return { success: true }
 }

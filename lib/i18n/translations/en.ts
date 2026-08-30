@@ -2350,6 +2350,8 @@ export const en: TranslationKeys = {
 
         nav: {
             profile: { label: 'Profile', description: 'Name, email, phone, language' },
+            household: { label: 'Your household', description: 'Who is at home and who is covered' },
+            appearance: { label: 'Appearance and language', description: 'Light or dark, Greek or English' },
             plan: { label: 'Plan & billing', description: 'Your plan, usage and invoices' },
             security: { label: 'Security', description: 'Password and devices' },
             notifications: { label: 'Notifications', description: 'What we send you, and when' },

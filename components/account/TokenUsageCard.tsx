@@ -101,7 +101,7 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
             const res = await fetch("/api/v1/tokens/purchase", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ package: pkgKey, returnTo: "/account" }),
+                body: JSON.stringify({ package: pkgKey, returnTo: "/me" }),
             })
             const json = await res.json()
             const checkoutUrl = json?.data?.checkout_url || json?.checkout_url
@@ -252,7 +252,7 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
                         <UpgradeTriggerCard
                             featureKey="token_topup"
                             triggerSource="token_usage_card"
-                            returnTo="/account"
+                            returnTo="/me"
                             variant="inline"
                         />
                     )}

@@ -119,6 +119,33 @@ is mostly reordering (Phase 2 spec), not reduction.
 
 ---
 
+## Εσείς — `/me` (+ household, appearance)
+
+Source: `app/(protected)/me/*` (Grafí G11 — the whole `/account` tree moved; `lib/settings/sections.ts`
+stays the one registry, gaining `household` and `appearance`). `/account/*` 301s with the query carried.
+
+| Section | What it renders | Source of truth |
+|---|---|---|
+| ledger | «Τι έκανα για εσάς φέτος» — a projection over BusinessEvent (`lib/app/ledger.ts`); lines only for things that happened; the honest empty sentence otherwise; the plan price beside it, no commentary | `businessEvent.groupBy`, `plan-defaults` |
+| household | people with the three-state verdict; dependant with no policy = «για έλεγχο», never «κενό»; add = the one-minute task publishing `household.person_added` | `HouseholdPerson` (flag `app.household`), insured names from documents |
+| sections | the settings list from the registry | `SETTINGS_SECTIONS` |
+
+Routes (each a real page; `/account/*` and `/account/[[...rest]]` only 301):
+
+| Route | Serves |
+|---|---|
+| `/me` | the index above |
+| `/me/profile` | ProfileSection (moved intact) |
+| `/me/plan` | PlanSection (moved intact) |
+| `/me/security` | SecuritySection (moved intact) |
+| `/me/notifications` | NotificationsSection — «Πότε σας ενοχλώ» (moved intact) |
+| `/me/privacy` | PrivacySection (moved intact) |
+| `/me/history` | activity history (moved intact) |
+| `/me/household` | HouseholdScreen (G11) |
+| `/me/household/[personId]` | PersonScreen (G11) |
+| `/me/appearance` | AppearanceSection (G11) |
+| `/account/[[...rest]]` | redirect stub only — 301 arm for legacy links |
+
 ## Σύμβουλος — `/adviser` (+ `/adviser/help/[hash]`)
 
 Source: `app/(protected)/adviser/*` (Grafí G10). Replaces `/agent` (301) for policyholders;
@@ -401,7 +428,7 @@ Source: `app/(protected)/agent/page.tsx` → `AgentClient.tsx`.
 
 ---
 
-## Ρυθμίσεις — `/account` + 5 subpages
+## Ρυθμίσεις — `/account` + 5 subpages (moved to `/me/*` by Grafí G11; `/account/*` 301s)
 
 Source: `app/(protected)/account/page.tsx`, `SettingsNav`, and
 `components/settings/sections/{Profile,Security,Privacy,Plan,Notifications}Section.tsx`.

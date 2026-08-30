@@ -176,7 +176,7 @@ export function UserMenu({
                             className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700 font-medium"
                             onClick={() => {
                                 setIsOpen(false)
-                                router.push('/account')
+                                router.push('/me')
                             }}
                         >
                             {t.userMenu.settings}

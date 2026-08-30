@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Modal } from "@/components/ui/Modal"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { changePassword } from "@/app/(protected)/account/security-actions"
+import { changePassword } from "@/app/(protected)/me/security-actions"
 
 /**
  * Change password.

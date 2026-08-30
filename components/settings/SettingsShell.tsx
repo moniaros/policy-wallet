@@ -33,7 +33,7 @@ export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellP
     const { t } = useLanguage()
     const pathname = usePathname()
     const active = activeSectionFor(pathname)
-    const isIndex = pathname === "/account" || pathname === "/account/"
+    const isIndex = pathname === "/me" || pathname === "/me/"
     const copy = t.settings.nav
 
     return (
@@ -43,7 +43,7 @@ export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellP
                 <header className="mb-4 lg:hidden">
                     {!isIndex && (
                         <Link
-                            href="/account"
+                            href="/me"
                             className="pw-inline-action -ml-1 mb-2 inline-flex min-h-11 items-center gap-1 pr-2 text-xs font-semibold text-primary hover:underline dark:text-mint"
                         >
                             <ChevronLeft aria-hidden="true" className="h-4 w-4" />
@@ -61,9 +61,11 @@ export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellP
                 {/* Desktop header */}
                 <header className="mb-6 hidden lg:block">
                     <p className="pw-kicker">{t.nav.account}</p>
-                    <h1 className="mt-1.5 text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                    {/* Visual duplicate of the mobile h1 (one of the two headers is CSS-hidden
+                        at any width) — aria-hidden so the document keeps exactly one h1. */}
+                    <p aria-hidden="true" className="mt-1.5 text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
                         {t.settings.pageTitle}
-                    </h1>
+                    </p>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.settings.pageSubtitle}</p>
                 </header>
 

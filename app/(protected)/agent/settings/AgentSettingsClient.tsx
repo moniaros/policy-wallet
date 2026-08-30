@@ -236,7 +236,7 @@ export function AgentSettingsClient({
             {/* Personal settings are not duplicated here — they are one link
                 away, and the rail already lists them. */}
             <SettingsSection title={copy.personalSettingsTitle} description={copy.personalSettingsDesc}>
-                <Link href="/account/profile" className="pw-secondary-button pw-btn-sm">
+                <Link href="/me/profile" className="pw-secondary-button pw-btn-sm">
                     {copy.personalSettingsCta}
                 </Link>
             </SettingsSection>
@@ -245,7 +245,7 @@ export function AgentSettingsClient({
                 Article 17 flow lives in privacy settings and this points at it
                 rather than pretending to be a second way in. */}
             <SettingsSection tone="danger" title={copy.dangerZone} description={copy.dangerDescription}>
-                <Link href="/account/privacy" className="pw-secondary-button pw-btn-sm">
+                <Link href="/me/privacy" className="pw-secondary-button pw-btn-sm">
                     {copy.deactivateAccount}
                 </Link>
             </SettingsSection>

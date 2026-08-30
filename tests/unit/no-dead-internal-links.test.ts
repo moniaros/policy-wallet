@@ -259,7 +259,7 @@ describe("no internal link points at a route that does not exist", () => {
         expect(routes.size).toBeGreaterThan(80)
         expect(routes.has("/dashboard")).toBe(true)
         expect(routes.has("/protection")).toBe(true)
-        expect(routes.has("/account/history")).toBe(true)
+        expect(routes.has("/me/history")).toBe(true)
         expect(files.length).toBeGreaterThan(400)
         expect(sites.length).toBeGreaterThan(200)
     })

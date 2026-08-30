@@ -98,7 +98,7 @@ export default async function ProtectedLayout({
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 { label: t.nav.protection, href: "/protection", icon: <Shield className="w-5 h-5" /> },
                 { label: t.nav.myAgent, href: "/agent", icon: <Users className="w-5 h-5" /> },
-                { label: t.userMenu.settings, href: "/account", icon: <Settings className="w-5 h-5" /> },
+                { label: t.userMenu.settings, href: "/me", icon: <Settings className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" />, badge: unreadNotificationCount || undefined },
             ]
         })
@@ -152,7 +152,7 @@ export default async function ProtectedLayout({
         navigation.push({
             title: t.nav.account,
             items: [
-                { label: t.userMenu.settings, href: "/account" }
+                { label: t.userMenu.settings, href: "/me" }
             ]
         })
     }

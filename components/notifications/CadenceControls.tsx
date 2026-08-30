@@ -5,7 +5,7 @@ import { BellOff } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { Switch } from "@/components/ui/form/Switch"
-import { saveOutboundPause, saveMonthlyCeiling } from "@/app/(protected)/account/cadence-actions"
+import { saveOutboundPause, saveMonthlyCeiling } from "@/app/(protected)/me/cadence-actions"
 import { MONTHLY_CEILING_CHOICES } from "@/lib/notifications/cadence-options"
 
 export interface CadenceState {

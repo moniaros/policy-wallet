@@ -104,7 +104,7 @@ describe("quiet hours degrade to the role default", () => {
         }))
         vi.doMock("next/cache", () => ({ revalidatePath: vi.fn() }))
 
-        const { getQuietHours } = await import("@/app/(protected)/account/quiet-hours-actions")
+        const { getQuietHours } = await import("@/app/(protected)/me/quiet-hours-actions")
         const state = await getQuietHours()
 
         expect(state, "the page got nothing at all").not.toBeNull()
@@ -135,7 +135,7 @@ describe("quiet hours degrade to the role default", () => {
         }))
         vi.doMock("next/cache", () => ({ revalidatePath: vi.fn() }))
 
-        const { getQuietHours } = await import("@/app/(protected)/account/quiet-hours-actions")
+        const { getQuietHours } = await import("@/app/(protected)/me/quiet-hours-actions")
         const state = await getQuietHours()
 
         expect(state).toEqual({

@@ -44,8 +44,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
     const reassurance = verdict.quiet ? formatPlural(t.app.verdict.quietReassurance, { next: nextLine }, lang) : formatPlural(t.app.verdict.thingsToSee, { count: model.findings.filter((f) => f.tier !== "later").length }, lang)
     const mood = verdict.quiet ? t.app.verdict.moodQuiet : verdict.counts.gap > 0 ? t.app.verdict.moodGap : verdict.counts.review > 0 ? t.app.verdict.moodReview : t.app.verdict.moodQuiet
     const seeHref = PRIMARY_NAV[1].href
-    // Household people are entered on the profile today; G11 moves this to /me/household (registry successor).
-    const householdHref = `${PRIMARY_NAV[4].href}/profile`
+    const householdHref = `${PRIMARY_NAV[4].href}/household`
     const notChecked: string[] = []
     if (model.notChecked.gapDetection) notChecked.push(formatPlural(t.app.verdict.notChecked.gap_detection_not_in_plan, { plan: planTierName("pro", lang) }, lang))
     if (model.notChecked.notAnalysed > 0) notChecked.push(formatPlural(t.app.verdict.notChecked.policies_not_analysed, { count: model.notChecked.notAnalysed }, lang))

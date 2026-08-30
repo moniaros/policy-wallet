@@ -22,6 +22,8 @@ export type SettingsSectionId =
     | "history"
     | "benefits"
     | "agency"
+    | "household"
+    | "appearance"
 
 export interface SettingsSectionDef {
     id: SettingsSectionId
@@ -39,15 +41,17 @@ export interface SettingsSectionDef {
 }
 
 export const SETTINGS_SECTIONS: SettingsSectionDef[] = [
-    { id: "profile", href: "/account/profile", labelKey: "profile" },
-    { id: "plan", href: "/account/plan", labelKey: "plan" },
-    { id: "security", href: "/account/security", labelKey: "security" },
-    { id: "notifications", href: "/account/notifications", labelKey: "notifications" },
-    { id: "privacy", href: "/account/privacy", labelKey: "privacy" },
+    { id: "profile", href: "/me/profile", labelKey: "profile" },
+    { id: "household", href: "/me/household", labelKey: "household", requiresRole: "policyholder" },
+    { id: "appearance", href: "/me/appearance", labelKey: "appearance" },
+    { id: "plan", href: "/me/plan", labelKey: "plan" },
+    { id: "security", href: "/me/security", labelKey: "security" },
+    { id: "notifications", href: "/me/notifications", labelKey: "notifications" },
+    { id: "privacy", href: "/me/privacy", labelKey: "privacy" },
     // The relocated timeline (V2-P2-02, ledger T-01): activity history is a
     // thing you consult about your account, not a destination — it lives here
     // rather than holding a menu slot.
-    { id: "history", href: "/account/history", labelKey: "history" },
+    { id: "history", href: "/me/history", labelKey: "history" },
     // §4.2 (V2-P2-03): the partner-benefits entry lives inside Ρυθμίσεις, not
     // as a tab — and only while an offer is actually live.
     { id: "benefits", href: "/benefits", labelKey: "benefits", requiresRole: "policyholder", requiresLiveOffers: true },
@@ -69,7 +73,7 @@ export function settingsSectionsFor(roles: string, opts?: { hasLiveOffers?: bool
  * active.
  */
 export function activeSectionFor(pathname: string): SettingsSectionId | null {
-    if (pathname === "/account" || pathname === "/account/") return "profile"
+    if (pathname === "/me" || pathname === "/me/") return "profile"
     const match = SETTINGS_SECTIONS.find((s) => pathname === s.href || pathname.startsWith(`${s.href}/`))
     return match?.id ?? null
 }
@@ -80,8 +84,8 @@ export function activeSectionFor(pathname: string): SettingsSectionId | null {
  * those links live in inboxes for years.
  */
 export const LEGACY_TAB_REDIRECTS: Record<string, string> = {
-    settings: "/account/notifications",
-    billing: "/account/plan",
-    overview: "/account",
-    referrals: "/account/plan",
+    settings: "/me/notifications",
+    billing: "/me/plan",
+    overview: "/me",
+    referrals: "/me/plan",
 }

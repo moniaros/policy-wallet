@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { saveQuietHours } from "@/app/(protected)/account/quiet-hours-actions"
+import { saveQuietHours } from "@/app/(protected)/me/quiet-hours-actions"
 
 interface QuietHoursProps {
     initial: { enabled: boolean; start: number; end: number; timezone: string }

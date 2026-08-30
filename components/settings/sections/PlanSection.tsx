@@ -16,9 +16,9 @@ import {
     cancelSubscription,
     createBillingPortalSession,
     upgradeSubscription,
-} from "@/app/(protected)/account/actions"
+} from "@/app/(protected)/me/actions"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
-import type { PlanData } from "@/app/(protected)/account/data"
+import type { PlanData } from "@/app/(protected)/me/data"
 import type { EntitlementLimits } from "@/types/subscription-entitlements"
 
 /**
@@ -90,7 +90,7 @@ export function PlanSection({ data }: { data: PlanData }) {
             billing_period: "monthly",
             screen: "settings_plan",
         })
-        const result = await upgradeSubscription(data.upgradeTarget.id, "monthly", "/account/plan")
+        const result = await upgradeSubscription(data.upgradeTarget.id, "monthly", "/me/plan")
         if ("url" in result && result.url) {
             window.location.href = result.url
             return
@@ -107,7 +107,7 @@ export function PlanSection({ data }: { data: PlanData }) {
             billing_period: "annual",
             screen: "settings_plan",
         })
-        const result = await upgradeSubscription(data.plan.id, "annual", "/account/plan")
+        const result = await upgradeSubscription(data.plan.id, "annual", "/me/plan")
         if ("url" in result && result.url) {
             window.location.href = result.url
             return

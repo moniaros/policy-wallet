@@ -71,7 +71,7 @@ import {
     handleSubscriptionSuccess,
     fulfillCheckoutSession,
 } from '@/lib/billing'
-import { cancelSubscription } from '@/app/(protected)/account/actions'
+import { cancelSubscription } from '@/app/(protected)/me/actions'
 import { resolveUserEntitlements } from '@/lib/subscription-entitlements'
 
 const DAY_MS = 24 * 60 * 60 * 1000

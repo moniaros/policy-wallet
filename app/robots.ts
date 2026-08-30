@@ -18,6 +18,7 @@ const DISALLOWED_PATHS = [
     "/wallet",
     "/admin",
     "/account",
+    "/me",
     "/onboarding",
     "/upgrade",
     "/agent",

@@ -8,7 +8,7 @@ import { motion } from 'framer-motion'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { PricingComparison } from '@/components/account/PricingComparison'
 import { getSubscriptionCopy } from '@/lib/subscription-copy'
-import { upgradeSubscription } from '../account/actions'
+import { upgradeSubscription } from "@/app/(protected)/me/actions"
 import { trackJourneyEvent } from '@/lib/journey/funnel'
 
 const TIER_TO_PLAN_ID: Record<string, string> = {

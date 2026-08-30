@@ -8,8 +8,8 @@ import { SettingRow } from "@/components/settings/SettingRow"
 import { InlineEditRow } from "@/components/settings/InlineEditRow"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
-import { updateEmail, updateProfile } from "@/app/(protected)/account/actions"
-import type { ProfileData } from "@/app/(protected)/account/data"
+import { updateEmail, updateProfile } from "@/app/(protected)/me/actions"
+import type { ProfileData } from "@/app/(protected)/me/data"
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 

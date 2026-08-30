@@ -386,6 +386,14 @@ export async function proxy(request: NextRequest) {
     // /wallet/[id]/edit|review keep serving until G12. Proxy-level so the
     // old URL never renders (the /coverage lesson); the page files also
     // redirect() for the dead-link guard.
+    // Grafí G11: the settings tree moved wholesale — /account/* → /me/* for
+    // every signed-in role (the registry lib/settings/sections.ts is the one
+    // source; agents follow it too).
+    if (isLoggedIn && user && /^\/account(\/|$)/.test(nextUrl.pathname)) {
+        const rest = nextUrl.pathname.replace(/^\/account/, "") || ""
+        return NextResponse.redirect(new URL(`/me${rest}${nextUrl.search}`, nextUrl), 301)
+    }
+
     if (isLoggedIn && user && effectiveRole === "policyholder") {
         const legacy = nextUrl.pathname.replace(/\/$/, "")
         if (legacy === "/protection") return NextResponse.redirect(new URL("/see", nextUrl), 301)

@@ -94,6 +94,6 @@ export async function saveQuietHours(formData: FormData) {
         },
     })
 
-    revalidatePath("/account")
+    revalidatePath("/me")
     return { success: true }
 }

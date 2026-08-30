@@ -2,12 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, Building2, ChevronRight, CreditCard, Gift, History, Lock, ShieldCheck, User, type LucideIcon } from "lucide-react"
+import { Bell, Building2, ChevronRight, CreditCard, Gift, History, Lock, Palette, ShieldCheck, User, Users, type LucideIcon } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { activeSectionFor, settingsSectionsFor, type SettingsSectionId } from "@/lib/settings/sections"
 
 const ICONS: Record<SettingsSectionId, LucideIcon> = {
     profile: User,
+    household: Users,
+    appearance: Palette,
     plan: CreditCard,
     security: ShieldCheck,
     notifications: Bell,

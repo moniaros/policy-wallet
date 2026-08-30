@@ -105,6 +105,11 @@ describe('proxy() role gate wiring', () => {
         expect((await run('/agent')).status).toBe(301)
         expect((await run('/agent')).headers.get('location')).toBe('http://localhost:3000/adviser')
         expect((await run('/adviser')).status).toBe(200)
+        // G11: the settings tree moved wholesale, query carried.
+        const acc = await run('/account/plan?x=1')
+        expect(acc.status).toBe(301)
+        expect(acc.headers.get('location')).toBe('http://localhost:3000/me/plan?x=1')
+        expect((await run('/me/plan')).status).toBe(200)
         expect((await run('/policies/pol-1')).status).toBe(200)
         sessionFor('agent')
         expect((await run('/wallet')).status, 'an agent is not rewritten').not.toBe(301)

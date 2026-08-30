@@ -10,9 +10,9 @@ import { Switch } from "@/components/ui/form/Switch"
 import { PushOptIn } from "@/components/notifications/PushOptIn"
 import { QuietHours } from "@/components/notifications/QuietHours"
 import { CadenceControls } from "@/components/notifications/CadenceControls"
-import { setNotificationStreamPreference } from "@/app/(protected)/account/actions"
+import { setNotificationStreamPreference } from "@/app/(protected)/me/actions"
 import { NOTIFICATION_PREFERENCE_GROUPS } from "@/lib/notifications/preference-registry"
-import type { NotificationSettingsData } from "@/app/(protected)/account/data"
+import type { NotificationSettingsData } from "@/app/(protected)/me/data"
 
 const GROUP_ICON = {
     renewalReminders: AlertTriangle,

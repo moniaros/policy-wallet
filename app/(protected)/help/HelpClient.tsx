@@ -181,7 +181,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
             icon: CreditCard,
             label: t.help.shortcuts.billingLabel,
             desc: t.help.shortcuts.billingDesc,
-            href: '/account',
+            href: '/me',
         },
     ]
 

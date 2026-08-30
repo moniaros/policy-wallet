@@ -214,7 +214,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                         repeats the heading tells the reader nothing about what it
                         DOES. It opens the notification PREFERENCES. */}
                     <Link
-                        href="/account/notifications"
+                        href="/me/notifications"
                         className="pw-secondary-button pw-btn-sm inline-flex shrink-0 items-center gap-2"
                     >
                         <Settings2 aria-hidden="true" className="h-3.5 w-3.5" />

@@ -179,7 +179,7 @@ function buildProfileNudge(completeness: number | undefined, isGreek: boolean): 
                     : `Your risk profile is ${completeness}% complete. Fill in missing fields for more accurate coverage recommendations.`
                 }
             </p>
-            <a href="${APP_URL}/account" style="display: inline-block; margin-top: 8px; font-size: 13px; color: #059669; text-decoration: underline;">
+            <a href="${APP_URL}/me" style="display: inline-block; margin-top: 8px; font-size: 13px; color: #059669; text-decoration: underline;">
                 ${isGreek ? 'Ενημέρωση προφίλ →' : 'Update profile →'}
             </a>
         </div>

@@ -601,7 +601,7 @@ export const BUSINESS_EVENTS: Record<string, EventDefinition> = {
         trigger: "/me/household writes a HouseholdPerson row",
         payloadFields: ["householdPersonId", "relation", "isDependant"],
         actions: ["risk_recalculation", "audit_log", "analytics"],
-        status: "planned",
+        status: "live",
         note: "Emitted by /me/household (G11) once it ships.",
     }),
 

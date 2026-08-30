@@ -41,9 +41,9 @@ describe('every settings section is a real, reachable route', () => {
     })
 
     it('marks the right rail entry active, including on the index', () => {
-        expect(activeSectionFor('/account')).toBe('profile')
-        expect(activeSectionFor('/account/profile')).toBe('profile')
-        expect(activeSectionFor('/account/plan')).toBe('plan')
+        expect(activeSectionFor('/me')).toBe('profile')
+        expect(activeSectionFor('/me/profile')).toBe('profile')
+        expect(activeSectionFor('/me/plan')).toBe('plan')
         expect(activeSectionFor('/agent/settings')).toBe('agency')
         expect(activeSectionFor('/wallet')).toBeNull()
     })
@@ -56,14 +56,14 @@ describe('every settings section is a real, reachable route', () => {
     })
 
     it('keeps every old tab link working', () => {
-        const routes = new Set(['/account', ...SETTINGS_SECTIONS.map((s) => s.href)])
+        const routes = new Set(['/me', ...SETTINGS_SECTIONS.map((s) => s.href)])
         for (const [tab, target] of Object.entries(LEGACY_TAB_REDIRECTS)) {
             expect(routes.has(target), `?tab=${tab} → ${target}`).toBe(true)
         }
     })
 
     it('keeps private settings out of the index', () => {
-        const layout = readFileSync('app/(protected)/account/layout.tsx', 'utf-8')
+        const layout = readFileSync('app/(protected)/me/layout.tsx', 'utf-8')
         expect(layout).toMatch(/robots/)
         expect(layout).toMatch(/index: false/)
     })
@@ -125,7 +125,7 @@ describe('settings never renders a control nothing backs', () => {
     })
 
     it('signs out through Supabase, which owns the sessions', () => {
-        const actions = strip(readFileSync('app/(protected)/account/security-actions.ts', 'utf-8'))
+        const actions = strip(readFileSync('app/(protected)/me/security-actions.ts', 'utf-8'))
         expect(actions).toMatch(/signOut\(\{ scope: "others" \}\)/)
         expect(actions).toMatch(/signOut\(\{ scope: "global" \}\)/)
     })
@@ -133,7 +133,7 @@ describe('settings never renders a control nothing backs', () => {
     it('re-authenticates before changing the password', () => {
         // updatePassword was reachable with only a length check: an open tab on
         // a shared machine was enough to lock the owner out of their account.
-        const actions = strip(readFileSync('app/(protected)/account/security-actions.ts', 'utf-8'))
+        const actions = strip(readFileSync('app/(protected)/me/security-actions.ts', 'utf-8'))
         expect(actions).toMatch(/signInWithPassword/)
         expect(actions).toMatch(/WRONG_PASSWORD/)
         expect(actions).toMatch(/rateLimit\(/)

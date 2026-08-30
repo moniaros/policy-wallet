@@ -9,8 +9,8 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
 import { SettingRow } from "@/components/settings/SettingRow"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
-import { cancelDeletionRequest, deleteAccount } from "@/app/(protected)/account/actions"
-import type { PrivacyData } from "@/app/(protected)/account/data"
+import { cancelDeletionRequest, deleteAccount } from "@/app/(protected)/me/actions"
+import type { PrivacyData } from "@/app/(protected)/me/data"
 
 const CONSENT_ROWS = [
     { type: "ai_processing", key: "consentAi" },

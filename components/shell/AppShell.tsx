@@ -82,7 +82,7 @@ const getBottomNavItems = (role: UserRole['role'], t: any): BottomNavItem[] => {
             { href: '/wallet', icon: Wallet, label: t.nav.walletShort, id: 'wallet' },
             { href: '/protection', icon: Shield, label: t.nav.protectionShort, id: 'protection' },
             { href: '/agent', icon: Users, label: t.nav.agentShort, id: 'agent' },
-            { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings' }
+            { href: '/me', icon: Settings, label: t.userMenu.settings, id: 'settings' }
         ]
     } else if (role === 'agent') {
         const translations = {
@@ -105,7 +105,7 @@ const getBottomNavItems = (role: UserRole['role'], t: any): BottomNavItem[] => {
             // mobile ONLY through the hamburger. Renewals and tasks are daily
             // advisor work; they should not be two taps behind a drawer the
             // bottom bar never points at.
-            { href: '/account', icon: MoreHorizontal, label: translations.more, id: 'more', showsNotificationBadge: true, opensDrawer: true }
+            { href: '/me', icon: MoreHorizontal, label: translations.more, id: 'more', showsNotificationBadge: true, opensDrawer: true }
         ]
     }
     return []

@@ -33,7 +33,7 @@ vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 vi.mock('@/lib/env', () => ({ env: { NEXTAUTH_URL: 'http://localhost:3000' } }))
 
-import { deleteAccount, cancelDeletionRequest } from '@/app/(protected)/account/actions'
+import { deleteAccount, cancelDeletionRequest } from '@/app/(protected)/me/actions'
 
 beforeEach(() => {
     vi.clearAllMocks()

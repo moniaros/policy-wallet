@@ -196,7 +196,7 @@ export default function PricingPage({
         }
 
         if (!plan.checkoutPlanId) {
-            router.push("/account")
+            router.push("/me")
             return
         }
 

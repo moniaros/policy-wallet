@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { Check, Loader2, Users, Zap, Crown, Building2, ChevronLeft } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatEur } from "@/lib/pricing/pricing-view-model"
-import { upgradeSubscription } from "../../account/actions"
+import { upgradeSubscription } from "@/app/(protected)/me/actions"
 
 const PRICING_COPY = {
     redirecting: { el: "Μετάβαση σε ασφαλή πληρωμή...", en: "Redirecting to secure payment..." },

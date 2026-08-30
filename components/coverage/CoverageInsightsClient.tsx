@@ -291,7 +291,7 @@ export function CoverageInsightsClient({
         }
 
         if (canUseAgentCollaboration) {
-            router.push('/account')
+            router.push('/me')
         } else {
             router.push('/upgrade?reason=feature_locked')
         }
@@ -514,7 +514,7 @@ export function CoverageInsightsClient({
                             <ArrowRight className="w-4 h-4" />
                         </button>
                         <button
-                            onClick={() => router.push(isFreeTier ? '/upgrade?reason=feature_locked' : '/account')}
+                            onClick={() => router.push(isFreeTier ? '/upgrade?reason=feature_locked' : '/me')}
                             className="flex-1 py-3.5 bg-transparent border border-black/15 dark:border-white/20 text-black dark:text-white rounded-xl font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <Activity className="w-4 h-4" />

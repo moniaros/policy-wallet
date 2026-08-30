@@ -21,6 +21,7 @@ import { MoneyScreen } from "@/app/(protected)/money/MoneyScreen"
 import { UpdatesScreen } from "@/app/(protected)/updates/UpdatesScreen"
 import { AdviserScreen } from "@/app/(protected)/adviser/AdviserScreen"
 import { HelpScreen } from "@/app/(protected)/adviser/help/[hash]/HelpScreen"
+import { MeScreen } from "@/app/(protected)/me/MeScreen"
 import { toRenderableFinding, findingHash } from "@/lib/app/finding"
 import type { SeeModel } from "@/lib/app/see-model"
 import type { PoliciesModel, PolicyRow } from "@/lib/app/policies-model"
@@ -198,5 +199,26 @@ describe("/adviser/help/[hash] — the consent is one switch", () => {
         const send = [...container.querySelectorAll("button")].find((b) => b.textContent === "Στείλτε το")
         expect(send?.hasAttribute("disabled")).toBe(true)
         expect(container.textContent).not.toMatch(/\d\s?%/)
+    })
+})
+
+describe("/me — «Εσείς»", () => {
+    const ledger = { policiesRead: 21, renewalsCaught: 3, findingsShown: 29, benefitsSurfaced: 0, questionsAnswered: 0, helpRequests: 1, year: 2026 }
+    const household = { lang: "el" as const, enabled: true, people: [{ id: "hp1", name: "Άννα", relation: "partner", isDependant: false, state: "covered" as const, policyCount: 2 }] }
+    const sections = [{ id: "profile", href: "/me/profile", label: "Προφίλ", description: "Όνομα, email" }, { id: "privacy", href: "/me/privacy", label: "Απόρρητο", description: "Δεδομένα" }]
+    it("renders the ledger lines only for what happened, the plan beside it without commentary, ≤ 4 sections", () => {
+        const { container } = wrap(<MeScreen ledger={ledger} household={household} sections={sections} planLine="Πρόγραμμα: Family" />)
+        const r = collectSections(JSDOM_OPTS)
+        expect(r.count, r.ids.join(", ")).toBeLessThanOrEqual(4)
+        expect(container.textContent).toContain("21 ασφαλιστήρια διάβασα")
+        expect(container.textContent).toContain("1 αίτημα στείλατε στον σύμβουλό σας")
+        expect(container.textContent).not.toContain("παροχ")
+        expect(container.textContent).toContain("Πρόγραμμα: Family")
+        expect(container.textContent).toContain("Άννα")
+    })
+    it("an empty year renders the honest empty sentence, never an invented achievement", () => {
+        const empty = { policiesRead: 0, renewalsCaught: 0, findingsShown: 0, benefitsSurfaced: 0, questionsAnswered: 0, helpRequests: 0, year: 2026 }
+        const { container } = wrap(<MeScreen ledger={empty} household={{ lang: "el", enabled: false, people: [] }} sections={sections} planLine="Πρόγραμμα: Free" />)
+        expect(container.textContent).toContain("Δεν έχω κάνει ακόμη κάτι που να αξίζει να μετρήσω.")
     })
 })
