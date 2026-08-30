@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Bot, Check, Download, Loader2, ShieldCheck, Sparkles, X } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { buttonClassName } from "@/src/design-system/primitives"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
 import { SettingRow } from "@/components/settings/SettingRow"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
@@ -112,12 +113,12 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                         <li key={item.title} className="flex items-start gap-3">
                             <span
                                 aria-hidden="true"
-                                className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
+                                className="grid h-9 w-9 shrink-0 place-items-center rounded-g-control bg-surface-sunken text-fg-brand"
                             >
                                 <item.icon className="h-4 w-4" />
                             </span>
                             <span className="min-w-0">
-                                <span className="block text-sm font-semibold text-black dark:text-white">
+                                <span className="block text-g-app-body-sm font-semibold text-fg-primary">
                                     {item.title}
                                 </span>
                                 <span className="mt-0.5 block text-caption leading-relaxed text-muted-foreground">
@@ -145,7 +146,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                                         {granted ? (
                                             <Check
                                                 aria-hidden="true"
-                                                className="h-3.5 w-3.5 text-primary dark:text-mint"
+                                                className="h-3.5 w-3.5 text-fg-brand"
                                             />
                                         ) : (
                                             <X aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground" />
@@ -161,7 +162,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                                 }
                                 action={
                                     row.type === "ai_processing" && !granted ? (
-                                        <Link href="/consent/ai" className="pw-secondary-button pw-btn-sm">
+                                        <Link href="/consent/ai" className={buttonClassName({ variant: "secondary", size: "sm" })}>
                                             {copy.consentAiCta}
                                         </Link>
                                     ) : undefined
@@ -180,7 +181,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                     type="button"
                     onClick={handleExport}
                     disabled={exporting}
-                    className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                    className={buttonClassName({ variant: "secondary", size: "sm" }, "disabled:opacity-60")}
                 >
                     {exporting ? (
                         <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
@@ -201,7 +202,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                         type="button"
                         onClick={handleWithdrawDeletion}
                         disabled={withdrawing}
-                        className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                        className={buttonClassName({ variant: "secondary", size: "sm" }, "disabled:opacity-60")}
                     >
                         {withdrawing && <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />}
                         {withdrawing ? t.settings.processing : t.settings.cancelDeletion}
@@ -216,7 +217,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                     <button
                         type="button"
                         onClick={() => setDeleteOpen(true)}
-                        className="inline-flex min-h-11 items-center rounded-full bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2"
+                        className={buttonClassName({ variant: "danger", size: "sm" })}
                     >
                         {t.settings.deletePermanently}
                     </button>

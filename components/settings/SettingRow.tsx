@@ -28,17 +28,17 @@ export function SettingRow({ label, value, hint, action, muted = false, classNam
             className={`flex min-h-11 flex-col gap-2 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 ${className}`}
         >
             <div className="min-w-0">
-                <p className="text-caption font-medium text-muted-foreground">{label}</p>
+                <p className="text-g-app-caption font-medium text-fg-secondary">{label}</p>
                 {value !== undefined && (
                     <p
-                        className={`mt-0.5 text-sm [overflow-wrap:anywhere] ${
-                            muted ? "text-muted-foreground" : "font-semibold text-black dark:text-white"
+                        className={`mt-0.5 text-g-app-body-sm [overflow-wrap:anywhere] ${
+                            muted ? "text-fg-secondary" : "font-semibold text-fg-primary"
                         }`}
                     >
                         {value}
                     </p>
                 )}
-                {hint && <p className="mt-1 text-caption leading-snug text-muted-foreground">{hint}</p>}
+                {hint && <p className="mt-1 text-g-app-caption leading-snug text-fg-secondary">{hint}</p>}
             </div>
             {action && <div className="shrink-0 sm:pl-4">{action}</div>}
         </div>

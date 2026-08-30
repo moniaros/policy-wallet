@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Modal } from "@/components/ui/Modal"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { buttonClassName } from "@/src/design-system/primitives"
 import { changePassword } from "@/app/(protected)/me/security-actions"
 
 /**
@@ -101,7 +102,7 @@ export function ChangePasswordModal({
         const message = fieldError(field)
         return (
             <div className="space-y-1.5">
-                <label htmlFor={id} className="ml-1 block text-caption font-medium text-muted-foreground">
+                <label htmlFor={id} className="ml-1 block text-g-app-caption font-medium text-fg-secondary">
                     {label}
                 </label>
                 <input
@@ -117,18 +118,18 @@ export function ChangePasswordModal({
                     required
                     aria-invalid={message ? true : undefined}
                     aria-describedby={message ? `${id}-error` : hint ? `${id}-hint` : undefined}
-                    className="pw-input pw-input-sm min-h-11 w-full"
+                    className="min-h-11 w-full rounded-g-control border border-border-strong bg-surface-raised px-g-4 text-[16px] text-fg-primary placeholder:text-fg-secondary"
                 />
                 {message ? (
                     <p
                         id={`${id}-error`}
                         role="alert"
-                        className="ml-1 text-caption font-semibold text-red-700 dark:text-red-400"
+                        className="ml-1 text-g-app-caption font-semibold text-action-danger"
                     >
                         {message}
                     </p>
                 ) : hint ? (
-                    <p id={`${id}-hint`} className="ml-1 text-caption text-muted-foreground">
+                    <p id={`${id}-hint`} className="ml-1 text-g-app-caption text-fg-secondary">
                         {hint}
                     </p>
                 ) : null}
@@ -146,10 +147,10 @@ export function ChangePasswordModal({
             closeLabel={t.common.close}
         >
             <form onSubmit={submit} className="p-6 md:p-8">
-                <h2 id={`${baseId}-title`} className="text-lead font-semibold text-foreground">
+                <h2 id={`${baseId}-title`} className="text-g-heading text-fg-primary">
                     {copy.changePassword}
                 </h2>
-                <p className="mt-1 text-caption text-muted-foreground">{copy.passwordDesc}</p>
+                <p className="mt-1 text-g-app-body-sm text-fg-secondary">{copy.passwordDesc}</p>
 
                 <div className="mt-5 space-y-4">
                     {renderField("current", copy.currentPassword, current, setCurrent, "current-password")}
@@ -169,11 +170,11 @@ export function ChangePasswordModal({
                         type="button"
                         onClick={() => onOpenChange(false)}
                         disabled={pending}
-                        className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                        className={buttonClassName({ variant: "secondary", size: "sm" }, "disabled:opacity-60")}
                     >
                         {t.common.cancel}
                     </button>
-                    <button type="submit" disabled={pending} className="pw-primary-button pw-btn-sm disabled:opacity-60">
+                    <button type="submit" disabled={pending} className={buttonClassName({ variant: "primary", size: "sm" }, "disabled:opacity-60")}>
                         {pending && <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />}
                         {pending ? t.common.saving : copy.changePassword}
                     </button>

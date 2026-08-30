@@ -22,8 +22,8 @@ interface SettingsSectionProps {
  *
  * The old settings tab set every heading in `text-kicker font-black uppercase
  * tracking-widest`, so a section title, a field label and a table header all
- * shouted at the same volume and nothing led the eye. Here the eyebrow is the
- * only uppercase element and the title is the largest thing in the card.
+ * shouted at the same volume and nothing led the eye. Here nothing is
+ * uppercase and the title is the largest thing in the card.
  */
 export function SettingsSection({
     title,
@@ -38,22 +38,22 @@ export function SettingsSection({
     return (
         <section
             aria-labelledby={headingId}
-            className={`pw-card pw-pad mx-g-4 tablet:mx-0 ${
-                tone === "danger" ? "border-red-500/30 dark:border-red-500/25" : ""
+            className={`mx-g-4 rounded-g-card bg-surface-raised p-g-5 shadow-g-raised tablet:mx-0 ${
+                tone === "danger" ? "border border-action-danger/30" : ""
             } ${className}`}
         >
             <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                     <h2
                         id={headingId}
-                        className={`text-lead font-semibold tracking-tight ${
-                            tone === "danger" ? "text-red-700 dark:text-red-300" : "text-black dark:text-white"
+                        className={`text-g-heading ${
+                            tone === "danger" ? "text-action-danger" : "text-fg-primary"
                         }`}
                     >
                         {title}
                     </h2>
                     {description && (
-                        <p className="mt-1 text-caption leading-relaxed text-muted-foreground">{description}</p>
+                        <p className="mt-1 text-g-app-body-sm leading-relaxed text-fg-secondary">{description}</p>
                     )}
                 </div>
                 {action && <div className="shrink-0">{action}</div>}
@@ -66,5 +66,5 @@ export function SettingsSection({
 
 /** Rows inside a section, separated the way the policy brief separates its rows. */
 export function SettingsRowList({ children }: { children: ReactNode }) {
-    return <div className="divide-y divide-black/5 dark:divide-white/10">{children}</div>
+    return <div className="divide-y divide-border-hair">{children}</div>
 }

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { AlertTriangle, ArrowRight, Mail, MessageSquare, Shield, Zap } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { buttonClassName } from "@/src/design-system/primitives"
 import { SettingsSection } from "@/components/settings/SettingsSection"
 import { Switch } from "@/components/ui/form/Switch"
 import { PushOptIn } from "@/components/notifications/PushOptIn"
@@ -81,7 +82,7 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
     return (
         <>
             <SettingsSection title={copy.streamsTitle} description={copy.streamsDesc}>
-                <div className="divide-y divide-black/5 dark:divide-white/10">
+                <div className="divide-y divide-border-hair">
                     {NOTIFICATION_PREFERENCE_GROUPS.map((group) => {
                         const Icon = GROUP_ICON[group.labelKey]
                         const groupCopy = t.settings.notificationGroups[group.labelKey]
@@ -124,7 +125,7 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
             <SettingsSection title={copy.historyTitle} description={copy.historyDesc}>
                 <Link
                     href="/notifications"
-                    className="pw-secondary-button pw-btn-sm inline-flex items-center gap-2"
+                    className={buttonClassName({ variant: "secondary", size: "sm" }, "gap-2")}
                 >
                     {copy.historyCta}
                     <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />

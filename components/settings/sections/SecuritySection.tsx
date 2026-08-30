@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { KeyRound, Loader2, LogIn, Mail, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { buttonClassName } from "@/src/design-system/primitives"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
 import { SettingRow } from "@/components/settings/SettingRow"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
@@ -73,7 +74,7 @@ export function SecuritySection({ data }: { data: SecurityData }) {
                             <button
                                 type="button"
                                 onClick={() => setPasswordOpen(true)}
-                                className="pw-secondary-button pw-btn-sm"
+                                className={buttonClassName({ variant: "secondary", size: "sm" })}
                             >
                                 {copy.changePassword}
                             </button>
@@ -82,7 +83,7 @@ export function SecuritySection({ data }: { data: SecurityData }) {
                     <SettingRow
                         label={copy.forgotPassword}
                         action={
-                            <Link href="/auth/forgot-password" className="pw-secondary-button pw-btn-sm">
+                            <Link href="/auth/forgot-password" className={buttonClassName({ variant: "secondary", size: "sm" })}>
                                 {copy.forgotPasswordCta}
                             </Link>
                         }
@@ -104,7 +105,7 @@ export function SecuritySection({ data }: { data: SecurityData }) {
                                 // it in the button gave the same sentence twice on
                                 // one line and pushed the row past 320px.
                                 aria-label={copy.signOutOthers}
-                                className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                                className={buttonClassName({ variant: "secondary", size: "sm" }, "disabled:opacity-60")}
                             >
                                 {busy === "others" && (
                                     <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
@@ -121,7 +122,7 @@ export function SecuritySection({ data }: { data: SecurityData }) {
                                 type="button"
                                 onClick={() => setSignOutAllOpen(true)}
                                 aria-label={copy.signOutEverywhere}
-                                className="pw-secondary-button pw-btn-sm border-red-500/40 text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30"
+                                className={buttonClassName({ variant: "secondary", size: "sm" }, "border-action-danger/40 text-action-danger hover:bg-action-danger/10")}
                             >
                                 {copy.signOutAction}
                             </button>
@@ -132,8 +133,8 @@ export function SecuritySection({ data }: { data: SecurityData }) {
 
             <SettingsSection title={copy.activityTitle} description={copy.activityDesc}>
                 {data.events.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-black/10 bg-black/[0.02] p-4 dark:border-white/15 dark:bg-white/[0.03]">
-                        <p className="text-sm font-semibold text-black dark:text-white">
+                    <div className="rounded-g-control border border-dashed border-border-strong bg-surface-sunken p-g-4">
+                        <p className="text-g-app-body-sm font-semibold text-fg-primary">
                             {copy.activityEmptyTitle}
                         </p>
                         <p className="mt-1 text-caption leading-snug text-muted-foreground">
@@ -141,7 +142,7 @@ export function SecuritySection({ data }: { data: SecurityData }) {
                         </p>
                     </div>
                 ) : (
-                    <ul className="divide-y divide-black/5 dark:divide-white/10">
+                    <ul className="divide-y divide-border-hair">
                         {data.events.map((event) => {
                             const meta = EVENT_META[event.type as keyof typeof EVENT_META]
                             const Icon = meta?.icon ?? ShieldCheck
@@ -154,12 +155,12 @@ export function SecuritySection({ data }: { data: SecurityData }) {
                                 <li key={event.id} className="flex min-h-11 items-center gap-3 py-3">
                                     <span
                                         aria-hidden="true"
-                                        className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-black/5 text-muted-foreground dark:bg-white/10"
+                                        className="grid h-9 w-9 shrink-0 place-items-center rounded-g-control bg-surface-sunken text-fg-secondary"
                                     >
                                         <Icon className="h-4 w-4" />
                                     </span>
                                     <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-semibold text-black dark:text-white">
+                                        <span className="block text-g-app-body-sm font-semibold text-fg-primary">
                                             {copy[meta.key]}
                                         </span>
                                         <span className="mt-0.5 block text-caption text-muted-foreground">

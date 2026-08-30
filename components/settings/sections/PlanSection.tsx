@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Check, ExternalLink, Loader2, Smartphone } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { buttonClassName } from "@/src/design-system/primitives"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
 import { SettingRow } from "@/components/settings/SettingRow"
 import { UsageMeter } from "@/components/monetization/UsageMeter"
@@ -142,8 +143,8 @@ export function PlanSection({ data }: { data: PlanData }) {
     return (
         <>
             <SettingsSection title={copy.currentTitle} description={copy.currentDesc}>
-                <div className="rounded-xl border border-black/8 bg-black/[0.03] p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <p className="text-h3 font-semibold tracking-tight text-black dark:text-white">
+                <div className="rounded-g-control bg-surface-sunken p-g-4">
+                    <p className="text-g-title text-fg-primary">
                         {data.plan?.displayName ?? copy.free}
                     </p>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -174,13 +175,13 @@ export function PlanSection({ data }: { data: PlanData }) {
                     )}
                 </div>
 
-                <h3 className="pw-kicker mt-5">{copy.includedTitle}</h3>
+                <h3 className="mt-g-5 text-g-app-body-sm font-semibold text-fg-secondary">{copy.includedTitle}</h3>
                 <ul className="mt-2 space-y-2">
                     {included.map((line) => (
-                        <li key={line} className="flex items-start gap-2 text-sm text-black/80 dark:text-white/80">
+                        <li key={line} className="flex items-start gap-2 text-g-app-body-sm text-fg-secondary">
                             <Check
                                 aria-hidden="true"
-                                className="mt-0.5 h-4 w-4 shrink-0 text-primary dark:text-mint"
+                                className="mt-0.5 h-4 w-4 shrink-0 text-fg-brand"
                             />
                             <span>{line}</span>
                         </li>
@@ -188,8 +189,8 @@ export function PlanSection({ data }: { data: PlanData }) {
                 </ul>
 
                 {data.upgradeTarget && (
-                    <div className="mt-5 rounded-xl border border-primary/25 bg-primary-soft/40 p-4 dark:border-mint/25 dark:bg-primary/10">
-                        <p className="text-sm font-semibold text-black dark:text-white">
+                    <div className="mt-g-5 rounded-g-control border border-border-subtle bg-surface-wash p-g-4">
+                        <p className="text-g-app-body-sm font-semibold text-fg-primary">
                             {copy.upgradeAddsTitle} {data.upgradeTarget.displayName}
                         </p>
                         <p className="mt-1 text-caption text-muted-foreground">
@@ -200,14 +201,14 @@ export function PlanSection({ data }: { data: PlanData }) {
                                 type="button"
                                 onClick={handleUpgrade}
                                 disabled={busy !== null || storeManaged}
-                                className="pw-primary-button pw-btn-sm disabled:opacity-60"
+                                className={buttonClassName({ variant: "primary", size: "sm" }, "disabled:opacity-60")}
                             >
                                 {busy === "upgrade" && (
                                     <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
                                 )}
                                 {copy.upgradeTo} {data.upgradeTarget.displayName}
                             </button>
-                            <Link href="/upgrade" className="pw-secondary-button pw-btn-sm">
+                            <Link href="/upgrade" className={buttonClassName({ variant: "secondary", size: "sm" })}>
                                 {copy.upgradeCta}
                             </Link>
                         </div>
@@ -276,7 +277,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                                         type="button"
                                         onClick={handlePortal}
                                         disabled={busy !== null}
-                                        className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                                        className={buttonClassName({ variant: "secondary", size: "sm" }, "disabled:opacity-60")}
                                     >
                                         {busy === "portal" ? (
                                             <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
@@ -299,7 +300,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                                         type="button"
                                         onClick={handleAnnual}
                                         disabled={busy !== null}
-                                        className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                                        className={buttonClassName({ variant: "secondary", size: "sm" }, "disabled:opacity-60")}
                                     >
                                         {busy === "annual" && (
                                             <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
@@ -318,7 +319,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                                     <button
                                         type="button"
                                         onClick={() => setCancelOpen(true)}
-                                        className="pw-secondary-button pw-btn-sm border-red-500/40 text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30"
+                                        className={buttonClassName({ variant: "secondary", size: "sm" }, "border-action-danger/40 text-action-danger hover:bg-action-danger/10")}
                                     >
                                         {copy.cancelCta}
                                     </button>

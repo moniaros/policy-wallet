@@ -1,8 +1,10 @@
 "use client"
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react"
-import { Check, Loader2 } from "lucide-react"
+import { Check } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { Button, Input } from "@/src/design-system/primitives"
+import { SettingRow } from "./SettingRow"
 
 type Status = "idle" | "editing" | "saving" | "saved"
 
@@ -145,44 +147,38 @@ export function InlineEditRow({
     }
 
     if (status === "idle" || status === "saved") {
+        // The read-only presentation IS SettingRow — one row layout, not two copies.
+        const idleHint =
+            hint || (disabled && disabledReason) ? (
+                <>
+                    {hint}
+                    {disabled && disabledReason && <span className={hint ? "mt-1 block" : "block"}>{disabledReason}</span>}
+                </>
+            ) : undefined
         return (
-            <div className="flex min-h-11 flex-col gap-2 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <div className="min-w-0">
-                    <p className="text-caption font-medium text-muted-foreground">{label}</p>
-                    <p
-                        className={`mt-0.5 text-sm [overflow-wrap:anywhere] ${
-                            value ? "font-semibold text-black dark:text-white" : "text-muted-foreground"
-                        }`}
-                    >
-                        {value || emptyLabel}
-                    </p>
-                    {hint && <p className="mt-1 text-caption leading-snug text-muted-foreground">{hint}</p>}
-                    {disabled && disabledReason && (
-                        <p className="mt-1 text-caption leading-snug text-muted-foreground">{disabledReason}</p>
-                    )}
-                </div>
-
-                <div className="flex shrink-0 items-center gap-3 sm:pl-4">
-                    {status === "saved" && (
-                        <span
-                            role="status"
-                            className="inline-flex items-center gap-1 text-caption font-semibold text-primary dark:text-mint"
-                        >
-                            <Check aria-hidden="true" className="h-3.5 w-3.5" />
-                            {t.settings.savedLabel}
-                        </span>
-                    )}
-                    <button
-                        type="button"
-                        onClick={open}
-                        disabled={disabled}
-                        className="pw-secondary-button pw-btn-sm disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                        {value ? t.common.edit : t.settings.addLabel}
-                        <span className="sr-only"> — {label}</span>
-                    </button>
-                </div>
-            </div>
+            <SettingRow
+                label={label}
+                value={value || emptyLabel}
+                muted={!value}
+                hint={idleHint}
+                action={
+                    <div className="flex items-center gap-3">
+                        {status === "saved" && (
+                            <span
+                                role="status"
+                                className="inline-flex items-center gap-1 text-g-app-caption font-semibold text-fg-brand"
+                            >
+                                <Check aria-hidden="true" className="h-3.5 w-3.5" />
+                                {t.settings.savedLabel}
+                            </span>
+                        )}
+                        <Button type="button" variant="secondary" size="sm" onClick={open} disabled={disabled}>
+                            {value ? t.common.edit : t.settings.addLabel}
+                            <span className="sr-only"> — {label}</span>
+                        </Button>
+                    </div>
+                }
+            />
         )
     }
 
@@ -190,12 +186,12 @@ export function InlineEditRow({
 
     return (
         <div className="py-3.5">
-            <label htmlFor={controlId} className="block text-caption font-medium text-muted-foreground">
+            <label htmlFor={controlId} className="block text-g-app-caption font-medium text-fg-secondary">
                 {label}
             </label>
 
             <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-start">
-                <input
+                <Input
                     ref={inputRef}
                     id={controlId}
                     type={type}
@@ -219,35 +215,24 @@ export function InlineEditRow({
                     }}
                     aria-invalid={error ? true : undefined}
                     aria-describedby={error ? errorId : editHint ? hintId : undefined}
-                    className="pw-input pw-input-sm min-h-11 flex-1"
+                    className="min-h-11 flex-1"
                 />
                 <div className="flex gap-2">
-                    <button
-                        type="button"
-                        onClick={() => void submit()}
-                        disabled={saving}
-                        className="pw-primary-button pw-btn-sm flex-1 disabled:opacity-60 sm:flex-none"
-                    >
-                        {saving && <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />}
+                    <Button type="button" size="sm" onClick={() => void submit()} loading={saving} className="flex-1 sm:flex-none">
                         {saving ? t.common.saving : t.common.save}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={cancel}
-                        disabled={saving}
-                        className="pw-secondary-button pw-btn-sm flex-1 disabled:opacity-60 sm:flex-none"
-                    >
+                    </Button>
+                    <Button type="button" variant="secondary" size="sm" onClick={cancel} disabled={saving} className="flex-1 sm:flex-none">
                         {t.common.cancel}
-                    </button>
+                    </Button>
                 </div>
             </div>
 
             {error ? (
-                <p id={errorId} role="alert" className="mt-2 text-caption font-semibold text-red-700 dark:text-red-400">
+                <p id={errorId} role="alert" className="mt-2 text-g-app-caption font-semibold text-action-danger">
                     {error}
                 </p>
             ) : editHint ? (
-                <p id={hintId} className="mt-2 text-caption leading-snug text-muted-foreground">
+                <p id={hintId} className="mt-2 text-g-app-caption leading-snug text-fg-secondary">
                     {editHint}
                 </p>
             ) : null}
