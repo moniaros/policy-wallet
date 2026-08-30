@@ -1,7 +1,11 @@
 # STATUS
 
-**Production: `7425ef9b`** — deployed 2026-08-28. The Grafí work below is committed on `NEW-UI`
-but **NOT yet deployed**; the live site still renders the carousel hero.
+**Production: `76f62a43`** — deployed 2026-08-30 via CI-green → deploy.yml (dpl_7DuAspuumiGFu9Cmokr4m3jFh3jb).
+The Grafí homepage is LIVE and smoked: fixed-promise H1, 16-line ticker, sourced numbers with
+their links, retired sentence absent, 4 steps + ReadingDemo, broker band, comparison, three
+pricing cards (€0/€4.99/€8.99) + recommender, CTA white-on-green, no h-scroll at 390; /en
+mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry groups in the
+2h window after deploy.
 
 ## Current phase
 
@@ -32,17 +36,16 @@ seams and hostile review: `docs/handover.md`.
 
 ## Top risks, ranked
 
-1. **Grafí work undeployed** — the longer NEW-UI sits ahead of prod, the bigger the cutover.
-2. **Marketing routes ship the app bundle** (602KB: Sentry 172KB, Supabase 46KB) — mobile LCP 4.8s
+1. **Marketing routes ship the app bundle** (602KB: Sentry 172KB, Supabase 46KB) — mobile LCP 4.8s
    vs the 2.0s budget; the split is the named fix (`docs/perf-report.md`).
 3. **Visual seam mid-homepage** — legacy-styled bands below the Grafí upper page until G6 polish.
 
 ## Next 3 actions
 
-1. Deploy NEW-UI (CI green gate → deploy.yml auto-deploys) and smoke the hero/ticker/numbers live.
-2. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix).
-3. Restyle the remaining legacy bands (ServicesGrid, WhyDifferent, ClearLimits, FAQ, final CTA)
+1. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix).
+2. Restyle the remaining legacy bands (ServicesGrid, WhyDifferent, ClearLimits, FAQ, final CTA)
    onto Grafí and finish the G4 primitive remainder.
+3. When legal returns Terms §3 + IDD: de-noindex the partners pair and add its hreflang link.
 
 ---
 
