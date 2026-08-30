@@ -277,6 +277,8 @@ export async function proxy(request: NextRequest) {
         // Partner-benefits marketing page (404s until the first live partner).
         "/perks",
         "/landing",
+    // Grafí living styleguide — the page itself 404s in production builds.
+    "/styleguide",
         "/api/contact",
         "/api/v1/contact",
         // Anonymous newsletter capture from the public footer — without this entry

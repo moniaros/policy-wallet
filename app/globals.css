@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Grafí design-system tokens — GENERATED from tokens/*.json via `npm run tokens`. */
+@import "./grafi.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
