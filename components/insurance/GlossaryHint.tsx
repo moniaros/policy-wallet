@@ -30,12 +30,12 @@ export type GlossaryHintData = {
 export function GlossaryHint({ hint, className = "" }: { hint: GlossaryHintData; className?: string }) {
     return (
         <details className={`inline-block align-baseline ${className}`}>
-            <summary className="inline cursor-pointer list-none underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
+            <summary className="inline cursor-pointer list-none underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
                 {hint.heading}
             </summary>
-            <span className="mt-1.5 block rounded-xl border border-black/10 bg-black/[0.03] p-3 text-caption font-normal normal-case leading-relaxed tracking-normal text-black/75 dark:border-white/15 dark:bg-white/5 dark:text-white/75">
+            <span className="mt-1.5 block rounded-g-control border border-border-subtle bg-surface-sunken p-3 text-g-app-caption font-normal normal-case leading-relaxed tracking-normal text-fg-secondary">
                 {hint.definition}{" "}
-                <Link href={hint.href} className="inline-flex min-h-11 min-w-11 items-center justify-center font-semibold text-primary underline-offset-2 hover:underline dark:text-mint">
+                <Link href={hint.href} className="inline-flex min-h-11 min-w-11 items-center justify-center font-semibold text-fg-brand underline-offset-2 hover:underline">
                     {hint.moreLabel}
                 </Link>
             </span>

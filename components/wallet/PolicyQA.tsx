@@ -116,8 +116,8 @@ export function PolicyQA({
     const toggleLabel = showChat ? t.wallet.closeChat : t.wallet.openChat
 
     return (
-        <div className="bg-white/90 dark:bg-black/90 backdrop-blur-xl rounded-2xl shadow-lg border border-black/10 dark:border-white/15 overflow-hidden transition-all duration-300 hover:shadow-xl">
-            <div className="bg-[#111111] p-6 text-white">
+        <div className="overflow-hidden rounded-g-card border border-border-subtle bg-surface-raised shadow-g-raised transition-shadow duration-300">
+            <div className="bg-action-primary-bg p-6 text-fg-on-brand">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -125,7 +125,7 @@ export function PolicyQA({
                         </div>
                         <div>
                             <h3 className="text-lg font-black">{t.wallet.askAiTitle}</h3>
-                            <p className="text-sm text-white/75 mt-0.5">{t.wallet.askAiSubtitle}</p>
+                            <p className="mt-0.5 text-g-app-body-sm opacity-80">{t.wallet.askAiSubtitle}</p>
                         </div>
                     </div>
                     <button
@@ -144,7 +144,7 @@ export function PolicyQA({
                         <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
                             {messages.map((msg, idx) => (
                                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[80%] rounded-2xl p-4 ${msg.role === 'user' ? 'bg-black text-white' : 'bg-black/5 dark:bg-white/10 text-black dark:text-white'}`}>
+                                    <div className={`max-w-[80%] rounded-2xl p-4 ${msg.role === 'user' ? 'bg-action-primary-bg text-fg-on-brand' : 'bg-surface-sunken text-fg-primary'}`}>
                                         <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                                         <p className="text-xs opacity-70 mt-2">{formatTime(msg.timestamp, language as 'el' | 'en')}</p>
                                     </div>
@@ -152,10 +152,10 @@ export function PolicyQA({
                             ))}
                             {isAsking && (
                                 <div className="flex justify-start">
-                                    <div className="bg-black/5 dark:bg-white/10 rounded-2xl p-4">
+                                    <div className="rounded-g-card bg-surface-sunken p-4">
                                         <div className="flex items-center gap-2">
-                                            <Loader2 className="w-4 h-4 animate-spin text-primary dark:text-mint" />
-                                            <span className="text-sm text-black/60 dark:text-white/70">{t.wallet.thinking}</span>
+                                            <Loader2 className="w-4 h-4 animate-spin text-fg-brand" />
+                                            <span className="text-g-app-body-sm text-fg-secondary">{t.wallet.thinking}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -165,16 +165,16 @@ export function PolicyQA({
 
                     {messages.length === 0 && (
                         <div className="mb-6">
-                            <p className="text-sm font-bold text-black/70 dark:text-white/75 mb-3">{t.wallet.tryAsking}</p>
+                            <p className="mb-3 text-g-app-body-sm font-semibold text-fg-secondary">{t.wallet.tryAsking}</p>
                             <div className="space-y-2">
                                 {suggestedQuestions.map((q, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => setQuestion(q)}
                                         disabled={!inputEnabled}
-                                        className="w-full text-left px-4 py-3 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 rounded-xl text-sm text-black/75 dark:text-white/75 transition-colors border border-black/10 dark:border-white/15 hover:border-primary/35 dark:hover:border-mint/35 cursor-pointer disabled:cursor-default disabled:opacity-60 disabled:hover:bg-black/5 dark:disabled:hover:bg-white/10"
+                                        className="w-full cursor-pointer rounded-g-control border border-border-subtle bg-surface-sunken px-4 py-3 text-left text-g-app-body-sm text-fg-secondary transition-colors hover:border-border-focus hover:bg-surface-wash disabled:cursor-default disabled:opacity-60 disabled:hover:bg-surface-sunken"
                                     >
-                                        <MessageCircle className="w-4 h-4 inline mr-2 text-primary dark:text-mint" />
+                                        <MessageCircle className="w-4 h-4 inline mr-2 text-fg-brand" />
                                         {q}
                                     </button>
                                 ))}
@@ -207,25 +207,25 @@ export function PolicyQA({
                             onChange={(e) => setQuestion(e.target.value)}
                             placeholder={t.wallet.askAiPlaceholder}
                             disabled={isAsking}
-                            className="pw-input pr-12 border-black/10 text-black dark:text-white dark:focus:border-mint"
+                            className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised px-g-4 pr-14 text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none"
                         />
                         <button
                             type="submit"
                             disabled={!question.trim() || isAsking}
-                            className="pw-primary-button absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 shadow-primary/25"
+                            className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-g-control bg-action-primary-bg text-fg-on-brand transition-colors hover:bg-action-primary-hover disabled:opacity-50"
                         >
                             {isAsking ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                         </button>
                     </form>
 
                     {canAskAsFree && freeRemaining !== null && (
-                        <p className="mt-3 text-center text-xs font-semibold text-primary dark:text-mint">
+                        <p className="mt-3 text-center text-g-app-caption font-semibold text-fg-brand">
                             {freeRemaining === 1
                                 ? `1 ${t.wallet.qaFreeRemainingOne}`
                                 : `${freeRemaining} ${t.wallet.qaFreeRemainingMany}`}
                         </p>
                     )}
-                    <p className="text-xs text-black/60 dark:text-white/60 mt-3 text-center">{t.wallet.aiFootnote}</p>
+                    <p className="mt-3 text-center text-g-app-caption text-fg-secondary">{t.wallet.aiFootnote}</p>
                     <AiDisclaimer variant="inline" className="mt-2 justify-center text-center" />
                 </div>
             )}

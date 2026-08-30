@@ -63,16 +63,13 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
                 aria-modal="true"
                 aria-labelledby={titleId}
                 tabIndex={-1}
-                className="bg-card rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-border"
+                className="w-full max-w-md overflow-hidden rounded-g-sheet border border-border-subtle bg-surface-raised shadow-g-overlay"
             >
-                {/* bg-red-600, not red-500. On red-500 even PURE WHITE is 3.81:1 —
-                    no foreground choice clears 4.5:1, so the background was the
-                    defect. «Η ενέργεια είναι οριστική» measured 3.12:1 in
-                    text-red-100 at 320/390/430; the h2 above it passed only
-                    because bold 20px counts as large text and needs 3:1. On
-                    red-600 white is 4.77:1 and the sentence that says the
-                    deletion cannot be undone is legible. */}
-                <div className="bg-red-600 p-6 text-white">
+                {/* action-danger + fg-on-brand: the token pair the contrast matrix
+                    measures, so the sentence that says the deletion cannot be
+                    undone stays legible in both themes (red-500-on-white never
+                    cleared 4.5:1 — the background, not the text, was the defect). */}
+                <div className="bg-action-danger p-6 text-fg-on-brand">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -80,7 +77,7 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
                             </div>
                             <div>
                                 <h2 id={titleId} className="text-xl font-black">{copy.confirmDeletion}</h2>
-                                <p className="text-sm text-white mt-0.5">{copy.permanentAction}</p>
+                                <p className="mt-0.5 text-g-app-body-sm">{copy.permanentAction}</p>
                             </div>
                         </div>
                         <button
@@ -93,10 +90,10 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
                 </div>
 
                 <div className="p-6">
-                    <p className="text-muted-foreground mb-6 leading-relaxed">{copy.confirmBody}</p>
+                    <p className="mb-6 leading-relaxed text-fg-secondary">{copy.confirmBody}</p>
 
-                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
-                        <p className="text-sm text-amber-800 dark:text-amber-200 font-semibold flex items-center gap-2">
+                    <div className="mb-6 rounded-g-control border border-state-gap-border bg-state-gap-fill p-4">
+                        <p className="flex items-center gap-2 text-g-app-body-sm font-semibold text-state-gap">
                             <AlertTriangle className="w-4 h-4" />
                             {copy.cannotUndo}
                         </p>
@@ -105,14 +102,14 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
                     <div className="flex gap-3">
                         <button
                             onClick={() => onOpenChange(false)}
-                            className="flex-1 py-3 px-4 bg-muted text-foreground rounded-xl font-bold hover:bg-muted/70 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                            className="flex-1 cursor-pointer rounded-g-control bg-surface-sunken px-4 py-3 font-bold text-fg-primary transition-colors hover:bg-surface-wash focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                         >
                             {copy.cancel}
                         </button>
                         <button
                             onClick={handleDelete}
                             disabled={isDeleting}
-                            className="flex-1 py-3 px-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-red-500/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-g-control bg-action-danger px-4 py-3 font-bold text-fg-on-brand shadow-g-raised transition-all duration-300 hover:bg-action-danger-hover disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action-danger/50 focus-visible:ring-offset-2"
                         >
                             <Trash2 className="w-4 h-4" />
                             {isDeleting ? copy.deleting : copy.deleteForever}

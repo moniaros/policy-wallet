@@ -115,9 +115,10 @@ export function PolicyDetailScreen({ model, hasAiConsent = true }: { model: Poli
                     <>
                         <CoverageChecklist lines={model.checklist.map((c) => ({ id: c.id, label: c.label, state: c.state, detail: c.detail ?? undefined, citation: citation(c) }))} stateLabels={{ ok: t.app.checklist.ok, not: t.app.checklist.not, review: t.app.checklist.review }} />
                         {model.exclusionHint && model.checklist.some((c) => c.state === "not") && (
-                            <p className="mt-g-3 text-g-app-body-sm text-fg-secondary">
+                            // span, not p: GlossaryHint is a <details> and HTML forbids it inside <p> (hydration error).
+                            <span className="mt-g-3 block text-g-app-body-sm text-fg-secondary">
                                 {t.app.policy.exclusionLead} <GlossaryHint hint={model.exclusionHint} />
-                            </p>
+                            </span>
                         )}
                     </>
                 )}

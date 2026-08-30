@@ -191,18 +191,18 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
     }
 
     return (
-        <div className="pw-card pw-pad">
-            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-black/60 dark:text-white/70">
-                <FilePlus2 className="h-4 w-4 text-primary dark:text-mint" />
+        <div className="rounded-g-card bg-surface-raised p-g-5 shadow-g-raised">
+            <h3 className="mb-2 flex items-center gap-2 text-g-app-body-sm font-semibold text-fg-secondary">
+                <FilePlus2 className="h-4 w-4 text-fg-brand" />
                 {copy.title}
             </h3>
             {/* The truth constraint, stated before the picker: stored for
                 reference — nothing will read it. */}
-            <p className="mb-4 text-xs leading-relaxed text-black/60 dark:text-white/65">{copy.note}</p>
+            <p className="mb-4 text-g-app-caption leading-relaxed text-fg-secondary">{copy.note}</p>
 
             <label
                 htmlFor={kindSelectId}
-                className="mb-1 block text-xs font-bold text-black/60 dark:text-white/70"
+                className="mb-1 block text-g-app-caption font-semibold text-fg-secondary"
             >
                 {copy.kindLabel}
             </label>
@@ -211,7 +211,7 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
                 value={kind}
                 disabled={busy !== null}
                 onChange={(e) => setKind(e.target.value as DocumentKind)}
-                className="mb-4 block w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm text-black/80 dark:border-white/15 dark:bg-white/5 dark:text-white/85"
+                className="mb-4 block w-full rounded-g-control border border-border-strong bg-surface-raised px-3 py-2.5 text-g-app-body-sm text-fg-primary"
             >
                 {ATTACHABLE_KINDS.map((k) => (
                     <option key={k} value={k}>
@@ -230,19 +230,19 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
                 hint={dropHint}
             />
             {busy === "attach" && (
-                <p role="status" className="mt-3 text-sm text-black/60 dark:text-white/70">
+                <p role="status" className="mt-3 text-g-app-body-sm text-fg-secondary">
                     {copy.uploading}
                 </p>
             )}
 
             {showRenewalEntry && (
-                <div className="mt-6 border-t border-black/10 pt-5 dark:border-white/15">
-                    <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-black/60 dark:text-white/70">
-                        <RefreshCw className="h-4 w-4 text-primary dark:text-mint" />
+                <div className="mt-6 border-t border-border-hair pt-5">
+                    <h4 className="mb-2 flex items-center gap-2 text-g-app-body-sm font-semibold text-fg-secondary">
+                        <RefreshCw className="h-4 w-4 text-fg-brand" />
                         {copy.renewalTitle}
                     </h4>
                     {/* This path re-runs the analysis, so the copy may say so. */}
-                    <p className="mb-4 text-xs leading-relaxed text-black/60 dark:text-white/65">
+                    <p className="mb-4 text-g-app-caption leading-relaxed text-fg-secondary">
                         {copy.renewalNote}
                     </p>
                     <UploadDropzone
@@ -255,7 +255,7 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
                         hint={dropHint}
                     />
                     {busy === "renewal" && (
-                        <p role="status" className="mt-3 text-sm text-black/60 dark:text-white/70">
+                        <p role="status" className="mt-3 text-g-app-body-sm text-fg-secondary">
                             {copy.renewalUploading}
                         </p>
                     )}
@@ -263,12 +263,12 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
             )}
 
             {error && (
-                <p role="alert" className="mt-4 text-sm font-medium text-red-700 dark:text-red-300">
+                <p role="alert" className="mt-4 text-g-app-body-sm font-medium text-action-danger">
                     {error}
                 </p>
             )}
             {success && (
-                <p role="status" className="mt-4 text-sm font-medium text-primary dark:text-mint">
+                <p role="status" className="mt-4 text-g-app-body-sm font-medium text-fg-brand">
                     {success}
                 </p>
             )}

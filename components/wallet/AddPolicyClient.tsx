@@ -257,7 +257,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         const elapsedSecs = (Date.now() - pollingStartRef.current) / 1000
 
         return (
-            <div className="min-h-screen bg-background pb-20">
+            <div className="pb-20">
             {/* Every top-level branch needs the heading: the component returns
                 from more than one place and the default state had none, so the
                 route reported no <h1> even after the polling branch got one. */}
@@ -266,7 +266,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     a form with nothing naming the page. Visually hidden because
                     the sticky bar already names it on screen. */}
                 {/* Header */}
-                <div className="bg-card border-b border-border sticky top-0 z-30">
+                <div className="border-b border-border-hair">
                     <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-center">
                         <span className="font-bold text-foreground">
                             {t.wallet.addPolicy}
@@ -275,7 +275,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 </div>
 
                 <div className="max-w-3xl mx-auto px-4 py-8">
-                    <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
+                    <div className="rounded-g-sheet border border-border-subtle bg-surface-raised p-6 shadow-g-raised md:p-8">
 
                         {discarded ? (
                             /* ── Discarded State ──
@@ -286,8 +286,8 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                be. */
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center gap-4 py-4">
-                                    <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                                        <AlertTriangle className="w-7 h-7 text-amber-500" />
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-state-gap-fill">
+                                        <AlertTriangle className="w-7 h-7 text-state-gap" />
                                     </div>
                                     <div className="text-center">
                                         <p className="text-sm font-semibold text-foreground">
@@ -309,7 +309,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             setSelectedFiles([])
                                             setPhase('form')
                                         }}
-                                        className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                        className="w-full rounded-g-control bg-action-primary-bg py-4 text-sm font-bold text-fg-on-brand shadow-g-raised transition-all hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2"
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <UploadCloud className="w-5 h-5" />
@@ -330,8 +330,8 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             /* ── Analysis Failed State ── */
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center gap-4 py-4">
-                                    <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                                        <AlertTriangle className="w-7 h-7 text-amber-500" />
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-state-gap-fill">
+                                        <AlertTriangle className="w-7 h-7 text-state-gap" />
                                     </div>
                                     <div className="text-center">
                                         <p className="text-sm font-semibold text-foreground">
@@ -362,7 +362,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             }
                                         }}
                                         disabled={retryingAnalysis}
-                                        className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                        className="w-full rounded-g-control bg-action-primary-bg py-4 text-sm font-bold text-fg-on-brand shadow-g-raised transition-all hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <RefreshCw className={`w-5 h-5 ${retryingAnalysis ? 'animate-spin' : ''}`} />
@@ -373,7 +373,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <button
                                         type="button"
                                         onClick={() => router.push(`/wallet/${createdPolicyId}/edit`)}
-                                        className="w-full rounded-2xl py-3.5 font-bold text-sm text-foreground border border-border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                        className="w-full rounded-g-control border border-action-secondary-border py-3.5 text-sm font-bold text-fg-primary transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <Pencil className="w-4 h-4" />
@@ -450,7 +450,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 <button
                                     type="button"
                                     onClick={() => router.push(`/wallet/${createdPolicyId}`)}
-                                    className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                    className="w-full rounded-g-control bg-action-primary-bg py-4 text-sm font-bold text-fg-on-brand shadow-g-raised transition-all hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2"
                                 >
                                     <span className="flex items-center justify-center gap-2">
                                         <Check className="w-5 h-5" />
@@ -467,9 +467,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
     // ────────────────────────────── UPLOAD FORM ──────────────────────────────
     return (
-        <div className="min-h-screen bg-background pb-20">
+        <div className="pb-20">
             {/* Header */}
-            <div className="bg-card border-b border-border sticky top-0 z-30">
+            <div className="border-b border-border-hair">
                 <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
                     <button
                         type="button"
@@ -516,7 +516,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 <form onSubmit={handleSubmit} className="space-y-8">
 
                     {/* File Upload Section */}
-                    <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border relative overflow-hidden group">
+                    <div className="group relative overflow-hidden rounded-g-sheet border border-border-subtle bg-surface-raised p-6 shadow-g-raised md:p-8">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
                         <div className="relative z-10">
@@ -570,7 +570,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 </div>
                             )}
 
-                            <div className="mt-4 flex items-center gap-2 p-3 bg-primary-tint dark:bg-primary/10 rounded-xl border border-primary-soft dark:border-primary/20">
+                            <div className="mt-4 flex items-center gap-2 rounded-g-control border border-border-subtle bg-surface-wash p-3">
                                 <Shield className="w-4 h-4 text-primary dark:text-mint" />
                                 <p className="text-xs font-semibold text-primary dark:text-mint">
                                     {t.wallet.aiExtraction}
@@ -580,7 +580,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     </div>
 
                     {/* Manual Details */}
-                    <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
+                    <div className="rounded-g-sheet border border-border-subtle bg-surface-raised p-6 shadow-g-raised md:p-8">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
                                 <FileText className="w-5 h-5" />
@@ -604,7 +604,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         aria-invalid={fieldErrors.lineOfBusiness ? true : undefined}
                                         aria-describedby={fieldErrors.lineOfBusiness ? "add-lineOfBusiness-error" : undefined}
                                         onChange={() => setFieldErrors(prev => ({ ...prev, lineOfBusiness: undefined }))}
-                                        className={`w-full appearance-none bg-primary-tint dark:bg-primary/10 border rounded-xl px-4 py-3.5 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary focus:bg-card transition-all ${fieldErrors.lineOfBusiness ? "border-red-500 ring-2 ring-red-500/40" : "border-primary-soft dark:border-primary/30"}`}
+                                        className={`w-full appearance-none rounded-g-control border bg-surface-wash px-4 py-3.5 text-sm font-bold text-fg-primary transition-all focus:bg-surface-raised focus:ring-2 focus:ring-border-focus ${fieldErrors.lineOfBusiness ? "border-action-danger ring-2 ring-action-danger/40" : "border-border-subtle"}`}
                                     >
                                         <option value="">{t.wallet.selectTypePlaceholder}</option>
                                         {types.map(typeItem => (
@@ -632,7 +632,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         <select
                                             id="add-insurerName"
                                             name="insurerName"
-                                            className="pw-input appearance-none"
+                                            className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none appearance-none px-g-4"
                                         >
                                             <option value="">{t.wallet.selectOrEmpty}</option>
                                             {insurers.map(i => (
@@ -661,7 +661,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         type="text"
                                         name="policyNumber"
                                         placeholder={formCopy.policyNumberPlaceholder}
-                                        className="pw-input pl-10 pr-4 pointer-events-auto"
+                                        className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none pl-10 pr-4 pointer-events-auto"
                                     />
                                 </div>
                             </div>
@@ -674,7 +674,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         id="add-startDate"
                                         type="date"
                                         name="startDate"
-                                        className="pw-input"
+                                        className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none px-g-4"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -683,7 +683,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         id="add-endDate"
                                         type="date"
                                         name="endDate"
-                                        className="pw-input"
+                                        className="min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised text-[16px] text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none px-g-4"
                                     />
                                 </div>
                             </div>
@@ -694,7 +694,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="pw-primary-button w-full group relative overflow-hidden uppercase tracking-widest shadow-primary/25"
+                        className="w-full rounded-g-control bg-action-primary-bg py-4 text-sm font-bold text-fg-on-brand shadow-g-raised transition-all hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                         <span className="relative z-10 flex items-center justify-center gap-2">

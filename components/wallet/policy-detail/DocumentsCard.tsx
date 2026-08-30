@@ -74,14 +74,14 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
     const docHref = (docId: string) => `/api/v1/policies/${policyId}/documents/${docId}`
 
     return (
-        <div className="pw-card pw-pad">
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-black/60 dark:text-white/70">
-                <FileText className="h-4 w-4 text-primary dark:text-mint" />
+        <div className="rounded-g-card bg-surface-raised p-g-5 shadow-g-raised">
+            <h3 className="mb-4 flex items-center gap-2 text-g-app-body-sm font-semibold text-fg-secondary">
+                <FileText className="h-4 w-4 text-fg-brand" />
                 {copy.documentsArea}
             </h3>
 
             {documents.length === 0 ? (
-                <p className="text-sm text-black/65 dark:text-white/70">{copy.noDocuments}</p>
+                <p className="text-g-app-body-sm text-fg-secondary">{copy.noDocuments}</p>
             ) : (
                 <ul className="space-y-3">
                     {documents.map((doc) => {
@@ -109,13 +109,13 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                     href={docHref(doc.id)}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex flex-1 items-center gap-3 rounded-xl border border-black/10 bg-white px-3 py-3 transition-colors hover:bg-black/5 dark:border-white/15 dark:bg-black dark:hover:bg-white/10"
+                                    className="flex flex-1 items-center gap-3 rounded-g-control border border-border-subtle bg-surface-raised px-3 py-3 transition-colors hover:bg-surface-sunken"
                                 >
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 bg-black/5 dark:border-white/15 dark:bg-white/10">
-                                        <FileText className="h-4 w-4 text-black/75 dark:text-white/80" />
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-g-control bg-surface-sunken">
+                                        <FileText className="h-4 w-4 text-fg-secondary" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="truncate text-sm font-semibold text-black dark:text-white">{doc.fileName}</p>
+                                        <p className="truncate text-g-app-body-sm font-semibold text-fg-primary">{doc.fileName}</p>
                                         {/* A policy accumulates documents over its life — the
                                             original schedule, a renewal endorsement, an amended
                                             schedule after a mid-term change — and insurer PDFs
@@ -123,7 +123,7 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                             already loads uploadedAt and orders newest first, but
                                             the card showed only the filename and format, so the
                                             reader could not tell which one is current. */}
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="text-g-app-caption text-fg-secondary">
                                             {/* What the document IS, when we know; what
                                                 kind of FILE it is otherwise. The card only
                                                 ever had the latter, so a schedule and a
@@ -143,7 +143,7 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                             )}
                                         </p>
                                     </div>
-                                    <Download className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                    <Download className="h-4 w-4 shrink-0 text-fg-faint" />
                                 </a>
                                 {/* The preview control is a real <button>, so it must be a SIBLING
                                     of the download <a> — never a child. A <button> nested inside an
