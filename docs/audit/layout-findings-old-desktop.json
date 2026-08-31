@@ -1,0 +1,332 @@
+{
+  "target": "old",
+  "project": "desktop",
+  "capturedAt": "2026-08-31T18:02:08.647Z",
+  "findings": [
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"div.mt-5\",\"text\":\"Πρόσφατα έγγραφαΑσφαλιστήριο Υγεία · ΣΥΜΒ-2025-HL-XPDΕθνική ΑσφαλιστικήΑνανεωτήρ\",\"scrollWidth\":806,\"clientWi"
+    },
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"div.mt-2\",\"text\":\"Ασφαλιστήριο Υγεία · ΣΥΜΒ-2025-HL-XPDΕθνική ΑσφαλιστικήΑνανεωτήριοΕθνική Ασφαλισ\",\"scrollWidth\":806,\"clientWi"
+    },
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"span.truncate.text-xs\",\"text\":\"Ασφαλιστήριο Υγεία · ΣΥΜΒ-2025-HL-XPD\",\"scrollWidth\":254,\"clientWidth\":170,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"span.truncate.text-xs\",\"text\":\"Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-LI\",\"scrollWidth\":282,\"clientWidth\":170,\"reason\":\"overfl"
+    },
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-2.truncate\",\"text\":\"Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δη\",\"scrollWidth\":780,\"c"
+    },
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"span.truncate.text-xs\",\"text\":\"Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-NP\",\"scrollWidth\":288,\"clientWidth\":170,\"reason\":\"overfl"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Σύγκριση ασφαλιστηρίων» 235×42 (div < div < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026.» 310×20 (li < ul < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026.» 310×20 (li < ul < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «+9 ακόμη» 68×16 (div < div < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "input «Αναζήτηση ασφαλιστηρίων...» 448×42 (div < div < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Όλα» 49×28 (div < div < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Αυτοκίνητο» 93×28 (div < div < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Υγεία» 58×28 (div < div < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Προβολή Κάρτας» 28×28 (div < div < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Προβολή Λίστας» 28×28 (div < div < div < div)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Διαχείριση» 88×30 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Ενέργειες» 28×28 (div < td < tr < tbody)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Προηγούμενο» 103×30 (div < div < div < section)"
+    },
+    {
+      "route": "/wallet",
+      "kind": "sub-44-target",
+      "detail": "button «Επόμενο» 74×30 (div < div < div < section)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Μη σχετικό για εμένα» 121×24 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Μη σχετικό για εμένα» 121×24 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Περισσότερα» 94×16 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Μη σχετικό για εμένα» 121×24 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Εμφάνιση όλων (10)» 782×16 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Σημείωση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Αγνόηση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Σημείωση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Αγνόηση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Σημείωση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Αγνόηση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Σημείωση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Αγνόηση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Σημείωση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Αγνόηση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Σημείωση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "sub-44-target",
+      "detail": "button «Αγνόηση» 390×38 (div < div < div < div)"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Καταλάβετε τι πραγματικά καλύπτει το συμβόλαιο του αυτοκινήτου σας — πριν το χρε\",\"scrollWidth\":22"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι \",\"scrollWidth\":22"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Μάθετε τι πληρώνετε εσείς και τι ο ασφαλιστής σας — πριν βρεθείτε στο νοσοκομείο\",\"scrollWidth\":22"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Σιγουρέψου ότι το συμβόλαιο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σ\",\"scrollWidth\":22"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Δείτε πού πηγαίνουν οι εισφορές σας, τι κοστίζει το πρόγραμμα και πότε ωριμάζει.\",\"scrollWidth\":22"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Πριν φύγετε, μάθετε τι καλύπτει η ταξιδιωτική σας — προορισμός, ιατρικά, αποσκευ\",\"scrollWidth\":22"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Κτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το συμβόλαιο του κατοικιδίου σα\",\"scrollWidth\":22"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Οι online συναλλαγές σας έχουν κινδύνους — δείτε τι από αυτά καλύπτει το συμβόλα\",\"scrollWidth\":22"
+    },
+    {
+      "route": "/agent",
+      "kind": "sub-44-target",
+      "detail": "button «Ανάκληση» 107×36 (li < ul < div < div)"
+    },
+    {
+      "route": "/agent",
+      "kind": "sub-44-target",
+      "detail": "button «Αποσύνδεση από τον σύμβουλο» 219×34 (div < div#_R_9bn5rtd5rcalb_-panel-overview < div < div)"
+    }
+  ]
+}

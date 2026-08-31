@@ -46,7 +46,7 @@ export function StyleguideStates() {
                         <Skeleton className="h-4 w-1/2" />
                     </div>
                 </div>
-                <div className="mt-g-4 grid grid-cols-3 gap-g-2">
+                <div className="mt-g-4 flex gap-g-2 [&>*]:flex-1">
                     <Skeleton className="h-16" />
                     <Skeleton className="h-16" />
                     <Skeleton className="h-16" />

@@ -1,0 +1,82 @@
+{
+  "target": "old",
+  "project": "iphone-se",
+  "capturedAt": "2026-08-31T18:05:26.885Z",
+  "findings": [
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"div.mt-5\",\"text\":\"Πρόσφατα έγγραφαΑσφαλιστήριο Υγεία · ΣΥΜΒ-2025-HL-XPDΕθνική ΑσφαλιστικήΑνανεωτήρ\",\"scrollWidth\":317,\"clientWi"
+    },
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"div.mt-2\",\"text\":\"Ασφαλιστήριο Υγεία · ΣΥΜΒ-2025-HL-XPDΕθνική ΑσφαλιστικήΑνανεωτήριοΕθνική Ασφαλισ\",\"scrollWidth\":317,\"clientWi"
+    },
+    {
+      "route": "/dashboard",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"span.truncate.text-xs\",\"text\":\"Ασφαλιστήριο Υγεία · ΣΥΜΒ-2025-HL-XPD\",\"scrollWidth\":254,\"clientWidth\":170,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/wallet",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"span.truncate.text-body-sm\",\"text\":\"Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δη\",\"scrollWi"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι \",\"scrollWidth\":30"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Σιγουρέψου ότι το συμβόλαιο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σ\",\"scrollWidth\":30"
+    },
+    {
+      "route": "/protection",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.line-clamp-2\",\"text\":\"Κτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το συμβόλαιο του κατοικιδίου σα\",\"scrollWidth\":30"
+    },
+    {
+      "route": "/agent",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"button#_R_9bn5rtd5rcalb_-tab-overview.flex.items-center\",\"text\":\"Επισκόπηση\",\"scrollWidth\":102,\"clientWidth\":76,\"reason\":\"overf"
+    },
+    {
+      "route": "/agent",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"button#_R_9bn5rtd5rcalb_-tab-messages.flex.items-center\",\"text\":\"Μηνύματα\",\"scrollWidth\":88,\"clientWidth\":69,\"reason\":\"overflow"
+    },
+    {
+      "route": "/agent",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"button#_R_9bn5rtd5rcalb_-tab-documents.flex.items-center\",\"text\":\"Έγγραφα\",\"scrollWidth\":81,\"clientWidth\":66,\"reason\":\"overflow"
+    },
+    {
+      "route": "/agent",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"button#_R_9bn5rtd5rcalb_-tab-proposals.flex.items-center\",\"text\":\"Προτάσεις\",\"scrollWidth\":90,\"clientWidth\":70,\"reason\":\"overfl"
+    },
+    {
+      "route": "/agent",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"h1.text-2xl.font-black\",\"text\":\"Νίκος Παπαδόπουλος\",\"scrollWidth\":266,\"clientWidth\":169,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/agent",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.truncate.text-sm\",\"text\":\"ΕΘΝΙΚΗ · 63708952\",\"scrollWidth\":137,\"clientWidth\":100,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/notifications",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.text-sm\",\"text\":\"Η ανάλυση του συμβολαίου Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) δεν ολοκληρώθηκε.\",\"scrollWidth\":271,\"cl"
+    },
+    {
+      "route": "/notifications",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"p.mt-1.text-sm\",\"text\":\"Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ \",\"scrollWidth\":271,\"cl"
+    }
+  ]
+}

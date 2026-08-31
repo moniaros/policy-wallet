@@ -175,3 +175,29 @@ closed — production behaviour is unchanged by the merge.
   design-token-debt; shrink when those files are next opened).
 - /protection/[branch] still renders the stored-uppercase V5 lifecycle labels (shared with agent
   surfaces) — they go with the legacy deletion commit (A-25), not a restyle.
+
+## Audit ladder (D0–D8, 2026-08-31) — what changed, what was retired, what is assumed
+
+**Changed by evidence** (each fix cites the probe that forced it, `docs/audit/dashboard-audit.md`):
+132→0 geometry findings across 5 viewports × 23 routes (both Switch overhangs, the branch-alert
+one-character title, GlossaryHint's collapsed definition, the pricing scale overflow, the
+three-up bands inside the ~700 px shell column, nine sub-44 controls, titled truncations);
+the `border-control` token (the Input boundary measured 1.45:1 — G2 had classed border-strong
+decorative); the protected layout's five sequential reads → one Promise.all wave; /help
+re-homed on /me after the loss gate found it orphaned; expiring/expired folder rows carry
+their date in every lens.
+
+**Retired with reasons**: `docs/audit/retired-information.md` (R-01..R-18) — the vocabulary
+unification, the banned score notification, the ten-chips life-event decision, compare/
+pagination/view-toggle mechanics, minute-grain timestamps, per-row mark-as-read.
+
+**Still assumed / owed**:
+- A-36: the absolute LCP < 2 s is `PERF_STRICT=1` against a same-region deployment (one
+  `SELECT 1` to the dev DB costs ~660 ms from here); locally CLS + client LCP−TTFB are the
+  asserted floors. Route JS on `/` is 528 KB — the Sentry/Supabase shell weight stands as the
+  named §4.10 item.
+- The audit suite runs on demand (`npx playwright test -c playwright.audit.config.ts` with
+  BASE_URL_OLD/BASE_URL_NEW + the Chrome path); it is not in CI (CI runs vitest + build).
+- The old-build baselines freeze the :3000 NEW-UI state of 2026-08-31; if that checkout moves,
+  the baselines stay as the historical record, not a live diff target.
+- Fixture-relative dates drift with provisioning — loss resolutions anchor on contract ids.
