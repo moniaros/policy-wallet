@@ -180,7 +180,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {tiers.map((tier, index) => {
                     const isCurrent = currentPlanId === tier.id
                     const isPopular = tier.popular

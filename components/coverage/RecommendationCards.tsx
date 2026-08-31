@@ -695,7 +695,7 @@ export function RecommendationCards({
                 <button
                     type="button"
                     onClick={() => setShowAll(!showAll)}
-                    className="mt-4 w-full text-center text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer flex items-center justify-center gap-1"
+                    className="mt-4 flex min-h-11 w-full cursor-pointer items-center justify-center gap-1 text-center text-xs font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {showAll ? (
                         t("Εμφάνιση λιγότερων", "Show fewer")

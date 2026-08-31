@@ -1,62 +1,6 @@
 {
   "target": "new",
   "project": "laptop",
-  "capturedAt": "2026-08-31T15:54:45.132Z",
-  "findings": [
-    {
-      "route": "/help",
-      "kind": "truncation",
-      "detail": "{\"selector\":\"div.flex.items-center\",\"text\":\"Λεξικό ασφαλιστικών όρων\",\"scrollWidth\":155,\"clientWidth\":150,\"reason\":\"overflow\"}"
-    },
-    {
-      "route": "/upgrade",
-      "kind": "sub-44-target",
-      "detail": "button «Πίσω» 64×20 (div < div < div < div)"
-    },
-    {
-      "route": "/upgrade",
-      "kind": "sub-44-target",
-      "detail": "button «Μηνιαία» 106×40 (div < div < div < div)"
-    },
-    {
-      "route": "/upgrade",
-      "kind": "sub-44-target",
-      "detail": "button «Ετήσια-20%» 96×40 (div < div < div < div)"
-    },
-    {
-      "route": "/upgrade",
-      "kind": "truncation",
-      "detail": "{\"selector\":\"div.grid.grid-cols-1\",\"text\":\"ΔωρεάνΙδανικό για να ξεκινήσετε€0/μήναΜέχρι 3 συμβόλαιαΒασική σύνοψη συμβολαίου \",\"scrollWidth\":6"
-    },
-    {
-      "route": "/protection/motor",
-      "kind": "sub-44-target",
-      "detail": "button «Μη σχετικό για εμένα» 124×24 (div < div < div < div)"
-    },
-    {
-      "route": "/protection/motor",
-      "kind": "sub-44-target",
-      "detail": "button «Μη σχετικό για εμένα» 124×24 (div < div < div < div)"
-    },
-    {
-      "route": "/protection/motor",
-      "kind": "sub-44-target",
-      "detail": "button «Μη σχετικό για εμένα» 124×24 (div < div < div < div)"
-    },
-    {
-      "route": "/protection/motor",
-      "kind": "sub-44-target",
-      "detail": "button «Εμφάνιση όλων (5)» 542×16 (div < section < div < div)"
-    },
-    {
-      "route": "/protection/motor",
-      "kind": "truncation",
-      "detail": "{\"selector\":\"h3.min-w-0.text-g-app-body-sm\",\"text\":\"Συμβόλαιο κοντά στη λήξη\",\"scrollWidth\":73,\"clientWidth\":8,\"reason\":\"overflow\"}"
-    },
-    {
-      "route": "/wallet/cmt5jzclg000buer6h5acxbcd/edit",
-      "kind": "sub-44-target",
-      "detail": "button «Ακύρωση» 203×40 (div < form < main < div)"
-    }
-  ]
+  "capturedAt": "2026-08-31T16:21:20.291Z",
+  "findings": []
 }

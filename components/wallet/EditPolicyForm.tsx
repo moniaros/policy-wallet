@@ -212,7 +212,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
                     type="button"
                     onClick={() => router.back()}
                     disabled={isPending}
-                    className="flex-1 h-10 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    className="flex min-h-11 flex-1 items-center justify-center rounded-g-control border border-action-secondary-border px-4 py-2 text-sm font-medium text-fg-primary hover:bg-surface-sunken disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                 >
                     {copy.cancel}
                 </button>

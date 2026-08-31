@@ -291,8 +291,8 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                 >
                                     {/* Column on phone: the chip's full label would crush the
                                         title to a one-character column beside it at 375px. */}
-                                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                                        <h3 className="min-w-0 text-g-app-body-sm font-bold text-fg-primary sm:flex-1">{gap.title[lang]}</h3>
+                                    <div className="flex flex-col gap-2">
+                                        <h3 className="min-w-0 text-g-app-body-sm font-bold text-fg-primary">{gap.title[lang]}</h3>
                                         {detected && (
                                             <span className="flex-shrink-0 self-start rounded-full bg-state-gap-fill px-2.5 py-1 text-g-app-caption font-semibold text-state-gap">
                                                 {t.branches.detectedInPortfolio}
