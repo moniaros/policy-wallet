@@ -118,7 +118,7 @@ export function ChangePasswordModal({
                     required
                     aria-invalid={message ? true : undefined}
                     aria-describedby={message ? `${id}-error` : hint ? `${id}-hint` : undefined}
-                    className="min-h-11 w-full rounded-g-control border border-border-strong bg-surface-raised px-g-4 text-g-app-body text-fg-primary placeholder:text-fg-secondary"
+                    className="min-h-11 w-full rounded-g-control border border-border-control bg-surface-raised px-g-4 text-g-app-body text-fg-primary placeholder:text-fg-secondary"
                 />
                 {message ? (
                     <p

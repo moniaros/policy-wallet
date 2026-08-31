@@ -1,0 +1,26 @@
+{
+  "target": "old",
+  "capturedAt": "2026-08-31T17:06:57.179Z",
+  "fails": [
+    {
+      "route": "/wallet",
+      "theme": "light",
+      "kind": "border",
+      "text": "INPUT",
+      "fg": "oklab(0 0 0 / 0.1)",
+      "bg": "rgb(255,255,255)",
+      "ratio": 1.25,
+      "selector": "div>div>div>input"
+    },
+    {
+      "route": "/wallet",
+      "theme": "dark",
+      "kind": "border",
+      "text": "INPUT",
+      "fg": "oklab(0 0 0 / 0.1)",
+      "bg": "rgb(0,0,0)",
+      "ratio": 1,
+      "selector": "div>div>div>input"
+    }
+  ]
+}

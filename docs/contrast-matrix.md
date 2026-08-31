@@ -16,6 +16,8 @@ so a value change that breaks a floor cannot produce a stylesheet. Floors: 4.5 t
 | light | state-gap `#8D621E` | surface-base `#F4F8F6` | **5.03:1** | 4.5 | PASS |
 | light | state-covered `#29685B` | surface-base `#F4F8F6` | **6.08:1** | 3 (non-text) | PASS |
 | light | state-review `#4A6660` | state-review-fill `#E7F1EC` | **5.41:1** | 4.5 | PASS |
+| light | border-control `#3E8C79` | surface-base `#F4F8F6` | **3.75:1** | 3 (non-text) *decorative* | PASS |
+| light | border-control `#3E8C79` | surface-raised `#FFFFFF` | **4.01:1** | 3 (non-text) *decorative* | PASS |
 | light | border-strong `#BFD4CC` | surface-base `#F4F8F6` | **1.45:1** | 1.2 (non-text) *decorative* | PASS |
 | light | border-focus `#3E8C79` | surface-base `#F4F8F6` | **3.75:1** | 3 (non-text) | PASS |
 | light | fg-faint `#5A746D` | surface-base `#F4F8F6` | **4.72:1** | 4.5 | PASS |
@@ -39,6 +41,8 @@ so a value change that breaks a floor cannot produce a stylesheet. Floors: 4.5 t
 | dark | state-gap `#EBD9B8` | surface-base `#0C231F` | **11.87:1** | 4.5 | PASS |
 | dark | state-covered `#8FCBB9` | surface-base `#0C231F` | **8.94:1** | 3 (non-text) | PASS |
 | dark | state-review `#8FCBB9` | state-review-fill `#10312B` | **7.63:1** | 4.5 | PASS |
+| dark | border-control `#3E8C79` | surface-base `#0C231F` | **4.10:1** | 3 (non-text) *decorative* | PASS |
+| dark | border-control `#3E8C79` | surface-raised `#10312B` | **3.50:1** | 3 (non-text) *decorative* | PASS |
 | dark | border-strong `#3E8C79` | surface-base `#0C231F` | **4.10:1** | 1.2 (non-text) *decorative* | PASS |
 | dark | border-focus `#8FCBB9` | surface-base `#0C231F` | **8.94:1** | 3 (non-text) | PASS |
 | dark | fg-faint `#6AAE9A` | surface-base `#0C231F` | **6.38:1** | 4.5 | PASS |

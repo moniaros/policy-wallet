@@ -25,7 +25,7 @@ const button = cva(
             variant: {
                 primary: "bg-action-primary-bg text-fg-on-brand hover:bg-action-primary-hover",
                 secondary:
-                    "border border-action-secondary-border bg-surface-raised text-fg-primary hover:border-border-strong hover:bg-surface-sunken",
+                    "border border-action-secondary-border bg-surface-raised text-fg-primary hover:border-border-control hover:bg-surface-sunken",
                 ghost: "text-fg-primary hover:bg-surface-sunken",
                 link: "min-h-0 rounded-g-sm px-1 text-fg-brand underline-offset-4 hover:underline",
                 // Application tier: a destructive ACTION (delete, disconnect). Never a status.
@@ -205,7 +205,7 @@ export const FilterChip = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTM
             aria-pressed={pressed}
             className={cn(
                 "g-row-press inline-flex min-h-11 items-center gap-g-2 rounded-g-pill border px-g-4 text-g-app-body-sm font-medium transition-colors duration-200 ease-g-out [-webkit-tap-highlight-color:transparent]",
-                pressed ? "border-action-primary-bg bg-action-primary-bg text-fg-on-brand" : "border-border-strong bg-surface-raised text-fg-primary hover:bg-surface-sunken",
+                pressed ? "border-action-primary-bg bg-action-primary-bg text-fg-on-brand" : "border-border-control bg-surface-raised text-fg-primary hover:bg-surface-sunken",
                 focusRing,
                 className
             )}
@@ -225,7 +225,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
             ref={ref}
             className={cn(
                 // 16px floor stops iOS focus-zoom
-                "min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised px-g-4 text-[16px] text-fg-primary",
+                "min-h-12 w-full rounded-g-control border border-border-control bg-surface-raised px-g-4 text-[16px] text-fg-primary",
                 "placeholder:text-fg-secondary",
                 "aria-[invalid=true]:border-state-gap",
                 focusRing,
@@ -253,7 +253,7 @@ export const SearchField = forwardRef<HTMLInputElement, InputHTMLAttributes<HTML
                     autoComplete="off"
                     placeholder={label}
                     className={cn(
-                        "min-h-12 w-full rounded-g-control border border-border-strong bg-surface-raised pe-g-4 ps-g-10 text-[16px] text-fg-primary placeholder:text-fg-faint",
+                        "min-h-12 w-full rounded-g-control border border-border-control bg-surface-raised pe-g-4 ps-g-10 text-[16px] text-fg-primary placeholder:text-fg-faint",
                         focusRing
                     )}
                     {...rest}
@@ -313,7 +313,7 @@ export function Spinner({ className }: { className?: string }) {
             role="status"
             aria-label="Φόρτωση"
             className={cn(
-                "inline-block size-5 animate-spin rounded-full border-2 border-border-strong border-t-fg-brand motion-reduce:animate-none",
+                "inline-block size-5 animate-spin rounded-full border-2 border-border-control border-t-fg-brand motion-reduce:animate-none",
                 className
             )}
         />

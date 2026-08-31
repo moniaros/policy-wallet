@@ -72,6 +72,7 @@
   --action-danger: #9B3B2E;
   --action-danger-hover: #7E2F24;
   --action-secondary-bg: #FFFFFF;
+  --border-control: #3E8C79;
 
   color-scheme: light;
   --space-section: clamp(66px, 7vw, 116px);
@@ -125,6 +126,7 @@
   --action-danger: #E39A8E;
   --action-danger-hover: #F0B9AF;
   --action-secondary-bg: #10312B;
+  --border-control: #3E8C79;
   color-scheme: dark;
 }
 
@@ -162,6 +164,7 @@
   --color-action-danger: var(--action-danger);
   --color-action-danger-hover: var(--action-danger-hover);
   --color-action-secondary-bg: var(--action-secondary-bg);
+  --color-border-control: var(--border-control);
 
   /* Namespaced scales — rounded-g-lg, rounded-g-card, p-g-6 … legacy --radius-* stays intact. */
   --spacing-g-1: 4px;

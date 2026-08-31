@@ -211,7 +211,7 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
                 value={kind}
                 disabled={busy !== null}
                 onChange={(e) => setKind(e.target.value as DocumentKind)}
-                className="mb-4 block min-h-11 w-full rounded-g-control border border-border-strong bg-surface-raised px-3 py-2.5 text-g-app-body-sm text-fg-primary"
+                className="mb-4 block min-h-11 w-full rounded-g-control border border-border-control bg-surface-raised px-3 py-2.5 text-g-app-body-sm text-fg-primary"
             >
                 {ATTACHABLE_KINDS.map((k) => (
                     <option key={k} value={k}>

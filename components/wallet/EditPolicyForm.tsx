@@ -95,7 +95,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
     // type — saving silently changed it.
     const policyTypes = WRITE_BRANCH_IDS
 
-    const inputClass = "flex min-h-11 w-full rounded-g-control border border-border-strong bg-surface-raised px-g-4 text-g-app-body text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none"
+    const inputClass = "flex min-h-11 w-full rounded-g-control border border-border-control bg-surface-raised px-g-4 text-g-app-body text-fg-primary placeholder:text-fg-secondary focus:border-border-focus focus:outline-none"
     const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground"
 
     return (
