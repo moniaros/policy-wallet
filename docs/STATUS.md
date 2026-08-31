@@ -17,7 +17,8 @@ seams and hostile review: `docs/handover.md`.
 ## Done since the last entry
 
 - **Auth rebuild A0–A8 (brief: split-shell, phone removal, phased social login)**
-  (2026-08-31, uncommitted): phone retired as an IDENTIFIER (synthetic emails minted
+  (2026-08-31, `e663df0f` — DEPLOYED, CI+deploy green, live signup smoked: new H1s,
+  no phone field, «Δημιουργία λογαριασμού», no social button pending credentials): phone retired as an IDENTIFIER (synthetic emails minted
   for no new account; universal email verification; recovery restored); terms now
   RECORDED on both paths; one AuthShell across all 9 auth screens (panel subtree
   omitted <1024); social registry live|soon|off with signed-intent role transport,
