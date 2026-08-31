@@ -7,6 +7,7 @@ import { parseRoles } from "@/lib/api-auth"
 import { getPrimaryRole } from "@/lib/auth/role-routing"
 import { ACTIVE_ROLE_COOKIE } from "@/lib/auth/active-role"
 import { AppShell } from "@/components/shell"
+import { UserMenu } from "@/components/shell/UserMenu"
 import { Shell as GrafiShell } from "@/src/design-system/shell"
 import { badgeCount } from "@/lib/app/badge"
 import { PRIMARY_NAV, SECONDARY_NAV, SIDEBAR_NAV, ADD_POLICY } from "@/lib/app/navigation"
@@ -188,6 +189,17 @@ export default async function ProtectedLayout({
                         href: PRIMARY_NAV[4].href,
                         planLine: formatPlural(t.app.shell.plan, { plan: planTierName(entitlements.tier, lang) }, lang),
                     }}
+                    userMenu={
+                        <UserMenu
+                            user={{
+                                name: displayPersonName(dbUser.name) || roleCopy.defaults.userName,
+                                email: dbUser.email,
+                                preferred_language: lang,
+                            }}
+                            notificationCount={unreadNotificationCount}
+                            onLogout={signOut}
+                        />
+                    }
                     brandHref={PRIMARY_NAV[0].href}
                     saturated={t.app.nav.moreThanNine}
                 >

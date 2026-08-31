@@ -22,6 +22,7 @@ export function Shell({
     badge,
     labels,
     user,
+    userMenu,
     brandHref,
     saturated,
     children,
@@ -33,6 +34,9 @@ export function Shell({
     badge: number
     labels: ShellLabels
     user: ShellUser
+    /** The account menu (the original UserMenu) — rendered by the layout so it
+     * sits inside the language provider; when absent the plain card renders. */
+    userMenu?: ReactNode
     brandHref: string
     saturated: string
     children: ReactNode
@@ -46,7 +50,7 @@ export function Shell({
                 {labels.skip}
             </a>
             <SideRail primary={primary} updates={updates} add={add} badge={badge} labels={labels} brandHref={brandHref} saturated={saturated} />
-            <Sidebar items={sidebar} add={add} badge={badge} labels={labels} user={user} brandHref={brandHref} saturated={saturated} />
+            <Sidebar items={sidebar} add={add} badge={badge} labels={labels} user={user} userMenu={userMenu} brandHref={brandHref} saturated={saturated} />
             <main
                 id="main-content"
                 className="mx-auto w-full max-w-[720px] tablet:ps-g-rail desk:max-w-[calc(760px+var(--spacing-g-sidebar))] desk:ps-g-sidebar"

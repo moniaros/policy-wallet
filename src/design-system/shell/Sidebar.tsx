@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { type ReactNode } from "react"
 import { cn } from "@/lib/utils"
 import { isNavActive } from "@/lib/app/navigation"
 import { BrandMark } from "./BrandMark"
@@ -16,6 +17,7 @@ export function Sidebar({
     badge,
     labels,
     user,
+    userMenu,
     brandHref,
     saturated,
 }: {
@@ -25,6 +27,8 @@ export function Sidebar({
     badge: number
     labels: ShellLabels
     user: ShellUser
+    /** The account menu; when absent the plain card link renders instead. */
+    userMenu?: ReactNode
     brandHref: string
     saturated: string
 }) {
@@ -72,19 +76,21 @@ export function Sidebar({
                     <NAV_ICONS.plus className="size-5" strokeWidth={2.4} aria-hidden />
                     <span>{add.label}</span>
                 </Link>
-                <Link
-                    href={user.href}
-                    className="g-nav-item flex min-h-14 items-center gap-g-3 rounded-g-card border border-border-hair px-g-3 py-g-2 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[2px] focus-visible:outline-border-focus"
-                >
-                    <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-g-pill bg-surface-sunken font-display text-g-heading text-fg-brand">
-                        {user.name.trim().charAt(0).toUpperCase() || "•"}
-                    </span>
-                    <span className="min-w-0">
-                        <span className="block truncate text-g-app-body font-semibold text-fg-primary">{user.name}</span>
-                        <span className="block truncate text-g-app-caption text-fg-faint">{user.planLine}</span>
-                    </span>
-                    <span className="sr-only">{labels.yourAccount}</span>
-                </Link>
+                {userMenu ?? (
+                    <Link
+                        href={user.href}
+                        className="g-nav-item flex min-h-14 items-center gap-g-3 rounded-g-card border border-border-hair px-g-3 py-g-2 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[2px] focus-visible:outline-border-focus"
+                    >
+                        <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-g-pill bg-surface-sunken font-display text-g-heading text-fg-brand">
+                            {user.name.trim().charAt(0).toUpperCase() || "•"}
+                        </span>
+                        <span className="min-w-0">
+                            <span className="block truncate text-g-app-body font-semibold text-fg-primary">{user.name}</span>
+                            <span className="block truncate text-g-app-caption text-fg-faint">{user.planLine}</span>
+                        </span>
+                        <span className="sr-only">{labels.yourAccount}</span>
+                    </Link>
+                )}
             </div>
         </nav>
     )
