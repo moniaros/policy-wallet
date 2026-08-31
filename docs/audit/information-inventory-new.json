@@ -1,0 +1,1751 @@
+{
+  "target": "new",
+  "capturedAt": "2026-08-31T16:34:52.638Z",
+  "inventory": {
+    "/": [
+      {
+        "key": "action|NΚαλύπτονται",
+        "class": "action",
+        "text": "12Καλύπτονται",
+        "selector": "section#verdict > section > ul > li > a",
+        "name": "12Καλύπτονται",
+        "href": "/see?state=covered"
+      },
+      {
+        "key": "action|NΜε κενό",
+        "class": "action",
+        "text": "13Με κενό",
+        "selector": "section#verdict > section > ul > li > a",
+        "name": "13Με κενό",
+        "href": "/see?state=gap"
+      },
+      {
+        "key": "action|NΓια έλεγχο",
+        "class": "action",
+        "text": "0Για έλεγχο",
+        "selector": "section#verdict > section > ul > li > a",
+        "name": "0Για έλεγχο",
+        "href": "/see?state=review"
+      },
+      {
+        "key": "action|Όλα όσα αξίζει να δείτε",
+        "class": "action",
+        "text": "Όλα όσα αξίζει να δείτε",
+        "selector": "div > div > section#now > div > a",
+        "name": "Όλα όσα αξίζει να δείτε",
+        "href": "/see"
+      },
+      {
+        "key": "action|Το Αυτοκίνητο · ΒΖΝ-N λήγει σε N ημέρες. Από τις N/N/N κυκλοφορεί ανασφάλιστο.Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-N",
+        "class": "action",
+        "text": "Το Αυτοκίνητο · ΒΖΝ-8520 λήγει σε 13 ημέρες. Από τις 13/09/2026 κυκλοφορεί ανασφάλιστο.Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-20",
+        "selector": "div > section#now > ul > li > a",
+        "name": "Το Αυτοκίνητο · ΒΖΝ-8520 λήγει σε 13 ημέρες. Από τις 13/09/2026 κυκλοφορεί ανασφάλιστο.Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-20",
+        "href": "/policies/cmt5jzclg000buer6h5acxbcd"
+      },
+      {
+        "key": "action|Το Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-EXP) λήγει σε N ημέρες.Ανανεωτήριο · πίνακας ασφαλιστηρίουN ημέρες",
+        "class": "action",
+        "text": "Το Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) λήγει σε 13 ημέρες.Ανανεωτήριο · πίνακας ασφαλιστηρίου13 ημέρες",
+        "selector": "div > section#now > ul > li > a",
+        "name": "Το Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) λήγει σε 13 ημέρες.Ανανεωτήριο · πίνακας ασφαλιστηρίου13 ημέρες",
+        "href": "/policies/cmt5k0pjc0015uer6cdujft34"
+      },
+      {
+        "key": "action|Στο Αυτοκίνητο · ΙΚΖ-N δεν βρήκα κάλυψη ιδίων ζημιών.Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-N-MOT-ACT · ενότητα καλύψεων —",
+        "class": "action",
+        "text": "Στο Αυτοκίνητο · ΙΚΖ-4821 δεν βρήκα κάλυψη ιδίων ζημιών.Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-MOT-ACT · ενότητα καλύψεων —",
+        "selector": "div > section#now > ul > li > a",
+        "name": "Στο Αυτοκίνητο · ΙΚΖ-4821 δεν βρήκα κάλυψη ιδίων ζημιών.Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-MOT-ACT · ενότητα καλύψεων —",
+        "href": "/policies/cmt5jyvgo0001121dx1ormp6a"
+      },
+      {
+        "key": "action|Υπάρχουν και N μικρότερα.",
+        "class": "action",
+        "text": "Υπάρχουν και 10 μικρότερα.",
+        "selector": "div > div > section#now > p > a",
+        "name": "Υπάρχουν και 10 μικρότερα.",
+        "href": "/see"
+      },
+      {
+        "key": "action|Χρήματα",
+        "class": "action",
+        "text": "Χρήματα",
+        "selector": "div > div > section#money > div > a",
+        "name": "Χρήματα",
+        "href": "/money"
+      },
+      {
+        "key": "action|Γάμος",
+        "class": "action",
+        "text": "Γάμος",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Γάμος",
+        "href": "/life-event/marriage"
+      },
+      {
+        "key": "action|Παιδί",
+        "class": "action",
+        "text": "Παιδί",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Παιδί",
+        "href": "/life-event/birth"
+      },
+      {
+        "key": "action|Νέο σπίτι",
+        "class": "action",
+        "text": "Νέο σπίτι",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Νέο σπίτι",
+        "href": "/life-event/property_purchase"
+      },
+      {
+        "key": "action|Νέο αυτοκίνητο",
+        "class": "action",
+        "text": "Νέο αυτοκίνητο",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Νέο αυτοκίνητο",
+        "href": "/life-event/vehicle_purchase"
+      },
+      {
+        "key": "action|Νέα δουλειά",
+        "class": "action",
+        "text": "Νέα δουλειά",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Νέα δουλειά",
+        "href": "/life-event/job_change"
+      },
+      {
+        "key": "action|Δάνειο",
+        "class": "action",
+        "text": "Δάνειο",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Δάνειο",
+        "href": "/life-event/mortgage"
+      },
+      {
+        "key": "action|Διαζύγιο",
+        "class": "action",
+        "text": "Διαζύγιο",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Διαζύγιο",
+        "href": "/life-event/divorce"
+      },
+      {
+        "key": "action|Μετακόμιση",
+        "class": "action",
+        "text": "Μετακόμιση",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Μετακόμιση",
+        "href": "/life-event/relocation"
+      },
+      {
+        "key": "action|Συνταξιοδότηση",
+        "class": "action",
+        "text": "Συνταξιοδότηση",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Συνταξιοδότηση",
+        "href": "/life-event/retirement"
+      },
+      {
+        "key": "action|Κάτι άλλο",
+        "class": "action",
+        "text": "Κάτι άλλο",
+        "selector": "div > section#life > ul > li > a",
+        "name": "Κάτι άλλο",
+        "href": "/life-event/other"
+      },
+      {
+        "key": "action|Αυτοκίνητο◆ Κενό",
+        "class": "action",
+        "text": "Αυτοκίνητο◆ Κενό",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Αυτοκίνητο◆ Κενό",
+        "href": "/policies"
+      },
+      {
+        "key": "action|Κατοικίαδεν έχετε",
+        "class": "action",
+        "text": "Κατοικίαδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Κατοικίαδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Υγεία◆ Κενό",
+        "class": "action",
+        "text": "Υγεία◆ Κενό",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Υγεία◆ Κενό",
+        "href": "/policies"
+      },
+      {
+        "key": "action|Κυβερνοασφάλειαδεν έχετε",
+        "class": "action",
+        "text": "Κυβερνοασφάλειαδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Κυβερνοασφάλειαδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Αστική Ευθύνηδεν έχετε",
+        "class": "action",
+        "text": "Αστική Ευθύνηδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Αστική Ευθύνηδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Νομική Προστασίαδεν έχετε",
+        "class": "action",
+        "text": "Νομική Προστασίαδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Νομική Προστασίαδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Ομαδική Υγείαδεν έχετε",
+        "class": "action",
+        "text": "Ομαδική Υγείαδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Ομαδική Υγείαδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Ομαδική Ζωήδεν έχετε",
+        "class": "action",
+        "text": "Ομαδική Ζωήδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Ομαδική Ζωήδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Ομαδική Σύνταξηδεν έχετε",
+        "class": "action",
+        "text": "Ομαδική Σύνταξηδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Ομαδική Σύνταξηδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Ζωήδεν έχετε",
+        "class": "action",
+        "text": "Ζωήδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Ζωήδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Ταξιδιωτικήδεν έχετε",
+        "class": "action",
+        "text": "Ταξιδιωτικήδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Ταξιδιωτικήδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Σύνταξη & Αποταμίευσηδεν έχετε",
+        "class": "action",
+        "text": "Σύνταξη & Αποταμίευσηδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Σύνταξη & Αποταμίευσηδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Σκάφοςδεν έχετε",
+        "class": "action",
+        "text": "Σκάφοςδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Σκάφοςδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Έργα Τέχνης & Τιμαλφήδεν έχετε",
+        "class": "action",
+        "text": "Έργα Τέχνης & Τιμαλφήδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Έργα Τέχνης & Τιμαλφήδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Επιχείρησηδεν έχετε",
+        "class": "action",
+        "text": "Επιχείρησηδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Επιχείρησηδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|Κατοικίδιαδεν έχετε",
+        "class": "action",
+        "text": "Κατοικίδιαδεν έχετε",
+        "selector": "div > section#map > ul > li > a",
+        "name": "Κατοικίδιαδεν έχετε",
+        "href": "/add"
+      },
+      {
+        "key": "action|ΑΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑN ασφαλιστήρια✓Καλύπτεται",
+        "class": "action",
+        "text": "ΑΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑ2 ασφαλιστήρια✓Καλύπτεται",
+        "selector": "div > section#household > ul > li > a",
+        "name": "ΑΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑ2 ασφαλιστήρια✓Καλύπτεται",
+        "href": "/me/household"
+      },
+      {
+        "key": "action|ΕΕΛΛΗ ΚΟΚΚΑΛΙΑχωρίς ασφαλιστήριο?Για έλεγχο",
+        "class": "action",
+        "text": "ΕΕΛΛΗ ΚΟΚΚΑΛΙΑχωρίς ασφαλιστήριο?Για έλεγχο",
+        "selector": "div > section#household > ul > li > a",
+        "name": "ΕΕΛΛΗ ΚΟΚΚΑΛΙΑχωρίς ασφαλιστήριο?Για έλεγχο",
+        "href": "/me/household"
+      },
+      {
+        "key": "action|ΑΑΓΓΕΛΙΚΗ ΜΟΝΙΑΡΟΥχωρίς ασφαλιστήριο?Για έλεγχο",
+        "class": "action",
+        "text": "ΑΑΓΓΕΛΙΚΗ ΜΟΝΙΑΡΟΥχωρίς ασφαλιστήριο?Για έλεγχο",
+        "selector": "div > section#household > ul > li > a",
+        "name": "ΑΑΓΓΕΛΙΚΗ ΜΟΝΙΑΡΟΥχωρίς ασφαλιστήριο?Για έλεγχο",
+        "href": "/me/household"
+      },
+      {
+        "key": "action|ΕΕΥΑΓΓΕΛΙΑ ΜΟΝΙΑΡΟΥχωρίς ασφαλιστήριο?Για έλεγχο",
+        "class": "action",
+        "text": "ΕΕΥΑΓΓΕΛΙΑ ΜΟΝΙΑΡΟΥχωρίς ασφαλιστήριο?Για έλεγχο",
+        "selector": "div > section#household > ul > li > a",
+        "name": "ΕΕΥΑΓΓΕΛΙΑ ΜΟΝΙΑΡΟΥχωρίς ασφαλιστήριο?Για έλεγχο",
+        "href": "/me/household"
+      },
+      {
+        "key": "action|+ Προσθήκη ατόμου",
+        "class": "action",
+        "text": "+ Προσθήκη ατόμου",
+        "selector": "div > section#household > ul > li > a",
+        "name": "+ Προσθήκη ατόμου",
+        "href": "/me/household"
+      },
+      {
+        "key": "chrome|Η προστασία σας",
+        "class": "chrome",
+        "text": "Η προστασία σας",
+        "selector": "div > main#main-content > div > div > h1"
+      },
+      {
+        "key": "metric|N/N/N · έλεγξα ξανά πριν από N ημέρες",
+        "class": "metric",
+        "text": "31/08/2026 · έλεγξα ξανά πριν από 3 ημέρες",
+        "value": "31/08/2026",
+        "selector": "div > main#main-content > div > div > p"
+      },
+      {
+        "key": "metric|N",
+        "class": "metric",
+        "text": "12",
+        "value": "12",
+        "selector": "section#verdict > section > div > svg > text"
+      },
+      {
+        "key": "chrome|Αξίζει να δείτε",
+        "class": "chrome",
+        "text": "Αξίζει να δείτε",
+        "selector": "section#verdict > section > div > div > span"
+      },
+      {
+        "key": "metric|Σας καλύπτουν N από τα N.",
+        "class": "metric",
+        "text": "Σας καλύπτουν 12 από τα 25.",
+        "value": "12",
+        "selector": "section#verdict > section > div > div > h2#verdict-title"
+      },
+      {
+        "key": "metric|N πράγματα αξίζει να δείτε αυτή την εβδομάδα. Τα υπόλοιπα N τα παρακολουθώ. Αν αλλάξει κάτι, θα σας το πω πρώτος.",
+        "class": "metric",
+        "text": "14 πράγματα αξίζει να δείτε αυτή την εβδομάδα. Τα υπόλοιπα 12 τα παρακολουθώ. Αν αλλάξει κάτι, θα σας το πω πρώτος.",
+        "value": "14",
+        "selector": "section#verdict > section > div > div > p"
+      },
+      {
+        "key": "metric|N έγγραφα δεν μπόρεσα να τα διαβάσω.",
+        "class": "metric",
+        "text": "2 έγγραφα δεν μπόρεσα να τα διαβάσω.",
+        "value": "2",
+        "selector": "main#main-content > div > section#verdict > ul > li"
+      },
+      {
+        "key": "chrome|Να το δείτε τώρα",
+        "class": "chrome",
+        "text": "Να το δείτε τώρα",
+        "selector": "div > div > section#now > div > h2#now-title"
+      },
+      {
+        "key": "chrome|Τα χρήματά σας",
+        "class": "chrome",
+        "text": "Τα χρήματά σας",
+        "selector": "div > div > section#money > div > h2#money-title"
+      },
+      {
+        "key": "chrome|Πληρώνετε τον χρόνο",
+        "class": "chrome",
+        "text": "Πληρώνετε τον χρόνο",
+        "selector": "section#money > div > dl > div > dt"
+      },
+      {
+        "key": "metric|N €",
+        "class": "metric",
+        "text": "8.224 €",
+        "value": "8.224 €",
+        "selector": "div > dl > div > dd > span"
+      },
+      {
+        "key": "chrome|Μόνο όσα ισχύουν σήμερα.",
+        "class": "chrome",
+        "text": "Μόνο όσα ισχύουν σήμερα.",
+        "selector": "div > dl > div > dd > span"
+      },
+      {
+        "key": "chrome|Σας προστατεύουν έως",
+        "class": "chrome",
+        "text": "Σας προστατεύουν έως",
+        "selector": "section#money > div > dl > div > dt"
+      },
+      {
+        "key": "metric|N.N €",
+        "class": "metric",
+        "text": "1.500.000 €",
+        "value": "1.500.000 €",
+        "selector": "div > dl > div > dd > span"
+      },
+      {
+        "key": "chrome|Το μεγαλύτερο μεμονωμένο όριο που βρήκα — όχι άθροισμα.",
+        "class": "chrome",
+        "text": "Το μεγαλύτερο μεμονωμένο όριο που βρήκα — όχι άθροισμα.",
+        "selector": "div > dl > div > dd > span"
+      },
+      {
+        "key": "chrome|Ίσως πληρώνετε δύο φορές",
+        "class": "chrome",
+        "text": "Ίσως πληρώνετε δύο φορές",
+        "selector": "section#money > div > dl > div > dt"
+      },
+      {
+        "key": "metric|N ζεύγη με ίδια κάλυψη για το ίδιο πράγμα.",
+        "class": "metric",
+        "text": "6 ζεύγη με ίδια κάλυψη για το ίδιο πράγμα.",
+        "value": "6",
+        "selector": "div > dl > div > dd > span"
+      },
+      {
+        "key": "metric|Βρήκα διπλή κάλυψη για το Αυτοκίνητο · ΙΚΖ-N σε δύο ασφαλιστήρια — δεν ξέρω αν η μία αφαιρείται. Μπορείτε να ρωτήσετε.",
+        "class": "metric",
+        "text": "Βρήκα διπλή κάλυψη για το Αυτοκίνητο · ΙΚΖ-4821 σε δύο ασφαλιστήρια — δεν ξέρω αν η μία αφαιρείται. Μπορείτε να ρωτήσετε.",
+        "value": "4821",
+        "selector": "div > div > div > section#money > p"
+      },
+      {
+        "key": "chrome|Άλλαξε κάτι στη ζωή σας;",
+        "class": "chrome",
+        "text": "Άλλαξε κάτι στη ζωή σας;",
+        "selector": "div > div > section#life > div > h2#life-title"
+      },
+      {
+        "key": "chrome|Πείτε μου και ξαναβλέπω την προστασία σας.",
+        "class": "chrome",
+        "text": "Πείτε μου και ξαναβλέπω την προστασία σας.",
+        "selector": "div > div > div > section#life > p"
+      },
+      {
+        "key": "metric|Οι N κλάδοι",
+        "class": "metric",
+        "text": "Οι 16 κλάδοι",
+        "value": "16",
+        "selector": "div > div > section#map > div > h2#map-title"
+      },
+      {
+        "key": "chrome|Το νοικοκυριό σας",
+        "class": "chrome",
+        "text": "Το νοικοκυριό σας",
+        "selector": "div > div > section#household > div > h2#household-title"
+      },
+      {
+        "key": "chrome|Σημείωση",
+        "class": "chrome",
+        "text": "Σημείωση",
+        "selector": "div > div > section#note > aside > p"
+      },
+      {
+        "key": "explanation|Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω",
+        "class": "explanation",
+        "text": "Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω",
+        "selector": "div > div > section#note > aside > p"
+      },
+      {
+        "key": "status|«Κενό» σημαίνει ότι, με βάση τα έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι.",
+        "class": "status",
+        "text": "«Κενό» σημαίνει ότι, με βάση τα έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι.",
+        "selector": "div > div > section#note > aside > p"
+      }
+    ],
+    "/policies": [
+      {
+        "key": "action|Ανά κλάδο",
+        "class": "action",
+        "text": "Ανά κλάδο",
+        "selector": "main#main-content > div > section#tools > div#_R_555esnecl5rcalb_ > button",
+        "name": "Ανά κλάδο"
+      },
+      {
+        "key": "action|Ανά λήξη",
+        "class": "action",
+        "text": "Ανά λήξη",
+        "selector": "main#main-content > div > section#tools > div#_R_555esnecl5rcalb_ > button",
+        "name": "Ανά λήξη"
+      },
+      {
+        "key": "action|Ανά άτομο",
+        "class": "action",
+        "text": "Ανά άτομο",
+        "selector": "main#main-content > div > section#tools > div#_R_555esnecl5rcalb_ > button",
+        "name": "Ανά άτομο"
+      },
+      {
+        "key": "action|Interamerican (ΣΥΜΒ-N-MOT-EXP) · ΒΖΝ-NΣωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · N € τον χρόνο · N έγγραφα◆",
+        "class": "action",
+        "text": "Interamerican (ΣΥΜΒ-2025-MOT-EXP) · ΒΖΝ-8520Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 298 € τον χρόνο · 4 έγγραφα◆",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Interamerican (ΣΥΜΒ-2025-MOT-EXP) · ΒΖΝ-8520Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 298 € τον χρόνο · 4 έγγραφα◆",
+        "href": "/policies/cmt5jzclg000buer6h5acxbcd"
+      },
+      {
+        "key": "action|ΕΘΝΙΚΗ (N) · IKZNΣωματικές Βλάβες τρίτων (ανά άτομο), Υλικές Ζημιές τρίτων (ανά ατύχημα) · N € τον χρόνο · ΑΡ",
+        "class": "action",
+        "text": "ΕΘΝΙΚΗ (64504715) · IKZ3113Σωματικές Βλάβες τρίτων (ανά άτομο), Υλικές Ζημιές τρίτων (ανά ατύχημα) · 94 € τον χρόνο · ΑΡ",
+        "selector": "section#list > div > ul > li > a",
+        "name": "ΕΘΝΙΚΗ (64504715) · IKZ3113Σωματικές Βλάβες τρίτων (ανά άτομο), Υλικές Ζημιές τρίτων (ανά ατύχημα) · 94 € τον χρόνο · ΑΡ",
+        "href": "/policies/cmstecqg5001of5663zv1vfhc"
+      },
+      {
+        "key": "action|Interamerican (ΣΥΜΒ-N-MOT-ACT) · ΙΚΖ-NΣωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · N € τον χρόνο · N έγγραφα◆",
+        "class": "action",
+        "text": "Interamerican (ΣΥΜΒ-2025-MOT-ACT) · ΙΚΖ-4821Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 312 € τον χρόνο · 4 έγγραφα◆",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Interamerican (ΣΥΜΒ-2025-MOT-ACT) · ΙΚΖ-4821Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 312 € τον χρόνο · 4 έγγραφα◆",
+        "href": "/policies/cmt5jyvgo0001121dx1ormp6a"
+      },
+      {
+        "key": "action|Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσα",
+        "class": "action",
+        "text": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσα",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσα",
+        "href": "/policies/cmt5z1q9r0014510smkjzr9lg"
+      },
+      {
+        "key": "action|Interamerican (ΣΥΜΒ-N-DEF-NP) · ΕΗΤ-NΣωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων◆Κενό›",
+        "class": "action",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-NP) · ΕΗΤ-6941Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων◆Κενό›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Interamerican (ΣΥΜΒ-2025-DEF-NP) · ΕΗΤ-6941Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων◆Κενό›",
+        "href": "/policies/cmt5z1jku000q510sty78s2jd"
+      },
+      {
+        "key": "action|Interamerican (ΣΥΜΒ-N-DEF-XX)Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · N € τον χρόνο◆Κενό›",
+        "class": "action",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-XX)Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 287 € τον χρόνο◆Κενό›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Interamerican (ΣΥΜΒ-2025-DEF-XX)Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 287 € τον χρόνο◆Κενό›",
+        "href": "/policies/cmt5k1mp2001xuer60ate6z3q"
+      },
+      {
+        "key": "action|Interamerican (ΣΥΜΒ-N-DEF-EN) · ΗΝΡ-NΣωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · N € τον χρόνο◆Κενό›",
+        "class": "action",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-EN) · ΗΝΡ-2885Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 94 € τον χρόνο◆Κενό›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Interamerican (ΣΥΜΒ-2025-DEF-EN) · ΗΝΡ-2885Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 94 € τον χρόνο◆Κενό›",
+        "href": "/policies/cmt5k18iy001puer6ke8xwcee"
+      },
+      {
+        "key": "action|Interamerican (ΣΥΜΒ-N-DEF-RE) · ΟΚΜ-NΣωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · N € τον χρόνο◆Κενό›",
+        "class": "action",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-RE) · ΟΚΜ-8338Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 275 € τον χρόνο◆Κενό›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Interamerican (ΣΥΜΒ-2025-DEF-RE) · ΟΚΜ-8338Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 275 € τον χρόνο◆Κενό›",
+        "href": "/policies/cmt5z1g7k000i510sz2zqb2rw"
+      },
+      {
+        "key": "action|Interamerican (ΣΥΜΒ-N-DEF-UG) · ΜΟΚ-NΣωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · N € τον χρόνο◆Κενό›",
+        "class": "action",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-UG) · ΜΟΚ-1839Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 301 € τον χρόνο◆Κενό›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Interamerican (ΣΥΜΒ-2025-DEF-UG) · ΜΟΚ-1839Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 301 € τον χρόνο◆Κενό›",
+        "href": "/policies/cmt5z18kx0001510sfrqkzbuj"
+      },
+      {
+        "key": "action|· ΚΜΥ-NΣωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · N € τον χρόνο✓Καλύπτεται›",
+        "class": "action",
+        "text": "· ΚΜΥ-4769Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 250 € τον χρόνο✓Καλύπτεται›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "· ΚΜΥ-4769Σωματικές Βλάβες τρίτων, Υλικές Ζημιές τρίτων · 250 € τον χρόνο✓Καλύπτεται›",
+        "href": "/policies/cmt5z1dx0000c510st3tchvdi"
+      },
+      {
+        "key": "action|ΕΘΝΙΚΗ (N)δεν το έχω διαβάσει ακόμη · N € τον χρόνο✓Καλύπτεται›",
+        "class": "action",
+        "text": "ΕΘΝΙΚΗ (63708952)δεν το έχω διαβάσει ακόμη · 105 € τον χρόνο✓Καλύπτεται›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "ΕΘΝΙΚΗ (63708952)δεν το έχω διαβάσει ακόμη · 105 € τον χρόνο✓Καλύπτεται›",
+        "href": "/policies/cmrynz3ls0003dacacfbnz4iu"
+      },
+      {
+        "key": "action|Interamerican (ENE-MOT-N) · IKZ-NΑστική ευθύνη προς τρίτους, Θραύση κρυστάλλων · N € τον χρόνο✓Καλύπτεται›",
+        "class": "action",
+        "text": "Interamerican (E2E-MOT-001) · IKZ-4821Αστική ευθύνη προς τρίτους, Θραύση κρυστάλλων · 420 € τον χρόνο✓Καλύπτεται›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Interamerican (E2E-MOT-001) · IKZ-4821Αστική ευθύνη προς τρίτους, Θραύση κρυστάλλων · 420 € τον χρόνο✓Καλύπτεται›",
+        "href": "/policies/cmrfk79o2000511e7lbj9qnsx"
+      },
+      {
+        "key": "action|Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-EXP)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · N € τον χρόνο · N έγγραφα◆Κενό",
+        "class": "action",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · 1.103 € τον χρόνο · 2 έγγραφα◆Κενό",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · 1.103 € τον χρόνο · 2 έγγραφα◆Κενό",
+        "href": "/policies/cmt5k0pjc0015uer6cdujft34"
+      },
+      {
+        "key": "action|Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-ACT)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · N € τον χρόνο · N έγγραφα◆Κενό",
+        "class": "action",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-ACT)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · 1.138 € τον χρόνο · 3 έγγραφα◆Κενό",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-ACT)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · 1.138 € τον χρόνο · 3 έγγραφα◆Κενό",
+        "href": "/policies/cmt5k0jtd000v121dwokv731m"
+      },
+      {
+        "key": "action|Εθνική Ασφαλιστική (ΣΥΜΒ-N-DEF-ND)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · N € τον χρόνο✓Καλύπτεται›",
+        "class": "action",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-DEF-ND)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · 500 € τον χρόνο✓Καλύπτεται›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-DEF-ND)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · 500 € τον χρόνο✓Καλύπτεται›",
+        "href": "/policies/cmt5z1ml3000y510sywyxdwmm"
+      },
+      {
+        "key": "action|Εθνική Ασφαλιστική (ΣΥΜΒ-N-DEF-FA)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · N € τον χρόνο?Για έλεγχο›",
+        "class": "action",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-DEF-FA)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · 1.138 € τον χρόνο?Για έλεγχο›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-DEF-FA)Νοσοκομειακή περίθαλψη, Διαγνωστικές εξετάσεις · 1.138 € τον χρόνο?Για έλεγχο›",
+        "href": "/policies/cmt5k1pd80025uer6pcdctp9e"
+      },
+      {
+        "key": "action|Η ΕΘΝΙΚΗ (N-N)Έξοδα Νοσοκομειακής Περίθαλψης · N € τον χρόνο · ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑ · N έγγραφα✓Καλύπτεται›",
+        "class": "action",
+        "text": "Η ΕΘΝΙΚΗ (1651622-03)Έξοδα Νοσοκομειακής Περίθαλψης · 1.567 € τον χρόνο · ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑ · 2 έγγραφα✓Καλύπτεται›",
+        "selector": "section#list > div > ul > li > a",
+        "name": "Η ΕΘΝΙΚΗ (1651622-03)Έξοδα Νοσοκομειακής Περίθαλψης · 1.567 € τον χρόνο · ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑ · 2 έγγραφα✓Καλύπτεται›",
+        "href": "/policies/cmt5k0y0w001fuer64rqt1103"
+      },
+      {
+        "key": "action|Έληξαν · N⌄",
+        "class": "action",
+        "text": "Έληξαν · 2⌄",
+        "selector": "main#main-content > div > section#expired > details > summary",
+        "name": "Έληξαν · 2⌄"
+      },
+      {
+        "key": "action|Interamerican (ΣΥΜΒ-N-MOT-XPD) · IKZ-NΑυτοκίνητο · έληξε N/N/N›",
+        "class": "action",
+        "text": "Interamerican (ΣΥΜΒ-2025-MOT-XPD) · IKZ-4821Αυτοκίνητο · έληξε 11/5/2026›",
+        "selector": "section#expired > details > ul > li > a",
+        "name": "Interamerican (ΣΥΜΒ-2025-MOT-XPD) · IKZ-4821Αυτοκίνητο · έληξε 11/5/2026›",
+        "href": "/policies/cmt5jzrsh000lx92v96pokhrc"
+      },
+      {
+        "key": "action|Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-XPD)Υγεία · έληξε N/N/N›",
+        "class": "action",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-XPD)Υγεία · έληξε 11/5/2026›",
+        "selector": "section#expired > details > ul > li > a",
+        "name": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-XPD)Υγεία · έληξε 11/5/2026›",
+        "href": "/policies/cmtc8k4cx00016wwvmbuql8xz"
+      },
+      {
+        "key": "chrome|Ο φάκελός σας",
+        "class": "chrome",
+        "text": "Ο φάκελός σας",
+        "selector": "div > main#main-content > div > div > h1"
+      },
+      {
+        "key": "metric|N ασφαλιστήρια",
+        "class": "metric",
+        "text": "17 ασφαλιστήρια",
+        "value": "17",
+        "selector": "div > main#main-content > div > div > p"
+      },
+      {
+        "key": "chrome|Αυτοκίνητο",
+        "class": "chrome",
+        "text": "Αυτοκίνητο",
+        "selector": "div > section#list > div > div > span"
+      },
+      {
+        "key": "metric|N",
+        "class": "metric",
+        "text": "12",
+        "value": "12",
+        "selector": "div > section#list > div > div > span"
+      },
+      {
+        "key": "chrome|Υγεία",
+        "class": "chrome",
+        "text": "Υγεία",
+        "selector": "div > section#list > div > div > span"
+      },
+      {
+        "key": "chrome|Τα κρατάω για το ιστορικό σας. Δεν τα ελέγχω πια.",
+        "class": "chrome",
+        "text": "Τα κρατάω για το ιστορικό σας. Δεν τα ελέγχω πια.",
+        "selector": "main#main-content > div > section#expired > details > p"
+      },
+      {
+        "key": "chrome|Σημείωση",
+        "class": "chrome",
+        "text": "Σημείωση",
+        "selector": "main#main-content > div > section#note > aside > p"
+      },
+      {
+        "key": "explanation|Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω",
+        "class": "explanation",
+        "text": "Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω",
+        "selector": "main#main-content > div > section#note > aside > p"
+      }
+    ],
+    "/see": [
+      {
+        "key": "action|Όλα",
+        "class": "action",
+        "text": "Όλα",
+        "selector": "div > div > ul > li > a",
+        "name": "Όλα",
+        "href": "/see"
+      },
+      {
+        "key": "action|Κενό",
+        "class": "action",
+        "text": "Κενό",
+        "selector": "div > div > ul > li > a",
+        "name": "Κενό",
+        "href": "/see?state=gap"
+      },
+      {
+        "key": "action|Για έλεγχο",
+        "class": "action",
+        "text": "Για έλεγχο",
+        "selector": "div > div > ul > li > a",
+        "name": "Για έλεγχο",
+        "href": "/see?state=review"
+      },
+      {
+        "key": "action|Λήγει",
+        "class": "action",
+        "text": "Λήγει",
+        "selector": "div > div > ul > li > a",
+        "name": "Λήγει",
+        "href": "/see?state=expiry"
+      },
+      {
+        "key": "action|Άνοιγμα ασφαλιστηρίου",
+        "class": "action",
+        "text": "Άνοιγμα ασφαλιστηρίου",
+        "selector": "ul > li > article > div > a",
+        "name": "Άνοιγμα ασφαλιστηρίου",
+        "href": "/policies/cmt5jzclg000buer6h5acxbcd"
+      },
+      {
+        "key": "action|Ζητάω βοήθεια",
+        "class": "action",
+        "text": "Ζητάω βοήθεια",
+        "selector": "ul > li > article > div > a",
+        "name": "Ζητάω βοήθεια",
+        "href": "/adviser/help/cmt5jzclg000buer6h5acxbcd%7Cexpiry%7Clifecycle_expiry"
+      },
+      {
+        "key": "action|Δεν με αφορά",
+        "class": "action",
+        "text": "Δεν με αφορά",
+        "selector": "ul > li > article > div > button",
+        "name": "Δεν με αφορά"
+      },
+      {
+        "key": "action|Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-ACT) δεν βρήκα απευθείας εξόφληση με το νοσοκομείο.Ασφαλιστήριο Υγεία · ΣΥΜ",
+        "class": "action",
+        "text": "Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-ACT) δεν βρήκα απευθείας εξόφληση με το νοσοκομείο.Ασφαλιστήριο Υγεία · ΣΥΜ",
+        "selector": "div > section#later > ul > li > a",
+        "name": "Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-ACT) δεν βρήκα απευθείας εξόφληση με το νοσοκομείο.Ασφαλιστήριο Υγεία · ΣΥΜ",
+        "href": "/policies/cmt5k0jtd000v121dwokv731m"
+      },
+      {
+        "key": "action|Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-ACT) δεν βρήκα ετήσιο check-up.Ασφαλιστήριο Υγεία · ΣΥΜΒ-N-HL-ACT · ενότ",
+        "class": "action",
+        "text": "Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-ACT) δεν βρήκα ετήσιο check-up.Ασφαλιστήριο Υγεία · ΣΥΜΒ-2025-HL-ACT · ενότ",
+        "selector": "div > section#later > ul > li > a",
+        "name": "Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-ACT) δεν βρήκα ετήσιο check-up.Ασφαλιστήριο Υγεία · ΣΥΜΒ-2025-HL-ACT · ενότ",
+        "href": "/policies/cmt5k0jtd000v121dwokv731m"
+      },
+      {
+        "key": "action|Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-EXP) δεν βρήκα απευθείας εξόφληση με το νοσοκομείο.Ανανεωτήριο · ενότητα κα",
+        "class": "action",
+        "text": "Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) δεν βρήκα απευθείας εξόφληση με το νοσοκομείο.Ανανεωτήριο · ενότητα κα",
+        "selector": "div > section#later > ul > li > a",
+        "name": "Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) δεν βρήκα απευθείας εξόφληση με το νοσοκομείο.Ανανεωτήριο · ενότητα κα",
+        "href": "/policies/cmt5k0pjc0015uer6cdujft34"
+      },
+      {
+        "key": "action|Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-EXP) δεν βρήκα ετήσιο check-up.Ανανεωτήριο · ενότητα καλύψεων — δεν αναφέρε",
+        "class": "action",
+        "text": "Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) δεν βρήκα ετήσιο check-up.Ανανεωτήριο · ενότητα καλύψεων — δεν αναφέρε",
+        "selector": "div > section#later > ul > li > a",
+        "name": "Στο Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) δεν βρήκα ετήσιο check-up.Ανανεωτήριο · ενότητα καλύψεων — δεν αναφέρε",
+        "href": "/policies/cmt5k0pjc0015uer6cdujft34"
+      },
+      {
+        "key": "chrome|Να δείτε",
+        "class": "chrome",
+        "text": "Να δείτε",
+        "selector": "div > main#main-content > div > div > h1"
+      },
+      {
+        "key": "metric|N τώρα · N αυτόν τον μήνα · N όταν έχετε χρόνο",
+        "class": "metric",
+        "text": "13 τώρα · 1 αυτόν τον μήνα · 4 όταν έχετε χρόνο",
+        "value": "13",
+        "selector": "div > main#main-content > div > div > p"
+      },
+      {
+        "key": "chrome|Να το δείτε τώρα",
+        "class": "chrome",
+        "text": "Να το δείτε τώρα",
+        "selector": "div > section#now > div > h2#tier-now > span"
+      },
+      {
+        "key": "metric|N",
+        "class": "metric",
+        "text": "13",
+        "value": "13",
+        "selector": "div > section#now > div > h2#tier-now > span"
+      },
+      {
+        "key": "status|Λήγει μέσα σε N ημέρες, ή είναι κενό σε κάτι βασικό που μου έχετε πει ότι έχετε.",
+        "class": "status",
+        "text": "Λήγει μέσα σε 14 ημέρες, ή είναι κενό σε κάτι βασικό που μου έχετε πει ότι έχετε.",
+        "selector": "main#main-content > div > section#now > div > p"
+      },
+      {
+        "key": "status|Λήγει",
+        "class": "status",
+        "text": "Λήγει",
+        "selector": "ul > li > article > div > span"
+      },
+      {
+        "key": "metric|N ημέρες",
+        "class": "metric",
+        "text": "13 ημέρες",
+        "value": "13",
+        "selector": "ul > li > article > div > span"
+      },
+      {
+        "key": "metric|Το Αυτοκίνητο · ΒΖΝ-N λήγει σε N ημέρες. Από τις N/N/N κυκλοφορεί ανασφάλιστο.",
+        "class": "metric",
+        "text": "Το Αυτοκίνητο · ΒΖΝ-8520 λήγει σε 13 ημέρες. Από τις 13/09/2026 κυκλοφορεί ανασφάλιστο.",
+        "value": "13/09/2026",
+        "selector": "section#now > ul > li > article > h3#finding-expiry:cmt5jzclg000buer6h5acxbcd-title"
+      },
+      {
+        "key": "chrome|Πού το είδα:",
+        "class": "chrome",
+        "text": "Πού το είδα:",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-MOT-EXP · πίνακας ασφαλιστηρίου",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-MOT-EXP · πίνακας ασφαλιστηρίου",
+        "value": "2025-MOT-EXP",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "metric|Το Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-N-HL-EXP) λήγει σε N ημέρες.",
+        "class": "metric",
+        "text": "Το Υγεία · Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) λήγει σε 13 ημέρες.",
+        "value": "2025",
+        "selector": "section#now > ul > li > article > h3#finding-expiry:cmt5k0pjc0015uer6cdujft34-title"
+      },
+      {
+        "key": "chrome|Ανανεωτήριο · πίνακας ασφαλιστηρίου",
+        "class": "chrome",
+        "text": "Ανανεωτήριο · πίνακας ασφαλιστηρίου",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "status|Κενό",
+        "class": "status",
+        "text": "Κενό",
+        "selector": "ul > li > article > div > span"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΙΚΖ-N δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΙΚΖ-4821 δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "value": "4821",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5jz1gl0007121ddx1q134e-title"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-MOT-ACT · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-MOT-ACT · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "value": "2025-MOT-ACT",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "metric|Μου είπατε ότι έχετε N όχημα — ένα κενό εκεί σας αφορά.",
+        "class": "metric",
+        "text": "Μου είπατε ότι έχετε 1 όχημα — ένα κενό εκεί σας αφορά.",
+        "value": "1",
+        "selector": "section#now > ul > li > article > p"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΙΚΖ-N δεν βρήκα κάλυψη θραύσης κρυστάλλων.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΙΚΖ-4821 δεν βρήκα κάλυψη θραύσης κρυστάλλων.",
+        "value": "4821",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5jz9ek0009121dgzdqbvat-title"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΒΖΝ-N δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΒΖΝ-8520 δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "value": "8520",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5jzmu3000huer6s13pxq1o-title"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-MOT-EXP · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-MOT-EXP · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "value": "2025-MOT-EXP",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΒΖΝ-N δεν βρήκα κάλυψη θραύσης κρυστάλλων.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΒΖΝ-8520 δεν βρήκα κάλυψη θραύσης κρυστάλλων.",
+        "value": "8520",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5jzorg000juer6dfsnd1ap-title"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΗΝΡ-N δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΗΝΡ-2885 δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "value": "2885",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5k1m3w001vuer67rfn5bjq-title"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-EN · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-EN · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "value": "2025-DEF-EN",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "entity|Στο Αυτοκίνητο · Interamerican (ΣΥΜΒ-2025-DEF-XX) δεν βρήκα κάλυψη θραύσης κρυστάλλων.",
+        "class": "entity",
+        "text": "Στο Αυτοκίνητο · Interamerican (ΣΥΜΒ-2025-DEF-XX) δεν βρήκα κάλυψη θραύσης κρυστάλλων.",
+        "value": "2025-DEF-XX",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5k1oq70023uer6bah24v97-title"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-XX · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-XX · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "value": "2025-DEF-XX",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΜΟΚ-N δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΜΟΚ-1839 δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "value": "1839",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5z1bg60007510sch5hecdl-title"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-UG · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-UG · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "value": "2025-DEF-UG",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΟΚΜ-N δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΟΚΜ-8338 δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "value": "8338",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5z1izw000o510sa55ilf5o-title"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-RE · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-RE · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "value": "2025-DEF-RE",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΕΗΤ-N δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΕΗΤ-6941 δεν βρήκα κάλυψη ιδίων ζημιών.",
+        "value": "6941",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5z1m0b000w510seuee07vj-title"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-NP · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-NP · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "value": "2025-DEF-NP",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-LI · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · ΣΥΜΒ-2025-DEF-LI · ενότητα καλύψεων — δεν αναφέρεται Έψαξα και στα άλλα 11 — πουθενά.",
+        "value": "2025-DEF-LI",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "metric|Στο Αυτοκίνητο · ΗΝΡ-N δεν βρήκα κάλυψη θραύσης κρυστάλλων.",
+        "class": "metric",
+        "text": "Στο Αυτοκίνητο · ΗΝΡ-9285 δεν βρήκα κάλυψη θραύσης κρυστάλλων.",
+        "value": "9285",
+        "selector": "section#now > ul > li > article > h3#finding-gap:cmt5z1ts7001c510saf2wgycr-title"
+      },
+      {
+        "key": "chrome|Αυτόν τον μήνα",
+        "class": "chrome",
+        "text": "Αυτόν τον μήνα",
+        "selector": "div > section#month > div > h2#tier-month > span"
+      },
+      {
+        "key": "status|Λήγει μέσα σε N ημέρες, ή άλλαξε τιμή πάνω από τον δείκτη, ή λείπει ένα όριο που θα έπρεπε να αναφέρεται.",
+        "class": "status",
+        "text": "Λήγει μέσα σε 45 ημέρες, ή άλλαξε τιμή πάνω από τον δείκτη, ή λείπει ένα όριο που θα έπρεπε να αναφέρεται.",
+        "selector": "main#main-content > div > section#month > div > p"
+      },
+      {
+        "key": "metric|Το Αυτοκίνητο · IKZN λήγει σε N ημέρες. Από τις N/N/N κυκλοφορεί ανασφάλιστο.",
+        "class": "metric",
+        "text": "Το Αυτοκίνητο · IKZ3113 λήγει σε 36 ημέρες. Από τις 06/10/2026 κυκλοφορεί ανασφάλιστο.",
+        "value": "06/10/2026",
+        "selector": "section#month > ul > li > article > h3#finding-expiry:cmstecqg5001of5663zv1vfhc-title"
+      },
+      {
+        "key": "entity|Ασφαλιστήριο Αυτοκίνητο · 64504715 · πίνακας ασφαλιστηρίου",
+        "class": "entity",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · 64504715 · πίνακας ασφαλιστηρίου",
+        "value": "64504715",
+        "selector": "ul > li > article > p > span"
+      },
+      {
+        "key": "chrome|Όταν έχετε χρόνο",
+        "class": "chrome",
+        "text": "Όταν έχετε χρόνο",
+        "selector": "div > section#later > div > h2#tier-later > span"
+      },
+      {
+        "key": "chrome|Ό,τι αξίζει μια ματιά, χωρίς ημερομηνία.",
+        "class": "chrome",
+        "text": "Ό,τι αξίζει μια ματιά, χωρίς ημερομηνία.",
+        "selector": "main#main-content > div > section#later > div > p"
+      },
+      {
+        "key": "explanation|Ό,τι επιλέξατε να μη βλέπετε το θυμάμαι. Θα σας το ξαναδείξω μόνο αν αλλάξει το έγγραφο ή λήξει το ασφαλιστήριο.",
+        "class": "explanation",
+        "text": "Ό,τι επιλέξατε να μη βλέπετε το θυμάμαι. Θα σας το ξαναδείξω μόνο αν αλλάξει το έγγραφο ή λήξει το ασφαλιστήριο.",
+        "selector": "main#main-content > div > section#memory > ul > li"
+      },
+      {
+        "key": "entity|Δεν τα ελέγχω πια: Interamerican (ΣΥΜΒ-2025-MOT-XPD), Interamerican (ΣΥΜΒ-2025-MOT-XPD), Interamerican (ΣΥΜΒ-2025-MOT-XPD), Interamerican (ΣΥΜΒ-2025-MOT-XPD), Ε",
+        "class": "entity",
+        "text": "Δεν τα ελέγχω πια: Interamerican (ΣΥΜΒ-2025-MOT-XPD), Interamerican (ΣΥΜΒ-2025-MOT-XPD), Interamerican (ΣΥΜΒ-2025-MOT-XPD), Interamerican (ΣΥΜΒ-2025-MOT-XPD), Ε",
+        "value": "2025-MOT-XPD",
+        "selector": "main#main-content > div > section#memory > ul > li"
+      },
+      {
+        "key": "chrome|Σημείωση",
+        "class": "chrome",
+        "text": "Σημείωση",
+        "selector": "main#main-content > div > section#note > aside > p"
+      },
+      {
+        "key": "explanation|Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω",
+        "class": "explanation",
+        "text": "Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω",
+        "selector": "main#main-content > div > section#note > aside > p"
+      },
+      {
+        "key": "status|«Κενό» σημαίνει ότι, με βάση τα έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι. Η σειρά ε",
+        "class": "status",
+        "text": "«Κενό» σημαίνει ότι, με βάση τα έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι. Η σειρά ε",
+        "selector": "main#main-content > div > section#note > aside > p"
+      }
+    ],
+    "/adviser": [
+      {
+        "key": "action|Email",
+        "class": "action",
+        "text": "Email",
+        "selector": "div > section#adviser > div > div > a",
+        "name": "Email",
+        "href": "mailto:e2e-agent@policywallet.test"
+      },
+      {
+        "key": "action|Αποσύνδεση συμβούλου",
+        "class": "action",
+        "text": "Αποσύνδεση συμβούλου",
+        "selector": "main#main-content > div > section#threads > div > button",
+        "name": "Αποσύνδεση συμβούλου"
+      },
+      {
+        "key": "chrome|Ο σύμβουλός σας",
+        "class": "chrome",
+        "text": "Ο σύμβουλός σας",
+        "selector": "div > main#main-content > div > div > h1"
+      },
+      {
+        "key": "chrome|Δικός σας — όχι δικός μας.",
+        "class": "chrome",
+        "text": "Δικός σας — όχι δικός μας.",
+        "selector": "div > main#main-content > div > div > p"
+      },
+      {
+        "key": "chrome|Νίκος Παπαδόπουλος",
+        "class": "chrome",
+        "text": "Νίκος Παπαδόπουλος",
+        "selector": "div > section#adviser > div > div > p"
+      },
+      {
+        "key": "metric|Συνεργάζεστε από N/N/N",
+        "class": "metric",
+        "text": "Συνεργάζεστε από 24/7/2026",
+        "value": "24/7/2026",
+        "selector": "div > section#adviser > div > div > p"
+      },
+      {
+        "key": "chrome|Τι βλέπει",
+        "class": "chrome",
+        "text": "Τι βλέπει",
+        "selector": "main#main-content > div > section#shares > div > h2#shares-title"
+      },
+      {
+        "key": "status|Εσείς αποφασίζετε ανά ασφαλιστήριο. Ό,τι σβήσετε παύει να το βλέπει αμέσως — δεν χρειάζεται να του το πείτε, του το λέω εγώ.",
+        "class": "status",
+        "text": "Εσείς αποφασίζετε ανά ασφαλιστήριο. Ό,τι σβήσετε παύει να το βλέπει αμέσως — δεν χρειάζεται να του το πείτε, του το λέω εγώ.",
+        "selector": "div > main#main-content > div > section#shares > p"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-MOT-XPD) · ΙΚΖ-4821",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-MOT-XPD) · ΙΚΖ-4821",
+        "value": "2025-MOT-XPD",
+        "selector": "ul > li > div > span > span#_R_d75esnecl5rcalb_"
+      },
+      {
+        "key": "status|δεν το βλέπει",
+        "class": "status",
+        "text": "δεν το βλέπει",
+        "selector": "ul > li > div > span > span#_R_d75esnecl5rcalb_-desc"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-MOT-XPD) · IKZ-4821",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-MOT-XPD) · IKZ-4821",
+        "value": "IKZ-4821",
+        "selector": "ul > li > div > span > span#_R_1575esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-XPD)",
+        "class": "entity",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-XPD)",
+        "value": "2025-HL-XPD",
+        "selector": "ul > li > div > span > span#_R_1d75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-MOT-EXP) · ΙΚΖ-4821",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-MOT-EXP) · ΙΚΖ-4821",
+        "value": "2025-MOT-EXP",
+        "selector": "ul > li > div > span > span#_R_1l75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP)",
+        "class": "entity",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP)",
+        "value": "2025-HL-EXP",
+        "selector": "ul > li > div > span > span#_R_2d75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-MOT-EXP) · ΒΖΝ-8520",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-MOT-EXP) · ΒΖΝ-8520",
+        "value": "2025-MOT-EXP",
+        "selector": "ul > li > div > span > span#_R_2l75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|ΕΘΝΙΚΗ (64504715) · IKZ3113",
+        "class": "entity",
+        "text": "ΕΘΝΙΚΗ (64504715) · IKZ3113",
+        "value": "IKZ3113",
+        "selector": "ul > li > div > span > span#_R_2t75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-ACT)",
+        "class": "entity",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-ACT)",
+        "value": "2025-HL-ACT",
+        "selector": "ul > li > div > span > span#_R_3575esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-MOT-ACT) · ΙΚΖ-4821",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-MOT-ACT) · ΙΚΖ-4821",
+        "value": "2025-MOT-ACT",
+        "selector": "ul > li > div > span > span#_R_3l75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. (ΣΥΜΒ-2025-DEF-LI) · ΗΝΡ-",
+        "class": "entity",
+        "text": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. (ΣΥΜΒ-2025-DEF-LI) · ΗΝΡ-",
+        "value": "2025-DEF-LI",
+        "selector": "ul > li > div > span > span#_R_4d75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Εθνική Ασφαλιστική (ΣΥΜΒ-2025-DEF-ND)",
+        "class": "entity",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-DEF-ND)",
+        "value": "2025-DEF-ND",
+        "selector": "ul > li > div > span > span#_R_4l75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-DEF-NP) · ΕΗΤ-6941",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-NP) · ΕΗΤ-6941",
+        "value": "2025-DEF-NP",
+        "selector": "ul > li > div > span > span#_R_4t75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-DEF-XX)",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-XX)",
+        "value": "2025-DEF-XX",
+        "selector": "ul > li > div > span > span#_R_5575esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-DEF-EN) · ΗΝΡ-2885",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-EN) · ΗΝΡ-2885",
+        "value": "2025-DEF-EN",
+        "selector": "ul > li > div > span > span#_R_5d75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Εθνική Ασφαλιστική (ΣΥΜΒ-2025-DEF-FA)",
+        "class": "entity",
+        "text": "Εθνική Ασφαλιστική (ΣΥΜΒ-2025-DEF-FA)",
+        "value": "2025-DEF-FA",
+        "selector": "ul > li > div > span > span#_R_5l75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-DEF-RE) · ΟΚΜ-8338",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-RE) · ΟΚΜ-8338",
+        "value": "2025-DEF-RE",
+        "selector": "ul > li > div > span > span#_R_6575esnecl5rcalb_"
+      },
+      {
+        "key": "metric|· ΚΜΥ-N",
+        "class": "metric",
+        "text": "· ΚΜΥ-4769",
+        "value": "4769",
+        "selector": "ul > li > div > span > span#_R_6l75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Interamerican (ΣΥΜΒ-2025-DEF-UG) · ΜΟΚ-1839",
+        "class": "entity",
+        "text": "Interamerican (ΣΥΜΒ-2025-DEF-UG) · ΜΟΚ-1839",
+        "value": "2025-DEF-UG",
+        "selector": "ul > li > div > span > span#_R_6t75esnecl5rcalb_"
+      },
+      {
+        "key": "entity|Η ΕΘΝΙΚΗ (1651622-03)",
+        "class": "entity",
+        "text": "Η ΕΘΝΙΚΗ (1651622-03)",
+        "value": "1651622-03",
+        "selector": "ul > li > div > span > span#_R_7575esnecl5rcalb_"
+      },
+      {
+        "key": "entity|ΕΘΝΙΚΗ (63708952)",
+        "class": "entity",
+        "text": "ΕΘΝΙΚΗ (63708952)",
+        "value": "63708952",
+        "selector": "ul > li > div > span > span#_R_7d75esnecl5rcalb_"
+      },
+      {
+        "key": "status|το βλέπει από N/N/N",
+        "class": "status",
+        "text": "το βλέπει από 24/7/2026",
+        "selector": "ul > li > div > span > span#_R_7d75esnecl5rcalb_-desc"
+      },
+      {
+        "key": "entity|Interamerican (E2E-MOT-001) · IKZ-4821",
+        "class": "entity",
+        "text": "Interamerican (E2E-MOT-001) · IKZ-4821",
+        "value": "MOT-001",
+        "selector": "ul > li > div > span > span#_R_7l75esnecl5rcalb_"
+      },
+      {
+        "key": "chrome|Αιτήματα και συζητήσεις",
+        "class": "chrome",
+        "text": "Αιτήματα και συζητήσεις",
+        "selector": "main#main-content > div > section#threads > div > h2#threads-title"
+      },
+      {
+        "key": "chrome|Δεν υπάρχουν ανοιχτά αιτήματα.",
+        "class": "chrome",
+        "text": "Δεν υπάρχουν ανοιχτά αιτήματα.",
+        "selector": "div > main#main-content > div > section#threads > p"
+      },
+      {
+        "key": "chrome|Η πρόσβασή του σταματά αμέσως — σε όλα.",
+        "class": "chrome",
+        "text": "Η πρόσβασή του σταματά αμέσως — σε όλα.",
+        "selector": "main#main-content > div > section#threads > div > p"
+      },
+      {
+        "key": "chrome|Σημείωση",
+        "class": "chrome",
+        "text": "Σημείωση",
+        "selector": "main#main-content > div > section#note > aside > p"
+      },
+      {
+        "key": "explanation|Ο Νίκος Παπαδόπουλος είναι ο δικός σας σύμβουλος, όχι δικός μας. Του δίνετε πρόσβαση εσείς και μπορείτε να τη σταματήσετε όποτε θέλετε.",
+        "class": "explanation",
+        "text": "Ο Νίκος Παπαδόπουλος είναι ο δικός σας σύμβουλος, όχι δικός μας. Του δίνετε πρόσβαση εσείς και μπορείτε να τη σταματήσετε όποτε θέλετε.",
+        "selector": "main#main-content > div > section#note > aside > p"
+      }
+    ],
+    "/updates": [
+      {
+        "key": "action|Τα είδα όλα",
+        "class": "action",
+        "text": "Τα είδα όλα",
+        "selector": "main#main-content > div > section#protection > div > button",
+        "name": "Τα είδα όλα"
+      },
+      {
+        "key": "action|ΝέοΧάθηκε κάλυψη σε έναν κίνδυνοΖημιά σε ακίνητο που σας ανήκει και N ακόμη αλλαγές.Σήμερα",
+        "class": "action",
+        "text": "ΝέοΧάθηκε κάλυψη σε έναν κίνδυνοΖημιά σε ακίνητο που σας ανήκει και 2 ακόμη αλλαγές.Σήμερα",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΧάθηκε κάλυψη σε έναν κίνδυνοΖημιά σε ακίνητο που σας ανήκει και 2 ακόμη αλλαγές.Σήμερα"
+      },
+      {
+        "key": "action|ΝέοΕντοπίσαμε ένα κενό κάλυψηςΖημιά σε ακίνητο που σας ανήκειΣήμερα",
+        "class": "action",
+        "text": "ΝέοΕντοπίσαμε ένα κενό κάλυψηςΖημιά σε ακίνητο που σας ανήκειΣήμερα",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΕντοπίσαμε ένα κενό κάλυψηςΖημιά σε ακίνητο που σας ανήκειΣήμερα"
+      },
+      {
+        "key": "action|ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.Σήμερα",
+        "class": "action",
+        "text": "ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.Σήμερα",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.Σήμερα"
+      },
+      {
+        "key": "action|Η ανάλυση δεν ολοκληρώθηκεΕθνική Ασφαλιστική (ΣΥΜΒ-N-HL-EXP) · Δεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρό",
+        "class": "action",
+        "text": "Η ανάλυση δεν ολοκληρώθηκεΕθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) · Δεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρό",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "Η ανάλυση δεν ολοκληρώθηκεΕθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) · Δεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρό"
+      },
+      {
+        "key": "action|ΝέοΗ ανάλυση δεν ολοκληρώθηκεΕθνική Ασφαλιστική (ΣΥΜΒ-N-HL-EXP) · Δεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθ",
+        "class": "action",
+        "text": "ΝέοΗ ανάλυση δεν ολοκληρώθηκεΕθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) · Δεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθ",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΗ ανάλυση δεν ολοκληρώθηκεΕθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) · Δεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθ"
+      },
+      {
+        "key": "action|ΝέοΈνας κίνδυνος έκλεισεΤα υπάρχοντά σας και ζημιές που προκαλείτε ως ενοικιαστής και N ακόμη αλλαγές.πριν από N ημέρες",
+        "class": "action",
+        "text": "ΝέοΈνας κίνδυνος έκλεισεΤα υπάρχοντά σας και ζημιές που προκαλείτε ως ενοικιαστής και 1 ακόμη αλλαγές.πριν από 3 ημέρες",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΈνας κίνδυνος έκλεισεΤα υπάρχοντά σας και ζημιές που προκαλείτε ως ενοικιαστής και 1 ακόμη αλλαγές.πριν από 3 ημέρες"
+      },
+      {
+        "key": "action|Άλλαξε η εικόνα κινδύνου σαςΑπώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας και N ακόμη αλλαγές.πριν απ",
+        "class": "action",
+        "text": "Άλλαξε η εικόνα κινδύνου σαςΑπώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας και 3 ακόμη αλλαγές.πριν απ",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "Άλλαξε η εικόνα κινδύνου σαςΑπώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας και 3 ακόμη αλλαγές.πριν απ"
+      },
+      {
+        "key": "action|Εντοπίσαμε ένα κενό κάλυψηςΑπώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σαςπριν από N ημέρες",
+        "class": "action",
+        "text": "Εντοπίσαμε ένα κενό κάλυψηςΑπώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σαςπριν από 6 ημέρες",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "Εντοπίσαμε ένα κενό κάλυψηςΑπώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σαςπριν από 6 ημέρες"
+      },
+      {
+        "key": "action|Βρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.πριν από N ημέρες",
+        "class": "action",
+        "text": "Βρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.πριν από 6 ημέρες",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "Βρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.πριν από 6 ημέρες"
+      },
+      {
+        "key": "action|Ο σύμβουλός σας ζήτησε ένα έγγραφοΑνεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας.πριν από N ημέρες",
+        "class": "action",
+        "text": "Ο σύμβουλός σας ζήτησε ένα έγγραφοΑνεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας.πριν από 7 ημέρες",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "Ο σύμβουλός σας ζήτησε ένα έγγραφοΑνεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας.πριν από 7 ημέρες"
+      },
+      {
+        "key": "action|Ένας κίνδυνος έκλεισεΑναμονή για θεραπεία τη στιγμή που μετράει και N ακόμη αλλαγές.πριν από N ημέρες",
+        "class": "action",
+        "text": "Ένας κίνδυνος έκλεισεΑναμονή για θεραπεία τη στιγμή που μετράει και 1 ακόμη αλλαγές.πριν από 8 ημέρες",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "Ένας κίνδυνος έκλεισεΑναμονή για θεραπεία τη στιγμή που μετράει και 1 ακόμη αλλαγές.πριν από 8 ημέρες"
+      },
+      {
+        "key": "action|ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.πριν από N ημέρες",
+        "class": "action",
+        "text": "ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.πριν από 8 ημέρες",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.πριν από 8 ημέρες"
+      },
+      {
+        "key": "action|Η ανάλυση δεν ολοκληρώθηκεΔεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρότερο αντίγραφο και ξαναπροσπαθώ.N/N/N",
+        "class": "action",
+        "text": "Η ανάλυση δεν ολοκληρώθηκεΔεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρότερο αντίγραφο και ξαναπροσπαθώ.14/08/20",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "Η ανάλυση δεν ολοκληρώθηκεΔεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρότερο αντίγραφο και ξαναπροσπαθώ.14/08/20"
+      },
+      {
+        "key": "action|ΝέοΗ ανάλυση δεν ολοκληρώθηκεΔεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρότερο αντίγραφο και ξαναπροσπαθώ.N/N",
+        "class": "action",
+        "text": "ΝέοΗ ανάλυση δεν ολοκληρώθηκεΔεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρότερο αντίγραφο και ξαναπροσπαθώ.14/08",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΗ ανάλυση δεν ολοκληρώθηκεΔεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρότερο αντίγραφο και ξαναπροσπαθώ.14/08"
+      },
+      {
+        "key": "action|ΝέοΈνας κίνδυνος έκλεισεΖημιά σε ακίνητο που σας ανήκει και N ακόμη αλλαγές.N/N/N",
+        "class": "action",
+        "text": "ΝέοΈνας κίνδυνος έκλεισεΖημιά σε ακίνητο που σας ανήκει και 3 ακόμη αλλαγές.14/08/2026",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΈνας κίνδυνος έκλεισεΖημιά σε ακίνητο που σας ανήκει και 3 ακόμη αλλαγές.14/08/2026"
+      },
+      {
+        "key": "action|ΝέοΕντοπίσαμε N κενά κάλυψηςΔιαδικτυακή απάτη και παραβίαση λογαριασμού και N ακόμη.N/N/N",
+        "class": "action",
+        "text": "ΝέοΕντοπίσαμε 2 κενά κάλυψηςΔιαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη.14/08/2026",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΕντοπίσαμε 2 κενά κάλυψηςΔιαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη.14/08/2026"
+      },
+      {
+        "key": "action|ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.N/N/N",
+        "class": "action",
+        "text": "ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.14/08/2026",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΒρήκα κάτι που αξίζει να δείτεΜε βάση τα έγγραφά σας και όσα μου έχετε πει.14/08/2026"
+      },
+      {
+        "key": "action|ΝέοΆλλαξε η εικόνα κινδύνου σαςΖημιά σε ακίνητο που σας ανήκει και N ακόμη αλλαγές.N/N/N",
+        "class": "action",
+        "text": "ΝέοΆλλαξε η εικόνα κινδύνου σαςΖημιά σε ακίνητο που σας ανήκει και 1 ακόμη αλλαγές.12/08/2026",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΆλλαξε η εικόνα κινδύνου σαςΖημιά σε ακίνητο που σας ανήκει και 1 ακόμη αλλαγές.12/08/2026"
+      },
+      {
+        "key": "action|ΝέοΕντοπίσαμε N κενά κάλυψηςΖημιά σε ακίνητο που σας ανήκει και N ακόμη.N/N/N",
+        "class": "action",
+        "text": "ΝέοΕντοπίσαμε 3 κενά κάλυψηςΖημιά σε ακίνητο που σας ανήκει και 2 ακόμη.12/08/2026",
+        "selector": "div > section#protection > ul > li > button",
+        "name": "ΝέοΕντοπίσαμε 3 κενά κάλυψηςΖημιά σε ακίνητο που σας ανήκει και 2 ακόμη.12/08/2026"
+      },
+      {
+        "key": "action|Η ανάλυση ολοκληρώθηκεΗ ΕΘΝΙΚΗ (N-N) · Το ασφαλιστήριο συμβόλαιο Η ΕΘΝΙΚΗ (N-N) αναλύθηκε επιτυχώς.πριν απ",
+        "class": "action",
+        "text": "Η ανάλυση ολοκληρώθηκεΗ ΕΘΝΙΚΗ (1651622-03) · Το ασφαλιστήριο συμβόλαιο Η ΕΘΝΙΚΗ (1651622-03) αναλύθηκε επιτυχώς.πριν απ",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "Η ανάλυση ολοκληρώθηκεΗ ΕΘΝΙΚΗ (1651622-03) · Το ασφαλιστήριο συμβόλαιο Η ΕΘΝΙΚΗ (1651622-03) αναλύθηκε επιτυχώς.πριν απ"
+      },
+      {
+        "key": "action|ΝέοΗ ανάλυση ολοκληρώθηκεΗ ΕΘΝΙΚΗ (N-N) · Το ασφαλιστήριο συμβόλαιο Η ΕΘΝΙΚΗ (N-N) αναλύθηκε επιτυχώς.πριν",
+        "class": "action",
+        "text": "ΝέοΗ ανάλυση ολοκληρώθηκεΗ ΕΘΝΙΚΗ (1651622-03) · Το ασφαλιστήριο συμβόλαιο Η ΕΘΝΙΚΗ (1651622-03) αναλύθηκε επιτυχώς.πριν",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "ΝέοΗ ανάλυση ολοκληρώθηκεΗ ΕΘΝΙΚΗ (1651622-03) · Το ασφαλιστήριο συμβόλαιο Η ΕΘΝΙΚΗ (1651622-03) αναλύθηκε επιτυχώς.πριν"
+      },
+      {
+        "key": "action|ΝέοΗ ανάλυση ολοκληρώθηκεΤο ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.πριν από N ημέρες",
+        "class": "action",
+        "text": "ΝέοΗ ανάλυση ολοκληρώθηκεΤο ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.πριν από 3 ημέρες",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "ΝέοΗ ανάλυση ολοκληρώθηκεΤο ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.πριν από 3 ημέρες"
+      },
+      {
+        "key": "action|Ζητήσατε προσφορά ανανέωσηςΗ ΕΘΝΙΚΗ (N-N) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.πριν από N ημέρ",
+        "class": "action",
+        "text": "Ζητήσατε προσφορά ανανέωσηςΗ ΕΘΝΙΚΗ (1651622-03) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.πριν από 3 ημέρ",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "Ζητήσατε προσφορά ανανέωσηςΗ ΕΘΝΙΚΗ (1651622-03) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.πριν από 3 ημέρ"
+      },
+      {
+        "key": "action|ΝέοΖητήσατε προσφορά ανανέωσηςΗ ΕΘΝΙΚΗ (N-N) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.πριν από N η",
+        "class": "action",
+        "text": "ΝέοΖητήσατε προσφορά ανανέωσηςΗ ΕΘΝΙΚΗ (1651622-03) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.πριν από 3 η",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "ΝέοΖητήσατε προσφορά ανανέωσηςΗ ΕΘΝΙΚΗ (1651622-03) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.πριν από 3 η"
+      },
+      {
+        "key": "action|Νέο ερωτηματολόγιο από τον σύμβουλό σαςΑπαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας.πριν από N ημέρες",
+        "class": "action",
+        "text": "Νέο ερωτηματολόγιο από τον σύμβουλό σαςΑπαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας.πριν από 7 ημέρες",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "Νέο ερωτηματολόγιο από τον σύμβουλό σαςΑπαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας.πριν από 7 ημέρες"
+      },
+      {
+        "key": "action|Η ανανέωση πλησιάζειΤο συμβόλαιό σας λήγει σύντομα. Αν το ανανεώσετε, ανεβάστε το νέο έγγραφο και το ξαναδιαβάζω.πριν απ",
+        "class": "action",
+        "text": "Η ανανέωση πλησιάζειΤο συμβόλαιό σας λήγει σύντομα. Αν το ανανεώσετε, ανεβάστε το νέο έγγραφο και το ξαναδιαβάζω.πριν απ",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "Η ανανέωση πλησιάζειΤο συμβόλαιό σας λήγει σύντομα. Αν το ανανεώσετε, ανεβάστε το νέο έγγραφο και το ξαναδιαβάζω.πριν απ"
+      },
+      {
+        "key": "action|Η ανάλυση ολοκληρώθηκεΕΘΝΙΚΗ (N) · Το ασφαλιστήριο συμβόλαιο N (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩ",
+        "class": "action",
+        "text": "Η ανάλυση ολοκληρώθηκεΕΘΝΙΚΗ (64504715) · Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩ",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "Η ανάλυση ολοκληρώθηκεΕΘΝΙΚΗ (64504715) · Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩ"
+      },
+      {
+        "key": "action|ΝέοΗ ανάλυση ολοκληρώθηκεΕΘΝΙΚΗ (N) · Το ασφαλιστήριο συμβόλαιο N (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛ",
+        "class": "action",
+        "text": "ΝέοΗ ανάλυση ολοκληρώθηκεΕΘΝΙΚΗ (64504715) · Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛ",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "ΝέοΗ ανάλυση ολοκληρώθηκεΕΘΝΙΚΗ (64504715) · Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛ"
+      },
+      {
+        "key": "action|ΝέοΗ ανάλυση ολοκληρώθηκεΤο ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.N/N/N",
+        "class": "action",
+        "text": "ΝέοΗ ανάλυση ολοκληρώθηκεΤο ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.14/08/2026",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "ΝέοΗ ανάλυση ολοκληρώθηκεΤο ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.14/08/2026"
+      },
+      {
+        "key": "action|Ζητήσατε προσφορά ανανέωσηςInteramerican (ENE-MOT-N) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.N/N/N",
+        "class": "action",
+        "text": "Ζητήσατε προσφορά ανανέωσηςInteramerican (E2E-MOT-001) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.14/08/202",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "Ζητήσατε προσφορά ανανέωσηςInteramerican (E2E-MOT-001) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.14/08/202"
+      },
+      {
+        "key": "action|ΝέοΖητήσατε προσφορά ανανέωσηςInteramerican (ENE-MOT-N) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.N/N/",
+        "class": "action",
+        "text": "ΝέοΖητήσατε προσφορά ανανέωσηςInteramerican (E2E-MOT-001) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.14/08/",
+        "selector": "div > section#meanwhile > ul > li > button",
+        "name": "ΝέοΖητήσατε προσφορά ανανέωσηςInteramerican (E2E-MOT-001) · Ζητήσατε προσφορά για την ανανέωση ενός ασφαλιστηρίου.14/08/"
+      },
+      {
+        "key": "chrome|Ενημερώσεις",
+        "class": "chrome",
+        "text": "Ενημερώσεις",
+        "selector": "div > main#main-content > div > div > h1"
+      },
+      {
+        "key": "chrome|Για την προστασία σας",
+        "class": "chrome",
+        "text": "Για την προστασία σας",
+        "selector": "main#main-content > div > section#protection > div > h2#protection-title"
+      },
+      {
+        "key": "explanation|Ό,τι αλλάζει το αν καλύπτεστε — λήξεις, κενά, έγγραφα που διάβασα.",
+        "class": "explanation",
+        "text": "Ό,τι αλλάζει το αν καλύπτεστε — λήξεις, κενά, έγγραφα που διάβασα.",
+        "selector": "div > main#main-content > div > section#protection > p"
+      },
+      {
+        "key": "chrome|Τι έκανα εν τω μεταξύ",
+        "class": "chrome",
+        "text": "Τι έκανα εν τω μεταξύ",
+        "selector": "main#main-content > div > section#meanwhile > div > h2#meanwhile-title"
+      },
+      {
+        "key": "chrome|Εργασίες και επιβεβαιώσεις. Δεν χρειάζονται κάτι από εσάς.",
+        "class": "chrome",
+        "text": "Εργασίες και επιβεβαιώσεις. Δεν χρειάζονται κάτι από εσάς.",
+        "selector": "div > main#main-content > div > section#meanwhile > p"
+      },
+      {
+        "key": "chrome|Σημείωση",
+        "class": "chrome",
+        "text": "Σημείωση",
+        "selector": "main#main-content > div > section#note > aside > p"
+      },
+      {
+        "key": "explanation|Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω",
+        "class": "explanation",
+        "text": "Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω",
+        "selector": "main#main-content > div > section#note > aside > p"
+      }
+    ],
+    "/me": [
+      {
+        "key": "action|ΠροφίλΌνομα, email, τηλέφωνο, γλώσσα",
+        "class": "action",
+        "text": "ΠροφίλΌνομα, email, τηλέφωνο, γλώσσα",
+        "selector": "div > nav > ul > li > a",
+        "name": "ΠροφίλΌνομα, email, τηλέφωνο, γλώσσα",
+        "href": "/me/profile"
+      },
+      {
+        "key": "action|Το νοικοκυριό σαςΠοιοι είναι στο σπίτι και ποιος καλύπτεται",
+        "class": "action",
+        "text": "Το νοικοκυριό σαςΠοιοι είναι στο σπίτι και ποιος καλύπτεται",
+        "selector": "div > nav > ul > li > a",
+        "name": "Το νοικοκυριό σαςΠοιοι είναι στο σπίτι και ποιος καλύπτεται",
+        "href": "/me/household"
+      },
+      {
+        "key": "action|Εμφάνιση και γλώσσαΦωτεινό ή σκούρο, ελληνικά ή αγγλικά",
+        "class": "action",
+        "text": "Εμφάνιση και γλώσσαΦωτεινό ή σκούρο, ελληνικά ή αγγλικά",
+        "selector": "div > nav > ul > li > a",
+        "name": "Εμφάνιση και γλώσσαΦωτεινό ή σκούρο, ελληνικά ή αγγλικά",
+        "href": "/me/appearance"
+      },
+      {
+        "key": "action|Συνδρομή και χρέωσηΠρόγραμμα, χρήση, τιμολόγια",
+        "class": "action",
+        "text": "Συνδρομή και χρέωσηΠρόγραμμα, χρήση, τιμολόγια",
+        "selector": "div > nav > ul > li > a",
+        "name": "Συνδρομή και χρέωσηΠρόγραμμα, χρήση, τιμολόγια",
+        "href": "/me/plan"
+      },
+      {
+        "key": "action|ΑσφάλειαΚωδικός πρόσβασης και συσκευές",
+        "class": "action",
+        "text": "ΑσφάλειαΚωδικός πρόσβασης και συσκευές",
+        "selector": "div > nav > ul > li > a",
+        "name": "ΑσφάλειαΚωδικός πρόσβασης και συσκευές",
+        "href": "/me/security"
+      },
+      {
+        "key": "action|ΕιδοποιήσειςΤι σας στέλνουμε και πότε",
+        "class": "action",
+        "text": "ΕιδοποιήσειςΤι σας στέλνουμε και πότε",
+        "selector": "div > nav > ul > li > a",
+        "name": "ΕιδοποιήσειςΤι σας στέλνουμε και πότε",
+        "href": "/me/notifications"
+      },
+      {
+        "key": "action|Απόρρητο και δεδομέναΣυγκαταθέσεις, εξαγωγή, διαγραφή",
+        "class": "action",
+        "text": "Απόρρητο και δεδομέναΣυγκαταθέσεις, εξαγωγή, διαγραφή",
+        "selector": "div > nav > ul > li > a",
+        "name": "Απόρρητο και δεδομέναΣυγκαταθέσεις, εξαγωγή, διαγραφή",
+        "href": "/me/privacy"
+      },
+      {
+        "key": "action|Ιστορικό δραστηριότηταςΤι άλλαξε στην προστασία σας, πότε και γιατί",
+        "class": "action",
+        "text": "Ιστορικό δραστηριότηταςΤι άλλαξε στην προστασία σας, πότε και γιατί",
+        "selector": "div > nav > ul > li > a",
+        "name": "Ιστορικό δραστηριότηταςΤι άλλαξε στην προστασία σας, πότε και γιατί",
+        "href": "/me/history"
+      },
+      {
+        "key": "action|ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑΣύντροφος · N ασφαλιστήρια✓Καλύπτεται›",
+        "class": "action",
+        "text": "ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑΣύντροφος · 2 ασφαλιστήρια✓Καλύπτεται›",
+        "selector": "div > section#household > ul > li > a",
+        "name": "ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑΣύντροφος · 2 ασφαλιστήρια✓Καλύπτεται›",
+        "href": "/me/household/cmthcqaqs000hae5lu4iy9ctq"
+      },
+      {
+        "key": "action|ΕΛΛΗ ΚΟΚΚΑΛΙΑΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "class": "action",
+        "text": "ΕΛΛΗ ΚΟΚΚΑΛΙΑΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "selector": "div > section#household > ul > li > a",
+        "name": "ΕΛΛΗ ΚΟΚΚΑΛΙΑΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "href": "/me/household/cmthcqk7t000lae5lm4sc71bx"
+      },
+      {
+        "key": "action|ΑΓΓΕΛΙΚΗ ΜΟΝΙΑΡΟΥΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "class": "action",
+        "text": "ΑΓΓΕΛΙΚΗ ΜΟΝΙΑΡΟΥΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "selector": "div > section#household > ul > li > a",
+        "name": "ΑΓΓΕΛΙΚΗ ΜΟΝΙΑΡΟΥΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "href": "/me/household/cmthcrbrd000pae5lb79i9h2n"
+      },
+      {
+        "key": "action|ΕΥΑΓΓΕΛΙΑ ΜΟΝΙΑΡΟΥΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "class": "action",
+        "text": "ΕΥΑΓΓΕΛΙΑ ΜΟΝΙΑΡΟΥΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "selector": "div > section#household > ul > li > a",
+        "name": "ΕΥΑΓΓΕΛΙΑ ΜΟΝΙΑΡΟΥΠαιδί · χωρίς ασφαλιστήριο?Για έλεγχο›",
+        "href": "/me/household/cmthcrkgr000tae5lttamvl0x"
+      },
+      {
+        "key": "action|Προσθήκη ατόμου",
+        "class": "action",
+        "text": "Προσθήκη ατόμου",
+        "selector": "div > div > div > section#household > a",
+        "name": "Προσθήκη ατόμου",
+        "href": "/me/household"
+      },
+      {
+        "key": "chrome|Ρυθμίσεις",
+        "class": "chrome",
+        "text": "Ρυθμίσεις",
+        "selector": "main#main-content > div > div > header > h1"
+      },
+      {
+        "key": "explanation|Ο λογαριασμός, η συνδρομή, οι ειδοποιήσεις και τα δεδομένα σας — όλα σε ένα σημείο.",
+        "class": "explanation",
+        "text": "Ο λογαριασμός, η συνδρομή, οι ειδοποιήσεις και τα δεδομένα σας — όλα σε ένα σημείο.",
+        "selector": "main#main-content > div > div > header > p"
+      },
+      {
+        "key": "metric|Τι έκανα για εσάς το N",
+        "class": "metric",
+        "text": "Τι έκανα για εσάς το 2026",
+        "value": "2026",
+        "selector": "div > div > section > div > h2#ledger-title"
+      },
+      {
+        "key": "metric|Family · €N/μήνα",
+        "class": "metric",
+        "text": "Family · €8.99/μήνα",
+        "value": "€8.99",
+        "selector": "div > div > section > div > span"
+      },
+      {
+        "key": "metric|N ασφαλιστήρια διάβασα",
+        "class": "metric",
+        "text": "2 ασφαλιστήρια διάβασα",
+        "value": "2",
+        "selector": "div > section > dl > div > dt"
+      },
+      {
+        "key": "chrome|Το νοικοκυριό σας",
+        "class": "chrome",
+        "text": "Το νοικοκυριό σας",
+        "selector": "div > div > section#household > div > h2#household-title"
+      }
+    ]
+  }
+}
