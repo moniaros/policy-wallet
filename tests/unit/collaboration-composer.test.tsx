@@ -30,8 +30,9 @@ describe('collaboration composer', () => {
     it('uses the shared primary button to send, not a hand-rolled dark button', () => {
         // The send control may wrap addMessage in the panel's in-flight guard
         // (runMutation) — what this pins is that it IS the send handler and it
-        // uses the shared primary button, not a hand-rolled dark one.
-        expect(SRC).toMatch(/onClick=\{[^}]*addMessage[^}]*\}[^>]*pw-primary-button/)
+        // uses the shared primary button (the Grafí buttonClassName since the
+        // R6 token pass; pw-primary-button before it), not a hand-rolled dark one.
+        expect(SRC).toMatch(/onClick=\{[^}]*addMessage[^}]*\}[^>]*buttonClassName\(\{ variant: "primary"/)
         expect(SRC).not.toContain('bg-neutral-800 hover:bg-neutral-900 text-white text-sm px-3 py-2')
     })
 
