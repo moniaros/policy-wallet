@@ -36,18 +36,29 @@ export default async function ProtectedLayout({
 }) {
     const { dbUser } = await getAuthenticatedUser()
 
-    // Email-verification hard gate (opt-in via the auth.enforce_email_verification
-    // feature flag, which still falls through to ENFORCE_EMAIL_VERIFICATION).
-    if (await emailVerificationRequired(dbUser)) {
+    // One round-trip's latency, not five: these reads are independent of each
+    // other, and each sequential await here was a full trip to the pooler —
+    // the audit's perf probe measured the old chain as seconds of TTFB.
+    // The verification gate stays decisive: its answer is awaited before
+    // anything renders; the sibling reads merely run concurrently.
+    const [verificationRequired, isPayingUser, planFacts, unreadRows, cookieStore] = await Promise.all([
+        // Email-verification hard gate (opt-in via the auth.enforce_email_verification
+        // feature flag, which still falls through to ENFORCE_EMAIL_VERIFICATION).
+        emailVerificationRequired(dbUser),
+        getIsPayingUser(dbUser),
+        // Live admin-managed plan facts for client price displays (UpgradeModal,
+        // pricing comparison, meters). Cached under the plan-catalog tag — this
+        // does not add a per-request DB round-trip.
+        getClientPlanFacts(),
+        db.notificationEvent.findMany({
+            where: { userId: dbUser.id, channel: "in_app", readAt: null },
+            select: { eventType: true, channel: true, readAt: true },
+        }),
+        cookies(),
+    ])
+    if (verificationRequired) {
         redirect("/auth/signup/confirmation")
     }
-
-    const isPayingUser = await getIsPayingUser(dbUser)
-
-    // Live admin-managed plan facts for client price displays (UpgradeModal,
-    // pricing comparison, meters). Cached under the plan-catalog tag — this
-    // does not add a per-request DB round-trip.
-    const planFacts = await getClientPlanFacts()
 
     // Unread = an IN-APP notification the user has not opened.
     //
@@ -60,10 +71,6 @@ export default async function ProtectedLayout({
     // Policyholders: the Grafí badge counts the PROTECTION stream's unread
     // in-app rows only (lib/app/badge.ts) — «τι έκανα εν τω μεταξύ» never sits
     // on the bell. Agents/admins keep the plain unread count.
-    const unreadRows = await db.notificationEvent.findMany({
-        where: { userId: dbUser.id, channel: "in_app", readAt: null },
-        select: { eventType: true, channel: true, readAt: true },
-    })
     const unreadNotificationCount = unreadRows.length
     const protectionBadgeCount = badgeCount(unreadRows)
 
@@ -78,7 +85,7 @@ export default async function ProtectedLayout({
     // actually switch. Nav only — every page and API guards itself server-side.
     const roles = parseRoles(dbUser.roles)
     const availableRoles: UserRole[] = roles.length > 0 ? roles : ["policyholder"]
-    const requestedRole = (await cookies()).get(ACTIVE_ROLE_COOKIE)?.value as UserRole | undefined
+    const requestedRole = cookieStore.get(ACTIVE_ROLE_COOKIE)?.value as UserRole | undefined
     const currentRole: UserRole = requestedRole && availableRoles.includes(requestedRole)
         ? requestedRole
         : getPrimaryRole(dbUser.roles)

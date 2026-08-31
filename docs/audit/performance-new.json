@@ -1,0 +1,66 @@
+{
+  "base": "http://localhost:3102",
+  "capturedAt": "2026-08-31T17:19:13.104Z",
+  "report": {
+    "/": {
+      "ttfbMs": 6375,
+      "lcpMs": 7472,
+      "lcpElement": "P.mt-g-1.text-g-app-body.text-fg-secondary «14 πράγματα αξίζει να δείτε αυτή την εβδ»",
+      "cls": 0,
+      "tbtMs": 172,
+      "jsKB": 528,
+      "fontKB": 118,
+      "requestsBeforeFCP": 6
+    },
+    "/policies": {
+      "ttfbMs": 2906,
+      "lcpMs": 3128,
+      "lcpElement": "SPAN.mt-0.5.line-clamp-2.block «Σωματικές Βλάβες τρίτων (ανά άτομο), Υλι»",
+      "cls": 0,
+      "tbtMs": 0,
+      "jsKB": 10,
+      "fontKB": 0,
+      "requestsBeforeFCP": 27
+    },
+    "/see": {
+      "ttfbMs": 3195,
+      "lcpMs": 3728,
+      "lcpElement": "H3.mt-g-3.text-g-row.text-fg-primary «Το Αυτοκίνητο · ΒΖΝ-8520 λήγει σε 13 ημέ»",
+      "cls": 0,
+      "tbtMs": 0,
+      "jsKB": 78,
+      "fontKB": 0,
+      "requestsBeforeFCP": 27
+    },
+    "/adviser": {
+      "ttfbMs": 2855,
+      "lcpMs": 4020,
+      "lcpElement": "P.mb-g-3.text-g-app-body-sm.text-fg-secondary «Εσείς αποφασίζετε ανά ασφαλιστήριο. Ό,τι»",
+      "cls": 0,
+      "tbtMs": 0,
+      "jsKB": 10,
+      "fontKB": 0,
+      "requestsBeforeFCP": 27
+    },
+    "/updates": {
+      "ttfbMs": 2880,
+      "lcpMs": 3040,
+      "lcpElement": "SPAN.mt-0.5.line-clamp-2.block «Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) · »",
+      "cls": 0,
+      "tbtMs": 0,
+      "jsKB": 10,
+      "fontKB": 0,
+      "requestsBeforeFCP": 27
+    },
+    "/me": {
+      "ttfbMs": 3480,
+      "lcpMs": 3640,
+      "lcpElement": "P.mt-1.text-g-app-body-sm.leading-relaxed «Ο λογαριασμός, η συνδρομή, οι ειδοποιήσε»",
+      "cls": 0,
+      "tbtMs": 0,
+      "jsKB": 26,
+      "fontKB": 0,
+      "requestsBeforeFCP": 27
+    }
+  }
+}
