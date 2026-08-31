@@ -66,14 +66,11 @@ function filesWithDarkSurface(): string[] {
  */
 const MIXED_SURFACE_FILES = [
     'app/(protected)/wallet/[id]/loading.tsx',
-    'app/auth/auth-code-error/page.tsx',
     'app/auth/forgot-password/page.tsx',
     'app/auth/handover/page.tsx',
     'app/auth/reset-password/page.tsx',
     'app/auth/signin/page.tsx',
-    'app/auth/signup/SignupForm.tsx',
     'app/auth/signup/confirmation/page.tsx',
-    'app/auth/verify-email/page.tsx',
     'components/landing/WorldClassLanding.tsx',
     'components/shell/AppShell.tsx',
     'components/wallet/PolicyQA.tsx',

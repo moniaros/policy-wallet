@@ -3,15 +3,9 @@
 import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { IBM_Plex_Sans } from "next/font/google"
 import { Loader2 } from "lucide-react"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
-
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
+import { AuthShell } from "@/components/auth/AuthShell"
 
 function HandoverContent() {
     const searchParams = useSearchParams()
@@ -48,12 +42,8 @@ function HandoverContent() {
     }
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
-            <div className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-white/10 dark:bg-[#111111] sm:p-10 text-center">
-                <div className="inline-block mb-8">
-                    <PolicyWalletLogo size="md" language={language} />
-                </div>
-
+        <AuthShell>
+            <div className="text-center">
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-6 border border-primary/20">
                     <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -110,15 +100,15 @@ function HandoverContent() {
                 confirmLabel={t("Συνέχεια στον browser", "Continue on the web")}
                 onConfirm={handleContinueWeb}
             />
-        </div>
+        </AuthShell>
     )
 }
 
 export default function HandoverPage() {
     return (
         <Suspense fallback={
-            <div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
-                <Loader2 className="h-7 w-7 animate-spin text-primary" />
+            <div className="flex min-h-dvh items-center justify-center bg-surface-base">
+                <Loader2 aria-hidden className="size-7 animate-spin text-fg-brand" />
             </div>
         }>
             <HandoverContent />

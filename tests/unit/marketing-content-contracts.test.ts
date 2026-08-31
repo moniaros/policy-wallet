@@ -133,29 +133,26 @@ describe('above-the-fold auth cards are painted at first paint', () => {
     // the SERVER HTML, so the card stays invisible until framer-motion
     // hydrates. On forgot-password the form was in the DOM at 1.5s and
     // invisible until 5.1s, and that gap set LCP at 5.2s on slow 4G.
-    // Conditional toasts are exempt: they are not present at first paint.
-    const cards: [string, string][] = [
-        ['app/auth/forgot-password/page.tsx', 'forgot-password'],
-        ['app/auth/signup/SignupForm.tsx', 'signup'],
-        ['app/auth/signup/confirmation/page.tsx', 'signup confirmation'],
-        ['app/auth/reset-password/page.tsx', 'reset-password'],
-    ]
+    //
+    // The auth rebuild (A3/A7) removed every animated card wrapper — the
+    // AuthShell paints statically — so the guard now walks the WHOLE auth
+    // tree instead of a per-page list: any reintroduced motion wrapper is
+    // caught wherever it lands. Conditional toasts/error boxes are exempt:
+    // they are not present at first paint.
+    function authTsxFiles(dir: string): string[] {
+        return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+            const full = join(dir, entry.name)
+            if (entry.isDirectory()) return authTsxFiles(full)
+            return entry.isFile() && entry.name.endsWith('.tsx') ? [full] : []
+        })
+    }
 
-    for (const [file, label] of cards) {
-        it(`${label}'s card does not start at opacity 0`, () => {
+    it('no auth screen mounts a card at opacity 0', () => {
+        for (const file of authTsxFiles('app/auth')) {
             const src = readFileSync(file, 'utf-8')
-            // Split on the tag rather than regex-matching across it: the
-            // opening tag can carry a multi-line comment, which blew past any
-            // fixed lookahead window.
             const tags = src.split('<motion.div').slice(1).map((chunk) => chunk.slice(0, 1200))
-            // A card wrapper is the one carrying the card chrome. Conditional
-            // toasts (rounded-xl, border-rose-*) are exempt — they are not on
-            // screen at first paint, so animating their opacity costs nothing.
-            const cards = tags.filter((t) => /rounded-2xl/.test(t))
-            expect(cards.length, `no card wrapper found in ${file}`).toBeGreaterThan(0)
+            const cards = tags.filter((t) => /rounded-2xl|rounded-g-lg/.test(t))
             for (const tag of cards) {
-                // Strip comments first — the fix is documented in a comment
-                // that necessarily quotes the `opacity: 0` it removed.
                 const attrs = tag
                     .slice(0, tag.indexOf('className'))
                     .replace(/\/\*[\s\S]*?\*\//g, '')
@@ -164,8 +161,8 @@ describe('above-the-fold auth cards are painted at first paint', () => {
                     `${file}: a full card animates from opacity 0, so it is blank until hydration`
                 ).not.toMatch(/initial=\{\{\s*opacity:\s*0/)
             }
-        })
-    }
+        }
+    })
 })
 
 describe('the sign-up link uses the sanctioned Greek CTA', () => {

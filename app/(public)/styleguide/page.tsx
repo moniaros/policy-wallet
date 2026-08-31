@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation"
+import { StyleguideAuthDemo } from "@/components/auth/StyleguideAuthDemo"
+import { TrustPanel } from "@/components/auth/TrustPanel"
 
 /**
  * /styleguide — Grafí's living documentation. DEV-ONLY: 404s in production.
@@ -50,6 +52,23 @@ export default function Styleguide() {
             <button className="rounded-g-pill bg-action-primary-bg px-g-6 py-g-3 font-semibold text-fg-on-brand transition-colors duration-200 hover:bg-action-primary-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus">
                 Primary action
             </button>
+            <h2 className="mt-g-8 font-semibold">Auth components (brief A1)</h2>
+            <p className="mt-2 max-w-[66ch] text-g-body-sm text-fg-secondary">
+                AuthShell (split/single) is a full-viewport shell — see it live at /auth/signup/policyholder
+                and /auth/signup/agent. Below: the form atoms in every state, the social buttons for all
+                registered providers, and both TrustPanel variants on the brand fill.
+            </p>
+            <div className="mt-g-4">
+                <StyleguideAuthDemo />
+            </div>
+            <div className="mt-g-6 grid max-w-[1100px] gap-g-6 lg:grid-cols-2">
+                <div className="flex items-start justify-center rounded-g-lg bg-action-primary-bg p-g-6">
+                    <TrustPanel variant="policyholder" />
+                </div>
+                <div className="flex items-start justify-center rounded-g-lg bg-action-primary-bg p-g-6">
+                    <TrustPanel variant="agent" />
+                </div>
+            </div>
             <span className="sr-only">{roles.join(" ")}</span>
         </main>
     )

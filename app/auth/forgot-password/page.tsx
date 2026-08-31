@@ -5,20 +5,13 @@ import { useMemo, useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { Inter } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Mail, ShieldCheck } from "lucide-react"
-import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { LocaleToggle } from "@/components/ui/LocaleToggle"
-import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { AuthShell } from "@/components/auth/AuthShell"
+import { AUTH_INPUT_CLASS } from "@/components/auth/FormField"
 import { authHref } from "@/lib/seo/locale-links"
 import { resetPasswordForEmail } from "../actions"
-
-const inter = Inter({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 // Lang-aware: the Zod message the form renders (errors.email.message) was
 // hardcoded English, so a Greek user with an invalid email saw "Please provide a
@@ -37,8 +30,7 @@ function buildForgotSchema(invalidEmail: string) {
 type ForgotPasswordValues = { email: string }
 
 export default function ForgotPasswordPage() {
-    const { language, setLanguage } = useLanguage()
-    const uiText = getTranslations(language)
+    const { language } = useLanguage()
     const [submitting, setSubmitting] = useState(false)
     const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
     const [serverError, setServerError] = useState<string | null>(null)
@@ -113,65 +105,24 @@ export default function ForgotPasswordPage() {
         }
     }
 
-    // Colour comes from .pw-input itself now — pinning #0F172A here is
-    // what made typed text unreadable in dark mode.
-    const inputBase = "pw-input"
+    const inputBase = AUTH_INPUT_CLASS
 
     return (
-        <div className={`${inter.className} pw-clear-consent flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
-            {/* Header bar */}
-            {/* Card. The back-link and language switcher used to sit in a
-                full-width <header> above this, so arriving here from sign-in
-                made the chrome jump from a centred column to the whole 1440px
-                viewport — it read as landing on a different site rather than
-                the next step of the same task. They now ride in the column,
-                exactly as sign-in and sign-up do. */}
-            <div className="flex flex-1 items-center justify-center px-4 py-10">
-                <div className="w-full max-w-[440px]">
-                <div className="mb-6 flex items-center justify-between">
-                    <Link
-                        href="/"
-                        className="inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"
-                    >
-                        <span aria-hidden="true">←</span> {copy.backHome}
-                    </Link>
-                    <LocaleToggle ariaLabel={uiText.userMenu.language} />
-                </div>
-                <motion.div
-                    /* NOT `initial={{ opacity: 0 }}`. This card is the whole
-                       above-the-fold page, and the server HTML carried
-                       `style="opacity:0"` on it — so the form existed in the DOM
-                       at 1.5s but stayed invisible until framer-motion hydrated
-                       at 5.1s, which is what set LCP (5.2s on slow 4G). The
-                       entry motion is now transform-only: the card is painted at
-                       first paint and slides the last 18px once JS arrives. */
-                    initial={{ y: 18 }}
-                    animate={{ y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-10"
-                >
-                    {/* Top meta row */}
-                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#5B6A7A] dark:text-white/60">
-                        <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1 dark:bg-white/10">
-                            {t("Ασφαλής ανάκτηση", "Secure recovery")}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[#475569] dark:text-white/65">
-                            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                            {copy.trust}
-                        </span>
-                    </div>
+        <AuthShell>
+            {/* Top meta row — the recovery reassurance, kept from the card. */}
+            <div className="mb-g-5 flex items-center justify-between text-xs font-semibold text-fg-secondary">
+                <span className="rounded-g-pill bg-surface-sunken px-g-3 py-g-1">
+                    {t("Ασφαλής ανάκτηση", "Secure recovery")}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                    <ShieldCheck aria-hidden className="size-3.5 text-fg-brand" />
+                    {copy.trust}
+                </span>
+            </div>
+            <h1 className="text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary">{copy.title}</h1>
+            <p className="mt-g-3 text-g-body text-fg-secondary">{copy.subtitle}</p>
 
-                    {/* Logo + heading */}
-                    <div className="mb-6 text-center">
-                        <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-[#F8FAFC] px-3 py-2 dark:bg-white/5">
-                            <PolicyWalletLogo size="md" language={language} />
-                        </div>
-                        {/* text-title/600, the same as sign-in and sign-up. Three pages in one
-                            flow were showing three heading treatments. */}
-                        <h1 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">{copy.title}</h1>
-                        <p className="mt-1.5 text-sm text-[#5B6A7A] dark:text-white/65">{copy.subtitle}</p>
-                    </div>
-
+            <div className="mt-g-6">
                     {submittedEmail ? (
                         <div className="space-y-4">
                             <div className="rounded-xl border border-[#E2E8F0] bg-[#F0FDF4] p-4 dark:border-primary/30 dark:bg-primary/15">
@@ -213,12 +164,12 @@ export default function ForgotPasswordPage() {
                             <div>
                                 <label
                                     htmlFor="forgot-email"
-                                    className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65"
+                                    className="mb-g-2 block text-sm font-semibold text-fg-primary"
                                 >
                                     {copy.emailLabel}
                                 </label>
                                 <div className="relative">
-                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
+                                    <Mail className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
                                     <input
                                         id="forgot-email"
                                         type="email"
@@ -227,7 +178,7 @@ export default function ForgotPasswordPage() {
                                         aria-invalid={errors.email ? true : undefined}
                                         aria-describedby={errors.email ? "forgot-email-error" : undefined}
                                         {...register("email")}
-                                        className={`${inputBase} pl-9 ${errors.email ? "border-rose-300 dark:border-rose-800/40 focus-visible:border-rose-400 focus-visible:ring-rose-200" : ""}`}
+                                        className={`${inputBase} pl-11 ${errors.email ? "border-rose-300 dark:border-rose-800/40 focus-visible:border-rose-400 focus-visible:ring-rose-200" : ""}`}
                                     />
                                 </div>
                                 {errors.email ? (
@@ -255,9 +206,7 @@ export default function ForgotPasswordPage() {
                             </Link>
                         </form>
                     )}
-                </motion.div>
-                </div>
             </div>
-        </div>
+        </AuthShell>
     )
 }

@@ -5,9 +5,13 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AlertCircle, ArrowRight, Loader2, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
-import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { AuthShell } from "@/components/auth/AuthShell"
+import { TrustPanel } from "@/components/auth/TrustPanel"
+import { SocialAuthRow } from "@/components/auth/SocialAuthRow"
+import { AuthDivider } from "@/components/auth/AuthDivider"
+import { AUTH_INPUT_CLASS } from "@/components/auth/FormField"
+import { liveProvidersFor } from "@/lib/auth/social-providers"
 import { resolveAuthEmailIdentifier } from "@/lib/auth/phone-auth"
 import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
 import { useDialog } from "@/hooks/useDialog"
@@ -214,36 +218,25 @@ export default function SignInPage() {
         } catch { setResetError(copy.resetFailed) } finally { setResetLoading(false) }
     }
 
-    // Colour comes from .pw-input itself now — pinning #0F172A here is
-    // what made typed text unreadable in dark mode.
-    const inputBase = "pw-input"
+    const inputBase = AUTH_INPUT_CLASS
+    const hasSocial = liveProvidersFor("policyholder").length > 0
 
     return (
-        <div className="pw-clear-consent flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black">
-            <div className="w-full max-w-[420px]">
+        <AuthShell panel={<TrustPanel variant="policyholder" />}>
+            <h1 className="text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary">{t.auth.welcomeBack}</h1>
+            <p className="mt-g-3 text-g-body text-fg-secondary">{copy.signInToContinue}</p>
 
-                {/* Back to home */}
-                <div className="mb-6 flex items-center justify-between">
-                    <Link href="/" className="inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
-                        <span aria-hidden="true">←</span> {copy.backHome}
-                    </Link>
-                    <LocaleToggle ariaLabel={t.userMenu.language} />
+            {/* The same buttons as signup — «Συνέχεια με …» serves both, which
+                is the point (brief §2.3). No terms line here: signing in is
+                not accepting anything new. */}
+            {hasSocial && (
+                <div className="mt-g-6">
+                    <SocialAuthRow role="policyholder" locale={locale} next="/" />
+                    <AuthDivider label={locale === "el" ? "ή" : "or"} />
                 </div>
+            )}
 
-                {/* Card */}
-                <div className="rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111]">
-                    {/* Logo + heading */}
-                    <div className="mb-7 text-center">
-                        <Link href="/" className="mb-4 inline-block">
-                            <PolicyWalletLogo size="md" language={language} />
-                        </Link>
-                        <h1 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
-                            {t.auth.welcomeBack}
-                        </h1>
-                        <p className="mt-1 text-body text-[#5B6A7A] dark:text-white/65">
-                            {copy.signInToContinue}
-                        </p>
-                    </div>
+                <div className={hasSocial ? "" : "mt-g-6"}>
 
                     {/* Error */}
                     {error && (
@@ -284,19 +277,19 @@ export default function SignInPage() {
                             visible label was not clickable (WCAG 1.3.1, 2.5.3). */}
                         {tab === "email" ? (
                             <div>
-                                <label htmlFor="signin-email" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">Email</label>
+                                <label htmlFor="signin-email" className="mb-g-2 block text-sm font-semibold text-fg-primary">Email</label>
                                 <div className="relative">
-                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
-                                    <input id="signin-email" ref={identifierRef} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-9`} placeholder="name@example.com" />
+                                    <Mail className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
+                                    <input id="signin-email" ref={identifierRef} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-11`} placeholder="name@example.com" />
                                 </div>
                                 {fieldErrors.identifier && <p id="signin-identifier-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
                             </div>
                         ) : (
                             <div>
-                                <label htmlFor="signin-phone" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.phonePlaceholder}</label>
+                                <label htmlFor="signin-phone" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.phonePlaceholder}</label>
                                 <div className="relative">
-                                    <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
-                                    <input id="signin-phone" ref={identifierRef} type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-9`} placeholder="+30 69X XXX XXXX" />
+                                    <Phone className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
+                                    <input id="signin-phone" ref={identifierRef} type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-11`} placeholder="+30 69X XXX XXXX" />
                                 </div>
                                 {fieldErrors.identifier && <p id="signin-identifier-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
                             </div>
@@ -304,10 +297,10 @@ export default function SignInPage() {
 
                         {/* Password */}
                         <div>
-                            <label htmlFor="signin-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.passwordLabel}</label>
+                            <label htmlFor="signin-password" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.passwordLabel}</label>
                             <div className="relative">
-                                <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
-                                <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={fieldErrors.password || undefined} aria-describedby={fieldErrors.password ? "signin-password-error" : undefined} placeholder="••••••••" className={`${inputBase} pl-9`} />
+                                <Lock className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
+                                <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={fieldErrors.password || undefined} aria-describedby={fieldErrors.password ? "signin-password-error" : undefined} placeholder="••••••••" className={`${inputBase} pl-11`} />
                             </div>
                             {fieldErrors.password && <p id="signin-password-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
                         </div>
@@ -355,7 +348,6 @@ export default function SignInPage() {
                         </Link>
                     </p>
                 </div>
-            </div>
 
             {/* Reset password modal */}
             {showReset && (
@@ -381,7 +373,7 @@ export default function SignInPage() {
                         {resetStep === "request" && (
                             <div className="space-y-3">
                                 <div>
-                                    <label htmlFor="reset-email" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.resetEmailLabel}</label>
+                                    <label htmlFor="reset-email" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.resetEmailLabel}</label>
                                     <input id="reset-email" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="name@example.com" className={inputBase} />
                                 </div>
                                 <button type="button" onClick={requestOtp} disabled={resetLoading} className="pw-primary-button w-full">
@@ -393,15 +385,15 @@ export default function SignInPage() {
                         {resetStep === "verify" && (
                             <div className="space-y-3">
                                 <div>
-                                    <label htmlFor="reset-otp" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.otpLabel}</label>
+                                    <label htmlFor="reset-otp" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.otpLabel}</label>
                                     <input id="reset-otp" type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className={inputBase} />
                                 </div>
                                 <div>
-                                    <label htmlFor="reset-new-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.newPassword}</label>
+                                    <label htmlFor="reset-new-password" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.newPassword}</label>
                                     <input id="reset-new-password" type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={copy.newPassword} className={inputBase} />
                                 </div>
                                 <div>
-                                    <label htmlFor="reset-confirm-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.confirmPassword}</label>
+                                    <label htmlFor="reset-confirm-password" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.confirmPassword}</label>
                                     <input id="reset-confirm-password" type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={copy.confirmPassword} className={inputBase} />
                                 </div>
                                 <button type="button" onClick={submitReset} disabled={resetLoading} className="pw-primary-button w-full">
@@ -423,6 +415,6 @@ export default function SignInPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </AuthShell>
     )
 }

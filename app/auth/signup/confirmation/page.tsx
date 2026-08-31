@@ -3,25 +3,17 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Inter } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowRight, CheckCircle2, CreditCard, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
-import { LocaleToggle } from "@/components/ui/LocaleToggle"
-import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { AuthShell } from "@/components/auth/AuthShell"
 import { authHref } from "@/lib/seo/locale-links"
-import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { completeOnboardingStep } from "@/app/onboarding/actions"
 import { resendVerificationEmail } from "@/app/auth/actions"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { isSyntheticPhoneEmail } from "@/lib/auth/phone-auth"
 import { BillingPeriod, VALID_PLAN_IDS, ValidPlanId, publicPricingContent } from "@/lib/pricing/public-pricing-content"
 import { getSignupCheckpointState } from "./actions"
-
-const inter = Inter({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 function resolvePlanDisplayName(planId: string, language: "el" | "en"): string | null {
     for (const audience of Object.values(publicPricingContent)) {
@@ -41,7 +33,6 @@ function SignupConfirmationContent() {
     // Internal auth links must carry the pinned language; a bare href
     // dropped an English visitor onto the Greek sign-in page.
     const authLocale: "el" | "en" = language === "el" ? "el" : "en"
-    const uiText = getTranslations(language)
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
     const role = searchParams.get("role") === "agent" ? "agent" : "policyholder"
@@ -247,49 +238,18 @@ function SignupConfirmationContent() {
     const busy = isContinuing || isCheckingVerification || isResending
 
     return (
-        <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
-            {/* Header bar */}
-            <header className="flex items-center justify-between px-6 py-4">
-                <Link
-                    href="/"
-                    className="inline-flex min-h-[44px] items-center text-body-sm font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
-                >
-                    {copy.backHome}
-                </Link>
-                <LocaleToggle ariaLabel={uiText.userMenu.language} />
-            </header>
+        <AuthShell>
+            <div className="mb-g-5 flex items-center justify-between text-xs font-semibold text-fg-secondary">
+                <span className="rounded-g-pill bg-surface-sunken px-g-3 py-g-1">{copy.stepLabel}</span>
+                <span className="inline-flex items-center gap-1">
+                    <ShieldCheck aria-hidden className="size-3.5 text-fg-brand" />
+                    {copy.secureSetup}
+                </span>
+            </div>
+            <h1 className="text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary">{copy.heading}</h1>
+            <p className="mt-g-3 text-g-body text-fg-secondary">{copy.subtitle}</p>
 
-            {/* Card — a <main> landmark, not a div: this page has a header above
-                it, so without one there is nothing to skip to. */}
-            <main className="flex flex-1 items-center justify-center px-4 py-10">
-                <motion.div
-                    /* Transform-only entry: see the note on
-                       app/auth/forgot-password/page.tsx. An `opacity: 0`
-                       initial ships in the server HTML, so the whole card stays
-                       invisible until framer-motion hydrates. */
-                    initial={{ y: 20 }}
-                    animate={{ y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-7"
-                >
-                    {/* Top meta row */}
-                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#5B6A7A] dark:text-white/60">
-                        <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1 dark:bg-white/10">{copy.stepLabel}</span>
-                        <span className="inline-flex items-center gap-1 text-[#475569] dark:text-white/65">
-                            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                            {copy.secureSetup}
-                        </span>
-                    </div>
-
-                    {/* Logo + heading */}
-                    <div className="mb-6 text-center">
-                        <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-[#F8FAFC] px-3 py-2 dark:bg-white/5">
-                            <PolicyWalletLogo size="md" language={language} />
-                        </div>
-                        <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] dark:text-white">{copy.heading}</h1>
-                        <p className="mt-1.5 text-sm text-[#5B6A7A] dark:text-white/65">{copy.subtitle}</p>
-                    </div>
-
+            <div className="mt-g-6">
                     {loadingState ? (
                         <div className="flex items-center justify-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 text-[#5B6A7A] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
                             <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
@@ -425,9 +385,8 @@ function SignupConfirmationContent() {
                             </div>
                         </div>
                     ) : null}
-                </motion.div>
-            </main>
-        </div>
+            </div>
+        </AuthShell>
     )
 }
 
@@ -435,8 +394,8 @@ export default function SignUpConfirmationPage() {
     return (
         <Suspense
             fallback={
-                <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
-                    <Loader2 className="h-7 w-7 animate-spin text-primary" />
+                <div className="flex min-h-dvh items-center justify-center bg-surface-base">
+                    <Loader2 aria-hidden className="size-7 animate-spin text-fg-brand" />
                 </div>
             }
         >

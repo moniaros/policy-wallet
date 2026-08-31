@@ -16,24 +16,23 @@ import {
     generateVerificationToken,
     validatePasswordResetToken,
 } from "@/lib/tokens"
-import {
-    buildSyntheticEmailFromPhone,
-    isSyntheticPhoneEmail,
-    normalizeGreekMobile,
-} from "@/lib/auth/phone-auth"
+import { isSyntheticPhoneEmail } from "@/lib/auth/phone-auth"
+import { LEGAL_POLICY_VERSIONS } from "@/lib/compliance/consent"
 import { isAgentRole } from "@/lib/auth/require-agent"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { VALID_PLAN_IDS } from "@/lib/pricing/public-pricing-content"
 
 const RegisterSchema = z.object({
     name: z.preprocess((v) => (typeof v === "string" && v.trim().length === 0 ? undefined : v), z.string().min(1).optional()),
-    mobileNumber: z.string().min(1, "Mobile number is required")
-        .refine((value) => Boolean(normalizeGreekMobile(value)), "Invalid Greek mobile number"),
+    // Email is the account identity — REQUIRED for every role. The mobile
+    // field is gone from signup (docs/auth-audit.md §7): it was the synthetic
+    // login identifier for email-less accounts, which skipped verification and
+    // had no recovery path. The column and the settings field stay.
     email: z.preprocess((value) => {
         if (typeof value !== "string") return value
         const trimmed = value.trim().toLowerCase()
         return trimmed.length === 0 ? undefined : trimmed
-    }, z.string().email("Invalid email").optional()),
+    }, z.string().email("Invalid email")),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(8),
     role: z.enum(["policyholder", "agent"]).default("policyholder"),
@@ -50,14 +49,9 @@ const RegisterSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
-}).refine((data) => {
-    if (data.role === "agent") {
-        return Boolean(data.email && data.name)
-    }
-    return true
-}, {
-    message: "Email and name are required for agents",
-    path: ["email"],
+}).refine((data) => (data.role === "agent" ? Boolean(data.name) : true), {
+    message: "Name is required for agents",
+    path: ["name"],
 })
 // Agent signup minimum is name + valid mobile + email; license and agency
 // details are collected later during agent onboarding (verification stays a
@@ -339,19 +333,17 @@ export async function registerUser(formData: FormData) {
         return { success: false, error: validation.error.flatten().fieldErrors }
     }
 
-    const { name, email, mobileNumber, password, role, token, selectedPlan, selectedBilling } = validation.data
-    const normalizedPhone = normalizeGreekMobile(mobileNumber)
-    if (!normalizedPhone) {
-        return { success: false, error: authErr(language, "Μη έγκυρος αριθμός ελληνικού κινητού", "Invalid Greek mobile number") }
-    }
+    const { name, email, password, role, token, selectedPlan, selectedBilling } = validation.data
 
-    const authEmail = email || buildSyntheticEmailFromPhone(normalizedPhone)
-    const isSyntheticEmail = !email
+    // The account identity is the email, full stop. Synthetic phone emails are
+    // minted for NO new account; existing ones keep signing in through
+    // resolveAuthEmailIdentifier (docs/auth-audit.md headline §3).
+    const authEmail = email
     const displayName = name?.trim()?.length
         ? name.trim()
         : role === "agent"
             ? "Agent User"
-            : `Policyholder ${normalizedPhone.slice(-4)}`
+            : authEmail.split("@")[0]
 
     const supabase = await createClient()
 
@@ -364,7 +356,6 @@ export async function registerUser(formData: FormData) {
                     full_name: displayName,
                     role,
                     language,
-                    phone_number: normalizedPhone,
                     ...(selectedPlan ? { selected_plan: selectedPlan } : {}),
                     ...(selectedBilling ? { selected_billing: selectedBilling } : {}),
                 },
@@ -392,8 +383,6 @@ export async function registerUser(formData: FormData) {
                     name: displayName,
                     roles: role,
                     preferredLanguage: language,
-                    phoneNumber: normalizedPhone,
-                    emailVerified: isSyntheticEmail ? new Date() : existingUser.emailVerified,
                     ...(isAgentAttestedConsent(existingUser.aiProcessingConsentVersion)
                         ? { aiProcessingConsentVersion: null }
                         : {}),
@@ -405,13 +394,49 @@ export async function registerUser(formData: FormData) {
                 data: {
                     name: displayName,
                     email: authEmail,
-                    phoneNumber: normalizedPhone,
                     roles: role,
                     preferredLanguage: language,
-                    emailVerified: isSyntheticEmail ? new Date() : null,
+                    // Never pre-verified: every account now has a real,
+                    // deliverable address and goes through the token flow.
+                    emailVerified: null,
                 },
             })
             userId = newUser.id
+        }
+
+        // The checkbox the user just ticked becomes a RECORD (audit §15): one
+        // ConsentAudit row per document plus the version stamps on the user —
+        // signup used to validate acceptance and then write nothing. Failure
+        // here must not strand a created account, so it is best-effort with
+        // the error surfaced to the log, not the user.
+        try {
+            const headerStore = await headers()
+            const consentUserAgent = headerStore.get("user-agent") || null
+            const acceptedAt = new Date()
+            await db.consentAudit.createMany({
+                data: (["terms", "privacy"] as const).map((consentType) => ({
+                    userId,
+                    consentType,
+                    policyVersion: LEGAL_POLICY_VERSIONS[consentType],
+                    locale: language,
+                    source: "signup",
+                    accepted: true,
+                    acceptedAt,
+                    ipAddress: ip,
+                    userAgent: consentUserAgent,
+                })),
+            })
+            await db.user.update({
+                where: { id: userId },
+                data: {
+                    termsVersionAccepted: LEGAL_POLICY_VERSIONS.terms,
+                    privacyVersionAccepted: LEGAL_POLICY_VERSIONS.privacy,
+                    consentLocale: language,
+                    consentUpdatedAt: acceptedAt,
+                },
+            })
+        } catch (consentError) {
+            console.error("SIGNUP_CONSENT_RECORD_FAILED:", consentError)
         }
 
         // Internal ops alert for every completed registration. Scheduled
@@ -422,7 +447,6 @@ export async function registerUser(formData: FormData) {
             await sendAdminSignupNotificationEmail({
                 name: displayName,
                 email: authEmail,
-                phoneNumber: normalizedPhone,
                 role,
                 language,
                 isInvitedActivation,
@@ -452,7 +476,7 @@ export async function registerUser(formData: FormData) {
             await applyInviteRedemption(token, userId)
         }
 
-        if (!isSyntheticEmail && email) {
+        {
             const verificationToken = await generateVerificationToken(email)
             const confirmLink = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/auth/verify-email?token=${verificationToken.token}&email=${encodeURIComponent(email)}`
             const template = getEmailVerificationTemplate(language, confirmLink)

@@ -96,3 +96,92 @@ nav rebuilds) · G5 remainder (none — ReadingDemo, PlanRecommender,
 BrokerScanPanel, DeviceFrame, ProtectionRing all shipped) · G6 polish (legacy
 bands onto Grafí; mobile perf) · G9 full-route restyle · `/solutions/agents`
 restyle · screen-reader + forced-colors passes.
+
+---
+
+# AUTH REBUILD HANDOVER (2026-08-31) — signup split-shell, phone removal, phased social login
+
+Ledger: [AUTH_PROGRESS.md](AUTH_PROGRESS.md) · Audit: [auth-audit.md](auth-audit.md) ·
+Assumptions AUTH-01…08 in [ASSUMPTIONS.md](ASSUMPTIONS.md). All of A0–A8 walked; A5 is
+code-complete and waits on credentials only.
+
+## What changed, in one paragraph
+
+Signup no longer collects a phone. That was not a field deletion but an identifier
+retirement: email-less signups used to mint a synthetic Supabase identity
+(`phone_…@phone.policywallet.app`), skip verification entirely, and have no recovery
+path. Email is now the only identity for new accounts, every account gets the real
+verification token flow, and — for the first time — the terms checkbox produces a
+server-side record (ConsentAudit ×2 + version stamps) on BOTH the email and the OAuth
+path. Every auth screen renders through one `AuthShell` (split-screen ≥1024 with a
+brand-fill trust panel whose subtree is genuinely omitted from the DOM below 1024;
+form-only with 16px gutters on phones). Social login ships as a registry
+(`lib/auth/social-providers.ts`): providers are `live | soon | off`, only `live`
+renders, phases are a config flip.
+
+## The three A8 passes — findings
+
+**Security (OAuth flow).** Role travels only in an HMAC-signed, httpOnly, 10-minute,
+single-consume cookie (`lib/auth/oauth-intent.ts`; tamper/expiry/replay covered by
+tests/unit/social-auth-providers.test.tsx). `next` is sanitized at both ends and only
+ever appended to our own origin. PKCE verifier and session live in httpOnly cookies —
+nothing in localStorage. `startSocialAuth` is rate-limited (10/5min/IP) and refuses
+non-live providers server-side. Callback fails CLOSED: no provider email → signOut +
+error page, row-creation failure on a new account → signOut + error page. Two accepted
+residuals: (1) `redirectTo` falls back to the Host header when NEXTAUTH_URL is unset —
+Supabase's own redirect allowlist is the second fence; keep NEXTAUTH_URL set in prod.
+(2) Supabase links same-verified-email identities automatically, so the brief's
+"link after asking" is delivered as "never re-role, redirect to the account's own home
+with ?notice=oauth_role_mismatch" [verify: surface that notice in UI copy].
+
+**First-time user (iPhone SE / 3G).** 375px verified on :3000: 16px gutters, no card
+chrome, sticky light header, 16px inputs (no iOS focus-zoom), 44px targets, zero
+running animations, trust facts as text under the form. framer-motion is gone from the
+signup route entirely; no provider SDK ever loads (server-side redirect flow). NOT
+verified on a physical iPhone over real 3G [verify].
+
+**Compliance.** Terms checkbox unchecked by default; marketing consent hardcoded
+false; social path shows the «Με τη συνέχεια αποδέχεστε…» line and records acceptance
+server-side with version+timestamp+source; Article 9 / AI-processing consent untouched
+at first upload; no advice language, no counts, no testimonials; samples stamped.
+One flag left open: the policyholder under-CTA line «Διαγράφετε τα πάντα όποτε
+θέλετε.» is the brief's wording — the precise mechanics (request-based deletion,
+statutory month) live in the TRUST_FACTS on the same screen; if legal prefers, swap to
+«Ζητάτε πλήρη διαγραφή όποτε θέλετε.» in SignupForm.
+
+## Owner checklist to make Google live (A5's last mile)
+
+1. Google Cloud Console → OAuth client (web), authorized redirect:
+   `https://<project>.supabase.co/auth/v1/callback`.
+2. Supabase → Authentication → Providers → Google: client id + secret; add
+   `https://www.policywallet.gr/auth/callback` (www, not apex) and
+   `http://localhost:3000/auth/callback` to the redirect allowlist.
+3. Vercel env: `NEXT_PUBLIC_AUTH_GOOGLE=live` (+ keep `NEXTAUTH_URL=https://www.policywallet.gr`).
+4. Smoke both roles: signup/agent → Google → account exists with roles=agent,
+   ConsentAudit source=oauth_signup, lands on /onboarding/agent.
+Facebook (phase 2): start Meta app review for the `email` scope, then repeat with
+`NEXT_PUBLIC_AUTH_FACEBOOK` — and build the collect-and-verify-email fallback before
+going live (today a no-email return is safely refused). LinkedIn (phase 3): agent-only
+by registry design.
+
+## Sharp edges for the next session
+
+- **The guards moved with the markup.** LocaleToggle/pw-clear-consent/back-arrow
+  contracts now point at `components/auth/AuthShell.tsx`; the terms aria contract at
+  `components/auth/TermsCheckbox.tsx`; the opacity guard walks all of app/auth. If you
+  add an auth screen, render it through AuthShell and the guards cover it for free.
+- **`cn()`/FormField cloning trap**: FormField clones its single child with id+aria.
+  Give it a bare `<input>`, never a wrapper div — PasswordField owns its markup for
+  exactly this reason.
+- **Existing synthetic-phone accounts still sign in** through the signin phone tab
+  (`resolveAuthEmailIdentifier`). Do not remove it until that cohort (owner test
+  accounts) is migrated or abandoned.
+- **`emailVerificationRequired` stays flag-off** (`auth.enforce_email_verification`).
+  Every new account is now verifiable; flipping enforcement is the owner's call and
+  will also gate the existing unverified accounts.
+- **Playwright E2E cache is broken on this machine**: chromium-1208 is half-installed
+  (framework dylib missing) and downloads kept being killed. Run
+  `./node_modules/.bin/playwright install chromium` on a stable connection, then
+  `npx playwright test tests/e2e/auth.spec.ts --project=chromium`.
+- The signin OTP-reset dialog and the token reset page kept their pre-rebuild inner
+  styling (tokens only on labels/shell) — a later polish pass can finish them.

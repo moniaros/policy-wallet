@@ -345,7 +345,7 @@ describe("count-interpolated copy agrees as a whole clause at n = 1", () => {
         // user-facing words), and label-indirected branches behind a
         // `lang === "el"` test the evaluator cannot decide. A new one must
         // be looked at, then listed.
-        const known = ["app/auth/reset-password/page.tsx", "components/coverage/RiskGraphPanel.tsx"]
+        const known = ["app/auth/reset-password/page.tsx", "components/coverage/RiskGraphPanel.tsx", "components/auth/PasswordField.tsx"]
         for (const u of repo.unrenderable) {
             expect(known, `unrenderable site ${u.file}:${u.line} — inspect it, then list it here`).toContain(u.file)
         }

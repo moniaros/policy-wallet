@@ -16,10 +16,11 @@ import { LOCALE_OPTIONS } from '@/components/ui/LocaleToggle'
  */
 describe('one language switcher, one meaning', () => {
     const authAndShell = [
-        'app/auth/signin/page.tsx',
-        'app/auth/signup/SignupForm.tsx',
-        'app/auth/signup/confirmation/page.tsx',
-        'app/auth/forgot-password/page.tsx',
+        // Signup renders through the shared AuthShell (auth rebuild A3), which
+        // carries the one LocaleToggle for every shell-based auth screen.
+        'components/auth/AuthShell.tsx',
+        // confirmation renders through AuthShell (A7), which carries the toggle.
+        // forgot-password renders through AuthShell (A7), which carries the toggle.
         'components/shell/AppShell.tsx',
     ]
 

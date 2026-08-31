@@ -14,7 +14,10 @@ import { readFileSync } from 'node:fs'
  */
 describe('public auth form validation wiring', () => {
     describe('signup terms checkbox', () => {
-        const src = readFileSync('app/auth/signup/SignupForm.tsx', 'utf-8')
+        // The markup moved into the shared TermsCheckbox (auth rebuild A1/A2);
+        // the contract — checkbox → aria-describedby → error id — is unchanged,
+        // and a final assertion holds SignupForm to actually feeding it.
+        const src = readFileSync('components/auth/TermsCheckbox.tsx', 'utf-8')
 
         // The <input> tag for the terms checkbox, from `<input` to the first `/>`.
         const checkbox = src.match(/<input\s+id="signup-terms"[\s\S]*?\/>/)?.[0] ?? ''
@@ -46,8 +49,13 @@ describe('public auth form validation wiring', () => {
             // announces nothing and the markup looks correct.
             expect(
                 src,
-                'the termsAccepted error element must carry id="signup-terms-error"'
-            ).toMatch(/errors\.termsAccepted[\s\S]{0,120}?id="signup-terms-error"/)
+                'the error element must carry id="signup-terms-error"'
+            ).toMatch(/<FormError id="signup-terms-error">/)
+        })
+
+        it('SignupForm actually feeds the shared checkbox its error', () => {
+            const form = readFileSync('app/auth/signup/SignupForm.tsx', 'utf-8')
+            expect(form).toMatch(/<TermsCheckbox[\s\S]{0,200}?errors\.termsAccepted/)
         })
     })
 

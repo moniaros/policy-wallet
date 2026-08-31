@@ -16,6 +16,15 @@ seams and hostile review: `docs/handover.md`.
 
 ## Done since the last entry
 
+- **Auth rebuild A0–A8 (brief: split-shell, phone removal, phased social login)**
+  (2026-08-31, uncommitted): phone retired as an IDENTIFIER (synthetic emails minted
+  for no new account; universal email verification; recovery restored); terms now
+  RECORDED on both paths; one AuthShell across all 9 auth screens (panel subtree
+  omitted <1024); social registry live|soon|off with signed-intent role transport,
+  callback row-birth + linking guards (and the id-vs-email lookup bug fixed);
+  Google code-complete behind NEXT_PUBLIC_AUTH_GOOGLE [verify: owner credentials].
+  Ledger docs/AUTH_PROGRESS.md · audit docs/auth-audit.md · handover appended.
+  518 files / 5900 unit tests green.
 - **How-it-works band restyled onto Grafí** (2026-08-30, uncommitted): new
   `components/landing/grafi/HowItWorks.tsx` — numbered icon tiles, one bold brand-green
   phrase per step (`emphasis`, a verbatim substring of the JSON-LD description), per-step

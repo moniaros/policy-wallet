@@ -21,7 +21,8 @@ const SRC =
 
 const LOCALIZED_MESSAGES = [
     'Too many signup attempts. Please try again in a few minutes.',
-    'Invalid Greek mobile number',
+    // 'Invalid Greek mobile number' is gone with the field: signup is
+    // email-identity-only since the auth rebuild (docs/auth-audit.md §7).
     'Registration failed. Please try again.',
     'User already exists',
     'An unexpected error occurred during registration.',

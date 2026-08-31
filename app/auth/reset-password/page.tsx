@@ -3,21 +3,15 @@
 import Link from "next/link"
 import { Suspense, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { IBM_Plex_Sans } from "next/font/google"
 import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, Lock, ShieldCheck } from "lucide-react"
-import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { AuthShell } from "@/components/auth/AuthShell"
 import { authHref } from "@/lib/seo/locale-links"
 import { resetPasswordWithToken } from "../actions"
-
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 // Lang-aware so the Zod messages the form renders (errors.*.message) are
 // localised — they were hardcoded English, so a Greek user resetting their
@@ -136,28 +130,18 @@ function ResetPasswordContent() {
     }
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-10 dark:bg-black`}>
-            <div className="pointer-events-none absolute left-0 top-0 z-0 h-full w-full overflow-hidden">
-                <div className="absolute left-[20%] top-[-10%] h-[60%] w-[60%] rounded-full bg-slate-100/50 blur-[120px] dark:bg-slate-800/20" />
+        <AuthShell>
+            <div className="mb-g-5 flex items-center justify-between text-xs font-semibold text-fg-secondary">
+                <span className="rounded-g-pill bg-surface-sunken px-g-3 py-g-1">{COPY.secureReset[lang]}</span>
+                <span className="inline-flex items-center gap-1">
+                    <ShieldCheck aria-hidden className="size-3.5 text-fg-brand" />
+                    {COPY.encryptedFlow[lang]}
+                </span>
             </div>
+            <h1 className="text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary">{copy.title}</h1>
+            <p className="mt-g-3 text-g-body text-fg-secondary">{copy.subtitle}</p>
 
-            <motion.div initial={{ y: 18 }} animate={{ y: 0 }} transition={{ duration: 0.3 }} className="relative z-10 w-full max-w-[440px] rounded-2xl border border-[#E2E8F0] bg-white/95 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-3xl dark:border-white/10 dark:bg-[#111111]/95 sm:p-10">
-                <div className="mb-5 flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-white/60">
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1 dark:bg-white/10">{COPY.secureReset[lang]}</span>
-                    <span className="inline-flex items-center gap-1 text-slate-700 dark:text-white/65">
-                        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                        {COPY.encryptedFlow[lang]}
-                    </span>
-                </div>
-
-                <div className="mb-6 text-center">
-                    <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 shadow-sm dark:bg-white/5">
-                        <PolicyWalletLogo size="md" language={language} />
-                    </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{copy.title}</h1>
-                    <p className="mt-1.5 text-sm text-slate-600 dark:text-white/65">{copy.subtitle}</p>
-                </div>
-
+            <div className="mt-g-6">
                 {!canSubmit ? (
                     <div className="space-y-4">
                         <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{copy.invalidLink}</div>
@@ -191,7 +175,7 @@ function ResetPasswordContent() {
                         </AnimatePresence>
 
                         <div>
-                            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-white/65">{copy.password}</label>
+                            <label className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.password}</label>
                             <div className="relative">
                                 <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-500 dark:text-slate-400" />
                                 <input
@@ -213,7 +197,7 @@ function ResetPasswordContent() {
                         </div>
 
                         <div>
-                            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-white/65">{copy.confirm}</label>
+                            <label className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.confirm}</label>
                             <div className="relative">
                                 <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-500 dark:text-slate-400" />
                                 <input
@@ -240,8 +224,8 @@ function ResetPasswordContent() {
                         </Link>
                     </form>
                 )}
-            </motion.div>
-        </div>
+            </div>
+        </AuthShell>
     )
 }
 
@@ -264,7 +248,7 @@ const COPY = {
 
 export default function ResetPasswordPage() {
     return (
-        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>}>
+        <Suspense fallback={<div className="flex min-h-dvh items-center justify-center bg-surface-base"><Loader2 aria-hidden className="size-7 animate-spin text-fg-brand" /></div>}>
             <ResetPasswordContent />
         </Suspense>
     )

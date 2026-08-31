@@ -155,9 +155,8 @@ describe('auth pages reserve space for the consent banner', () => {
     })
 
     for (const [file, label] of [
-        ['app/auth/signin/page.tsx', 'signin'],
-        ['app/auth/signup/SignupForm.tsx', 'signup'],
-        ['app/auth/forgot-password/page.tsx', 'forgot-password'],
+        // Signin, signup and forgot-password all render through AuthShell (A3/A7).
+        ['components/auth/AuthShell.tsx', 'AuthShell (signin + signup + forgot)'],
     ] as const) {
         it(`${label} applies it to the full-height container`, () => {
             expect(readFileSync(file, 'utf-8')).toMatch(/pw-clear-consent/)
@@ -169,9 +168,8 @@ describe('the auth back-link arrow is decoration, not the link name', () => {
     // forgot-password baked "←" into the translated string AND rendered another
     // one in JSX, so the link's accessible name was "← ← Αρχική".
     for (const [file, label] of [
-        ['app/auth/signin/page.tsx', 'signin'],
-        ['app/auth/signup/SignupForm.tsx', 'signup'],
-        ['app/auth/forgot-password/page.tsx', 'forgot-password'],
+        // Signin, signup and forgot-password all use AuthShell's back link (A3/A7).
+        ['components/auth/AuthShell.tsx', 'AuthShell (signin + signup + forgot)'],
     ] as const) {
         it(`${label} renders exactly one arrow, hidden from assistive tech`, () => {
             const src = readFileSync(file, 'utf-8')
