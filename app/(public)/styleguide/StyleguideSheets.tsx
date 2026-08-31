@@ -1,6 +1,8 @@
 import { StatusChip, Button } from "@/src/design-system"
 import { StyleguideInteractive } from "./StyleguideInteractive"
 import { StyleguideProduct } from "./StyleguideProduct"
+import { StyleguideStates } from "./StyleguideStates"
+import { StyleguidePresentations } from "./StyleguidePresentations"
 
 /**
  * The token sheets, rendered once per theme by the page. Server component —
@@ -86,6 +88,14 @@ export function StyleguideSheets({ theme }: { theme: "light" | "dark" }) {
 
             <Sheet title="Product components — ΔΕΙΓΜΑ">
                 <StyleguideProduct />
+            </Sheet>
+
+            <Sheet title="States — loading, empty, over-populated">
+                <StyleguideStates />
+            </Sheet>
+
+            <Sheet title="Three presentations, same facts">
+                <StyleguidePresentations />
             </Sheet>
 
             <Sheet title="Motion">
