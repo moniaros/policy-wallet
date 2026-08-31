@@ -1,0 +1,32 @@
+{
+  "target": "new",
+  "theme": "dark",
+  "project": "iphone-15",
+  "capturedAt": "2026-08-31T16:51:52.584Z",
+  "report": {
+    "/": {
+      "axe": [],
+      "customs": []
+    },
+    "/policies": {
+      "axe": [],
+      "customs": []
+    },
+    "/see": {
+      "axe": [],
+      "customs": []
+    },
+    "/adviser": {
+      "axe": [],
+      "customs": []
+    },
+    "/updates": {
+      "axe": [],
+      "customs": []
+    },
+    "/me": {
+      "axe": [],
+      "customs": []
+    }
+  }
+}

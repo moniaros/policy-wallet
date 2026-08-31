@@ -1,0 +1,46 @@
+{
+  "target": "old",
+  "theme": "light",
+  "project": "desktop",
+  "capturedAt": "2026-08-31T16:56:57.188Z",
+  "report": {
+    "/dashboard": {
+      "axe": [
+        {
+          "id": "aria-progressbar-name",
+          "impact": "serious",
+          "nodes": 1,
+          "help": "ARIA progressbar nodes must have an accessible name"
+        }
+      ],
+      "customs": []
+    },
+    "/wallet": {
+      "axe": [],
+      "customs": []
+    },
+    "/protection": {
+      "axe": [],
+      "customs": []
+    },
+    "/agent": {
+      "axe": [],
+      "customs": []
+    },
+    "/notifications": {
+      "axe": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1,
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        }
+      ],
+      "customs": []
+    },
+    "/account": {
+      "axe": [],
+      "customs": []
+    }
+  }
+}

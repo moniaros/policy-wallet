@@ -1,0 +1,39 @@
+{
+  "target": "old",
+  "theme": "dark",
+  "project": "desktop",
+  "capturedAt": "2026-08-31T16:57:53.201Z",
+  "report": {
+    "/dashboard": {
+      "axe": [
+        {
+          "id": "aria-progressbar-name",
+          "impact": "serious",
+          "nodes": 1,
+          "help": "ARIA progressbar nodes must have an accessible name"
+        }
+      ],
+      "customs": []
+    },
+    "/wallet": {
+      "axe": [],
+      "customs": []
+    },
+    "/protection": {
+      "axe": [],
+      "customs": []
+    },
+    "/agent": {
+      "axe": [],
+      "customs": []
+    },
+    "/notifications": {
+      "axe": [],
+      "customs": []
+    },
+    "/account": {
+      "axe": [],
+      "customs": []
+    }
+  }
+}

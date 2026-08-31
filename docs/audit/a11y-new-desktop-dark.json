@@ -1,0 +1,32 @@
+{
+  "target": "new",
+  "theme": "dark",
+  "project": "desktop",
+  "capturedAt": "2026-08-31T16:53:34.954Z",
+  "report": {
+    "/": {
+      "axe": [],
+      "customs": []
+    },
+    "/policies": {
+      "axe": [],
+      "customs": []
+    },
+    "/see": {
+      "axe": [],
+      "customs": []
+    },
+    "/adviser": {
+      "axe": [],
+      "customs": []
+    },
+    "/updates": {
+      "axe": [],
+      "customs": []
+    },
+    "/me": {
+      "axe": [],
+      "customs": []
+    }
+  }
+}
