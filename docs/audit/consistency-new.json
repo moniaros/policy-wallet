@@ -1,0 +1,89 @@
+{
+  "target": "new",
+  "capturedAt": "2026-08-31T16:44:46.345Z",
+  "report": {
+    "/": {
+      "statusWords": [
+        "Για έλεγχο",
+        "Καλύπτεται"
+      ],
+      "banned": [],
+      "templateCards": [],
+      "duplicates": [],
+      "uppercaseRuns": [],
+      "storedCapsData": [
+        "ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑ",
+        "ΕΛΛΗ ΚΟΚΚΑΛΙΑ",
+        "ΑΓΓΕΛΙΚΗ ΜΟΝΙΑΡΟΥ",
+        "ΕΥΑΓΓΕΛΙΑ ΜΟΝΙΑΡΟΥ"
+      ],
+      "nakedNumbers": []
+    },
+    "/policies": {
+      "statusWords": [
+        "Κενό",
+        "Για έλεγχο",
+        "Καλύπτεται"
+      ],
+      "banned": [],
+      "templateCards": [],
+      "duplicates": [],
+      "uppercaseRuns": [],
+      "storedCapsData": [
+        "Σωματικές Βλάβες τρίτων (ανά άτομο), Υλικές Ζημιές",
+        "Έξοδα Νοσοκομειακής Περίθαλψης · 1.567 € τον χρόνο"
+      ],
+      "nakedNumbers": []
+    },
+    "/see": {
+      "statusWords": [
+        "Κενό",
+        "Για έλεγχο"
+      ],
+      "banned": [],
+      "templateCards": [],
+      "duplicates": [],
+      "uppercaseRuns": [],
+      "storedCapsData": [],
+      "nakedNumbers": []
+    },
+    "/adviser": {
+      "statusWords": [],
+      "banned": [],
+      "templateCards": [],
+      "duplicates": [],
+      "uppercaseRuns": [],
+      "storedCapsData": [],
+      "nakedNumbers": []
+    },
+    "/updates": {
+      "statusWords": [],
+      "banned": [],
+      "templateCards": [],
+      "duplicates": [],
+      "uppercaseRuns": [],
+      "storedCapsData": [
+        "Η ΕΘΝΙΚΗ (1651622-03) · Το ασφαλιστήριο συμβόλαιο ",
+        "ΕΘΝΙΚΗ (64504715) · Το ασφαλιστήριο συμβόλαιο 6450"
+      ],
+      "nakedNumbers": []
+    },
+    "/me": {
+      "statusWords": [
+        "Καλύπτεται",
+        "Για έλεγχο"
+      ],
+      "banned": [],
+      "templateCards": [],
+      "duplicates": [],
+      "uppercaseRuns": [],
+      "storedCapsData": [
+        "ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑ",
+        "ΕΛΛΗ ΚΟΚΚΑΛΙΑ",
+        "ΑΓΓΕΛΙΚΗ ΜΟΝΙΑΡΟΥ",
+        "ΕΥΑΓΓΕΛΙΑ ΜΟΝΙΑΡΟΥ"
+      ],
+      "nakedNumbers": []
+    }
+  }
+}
