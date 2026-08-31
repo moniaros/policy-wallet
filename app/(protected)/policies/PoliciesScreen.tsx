@@ -60,6 +60,10 @@ export function PoliciesScreen({ model }: { model: PoliciesModel }) {
 
     const secondary = (r: PolicyRow) =>
         [
+            // the expiry lens exists to show WHEN — the date leads its rows;
+            // an expiring or expired policy carries its date in EVERY lens
+            // (the old dashboard showed it; the loss gate keeps it)
+            lens === "expiry" || (r.daysUntilExpiry != null && r.daysUntilExpiry <= 45) ? r.endDate : null,
             lens !== "line" ? r.lineLabel : null,
             r.covers ? r.covers.join(", ") : t.app.policies.coversUnknown,
             r.premium ? formatPlural(t.app.policies.premiumPerYear, { amount: formatCurrency(r.premium.amount, lang, { currency: r.premium.currency }) }, lang) : null,

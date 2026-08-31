@@ -14,5 +14,5 @@ the audited app: this worktree at :3100.
 | D4 | Widgets | product engineer | pending | styleguide state demos + presentations sheet | |
 | D5 | Dashboard fixes | product engineer | **A2 geometry CLEAR** (user-reported responsiveness: 132→0 findings across 5 viewports ×23 routes; both Switches, GlossaryHint width, pricing scale, help/upgrade grids vs the 700px shell column, 9 sub-44 controls, titled truncations) — other probes pending | probes green on / at :3100; density assertions | |
 | D6 | Sibling fixes | product engineer | pending | probes green on /see /policies /money /updates /adviser /me | |
-| D7 | Gates | both | pending | eight gates green; docs/audit/retired-information.md | |
+| D7 | Gates | both | **gate 1 GREEN** (loss.spec.ts: 189 guarded facts auto-matched, live-quoted via loss-resolutions.json, or retired in retired-information.md R-01..R-18; it found /help ORPHANED → /me row, and the folder hiding expiry dates → dates on expiring rows in every lens) · gates 2-5 green via A6/A2/A3/A4 · gate 6 per A-36 · gates 7-8 pending | |
 | D8 | Handover | both | pending | handover addendum, accepted visual baseline | |

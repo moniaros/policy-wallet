@@ -1,0 +1,27 @@
+# Retired information — the written reasons (gate 1)
+
+Every entry is a fact or affordance the old screens carried that the rebuilt
+app deliberately does not, with the reason. An id referenced by
+`loss-resolutions.json` must exist here or the gate fails. Nothing on this
+list was dropped silently; several entries retire the *presentation* while
+naming where the substance now lives.
+
+| id | route(s) | fact / affordance | class | reason | decided |
+|---|---|---|---|---|---|
+| R-01 | all | The seven status vocabularies (ΛΗΓΜΕΝΟ, ΛΗΓΕΙ ΣΥΝΤΟΜΑ, ΕΝΕΡΓΟ, ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ, Κρίσιμη/Υψηλή/Μεσαία/Χαμηλή προτεραιότητα, Απαιτείται ενέργεια/Εντάξει/Προσοχή, υψηλά/μέτρια/χαμηλά, Κενό προστασίας) | status | Replaced by the three-state system (Καλύπτεται/Κενό/Για έλεγχο) — the brief's own gate 2; severity is not a verdict until an underwriter says so, and time tiers replaced severity adjectives | 2026-08-31 |
+| R-02 | /notifications | «Το σκορ προστασίας σας πήγε από 83% σε 74%» | metric | Scores and percentages of the person are banned outright (H-001 owner halt + AI-Act posture; counts never percentages). The stored notification row is filtered by `isRetiredScoreRow` | 2026-08-31 |
+| R-03 | /protection | Twelve specific life-event entries beyond the ten chips (μοτοσυκλέτα, σκάφος, ενοικίαση, εκμίσθωση, συχνά ταξίδια, αντικείμενο αξίας, επιχείρηση, προσωπικό, πώληση ακινήτου/οχήματος, εξόφληση δανείου, αύξηση εισοδήματος, ανεξαρτητοποίηση παιδιού, υιοθεσία κατοικιδίου) | action | The ten chips are the owner decision (2026-08-30 #4); every other event reaches the same engine through «Κάτι άλλο» (/life-event/other) | 2026-08-31 |
+| R-04 | /protection | «Μεταβολή στην υγεία σας» as a life-event entry | action | H-007: health stays off the chips; the event remains reachable through «Κάτι άλλο» without naming an Art. 9 category in the UI | 2026-08-31 |
+| R-05 | /protection, /wallet | The category filter chips (Όλα/Οχήματα/Κατοικία/Υγεία/Οικογένεια/Εργασία/Οικονομικά/Ακίνητα/Τρόπος ζωής) | action | The ανά-κλάδο lens was absorbed: /see orders findings by time (the three tiers), the coverage map on / carries the by-line view, and /policies has the three lenses — the G8 cutover dropped `?lens=` deliberately | 2026-08-31 |
+| R-06 | /protection | «Σημείωση» (free-text note on a finding) | action | Not ported: the note wrote to a field nothing read. Dismissal now records one of three NAMED reasons («Το ξέρω, το επέλεξα», «Το ανανέωσα ήδη», «Να μην το ξαναδώ») that the engine acts on (reopen rules) | 2026-08-31 |
+| R-07 | /protection | «Ανανέωση ανάλυσης» (re-run button) | action | One path: re-analysis happens by uploading the current document on the policy page (AddDocumentCard's renewal flow) — a bare re-run on stale documents produced the same result and read as magic | 2026-08-31 |
+| R-08 | /wallet | «Σύγκριση ασφαλιστηρίων» | action | Own-policy comparison table not ported (D-B2C-31): its protective purpose — «πληρώνετε δύο φορές;» — lives on /money via `findSameSubjectOverlap`; a feature-by-feature compare invites advice the informational product must not give | 2026-08-31 |
+| R-09 | /wallet, /dashboard | Card/list view toggles, pagination (Προηγούμενο/Επόμενο, +9 ακόμη), «Διαχείριση»/«Ενέργειες» menus, tab chrome («Επισκόπηση») | action | Presentation mechanics of the old shell: the folder is ONE grouped list (no pagination — every row renders), the whole row is the target, actions live on the policy page | 2026-08-31 |
+| R-10 | /wallet | «19» (bare count in the stat grid) | metric | An unlabeled number was itself a baseline defect (A6 forbids naked numbers). Labeled counts render per group («Αυτοκίνητο · 3», «Έληξαν · N») and in the verdict («12 από τα 25») | 2026-08-31 |
+| R-11 | /wallet | «Ασφαλιστικό αποτύπωμα 1.064,30 €» | metric | The old figure summed a page of mixed-lifecycle rows. The money screen states the defined fact: in-force premiums («Πληρώνετε 8.224 € τον χρόνο») with its exclusion note — same purpose, honest definition | 2026-08-31 |
+| R-12 | /agent | The adviser sub-tabs «Επισκόπηση/Μηνύματα/Έγγραφα/Προτάσεις» | action | The adviser screen is one page now: per-policy share switches say exactly what he sees (the old Έγγραφα tab duplicated the wallet), requests/threads render inline, and «πρόταση» belongs to the adviser's own voice in those threads | 2026-08-31 |
+| R-13 | /agent | «Κλήση» (call the adviser) | action | Not lost — conditional: `AdviserScreen.tsx` renders the tel: action when the adviser has a phone number; the seeded fixture adviser has none, so no live quote can prove it. Fixture limitation, recorded honestly | 2026-08-31 |
+| R-15 | /notifications | Minute-grain timestamps («28/8/26, 2:01 π.μ.») | metric | Day-grain by design («πριν από N ημέρες» + the date): the minute a batch job wrote a row is telemetry, not a fact about the user's protection | 2026-08-31 |
+| R-16 | /notifications, /protection | «Προτιμήσεις» / «Ρυθμίσεις κάλυψης» shortcuts | action | Notification and coverage preferences live in one place — Εσείς → Ειδοποιήσεις (/me/notifications) — instead of per-page shortcut buttons | 2026-08-31 |
+| R-17 | /notifications | «Σήμανση ως αναγνωσμένο» (per row) | action | Opening a row marks it read; «Τα είδα όλα» clears a stream. An explicit per-row mark-as-read duplicated the tap that reads it | 2026-08-31 |
+| R-18 | /dashboard | «Ενεργοποιήστε τις ειδοποιήσεις» promo card | action | A permission-nag widget, not information. The bell carries the stream; delivery settings live in Ρυθμίσεις → Ειδοποιήσεις | 2026-08-31 |

@@ -66,6 +66,9 @@ export function MeScreen({ ledger, household, sections, planLine }: { ledger: Le
                     {sections.map((s) => (
                         <Row key={s.id} href={s.href} primary={s.label} secondary={s.description} />
                     ))}
+                    {/* the help centre lost its only entry point in the cutover —
+                        the loss gate (audit D7.1) found it orphaned */}
+                    <Row href="/help" primary={t.help.pageTitle} secondary={t.help.pageSubtitle} />
                 </GroupedList>
             </AppSection>
         </>

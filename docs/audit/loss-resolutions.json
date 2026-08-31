@@ -1,0 +1,672 @@
+[
+ {
+  "key": "action|Αυτοκίνητο: ανανέωση σε N ημέρεςInteramerican · ΙΚΖ-N · N/N/N · N €N σημεία για έλεγχο",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "ΣΥΜΒ-2025-MOT-EXP"
+  }
+ },
+ {
+  "key": "action|Υγεία: ανανέωση σε N ημέρεςΕθνική Ασφαλιστική · ΣΥΜΒ-N-HL-EXP · N/N/N · N €N σημεία για έλεγχο",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "13/9/2026"
+  }
+ },
+ {
+  "key": "action|Αυτοκίνητο: ανανέωση σε N ημέρεςInteramerican · ΒΖΝ-N · N/N/N · N €N σημεία για έλεγχο",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "13/9/2026"
+  }
+ },
+ {
+  "key": "action|Αυτοκίνητο: ανανέωση σε N ημέρεςΕΘΝΙΚΗ · IKZN · N/N/N · N €N σημείο για έλεγχο",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "6/10/2026"
+  }
+ },
+ {
+  "key": "action|Ανεβάστε ένα ασφαλιστήριο",
+  "foundAt": {
+   "route": "/add",
+   "quote": "Προσθήκη ασφαλιστηρίου"
+  }
+ },
+ {
+  "key": "action|Συνδεθείτε με σύμβουλο",
+  "foundAt": {
+   "route": "/adviser",
+   "quote": "σύμβουλ"
+  }
+ },
+ {
+  "key": "action|Ενεργοποιήστε τις ειδοποιήσειςΛάβετε ειδοποιήσεις για ανανεώσεις και αλλαγές.",
+  "retiredId": "R-18"
+ },
+ {
+  "key": "action|+N ακόμη στις προτάσεις σας",
+  "foundAt": {
+   "route": "/",
+   "quote": "Όλα όσα αξίζει να δείτε"
+  }
+ },
+ {
+  "key": "action|Δηλώστε μια αλλαγή",
+  "foundAt": {
+   "route": "/",
+   "quote": "Άλλαξε κάτι στη ζωή σας"
+  }
+ },
+ {
+  "key": "action|Αυτοκίνητο",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Κατοικία",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Υγεία",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Κατοικίδιο",
+  "foundAt": {
+   "route": "/",
+   "quote": "Κατοικίδια"
+  }
+ },
+ {
+  "key": "action|Cyber",
+  "foundAt": {
+   "route": "/",
+   "quote": "Κυβερνοασφάλεια"
+  }
+ },
+ {
+  "key": "action|Προσθέστε νέο ασφαλιστήριο",
+  "foundAt": {
+   "route": "/add",
+   "quote": "Προσθήκη ασφαλιστηρίου"
+  }
+ },
+ {
+  "key": "action|Ασφαλιστήριο Υγεία · ΣΥΜΒ-N-HL-XPDΕθνική Ασφαλιστική",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "ΣΥΜΒ-2025-HL-XPD"
+  }
+ },
+ {
+  "key": "action|ΑνανεωτήριοΕθνική Ασφαλιστική",
+  "foundAt": {
+   "route": "/updates",
+   "quote": "Η ΕΘΝΙΚΗ"
+  }
+ },
+ {
+  "key": "action|ΑνανεωτήριοΗ ΕΘΝΙΚΗ",
+  "foundAt": {
+   "route": "/updates",
+   "quote": "Η ΕΘΝΙΚΗ"
+  }
+ },
+ {
+  "key": "action|Τι άλλαξε πρόσφαταΆνοιξε ένας κίνδυνοςΜπορούμε να εξηγήσουμε γιατίΈνας κίνδυνος έγινε σοβαρότεροςΜπορούμε να εξηγήσουμε",
+  "foundAt": {
+   "route": "/updates",
+   "quote": "εν τω μεταξύ"
+  }
+ },
+ {
+  "key": "action|Κατάσταση συμβούλουΣυνδεδεμένος: Νίκος Παπαδόπουλος",
+  "foundAt": {
+   "route": "/adviser",
+   "quote": "Νίκος"
+  }
+ },
+ {
+  "key": "action|Βοήθεια και υποστήριξηΆνοιγμα κέντρου βοήθειας",
+  "foundAt": {
+   "route": "/me",
+   "quote": "Κέντρο βοήθειας"
+  }
+ },
+ {
+  "key": "action|Γρήγορο upload",
+  "foundAt": {
+   "route": "/add",
+   "quote": "Προσθήκη ασφαλιστηρίου"
+  }
+ },
+ {
+  "key": "metric|N ευρήματα ίσως χρειάζονται έλεγχο",
+  "foundAt": {
+   "route": "/",
+   "quote": "Για έλεγχο"
+  }
+ },
+ {
+  "key": "status|υψηλά",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "status|μέτρια",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "status|χαμηλά",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "metric|Τελευταίος έλεγχος N/N/N",
+  "foundAt": {
+   "route": "/",
+   "quote": "έλεγξα ξανά"
+  }
+ },
+ {
+  "key": "status|Απαιτείται ενέργεια",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "status|Εντάξει",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "action|Σύγκριση ασφαλιστηρίων",
+  "retiredId": "R-08"
+ },
+ {
+  "key": "action|Αυτοκίνητο · Interamerican: έληξε στις N/N/N.",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "Έληξαν"
+  }
+ },
+ {
+  "key": "action|+N ακόμη",
+  "retiredId": "R-09"
+ },
+ {
+  "key": "action|Όλα",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Προβολή Κάρτας",
+  "retiredId": "R-09"
+ },
+ {
+  "key": "action|Προβολή Λίστας",
+  "retiredId": "R-09"
+ },
+ {
+  "key": "action|Διαχείριση",
+  "retiredId": "R-09"
+ },
+ {
+  "key": "action|Ενέργειες",
+  "retiredId": "R-09"
+ },
+ {
+  "key": "action|Προηγούμενο",
+  "retiredId": "R-09"
+ },
+ {
+  "key": "action|Επόμενο",
+  "retiredId": "R-09"
+ },
+ {
+  "key": "action|Χειροκίνητη προσθήκη",
+  "foundAt": {
+   "route": "/add",
+   "quote": "Προσθήκη ασφαλιστηρίου"
+  }
+ },
+ {
+  "key": "action|Μεταφόρτωση εγγράφου",
+  "foundAt": {
+   "route": "/add",
+   "quote": "Προσθήκη ασφαλιστηρίου"
+  }
+ },
+ {
+  "key": "action|Μαζική μεταφόρτωση",
+  "foundAt": {
+   "route": "/add",
+   "quote": "Προσθήκη ασφαλιστηρίου"
+  }
+ },
+ {
+  "key": "action|Προσθήκη ασφαλιστηρίου",
+  "foundAt": {
+   "route": "/add",
+   "quote": "Προσθήκη ασφαλιστηρίου"
+  }
+ },
+ {
+  "key": "metric|N",
+  "retiredId": "R-10"
+ },
+ {
+  "key": "status|ΛΗΓΕΙ ΣΥΝΤΟΜΑ",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "metric|N/N/N",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "Έληξαν"
+  }
+ },
+ {
+  "key": "status|ΛΗΓΜΕΝΟ",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "entity|ΣΥΜΒ-2025-HL-XPD",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "ΣΥΜΒ-2025-HL-XPD"
+  }
+ },
+ {
+  "key": "metric|N,N €",
+  "retiredId": "R-11"
+ },
+ {
+  "key": "entity|ΣΥΜΒ-2025-HL-EXP",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "ΣΥΜΒ-2025-HL-EXP"
+  }
+ },
+ {
+  "key": "action|Ανανέωση ανάλυσης",
+  "retiredId": "R-07"
+ },
+ {
+  "key": "action|Έλεγχος",
+  "foundAt": {
+   "route": "/see",
+   "quote": "Για έλεγχο"
+  }
+ },
+ {
+  "key": "action|Ρωτήστε τον σύμβουλό μου",
+  "foundAt": {
+   "route": "/see",
+   "quote": "Ζητάω βοήθεια"
+  }
+ },
+ {
+  "key": "action|Μη σχετικό για εμένα",
+  "foundAt": {
+   "route": "/see",
+   "quote": "Δεν με αφορά"
+  }
+ },
+ {
+  "key": "action|Περισσότερα",
+  "foundAt": {
+   "route": "/see",
+   "quote": "Πού το είδα"
+  }
+ },
+ {
+  "key": "action|Εμφάνιση όλων (N)",
+  "foundAt": {
+   "route": "/see",
+   "quote": "ταν έχετε χρόνο"
+  }
+ },
+ {
+  "key": "action|Προβολή ασφαλιστηρίου",
+  "foundAt": {
+   "route": "/see",
+   "quote": "Άνοιγμα ασφαλιστηρίου"
+  }
+ },
+ {
+  "key": "action|Σημείωση",
+  "retiredId": "R-06"
+ },
+ {
+  "key": "action|Αγνόηση",
+  "foundAt": {
+   "route": "/see",
+   "quote": "Δεν με αφορά"
+  }
+ },
+ {
+  "key": "action|Επιστροφή στο πορτοφόλι",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "Ο φάκελός σας"
+  }
+ },
+ {
+  "key": "action|Ρυθμίσεις κάλυψης",
+  "retiredId": "R-16"
+ },
+ {
+  "key": "action|Χρειάζεται προσοχήΑυτοκίνητοΚαταλάβετε τι πραγματικά καλύπτει το συμβόλαιο του αυτοκινήτου σας — πριν το χρειαστείτε.N",
+  "foundAt": {
+   "route": "/",
+   "quote": "Αυτοκίνητο"
+  }
+ },
+ {
+  "key": "action|Χωρίς ασφαλιστήριοΚατοικίαΤο σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι πραγματικά προ",
+  "foundAt": {
+   "route": "/",
+   "quote": "Κατοικία"
+  }
+ },
+ {
+  "key": "action|Χρειάζεται προσοχήΥγείαΜάθετε τι πληρώνετε εσείς και τι ο ασφαλιστής σας — πριν βρεθείτε στο νοσοκομείο.N ασφαλιστήρια",
+  "foundAt": {
+   "route": "/",
+   "quote": "Υγεία"
+  }
+ },
+ {
+  "key": "action|Χωρίς ασφαλιστήριοΖωήΣιγουρέψου ότι το συμβόλαιο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σωστό κεφάλαιο και τ",
+  "foundAt": {
+   "route": "/",
+   "quote": "Ζωή"
+  }
+ },
+ {
+  "key": "action|Δεν έχει αξιολογηθείΣύνταξη & ΑποταμίευσηΔείτε πού πηγαίνουν οι εισφορές σας, τι κοστίζει το πρόγραμμα και πότε ωριμάζει",
+  "foundAt": {
+   "route": "/",
+   "quote": "Σύνταξη & Αποταμίευση"
+  }
+ },
+ {
+  "key": "action|Δεν έχει αξιολογηθείΤαξιδιωτικήΠριν φύγετε, μάθετε τι καλύπτει η ταξιδιωτική σας — προορισμός, ιατρικά, αποσκευές, ακύρω",
+  "foundAt": {
+   "route": "/",
+   "quote": "Ταξιδιωτική"
+  }
+ },
+ {
+  "key": "action|Δεν έχει αξιολογηθείΚατοικίδιοΚτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το συμβόλαιο του κατοικιδίου σας — και με",
+  "foundAt": {
+   "route": "/",
+   "quote": "Κατοικίδια"
+  }
+ },
+ {
+  "key": "action|Χωρίς ασφαλιστήριοCyberΟι online συναλλαγές σας έχουν κινδύνους — δείτε τι από αυτά καλύπτει το συμβόλαιό σας.",
+  "foundAt": {
+   "route": "/",
+   "quote": "Κυβερνοασφάλεια"
+  }
+ },
+ {
+  "key": "action|Οικογένεια",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Ακίνητα",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Οικονομικά",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Οχήματα",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Τρόπος ζωής",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Εργασία",
+  "retiredId": "R-05"
+ },
+ {
+  "key": "action|Γάμος ή σύμφωνο συμβίωσης",
+  "foundAt": {
+   "route": "/",
+   "quote": "Γάμος"
+  }
+ },
+ {
+  "key": "action|Διαζύγιο",
+  "foundAt": {
+   "route": "/",
+   "quote": "Διαζύγιο"
+  }
+ },
+ {
+  "key": "action|Γέννηση παιδιού",
+  "foundAt": {
+   "route": "/",
+   "quote": "Παιδί"
+  }
+ },
+ {
+  "key": "action|Ένα παιδί ανεξαρτητοποιήθηκε",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Αγορά ακινήτου",
+  "foundAt": {
+   "route": "/",
+   "quote": "Νέο σπίτι"
+  }
+ },
+ {
+  "key": "action|Πώληση ακινήτου",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Έναρξη ενοικίασης",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Λήψη στεγαστικού δανείου",
+  "foundAt": {
+   "route": "/",
+   "quote": "Δάνειο"
+  }
+ },
+ {
+  "key": "action|Εξόφληση στεγαστικού δανείου",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Έναρξη εκμίσθωσης ακινήτου",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Αγορά οχήματος",
+  "foundAt": {
+   "route": "/",
+   "quote": "Νέο αυτοκίνητο"
+  }
+ },
+ {
+  "key": "action|Αγορά μοτοσυκλέτας",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Πώληση ή απόσυρση οχήματος",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Αγορά σκάφους",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Υιοθεσία κατοικιδίου",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Έναρξη συχνών ταξιδιών",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Απόκτηση αντικειμένου υψηλής αξίας",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Δημιουργία επιχείρησης",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Πρόσληψη προσωπικού",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Συνταξιοδότηση",
+  "foundAt": {
+   "route": "/",
+   "quote": "Συνταξιοδότηση"
+  }
+ },
+ {
+  "key": "action|Σημαντική αύξηση εισοδήματος",
+  "retiredId": "R-03"
+ },
+ {
+  "key": "action|Μεταβολή στην υγεία σας",
+  "retiredId": "R-04"
+ },
+ {
+  "key": "status|Κρίσιμη προτεραιότητα",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "status|Κενό προστασίας",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "status|Υψηλή προτεραιότητα",
+  "retiredId": "R-01"
+ },
+ {
+  "key": "metric|Το ασφαλιστήριό σας Interamerican (ΣΥΜΒ-N-MOT-EXP) λήγει στις N/N/N — σε N ημέρες.",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "ΣΥΜΒ-2025-MOT-EXP"
+  }
+ },
+ {
+  "key": "action|Επισκόπηση",
+  "retiredId": "R-12"
+ },
+ {
+  "key": "action|Μηνύματα",
+  "retiredId": "R-12"
+ },
+ {
+  "key": "action|Έγγραφα",
+  "retiredId": "R-12"
+ },
+ {
+  "key": "action|Προτάσεις",
+  "retiredId": "R-12"
+ },
+ {
+  "key": "action|Κλήση",
+  "retiredId": "R-13"
+ },
+ {
+  "key": "action|Ανάκληση",
+  "foundAt": {
+   "route": "/adviser",
+   "quote": "βλέπει"
+  }
+ },
+ {
+  "key": "action|Αποσύνδεση από τον σύμβουλο",
+  "foundAt": {
+   "route": "/adviser",
+   "quote": "Αποσύνδεση"
+  }
+ },
+ {
+  "key": "action|Προτιμήσεις",
+  "retiredId": "R-16"
+ },
+ {
+  "key": "action|Σήμανση όλων ως αναγνωσμένα",
+  "foundAt": {
+   "route": "/updates",
+   "quote": "Τα είδα όλα"
+  }
+ },
+ {
+  "key": "action|Σήμανση ως αναγνωσμένο",
+  "retiredId": "R-17"
+ },
+ {
+  "key": "metric|N/N/N, N:N μ.μ.",
+  "retiredId": "R-15"
+ },
+ {
+  "key": "metric|N/N/N, N:N π.μ.",
+  "retiredId": "R-15"
+ },
+ {
+  "key": "entity|Η ανάλυση του συμβολαίου Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "ΣΥΜΒ-2025-HL-EXP"
+  }
+ },
+ {
+  "key": "entity|Ασφαλιστήριο ΣΥΜΒ-2025-HL-XPD: ζητήθηκε προσφορά ανανέωσης",
+  "foundAt": {
+   "route": "/policies",
+   "quote": "ΣΥΜΒ-2025-HL-XPD"
+  }
+ },
+ {
+  "key": "metric|Το σκορ προστασίας σας πήγε από N% σε N%.",
+  "retiredId": "R-02"
+ },
+ {
+  "key": "action|Επεξεργασία — Ονοματεπώνυμο",
+  "foundAt": {
+   "route": "/me/profile",
+   "quote": "Επεξεργασία"
+  }
+ },
+ {
+  "key": "action|Προσθήκη — Κινητό τηλέφωνο",
+  "foundAt": {
+   "route": "/me/profile",
+   "quote": "Επεξεργασία"
+  }
+ },
+ {
+  "key": "action|Επεξεργασία — Email",
+  "foundAt": {
+   "route": "/me/profile",
+   "quote": "Επεξεργασία"
+  }
+ },
+ {
+  "key": "action|Ελληνικά",
+  "foundAt": {
+   "route": "/me/appearance",
+   "quote": "English"
+  }
+ },
+ {
+  "key": "action|English",
+  "foundAt": {
+   "route": "/me/appearance",
+   "quote": "English"
+  }
+ }
+]
