@@ -120,7 +120,7 @@ export default function PricingPage() {
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-fg-secondary hover:text-fg-primary transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
+                        className="flex min-h-11 items-center gap-2 rounded-g-control text-fg-secondary transition-colors hover:text-fg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                     >
                         <ChevronLeft className="w-5 h-5" />
                         <span className="font-bold text-sm">{t.common.back}</span>

@@ -47,7 +47,7 @@ export function Switch({
                 disabled={locked}
                 onClick={() => onCheckedChange(!checked)}
                 className={cn(
-                    "-me-g-1 grid h-11 w-16 shrink-0 place-items-center rounded-g-control transition disabled:cursor-not-allowed [-webkit-tap-highlight-color:transparent]",
+                    "grid h-11 w-[51px] shrink-0 place-items-center rounded-g-control transition disabled:cursor-not-allowed [-webkit-tap-highlight-color:transparent]",
                     "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[2px] focus-visible:outline-border-focus"
                 )}
             >

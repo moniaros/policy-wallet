@@ -35,7 +35,8 @@ const policyholderIgnores = [
 
 export default defineConfig({
     testDir: './tests',
-    testIgnore: ['**/tests/unit/**'],
+    // tests/audit/ belongs to playwright.audit.config.ts (own device projects, external servers)
+    testIgnore: ['**/tests/unit/**', '**/tests/audit/**'],
     globalSetup: './tests/global-setup.ts',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,

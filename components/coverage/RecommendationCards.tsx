@@ -663,7 +663,7 @@ export function RecommendationCards({
                                         <button
                                             type="button"
                                             onClick={() => handleDismiss(rec.id, "not_relevant")}
-                                            className="inline-flex min-h-[24px] items-center text-xs text-black/55 hover:text-black/70 hover:underline cursor-pointer dark:text-white/60 dark:hover:text-white/70"
+                                            className="inline-flex min-h-11 items-center text-xs text-black/55 hover:text-black/70 hover:underline cursor-pointer dark:text-white/60 dark:hover:text-white/70"
                                         >
                                             {t("Μη σχετικό για εμένα", "Mark as not relevant")}
                                         </button>

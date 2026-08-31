@@ -142,7 +142,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                         role="radio"
                         aria-checked={billingPeriod === 'monthly'}
                         onClick={() => selectBillingPeriod('monthly')}
-                        className={`px-6 py-2.5 rounded-g-control text-sm font-bold transition-all relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus ${billingPeriod === 'monthly'
+                        className={`min-h-11 px-6 py-2.5 rounded-g-control text-sm font-bold transition-all relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus ${billingPeriod === 'monthly'
                             ? 'text-fg-primary shadow-sm bg-surface-raised'
                             : 'text-fg-secondary hover:text-fg-primary'
                             }`}
@@ -154,13 +154,13 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                         role="radio"
                         aria-checked={billingPeriod === 'annual'}
                         onClick={() => selectBillingPeriod('annual')}
-                        className={`px-6 py-2.5 rounded-g-control text-sm font-bold transition-all relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus ${billingPeriod === 'annual'
+                        className={`min-h-11 px-6 py-2.5 rounded-g-control text-sm font-bold transition-all relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus ${billingPeriod === 'annual'
                             ? 'text-fg-primary shadow-sm bg-surface-raised'
                             : 'text-fg-secondary hover:text-fg-primary'
                             }`}
                     >
                         {copy.billing.annual[language]}
-                        <span className="absolute -top-3 -right-3 bg-action-primary-bg text-fg-on-brand text-g-app-caption font-black px-2 py-0.5 rounded-full shadow-g-raised">
+                        <span className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/4 rounded-full bg-action-primary-bg px-2 py-0.5 text-g-app-caption font-black text-fg-on-brand shadow-g-raised">
                             -20%
                         </span>
                     </button>
@@ -198,7 +198,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             className={`relative rounded-g-card p-6 border hover:shadow-2xl transition-all duration-300 group flex flex-col ${isPopular
-                                ? 'bg-surface-raised border-primary shadow-g-raised shadow-primary/10 scale-105 z-10'
+                                ? 'bg-surface-raised border-primary shadow-g-raised shadow-primary/10 z-10'
                                 : 'bg-surface-sunken/40 border-border-subtle hover:border-primary/40'
                                 }`}
                         >

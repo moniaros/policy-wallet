@@ -94,7 +94,7 @@ export function UserMenu({
                         {displayName}
                     </div>
                     {user.email && user.email !== displayName && (
-                        <div className="text-xs text-stone-500 dark:text-stone-400 truncate">
+                        <div className="text-xs text-stone-500 dark:text-stone-400 truncate" title={user.email}>
                             {user.email}
                         </div>
                     )}

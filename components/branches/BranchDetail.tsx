@@ -232,10 +232,10 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                         className="flex items-center justify-between gap-3 rounded-g-control border border-border-subtle bg-surface-raised px-4 py-3 transition-colors hover:border-border-focus"
                                     >
                                         <div className="min-w-0">
-                                            <p className="truncate text-g-app-body-sm font-bold text-fg-primary">
+                                            <p className="truncate text-g-app-body-sm font-bold text-fg-primary" title={displayInsurerName(policy.insurerName) || undefined}>
                                                 {displayInsurerName(policy.insurerName) || "—"}
                                             </p>
-                                            <p className="truncate text-xs text-muted-foreground">
+                                            <p className="truncate text-xs text-muted-foreground" title={assetLabel || displayPolicyNumber(policy.policyNumber) || undefined}>
                                                 {assetLabel || displayPolicyNumber(policy.policyNumber) || "—"}
                                             </p>
                                         </div>
@@ -289,10 +289,12 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                     key={gap.id}
                                     className="rounded-g-control border border-border-subtle bg-surface-raised p-4"
                                 >
-                                    <div className="flex items-start justify-between gap-2">
-                                        <h3 className="text-g-app-body-sm font-bold text-fg-primary">{gap.title[lang]}</h3>
+                                    {/* Column on phone: the chip's full label would crush the
+                                        title to a one-character column beside it at 375px. */}
+                                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                        <h3 className="min-w-0 text-g-app-body-sm font-bold text-fg-primary sm:flex-1">{gap.title[lang]}</h3>
                                         {detected && (
-                                            <span className="flex-shrink-0 rounded-full bg-state-gap-fill px-2.5 py-1 text-g-app-caption font-semibold text-state-gap">
+                                            <span className="flex-shrink-0 self-start rounded-full bg-state-gap-fill px-2.5 py-1 text-g-app-caption font-semibold text-state-gap">
                                                 {t.branches.detectedInPortfolio}
                                             </span>
                                         )}
@@ -346,7 +348,10 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                         href={`/wallet/${policy.id}#dates`}
                                         className="flex items-center justify-between gap-3 rounded-g-control border border-border-subtle bg-surface-raised px-4 py-3 transition-colors hover:border-border-focus"
                                     >
-                                        <p className="truncate text-g-app-body-sm font-bold text-fg-primary">
+                                        <p
+                                            className="truncate text-g-app-body-sm font-bold text-fg-primary"
+                                            title={[displayInsurerName(policy.insurerName), policyAssetIdentifier(policy)].filter(Boolean).join(' · ') || undefined}
+                                        >
                                             {/* Insurer + asset identifier through the shared
                                                 primitive — two same-insurer renewals in one
                                                 branch are otherwise the same row twice. */}
@@ -378,7 +383,7 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                 <Link
                                     key={action.id}
                                     href={target}
-                                    className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 py-2 text-g-app-caption font-semibold text-fg-secondary transition-colors hover:border-border-focus hover:text-fg-brand"
+                                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 py-2 text-g-app-caption font-semibold text-fg-secondary transition-colors hover:border-border-focus hover:text-fg-brand"
                                 >
                                     {action.label[lang]}
                                     <ArrowRight className="h-3.5 w-3.5" aria-hidden />

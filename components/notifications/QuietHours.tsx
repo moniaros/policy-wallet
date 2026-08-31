@@ -56,6 +56,10 @@ export function QuietHours({ initial }: QuietHoursProps) {
                     </label>
                     <p className="text-caption text-muted-foreground mt-1">{copy.description}</p>
                 </div>
+                {/* The wrapping label is the 44px target (WCAG 2.5.8 equivalent
+                    control); the box itself stays 24px — a 44px checkbox is not
+                    what anyone draws. */}
+                <label htmlFor="quietHoursEnabled" className="grid h-11 w-11 shrink-0 cursor-pointer place-items-center">
                 <input
                     id="quietHoursEnabled"
                     name="quietHoursEnabled"
@@ -68,8 +72,9 @@ export function QuietHours({ initial }: QuietHoursProps) {
                     // that criterion asks for when the control has a real label —
                     // `htmlFor="quietHoursEnabled"` above makes the whole title a
                     // second, much larger target for the same toggle.
-                    className="mt-1 h-6 w-6 shrink-0 accent-[var(--primary)]"
+                    className="h-6 w-6 shrink-0 accent-[var(--primary)]"
                 />
+                </label>
             </div>
 
             {enabled && (

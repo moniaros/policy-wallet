@@ -66,7 +66,7 @@ export function UpdatesScreen({ model }: { model: UpdatesModel }) {
                             <Row
                                 key={item.id}
                                 onClick={() => open(item)}
-                                primary={<span className="flex items-center gap-g-2">{item.unread && <Badge tone="brand" className="whitespace-nowrap">{t.app.updates.unread}</Badge>}<span>{item.title}</span></span>}
+                                primary={<span className="flex items-center gap-g-2">{item.unread && <Badge tone="brand" className="shrink-0 whitespace-nowrap">{t.app.updates.unread}</Badge>}<span>{item.title}</span></span>}
                                 secondary={[item.objectLabel, item.failedReading ? t.app.updates.failedReading : item.message].filter(Boolean).join(" · ")}
                                 trailing={<span className="whitespace-nowrap">{when(item.at)}</span>}
                             />

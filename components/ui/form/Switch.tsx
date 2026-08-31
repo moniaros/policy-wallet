@@ -82,7 +82,7 @@ export function Switch({
                 aria-describedby={description ? descId : undefined}
                 disabled={locked}
                 onClick={() => onCheckedChange(!checked)}
-                className="-mr-1.5 grid h-11 w-14 shrink-0 place-items-center rounded-xl transition disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-xl transition disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
                 {/* The OFF track is a mid grey, not a faint one: WCAG 2.2 1.4.11
                     wants 3:1 for the control against its background, and the

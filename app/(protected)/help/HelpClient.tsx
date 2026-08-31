@@ -210,7 +210,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                 Support entry points live in the support band. */}
                             <button
                                 onClick={() => router.push('/wallet')}
-                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-g-control bg-action-primary-bg text-fg-on-brand text-sm font-bold hover:bg-action-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                className="inline-flex min-h-11 items-center gap-2 px-4 py-2.5 rounded-g-control bg-action-primary-bg text-fg-on-brand text-sm font-bold hover:bg-action-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                             >
                                 {t.help.openWallet}
                                 <ArrowRight className="w-4 h-4" />
@@ -249,7 +249,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                     key={category}
                                     onClick={() => setActiveCategory(category)}
                                     aria-pressed={isActive}
-                                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-g-control text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus ${
+                                    className={`inline-flex min-h-11 items-center gap-2 px-3 py-2 rounded-g-control text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus ${
                                         isActive
                                             ? 'bg-action-primary-bg text-fg-on-brand'
                                             : 'bg-surface-sunken text-fg-secondary hover:bg-surface-wash'
@@ -330,7 +330,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                     <h3 className="text-base font-black text-fg-primary mb-2 leading-tight group-hover:text-fg-brand  transition-colors">
                                         {article.title}
                                     </h3>
-                                    <p className="text-sm text-fg-secondary line-clamp-2 mb-4">{article.subtitle}</p>
+                                    <p className="text-sm text-fg-secondary line-clamp-2 mb-4" title={article.subtitle}>{article.subtitle}</p>
                                     <div className="inline-flex items-center gap-1.5 text-xs font-bold text-fg-brand">
                                         {t.help.openGuide}
                                         <ChevronRight className="w-3.5 h-3.5" />
@@ -347,12 +347,12 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                             <div className="w-10 h-10 rounded-g-control bg-surface-wash text-fg-brand flex items-center justify-center">
                                 <GraduationCap className="w-5 h-5" />
                             </div>
-                            <h3 className="text-base font-black text-fg-primary">{t.help.dictionaryTitle}</h3>
+                            <h3 className="min-w-0 text-base font-black text-fg-primary">{t.help.dictionaryTitle}</h3>
                         </div>
                         <p className="text-sm text-fg-secondary mb-5">{t.help.dictionaryDesc}</p>
                         <button
                             onClick={() => router.push('/lexiko')}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-g-control bg-action-primary-bg text-fg-on-brand text-sm font-bold hover:bg-action-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                            className="inline-flex min-h-11 items-center gap-2 px-4 py-2.5 rounded-g-control bg-action-primary-bg text-fg-on-brand text-sm font-bold hover:bg-action-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                         >
                             {t.help.openDictionary}
                             <ArrowRight className="w-4 h-4" />
@@ -364,7 +364,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                             <div className="w-10 h-10 rounded-g-control bg-surface-wash text-fg-brand flex items-center justify-center">
                                 <Mail className="w-5 h-5" />
                             </div>
-                            <h3 className="text-base font-black text-fg-primary">{t.help.emailSupport}</h3>
+                            <h3 className="min-w-0 text-base font-black text-fg-primary">{t.help.emailSupport}</h3>
                         </div>
                         <p className="text-sm text-fg-secondary mb-5">{t.help.emailDesc}</p>
                         <a
@@ -381,12 +381,12 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                             <div className="w-10 h-10 rounded-g-control bg-surface-wash text-fg-brand flex items-center justify-center">
                                 <MessageCircle className="w-5 h-5" />
                             </div>
-                            <h3 className="text-base font-black text-fg-primary">{t.help.communityChat}</h3>
+                            <h3 className="min-w-0 text-base font-black text-fg-primary">{t.help.communityChat}</h3>
                         </div>
                         <p className="text-sm text-fg-secondary mb-5">{t.help.communityDesc}</p>
                         <button
                             onClick={() => router.push('/agent')}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-g-control border border-border-subtle text-fg-primary text-sm font-bold hover:bg-surface-sunken transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
+                            className="inline-flex min-h-11 items-center gap-2 px-4 py-2.5 rounded-g-control border border-border-subtle text-fg-primary text-sm font-bold hover:bg-surface-sunken transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                         >
                             {t.help.openAdvisorPage}
                             <ArrowRight className="w-4 h-4" />

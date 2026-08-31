@@ -1,0 +1,18 @@
+# DASHBOARD_PROGRESS — the audit ladder (D0–D8)
+
+Run started 2026-08-31. Instruments first, evidence always; the role doing the
+work is named per row (test engineer writes probes, product engineer fixes
+what they prove). Baselines: the OLD build at :3000 (main checkout, NEW-UI);
+the audited app: this worktree at :3100.
+
+| id | goal | role | status | artefacts | assumptions |
+|---|---|---|---|---|---|
+| D0 | Harness | test engineer | **IN PROGRESS** | playwright.audit.config.ts (5 devices × themes-in-spec, no webServer, workers=1) · tests/audit/{helpers,audit.setup,visual.spec}.ts · main-config testIgnore guard · build-identity assertions (old 307s /dashboard, new 301s it) | A-32..A-35 |
+| D1 | Inventory | test engineer | pending | docs/audit/information-inventory.{json,md} for the six old routes | |
+| D2 | Probes A2–A6 | test engineer | pending | tests/audit/{layout,a11y,contrast,performance,consistency}.spec.ts + docs/audit/*-baseline.json | |
+| D3 | Report | test engineer | pending | docs/audit/dashboard-audit.md (ranked, evidenced, incl. «what works») | |
+| D4 | Widgets | product engineer | pending | styleguide state demos + presentations sheet | |
+| D5 | Dashboard fixes | product engineer | pending | probes green on / at :3100; density assertions | |
+| D6 | Sibling fixes | product engineer | pending | probes green on /see /policies /money /updates /adviser /me | |
+| D7 | Gates | both | pending | eight gates green; docs/audit/retired-information.md | |
+| D8 | Handover | both | pending | handover addendum, accepted visual baseline | |

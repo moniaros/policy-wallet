@@ -33,7 +33,7 @@ export function GlossaryHint({ hint, className = "" }: { hint: GlossaryHintData;
             <summary className="inline cursor-pointer list-none underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
                 {hint.heading}
             </summary>
-            <span className="mt-1.5 block rounded-g-control border border-border-subtle bg-surface-sunken p-3 text-g-app-caption font-normal normal-case leading-relaxed tracking-normal text-fg-secondary">
+            <span className="mt-1.5 block w-64 max-w-[78vw] rounded-g-control border border-border-subtle bg-surface-sunken p-3 text-g-app-caption font-normal normal-case leading-relaxed tracking-normal text-fg-secondary">
                 {hint.definition}{" "}
                 <Link href={hint.href} className="inline-flex min-h-11 min-w-11 items-center justify-center font-semibold text-fg-brand underline-offset-2 hover:underline">
                     {hint.moreLabel}

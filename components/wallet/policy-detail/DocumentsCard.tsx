@@ -115,7 +115,7 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                         <FileText className="h-4 w-4 text-fg-secondary" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="truncate text-g-app-body-sm font-semibold text-fg-primary">{doc.fileName}</p>
+                                        <p className="truncate text-g-app-body-sm font-semibold text-fg-primary" title={doc.fileName}>{doc.fileName}</p>
                                         {/* A policy accumulates documents over its life — the
                                             original schedule, a renewal endorsement, an amended
                                             schedule after a mid-term change — and insurer PDFs
