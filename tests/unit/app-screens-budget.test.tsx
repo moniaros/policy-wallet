@@ -84,7 +84,7 @@ describe("/see — «Να δείτε»", () => {
         const { container } = wrap(<SeeScreen model={seeModel({ tiers: { now: [], month: [], later: [] }, nextExpiryDays: 37, gapsNotChecked: true })} />)
         expect(container.textContent).toContain("Δεν βρήκα κάτι που να αξίζει να δείτε αυτή τη στιγμή.")
         expect(container.textContent).toContain("Η επόμενη λήξη είναι σε 37 ημέρες.")
-        expect(container.textContent).toContain("Κενά κάλυψης δεν τα έλεγξα")
+        expect(container.textContent).toContain("Δεν έλεγξα κενά κάλυψης")
     })
 })
 

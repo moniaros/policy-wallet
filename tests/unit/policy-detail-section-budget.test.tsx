@@ -107,6 +107,6 @@ describe("/policies/[id] — the ≤ 8 section budget and ≤ 2 AI entry points 
     })
     it("an expiring policy leads with «Το πλήρωσα»; an active one with the question", () => {
         expect(renderScreen(model({ lifecycle: "expiring_soon", daysUntilExpiry: 15 })).container.textContent).toContain("Το πλήρωσα")
-        expect(renderScreen(model()).container.textContent).toContain("Ρωτάτε με απλά λόγια")
+        expect(renderScreen(model()).container.textContent).toContain("Ρωτήστε με απλά λόγια")
     })
 })
