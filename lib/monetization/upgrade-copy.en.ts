@@ -40,7 +40,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
     },
     advanced_gap_detection: {
         headline: "See what the coverage gap means",
-        body: "We detected a possible coverage gap. Upgrade to see what it means, where it comes from and what you can do.",
+        body: "I found a possible coverage gap. Upgrade to see what it means, where it comes from and what you can do.",
         primaryCta: "See the coverage gap",
         secondaryCta: "Not now",
         benefits: [

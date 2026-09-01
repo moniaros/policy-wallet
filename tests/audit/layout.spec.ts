@@ -67,6 +67,7 @@ async function wideElements(page: Page): Promise<string[]> {
             const cs = getComputedStyle(el)
             if (cs.display === "none" || cs.visibility === "hidden") return
             if (el.closest('[aria-hidden="true"]')) return
+            if (el.closest("details:not([open])") && !el.closest("summary")) return // closed-details geometry ghost
             if (scrollsX(el.parentElement)) return
             const id = el.id ? `#${el.id}` : ""
             out.push(`${el.tagName.toLowerCase()}${id} right=${Math.round(r.right)} vw=${vw} «${(el.textContent || "").trim().slice(0, 40)}»`)

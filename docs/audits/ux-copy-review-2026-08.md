@@ -57,6 +57,10 @@ inventory STATUS_WORDS, density fold/row regexes, the loss gate's rename
 bridge («Κενό» in the old contract matches «Χωρίς κάλυψη» live), R-01, and
 docs/voice.md.
 
+- The help quick-action shortcuts (the hub's last informal island) were
+  formalized in the same pass, and the gap-detection upgrade trigger now speaks
+  as the analyst («Εντόπισα πιθανό κενό κάλυψης», EN 'I found…').
+
 ## Deliberately NOT changed (and why)
 
 - **`common.aiConsentBody`** — the Article 9 consent wording renders verbatim
@@ -70,6 +74,11 @@ docs/voice.md.
   be churn.
 - **«δεν έχετε»** on the coverage map — short, factual, already distinct from
   the gap state; the /see note now says so explicitly.
+- **The legacy catalogue's we-voice** («εντοπίσαμε», «σας ειδοποιούμε» across
+  old-route strings in `lib/i18n/translations/el.ts`) — those surfaces are
+  scheduled for deletion (A-25); rewriting their voice now would be churn on
+  screens the rebuild replaces. The two notification-settings strings that DO
+  render on rebuilt surfaces were moved to first person (changes 14–15).
 - **Catchy-heading suggestions (brief §7)** — the screen names (Η προστασία
   σας, Να δείτε, Ο φάκελός σας, Τα χρήματά σας) are nav anchors pinned across
   tab bar, headings and tests; renaming them buys memorability at the cost of

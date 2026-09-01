@@ -268,7 +268,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                         <h2 className="text-lg font-black text-fg-primary tracking-tight mb-4">
                             {t.help.quickActions}
                         </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 desk:grid-cols-4 gap-4">
                             {taskShortcuts.map((task) => (
                                 <button
                                     key={task.id}
