@@ -210,6 +210,23 @@ export function composeFindings(
             engineVersion: g.engineVersion,
         })
     }
+
+    // Renewal intelligence: an expiry tells you WHEN, which is the least useful
+    // half. What decides whether you renew as-is is what this policy already
+    // has open against it — so each expiry carries the count of the other
+    // findings on the same policy.
+    //
+    // Deliberately NOT a premium comparison against the previous term: that
+    // needs two term-bearing documents with extractions on one policy, and no
+    // policy in the corpus has them (checked 2026-09-01: 2 policies hold any
+    // term-bearing document, 1 an extraction, 0 a comparable prior term). A
+    // premium delta would have been a component that never rendered, or an
+    // invitation to invent one.
+    for (const f of out) {
+        if (f.kind !== "expiry") continue
+        const checks = out.filter((o) => o.kind !== "expiry" && o.object.policyId === f.object.policyId).length
+        if (checks > 0) f.renewalChecks = checks
+    }
     return out
 }
 

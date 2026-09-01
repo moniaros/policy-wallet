@@ -34,6 +34,7 @@ export function FindingCard({
     sentence,
     sourceLine,
     whyYou,
+    renewalChecks,
     trailing,
     openHref,
     helpHref,
@@ -46,6 +47,8 @@ export function FindingCard({
     /** «Ασφαλιστήριο κατοικίας · σελ. 4» / «… · ενότητα καλύψεων — δεν αναφέρεται» — composed by the page from the source pointer. */
     sourceLine: string
     whyYou?: string
+    /** «Βρήκα 2 σημεία…» — rendered only when the model counted real findings. */
+    renewalChecks?: string
     /** «8 ημέρες» for an expiry; nothing otherwise. */
     trailing?: string
     openHref: string
@@ -74,6 +77,7 @@ export function FindingCard({
                 <span data-fact="finding.source">{sourceLine}</span>
             </p>
             {whyYou && <p className="mt-g-2 text-g-app-body-sm text-fg-primary">{whyYou}</p>}
+            {renewalChecks && <p className="mt-g-2 text-g-app-body-sm text-fg-primary" data-fact="finding.renewalChecks">{renewalChecks}</p>}
             <div className="mt-g-4 flex flex-wrap gap-g-2">
                 <Link href={openHref} className={buttonClassName({ variant: "secondary", size: "sm" })}>{labels.open}</Link>
                 <Link href={helpHref} className={buttonClassName({ variant: "ghost", size: "sm" })}>{labels.help}</Link>

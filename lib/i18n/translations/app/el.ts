@@ -88,6 +88,7 @@ export const appEl = {
             sectionFound: '{document} · {section}',
         },
         sourceLabel: 'Πού το είδα:',
+        renewalChecks: '{count, plural, one {Πριν το ανανεώσετε: # σημείο αξίζει να το δείτε.} other {Πριν το ανανεώσετε: # σημεία αξίζει να τα δείτε.}}',
         open: 'Άνοιγμα ασφαλιστηρίου',
         help: 'Ζητήστε βοήθεια',
         dismiss: 'Δεν με αφορά',

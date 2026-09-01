@@ -119,6 +119,7 @@ export function SeeScreen({ model, filter = "all" }: { model: SeeModel; filter?:
                                                 sentence={resolveSentence(f, lang, t)}
                                                 sourceLine={resolveSource(f, lang, t)}
                                                 whyYou={resolveWhyYou(f, lang, t)}
+                                                renewalChecks={f.renewalChecks ? formatPlural(t.app.finding.renewalChecks, { count: f.renewalChecks }, lang) : undefined}
                                                 trailing={typeof f.daysUntilExpiry === "number" ? formatPlural(t.app.finding.daysUntil, { count: f.daysUntilExpiry }, lang) : undefined}
                                                 openHref={openHref(f)}
                                                 helpHref={helpHref(f)}

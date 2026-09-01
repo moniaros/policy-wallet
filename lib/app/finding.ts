@@ -64,6 +64,10 @@ export const FindingSchema = z.object({
     whyYou: MessageRefSchema.extend({ profileField: z.string().min(1) }).nullable().optional(),
     /** Days until the relevant expiry, for the trailing figure; null when none. */
     daysUntilExpiry: z.number().int().nullable().optional(),
+    /** Expiry findings only: how many OTHER open findings sit on the SAME policy
+     *  — the things worth reading before you decide to renew. A real count of
+     *  findings that already passed the gate, never an estimate. */
+    renewalChecks: z.number().int().min(0).optional(),
     ruleId: z.string().min(1),
     engineVersion: z.string().min(1).nullable().optional(),
     dismissedReason: z.enum(DISMISS_REASONS).nullable().optional(),

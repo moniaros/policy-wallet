@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3201
+# bundle entries: 3202
 # inline entries: 4801 across 214 files
 # ternary entries: 285 across 44 files
 # call entries: 1212 across 78 files
@@ -633,6 +633,7 @@ bundle	app.finding.page	"σελ. {page}"
 bundle	app.finding.reasons.chosen	"Το ξέρω, το επέλεξα"
 bundle	app.finding.reasons.not_relevant	"Δεν με αφορά"
 bundle	app.finding.reasons.renewed	"Το ανανέωσα ήδη"
+bundle	app.finding.renewalChecks	"{count, plural, one {Πριν το ανανεώσετε: # σημείο αξίζει να το δείτε.} other {Πριν το ανανεώσετε: # σημεία αξίζει να τα δείτε.}}"
 bundle	app.finding.section.conditions	"όροι"
 bundle	app.finding.section.coverages	"ενότητα καλύψεων"
 bundle	app.finding.section.exclusions	"εξαιρέσεις"

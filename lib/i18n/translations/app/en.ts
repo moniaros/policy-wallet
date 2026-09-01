@@ -82,6 +82,7 @@ export const appEn: typeof appEl = {
             sectionFound: '{document} · {section}',
         },
         sourceLabel: 'Where I saw it:',
+        renewalChecks: '{count, plural, one {Before you renew: # point is worth a look.} other {Before you renew: # points are worth a look.}}',
         open: 'Open the policy',
         help: 'Ask for help',
         dismiss: 'Not for me',
