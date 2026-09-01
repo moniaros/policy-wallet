@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { LEGAL_POLICY_VERSIONS } from "@/lib/compliance/consent"
 import { PRIMARY_NAV } from "@/lib/app/navigation"
 import { LargeTitleNav } from "@/src/design-system/shell"
 import { AppSection } from "@/src/design-system/app-layout"
@@ -19,9 +20,42 @@ import { AddPolicyClient } from "@/components/wallet/AddPolicyClient"
  * per-document and revocable from /me/privacy.
  */
 export function AddGate({ insurers, types, hasAccountConsent }: { insurers: { id: string; name: string }[]; types: { id: string; name: string; slug: string }[]; hasAccountConsent: boolean }) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const [agreed, setAgreed] = useState(hasAccountConsent)
+    // The analysis pipeline's enforcement anchor is the ACCOUNT-level consent
+    // (user.aiProcessingConsentVersion — the orchestrator refuses without it),
+    // so the switch must persist it before the dropzone unlocks. Fail closed:
+    // if the POST fails the switch stays off and the reason renders.
+    const [persisted, setPersisted] = useState(hasAccountConsent)
+    const [saving, setSaving] = useState(false)
+    const [failed, setFailed] = useState(false)
     const brand = { href: PRIMARY_NAV[0].href, label: t.app.nav.brand }
+
+    const onToggle = async (next: boolean) => {
+        if (!next) { setAgreed(false); return }
+        if (persisted) { setAgreed(true); return }
+        setSaving(true)
+        setFailed(false)
+        try {
+            const response = await fetch("/api/v1/consents", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    consentType: "ai_processing",
+                    locale: language,
+                    source: "add_gate",
+                    policyVersion: LEGAL_POLICY_VERSIONS.ai_processing,
+                }),
+            })
+            if (!response.ok) throw new Error("consent not persisted")
+            setPersisted(true)
+            setAgreed(true)
+        } catch {
+            setFailed(true)
+        } finally {
+            setSaving(false)
+        }
+    }
 
     return (
         <>
@@ -31,9 +65,10 @@ export function AddGate({ insurers, types, hasAccountConsent }: { insurers: { id
                 <p className="text-g-app-body text-fg-primary">{t.common.aiConsentBody}</p>
                 <p className="mt-g-2 text-g-app-body-sm text-fg-secondary">{t.app.add.gatePlain}</p>
                 <div className="mt-g-4">
-                    <Switch checked={agreed} onCheckedChange={setAgreed} label={t.app.add.gateSwitch} />
+                    <Switch checked={agreed} onCheckedChange={onToggle} disabled={saving} label={t.app.add.gateSwitch} />
                 </div>
-                {!agreed && <p className="mt-g-2 text-g-app-body-sm text-fg-secondary">{t.app.add.gateLocked}</p>}
+                {failed && <p className="mt-g-2 text-g-app-body-sm text-state-gap" role="alert">{t.app.add.gateError}</p>}
+                {!agreed && !failed && <p className="mt-g-2 text-g-app-body-sm text-fg-secondary">{t.app.add.gateLocked}</p>}
             </AppSection>
             {agreed && (
                 <AppSection id="upload">
