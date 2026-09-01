@@ -364,11 +364,15 @@ export async function getTokenBalance(userId: string) {
         where: { userId },
     })
 
+    // `remaining` nets off in-flight claims as well as recorded usage: a
+    // reservation is money already promised to a running step, so showing it as
+    // available is what let two concurrent claimants both be admitted.
     return {
         purchased_tokens: balance ? Number(balance.purchasedTokens) : 0,
         used_tokens: balance ? Number(balance.usedTokens) : 0,
+        reserved_tokens: balance ? Number(balance.reservedTokens) : 0,
         remaining_tokens: balance
-            ? Number(balance.purchasedTokens) - Number(balance.usedTokens)
+            ? Number(balance.purchasedTokens) - Number(balance.usedTokens) - Number(balance.reservedTokens)
             : 0,
     }
 }
@@ -506,11 +510,25 @@ export async function reserveTokens(
         return { allowed: true, source: 'subscription' }
     }
 
-    // Subscription exhausted — check purchased tokens for non-free tiers.
-    // IMPORTANT: do NOT increment reserved_tokens here; purchased usage is tracked separately.
+    // Subscription exhausted — claim against purchased tokens for non-free tiers.
+    //
+    // This used to read the balance and then return `allowed` without recording
+    // anything, so the check and the spend were separated by an entire model
+    // call. Two steps running concurrently (clarity and gap detection now do)
+    // both read the same balance and were both admitted, overdrawing the pool
+    // by up to one estimate per extra claimant. The claim is now a single
+    // conditional UPDATE on token_balances.reserved_tokens — the purchased-pool
+    // twin of the subscription reserve above — so the row lock serialises
+    // concurrent claimants and the loser gets a truthful `insufficient_tokens`
+    // instead of silently overspending.
     if (tier !== 'free') {
-        const balance = await getTokenBalance(userId)
-        if (balance.remaining_tokens >= estimatedTokens) {
+        const claimed = await prisma.$executeRaw`
+            UPDATE token_balances
+            SET reserved_tokens = reserved_tokens + ${BigInt(estimatedTokens)}
+            WHERE user_id = ${userId}
+              AND (purchased_tokens - used_tokens - reserved_tokens) >= ${BigInt(estimatedTokens)}`
+
+        if (claimed === 1) {
             return { allowed: true, source: 'purchased' }
         }
         return { allowed: false, reason: 'insufficient_tokens' }
@@ -525,8 +543,21 @@ export async function reserveTokens(
  */
 export async function releaseTokenReservation(
     userId: string,
-    estimatedTokens: number
+    estimatedTokens: number,
+    source: 'subscription' | 'purchased' = 'subscription'
 ): Promise<void> {
+    // The two pools keep their in-flight counters in different tables, so the
+    // release has to go where the claim went. A purchased claim released
+    // against monthly_token_usage would leak the purchased pool for ever — it
+    // has no monthly reset to rescue it.
+    if (source === 'purchased') {
+        await prisma.$executeRaw`
+            UPDATE token_balances
+            SET reserved_tokens = GREATEST(0, reserved_tokens - ${BigInt(estimatedTokens)})
+            WHERE user_id = ${userId}`
+        return
+    }
+
     const { key: monthKey } = billingMonth()
     await prisma.$executeRaw`
         UPDATE monthly_token_usage
@@ -543,7 +574,7 @@ export async function releaseTokenReservation(
  */
 export async function clearOrphanedReservations(): Promise<number> {
     const { key: monthKey } = billingMonth()
-    return prisma.$executeRaw`
+    const monthly = await prisma.$executeRaw`
         UPDATE monthly_token_usage m
         SET reserved_tokens = 0
         WHERE m.month = ${monthKey}::date
@@ -552,6 +583,20 @@ export async function clearOrphanedReservations(): Promise<number> {
               SELECT 1 FROM policy_analysis_runs r
               WHERE r.user_id = m.user_id AND r.status = 'running'
           )`
+
+    // The purchased pool needs the same rescue, and needs it more: a leaked
+    // subscription reservation dies at the next billing month, a leaked
+    // purchased claim is gone until someone notices.
+    const purchased = await prisma.$executeRaw`
+        UPDATE token_balances b
+        SET reserved_tokens = 0
+        WHERE b.reserved_tokens > 0
+          AND NOT EXISTS (
+              SELECT 1 FROM policy_analysis_runs r
+              WHERE r.user_id = b.user_id AND r.status = 'running'
+          )`
+
+    return monthly + purchased
 }
 
 /**

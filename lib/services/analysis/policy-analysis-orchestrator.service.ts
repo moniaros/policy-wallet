@@ -1449,6 +1449,76 @@ export class PolicyAnalysisOrchestratorService {
         }
         const metadata = this.buildMetadata(policy, extractionStep.result)
 
+        // Gap detection reads only `metadata` and the extraction result — it
+        // never touches clarityResult — so it runs CONCURRENTLY with the clarity
+        // step rather than behind it. Measured 2026-09-01: clarity 10.8s and
+        // gaps 10.1s ran back to back inside a 64.3s run; overlapping them
+        // returns roughly the shorter of the two to the user.
+        //
+        // Settled explicitly rather than via Promise.all: if the clarity block
+        // throws, an in-flight gap rejection must not surface as an unhandled
+        // rejection, and each step keeps the exact degradation semantics it had
+        // when the two were sequential. Both reserve through reserveTokens,
+        // which claims atomically against each pool, so two concurrent claims
+        // cannot overdraw a budget between them.
+        const gapStepInFlight = shouldRun("gap_detection")
+            ? this.executeStepWithRetry({
+                    runId,
+                    leaseId,
+                    policyId: policy.id,
+                    userId: run.userId,
+                    userRoles,
+                    stepKey: "gap_detection",
+                    estimatedTokens: tokenBudget.byStep.gap_detection,
+                    allowFallbackModel: true,
+                    allowProviderFailover: failoverEnabled,
+                    preferredProvider: primaryProvider,
+                    // Use structured extraction context instead of re-sending the PDF (~50-100K token savings)
+                    includesDocumentContext: false,
+                    capabilityOperation: "analyzeGaps",
+                    documentMimeType: docStep.result.document?.mimeType,
+                    failoverDataAllowed: fullFailoverAllowed,
+                    execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
+                        const gapAnalysis = await service.analyzeGaps(
+                            null, // No PDF re-send: use structuredContext instead
+                            metadata,
+                            gapDefinitions,
+                            {
+                                userId: run.userId,
+                                policyId: policy.id,
+                                modelOverride,
+                                provider,
+                                remediationAttempt,
+                                fallbackType:
+                                    remediationType === "provider_failover" ||
+                                    remediationType === "model_fallback"
+                                        ? remediationType
+                                        : undefined,
+                                structuredContext: extractionStep.result,
+                                operatorGuidance: guidanceFor("analyzeGaps"),
+                            }
+                        )
+                        const total = Math.max(gapDefinitions.length, 1)
+                        const checksPassed = Math.min(gapAnalysis.gapResults.length, total)
+                        return {
+                            result: gapAnalysis,
+                            successPct: Math.round((checksPassed / total) * 100),
+                            logMessage: "Gap detection completed",
+                            logJson: {
+                                checked: gapDefinitions.length,
+                                returned: gapAnalysis.gapResults.length,
+                                explained: gapAnalysis.gapResults.length,
+                                provider,
+                            },
+                            usage: gapAnalysis.usage,
+                        }
+                    },
+                }).then(
+                  (value) => ({ ok: true as const, value }),
+                  (error) => ({ ok: false as const, error })
+              )
+            : null
+
         let clarityResult: AIPolicyClarityResponse = storedClarity
         if (shouldRunClarityGroup && shouldRun("plain_language_translation")) {
             try {
@@ -1592,58 +1662,9 @@ export class PolicyAnalysisOrchestratorService {
         let gapResult: AIGapAnalysisResponse = storedGapAnalysis
         if (shouldRun("gap_detection")) {
             try {
-                const gapStep = await this.executeStepWithRetry({
-                    runId,
-                    leaseId,
-                    policyId: policy.id,
-                    userId: run.userId,
-                    userRoles,
-                    stepKey: "gap_detection",
-                    estimatedTokens: tokenBudget.byStep.gap_detection,
-                    allowFallbackModel: true,
-                    allowProviderFailover: failoverEnabled,
-                    preferredProvider: primaryProvider,
-                    // Use structured extraction context instead of re-sending the PDF (~50-100K token savings)
-                    includesDocumentContext: false,
-                    capabilityOperation: "analyzeGaps",
-                    documentMimeType: docStep.result.document?.mimeType,
-                    failoverDataAllowed: fullFailoverAllowed,
-                    execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
-                        const gapAnalysis = await service.analyzeGaps(
-                            null, // No PDF re-send: use structuredContext instead
-                            metadata,
-                            gapDefinitions,
-                            {
-                                userId: run.userId,
-                                policyId: policy.id,
-                                modelOverride,
-                                provider,
-                                remediationAttempt,
-                                fallbackType:
-                                    remediationType === "provider_failover" ||
-                                    remediationType === "model_fallback"
-                                        ? remediationType
-                                        : undefined,
-                                structuredContext: extractionStep.result,
-                                operatorGuidance: guidanceFor("analyzeGaps"),
-                            }
-                        )
-                        const total = Math.max(gapDefinitions.length, 1)
-                        const checksPassed = Math.min(gapAnalysis.gapResults.length, total)
-                        return {
-                            result: gapAnalysis,
-                            successPct: Math.round((checksPassed / total) * 100),
-                            logMessage: "Gap detection completed",
-                            logJson: {
-                                checked: gapDefinitions.length,
-                                returned: gapAnalysis.gapResults.length,
-                                explained: gapAnalysis.gapResults.length,
-                                provider,
-                            },
-                            usage: gapAnalysis.usage,
-                        }
-                    },
-                })
+                const settled = await gapStepInFlight!
+                if (!settled.ok) throw settled.error
+                const gapStep = settled.value
                 absorbPayload(gapStep)
                 gapResult = gapStep.result
             } catch (error) {
@@ -2356,15 +2377,23 @@ export class PolicyAnalysisOrchestratorService {
             }
 
             } finally {
-                // Release the subscription reservation on EVERY exit path —
-                // success (actual usage is recorded by trackTokenUsage in the
-                // AI service layer), failure, token-classified throws, and
-                // lost leases. Before this, the throw paths skipped the
-                // release, leaking reserved_tokens against the user's budget
-                // for the rest of the billing month. The purchased-token path
-                // does not use reserved_tokens and must not release.
-                if (reservationSource === 'subscription') {
-                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                // Release the reservation on EVERY exit path — success (actual
+                // usage is recorded by trackTokenUsage in the AI service
+                // layer), failure, token-classified throws, and lost leases.
+                // Before this, the throw paths skipped the release, leaking
+                // reserved_tokens against the user's budget for the rest of the
+                // billing month.
+                //
+                // Both pools now hold in-flight claims, and each releases where
+                // it claimed: subscription against monthly_token_usage,
+                // purchased against token_balances. A purchased claim left
+                // unreleased would not expire at the month boundary.
+                if (reservationSource) {
+                    await releaseTokenReservation(
+                        params.userId,
+                        params.estimatedTokens,
+                        reservationSource
+                    ).catch(() => {})
                 }
             }
         }

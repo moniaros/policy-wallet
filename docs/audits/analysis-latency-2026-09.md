@@ -104,22 +104,66 @@ Note `CLAUDE_MODEL_*` defaults are Sonnet-class for extraction, gaps and clarity
 more capable and more expensive per call than flash-lite. Benchmark before
 switching the fleet.
 
+## Follow-up: clarity and gaps now run concurrently (2026-09-01)
+
+Gap detection reads only `metadata` and the extraction result — it never touches
+`clarityResult` — so it no longer waits behind the clarity step. The call is
+hoisted above the clarity block and settled explicitly (not `Promise.all`), so a
+clarity throw cannot turn an in-flight gap rejection into an unhandled rejection,
+and each step keeps the degradation semantics it had when sequential.
+
+**Token reservation was made concurrency-safe first**, because two concurrent
+steps both reserve. The subscription pool was already safe — its claim is a
+single conditional `UPDATE` on `monthly_token_usage` and concurrent claimants
+serialise on the row lock. The **purchased** pool was not: it read the balance
+and returned `allowed` without recording anything, so the check and the spend
+were separated by a whole model call and two concurrent steps could both be
+admitted, overdrawing by up to one estimate per extra claimant. Now:
+
+- `token_balances.reserved_tokens` (new column, migration
+  `20260901140000_token_balance_reserved`) holds in-flight purchased claims.
+- The claim is one conditional `UPDATE` guarded on
+  `(purchased_tokens - used_tokens - reserved_tokens) >= estimate`.
+- `releaseTokenReservation` takes the source and releases where it claimed — a
+  purchased claim released against `monthly_token_usage` would leak that pool
+  for ever, as it has no monthly reset.
+- `clearOrphanedReservations` (the stale-run reaper) clears both pools.
+- `getTokenBalance().remaining_tokens` nets off reservations; showing a claim as
+  available is what admitted the second claimant in the first place.
+
+Pinned by `tests/unit/token-reservation-concurrency.test.ts` (5 tests).
+
+**Measured** — run `cmtiu5yry003qx9kiz7ba05jh`, same policy as the 64.3 s run,
+step start offsets from run start:
+
+| offset | step | seconds |
+|---|---|---|
+| t+5.0 | document_load_and_validation | 3.5 |
+| **t+9.8** | **gap_detection** | 10.8 |
+| **t+9.8** | **plain_language_translation** | 11.1 |
+| t+22.2 | coverage_mapping | 1.3 |
+| t+24.2 | savings_detection | 1.3 |
+| t+26.2 | checklist_scoring_and_actions | 1.5 |
+| t+33.7 | persistence_and_finalize | 3.9 |
+| | **total** | **38.9 s, completed** |
+
+The two steps start at the same offset — that is the overlap, and it takes
+21.9 s of sequential model time down to 11.1 s. Read the 38.9 s total carefully:
+**extraction does not appear because it was a cache hit** (same document hash,
+inside the 24 h TTL), so this is not like-for-like with the 64.3 s cold run.
+Cold, the same run would be roughly 51 s. The parallelisation itself is worth
+about 10 s.
+
 ## Still on the table, in value order
 
-1. **Parallelise clarity and gaps** (~10 s of the remaining 64). They are
-   independent — both pass `null` for the document and read only `metadata` +
-   `structuredContext` from extraction (`:1467-1475`, `:1605-1616`). *Not done:*
-   both run through `executeStepWithRetry`, which calls `reserveTokens`, so
-   concurrent execution races on the user's token budget and could surface a
-   spurious `TOKEN_LIMIT_BLOCKED`. Needs the reservation made concurrency-safe first.
-2. **Make the extraction cache permanent** (`extraction-cache.ts:16`, 24 h TTL).
+1. **Make the extraction cache permanent** (`extraction-cache.ts:16`, 24 h TTL).
    It is keyed by SHA-256 of the bytes; identical bytes cannot yield a different
    reading, so the TTL only buys re-billing.
-3. **Release the policy at extraction** — after step 2 the insurer, number, dates
+2. **Release the policy at extraction** — after step 2 the insurer, number, dates
    and premium are known. The user could see a real policy row at ~16 s while the
    deep steps continue, provided the UI stays honest about what is still running.
-4. **Defer batch translation and the protection-score refresh** off the critical path.
-5. **Local-only:** a local Postgres would remove the ~19 s of boundary time; and
+3. **Defer batch translation and the protection-score refresh** off the critical path.
+4. **Local-only:** a local Postgres would remove the ~19 s of boundary time; and
    `AI_SERVICE_TYPE=mock` makes analysis instant while working on screens.
 
 ## Separate finding, not addressed here

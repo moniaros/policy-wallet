@@ -1167,6 +1167,11 @@ model TokenBalance {
   userId          String    @unique @map("user_id")
   purchasedTokens BigInt    @default(0) @map("purchased_tokens")
   usedTokens      BigInt    @default(0) @map("used_tokens")
+  /// In-flight claims against the purchased pool, mirroring
+  /// monthly_token_usage.reserved_tokens for the subscription pool. Without it
+  /// the purchased branch of reserveTokens could only read-then-allow, so two
+  /// concurrent steps both saw the same balance and both were admitted.
+  reservedTokens  BigInt    @default(0) @map("reserved_tokens")
   lastPurchaseAt  DateTime? @map("last_purchase_at")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
