@@ -72,7 +72,7 @@ export function AddGate({ insurers, types, hasAccountConsent }: { insurers: { id
             </AppSection>
             {agreed && (
                 <AppSection id="upload">
-                    <AddPolicyClient insurers={insurers} types={types} hasAiConsent={agreed} />
+                    <AddPolicyClient insurers={insurers} types={types} hasAiConsent={agreed} chromeless />
                 </AppSection>
             )}
             <AppSection id="note">

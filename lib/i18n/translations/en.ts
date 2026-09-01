@@ -446,7 +446,7 @@ export const en: TranslationKeys = {
         coverageType: 'Coverage Type',
         insurerProvider: 'Insurer Provider',
         optional: 'Optional',
-        addToWalletAction: 'Add Policy to Wallet',
+        addToWalletAction: 'Add to your folder',
         processing: 'Processing...',
         securityNote: 'Your data is encrypted and secure.',
         selectOrEmpty: 'Select or leave empty',

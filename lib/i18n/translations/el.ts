@@ -445,7 +445,7 @@ export const el = {
         coverageType: 'Είδος ασφαλιστηρίου',
         insurerProvider: 'Ασφαλιστικός πάροχος',
         optional: 'Προαιρετικό',
-        addToWalletAction: 'Προσθήκη στο πορτοφόλι',
+        addToWalletAction: 'Προσθήκη στον φάκελο',
         processing: 'Επεξεργασία...',
         securityNote: 'Τα δεδομένα σας είναι κρυπτογραφημένα και ασφαλή.',
         selectOrEmpty: 'Επιλέξτε ή αφήστε κενό',

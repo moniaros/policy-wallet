@@ -58,7 +58,7 @@ export const subscriptionCopy = {
             en: 'Up to {count} policies'
         },
         policyLimitLabel: {
-            el: 'Όριο συμβολαίων',
+            el: 'Όριο ασφαλιστηρίων',
             en: 'Policy limit'
         },
         unlimitedPolicies: {
@@ -110,7 +110,7 @@ export const subscriptionCopy = {
             en: 'Agent collaboration'
         },
         digitalWallet: {
-            el: 'Ψηφιακό πορτοφόλι',
+            el: 'Ψηφιακός φάκελος',
             en: 'Digital wallet integration'
         },
     },
@@ -169,7 +169,7 @@ export const subscriptionCopy = {
         },
         comparison: {
             title: {
-                el: 'Σύγκριση Χαρακτηριστικών',
+                el: 'Σύγκριση χαρακτηριστικών',
                 en: 'Feature Comparison'
             },
             featureColumn: {
@@ -179,7 +179,7 @@ export const subscriptionCopy = {
         },
         faq: {
             title: {
-                el: 'Συχνές Ερωτήσεις',
+                el: 'Συχνές ερωτήσεις',
                 en: 'Frequently Asked Questions'
             },
         },

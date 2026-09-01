@@ -35,6 +35,8 @@ interface AddPolicyClientProps {
     insurers: { id: string, name: string }[]
     types: { id: string, name: string, slug: string }[]
     hasAiConsent: boolean
+    /** The /add composition provides its own title chrome — hides the internal header. */
+    chromeless?: boolean
 }
 
 type Phase = 'form' | 'reviewing'
@@ -47,7 +49,7 @@ function getAnalyzingStep(elapsed: number, t: any): string {
     return steps.stepGenerating
 }
 
-export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClientProps) {
+export function AddPolicyClient({ insurers, types, hasAiConsent, chromeless = false }: AddPolicyClientProps) {
     const { t } = useLanguage()
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
@@ -470,6 +472,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     return (
         <div className="pb-20">
             {/* Header */}
+            {!chromeless && (
             <div className="border-b border-border-hair">
                 <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
                     <button
@@ -488,6 +491,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     <div className="w-9" />
                 </div>
             </div>
+            )}
 
             <div className="max-w-3xl mx-auto px-4 py-8">
                 <AiConsentModal

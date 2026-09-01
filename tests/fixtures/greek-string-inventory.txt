@@ -2406,7 +2406,7 @@ bundle	wallet.addScan	"Προσθήκη σάρωσης"
 bundle	wallet.addToApple	"Προσθήκη στο Apple Wallet"
 bundle	wallet.addToGoogle	"Προσθήκη στο Google Wallet"
 bundle	wallet.addToWallet	"Προσθήκη στο πορτοφόλι"
-bundle	wallet.addToWalletAction	"Προσθήκη στο πορτοφόλι"
+bundle	wallet.addToWalletAction	"Προσθήκη στον φάκελο"
 bundle	wallet.addWalletDesc	"Προσθέστε αυτό το ασφαλιστήριο στο κινητό σας για γρήγορη πρόσβαση."
 bundle	wallet.advisorScreen.call	"Κλήση"
 bundle	wallet.advisorScreen.chat	"Συνομιλία"
@@ -7922,7 +7922,7 @@ inline	lib/subscription-copy.ts	'Family'
 inline	lib/subscription-copy.ts	'Plus'
 inline	lib/subscription-copy.ts	'{used} από {limit} ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Έχετε φτάσει το όριο των {limit} συμβολαίων'
-inline	lib/subscription-copy.ts	'Όριο συμβολαίων'
+inline	lib/subscription-copy.ts	'Όριο ασφαλιστηρίων'
 inline	lib/subscription-copy.ts	'Ακύρωση ανά πάσα στιγμή'
 inline	lib/subscription-copy.ts	'Ακύρωση'
 inline	lib/subscription-copy.ts	'Αναβάθμιση λογαριασμού'
@@ -7985,8 +7985,8 @@ inline	lib/subscription-copy.ts	'Προηγμένη ανάλυση AI'
 inline	lib/subscription-copy.ts	'Πρόσβαση μέχρι: {date}'
 inline	lib/subscription-copy.ts	'Συνδρομή & Χρεώσεις'
 inline	lib/subscription-copy.ts	'Συνεργασία με σύμβουλο'
-inline	lib/subscription-copy.ts	'Συχνές Ερωτήσεις'
-inline	lib/subscription-copy.ts	'Σύγκριση Χαρακτηριστικών'
+inline	lib/subscription-copy.ts	'Συχνές ερωτήσεις'
+inline	lib/subscription-copy.ts	'Σύγκριση χαρακτηριστικών'
 inline	lib/subscription-copy.ts	'Τα δεδομένα σας προστατεύονται'
 inline	lib/subscription-copy.ts	'Τι συμβαίνει αν ακυρώσω;'
 inline	lib/subscription-copy.ts	'Τρέχον Πλάνο'
@@ -7997,7 +7997,7 @@ inline	lib/subscription-copy.ts	'Φυσικά! Ξεκινήστε με το δω
 inline	lib/subscription-copy.ts	'Χαρακτηριστικό'
 inline	lib/subscription-copy.ts	'Χειροκίνητος εντοπισμός κενών'
 inline	lib/subscription-copy.ts	'Χωρίς κρυφές χρεώσεις'
-inline	lib/subscription-copy.ts	'Ψηφιακό πορτοφόλι'
+inline	lib/subscription-copy.ts	'Ψηφιακός φάκελος'
 inline	lib/subscription-copy.ts	'€0'
 inline	lib/subscription-copy.ts	'€39'
 inline	lib/subscription-copy.ts	'€4.99'

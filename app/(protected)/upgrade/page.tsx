@@ -143,6 +143,7 @@ export default function PricingPage() {
                         <Zap className="w-3.5 h-3.5" />
                         {badgeText}
                     </div>
+                    <div data-wide className="hidden" />
                     <h1 className="text-5xl md:text-7xl font-black text-fg-primary mb-8 tracking-tighter leading-none">
                         {headingTitle}
                     </h1>
