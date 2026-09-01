@@ -1,5 +1,6 @@
 export const runtime = "nodejs"
 
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getTranslations } from "@/lib/i18n"
@@ -34,5 +35,5 @@ export default async function MePage({ searchParams }: { searchParams: Promise<{
     const sections = settingsSectionsFor(dbUser.roles ?? "", { hasLiveOffers })
         .filter((s) => s.id !== "household")
         .map((s) => ({ id: s.id, href: s.href, label: t.settings.nav[s.labelKey].label, description: t.settings.nav[s.labelKey].description }))
-    return <MeScreen ledger={ledger} household={household} sections={sections} planLine={formatPlural(t.app.me.planLine, { plan: planTierName(entitlements.tier, lang), price: subscriptionCopy.tiers[entitlements.tier as "free" | "plus" | "pro"].price[lang], period: subscriptionCopy.tiers[entitlements.tier as "free" | "plus" | "pro"].period[lang] }, lang)} />
+    return <MeScreen ledger={ledger} household={household} sections={sections} user={displayPersonName(dbUser.name) ? { name: displayPersonName(dbUser.name) } : undefined} planLine={formatPlural(t.app.me.planLine, { plan: planTierName(entitlements.tier, lang), price: subscriptionCopy.tiers[entitlements.tier as "free" | "plus" | "pro"].price[lang], period: subscriptionCopy.tiers[entitlements.tier as "free" | "plus" | "pro"].period[lang] }, lang)} />
 }

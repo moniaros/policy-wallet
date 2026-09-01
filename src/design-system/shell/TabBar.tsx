@@ -31,7 +31,14 @@ export function TabBar({ items, label }: { items: ShellNavItem[]; label: string 
                                     active ? "text-fg-brand" : "text-fg-secondary"
                                 )}
                             >
-                                <Icon className="size-6" strokeWidth={active ? 2.4 : 1.8} aria-hidden />
+                                <span
+                                    className={cn(
+                                        "grid h-7 w-12 place-items-center rounded-g-pill transition-colors duration-[var(--dur-fast)]",
+                                        active && "bg-state-covered-fill"
+                                    )}
+                                >
+                                    <Icon className="size-6" strokeWidth={active ? 2.4 : 1.8} aria-hidden />
+                                </span>
                                 <span className="truncate max-[359px]:text-g-label max-[359px]:tracking-tight">{item.label}</span>
                             </Link>
                         </li>

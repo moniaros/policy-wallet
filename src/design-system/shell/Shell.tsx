@@ -3,6 +3,7 @@ import { SideRail } from "./SideRail"
 import { Sidebar } from "./Sidebar"
 import { TabBar } from "./TabBar"
 import { Fab } from "./Fab"
+import { ChromeProvider } from "./chrome-context"
 import type { ShellLabels, ShellNavItem, ShellUser } from "./types"
 
 /**
@@ -18,9 +19,13 @@ export function Shell({
     primary,
     sidebar,
     updates,
+    secondary,
     add,
     badge,
     labels,
+    closeLabel,
+    menuLabel,
+    menuBadgeLabel,
     user,
     userMenu,
     brandHref,
@@ -30,9 +35,19 @@ export function Shell({
     primary: ShellNavItem[]
     sidebar: ShellNavItem[]
     updates: ShellNavItem
+    /** Ενημερώσεις + Σύμβουλος — the phone reaches these only through the
+     *  header menu; the rail and sidebar have their own room for them. Omit it
+     *  and no menu is offered: the header keeps the brand mark. */
+    secondary?: ShellNavItem[]
     add: ShellNavItem
     badge: number
     labels: ShellLabels
+    /** Sheet dismissal label for the header menu. */
+    closeLabel?: string
+    /** Accessible name of the menu landmark — never labels.primary. */
+    menuLabel?: string
+    /** The trigger's accessible name, already pluralised with the badge count. */
+    menuBadgeLabel?: string
     user: ShellUser
     /** The account menu (the original UserMenu) — rendered by the layout so it
      * sits inside the language provider; when absent the plain card renders. */
@@ -42,6 +57,13 @@ export function Shell({
     children: ReactNode
 }) {
     return (
+        <ChromeProvider
+            value={
+                secondary && secondary.length > 0 && closeLabel && menuLabel
+                    ? { secondary, badge, labels, brandHref, saturated, closeLabel, menuLabel, menuBadgeLabel: menuBadgeLabel ?? menuLabel }
+                    : null
+            }
+        >
         <div className="min-h-screen bg-surface-base text-fg-primary [font-size:var(--text-g-app-base)]">
             <a
                 href="#main-content"
@@ -61,5 +83,6 @@ export function Shell({
             </main>
             <TabBar items={primary} label={labels.primary} />
         </div>
+        </ChromeProvider>
     )
 }

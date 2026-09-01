@@ -1,5 +1,7 @@
 "use client"
 
+import { getBranchIcon } from "@/lib/insurance/branch-icons"
+import { insurerInitials } from "@/lib/wallet/policy-identity"
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -11,7 +13,7 @@ import { LargeTitleNav } from "@/src/design-system/shell"
 import { AppSection, GroupHeader, GroupedList, Row } from "@/src/design-system/app-layout"
 import { SegmentedControl } from "@/src/design-system/segmented-control"
 import { SearchField, StatusChip, buttonClassName } from "@/src/design-system/primitives"
-import { PlatformNote } from "@/src/design-system/app"
+import { PlatformNote, BranchTile } from "@/src/design-system/app"
 
 type Lens = "line" | "expiry" | "person"
 const EXPIRING_DAYS = 45
@@ -80,6 +82,9 @@ export function PoliciesScreen({ model }: { model: PoliciesModel }) {
     }
     const trailing = (r: PolicyRow) => (r.state ? <StatusChip state={r.state}>{stateLabels[r.state]}</StatusChip> : null)
     const primary = (r: PolicyRow) => [r.label, r.asset].filter(Boolean).join(" · ") || r.number || r.lineLabel
+    // The two facts a reader recognises a row by before reading it: what kind
+    // of thing it insures, and who insures it.
+    const tile = (r: PolicyRow) => <BranchTile icon={getBranchIcon(r.line)} initials={insurerInitials(r.insurer)} />
 
     if (model.rows.length === 0 && model.expired.length === 0) {
         return (
@@ -118,7 +123,7 @@ export function PoliciesScreen({ model }: { model: PoliciesModel }) {
                             <GroupHeader count={g.rows.length}>{g.title}</GroupHeader>
                             <GroupedList label={g.title}>
                                 {g.rows.map((r) => (
-                                    <Row key={r.id} href={r.href} primary={primary(r)} secondary={secondary(r)} trailing={trailing(r)} />
+                                    <Row key={r.id} href={r.href} icon={tile(r)} iconClassName="tablet:hidden" primary={primary(r)} secondary={secondary(r)} trailing={trailing(r)} />
                                 ))}
                             </GroupedList>
                         </div>
@@ -136,7 +141,7 @@ export function PoliciesScreen({ model }: { model: PoliciesModel }) {
                         <p className="px-g-4 pb-g-2 text-g-app-body-sm text-fg-secondary tablet:px-0">{t.app.policies.expiredNote}</p>
                         <GroupedList label={t.app.policies.expired}>
                             {model.expired.map((r) => (
-                                <Row key={r.id} href={r.href} primary={primary(r)} secondary={[r.lineLabel, r.endDate ? formatPlural(t.app.policies.expiredOn, { date: r.endDate }, lang) : null].filter(Boolean).join(" · ")} />
+                                <Row key={r.id} href={r.href} icon={tile(r)} iconClassName="tablet:hidden" primary={primary(r)} secondary={[r.lineLabel, r.endDate ? formatPlural(t.app.policies.expiredOn, { date: r.endDate }, lang) : null].filter(Boolean).join(" · ")} />
                             ))}
                         </GroupedList>
                     </details>

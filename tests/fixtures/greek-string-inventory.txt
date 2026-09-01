@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3199
+# bundle entries: 3201
 # inline entries: 4801 across 214 files
 # ternary entries: 285 across 44 files
 # call entries: 1212 across 78 files
@@ -770,6 +770,8 @@ bundle	app.nav.adviser	"Σύμβουλος"
 bundle	app.nav.back	"Πίσω"
 bundle	app.nav.brand	"PolicyWallet — αρχική"
 bundle	app.nav.me	"Εσείς"
+bundle	app.nav.menu	"Μενού"
+bundle	app.nav.menuBadge	"{count, plural, =0 {Μενού} one {Μενού — # νέα ενημέρωση} other {Μενού — # νέες ενημερώσεις}}"
 bundle	app.nav.money	"Χρήματα"
 bundle	app.nav.moreThanNine	"9+"
 bundle	app.nav.policies	"Φάκελος"

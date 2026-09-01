@@ -98,7 +98,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
                             </GroupedList>
                         </AppSection>
                     ) : (
-                        <AppSection id="now" title={t.app.home.now} trailing={<Link href={seeHref} className="inline-flex min-h-11 items-center text-g-app-body-sm font-medium text-fg-brand">{t.app.home.seeAll}</Link>}>
+                        <AppSection id="now" title={t.app.home.now} trailing={<Link href={seeHref} className="inline-flex min-h-11 items-center gap-g-1 text-g-app-body-sm font-medium text-fg-brand">{t.app.home.seeAll}<span aria-hidden className="text-fg-faint tablet:hidden">›</span></Link>}>
                             {model.now.shown.length === 0 ? (
                                 <GroupedList label={t.app.home.now}><Row primary={formatPlural(t.app.verdict.thingsToSee, { count: 0 }, lang)} /></GroupedList>
                             ) : (
@@ -114,7 +114,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
                         </AppSection>
                     )}
 
-                    <AppSection id="money" title={t.app.home.money} trailing={<Link href={PRIMARY_NAV[3].href} className="inline-flex min-h-11 items-center text-g-app-body-sm font-medium text-fg-brand">{t.app.nav.money}</Link>}>
+                    <AppSection id="money" title={t.app.home.money} trailing={<Link href={PRIMARY_NAV[3].href} className="inline-flex min-h-11 items-center gap-g-1 text-g-app-body-sm font-medium text-fg-brand">{t.app.nav.money}<span aria-hidden className="text-fg-faint tablet:hidden">›</span></Link>}>
                         <MoneyTriad
                             paid={{ label: t.app.moneyLine.paid, value: formatCurrency(money.paidPerYear, lang), note: t.app.moneyLine.paidNote, factKey: "money.paidPerYear" }}
                             protects={{ label: t.app.moneyLine.protects, value: money.protectsUpTo ? formatCurrency(money.protectsUpTo.amount, lang) : null, note: money.protectsUpTo ? t.app.moneyLine.protectsNote : t.app.moneyLine.protectsNone, factKey: "money.protectsUpTo" }}

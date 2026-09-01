@@ -2,24 +2,11 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, Building2, CreditCard, Gift, History, Lock, Palette, ShieldCheck, User, Users, type LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { GroupedList, Row } from "@/src/design-system/app-layout"
-import { activeSectionFor, settingsSectionsFor, type SettingsSectionId } from "@/lib/settings/sections"
-
-const ICONS: Record<SettingsSectionId, LucideIcon> = {
-    profile: User,
-    household: Users,
-    appearance: Palette,
-    plan: CreditCard,
-    security: ShieldCheck,
-    notifications: Bell,
-    privacy: Lock,
-    history: History,
-    benefits: Gift,
-    agency: Building2,
-}
+import { activeSectionFor, settingsSectionsFor } from "@/lib/settings/sections"
+import { SETTINGS_ICONS as ICONS } from "@/lib/settings/section-icons"
 
 interface SettingsNavProps {
     /** Comma-separated `User.roles`. */

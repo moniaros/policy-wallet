@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils"
+import { getBranchIcon } from "@/lib/insurance/branch-icons"
+import { BranchTile } from "./branch-tile"
 import type { ProtectionState } from "@/lib/app/state"
 
 export interface CoverageCell {
@@ -32,6 +34,9 @@ export function CoverageMap({
             {cells.map((c) => {
                 const inner = (
                     <>
+                        {/* The wireframe's tinted icon block. The cell id IS the
+                            line of business, so the icon is a fact, not decor. */}
+                        <BranchTile size="cell" icon={getBranchIcon(c.id)} className="mb-g-2" />
                         <span lang="el" className="block min-w-0 break-words [hyphens:auto] text-g-app-body-sm font-medium text-fg-primary">{c.label}</span>
                         <span className={cn("mt-g-1 block text-g-app-body-sm", c.state === "covered" && "text-state-covered", c.state === "gap" && "text-state-gap", c.state === "review" && "text-state-review", c.state === null && "text-fg-faint")}>
                             {c.state ? `${GLYPH[c.state]} ${c.detail ?? legend[c.state]}` : legend.none}

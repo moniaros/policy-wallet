@@ -23,6 +23,8 @@ export const appEl = {
         brand: 'PolicyWallet — αρχική',
         updatesBadge: '{count, plural, =0 {Ενημερώσεις} one {Ενημερώσεις — # νέα} other {Ενημερώσεις — # νέες}}',
         moreThanNine: '9+',
+        menu: 'Μενού',
+        menuBadge: '{count, plural, =0 {Μενού} one {Μενού — # νέα ενημέρωση} other {Μενού — # νέες ενημερώσεις}}',
     },
     shell: {
         close: 'Κλείσιμο',

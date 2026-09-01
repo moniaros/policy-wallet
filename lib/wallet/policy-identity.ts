@@ -110,6 +110,26 @@ export function displayInsurerName(
 }
 
 /**
+ * The insurer's initials for the row tile — at most two letters, or `null`.
+ *
+ * `null` whenever the name is a placeholder or too short to abbreviate, and
+ * never a `?`: that glyph belongs to the `review` state chip, and a tile that
+ * borrowed it would look like a verdict about the policy rather than a gap in
+ * what we know about the insurer.
+ */
+export function insurerInitials(value: string | null | undefined): string | null {
+    const name = displayInsurerName(value)
+    if (!name) return null
+    const words = name.split(/\s+/).filter((w) => /\p{L}/u.test(w))
+    if (words.length === 0) return null
+    const letters = words
+        .slice(0, 2)
+        .map((w) => [...w].find((c) => /\p{L}/u.test(c)) ?? "")
+        .join("")
+    return letters ? letters.toLocaleUpperCase("el-GR") : null
+}
+
+/**
  * The policy number to show, or `null`. Never a fallback: an invented number
  * next to a real insurer reads as data, and a wrong policy number is worse
  * than a missing one.

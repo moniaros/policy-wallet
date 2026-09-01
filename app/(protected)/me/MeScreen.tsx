@@ -1,5 +1,8 @@
 "use client"
 
+import { LifeBuoy, type LucideIcon } from "lucide-react"
+import { SETTINGS_ICONS } from "@/lib/settings/section-icons"
+import type { SettingsSectionId } from "@/lib/settings/sections"
 import { useEffect } from "react"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -23,7 +26,16 @@ export interface MeSections {
  * or the honest empty sentence), the household, then the settings list from
  * the one registry. The plan price sits beside the ledger without commentary.
  */
-export function MeScreen({ ledger, household, sections, planLine }: { ledger: LedgerCounts; household: HouseholdModel; sections: MeSections[]; planLine: string }) {
+/** The wireframe's leading icon block, at settings scale. */
+function SettingsTile({ icon: Icon }: { icon: LucideIcon }) {
+    return (
+        <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-g-control bg-surface-sunken text-fg-secondary tablet:hidden">
+            <Icon className="size-5" strokeWidth={1.8} />
+        </span>
+    )
+}
+
+export function MeScreen({ ledger, household, sections, planLine }: { ledger: LedgerCounts; household: HouseholdModel; sections: MeSections[]; planLine: string; /** Optional: without it the ledger renders exactly as it did before. */ user?: { name: string } }) {
     const { t, language: lang } = useLanguage()
     const me = t.app.me
     const stateLabels = { covered: t.app.state.covered, gap: t.app.state.gap, review: t.app.state.review }
@@ -63,12 +75,22 @@ export function MeScreen({ ledger, household, sections, planLine }: { ledger: Le
 
             <AppSection id="sections" title={me.sections} className="desk:hidden">
                 <GroupedList label={me.sections}>
-                    {sections.map((s) => (
-                        <Row key={s.id} href={s.href} primary={s.label} secondary={s.description} />
-                    ))}
+                    {sections.map((s) => {
+                        const Icon = SETTINGS_ICONS[s.id as SettingsSectionId]
+                        return (
+                            <Row
+                                key={s.id}
+                                href={s.href}
+                                icon={Icon ? <SettingsTile icon={Icon} /> : undefined}
+                                iconClassName="tablet:hidden"
+                                primary={s.label}
+                                secondary={s.description}
+                            />
+                        )
+                    })}
                     {/* the help centre lost its only entry point in the cutover —
                         the loss gate (audit D7.1) found it orphaned */}
-                    <Row href="/help" primary={t.help.pageTitle} secondary={t.help.pageSubtitle} />
+                    <Row href="/help" icon={<SettingsTile icon={LifeBuoy} />} iconClassName="tablet:hidden" primary={t.help.pageTitle} secondary={t.help.pageSubtitle} />
                 </GroupedList>
             </AppSection>
         </>

@@ -5,13 +5,22 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { BrandMark } from "./BrandMark"
 import { ChevronLeft } from "./icons"
+import { MobileMenu } from "./MobileMenu"
+import { useChrome } from "./chrome-context"
 
 /**
- * The iOS large title (§5.2). On the phone: a translucent bar carrying the
- * brand mark (or, on a sub-screen, a back control in its place) and a centred
+ * The iOS large title (§5.2). On the phone: a translucent bar carrying the menu
+ * trigger (or, on a sub-screen, a back control in its place) and a centred
  * small title that fades in as the large title scrolls under it. From tablet
  * up the bar disappears and the title is simply the page's H1 — the rail or
  * sidebar carries the brand. The page has exactly ONE <h1>: this one.
+ *
+ * Inside the Grafí shell the leading slot holds the MENU, because a mark that
+ * links to the screen you are already on was the least useful control on the
+ * phone, while Ενημερώσεις and Σύμβουλος had no route at all below 768px. The
+ * brand moved inside the menu sheet, where it still links home. Outside the
+ * shell (welcome, adviser help) there is no chrome context and the brand mark
+ * remains the leading control — those screens have no menu to open.
  */
 export function LargeTitleNav({
     title,
@@ -28,6 +37,7 @@ export function LargeTitleNav({
     brand: { href: string; label: string }
     subtitle?: string
 }) {
+    const chrome = useChrome()
     const [collapsed, setCollapsed] = useState(false)
     useEffect(() => {
         const onScroll = () => setCollapsed(window.scrollY > 44)
@@ -48,6 +58,8 @@ export function LargeTitleNav({
                             <ChevronLeft className="size-6" aria-hidden />
                             <span>{back.label}</span>
                         </Link>
+                    ) : chrome ? (
+                        <MobileMenu />
                     ) : (
                         <Link
                             href={brand.href}

@@ -17,6 +17,8 @@ export const appEn: typeof appEl = {
         brand: 'PolicyWallet — home',
         updatesBadge: '{count, plural, =0 {Updates} one {Updates — # new} other {Updates — # new}}',
         moreThanNine: '9+',
+        menu: 'Menu',
+        menuBadge: '{count, plural, =0 {Menu} one {Menu — # new update} other {Menu — # new updates}}',
     },
     shell: {
         close: 'Close',

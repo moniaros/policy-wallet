@@ -62,6 +62,9 @@ export function GroupedList({ children, className, label }: { children: ReactNod
 
 export interface RowProps {
     icon?: ReactNode
+    /** Classes for the icon's BOX, not its contents — the box is what reserves
+     *  space, so gating the icon itself would leave an empty square behind. */
+    iconClassName?: string
     primary: ReactNode
     secondary?: ReactNode
     trailing?: ReactNode
@@ -73,10 +76,10 @@ export interface RowProps {
 }
 
 /** One row, one target. With `href` it is a link; with `onClick` a button; otherwise static. */
-export function Row({ icon, primary, secondary, trailing, href, onClick, className, ariaLabel }: RowProps) {
+export function Row({ icon, iconClassName, primary, secondary, trailing, href, onClick, className, ariaLabel }: RowProps) {
     const inner = (
         <>
-            {icon && <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-g-control bg-surface-sunken text-fg-brand">{icon}</span>}
+            {icon && <span aria-hidden className={cn("grid size-10 shrink-0 place-items-center rounded-g-control bg-surface-sunken text-fg-brand", iconClassName)}>{icon}</span>}
             <span className="min-w-0 flex-1">
                 <span className="line-clamp-2 block text-g-row text-fg-primary">{primary}</span>
                 {secondary && <span className="mt-0.5 line-clamp-2 block text-g-app-body-sm text-fg-secondary">{secondary}</span>}

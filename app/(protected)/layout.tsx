@@ -188,9 +188,13 @@ export default async function ProtectedLayout({
                     primary={PRIMARY_NAV.map(resolve)}
                     sidebar={SIDEBAR_NAV.map(resolve)}
                     updates={resolve(SECONDARY_NAV[0])}
+                    secondary={SECONDARY_NAV.map(resolve)}
                     add={resolve(ADD_POLICY)}
                     badge={protectionBadgeCount}
                     labels={shellLabels}
+                    closeLabel={t.app.shell.close}
+                    menuLabel={t.app.nav.menu}
+                    menuBadgeLabel={formatPlural(t.app.nav.menuBadge, { count: protectionBadgeCount }, lang)}
                     user={{
                         name: displayPersonName(dbUser.name) || roleCopy.defaults.userName,
                         href: PRIMARY_NAV[4].href,
