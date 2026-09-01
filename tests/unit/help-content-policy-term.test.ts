@@ -22,6 +22,6 @@ describe('Greek help content uses «ασφαλιστήριο» for the policy te
     })
 
     it('the first-upload article title now names the ασφαλιστήριο', () => {
-        expect(helpArticles.el['upload-policy'].title).toContain('Ασφαλιστήριο')
+        expect(helpArticles.el['upload-policy'].title.toLocaleLowerCase('el-GR')).toContain('ασφαλιστήριο')
     })
 })
