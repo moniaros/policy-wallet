@@ -54,7 +54,7 @@ export function HelpScreen({ finding, adviserName, otherPolicies }: { finding: R
             <LargeTitleNav title={help.title} back={back} brand={brand} />
 
             <AppSection id="finding">
-                <div className="rounded-g-card border border-border-hair bg-surface-raised p-g-4 shadow-g-raised">
+                <div className="rounded-g-card border border-border-hair bg-surface-raised p-g-4">
                     <p className="text-g-app-body font-semibold text-fg-primary">{sentence}</p>
                     <p className="mt-g-1 text-g-app-body-sm text-fg-secondary">{source}</p>
                     {whyYou && <p className="mt-g-1 text-g-app-body-sm text-fg-secondary">{whyYou}</p>}

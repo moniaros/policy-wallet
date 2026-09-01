@@ -78,6 +78,7 @@ export function SeeScreen({ model, filter = "all" }: { model: SeeModel; filter?:
 
     return (
         <>
+            <div data-wide className="hidden" />
             <LargeTitleNav title={t.app.see.title} brand={brand} subtitle={formatPlural(t.app.see.tierCounts, { now: model.tiers.now.length, month: model.tiers.month.length, later: model.tiers.later.length }, lang)} />
             <div className="px-g-4 pt-g-2 tablet:px-0">
                 <ul aria-label={t.app.see.filterLabel} className="pw-scroll-strip flex gap-g-2 overflow-x-auto pb-g-1">
@@ -110,7 +111,7 @@ export function SeeScreen({ model, filter = "all" }: { model: SeeModel; filter?:
                                     ))}
                                 </ActionRowList>
                             ) : (
-                                <ul aria-labelledby={`tier-${tier}`} className="flex flex-col gap-g-3">
+                                <ul aria-labelledby={`tier-${tier}`} className="flex flex-col gap-g-3 desk:grid desk:grid-cols-2 desk:items-start">
                                     {items.map((f) => (
                                         <li key={f.id}>
                                             <FindingCard

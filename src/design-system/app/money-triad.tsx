@@ -14,9 +14,9 @@ export function MoneyTriad({ paid, protects, twice, className }: { paid: MoneyCe
     const cells = [paid, protects, twice]
     return (
         <div className={cn("@container", className)}>
-        <dl className="grid gap-g-2 @md:grid-cols-3">
+        <dl className="grid gap-g-2 @xl:grid-cols-3">
             {cells.map((c) => (
-                <div key={c.factKey} className="rounded-g-card border border-border-hair bg-surface-raised p-g-4 shadow-g-raised">
+                <div key={c.factKey} className="rounded-g-card border border-border-hair bg-surface-raised p-g-4">
                     <dt className="text-g-app-caption text-fg-secondary">{c.label}</dt>
                     <dd className="mt-g-1">
                         <span className="block font-display text-g-title tabular-nums lining-nums text-fg-primary" data-fact={c.factKey}>

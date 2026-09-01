@@ -65,7 +65,7 @@ export function AdviserScreen({ model }: { model: AdviserModel }) {
             <LargeTitleNav title={t.app.adviser.title} brand={brand} subtitle={t.app.adviser.subtitleConnected} />
 
             <AppSection id="adviser">
-                <div className="flex items-center gap-g-4 rounded-g-card border border-border-hair bg-surface-raised p-g-4 shadow-g-raised">
+                <div className="flex items-center gap-g-4 rounded-g-card border border-border-hair bg-surface-raised p-g-4">
                     <Avatar name={adviser.name} src={adviser.photoUrl ?? undefined} size="lg" />
                     <div className="min-w-0 flex-1">
                         <p className="text-g-app-body font-semibold text-fg-primary">{adviser.name}</p>
@@ -87,7 +87,7 @@ export function AdviserScreen({ model }: { model: AdviserModel }) {
                             <Switch
                                 checked={Boolean(p.grantId)}
                                 pending={busyPolicy === p.id}
-                                label={p.asset ? `${p.label} · ${p.asset}` : p.label}
+                                label={[p.label, p.asset].filter(Boolean).join(" · ")}
                                 description={
                                     <>
                                         {p.grantId && p.sharedSince ? formatPlural(t.app.adviser.sharedSince, { date: p.sharedSince }, lang) : t.app.adviser.notShared}

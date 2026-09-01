@@ -53,7 +53,7 @@ export function Shell({
             <Sidebar items={sidebar} add={add} badge={badge} labels={labels} user={user} userMenu={userMenu} brandHref={brandHref} saturated={saturated} />
             <main
                 id="main-content"
-                className="mx-auto w-full max-w-[720px] tablet:ps-g-rail desk:max-w-[calc(760px+var(--spacing-g-sidebar))] desk:ps-g-sidebar"
+                className="mx-auto w-full max-w-[720px] tablet:ps-g-rail desk:max-w-[calc(760px+var(--spacing-g-sidebar))] desk:has-[[data-wide]]:max-w-[calc(1100px+var(--spacing-g-sidebar))] desk:ps-g-sidebar"
                 style={{ paddingBottom: "calc(var(--spacing-g-tabbar) + env(safe-area-inset-bottom) + var(--spacing-g-6))" }}
             >
                 <div className="min-h-screen pb-g-8 tablet:px-g-6 desk:px-g-8">{children}</div>

@@ -700,7 +700,7 @@ bundle	app.lifeEvent.what	"Θα το καταγράψω και θα ξανατρ
 bundle	app.lifeEvent.when	"Πότε έγινε;"
 bundle	app.lifeEvent.whenAgo	"πριν από ~{count, plural, one {# ημέρα} other {# ημέρες}}"
 bundle	app.lifeEvent.whenNow	"Πρόσφατα"
-bundle	app.me.household.add	"Προσθήκη"
+bundle	app.me.household.add	"Προσθήκη μέλους"
 bundle	app.me.household.addFailed	"Δεν μπόρεσα να το αποθηκεύσω."
 bundle	app.me.household.addTitle	"Προσθήκη ατόμου"
 bundle	app.me.household.added	"Εντάξει — τον/την πρόσθεσα."

@@ -58,12 +58,13 @@ export function PoliciesScreen({ model }: { model: PoliciesModel }) {
         return list.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, lang === "el" ? "el-GR" : "en-GB"))
     }, [rows, lens, t, lang])
 
-    const secondary = (r: PolicyRow) =>
-        [
+    const secondary = (r: PolicyRow) => {
+        const near = lens === "expiry" || (r.daysUntilExpiry != null && r.daysUntilExpiry <= 45)
+        const rest = [
             // the expiry lens exists to show WHEN — the date leads its rows;
             // an expiring or expired policy carries its date in EVERY lens
             // (the old dashboard showed it; the loss gate keeps it)
-            lens === "expiry" || (r.daysUntilExpiry != null && r.daysUntilExpiry <= 45) ? r.endDate : null,
+            near ? r.endDate : null,
             lens !== "line" ? r.lineLabel : null,
             r.covers ? r.covers.join(", ") : t.app.policies.coversUnknown,
             r.premium ? formatPlural(t.app.policies.premiumPerYear, { amount: formatCurrency(r.premium.amount, lang, { currency: r.premium.currency }) }, lang) : null,
@@ -72,8 +73,13 @@ export function PoliciesScreen({ model }: { model: PoliciesModel }) {
         ]
             .filter(Boolean)
             .join(" · ")
+        // the far-off renewal date the old table always showed: visible where
+        // the pane has room, folded on phones (the ≤45-day rule stays global)
+        if (!near && r.endDate) return (<><span className="hidden tablet:inline">{r.endDate} · </span>{rest}</>)
+        return rest
+    }
     const trailing = (r: PolicyRow) => (r.state ? <StatusChip state={r.state}>{stateLabels[r.state]}</StatusChip> : null)
-    const primary = (r: PolicyRow) => (r.asset ? `${r.label} · ${r.asset}` : r.label)
+    const primary = (r: PolicyRow) => [r.label, r.asset].filter(Boolean).join(" · ") || r.number || r.lineLabel
 
     if (model.rows.length === 0 && model.expired.length === 0) {
         return (
@@ -89,6 +95,7 @@ export function PoliciesScreen({ model }: { model: PoliciesModel }) {
 
     return (
         <>
+            <div data-wide className="hidden" />
             <LargeTitleNav title={t.app.policies.title} brand={brand} subtitle={formatPlural(t.app.policies.count, { count: model.rows.length }, lang)} />
             <AppSection id="tools">
                 <SearchField label={t.app.policies.search} placeholder={t.app.policies.searchHint} value={query} onChange={(e) => setQuery(e.target.value)} />

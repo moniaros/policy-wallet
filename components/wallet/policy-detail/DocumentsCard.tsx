@@ -109,7 +109,7 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                     href={docHref(doc.id)}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex flex-1 items-center gap-3 rounded-g-control border border-border-subtle bg-surface-raised px-3 py-3 transition-colors hover:bg-surface-sunken"
+                                    className="flex min-w-0 flex-1 items-center gap-3 rounded-g-control border border-border-subtle bg-surface-raised px-3 py-3 transition-colors hover:bg-surface-sunken"
                                 >
                                     <div className="flex h-9 w-9 items-center justify-center rounded-g-control bg-surface-sunken">
                                         <FileText className="h-4 w-4 text-fg-secondary" />

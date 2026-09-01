@@ -65,6 +65,7 @@ export function HomeScreen({ model }: { model: HomeModel }) {
 
     return (
         <>
+            <div data-wide className="hidden" />
             <LargeTitleNav title={t.app.home.title} brand={brand} subtitle={subtitle} />
             <MomentOfTruthBeacon findings={model.now.shown.map((f) => ({ id: f.id, tier: f.tier, kind: f.kind }))} />
             <AppSection id="verdict" className="[padding-block-start:var(--spacing-g-4)]">

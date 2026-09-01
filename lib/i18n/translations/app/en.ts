@@ -296,7 +296,7 @@ export const appEn: typeof appEl = {
             relations: { partner: 'Partner', child: 'Child', parent: 'Parent', other: 'Other' },
             dependantQuestion: 'Financially dependent on you?',
             dependantHint: "If so and I find no policy in their name, I'll mark it «for review» — I won't write «not covered».",
-            add: 'Add',
+            add: 'Add member',
             added: 'Alright — added.',
             addFailed: "I couldn't save that.",
             saved: 'Saved.',

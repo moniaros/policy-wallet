@@ -40,6 +40,9 @@ export const AUDIT_DEVICES = [
     { name: "iphone-xr", viewport: { width: 414, height: 896 }, mobile: true },
     { name: "iphone-15-max", viewport: { width: 430, height: 932 }, mobile: true },
     { name: "ipad-landscape", viewport: { width: 1024, height: 768 }, mobile: true },
+    { name: "large-phone", viewport: { width: 480, height: 854 }, mobile: true },
+    { name: "ipad-air", viewport: { width: 820, height: 1180 }, mobile: true },
+    { name: "macbook", viewport: { width: 1440, height: 900 }, mobile: false },
     { name: "full-hd", viewport: { width: 1920, height: 1080 }, mobile: false },
 ] as const
 

@@ -37,6 +37,7 @@ export function MoneyScreen({ model }: { model: MoneyModel }) {
 
     return (
         <>
+            <div data-wide className="hidden" />
             <LargeTitleNav title={t.app.money.title} brand={brand} />
 
             <AppSection id="triad">
@@ -49,6 +50,7 @@ export function MoneyScreen({ model }: { model: MoneyModel }) {
                 {notCounted > 0 && <p className="mt-g-1 text-g-app-body-sm text-fg-secondary">{formatPlural(t.app.money.notCounted, { count: notCounted }, lang)}</p>}
             </AppSection>
 
+            <div className="desk:grid desk:grid-cols-2 desk:items-start desk:gap-x-g-8">
             <AppSection id="twice" title={t.app.money.twiceTitle}>
                 {model.paidTwice.length === 0 ? (
                     <p className="text-g-app-body text-fg-secondary">{t.app.money.twiceEmpty}</p>
@@ -102,6 +104,7 @@ export function MoneyScreen({ model }: { model: MoneyModel }) {
                     </>
                 )}
             </AppSection>
+            </div>
 
             {model.byLine.length > 0 && (
                 <AppSection id="where" title={formatPlural(t.app.money.whereTitle, { amount: formatCurrency(footprint.total, lang) }, lang)}>

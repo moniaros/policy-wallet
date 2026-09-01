@@ -49,6 +49,9 @@ export const VIEWPORTS: Record<string, { width: number; height: number }> = {
     "iphone-xr": { width: 414, height: 896 },
     "iphone-15-max": { width: 430, height: 932 },
     "ipad-landscape": { width: 1024, height: 768 },
+    "large-phone": { width: 480, height: 854 },
+    "ipad-air": { width: 820, height: 1180 },
+    macbook: { width: 1440, height: 900 },
     "full-hd": { width: 1920, height: 1080 },
 }
 
