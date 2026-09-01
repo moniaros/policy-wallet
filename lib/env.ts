@@ -13,8 +13,16 @@ const envSchema = z.object({
     // reasoning at ~40% of 2.5-pro cost); the retry fallback is the STABLE
     // GA gemini-3.5-flash so a preview-model hiccup lands on solid ground.
     GEMINI_API_KEY: z.string().optional(),
-    GEMINI_MODEL_EXTRACTION: z.string().default("gemini-3-flash-preview"),
-    GEMINI_MODEL_GAP_ANALYSIS: z.string().default("gemini-3-flash-preview"),
+    // Measured 2026-09-01 (scripts/bench-analysis-models.ts, 6MB health policy):
+    // `gemini-3-flash-preview` FAILED extraction twice with "other side closed"
+    // after 125s, and the two production runs that did complete spent 89.8s and
+    // 92.6s in these two steps — 80% of a 226.7s run. On the same document
+    // `gemini-3.1-flash-lite` extracts in 8.6s and analyses gaps in 3.1s, and
+    // scores IDENTICALLY on the golden datasets (81% aggregate, same per-case
+    // results: `npm run eval -- --provider=gemini --suite=all`). A preview model
+    // is not a stable dependency for the two steps the whole run waits on.
+    GEMINI_MODEL_EXTRACTION: z.string().default("gemini-3.1-flash-lite"),
+    GEMINI_MODEL_GAP_ANALYSIS: z.string().default("gemini-3.1-flash-lite"),
     // Clarity/QA/translation are language work — flash-lite is sufficient.
     GEMINI_MODEL_CLARITY_ANALYSIS: z.string().default("gemini-3.1-flash-lite"),
     GEMINI_MODEL_QA: z.string().default("gemini-3.1-flash-lite"),

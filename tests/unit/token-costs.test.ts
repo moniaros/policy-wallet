@@ -18,8 +18,8 @@ describe('resolveTokenCosts', () => {
     // (GEMINI_MODEL_* etc.); every lib/env default MUST have an exact price
     // entry so metering never silently falls back for the standard fleet.
     it.each([
-        'gemini-3-flash-preview', // GEMINI_MODEL_EXTRACTION / GAP_ANALYSIS default
-        'gemini-3.1-flash-lite', // GEMINI_MODEL_CLARITY / QA / TRANSLATION default
+        'gemini-3-flash-preview', // ex-default for EXTRACTION / GAP_ANALYSIS; still env-selectable and on historical usage rows
+        'gemini-3.1-flash-lite', // GEMINI_MODEL_EXTRACTION / GAP_ANALYSIS / CLARITY / QA / TRANSLATION default
         'gemini-3.5-flash', // GEMINI_MODEL_FALLBACK default
         'gpt-4.1-mini',
         'claude-sonnet-5',
