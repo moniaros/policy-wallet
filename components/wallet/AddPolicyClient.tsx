@@ -269,6 +269,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent, chromeless = fa
                     a form with nothing naming the page. Visually hidden because
                     the sticky bar already names it on screen. */}
                 {/* Header */}
+                {!chromeless && (
                 <div className="border-b border-border-hair">
                     <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-center">
                         <span className="font-bold text-fg-primary">
@@ -276,8 +277,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent, chromeless = fa
                         </span>
                     </div>
                 </div>
+                )}
 
-                <div className="max-w-3xl mx-auto px-4 py-8">
+                <div className={`max-w-3xl mx-auto py-8 ${chromeless ? "" : "px-4"}`}>
                     <div className="rounded-g-sheet border border-border-subtle bg-surface-raised p-6 shadow-g-raised md:p-8">
 
                         {discarded ? (
@@ -493,7 +495,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent, chromeless = fa
             </div>
             )}
 
-            <div className="max-w-3xl mx-auto px-4 py-8">
+            <div className={`max-w-3xl mx-auto py-8 ${chromeless ? "" : "px-4"}`}>
                 <AiConsentModal
                     isOpen={consentModalOpen}
                     onClose={() => {
@@ -609,7 +611,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent, chromeless = fa
                                         aria-invalid={fieldErrors.lineOfBusiness ? true : undefined}
                                         aria-describedby={fieldErrors.lineOfBusiness ? "add-lineOfBusiness-error" : undefined}
                                         onChange={() => setFieldErrors(prev => ({ ...prev, lineOfBusiness: undefined }))}
-                                        className={`w-full appearance-none rounded-g-control border bg-surface-wash px-4 py-3.5 text-sm font-bold text-fg-primary transition-all focus:bg-surface-raised focus:ring-2 focus:ring-border-focus ${fieldErrors.lineOfBusiness ? "border-action-danger ring-2 ring-action-danger/40" : "border-border-subtle"}`}
+                                        className={`w-full min-w-0 max-w-full appearance-none rounded-g-control border bg-surface-wash px-4 py-3.5 text-sm font-bold text-fg-primary transition-all focus:bg-surface-raised focus:ring-2 focus:ring-border-focus ${fieldErrors.lineOfBusiness ? "border-action-danger ring-2 ring-action-danger/40" : "border-border-subtle"}`}
                                     >
                                         <option value="">{t.wallet.selectTypePlaceholder}</option>
                                         {types.map(typeItem => (
@@ -627,17 +629,17 @@ export function AddPolicyClient({ insurers, types, hasAiConsent, chromeless = fa
 
                                 {/* Insurer - OPTIONAL */}
                                 <div className="space-y-2">
-                                    <div className="flex justify-between items-center ml-1">
+                                    <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-1 ml-1">
                                         <label htmlFor="add-insurerName" className="text-xs font-bold uppercase tracking-wider text-fg-secondary">
                                             {t.wallet.insurerProvider}
                                         </label>
-                                        <span className="text-g-app-caption font-medium text-fg-secondary bg-surface-sunken px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
+                                        <span className="whitespace-nowrap text-g-app-caption font-medium text-fg-secondary bg-surface-sunken px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                     </div>
                                     <div className="relative">
                                         <select
                                             id="add-insurerName"
                                             name="insurerName"
-                                            className="pw-input appearance-none"
+                                            className="pw-input max-w-full appearance-none"
                                         >
                                             <option value="">{t.wallet.selectOrEmpty}</option>
                                             {insurers.map(i => (
@@ -653,11 +655,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent, chromeless = fa
 
                             {/* Policy Number - OPTIONAL */}
                             <div className="space-y-2">
-                                <div className="flex justify-between items-center ml-1">
+                                <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-1 ml-1">
                                     <label htmlFor="add-policyNumber" className="text-xs font-bold uppercase tracking-wider text-fg-secondary">
                                         {t.wallet.policyNumber}
                                     </label>
-                                    <span className="text-g-app-caption font-medium text-fg-secondary bg-surface-sunken px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
+                                    <span className="whitespace-nowrap text-g-app-caption font-medium text-fg-secondary bg-surface-sunken px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                 </div>
                                 <div className="relative">
                                     <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-secondary" />

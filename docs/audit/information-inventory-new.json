@@ -1,6 +1,6 @@
 {
   "target": "new",
-  "capturedAt": "2026-09-01T07:36:54.056Z",
+  "capturedAt": "2026-09-01T09:17:20.562Z",
   "inventory": {
     "/": [
       {
@@ -1734,10 +1734,9 @@
         "selector": "div > div > section > div > span"
       },
       {
-        "key": "metric|N ασφαλιστήρια διάβασα",
-        "class": "metric",
-        "text": "2 ασφαλιστήρια διάβασα",
-        "value": "2",
+        "key": "chrome|ασφαλιστήρια που διάβασα",
+        "class": "chrome",
+        "text": "ασφαλιστήρια που διάβασα",
         "selector": "div > section > dl > div > dt"
       },
       {
