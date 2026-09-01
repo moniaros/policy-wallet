@@ -32,6 +32,15 @@ export const AUDIT_DEVICES = [
     { name: "ipad", viewport: { width: 768, height: 1024 }, mobile: true },
     { name: "laptop", viewport: { width: 1280, height: 800 }, mobile: false },
     { name: "desktop", viewport: { width: 1600, height: 900 }, mobile: false },
+    // geometry-only widths (responsive brief §15): the layout probe runs on
+    // every project; the visual/a11y/etc. specs restrict themselves to the
+    // five canonical devices above (helpers.CORE_PROJECTS)
+    { name: "iphone-se-1", viewport: { width: 320, height: 568 }, mobile: true },
+    { name: "android", viewport: { width: 360, height: 800 }, mobile: true },
+    { name: "iphone-xr", viewport: { width: 414, height: 896 }, mobile: true },
+    { name: "iphone-15-max", viewport: { width: 430, height: 932 }, mobile: true },
+    { name: "ipad-landscape", viewport: { width: 1024, height: 768 }, mobile: true },
+    { name: "full-hd", viewport: { width: 1920, height: 1080 }, mobile: false },
 ] as const
 
 export default defineConfig({

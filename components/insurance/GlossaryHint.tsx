@@ -29,7 +29,7 @@ export type GlossaryHintData = {
 
 export function GlossaryHint({ hint, className = "" }: { hint: GlossaryHintData; className?: string }) {
     return (
-        <details className={`inline-block align-baseline ${className}`}>
+        <details className={`inline-block align-baseline open:block ${className}`}>
             <summary className="inline cursor-pointer list-none underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
                 {hint.heading}
             </summary>

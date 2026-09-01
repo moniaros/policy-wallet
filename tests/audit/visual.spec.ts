@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test"
-import { BASE, ROUTES, THEMES, auditContext, settleDeterministic, clockMasks, shotName, assertTarget } from "./helpers"
+import { BASE, ROUTES, THEMES, CORE_PROJECTS, auditContext, settleDeterministic, clockMasks, shotName, assertTarget } from "./helpers"
 
 /**
  * A7 — visual truth (D0 proves the harness with it). Deterministic full-page
@@ -12,7 +12,8 @@ import { BASE, ROUTES, THEMES, auditContext, settleDeterministic, clockMasks, sh
  */
 
 test.describe("visual baseline", () => {
-    test.beforeEach(async ({ request }) => {
+    test.beforeEach(async ({ request }, testInfo) => {
+        test.skip(!(CORE_PROJECTS as readonly string[]).includes(testInfo.project.name), "the visual baseline lives on the five canonical devices")
         await assertTarget(request)
     })
 

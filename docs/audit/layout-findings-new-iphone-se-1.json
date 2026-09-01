@@ -1,0 +1,137 @@
+{
+  "target": "new",
+  "project": "iphone-se-1",
+  "capturedAt": "2026-09-01T00:02:41.718Z",
+  "findings": [
+    {
+      "route": "/",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/see",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/policies",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/policies/cmt5jzclg000buer6h5acxbcd",
+      "kind": "wide-element",
+      "detail": "span right=362 vw=320 «Εξαίρεση είναι κάθε περίπτωση, αιτία ή π»"
+    },
+    {
+      "route": "/policies/cmt5jzclg000buer6h5acxbcd",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/money",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/updates",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/adviser",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me/profile",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me/household",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me/appearance",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me/plan",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me/security",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me/notifications",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me/privacy",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/me/history",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/add",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"span.truncate.text-center\",\"text\":\"Προσθήκη ασφαλιστηρίου\",\"scrollWidth\":242,\"clientWidth\":216,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/add",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/life-event/marriage",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/help",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/upgrade",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/benefits",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/protection/motor",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    },
+    {
+      "route": "/wallet/cmt5jzclg000buer6h5acxbcd/edit",
+      "kind": "sub-44-target",
+      "detail": "a «Πίσω» 41×44 (div < div < div < main#main-content)"
+    },
+    {
+      "route": "/wallet/cmt5jzclg000buer6h5acxbcd/edit",
+      "kind": "truncation",
+      "detail": "{\"selector\":\"li\",\"text\":\"Προστασία\",\"scrollWidth\":69,\"clientWidth\":64,\"reason\":\"overflow\"}"
+    }
+  ]
+}

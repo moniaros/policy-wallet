@@ -1,21 +1,21 @@
 {
   "base": "http://localhost:3102",
-  "capturedAt": "2026-08-31T17:19:13.104Z",
+  "capturedAt": "2026-08-31T19:19:36.802Z",
   "report": {
     "/": {
-      "ttfbMs": 6375,
-      "lcpMs": 7472,
+      "ttfbMs": 6557,
+      "lcpMs": 7656,
       "lcpElement": "P.mt-g-1.text-g-app-body.text-fg-secondary «14 πράγματα αξίζει να δείτε αυτή την εβδ»",
       "cls": 0,
-      "tbtMs": 172,
+      "tbtMs": 168,
       "jsKB": 528,
       "fontKB": 118,
       "requestsBeforeFCP": 6
     },
     "/policies": {
-      "ttfbMs": 2906,
-      "lcpMs": 3128,
-      "lcpElement": "SPAN.mt-0.5.line-clamp-2.block «Σωματικές Βλάβες τρίτων (ανά άτομο), Υλι»",
+      "ttfbMs": 2952,
+      "lcpMs": 3152,
+      "lcpElement": "SPAN.mt-0.5.line-clamp-2.block «6/10/2026 · Σωματικές Βλάβες τρίτων (ανά»",
       "cls": 0,
       "tbtMs": 0,
       "jsKB": 10,
@@ -23,8 +23,8 @@
       "requestsBeforeFCP": 27
     },
     "/see": {
-      "ttfbMs": 3195,
-      "lcpMs": 3728,
+      "ttfbMs": 3242,
+      "lcpMs": 3784,
       "lcpElement": "H3.mt-g-3.text-g-row.text-fg-primary «Το Αυτοκίνητο · ΒΖΝ-8520 λήγει σε 13 ημέ»",
       "cls": 0,
       "tbtMs": 0,
@@ -33,8 +33,8 @@
       "requestsBeforeFCP": 27
     },
     "/adviser": {
-      "ttfbMs": 2855,
-      "lcpMs": 4020,
+      "ttfbMs": 2941,
+      "lcpMs": 4292,
       "lcpElement": "P.mb-g-3.text-g-app-body-sm.text-fg-secondary «Εσείς αποφασίζετε ανά ασφαλιστήριο. Ό,τι»",
       "cls": 0,
       "tbtMs": 0,
@@ -43,8 +43,8 @@
       "requestsBeforeFCP": 27
     },
     "/updates": {
-      "ttfbMs": 2880,
-      "lcpMs": 3040,
+      "ttfbMs": 2954,
+      "lcpMs": 3112,
       "lcpElement": "SPAN.mt-0.5.line-clamp-2.block «Εθνική Ασφαλιστική (ΣΥΜΒ-2025-HL-EXP) · »",
       "cls": 0,
       "tbtMs": 0,
@@ -53,8 +53,8 @@
       "requestsBeforeFCP": 27
     },
     "/me": {
-      "ttfbMs": 3480,
-      "lcpMs": 3640,
+      "ttfbMs": 3925,
+      "lcpMs": 4076,
       "lcpElement": "P.mt-1.text-g-app-body-sm.leading-relaxed «Ο λογαριασμός, η συνδρομή, οι ειδοποιήσε»",
       "cls": 0,
       "tbtMs": 0,

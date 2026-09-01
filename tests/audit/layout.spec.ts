@@ -157,6 +157,11 @@ test.describe("A2 geometry", () => {
                 if (t.tag === "input" && t.chain.includes("label") && smallLabelledInputs > 0) continue
                 findings.push({ route, kind: "sub-44-target", detail: `${t.tag} «${t.text}» ${Math.round(t.w)}×${Math.round(t.h)} (${t.chain})` })
             }
+            const hiddenTexts = await page.evaluate(() =>
+                // aria-hidden duplicates (the collapsed header title) truncate by
+                // design — their accessible twin carries the full text
+                [...document.querySelectorAll<HTMLElement>('[aria-hidden="true"]')].map((el) => (el.textContent || "").trim().slice(0, 50))
+            )
             const seenTrunc = new Set<string>()
             const absDecorated = await page.evaluate(() =>
                 [...document.querySelectorAll<HTMLElement>("*")].filter((el) =>
@@ -172,6 +177,7 @@ test.describe("A2 geometry", () => {
                 if (t.clientWidth <= 2 || t.selector.includes("sr-only")) continue // visually-hidden by design
                 if (absDecorated.includes(t.text.slice(0, 40))) continue // overflow from an absolute decoration, not text
                 if (titledTexts.includes(t.text.trim().slice(0, 50))) continue
+                if (hiddenTexts.includes(t.text.trim().slice(0, 50))) continue
                 const key = `${route}|${t.text.slice(0, 50)}`
                 if (seenTrunc.has(key)) continue // one defect, one entry — not one per ancestor
                 seenTrunc.add(key)

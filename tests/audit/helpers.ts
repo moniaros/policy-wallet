@@ -44,7 +44,17 @@ export const VIEWPORTS: Record<string, { width: number; height: number }> = {
     ipad: { width: 768, height: 1024 },
     laptop: { width: 1280, height: 800 },
     desktop: { width: 1600, height: 900 },
+    "iphone-se-1": { width: 320, height: 568 },
+    android: { width: 360, height: 800 },
+    "iphone-xr": { width: 414, height: 896 },
+    "iphone-15-max": { width: 430, height: 932 },
+    "ipad-landscape": { width: 1024, height: 768 },
+    "full-hd": { width: 1920, height: 1080 },
 }
+
+/** The five canonical devices carry the visual baseline and the
+ * project-restricted probes; the rest are geometry-only widths. */
+export const CORE_PROJECTS = ["iphone-se", "iphone-15", "ipad", "laptop", "desktop"] as const
 
 export const THEMES = ["light", "dark"] as const
 export type Theme = (typeof THEMES)[number]
@@ -121,7 +131,7 @@ export async function settleDeterministic(page: Page): Promise<void> {
  * relative hours/days («πριν από 3 ώρες», «σε 13 ημέρες»), full dates, and
  * <time> elements.
  */
-export const CLOCK_TEXT = /πριν από \d+|σε \d+ (?:ημέρες|ημέρα|ώρες|ώρα)|\d{1,2}\/\d{1,2}\/\d{4}|\d{1,2} (?:Ιαν|Φεβ|Μαρ|Απρ|Μαΐ|Ιουν|Ιουλ|Αυγ|Σεπ|Οκτ|Νοε|Δεκ)/
+export const CLOCK_TEXT = /πριν από \d+|σε \d+ (?:ημέρες|ημέρα|ώρες|ώρα)|\d+\s?ημ\.|\d{1,2}\/\d{1,2}\/\d{4}|\d{1,2} (?:Ιαν|Φεβ|Μαρ|Απρ|Μαΐ|Ιουν|Ιουλ|Αυγ|Σεπ|Οκτ|Νοε|Δεκ)/
 export function clockMasks(page: Page) {
     return [page.locator("time"), page.getByText(CLOCK_TEXT)]
 }
