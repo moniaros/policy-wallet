@@ -168,13 +168,18 @@ export async function GET(request: Request) {
     }
 
     // ── Post-login side effects (best-effort, never block the redirect) ──
+    // NOTE the id namespace: these tables FK onto public.users (cuid), NOT the
+    // Supabase auth id. The pre-rebuild code wrote user.id here and every OAuth
+    // login logged a swallowed P2003 (seen live 2026-09-01, dpl_7UhXSaWPAw…).
     try {
-        await db.securityEvent.create({
-            data: { userId: user.id, eventType: "login_success", ipAddress: ip, userAgent: ua },
-        })
+        if (dbUser) {
+            await db.securityEvent.create({
+                data: { userId: dbUser.id, eventType: "login_success", ipAddress: ip, userAgent: ua },
+            })
+        }
         await (db.activityLog as any).create({
             data: {
-                adminUserId: user.id,
+                adminUserId: dbUser?.id ?? user.id,
                 adminEmail: email,
                 actionType: "USER_LOGIN",
                 description: `User logged in from ${ip}`,
@@ -184,14 +189,14 @@ export async function GET(request: Request) {
         const cookieStore = await cookies()
         const referrerId = cookieStore.get("pw_referrer")?.value
         if (referrerId && dbUser) {
-            const existingReferral = await db.referral.findFirst({ where: { referredUserId: user.id } })
+            const existingReferral = await db.referral.findFirst({ where: { referredUserId: dbUser.id } })
             if (!existingReferral) {
                 const referrer = await db.user.findUnique({ where: { id: referrerId } })
                 if (referrer) {
                     await db.referral.create({
                         data: {
                             referrerUserId: referrerId,
-                            referredUserId: user.id,
+                            referredUserId: dbUser.id,
                             referredEmail: email,
                             status: "pending",
                             creditsEarned: 0,
