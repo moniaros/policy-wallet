@@ -2654,7 +2654,7 @@ export const en: TranslationKeys = {
         searchPlaceholder: 'Search for articles, guides, or help topics...',
         todayTitle: 'What do you need to do today?',
         todaySubtitle: 'Get instant guidance on uploading policies, understanding coverage, and collaborating with your advisor.',
-        openWallet: 'Open wallet',
+        openWallet: 'Open your folder',
         quickActions: 'Quick actions',
         results: 'Results',
         clearFilters: 'Clear filters',

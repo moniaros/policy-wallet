@@ -265,6 +265,7 @@ export const appEn: typeof appEl = {
         gatePlain: 'In plain words: to tell you what it covers, the document has to be read by AI. This applies to every document you upload here, and you can withdraw it per document from Privacy.',
         gateSwitch: 'I agree that the documents I upload are read by AI',
         gateLocked: "Without this I can't read any document — you can still store files from a policy's folder.",
+        gateError: 'Your consent was not saved — please try again in a moment.',
     },
     me: {
         theme: 'Theme',
@@ -278,12 +279,12 @@ export const appEn: typeof appEl = {
         ledgerTitle: 'What I did for you in {year}',
         ledgerEmpty: "I haven't done anything worth counting yet. As soon as I read your first policy, you'll see it here.",
         ledger: {
-            policiesRead: '{count, plural, one {# policy read} other {# policies read}}',
-            renewalsCaught: '{count, plural, one {# expiry shown before it passed} other {# expiries shown before they passed}}',
-            findingsShown: '{count, plural, one {# finding shown} other {# findings shown}}',
-            benefitsSurfaced: '{count, plural, one {# benefit you already pay for} other {# benefits you already pay for}}',
-            questionsAnswered: '{count, plural, one {# question answered} other {# questions answered}}',
-            helpRequests: '{count, plural, one {# request sent to your adviser} other {# requests sent to your adviser}}',
+            policiesRead: '{count, plural, one {policy read} other {policies read}}',
+            renewalsCaught: '{count, plural, one {expiry shown before it passed} other {expiries shown before they passed}}',
+            findingsShown: '{count, plural, one {finding shown} other {findings shown}}',
+            benefitsSurfaced: '{count, plural, one {benefit you already pay for} other {benefits you already pay for}}',
+            questionsAnswered: '{count, plural, one {question answered} other {questions answered}}',
+            helpRequests: '{count, plural, one {request sent to your adviser} other {requests sent to your adviser}}',
         },
         sections: 'Settings',
         household: {

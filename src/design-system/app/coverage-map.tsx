@@ -32,7 +32,7 @@ export function CoverageMap({
             {cells.map((c) => {
                 const inner = (
                     <>
-                        <span className="block min-w-0 break-words text-g-app-body-sm font-medium text-fg-primary">{c.label}</span>
+                        <span lang="el" className="block min-w-0 break-words [hyphens:auto] text-g-app-body-sm font-medium text-fg-primary">{c.label}</span>
                         <span className={cn("mt-g-1 block text-g-app-body-sm", c.state === "covered" && "text-state-covered", c.state === "gap" && "text-state-gap", c.state === "review" && "text-state-review", c.state === null && "text-fg-faint")}>
                             {c.state ? `${GLYPH[c.state]} ${c.detail ?? legend[c.state]}` : legend.none}
                         </span>

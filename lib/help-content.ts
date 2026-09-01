@@ -213,7 +213,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
     el: {
         'upload-policy': {
             id: 'upload-policy',
-            title: 'Πώς να Ανεβάσετε το Πρώτο σας Ασφαλιστήριο',
+            title: 'Πώς να ανεβάσετε το πρώτο σας ασφαλιστήριο',
             subtitle: 'Ψηφιοποιήστε με ασφάλεια τα ασφαλιστήριά σας χρησιμοποιώντας τον AI σαρωτή μας.',
             readTime: '4 λεπτά',
             category: 'Ξεκινώντας',
@@ -249,7 +249,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         },
         'sharing-access': {
             id: 'sharing-access',
-            title: 'Κοινοποίηση Πρόσβασης Ασφαλιστηρίου',
+            title: 'Κοινοποίηση πρόσβασης ασφαλιστηρίου',
             subtitle: 'Δώστε ασφαλή, προσωρινή ή μόνιμη πρόσβαση σε μέλη της οικογένειας ή στον ασφαλιστικό σας σύμβουλο.',
             readTime: '2 λεπτά',
             category: 'Συνεργασία',
@@ -298,7 +298,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         },
         'reset-password': {
             id: 'reset-password',
-            title: 'Πώς να Επαναφέρετε τον Κωδικό σας',
+            title: 'Πώς να επαναφέρετε τον κωδικό σας',
             subtitle: 'Ανακτήστε την πρόσβαση στον λογαριασμό σας με ασφάλεια.',
             readTime: '1 λεπτό',
             category: 'Λογαριασμός & Ασφάλεια',
@@ -320,7 +320,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         },
         'notifications': {
             id: 'notifications',
-            title: 'Διαχείριση Προτιμήσεων Ειδοποιήσεων',
+            title: 'Διαχείριση προτιμήσεων ειδοποιήσεων',
             subtitle: 'Προσαρμόστε πώς και πότε το PolicyWallet επικοινωνεί μαζί σας.',
             readTime: '3 λεπτά',
             category: 'Ρυθμίσεις',
@@ -343,7 +343,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         },
         'install-pwa': {
             id: 'install-pwa',
-            title: 'Πώς να Εγκαταστήσετε την Εφαρμογή',
+            title: 'Πώς να εγκαταστήσετε την εφαρμογή',
             subtitle: 'Αποκτήστε το PolicyWallet στην αρχική σας οθόνη για άμεση πρόσβαση.',
             readTime: '2 λεπτά',
             category: 'Mobile App & PWA',
@@ -374,7 +374,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         },
         'update-payment': {
             id: 'update-payment',
-            title: 'Ενημέρωση Μεθόδου Πληρωμής',
+            title: 'Ενημέρωση μεθόδου πληρωμής',
             subtitle: 'Διαχειριστείτε με ασφάλεια τα στοιχεία πληρωμής της συνδρομής σας.',
             readTime: '2 λεπτά',
             category: 'Χρεώσεις & Συνδρομές',
