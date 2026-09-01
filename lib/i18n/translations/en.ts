@@ -406,7 +406,7 @@ export const en: TranslationKeys = {
         detectedGaps: "Detected Gaps",
         history: 'History',
         noNotifications: 'No notifications',
-        noNotificationsYetDesc: "We'll notify you when there's something new",
+        noNotificationsYetDesc: "I'll tell you as soon as there is something new.",
         shareWithAgent: 'Share with Advisor',
         invitationCreated: 'Invitation created. Send the link to your advisor.',
         invitationEmailFailed: 'Email not delivered — copy the link below and share it yourself.',
@@ -2521,7 +2521,7 @@ export const en: TranslationKeys = {
         notificationGroups: {
             renewalReminders: {
                 label: 'Renewal and expiry reminders',
-                description: 'We tell you before a policy expires, so you are never left uncovered.',
+                description: 'I\'ll remind you before anything expires — with time to decide.',
             },
             weeklyDigest: {
                 label: 'Weekly summary',

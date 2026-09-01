@@ -17,13 +17,13 @@ import { BASE, TARGET, OLD_ROUTES, ROUTE_MAP, auditContext, settleDeterministic,
 
 const BANNED = /πρόταση|προτείν|συμβουλεύ|καλύτερο πρόγραμμα|αλλάξτε|αγοράστε|εξοικονομ|κόψτε/i
 /** The rebuilt status vocabulary (StatusChip's three states). */
-const THREE_STATES = new Set(["Καλύπτεται", "Κενό", "Για έλεγχο"])
+const THREE_STATES = new Set(["Καλύπτεται", "Χωρίς κάλυψη", "Για έλεγχο"])
 /** Everything the OLD builds' seven vocabularies used — collected, not asserted. */
 const STATUS_SCAN = [
     "ΛΗΓΜΕΝΟ", "ΛΗΓΕΙ ΣΥΝΤΟΜΑ", "ΕΝΕΡΓΟ", "ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ",
     "Κρίσιμη προτεραιότητα", "Υψηλή προτεραιότητα", "Μεσαία προτεραιότητα", "Χαμηλή προτεραιότητα",
     "Απαιτείται ενέργεια", "Εντάξει", "Προσοχή", "σημεία για έλεγχο",
-    "Καλύπτεται", "Κενό", "Για έλεγχο",
+    "Καλύπτεται", "Κενό", "Χωρίς κάλυψη", "Για έλεγχο",
 ]
 
 type RouteReport = {

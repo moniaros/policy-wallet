@@ -111,7 +111,7 @@ test.describe("gate 1 — no information loss", () => {
                 } else if (item.class === "status") {
                     // the old vocabularies were deliberately replaced — a status
                     // word "missing" is only fine if the retirement is written
-                    found = ["Καλύπτεται", "Κενό", "Για έλεγχο"].some((s) => item.text.includes(s)) && base.text.includes(item.text)
+                    found = ["Καλύπτεται", "Κενό", "Για έλεγχο"].some((s) => item.text.includes(s)) && (base.text.includes(item.text) || (item.text === "Κενό" && base.text.includes("Χωρίς κάλυψη")))
                 }
 
                 if (found) continue

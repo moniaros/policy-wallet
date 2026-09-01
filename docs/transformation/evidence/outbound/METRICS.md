@@ -69,16 +69,16 @@ Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
 
 ### churn: day 30
 
-- subject: «🎁 Μας λείπετε — 500 δωρεάν credits σας περιμένουν»
-- rendered length: 453 chars
+- subject: «Ο ασφαλιστικός σας φάκελος σας περιμένει»
+- rendered length: 439 chars
 - **score renders: 0**
 - **internal tokens: 0**
 - **Latin-script sentences: 0**
 
 ### churn: day 60
 
-- subject: «🔒 Η κάλυψή σας μπορεί να κινδυνεύει»
-- rendered length: 492 chars
+- subject: «Δεν έχετε ελέγξει τα ασφαλιστήριά σας εδώ και 2 μήνες»
+- rendered length: 529 chars
 - **score renders: 0**
 - **internal tokens: 0**
 - **Latin-script sentences: 0**

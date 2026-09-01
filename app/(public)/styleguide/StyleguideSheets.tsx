@@ -58,7 +58,7 @@ export function StyleguideSheets({ theme }: { theme: "light" | "dark" }) {
 
             <Sheet title="Type ladder (app tier)">
                 <p className="font-display text-g-title-lg">Η προστασία σας</p>
-                <p className="font-display text-g-title">Σας καλύπτουν 22 από τα 30.</p>
+                <p className="font-display text-g-title">Βρήκα κάλυψη σε 22 από τα 30.</p>
                 <p className="text-g-heading">Να το δείτε τώρα</p>
                 <p className="text-g-row">Toyota Yaris · ΙΚΖ-4821</p>
                 <p className="text-g-app-body">Το ΙΚΖ-4821 λήγει σε 8 ημέρες. Από τις 8 Σεπτεμβρίου κυκλοφορεί ανασφάλιστο.</p>

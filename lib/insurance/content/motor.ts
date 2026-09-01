@@ -151,7 +151,7 @@ export const motorContent: BranchContent = {
             en: 'In an accident: call your insurer’s accident-care line first — it records the incident and guides you on the spot.',
         },
         {
-            el: 'Φωτογραφίστε τα οχήματα, τις πινακίδες και το σημείο. Αν υπάρχουν τραυματισμοί ή διαφωνία, καλέστε και την Τροχαία.',
+            el: 'Φωτογραφίστε τα οχήματα, τις πινακίδείτε και το σημείο. Αν υπάρχουν τραυματισμοί ή διαφωνία, καλέστε και την Τροχαία.',
             en: 'Photograph the vehicles, the plates and the scene. If there are injuries or a dispute, also call the traffic police.',
         },
         {

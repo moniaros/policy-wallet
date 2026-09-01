@@ -50,7 +50,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
             Icon: Home,
             name: t("Σπίτι", "Home"),
             note: t("Λείπει κάλυψη πλημμύρας", "Flood cover is missing"),
-            status: t("Κενό", "Gap"),
+            status: t("Χωρίς κάλυψη", "Not covered"),
             type: "gap" as const,
         },
         {

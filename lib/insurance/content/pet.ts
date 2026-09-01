@@ -12,7 +12,7 @@ export const petContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Ένα έκτακτο χειρουργείο μπορεί να κοστίσει εκατοντάδες ή χιλιάδες ευρώ — οι καλύψεις όμως έχουν όρια ανά περιστατικό και ανά έτος.',
+            el: 'Ένα έκτακτο χειρουργείο μπορεί να κοστίσει εκατοντάδείτε ή χιλιάδείτε ευρώ — οι καλύψεις όμως έχουν όρια ανά περιστατικό και ανά έτος.',
             en: 'An emergency surgery can cost hundreds or thousands of euros — but covers carry per-incident and annual limits.',
         },
         {

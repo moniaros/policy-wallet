@@ -32,7 +32,7 @@ export const motorbikeContent: BranchContent = {
             en: 'In a fall with no other vehicle involved there is no third party to pay — whatever applies comes only from your own policy.',
         },
         {
-            el: 'Ο συνεπιβάτης δεν αντιμετωπίζεται πάντα με τους ίδιους όρους με τον αναβάτη· αν μεταφέρετε τακτικά κάποιον, ίσως αξίζει να το επιβεβαιώσεις.',
+            el: 'Ο συνεπιβάτης δεν αντιμετωπίζεται πάντα με τους ίδιους όρους με τον αναβάτη· αν μεταφέρετε τακτικά κάποιον, ίσως αξίζει να το επιβεβαιώσετε.',
             en: 'A pillion passenger is not always treated on the same terms as the rider; if you regularly carry someone, it may be worth confirming.',
         },
         {

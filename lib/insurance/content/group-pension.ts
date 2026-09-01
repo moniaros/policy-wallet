@@ -71,7 +71,7 @@ export const groupPensionContent: BranchContent = {
             en: 'If the scheme offers an optional employee contribution matched by the employer, check whether you are using it — it is part of your remuneration package.',
         },
         {
-            el: 'Για κάθε φορολογικό ερώτημα, απευθύνσου σε λογιστή ή φοροτεχνικό: η μεταχείριση εξαρτάται από τα συνολικά σας οικονομικά, όχι μόνο από το πρόγραμμα.',
+            el: 'Για κάθε φορολογικό ερώτημα, απευθυνθείτε σε λογιστή ή φοροτεχνικό: η μεταχείριση εξαρτάται από τα συνολικά σας οικονομικά, όχι μόνο από το πρόγραμμα.',
             en: 'For any tax question, go to an accountant or tax adviser: the treatment depends on your finances as a whole, not on the scheme alone.',
         },
     ],

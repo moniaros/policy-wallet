@@ -9,7 +9,7 @@ import { VerdictCard, MoneyTriad, CoverageMap } from "@/src/design-system/app"
  */
 
 const WIDTHS = [375, 768, 1100] as const
-const stateLabels = { covered: "Καλύπτεται", gap: "Κενό", review: "Για έλεγχο" }
+const stateLabels = { covered: "Καλύπτεται", gap: "Χωρίς κάλυψη", review: "Για έλεγχο" }
 
 function SampleSet() {
     return (
@@ -19,10 +19,10 @@ function SampleSet() {
                 active={30}
                 quiet={false}
                 mood="Αξίζει να δείτε"
-                sentence="Σας καλύπτουν 22 από τα 30."
+                sentence="Βρήκα κάλυψη σε 22 από τα 30."
                 reassurance="Τρία πράγματα αξίζει να δείτε αυτή την εβδομάδα."
-                ringLabel="22 από 30 καλύπτονται · 5 με κενό · 3 για έλεγχο"
-                tiles={[{ state: "covered", label: "Καλύπτονται", count: 22, href: "#" }, { state: "gap", label: "Με κενό", count: 5, href: "#" }, { state: "review", label: "Για έλεγχο", count: 3, href: "#" }]}
+                ringLabel="22 από 30 καλύπτονται · 5 χωρίς κάλυψη · 3 για έλεγχο"
+                tiles={[{ state: "covered", label: "Καλύπτονται", count: 22, href: "#" }, { state: "gap", label: "Χωρίς κάλυψη", count: 5, href: "#" }, { state: "review", label: "Για έλεγχο", count: 3, href: "#" }]}
             />
             <MoneyTriad
                 paid={{ label: "Πληρώνετε τον χρόνο", value: "8.224 €", note: "Μόνο όσα ισχύουν σήμερα.", factKey: "money.paidPerYear" }}

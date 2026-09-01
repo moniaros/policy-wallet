@@ -118,7 +118,7 @@ const CHIP_GLYPH = { covered: "✓", gap: "◆", review: "?" } as const
  */
 export const STATE_LABELS: Record<"covered" | "gap" | "review", { el: string; en: string }> = {
     covered: { el: "Καλύπτεται", en: "Covered" },
-    gap: { el: "Κενό", en: "Gap" },
+    gap: { el: "Χωρίς κάλυψη", en: "Not covered" },
     review: { el: "Για έλεγχο", en: "Needs review" },
 }
 

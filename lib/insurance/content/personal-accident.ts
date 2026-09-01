@@ -105,7 +105,7 @@ export const personalAccidentContent: BranchContent = {
             id: 'personal_accident_activities_gap',
             title: { el: 'Δραστηριότητες στις εξαιρέσεις', en: 'Activities in the exclusions' },
             description: {
-                el: 'Αθλήματα, χόμπι ή οχήματα που χρησιμοποιείτε τακτικά μπορεί να αναφέρονται ρητά ως εξαιρέσεις — ίσως αξίζει να το επιβεβαιώσεις πριν χρειαστεί.',
+                el: 'Αθλήματα, χόμπι ή οχήματα που χρησιμοποιείτε τακτικά μπορεί να αναφέρονται ρητά ως εξαιρέσεις — ίσως αξίζει να το επιβεβαιώσετε πριν χρειαστεί.',
                 en: 'Sports, hobbies or vehicles you use regularly may be named explicitly as exclusions — worth confirming before it matters.',
             },
             relatedRuleId: 'unclear_exclusions',

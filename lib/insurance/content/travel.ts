@@ -12,7 +12,7 @@ export const travelContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Τα ιατρικά έξοδα εκτός Ελλάδας (ειδικά εκτός ΕΕ) μπορούν να φτάσουν δεκάδες χιλιάδες ευρώ — η ΕΚΑΑ δεν καλύπτει τα πάντα.',
+            el: 'Τα ιατρικά έξοδα εκτός Ελλάδας (ειδικά εκτός ΕΕ) μπορούν να φτάσουν δεκάδείτε χιλιάδείτε ευρώ — η ΕΚΑΑ δεν καλύπτει τα πάντα.',
             en: 'Medical costs outside Greece (especially outside the EU) can reach tens of thousands of euros — the EHIC does not cover everything.',
         },
         {

@@ -28,7 +28,7 @@ test.describe("gate 8 — density", () => {
         const fold = await page.evaluate(() => {
             const inFold = (el: Element | null) => { const r = el?.getBoundingClientRect(); return !!r && r.top >= 0 && r.bottom <= 852 && r.height > 0 }
             const verdict = document.querySelector("#verdict")
-            const tiles = verdict ? [...verdict.querySelectorAll("a")].filter((a) => /Καλύπτονται|Με κενό|Για έλεγχο/.test(a.textContent || "")) : []
+            const tiles = verdict ? [...verdict.querySelectorAll("a")].filter((a) => /Καλύπτονται|Χωρίς κάλυψη|Για έλεγχο/.test(a.textContent || "")) : []
             const firstRow = document.querySelector("#now li a, #now li")
             return {
                 verdictInFold: inFold(verdict),
@@ -68,7 +68,7 @@ test.describe("gate 8 — density", () => {
                 hasInsurer: /[A-ZΑ-Ωa-zα-ω]{4,}/.test(text),
                 hasCovers: /·/.test(text),
                 hasPremium: /€/.test(text),
-                hasStatus: /Καλύπτεται|Κενό|Για έλεγχο|Ληγμένο|Λήγει/.test(text),
+                hasStatus: /Καλύπτεται|Χωρίς κάλυψη|Για έλεγχο|Ληγμένο|Λήγει/.test(text),
                 clipped,
             }
         })

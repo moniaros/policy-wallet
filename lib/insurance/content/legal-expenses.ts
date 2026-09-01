@@ -36,7 +36,7 @@ export const legalExpensesContent: BranchContent = {
             en: 'Free choice of lawyer is recognised once the case reaches court or an administrative procedure. The insurer, though, reimburses only up to the contract’s limit — whatever the fee exceeds it stays with you.',
         },
         {
-            el: 'Στην ελληνική αγορά η νομική προστασία πωλείται πολύ συχνά ως πρόσθετη κάλυψη μέσα στο συμβόλαιο του αυτοκινήτου, με πεδίο μόνο τα τροχαία. Αν περιμένετε να καλύψει εργασιακή ή καταναλωτική διαφορά, αξίζει να το επιβεβαιώσεις στο κείμενο.',
+            el: 'Στην ελληνική αγορά η νομική προστασία πωλείται πολύ συχνά ως πρόσθετη κάλυψη μέσα στο συμβόλαιο του αυτοκινήτου, με πεδίο μόνο τα τροχαία. Αν περιμένετε να καλύψει εργασιακή ή καταναλωτική διαφορά, αξίζει να το επιβεβαιώσετε στο κείμενο.',
             en: 'In the Greek market legal expenses is very often sold as an add-on inside the motor policy, scoped to traffic matters only. If you expect it to cover an employment or consumer dispute, it is worth confirming in the wording.',
         },
     ],

@@ -54,7 +54,7 @@ export const subscriptionCopy = {
     // Feature Labels
     features: {
         policyLimit: {
-            el: 'Μέχρι {count} συμβόλαια',
+            el: 'Μέχρι {count} ασφαλιστήρια',
             en: 'Up to {count} policies'
         },
         policyLimitLabel: {
@@ -62,7 +62,7 @@ export const subscriptionCopy = {
             en: 'Policy limit'
         },
         unlimitedPolicies: {
-            el: 'Απεριόριστα συμβόλαια',
+            el: 'Απεριόριστα ασφαλιστήρια',
             en: 'Unlimited policies'
         },
         basicAI: {
@@ -159,7 +159,7 @@ export const subscriptionCopy = {
                 en: 'Account upgrade'
             },
             title: {
-                el: 'Επιλέξτε το Πλάνο που σας Ταιριάζει',
+                el: 'Επιλέξτε το πλάνο που σας ταιριάζει',
                 en: 'Choose the Plan That Fits You'
             },
             subtitle: {
@@ -238,7 +238,7 @@ export const subscriptionCopy = {
             en: 'Subscription canceled successfully'
         },
         policiesUsed: {
-            el: '{used} από {limit} συμβόλαια',
+            el: '{used} από {limit} ασφαλιστήρια',
             en: '{used} of {limit} policies'
         },
         unlimited: {

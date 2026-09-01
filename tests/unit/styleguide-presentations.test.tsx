@@ -12,7 +12,7 @@ describe("three presentations, same facts", () => {
         const { container } = render(<StyleguidePresentations />)
         const panes = [...container.querySelectorAll("[data-presentation]")]
         expect(panes.map((p) => p.getAttribute("data-presentation"))).toEqual(["375", "768", "1100"])
-        const FACTS = ["22", "5", "3", "30", "8.224 €", "1,3 εκ. €", "84 €", "Αυτοκίνητο", "Κατοικία", "Υγεία", "Ζωή", "Καλύπτονται", "Με κενό", "Για έλεγχο", "δεν έχετε"]
+        const FACTS = ["22", "5", "3", "30", "8.224 €", "1,3 εκ. €", "84 €", "Αυτοκίνητο", "Κατοικία", "Υγεία", "Ζωή", "Καλύπτονται", "Χωρίς κάλυψη", "Για έλεγχο", "δεν έχετε"]
         for (const pane of panes) {
             const text = (pane.textContent || "").replace(/\s+/g, " ")
             for (const fact of FACTS) {

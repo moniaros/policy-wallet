@@ -623,7 +623,7 @@ bundle	app.finding.dismissMemory	"Ό,τι μου πείτε «δεν με αφο
 bundle	app.finding.dismissTitle	"Γιατί δεν σας αφορά;"
 bundle	app.finding.help	"Ζητάω βοήθεια"
 bundle	app.finding.kind.expiry	"Λήγει"
-bundle	app.finding.kind.gap	"Κενό"
+bundle	app.finding.kind.gap	"Χωρίς κάλυψη"
 bundle	app.finding.kind.review	"Για έλεγχο"
 bundle	app.finding.notFoundThere	"δεν αναφέρεται"
 bundle	app.finding.open	"Άνοιγμα ασφαλιστηρίου"
@@ -644,8 +644,8 @@ bundle	app.finding.source.section	"{document} · {section} — δεν αναφέ
 bundle	app.finding.source.sectionFound	"{document} · {section}"
 bundle	app.finding.sourceLabel	"Πού το είδα:"
 bundle	app.finding.why.dependants	"{n, plural, one {Μου είπατε ότι # άτομο εξαρτάται από εσάς.} other {Μου είπατε ότι # άτομα εξαρτώνται από εσάς.}}"
-bundle	app.finding.why.ownsHome	"Μου είπατε ότι το σπίτι είναι δικό σας — ένα κενό εκεί σας αφορά."
-bundle	app.finding.why.vehicles	"{n, plural, one {Μου είπατε ότι έχετε # όχημα — ένα κενό εκεί σας αφορά.} other {Μου είπατε ότι έχετε # οχήματα — ένα κενό εκεί σας αφορά.}}"
+bundle	app.finding.why.ownsHome	"Μου είπατε ότι το σπίτι είναι δικό σας — αν κάτι δεν καλύπτεται εκεί, σας αφορά."
+bundle	app.finding.why.vehicles	"{n, plural, one {Μου είπατε ότι έχετε # όχημα — αν κάτι δεν καλύπτεται εκεί, σας αφορά.} other {Μου είπατε ότι έχετε # οχήματα — αν κάτι δεν καλύπτεται εκεί, σας αφορά.}}"
 bundle	app.home.checkedDaysAgo	"έλεγξα ξανά πριν από {count, plural, one {# ημέρα} other {# ημέρες}}"
 bundle	app.home.checkedHoursAgo	"έλεγξα ξανά πριν από {count, plural, one {# ώρα} other {# ώρες}}"
 bundle	app.home.checkedJustNow	"έλεγξα ξανά μόλις τώρα"
@@ -673,7 +673,7 @@ bundle	app.household.policies	"{count, plural, =0 {χωρίς ασφαλιστή
 bundle	app.household.title	"Το νοικοκυριό σας"
 bundle	app.ledger.benefitsShown	"Παροχές που σας έδειξα"
 bundle	app.ledger.empty	"Δεν έχω ακόμη κάτι να σας δείξω — μόλις διαβάσω το πρώτο ασφαλιστήριο, θα το γράψω εδώ."
-bundle	app.ledger.gapsFound	"Κενά που βρήκα"
+bundle	app.ledger.gapsFound	"Σημεία χωρίς κάλυψη"
 bundle	app.ledger.paidTwice	"Που ίσως πληρώνατε δύο φορές"
 bundle	app.ledger.policiesRead	"Ασφαλιστήρια που διάβασα"
 bundle	app.ledger.questionsAnswered	"Ερωτήσεις που απάντησα"
@@ -705,7 +705,7 @@ bundle	app.me.household.addFailed	"Δεν μπόρεσα να το αποθηκ�
 bundle	app.me.household.addTitle	"Προσθήκη ατόμου"
 bundle	app.me.household.added	"Εντάξει — τον/την πρόσθεσα."
 bundle	app.me.household.dependant	"εξαρτώμενο μέλος"
-bundle	app.me.household.dependantHint	"Αν ναι και δεν βρω ασφαλιστήριο στο όνομά του, θα το σημειώσω «για έλεγχο» — όχι «κενό»."
+bundle	app.me.household.dependantHint	"Αν ναι και δεν βρω ασφαλιστήριο στο όνομά του, θα το σημειώσω «για έλεγχο» — δεν θα γράψω «χωρίς κάλυψη»."
 bundle	app.me.household.dependantQuestion	"Εξαρτάται οικονομικά από εσάς;"
 bundle	app.me.household.empty	"Δεν μου έχετε πει ακόμη ποιοι είναι στο νοικοκυριό."
 bundle	app.me.household.intro	"Ποιος καλύπτεται το βλέπω από τα ονόματα στα έγγραφα — δεν το μαντεύω."
@@ -779,7 +779,7 @@ bundle	app.nav.skip	"Μετάβαση στο περιεχόμενο"
 bundle	app.nav.updates	"Ενημερώσεις"
 bundle	app.nav.updatesBadge	"{count, plural, =0 {Ενημερώσεις} one {Ενημερώσεις — # νέα} other {Ενημερώσεις — # νέες}}"
 bundle	app.note.body	"Ό,τι σας λέω το διάβασα στα δικά σας έγγραφα με AI και μπορεί να έχω λάθος — κάθε στοιχείο είναι ορατό για να το ελέγξετε. Δεν σας λέω τι να αγοράσετε· σας λέω τι είδα. Δεν είναι ασφαλιστική συμβουλή: για αποφάσεις, ρωτήστε τον σύμβουλό σας."
-bundle	app.note.gapDefinition	"«Κενό» σημαίνει ότι, με βάση τα έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι."
+bundle	app.note.gapDefinition	"«Χωρίς κάλυψη» σημαίνει ότι, με βάση τα έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι. Όπου γράφω «δεν έχετε», δεν βρήκα κανένα ασφαλιστήριο αυτού του κλάδου."
 bundle	app.note.ordering	"Η σειρά είναι η εκτίμησή μου για το ΠΟΤΕ αξίζει να το δείτε — όχι αξιολόγηση κινδύνου."
 bundle	app.note.title	"Σημείωση"
 bundle	app.policies.byExpiry	"Ανά λήξη"
@@ -844,7 +844,7 @@ bundle	app.policy.source	"Από το έγγραφο «{document}»"
 bundle	app.policy.sourcePage	"Από το έγγραφο «{document}», σελίδα {page}"
 bundle	app.policy.summaryMismatch	"Το διάβασα σε άλλη γλώσσα από αυτή που βλέπετε· δεν το μεταφράζω για να μη σας δώσω λάθος λέξεις."
 bundle	app.policy.summaryUnavailable	"Το ασφαλιστήριο δεν το έχω διαβάσει ακόμη — μόλις το διαβάσω θα σας το πω σε απλά λόγια."
-bundle	app.policy.verdictGap	"{count, plural, one {Βρήκα # συγκεκριμένο κενό.} other {Βρήκα # συγκεκριμένα κενά.}}"
+bundle	app.policy.verdictGap	"{count, plural, one {Βρήκα # σημείο χωρίς κάλυψη.} other {Βρήκα # σημεία χωρίς κάλυψη.}}"
 bundle	app.policy.verdictOk	"Καλύπτει όσα βρήκα στον πίνακα καλύψεων."
 bundle	app.policy.verdictReview	"{count, plural, one {# σημείο θέλει έλεγχο.} other {# σημεία θέλουν έλεγχο.}}"
 bundle	app.privacyDocs.failed	"Δεν μπόρεσα να το αποθηκεύσω."
@@ -870,7 +870,7 @@ bundle	app.see.filterLabel	"Φίλτρο ευρημάτων"
 bundle	app.see.intro	"Με τη σειρά που αξίζει να τα δείτε — από αυτό που λήγει πρώτο."
 bundle	app.see.later	"{count, plural, one {# μικρότερο για όταν έχετε χρόνο} other {# μικρότερα για όταν έχετε χρόνο}}"
 bundle	app.see.notChecked	"Κενά κάλυψης δεν τα έλεγξα — περιλαμβάνεται στο {plan}. Ό,τι βλέπετε εδώ είναι λήξεις και σημεία για έλεγχο."
-bundle	app.see.noteGap	"«Κενό» σημαίνει ότι, με βάση τα έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι."
+bundle	app.see.noteGap	"«Χωρίς κάλυψη» σημαίνει ότι, με βάση τα έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι. Όπου γράφω «δεν έχετε», δεν βρήκα κανένα ασφαλιστήριο αυτού του κλάδου."
 bundle	app.see.noteOrder	"Η σειρά είναι η εκτίμησή μου για το πότε αξίζει να το δείτε — όχι εκτίμηση κινδύνου."
 bundle	app.see.tierCounts	"{now} τώρα · {month} αυτόν τον μήνα · {later} όταν έχετε χρόνο"
 bundle	app.see.title	"Να δείτε"
@@ -878,19 +878,19 @@ bundle	app.shell.close	"Κλείσιμο"
 bundle	app.shell.plan	"Πρόγραμμα: {plan}"
 bundle	app.shell.yourAccount	"Ο λογαριασμός σας"
 bundle	app.state.covered	"Καλύπτεται"
-bundle	app.state.gap	"Κενό"
+bundle	app.state.gap	"Χωρίς κάλυψη"
 bundle	app.state.review	"Για έλεγχο"
 bundle	app.tier.later.definition	"Ό,τι αξίζει μια ματιά, χωρίς ημερομηνία."
 bundle	app.tier.later.title	"Όταν έχετε χρόνο"
 bundle	app.tier.month.definition	"Λήγει μέσα σε 45 ημέρες, ή άλλαξε τιμή πάνω από τον δείκτη, ή λείπει ένα όριο που θα έπρεπε να αναφέρεται."
 bundle	app.tier.month.title	"Αυτόν τον μήνα"
-bundle	app.tier.now.definition	"Λήγει μέσα σε 14 ημέρες, ή είναι κενό σε κάτι βασικό που μου έχετε πει ότι έχετε."
+bundle	app.tier.now.definition	"Λήγει μέσα σε 14 ημέρες, ή δεν βρήκα κάλυψη σε κάτι βασικό που μου έχετε πει ότι έχετε."
 bundle	app.tier.now.title	"Να το δείτε τώρα"
 bundle	app.updates.daysAgo	"{count, plural, one {πριν από # ημέρα} other {πριν από # ημέρες}}"
 bundle	app.updates.emptyMeanwhile	"Δεν έχω κάνει κάτι που να αξίζει να σας πω."
 bundle	app.updates.emptyProtection	"Δεν έχω κάτι νέο για την προστασία σας."
 bundle	app.updates.failedReading	"Δεν μπόρεσα να διαβάσω το έγγραφο. Ανεβάστε ένα καθαρότερο αντίγραφο και ξαναπροσπαθώ."
-bundle	app.updates.legacyRenewal.body	"Το συμβόλαιό σας λήγει σύντομα. Αν το ανανεώσετε, ανεβάστε το νέο έγγραφο και το ξαναδιαβάζω."
+bundle	app.updates.legacyRenewal.body	"Το ασφαλιστήριό σας λήγει σύντομα. Αν το ανανεώσετε, ανεβάστε το νέο έγγραφο και το ξαναδιαβάζω."
 bundle	app.updates.legacyRenewal.title	"Η ανανέωση πλησιάζει"
 bundle	app.updates.markAll	"Τα είδα όλα"
 bundle	app.updates.markFailed	"Δεν μπόρεσα να τα σημειώσω. Δοκιμάστε ξανά."
@@ -915,11 +915,11 @@ bundle	app.verdict.notChecked.policies_not_analysed	"{count, plural, one {# ασ
 bundle	app.verdict.notChecked.readings_failed	"{count, plural, one {# έγγραφο δεν μπόρεσα να το διαβάσω.} other {# έγγραφα δεν μπόρεσα να τα διαβάσω.}}"
 bundle	app.verdict.quietReassurance	"Τα παρακολουθώ όλα. {next}"
 bundle	app.verdict.quietSentence	"Δεν χρειάζεται να κάνετε τίποτα σήμερα."
-bundle	app.verdict.ringLabel	"{covered, plural, one {# από {active} καλύπτεται} other {# από {active} καλύπτονται}} · {gap} με κενό · {review} για έλεγχο"
-bundle	app.verdict.sentence	"{covered, plural, one {Σας καλύπτει # από τα {active}.} other {Σας καλύπτουν # από τα {active}.}}"
+bundle	app.verdict.ringLabel	"{covered, plural, one {# από {active} καλύπτεται} other {# από {active} καλύπτονται}} · {gap} χωρίς κάλυψη · {review} για έλεγχο"
+bundle	app.verdict.sentence	"{covered, plural, one {Βρήκα κάλυψη σε # από τα {active}.} other {Βρήκα κάλυψη σε # από τα {active}.}}"
 bundle	app.verdict.thingsToSee	"{count, plural, =0 {Δεν βρήκα κάτι που να αξίζει να δείτε αυτή την εβδομάδα.} one {Ένα πράγμα αξίζει να δείτε αυτή την εβδομάδα.} other {# πράγματα αξίζει να δείτε αυτή την εβδομάδα.}}"
 bundle	app.verdict.tiles.covered	"Καλύπτονται"
-bundle	app.verdict.tiles.gap	"Με κενό"
+bundle	app.verdict.tiles.gap	"Χωρίς κάλυψη"
 bundle	app.verdict.tiles.review	"Για έλεγχο"
 bundle	app.verdict.watching	"Τα υπόλοιπα {count, plural, one {# το παρακολουθώ} other {# τα παρακολουθώ}}. Αν αλλάξει κάτι, θα σας το πω πρώτος."
 bundle	app.welcome.addFirst	"Ανεβάστε το πρώτο"
@@ -1071,7 +1071,7 @@ bundle	branches.howToUseBetter	"Πώς να το αξιοποιήσεις καλ
 bundle	branches.noRenewalsSoon	"Καμία ανανέωση τους επόμενους 3 μήνες."
 bundle	branches.onePolicy	"1 ασφαλιστήριο"
 bundle	branches.perksTitle	"Παροχές από τα ασφαλιστήριά σου"
-bundle	branches.policiesInBranch	"Τα ασφαλιστήριά σου"
+bundle	branches.policiesInBranch	"Τα ασφαλιστήριά σας"
 bundle	branches.policyCountN	"{count} ασφαλιστήρια"
 bundle	branches.recommendedActions	"Προτεινόμενες ενέργειες"
 bundle	branches.renewal	"Ανανέωση"
@@ -1817,8 +1817,8 @@ bundle	help.shortcuts.uploadDesc	"Ξεκίνα από το πορτοφόλι σ
 bundle	help.shortcuts.uploadLabel	"Ανέβασε νέο ασφαλιστήριο"
 bundle	help.startLearning	"Έναρξη εκμάθησης"
 bundle	help.stillNeedHelp	"Χρειάζεστε ακόμα βοήθεια;"
-bundle	help.todaySubtitle	"Βρες άμεσα οδηγούς για ανέβασμα ασφαλιστηρίου, κατανόηση καλύψεων και συνεργασία με τον σύμβουλό σου."
-bundle	help.todayTitle	"Τι θέλεις να κάνεις σήμερα;"
+bundle	help.todaySubtitle	"Βρείτε γρήγορα οδηγούς για ανέβασμα ασφαλιστηρίου, κατανόηση καλύψεων και συνεργασία με τον σύμβουλό σας."
+bundle	help.todayTitle	"Τι θέλετε να κάνετε σήμερα;"
 bundle	help.viewAll	"Προβολή όλων"
 bundle	help.visitDocs	"Επίσκεψη στα έγγραφα"
 bundle	insights.acordValidated	"Επαληθευμένα (ACORD)"
@@ -2121,7 +2121,7 @@ bundle	settings.notificationGroups.coverageFindings.description	"Όταν ολο
 bundle	settings.notificationGroups.coverageFindings.label	"Ευρήματα ανάλυσης κάλυψης"
 bundle	settings.notificationGroups.productUpdates.description	"Νέες δυνατότητες και συμβουλές για να αξιοποιήσετε το PolicyWallet."
 bundle	settings.notificationGroups.productUpdates.label	"Ενημερώσεις και συμβουλές για το προϊόν"
-bundle	settings.notificationGroups.renewalReminders.description	"Σας ειδοποιούμε πριν λήξει ένα ασφαλιστήριο, ώστε να μη μείνετε ακάλυπτος."
+bundle	settings.notificationGroups.renewalReminders.description	"Θα σας το θυμίσω πριν λήξει κάτι — με χρόνο να αποφασίσετε."
 bundle	settings.notificationGroups.renewalReminders.label	"Υπενθυμίσεις ανανέωσης και λήξης"
 bundle	settings.notificationGroups.weeklyDigest.description	"Μία φορά την εβδομάδα, τι άλλαξε στο χαρτοφυλάκιό σας."
 bundle	settings.notificationGroups.weeklyDigest.label	"Εβδομαδιαία σύνοψη"
@@ -2785,7 +2785,7 @@ bundle	wallet.newAsset	"Νέο περιουσιακό στοιχείο"
 bundle	wallet.noCoveragesFound	"Δεν αναλύθηκαν συγκεκριμένες καλύψεις."
 bundle	wallet.noDocuments	"Δεν βρέθηκαν έγγραφα"
 bundle	wallet.noNotifications	"Δεν υπάρχουν ειδοποιήσεις"
-bundle	wallet.noNotificationsYetDesc	"Θα σας ειδοποιήσουμε όταν υπάρχει κάτι νέο"
+bundle	wallet.noNotificationsYetDesc	"Θα σας πω μόλις υπάρχει κάτι νέο."
 bundle	wallet.noPolicies	"Δεν έχετε ακόμα αποθηκεύσει ασφαλιστήριο"
 bundle	wallet.noPoliciesDesc	"Ξεκινήστε προσθέτοντας το πρώτo σας ασφαλιστήριο"
 bundle	wallet.noPoliciesFound	"Δεν βρέθηκαν ασφαλιστήρια"
@@ -5186,7 +5186,7 @@ inline	lib/insurance/content/fidelity.ts	'Όταν ο εσωτερικός έλ�
 inline	lib/insurance/content/fidelity.ts	'Αν ένα πρόσωπο διαχειρίζεται ποσά μεγαλύτερα από το ατομικό του όριο, η διαφορά μένει στην επιχείρηση ακόμη και σε επιτυχή απαίτηση.'
 inline	lib/insurance/content/fidelity.ts	'Αν ο υπάλληλος έχει αποχωρήσει πριν από μήνες και δεν έγινε επισκόπηση, η προθεσμία ανακάλυψης μπορεί να έχει εξαντληθεί πριν εντοπιστεί οτιδήποτε.'
 inline	lib/insurance/content/fidelity.ts	'Ανεβάστε ασφαλιστήριο'
-inline	lib/insurance/content/fidelity.ts	'Ανεβάστε το ασφαλιστήριο και δείτε τα όρια ανά υπάλληλο, τις προθεσμίες ανακάλυψης και τις δικλείδες που ζητά.'
+inline	lib/insurance/content/fidelity.ts	'Ανεβάστε το ασφαλιστήριο και δείτε τα όρια ανά υπάλληλο, τις προθεσμίες ανακάλυψης και τις δικλείδείτε που ζητά.'
 inline	lib/insurance/content/fidelity.ts	'Απαιτείται εσωτερικός έλεγχος για να ισχύει η κάλυψη;'
 inline	lib/insurance/content/fidelity.ts	'Από το έγγραφο που ανεβάσατε: το όριο ανά υπάλληλο και το συνολικό ανώτατο όριο, μαζί με την απαλλαγή ανά ζημιογόνο γεγονός.'
 inline	lib/insurance/content/fidelity.ts	'Ατομικό όριο μικρότερο από την πιθανή έκθεση'
@@ -5367,7 +5367,7 @@ inline	lib/insurance/content/group-pension.ts	'Ανεβάστε πιστοποι
 inline	lib/insurance/content/group-pension.ts	'Ανεβάστε το πιστοποιητικό ή τον κανονισμό του προγράμματος και δείτε τι περιγράφεται για εισφορές, κατοχύρωση και αποχώρηση.'
 inline	lib/insurance/content/group-pension.ts	'Αποταμίευση μόνο μέσω του εργοδότη'
 inline	lib/insurance/content/group-pension.ts	'Ασαφείς όροι αποχώρησης'
-inline	lib/insurance/content/group-pension.ts	'Για κάθε φορολογικό ερώτημα, απευθύνσου σε λογιστή ή φοροτεχνικό: η μεταχείριση εξαρτάται από τα συνολικά σας οικονομικά, όχι μόνο από το πρόγραμμα.'
+inline	lib/insurance/content/group-pension.ts	'Για κάθε φορολογικό ερώτημα, απευθυνθείτε σε λογιστή ή φοροτεχνικό: η μεταχείριση εξαρτάται από τα συνολικά σας οικονομικά, όχι μόνο από το πρόγραμμα.'
 inline	lib/insurance/content/group-pension.ts	'Δείτε ποιος εισφέρει και σε τι αναλογία'
 inline	lib/insurance/content/group-pension.ts	'Δείτε τι μεταφέρεται αν αποχωρήσετε'
 inline	lib/insurance/content/group-pension.ts	'Δεν έχετε προσθέσει επαγγελματικό συνταξιοδοτικό πρόγραμμα'
@@ -5413,7 +5413,7 @@ inline	lib/insurance/content/health.ts	'Δείτε ποιες παροχές μ�
 inline	lib/insurance/content/health.ts	'Δείτε τι πληρώνετε εσείς σε νοσηλεία'
 inline	lib/insurance/content/health.ts	'Δεν έχετε προσθέσει συμβόλαιο υγείας'
 inline	lib/insurance/content/health.ts	'Ελέγξτε αν το ομαδικό σας αρκεί'
-inline	lib/insurance/content/health.ts	'Η απαλλαγή και η συμμετοχή καθορίζουν τι θα πληρώσετε εσείς σε μια νοσηλεία — δύο συμβόλαια με ίδιο ασφάλιστρο μπορεί να διαφέρουν χιλιάδες ευρώ στην πράξη.'
+inline	lib/insurance/content/health.ts	'Η απαλλαγή και η συμμετοχή καθορίζουν τι θα πληρώσετε εσείς σε μια νοσηλεία — δύο συμβόλαια με ίδιο ασφάλιστρο μπορεί να διαφέρουν χιλιάδείτε ευρώ στην πράξη.'
 inline	lib/insurance/content/health.ts	'Καλύπτονται διαγνωστικές εξετάσεις;'
 inline	lib/insurance/content/health.ts	'Κρατήστε όλες τις γνωματεύσεις, τα παραπεμπτικά και τις αποδείξεις — ζητούνται σχεδόν πάντα στον φάκελο.'
 inline	lib/insurance/content/health.ts	'Μάθετε τι πληρώνετε εσείς και τι ο ασφαλιστής σας — πριν βρεθείτε στο νοσοκομείο.'
@@ -5431,7 +5431,7 @@ inline	lib/insurance/content/health.ts	'Πολλά νοσοκομειακά πρ
 inline	lib/insurance/content/health.ts	'Πριν από προγραμματισμένη νοσηλεία, ρωτήστε αν το νοσοκομείο είναι συμβεβλημένο — η διαφορά στη συμμετοχή μπορεί να είναι μεγάλη.'
 inline	lib/insurance/content/health.ts	'Ρωτήστε τον σύμβουλό σας για συμπληρωματική κάλυψη'
 inline	lib/insurance/content/health.ts	'Σε έκτακτη νοσηλεία, ενημερώστε το συντονιστικό κέντρο του ασφαλιστή το συντομότερο — συνήθως υπάρχει 24ωρη γραμμή στο συμβόλαιο.'
-inline	lib/insurance/content/health.ts	'Στην ανανέωση, πρόσεξε αλλαγές σε απαλλαγή, συμμετοχή και όρια — και ρωτήστε αν οι αναμονές που έχετε ήδη «χτίσει» μεταφέρονται.'
+inline	lib/insurance/content/health.ts	'Στην ανανέωση, προσέξτε αλλαγές σε απαλλαγή, συμμετοχή και όρια — και ρωτήστε αν οι αναμονές που έχετε ήδη «χτίσει» μεταφέρονται.'
 inline	lib/insurance/content/health.ts	'Τι πληρώνω εγώ σε μια νοσηλεία;'
 inline	lib/insurance/content/health.ts	'Τι πληρώνω εγώ σε νοσηλεία;'
 inline	lib/insurance/content/health.ts	'Χαμηλό όριο κάλυψης'
@@ -5583,7 +5583,7 @@ inline	lib/insurance/content/legal-expenses.ts	'Πρώτα τι ΔΕΝ είνα�
 inline	lib/insurance/content/legal-expenses.ts	'Ρωτήστε τον σύμβουλό σας πώς αναγγέλλεται μια υπόθεση'
 inline	lib/insurance/content/legal-expenses.ts	'Στείλτε από την αρχή τα έγγραφα που δείχνουν πότε γεννήθηκε η υπόθεση: σύμβαση, τιμολόγιο, εξώδικο, καταγγελία, δελτίο τροχαίου.'
 inline	lib/insurance/content/legal-expenses.ts	'Στην ανανέωση αξίζει να δείτε αν το πεδίο εφαρμογής άλλαξε: οι όροι της νομικής προστασίας αναδιατυπώνονται συχνότερα από τις υπόλοιπες καλύψεις.'
-inline	lib/insurance/content/legal-expenses.ts	'Στην ελληνική αγορά η νομική προστασία πωλείται πολύ συχνά ως πρόσθετη κάλυψη μέσα στο συμβόλαιο του αυτοκινήτου, με πεδίο μόνο τα τροχαία. Αν περιμένετε να καλύψει εργασιακή ή καταναλωτική διαφορά, αξίζει να το επιβεβαιώσεις στο κείμενο.'
+inline	lib/insurance/content/legal-expenses.ts	'Στην ελληνική αγορά η νομική προστασία πωλείται πολύ συχνά ως πρόσθετη κάλυψη μέσα στο συμβόλαιο του αυτοκινήτου, με πεδίο μόνο τα τροχαία. Αν περιμένετε να καλύψει εργασιακή ή καταναλωτική διαφορά, αξίζει να το επιβεβαιώσετε στο κείμενο.'
 inline	lib/insurance/content/legal-expenses.ts	'Συχνές εμπλοκές σε τροχαία χωρίς νομική στήριξη'
 inline	lib/insurance/content/legal-expenses.ts	'Σχεδόν κάθε πρόγραμμα ορίζει χρόνο αναμονής. Μια διαφορά που γεννήθηκε πριν την έναρξη ή μέσα στους πρώτους μήνες ισχύος συνήθως μένει εκτός, ακόμη κι αν την πληροφορήθηκες αργότερα.'
 inline	lib/insurance/content/legal-expenses.ts	'Τι γίνεται αν ο ασφαλιστής κρίνει ότι η υπόθεση δεν έχει πιθανότητες;'
@@ -5739,7 +5739,7 @@ inline	lib/insurance/content/marine-crew.ts	'Κενό ανάμεσα σε δύο
 inline	lib/insurance/content/marine-crew.ts	'Κρατήστε τα ναυτολόγια και τα πιστοποιητικά ικανότητας προσβάσιμα από το πλοίο και από το γραφείο· σε περιστατικό ζητούνται ταυτόχρονα και από τις δύο πλευρές.'
 inline	lib/insurance/content/marine-crew.ts	'Μέχρι ποιο ποσό καλύπτονται τα νοσοκομειακά έξοδα;'
 inline	lib/insurance/content/marine-crew.ts	'Οι παροχές έχουν χωριστά όρια ανά κατηγορία — θάνατος, διαρκής ανικανότητα, πρόσκαιρη ανικανότητα, νοσοκομειακά, παλιννόστηση, μεταφορά σορού. Το άθροισμα ανά άτομο συνήθως δεν επιτρέπεται να ξεπεράσει το κεφάλαιο θανάτου από ατύχημα.'
-inline	lib/insurance/content/marine-crew.ts	'Οι περίοδοι είναι σύντομες και δεμένες στο ταξίδι ή στη ναυτολόγηση — συχνά εβδομάδες αντί για έτος. Η λογική της ετήσιας ανανέωσης δεν εφαρμόζεται και τα κενά δημιουργούνται στις αλλαγές πληρώματος.'
+inline	lib/insurance/content/marine-crew.ts	'Οι περίοδοι είναι σύντομες και δεμένες στο ταξίδι ή στη ναυτολόγηση — συχνά εβδομάδείτε αντί για έτος. Η λογική της ετήσιας ανανέωσης δεν εφαρμόζεται και τα κενά δημιουργούνται στις αλλαγές πληρώματος.'
 inline	lib/insurance/content/marine-crew.ts	'Ομαδικό όριο κοντά στο ατομικό'
 inline	lib/insurance/content/marine-crew.ts	'Ποια είναι τα όρια ανά παροχή για το πλήρωμα;'
 inline	lib/insurance/content/marine-crew.ts	'Ποιο είναι το ανώτατο όριο ευθύνης για ομαδικό ατύχημα;'
@@ -5886,7 +5886,7 @@ inline	lib/insurance/content/motor.ts	'Συμβόλαιο κοντά στη λή
 inline	lib/insurance/content/motor.ts	'Συμπληρώστε φιλική δήλωση μόνο αν συμφωνείτε για το τι συνέβη — επιταχύνει τη διαδικασία. Αν δεν είστε σίγουροι ποιος φταίει, μην υπογράψετε δήλωση υπαιτιότητας· καταγράψτε μόνο τα γεγονότα και αφήστε τους ασφαλιστές να κρίνουν.'
 inline	lib/insurance/content/motor.ts	'Τι ισχύει για θραύση κρυστάλλων;'
 inline	lib/insurance/content/motor.ts	'Τι πρέπει να κάνω σε περίπτωση ατυχήματος;'
-inline	lib/insurance/content/motor.ts	'Φωτογραφίστε τα οχήματα, τις πινακίδες και το σημείο. Αν υπάρχουν τραυματισμοί ή διαφωνία, καλέστε και την Τροχαία.'
+inline	lib/insurance/content/motor.ts	'Φωτογραφίστε τα οχήματα, τις πινακίδείτε και το σημείο. Αν υπάρχουν τραυματισμοί ή διαφωνία, καλέστε και την Τροχαία.'
 inline	lib/insurance/content/motor.ts	'Χωρίς κάλυψη κλοπής'
 inline	lib/insurance/content/motor.ts	'Χωρίς νομική προστασία'
 inline	lib/insurance/content/motorbike.ts	'Έχω οδική βοήθεια για τη μοτοσικλέτα;'
@@ -5919,7 +5919,7 @@ inline	lib/insurance/content/motorbike.ts	'Κράνος, στολή και μπ�
 inline	lib/insurance/content/motorbike.ts	'Κρατήστε και τον κατεστραμμένο εξοπλισμό προστασίας — αν καλύπτεται, θα ζητηθεί ως απόδειξη ζημιάς.'
 inline	lib/insurance/content/motorbike.ts	'Με βάση το έγγραφο που ανεβάσατε: στοιχεία του δικύκλου (μάρκα, μοντέλο, πινακίδα), τύπο κάλυψης και απαλλαγή, όπως αναγράφονται.'
 inline	lib/insurance/content/motorbike.ts	'Ο εξοπλισμός προστασίας (κράνος, στολή, μπότες) μπορεί να κοστίζει όσο μια μικρή ζημιά, αλλά σπάνια περιλαμβάνεται αυτόματα στην κάλυψη.'
-inline	lib/insurance/content/motorbike.ts	'Ο συνεπιβάτης δεν αντιμετωπίζεται πάντα με τους ίδιους όρους με τον αναβάτη· αν μεταφέρετε τακτικά κάποιον, ίσως αξίζει να το επιβεβαιώσεις.'
+inline	lib/insurance/content/motorbike.ts	'Ο συνεπιβάτης δεν αντιμετωπίζεται πάντα με τους ίδιους όρους με τον αναβάτη· αν μεταφέρετε τακτικά κάποιον, ίσως αξίζει να το επιβεβαιώσετε.'
 inline	lib/insurance/content/motorbike.ts	'Ορισμένα συμβόλαια δικύκλου περιορίζουν ή εξαιρούν τη μεταφορά επιβάτη. Αν μεταφέρετε τακτικά κάποιον, ίσως χρειάζεται επιβεβαίωση.'
 inline	lib/insurance/content/motorbike.ts	'Πριν αφήσετε τη μηχανή ακίνητη για μήνες, δείτε τι προβλέπει το συμβόλαιο για κλοπή και ζημιά ενώ δεν κυκλοφορεί — η ακινησία δεν σημαίνει πάντα μειωμένο ρίσκο για τον ασφαλιστή.'
 inline	lib/insurance/content/motorbike.ts	'Ρωτήστε τον σύμβουλό σας για κάλυψη εξοπλισμού'
@@ -5974,7 +5974,7 @@ inline	lib/insurance/content/pension.ts	'Τι ισχύει αν σταματήσ
 inline	lib/insurance/content/pension.ts	'Τι κόστος έχει η πρόωρη εξαγορά;'
 inline	lib/insurance/content/pension.ts	'Υπάρχει εγγυημένο σκέλος στο πρόγραμμα;'
 inline	lib/insurance/content/personal-accident.ts	'Άγνωστος πίνακας ποσοστών'
-inline	lib/insurance/content/personal-accident.ts	'Αθλήματα, χόμπι ή οχήματα που χρησιμοποιείτε τακτικά μπορεί να αναφέρονται ρητά ως εξαιρέσεις — ίσως αξίζει να το επιβεβαιώσεις πριν χρειαστεί.'
+inline	lib/insurance/content/personal-accident.ts	'Αθλήματα, χόμπι ή οχήματα που χρησιμοποιείτε τακτικά μπορεί να αναφέρονται ρητά ως εξαιρέσεις — ίσως αξίζει να το επιβεβαιώσετε πριν χρειαστεί.'
 inline	lib/insurance/content/personal-accident.ts	'Αν άλλαξαν επάγγελμα, αθλήματα ή συνήθειες μετακίνησης, η ανανέωση είναι η στιγμή να τα δηλώσετε — το εύρος της κάλυψης εξαρτάται από αυτά.'
 inline	lib/insurance/content/personal-accident.ts	'Αν έχετε παρόμοια κάλυψη μέσω εργοδότη ή ομαδικού συμβολαίου, δείτε πώς συνδυάζονται· τα εφάπαξ συνήθως αθροίζονται, οι δαπάνες συνήθως όχι.'
 inline	lib/insurance/content/personal-accident.ts	'Αν το συμβόλαιο ισχύει μόνο επαγγελματικά, ο ελεύθερος χρόνος — όπου συμβαίνουν πολλά ατυχήματα — ενδέχεται να μένει ακάλυπτος.'
@@ -6017,7 +6017,7 @@ inline	lib/insurance/content/personal-accident.ts	'Το προσωπικό ατ�
 inline	lib/insurance/content/personal-accident.ts	'Το προσωπικό ατύχημα δεν καλύπτει παθήσεις. Αν χρειάζεστε προστασία και για ασθένεια, αυτή έρχεται από άλλο συμβόλαιο.'
 inline	lib/insurance/content/personal-accident.ts	'Υπάρχει ημερήσια αποζημίωση για ανικανότητα;'
 inline	lib/insurance/content/personal-accident.ts	'Χωρίς τον πίνακα μόνιμης ανικανότητας, το κεφάλαιο του συμβολαίου δεν λέει σχεδόν τίποτα για το τι θα καταβληθεί στην πράξη.'
-inline	lib/insurance/content/pet.ts	'Ένα έκτακτο χειρουργείο μπορεί να κοστίσει εκατοντάδες ή χιλιάδες ευρώ — οι καλύψεις όμως έχουν όρια ανά περιστατικό και ανά έτος.'
+inline	lib/insurance/content/pet.ts	'Ένα έκτακτο χειρουργείο μπορεί να κοστίσει εκατοντάδείτε ή χιλιάδείτε ευρώ — οι καλύψεις όμως έχουν όρια ανά περιστατικό και ανά έτος.'
 inline	lib/insurance/content/pet.ts	'Αν το κατοικίδιο προκαλέσει ζημιά ή τραυματισμό, η ευθύνη είναι δική σας — δείτε αν το συμβόλαιο την καλύπτει.'
 inline	lib/insurance/content/pet.ts	'Αναμονές, ηλικιακά όρια και εξαιρέσεις (π.χ. προϋπάρχουσες παθήσεις, συγκεκριμένες φυλές, λεϊσμανίαση).'
 inline	lib/insurance/content/pet.ts	'Ανεβάστε συμβόλαιο'
@@ -6239,7 +6239,7 @@ inline	lib/insurance/content/travel.ts	'Σε ιατρικό περιστατικ
 inline	lib/insurance/content/travel.ts	'Σε ποιες χώρες ισχύει το συμβόλαιό μου;'
 inline	lib/insurance/content/travel.ts	'Σπορ και δραστηριότητες (σκι, καταδύσεις, ενοικίαση μηχανής) συχνά εξαιρούνται — αν τα σχεδιάζετε, έλεγξέ το από πριν.'
 inline	lib/insurance/content/travel.ts	'Τα γεωγραφικά όρια μετράνε: ένα συμβόλαιο «Ευρώπης» μπορεί να μην ισχύει σε ΗΠΑ ή Ασία.'
-inline	lib/insurance/content/travel.ts	'Τα ιατρικά έξοδα εκτός Ελλάδας (ειδικά εκτός ΕΕ) μπορούν να φτάσουν δεκάδες χιλιάδες ευρώ — η ΕΚΑΑ δεν καλύπτει τα πάντα.'
+inline	lib/insurance/content/travel.ts	'Τα ιατρικά έξοδα εκτός Ελλάδας (ειδικά εκτός ΕΕ) μπορούν να φτάσουν δεκάδείτε χιλιάδείτε ευρώ — η ΕΚΑΑ δεν καλύπτει τα πάντα.'
 inline	lib/insurance/content/travel.ts	'Ταξιδεύεις συχνά χωρίς ετήσια κάλυψη'
 inline	lib/insurance/content/travel.ts	'Τη γραμμή επείγουσας βοήθειας του ασφαλιστή, αν αναγράφεται — τον αριθμό που θέλετε πρόχειρο στο ταξίδι.'
 inline	lib/insurance/content/travel.ts	'Τι ισχύει για απώλεια αποσκευών;'
@@ -7919,7 +7919,7 @@ inline	lib/subscription-copy.ts	'/μήνα'
 inline	lib/subscription-copy.ts	'14 ημέρες δωρεάν'
 inline	lib/subscription-copy.ts	'Family'
 inline	lib/subscription-copy.ts	'Plus'
-inline	lib/subscription-copy.ts	'{used} από {limit} συμβόλαια'
+inline	lib/subscription-copy.ts	'{used} από {limit} ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Έχετε φτάσει το όριο των {limit} συμβολαίων'
 inline	lib/subscription-copy.ts	'Όριο συμβολαίων'
 inline	lib/subscription-copy.ts	'Ακύρωση ανά πάσα στιγμή'
@@ -7929,7 +7929,7 @@ inline	lib/subscription-copy.ts	'Αναβάθμιση σε Family'
 inline	lib/subscription-copy.ts	'Αναβάθμιση σε Plus'
 inline	lib/subscription-copy.ts	'Αναβάθμιση'
 inline	lib/subscription-copy.ts	'Αναβαθμίστε για να ξεκλειδώσετε αυτή τη λειτουργία'
-inline	lib/subscription-copy.ts	'Απεριόριστα συμβόλαια'
+inline	lib/subscription-copy.ts	'Απεριόριστα ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Απεριόριστα'
 inline	lib/subscription-copy.ts	'Ασφαλής αποθήκευση εγγράφων'
 inline	lib/subscription-copy.ts	'Ασφαλής πληρωμή με Stripe'
@@ -7952,7 +7952,7 @@ inline	lib/subscription-copy.ts	'Ενημέρωση Πληρωμής'
 inline	lib/subscription-copy.ts	'Εξοικονομήστε 3 μήνες'
 inline	lib/subscription-copy.ts	'Εξοικονομήστε 4 μήνες'
 inline	lib/subscription-copy.ts	'Επανενεργοποίηση'
-inline	lib/subscription-copy.ts	'Επιλέξτε το Πλάνο που σας Ταιριάζει'
+inline	lib/subscription-copy.ts	'Επιλέξτε το πλάνο που σας ταιριάζει'
 inline	lib/subscription-copy.ts	'Επόμενη χρέωση: {date}'
 inline	lib/subscription-copy.ts	'Ετήσια'
 inline	lib/subscription-copy.ts	'Η αναβάθμιση ολοκληρώθηκε!'
@@ -7964,7 +7964,7 @@ inline	lib/subscription-copy.ts	'Ιστορικό Χρεώσεων'
 inline	lib/subscription-copy.ts	'Καλύτερη αξία'
 inline	lib/subscription-copy.ts	'Λήψη PDF'
 inline	lib/subscription-copy.ts	'Μέθοδος Πληρωμής'
-inline	lib/subscription-copy.ts	'Μέχρι {count} συμβόλαια'
+inline	lib/subscription-copy.ts	'Μέχρι {count} ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Μηνιαία'
 inline	lib/subscription-copy.ts	'Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή;'
 inline	lib/subscription-copy.ts	'Μπορώ να αναβαθμίσω αργότερα;'
@@ -9188,7 +9188,6 @@ call	components/landing/AudienceTabs.tsx	"Εντάξει"
 call	components/landing/AudienceTabs.tsx	"Εντάξει"
 call	components/landing/AudienceTabs.tsx	"Επιλογή κοινού"
 call	components/landing/AudienceTabs.tsx	"Ιδιώτες"
-call	components/landing/AudienceTabs.tsx	"Κενό"
 call	components/landing/AudienceTabs.tsx	"Παράδειγμα αποτελέσματος με το Family."
 call	components/landing/AudienceTabs.tsx	"Παράδειγμα οθόνης συμβούλου. Τα ονόματα είναι φανταστικά."
 call	components/landing/AudienceTabs.tsx	"Παράδειγμα: μία οθόνη με τους πελάτες σας, ποιανού η ασφάλεια λήγει σύντομα, και μια πρόταση για το τι λείπει σε έναν από αυτούς."
@@ -9204,6 +9203,7 @@ call	components/landing/AudienceTabs.tsx	"Συγκεντρώστε τις καλ
 call	components/landing/AudienceTabs.tsx	"Τέλος το ψάξιμο στα συρτάρια. Όλα σε ένα μέρος, πάντα ενημερωμένα."
 call	components/landing/AudienceTabs.tsx	"Τα συμβόλαιά μου"
 call	components/landing/AudienceTabs.tsx	"Υγεία"
+call	components/landing/AudienceTabs.tsx	"Χωρίς κάλυψη"
 call	components/landing/AudienceTabs.tsx	"κενό"
 call	components/landing/ClearLimits.tsx	"Όταν δεν ξέρουμε κάτι, το λέμε αντί να το μαντέψουμε. Ένας κίνδυνος που εξαρτάται από στοιχεία που δεν μας έχετε δώσει μένει «χρειάζεται έλεγχος» — δεν γίνεται κενό που δεν επιβεβαιώσαμε ποτέ."
 call	components/landing/ClearLimits.tsx	"Αν κάτι σας το υποσχέθηκαν προφορικά αλλά δεν μπήκε στο συμβόλαιο, δεν μπορούμε να το δούμε — και δεν θα το δει ούτε η ασφαλιστική την ώρα της αποζημίωσης."
@@ -9278,7 +9278,6 @@ call	components/landing/PolicyWalletWidget.tsx	"Η ανάλυση ολοκληρ
 call	components/landing/PolicyWalletWidget.tsx	"Η εικόνα ρίσκου σας"
 call	components/landing/PolicyWalletWidget.tsx	"Καλυμμένο"
 call	components/landing/PolicyWalletWidget.tsx	"Καλυμμένο"
-call	components/landing/PolicyWalletWidget.tsx	"Κενό"
 call	components/landing/PolicyWalletWidget.tsx	"Λήγει σε 14 μέρες"
 call	components/landing/PolicyWalletWidget.tsx	"Λείπει κάλυψη πλημμύρας"
 call	components/landing/PolicyWalletWidget.tsx	"Παράδειγμα αποτελέσματος με το Family."
@@ -9286,6 +9285,7 @@ call	components/landing/PolicyWalletWidget.tsx	"Παράδειγμα αποτε�
 call	components/landing/PolicyWalletWidget.tsx	"Σπίτι"
 call	components/landing/PolicyWalletWidget.tsx	"Το σπίτι σας δεν καλύπτεται για πλημμύρα."
 call	components/landing/PolicyWalletWidget.tsx	"Υγεία"
+call	components/landing/PolicyWalletWidget.tsx	"Χωρίς κάλυψη"
 call	components/landing/PricingPreview.tsx	"Δείτε όλα τα πλάνα"
 call	components/landing/PricingPreview.tsx	"Ετήσια"
 call	components/landing/PricingPreview.tsx	"Μία συνδρομή, όλα τα ασφαλιστήριά σας διαβασμένα."

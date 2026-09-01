@@ -10,7 +10,7 @@ import { toRenderableFinding, findingHash } from "@/lib/app/finding"
  * review-kind finding without a why-you. Every figure is «ΔΕΙΓΜΑ».
  */
 export function StyleguideStates() {
-    const stateLabels = { covered: "Καλύπτεται", gap: "Κενό", review: "Για έλεγχο" }
+    const stateLabels = { covered: "Καλύπτεται", gap: "Χωρίς κάλυψη", review: "Για έλεγχο" }
     const reviewFinding = toRenderableFinding({
         id: "sample-2",
         hash: findingHash("sample-pol-2", "life-sum", "life_sum_unknown"),
@@ -31,10 +31,10 @@ export function StyleguideStates() {
                 active={237}
                 quiet={false}
                 mood="Αξίζει να δείτε"
-                sentence="Σας καλύπτουν 180 από τα 237."
+                sentence="Βρήκα κάλυψη σε 180 από τα 237."
                 reassurance="Υπάρχουν 57 πράγματα που αξίζει να δείτε."
-                ringLabel="180 από 237 καλύπτονται · 45 με κενό · 12 για έλεγχο"
-                tiles={[{ state: "covered", label: "Καλύπτονται", count: 180, href: "#" }, { state: "gap", label: "Με κενό", count: 45, href: "#" }, { state: "review", label: "Για έλεγχο", count: 12, href: "#" }]}
+                ringLabel="180 από 237 καλύπτονται · 45 χωρίς κάλυψη · 12 για έλεγχο"
+                tiles={[{ state: "covered", label: "Καλύπτονται", count: 180, href: "#" }, { state: "gap", label: "Χωρίς κάλυψη", count: 45, href: "#" }, { state: "review", label: "Για έλεγχο", count: 12, href: "#" }]}
             />
 
             {/* loading: the skeleton mirrors the card it becomes */}

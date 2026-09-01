@@ -170,7 +170,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
         // decoration rather than evidence. Same verdicts as the desktop mock
         // now: which cover is fine, which one has a hole.
         { Icon: Car, name: t("Αυτοκίνητο", "Car"), status: t("Εντάξει", "All good"), type: "ok" as const },
-        { Icon: Home, name: t("Σπίτι", "Home"), status: t("Κενό", "Gap"), type: "warn" as const },
+        { Icon: Home, name: t("Σπίτι", "Home"), status: t("Χωρίς κάλυψη", "Not covered"), type: "warn" as const },
         { Icon: Heart, name: t("Υγεία", "Health"), status: t("Εντάξει", "All good"), type: "ok" as const },
     ]
 

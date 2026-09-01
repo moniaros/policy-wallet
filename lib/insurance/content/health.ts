@@ -12,7 +12,7 @@ export const healthContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Η απαλλαγή και η συμμετοχή καθορίζουν τι θα πληρώσετε εσείς σε μια νοσηλεία — δύο συμβόλαια με ίδιο ασφάλιστρο μπορεί να διαφέρουν χιλιάδες ευρώ στην πράξη.',
+            el: 'Η απαλλαγή και η συμμετοχή καθορίζουν τι θα πληρώσετε εσείς σε μια νοσηλεία — δύο συμβόλαια με ίδιο ασφάλιστρο μπορεί να διαφέρουν χιλιάδείτε ευρώ στην πράξη.',
             en: 'The deductible and co-payment decide what you pay in a hospitalisation — two policies with the same premium can differ by thousands of euros in practice.',
         },
         {
@@ -144,7 +144,7 @@ export const healthContent: BranchContent = {
         },
     ],
     renewalNote: {
-        el: 'Στην ανανέωση, πρόσεξε αλλαγές σε απαλλαγή, συμμετοχή και όρια — και ρωτήστε αν οι αναμονές που έχετε ήδη «χτίσει» μεταφέρονται.',
+        el: 'Στην ανανέωση, προσέξτε αλλαγές σε απαλλαγή, συμμετοχή και όρια — και ρωτήστε αν οι αναμονές που έχετε ήδη «χτίσει» μεταφέρονται.',
         en: 'At renewal, watch for changes to deductible, co-payment and limits — and ask whether the waiting periods you have already served carry over.',
     },
     emptyState: {

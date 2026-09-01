@@ -190,7 +190,7 @@ export const fidelityContent: BranchContent = {
     emptyState: {
         headline: { el: 'Δεν έχετε προσθέσει ασφάλιση εμπιστοσύνης υπαλλήλων', en: 'No fidelity policy added yet' },
         description: {
-            el: 'Ανεβάστε το ασφαλιστήριο και δείτε τα όρια ανά υπάλληλο, τις προθεσμίες ανακάλυψης και τις δικλείδες που ζητά.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε τα όρια ανά υπάλληλο, τις προθεσμίες ανακάλυψης και τις δικλείδείτε που ζητά.',
             en: 'Upload the policy and see the per-employee limits, the discovery deadlines and the controls it asks for.',
         },
         ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },

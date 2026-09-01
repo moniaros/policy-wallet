@@ -89,18 +89,18 @@ describe("AudienceTabs", () => {
             expect(screen.getByRole("tab", { name: "Agents" })).toBeInTheDocument()
         })
 
-        it('renders "Κενό" (not "Gap") in Greek mode on the warning badge', async () => {
+        it('renders "Χωρίς κάλυψη" (not "Not covered") in Greek mode on the warning badge', async () => {
             const user = userEvent.setup()
             render(<AudienceTabs isGreek={true} />)
             // policyholders panel is visible by default and contains the gap badge
-            expect(screen.queryByText("Gap")).not.toBeInTheDocument()
-            expect(screen.getByText("Κενό")).toBeInTheDocument()
+            expect(screen.queryByText("Not covered")).not.toBeInTheDocument()
+            expect(screen.getByText("Χωρίς κάλυψη")).toBeInTheDocument()
         })
 
-        it('renders "Gap" (not "Κενό") in English mode on the warning badge', () => {
+        it('renders "Not covered" (not "Χωρίς κάλυψη") in English mode on the warning badge', () => {
             render(<AudienceTabs isGreek={false} />)
-            expect(screen.getByText("Gap")).toBeInTheDocument()
-            expect(screen.queryByText("Κενό")).not.toBeInTheDocument()
+            expect(screen.getByText("Not covered")).toBeInTheDocument()
+            expect(screen.queryByText("Χωρίς κάλυψη")).not.toBeInTheDocument()
         })
     })
 })

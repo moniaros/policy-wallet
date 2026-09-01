@@ -41,20 +41,34 @@ product's voice under «Σημείωση».
 
 ## Gap, review, covered — the words
 
-- **Κενό** (gap): the rules found explicit evidence that a cover is absent, or the cover lapses
-  within 14 days. Defined on every screen that uses it (`app.note.gapDefinition`): «με βάση τα
-  έγγραφα και όσα μου έχετε πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει
-  ότι είστε ανασφάλιστοι.»
+- **Χωρίς κάλυψη** (not covered — renamed from «Κενό», owner decision 2026-08-31): the rules
+  found explicit evidence that a cover is absent, or the cover lapses within 14 days. Defined on
+  every screen that uses it (`app.note.gapDefinition`): «με βάση τα έγγραφα και όσα μου έχετε
+  πει, δεν βρήκα μια συγκεκριμένη κάλυψη που θα περίμενα. Δεν σημαίνει ότι είστε ανασφάλιστοι.»
+  Distinct from the coverage map's «δεν έχετε», which means no policy of that line exists at all —
+  the note defines both.
 - **Για έλεγχο** (review): the analyst could not tell — silence in a document, an unreadable
   value, a missing fact. A `missing`-operator finding is worded «δεν αναφέρεται», never «δεν
   καλύπτεται». Review never silently becomes gap.
 - **Καλύπτεται** (covered): in force, nothing found, nothing unresolved.
 
+## Vocabulary rules (2026-09 copy pass)
+
+- **ασφαλιστήριο** = the uploaded document; never «συμβόλαιο» in UI copy.
+- **κάλυψη** = what a document covers; **προστασία** = the human state of being prepared —
+  the product promise, used sparingly and never as a score.
+- **The three states**: Καλύπτεται / Χωρίς κάλυψη / Για έλεγχο (EN: Covered / Not covered /
+  Needs review). «Χωρίς κάλυψη» renders only on explicit `is_false` evidence.
+- **Register**: formal «σας» everywhere; first person for what the analyst did or will do
+  («βρήκα», «διάβασα», «θα σας το θυμίσω»). The verdict speaks it: «Βρήκα κάλυψη σε 12 από τα 25.»
+- **Empty states** distinguish four facts and never apologise: nothing uploaded yet / cover not
+  found in the documents / could not read the document / not checked on this plan.
+
 ## The three tiers
 
 | tier | title | definition (`app.tier.*`) |
 |---|---|---|
-| now | Να το δείτε τώρα | Λήγει μέσα σε 14 ημέρες, ή είναι κενό σε κάτι βασικό που μου έχετε πει ότι έχετε. |
+| now | Να το δείτε τώρα | Λήγει μέσα σε 14 ημέρες, ή δεν βρήκα κάλυψη σε κάτι βασικό που μου έχετε πει ότι έχετε. |
 | month | Αυτόν τον μήνα | Λήγει μέσα σε 45 ημέρες, ή άλλαξε τιμή πάνω από τον δείκτη, ή λείπει ένα όριο που θα έπρεπε να αναφέρεται. |
 | later | Όταν έχετε χρόνο | Ό,τι αξίζει μια ματιά, χωρίς ημερομηνία. |
 

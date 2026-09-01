@@ -11,11 +11,11 @@ beforeAll(() => {
     proto.close = proto.close ?? function (this: HTMLDialogElement) { this.removeAttribute("open") }
 })
 
-const tiles = [{ state: "covered" as const, label: "Καλύπτονται", count: 22, href: "/see?state=covered" }, { state: "gap" as const, label: "Με κενό", count: 5, href: "/see?state=gap" }, { state: "review" as const, label: "Για έλεγχο", count: 3, href: "/see?state=review" }]
+const tiles = [{ state: "covered" as const, label: "Καλύπτονται", count: 22, href: "/see?state=covered" }, { state: "gap" as const, label: "Χωρίς κάλυψη", count: 5, href: "/see?state=gap" }, { state: "review" as const, label: "Για έλεγχο", count: 3, href: "/see?state=review" }]
 
 describe("VerdictCard — counts of documents, never a score", () => {
     it("renders the count pair, a named ring, three tiles that sum to the active policies, and no percentage anywhere", () => {
-        const { container } = render(<VerdictCard counts={{ covered: 22, gap: 5, review: 3 }} active={30} quiet={false} mood="Αξίζει να δείτε" sentence="Σας καλύπτουν 22 από τα 30." reassurance="Τρία πράγματα αξίζει να δείτε." ringLabel="22 από 30 καλύπτονται · 5 με κενό · 3 για έλεγχο" tiles={tiles} />)
+        const { container } = render(<VerdictCard counts={{ covered: 22, gap: 5, review: 3 }} active={30} quiet={false} mood="Αξίζει να δείτε" sentence="Βρήκα κάλυψη σε 22 από τα 30." reassurance="Τρία πράγματα αξίζει να δείτε." ringLabel="22 από 30 καλύπτονται · 5 χωρίς κάλυψη · 3 για έλεγχο" tiles={tiles} />)
         expect(screen.getByRole("img", { name: /22 από 30/ })).toBeTruthy()
         expect(screen.getByText("22/30")).toBeTruthy()
         expect(container.textContent).not.toMatch(/%/)
@@ -41,7 +41,7 @@ describe("ActionRow / TierHeader", () => {
     })
 })
 
-const labels = { kind: "Κενό", sourceLabel: "Πού το είδα:", open: "Άνοιγμα", help: "Βοήθεια", dismiss: "Δεν με αφορά", dismissTitle: "Γιατί;", dismissConfirm: "Να μην το ξαναδώ", close: "Κλείσιμο", cancel: "Άκυρο", reasons: [{ value: "chosen" as const, label: "Το ξέρω" }, { value: "renewed" as const, label: "Το ανανέωσα" }, { value: "not_relevant" as const, label: "Δεν με αφορά" }] }
+const labels = { kind: "Χωρίς κάλυψη", sourceLabel: "Πού το είδα:", open: "Άνοιγμα", help: "Βοήθεια", dismiss: "Δεν με αφορά", dismissTitle: "Γιατί;", dismissConfirm: "Να μην το ξαναδώ", close: "Κλείσιμο", cancel: "Άκυρο", reasons: [{ value: "chosen" as const, label: "Το ξέρω" }, { value: "renewed" as const, label: "Το ανανέωσα" }, { value: "not_relevant" as const, label: "Δεν με αφορά" }] }
 const gated = (): RenderableFinding => toRenderableFinding({ id: "f1", hash: findingHash("p1", "flood", "r"), kind: "gap", tier: "now", object: { policyId: "p1", assetLabel: "Κατοικία" }, sentence: { key: "k", params: {} }, source: { documentId: "d1", documentLabel: "Ασφαλιστήριο κατοικίας", locator: { kind: "section", section: "coverages", found: false } }, ruleId: "r" })!
 
 describe("FindingCard — cannot render without the gate", () => {
@@ -85,9 +85,9 @@ describe("MoneyTriad / CoverageMap / CoverageChecklist", () => {
         expect(document.querySelector('[data-fact="money.paid"]')!.textContent).toBe("8.224 €")
     })
     it("every map cell carries a glyph and a label; a line you do not have says so", () => {
-        render(<CoverageMap legend={{ covered: "Καλύπτεται", gap: "Κενό", review: "Για έλεγχο", none: "δεν έχετε" }} cells={[{ id: "home", label: "Κατοικία", state: "covered" }, { id: "motor", label: "Αυτοκίνητο", state: "gap" }, { id: "pet", label: "Κατοικίδιο", state: null }]} />)
+        render(<CoverageMap legend={{ covered: "Καλύπτεται", gap: "Χωρίς κάλυψη", review: "Για έλεγχο", none: "δεν έχετε" }} cells={[{ id: "home", label: "Κατοικία", state: "covered" }, { id: "motor", label: "Αυτοκίνητο", state: "gap" }, { id: "pet", label: "Κατοικίδιο", state: null }]} />)
         expect(screen.getByText("✓ Καλύπτεται")).toBeTruthy()
-        expect(screen.getByText("◆ Κενό")).toBeTruthy()
+        expect(screen.getByText("◆ Χωρίς κάλυψη")).toBeTruthy()
         expect(screen.getByText("δεν έχετε")).toBeTruthy()
     })
     it("every checklist line carries a citation", () => {
@@ -125,7 +125,7 @@ describe("Ledger / PlatformNote / HouseholdStrip / ExpiryRail", () => {
         expect(screen.getByRole("note", { name: "Σημείωση" }).textContent).toContain("AI")
     })
     it("household cards and expiry cards are whole-card links with a state chip", () => {
-        render(<><HouseholdStrip stateLabels={{ covered: "Καλύπτεται", gap: "Κενό", review: "Για έλεγχο" }} add={{ href: "/me/household", label: "Προσθήκη" }} people={[{ id: "a", name: "Μαρία", state: "review", countLabel: "χωρίς ασφαλιστήριο", href: "/me/household/a" }]} /><ExpiryRail label="Λήξεις" stateLabels={{ covered: "Καλύπτεται", gap: "Κενό", review: "Για έλεγχο" }} items={[{ id: "1", label: "ΙΚΖ-4821", when: "σε 8 ημέρες", state: "gap", href: "/wallet/1" }]} /></>)
+        render(<><HouseholdStrip stateLabels={{ covered: "Καλύπτεται", gap: "Χωρίς κάλυψη", review: "Για έλεγχο" }} add={{ href: "/me/household", label: "Προσθήκη" }} people={[{ id: "a", name: "Μαρία", state: "review", countLabel: "χωρίς ασφαλιστήριο", href: "/me/household/a" }]} /><ExpiryRail label="Λήξεις" stateLabels={{ covered: "Καλύπτεται", gap: "Χωρίς κάλυψη", review: "Για έλεγχο" }} items={[{ id: "1", label: "ΙΚΖ-4821", when: "σε 8 ημέρες", state: "gap", href: "/wallet/1" }]} /></>)
         expect(screen.getByRole("link", { name: /Μαρία/ }).getAttribute("href")).toBe("/me/household/a")
         expect(screen.getByRole("link", { name: /Προσθήκη/ })).toBeTruthy()
         expect(screen.getByRole("list", { name: "Λήξεις" }).className).toMatch(/pw-scroll-strip/)

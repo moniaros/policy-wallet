@@ -32,7 +32,7 @@ export const marineCrewContent: BranchContent = {
             en: 'Cover presupposes a lawful sign-on. Someone working aboard without being signed on may not fall within the contract at all.',
         },
         {
-            el: 'Οι περίοδοι είναι σύντομες και δεμένες στο ταξίδι ή στη ναυτολόγηση — συχνά εβδομάδες αντί για έτος. Η λογική της ετήσιας ανανέωσης δεν εφαρμόζεται και τα κενά δημιουργούνται στις αλλαγές πληρώματος.',
+            el: 'Οι περίοδοι είναι σύντομες και δεμένες στο ταξίδι ή στη ναυτολόγηση — συχνά εβδομάδείτε αντί για έτος. Η λογική της ετήσιας ανανέωσης δεν εφαρμόζεται και τα κενά δημιουργούνται στις αλλαγές πληρώματος.',
             en: 'Periods are short and tied to the voyage or the sign-on — often weeks rather than a year. Annual renewal logic does not apply, and gaps appear at crew changes.',
         },
         {
