@@ -18,8 +18,10 @@ import { signOut } from "@/app/auth/actions"
 import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, FileText, Inbox, Coins, Zap } from 'lucide-react'
-import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, FileText, Inbox, Coins, Zap, LogOut } from 'lucide-react'
+import { displayInsurerName, displayPersonName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import type { CommandSearchItem } from "@/components/shell/CommandSearch"
 
 export default async function ProtectedLayout({
     children,
@@ -73,20 +75,67 @@ export default async function ProtectedLayout({
     const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
     const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'en' | 'el') || 'el')
 
+    // The desktop top bar's search — the policyholder's own policies, the same
+    // held-policy predicate the wallet and the dashboard apply. Three columns,
+    // one indexed query; agents and admins get no field (their books are not
+    // "my policies").
+    let searchItems: CommandSearchItem[] | undefined
+    if (currentRole === "policyholder") {
+        const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
+        const rows = await db.policy.findMany({
+            where: { ownerUserId: dbUser.id, status: { not: "deleted" } },
+            select: { id: true, insurerName: true, policyNumber: true, lineOfBusiness: true },
+            orderBy: { updatedAt: "desc" },
+        })
+        searchItems = rows.map((row) => {
+            const branch = normalizeBranch(row.lineOfBusiness)
+            const branchLabel = branch.label[lang] || branch.label.en
+            const number = displayPolicyNumber(row.policyNumber)
+            // Through the identity module, so a placeholder sentinel never
+            // renders in the list — nor matches a search: the keywords are the
+            // scrubbed values plus the branch in both languages, never the raw
+            // columns.
+            const title = displayInsurerName(row.insurerName, branchLabel)
+            return {
+                id: row.id,
+                title,
+                subtitle: number ? `${branchLabel} · ${number}` : branchLabel,
+                href: `/wallet/${row.id}`,
+                keywords: `${title} ${number ?? ""} ${branch.label.el} ${branch.label.en}`,
+            }
+        })
+    }
+
     if (currentRole === "policyholder") {
         // §4.2 IA: five tabs plus the bell. /protection absorbed /branches,
         // /insights/risk-profile and /coverage-insights; the timeline lives
         // inside Ρυθμίσεις (/account/history); the partner-benefits entry is
         // conditional INSIDE Ρυθμίσεις (SettingsNav), not a tab.
+        //
+        // Direction A groups the same destinations the way the reference does:
+        // the product's three surfaces, then the people and messages that
+        // support them, then the account itself — sign-out included, so the
+        // one action that ends a session is not hidden inside a menu.
         navigation.push({
-            title: t.nav.navigation,
+            title: t.nav.groupProtection,
             items: [
                 { label: t.nav.home, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 { label: t.nav.protection, href: "/protection", icon: <Shield className="w-5 h-5" /> },
+            ]
+        })
+        navigation.push({
+            title: t.nav.groupSupport,
+            items: [
                 { label: t.nav.myAgent, href: "/agent", icon: <Users className="w-5 h-5" /> },
-                { label: t.userMenu.settings, href: "/account", icon: <Settings className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" />, badge: unreadNotificationCount || undefined },
+            ]
+        })
+        navigation.push({
+            title: t.nav.groupGeneral,
+            items: [
+                { label: t.userMenu.settings, href: "/account", icon: <Settings className="w-5 h-5" /> },
+                { label: t.userMenu.logout, href: "#logout", icon: <LogOut className="w-5 h-5" /> },
             ]
         })
     } else if (currentRole === "agent") {
@@ -161,6 +210,13 @@ export default async function ProtectedLayout({
             availableRoles={availableRoles.map(r => ({ role: r, label: t.roles[r as keyof typeof t.roles] || r }))}
             navigation={navigation}
             notificationCount={unreadNotificationCount}
+            searchItems={searchItems}
+            searchLabels={searchItems ? {
+                placeholder: t.nav.searchPlaceholder,
+                ariaLabel: t.nav.searchPolicies,
+                noResults: t.nav.searchNoResults,
+                resultsLabel: t.nav.searchResultsLabel,
+            } : undefined}
             onLogout={signOut}
         >
             {/* Live analysis-completion toasts for agents (b2c uses the wallet

@@ -1,6 +1,7 @@
 import Link from "next/link"
-import { ArrowRight, Bell, Check, Lightbulb, ShieldAlert, Sparkles, Upload, Users } from "lucide-react"
+import { ArrowRight, Bell, Check, Lightbulb, ListChecks, ShieldAlert, Sparkles, Upload, Users } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { CardHead } from "./CardHead"
 
 export interface ProtectionPlanStepView {
     id: string
@@ -67,12 +68,12 @@ export function ProtectionPlanCard({
     if (allDone) {
         return (
             <section className="pw-card pw-pad" aria-labelledby="protection-plan-heading">
-                <p className="pw-kicker" id="protection-plan-heading">{labels.kicker}</p>
-                <div className="mt-3 flex items-center gap-3">
+                <CardHead icon={ListChecks} title={labels.kicker} id="protection-plan-heading" />
+                <div className="mt-4 flex items-center gap-3">
                     <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
                         <Check className="h-4 w-4" aria-hidden />
                     </span>
-                    <p className="text-sm font-semibold text-black/80 dark:text-white/85">{labels.upToDate}</p>
+                    <p className="text-sm font-semibold text-foreground">{labels.upToDate}</p>
                 </div>
             </section>
         )
@@ -80,19 +81,23 @@ export function ProtectionPlanCard({
 
     return (
         <section className="pw-card pw-pad" aria-labelledby="protection-plan-heading">
-            <div className="flex items-center justify-between">
-                <p className="pw-kicker" id="protection-plan-heading">{labels.kicker}</p>
-                <p className="text-micro font-semibold text-muted-foreground">
-                    {beforeDone}
-                    <span data-count="plan.stepsDone">{completed}</span>
-                    {betweenNumbers}
-                    <span data-count="plan.stepsTotal">{total}</span>
-                    {afterTotal}
-                </p>
-            </div>
+            <CardHead
+                icon={ListChecks}
+                title={labels.kicker}
+                id="protection-plan-heading"
+                meta={
+                    <span className="text-caption font-medium text-muted-foreground">
+                        {beforeDone}
+                        <span data-count="plan.stepsDone">{completed}</span>
+                        {betweenNumbers}
+                        <span data-count="plan.stepsTotal">{total}</span>
+                        {afterTotal}
+                    </span>
+                }
+            />
 
             <div
-                className="mt-3 h-1.5 w-full rounded-full bg-black/8 dark:bg-white/10"
+                className="mt-4 h-1.5 w-full rounded-full bg-muted"
                 role="progressbar"
                 aria-valuemin={0}
                 aria-valuemax={total}
@@ -110,17 +115,15 @@ export function ProtectionPlanCard({
                         <li key={step.id}>
                             <Link
                                 href={step.href}
-                                className={`pw-control-boundary flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 transition ${
-                                    done
-                                        ? "bg-primary/5 dark:bg-primary/15"
-                                        : "bg-black/[0.02] hover:bg-black/[0.05] dark:bg-white/[0.02] dark:hover:bg-white/[0.05]"
+                                className={`pw-subcard flex min-h-11 items-center gap-3 px-3 py-2.5 transition-colors ${
+                                    done ? "opacity-80" : ""
                                 }`}
                             >
                                 <span
                                     className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg ${
                                         done
                                             ? "bg-primary text-primary-foreground"
-                                            : "bg-white text-black/60 dark:bg-black dark:text-white/60"
+                                            : "bg-card text-foreground/70"
                                     }`}
                                 >
                                     {done ? <Check className="h-4 w-4" aria-hidden /> : <Icon className="h-4 w-4" aria-hidden />}
@@ -128,7 +131,7 @@ export function ProtectionPlanCard({
                                 <span className="min-w-0 flex-1">
                                     <span
                                         className={`block text-xs font-semibold [overflow-wrap:anywhere] ${
-                                            done ? "text-primary line-through dark:text-mint" : "text-black dark:text-white"
+                                            done ? "text-muted-foreground line-through" : "text-foreground"
                                         }`}
                                     >
                                         {step.title}
@@ -148,21 +151,15 @@ export function ProtectionPlanCard({
             {moreOpenLabel && (
                 <a
                     // The findings this counts render in «Χρειάζεται την προσοχή
-                    // σας», one section up on THIS page (PolicyholderHome's
-                    // `section#attention` — which carries scroll-mt for this
-                    // anchor). The card's own header comment already said the
-                    // plan "links there rather than restating them", but the
-                    // href said `/protection` — a third bare offer of the same
-                    // destination the hero CTA and the attention list's «Όλες»
-                    // continuation already carry (§11 metric 7, gated
-                    // content-repeat). A cross-reference points at where the
-                    // findings actually are; it does not re-offer navigation
-                    // the attention section owns.
+                    // σας» on THIS page (the attention card carries id="attention"
+                    // and scroll-mt for this anchor). A cross-reference points at
+                    // where the findings actually are; it does not re-offer
+                    // navigation the attention section owns (§11 metric 7).
                     href="#attention"
                     // The «+N ακόμη» count IS the open recommendation set — the
                     // same fact the hero's areas line states, under one key.
                     data-count={moreOpenCount !== undefined ? "recommendation.openCount" : undefined}
-                    className="pw-inline-action mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                    className="pw-inline-action mt-3 inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {moreOpenLabel}
                     <ArrowRight className="h-3 w-3" aria-hidden />

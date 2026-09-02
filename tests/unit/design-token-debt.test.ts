@@ -183,7 +183,6 @@ const HARDCODED_COLOUR_DEBT: Record<string, number> = {
     'app/(protected)/agent/AgentClient.tsx::#5b6a7a': 1,
     'app/(protected)/agent/page.tsx::#10b981': 1,
     'app/(protected)/customers/invite/page.tsx::#1a2420': 1,
-    'app/(protected)/dashboard/PolicyholderHome.tsx::#0f172a': 1,
     'app/(protected)/insights/InsightsClient.tsx::#29685b': 3,
     'app/(protected)/insights/InsightsClient.tsx::#3b82f6': 2,
     'app/(protected)/insights/InsightsClient.tsx::#64748b': 2,

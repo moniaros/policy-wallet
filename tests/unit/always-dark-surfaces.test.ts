@@ -72,7 +72,6 @@ const MIXED_SURFACE_FILES = [
     'app/auth/signin/page.tsx',
     'app/auth/signup/confirmation/page.tsx',
     'components/landing/WorldClassLanding.tsx',
-    'components/shell/AppShell.tsx',
     'components/wallet/PolicyQA.tsx',
 ]
 

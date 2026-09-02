@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { MainNav } from './MainNav'
 import { UserMenu } from './UserMenu'
 import { RoleSwitcher } from './RoleSwitcher'
+import { CommandSearch, type CommandSearchItem, type CommandSearchLabels } from './CommandSearch'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
@@ -51,6 +52,13 @@ export interface AppShellProps {
     }
     language?: 'el' | 'en'
     notificationCount?: number
+    /**
+     * The desktop top bar's search — the account's own policies, already
+     * loaded by the layout. Absent (agents, admins) the bar renders without
+     * the field.
+     */
+    searchItems?: CommandSearchItem[]
+    searchLabels?: CommandSearchLabels
     onNavigate?: (href: string) => void
     onRoleSwitch?: (role: UserRole) => void
     onLogout?: () => void
@@ -111,6 +119,14 @@ const getBottomNavItems = (role: UserRole['role'], t: any): BottomNavItem[] => {
     return []
 }
 
+/**
+ * The authenticated app's chrome. Direction A (2026-09-03): a flat cool-slate
+ * canvas, a white sidebar with grouped navigation and a bar for the active
+ * row, a desktop top bar carrying search · bell · account (the user menu moved
+ * up from the sidebar's foot), and a phone tab bar whose active tab is a mark
+ * and a weight change rather than a filled pill. Light is the default theme;
+ * dark stays a real second theme through the same tokens.
+ */
 export function AppShell({
     children,
     navigation,
@@ -118,6 +134,8 @@ export function AppShell({
     availableRoles = [],
     user,
     notificationCount = 0,
+    searchItems,
+    searchLabels,
     onNavigate,
     onRoleSwitch,
     onLogout,
@@ -187,16 +205,23 @@ export function AppShell({
 
     const bottomNavItems = getBottomNavItems(currentRole.role, t)
     const hasBottomNav = bottomNavItems.length > 0
+    // The policyholder nav carries sign-out as a row (Γενικά → Αποσύνδεση); the
+    // drawer footer's red button then says the same thing twice on one screen.
+    // Roles whose nav has no such row (agent, admin) keep the footer button.
+    const navHasLogout = navigation.some((group) => group.items.some((item) => item.href === '#logout'))
+    const bellLabel = notificationCount > 0
+        ? `${t.nav.notifications} (${notificationCount})`
+        : t.nav.notifications
 
     return (
         <>
-            <div className="min-h-screen pw-app-canvas font-sans text-[var(--pw-text-primary-light)] dark:text-[var(--pw-text-primary-dark)]">
+            <div className="min-h-screen pw-app-canvas font-sans text-foreground">
                 {/* Skip link — first focusable element in the authenticated app, so a
                     keyboard/SR user can jump the sidebar instead of tabbing ~14 items
                     on every page. Visually hidden until focused. */}
                 <a
                     href="#main-content"
-                    className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2.5 focus:rounded-xl focus:bg-primary focus:text-white dark:focus:text-[#1A2420] focus:text-sm focus:font-semibold focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2.5 focus:rounded-xl focus:bg-primary focus:text-primary-foreground focus:text-sm focus:font-semibold focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                     {t.nav.skipToContent}
                 </a>
@@ -205,7 +230,7 @@ export function AppShell({
                     declares aria-modal, and the scrim only covers pointers — inert is
                     what actually removes these controls from focus and the
                     accessibility tree while the modal claims they are unreachable. */}
-                <header inert={sidebarOpen || undefined} className="lg:hidden sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-black/10 dark:border-white/10 px-4 flex items-center justify-between">
+                <header inert={sidebarOpen || undefined} className="lg:hidden sticky top-0 z-40 w-full h-16 bg-card/95 backdrop-blur-xl border-b border-border px-4 flex items-center justify-between">
                     <button
                         onClick={() => setSidebarOpen(true)}
                         aria-label={t.nav.primaryNavigation}
@@ -213,7 +238,7 @@ export function AppShell({
                         aria-controls="app-sidebar"
                         // 40x44 before: `p-2` on a 24px icon gives 40 wide, which
                         // is under the 44px floor on the axis a thumb misses on.
-                        className="grid h-11 w-11 -ml-2 place-items-center text-black/60 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg">
+                        className="grid h-11 w-11 -ml-2 place-items-center text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -235,10 +260,8 @@ export function AppShell({
                     <Link
                         href="/notifications"
                         onClick={() => handleNavigate('/notifications')}
-                        aria-label={notificationCount > 0
-                            ? `${t.nav.notifications} (${notificationCount})`
-                            : t.nav.notifications}
-                        className="relative -mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-black/60 transition-colors hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:text-white/70 dark:hover:text-white"
+                        aria-label={bellLabel}
+                        className="relative -mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
                         <Bell className="h-6 w-6" strokeWidth={2} />
                         {notificationCount > 0 && (
@@ -246,13 +269,54 @@ export function AppShell({
                                count (saturated at «9+», which the collector
                                reads as 9 — keep the threshold identical on
                                every badge site, see count-keys.ts). */
-                            <span data-count="notification.unreadCount" className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.5625rem] font-bold leading-none text-white dark:text-[#1A2420]">
+                            <span data-count="notification.unreadCount" className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold leading-none text-primary-foreground">
                                 {notificationCount > 9 ? '9+' : notificationCount}
                             </span>
                         )}
                     </Link>
                 </header>
 
+                {/* Desktop top bar — the reference's one command surface: search,
+                    the bell, the account. Sticky under the viewport top, offset by
+                    the sidebar's width so it never slides beneath it. `hidden
+                    lg:block` on the wrapper: below 1024px the mobile header owns
+                    these controls, and the drawer's inert/scrim contract is
+                    measured against that header, not this one. */}
+                <div className="hidden lg:block sticky top-0 z-30 lg:pl-64 xl:pl-72" inert={sidebarOpen || undefined}>
+                    <div className="flex h-16 items-center gap-4 border-b border-border bg-card/95 px-6 backdrop-blur-xl xl:px-8">
+                        {searchItems && searchLabels ? (
+                            <CommandSearch items={searchItems} labels={searchLabels} className="w-full max-w-xl" />
+                        ) : (
+                            <span className="flex-1" />
+                        )}
+                        <div className="ml-auto flex items-center gap-2">
+                            <Link
+                                href="/notifications"
+                                onClick={() => handleNavigate('/notifications')}
+                                aria-label={bellLabel}
+                                className="relative flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            >
+                                <Bell className="h-5 w-5" strokeWidth={1.75} />
+                                {notificationCount > 0 && (
+                                    /* Same fact, same key, same «9+» saturation as the
+                                       mobile header and the sidebar row — two renders of
+                                       one count on one screen must never disagree. */
+                                    <span data-count="notification.unreadCount" className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold leading-none text-primary-foreground">
+                                        {notificationCount > 9 ? '9+' : notificationCount}
+                                    </span>
+                                )}
+                            </Link>
+                            <div className="h-6 w-px bg-border" aria-hidden="true" />
+                            <UserMenu
+                                user={user}
+                                notificationCount={notificationCount}
+                                onLogout={onLogout}
+                                compact
+                                placement="down"
+                            />
+                        </div>
+                    </div>
+                </div>
 
                 {/* Sidebar — a static landmark at lg+, a modal drawer below it.
                     The drawer had no focus trap, no dialog semantics and no Escape:
@@ -267,40 +331,36 @@ export function AppShell({
                         ? { role: 'dialog' as const, 'aria-modal': true, 'aria-label': t.nav.primaryNavigation, tabIndex: -1 }
                         : {})}
                     className={`
-          fixed top-0 left-0 z-50 h-full w-[17rem] lg:w-64 xl:w-72 bg-white/95 dark:bg-black/95 border-r border-black/10 dark:border-white/10
-          transform transition-transform duration-300 ease-in-out shadow-xl
+          fixed top-0 left-0 z-50 h-full w-[17rem] lg:w-64 xl:w-72 bg-card border-r border-border
+          transform transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none
           lg:translate-x-0
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
                 >
                     <div className="flex flex-col h-full">
-                        {/* Enhanced Logo Section */}
-                        <div className="flex flex-col border-b border-black/10 dark:border-white/10 bg-gradient-to-br from-white to-black/5 dark:from-black dark:to-[#111111]">
-                            <div className="flex items-center justify-between px-6 h-16">
-                                {/* h-11 wrapper for the same reason the top-header logo
-                                    link has one: the md wordmark is 40px tall on its own. */}
-                                <Link href={roleHomeHref} onClick={() => handleNavigate(roleHomeHref)} className="flex h-11 items-center rounded-lg hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                                    <PolicyWalletLogo size="md" language={user.preferred_language || 'el'} />
-                                </Link>
-                                <button
-                                    onClick={() => setSidebarOpen(false)}
-                                    // 36x36 before: p-2 around a 20px icon. -mr-2 keeps the
-                                    // icon optically where it was inside the px-6 gutter.
-                                    className="lg:hidden grid h-11 w-11 -mr-2 place-items-center rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-white/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                                    aria-label={roleCopy.shell.closeMenu}
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            {/* Context Indicator */}
-
+                        {/* Wordmark */}
+                        <div className="flex items-center justify-between px-6 h-16 border-b border-border lg:border-b-0">
+                            {/* h-11 wrapper for the same reason the top-header logo
+                                link has one: the md wordmark is 40px tall on its own. */}
+                            <Link href={roleHomeHref} onClick={() => handleNavigate(roleHomeHref)} className="flex h-11 items-center rounded-lg hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                                <PolicyWalletLogo size="md" language={user.preferred_language || 'el'} />
+                            </Link>
+                            <button
+                                onClick={() => setSidebarOpen(false)}
+                                // 36x36 before: p-2 around a 20px icon. -mr-2 keeps the
+                                // icon optically where it was inside the px-6 gutter.
+                                className="lg:hidden grid h-11 w-11 -mr-2 place-items-center rounded-xl hover:bg-muted text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                aria-label={roleCopy.shell.closeMenu}
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
 
                         {/* Role switcher */}
                         {hasMultipleRoles && (
-                            <div className="px-4 py-3 border-b border-black/10 dark:border-white/10">
+                            <div className="px-4 py-3 border-b border-border">
                                 <RoleSwitcher
                                     currentRole={currentRole}
                                     availableRoles={availableRoles}
@@ -310,7 +370,7 @@ export function AppShell({
                         )}
 
                         {/* Navigation */}
-                        <div className="flex-1 overflow-y-auto py-6 px-3">
+                        <div className="flex-1 overflow-y-auto py-4">
                             <MainNav
                                 navigation={navigation.map(group => ({
                                     ...group,
@@ -324,9 +384,9 @@ export function AppShell({
                         </div>
 
                         {/* Mobile Footer (Sign Out & Theme) */}
-                        <div className="lg:hidden p-4 border-t border-black/10 dark:border-white/10 bg-black/5 dark:bg-[#111111]/70 space-y-4">
+                        <div className="lg:hidden p-4 border-t border-border bg-muted/60 space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-semibold text-black/70 dark:text-white/70">{t.userMenu.settings}</span>
+                                <span className="text-sm font-semibold text-foreground/80">{t.userMenu.settings}</span>
                                 <div className="flex items-center gap-3">
                                     {/* Language — this was a DEAD control: it called
                                         onNavigate?.('/?lang=el'), and the protected layout
@@ -341,24 +401,17 @@ export function AppShell({
                                     <ThemeToggle ariaLabel={t.userMenu.toggleTheme} />
                                 </div>
                             </div>
+                            {!navHasLogout && (
                             <button
                                 onClick={onLogout}
-                                className="w-full min-h-11 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-red-200/70 dark:border-red-400/30 bg-red-50/90 dark:bg-red-950/30 text-red-700 dark:text-red-300 font-semibold text-sm hover:bg-red-100/90 dark:hover:bg-red-950/50 transition-colors"
+                                className="w-full min-h-11 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-status-danger-edge bg-status-danger-tint text-status-danger font-semibold text-sm transition-colors hover:opacity-90"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
                                 {t.userMenu.logout}
                             </button>
-                        </div>
-
-                        {/* User menu (desktop) */}
-                        <div className="hidden lg:block border-t border-black/10 dark:border-white/10 p-4 bg-black/5 dark:bg-[#111111]/80">
-                            <UserMenu
-                                user={user}
-                                notificationCount={notificationCount}
-                                onLogout={onLogout}
-                            />
+                            )}
                         </div>
                     </div>
                 </aside>
@@ -396,10 +449,10 @@ export function AppShell({
                         aria-label={t.nav.bottomNavigation}
                         // inert while the drawer is open — see the header's comment.
                         inert={sidebarOpen || undefined}
-                        className="pw-above-consent lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 border-t border-black/10 dark:border-white/10 safe-area-inset-bottom shadow-xl backdrop-blur-xl"
+                        className="pw-above-consent lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-card/95 border-t border-border safe-area-inset-bottom backdrop-blur-xl"
                     >
                         <div
-                            className="grid gap-1.5 px-2 py-2 min-h-[76px]"
+                            className="grid gap-1 px-2 py-1.5 min-h-[76px]"
                             style={{ gridTemplateColumns: `repeat(${bottomNavItems.length}, minmax(0, 1fr))` }}
                         >
                             {bottomNavItems.map((item) => {
@@ -428,9 +481,12 @@ export function AppShell({
                                     <Tag
                                         key={item.id}
                                         {...tagProps}
-                                        className={`min-h-[44px] w-full rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
-                                            ? 'text-primary dark:text-mint bg-primary/15 dark:bg-primary/15'
-                                            : 'text-muted-foreground hover:text-black dark:hover:text-white'
+                                        /* The active tab is a MARK (the bar at the top of the
+                                           slot) plus a weight and colour change — never a filled
+                                           pill, which read as a button on a bar of buttons. */
+                                        className={`relative min-h-[44px] w-full rounded-xl flex flex-col items-center justify-center gap-1 pt-1.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
+                                            ? 'text-primary dark:text-mint'
+                                            : 'text-muted-foreground hover:text-foreground'
                                             }`}
                                         /* The badge is purely visual, so fold the count into
                                            the accessible name — otherwise a screen-reader
@@ -440,20 +496,26 @@ export function AppShell({
                                             : item.label}
                                         aria-current={isActive ? 'page' : undefined}
                                     >
+                                        {isActive && (
+                                            <span aria-hidden="true" className="absolute top-0 left-1/2 h-[3px] w-7 -translate-x-1/2 rounded-b-full bg-primary dark:bg-mint" />
+                                        )}
                                         <div className="relative">
                                             <Icon
                                                 className="w-6 h-6"
-                                                strokeWidth={2.5}
+                                                strokeWidth={isActive ? 2.25 : 1.75}
                                             />
                                             {item.showsNotificationBadge && notificationCount > 0 && (
                                                 /* Same fact as the header bell badge —
                                                    same key, same «9+» saturation. */
-                                                <span data-count="notification.unreadCount" className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-kicker font-bold rounded-full flex items-center justify-center shadow-lg">
+                                                <span data-count="notification.unreadCount" className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-primary-foreground text-kicker font-bold rounded-full flex items-center justify-center">
                                                     {notificationCount > 9 ? '9+' : notificationCount}
                                                 </span>
                                             )}
                                         </div>
-                                        <span className="text-kicker font-medium whitespace-nowrap">
+                                        {/* 12px — the functional floor. Tab labels are read to
+                                            navigate; 10px was decorative-size copy doing a
+                                            functional job. */}
+                                        <span className={`text-caption whitespace-nowrap ${isActive ? 'font-semibold' : 'font-medium'}`}>
                                             {item.label}
                                         </span>
                                     </Tag>
@@ -467,5 +529,3 @@ export function AppShell({
         </>
     )
 }
-
-

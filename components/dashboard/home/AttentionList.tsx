@@ -1,10 +1,11 @@
 import Link from "next/link"
+import type { ReactNode } from "react"
 import { describeSeverity } from "@/lib/gaps/severity-display"
 import { toneDotClass } from "@/components/gaps/severity-tone"
-import { ArrowRight, ShieldCheck } from "lucide-react"
+import { ArrowRight, ShieldCheck, TriangleAlert } from "lucide-react"
 
-import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import type { Language } from "@/lib/i18n"
+import { CardHead } from "./CardHead"
 
 export interface AttentionItem {
     id: string
@@ -32,11 +33,16 @@ export interface AttentionItem {
  * Advice surface: always carries the priority honesty note and the AI
  * disclaimer. The empty state is a positive result with its evidence boundary
  * stated — "based on what we have", never a bare all-clear.
+ *
+ * Direction A: the card takes the reference's "score" slot, so the severity
+ * tally (CoverageGapsWidget, embedded) renders between the head and the
+ * rows — a segmented bar of COUNTS, never a score. `language` is accepted for
+ * API stability; every string arrives pre-resolved.
  */
 export function AttentionList({
     items,
     totalCount,
-    language,
+    tally,
     labels,
 }: {
     items: AttentionItem[]
@@ -49,6 +55,8 @@ export function AttentionList({
      * measured live: four bare `/protection` offers in one page's content.
      */
     totalCount: number
+    /** The severity tally, rendered inside this card (CoverageGapsWidget embedded). */
+    tally?: ReactNode
     language: Language
     labels: {
         kicker: string
@@ -59,27 +67,32 @@ export function AttentionList({
     }
 }) {
     return (
-        <div className="pw-card pw-pad lg:col-span-2">
-            <div className="flex items-center justify-between">
-                <p className="pw-kicker">{labels.kicker}</p>
-                {totalCount > items.length && (
-                    <Link
-                        href="/protection"
-                        className="pw-inline-action inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
-                    >
-                        {labels.viewAll}
-                        <ArrowRight className="h-3 w-3" aria-hidden />
-                    </Link>
-                )}
-            </div>
-            <div className="mt-3">
+        <section className="pw-card pw-pad" aria-labelledby="attention-heading">
+            <CardHead
+                icon={TriangleAlert}
+                title={labels.kicker}
+                id="attention-heading"
+                meta={
+                    totalCount > items.length ? (
+                        <Link
+                            href="/protection"
+                            className="inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
+                        >
+                            {labels.viewAll}
+                            <ArrowRight className="h-3 w-3" aria-hidden />
+                        </Link>
+                    ) : undefined
+                }
+            />
+            {tally && <div className="mt-4">{tally}</div>}
+            <div className="mt-4">
                 {items.length === 0 ? (
-                    <div className="flex items-start gap-3 rounded-xl border border-dashed border-black/10 bg-black/[0.02] p-3.5 dark:border-white/15 dark:bg-white/[0.03]">
+                    <div className="pw-subcard flex items-start gap-3 p-3.5">
                         <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft dark:bg-primary/15">
                             <ShieldCheck className="h-4 w-4 text-primary dark:text-mint" aria-hidden />
                         </span>
                         <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold text-black/75 dark:text-white/85">{labels.emptyTitle}</p>
+                            <p className="text-sm font-semibold text-foreground">{labels.emptyTitle}</p>
                             <p className="mt-0.5 text-xs text-muted-foreground">{labels.emptyBody}</p>
                         </div>
                     </div>
@@ -89,31 +102,31 @@ export function AttentionList({
                             <li key={item.id}>
                                 <Link
                                     href="/protection"
-                                    className="pw-control-boundary flex items-start gap-3 rounded-xl border bg-black/[0.03] p-3 transition hover:bg-black/[0.06] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+                                    className="pw-subcard flex items-start gap-3 p-3.5 transition-colors"
                                 >
                                     <span
                                         className={`mt-1.5 h-2 w-2 flex-shrink-0 rounded-full ${toneDotClass(describeSeverity(item.urgency).tone)}`}
                                         aria-hidden
                                     />
                                     <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-semibold leading-snug text-black dark:text-white [overflow-wrap:anywhere]">
+                                        <span className="block text-sm font-semibold leading-snug text-foreground [overflow-wrap:anywhere]">
                                             {item.title}
                                         </span>
                                         {item.reason && (
                                             <span
                                                 data-count={item.reasonCountKey}
-                                                className="mt-0.5 line-clamp-2 block text-xs leading-snug text-black/65 dark:text-white/60"
+                                                className="mt-0.5 line-clamp-2 block text-xs leading-snug text-muted-foreground"
                                             >
                                                 {item.reason}
                                             </span>
                                         )}
-                                        <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                                            <span className="inline-flex items-center gap-1 rounded-full border border-black/10 px-2 py-0.5 text-micro font-semibold text-black/60 dark:border-white/15 dark:text-white/60">
+                                        <span className="mt-2 flex flex-wrap items-center gap-1.5">
+                                            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-micro font-semibold text-foreground/80">
                                                 <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(describeSeverity(item.urgency).tone)}`} aria-hidden />
                                                 {item.urgencyLabel}
                                             </span>
                                             {item.timingLabel && (
-                                                <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-micro font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+                                                <span className="inline-flex items-center rounded-full bg-status-warning-tint px-2 py-0.5 text-micro font-semibold text-status-warning">
                                                     {item.timingLabel}
                                                 </span>
                                             )}
@@ -137,6 +150,6 @@ export function AttentionList({
                     the page read as boilerplate and pushes the actual findings
                     further down. */}
             </div>
-        </div>
+        </section>
     )
 }

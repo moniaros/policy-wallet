@@ -16,12 +16,21 @@ export interface UserMenuProps {
     }
     notificationCount?: number
     onLogout?: () => void
+    /**
+     * `compact` renders avatar + name only (the top bar); the default keeps the
+     * email line (the sidebar foot it grew up in). `placement` says which way
+     * the menu opens — up from a footer, down from a top bar.
+     */
+    compact?: boolean
+    placement?: 'up' | 'down'
 }
 
 export function UserMenu({
     user,
     notificationCount = 0,
     onLogout,
+    compact = false,
+    placement = 'up',
 }: UserMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
     const menuTriggerRef = useRef<HTMLButtonElement>(null)
@@ -84,23 +93,23 @@ export function UserMenu({
                 aria-expanded={isOpen}
                 aria-controls={menuId}
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
+                className={`${compact ? 'min-h-11' : 'w-full'} flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
             >
-                <div className="w-10 h-10 rounded-full bg-primary text-white dark:text-[#1A2420] text-sm font-medium flex items-center justify-center flex-shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint text-sm font-semibold flex items-center justify-center flex-shrink-0">
                     {initials}
                 </div>
-                <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
+                <div className={`flex-1 min-w-0 text-left ${compact ? 'hidden xl:block max-w-[12rem]' : ''}`}>
+                    <div className="text-sm font-semibold text-foreground truncate">
                         {displayName}
                     </div>
                     {user.email && user.email !== displayName && (
-                        <div className="text-xs text-stone-500 dark:text-stone-400 truncate">
+                        <div className={`text-xs text-muted-foreground truncate ${compact ? 'hidden' : ''}`}>
                             {user.email}
                         </div>
                     )}
                 </div>
                 <svg
-                    className={`w-4 h-4 text-stone-500 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 text-muted-foreground transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -116,7 +125,15 @@ export function UserMenu({
                         className="fixed inset-0 z-10"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div id={menuId} role="menu" className="absolute bottom-full left-0 right-0 mb-3 z-20 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-stone-200/50 dark:border-stone-700/50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div
+                        id={menuId}
+                        role="menu"
+                        className={`absolute z-20 overflow-hidden rounded-2xl border border-border bg-card shadow-2xl animate-in fade-in duration-200 ${
+                            placement === 'down'
+                                ? 'top-full right-0 mt-2 w-64 slide-in-from-top-2'
+                                : 'bottom-full left-0 right-0 mb-3 slide-in-from-bottom-2'
+                        }`}
+                    >
                         {/* Notifications */}
                         <button
                             className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 flex items-center justify-between"

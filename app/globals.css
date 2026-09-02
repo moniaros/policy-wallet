@@ -554,7 +554,11 @@ pre {
 
 
   .pw-app-canvas {
-    @apply bg-[radial-gradient(circle_at_top_right,_rgba(41,104,91,0.06),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
+    /* Direction A (2026-09-03): a FLAT cool-slate ground. The radial green
+       wash + white gradient made every white card fight its own ground at the
+       page's top-right; the reference reads calm because the canvas is one
+       even grey and the cards are the only white. --muted is slate-100. */
+    background: var(--muted);
   }
 
   /* The canvas under every authenticated page painted a white gradient in BOTH
@@ -570,7 +574,10 @@ pre {
 
   .pw-page-shell {
     @apply min-h-screen pb-24;
-    background: linear-gradient(140deg, #f8fafc 0%, #ffffff 50%, #f9fafb 100%);
+    /* Transparent on purpose: the shell's .pw-app-canvas is the one ground.
+       A second gradient here painted a lighter rectangle inside the canvas
+       and the seam showed at the sidebar edge. */
+    background: transparent;
   }
 
   .dark .pw-page-shell {
@@ -931,6 +938,37 @@ pre {
 
   .pw-pad-roomy {
     @apply p-6 sm:p-8;      /* feature cards, empty states   */
+  }
+
+  /* The nested surface — a row or tile INSIDE a .pw-card. The reference's
+     one depth device: a slightly darker rectangle in a white card, never a
+     border, never a shadow, never a card inside a card. Same value as the
+     page canvas so it reads as "the ground showing through". */
+  .pw-subcard {
+    border-radius: 12px;
+    background: var(--muted);
+  }
+  .dark .pw-subcard {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  a.pw-subcard:hover,
+  button.pw-subcard:hover {
+    background: var(--accent);
+  }
+  .dark a.pw-subcard:hover,
+  .dark button.pw-subcard:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* The card header's icon chip — a 36px circle on the muted ground holding a
+     16px glyph. One anatomy for every card: chip · title · meta. */
+  .pw-card-chip {
+    @apply grid h-9 w-9 flex-shrink-0 place-items-center rounded-full;
+    background: var(--muted);
+    color: var(--foreground);
+  }
+  .dark .pw-card-chip {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .pw-kicker {
