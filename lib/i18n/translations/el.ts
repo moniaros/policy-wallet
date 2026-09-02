@@ -97,7 +97,7 @@ export const el = {
         searchPlaceholder: 'Αναζήτηση στα ασφαλιστήριά σας…',
         searchNoResults: 'Δεν βρέθηκε ασφαλιστήριο με αυτά τα στοιχεία.',
         searchResultsLabel: 'Ασφαλιστήρια που ταιριάζουν',
-        preferences: 'Γλώσσα και θέμα',
+        preferences: 'Προτιμήσεις',
         home: 'Αρχική',
         wallet: 'Ο φάκελός μου',
         walletShort: 'Φάκελος',

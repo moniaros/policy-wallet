@@ -27,6 +27,18 @@ seams and hostile review: `docs/handover.md`.
   uploads by policy number, map tiles, advisor rail card, one upload offer). Every honesty
   guard kept green; registers updated deliberately (clamp, token-debt, always-dark, Greek
   inventory). 518 files / 5900 unit tests, tsc, eslint, i18n, utf8, api-auth all clean.
+  **Finish review (independent reviewer, degraded in-thread role via subagent):** first pass
+  `fix` → batch applied (`0c64c2cd`: three visible planes via `--surface-canvas`/`--surface-sunken`,
+  36px/10px slate-200 chips, 12px floor on every functional string, neutral term bars outside 30
+  days, soft-pill secondary actions, drawer sign-out dedupe) → verdict pass scored 6/8 resolved or
+  accepted-as-cited; regressions it found (pill arrow wrap, drawer label wrap) fixed in the
+  follow-up commit. **Open by decision, for the owner:** (a) the severity tone module uses blue
+  (`sky-500`) for the *medium* tier while the design rule says blue = info only — a product-wide
+  single source (`components/gaps/severity-tone.ts`), not repainted here; (b) DESIGN.md still
+  describes the pre-build canvas and lacks the sub-card/chip/count-bar devices — to be documented
+  from the built world after the remaining surfaces are re-cut. Preview: Vercel git integration
+  builds every push on `moniaros-projects/policy-wallet` (the second "AgentRise" team status fails
+  on author access and is pre-existing); the CSP blocks Vercel's live-feedback script on previews.
   **Next pass:** wallet, policy detail, protection, settings bodies onto the same card
   anatomy (they already sit inside the new shell); then DESIGN.md documented from the built
   world. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over

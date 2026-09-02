@@ -100,7 +100,7 @@ export const en: TranslationKeys = {
         searchPlaceholder: 'Search your policies…',
         searchNoResults: 'No policy matches those details.',
         searchResultsLabel: 'Matching policies',
-        preferences: 'Language and theme',
+        preferences: 'Preferences',
         home: 'Home',
         wallet: 'My folder',
         walletShort: 'Folder',

@@ -41,7 +41,7 @@ export function CardHead({
         // instead of squeezing «Χρονοδιάγραμμα ανανεώσεων» into one letter
         // per line — which is exactly what the first render did at 390px.
         <div className={cn("flex flex-wrap items-center gap-x-3 gap-y-1", className)}>
-            <span className="flex min-w-0 flex-1 basis-[11rem] items-center gap-3">
+            <span className="flex min-w-0 flex-1 basis-[14rem] items-center gap-3">
                 <span className="pw-card-chip" aria-hidden="true">
                     <Icon className="h-4 w-4" strokeWidth={1.75} />
                 </span>
