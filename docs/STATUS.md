@@ -14,6 +14,25 @@ mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry 
 partial with the remainder named per-goal in the ledger. Written system: `docs/design-system.md`;
 seams and hostile review: `docs/handover.md`.
 
+## In progress (2026-09-03)
+
+- **B2C app redesign — Direction A BUILT on `feat/b2c-direction-a` (`b73421e6`), draft PR #288
+  against NEW-UI, awaiting the owner's look on the preview.** Owner set aside `feat/grafi-b2c`
+  (PR #287) for the policyholder app and picked, from the proposals artifact
+  (https://claude.ai/code/artifact/ea4a5213-6b3b-4612-8769-d2e2a8d7161b), **Direction A · Inter ·
+  cool slate**. Shipped in this pass: the shell (three-group sidebar, desktop top bar with
+  accent-insensitive policy search ⌘K + bell + account, phone tab bar, flat slate canvas,
+  light-first default) and `/dashboard` re-cut on the reference grid (facts row inside the
+  same guarded h2, count bar instead of a score, renewal term bars, dedupe of duplicate
+  uploads by policy number, map tiles, advisor rail card, one upload offer). Every honesty
+  guard kept green; registers updated deliberately (clamp, token-debt, always-dark, Greek
+  inventory). 518 files / 5900 unit tests, tsc, eslint, i18n, utf8, api-auth all clean.
+  **Next pass:** wallet, policy detail, protection, settings bodies onto the same card
+  anatomy (they already sit inside the new shell); then DESIGN.md documented from the built
+  world. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
+  the first tab" was the Next dev-tools button; the identical renewal rows were fixture
+  duplicates, now collapsed).
+
 ## Done since the last entry
 
 - **Auth rebuild A0–A8 (brief: split-shell, phone removal, phased social login)**
