@@ -59,7 +59,7 @@ export function BranchCoverageMap({
                         // duplicate-actions metric gated on /dashboard (§11
                         // metric 7); the hero CTA is the page's one generic entry.
                         href="/protection?lens=branch"
-                        className="inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
+                        className="pw-soft-button !px-3.5 !text-caption"
                     >
                         {labels.viewAll}
                         <ArrowRight className="h-3 w-3" aria-hidden />
@@ -93,7 +93,7 @@ export function BranchCoverageMap({
                         </span>
                         <span
                             className={cn(
-                                "inline-flex w-fit max-w-full items-center rounded-full px-2 py-0.5 text-micro font-semibold [overflow-wrap:anywhere]",
+                                "inline-flex w-fit max-w-full items-center rounded-full px-2 py-0.5 text-caption font-semibold [overflow-wrap:anywhere]",
                                 PILL_STYLES[entry.state]
                             )}
                         >

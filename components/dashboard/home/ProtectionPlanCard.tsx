@@ -120,10 +120,10 @@ export function ProtectionPlanCard({
                                 }`}
                             >
                                 <span
-                                    className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg ${
+                                    className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] ${
                                         done
                                             ? "bg-primary text-primary-foreground"
-                                            : "bg-card text-foreground/70"
+                                            : "pw-card-chip"
                                     }`}
                                 >
                                     {done ? <Check className="h-4 w-4" aria-hidden /> : <Icon className="h-4 w-4" aria-hidden />}

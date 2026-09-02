@@ -272,6 +272,20 @@
   --dot-track: var(--dot-track-on-light);
   --dot-track-hover: var(--dot-track-hover-on-light);
 
+  /* ── THE APP'S THREE PLANES (Direction A, 2026-09-03) ─────────────────────
+     card (white) > sub-card (sunken) > canvas. The reference reads calm because
+     these three greys are DISTINCT: a nested row is visibly a rectangle on its
+     card, and a card is visibly white on its ground. The first build set both
+     the canvas and the sub-card to --muted (#f1f5f9): on a white card a 1.07:1
+     step is invisible on most panels, and the finish review measured the
+     sub-cards as "no perceptible container". Two steps on the slate hue,
+     between slate-100 and slate-200, are the fix — the ONE new system step
+     this pass introduces, recorded here so the ramp stays the ramp.
+     --muted-foreground (#5b6a7a) measures 4.6:1 on --surface-sunken, so meta
+     text inside a sub-card still clears AA. */
+  --surface-canvas: #E7ECF1;
+  --surface-sunken: #EDF1F5;
+
   --pw-primary: #29685B;
   --pw-primary-hover: #1C4E44;
   --pw-bg-dark: #000000;
@@ -557,8 +571,9 @@ pre {
     /* Direction A (2026-09-03): a FLAT cool-slate ground. The radial green
        wash + white gradient made every white card fight its own ground at the
        page's top-right; the reference reads calm because the canvas is one
-       even grey and the cards are the only white. --muted is slate-100. */
-    background: var(--muted);
+       even grey and the cards are the only white. One step below the
+       sub-card, so the three planes read (see --surface-canvas). */
+    background: var(--surface-canvas);
   }
 
   /* The canvas under every authenticated page painted a white gradient in BOTH
@@ -946,10 +961,10 @@ pre {
      page canvas so it reads as "the ground showing through". */
   .pw-subcard {
     border-radius: 12px;
-    background: var(--muted);
+    background: var(--surface-sunken);
   }
   .dark .pw-subcard {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.06);
   }
   a.pw-subcard:hover,
   button.pw-subcard:hover {
@@ -960,15 +975,35 @@ pre {
     background: rgba(255, 255, 255, 0.08);
   }
 
-  /* The card header's icon chip — a 36px circle on the muted ground holding a
-     16px glyph. One anatomy for every card: chip · title · meta. */
+  /* The card header's icon chip — DESIGN.md's "36px tinted square, 10px
+     radius, 16px glyph", tinted one step darker than the sub-card so it reads
+     as a disc of ground, not a bare glyph. One anatomy for every card and
+     every row: chip · title · meta. */
   .pw-card-chip {
-    @apply grid h-9 w-9 flex-shrink-0 place-items-center rounded-full;
-    background: var(--muted);
+    @apply grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px];
+    background: var(--color-neutral-200);
     color: var(--foreground);
   }
   .dark .pw-card-chip {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* The soft pill — the reference's secondary action («View all upcoming
+     payments»): a grey pill, same shape as the primary, no border. Text links
+     stay for tertiary actions inside a paragraph. */
+  .pw-soft-button {
+    @apply inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0];
+    background: var(--surface-sunken);
+    color: var(--foreground);
+  }
+  .pw-soft-button:hover {
+    background: var(--color-neutral-200);
+  }
+  .dark .pw-soft-button {
     background: rgba(255, 255, 255, 0.08);
+  }
+  .dark .pw-soft-button:hover {
+    background: rgba(255, 255, 255, 0.14);
   }
 
   .pw-kicker {

@@ -74,10 +74,7 @@ export function AttentionList({
                 id="attention-heading"
                 meta={
                     totalCount > items.length ? (
-                        <Link
-                            href="/protection"
-                            className="inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
-                        >
+                        <Link href="/protection" className="pw-soft-button !px-3.5 !text-caption">
                             {labels.viewAll}
                             <ArrowRight className="h-3 w-3" aria-hidden />
                         </Link>
@@ -88,8 +85,8 @@ export function AttentionList({
             <div className="mt-4">
                 {items.length === 0 ? (
                     <div className="pw-subcard flex items-start gap-3 p-3.5">
-                        <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft dark:bg-primary/15">
-                            <ShieldCheck className="h-4 w-4 text-primary dark:text-mint" aria-hidden />
+                        <span className="pw-card-chip">
+                            <ShieldCheck className="h-4 w-4" aria-hidden />
                         </span>
                         <div className="min-w-0 flex-1">
                             <p className="text-sm font-semibold text-foreground">{labels.emptyTitle}</p>
@@ -121,12 +118,12 @@ export function AttentionList({
                                             </span>
                                         )}
                                         <span className="mt-2 flex flex-wrap items-center gap-1.5">
-                                            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-micro font-semibold text-foreground/80">
+                                            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-caption font-semibold text-foreground/80">
                                                 <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(describeSeverity(item.urgency).tone)}`} aria-hidden />
                                                 {item.urgencyLabel}
                                             </span>
                                             {item.timingLabel && (
-                                                <span className="inline-flex items-center rounded-full bg-status-warning-tint px-2 py-0.5 text-micro font-semibold text-status-warning">
+                                                <span className="inline-flex items-center rounded-full bg-status-warning-tint px-2 py-0.5 text-caption font-semibold text-status-warning">
                                                     {item.timingLabel}
                                                 </span>
                                             )}

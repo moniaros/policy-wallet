@@ -63,7 +63,7 @@ export function RecentChangesWidget({
                                         {change.title}
                                     </span>
                                     {change.explained && (
-                                        <span className="mt-0.5 block text-micro text-muted-foreground">
+                                        <span className="mt-0.5 block text-caption text-muted-foreground">
                                             {labels.explained}
                                         </span>
                                     )}

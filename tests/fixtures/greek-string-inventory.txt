@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2838
+# bundle entries: 2839
 # inline entries: 4771 across 214 files
 # ternary entries: 285 across 44 files
 # call entries: 1232 across 87 files
@@ -1570,6 +1570,7 @@ bundle	nav.opportunities	"Ευκαιρίες"
 bundle	nav.partners	"Παροχές συνεργατών"
 bundle	nav.plans	"Πλάνα & τιμολόγηση"
 bundle	nav.policies	"Ασφαλιστήρια"
+bundle	nav.preferences	"Γλώσσα και θέμα"
 bundle	nav.primaryNavigation	"Κύρια πλοήγηση"
 bundle	nav.protection	"Η προστασία μου"
 bundle	nav.protectionShort	"Προστασία"

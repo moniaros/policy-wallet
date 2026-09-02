@@ -113,8 +113,8 @@ export function RenewalsTimelineCard({
             <div className="mt-4">
                 {items.length === 0 ? (
                     <div className="pw-subcard flex items-start gap-3 p-3.5">
-                        <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft dark:bg-primary/15">
-                            <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
+                        <span className="pw-card-chip">
+                            <CalendarClock className="h-4 w-4" aria-hidden />
                         </span>
                         <div className="min-w-0 flex-1">
                             {!hasPolicies ? (
@@ -147,7 +147,10 @@ export function RenewalsTimelineCard({
                             // owns (the role's TEXT token is far too dark for a fill).
                             // Everything further out is brand green. No rose: an
                             // approaching date is not a gap.
-                            const fill = item.days <= 30 ? "bg-amber-500" : "bg-primary"
+                            // Outside that window the bar is a neutral step: the term
+                            // elapsed is information, not a state, and brand green is
+                            // kept for the three things it means on this page.
+                            const fill = item.days <= 30 ? "bg-amber-500" : "bg-neutral-400"
 
                             return (
                                 <Link
@@ -156,7 +159,7 @@ export function RenewalsTimelineCard({
                                     className="pw-subcard grid gap-2 p-3.5 transition-colors"
                                 >
                                     <span className="flex items-start gap-3">
-                                        <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg bg-card text-foreground/70">
+                                        <span className="pw-card-chip mt-0.5">
                                             <item.icon className="h-4 w-4" aria-hidden />
                                         </span>
                                         <span className="min-w-0 flex-1">
@@ -222,7 +225,7 @@ export function RenewalsTimelineCard({
                                         earns, because both ends of it are dates printed on
                                         the document. */}
                                     {item.termProgressPct !== null && item.termProgressPct !== undefined && (
-                                        <span className="block pl-11">
+                                        <span className="block pl-12">
                                             <span
                                                 role="img"
                                                 aria-label={item.termAria ?? undefined}
@@ -234,7 +237,7 @@ export function RenewalsTimelineCard({
                                                 />
                                             </span>
                                             {item.termStartLabel && (
-                                                <span className="mt-1 block text-micro text-muted-foreground">{item.termStartLabel}</span>
+                                                <span className="mt-1 block text-caption text-muted-foreground">{item.termStartLabel}</span>
                                             )}
                                         </span>
                                     )}
@@ -243,11 +246,11 @@ export function RenewalsTimelineCard({
                                         a right-hand cluster beside the arrow (P5 finding: as a
                                         flex sibling it took its width off the title first). */}
                                     {item.checkpointLabel && (
-                                        <span className="pl-11">
+                                        <span className="pl-12">
                                             <span
                                                 data-count="policy.renewalCheckpointCount"
                                                 data-count-subject={item.id}
-                                                className="inline-flex items-center rounded-full bg-status-warning-tint px-2 py-0.5 text-micro font-semibold text-status-warning"
+                                                className="inline-flex items-center rounded-full bg-status-warning-tint px-2 py-0.5 text-caption font-semibold text-status-warning"
                                             >
                                                 {item.checkpointLabel}
                                             </span>

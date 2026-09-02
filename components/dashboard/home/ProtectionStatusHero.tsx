@@ -155,10 +155,14 @@ export function ProtectionStatusHero({
                                     {/* Visual order is words-over-number (flex-col-reverse);
                                         DOM order stays «count words», so the text reads
                                         «12 ασφαλιστήρια» to every reader. */}
-                                    <span className="text-h3 font-semibold leading-none tracking-tight text-foreground tabular-nums">
+                                    <span className="text-title font-semibold leading-none tracking-tight text-foreground tabular-nums">
                                         {parts.lead}
                                     </span>{" "}
-                                    <span className="text-caption leading-snug text-muted-foreground">{parts.rest}</span>
+                                    {/* Lowercase-initial on purpose: the labels are the tails
+                                        of the facts sentence («5 έχουν λήξει»), and CSS
+                                        capitalisation under lang="el" strips the tonos
+                                        («Εχουν»). The premium label is lowercased to match. */}
+                                    <span className="block text-caption leading-snug text-muted-foreground">{parts.rest}</span>
                                 </>
                             ) : (
                                 <span className="text-body font-semibold text-foreground">{fact.label}</span>
@@ -171,10 +175,10 @@ export function ProtectionStatusHero({
                         data-fact="portfolio.totalAnnualPremium"
                         className="flex min-w-0 flex-col-reverse gap-1"
                     >
-                        <span className="text-h3 font-semibold leading-none tracking-tight text-foreground tabular-nums">
+                        <span className="text-title font-semibold leading-none tracking-tight text-foreground tabular-nums">
                             {premium.value}
                         </span>{" "}
-                        <span className="text-caption leading-snug text-muted-foreground">{premium.label}</span>
+                        <span className="block text-caption leading-snug text-muted-foreground first-letter:lowercase">{premium.label}</span>
                     </span>
                 )}
             </h2>

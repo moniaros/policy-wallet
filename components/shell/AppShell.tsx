@@ -386,7 +386,7 @@ export function AppShell({
                         {/* Mobile Footer (Sign Out & Theme) */}
                         <div className="lg:hidden p-4 border-t border-border bg-muted/60 space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-semibold text-foreground/80">{t.userMenu.settings}</span>
+                                <span className="text-sm font-semibold text-foreground/80">{t.nav.preferences}</span>
                                 <div className="flex items-center gap-3">
                                     {/* Language — this was a DEAD control: it called
                                         onNavigate?.('/?lang=el'), and the protected layout

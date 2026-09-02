@@ -77,7 +77,7 @@ export function ProtectionMonitorCard({
                             className="pw-subcard flex items-start gap-3 p-3"
                         >
                             <span
-                                className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-micro font-semibold ${style.chip}`}
+                                className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-caption font-semibold ${style.chip}`}
                             >
                                 <Icon className="h-3 w-3" aria-hidden />
                                 {signal.verdictLabel}
@@ -111,10 +111,7 @@ export function ProtectionMonitorCard({
                     )
                 })}
             </ul>
-            <Link
-                href="/protection?lens=risk"
-                className="pw-inline-action mt-3 inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
-            >
+            <Link href="/protection?lens=risk" className="pw-soft-button mt-4 !text-caption">
                 {labels.detailsLink}
                 <ArrowRight className="h-3 w-3" aria-hidden />
             </Link>
