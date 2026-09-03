@@ -47,6 +47,7 @@ const tx = {
     businessEvent: { deleteMany: vi.fn(async (_a?: any) => count(5)) },
     riskReview: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     userNotificationSettings: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
+    protectionProfile: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     user: { update: vi.fn(async (_a?: any) => ({})) },
 }
 
@@ -138,15 +139,27 @@ describe('eraseUserData — DB coverage', () => {
             'chronicConditions', 'familyMedicalHistory', 'dateOfBirth', 'gender',
             'heightCm', 'weightKg', 'smokingStatus', 'annualIncome', 'occupation',
             'drivingRecord', 'lifeEvents', 'maritalStatus', 'mortgageAmount', 'loanAmount',
+            // The life-context columns (Aug 2026) and the answered-fields
+            // ledger, found surviving when the protection profile landed.
+            'childrenCount', 'residenceType', 'propertiesOwned', 'rentsOutProperty', 'ownsBoat',
+            'ownsBusiness', 'businessEmployees', 'savingsAmount', 'valuablesValue', 'activities',
+            'cyberExposure', 'retirementPlanning', 'isBuildingManager', 'coverHeldElsewhere',
+            'answeredFields',
         ]) {
             expect(profileData, `profile scrub must cover ${field}`).toHaveProperty(field)
         }
         expect(profileData.gender).toBeNull()
         expect(profileData.heightCm).toBeNull()
+        expect(profileData.residenceType).toBeNull()
+        expect(profileData.ownsBusiness).toBe(false)
+
+        // The needs layer is deleted outright and counted in the summary.
+        expect(tx.protectionProfile.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user-1' } })
     })
 
     it('erases payment methods, questionnaire answers, gaps, tasks and purges export snapshots', async () => {
         const summary = await eraseUserData('user-1')
+        expect(summary.deletedProtectionProfiles).toBe(1)
 
         expect(tx.paymentMethod.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user-1' } })
         expect(tx.questionnaireResponse.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user-1' } })

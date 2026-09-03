@@ -110,6 +110,7 @@ model User {
   policiesOwned                   Policy[]                   @relation("Owner")
   documentsUploaded               PolicyDocument[]
   policyholderProfile             PolicyholderProfile?
+  protectionProfile               ProtectionProfile?
   questionnairesSent              QuestionnaireInstance[]    @relation("Sender")
   questionnairesReceived          QuestionnaireInstance[]    @relation("Receiver")
   questionnaireResponses          QuestionnaireResponse[]
@@ -1652,6 +1653,64 @@ model LifeEventInstance {
   @@index([userId, occurredAt])
   @@index([userId, definitionId])
   @@map("life_event_instances")
+}
+
+/// Layer 1 — NEEDS. What the customer SAYS matters, captured by the first-stage
+/// onboarding before any policy is read (docs: the personal protection profile).
+///
+/// Holds no verdict: coverage lives on Policy and its analysis, alignment on
+/// GapInstance / RecommendationInstance. Ownership FACTS (children, residence,
+/// employment, vehicles, loans) do not live here either — they go to the typed
+/// PolicyholderProfile columns the risk engine reads, through the same
+/// non-overwriting patch the /protection quick start uses. This row is the
+/// person's own statements: why they came, what would hurt most, how confident
+/// they feel, what changed and what is coming. A stated priority is a reason
+/// to LOOK, never a finding — deriveProtectionPriorities() turns the two stores
+/// into "areas to check" on read and persists nothing.
+///
+/// Its own table rather than `preferences` JSON so it is typed, queryable
+/// (product intelligence: GROUP BY intent / confidence), covered automatically by
+/// the schema-derived erasure guard, and exported under Art. 15 by name.
+model ProtectionProfile {
+  id                   String    @id @default(cuid()) @map("protection_profile_id")
+  userId               String    @unique @map("user_id")
+  /// INTENT_VALUES — why they came.
+  intent               String?
+  /// RISK_CONCERNS in the order chosen (max 2): what would hurt most.
+  riskConcerns         Json?     @map("risk_concerns")
+  /// COMMITMENTS — mortgage / loan / rent as flags. Never amounts.
+  commitments          Json?
+  /// CONFIDENCE_LEVELS — how sure they feel their cover matches what matters.
+  confidenceLevel      String?   @map("confidence_level")
+  /// UNCERTAINTY_REASONS — asked only when confidence is low.
+  uncertaintyReasons   Json?     @map("uncertainty_reasons")
+  /// {id, when}[] — LIFE_CHANGE_OPTIONS; registry-backed ones also become
+  /// LifeEventInstance rows at completion.
+  recentChanges        Json?     @map("recent_changes")
+  /// {id, horizon}[] — FUTURE_CONSIDERATIONS.
+  futureConsiderations Json?     @map("future_considerations")
+  /// GUIDANCE_PREFERENCES — how they want to be guided.
+  guidancePreference   String?   @map("guidance_preference")
+  /// Snapshot of the derived top domains at completion — analytics only; the
+  /// live picture is always recomputed.
+  priorityAreas        Json?     @map("priority_areas")
+  /// stepId → raw answer, so a refresh returns to the same screen pre-selected.
+  answers              Json?
+  answeredSteps        Json?     @map("answered_steps")
+  /// Where «Δεν είμαι σίγουρος/η» was the answer — the honest lower-confidence
+  /// signal, and product intelligence about where people cannot answer.
+  unsureSteps          Json?     @map("unsure_steps")
+  uploadChoice         String?   @map("upload_choice") // done | later
+  version              Int       @default(1)
+  startedAt            DateTime  @default(now()) @map("started_at")
+  completedAt          DateTime? @map("completed_at")
+  skippedAt            DateTime? @map("skipped_at")
+  summaryViewedAt      DateTime? @map("summary_viewed_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("protection_profiles")
 }
 
 /// A versioned snapshot of the risk assessment.

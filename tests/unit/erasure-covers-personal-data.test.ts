@@ -187,12 +187,29 @@ describe("every personal-data store is erased or explicitly exempt", () => {
         ).toEqual([])
     })
 
-    it("erases the four stores that were found surviving", () => {
+    it("erases the stores that were found surviving, by name", () => {
         // Named explicitly so a refactor cannot quietly drop them again.
         expect(ERASER).toMatch(/tx\.pushDevice\.deleteMany/)
         expect(ERASER).toMatch(/tx\.businessEvent\.deleteMany/)
         expect(ERASER).toMatch(/tx\.riskReview\.deleteMany/)
         expect(ERASER).toMatch(/tx\.userNotificationSettings\.deleteMany/)
+        // The needs layer (2026-09): the person's own statements about what
+        // matters — nothing in it is worth keeping without the person.
+        expect(ERASER).toMatch(/tx\.protectionProfile\.deleteMany/)
+    })
+
+    it("scrubs the life-context columns and the answered-fields ledger, not only the 2025 fields", () => {
+        // Found surviving in Sept 2026: the columns added with the life-context
+        // migration were never added to the scrub, so an erased profile still
+        // said "owns a boat, runs a business, three properties".
+        for (const column of [
+            "childrenCount", "residenceType", "propertiesOwned", "rentsOutProperty", "ownsBoat",
+            "ownsBusiness", "businessEmployees", "savingsAmount", "valuablesValue", "activities",
+            "cyberExposure", "retirementPlanning", "isBuildingManager", "coverHeldElsewhere",
+            "answeredFields",
+        ]) {
+            expect(ERASER, `${column} is not scrubbed`).toMatch(new RegExp(`\\b${column}:`))
+        }
     })
 
     it("matches the business event on its subject, not its actor", () => {

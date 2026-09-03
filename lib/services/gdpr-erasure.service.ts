@@ -87,6 +87,7 @@ export type ErasureSummary = {
     deletedRiskReviews: number
     deletedNotificationSettings: number
     deletedFormSubmissions: number
+    deletedProtectionProfiles: number
     scrubbedCollaborationMessages: number
     scrubbedReferrals: number
     scrubbedConsentAudits: number
@@ -241,6 +242,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 scrubbedConsentAudits,
                 purgedDataExports,
                 terminatedRelationships,
+                deletedProtectionProfiles,
             ] = await Promise.all([
                 tx.policy.deleteMany({ where: { ownerUserId: userId } }),
                 tx.account.deleteMany({ where: { userId } }),
@@ -321,6 +323,27 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                         familyMedicalHistory: Prisma.JsonNull,
                         drivingRecord: null,
                         activityLevel: null,
+                        // The life-context columns added in Aug 2026 and the
+                        // answered-fields ledger were missed here until the
+                        // protection profile landed (2026-09): a scrub that
+                        // leaves "has a boat, runs a business, three
+                        // properties" behind is not a scrub.
+                        petsCount: null,
+                        childrenCount: 0,
+                        residenceType: null,
+                        propertiesOwned: null,
+                        rentsOutProperty: false,
+                        ownsBoat: false,
+                        ownsBusiness: false,
+                        businessEmployees: 0,
+                        savingsAmount: null,
+                        valuablesValue: null,
+                        activities: Prisma.JsonNull,
+                        cyberExposure: null,
+                        retirementPlanning: false,
+                        isBuildingManager: false,
+                        coverHeldElsewhere: Prisma.JsonNull,
+                        answeredFields: Prisma.JsonNull,
                     },
                 }),
                 tx.agentProfile.updateMany({
@@ -396,6 +419,10 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                     where: { OR: [{ policyholderUserId: userId }, { agentUserId: userId }] },
                     data: { status: "terminated" },
                 }),
+                // Layer 1 of the needs model — the person's own statements about
+                // what matters. Deleted, not scrubbed: nothing in it is worth
+                // keeping without the person.
+                tx.protectionProfile.deleteMany({ where: { userId } }),
             ])
 
             // Profile-level gaps survive the policy cascade (policyId null) and
@@ -453,6 +480,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedRiskReviews: deletedRiskReviews.count,
                 deletedNotificationSettings: deletedNotificationSettings.count,
                 deletedFormSubmissions: deletedFormSubmissions.count,
+                deletedProtectionProfiles: deletedProtectionProfiles.count,
                 scrubbedCollaborationMessages: scrubbedCollaborationMessages.count,
                 scrubbedReferrals: scrubbedReferrals.count,
                 scrubbedConsentAudits: scrubbedConsentAudits.count,
