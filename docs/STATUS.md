@@ -48,6 +48,20 @@ seams and hostile review: `docs/handover.md`.
   the Google consent screen's «to continue to cquudefwfwrmvpftuhyl.supabase.co» is the
   Supabase-hosted OAuth redirect — brand verification and/or a Supabase custom auth domain fix
   it, no code needed.
+  **B2B batch B is on PR #291 (`feat/b2b-batch-b`, stacked on #290 because it uses the segmented
+  recipe):** B-1 = tasks, activity, renewals, opportunities; B-2 = customers list, customer detail
+  (the four tabs, the collaboration cards, the danger zone) and invite — all on the card anatomy
+  (page names itself on the canvas, CardHead on every card, sub-card rows, fact cells / StatTiles,
+  status pills on tokens, segmented view switches with aria-pressed, one primary per screen).
+  `components/ui/PageHeader.tsx` deleted; SortableColumn headers in caption sentence case; the
+  FAB clears the phone bar (fix on #290). Registers moved in the register direction:
+  task-priority-colors-urgency (status-warning accepted), customer-list-responsive (toggle by
+  recipe class), design-token-debt (invite hex gone), gap-severity-display-single-source and
+  solid-panel-contrast (entries whose debt is paid), Greek inventory (+1 pair). 518 files / 5900
+  tests, tsc, eslint, i18n, utf8 clean after each batch; captured at 1440/390 with 0 console
+  errors. NOTE: CI does not run for a PR whose base is a feature branch — gates were run locally.
+  **Still legacy (batch C):** insights, questionnaires, team, commissions, benefits, and the
+  three customer modals (AddCustomerModal, UploadPolicyModal, BulkImportModal).
 - **B2C app redesign — Direction A BUILT on `feat/b2c-direction-a` (`b73421e6`), draft PR #288
   against NEW-UI, awaiting the owner's look on the preview** (superseded by the entry above —
   merged the same day). Owner set aside `feat/grafi-b2c`
@@ -222,8 +236,8 @@ seams and hostile review: `docs/handover.md`.
 1. Owner: open PR #290's preview at phone width (dashboard, wallet, protection, /agent, account)
    and decide on the Steady phone layer; then set the Preview-scope DB env vars and the Google
    OAuth branding / custom auth domain (both owner-only, see In progress).
-2. B2B batches B and C (customers, renewals, opportunities, tasks, activity; insights,
-   questionnaires, team, commissions, benefits) onto the Direction A anatomy.
+2. B2B batch C (insights, questionnaires, team, commissions, benefits) and the three customer
+   modals onto the Direction A anatomy; then merge #290 → #291 in that order.
 3. Marketing carry-overs: split the marketing route group from the app providers (the mobile-LCP
    fix), restyle the remaining legacy bands, and de-noindex the partners pair when legal returns.
 
