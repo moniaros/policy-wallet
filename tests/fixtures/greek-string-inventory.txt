@@ -22,7 +22,7 @@
 # bundle entries: 2847
 # inline entries: 4773 across 214 files
 # ternary entries: 285 across 44 files
-# call entries: 1220 across 88 files
+# call entries: 1221 across 88 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -8705,6 +8705,7 @@ call	components/coverage/RiskProfileWizard.tsx	"Πολλά ασφαλιστήρ�
 call	components/coverage/RiskProfileWizard.tsx	"Πολύ ενεργός"
 call	components/coverage/RiskProfileWizard.tsx	"Ποσό δανείων (€)"
 call	components/coverage/RiskProfileWizard.tsx	"Προσθέστε σημαντικά γεγονότα ζωής για ακριβέστερη ανίχνευση κενών."
+call	components/coverage/RiskProfileWizard.tsx	"Προσθήκη"
 call	components/coverage/RiskProfileWizard.tsx	"Προσθήκη"
 call	components/coverage/RiskProfileWizard.tsx	"Προτιμώ να μην αναφέρω"
 call	components/coverage/RiskProfileWizard.tsx	"Προφίλ κινδύνου"
