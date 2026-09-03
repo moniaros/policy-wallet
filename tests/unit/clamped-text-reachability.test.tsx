@@ -224,14 +224,6 @@ const REGISTER: RegisterEntry[] = [
             "unreachable. Candidates: let the description wrap, or expand on tap.",
     },
     {
-        file: "components/branches/BranchCoverageMap.tsx",
-        clamps: { truncate: 1 },
-        kind: "reachable",
-        note:
-            "sm:truncate — wraps at mobile widths, truncates only ≥640px; each row links " +
-            "to /protection/[branch] whose h1 is the full branch title.",
-    },
-    {
         file: "components/branches/BranchDetail.tsx",
         clamps: { truncate: 3, "line-clamp-2": 1 },
         kind: "reachable",

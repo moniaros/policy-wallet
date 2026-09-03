@@ -645,12 +645,15 @@ pre {
      border-color, so this rule must come after it — placed before, it applied
      and was silently overridden, and the measurement still read 1.20:1.
 
-     Scoped by ELEMENT, not by a new class, so a card cannot become clickable and
-     silently keep a decorative edge — the thing that made this 20 failures
-     rather than one. Non-interactive `.pw-card` surfaces keep `--pw-border`;
-     1.4.11 does not govern them and darkening every edge in the product to fix a
-     control problem is how you end up with a heavier product. */
-  :where(a, button, [role="button"]).pw-card,
+     Direction A (2026-09-03) retires the element-scoped form of this rule.
+     Every link card in the app now identifies itself by CONTENT — a title, a
+     caption and a trailing arrow (the rail's «Βοήθεια και υποστήριξη», «Τι
+     άλλαξε πρόσφατα», the branch tiles with their state pill) — and 1.4.11's
+     own note exempts a boundary that is not the only indicator of the
+     control. Painting a 45%-black edge on exactly those cards made two cards
+     in a rail of six look like a different product; the reader read the
+     inconsistency, not the affordance. `.pw-control-boundary` stays as the
+     opt-in for a control whose boundary IS its only cue (an icon-only tile). */
   .pw-control-boundary {
     border-color: var(--pw-border-control);
   }
