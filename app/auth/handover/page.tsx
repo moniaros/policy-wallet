@@ -3,9 +3,10 @@
 import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { Loader2 } from "lucide-react"
+import { Loader2, Smartphone } from "lucide-react"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { AuthShell } from "@/components/auth/AuthShell"
+import { Button } from "@/src/design-system"
 
 function HandoverContent() {
     const searchParams = useSearchParams()
@@ -44,49 +45,44 @@ function HandoverContent() {
     return (
         <AuthShell>
             <div className="text-center">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-6 border border-primary/20">
-                    <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
+                <div className="mx-auto mb-g-6 flex size-20 items-center justify-center rounded-g-pill bg-state-covered-fill">
+                    <Smartphone aria-hidden className="size-10 text-state-covered" strokeWidth={2} />
                 </div>
 
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                <h1 className="text-g-display-md font-bold text-fg-primary">
                     {isMobile
                         ? t("Άνοιγμα στην εφαρμογή PolicyWallet;", "Open in PolicyWallet App?")
                         : t("Καλώς ήρθατε στο PolicyWallet", "Welcome to PolicyWallet")}
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+                <p className="mt-g-3 text-g-body text-fg-secondary">
                     {isMobile
                         ? t("Εντοπίσαμε ότι χρησιμοποιείτε κινητό. Για καλύτερη εμπειρία, χρησιμοποιήστε την εφαρμογή μας.", "We detected you are on mobile. For the best experience, use our native app.")
                         : t("Πατήστε παρακάτω για να συνεχίσετε στο ασφαλές ψηφιακό πορτοφόλι ασφάλισής σας.", "Click below to continue to your secure insurance wallet.")}
                 </p>
 
-                <div className="space-y-4">
+                <div className="mt-g-8 flex flex-col gap-g-4">
                     {isMobile && (
-                        <button
-                            onClick={handleOpenApp}
-                            className="pw-primary-button w-full"
-                        >
+                        <Button type="button" size="lg" onClick={handleOpenApp} className="w-full">
                             {t("Άνοιγμα εφαρμογής PolicyWallet", "Open PolicyWallet App")}
-                        </button>
+                        </Button>
                     )}
 
-                    <button
+                    <Button
+                        type="button"
+                        size="lg"
+                        variant={isMobile ? "secondary" : "primary"}
                         onClick={handleContinueWeb}
-                        className={`w-full py-3.5 rounded-full font-bold transition-all active:scale-[0.98] hover:-translate-y-0.5 ${isMobile
-                            ? "border border-slate-300 bg-white text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-slate-300"
-                            : "bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover hover:shadow-lg"
-                            }`}
+                        className="w-full"
                     >
                         {isMobile
                             ? t("Συνέχεια στον browser", "Continue in Browser")
                             : t("Συνέχεια στο Πορτοφόλι", "Continue to Wallet")}
-                    </button>
+                    </Button>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-[#E2E8F0] dark:border-white/10">
-                    <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <div className="mt-g-8 border-t border-border-subtle pt-g-6">
+                    <p className="flex items-center justify-center gap-g-2 text-g-caption text-fg-secondary">
+                        <span aria-hidden className="size-2 rounded-g-pill bg-state-covered motion-safe:animate-pulse" />
                         {t(`Ασφαλής ταυτοποίηση ${email}...`, `Securely authenticating ${email}...`)}
                     </p>
                 </div>

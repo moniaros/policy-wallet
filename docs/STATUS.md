@@ -114,6 +114,20 @@ seams and hostile review: `docs/handover.md`.
   a finding), content-width submit — and moved every upgrade CTA on the page (lite gate, locked
   empty state, UpgradeTriggerCard's card and inline variants) to soft pills, so the wizard's
   submit is the screen's one primary. Not touched: the finding cards (already on the anatomy).
+  **Auth pages (same day, `/impeccable polish`):** the auth tree is the Grafí world (the split
+  AuthShell, `fg-*`/`surface-*`/`state-*` tokens) and sign-up already lived there; sign-in and the
+  five utility screens did not. Sign-in: the email/phone switch is a segmented pill on the sunken
+  surface, the error banner / field errors / reset dialog use the shared gap and covered notices,
+  the submit and dialog buttons are the design-system Button, the trust badge and links are on
+  tokens — no hex, no rose, no app-world `pw-*` recipes. Forgot / reset / verify / confirmation /
+  handover: one anatomy (state disc · display-md heading · body · one action) on the same
+  notices and Button; the reset page's two hand-rolled password inputs — `<label>`s with no
+  `htmlFor`, an unlabelled three-segment meter — are now the shared PasswordField (a `showRule`
+  prop hides the rule line on the confirm field). Shared recipes live in
+  `components/auth/FormField.tsx` (`AUTH_LINK_CLASS`, `AUTH_PRIMARY_LINK_CLASS`,
+  `AUTH_SECONDARY_LINK_CLASS`, `AUTH_NOTICE_GAP_CLASS`, `AUTH_NOTICE_COVERED_CLASS`). The five auth
+  pages left the always-dark register's MIXED list because they no longer carry a dark literal.
+  Captured unauthenticated at 1440/390: 0 console errors.
   **Next:** owner review on the preview (four app pages + /protection both lenses + homepage
   hero/audience/why-now); the severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
   the first tab" was the Next dev-tools button; the identical renewal rows were fixture

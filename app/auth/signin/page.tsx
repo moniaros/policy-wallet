@@ -3,14 +3,23 @@
 import { useId, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { AlertCircle, ArrowRight, Loader2, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
+import { AlertCircle, ArrowRight, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { AuthShell } from "@/components/auth/AuthShell"
 import { TrustPanel } from "@/components/auth/TrustPanel"
 import { SocialAuthRow } from "@/components/auth/SocialAuthRow"
 import { AuthDivider } from "@/components/auth/AuthDivider"
-import { AUTH_INPUT_CLASS } from "@/components/auth/FormField"
+import {
+    AUTH_FOCUS_CLASS,
+    AUTH_INPUT_CLASS,
+    AUTH_LINK_CLASS,
+    AUTH_NOTICE_COVERED_CLASS,
+    AUTH_NOTICE_GAP_CLASS,
+} from "@/components/auth/FormField"
+import { FormError } from "@/components/auth/FormError"
+import { Button } from "@/src/design-system"
+import { cn } from "@/lib/utils"
 import { liveProvidersFor } from "@/lib/auth/social-providers"
 import { resolveAuthEmailIdentifier } from "@/lib/auth/phone-auth"
 import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
@@ -240,32 +249,43 @@ export default function SignInPage() {
 
                     {/* Error */}
                     {error && (
-                        <div role="alert" className="mb-4 flex items-start gap-2 rounded-xl border border-rose-200 dark:border-rose-800/40 bg-rose-50 dark:bg-rose-900/20 px-3 py-2.5 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
-                            <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                        <div role="alert" className={`mb-g-4 ${AUTH_NOTICE_GAP_CLASS}`}>
+                            <AlertCircle aria-hidden className="mt-0.5 size-4 flex-shrink-0" />
                             {error}
                         </div>
                     )}
                     {showResend && (
-                        <button
+                        <Button
                             type="button"
+                            variant="secondary"
                             onClick={resendVerification}
-                            disabled={resending}
-                            className="pw-secondary-button mb-4 w-full"
+                            loading={resending}
+                            className="mb-g-4 w-full"
                         >
-                            {resending ? (copy.sending) : (copy.resendVerification)}
-                        </button>
+                            {resending ? copy.sending : copy.resendVerification}
+                        </Button>
                     )}
-                    {resendMessage && <p role="status" className="mb-4 text-body-sm text-[#475569] dark:text-white/65">{resendMessage}</p>}
+                    {resendMessage && <p role="status" className="mb-g-4 text-g-body-sm text-fg-secondary">{resendMessage}</p>}
 
-                    <form noValidate onSubmit={handleSubmit} className="space-y-4">
+                    <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-g-4">
                         {/* Email / Phone toggle */}
-                        <div className="flex rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-1 dark:border-white/10 dark:bg-white/5">
-                            <button type="button" onClick={() => setTab("email")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "email" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
-                                Email
-                            </button>
-                            <button type="button" onClick={() => setTab("phone")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "phone" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
-                                {copy.phoneTab}
-                            </button>
+                        {/* The identifier switch — a segmented control on the
+                            sunken surface, the same control the app uses for a
+                            view switch. Green is the screen's one action. */}
+                        <div className="flex gap-1 rounded-g-pill bg-surface-sunken p-1">
+                            {(["email", "phone"] as const).map((option) => (
+                                <button
+                                    key={option}
+                                    type="button"
+                                    aria-pressed={tab === option}
+                                    onClick={() => setTab(option)}
+                                    className={`min-h-11 flex-1 rounded-g-pill text-g-body-sm font-semibold transition-colors ${
+                                        tab === option ? "bg-surface-raised text-fg-primary shadow-sm" : "text-fg-secondary hover:text-fg-primary"
+                                    } ${AUTH_FOCUS_CLASS}`}
+                                >
+                                    {option === "email" ? "Email" : copy.phoneTab}
+                                </button>
+                            ))}
                         </div>
 
                         {/* Identifier field */}
@@ -282,7 +302,7 @@ export default function SignInPage() {
                                     <Mail className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
                                     <input id="signin-email" ref={identifierRef} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-11`} placeholder="name@example.com" />
                                 </div>
-                                {fieldErrors.identifier && <p id="signin-identifier-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
+                                <FormError id="signin-identifier-error">{fieldErrors.identifier ? copy.fieldRequired : null}</FormError>
                             </div>
                         ) : (
                             <div>
@@ -291,7 +311,7 @@ export default function SignInPage() {
                                     <Phone className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
                                     <input id="signin-phone" ref={identifierRef} type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-11`} placeholder="+30 69X XXX XXXX" />
                                 </div>
-                                {fieldErrors.identifier && <p id="signin-identifier-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
+                                <FormError id="signin-identifier-error">{fieldErrors.identifier ? copy.fieldRequired : null}</FormError>
                             </div>
                         )}
 
@@ -302,21 +322,21 @@ export default function SignInPage() {
                                 <Lock className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
                                 <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={fieldErrors.password || undefined} aria-describedby={fieldErrors.password ? "signin-password-error" : undefined} placeholder="••••••••" className={`${inputBase} pl-11`} />
                             </div>
-                            {fieldErrors.password && <p id="signin-password-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
+                            <FormError id="signin-password-error">{fieldErrors.password ? copy.fieldRequired : null}</FormError>
                         </div>
 
                         {/* Forgot password */}
                         <div className="flex justify-end">
-                            <button type="button" onClick={() => { setShowReset(true); setResetStep("request"); setResetEmail(email) }} className="text-caption font-semibold text-primary hover:underline">
+                            <button type="button" onClick={() => { setShowReset(true); setResetStep("request"); setResetEmail(email) }} className={cn(AUTH_LINK_CLASS, "min-h-11 text-g-caption")}>
                                 {copy.forgotPassword}
                             </button>
                         </div>
 
                         {/* Submit */}
-                        <button type="submit" disabled={loading} className="pw-primary-button pw-btn-lg w-full">
-                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                            {loading ? (copy.signingIn) : t.auth.signIn}
-                        </button>
+                        <Button type="submit" size="lg" loading={loading} className="w-full">
+                            {!loading && <ArrowRight aria-hidden className="size-4" />}
+                            {loading ? copy.signingIn : t.auth.signIn}
+                        </Button>
                     </form>
 
                     {/* A "Biometric / PIN" quick-unlock block used to sit here. It was
@@ -331,19 +351,19 @@ export default function SignInPage() {
                         only with real WebAuthn. */}
 
                     {/* Trust badge */}
-                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-white/10 dark:bg-white/5">
-                        <Lock className="h-4 w-4 flex-shrink-0 text-primary" />
-                        <div className="min-w-0">
-                            <p className="text-caption font-semibold text-[#0F172A] dark:text-white">{copy.encryptionTitle}</p>
-                            <p className="text-micro text-[#5B6A7A] dark:text-white/60">{copy.encryptionSubtitle}</p>
+                    <div className="mt-g-4 flex items-center gap-g-3 rounded-g-md bg-surface-sunken px-g-4 py-g-3">
+                        <Lock aria-hidden className="size-4 flex-shrink-0 text-fg-brand" />
+                        <div className="min-w-0 flex-1">
+                            <p className="text-g-caption font-semibold text-fg-primary">{copy.encryptionTitle}</p>
+                            <p className="text-g-caption text-fg-secondary">{copy.encryptionSubtitle}</p>
                         </div>
-                        <span className="flex-shrink-0 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2 py-0.5 text-kicker font-bold text-primary dark:border-primary/30 dark:bg-primary/15">GDPR</span>
+                        <span className="flex-shrink-0 rounded-g-pill bg-state-covered-fill px-g-2 py-g-1 text-g-caption font-semibold text-state-covered">GDPR</span>
                     </div>
 
                     {/* Sign up link */}
-                    <p className="mt-5 text-center text-body-sm text-[#5B6A7A] dark:text-white/65">
+                    <p className="mt-g-5 text-center text-g-body-sm text-fg-secondary">
                         {copy.noAccountYet}{" "}
-                        <Link href={authHref("/auth/signup", locale)} className="font-semibold text-primary hover:underline">
+                        <Link href={authHref("/auth/signup", locale)} className={AUTH_LINK_CLASS}>
                             {copy.createAccount}
                         </Link>
                     </p>
@@ -351,19 +371,19 @@ export default function SignInPage() {
 
             {/* Reset password modal */}
             {showReset && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-                    <div ref={resetDialogRef} role="dialog" aria-modal="true" aria-labelledby={resetTitleId} tabIndex={-1} className="w-full max-w-[400px] rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_64px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#111111]">
-                        <h2 id={resetTitleId} className="mb-1 text-lead font-semibold text-[#0F172A] dark:text-white">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-g-4 backdrop-blur-sm">
+                    <div ref={resetDialogRef} role="dialog" aria-modal="true" aria-labelledby={resetTitleId} tabIndex={-1} className="w-full max-w-[400px] rounded-g-lg border border-border-subtle bg-surface-raised p-g-6 shadow-[0_24px_64px_rgba(0,0,0,0.12)]">
+                        <h2 id={resetTitleId} className="mb-g-1 text-g-body-lg font-semibold text-fg-primary">
                             {copy.resetTitle}
                         </h2>
-                        <p className="mb-4 text-body-sm text-[#5B6A7A] dark:text-white/65">
+                        <p className="mb-g-4 text-g-body-sm text-fg-secondary">
                             {resetStep === "request"
                                 ? (copy.resetStepRequest)
                                 : (copy.resetStepVerify)}
                         </p>
 
-                        {resetError && <p role="alert" className="mb-3 rounded-xl border border-rose-200 dark:border-rose-800/40 bg-rose-50 dark:bg-rose-900/20 px-3 py-2 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{resetError}</p>}
-                        {resetNotice && <p role="status" className="mb-3 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2 text-body-sm text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">{resetNotice}</p>}
+                        {resetError && <p role="alert" className={`mb-g-3 ${AUTH_NOTICE_GAP_CLASS}`}>{resetError}</p>}
+                        {resetNotice && <p role="status" className={`mb-g-3 ${AUTH_NOTICE_COVERED_CLASS}`}>{resetNotice}</p>}
 
                         {/* Every field in this dialog was placeholder-only: no
                             <label>, no aria-label, so each one's accessible
@@ -371,19 +391,19 @@ export default function SignInPage() {
                             moment you type. Visible labels, like the form
                             behind the dialog. */}
                         {resetStep === "request" && (
-                            <div className="space-y-3">
+                            <div className="flex flex-col gap-g-3">
                                 <div>
                                     <label htmlFor="reset-email" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.resetEmailLabel}</label>
                                     <input id="reset-email" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="name@example.com" className={inputBase} />
                                 </div>
-                                <button type="button" onClick={requestOtp} disabled={resetLoading} className="pw-primary-button w-full">
-                                    {resetLoading ? (copy.sending) : (copy.sendOtp)}
-                                </button>
+                                <Button type="button" size="lg" onClick={requestOtp} loading={resetLoading} className="w-full">
+                                    {resetLoading ? copy.sending : copy.sendOtp}
+                                </Button>
                             </div>
                         )}
 
                         {resetStep === "verify" && (
-                            <div className="space-y-3">
+                            <div className="flex flex-col gap-g-3">
                                 <div>
                                     <label htmlFor="reset-otp" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.otpLabel}</label>
                                     <input id="reset-otp" type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className={inputBase} />
@@ -396,22 +416,22 @@ export default function SignInPage() {
                                     <label htmlFor="reset-confirm-password" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.confirmPassword}</label>
                                     <input id="reset-confirm-password" type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={copy.confirmPassword} className={inputBase} />
                                 </div>
-                                <button type="button" onClick={submitReset} disabled={resetLoading} className="pw-primary-button w-full">
-                                    {resetLoading ? (copy.processing) : (copy.verifyAndReset)}
-                                </button>
+                                <Button type="button" size="lg" onClick={submitReset} loading={resetLoading} className="w-full">
+                                    {resetLoading ? copy.processing : copy.verifyAndReset}
+                                </Button>
                             </div>
                         )}
 
                         {resetStep === "success" && (
-                            <div className="mb-3 flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2.5 text-body-sm text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
-                                <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+                            <div className={`mb-g-3 ${AUTH_NOTICE_COVERED_CLASS}`}>
+                                <ShieldCheck aria-hidden className="mt-0.5 size-4 flex-shrink-0" />
                                 {copy.passwordUpdated}
                             </div>
                         )}
 
-                        <button type="button" onClick={() => setShowReset(false)} className="mt-3 w-full rounded-full border border-[#E2E8F0] bg-white px-4 py-2.5 text-body font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
+                        <Button type="button" variant="secondary" onClick={() => setShowReset(false)} className="mt-g-3 w-full">
                             {copy.closeLabel}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}

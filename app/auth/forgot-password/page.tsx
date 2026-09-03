@@ -6,10 +6,12 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { AnimatePresence, motion } from "framer-motion"
-import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Mail, ShieldCheck } from "lucide-react"
+import { AlertCircle, ArrowLeft, CheckCircle2, Mail, ShieldCheck } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { AuthShell } from "@/components/auth/AuthShell"
-import { AUTH_INPUT_CLASS } from "@/components/auth/FormField"
+import { AUTH_INPUT_CLASS, AUTH_NOTICE_GAP_CLASS, AUTH_SECONDARY_LINK_CLASS } from "@/components/auth/FormField"
+import { FormError } from "@/components/auth/FormError"
+import { Button } from "@/src/design-system"
 import { authHref } from "@/lib/seo/locale-links"
 import { resetPasswordForEmail } from "../actions"
 
@@ -110,11 +112,11 @@ export default function ForgotPasswordPage() {
     return (
         <AuthShell>
             {/* Top meta row — the recovery reassurance, kept from the card. */}
-            <div className="mb-g-5 flex items-center justify-between text-xs font-semibold text-fg-secondary">
+            <div className="mb-g-5 flex items-center justify-between text-g-caption font-semibold text-fg-secondary">
                 <span className="rounded-g-pill bg-surface-sunken px-g-3 py-g-1">
                     {t("Ασφαλής ανάκτηση", "Secure recovery")}
                 </span>
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-g-1">
                     <ShieldCheck aria-hidden className="size-3.5 text-fg-brand" />
                     {copy.trust}
                 </span>
@@ -124,38 +126,38 @@ export default function ForgotPasswordPage() {
 
             <div className="mt-g-6">
                     {submittedEmail ? (
-                        <div className="space-y-4">
-                            <div className="rounded-xl border border-[#E2E8F0] bg-[#F0FDF4] p-4 dark:border-primary/30 dark:bg-primary/15">
-                                <div className="flex items-start gap-2">
-                                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                                    <div>
-                                        <p className="text-sm font-semibold text-[#0F172A] dark:text-white">{copy.sentTitle}</p>
-                                        <p className="mt-1 text-sm text-[#475569] dark:text-white/65">{copy.sentBody}</p>
-                                        <p className="mt-1 break-all text-xs font-semibold text-primary">{submittedEmail}</p>
-                                        <p className="mt-2 text-xs text-[#5B6A7A] dark:text-white/60">{copy.sentHint}</p>
+                        <div className="flex flex-col gap-g-4">
+                            <div role="status" className="rounded-g-lg bg-state-covered-fill p-g-4">
+                                <div className="flex items-start gap-g-2">
+                                    <CheckCircle2 aria-hidden className="mt-0.5 size-4 flex-shrink-0 text-state-covered" />
+                                    <div className="min-w-0">
+                                        <p className="text-g-body-sm font-semibold text-fg-primary">{copy.sentTitle}</p>
+                                        <p className="mt-g-1 text-g-body-sm text-fg-secondary">{copy.sentBody}</p>
+                                        <p className="mt-g-1 break-all text-g-caption font-semibold text-fg-brand">{submittedEmail}</p>
+                                        <p className="mt-g-2 text-g-caption text-fg-secondary">{copy.sentHint}</p>
                                     </div>
                                 </div>
                             </div>
                             <Link
                                 href={authHref("/auth/signin", lang)}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
+                                className={AUTH_SECONDARY_LINK_CLASS}
                             >
-                                <ArrowLeft className="h-4 w-4" />
+                                <ArrowLeft aria-hidden className="size-4" />
                                 {copy.backToSignIn}
                             </Link>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-g-4">
                             <AnimatePresence>
                                 {serverError ? (
                                     <motion.div
                                         initial={{ opacity: 0, y: -6 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0 }}
-                                        className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
+                                        className={AUTH_NOTICE_GAP_CLASS}
                                         role="alert"
                                     >
-                                        <AlertCircle className="mt-0.5 h-4 w-4" />
+                                        <AlertCircle aria-hidden className="mt-0.5 size-4 flex-shrink-0" />
                                         <span>{serverError}</span>
                                     </motion.div>
                                 ) : null}
@@ -178,30 +180,21 @@ export default function ForgotPasswordPage() {
                                         aria-invalid={errors.email ? true : undefined}
                                         aria-describedby={errors.email ? "forgot-email-error" : undefined}
                                         {...register("email")}
-                                        className={`${inputBase} pl-11 ${errors.email ? "border-rose-300 dark:border-rose-800/40 focus-visible:border-rose-400 focus-visible:ring-rose-200" : ""}`}
+                                        className={`${inputBase} pl-11`}
                                     />
                                 </div>
-                                {errors.email ? (
-                                    <p id="forgot-email-error" role="alert" className="mt-1 text-xs text-rose-600">
-                                        {errors.email.message}
-                                    </p>
-                                ) : null}
+                                <FormError id="forgot-email-error">{errors.email?.message ?? null}</FormError>
                             </div>
 
-                            <button
-                                type="submit"
-                                disabled={submitting}
-                                className="pw-primary-button pw-btn-lg w-full"
-                            >
-                                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                            <Button type="submit" size="lg" loading={submitting} className="w-full">
                                 {submitting ? copy.sending : copy.send}
-                            </button>
+                            </Button>
 
                             <Link
                                 href={authHref("/auth/signin", lang)}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
+                                className={AUTH_SECONDARY_LINK_CLASS}
                             >
-                                <ArrowLeft className="h-4 w-4" />
+                                <ArrowLeft aria-hidden className="size-4" />
                                 {copy.backToSignIn}
                             </Link>
                         </form>

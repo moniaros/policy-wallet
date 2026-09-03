@@ -31,6 +31,7 @@ export function PasswordField({
     error,
     value,
     showMeter = true,
+    showRule = true,
     inputProps,
 }: {
     id: string
@@ -41,6 +42,8 @@ export function PasswordField({
     value: string
     /** Sign-in has no use for a meter; signup shows it. */
     showMeter?: boolean
+    /** The «Τουλάχιστον 8 χαρακτήρες» line — off on a confirm field, where the field above already states it. */
+    showRule?: boolean
     inputProps: InputHTMLAttributes<HTMLInputElement>
 }) {
     const t = (el: string, en: string) => (locale === "el" ? el : en)
@@ -78,7 +81,9 @@ export function PasswordField({
             </div>
             <FormError id={errorId}>{error ?? null}</FormError>
             {/* The rule, in words — the meter never blocks submission. */}
-            <p className="mt-g-2 text-g-caption text-fg-secondary">{t("Τουλάχιστον 8 χαρακτήρες.", "At least 8 characters.")}</p>
+            {showRule && (
+                <p className="mt-g-2 text-g-caption text-fg-secondary">{t("Τουλάχιστον 8 χαρακτήρες.", "At least 8 characters.")}</p>
+            )}
             {showMeter && strength.level > 0 && (
                 <div className="mt-g-2">
                     <div aria-hidden className="flex gap-g-1">

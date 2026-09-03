@@ -4,12 +4,18 @@ import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { verifyEmailToken } from "./actions"
-import { Loader2 } from "lucide-react"
+import { Check, Loader2, X } from "lucide-react"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { authHref } from "@/lib/seo/locale-links"
 import { AuthShell } from "@/components/auth/AuthShell"
+import { AUTH_LINK_CLASS, AUTH_PRIMARY_LINK_CLASS } from "@/components/auth/FormField"
 
+/**
+ * Utility screen on the single-column AuthShell: the three outcomes share the
+ * auth-code-error anatomy — a state disc, a display-md heading, one line of
+ * body, one action — on the three-state tokens (covered / gap).
+ */
 function VerifyEmailContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
@@ -59,50 +65,46 @@ function VerifyEmailContent() {
         <AuthShell>
             <div className="text-center">
                 {status === "loading" && (
-                    <div className="flex flex-col items-center py-8">
-                        <Loader2 className="h-12 w-12 animate-spin text-primary mb-6" />
-                        <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+                    <div className="flex flex-col items-center py-g-8">
+                        <Loader2 aria-hidden className="mb-g-6 size-12 animate-spin text-fg-brand" />
+                        <h1 className="text-g-display-md font-bold text-fg-primary">
                             {t("Επαλήθευση email...", "Verifying your email...")}
                         </h1>
                     </div>
                 )}
 
                 {status === "success" && (
-                    <div className="py-2">
-                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-6 border border-primary/20">
-                            <svg className="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
+                    <div className="py-g-2">
+                        <div className="mx-auto mb-g-6 flex size-20 items-center justify-center rounded-g-pill bg-state-covered-fill">
+                            <Check aria-hidden className="size-10 text-state-covered" strokeWidth={2.5} />
                         </div>
-                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                        <h1 className="text-g-display-md font-bold text-fg-primary">
                             {t("Το email επαληθεύτηκε!", "Email Verified!")}
                         </h1>
-                        <p className="text-slate-600 dark:text-slate-400 mb-8">
+                        <p className="mt-g-3 text-g-body text-fg-secondary">
                             {t(
                                 "Το email σας επαληθεύτηκε επιτυχώς. Μπορείτε πλέον να χρησιμοποιήσετε όλες τις λειτουργίες.",
                                 "Your email has been successfully verified. You can now access all features."
                             )}
                         </p>
-                        <Link href={authHref("/auth/signin", authLocale)} className="block w-full rounded-full bg-primary px-4 py-3.5 text-sm font-bold text-white dark:text-[#1A2420] transition-all hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg">
+                        <Link href={authHref("/auth/signin", authLocale)} className={`mt-g-8 ${AUTH_PRIMARY_LINK_CLASS}`}>
                             {t("Συνέχεια στην εφαρμογή", "Continue to App")}
                         </Link>
                     </div>
                 )}
 
                 {status === "error" && (
-                    <div className="py-2">
-                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10 mb-6 border border-red-500/20">
-                            <svg className="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                    <div className="py-g-2">
+                        <div className="mx-auto mb-g-6 flex size-20 items-center justify-center rounded-g-pill border border-state-gap-border bg-state-gap-fill">
+                            <X aria-hidden className="size-10 text-state-gap" strokeWidth={2.5} />
                         </div>
-                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                        <h1 className="text-g-display-md font-bold text-fg-primary">
                             {t("Η επαλήθευση απέτυχε", "Verification Failed")}
                         </h1>
-                        <p className="text-slate-600 dark:text-slate-400 mb-8">
+                        <p className="mt-g-3 text-g-body text-fg-secondary">
                             {message}. {t("Ο σύνδεσμος μπορεί να μην είναι έγκυρος ή να έχει λήξει.", "The link may be invalid or expired.")}
                         </p>
-                        <Link href={authHref("/auth/signin", authLocale)} className="font-bold text-primary hover:underline transition-colors">
+                        <Link href={authHref("/auth/signin", authLocale)} className={`mt-g-8 ${AUTH_LINK_CLASS}`}>
                             {t("Επιστροφή στη σύνδεση", "Back to Sign In")}
                         </Link>
                     </div>
