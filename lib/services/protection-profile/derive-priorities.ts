@@ -1,0 +1,318 @@
+/**
+ * The protection map — Layer 1 turned into "areas to check", on read.
+ *
+ * Deterministic rules over two stores: the FACTS the engine knows
+ * (`LifeContext`) and the person's own STATEMENTS (`ProtectionProfile`). It
+ * emits no score, no verdict and no coverage word: an entry says why an area
+ * deserves attention and how well we know the input, and `requiresValidation`
+ * is always true because nothing here has seen a policy. Layer 3's vocabulary
+ * (protected / unprotected) is unrepresentable by type on purpose.
+ *
+ * Never persisted — computed on every read, so it cannot go stale — and never
+ * summed: three high-priority areas are three sentences, not a number.
+ */
+
+import type { LifeContext } from "@/lib/services/gap-engine/life-context"
+import { totalDependents } from "@/lib/services/gap-engine/life-context"
+import type { Bilingual } from "@/lib/services/gap-engine/risk-types"
+import type { MoneyFacet, PriorityDomain } from "./vocabulary"
+
+export type PriorityImportance = "high" | "medium" | "watch" | "needs_review"
+export type PriorityConfidence = "known" | "partial" | "unknown"
+
+export interface ProtectionPriority {
+    /** `household` | `residence` | `money:income` | … — the stable row id. */
+    id: string
+    domain: PriorityDomain
+    facet?: MoneyFacet
+    importance: PriorityImportance
+    reason: { id: PriorityReasonId; text: Bilingual }
+    /** How well we know the INPUT — never how well the person is covered. */
+    confidence: PriorityConfidence
+    /** Always true at Layer 1: no policy has been read yet. */
+    requiresValidation: true
+    /** needs_review = a fact we could not settle; unverified = a statement. */
+    status: "needs_review" | "unverified"
+    source: "declared_fact" | "stated_priority" | "both"
+}
+
+export type PriorityReasonId =
+    | "stated_primary"
+    | "stated_secondary"
+    | "changed_recently"
+    | "planned"
+    | "dependants"
+    | "income_dependency"
+    | "owned_home"
+    | "renting"
+    | "debt"
+    | "business"
+    | "vehicle"
+    | "health_everyone"
+    | "mentioned_not_present"
+    | "unsure"
+
+/** Singular register — the onboarding's voice; the dashboard card wraps its own. */
+const REASON_TEXT: Record<PriorityReasonId, Bilingual> = {
+    stated_primary: { el: "Το ανέφερες ως αυτό που θα σε επηρέαζε περισσότερο.", en: "You named it as what would affect you most." },
+    stated_secondary: { el: "Το ξεχώρισες κι εσύ.", en: "You singled it out too." },
+    changed_recently: { el: "Άλλαξε πρόσφατα — αξίζει να το δούμε πρώτο.", en: "It changed recently — worth looking at first." },
+    planned: { el: "Έρχεται σύντομα — καλύτερα να το προλάβουμε.", en: "It is coming up — better to get ahead of it." },
+    dependants: { el: "Άλλοι βασίζονται σε σένα.", en: "Others depend on you." },
+    income_dependency: { el: "Είπες ότι άλλοι βασίζονται στο εισόδημά σου.", en: "You said others rely on your income." },
+    owned_home: { el: "Είπες ότι το σπίτι είναι δικό σου.", en: "You said the home is yours." },
+    renting: { el: "Είπες ότι νοικιάζεις — τα πράγματά σου και η ευθύνη σου είναι δικά σου.", en: "You said you rent — your things and your liability are still yours." },
+    debt: { el: "Είπες ότι τρέχει δάνειο ή άλλη υποχρέωση.", en: "You said a loan or another commitment is running." },
+    business: { el: "Είπες ότι η δουλειά είναι δική σου.", en: "You said the work is your own." },
+    vehicle: { el: "Είπες ότι οδηγείς.", en: "You said you drive." },
+    health_everyone: { el: "Αφορά όλους — και αξίζει να ξέρεις τι ισχύει για σένα.", en: "It concerns everyone — and it is worth knowing what applies to you." },
+    mentioned_not_present: { el: "Το ανέφερες εσύ — δεν φαίνεται να ισχύει σήμερα, αλλά το κρατάμε.", en: "You mentioned it — it does not seem to apply today, but we keep it." },
+    unsure: { el: "Δεν το ξεκαθαρίσαμε — θα το δούμε όταν δούμε τις καλύψεις σου.", en: "We did not settle it — we will when we see your cover." },
+}
+
+export interface ProtectionStatementsLike {
+    riskConcerns?: unknown
+    commitments?: unknown
+    recentChanges?: unknown
+    futureConsiderations?: unknown
+    unsureSteps?: unknown
+}
+
+type Presence = "yes" | "no" | "unsure"
+type Concern = "primary" | "secondary" | "none"
+type Change = "recent" | "planned" | "none"
+
+interface Area {
+    id: string
+    domain: PriorityDomain
+    facet?: MoneyFacet
+    presence: Presence
+    /** Reason used when the area is present and essential. */
+    essential: PriorityReasonId | null
+    confidence: PriorityConfidence
+}
+
+function list(value: unknown): string[] {
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : []
+}
+
+/** concern id → area id */
+const CONCERN_AREA: Record<string, string> = {
+    health: "health",
+    family: "household",
+    income: "money:income",
+    home: "residence",
+    obligation: "money:debt",
+    vehicle: "mobility",
+    business: "work",
+}
+
+/** recent change id → area id */
+const CHANGE_AREA: Record<string, string> = {
+    new_child: "household",
+    married: "household",
+    separated: "household",
+    bought_home: "residence",
+    started_renting: "residence",
+    took_mortgage: "money:debt",
+    income_changed: "money:income",
+    started_business: "work",
+    retired: "money:retirement",
+    new_vehicle: "mobility",
+    health_changed: "health",
+}
+
+/** future consideration id → area id */
+const PLAN_AREA: Record<string, string> = {
+    home_purchase: "residence",
+    child: "household",
+    business: "work",
+    retirement: "money:retirement",
+    move: "residence",
+    large_purchase: "property",
+}
+
+const IMPORTANCE_ORDER: Record<PriorityImportance, number> = { high: 0, medium: 1, watch: 2, needs_review: 3 }
+
+function areas(ctx: LifeContext, s: ProtectionStatementsLike): Area[] {
+    const unsure = new Set(list(s.unsureSteps))
+    const commitments = new Set(list(s.commitments))
+    const plans = new Set(list(s.futureConsiderations))
+    const earning = ctx.employmentStatus === "employed" || ctx.isSelfEmployed || ctx.ownsBusiness
+    const employmentKnown = ctx.known.selfEmployed
+    const dependants = totalDependents(ctx) > 0
+    const householdKnown = ctx.known.children || ctx.known.dependents
+    const householdPresence: Presence = householdKnown ? (dependants ? "yes" : "no") : unsure.has("people") ? "unsure" : "no"
+    const debtPresence: Presence =
+        commitments.has("mortgage") || commitments.has("loan") || (ctx.mortgageAmount ?? 0) > 0 || (ctx.loanAmount ?? 0) > 0
+            ? "yes"
+            : unsure.has("obligations")
+              ? "unsure"
+              : "no"
+    const retired = ctx.employmentStatus === "retired" || plans.has("retirement")
+
+    return [
+        {
+            id: "household",
+            domain: "household",
+            presence: householdPresence,
+            essential: "dependants",
+            confidence: householdKnown ? "known" : "unknown",
+        },
+        {
+            id: "health",
+            domain: "health",
+            // Everyone has health to protect; we never asked a health fact, so
+            // this area is a statement-only row by construction.
+            presence: "yes",
+            essential: null,
+            confidence: "unknown",
+        },
+        {
+            id: "money:income",
+            domain: "money",
+            facet: "income",
+            presence: employmentKnown ? (earning ? "yes" : "no") : "unsure",
+            // Income is essential when someone else lives on it.
+            essential: dependants ? "income_dependency" : null,
+            // The brief's example row: an income priority reported at LOW
+            // confidence while the income itself is unknown to the engine.
+            confidence: ctx.known.income ? "known" : employmentKnown ? "partial" : "unknown",
+        },
+        {
+            id: "residence",
+            domain: "residence",
+            presence: "yes",
+            essential: ctx.residenceType === "owned" ? "owned_home" : ctx.residenceType === "rented" ? "renting" : null,
+            confidence: ctx.known.residence ? "known" : "unknown",
+        },
+        {
+            id: "money:debt",
+            domain: "money",
+            facet: "debt",
+            presence: debtPresence,
+            essential: "debt",
+            confidence: debtPresence === "unsure" ? "unknown" : ctx.known.loans || ctx.known.mortgage ? "known" : "partial",
+        },
+        {
+            id: "mobility",
+            domain: "mobility",
+            presence: ctx.known.vehicles ? (ctx.vehiclesCount > 0 ? "yes" : "no") : "unsure",
+            essential: "vehicle",
+            confidence: ctx.known.vehicles ? "known" : "unknown",
+        },
+        {
+            id: "work",
+            domain: "work",
+            presence: employmentKnown ? (ctx.isSelfEmployed || ctx.ownsBusiness ? "yes" : "no") : "unsure",
+            essential: "business",
+            confidence: employmentKnown ? "known" : "unknown",
+        },
+        {
+            id: "money:retirement",
+            domain: "money",
+            facet: "retirement",
+            presence: retired ? "yes" : "no",
+            essential: null,
+            confidence: employmentKnown ? "known" : "unknown",
+        },
+        {
+            id: "property",
+            domain: "property",
+            presence: ctx.propertiesOwned > 1 || ctx.rentsOutProperty || (ctx.valuablesValue ?? 0) > 0 ? "yes" : "no",
+            essential: null,
+            confidence: ctx.known.propertyOwnership ? "known" : "unknown",
+        },
+    ]
+}
+
+/**
+ * The rule table, first match wins:
+ *   1. presence unsure                     → needs_review
+ *   2. absent and never mentioned          → hidden
+ *   3. absent but mentioned                → watch («you mentioned it»)
+ *   4. primary concern ∨ recent change     → high
+ *   5. secondary concern ∨ planned         → medium
+ *   6. present and essential               → medium
+ *   7. present                             → watch
+ */
+export function deriveProtectionPriorities(
+    ctx: LifeContext,
+    statements: ProtectionStatementsLike | null
+): ProtectionPriority[] {
+    const s = statements ?? {}
+    const concerns = list(s.riskConcerns)
+    const concernOf = (areaId: string): Concern => {
+        const at = concerns.findIndex((c) => CONCERN_AREA[c] === areaId)
+        return at === 0 ? "primary" : at > 0 ? "secondary" : "none"
+    }
+    const changes = new Set(list(s.recentChanges).map((c) => CHANGE_AREA[c]).filter(Boolean))
+    const plans = new Set(list(s.futureConsiderations).map((p) => PLAN_AREA[p]).filter(Boolean))
+    const changeOf = (areaId: string): Change => (changes.has(areaId) ? "recent" : plans.has(areaId) ? "planned" : "none")
+
+    const out: ProtectionPriority[] = []
+    for (const area of areas(ctx, s)) {
+        const concern = concernOf(area.id)
+        const change = changeOf(area.id)
+        const stated = concern !== "none" || change !== "none"
+        const base = {
+            id: area.id,
+            domain: area.domain,
+            ...(area.facet ? { facet: area.facet } : {}),
+            confidence: area.confidence,
+            requiresValidation: true as const,
+        }
+        const reason = (id: PriorityReasonId) => ({ id, text: REASON_TEXT[id] })
+
+        if (area.presence === "unsure") {
+            out.push({ ...base, importance: "needs_review", reason: reason("unsure"), status: "needs_review", source: stated ? "both" : "declared_fact" })
+            continue
+        }
+        if (area.presence === "no" && !stated) continue
+        if (area.presence === "no") {
+            out.push({ ...base, importance: "watch", reason: reason("mentioned_not_present"), status: "unverified", source: "stated_priority" })
+            continue
+        }
+        const source: ProtectionPriority["source"] = stated ? (area.essential ? "both" : "stated_priority") : "declared_fact"
+        const status: ProtectionPriority["status"] = area.id === "health" ? "unverified" : "needs_review"
+        if (concern === "primary" || change === "recent") {
+            out.push({ ...base, importance: "high", reason: reason(change === "recent" && concern !== "primary" ? "changed_recently" : "stated_primary"), status, source })
+            continue
+        }
+        if (concern === "secondary" || change === "planned") {
+            out.push({ ...base, importance: "medium", reason: reason(change === "planned" && concern !== "secondary" ? "planned" : "stated_secondary"), status, source })
+            continue
+        }
+        if (area.essential) {
+            out.push({ ...base, importance: "medium", reason: reason(area.essential), status, source })
+            continue
+        }
+        out.push({
+            ...base,
+            importance: "watch",
+            reason: reason(area.id === "health" ? "health_everyone" : area.essential ?? "dependants"),
+            status,
+            source,
+        })
+    }
+
+    // high → medium → watch → needs_review; inside a tier, the person's own
+    // ordering of concerns, then the authored area order (stable).
+    const concernRank = (p: ProtectionPriority) => {
+        const at = concerns.findIndex((c) => CONCERN_AREA[c] === p.id)
+        return at < 0 ? 99 : at
+    }
+    return out
+        .map((p, i) => ({ p, i }))
+        .sort((a, b) =>
+            IMPORTANCE_ORDER[a.p.importance] - IMPORTANCE_ORDER[b.p.importance] ||
+            concernRank(a.p) - concernRank(b.p) ||
+            a.i - b.i
+        )
+        .map(({ p }) => p)
+}
+
+/** The top domains as ids, for the analytics snapshot at completion. */
+export function topPriorityIds(priorities: ProtectionPriority[], max = 3): string[] {
+    return priorities.filter((p) => p.importance === "high" || p.importance === "medium").slice(0, max).map((p) => p.id)
+}

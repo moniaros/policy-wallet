@@ -27,6 +27,14 @@ export interface DeclareLifeEventArgs {
     magnitude?: number | null
     source?: EventSource
     confidence?: EventConfidence
+    /**
+     * False when the FACTS the event implies were already written by the
+     * caller (the first-stage onboarding records «ήρθε παιδί» after it has
+     * written `childrenCount`): the instance is still recorded, published and
+     * recalculated, but the registry's delta — an increment — is not applied a
+     * second time. Default true.
+     */
+    applyDelta?: boolean
 }
 
 export interface DeclareLifeEventResult {
@@ -95,6 +103,7 @@ export async function declareLifeEvent(
         magnitude = null,
         source = "customer_declared",
         confidence = "high",
+        applyDelta = true,
     } = args
 
     const definition = getLifeEvent(definitionId)
@@ -131,7 +140,9 @@ export async function declareLifeEvent(
         confidence,
         magnitude,
     }
-    const applied = applyLifeEvent(occurrence, profile as Record<string, unknown> | null)
+    const computed = applyLifeEvent(occurrence, profile as Record<string, unknown> | null)
+    // Declared after the facts: keep the record, skip the delta.
+    const applied = applyDelta ? computed : { ...computed, patch: {}, answeredColumns: [], skipped: [] }
 
     // Answered columns union into `answeredFields` — without this an event can
     // change a value and still leave the risk in `needs_review`, which is the
@@ -159,7 +170,7 @@ export async function declareLifeEvent(
                 confidence,
                 magnitude,
                 status: "applied",
-                appliedPatch: applied.patch as any,
+                appliedPatch: (applyDelta ? applied.patch : { declaredAfterFacts: true }) as any,
             },
         })
     })

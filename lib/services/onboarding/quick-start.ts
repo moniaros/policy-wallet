@@ -196,7 +196,16 @@ export function firstInsight(answers: QuickStartAnswers, now: Date = new Date())
     if (Object.keys(answers).length === 0) return null
 
     const patch = quickStartPatch(answers)
-    const ctx = toLifeContext(patch as any, now)
+    return insightFromContext(toLifeContext(patch as any, now))
+}
+
+/**
+ * The same one true thing, from a context that already exists — the first-stage
+ * onboarding writes its facts to the profile and asks for the insight on the
+ * map screen, where `firstInsight(answers)`'s three-answer shape no longer
+ * applies. Same engine, same exclusions, same honesty: applicable, not open.
+ */
+export function insightFromContext(ctx: LifeContext): FirstInsight | null {
     const assessments = assessRisks(ctx, [])
 
     // APPLICABLE, not open. `openFindings` means "applies and nothing covers

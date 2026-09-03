@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { CalendarPlus, Check, Loader2 } from "lucide-react"
 import { CardHead } from "@/components/dashboard/home/CardHead"
+import { EVENT_DOMAIN_LABELS } from "@/lib/services/life-events/registry"
 
 interface Bilingual {
     en: string
@@ -54,16 +55,8 @@ interface LifeEventsPanelProps {
     language: "en" | "el"
 }
 
-const DOMAIN_LABELS: Record<string, Bilingual> = {
-    household: { en: "Family", el: "Οικογένεια" },
-    residence: { en: "Home", el: "Κατοικία" },
-    property: { en: "Property", el: "Ακίνητα" },
-    mobility: { en: "Vehicles", el: "Οχήματα" },
-    work: { en: "Work", el: "Εργασία" },
-    money: { en: "Money", el: "Οικονομικά" },
-    health: { en: "Health", el: "Υγεία" },
-    lifestyle: { en: "Lifestyle", el: "Τρόπος ζωής" },
-}
+// One label set for every surface that names a domain (registry.ts).
+const DOMAIN_LABELS: Record<string, Bilingual> = EVENT_DOMAIN_LABELS
 
 export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelProps) {
     const lang = language
