@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2847
-# inline entries: 4773 across 214 files
+# inline entries: 4774 across 214 files
 # ternary entries: 285 across 44 files
 # call entries: 1217 across 87 files
 
@@ -3255,6 +3255,7 @@ inline	components/agent/tabs/ClientPoliciesTab.tsx	"Όλοι οι τύποι"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ακυρωμένο"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ανάλυση…"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Απαιτείται ενέργεια"
+inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ασφαλιστήρια"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Διαχειριζόμενο από εσάς"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ελλιπές"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ενεργό"

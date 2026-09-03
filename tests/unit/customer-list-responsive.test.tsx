@@ -61,7 +61,9 @@ describe('CustomerList — responsive presentation', () => {
 
     it('does not offer the view toggle below xl, where it would be a no-op', () => {
         const { container } = renderList()
-        const toggle = container.querySelector('div[class*="xl:flex"][class*="rounded-xl"]')
+        // The toggle sits on the `.pw-segmented` recipe since batch B (2026-09-03).
+        const toggle = container.querySelector('div[class*="xl:flex"][class*="pw-segmented"]')
+        expect(toggle, 'view toggle missing').toBeTruthy()
         expect(toggle?.className).toContain('hidden')
     })
 

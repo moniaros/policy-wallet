@@ -87,7 +87,6 @@ const KNOWN_BYPASSES = new Set([
     // CoverageInsightsClient renders `recPriorityNote`; ClientOverviewTab carries a
     // stronger, surface-specific one ("not an assessment of insurance adequacy").
     "components/coverage/CoverageInsightsClient.tsx",
-    "components/agent/tabs/ClientOverviewTab.tsx",
 
     // Colour ONLY — no severity word reaches the reader. PolicyBriefCard's dot is
     // even aria-hidden. A disclaimer bolted to a coloured dot is noise, not honesty.

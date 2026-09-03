@@ -111,7 +111,6 @@ function scan(): { pairs: Pair[]; files: string[]; unknown: string[] } {
  */
 const OUT_OF_SCOPE_B2B = new Set([
     "app/(protected)/admin/dsr/DsrQueueClient.tsx",
-    "app/(protected)/customers/[id]/CustomerProfileClient.tsx",
     "components/agent/InviteModal.tsx",
     "components/agent/QuestionnaireSender.tsx",
     "components/agent/UploadPolicyModal.tsx",
