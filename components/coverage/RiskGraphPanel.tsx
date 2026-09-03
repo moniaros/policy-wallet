@@ -191,7 +191,7 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                 rather than a wrapping row: five chips wrap to three lines at
                 320px and push the content below the fold. */}
             <div
-                className="pw-subcard pw-scroll-strip mb-4 flex gap-0.5 overflow-x-auto !rounded-full p-1"
+                className="pw-segmented pw-scroll-strip mb-4"
                 role="group"
                 aria-label={t("Φίλτρο προστασίας", "Filter by protection")}
             >
@@ -359,13 +359,13 @@ function Chip({
             type="button"
             onClick={onClick}
             aria-pressed={active}
-            className={`inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-4 text-caption font-semibold transition-colors ${
-                active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            }`}
+            className="pw-segment min-h-11 px-4"
         >
             {label}
+            {/* Inherits the segment's colour: a muted count inside the phone
+                layer's ink pill would sit at 3:1 on black. */}
             <span
-                className="tabular-nums text-muted-foreground"
+                className="tabular-nums font-medium"
                 data-count={countKey}
                 data-count-subject={countSubject}
             >

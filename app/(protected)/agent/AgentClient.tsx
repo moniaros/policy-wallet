@@ -532,7 +532,7 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                 <div
                     role="tablist"
                     aria-label={pick(PAGE_COPY.tablistLabel, language)}
-                    className="pw-subcard pw-scroll-strip mb-4 max-w-full gap-0.5 !rounded-full p-1"
+                    className="pw-segmented pw-scroll-strip mb-4"
                 >
                     {tabs.map(tab => {
                         const Icon = tab.icon
@@ -542,11 +542,7 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                                 type="button"
                                 key={tab.id}
                                 {...tabProps(tab.id)}
-                                className={`inline-flex min-h-10 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-caption font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                                    isActive
-                                        ? 'bg-card text-foreground shadow-sm'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                }`}
+                                className="pw-segment focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             >
                                 <Icon className="w-4 h-4" aria-hidden="true" />
                                 {tab.label}

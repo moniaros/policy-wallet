@@ -285,7 +285,9 @@ The severity **tone** of a finding becomes a colour in exactly one file (`compon
 
 One page-width primitive with four ceilings and a single gutter that never changes: `px-4 sm:px-6 lg:px-8` at every width. Ceilings are **reading** (680px, legal and article prose), **form** (900px, single-column flows), **page** (1240px, standard content) and **page-wide** (1400px, dense dashboards that genuinely need the room). The app uses them by surface: the dashboard and wallet at page-wide, the policy page at 768px opening to 1024px, protection at 896px, settings at page with a 250px section rail.
 
-The app shell is a fixed 256px sidebar (288px from 1280px) with a 64px sticky top bar beside it — policy search, bell, account — and a main column offset by the same width. Below 1024px the sidebar becomes a focus-trapped drawer, the top bar becomes a 64px header, and a five-tab bar with safe-area inset sits at the foot.
+The app shell is a fixed 256px sidebar (288px from 1280px) with a 64px sticky top bar beside it — policy search, bell, account — and a main column offset by the same width. Below 1024px the sidebar becomes a focus-trapped drawer, the top bar becomes a 64px header on the canvas (avatar left, bell right), and a floating ink tab bar hovers 12px above the safe area at the foot.
+
+**The phone layer.** Below 1024px the same tokens are re-tuned to the Steady reference (owner-pinned, phones only): the canvas lightens to near-white (`#F1F4F7`), cards drop their hairline and take a 20px corner, sub-cards a 14px one, and the active state of every switch becomes an ink pill. Nothing else changes — the card head, the fact cells, the density scale and the count keys are the same components rendering the same facts; a phone screenshot and a desktop screenshot differ in ground and geometry, never in what is stated.
 
 The dashboard is one grid: a main column of two card tracks (cards span both when they are the page's headline) and a 320px rail (340px from 1280px), 20px between everything. Below 1024px the rail follows the main column; below 768px the two tracks become one.
 
@@ -341,7 +343,7 @@ Borders are hairlines. A coloured border thicker than 1px on a card, list item o
 
 ### Cards
 - **Corner:** 16px. **Background:** Paper on light, Surface Night on a black ground.
-- **Border:** 1px Rule. **Shadow:** none at rest (see Elevation).
+- **Border:** 1px Rule; none below 1024px, where the card reads against the near-white canvas by tone alone. **Shadow:** none at rest (see Elevation).
 - **Padding:** the three-step density scale. Cards carry no padding of their own — it is applied, so the same card can be tight in a list and roomy as a feature.
 - **Card head (`CardHead`):** the ONE header of the app — a 36px chip on Rule with a 16px glyph, the card title in sentence case, and meta pushed right in caption Reading Slate (a count, a continuation soft pill, a date). It wraps rather than squeezes: on a phone a long meta drops under the title.
 - **Sub-card:** the nested surface — App Sunken, 12px, `10px 12px` padding, 44px minimum when it is a row. Rows are sub-cards; tiles are sub-cards; a callout is a sub-card. Hovering a sub-card that is a link darkens it one step.
@@ -359,14 +361,14 @@ Borders are hairlines. A coloured border thicker than 1px on a card, list item o
 
 ### Chips and Pills
 - **State pills:** fully round, semantic tint and text, caption size, 600 weight, the state as a WORD — «Χρειάζεται προσοχή», «Χωρίς ασφαλιστήριο», «Υψηλή προτεραιότητα». Never restyled with brand green; never colour alone.
-- **Segmented control:** a fully-round App Sunken track with 4px padding; segments are 40px pills in caption 600, the active one Paper with a hairline shadow, the idle ones Reading Slate. It replaces the filled green tab and the black filter chip wherever a view is being switched rather than an action taken.
+- **Segmented control:** `.pw-segmented` / `.pw-segment` — a fully-round App Sunken track with 4px padding; segments are 40px pills in caption 600, the active one Paper with a hairline shadow, the idle ones Reading Slate. The recipe reads the active state from `aria-current`, `aria-pressed` or `aria-selected`, so a segment cannot look active without saying so. Below 1024px the track disappears and the active segment is an ink pill — the reference's period switch. It replaces the filled green tab and the black filter chip wherever a view is being switched rather than an action taken.
 - **Icon chip:** the 36px Rule square (10px) carrying a branch or section glyph — on every card head, every list row, every menu item. Status never tints it; the pill beside it carries status.
 - **Marketing pills:** fully round, hairline border, Reading Slate label text at 10px uppercase with 0.24em tracking — the public site's eyebrow, not the app's.
 
 ### Navigation
 - **App shell:** a fixed sidebar at `lg+` that becomes a focus-trapped drawer below it. Three sentence-case caption group titles; each row 44px, 12px radius, medium weight in Reading Slate. The active row is a 3px Ledger Green bar at the sidebar's edge, semibold Ink, on Green Soft at 8% — bar plus weight plus tint, never colour alone. Badges saturate at «9+» everywhere they appear. A quiet help panel on Hush sits at the foot.
 - **Top bar (desktop):** 64px, Paper at 95% with blur, hairline below; the search field, the bell with its badge, the account menu opening downward.
-- **Tab bar (phone):** five 44px tabs with caption labels; the active tab is a 3px bar across its top and a weight change.
+- **Tab bar (phone):** a floating ink pill — five 44px icon-only tabs on Ink with 6px padding and a soft offset shadow, the active tab a Paper disc. Names live in `aria-label`; the badge keeps its «9+» saturation. The agent's fifth slot is a button that opens the drawer.
 - **Settings rail:** the same active grammar — bar, weight, tint — on a 250px column beside the section cards; on a phone the sections become a single card of chip rows.
 - **Marketing:** a floating pill header with the wordmark, section links, a Greek/English toggle and one primary action.
 

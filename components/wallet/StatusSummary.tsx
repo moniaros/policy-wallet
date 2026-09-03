@@ -69,72 +69,82 @@ export function StatusSummary({
         t.status
     )
 
-    const cell = 'flex min-w-0 flex-col gap-1'
-    const label = 'text-caption leading-snug text-muted-foreground'
+    // Cell recipes — the dashboard hero's phone grammar (the Steady layer):
+    // the active count is the headline number and the other three ride in
+    // one ink panel; from lg the four are the same fact cells with hairlines
+    // between (the panel is `contents` there, so the cells are the grid's own
+    // children again). Numbers inside the panel inherit its white; the
+    // amber-on-expiring cue is a desktop-only refinement because amber on
+    // ink does not clear 4.5:1.
+    const lead = 'flex min-w-0 flex-col gap-1 lg:pr-4'
+    const cell = 'flex min-w-0 flex-col gap-1 rounded-2xl bg-background/10 px-3.5 py-3 text-background lg:rounded-none lg:border-l lg:border-border lg:bg-transparent lg:p-0 lg:pl-4 lg:pr-4 lg:text-foreground lg:last:pr-0'
+    const leadLabel = 'text-caption leading-snug text-muted-foreground'
+    const label = 'text-caption leading-snug lg:text-muted-foreground'
+    const leadNumber = 'text-display font-semibold leading-none tracking-tight tabular-nums text-foreground lg:text-title'
     const number = 'text-title font-semibold leading-none tracking-tight tabular-nums'
-    const sub = 'text-caption leading-snug text-muted-foreground'
+    const leadSub = 'text-caption leading-snug text-muted-foreground'
+    const sub = 'text-caption leading-snug lg:text-muted-foreground'
 
     return (
         <section className="pw-card pw-pad mb-4" aria-labelledby="wallet-overview-heading">
             <CardHead icon={Wallet} title={t.wallet.overview} id="wallet-overview-heading" />
 
-            {/* Hairlines between cells at lg+ only: below that the row wraps
-                two-up, and a divider at a wrapped row's start is a line with
-                nothing to its left. */}
-            <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-5 lg:grid-cols-4 lg:gap-x-0 lg:[&>*+*]:border-l lg:[&>*+*]:border-border lg:[&>*+*]:pl-4 lg:[&>*]:pr-4 lg:[&>*:last-child]:pr-0">
+            <div className="mt-5 flex flex-col gap-4 lg:grid lg:grid-cols-4 lg:gap-0">
                 {/* «Ενεργή προστασία» is the STRICT lifecycle state (in force,
                     >30 days out, identity complete) — NOT the same fact as
                     coverage-insights' «Σε ισχύ σήμερα», which also counts
                     expiring/unreadable cover. Separate keys, and each label
                     says which it is. The five dashboard hero facts are not a
                     partition of the total either (§2.8). */}
-                <div className={cell}>
-                    <p className={label}>{t.status.activePolicies}</p>
-                    <p className={cn(number, 'text-foreground')}>
+                <div className={lead}>
+                    <p className={leadLabel}>{t.status.activePolicies}</p>
+                    <p className={leadNumber}>
                         <span data-count="portfolio.activeCount">{activeCount}</span>
                     </p>
-                    <p className={sub}>
+                    <p className={leadSub}>
                         <span data-count="portfolio.policyCount">{totalPolicies}</span>
                         {` ${t.status.added}`}
                     </p>
                 </div>
 
-                {/* The 30-day window, stated under the number — the same fact
-                    and the same window as the dashboard hero's «λήγουν μέσα σε
-                    30 ημέρες»; the risk watch's 45-day look-ahead is a
-                    DIFFERENT key. Amber only when there is something expiring:
-                    a zero in the warning colour is an alarm about nothing. */}
-                <div className={cell}>
-                    <p className={label}>{t.status.expiringSoon}</p>
-                    <p className={cn(number, expiringCount > 0 ? 'text-status-warning' : 'text-foreground')}>
-                        <span data-count="portfolio.expiringCount">{expiringCount}</span>
-                    </p>
-                    <p className={sub}>{t.status.within30Days}</p>
-                </div>
-
-                <div className={cell}>
-                    <p className={label}>{t.status.attentionNeeded}</p>
-                    <p className={cn(number, 'text-foreground')}>
-                        <span data-count="portfolio.attentionCount">{attentionCount}</span>
-                    </p>
-                    <p className={sub}>{t.status.needsReview}</p>
-                </div>
-
-                <div className={cell}>
-                    <p className={label}>{t.status.totalPremium}</p>
-                    <p className={cn(number, 'text-foreground')}>
-                        <span data-fact="portfolio.totalAnnualPremium">{premiumLabel}</span>
-                    </p>
-                    {excludedParts.length > 0 && (
-                        <p className={sub}>
-                            {excludedParts.map((part, i) => (
-                                <span key={part.countKey}>
-                                    {i > 0 && <span aria-hidden> · </span>}
-                                    <span data-count={part.countKey}>{part.label}</span>
-                                </span>
-                            ))}
+                <div className="grid grid-cols-1 gap-1.5 rounded-3xl bg-foreground p-1.5 sm:grid-cols-3 lg:contents">
+                    {/* The 30-day window, stated under the number — the same fact
+                        and the same window as the dashboard hero's «λήγουν μέσα σε
+                        30 ημέρες»; the risk watch's 45-day look-ahead is a
+                        DIFFERENT key. Amber only when there is something expiring:
+                        a zero in the warning colour is an alarm about nothing. */}
+                    <div className={cell}>
+                        <p className={label}>{t.status.expiringSoon}</p>
+                        <p className={cn(number, expiringCount > 0 ? 'lg:text-status-warning' : 'lg:text-foreground')}>
+                            <span data-count="portfolio.expiringCount">{expiringCount}</span>
                         </p>
-                    )}
+                        <p className={sub}>{t.status.within30Days}</p>
+                    </div>
+
+                    <div className={cell}>
+                        <p className={label}>{t.status.attentionNeeded}</p>
+                        <p className={cn(number, 'lg:text-foreground')}>
+                            <span data-count="portfolio.attentionCount">{attentionCount}</span>
+                        </p>
+                        <p className={sub}>{t.status.needsReview}</p>
+                    </div>
+
+                    <div className={cell}>
+                        <p className={label}>{t.status.totalPremium}</p>
+                        <p className={cn(number, 'lg:text-foreground')}>
+                            <span data-fact="portfolio.totalAnnualPremium">{premiumLabel}</span>
+                        </p>
+                        {excludedParts.length > 0 && (
+                            <p className={sub}>
+                                {excludedParts.map((part, i) => (
+                                    <span key={part.countKey}>
+                                        {i > 0 && <span aria-hidden> · </span>}
+                                        <span data-count={part.countKey}>{part.label}</span>
+                                    </span>
+                                ))}
+                            </p>
+                        )}
+                    </div>
                 </div>
             </div>
         </section>

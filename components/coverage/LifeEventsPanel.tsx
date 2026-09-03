@@ -183,7 +183,7 @@ export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelPr
                 nine domain segments wrap to four lines at 320px and bury the
                 events themselves. */}
             <div
-                className="pw-subcard pw-scroll-strip mt-4 gap-0.5 !rounded-full p-1"
+                className="pw-segmented pw-scroll-strip mt-4"
                 role="group"
                 aria-label={t("Φίλτρο κατηγορίας", "Filter by category")}
             >
@@ -322,9 +322,7 @@ function FilterChip({
             type="button"
             onClick={onClick}
             aria-pressed={active}
-            className={`inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center whitespace-nowrap rounded-full px-4 text-caption font-semibold transition-colors ${
-                active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            }`}
+            className="pw-segment min-h-11 px-4"
         >
             {label}
         </button>
