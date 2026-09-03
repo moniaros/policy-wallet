@@ -36,6 +36,20 @@ seams and hostile review: `docs/handover.md`.
   registry, upload-status honesty replaces the «AI Σύνοψη» subtitle guard). tsc, eslint, i18n,
   utf8, api-auth clean. **Pending:** browser verification of the five personas at 390/1440,
   keyboard + reduced-motion run, red-team pass, PR against NEW-UI (stacks after #290/#291).
+- **BROKEN (gates launch), found by the onboarding walk, fixed: every upload through
+  `uploadAndParse` committed a policy with ZERO documents since `1057ab7d` (2026-08-21).**
+  The generated Greek label was passed to `create()` as the document name; its extension check
+  rejected it silently, the row was written without a document, the analysis had nothing to
+  read, and the object sat orphaned in the bucket (unreachable by export or erasure). Both
+  callers affected: the wallet's `uploadPolicyDocument` action and the onboarding upload.
+  Production had three such rows (two created 2026-09-03 by owner-family accounts, one on
+  09-01) and three orphaned objects — repaired in place on prod (unrehearsed, prod-only rows) by
+  inserting the missing `policy_documents` rows (`repair_*`, paired by timestamp within 60 ms);
+  verified 0 document-less policies in 45 days and 0 orphaned objects since 08-20 afterwards.
+  Those three policies still need a re-analysis from the wallet. Fix `502f597f` + guard
+  `tests/unit/upload-keeps-its-document.test.ts` (behavioural + probe + source), also
+  cherry-picked to `hotfix/upload-keeps-its-document` off NEW-UI so it can ship ahead of the
+  onboarding PR.
 - **B2C app redesign — Direction A BUILT on `feat/b2c-direction-a` (`b73421e6`), draft PR #288
   against NEW-UI, awaiting the owner's look on the preview.** Owner set aside `feat/grafi-b2c`
   (PR #287) for the policyholder app and picked, from the proposals artifact
