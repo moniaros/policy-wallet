@@ -2,20 +2,18 @@
 
 import React from "react"
 import {
-    Briefcase,
     Users,
     Calendar,
     CheckCircle2,
     AlertCircle,
     Activity,
-    ArrowUpRight,
     Plus,
     UserPlus,
     FileText,
 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { formatRelativeDate } from "@/lib/agent/format"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { ActionQueueCard } from "./ActionQueueCard"
 import { AgentKpiStrip } from "./AgentKpiStrip"
 import { RevenuePulse } from "./RevenuePulse"
@@ -26,9 +24,6 @@ import { PendingTasksCard } from "./PendingTasksCard"
 import { CrossSellCard } from "./CrossSellCard"
 import type {
     ActionQueueItem,
-    RevenueMetrics,
-    PortfolioHealth as PortfolioHealthData,
-    ClientCardData,
     AgentDashboardData,
 } from "./types"
 import type { AgentTier } from "@/types/subscription-entitlements"
@@ -72,13 +67,23 @@ const ACTIVITY_ICONS: Record<string, React.ElementType> = {
     claim_filed: AlertCircle,
 }
 
+/** The feed glyph's tone is a status token — never a palette literal. */
 const ACTIVITY_COLORS: Record<string, string> = {
-    policy_added: "text-[#22C55E]",
-    customer_invited: "text-primary dark:text-mint",
-    renewal_completed: "text-neutral-500",
-    claim_filed: "text-amber-500",
+    policy_added: "text-status-success",
+    customer_invited: "text-primary",
+    renewal_completed: "text-muted-foreground",
+    claim_filed: "text-status-warning",
 }
 
+/**
+ * The advisor's home, on the app's page grammar (Direction A, 2026-09-03): the
+ * page header (a greeting as the h1, the queue count as the subtitle, the one
+ * primary action), the KPI strip as fact tiles, and every section a `.pw-card`
+ * with the one card head — chip · sentence-case title · meta. The old header
+ * band (a blurred white strip with a green icon box and a black-weight
+ * greeting) and the three hand-rolled bordered cards are gone; the canvas and
+ * the shell's rail are the only chrome.
+ */
 export function DesktopDashboard({
     data,
     recentActivity,
@@ -91,51 +96,35 @@ export function DesktopDashboard({
     isLoading,
 }: DesktopDashboardProps) {
     const { language, t } = useLanguage()
-    const roleCopy = getRoleCopy(language)
 
     const greeting = getGreeting(language)
 
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-            {/* Header */}
-            <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
-                <div className="max-w-page-wide mx-auto px-4 sm:px-8 py-6">
-                    <div className="flex items-center justify-between flex-wrap gap-3">
-                        <div className="flex items-center gap-4">
-                            <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
-                                <Briefcase className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-black text-foreground tracking-tight">
-                                    {greeting}{agentName ? `, ${agentName}` : ""}
-                                </h1>
-                                <p className="text-sm text-muted-foreground mt-0.5">
-                                    {data.actionQueue.length > 0
-                                        ? t.agentDashboard.itemsNeedAttention.replace("{count}", String(data.actionQueue.length))
-                                        : t.agentDashboard.noPendingItems}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <button
-                                type="button"
-                                onClick={onInviteCustomer}
-                                className="pw-primary-button group shadow-primary/25"
-                            >
-                                <UserPlus className="w-4 h-4" />
-                                {pick(DASH_COPY.newClient, language)}
-                            </button>
-                        </div>
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-page-wide space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* Header — who this is for, what is pending, the one action. */}
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="min-w-0">
+                        <h1 className="text-h3 font-semibold tracking-tight text-foreground">
+                            {greeting}{agentName ? `, ${agentName}` : ""}
+                        </h1>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                            {data.actionQueue.length > 0
+                                ? t.agentDashboard.itemsNeedAttention.replace("{count}", String(data.actionQueue.length))
+                                : t.agentDashboard.noPendingItems}
+                        </p>
                     </div>
+                    <button type="button" onClick={onInviteCustomer} className="pw-primary-button">
+                        <UserPlus className="h-4 w-4" aria-hidden="true" />
+                        {pick(DASH_COPY.newClient, language)}
+                    </button>
                 </div>
-            </div>
 
-            <div className="max-w-page-wide mx-auto px-4 sm:px-8 py-6 space-y-6">
                 {/* ── Book-of-business KPI strip ─────────────────────────── */}
                 {data.portalStats && <AgentKpiStrip stats={data.portalStats} />}
 
                 {/* ── Above the fold: Action Queue + Revenue Pulse ──────── */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
                     <div className="lg:col-span-7">
                         <ActionQueueCard
                             items={data.actionQueue}
@@ -164,7 +153,7 @@ export function DesktopDashboard({
                 </div>
 
                 {/* ── Mid fold: Portfolio Health + Today's Follow-ups ──── */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
                     <div className="lg:col-span-5">
                         <PortfolioHealth
                             health={data.portfolioHealth}
@@ -177,25 +166,22 @@ export function DesktopDashboard({
                 </div>
 
                 {/* ── Below the fold: Clients + Activity Feed ─────────── */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
                     <div className="lg:col-span-8">
-                        <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                                    <Users className="h-5 w-5 text-primary dark:text-mint" />
-                                    {pick(DASH_COPY.clients, language)}
-                                </h2>
+                        <div className="pw-card pw-pad">
+                            <CardHead icon={Users} title={pick(DASH_COPY.clients, language)} />
+                            <div className="mt-4">
+                                <ClientListGrouped
+                                    clients={data.clientsByUrgency}
+                                    onClientClick={onClientClick}
+                                    onInviteClient={onInviteCustomer}
+                                    isLoading={isLoading}
+                                />
                             </div>
-                            <ClientListGrouped
-                                clients={data.clientsByUrgency}
-                                onClientClick={onClientClick}
-                                onInviteClient={onInviteCustomer}
-                                isLoading={isLoading}
-                            />
                         </div>
                     </div>
 
-                    <div className="lg:col-span-4 space-y-5">
+                    <div className="space-y-4 lg:col-span-4">
                         {/* Cross-sell opportunities (Pro+). Data is withheld
                             server-side for below-Pro tiers; the gate blurs the
                             empty card and shows the upgrade prompt. */}
@@ -211,38 +197,30 @@ export function DesktopDashboard({
                         </AgentPlanGate>
 
                         {/* Activity Feed */}
-                        <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
-                            <h2 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
-                                <Activity className="h-4 w-4 text-primary dark:text-mint" />
-                                {pick(DASH_COPY.recentActivity, language)}
-                            </h2>
-                            <div className="space-y-4">
+                        <div className="pw-card pw-pad">
+                            <CardHead icon={Activity} title={pick(DASH_COPY.recentActivity, language)} />
+                            <div className="mt-4 space-y-3">
                                 {recentActivity.length === 0 && (
-                                    <p className="py-4 text-center text-xs text-muted-foreground">
+                                    <p className="py-4 text-center text-caption text-muted-foreground">
                                         {t.agentUi.noRecentActivity}
                                     </p>
                                 )}
-                                {recentActivity.slice(0, 6).map((activity, i) => {
+                                {recentActivity.slice(0, 6).map((activity) => {
                                     const Icon = ACTIVITY_ICONS[activity.type] || Activity
-                                    const color = ACTIVITY_COLORS[activity.type] || "text-neutral-500"
+                                    const color = ACTIVITY_COLORS[activity.type] || "text-muted-foreground"
                                     return (
                                         <div key={activity.id} className="flex items-start gap-3">
-                                            <div className="relative mt-0.5">
-                                                <div className="p-1.5 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
-                                                    <Icon className={`w-3.5 h-3.5 ${color}`} />
-                                                </div>
-                                                {i < recentActivity.length - 1 && (
-                                                    <div className="absolute left-1/2 top-8 -translate-x-1/2 w-px h-3 bg-neutral-200 dark:bg-neutral-800" />
-                                                )}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-semibold text-foreground truncate">
+                                            <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg bg-muted" aria-hidden="true">
+                                                <Icon className={`h-3.5 w-3.5 ${color}`} />
+                                            </span>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="truncate text-sm font-semibold text-foreground">
                                                     {activity.customerName}
                                                 </p>
-                                                <p className="text-micro text-muted-foreground truncate">
+                                                <p className="truncate text-caption text-muted-foreground">
                                                     {activity.details}
                                                 </p>
-                                                <p className="text-kicker text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                                <p className="mt-0.5 text-caption text-muted-foreground">
                                                     {formatRelativeDate(activity.timestamp, language)}
                                                 </p>
                                             </div>
@@ -254,14 +232,12 @@ export function DesktopDashboard({
 
                         {/* Quick Add */}
                         {onQuickAdd && (
-                            <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-4">
-                                <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">
-                                    {pick(DASH_COPY.quickAdd, language)}
-                                </h3>
+                            <div className="pw-card pw-pad">
+                                <CardHead icon={Plus} title={pick(DASH_COPY.quickAdd, language)} as="h3" />
                                 {/* "Request" (document_request) was removed — there is
                                     no dashboard-level document-request flow to wire it
                                     to, so it did nothing on click. */}
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="mt-4 grid grid-cols-2 gap-2">
                                     {[
                                         { type: "client" as const, icon: UserPlus, label: pick(DASH_COPY.quickClient, language) },
                                         { type: "policy" as const, icon: FileText, label: pick(DASH_COPY.quickPolicy, language) },
@@ -270,10 +246,10 @@ export function DesktopDashboard({
                                             key={type}
                                             type="button"
                                             onClick={() => onQuickAdd(type)}
-                                            className="flex flex-col items-center gap-1.5 rounded-xl border border-[var(--brand-border-subtle)] p-3 text-center transition hover:bg-[var(--brand-surface-elevated)] hover:shadow-sm cursor-pointer"
+                                            className="pw-subcard flex min-h-11 cursor-pointer flex-col items-center gap-1.5 p-3 text-center transition-colors"
                                         >
-                                            <Icon className="h-4 w-4 text-primary dark:text-mint" />
-                                            <span className="text-micro font-medium text-neutral-600 dark:text-neutral-300">
+                                            <Icon className="h-4 w-4 text-foreground" aria-hidden="true" />
+                                            <span className="text-caption font-medium text-foreground">
                                                 {label}
                                             </span>
                                         </button>

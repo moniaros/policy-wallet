@@ -26,7 +26,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
         <button
             type="button"
             onClick={() => onClick(client.id)}
-            className="flex w-full items-center gap-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-3 text-left transition-all hover:shadow-md hover:border-primary/40 dark:hover:border-mint/40 cursor-pointer"
+            className="pw-subcard flex min-h-11 w-full cursor-pointer items-center gap-3 p-3 text-left transition-colors"
         >
             {/* Avatar */}
             <div className="relative shrink-0">
@@ -37,7 +37,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                         className="h-10 w-10 rounded-full object-cover"
                     />
                 ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary dark:bg-primary/15 dark:text-mint">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-card text-sm font-semibold text-foreground">
                         {getInitials(client.name, client.surname)}
                     </div>
                 )}
@@ -48,7 +48,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                 <span
                     role="img"
                     aria-label={`${t.agentUi.healthScore}: ${client.healthScore}`}
-                    className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-neutral-900 ${dotColor}`}
+                    className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card ${dotColor}`}
                     title={`${t.agentUi.healthScore}: ${client.healthScore}`}
                 />
             </div>
@@ -59,13 +59,13 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                     {client.name} {client.surname}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Shield className="h-3 w-3" />
+                    <span className="flex items-center gap-1 text-caption text-muted-foreground">
+                        <Shield className="h-3 w-3" aria-hidden="true" />
                         {client.policyCount} {t.agentUi.policiesAbbr}
                     </span>
                     {client.nextActionDue && (
-                        <span className="flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400">
-                            <Clock className="h-3 w-3" />
+                        <span className="flex items-center gap-1 text-caption text-status-warning">
+                            <Clock className="h-3 w-3" aria-hidden="true" />
                             {client.nextActionLabel || formatRelativeDate(client.nextActionDue, language)}
                         </span>
                     )}
@@ -74,22 +74,17 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
 
             {/* Protection score badge */}
             {client.protectionScore != null && (
-                <div className="shrink-0 flex flex-col items-center gap-0.5 mr-1">
-                    <span
-                        className={`text-xs font-bold ${
-                            client.protectionScore >= 70
-                                ? "text-[#166534] dark:text-mint"
-                                : client.protectionScore >= 40
-                                    ? "text-amber-700 dark:text-amber-400"
-                                    : "text-red-700 dark:text-red-400"
-                        }`}
-                    >
+                // The number in the text colour: painted red/amber/green by
+                // threshold it was a verdict the advisor had not made. The gap
+                // count beside it keeps the one tone that means «finding».
+                <div className="mr-1 flex shrink-0 flex-col items-center gap-0.5">
+                    <span className="text-sm font-semibold tabular-nums text-foreground">
                         {client.protectionScore}
+                        <span className="text-caption font-medium text-muted-foreground">/100</span>
                     </span>
-                    <span className="text-kicker text-neutral-500 dark:text-neutral-400">/100</span>
                     {(client.gapCount ?? 0) > 0 && (
-                        <span className="flex items-center gap-0.5 text-kicker text-red-500">
-                            <AlertTriangle className="h-2.5 w-2.5" />
+                        <span className="flex items-center gap-0.5 text-caption font-semibold tabular-nums text-status-danger">
+                            <AlertTriangle className="h-3 w-3" aria-hidden="true" />
                             {client.gapCount}
                         </span>
                     )}
@@ -97,7 +92,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
             )}
 
             {/* Arrow */}
-            <ChevronRight className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
         </button>
     )
 }
@@ -130,6 +125,8 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
                 headline={t.emptyStates.clients.headline}
                 description={t.emptyStates.clients.description}
                 cta={onInviteClient ? { label: t.agentUi.inviteClient, onClick: onInviteClient } : undefined}
+                ctaVariant="soft"
+                className="!border-0 !bg-transparent px-0 py-6 !shadow-none"
                 previewLabel={t.emptyStates.example}
                 preview={
                     <CustomerPreviewRow
@@ -150,12 +147,12 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
                 const display = getUrgencyTierDisplay(tier, language)
                 return (
                     <div key={tier}>
-                        <div className="flex items-center gap-2 mb-2 px-1">
-                            <span className={`h-2 w-2 rounded-full ${display.dotColor}`} />
-                            <h3 className={`text-xs font-semibold uppercase tracking-wider ${display.color}`}>
+                        <div className="mb-2 flex items-center gap-2 px-1">
+                            <span className={`h-2 w-2 rounded-full ${display.dotColor}`} aria-hidden="true" />
+                            <h3 className="text-caption font-semibold text-foreground">
                                 {display.label}
                             </h3>
-                            <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                            <span className="text-caption tabular-nums text-muted-foreground">
                                 ({tierClients.length})
                             </span>
                         </div>

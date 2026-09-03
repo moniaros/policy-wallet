@@ -8,10 +8,15 @@ import { cn } from "@/lib/utils"
  *
  * There were two near-identical `KpiCard`s — one in the wallet, one on the agent
  * dashboard — plus a third stat block on the home page. Same anatomy every time
- * (accent chip, kicker label, big number, optional sub-line) but different icon
- * sizes (11 vs 9), value sizes (2xl vs xl), font weights (semibold vs black) and
- * accent maps, so the two halves of the product quietly disagreed about what a
- * metric looks like.
+ * (accent chip, label, big number, optional sub-line) but different icon sizes,
+ * value sizes, font weights and accent maps, so the two halves of the product
+ * quietly disagreed about what a metric looks like.
+ *
+ * Direction A (2026-09-03): the tile is the card anatomy's fact cell — a 36px
+ * chip, a sentence-case caption, a tabular number in the text colour. The
+ * accent tints the chip's GLYPH only: a number painted red is a verdict, and
+ * «1 πελάτης με κενά» is a count. Sentence case in the string, never CSS
+ * uppercase — Greek capitals drop their accents.
  *
  * Density is responsive: the tile is compact on a phone and opens up from `sm`,
  * because these appear four-across on desktop and two-across at 375px.
@@ -20,19 +25,11 @@ import { cn } from "@/lib/utils"
 export type StatAccent = "brand" | "positive" | "warning" | "critical" | "neutral"
 
 const CHIP: Record<StatAccent, string> = {
-    brand: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
-    positive: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
-    warning: "bg-[#FEF3C7] text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-300",
-    critical: "bg-[#FEF2F2] text-[#B91C1C] dark:bg-red-900/30 dark:text-red-300",
-    neutral: "bg-black/5 text-black/70 dark:bg-white/10 dark:text-white/70",
-}
-
-const VALUE: Record<StatAccent, string> = {
-    brand: "text-foreground",
-    positive: "text-primary dark:text-mint",
-    warning: "text-[#92400E] dark:text-amber-300",
-    critical: "text-[#B91C1C] dark:text-red-300",
-    neutral: "text-foreground",
+    brand: "text-primary",
+    positive: "text-status-success",
+    warning: "text-status-warning",
+    critical: "text-status-danger",
+    neutral: "",
 }
 
 interface StatTileProps {
@@ -59,16 +56,16 @@ export function StatTile({
     return (
         <div className={cn("pw-card flex items-center gap-3 pw-pad-tight", className)}>
             {visual ?? (Icon && (
-                <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-xl sm:h-11 sm:w-11", CHIP[accent])}>
-                    <Icon className="h-5 w-5" />
+                <span className={cn("pw-card-chip", CHIP[accent])} aria-hidden="true">
+                    <Icon className="h-4 w-4" strokeWidth={1.75} />
                 </span>
             ))}
             <div className="min-w-0">
-                <p className="pw-kicker leading-tight">{label}</p>
-                <p className={cn("mt-0.5 text-title font-semibold tabular-nums leading-none tracking-tight sm:text-h3", VALUE[accent])}>
+                <p className="text-caption font-medium leading-tight text-muted-foreground">{label}</p>
+                <p className="mt-0.5 text-title font-semibold tabular-nums leading-none tracking-tight text-foreground">
                     {value}
                 </p>
-                {hint && <p className="mt-1 text-micro text-muted-foreground">{hint}</p>}
+                {hint && <p className="mt-1 text-caption text-muted-foreground">{hint}</p>}
             </div>
         </div>
     )
@@ -81,8 +78,8 @@ export function StatTile({
  */
 export function StatGrid({ children, className }: { children: ReactNode; className?: string }) {
     // Single column below 360px. Two columns at 320 leave each tile ~138px, of
-    // which the icon and gaps take half — not enough for a Greek uppercase
-    // label, which is why every one of them broke mid-word.
+    // which the icon and gaps take half — not enough for a long Greek label,
+    // which is why every one of them broke mid-word.
     return (
         <div className={cn("grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 xl:grid-cols-4", className)}>
             {children}

@@ -109,39 +109,41 @@ export function DashboardClient({
     return (
         <>
             {showBanner && (
-                <div className="px-4 py-3 relative animate-in slide-in-from-top-2">
-                    <div className="max-w-7xl mx-auto rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm dark:border-amber-800 dark:bg-amber-900/20">
+                <div className="mx-auto max-w-page-wide px-4 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                    <div className="rounded-xl bg-status-warning-tint px-4 py-3">
                         <div className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3">
-                                <AlertCircle className="mt-0.5 w-5 h-5 text-amber-700 dark:text-amber-500 flex-shrink-0" />
+                                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-status-warning" aria-hidden="true" />
                                 <div className="space-y-1">
-                                    <p className="text-sm text-amber-900 dark:text-amber-100">
-                                        <span className="font-bold">{tb.verifyBannerTitle}</span> {tb.verifyBannerCheckInbox} ({userEmail}) {tb.verifyBannerUnlock}
+                                    <p className="text-sm text-foreground">
+                                        <span className="font-semibold text-status-warning">{tb.verifyBannerTitle}</span> {tb.verifyBannerCheckInbox} ({userEmail}) {tb.verifyBannerUnlock}
                                     </p>
                                     {resendError && (
-                                        <p className="text-xs font-medium text-rose-700 dark:text-rose-300">{resendError}</p>
+                                        <p className="text-caption font-semibold text-status-danger">{resendError}</p>
                                     )}
                                 </div>
                             </div>
                             <button
+                                type="button"
                                 onClick={() => setShowBanner(false)}
-                                className="text-amber-500 hover:text-amber-700 dark:hover:text-amber-300 transition-colors"
+                                className="grid h-9 w-9 flex-shrink-0 cursor-pointer place-items-center rounded-full text-status-warning transition-colors hover:bg-card/60"
                                 aria-label={tb.verifyBannerDismiss}
                             >
-                                <X className="w-4 h-4" />
+                                <X className="h-4 w-4" aria-hidden="true" />
                             </button>
                         </div>
-                        <div className="mt-3 flex items-center gap-3">
+                        <div className="mt-3 flex flex-wrap items-center gap-3">
                             {resendSuccess && (
-                                <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1.5 text-xs font-semibold text-status-success dark:border-primary/30 dark:bg-primary/15">
-                                    <CheckCircle className="w-3.5 h-3.5" />
+                                <span className="inline-flex items-center gap-1 rounded-full bg-status-success-tint px-2.5 py-1.5 text-caption font-semibold text-status-success">
+                                    <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
                                     {tb.verifyBannerSent}
                                 </span>
                             )}
                             <button
+                                type="button"
                                 onClick={handleResendVerification}
                                 disabled={isResending}
-                                className="pw-secondary-button border-amber-300 dark:border-amber-800/40 text-amber-800 dark:bg-amber-900/10 dark:text-amber-200"
+                                className="pw-soft-button !bg-card"
                             >
                                 {isResending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                                 {isResending ? tb.verifyBannerSending : tb.verifyBannerResend}
@@ -155,7 +157,7 @@ export function DashboardClient({
                 once every step is done or the agent dismisses it, so the empty
                 wrapper collapses via [&:empty]:hidden — no stray gap above the
                 dashboard header for established agents. */}
-            <div className="max-w-page-wide mx-auto px-4 sm:px-8 pt-6 [&:empty]:hidden">
+            <div className="mx-auto max-w-page-wide px-4 pt-6 sm:px-6 lg:px-8 lg:pt-8 [&:empty]:hidden">
                 <AgentGettingStartedChecklist
                     language={language}
                     profileComplete={checklistSignals.profileComplete}

@@ -32,6 +32,12 @@ export interface EmptyStateProps {
     /** Extra content below everything (e.g. an inline input flow). */
     secondary?: React.ReactNode
     /**
+     * `soft` when the empty state sits INSIDE a card that already lives on a
+     * page with its own primary action — a green pill in every empty card
+     * made the agent dashboard show four primaries at once.
+     */
+    ctaVariant?: "primary" | "soft"
+    /**
      * Heading level for the headline. Defaults to `h3`, which is right when the
      * empty state sits inside a page that already has its own `<h1>` — the
      * common case. Pass `h1` when the empty state IS the whole page, otherwise
@@ -52,10 +58,10 @@ export function EmptyState({
     trust,
     secondary,
     headingLevel: Heading = "h3",
+    ctaVariant = "primary",
     className = "",
 }: EmptyStateProps) {
-    const ctaClasses =
-        "pw-primary-button cursor-pointer"
+    const ctaClasses = ctaVariant === "soft" ? "pw-soft-button cursor-pointer" : "pw-primary-button cursor-pointer"
 
     return (
         <div

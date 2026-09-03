@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { TrendingUp, TrendingDown, Minus, Activity } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { SCORE_CATEGORIES } from "@/lib/services/gap-engine/protection-score"
@@ -69,8 +70,8 @@ export function ProtectionScoreTrendCard({ customerId }: { customerId: string })
 
     if (state === "loading") {
         return (
-            <BrandCard className="p-5">
-                <Skeleton className="h-4 w-32 mb-4" />
+            <BrandCard className="pw-pad">
+                <Skeleton className="mb-4 h-4 w-32" />
                 <Skeleton className="h-16 w-full" />
             </BrandCard>
         )
@@ -82,10 +83,10 @@ export function ProtectionScoreTrendCard({ customerId }: { customerId: string })
         data.direction === "up" ? TrendingUp : data.direction === "down" ? TrendingDown : Minus
     const tone =
         data.direction === "up"
-            ? "text-emerald-600 dark:text-emerald-400"
+            ? "text-status-success"
             : data.direction === "down"
-                ? "text-red-600 dark:text-red-400"
-                : "text-neutral-500 dark:text-neutral-400"
+                ? "text-status-danger"
+                : "text-muted-foreground"
 
     // Plot as a simple polyline: a dependency-free sparkline keeps this card
     // cheap, and the shape is all the advisor needs beside the numbers.
@@ -102,16 +103,13 @@ export function ProtectionScoreTrendCard({ customerId }: { customerId: string })
         .join(" ")
 
     return (
-        <BrandCard className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-                <Activity className="h-5 w-5 text-primary dark:text-mint shrink-0" />
-                <h3 className="text-base font-bold text-foreground">{trend_t.title}</h3>
-            </div>
+        <BrandCard className="pw-pad">
+            <CardHead icon={Activity} title={trend_t.title} as="h3" />
 
-            <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
-                <span className="text-3xl font-black text-foreground tabular-nums">{data.current}</span>
+            <div className="mt-4 flex flex-wrap items-end gap-x-4 gap-y-2">
+                <span className="text-h3 font-semibold tabular-nums text-foreground">{data.current}</span>
                 {data.delta !== null && data.delta !== 0 && (
-                    <span className={`flex items-center gap-1 text-sm font-bold ${tone}`}>
+                    <span className={`flex items-center gap-1 text-sm font-semibold tabular-nums ${tone}`}>
                         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                         <span>
                             {data.delta > 0 ? "+" : ""}
@@ -147,16 +145,14 @@ export function ProtectionScoreTrendCard({ customerId }: { customerId: string })
                     {data.movements.map((m) => (
                         <li
                             key={m.key}
-                            className="flex items-center justify-between gap-3 text-xs font-medium text-neutral-600 dark:text-neutral-400"
+                            className="flex items-center justify-between gap-3 text-caption text-muted-foreground"
                         >
                             <span className="truncate">
                                 {CATEGORY_LABELS.get(m.key)?.[language === "el" ? "el" : "en"] ?? m.key}
                             </span>
                             <span
-                                className={`tabular-nums font-bold shrink-0 ${
-                                    m.delta > 0
-                                        ? "text-emerald-600 dark:text-emerald-400"
-                                        : "text-red-600 dark:text-red-400"
+                                className={`shrink-0 font-semibold tabular-nums ${
+                                    m.delta > 0 ? "text-status-success" : "text-status-danger"
                                 }`}
                             >
                                 {m.delta > 0 ? "+" : ""}
@@ -167,7 +163,7 @@ export function ProtectionScoreTrendCard({ customerId }: { customerId: string })
                 </ul>
             )}
 
-            <p className="mt-4 text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+            <p className="mt-4 text-caption text-muted-foreground">
                 {trend_t.caption}
             </p>
         </BrandCard>

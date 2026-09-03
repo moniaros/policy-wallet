@@ -2,6 +2,7 @@
 
 import { Sparkles, TrendingUp } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatCurrencyCompact } from "@/lib/agent/format"
@@ -23,21 +24,18 @@ export function CrossSellCard({ items, onClientClick }: CrossSellCardProps) {
     const lobLabels = t.policyTypes as Record<string, string>
 
     return (
-        <BrandCard className="p-5">
-            <div className="mb-4 flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary dark:text-mint" />
-                <h2 className="text-base font-bold text-foreground">{tb.crossSell}</h2>
-            </div>
+        <BrandCard className="pw-pad">
+            <CardHead icon={TrendingUp} title={tb.crossSell} />
 
             {items.length === 0 ? (
                 <EmptyState
                     icon={Sparkles}
                     headline={tb.noCrossSellTitle}
                     description={tb.noCrossSellDesc}
-                    className="border-0 px-0 py-6 shadow-none"
+                    className="!border-0 !bg-transparent px-0 py-6 !shadow-none"
                 />
             ) : (
-                <div className="space-y-2">
+                <div className="mt-4 space-y-2">
                     {items.map((item) => {
                         const lineLabel = lobLabels[item.lineOfBusiness] ?? item.lineOfBusiness
                         return (
@@ -45,22 +43,22 @@ export function CrossSellCard({ items, onClientClick }: CrossSellCardProps) {
                                 key={item.id}
                                 type="button"
                                 onClick={() => item.customerId && onClientClick?.(item.customerId)}
-                                className="flex w-full items-center gap-3 rounded-xl border border-neutral-200/60 bg-neutral-50/50 p-3 text-left transition hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/50 dark:hover:bg-neutral-800"
+                                className="pw-subcard flex min-h-11 w-full cursor-pointer items-center gap-3 p-3 text-left transition-colors"
                             >
-                                <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary-soft dark:bg-primary/15">
-                                    <Sparkles className="h-4 w-4 text-primary dark:text-mint" />
-                                </div>
+                                <span className="pw-card-chip" aria-hidden="true">
+                                    <Sparkles className="h-4 w-4" strokeWidth={1.75} />
+                                </span>
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate text-sm font-medium text-foreground">
+                                    <p className="truncate text-sm font-semibold text-foreground">
                                         {item.customerName}
                                     </p>
-                                    <p className="truncate text-xs text-muted-foreground">{lineLabel}</p>
+                                    <p className="truncate text-caption text-muted-foreground">{lineLabel}</p>
                                 </div>
                                 <div className="shrink-0 text-right">
-                                    <p className="text-sm font-bold text-primary dark:text-mint">
+                                    <p className="text-sm font-semibold tabular-nums text-foreground">
                                         {formatCurrencyCompact(item.estimatedCommission, language)}
                                     </p>
-                                    <p className="text-kicker text-muted-foreground">{tb.crossSellPotential}</p>
+                                    <p className="text-caption text-muted-foreground">{tb.crossSellPotential}</p>
                                 </div>
                             </button>
                         )
