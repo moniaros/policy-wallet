@@ -178,9 +178,6 @@ function diffAgainstDebt(found: Map<string, number>, debt: Record<string, number
  */
 const HARDCODED_COLOUR_DEBT: Record<string, number> = {
     'app/(protected)/admin/users/UsersClient.tsx::#22c55e': 1,
-    'app/(protected)/agent/AgentClient.tsx::#0f172a': 1,
-    'app/(protected)/agent/AgentClient.tsx::#29685b': 5,
-    'app/(protected)/agent/AgentClient.tsx::#5b6a7a': 1,
     'app/(protected)/agent/page.tsx::#10b981': 1,
     'app/(protected)/customers/invite/page.tsx::#1a2420': 1,
     'app/(protected)/insights/InsightsClient.tsx::#29685b': 3,

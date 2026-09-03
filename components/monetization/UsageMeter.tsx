@@ -49,10 +49,10 @@ export function UsageMeter({ label, used, limit, usedCountKey, limitCountKey, hi
     return (
         <div className={className}>
             <div className="flex items-baseline justify-between gap-2">
-                <p className="text-micro font-bold uppercase tracking-wider text-black/60 dark:text-white/55">
+                <p className="text-caption font-medium text-muted-foreground">
                     {label}
                 </p>
-                <p className="text-xs font-bold text-black/70 dark:text-white/75" aria-live="polite">
+                <p className="text-caption font-semibold tabular-nums text-foreground" aria-live="polite">
                     {limit === null ? (
                         unlimitedLabel ?? `${used} · ∞`
                     ) : (
@@ -75,7 +75,7 @@ export function UsageMeter({ label, used, limit, usedCountKey, limitCountKey, hi
                     aria-valuetext={`${used} / ${limit}`}
                     aria-valuemin={0}
                     aria-valuemax={limit}
-                    className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/8 dark:bg-white/10"
+                    className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted"
                 >
                     <div
                         className={`h-full rounded-full transition-all duration-500 ${tone}`}
@@ -85,8 +85,9 @@ export function UsageMeter({ label, used, limit, usedCountKey, limitCountKey, hi
             )}
             {/* The hint says what a plan actually buys ("Plus has room for up to 10
                 policies") — functional, so text-caption, the design system's
-                smallest FUNCTIONAL size. The label above stays text-micro: a short
-                uppercase eyebrow is exactly what micro is documented for. */}
+                smallest FUNCTIONAL size. The label above is a caption too since
+                Direction A: the app has no eyebrows, and a CSS text-transform
+                strips the tonos off Greek capitals. */}
             {hint && <p className="mt-1.5 text-caption text-muted-foreground">{hint}</p>}
         </div>
     )

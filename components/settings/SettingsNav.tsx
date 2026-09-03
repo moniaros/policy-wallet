@@ -6,7 +6,7 @@ import { Bell, Building2, ChevronRight, CreditCard, Gift, History, Lock, ShieldC
 import { useLanguage } from "@/contexts/LanguageContext"
 import { activeSectionFor, settingsSectionsFor, type SettingsSectionId } from "@/lib/settings/sections"
 
-const ICONS: Record<SettingsSectionId, LucideIcon> = {
+export const SETTINGS_ICONS: Record<SettingsSectionId, LucideIcon> = {
     profile: User,
     plan: CreditCard,
     security: ShieldCheck,
@@ -45,7 +45,7 @@ export function SettingsNav({ roles, hasLiveOffers, variant }: SettingsNavProps)
             <nav aria-label={t.settings.pageTitle}>
                 <ul className="pw-card divide-y divide-border">
                     {sections.map((section) => {
-                        const Icon = ICONS[section.id]
+                        const Icon = SETTINGS_ICONS[section.id]
                         return (
                             <li key={section.id}>
                                 <Link
@@ -80,7 +80,7 @@ export function SettingsNav({ roles, hasLiveOffers, variant }: SettingsNavProps)
         <nav aria-label={t.settings.pageTitle} className="sticky top-6 self-start">
             <ul className="space-y-0.5">
                 {sections.map((section) => {
-                    const Icon = ICONS[section.id]
+                    const Icon = SETTINGS_ICONS[section.id]
                     const isActive = active === section.id
                     return (
                         <li key={section.id}>

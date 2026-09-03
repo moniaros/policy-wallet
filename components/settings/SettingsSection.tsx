@@ -1,6 +1,8 @@
 "use client"
 
 import { useId, type ReactNode } from "react"
+import { Settings2, type LucideIcon } from "lucide-react"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 
 interface SettingsSectionProps {
     title: string
@@ -13,6 +15,8 @@ interface SettingsSectionProps {
      * not a decoration — the section it marks must also confirm before acting.
      */
     tone?: "default" | "danger"
+    /** The card head's icon — this card's own glyph, not the page's. */
+    icon?: LucideIcon
     children: ReactNode
     className?: string
 }
@@ -30,34 +34,27 @@ export function SettingsSection({
     description,
     action,
     tone = "default",
+    icon,
     children,
     className = "",
 }: SettingsSectionProps) {
     const headingId = useId()
+    // One card head for every card in the app (Direction A). Each card names
+    // its OWN glyph: a chip that repeated the page's icon down the column was
+    // ornament — it could not tell one card from the next.
+    const Icon = icon ?? Settings2
 
     return (
         <section
             aria-labelledby={headingId}
             className={`pw-card pw-pad ${
-                tone === "danger" ? "border-status-danger-edge" : ""
+                tone === "danger" ? "border-status-danger-edge [&_h2]:text-status-danger" : ""
             } ${className}`}
         >
-            <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                    <h2
-                        id={headingId}
-                        className={`text-body-lg font-semibold tracking-tight ${
-                            tone === "danger" ? "text-status-danger" : "text-foreground"
-                        }`}
-                    >
-                        {title}
-                    </h2>
-                    {description && (
-                        <p className="mt-1 text-caption leading-relaxed text-muted-foreground">{description}</p>
-                    )}
-                </div>
-                {action && <div className="shrink-0">{action}</div>}
-            </div>
+            <CardHead icon={Icon} title={title} id={headingId} meta={action} />
+            {description && (
+                <p className="mt-2 text-caption leading-relaxed text-muted-foreground">{description}</p>
+            )}
 
             <div className="mt-4">{children}</div>
         </section>

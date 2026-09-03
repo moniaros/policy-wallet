@@ -436,7 +436,10 @@ export function AppShell({
                     env(safe-area-inset-bottom) or the bar covers the last 15px of
                     every page on a notched iPhone. See app/globals.css. */}
                 <main id="main-content" className={`lg:pl-64 xl:pl-72 lg:pb-0 ${hasBottomNav ? 'pw-bottom-nav-reserve lg:!pb-0' : ''}`}>
-                    <div className="min-h-screen">
+                    {/* No min-height: the root above already spans the viewport; a
+                        second 100vh floor here sat UNDER the 64px top bar and added
+                        exactly that much empty canvas to every short page. */}
+                    <div>
                         {children}
                     </div>
                 </main>

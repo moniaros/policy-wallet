@@ -64,7 +64,27 @@ seams and hostile review: `docs/handover.md`.
   api-auth clean; browser console clean on all four surfaces at 1440 and 390.
   DESIGN.md and `.impeccable/design.json` re-documented from the BUILT world (three planes, card head,
   fact cells, soft pills, segmented control, count bar; MASTER.md gained the two app surface rows).
-  **Next:** owner review on the preview; the severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
+  **Pass 3 (later 2026-09-03, same branch/PR): /agent, /notifications, /account, /help re-cut and
+  run through the finish reviewer until `disposition: ship` (three verdict passes; every material fix
+  and regression resolved on recaptures).** Notable: notifications as ONE card of day-grouped rows with
+  a fixed unread gutter; the advisor page as header + segmented tabs + white cards (connected state
+  seeded on dev via `scripts/seed-agent-demo.mjs e2e-agent@… e2e-ph@…`); help page on the card
+  anatomy with formal-plural copy and sentence-case article titles; every settings card opens with
+  `CardHead` and its OWN glyph, row actions are soft pills (`.pw-soft-button` is now `:where()`-scoped
+  so `text-status-danger` wins on destructive ones), quiet hours on the shared Switch, the ended plan
+  reads as ended (badge, no price, past-tense entitlements, over-limit meter copy), UsageMeter's label
+  is a caption (typography pin updated), TokenUsageCard on the ladder with a card head. Two shell
+  traps fixed: a second `min-h-screen` INSIDE `<main>` under the 64px bar (64px/144px of empty canvas
+  on every short page) and legacy `pb-28` tab-bar allowances stacked on the shell's own reserve.
+  **Marketing (same day): the dummy phone UIs are gone.** `components/landing/real-screens/
+  RealScreens.tsx` renders the REAL app components (ProtectionStatusHero + AttentionList, the
+  renewals timeline, the coverage map, the advisor's ClientCard rows) on fixture data, laid out at
+  390px and scaled into the hero DeviceFrame (now 300px, unpadded), both AudienceTabs phones and the
+  «Γιατί τώρα» band; each screen brings a pinned `LanguageProvider` + `TranslationsProvider` (the
+  public layouts mount neither), is `inert`, and is stamped as a sample; the mock-honesty guard now
+  scans that file. BranchCoverageMap sizes to its container (`@container` / `@sm:`), which is what
+  keeps it two-up inside a phone frame on a wide viewport. **Next:** owner review on the preview
+  (four app pages + homepage hero/audience/why-now); the severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
   the first tab" was the Next dev-tools button; the identical renewal rows were fixture
   duplicates, now collapsed).
 

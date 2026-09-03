@@ -38,7 +38,7 @@ export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellP
 
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-page px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-12 lg:pt-8">
+            <div className="mx-auto max-w-page px-4 pb-4 pt-6 sm:px-6 lg:px-8 lg:pb-12 lg:pt-8">
                 {/* Mobile header */}
                 <header className="mb-4 lg:hidden">
                     {!isIndex && (

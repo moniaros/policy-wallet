@@ -100,10 +100,16 @@ export function DeviceFrame({
     screens,
     interval = 4500,
     className,
+    width = 248,
+    padded = true,
 }: {
     screens: { id: string; label: string; content: ReactNode }[]
     interval?: number
     className?: string
+    /** Outer width in px. The hero shows REAL app screens (390px layouts scaled down), which need a wider frame to stay legible. */
+    width?: number
+    /** False when a screen brings its own layout edge to edge (a real app screen). */
+    padded?: boolean
 }) {
     const [index, setIndex] = useState(0)
     const [reduced, setReduced] = useState(false)
@@ -137,7 +143,7 @@ export function DeviceFrame({
             onFocusCapture={() => (hold.current = true)}
             onBlurCapture={() => (hold.current = false)}
         >
-            <div className="w-[248px] rounded-[38px] border border-border-strong bg-surface-inverse p-g-2 shadow-[0_2px_4px_rgb(12_35_31/0.05),0_30px_70px_-28px_rgb(12_35_31/0.32)]">
+            <div className="rounded-[38px] border border-border-strong bg-surface-inverse p-g-2 shadow-[0_2px_4px_rgb(12_35_31/0.05),0_30px_70px_-28px_rgb(12_35_31/0.32)]" style={{ width }}>
                 <div className="relative aspect-[9/19] overflow-hidden rounded-[30px] bg-surface-base" aria-live={reduced ? undefined : "off"}>
                     {screens.map((s, i) => (
                         <div
@@ -145,7 +151,8 @@ export function DeviceFrame({
                             aria-hidden={i !== index}
                             // reduced motion: no fade, first screen static
                             className={cn(
-                                "absolute inset-0 p-g-4 transition-opacity duration-[450ms] [transition-timing-function:var(--ease-out-g)] motion-reduce:transition-none",
+                                "absolute inset-0 transition-opacity duration-[450ms] [transition-timing-function:var(--ease-out-g)] motion-reduce:transition-none",
+                                padded ? "p-g-4" : "p-0",
                                 i === index ? "opacity-100" : "pointer-events-none opacity-0"
                             )}
                         >

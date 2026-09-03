@@ -48,8 +48,11 @@ describe('the type scale means what it says', () => {
         const meter = readFileSync('components/monetization/UsageMeter.tsx', 'utf-8')
         // The hint explains what a plan buys — functional.
         expect(meter).toMatch(/\{hint && <p className="mt-1\.5 text-caption/)
-        // The label above it is a short uppercase eyebrow — micro is correct there.
-        expect(meter).toMatch(/text-micro font-bold uppercase tracking-wider/)
+        // The label above it was a 10px uppercase eyebrow until Direction A
+        // (2026-09-03): the app has no eyebrows and CSS uppercase strips the
+        // tonos off Greek, so it is a sentence-case caption now.
+        expect(meter).not.toMatch(/uppercase/)
+        expect(meter).toMatch(/text-caption font-medium text-muted-foreground/)
 
         const planCard = readFileSync('components/dashboard/home/ProtectionPlanCard.tsx', 'utf-8')
         expect(planCard).toMatch(/mt-0\.5 block text-caption text-black\/60/)

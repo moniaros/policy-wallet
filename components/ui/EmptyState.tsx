@@ -55,27 +55,27 @@ export function EmptyState({
     className = "",
 }: EmptyStateProps) {
     const ctaClasses =
-        "inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover active:scale-95"
+        "pw-primary-button cursor-pointer"
 
     return (
         <div
-            className={`flex flex-col items-center rounded-2xl border border-[var(--pw-border)] bg-[var(--pw-bg-light)] px-6 py-12 text-center shadow-[0_16px_48px_rgba(0,0,0,0.08)] dark:bg-[var(--pw-surface-dark)] ${className}`}
+            className={`pw-card flex flex-col items-center px-6 py-10 text-center sm:px-8 sm:py-12 ${className}`}
         >
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15">
                 <Icon className="h-7 w-7 text-primary dark:text-mint" />
             </div>
 
-            <Heading className="mt-5 text-xl font-semibold tracking-tight text-foreground">
+            <Heading className="mt-5 text-title font-semibold tracking-tight text-foreground">
                 {headline}
             </Heading>
-            <p className="mt-2 max-w-md text-body leading-relaxed text-[var(--pw-text-muted)] dark:text-white/65">
+            <p className="mt-2 max-w-md text-body leading-relaxed text-muted-foreground">
                 {description}
             </p>
 
             {preview && (
-                <div className="relative mt-7 w-full max-w-sm rounded-2xl border border-dashed border-[var(--pw-border)] bg-[var(--pw-surface-light)] p-4 dark:border-white/15 dark:bg-white/5">
+                <div className="pw-subcard relative mt-7 w-full max-w-sm p-4 pt-5">
                     {previewLabel && (
-                        <span className="absolute -top-2.5 left-4 rounded-full border border-[var(--pw-border)] bg-[var(--pw-bg-light)] px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[var(--pw-text-muted)] dark:border-white/15 dark:bg-black dark:text-white/60">
+                        <span className="absolute -top-2.5 left-4 rounded-full border border-border bg-card px-2 py-0.5 text-caption font-semibold text-muted-foreground">
                             {previewLabel}
                         </span>
                     )}
@@ -104,8 +104,8 @@ export function EmptyState({
             )}
 
             {trust && (
-                <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-[var(--pw-text-muted)] dark:text-white/50">
-                    <ShieldCheck className="h-3.5 w-3.5 text-primary dark:text-mint" />
+                <p className="mt-4 inline-flex items-center gap-1.5 text-caption text-muted-foreground">
+                    <ShieldCheck className="h-3.5 w-3.5 text-primary dark:text-mint" aria-hidden="true" />
                     {trust}
                 </p>
             )}
@@ -131,7 +131,7 @@ export function PolicyPreviewRow({
     icon?: LucideIcon
 }) {
     return (
-        <div className="flex items-center gap-3 rounded-xl border border-transparent bg-white p-3 shadow-sm dark:bg-black">
+        <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm">
             <div
                 className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] ${warn ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-primary-soft dark:bg-primary/15"}`}
             >
@@ -139,10 +139,10 @@ export function PolicyPreviewRow({
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
-                <p className="text-micro text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
+                <p className="text-caption text-muted-foreground">{meta}</p>
             </div>
             <span
-                className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-widest ${
+                className={`flex-shrink-0 rounded-full px-2 py-0.5 text-caption font-semibold ${
                     warn
                         ? "bg-[#FEF3C7] dark:bg-amber-900/30 text-[#92400E] dark:text-amber-200"
                         : "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
@@ -166,13 +166,13 @@ export function CustomerPreviewRow({
     healthy?: boolean
 }) {
     return (
-        <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm dark:bg-black">
+        <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm">
             <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-primary text-body-sm font-bold text-primary-foreground">
                 {initial}
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
-                <p className="text-micro text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
+                <p className="text-caption text-muted-foreground">{meta}</p>
             </div>
             <span
                 className={`h-2 w-2 flex-shrink-0 rounded-full ${healthy ? "bg-primary dark:bg-mint" : "bg-[#F59E0B]"}`}
@@ -191,15 +191,15 @@ export function RenewalPreviewRow({
     daysLabel: string
 }) {
     return (
-        <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm dark:bg-black">
+        <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm">
             <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft dark:bg-primary/15">
                 <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
-                <p className="text-micro text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
+                <p className="text-caption text-muted-foreground">{meta}</p>
             </div>
-            <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#92400E] dark:text-amber-200">
+            <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-caption font-semibold text-[#92400E] dark:text-amber-200">
                 {daysLabel}
             </span>
         </div>
@@ -216,15 +216,15 @@ export function RecommendationPreviewCard({
     urgencyLabel: string
 }) {
     return (
-        <div className="rounded-xl bg-white p-3 text-left shadow-sm dark:bg-black">
+        <div className="rounded-xl bg-card p-3 text-left shadow-sm">
             <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
                 <p className="flex-1 truncate text-body-sm font-semibold text-foreground">{title}</p>
-                <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#92400E] dark:text-amber-200">
+                <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-caption font-semibold text-[#92400E] dark:text-amber-200">
                     {urgencyLabel}
                 </span>
             </div>
-            <p className="mt-1.5 text-micro leading-relaxed text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
+            <p className="mt-1.5 text-caption leading-relaxed text-muted-foreground">{meta}</p>
         </div>
     )
 }

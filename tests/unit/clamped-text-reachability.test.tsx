@@ -310,12 +310,6 @@ const REGISTER: RegisterEntry[] = [
         note: "Fictional agent-dashboard mock on the landing page — demo set-dressing.",
     },
     {
-        file: "components/landing/AudienceTabs.tsx",
-        clamps: { truncate: 1 },
-        kind: "no-information-loss",
-        note: "Fictional client list in the landing mock — demo set-dressing.",
-    },
-    {
         file: "components/landing/PolicyWalletWidget.tsx",
         clamps: { truncate: 3 },
         kind: "no-information-loss",

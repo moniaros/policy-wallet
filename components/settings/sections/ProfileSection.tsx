@@ -1,5 +1,6 @@
 "use client"
 
+import { IdCard, Languages, UserRound } from "lucide-react"
 import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -46,7 +47,7 @@ export function ProfileSection({ data }: { data: ProfileData }) {
 
     return (
         <>
-            <SettingsSection title={copy.detailsTitle} description={copy.detailsDesc}>
+            <SettingsSection icon={UserRound} title={copy.detailsTitle} description={copy.detailsDesc}>
                 <SettingsRowList>
                     <InlineEditRow
                         label={copy.fullName}
@@ -113,14 +114,14 @@ export function ProfileSection({ data }: { data: ProfileData }) {
                 </SettingsRowList>
             </SettingsSection>
 
-            <SettingsSection title={copy.languageTitle} description={copy.languageDesc}>
+            <SettingsSection icon={Languages} title={copy.languageTitle} description={copy.languageDesc}>
                 {/* Writes `preferredLanguage` through the language context, which
                     is the same column the app shell's switcher writes — one
                     preference, one write path. */}
                 <LocaleToggle variant="settings" ariaLabel={copy.languageTitle} />
             </SettingsSection>
 
-            <SettingsSection title={copy.accountTitle}>
+            <SettingsSection icon={IdCard} title={copy.accountTitle}>
                 <SettingsRowList>
                     <SettingRow label={copy.memberSince} value={memberSince} />
                     <SettingRow label={copy.role} value={roleLabel} />

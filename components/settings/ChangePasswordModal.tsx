@@ -123,7 +123,7 @@ export function ChangePasswordModal({
                     <p
                         id={`${id}-error`}
                         role="alert"
-                        className="ml-1 text-caption font-semibold text-red-700 dark:text-red-400"
+                        className="ml-1 text-caption font-semibold text-status-danger"
                     >
                         {message}
                     </p>
@@ -169,7 +169,7 @@ export function ChangePasswordModal({
                         type="button"
                         onClick={() => onOpenChange(false)}
                         disabled={pending}
-                        className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                        className="pw-soft-button disabled:opacity-60"
                     >
                         {t.common.cancel}
                     </button>

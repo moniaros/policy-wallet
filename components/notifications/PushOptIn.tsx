@@ -123,7 +123,7 @@ export function PushOptIn() {
                 onClick={isOn ? disable : enable}
                 disabled={state === "working"}
                 aria-label={isOn ? t.settings.push.disable : t.settings.push.enable}
-                className="pw-secondary-button pw-btn-sm shrink-0 disabled:opacity-60"
+                className="pw-soft-button shrink-0 disabled:opacity-60"
             >
                 {isOn ? t.settings.push.disable : t.settings.push.enable}
             </button>

@@ -1,8 +1,9 @@
 "use client"
 
 import React, { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { PageHeader } from '@/components/ui/PageHeader'
+import { CardHead } from '@/components/dashboard/home/CardHead'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { helpArticles } from '@/lib/help-content'
 import type { GuideSummary } from '@/lib/guides/content'
@@ -188,210 +189,201 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
     const hasFilters = query.trim().length > 0 || activeCategory !== 'all'
 
     return (
-        <div className="min-h-screen bg-background pb-20">
-            <PageHeader title={t.help.pageTitle} subtitle={t.help.pageSubtitle} />
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-page px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* Direction A: the page's own header, not the sticky PageHeader —
+                    the shell already pins a top bar. */}
+                <header className="mb-6">
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{t.help.pageTitle}</h1>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.help.pageSubtitle}</p>
+                </header>
 
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
-                <section className="rounded-3xl border border-border bg-card p-5 sm:p-7 shadow-sm">
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                        <div>
-                            <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
-                                {t.help.todayTitle}
-                            </h2>
-                            <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
-                                {t.help.todaySubtitle}
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            {/* One action here. The email CTA used to sit beside this,
-                                duplicating the full email-support card in the support
-                                band below — two identical mailto CTAs on one screen.
-                                Support entry points live in the support band. */}
+                <div className="space-y-4">
+                    <section className="pw-card pw-pad" aria-labelledby="help-today-heading">
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                            <div className="min-w-0">
+                                <h2 id="help-today-heading" className="text-body-lg font-semibold leading-snug tracking-tight text-foreground">
+                                    {t.help.todayTitle}
+                                </h2>
+                                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                                    {t.help.todaySubtitle}
+                                </p>
+                            </div>
+                            {/* One action here — the page's one primary. The email CTA
+                                used to sit beside this, duplicating the full email-support
+                                card in the support band below. Support entry points live
+                                in the support band. */}
                             <button
+                                type="button"
                                 onClick={() => router.push('/wallet')}
-                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                className="pw-primary-button pw-btn-sm shrink-0 cursor-pointer"
                             >
                                 {t.help.openWallet}
-                                <ArrowRight className="w-4 h-4" />
+                                <ArrowRight className="h-4 w-4" aria-hidden="true" />
                             </button>
                         </div>
-                    </div>
 
-                    <div className="mt-6 relative">
-                        <Search className="w-5 h-5 text-muted-foreground absolute left-4 top-1/2 -translate-y-1/2" />
-                        <input
-                            type="text"
-                            aria-label={t.help.searchPlaceholder}
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder={t.help.searchPlaceholder}
-                            className="pw-input pl-12 pr-12"
-                        />
-                        {query && (
-                            <button
-                                onClick={() => setQuery('')}
-                                aria-label={t.help.clearFilters}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mt-4">
-                        {(Object.keys(categoryLabels) as CategoryKey[]).map((category) => {
-                            const Icon = getCategoryIcon(category)
-                            const isActive = activeCategory === category
-
-                            return (
+                        <div className="relative mt-5">
+                            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                            <input
+                                type="text"
+                                aria-label={t.help.searchPlaceholder}
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                placeholder={t.help.searchPlaceholder}
+                                className="pw-input pl-11 pr-12"
+                            />
+                            {query && (
                                 <button
-                                    key={category}
-                                    onClick={() => setActiveCategory(category)}
-                                    aria-pressed={isActive}
-                                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                                        isActive
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'bg-muted text-muted-foreground hover:bg-muted/70'
-                                    }`}
+                                    type="button"
+                                    onClick={() => setQuery('')}
+                                    aria-label={t.help.clearFilters}
+                                    className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                 >
-                                    <Icon className="w-3.5 h-3.5" />
-                                    {categoryLabels[category]}
+                                    <X className="h-4 w-4" aria-hidden="true" />
                                 </button>
-                            )
-                        })}
-                    </div>
-                </section>
+                            )}
+                        </div>
 
-                {!hasFilters && (
-                    <section>
-                        <h2 className="text-lg font-black text-foreground tracking-tight mb-4">
-                            {t.help.quickActions}
-                        </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {taskShortcuts.map((task) => (
-                                <button
-                                    key={task.id}
-                                    onClick={() => router.push(task.href)}
-                                    className="text-left p-5 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-md transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                                >
-                                    <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center mb-3">
-                                        <task.icon className="w-5 h-5" />
-                                    </div>
-                                    <p className="font-bold text-sm text-foreground mb-1">{task.label}</p>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">{task.desc}</p>
-                                </button>
-                            ))}
+                        {/* A segmented strip on the sunken plane — a view filter, not
+                            an action, so no green pill (the wallet's filter grammar). */}
+                        <div className="pw-subcard pw-scroll-strip mt-4 max-w-full gap-0.5 !rounded-full p-1">
+                            {(Object.keys(categoryLabels) as CategoryKey[]).map((category) => {
+                                const Icon = getCategoryIcon(category)
+                                const isActive = activeCategory === category
+
+                                return (
+                                    <button
+                                        key={category}
+                                        type="button"
+                                        onClick={() => setActiveCategory(category)}
+                                        aria-pressed={isActive}
+                                        className={`inline-flex min-h-10 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-caption font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                                            isActive
+                                                ? 'bg-card text-foreground shadow-sm'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                    >
+                                        <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                                        {categoryLabels[category]}
+                                    </button>
+                                )
+                            })}
                         </div>
                     </section>
-                )}
 
-                <section>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-black text-foreground tracking-tight">
-                            {hasFilters ? t.help.results : t.help.featuredGuides}
-                        </h2>
-                        {hasFilters && (
-                            <button
-                                onClick={() => {
-                                    setActiveCategory('all')
-                                    setQuery('')
-                                }}
-                                className="rounded text-xs font-bold text-primary dark:text-mint hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                            >
-                                {t.help.clearFilters}
-                            </button>
-                        )}
-                    </div>
-
-                    {filtered.length === 0 ? (
-                        <div className="bg-card rounded-2xl border border-border p-10 text-center">
-                            <p className="text-sm font-bold text-foreground mb-2">
-                                {t.help.noArticles}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                {t.help.noArticlesHint}
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {(hasFilters ? filtered : featured).map((article) => (
-                                <button
-                                    key={article.id}
-                                    onClick={() => router.push(article.href)}
-                                    className="text-left h-full p-5 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-md transition-all group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                                >
-                                    <div className="flex items-center justify-between mb-3">
-                                        <span className="px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-kicker font-bold uppercase tracking-widest">
-                                            {article.categoryLabel}
+                    {!hasFilters && (
+                        <section aria-labelledby="help-quick-heading">
+                            <h2 id="help-quick-heading" className="mb-3 text-body font-semibold text-foreground">
+                                {t.help.quickActions}
+                            </h2>
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                {taskShortcuts.map((task) => (
+                                    <Link
+                                        key={task.id}
+                                        href={task.href}
+                                        className="pw-card pw-pad-tight flex items-start gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                    >
+                                        <span className="pw-card-chip" aria-hidden="true">
+                                            <task.icon className="h-4 w-4" strokeWidth={1.75} />
                                         </span>
-                                        <span className="text-kicker font-bold text-muted-foreground">{article.readTime}</span>
-                                    </div>
-                                    <h3 className="text-base font-black text-foreground mb-2 leading-tight group-hover:text-primary dark:group-hover:text-mint transition-colors">
-                                        {article.title}
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{article.subtitle}</p>
-                                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary dark:text-mint">
-                                        {t.help.openGuide}
-                                        <ChevronRight className="w-3.5 h-3.5" />
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
+                                        <span className="min-w-0">
+                                            <span className="block text-sm font-semibold text-foreground">{task.label}</span>
+                                            <span className="mt-0.5 block text-caption leading-snug text-muted-foreground">{task.desc}</span>
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
                     )}
-                </section>
 
-                <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <div className="rounded-2xl bg-card border border-border p-6">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
-                                <GraduationCap className="w-5 h-5" />
-                            </div>
-                            <h3 className="text-base font-black text-foreground">{t.help.dictionaryTitle}</h3>
+                    <section aria-labelledby="help-articles-heading">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                            <h2 id="help-articles-heading" className="text-body font-semibold text-foreground">
+                                {hasFilters ? t.help.results : t.help.featuredGuides}
+                            </h2>
+                            {hasFilters && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setActiveCategory('all')
+                                        setQuery('')
+                                    }}
+                                    className="pw-soft-button cursor-pointer !px-3.5 !text-caption"
+                                >
+                                    {t.help.clearFilters}
+                                </button>
+                            )}
                         </div>
-                        <p className="text-sm text-muted-foreground mb-5">{t.help.dictionaryDesc}</p>
-                        <button
-                            onClick={() => router.push('/lexiko')}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-                        >
-                            {t.help.openDictionary}
-                            <ArrowRight className="w-4 h-4" />
-                        </button>
-                    </div>
 
-                    <div className="rounded-2xl bg-card border border-border p-6">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
-                                <Mail className="w-5 h-5" />
+                        {filtered.length === 0 ? (
+                            <div className="pw-card pw-pad-roomy text-center">
+                                <p className="text-sm font-semibold text-foreground">{t.help.noArticles}</p>
+                                <p className="mt-1 text-caption text-muted-foreground">{t.help.noArticlesHint}</p>
                             </div>
-                            <h3 className="text-base font-black text-foreground">{t.help.emailSupport}</h3>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-5">{t.help.emailDesc}</p>
-                        <a
-                            href={`mailto:${siteConfig.contactEmail}`}
-                            className="inline-flex min-h-11 items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                        >
-                            {t.help.sendEmail}
-                            <ArrowRight className="w-4 h-4" />
-                        </a>
-                    </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                                {(hasFilters ? filtered : featured).map((article) => (
+                                    <Link
+                                        key={article.id}
+                                        href={article.href}
+                                        className="pw-card pw-pad group flex h-full flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                    >
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className="rounded-full bg-muted px-2.5 py-0.5 text-caption font-semibold text-muted-foreground">
+                                                {article.categoryLabel}
+                                            </span>
+                                            <span className="text-caption text-muted-foreground">{article.readTime}</span>
+                                        </div>
+                                        <h3 className="mt-3 text-body-lg font-semibold leading-snug tracking-tight text-foreground">
+                                            {article.title}
+                                        </h3>
+                                        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground line-clamp-2">{article.subtitle}</p>
+                                        <span className="mt-auto inline-flex items-center gap-1 pt-4 text-caption font-semibold text-primary dark:text-mint">
+                                            {t.help.openGuide}
+                                            <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </section>
 
-                    <div className="rounded-2xl bg-card border border-border p-6">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
-                                <MessageCircle className="w-5 h-5" />
+                    <section className="grid grid-cols-1 gap-3 lg:grid-cols-3" aria-label={t.help.emailSupport}>
+                        <div className="pw-card pw-pad flex flex-col">
+                            <CardHead icon={GraduationCap} title={t.help.dictionaryTitle} as="h3" />
+                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t.help.dictionaryDesc}</p>
+                            <div className="mt-auto pt-4">
+                                <button type="button" onClick={() => router.push('/lexiko')} className="pw-soft-button cursor-pointer">
+                                    {t.help.openDictionary}
+                                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                                </button>
                             </div>
-                            <h3 className="text-base font-black text-foreground">{t.help.communityChat}</h3>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-5">{t.help.communityDesc}</p>
-                        <button
-                            onClick={() => router.push('/agent')}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                        >
-                            {t.help.openAdvisorPage}
-                            <ArrowRight className="w-4 h-4" />
-                        </button>
-                    </div>
-                </section>
+
+                        <div className="pw-card pw-pad flex flex-col">
+                            <CardHead icon={Mail} title={t.help.emailSupport} as="h3" />
+                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t.help.emailDesc}</p>
+                            <div className="mt-auto pt-4">
+                                <a href={`mailto:${siteConfig.contactEmail}`} className="pw-soft-button">
+                                    {t.help.sendEmail}
+                                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                                </a>
+                            </div>
+                        </div>
+
+                        <div className="pw-card pw-pad flex flex-col">
+                            <CardHead icon={MessageCircle} title={t.help.communityChat} as="h3" />
+                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t.help.communityDesc}</p>
+                            <div className="mt-auto pt-4">
+                                <Link href="/agent" className="pw-soft-button">
+                                    {t.help.openAdvisorPage}
+                                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                                </Link>
+                            </div>
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
     )

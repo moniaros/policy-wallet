@@ -44,7 +44,7 @@ export function BranchCoverageMap({
     className?: string
 }) {
     return (
-        <section className={cn("pw-card pw-pad", className)} aria-labelledby="coverage-map-heading">
+        <section className={cn("pw-card pw-pad @container", className)} aria-labelledby="coverage-map-heading">
             <CardHead
                 icon={Shield}
                 title={labels.kicker}
@@ -66,7 +66,11 @@ export function BranchCoverageMap({
                     </Link>
                 }
             />
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {/* Container query, not a viewport one: the map sizes to ITS width, so
+                it is two-up inside a narrow column (and inside the marketing
+                site's phone frames, where the viewport is wide but the screen
+                is 390px) and three-up wherever it actually has the room. */}
+            <div className="mt-4 grid grid-cols-2 gap-2 @sm:grid-cols-3">
                 {entries.map((entry) => (
                     <Link
                         key={entry.id}
@@ -87,7 +91,7 @@ export function BranchCoverageMap({
                     >
                         <span className="flex items-center gap-2">
                             <entry.icon className="h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden />
-                            <span className="min-w-0 flex-1 text-sm font-semibold text-foreground sm:truncate">
+                            <span className="min-w-0 flex-1 text-sm font-semibold text-foreground @sm:truncate">
                                 {entry.label}
                             </span>
                         </span>
