@@ -53,14 +53,18 @@ export function FloatingActionButton({
         return () => document.removeEventListener('keydown', onKeyDown)
     }, [isExpanded])
 
+    // Below lg the shell's floating tab bar owns the bottom of the screen
+    // (--pw-bottom-nav-h plus the safe area), so the button sits just above
+    // it; from lg there is no bar and the classic corner offset returns.
+    const phoneBottom = 'bottom-[calc(var(--pw-bottom-nav-h)+env(safe-area-inset-bottom,0px)+0.5rem)] lg:bottom-6'
     const getPositionClasses = () => {
         switch (position) {
             case 'bottom-right':
-                return 'bottom-6 right-6'
+                return `${phoneBottom} right-6`
             case 'bottom-left':
-                return 'bottom-6 left-6'
+                return `${phoneBottom} left-6`
             case 'bottom-center':
-                return 'bottom-6 left-1/2 -translate-x-1/2'
+                return `${phoneBottom} left-1/2 -translate-x-1/2`
         }
     }
 
