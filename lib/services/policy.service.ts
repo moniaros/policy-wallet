@@ -391,11 +391,16 @@ export class PolicyService extends BaseService {
                 status: 'analyzing', // Marks it for background processing
                 documents: [{
                     url: fileUrl,
-                    // GENERATED, never the user's file name. At this point
-                    // extraction has not run, so there is no branch and no
-                    // policy number — the label says so rather than inventing
-                    // one. See lib/wallet/document-label.ts.
-                    name: storedDocumentLabel({}),
+                    // SYNTHETIC, never the user's file name — and never the
+                    // display label either. `create()` reads `name` for ONE
+                    // thing, the extension allowlist, and stores a generated
+                    // label regardless (lib/wallet/document-label.ts). Passing
+                    // the Greek label here (`Ασφαλιστήριο …`, no extension)
+                    // failed that check, so every upload through this path
+                    // committed a policy with ZERO documents and an analysis
+                    // that had nothing to read. The extension is the one the
+                    // content validation established, not the client's.
+                    name: `upload${validation.value.ext}`,
                     size: file.size
                 }]
             }, language)
