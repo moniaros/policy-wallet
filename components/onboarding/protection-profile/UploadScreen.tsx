@@ -40,18 +40,30 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
     }
 
     const submit = async (chosen: File) => {
-        move("uploading")
-        try {
-            const formData = new FormData()
-            formData.append("file", chosen)
-            const result = await uploadOnboardingPolicy(formData)
-            if (!result.success || !result.policyId) {
+        // A retry after a failed READING must not upload the same document
+        // again: the policy already exists, and a second tap produced a second
+        // «AI Analyzing…» row in the wallet. Re-run the reading on the row we have.
+        let id = policyId
+        if (!id) {
+            move("uploading")
+            try {
+                const formData = new FormData()
+                formData.append("file", chosen)
+                const result = await uploadOnboardingPolicy(formData)
+                if (!result.success || !result.policyId) {
+                    move("failed", "upload_failed")
+                    return
+                }
+                id = result.policyId
+                setPolicyId(id)
+            } catch {
                 move("failed", "upload_failed")
                 return
             }
-            setPolicyId(result.policyId)
+        }
+        try {
             move("reading")
-            const analysis = await triggerOnboardingAnalysis(result.policyId).catch(() => ({ status: "queued" as const }))
+            const analysis = await triggerOnboardingAnalysis(id).catch(() => ({ status: "queued" as const }))
             move(analysis.status === "completed" ? "completed" : analysis.status === "failed" ? "failed" : "queued", analysis.status === "failed" ? "analysis_failed" : undefined)
         } catch {
             move("failed", "upload_failed")

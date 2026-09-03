@@ -85,6 +85,7 @@ export const QuestionScreen = forwardRef<HTMLHeadingElement, QuestionScreenProps
                         <li key={option.value}>
                             <button
                                 type="button"
+                                data-value={option.value}
                                 disabled={saving}
                                 aria-pressed={option.value === selected}
                                 onClick={() => onSelect(option.value)}
@@ -98,9 +99,9 @@ export const QuestionScreen = forwardRef<HTMLHeadingElement, QuestionScreenProps
                             {subChoice && subChoice.under === option.value && option.value === selected ? (
                                 <div className="mt-2 pl-4" role="group" aria-label={subChoice.label}>
                                     <p className="text-caption font-medium text-muted-foreground">{subChoice.label}</p>
-                                    <div className="pw-segmented mt-1.5">
+                                    <div className="mt-1.5 flex flex-wrap gap-2">
                                         {subChoice.options.map((o) => (
-                                            <button key={o.value} type="button" aria-pressed={o.value === subChoice.selected} onClick={() => subChoice.onSelect(o.value)} className="pw-segment min-h-11">
+                                            <button key={o.value} type="button" aria-pressed={o.value === subChoice.selected} onClick={() => subChoice.onSelect(o.value)} className={cn("min-h-11 rounded-full border px-4 text-sm font-semibold transition-colors", o.value === subChoice.selected ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-foreground hover:border-primary/40")}>
                                                 {o.label}
                                             </button>
                                         ))}
@@ -116,7 +117,7 @@ export const QuestionScreen = forwardRef<HTMLHeadingElement, QuestionScreenProps
                         const checked = multiSelected?.includes(option.value) ?? false
                         return (
                             <li key={option.value}>
-                                <label className={cn(row, "cursor-pointer has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary", checked ? chosen : idle)}>
+                                <label data-value={option.value} className={cn(row, "cursor-pointer has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary", checked ? chosen : idle)}>
                                     <input
                                         type="checkbox"
                                         className="sr-only"
@@ -130,9 +131,9 @@ export const QuestionScreen = forwardRef<HTMLHeadingElement, QuestionScreenProps
                                 {subChoice && subChoice.under === option.value && checked ? (
                                     <div className="mt-2 pl-4" role="group" aria-label={subChoice.label}>
                                         <p className="text-caption font-medium text-muted-foreground">{subChoice.label}</p>
-                                        <div className="pw-segmented mt-1.5">
+                                        <div className="mt-1.5 flex flex-wrap gap-2">
                                             {subChoice.options.map((o) => (
-                                                <button key={o.value} type="button" aria-pressed={o.value === subChoice.selected} onClick={() => subChoice.onSelect(o.value)} className="pw-segment min-h-11">
+                                                <button key={o.value} type="button" aria-pressed={o.value === subChoice.selected} onClick={() => subChoice.onSelect(o.value)} className={cn("min-h-11 rounded-full border px-4 text-sm font-semibold transition-colors", o.value === subChoice.selected ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-foreground hover:border-primary/40")}>
                                                     {o.label}
                                                 </button>
                                             ))}
