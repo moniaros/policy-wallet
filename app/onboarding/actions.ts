@@ -187,44 +187,6 @@ export async function uploadOnboardingPolicy(formData: FormData) {
     }
 }
 
-// First name for the onboarding greeting. `User.name` is free text but can be
-// synthetic (signup defaults, test fixtures) — firstNameLabel is the single
-// owner of that decision; this file used to carry its own partial copy, which
-// knew the signup defaults and not the fixtures.
-
-export async function getOnboardingState() {
-    const { dbUser } = await getAuthenticatedUser()
-
-    const profile = await db.policyholderProfile.findUnique({
-        where: { userId: dbUser.id }
-    })
-
-    if (!profile || !profile.preferences) return {
-        step: 1,
-        completed: false,
-        name: firstNameLabel(dbUser.name),
-        onboardingSegment: null as "individual" | "family_manager" | "small_business" | null,
-        onboardingGoals: [] as string[],
-        onboardingFamiliarity: null as "beginner" | "intermediate" | "experienced" | null,
-        onboardingFileReady: null as boolean | null,
-        onboardingEntryCompleted: false,
-        hasAiConsent: Boolean(dbUser.aiProcessingConsentVersion),
-    }
-
-    const prefs = profile.preferences as any
-    return {
-        step: prefs.onboardingStep || 1,
-        completed: prefs.onboardingCompleted || false,
-        name: firstNameLabel(dbUser.name),
-        onboardingSegment: prefs.onboardingSegment ?? null,
-        onboardingGoals: Array.isArray(prefs.onboardingGoals) ? prefs.onboardingGoals : [],
-        onboardingFamiliarity: prefs.onboardingFamiliarity ?? null,
-        onboardingFileReady: typeof prefs.onboardingFileReady === "boolean" ? prefs.onboardingFileReady : null,
-        onboardingEntryCompleted: Boolean(prefs.onboardingEntryCompletedAt),
-        hasAiConsent: Boolean(dbUser.aiProcessingConsentVersion),
-    }
-}
-
 export async function redeemInviteCode(code: string) {
     const { dbUser } = await getAuthenticatedUser()
 

@@ -16,7 +16,12 @@ const EN = readFileSync('lib/i18n/translations/en.ts', 'utf-8')
 // marketing narrative — deliberately keeps «συμβόλαιο» as a prose synonym.)
 const UI_FILES = [
     'components/coverage/CoverageInsightsClient.tsx',
-    'app/onboarding/flow.tsx',
+    'app/onboarding/ProtectionProfileFlow.tsx',
+    'components/onboarding/protection-profile/QuestionScreen.tsx',
+    'components/onboarding/protection-profile/SummaryScreen.tsx',
+    'components/onboarding/protection-profile/ProtectionMapCard.tsx',
+    'components/onboarding/protection-profile/UploadScreen.tsx',
+    'components/onboarding/protection-profile/AdvisorScreen.tsx',
     'lib/monetization/upgrade-copy.el.ts',
     'lib/pricing/public-pricing-content.ts',
     // Gap-engine findings are short customer-facing cards (title + evidence),

@@ -297,15 +297,21 @@ export interface ProtectionOnboardingViewState extends ResolvedProtectionOnboard
     name: string
     hasAiConsent: boolean
     language: "el" | "en"
+    /** The stage was finished (legacy flag) — the page redirects to the dashboard. */
+    finished: boolean
 }
 
 export async function getProtectionOnboardingState(): Promise<ProtectionOnboardingViewState> {
     const { dbUser } = await getAuthenticatedUser()
-    const row = await db.protectionProfile.findUnique({ where: { userId: dbUser.id } })
+    const [row, profile] = await Promise.all([
+        db.protectionProfile.findUnique({ where: { userId: dbUser.id } }),
+        db.policyholderProfile.findUnique({ where: { userId: dbUser.id }, select: { preferences: true } }),
+    ])
     return {
         ...resolveProtectionOnboardingState(row),
         name: firstNameLabel(dbUser.name),
         hasAiConsent: Boolean(dbUser.aiProcessingConsentVersion),
         language: dbUser.preferredLanguage === "en" ? "en" : "el",
+        finished: objectOf(profile?.preferences).onboardingCompleted === true,
     }
 }

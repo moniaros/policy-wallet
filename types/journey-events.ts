@@ -101,6 +101,7 @@ export interface JourneyEventPayloadMap {
     onboarding_resumed: {
         locale?: string
         step?: number
+        step_id?: string
     }
     onboarding_skipped: {
         locale?: string

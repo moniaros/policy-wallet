@@ -97,8 +97,8 @@ describe("completeProtectionProfile", () => {
         state.row = { intent: "find_gaps", riskConcerns: ["income"], recentChanges: ["new_child", "health_changed"], unsureSteps: [], confidenceLevel: "gaps", completedAt: null }
         const out = await completeProtectionProfile()
         expect(declareLifeEvent).toHaveBeenCalledTimes(1)
-        expect(declareLifeEvent.mock.calls[0]![0]).toMatchObject({ userId: "user-1", definitionId: "birth", source: "customer_declared", confidence: "high", applyDelta: false })
-        expect(db.protectionProfile.update.mock.calls[0]![0].data.completedAt).toBeInstanceOf(Date)
+        expect((declareLifeEvent.mock.calls as any[])[0][0]).toMatchObject({ userId: "user-1", definitionId: "birth", source: "customer_declared", confidence: "high", applyDelta: false })
+        expect((db.protectionProfile.update.mock.calls as any[])[0][0].data.completedAt).toBeInstanceOf(Date)
         // A declaration already ran the engine — no second run.
         expect(refreshProtectionScore).not.toHaveBeenCalled()
         expect(recordConversionEvent).toHaveBeenCalledWith("user-1", "protection_profile_completed", expect.objectContaining({ intent: "find_gaps", confidence: "gaps" }))
