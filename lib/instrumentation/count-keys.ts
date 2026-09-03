@@ -64,6 +64,12 @@ export const COUNT_KEYS: Record<string, string> = {
     "plan.stepsDone": "Setup steps completed.",
     "plan.stepsTotal": "Setup steps total (five).",
 
+    // needs.* — Layer 1 of the needs → coverage → gap model: what the customer
+    // SAID matters (deriveProtectionPriorities). Deliberately its own namespace,
+    // never a gap or recommendation count.
+    "needs.priorityCount": "Derived protection priorities rendered by the protection map / priorities card.",
+    "needs.unsureCount": "Onboarding screens answered «δεν είμαι σίγουρος/η» — the honest lower-confidence signal.",
+
     // household.* — the customer's household as the risk graph records it.
     "household.memberCount": "1 + dependants.",
     "household.dependantCount":
