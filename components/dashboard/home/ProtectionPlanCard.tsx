@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, Bell, Check, Lightbulb, ListChecks, ShieldAlert, Sparkles, Upload, Users } from "lucide-react"
+import { ArrowRight, Bell, Check, Compass, Lightbulb, ListChecks, ShieldAlert, Sparkles, Upload, Users } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { CardHead } from "./CardHead"
 
@@ -15,6 +15,7 @@ export interface ProtectionPlanStepView {
 }
 
 const SETUP_ICONS: Record<string, LucideIcon> = {
+    profile: Compass,
     upload: Upload,
     analysis: Sparkles,
     gaps: ShieldAlert,

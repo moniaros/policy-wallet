@@ -16,6 +16,7 @@
  */
 
 import { db } from "@/lib/db"
+import { deriveProtectionPriorities } from "@/lib/services/protection-profile/derive-priorities"
 import { logger } from "@/lib/logger"
 import {
     detectProfileGaps,
@@ -873,8 +874,22 @@ async function runAiRiskAnalysis(
         const ifKnown = <T,>(factor: Parameters<typeof ctxKnown>[1], value: T): T | null =>
             ctxKnown(ctx, factor) ? value : null
 
+        // Layer 1 as context: what the customer said matters, if they finished
+        // saying it. Derived on read from the same rule table the map uses, so
+        // the model and the customer see one list.
+        const statements = await db.protectionProfile.findUnique({
+            where: { userId },
+            select: { completedAt: true, riskConcerns: true, commitments: true, recentChanges: true, futureConsiderations: true, unsureSteps: true },
+        })
+        const statedPriorities = statements?.completedAt
+            ? deriveProtectionPriorities(ctx, statements)
+                  .filter((p) => p.importance === "high" || p.importance === "medium")
+                  .map((p) => ({ domain: p.id, importance: p.importance }))
+            : null
+
         return await aiGateway.analyzeRiskProfile(
             {
+                statedPriorities,
                 maritalStatus: profile.maritalStatus,
                 dependentsCount: ifKnown("dependents", profile.dependentsCount),
                 employmentStatus: profile.employmentStatus,

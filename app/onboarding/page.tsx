@@ -9,7 +9,10 @@ import { ProtectionProfileFlow } from "./ProtectionProfileFlow"
  */
 export default async function OnboardingPage() {
     const state = await getProtectionOnboardingState()
-    if (state.finished) redirect("/dashboard")
+    // Finished means the WHOLE stage — profile complete and the tail walked. A
+    // legacy account carries the finished flag from the old intake with no
+    // profile at all; it must still be able to come in and say what matters.
+    if (state.finished && state.status === "completed") redirect("/dashboard")
     const labels = getTranslations(state.language).onboarding.protectionProfile
     return <ProtectionProfileFlow initialState={state} labels={labels} language={state.language} />
 }

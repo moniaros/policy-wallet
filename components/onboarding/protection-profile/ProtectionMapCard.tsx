@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
-import { Banknote, Briefcase, Building2, Car, HeartPulse, House, Landmark, Map, PiggyBank, Sparkles, Users, type LucideIcon } from "lucide-react"
+import { Map } from "lucide-react"
 import { CardHead } from "@/components/dashboard/home/CardHead"
+import { protectionDomainIcon } from "@/lib/services/protection-profile/domain-icons"
 import type { ProtectionPriority } from "@/lib/services/protection-profile/derive-priorities"
 import type { FirstInsight } from "@/lib/services/onboarding/quick-start"
 import type { TranslationKeys } from "@/lib/i18n/translations/el"
@@ -8,26 +9,12 @@ import { cn } from "@/lib/utils"
 
 export type ProtectionMapLabels = TranslationKeys["onboarding"]["protectionProfile"]["summary"]
 
-const ICONS: Record<string, LucideIcon> = {
-    household: Users,
-    residence: House,
-    property: Building2,
-    mobility: Car,
-    work: Briefcase,
-    health: HeartPulse,
-    lifestyle: Sparkles,
-    "money:income": Banknote,
-    "money:debt": Landmark,
-    "money:retirement": PiggyBank,
-    money: Banknote,
-}
-
 /**
  * Importance as a WORD on a tone that never accuses: the brand's emphasis
  * tint for high, the sunken neutral for medium and watch, the info tint for
  * «more detail needed». Never amber (means gap) and never red.
  */
-const TONE: Record<ProtectionPriority["importance"], string> = {
+export const IMPORTANCE_TONE: Record<ProtectionPriority["importance"], string> = {
     high: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
     medium: "bg-muted text-foreground",
     watch: "bg-muted text-muted-foreground",
@@ -94,7 +81,7 @@ export function ProtectionMapCard({
             {shown.length > 0 ? (
                 <ul className="mt-4 space-y-2">
                     {shown.map((p) => {
-                        const Icon = ICONS[p.id] ?? ICONS[p.domain] ?? Sparkles
+                        const Icon = protectionDomainIcon(p.id)
                         return (
                             <li key={p.id} className="pw-subcard flex items-start gap-3 p-3">
                                 <span className="pw-card-chip" aria-hidden="true">
@@ -103,7 +90,7 @@ export function ProtectionMapCard({
                                 <div className="min-w-0 flex-1">
                                     <div className="flex flex-wrap items-center gap-2">
                                         <p className="text-sm font-semibold text-foreground">{domainLabelFor(labels, p.id)}</p>
-                                        <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-caption font-semibold", TONE[p.importance])}>
+                                        <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-caption font-semibold", IMPORTANCE_TONE[p.importance])}>
                                             {labels.importance[p.importance]}
                                         </span>
                                     </div>

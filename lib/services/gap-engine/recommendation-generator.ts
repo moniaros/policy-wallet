@@ -445,21 +445,59 @@ const SEVERITY_ORDER: Record<GapSeverity, number> = {
  * by an insurance judgement, and one the rest of the product already stands
  * behind. Ties fall back to the rule id so the order is stable between renders.
  */
-export function prioritizeRecommendations(
-    recs: RecommendationInput[]
-): RecommendationInput[] {
-    return [...recs].sort((a, b) => {
+/**
+ * Layer 1 as a TIE-BREAK, and only a tie-break. Urgency and the protection
+ * model still decide; among findings they cannot separate, the one touching a
+ * domain the customer said matters comes first. A stated priority never
+ * promotes a finding past a more urgent one, and never demotes anything —
+ * it only orders equals, which is the only thing a self-report is evidence of.
+ */
+const PRIORITY_LOBS: Record<string, readonly string[]> = {
+    health: ["health"],
+    household: ["life"],
+    "money:income": ["income_protection", "disability", "life"],
+    "money:debt": ["life", "income_protection"],
+    "money:retirement": ["pension", "life"],
+    residence: ["home"],
+    property: ["home"],
+    mobility: ["motor"],
+    work: ["liability", "income_protection", "disability"],
+    lifestyle: ["travel", "pet", "boat"],
+}
+
+export function statedPriorityRank(lineOfBusiness: string, stated: readonly string[] | null | undefined): number {
+    if (!stated || stated.length === 0) return Number.MAX_SAFE_INTEGER
+    const lob = String(lineOfBusiness || "").toLowerCase().split(/[:/]/)[0]
+    const index = stated.findIndex((id) => (PRIORITY_LOBS[id] ?? []).includes(lob))
+    return index === -1 ? Number.MAX_SAFE_INTEGER : index
+}
+
+type Orderable = { urgency: string; lineOfBusiness: string; ruleId?: string | null }
+
+/** The ONE comparator both read paths use — urgency, protection weight, stated priority, rule id. */
+export function recommendationOrder(stated: readonly string[] | null | undefined = null) {
+    return (a: Orderable, b: Orderable): number => {
         const sevDiff =
-            (SEVERITY_ORDER[a.urgency] ?? 3) -
-            (SEVERITY_ORDER[b.urgency] ?? 3)
+            (SEVERITY_ORDER[a.urgency as GapSeverity] ?? 3) -
+            (SEVERITY_ORDER[b.urgency as GapSeverity] ?? 3)
         if (sevDiff !== 0) return sevDiff
 
         const weightDiff =
             lobProtectionWeight(b.lineOfBusiness) - lobProtectionWeight(a.lineOfBusiness)
         if (weightDiff !== 0) return weightDiff
 
+        const statedDiff = statedPriorityRank(a.lineOfBusiness, stated) - statedPriorityRank(b.lineOfBusiness, stated)
+        if (statedDiff !== 0) return statedDiff
+
         return String(a.ruleId || "").localeCompare(String(b.ruleId || ""))
-    })
+    }
+}
+
+export function prioritizeRecommendations(
+    recs: RecommendationInput[],
+    stated: readonly string[] | null = null
+): RecommendationInput[] {
+    return [...recs].sort(recommendationOrder(stated))
 }
 
 // ── Product Matching ─────────────────────────────────────────────────
@@ -838,6 +876,11 @@ export async function actionRecommendation(
 export async function getActiveRecommendations(
     userId: string
 ): Promise<RecommendationOutput[]> {
+    // What the customer said matters — a tie-break for the order, nothing more.
+    const stated = await db.protectionProfile.findUnique({ where: { userId }, select: { completedAt: true, priorityAreas: true } })
+    const statedIds = stated?.completedAt && Array.isArray(stated.priorityAreas)
+        ? (stated.priorityAreas as unknown[]).filter((id): id is string => typeof id === "string")
+        : null
     const recs = await db.recommendationInstance.findMany({
         where: {
             userId,
@@ -862,16 +905,7 @@ export async function getActiveRecommendations(
 
     // Same order as prioritizeRecommendations — urgency, then how much the
     // missing cover matters, never what it costs to buy.
-    const sorted = recs.sort((a, b) => {
-        const sevDiff =
-            (SEVERITY_ORDER[(a.urgency as GapSeverity)] ?? 3) -
-            (SEVERITY_ORDER[(b.urgency as GapSeverity)] ?? 3)
-        if (sevDiff !== 0) return sevDiff
-        const weightDiff =
-            lobProtectionWeight(b.lineOfBusiness) - lobProtectionWeight(a.lineOfBusiness)
-        if (weightDiff !== 0) return weightDiff
-        return String(a.ruleId || "").localeCompare(String(b.ruleId || ""))
-    })
+    const sorted = recs.sort(recommendationOrder(statedIds))
 
     // Belt to the unique constraint's suspender: never render the same FINDING
     // twice, whatever legacy rows survive in the table. The constraint only

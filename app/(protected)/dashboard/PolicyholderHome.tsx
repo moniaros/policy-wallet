@@ -45,6 +45,11 @@ import { PortfolioSummaryCard } from "@/components/dashboard/home/PortfolioSumma
 import { RenewalsTimelineCard } from "@/components/dashboard/home/RenewalsTimelineCard"
 import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidget"
 import { RecentChangesWidget } from "@/components/dashboard/home/RecentChangesWidget"
+import { ProtectionPrioritiesCard } from "@/components/dashboard/home/ProtectionPrioritiesCard"
+import { ProtectionProfileResumeCard } from "@/components/dashboard/home/ProtectionProfileResumeCard"
+import { resolveProtectionOnboardingState, shouldEnterProtectionOnboarding } from "@/lib/services/protection-profile/state"
+import { deriveProtectionPriorities } from "@/lib/services/protection-profile/derive-priorities"
+import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 
 /**
  * Calendar days until a date, in Athens.
@@ -119,6 +124,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         activeRecommendations,
         recStatusGroups,
         timelineEntries,
+        protectionProfileRow,
     ] = await Promise.all([
         db.policy.findMany({
             // status ≠ deleted: a soft-deleted row (the API's DELETE path) is
@@ -197,8 +203,50 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             })
             .catch(() => [] as Array<{ status: string; _count: { _all: number } }>),
         getTimeline(dbUser.id, { limit: 3 }).catch(() => []),
+        // Layer 1 — the statements behind «Η εικόνα σας» and the resume state.
+        db.protectionProfile
+            .findUnique({
+                where: { userId: dbUser.id },
+                select: {
+                    answers: true,
+                    answeredSteps: true,
+                    unsureSteps: true,
+                    completedAt: true,
+                    skippedAt: true,
+                    summaryViewedAt: true,
+                    uploadChoice: true,
+                    riskConcerns: true,
+                    commitments: true,
+                    recentChanges: true,
+                    futureConsiderations: true,
+                },
+            })
+            .catch(() => null),
     ])
     const isFreeTier = entitlements.tier === "free"
+
+    // ── Layer 1: the first stage of onboarding ───────────────────────────
+    // Entered ONCE: a new customer with no policies, no completed profile and
+    // no skip is sent to it. Every screen there carries a visible skip, and a
+    // skip is remembered here — nobody is sent twice.
+    const legacyOnboardingCompleted =
+        ((profile?.preferences ?? {}) as Record<string, unknown>).onboardingCompleted === true
+    if (
+        shouldEnterProtectionOnboarding({
+            completedAt: protectionProfileRow?.completedAt ?? null,
+            skippedAt: protectionProfileRow?.skippedAt ?? null,
+            policyCount: policies.length,
+            legacyCompleted: legacyOnboardingCompleted,
+        })
+    ) {
+        redirect("/onboarding")
+    }
+    const protectionState = resolveProtectionOnboardingState(protectionProfileRow)
+    // Derived on read from the facts and the statements — never stored, never a score.
+    const protectionPriorities =
+        protectionProfileRow?.completedAt && profile
+            ? deriveProtectionPriorities(toLifeContext(profile as any, new Date()), protectionProfileRow)
+            : []
 
     // Plan picked at signup but never activated (carried through onboarding)
     let carriedPlan: "ph-plus" | "ph-pro" | null = null
@@ -392,6 +440,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         .filter((group) => group.status === "actioned" || group.status === "dismissed")
         .reduce((sum, group) => sum + group._count._all, 0)
     const plan = buildProtectionPlan({
+        profileCompleted: Boolean(protectionProfileRow?.completedAt),
         policyCount: policies.length,
         hasCompletedAnalysis,
         openGapCount,
@@ -401,6 +450,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         handledRecommendationCount,
     })
     const setupStepCopy: Record<string, { title: string; description: string }> = {
+        profile: { title: home.planStepProfileTitle, description: home.planStepProfileBody },
         upload: { title: home.planStepUploadTitle, description: home.planStepUploadBody },
         analysis: { title: home.planStepAnalysisTitle, description: home.planStepAnalysisBody },
         gaps: { title: home.planStepGapsTitle, description: home.planStepGapsBody },
@@ -706,6 +756,45 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         explained: entry.cause !== null,
     }))
 
+    // Layer 1 on the home: the customer's own picture of what matters, or the
+    // way into saying it. Never a score — the hero stays the only verdict
+    // surface — and the upload ACTION stays the hero's; this card only links.
+    const protectionCard =
+        protectionState.status === "completed" ? (
+            protectionPriorities.length > 0 ? (
+                <ProtectionPrioritiesCard
+                    priorities={protectionPriorities}
+                    hasPolicies={hasPolicies}
+                    unsureCount={protectionState.unsureSteps.length}
+                    language={lang}
+                    mapLabels={t.onboarding.protectionProfile.summary}
+                    labels={{
+                        kicker: home.prioritiesKicker,
+                        lead: home.prioritiesLead,
+                        countLabel: home.prioritiesCountLabel,
+                        unsureLabel: home.prioritiesUnsureLabel,
+                        confirmChip: home.prioritiesConfirmChip,
+                        declaredChip: home.prioritiesDeclaredChip,
+                        noPolicies: home.prioritiesNoPolicies,
+                        uploadCta: home.prioritiesUploadCta,
+                        withPolicies: home.prioritiesWithPolicies,
+                        alignmentCta: home.prioritiesAlignmentCta,
+                        disclaimer: home.prioritiesDisclaimer,
+                        reason: home.priorityReason,
+                    }}
+                />
+            ) : null
+        ) : (
+            <ProtectionProfileResumeCard
+                variant={protectionState.status === "in_progress" ? "in_progress" : "start"}
+                labels={
+                    protectionState.status === "in_progress"
+                        ? { kicker: home.resumeInProgressKicker, body: home.resumeInProgressBody, cta: home.resumeInProgressCta }
+                        : { kicker: home.resumeStartKicker, body: home.resumeStartBody, cta: home.resumeStartCta }
+                }
+            />
+        )
+
     const planCard = (
         <ProtectionPlanCard
             steps={planStepViews}
@@ -787,6 +876,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_340px]">
                     {/* ── Main column ─────────────────────────────────────── */}
                     <div className="grid min-w-0 gap-5 md:grid-cols-2">
+                        {protectionCard && <div className="min-w-0 md:col-span-2">{protectionCard}</div>}
                         <div className="min-w-0 md:col-span-2">
                             <ProtectionStatusHero
                                 hasPolicies={hasPolicies}

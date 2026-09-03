@@ -153,6 +153,16 @@ No new keys; four standing decisions:
   first-number rule reads the count and the window becomes measured context. Standalone window
   copy remains in the collector's `unmeasurable` list, which is the honest place for it.
 
+### Additions ratified 2026-09-03 (first-stage onboarding — the needs layer)
+
+`needs.priorityCount` · `needs.unsureCount`
+
+Layer 1 of the needs → coverage → gap model. `needs.priorityCount` is the number of derived
+protection priorities a surface renders (the onboarding map, the dashboard's «Η εικόνα σας»);
+`needs.unsureCount` the number of onboarding screens answered «δεν είμαι σίγουρος/η». Neither is a
+score and neither may be summed with a coverage count: they describe what the customer said
+matters, not what any policy does.
+
 ## Action verbs
 
 `upload` · `analyse` · `viewPolicy` · `viewGap` · `renew` · `contactAdvisor` · `callClaims` ·

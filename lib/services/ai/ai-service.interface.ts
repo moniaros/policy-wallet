@@ -302,6 +302,13 @@ export interface RiskProfileInput {
     familyMedicalHistory: string[] | null
     drivingRecord: string | null
     activityLevel: string | null
+    /**
+     * Layer 1 as CONTEXT, never as evidence: what the customer said matters,
+     * derived from the first-stage onboarding. Orders and phrases the model's
+     * observations; cannot create, remove or resize a gap. Null when the
+     * customer never completed the profile.
+     */
+    statedPriorities?: Array<{ domain: string; importance: string }> | null
 }
 
 export interface AIRiskInsight {

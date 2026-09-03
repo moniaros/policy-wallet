@@ -11,6 +11,7 @@ import { buildProtectionPlan, type ProtectionPlanFacts } from "@/lib/services/pr
  */
 
 const NONE: ProtectionPlanFacts = {
+    profileCompleted: false,
     policyCount: 0,
     hasCompletedAnalysis: false,
     openGapCount: 0,
@@ -21,13 +22,18 @@ const NONE: ProtectionPlanFacts = {
 }
 
 describe("buildProtectionPlan", () => {
-    it("starts a new account at 0 of 5 with every setup step open", () => {
+    it("starts a new account at 0 of 6 with every setup step open", () => {
         const plan = buildProtectionPlan(NONE)
-        expect(plan.steps).toHaveLength(5)
+        expect(plan.steps).toHaveLength(6)
         expect(plan.completed).toBe(0)
-        expect(plan.total).toBe(5)
+        expect(plan.total).toBe(6)
         expect(plan.allDone).toBe(false)
         expect(plan.steps.every((s) => s.state === "open")).toBe(true)
+    })
+
+    it("puts the protection profile first and completes it only on completedAt — a skip leaves it open", () => {
+        expect(buildProtectionPlan(NONE).steps[0]).toMatchObject({ id: "profile", state: "open", href: "/onboarding" })
+        expect(buildProtectionPlan({ ...NONE, profileCompleted: true }).steps[0]?.state).toBe("done")
     })
 
     it("keeps the gaps step open when no analysis ever ran, even at zero gaps", () => {
@@ -50,18 +56,19 @@ describe("buildProtectionPlan", () => {
         expect(recSteps).toHaveLength(2)
         expect(recSteps.map((s) => s.id)).toEqual(["recommendation:r1", "recommendation:r2"])
         expect(recSteps.every((s) => s.state === "open" && s.href === "/protection")).toBe(true)
-        expect(plan.total).toBe(7)
+        expect(plan.total).toBe(8)
     })
 
     it("counts handled recommendations as completed work without adding steps", () => {
         const plan = buildProtectionPlan({ ...NONE, handledRecommendationCount: 3 })
-        expect(plan.steps).toHaveLength(5)
+        expect(plan.steps).toHaveLength(6)
         expect(plan.completed).toBe(3)
-        expect(plan.total).toBe(8)
+        expect(plan.total).toBe(9)
     })
 
     it("is all done when every setup step is done and no recommendation is active", () => {
         const plan = buildProtectionPlan({
+            profileCompleted: true,
             policyCount: 2,
             hasCompletedAnalysis: true,
             openGapCount: 0,
@@ -77,6 +84,7 @@ describe("buildProtectionPlan", () => {
     it("routes setup steps where the checklist routed them", () => {
         const plan = buildProtectionPlan(NONE)
         const href = (id: string) => plan.steps.find((s) => s.id === id)?.href
+        expect(href("profile")).toBe("/onboarding")
         expect(href("upload")).toBe("/wallet/add")
         expect(href("analysis")).toBe("/protection")
         expect(href("gaps")).toBe("/protection")
