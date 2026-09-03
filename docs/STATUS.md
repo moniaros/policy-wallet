@@ -62,8 +62,9 @@ seams and hostile review: `docs/handover.md`.
   global, CoverageInsightsClient's verdict/stat tiles and the rest of its body, RecommendationCards'
   urgency colour map (bypass-listed). 518 files / 5900 unit tests, tsc, eslint, i18n, utf8,
   api-auth clean; browser console clean on all four surfaces at 1440 and 390.
-  **Next:** owner review on the preview; DESIGN.md documented from the built world; the severity
-  tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
+  DESIGN.md and `.impeccable/design.json` re-documented from the BUILT world (three planes, card head,
+  fact cells, soft pills, segmented control, count bar; MASTER.md gained the two app surface rows).
+  **Next:** owner review on the preview; the severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
   the first tab" was the Next dev-tools button; the identical renewal rows were fixture
   duplicates, now collapsed).
 

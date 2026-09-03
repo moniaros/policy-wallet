@@ -7,7 +7,7 @@
 ---
 
 **Project:** PolicyWallet
-**Updated:** 2026-08-27
+**Updated:** 2026-09-03
 **Category:** Insurance Platform
 
 > **Canonical value table:** [app/globals.css](../../app/globals.css) — the runtime source of truth, and it is layered. `:root` / `.dark` hold the semantic values (`--primary`, `--foreground`, `--border`, …); the `@theme { --color-* }` block maps those into Tailwind's colour namespace; components consume the **generated utilities** (`bg-primary`, `text-foreground`, `border-border`). That generated-utility path is the recommended one and overwhelmingly the dominant one in the codebase. The `@layer components` recipes (`.pw-card`, `.pw-pill`, `.pw-primary-button`, `.pw-kicker`, `.pw-input`) are defined there too. If this document and `globals.css` ever disagree, **`globals.css` wins** — it is what actually ships.
@@ -32,6 +32,8 @@
 | Primary soft tint | `#DCEBDA` | `bg-primary-soft` |
 | Primary pale tint | `#F0FDF4` | `bg-primary-tint` |
 | Canvas / page background | `#F8FAFC` | `bg-neutral-50` / `.pw-page-shell` |
+| App canvas (signed-in surfaces, 2026-09-03) | `#E7ECF1` | `--surface-canvas` / `.pw-app-canvas` |
+| App sunken sub-card (the one nested surface) | `#EDF1F5` | `--surface-sunken` / `.pw-subcard`, `.pw-soft-button` |
 | Card border | `#E2E8F0` | `border-border` / `bg-neutral-200` |
 | Text — headings | `#0F172A` | `text-foreground` / `neutral-900` |
 | Text — body | `#475569` | `neutral-600` |
