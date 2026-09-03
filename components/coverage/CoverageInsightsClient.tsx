@@ -427,7 +427,7 @@ export function CoverageInsightsClient({
                         </div>
                         <button
                             onClick={() => router.push('/upgrade?reason=feature_locked')}
-                            className="pw-primary-button flex-shrink-0 cursor-pointer"
+                            className="pw-soft-button flex-shrink-0 cursor-pointer"
                         >
                             <Crown className="h-4 w-4" aria-hidden="true" />
                             {copy.upgrade}
@@ -475,7 +475,7 @@ export function CoverageInsightsClient({
                                 {isDeepAnalysisLocked ? (
                                     <button
                                         onClick={() => router.push('/upgrade?reason=feature_locked')}
-                                        className="pw-primary-button mt-4 cursor-pointer"
+                                        className="pw-soft-button mt-4 cursor-pointer"
                                     >
                                         <Crown className="h-4 w-4" aria-hidden="true" />
                                         {copy.notAnalyzedLockedCta}

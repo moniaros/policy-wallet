@@ -106,9 +106,14 @@ seams and hostile review: `docs/handover.md`.
   caption labels. Every bar, icon and pill colour is a status token (no `#1A2420`, no
   `text-black`, no palette literals). One guard learned the token vocabulary
   (`risk-assessment-panel-mobile`'s unknown-vs-unprotected check only knew `bg-red-50`-style
-  classes). Recaptured both lenses at 1440/390: 0 console errors. Not touched: RiskProfileWizard
-  (not rendered for the fixture profile — its 34 legacy label sites remain), the finding cards
-  (already on the anatomy). Commit `fc6b7cac`.
+  classes). Recaptured both lenses at 1440/390: 0 console errors. Commit `fc6b7cac`. A second
+  batch (captured as the FREE and DASH fixtures, whose thin profiles render the states the Pro
+  fixture hides) put RiskProfileWizard on the anatomy — CardHead, sentence-case section heads,
+  `.pw-input` recipe fields with a visible control edge, sunken chips with a primary ring when
+  ticked (ChipToggle's amber «warning» accent is gone: a ticked family-history chip is state, not
+  a finding), content-width submit — and moved every upgrade CTA on the page (lite gate, locked
+  empty state, UpgradeTriggerCard's card and inline variants) to soft pills, so the wizard's
+  submit is the screen's one primary. Not touched: the finding cards (already on the anatomy).
   **Next:** owner review on the preview (four app pages + /protection both lenses + homepage
   hero/audience/why-now); the severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
   the first tab" was the Next dev-tools button; the identical renewal rows were fixture
