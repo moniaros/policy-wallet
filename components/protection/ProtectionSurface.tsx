@@ -97,12 +97,12 @@ export function ProtectionSurface({
 }: ProtectionSurfaceProps) {
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-4xl space-y-6 px-4 pb-10 pt-7 sm:px-6 lg:px-8 lg:pt-10">
+            <div className="mx-auto max-w-4xl space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
                 {/* Header — what the screen IS, plus the one explicit action (A-08). */}
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0">
-                        <h1 className="text-2xl font-bold text-black dark:text-white">{labels.title}</h1>
-                        <p className="mt-1 text-sm leading-snug text-black/65 dark:text-white/70">
+                        <h1 className="text-h3 font-semibold tracking-tight text-foreground">{labels.title}</h1>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                             {labels.subtitle}
                         </p>
                     </div>

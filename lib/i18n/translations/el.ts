@@ -236,6 +236,7 @@ export const el = {
     // Wallet
     wallet: {
         title: 'Το πορτοφόλι μου',
+        overview: 'Επισκόπηση',
         addPolicy: 'Προσθήκη ασφαλιστηρίου',
         uploadDocument: 'Μεταφόρτωση εγγράφου',
         manualEntry: 'Χειροκίνητη προσθήκη',
@@ -265,7 +266,7 @@ export const el = {
         coverageHighlights: 'Κύριες καλύψεις',
         summary: 'Σύνοψη',
         summaryFallback: 'Δεν παρέχεται σύνοψη για αυτό το ασφαλιστήριο. Η ανάλυση AI θα συμπληρώσει αυτήν την ενότητα μόλις επεξεργαστεί το έγγραφό σας.',
-        policyId: 'ΑΡΙΘΜΟΣ ΣΥΜΒΟΛΑΙΟΥ',
+        policyId: 'Αριθμός ασφαλιστηρίου',
         starts: 'Έναρξη',
         ends: 'Λήξη',
         actionItems: 'Ενέργειες',
@@ -2655,6 +2656,7 @@ export const el = {
     },
 
     status: {
+        expiringSoon: 'Λήγουν σύντομα',
         totalPremium: 'Ασφαλιστικό αποτύπωμα',
         premiumExcludesNoAmount: '{count} ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο',
         premiumExcludesNoAmountPlural: '{count} ασφαλιστήρια χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετρώνται στο σύνολο',

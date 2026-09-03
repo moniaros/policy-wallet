@@ -304,8 +304,8 @@ export function CoverageInsightsClient({
             <div>
                 <div className={containerClass}>
                     <div className="mb-7 text-center">
-                        <Heading className="pw-kicker mb-2">{copy.summaryTitle}</Heading>
-                        <p className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight">{copy.addFirstBody}</p>
+                        <Heading className="text-caption font-semibold text-muted-foreground mb-2">{copy.summaryTitle}</Heading>
+                        <p className="text-title font-semibold leading-tight tracking-tight text-foreground sm:text-h3">{copy.addFirstBody}</p>
                     </div>
                     <div className="text-center py-10 pw-card">
                         <Sparkles className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
@@ -326,9 +326,9 @@ export function CoverageInsightsClient({
         <div>
             <div className={containerClass}>
                 <div className="mb-7 text-center">
-                    <Heading className="pw-kicker mb-2">{copy.summaryTitle}</Heading>
+                    <Heading className="text-caption font-semibold text-muted-foreground mb-2">{copy.summaryTitle}</Heading>
                     <p
-                        className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight"
+                        className="text-title font-semibold leading-tight tracking-tight text-foreground sm:text-h3"
                         // «Εντοπίστηκαν 33 σημεία προς έλεγχο» is gap.openCount as
                         // prose — the same live-gap universe the dashboard's
                         // severity tally now sums to (gapsOnActiveCoverage), so
@@ -352,7 +352,7 @@ export function CoverageInsightsClient({
                                     // never one key disagreeing with itself.
                                     data-count="gap.severityCount"
                                     data-count-subject={entry.severity}
-                                    className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
+                                    className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-caption font-semibold text-foreground"
                                 >
                                     <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(entry.tone)}`} aria-hidden />
                                     {entry.count} {severityLabels[entry.severity]}
@@ -363,13 +363,13 @@ export function CoverageInsightsClient({
                 </div>
 
                 {excludedExpired.length > 0 && (
-                    <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-300/60 bg-amber-50 p-4 dark:border-amber-800/60 dark:bg-amber-950/20">
-                        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-700 dark:text-amber-400" />
+                    <div className="mb-6 flex items-start gap-3 rounded-2xl bg-status-warning-tint p-4">
+                        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" aria-hidden="true" />
                         <div className="min-w-0">
-                            <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+                            <p className="text-sm font-semibold text-status-warning">
                                 {copy.expiredExcludedTitle}
                             </p>
-                            <p className="mt-0.5 text-xs leading-relaxed text-amber-800 dark:text-amber-300/90">
+                            <p className="mt-0.5 text-caption leading-relaxed text-foreground/80">
                                 {copy.expiredExcludedBody} {excludedExpired.map((policy) => policy.label).join(' · ')}
                             </p>
                         </div>
@@ -378,11 +378,11 @@ export function CoverageInsightsClient({
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
                     <div className={`rounded-2xl p-4 ${gapVerdict.bg}`}>
-                        <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${gapVerdict.color}`}>{gapVerdict.label[lang]}</p>
+                        <p className={`text-caption font-semibold mb-1 ${gapVerdict.color}`}>{gapVerdict.label[lang]}</p>
                         <p className="text-sm text-black/85 dark:text-white/85">{gapVerdict.desc[lang]}</p>
                     </div>
                     <div className="pw-card rounded-2xl p-4">
-                        <p className="pw-kicker mb-1">{copy.policiesWithPoints}</p>
+                        <p className="text-caption font-semibold text-muted-foreground mb-1">{copy.policiesWithPoints}</p>
                         <p
                             className="text-2xl font-semibold text-black dark:text-white"
                             data-count={hasDeepAnalysis ? "portfolio.policiesWithFindingsCount" : undefined}
@@ -391,7 +391,7 @@ export function CoverageInsightsClient({
                         </p>
                     </div>
                     <div className="pw-card rounded-2xl p-4">
-                        <p className="pw-kicker mb-1">{copy.totalPolicies}</p>
+                        <p className="text-caption font-semibold text-muted-foreground mb-1">{copy.totalPolicies}</p>
                         {/* isPolicyCoverageActive — cover in force TODAY, which
                             also counts expiring-soon and unreadable-term cover.
                             NOT the wallet's «Ενεργά» (strict lifecycle active):
@@ -481,7 +481,7 @@ export function CoverageInsightsClient({
 
                 {hasDeepAnalysis && policiesOk.length > 0 && (
                     <div className="mb-10">
-                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-1">{copy.checkedAndGood}</h3>
+                        <h3 className="text-caption font-semibold text-muted-foreground mb-3 px-1">{copy.checkedAndGood}</h3>
                         <div className="pw-card rounded-2xl divide-y divide-black/10 dark:divide-white/10">
                             {policiesOk.map((policy) => (
                                 <div key={policy.id} className="p-4 flex items-center justify-between">

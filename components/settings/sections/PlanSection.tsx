@@ -174,7 +174,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                     )}
                 </div>
 
-                <h3 className="pw-kicker mt-5">{copy.includedTitle}</h3>
+                <h3 className="mt-5 text-caption font-semibold text-muted-foreground">{copy.includedTitle}</h3>
                 <ul className="mt-2 space-y-2">
                     {included.map((line) => (
                         <li key={line} className="flex items-start gap-2 text-sm text-black/80 dark:text-white/80">

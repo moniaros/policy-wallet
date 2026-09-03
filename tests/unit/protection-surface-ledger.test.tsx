@@ -42,7 +42,7 @@ import React from "react"
 import { LanguageProvider } from "@/contexts/LanguageContext"
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
 import { getTranslations } from "@/lib/i18n"
-import { INSURANCE_BRANCHES } from "@/lib/insurance/taxonomy"
+import { INSURANCE_BRANCHES, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { getBranchContent } from "@/lib/insurance/content"
 import { policiesInBranch, type BranchPolicyFacts, type BranchTileState } from "@/lib/insurance/branch-page"
 import { assembleRiskGraph } from "@/lib/services/risk-graph/service"
@@ -723,7 +723,10 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
                 card!.textContent,
                 `A-10: ${gap.id} does not carry its severity label`
             ).toContain(resolveCopyKey(describeSeverity(gap.severity).labelKey))
-            expect(card!.textContent).toContain(gap.policy.lineOfBusiness.toUpperCase())
+            // The line of business is NAMED, in the reader's language — the card
+            // used to print the raw branch id in capitals («MOTOR» on a Greek
+            // page), which this assertion had frozen as if it were the product.
+            expect(card!.textContent).toContain(normalizeBranch(gap.policy.lineOfBusiness).label.el)
         }
     })
 

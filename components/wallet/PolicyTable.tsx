@@ -77,13 +77,13 @@ export function PolicyTable({
             <div className="overflow-x-auto">
                 <table className="w-full min-w-[760px] text-left">
                     <thead>
-                        <tr className="border-b border-black/[0.07] dark:border-white/10">
-                            <th scope="col" className="pw-kicker px-4 py-2.5">{columns.policy}</th>
-                            <th scope="col" className="pw-kicker px-4 py-2.5">{columns.type}</th>
-                            <th scope="col" className="pw-kicker px-4 py-2.5">{columns.renewal}</th>
-                            <th scope="col" className="pw-kicker px-4 py-2.5 text-right">{columns.annualPremium}</th>
-                            <th scope="col" className="pw-kicker px-4 py-2.5">{columns.status}</th>
-                            <th scope="col" className="pw-kicker px-4 py-2.5 text-right">{columns.actions}</th>
+                        <tr className="border-b border-border">
+                            <th scope="col" className="px-4 py-3 text-caption font-semibold text-muted-foreground">{columns.policy}</th>
+                            <th scope="col" className="px-4 py-3 text-caption font-semibold text-muted-foreground">{columns.type}</th>
+                            <th scope="col" className="px-4 py-3 text-caption font-semibold text-muted-foreground">{columns.renewal}</th>
+                            <th scope="col" className="px-4 py-3 text-right text-caption font-semibold text-muted-foreground">{columns.annualPremium}</th>
+                            <th scope="col" className="px-4 py-3 text-caption font-semibold text-muted-foreground">{columns.status}</th>
+                            <th scope="col" className="px-4 py-3 text-right text-caption font-semibold text-muted-foreground">{columns.actions}</th>
                         </tr>
                     </thead>
 
@@ -155,18 +155,13 @@ export function PolicyTable({
                                     // tagging only the grid card left the audit finding no policy at all.
                                     data-testid="policy-card"
                                     onClick={() => onViewPolicy?.(policy.id)}
-                                    className="cursor-pointer border-b border-black/[0.05] transition-colors last:border-0 hover:bg-black/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.03]"
+                                    className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-muted/60"
                                 >
                                     {/* Policy — insured asset over insurer, two tight lines */}
                                     <td className="px-4 py-2.5">
                                         <div className="flex items-center gap-2.5">
-                                            <span
-                                                className={cn(
-                                                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
-                                                    view.chipClass
-                                                )}
-                                            >
-                                                <Icon className="h-4 w-4" />
+                                            <span className="pw-card-chip" aria-hidden="true">
+                                                <Icon className="h-4 w-4" strokeWidth={1.75} />
                                             </span>
                                             <div className="min-w-0">
                                                 <p className="truncate text-body-sm font-semibold text-foreground">
@@ -176,7 +171,7 @@ export function PolicyTable({
                                                     vehicle/property to name — don't print it twice. The
                                                     identifier leads: it is the half that tells two rows
                                                     of one insurer apart. */}
-                                                <p className="truncate text-micro text-muted-foreground">
+                                                <p className="truncate text-caption text-muted-foreground">
                                                     {secondaryParts.map((part, i) => (
                                                         <span key={part.factKey}>
                                                             {i > 0 && <span aria-hidden> · </span>}
@@ -191,17 +186,17 @@ export function PolicyTable({
                                     </td>
 
                                     <td className="px-4 py-2.5">
-                                        <span className="text-caption text-black/70 dark:text-white/70">
+                                        <span className="text-body-sm text-foreground">
                                             {branch.label[lang]}
                                         </span>
                                     </td>
 
                                     <td className="px-4 py-2.5">
-                                        <span className="inline-flex items-center gap-1.5 text-caption whitespace-nowrap text-black/70 dark:text-white/70">
+                                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-body-sm text-foreground">
                                             <CalendarDays className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                                             <span className="tabular-nums" data-fact="policy.endDate" data-fact-subject={policy.id}>{renewalLabel}</span>
                                             {daysLeft !== null && (
-                                                <span className="tabular-nums text-micro text-muted-foreground" data-fact="policy.daysRemaining" data-fact-subject={policy.id}>
+                                                <span className="tabular-nums text-caption text-muted-foreground" data-fact="policy.daysRemaining" data-fact-subject={policy.id}>
                                                     ({daysLeft}
                                                     {lang === 'el' ? 'η' : 'd'})
                                                 </span>
@@ -226,7 +221,7 @@ export function PolicyTable({
                                         >
                                             <button
                                                 onClick={() => onViewPolicy?.(policy.id)}
-                                                className="cursor-pointer rounded-full bg-primary px-3 py-1.5 text-caption font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none"
+                                                className="pw-soft-button cursor-pointer !px-3.5 !text-caption"
                                             >
                                                 {columns.manage}
                                             </button>
@@ -257,17 +252,17 @@ export function PolicyTable({
                                                     else setOpenMenuId(policy.id)
                                                 }}
                                                 className={cn(
-                                                    'cursor-pointer rounded-lg p-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none',
+                                                    'grid h-11 w-11 cursor-pointer place-items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none',
                                                     isMenuOpen
-                                                        ? 'bg-black/5 dark:bg-white/10'
-                                                        : 'hover:bg-black/5 dark:hover:bg-white/10'
+                                                        ? 'bg-muted'
+                                                        : 'hover:bg-muted'
                                                 )}
                                                 id={`policy-actions-${policy.id}`}
                                                 aria-label={columns.actions}
                                                 aria-expanded={isMenuOpen}
                                                 aria-haspopup="menu"
                                             >
-                                                <MoreVertical className="h-4 w-4 text-black/60 dark:text-white/60" />
+                                                <MoreVertical className="h-4 w-4 text-muted-foreground" />
                                             </button>
 
                                             {isMenuOpen &&
@@ -277,7 +272,7 @@ export function PolicyTable({
                                                         <div aria-hidden="true" className="fixed inset-0 z-[9998]" onClick={closeMenu} />
                                                         <div
                                                             role="menu"
-                                                            className="animate-in fade-in zoom-in-95 fixed z-[9999] w-60 rounded-2xl border border-black/10 bg-white py-1.5 shadow-2xl duration-150 dark:border-white/15 dark:bg-black"
+                                                            className="animate-in fade-in zoom-in-95 fixed z-[9999] w-60 rounded-2xl border border-border bg-card py-1.5 shadow-2xl duration-150"
                                                             style={{
                                                                 top: `${menuPosition?.top ?? 0}px`,
                                                                 left: `${menuPosition?.left ?? 0}px`,
@@ -339,30 +334,30 @@ export function PolicyTable({
 
             {currentPolicies.length === 0 && (
                 <div className="px-6 py-10 text-center">
-                    <AlertCircle className="mx-auto mb-2 h-6 w-6 text-black/30 dark:text-white/30" />
-                    <h3 className="text-body-sm font-semibold text-black dark:text-white">{t.dashboard.noPolicies}</h3>
+                    <AlertCircle className="mx-auto mb-2 h-6 w-6 text-muted-foreground" aria-hidden="true" />
+                    <h3 className="text-body-sm font-semibold text-foreground">{t.dashboard.noPolicies}</h3>
                     <p className="mt-0.5 text-caption text-muted-foreground">{t.dashboard.addFirstPolicy}</p>
                 </div>
             )}
 
             {totalPages > 1 && (
-                <div className="flex items-center justify-between border-t border-black/[0.07] px-4 py-2.5 dark:border-white/10">
+                <div className="flex items-center justify-between border-t border-border px-4 py-2.5">
                     <button
                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="cursor-pointer rounded-full px-3 py-1.5 text-caption font-medium text-black/70 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10"
+                        className="pw-soft-button cursor-pointer !px-3.5 !text-caption disabled:cursor-not-allowed disabled:opacity-40"
                     >
                         {t.dashboard.previous}
                     </button>
 
-                    <span className="text-caption tabular-nums text-black/60 dark:text-white/50">
+                    <span className="text-caption tabular-nums text-muted-foreground">
                         {page} / {totalPages}
                     </span>
 
                     <button
                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages}
-                        className="cursor-pointer rounded-full px-3 py-1.5 text-caption font-medium text-black/70 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10"
+                        className="pw-soft-button cursor-pointer !px-3.5 !text-caption disabled:cursor-not-allowed disabled:opacity-40"
                     >
                         {t.dashboard.next}
                     </button>
@@ -390,8 +385,8 @@ function MenuItem({
             className={cn(
                 'flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-body-sm font-medium transition-colors',
                 destructive
-                    ? 'text-red-700 dark:text-rose-200 hover:bg-red-50 dark:hover:bg-red-900/15'
-                    : 'text-black/80 hover:bg-black/5 dark:text-white/85 dark:hover:bg-white/10'
+                    ? 'text-status-danger hover:bg-status-danger-tint'
+                    : 'text-foreground hover:bg-muted'
             )}
         >
             <Icon className="h-4 w-4" />

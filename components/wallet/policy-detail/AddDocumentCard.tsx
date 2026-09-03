@@ -191,8 +191,8 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
     }
 
     return (
-        <div className="pw-card pw-pad">
-            <h3 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+        <div>
+            <h3 className="mb-2 flex items-center gap-2 text-body font-semibold text-foreground">
                 <FilePlus2 className="h-4 w-4 text-primary dark:text-mint" />
                 {copy.title}
             </h3>
@@ -237,7 +237,7 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
 
             {showRenewalEntry && (
                 <div className="mt-6 border-t border-black/10 pt-5 dark:border-white/15">
-                    <h4 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                    <h4 className="mb-2 flex items-center gap-2 text-body font-semibold text-foreground">
                         <RefreshCw className="h-4 w-4 text-primary dark:text-mint" />
                         {copy.renewalTitle}
                     </h4>

@@ -239,6 +239,7 @@ export const en: TranslationKeys = {
     // Wallet
     wallet: {
         title: 'My Wallet',
+        overview: 'Overview',
         addPolicy: 'Add Policy',
         uploadDocument: 'Upload Document',
         manualEntry: 'Manual Entry',
@@ -2626,6 +2627,7 @@ export const en: TranslationKeys = {
     },
 
     status: {
+        expiringSoon: 'Expiring soon',
         totalPremium: 'Insurance Footprint',
         premiumExcludesNoAmount: '{count} policy with no recorded premium is not included in the total',
         premiumExcludesNoAmountPlural: '{count} policies with no recorded premium are not included in the total',

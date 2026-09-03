@@ -39,9 +39,31 @@ seams and hostile review: `docs/handover.md`.
   from the built world after the remaining surfaces are re-cut. Preview: Vercel git integration
   builds every push on `moniaros-projects/policy-wallet` (the second "AgentRise" team status fails
   on author access and is pre-existing); the CSP blocks Vercel's live-feedback script on previews.
-  **Next pass:** wallet, policy detail, protection, settings bodies onto the same card
-  anatomy (they already sit inside the new shell); then DESIGN.md documented from the built
-  world. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
+  **Pass 2 (later 2026-09-03, same branch/PR): wallet, policy detail, protection and settings
+  bodies re-cut onto the same card anatomy.** `/wallet`: KPI tiles + completion ring → ONE overview
+  card of fact cells (every `data-count`/`data-fact` key kept, each rendered once), red notices box →
+  white card with sub-card rows and a «+N ακόμη» soft pill, segmented filter/view controls on the
+  sunken surface, sentence-case table headers, neutral chips, soft-pill row actions, the sticky
+  `PageHeader` replaced by the page's own header, FAB as a round brand button with a card menu.
+  `/wallet/[id]`: head without uppercase/mono (captions for labels, attention as a sub-card,
+  primary DO + soft-pill ASK in one row — still exactly two buttons, DO first), summary on
+  `CardHead` with the health donut turned into a fact cell, the six disclosure sections as cards
+  with chips, 60+ uppercase labels across the sub-cards → sentence case, inner cards flattened into
+  groups with sub-card tiles. `/protection`: header, segmented lens tabs (no green pill),
+  `RecommendationCards` → `CardHead` + sub-cards with white pill actions, `InsightCard` without the
+  coloured side bar and the six green blocks, raw branch id → localised branch name, expired notice
+  on the warning tint. `/account`: rail active = bar + tint, chips, tokens. Also fixed a REAL
+  hydration error on every expired policy (GlossaryHint's `<details>` inside a `<p>` in
+  KeyDatesCard). Register/guard moves: token-debt −4 (ImportantNotices hex), Greek inventory
+  (+«Επισκόπηση», +«Λήγουν σύντομα», «Αριθμός ασφαλιστηρίου» — the old ALL-CAPS label had evaded
+  the «συμβόλαιο» ban because capitals drop the tonos), ledger A-10 now asserts the localised branch
+  name rather than the raw id in capitals. Left as-is by decision: `policyStatus` labels stay
+  ALL-CAPS in the source (pinned by policy-status-wording + e2e), `.pw-card:hover` mint lift is
+  global, CoverageInsightsClient's verdict/stat tiles and the rest of its body, RecommendationCards'
+  urgency colour map (bypass-listed). 518 files / 5900 unit tests, tsc, eslint, i18n, utf8,
+  api-auth clean; browser console clean on all four surfaces at 1440 and 390.
+  **Next:** owner review on the preview; DESIGN.md documented from the built world; the severity
+  tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
   the first tab" was the Next dev-tools button; the identical renewal rows were fixture
   duplicates, now collapsed).
 

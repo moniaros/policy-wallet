@@ -44,13 +44,13 @@ export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellP
                     {!isIndex && (
                         <Link
                             href="/account"
-                            className="pw-inline-action -ml-1 mb-2 inline-flex min-h-11 items-center gap-1 pr-2 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                            className="pw-inline-action -ml-1 mb-2 inline-flex min-h-11 items-center gap-1 pr-2 text-caption font-semibold text-primary hover:underline dark:text-mint"
                         >
                             <ChevronLeft aria-hidden="true" className="h-4 w-4" />
                             {t.settings.pageTitle}
                         </Link>
                     )}
-                    <h1 className="text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                    <h1 className="text-title font-semibold tracking-tight text-foreground">
                         {isIndex || !active ? t.settings.pageTitle : copy[active].label}
                     </h1>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
@@ -60,8 +60,7 @@ export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellP
 
                 {/* Desktop header */}
                 <header className="mb-6 hidden lg:block">
-                    <p className="pw-kicker">{t.nav.account}</p>
-                    <h1 className="mt-1.5 text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">
                         {t.settings.pageTitle}
                     </h1>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.settings.pageSubtitle}</p>

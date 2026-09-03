@@ -64,28 +64,28 @@ export function PolicySection({
     }, [forceOpen])
 
     return (
-        <section id={id} className="scroll-mt-20 border-b border-black/10 dark:border-white/12">
+        <section id={id} className="pw-card scroll-mt-20 px-4 sm:px-6">
             <h2>
                 <button
                     type="button"
                     onClick={() => setOpen((v) => !v)}
                     aria-expanded={open}
                     aria-controls={panelId}
-                    className="flex min-h-[56px] w-full items-center gap-3 py-4 text-left transition-colors hover:text-primary dark:hover:text-mint"
+                    className="flex min-h-[56px] w-full cursor-pointer items-center gap-3 rounded-lg py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
-                    {icon && <span className="shrink-0 text-primary dark:text-mint" aria-hidden>{icon}</span>}
+                    {icon && <span className="pw-card-chip [&>svg]:h-4 [&>svg]:w-4" aria-hidden>{icon}</span>}
                     <span className="min-w-0 flex-1">
-                        <span className="block text-base font-bold leading-snug text-black dark:text-white">
+                        <span className="block text-body-lg font-semibold leading-snug tracking-tight text-foreground">
                             {title}
                         </span>
                         {summary && (
-                            <span className="mt-0.5 block text-sm leading-snug text-black/60 dark:text-white/60">
+                            <span className="mt-0.5 block text-caption leading-snug text-muted-foreground">
                                 {summary}
                             </span>
                         )}
                     </span>
                     <ChevronDown
-                        className={`h-5 w-5 shrink-0 text-black/40 transition-transform dark:text-white/40 ${open ? "rotate-180" : ""}`}
+                        className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
                         aria-hidden
                     />
                 </button>
@@ -95,7 +95,7 @@ export function PolicySection({
                 and tap-target measurement counts content no reader can see, and
                 the guards would be auditing the DOM instead of the product. */}
             {open && (
-                <div id={panelId} role="region" aria-label={title} className="pb-6">
+                <div id={panelId} role="region" aria-label={title} className="border-t border-border pb-6 pt-4">
                     {children}
                 </div>
             )}

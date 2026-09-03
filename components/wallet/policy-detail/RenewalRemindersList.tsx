@@ -33,7 +33,7 @@ export function RenewalRemindersList({ renewals, locale, copy }: RenewalReminder
 
     return (
         <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
-            <h3 className="mb-3 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+            <h3 className="mb-3 text-caption font-medium text-muted-foreground">
                 {copy.title}
             </h3>
             <ul className="space-y-2">
@@ -49,7 +49,7 @@ export function RenewalRemindersList({ renewals, locale, copy }: RenewalReminder
                                 <p className="text-sm font-semibold text-black dark:text-white">
                                     {copy.periodEnding} {formatPolicyDate(renewal.policyEndDate, locale)}
                                 </p>
-                                <span className={`rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-wider ${chip}`}>
+                                <span className={`rounded-full px-2 py-0.5 text-caption font-semibold ${chip}`}>
                                     {statusLabel}
                                 </span>
                             </div>

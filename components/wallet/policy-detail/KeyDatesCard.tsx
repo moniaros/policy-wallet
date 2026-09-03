@@ -132,14 +132,14 @@ export function KeyDatesCard({
     })()
 
     return (
-        <div className="pw-card pw-pad sm:p-7">
+        <div>
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                <h2 className="flex items-center gap-2 text-body font-semibold text-foreground">
                     <Calendar className="h-4 w-4 text-primary dark:text-mint" />
                     {copy.keyDatesTitle}
                 </h2>
                 {!suppressStatusAndCountdown && (
-                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
+                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-caption font-semibold ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
                         {copy.renewalStatusLabel}: {statusLabel}
                     </span>
                 )}
@@ -148,22 +148,25 @@ export function KeyDatesCard({
             {/* When the policy has expired, explain what that means for cover at
                 the exact moment the reader sees the status — a novice rarely
                 knows «Έληξε» means "no cover for new losses right now". */}
+            {/* A div, not a <p>: GlossaryHint is a <details>, which HTML
+                forbids inside a paragraph — the browser closed the <p> early
+                and React reported a hydration mismatch on every expired policy. */}
             {isExpired && lapseHint && (
-                <p className="-mt-2 mb-5 text-caption text-black/60 dark:text-white/60">
+                <div className="-mt-2 mb-5 text-caption text-muted-foreground">
                     <GlossaryHint hint={lapseHint} />
-                </p>
+                </div>
             )}
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5" data-fact="policy.startDate">
-                    <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">{copy.startedOn}</p>
+                <div className="pw-subcard px-4 py-3" data-fact="policy.startDate">
+                    <p className="mb-1 text-caption font-medium text-muted-foreground">{copy.startedOn}</p>
                     <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(startDate, locale)}</p>
                 </div>
                 {/* The EXPIRY DATE is the head's, stated once. This tile
                     remains for the standalone (non-restructured) callers. */}
                 {!suppressStatusAndCountdown && (
-                <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
-                    <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                <div className="pw-subcard px-4 py-3">
+                    <p className="mb-1 text-caption font-medium text-muted-foreground">
                         {isExpired ? copy.expiredOn : copy.expiresOn}
                     </p>
                     <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(endDate, locale)}</p>
@@ -179,7 +182,7 @@ export function KeyDatesCard({
                                 : "border-black/10 bg-black/[0.03] dark:border-white/15 dark:bg-white/5"
                         }`}
                     >
-                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">{copy.expiresIn}</p>
+                        <p className="mb-1 text-caption font-medium text-muted-foreground">{copy.expiresIn}</p>
                         <p
                             className={`text-sm font-bold ${
                                 isExpiringSoon ? "text-status-warning" : "text-black dark:text-white"
@@ -192,8 +195,8 @@ export function KeyDatesCard({
                 {/* What you pay — a term of this period, relocated out of the
                     hero, where it was a large number competing with identity. */}
                 {typeof premiumAmount === "number" && premiumAmount > 0 && (
-                    <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5" data-fact="policy.premiumAmount">
-                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                    <div className="pw-subcard px-4 py-3" data-fact="policy.premiumAmount">
+                        <p className="mb-1 text-caption font-medium text-muted-foreground">
                             {premiumFrequency && premiumFrequency !== "annual" && copy.premiumFrequencies?.[premiumFrequency]
                                 ? `${copy.premiumLabel} · ${copy.premiumFrequencies[premiumFrequency]}`
                                 : copy.annualPremium || copy.premiumLabel}
@@ -204,10 +207,10 @@ export function KeyDatesCard({
                     </div>
                 )}
                 {renewalDate && (
-                    <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
-                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                    <div className="pw-subcard px-4 py-3">
+                        <div className="mb-1 text-caption font-medium text-muted-foreground">
                             {renewalHint ? <GlossaryHint hint={renewalHint} /> : copy.renewalDateLabel}
-                        </p>
+                        </div>
                         <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(renewalDate, locale)}</p>
                     </div>
                 )}
@@ -241,7 +244,7 @@ export function KeyDatesCard({
             )}
 
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
-                <h3 className="mb-3 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">{copy.renewalHistory}</h3>
+                <h3 className="mb-3 text-caption font-medium text-muted-foreground">{copy.renewalHistory}</h3>
                 {renewalHistory.length === 0 ? (
                     <p className="text-xs text-muted-foreground">{copy.noRenewalHistory}</p>
                 ) : (

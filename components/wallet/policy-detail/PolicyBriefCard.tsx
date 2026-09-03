@@ -39,8 +39,8 @@ export function PolicyBriefCard({
     }
 }) {
     return (
-        <div className="pw-card pw-pad sm:p-7">
-            <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+        <div>
+            <h2 className="flex items-center gap-2 text-body font-semibold text-foreground">
                 <FileSearch className="h-4 w-4 text-primary dark:text-mint" />
                 {copy.title}
             </h2>

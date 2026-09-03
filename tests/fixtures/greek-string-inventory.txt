@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2839
+# bundle entries: 2841
 # inline entries: 4771 across 214 files
 # ternary entries: 285 across 44 files
 # call entries: 1232 across 87 files
@@ -1946,6 +1946,7 @@ bundle	status.added	"προστεθέντα"
 bundle	status.allClear30Days	"Όλα καθαρά για τις επόμενες 30 ημέρες!"
 bundle	status.attentionNeeded	"Χρειάζεται προσοχή"
 bundle	status.auto	"Αυτοκίνητο"
+bundle	status.expiringSoon	"Λήγουν σύντομα"
 bundle	status.expiringWithin30Days	"Ασφαλιστήρια που λήγουν εντός 30 ημερών"
 bundle	status.fromLastMonth	"από τον προηγούμενο μήνα"
 bundle	status.health	"Υγεία"
@@ -2442,6 +2443,7 @@ bundle	wallet.notices.title	"Σημαντικές ειδοποιήσεις"
 bundle	wallet.notices.unknownDuration	"{policy}: δεν εντοπίστηκε ημερομηνία λήξης."
 bundle	wallet.openChat	"Άνοιγμα συνομιλίας"
 bundle	wallet.optional	"Προαιρετικό"
+bundle	wallet.overview	"Επισκόπηση"
 bundle	wallet.plateNumber	"Αριθμός κυκλοφορίας"
 bundle	wallet.policyDetails	"Λεπτομέρειες ασφάλισης"
 bundle	wallet.policyDetailsPage.actionRequiredChip	"Απαιτείται ενέργεια"
@@ -2722,7 +2724,7 @@ bundle	wallet.policyDetailsPage.valueUnreadable	"Δεν διαβάστηκε α�
 bundle	wallet.policyDetailsPage.valueUnreadableCta	"Άνοιγμα εγγράφου"
 bundle	wallet.policyDetailsPage.valueUnreadableHint	"Δεν καταφέραμε να διαβάσουμε αυτό το στοιχείο. Δεν είναι κρυμμένο — ανοίξτε το έγγραφο για να το δείτε."
 bundle	wallet.policyDetailsPage.visitSiteCta	"Άνοιγμα συνδέσμου"
-bundle	wallet.policyId	"ΑΡΙΘΜΟΣ ΣΥΜΒΟΛΑΙΟΥ"
+bundle	wallet.policyId	"Αριθμός ασφαλιστηρίου"
 bundle	wallet.policyNumber	"Αριθμός ασφαλιστηρίου"
 bundle	wallet.policyShared	"Το ασφαλιστήριο κοινοποιήθηκε με επιτυχία"
 bundle	wallet.premium	"Ασφάλιστρο"

@@ -78,7 +78,7 @@ export function StructuredCoverageTable({ acordData, language }: Props) {
 
     return (
         <section className="pw-card pw-pad space-y-4">
-            <h3 className="pw-kicker">{copy.limitsTitle}</h3>
+            <h3 className="text-caption font-semibold text-muted-foreground">{copy.limitsTitle}</h3>
 
             <ul className="space-y-4">
                 {coverages.map((coverage, index) => {

@@ -69,8 +69,8 @@ function CardAction({
             // parent, width 8px short — three times per card, 87 offenders
             // across a 29-policy wallet at 320/390/430. One primitive, not 87
             // defects. The icon inside stays h-4 w-4; only the hit area grows.
-            className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${destructive
-                ? 'text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
+            className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${destructive
+                ? 'text-status-danger hover:bg-status-danger-tint'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
         >
@@ -140,11 +140,11 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
             >
                 <div className="flex items-center gap-3">
                 {/* LOB icon — status-semantic chip from the shared status pipeline */}
-                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${view.chipClass}`}>
+                <div className="pw-card-chip" aria-hidden="true">
                     {isAnalyzing ? (
-                        <Sparkles className="h-5 w-5 animate-pulse" />
+                        <Sparkles className="h-4 w-4 animate-pulse" />
                     ) : (
-                        <glyph.Icon className="h-5 w-5" />
+                        <glyph.Icon className="h-4 w-4" strokeWidth={1.75} />
                     )}
                 </div>
 
@@ -164,7 +164,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                     </div>
 
                     {/* Row 2: LOB type (+ asset identifier) + expiry inline */}
-                    <p className="text-micro text-muted-foreground">
+                    <p className="text-caption text-muted-foreground">
                         {localizedLob}
                         {assetLabel && (
                             <>
@@ -217,7 +217,7 @@ export function PolicyCardSkeleton() {
     return (
         <div className="pw-card pw-pad-tight">
             <div className="flex items-center gap-3">
-                <Skeleton className="h-9 w-9 rounded-lg" />
+                <Skeleton className="h-9 w-9 rounded-[10px]" />
                 <div className="flex-1 space-y-1.5">
                     <div className="flex items-center justify-between">
                         <Skeleton className="h-3.5 w-28" />

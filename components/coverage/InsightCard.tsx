@@ -1,4 +1,5 @@
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { SeverityCaveat } from "@/components/gaps/SeverityCaveat"
 import { CheckCircle2, ChevronRight, Info, Shield, Car, HeartPulse, Home, Briefcase, Lock } from 'lucide-react'
 
@@ -92,37 +93,36 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
     const glyph = { Icon: getBranchIcon(insight.type) }
 
     return (
-        <div className={`relative bg-white dark:bg-black rounded-2xl border transition-all duration-200 hover:shadow-md overflow-hidden ${config.border} border-l-4 shadow-sm`}>
-            <div className={`absolute left-0 top-0 bottom-0 w-1 ${config.accent}`} />
+        <div className="pw-card relative overflow-hidden">
 
             <div className="p-5">
                 <div className="flex items-start gap-3 mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center flex-shrink-0 border border-black/10 dark:border-white/15">
-                        <glyph.Icon className="w-5 h-5 text-black/65 dark:text-white/75" />
+                    <div className="pw-card-chip" aria-hidden="true">
+                        <glyph.Icon className="h-4 w-4" strokeWidth={1.75} />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                            <span className="text-kicker font-semibold uppercase tracking-widest text-black/60 dark:text-white/60">
-                                {insight.type.toUpperCase()}
+                            <span className="text-caption font-semibold text-muted-foreground">
+                                {normalizeBranch(insight.type).label[language === 'el' ? 'el' : 'en']}
                             </span>
-                            <span className={`text-kicker font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full ${config.bg} ${config.color} border ${config.border}`}>
+                            <span className={`rounded-full px-2 py-0.5 text-caption font-semibold ${config.bg} ${config.color}`}>
                                 {config.label[language]}
                             </span>
                             {insight.isPlusFeature && (
-                                <span className="text-kicker font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/30 flex items-center gap-1">
+                                <span className="flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-primary dark:bg-primary/15 dark:text-mint">
                                     <Lock className="w-3 h-3" />
                                     PLUS
                                 </span>
                             )}
                         </div>
-                        <h3 className="text-lg font-semibold text-black dark:text-white leading-tight">{insight.title}</h3>
+                        <h3 className="text-body-lg font-semibold leading-snug tracking-tight text-foreground">{insight.title}</h3>
                     </div>
                 </div>
 
                 {insight.isPlusFeature ? (
-                    <div className="rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 px-4 py-5 text-center space-y-3">
-                        <Lock className="w-6 h-6 mx-auto text-black/35 dark:text-white/60" />
-                        <p className="text-sm text-black/70 dark:text-white/75">
+                    <div className="pw-subcard space-y-3 px-4 py-5 text-center">
+                        <Lock className="mx-auto h-6 w-6 text-muted-foreground" aria-hidden="true" />
+                        <p className="text-sm text-muted-foreground">
                             {language === 'el'
                                 ? 'Αναβάθμισε για να δεις ανάλυση και προτεινόμενες ενέργειες.'
                                 : 'Upgrade to see the full analysis and recommended actions.'}
@@ -130,25 +130,25 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/10 dark:border-white/15">
+                        <div className="pw-subcard p-3">
                             <div className="flex gap-2.5">
-                                <Info className="w-4 h-4 text-black/70 dark:text-white/70 mt-0.5 flex-shrink-0" />
+                                <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden="true" />
                                 <div>
-                                    <span className="text-kicker font-semibold text-black/70 dark:text-white/70 uppercase tracking-widest block mb-1">
+                                    <span className="mb-1 block text-caption font-semibold text-muted-foreground">
                                         {COPY.whyItMatters[language]}
                                     </span>
-                                    <p className="text-black/80 dark:text-white/80 text-sm leading-relaxed">{insight.whyItMatters}</p>
+                                    <p className="text-sm leading-relaxed text-foreground">{insight.whyItMatters}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div>
-                            <span className="text-kicker font-semibold text-muted-foreground uppercase tracking-widest block mb-2">
+                            <span className="mb-2 block text-caption font-semibold text-muted-foreground">
                                 {COPY.whatWeChecked[language]}
                             </span>
                             <div className="space-y-2">
                                 {insight.checkedItems.slice(0, 3).map((item, idx) => (
-                                    <div key={idx} className="flex items-center gap-2.5 text-sm text-black/70 dark:text-white/70">
+                                    <div key={idx} className="flex items-center gap-2.5 text-sm text-foreground/80">
                                         <div className="w-5 h-5 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center flex-shrink-0">
                                             <CheckCircle2 className="w-3.5 h-3.5 text-primary dark:text-mint" />
                                         </div>
@@ -161,7 +161,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                         <button
                             type="button"
                             onClick={() => onAction('primary', insight.id, insight.primaryAction.label)}
-                            className="w-full flex items-center justify-between px-4 py-3 bg-primary text-white dark:text-[#1A2420] rounded-xl text-sm font-semibold shadow-sm hover:bg-primary-hover transition-colors cursor-pointer"
+                            className="pw-soft-button w-full cursor-pointer !justify-between"
                         >
                             <span>{insight.primaryAction.label}</span>
                             <ChevronRight className="w-4 h-4" />
@@ -173,9 +173,9 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                                     key={idx}
                                     type="button"
                                     onClick={() => onAction('secondary', insight.id, action.label)}
-                                    className={`px-3 py-2.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${idx === 0
-                                        ? 'bg-white dark:bg-black border-black/15 dark:border-white/20 text-black dark:text-white'
-                                        : 'bg-black/5 dark:bg-white/10 border-black/10 dark:border-white/15 text-black/60 dark:text-white/60'
+                                    className={`inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full px-3 text-caption font-semibold transition-colors ${idx === 0
+                                        ? 'border border-border bg-card text-foreground hover:bg-muted'
+                                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                                         }`}
                                 >
                                     {action.label}
@@ -185,7 +185,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
 
                         {insight.microcopy && (
                             <div className="flex justify-center">
-                                <span className="text-kicker font-medium text-muted-foreground bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
+                                <span className="flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-caption font-medium text-muted-foreground">
                                     <Shield className="w-3 h-3" />
                                     {insight.microcopy}
                                 </span>
@@ -196,8 +196,8 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
             </div>
 
             {insight.isPlusFeature && (
-                <div className="bg-black/5 dark:bg-white/10 px-5 py-2 border-t border-black/10 dark:border-white/15 flex justify-center">
-                    <span className="text-kicker font-semibold text-muted-foreground">
+                <div className="flex justify-center border-t border-border bg-muted/60 px-5 py-2">
+                    <span className="text-caption font-semibold text-muted-foreground">
                         {COPY.plusFeature[language]}
                     </span>
                 </div>

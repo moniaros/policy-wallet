@@ -43,23 +43,23 @@ export function SettingsNav({ roles, hasLiveOffers, variant }: SettingsNavProps)
     if (variant === "index") {
         return (
             <nav aria-label={t.settings.pageTitle}>
-                <ul className="pw-card divide-y divide-black/5 dark:divide-white/10">
+                <ul className="pw-card divide-y divide-border">
                     {sections.map((section) => {
                         const Icon = ICONS[section.id]
                         return (
                             <li key={section.id}>
                                 <Link
                                     href={section.href}
-                                    className="flex min-h-11 items-center gap-3 px-4 py-3.5 transition hover:bg-black/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset dark:hover:bg-white/[0.04]"
+                                    className="flex min-h-11 items-center gap-3 px-4 py-3.5 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                                 >
                                     <span
                                         aria-hidden="true"
-                                        className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
+                                        className="pw-card-chip"
                                     >
                                         <Icon className="h-4 w-4" />
                                     </span>
                                     <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-semibold text-black dark:text-white">
+                                        <span className="block text-sm font-semibold text-foreground">
                                             {copy[section.labelKey].label}
                                         </span>
                                         <span className="mt-0.5 block text-caption leading-snug text-muted-foreground">
@@ -78,7 +78,7 @@ export function SettingsNav({ roles, hasLiveOffers, variant }: SettingsNavProps)
 
     return (
         <nav aria-label={t.settings.pageTitle} className="sticky top-6 self-start">
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
                 {sections.map((section) => {
                     const Icon = ICONS[section.id]
                     const isActive = active === section.id
@@ -89,12 +89,15 @@ export function SettingsNav({ roles, hasLiveOffers, variant }: SettingsNavProps)
                             <Link
                                 href={section.href}
                                 aria-current={isActive ? "page" : undefined}
-                                className={`flex min-h-11 items-start gap-3 rounded-xl border-l-2 py-2.5 pl-3 pr-3 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                                className={`relative flex min-h-11 items-start gap-3 rounded-xl py-2.5 pl-4 pr-3 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                                     isActive
-                                        ? "border-l-primary bg-primary-soft/60 dark:border-l-mint dark:bg-primary/15"
-                                        : "border-l-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+                                        ? "bg-primary/8 dark:bg-primary/15"
+                                        : "hover:bg-muted"
                                 }`}
                             >
+                                {isActive && (
+                                    <span aria-hidden="true" className="absolute bottom-2 left-0 top-2 w-[3px] rounded-r-full bg-primary" />
+                                )}
                                 <Icon
                                     aria-hidden="true"
                                     className={`mt-0.5 h-4 w-4 shrink-0 ${
@@ -105,8 +108,8 @@ export function SettingsNav({ roles, hasLiveOffers, variant }: SettingsNavProps)
                                     <span
                                         className={`block text-sm ${
                                             isActive
-                                                ? "font-semibold text-black dark:text-white"
-                                                : "font-medium text-black/80 dark:text-white/80"
+                                                ? "font-semibold text-foreground"
+                                                : "font-medium text-foreground/80"
                                         }`}
                                     >
                                         {copy[section.labelKey].label}

@@ -75,7 +75,7 @@ export function PolicyConditionsCard({ acordData, language }: Props) {
             <div className="flex items-start gap-2">
                 <ShieldCheck className="h-4 w-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
                 <div>
-                    <h3 className="pw-kicker">{copy.conditionsTitle}</h3>
+                    <h3 className="text-caption font-semibold text-muted-foreground">{copy.conditionsTitle}</h3>
                     <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{copy.conditionsIntro}</p>
                 </div>
             </div>

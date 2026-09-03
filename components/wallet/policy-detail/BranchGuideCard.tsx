@@ -42,7 +42,7 @@ function GuideList({ icon: Icon, title, items }: { icon: typeof Eye; title: stri
     if (items.length === 0) return null
     return (
         <div>
-            <h3 className="mb-2 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+            <h3 className="mb-2 flex items-center gap-1.5 text-caption font-medium text-muted-foreground">
                 <Icon className="h-3.5 w-3.5 text-primary dark:text-mint" />
                 {title}
             </h3>
@@ -70,7 +70,7 @@ export function BranchGuideCard({
     const [open, setOpen] = useState(false)
 
     return (
-        <div className="pw-card pw-pad sm:p-7">
+        <div>
             <button
                 type="button"
                 onClick={() => setOpen((prev) => !prev)}
@@ -79,7 +79,7 @@ export function BranchGuideCard({
                 className="flex w-full items-start justify-between gap-4 text-left cursor-pointer"
             >
                 <div className="min-w-0">
-                    <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                    <h2 className="flex items-center gap-2 text-body font-semibold text-foreground">
                         <BookOpen className="h-4 w-4 text-primary dark:text-mint" />
                         {copy.guideTitle}
                     </h2>
@@ -104,7 +104,7 @@ export function BranchGuideCard({
 
                     {commonGaps.length > 0 && (
                         <div>
-                            <h3 className="mb-2 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                            <h3 className="mb-2 flex items-center gap-1.5 text-caption font-medium text-muted-foreground">
                                 <ShieldAlert className="h-3.5 w-3.5 text-primary dark:text-mint" />
                                 {copy.guideCommonGaps}
                             </h3>
@@ -121,7 +121,7 @@ export function BranchGuideCard({
                                         <div className="flex flex-wrap items-center gap-2">
                                             <p className="text-xs font-bold text-black dark:text-white">{gap.title}</p>
                                             {gap.detected && (
-                                                <span className="inline-flex items-center rounded-full border border-amber-300 dark:border-amber-800/40 bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-black uppercase tracking-widest text-status-warning">
+                                                <span className="inline-flex items-center rounded-full border border-amber-300 dark:border-amber-800/40 bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-caption font-semibold text-status-warning">
                                                     {copy.guideDetectedChip}
                                                 </span>
                                             )}

@@ -127,10 +127,10 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
     const visibleFinePrint = showAllFinePrint ? sortedFinePrint : sortedFinePrint.slice(0, FINE_PRINT_PREVIEW_COUNT)
 
     return (
-        <div className="pw-card pw-pad sm:p-7">
+        <div>
             <div className="mb-1 flex items-center gap-2">
                 <ShieldOff className="h-4 w-4 text-muted-foreground" />
-                <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                <h2 className="text-body font-semibold text-foreground">
                     {/* The heading itself explains the term — "Εξαίρεση" decides
                         what does NOT get paid, and was shown as a bare label. */}
                     {termHint ? <GlossaryHint hint={termHint} /> : copy.exclusionsTitle}
@@ -139,7 +139,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
             <p className="mb-5 text-xs text-muted-foreground">{copy.exclusionsSubtitle}</p>
 
             {!hasAnyContent ? (
-                <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-4 dark:border-white/15 dark:bg-white/5">
+                <div className="pw-subcard px-4 py-4">
                     <p className="text-sm text-black/65 dark:text-white/70">{copy.noExclusionsDetected}</p>
                     <p className="mt-1 text-xs text-black/60 dark:text-white/55">{copy.exclusionsReanalyzeHint}</p>
                 </div>
@@ -147,7 +147,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                 <div className="space-y-6">
                     {exclusions.length > 0 && (
                         <div>
-                            <h3 className="mb-2.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                            <h3 className="mb-2.5 text-caption font-medium text-muted-foreground">
                                 {copy.exclusionsListTitle} ({exclusions.length})
                             </h3>
                             {/* Standard exclusions are facts of the contract, not alarms —
@@ -178,7 +178,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
 
                     {conditions.length > 0 && (
                         <div>
-                            <h3 className="mb-2.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                            <h3 className="mb-2.5 text-caption font-medium text-muted-foreground">
                                 {copy.notableConditionsTitle} ({conditions.length})
                             </h3>
                             <ul className="space-y-2">
@@ -194,7 +194,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                             <ConditionIcon className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
                                             <div className="min-w-0 flex-1">
                                                 <div className="flex flex-wrap items-center gap-1.5">
-                                                    <span className="text-kicker font-black uppercase tracking-wider text-black/60 dark:text-white/55">
+                                                    <span className="text-caption font-medium text-muted-foreground">
                                                         {condHint ? <GlossaryHint hint={condHint} /> : typeLabel}
                                                     </span>
                                                     {condition.value && (
@@ -203,7 +203,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                                         </span>
                                                     )}
                                                     {condition.userActionRequired && (
-                                                        <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-status-warning">
+                                                        <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-caption font-semibold text-status-warning">
                                                             {copy.actionRequiredChip}
                                                         </span>
                                                     )}
@@ -219,7 +219,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
 
                     {finePrint.length > 0 && (
                         <div>
-                            <h3 className="mb-2.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                            <h3 className="mb-2.5 text-caption font-medium text-muted-foreground">
                                 {copy.finePrintTitle} ({finePrint.length})
                             </h3>
                             <ul className="space-y-2">
@@ -229,7 +229,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                     return (
                                         <li key={i} className={`rounded-xl border px-3 py-2.5 ${styles.border} ${styles.bg}`}>
                                             <div className="flex flex-wrap items-center gap-1.5">
-                                                <span className={`rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-wider ${styles.badge}`}>
+                                                <span className={`rounded-full px-2 py-0.5 text-caption font-semibold ${styles.badge}`}>
                                                     {riskLabel}
                                                 </span>
                                                 <span className="text-kicker font-semibold text-muted-foreground">{clause.section}</span>
