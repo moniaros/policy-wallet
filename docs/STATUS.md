@@ -34,8 +34,21 @@ seams and hostile review: `docs/handover.md`.
   Typed journey events on every step plus the server mirror. Guards moved with the code
   (aria-pressed, upload-accept, asfalistírio, accents, clamp register, icon map, journey-events
   registry, upload-status honesty replaces the «AI Σύνοψη» subtitle guard). tsc, eslint, i18n,
-  utf8, api-auth clean. **Pending:** browser verification of the five personas at 390/1440,
-  keyboard + reduced-motion run, red-team pass, PR against NEW-UI (stacks after #290/#291).
+  utf8, api-auth clean. **Verified in a browser (dev, scratch account, Playwright):** five
+  personas walked end to end at 390 (one at 1440 with reduced motion) — the help-me path,
+  «δεν είμαι σίγουρος/η» twice, the plans branch, skip → resume card → re-entry at the first
+  open step, back and reload-resume, keyboard activation, the upload with the consent modal and
+  the honest status sequence («Ανεβάζουμε…» → «Το διαβάζουμε…» → «Το διαβάσαμε»); zero console
+  errors, no horizontal scroll, one option pressed per pick, the map with no score word and the
+  honesty sentence; data after a walk: eight fact columns in `answeredFields`, the statements row
+  with `priorityAreas`, the life event with `appliedPatch.declaredAfterFacts`, one
+  `RiskProfileVersion`, and the uploaded policy WITH its document. Fixed from the walk: the
+  «Πόσα;» pills (relied on the unmerged phone-layer classes), a failed reading no longer
+  re-uploads, no CTA says «Συνέχεια», the map's «Θα το κάνω αργότερα» leaves instead of asking
+  for the advisor, the advisor screen has one exit, the engine runs in `after()` (the map waited
+  ~20 s for a model call), and the risk-review card told the customer the admin's English
+  rationale («this is a hard time, not a sales moment») — every trigger now carries a bilingual
+  customer `reason`. **Pending:** the PR against NEW-UI (stacks after #290/#291 and #292).
 - **BROKEN (gates launch), found by the onboarding walk, fixed: every upload through
   `uploadAndParse` committed a policy with ZERO documents since `1057ab7d` (2026-08-21).**
   The generated Greek label was passed to `create()` as the document name; its extension check
