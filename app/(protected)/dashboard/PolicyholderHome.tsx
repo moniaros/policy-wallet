@@ -868,7 +868,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 findingsAtOpen: openReview.findingsAtOpen,
                             }}
                             label={getReviewPolicy(openReview.trigger)!.label}
-                            rationale={getReviewPolicy(openReview.trigger)!.rationale}
+                            reason={getReviewPolicy(openReview.trigger)!.reason}
                         />
                     </div>
                 )}

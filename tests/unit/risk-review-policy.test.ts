@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import { describe, it, expect } from "vitest"
 import {
     REVIEW_POLICIES,
@@ -36,7 +37,17 @@ describe("the trigger matrix answers all five questions for every trigger", () =
             }
             expect(p.rationale, `${key} has no rationale`).toBeTruthy()
             expect(p.label.el && p.label.en, `${key} is not bilingual`).toBeTruthy()
+            // The customer is told WHY in their language — never the admin rationale.
+            expect(p.reason?.el && p.reason?.en, `${key} has no customer-facing reason`).toBeTruthy()
+            expect(p.reason.el, `${key}.reason.el is not Greek`).toMatch(/[Ͱ-Ͽ]/)
+            expect(p.reason.en, `${key}.reason.en is the admin rationale`).not.toBe(p.rationale)
         }
+    })
+
+    it("the dashboard shows the customer the reason, not the admin rationale", () => {
+        const home = readFileSync("app/(protected)/dashboard/PolicyholderHome.tsx", "utf-8")
+        expect(home).not.toMatch(/rationale=\{/)
+        expect(home).toMatch(/reason=\{getReviewPolicy\(/)
     })
 })
 
