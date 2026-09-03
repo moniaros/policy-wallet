@@ -1,7 +1,11 @@
 # STATUS
 
-**Production: `76f62a43`** — deployed 2026-08-30 via CI-green → deploy.yml (dpl_7DuAspuumiGFu9Cmokr4m3jFh3jb).
-The Grafí homepage is LIVE and smoked: fixed-promise H1, 16-line ticker, sourced numbers with
+**Production: `6cb43303`** — deployed 2026-09-03 via CI-green → deploy.yml: the Direction A
+policyholder app (shell, dashboard, wallet, policy detail, protection, settings, /agent,
+notifications, help), the /protection and auth polish, the agent dashboard on the same anatomy
+(PR #288). `addfb7e6` (PR #289 — the preview's dashboard defects: 45%-black link-card borders,
+dashed coverage-map tiles) is merged and its deploy was in flight at the time of writing.
+The Grafí homepage (`76f62a43`, 2026-08-30) is LIVE and smoked: fixed-promise H1, 16-line ticker, sourced numbers with
 their links, retired sentence absent, 4 steps + ReadingDemo, broker band, comparison, three
 pricing cards (€0/€4.99/€8.99) + recommender, CTA white-on-green, no h-scroll at 390; /en
 mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry groups in the
@@ -16,8 +20,37 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **Late 2026-09-03 — Direction A is LIVE; the phone layer is up for the owner's decision.**
+  PR #288 merged (`6cb43303`) after the owner's "error seen on production" turned out to be an
+  OLD PREVIEW deployment whose Preview-scope `DATABASE_URL`/`DIRECT_URL` still carry 55-day-old dev
+  credentials (Supabase `query_logs` showed the failed auths on the DEV project; production had
+  none) — the raw Prisma message that page leaked is now a localised generic (`7f6a2f5d`), but
+  the Preview env vars themselves are an OWNER action (`vercel env add` is classifier-blocked
+  for the agent): set Preview `DATABASE_URL` to the dev 6543 pooler URL (without the local
+  `connection_limit=5&pool_timeout=20`) and `DIRECT_URL` to the dev 5432 URL, then redeploy the
+  previews. The dashboard defects the owner then flagged on the preview shipped as PR #289
+  (`addfb7e6`): the element-scoped control-border rule painted every `a.pw-card` 45 % black
+  (retired; `.pw-control-boundary` stays as the explicit opt-in), and unassessed coverage-map
+  tiles were dashed and faded (plain sunken tiles now). **PR #290 (`feat/steady-mobile`) is the
+  Steady phone layer** the owner pinned ("for the mobile UIs only"): ≤1023px only — near-white
+  canvas, borderless 20px cards, one `.pw-segmented`/`.pw-segment` recipe (state from
+  aria-current/pressed/selected; ink pill active on phones, the sunken track + white pill on
+  desktop as before), avatar-left/bell-right header on the canvas, a floating ink icon-only tab
+  bar (still `fixed bottom-0` + safe-area, so the shell guards hold), and the ink stat pill /
+  panel under the headline number on the dashboard hero and the wallet overview (wrapper is
+  `lg:contents`; every count renders once, h2 text unchanged). NOT merged on purpose — it is a
+  design direction for the owner to look at on the preview at phone width. Guard moved in the
+  register direction: `risk-assessment-panel-mobile` accepts `.pw-scroll-strip` and checks
+  no-wrap on the `.pw-segment` rule itself. Deliberately not done: list rows as separate white
+  cards on the canvas, dark detail headers with bottom sheets. Still legacy: **B2B batches B**
+  (customers list/detail, renewals, opportunities, tasks, activity) **and C** (insights,
+  questionnaires, team, commissions, benefits). Owner question answered in the session report:
+  the Google consent screen's «to continue to cquudefwfwrmvpftuhyl.supabase.co» is the
+  Supabase-hosted OAuth redirect — brand verification and/or a Supabase custom auth domain fix
+  it, no code needed.
 - **B2C app redesign — Direction A BUILT on `feat/b2c-direction-a` (`b73421e6`), draft PR #288
-  against NEW-UI, awaiting the owner's look on the preview.** Owner set aside `feat/grafi-b2c`
+  against NEW-UI, awaiting the owner's look on the preview** (superseded by the entry above —
+  merged the same day). Owner set aside `feat/grafi-b2c`
   (PR #287) for the policyholder app and picked, from the proposals artifact
   (https://claude.ai/code/artifact/ea4a5213-6b3b-4612-8769-d2e2a8d7161b), **Direction A · Inter ·
   cool slate**. Shipped in this pass: the shell (three-group sidebar, desktop top bar with
@@ -186,10 +219,13 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
-1. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix).
-2. Restyle the remaining legacy bands (WhyDifferent, ClearLimits, FAQ, final CTA — how-it-works and who-it-is-for done)
-   onto Grafí and finish the G4 primitive remainder.
-3. When legal returns Terms §3 + IDD: de-noindex the partners pair and add its hreflang link.
+1. Owner: open PR #290's preview at phone width (dashboard, wallet, protection, /agent, account)
+   and decide on the Steady phone layer; then set the Preview-scope DB env vars and the Google
+   OAuth branding / custom auth domain (both owner-only, see In progress).
+2. B2B batches B and C (customers, renewals, opportunities, tasks, activity; insights,
+   questionnaires, team, commissions, benefits) onto the Direction A anatomy.
+3. Marketing carry-overs: split the marketing route group from the app providers (the mobile-LCP
+   fix), restyle the remaining legacy bands, and de-noindex the partners pair when legal returns.
 
 ---
 
