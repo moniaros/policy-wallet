@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { QuestionnaireForm } from "@/components/tasks/QuestionnaireForm"
-import { PageHeader } from "@/components/ui/PageHeader"
+import { CheckCircle2 } from "lucide-react"
 import { getTranslations } from "@/lib/i18n"
 
 interface TemplateQuestionOption {
@@ -69,25 +69,30 @@ export default async function TaskDetailPage({
 
     if (instance.status === 'completed') {
         return (
-            <div className="min-h-screen bg-transparent">
-                <PageHeader title={instance.template.name} subtitle={t.tasks.manageTasks} />
-                <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-6">
-                    <p className="text-lg font-semibold text-foreground">{t.agentUi.responsesSubmitted}</p>
-                    <Link
-                        href="/protection"
-                        className="inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-4 text-sm font-black text-primary-foreground transition-transform hover:scale-[1.02]"
-                    >
-                        {t.tasks.viewCoverageInsights}
-                    </Link>
+            <div className="pw-page-shell">
+                <div className="mx-auto max-w-4xl px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                    <section className="pw-card pw-pad-roomy flex flex-col items-center text-center">
+                        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15" aria-hidden="true">
+                            <CheckCircle2 className="h-7 w-7 text-primary dark:text-mint" />
+                        </span>
+                        <h1 className="mt-4 text-title font-semibold text-foreground">{instance.template.name}</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">{t.agentUi.responsesSubmitted}</p>
+                        <Link href="/protection" className="pw-primary-button mt-5">
+                            {t.tasks.viewCoverageInsights}
+                        </Link>
+                    </section>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-transparent">
-            <PageHeader title={t.tasks.actionCenter} subtitle={t.tasks.manageTasks} />
-            <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-4xl space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                <div className="min-w-0">
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{t.tasks.actionCenter}</h1>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.tasks.manageTasks}</p>
+                </div>
                 <QuestionnaireForm
                     instanceId={instance.id}
                     templateName={instance.template.name}

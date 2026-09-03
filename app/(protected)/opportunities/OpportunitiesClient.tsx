@@ -8,6 +8,7 @@ import { updateOpportunityStatus, runBookCrossSell } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { TableShell } from "@/components/ui/TableShell"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 
 import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
 interface Opportunity {
@@ -140,27 +141,22 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
     }
 
     return (
-        <div className="pw-page-shell min-h-screen">
-            <div className="max-w-page mx-auto px-4 sm:px-6 py-12 lg:py-16">
-                {/* min-w-0 lets the title column shrink so the action keeps its
-                    full size; the button is full-width and centred on mobile and
-                    right-aligned from sm, matching /customers. */}
-                <header className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-page space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* Header — what the screen is, plus the one primary action
+                    (the book scan). min-w-0 lets the title column shrink so the
+                    action keeps its size; full-width on a phone. */}
+                <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
-                        <span className="pw-kicker inline-block mb-2">{opp_t.kicker}</span>
-                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
-                            {opp_t.title}
-                        </h1>
-                        <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
-                            {opp_t.subtitle}
-                        </p>
+                        <h1 className="text-h3 font-semibold tracking-tight text-foreground">{opp_t.title}</h1>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{opp_t.subtitle}</p>
                     </div>
-                    <div className="flex flex-col items-center sm:items-end gap-2 shrink-0">
+                    <div className="flex shrink-0 flex-col gap-1.5 sm:items-end">
                         <button
                             onClick={handleScanBook}
                             disabled={isScanning}
                             aria-busy={isScanning}
-                            className="pw-primary-button justify-center w-full sm:w-auto"
+                            className="pw-primary-button w-full justify-center sm:w-auto"
                         >
                             <Sparkles className={`w-4 h-4 shrink-0 ${isScanning ? 'animate-pulse' : ''}`} />
                             <span>{isScanning ? opp_t.scanBookRunning : opp_t.scanBook}</span>
@@ -168,15 +164,15 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         <p
                             role="status"
                             aria-live="polite"
-                            className="text-xs font-medium text-neutral-500 dark:text-neutral-400 max-w-xs text-center sm:text-right"
+                            className="max-w-xs text-caption text-muted-foreground sm:text-right"
                         >
                             {scanMessage || opp_t.scanBookHint}
                         </p>
                     </div>
                 </header>
 
-                {/* Filters */}
-                <div className="mb-8 flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+                {/* The status filter is a view switch — the segmented recipe. */}
+                <div className="pw-segmented pw-scroll-strip" role="group" aria-label={opp_t.colStatus}>
                     {[
                         { key: 'all', count: statusCounts.all },
                         { key: 'open', count: statusCounts.open },
@@ -187,13 +183,13 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                     ].map(({ key, count }) => (
                         <button
                             key={key}
+                            type="button"
                             onClick={() => setFilter(key)}
-                            className={`px-5 py-2.5 rounded-full font-bold text-sm tracking-wide whitespace-nowrap transition-all duration-300 ${filter === key
-                                ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-xl shadow-neutral-900/10'
-                                : 'bg-white text-neutral-600 border border-neutral-200 dark:border-white/10 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900/50 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white shadow-sm'
-                                }`}
+                            aria-pressed={filter === key}
+                            className="pw-segment"
                         >
-                            {statusLabel(key)} {count > 0 && <span className="ml-1.5 opacity-60 text-xs">({count})</span>}
+                            {statusLabel(key)}
+                            {count > 0 && <span className="tabular-nums font-medium">{count}</span>}
                         </button>
                     ))}
                 </div>
@@ -207,6 +203,8 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         cta={filter === 'all'
                             ? { label: t.emptyStates.viewClients, href: '/customers' }
                             : { label: t.emptyStates.clearFilters, onClick: () => setFilter('all') }}
+                        // Soft: the page's one primary is the book scan in the header.
+                        ctaVariant="soft"
                         previewLabel={filter === 'all' ? t.emptyStates.example : undefined}
                         preview={filter === 'all' ? (
                             <RecommendationPreviewCard
@@ -217,92 +215,104 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         ) : undefined}
                     />
                 ) : (
-                <div className="pw-card overflow-hidden border-t-4 border-t-primary">
-                    {/* An agent allocates their day by this column. The score is a
-                        heuristic over gap severity, profile completeness, engagement
-                        and detection recency — it has never been calibrated against
-                        the won/lost outcomes the product already records, so it is a
-                        prioritisation aid, not a forecast. Say which. */}
-                    <p className="px-6 pt-4 text-caption leading-snug text-muted-foreground">
-                        {opp_t.likelihoodNote}
-                    </p>
+                <div className="pw-card overflow-hidden">
+                    <div className="pw-pad pb-0">
+                        <CardHead
+                            icon={Target}
+                            title={opp_t.title}
+                            meta={<span className="tabular-nums">{filteredOpportunities.length}</span>}
+                        />
+                        {/* An agent allocates their day by this column. The score is a
+                            heuristic over gap severity, profile completeness, engagement
+                            and detection recency — it has never been calibrated against
+                            the won/lost outcomes the product already records, so it is a
+                            prioritisation aid, not a forecast. Say which. */}
+                        <p className="mt-3 text-caption leading-snug text-muted-foreground">
+                            {opp_t.likelihoodNote}
+                        </p>
+                        <MobileSortControl sort={sort} onSort={toggle} onClear={() => setSort(null)} columns={[{ key: "customer", label: opp_t.colCustomer }, { key: "status", label: opp_t.colStatus }, { key: "likelihood", label: opp_t.colLikelihood }, { key: "qualification", label: opp_t.colQualification }, { key: "nextAction", label: opp_t.colNextAction }]} label={opp_t.sortLabel} defaultLabel={opp_t.defaultOrder} className="mt-3" />
+                    </div>
                     <TableShell label={opp_t.title}>
-                        <MobileSortControl sort={sort} onSort={toggle} onClear={() => setSort(null)} columns={[{ key: "customer", label: opp_t.colCustomer }, { key: "status", label: opp_t.colStatus }, { key: "likelihood", label: opp_t.colLikelihood }, { key: "qualification", label: opp_t.colQualification }, { key: "nextAction", label: opp_t.colNextAction }]} label={opp_t.sortLabel} defaultLabel={opp_t.defaultOrder} className="mb-3" />
                         <table className="pw-stacked-table w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-800/60">
-                                    <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={opp_t.colCustomer} align="left" className="px-6 py-5 pl-8" />
-                                    <th className="px-6 py-5 text-micro font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{opp_t.colOpportunity}</th>
-                                    <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={opp_t.colStatus} align="left" className="px-6 py-5" />
-                                    <SortableColumn columnKey="likelihood" sort={sort} onSort={toggle} label={opp_t.colLikelihood} align="left" className="px-6 py-5" />
-                                    <SortableColumn columnKey="qualification" sort={sort} onSort={toggle} label={opp_t.colQualification} align="left" className="px-6 py-5" />
-                                    <SortableColumn columnKey="nextAction" sort={sort} onSort={toggle} label={opp_t.colNextAction} align="left" className="px-6 py-5" />
-                                    <th className="px-6 py-5 text-micro font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
+                                <tr className="border-b border-border">
+                                    <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={opp_t.colCustomer} align="left" className="px-6 py-4" />
+                                    <th className="px-6 py-4 text-caption font-semibold text-muted-foreground">{opp_t.colOpportunity}</th>
+                                    <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={opp_t.colStatus} align="left" className="px-6 py-4" />
+                                    <SortableColumn columnKey="likelihood" sort={sort} onSort={toggle} label={opp_t.colLikelihood} align="left" className="px-6 py-4" />
+                                    <SortableColumn columnKey="qualification" sort={sort} onSort={toggle} label={opp_t.colQualification} align="left" className="px-6 py-4" />
+                                    <SortableColumn columnKey="nextAction" sort={sort} onSort={toggle} label={opp_t.colNextAction} align="left" className="px-6 py-4" />
+                                    <th className="px-6 py-4 text-right text-caption font-semibold text-muted-foreground">{opp_t.colActions}</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
+                            <tbody className="divide-y divide-border/60">
                                 {sortedOpportunities.map((opp) => (
-                                        <tr key={opp.id} className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/30 transition-colors group">
-                                            <td data-label={opp_t.colCustomer} className="px-6 py-6 pl-8">
-                                                <div className="font-bold text-foreground capitalize tracking-tight">{opp.customerName}</div>
-                                                <div className="text-xs font-medium text-muted-foreground mt-1">{opp.customerEmail}</div>
+                                        <tr key={opp.id} className="group transition-colors hover:bg-muted/40">
+                                            <td data-label={opp_t.colCustomer} className="px-6 py-5">
+                                                <div className="font-semibold text-foreground">{opp.customerName}</div>
+                                                <div className="mt-0.5 text-caption text-muted-foreground">{opp.customerEmail}</div>
                                             </td>
-                                            <td data-label={opp_t.colOpportunity} className="px-6 py-6">
-                                                <div className="text-sm font-bold text-neutral-800 dark:text-neutral-200">{opp.title}</div>
+                                            <td data-label={opp_t.colOpportunity} className="px-6 py-5">
+                                                <div className="text-sm font-semibold text-foreground">{opp.title}</div>
                                                 {opp.notes && (
                                                     <div className="text-body-sm text-muted-foreground mt-1.5 line-clamp-1 max-w-[300px]">
                                                         {opp.notes}
                                                     </div>
                                                 )}
                                             </td>
-                                            <td data-label={opp_t.colStatus} className="px-6 py-6">
-                                                <span className={`pw-pill uppercase tracking-widest ${opp.status === 'won' ? 'bg-primary-soft text-status-success dark:bg-primary/15' :
-                                                    opp.status === 'lost' ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400' :
-                                                        opp.status === 'quoted' ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400' :
-                                                            opp.status === 'contacted' ? 'bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint' :
-                                                                'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
+                                            <td data-label={opp_t.colStatus} className="px-6 py-5">
+                                                {/* The state as a word on the status tokens: won =
+                                                    success, lost = danger, open = warning (it wants
+                                                    attention), contacted = info, quoted = neutral. */}
+                                                <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-caption font-semibold ${opp.status === 'won' ? 'bg-status-success-tint text-status-success' :
+                                                    opp.status === 'lost' ? 'bg-status-danger-tint text-status-danger' :
+                                                        opp.status === 'quoted' ? 'bg-muted text-foreground' :
+                                                            opp.status === 'contacted' ? 'bg-status-info-tint text-status-info' :
+                                                                'bg-status-warning-tint text-status-warning'
                                                     }`}>
                                                     {statusLabel(opp.status)}
                                                 </span>
                                             </td>
-                                            <td data-label={opp_t.colLikelihood} className="px-6 py-6">
+                                            <td data-label={opp_t.colLikelihood} className="px-6 py-5">
                                                 {opp.conversionLikelihood ? (
                                                     <div className="flex items-center gap-1.5">
                                                         <span className={`inline-block h-2 w-2 rounded-full ${
-                                                            opp.conversionLikelihood === "high" ? "bg-primary" :
-                                                            opp.conversionLikelihood === "medium" ? "bg-amber-500" : "bg-neutral-400"
-                                                        }`} />
-                                                        <span className="text-xs font-bold text-neutral-600 dark:text-neutral-400">
+                                                            opp.conversionLikelihood === "high" ? "bg-status-success" :
+                                                            opp.conversionLikelihood === "medium" ? "bg-status-warning" : "bg-muted-foreground"
+                                                        }`} aria-hidden="true" />
+                                                        <span className="text-caption font-semibold text-foreground">
                                                             {opp_t.likelihood[opp.conversionLikelihood]}
                                                         </span>
                                                         {opp.conversionScore != null && (
-                                                            <span className="text-kicker text-neutral-500 dark:text-neutral-400 font-mono">
+                                                            <span className="text-caption tabular-nums text-muted-foreground">
                                                                 {opp.conversionScore}%
                                                             </span>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400">—</span>
+                                                    <span className="text-caption text-muted-foreground">—</span>
                                                 )}
                                             </td>
-                                            <td data-label={opp_t.colQualification} className="px-6 py-6">
+                                            <td data-label={opp_t.colQualification} className="px-6 py-5">
                                                 {opp.medicScore != null ? (
-                                                    <span className="inline-flex items-center gap-1.5">
-                                                        <span className="font-mono text-xs font-bold text-neutral-700 dark:text-neutral-300">{opp.medicScore}</span>
-                                                        <span className="text-kicker text-neutral-500 dark:text-neutral-400">/100</span>
+                                                    <span className="inline-flex items-baseline gap-1">
+                                                        <span className="text-sm font-semibold tabular-nums text-foreground">{opp.medicScore}</span>
+                                                        <span className="text-caption text-muted-foreground">/100</span>
                                                     </span>
                                                 ) : (
-                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400">—</span>
+                                                    <span className="text-caption text-muted-foreground">—</span>
                                                 )}
                                             </td>
-                                            <td data-label={opp_t.colNextAction} className="px-6 py-6 text-sm font-bold text-muted-foreground">
+                                            <td data-label={opp_t.colNextAction} className="px-6 py-5 text-sm text-muted-foreground">
                                                 {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB') : '—'}
                                             </td>
-                                            <td data-label={opp_t.colActions} className="px-6 py-6 text-right pr-8">
+                                            <td data-label={opp_t.colActions} className="px-6 py-5 text-right">
+                                                {/* Soft pills: the page's one primary is the book scan. */}
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                                                     <button
+                                                        type="button"
                                                         onClick={() => setSelectedOpp(opp)}
-                                                        className="pw-secondary-button pw-btn-sm"
+                                                        className="pw-soft-button"
                                                     >
                                                         {opp_t.update}
                                                     </button>
@@ -310,7 +320,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                     {opp.policyId && (
                                                         <a
                                                             href={`/wallet/${opp.policyId}`}
-                                                            className="pw-primary-button pw-btn-sm"
+                                                            className="pw-soft-button"
                                                         >
                                                             {opp_t.view}
                                                         </a>
