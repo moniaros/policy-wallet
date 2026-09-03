@@ -3,9 +3,12 @@
 import { useState } from "react"
 import * as Sentry from "@sentry/nextjs"
 import { toast } from "sonner"
+import { X, FileSpreadsheet, CheckCircle2 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useDialog } from "@/hooks/useDialog"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { TableShell } from "@/components/ui/TableShell"
+import { UploadDropzone } from "@/components/ui/UploadDropzone"
 
 interface BulkImportModalProps {
     isOpen: boolean
@@ -21,6 +24,11 @@ interface CustomerRow {
     status: 'valid' | 'invalid' | 'duplicate'
     error?: string
 }
+
+// Upload the file, then review what it parsed to.
+const TOTAL_STEPS = 2
+
+const PILL = "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-caption font-semibold"
 
 /**
  * Localised reason for a rejected import. The API returns a distinct code and
@@ -61,10 +69,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
 
     if (!isOpen) return null
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
+    const handleFileUpload = async (file: File) => {
         setIsProcessing(true)
         try {
             const text = await file.text()
@@ -156,125 +161,138 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
     const validCount = customers.filter(c => c.status === 'valid').length
     const invalidCount = customers.filter(c => c.status === 'invalid').length
 
+    const stepCaption = (current: number) =>
+        t.common.stepOf.replace('{current}', String(current)).replace('{total}', String(TOTAL_STEPS))
+
+    // The thin track under the card head — the onboarding's progress device,
+    // one segment per step, described once as a progressbar. A render helper,
+    // not a nested component, so the panel does not remount on every render.
+    const stepTrack = (current: number) => (
+        <div className="mt-3">
+            <p className="text-caption font-semibold text-muted-foreground">{stepCaption(current)}</p>
+            <div
+                className="mt-1.5 flex gap-1"
+                role="progressbar"
+                aria-valuenow={current}
+                aria-valuemin={1}
+                aria-valuemax={TOTAL_STEPS}
+                aria-label={stepCaption(current)}
+            >
+                {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+                    <span key={i} className={`h-1 flex-1 rounded-full ${i < current ? "bg-primary" : "bg-muted"}`} />
+                ))}
+            </div>
+        </div>
+    )
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" tabIndex={-1} className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
-                {/* Header */}
-                <div className="border-b border-neutral-200 dark:border-neutral-700 px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 id="bulk-import-title" className="text-2xl font-bold text-foreground">
-                                {tt.title}
-                            </h2>
-                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                                {tt.subtitle}
-                            </p>
-                        </div>
-                        <button
-                            onClick={handleClose}
-                            aria-label={t.common.close}
-                            className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" tabIndex={-1} className="pw-card pw-pad relative max-h-[90vh] w-full max-w-4xl overflow-y-auto">
+                {/* Header — persistent across the steps, so the dialog's name
+                    resolves on every one of them. */}
+                <header>
+                    <CardHead
+                        icon={FileSpreadsheet}
+                        id="bulk-import-title"
+                        title={tt.title}
+                        meta={
+                            <button
+                                type="button"
+                                onClick={handleClose}
+                                aria-label={t.common.close}
+                                className="pw-soft-button h-11 w-11 px-0"
+                            >
+                                <X className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                        }
+                    />
+                    <p className="mt-2 text-sm text-muted-foreground">{tt.subtitle}</p>
+                    {step === 'upload' && stepTrack(1)}
+                    {step === 'preview' && stepTrack(2)}
+                </header>
 
                 {/* Content */}
-                <div className="p-6">
+                <div className="mt-5">
                     {step === 'upload' && (
-                        <div className="space-y-6">
-                            {/* Instructions */}
-                            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                                <h3 className="font-bold text-blue-900 dark:text-blue-300 mb-2">{tt.csvFormatTitle}</h3>
-                                <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">
+                        <div className="space-y-4">
+                            {/* Instructions — a sub-card, not a blue panel. */}
+                            <div className="pw-subcard p-4">
+                                <h3 className="text-sm font-semibold text-foreground">{tt.csvFormatTitle}</h3>
+                                <p className="mt-1 text-caption text-muted-foreground">
                                     {tt.csvFormatDesc}
                                 </p>
-                                <code className="block bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-300 p-3 rounded text-xs font-mono">
+                                <code className="mt-2 block rounded-lg bg-card px-3 py-2 font-mono text-caption text-foreground">
                                     name,surname,email,phone
                                 </code>
-                                <p className="text-xs text-blue-700 dark:text-blue-400 mt-2">
+                                <p className="mt-2 text-caption text-muted-foreground">
                                     {tt.csvExample}
                                 </p>
                             </div>
 
-                            {/* File Upload */}
-                            <div className="border-2 border-dashed border-neutral-300 dark:border-neutral-600 rounded-xl p-8 text-center">
-                                <input
-                                    type="file"
+                            {/* File Upload — the shared dropzone, so «σύρετε και
+                                αποθέστε» is true. Inert while a file is parsing,
+                                which is what `disabled` on the old input did. */}
+                            <div className={isProcessing ? "pointer-events-none opacity-60" : undefined} aria-busy={isProcessing || undefined}>
+                                <UploadDropzone
+                                    onFiles={(files) => { const file = files[0]; if (file) void handleFileUpload(file) }}
                                     accept=".csv"
-                                    onChange={handleFileUpload}
-                                    className="hidden"
-                                    id="csv-upload"
-                                    disabled={isProcessing}
+                                    multiple={false}
+                                    inputId="csv-upload"
+                                    title={isProcessing ? tt.processing : tt.clickToUpload}
+                                    hint={tt.dragAndDrop}
                                 />
-                                <label
-                                    htmlFor="csv-upload"
-                                    className="cursor-pointer inline-flex flex-col items-center"
-                                >
-                                    <svg className="w-16 h-16 text-neutral-500 dark:text-neutral-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                    </svg>
-                                    <span className="text-lg font-bold text-neutral-700 dark:text-neutral-300">
-                                        {isProcessing ? tt.processing : tt.clickToUpload}
-                                    </span>
-                                    <span className="text-sm text-muted-foreground mt-1">
-                                        {tt.dragAndDrop}
-                                    </span>
-                                </label>
                             </div>
                         </div>
                     )}
 
                     {step === 'preview' && (
                         <div className="space-y-4">
-                            {/* Stats */}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                <div className="bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 rounded-xl p-4">
-                                    <div className="text-3xl font-bold text-[#166534] dark:text-mint">{validCount}</div>
-                                    <div className="text-sm font-medium text-primary dark:text-mint">{tt.valid}</div>
+                            {/* Stats — three fact cells: the word above, the count
+                                below, each rendered exactly once. */}
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.valid}</p>
+                                    <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">{validCount}</p>
                                 </div>
-                                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-                                    <div className="text-3xl font-bold text-red-700 dark:text-red-400">{invalidCount}</div>
-                                    <div className="text-sm font-medium text-red-700 dark:text-red-500">{tt.invalid}</div>
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.invalid}</p>
+                                    <p className={`mt-0.5 text-title font-semibold tabular-nums ${invalidCount > 0 ? "text-status-danger" : "text-foreground"}`}>{invalidCount}</p>
                                 </div>
-                                <div className="bg-neutral-50 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-xl p-4">
-                                    <div className="text-3xl font-bold text-neutral-700 dark:text-neutral-300">{customers.length}</div>
-                                    <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400">{tt.total}</div>
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.total}</p>
+                                    <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">{customers.length}</p>
                                 </div>
                             </div>
 
-                            {/* Preview Table */}
-                            {/* overflow-x was missing entirely here, so a wide preview was CLIPPED
-                                    rather than scrollable. */}
-                            <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl max-h-96 overflow-y-auto">
+                            {/* Preview Table — a sub-card that scrolls both ways:
+                                overflow-x was missing entirely here, so a wide
+                                preview was CLIPPED rather than scrollable. */}
+                            <div className="pw-subcard max-h-96 overflow-y-auto">
                                 <TableShell label={tt.title}>
-                                <table className="w-full text-sm">
-                                    <thead className="bg-neutral-50 dark:bg-neutral-900/50 sticky top-0">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="sticky top-0 border-b border-border bg-muted text-caption font-semibold text-muted-foreground">
                                         <tr>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colName}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colEmail}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colPhone}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colStatus}</th>
+                                            <th className="px-4 py-3">{tt.colName}</th>
+                                            <th className="px-4 py-3">{tt.colEmail}</th>
+                                            <th className="px-4 py-3">{tt.colPhone}</th>
+                                            <th className="px-4 py-3">{tt.colStatus}</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-neutral-100 dark:divide-neutral-700">
+                                    <tbody className="divide-y divide-border">
                                         {customers.map((customer, index) => (
-                                            <tr key={index} className={customer.status === 'invalid' ? 'bg-red-50 dark:bg-red-900/10' : ''}>
-                                                <td className="px-4 py-3 text-foreground">
+                                            <tr key={index}>
+                                                <td className="px-4 py-3 font-medium text-foreground">
                                                     {customer.name} {customer.surname}
                                                 </td>
-                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{customer.email}</td>
-                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{customer.phone}</td>
+                                                <td className="px-4 py-3 text-muted-foreground">{customer.email}</td>
+                                                <td className="px-4 py-3 text-muted-foreground">{customer.phone}</td>
                                                 <td className="px-4 py-3">
                                                     {customer.status === 'valid' ? (
-                                                        <span className="px-2 py-1 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-full text-xs font-bold">
+                                                        <span className={`${PILL} bg-status-success-tint text-status-success`}>
                                                             {tt.validBadge}
                                                         </span>
                                                     ) : (
-                                                        <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold">
+                                                        <span className={`${PILL} bg-status-danger-tint text-status-danger`}>
                                                             {customer.error}
                                                         </span>
                                                     )}
@@ -287,17 +305,19 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                             </div>
 
                             {/* Actions */}
-                            <div className="flex gap-3 pt-4">
+                            <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row">
                                 <button
+                                    type="button"
                                     onClick={() => setStep('upload')}
-                                    className="flex-1 px-6 py-3 rounded-xl font-bold text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
+                                    className="pw-soft-button flex-1"
                                 >
                                     {tt.back}
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={handleImport}
                                     disabled={validCount === 0 || isProcessing}
-                                    className="pw-primary-button flex-1 shadow-primary/25"
+                                    className="pw-primary-button flex-1"
                                 >
                                     {tt.importBtn} {validCount} {validCount !== 1 ? tt.custBtnPlural : tt.custBtnSingular}
                                 </button>
@@ -306,22 +326,20 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                     )}
 
                     {step === 'importing' && (
-                        <div className="py-12 text-center">
-                            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mb-4"></div>
-                            <h3 className="text-xl font-bold text-foreground">{tt.importingTitle}</h3>
-                            <p className="text-neutral-600 dark:text-neutral-400 mt-2">{tt.importingDesc}</p>
+                        <div className="py-10 text-center">
+                            <div className="mx-auto mb-6 h-16 w-16 animate-spin rounded-full border-4 border-primary/10 border-t-primary" />
+                            <h3 className="text-title font-semibold text-foreground">{tt.importingTitle}</h3>
+                            <p className="mt-1 text-sm text-muted-foreground">{tt.importingDesc}</p>
                         </div>
                     )}
 
                     {step === 'complete' && (
-                        <div className="py-12 text-center">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-soft dark:bg-primary/15 rounded-full mb-4">
-                                <svg className="w-8 h-8 text-primary dark:text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <h3 className="text-xl font-bold text-foreground">{tt.completeTitle}</h3>
-                            <p className="text-neutral-600 dark:text-neutral-400 mt-2">
+                        <div className="py-10 text-center">
+                            <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-status-success-tint text-status-success" aria-hidden="true">
+                                <CheckCircle2 className="h-7 w-7" />
+                            </span>
+                            <h3 className="mt-4 text-title font-semibold text-foreground">{tt.completeTitle}</h3>
+                            <p className="mt-1 text-sm text-muted-foreground">
                                 {tt.successfullyImported} {importedCount} {importedCount !== 1 ? tt.custPlural : tt.custSingular}
                             </p>
                         </div>

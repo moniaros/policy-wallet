@@ -20,6 +20,9 @@ export const el = {
         close: 'Κλείσιμο',
         back: 'Πίσω',
         next: 'Επόμενο',
+        // Step caption of a multi-step dialog («Βήμα 2 από 3»), read by the
+        // agent modals beside their thin progress track.
+        stepOf: 'Βήμα {current} από {total}',
         submit: 'Υποβολή',
         search: 'Αναζήτηση',
         filter: 'Φίλτρο',
@@ -1386,7 +1389,7 @@ export const el = {
             expiresTodayBadge: 'Σήμερα',
             expiresTomorrowBadge: 'Αύριο',
             renewalMetrics: 'Μετρικές ανανεώσεων',
-            manageRenewals: 'Διαχείριση ανανεώσεων →',
+            manageRenewals: 'Διαχείριση ανανεώσεων',
             tracked: 'Σύνολο',
             pending: 'Εκκρεμείς',
             overdue: 'Ληξιπρόθεσμες',
@@ -1398,7 +1401,7 @@ export const el = {
             coverageGaps: 'Κενά κάλυψης',
             recentGapsDesc: 'Πρόσφατα κενά κάλυψης σε όλους τους πελάτες',
             noGaps: 'Δεν εντοπίστηκαν κενά κάλυψης στα στοιχεία που έχουμε',
-            wellCovered: 'Η κάλυψη είναι πλήρης'
+            wellCovered: 'Δεν εντοπίστηκαν ανοιχτά κενά στα ασφαλιστήρια που έχουν αναλυθεί'
         }
     },
 

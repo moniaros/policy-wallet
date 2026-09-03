@@ -13,23 +13,26 @@ export function CommissionsLocked() {
     const { t } = useLanguage()
 
     return (
-        <div className="mx-auto flex max-w-xl flex-col items-center px-6 py-24 text-center">
-            <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <Lock className="h-6 w-6" />
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-reading px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* One card on the canvas, the empty-state anatomy: chip, title,
+                    the sentence that says why, and the page's one primary action. */}
+                <div className="pw-card pw-pad-roomy flex flex-col items-center text-center">
+                    <span className="pw-card-chip" aria-hidden="true">
+                        <Lock className="h-4 w-4" strokeWidth={1.75} />
+                    </span>
+                    <h1 className="mt-4 text-h3 font-semibold tracking-tight text-foreground">
+                        {t.commissionsLocked.title}
+                    </h1>
+                    <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                        {t.commissionsLocked.body}
+                    </p>
+                    <Link href="/agent/pricing" className="pw-primary-button mt-6">
+                        {t.commissionsLocked.viewPlans}
+                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                </div>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
-                {t.commissionsLocked.title}
-            </h1>
-            <p className="mt-3 text-muted-foreground">
-                {t.commissionsLocked.body}
-            </p>
-            <Link
-                href="/agent/pricing"
-                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
-            >
-                {t.commissionsLocked.viewPlans}
-                <ArrowRight className="h-4 w-4" />
-            </Link>
         </div>
     )
 }

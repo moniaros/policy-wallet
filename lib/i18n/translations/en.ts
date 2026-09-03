@@ -22,6 +22,9 @@ export const en: TranslationKeys = {
         close: 'Close',
         back: 'Back',
         next: 'Next',
+        // Step caption of a multi-step dialog ("Step 2 of 3"), read by the
+        // agent modals beside their thin progress track.
+        stepOf: 'Step {current} of {total}',
         submit: 'Submit',
         search: 'Search',
         filter: 'Filter',
@@ -1375,7 +1378,7 @@ export const en: TranslationKeys = {
             expiresTodayBadge: 'Today',
             expiresTomorrowBadge: 'Tomorrow',
             renewalMetrics: 'Renewal Metrics',
-            manageRenewals: 'Manage Renewals →',
+            manageRenewals: 'Manage renewals',
             tracked: 'Tracked',
             pending: 'Pending',
             overdue: 'Overdue',
@@ -1387,7 +1390,7 @@ export const en: TranslationKeys = {
             coverageGaps: 'Coverage Gaps',
             recentGapsDesc: 'Recent gaps detected across all customers',
             noGaps: 'No coverage gaps found in what we hold',
-            wellCovered: 'Your customers are well covered'
+            wellCovered: 'No open gaps in the policies that have been analysed'
         }
     },
 

@@ -19,8 +19,8 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2847
-# inline entries: 4774 across 214 files
+# bundle entries: 2848
+# inline entries: 4770 across 214 files
 # ternary entries: 285 across 44 files
 # call entries: 1217 across 87 files
 
@@ -929,6 +929,7 @@ bundle	common.save	"Αποθήκευση"
 bundle	common.saving	"Αποθήκευση..."
 bundle	common.search	"Αναζήτηση"
 bundle	common.sort	"Ταξινόμηση"
+bundle	common.stepOf	"Βήμα {current} από {total}"
 bundle	common.submit	"Υποβολή"
 bundle	common.terminationFailed	"Η ενέργεια απέτυχε. Δοκιμάστε ξανά."
 bundle	common.yes	"Ναι"
@@ -1484,7 +1485,7 @@ bundle	insights.practice.heading	"Αναλυτικά στοιχεία"
 bundle	insights.practice.inactive	"Ανενεργοί"
 bundle	insights.practice.invited	"Προσκεκλημένοι"
 bundle	insights.practice.lapsed	"Εκπνοή"
-bundle	insights.practice.manageRenewals	"Διαχείριση ανανεώσεων →"
+bundle	insights.practice.manageRenewals	"Διαχείριση ανανεώσεων"
 bundle	insights.practice.noData	"Δεν υπάρχουν δεδομένα"
 bundle	insights.practice.noGaps	"Δεν εντοπίστηκαν κενά κάλυψης στα στοιχεία που έχουμε"
 bundle	insights.practice.noOpportunities	"Δεν υπάρχουν ευκαιρίες"
@@ -1511,7 +1512,7 @@ bundle	insights.practice.subheading	"Αναλυτική επισκόπηση τ�
 bundle	insights.practice.total	"Σύνολο"
 bundle	insights.practice.totalPremium	"Συνολικό ασφάλιστρο"
 bundle	insights.practice.tracked	"Σύνολο"
-bundle	insights.practice.wellCovered	"Η κάλυψη είναι πλήρης"
+bundle	insights.practice.wellCovered	"Δεν εντοπίστηκαν ανοιχτά κενά στα ασφαλιστήρια που έχουν αναλυθεί"
 bundle	insights.premiumByProvider	"Ασφάλιστρα ανά πάροχο"
 bundle	insights.refreshAnalysis	"Ανανέωση ανάλυσης"
 bundle	insights.refreshFailed	"Η ανανέωση της ανάλυσης απέτυχε. Δοκιμάστε ξανά."
@@ -2996,14 +2997,10 @@ inline	app/(protected)/insights/InsightsClient.tsx	"Αυτοκίνητο"
 inline	app/(protected)/insights/InsightsClient.tsx	"Ζωή"
 inline	app/(protected)/insights/InsightsClient.tsx	"Κατοικία"
 inline	app/(protected)/insights/InsightsClient.tsx	"Κατοικίδιο"
-inline	app/(protected)/insights/InsightsClient.tsx	"Κρίσιμο"
-inline	app/(protected)/insights/InsightsClient.tsx	"Μεσαίο"
 inline	app/(protected)/insights/InsightsClient.tsx	"Ταξίδι"
 inline	app/(protected)/insights/InsightsClient.tsx	"Υγεία"
-inline	app/(protected)/insights/InsightsClient.tsx	"Υψηλό"
-inline	app/(protected)/insights/InsightsClient.tsx	"Χαμηλό"
 inline	app/(protected)/protection/page.tsx	event.definitionId
-inline	app/(protected)/questionnaires/QuestionnairesClient.tsx	{ kicker: "ΕΡΩΤΗΜΑΤΟΛΟΓΙΑ", title: "Διαχείριση ερωτηματολογίων", subtitle: "Δημιουργήστε πρότυπα, παρακολουθήστε και αναλύστε απαντήσεις πελατών.", templates: "Πρότυπα", sent: "Απεσταλμένα", createNew: "Νέο πρότυπο", system: "Σύστημα", custom: "Προσαρμοσμένο", questions: "ερωτήσεις", sentCount: "αποστολές", editTemplate: "Επεξεργασία", deleteTemplate: "Διαγραφή", deleteTemplateTitle: "Διαγραφή του προτύπου;", deleteTemplateBody: "Το πρότυπο αφαιρείται από τη βιβλιοθήκη σας. Τα ερωτηματολόγια που έχουν ήδη σταλεί διατηρούν τις απαντήσεις τους.", deleteTemplateFailed: "Το πρότυπο δεν διαγράφηκε. Δοκιμάστε ξανά.", saveTemplateFailed: "Το πρότυπο δεν αποθηκεύτηκε. Δοκιμάστε ξανά.", templateName: "Όνομα προτύπου", lob: "Κλάδος ασφάλισης", addQuestion: "Προσθήκη ερώτησης", questionLabel: "Κείμενο ερώτησης (EN)", questionLabelEl: "Κείμενο ερώτησης (EL)", questionType: "Τύπος", removeQuestion: "Αφαίρεση ερώτησης", markRequired: "Υποχρεωτική ερώτηση", required: "Υποχρεωτικό", optional: "Προαιρετικό", options: "Επιλογές (χωρισμένες με κόμμα)", optionsEl: "Επιλογές EL (χωρισμένες με κόμμα)", save: "Αποθήκευση", cancel: "Ακύρωση", customer: "Πελάτης", sortLabel: "Ταξινόμηση", defaultOrder: "Προεπιλεγμένη σειρά", template: "Πρότυπο", status: "Κατάσταση", sentAt: "Αποστολή", pending: "Αναμονή", completed: "Ολοκληρωμένο", analyze: "Ανάλυση AI", noTemplates: "Δεν υπάρχουν πρότυπα", noTemplatesDesc: "Δημιουργήστε ένα επαναχρησιμοποιήσιμο ερωτηματολόγιο για να καταγράφετε ανάγκες πελατών και να εντοπίζετε κενά κάλυψης πιο γρήγορα.", noInstances: "Δεν υπάρχουν απεσταλμένα ερωτηματολόγια", noInstancesDesc: "Στείλτε ένα ερωτηματολόγιο από το προφίλ ενός πελάτη για να αρχίσετε να συλλέγετε απαντήσεις εδώ.", viewClients: "Προβολή πελατών", analysisTitle: "Ανάλυση απαντήσεων", needs: "Αναγνωρισμένες ανάγκες", recommendations: "Συστάσεις", missingCoverage: "Ελλείψεις κάλυψης", answers: "Απαντήσεις", essential: "Απαραίτητο", text: "Κείμενο", number: "Αριθμός", boolean: "Ναι/Όχι", select: "Λίστα", }
+inline	app/(protected)/questionnaires/QuestionnairesClient.tsx	{ kicker: "ΕΡΩΤΗΜΑΤΟΛΟΓΙΑ", title: "Διαχείριση ερωτηματολογίων", subtitle: "Δημιουργήστε πρότυπα, παρακολουθήστε και αναλύστε απαντήσεις πελατών.", templates: "Πρότυπα", sent: "Απεσταλμένα", createNew: "Νέο πρότυπο", system: "Σύστημα", custom: "Προσαρμοσμένο", questions: "ερωτήσεις", sentCount: "αποστολές", editTemplate: "Επεξεργασία", moreQuestions: "+{n} ακόμη", namePlaceholder: "π.χ. Ετήσιος έλεγχος κάλυψης", errorNameRequired: "Δώστε ένα όνομα στο πρότυπο", errorAddQuestion: "Προσθέστε τουλάχιστον μία ερώτηση", errorQuestionText: "Κάθε ερώτηση χρειάζεται κείμενο", deleteTemplate: "Διαγραφή", deleteTemplateTitle: "Διαγραφή του προτύπου;", deleteTemplateBody: "Το πρότυπο αφαιρείται από τη βιβλιοθήκη σας. Τα ερωτηματολόγια που έχουν ήδη σταλεί διατηρούν τις απαντήσεις τους.", deleteTemplateFailed: "Το πρότυπο δεν διαγράφηκε. Δοκιμάστε ξανά.", saveTemplateFailed: "Το πρότυπο δεν αποθηκεύτηκε. Δοκιμάστε ξανά.", templateName: "Όνομα προτύπου", lob: "Κλάδος ασφάλισης", addQuestion: "Προσθήκη ερώτησης", questionLabel: "Κείμενο ερώτησης (EN)", questionLabelEl: "Κείμενο ερώτησης (EL)", questionType: "Τύπος", removeQuestion: "Αφαίρεση ερώτησης", markRequired: "Υποχρεωτική ερώτηση", required: "Υποχρεωτικό", optional: "Προαιρετικό", options: "Επιλογές (χωρισμένες με κόμμα)", optionsEl: "Επιλογές EL (χωρισμένες με κόμμα)", save: "Αποθήκευση", cancel: "Ακύρωση", customer: "Πελάτης", sortLabel: "Ταξινόμηση", defaultOrder: "Προεπιλεγμένη σειρά", template: "Πρότυπο", status: "Κατάσταση", sentAt: "Αποστολή", pending: "Αναμονή", completed: "Ολοκληρωμένο", analyze: "Ανάλυση AI", noTemplates: "Δεν υπάρχουν πρότυπα", noTemplatesDesc: "Δημιουργήστε ένα επαναχρησιμοποιήσιμο ερωτηματολόγιο για να καταγράφετε ανάγκες πελατών και να εντοπίζετε κενά κάλυψης πιο γρήγορα.", noInstances: "Δεν υπάρχουν απεσταλμένα ερωτηματολόγια", noInstancesDesc: "Στείλτε ένα ερωτηματολόγιο από το προφίλ ενός πελάτη για να αρχίσετε να συλλέγετε απαντήσεις εδώ.", viewClients: "Προβολή πελατών", analysisTitle: "Ανάλυση απαντήσεων", needs: "Αναγνωρισμένες ανάγκες", recommendations: "Συστάσεις", missingCoverage: "Ελλείψεις κάλυψης", answers: "Απαντήσεις", essential: "Απαραίτητο", text: "Κείμενο", number: "Αριθμός", boolean: "Ναι/Όχι", select: "Λίστα", }
 inline	app/(protected)/renewals/RenewalsClient.tsx	{ title: "Ανανεώσεις", sortLabel: "Ταξινόμηση", defaultOrder: "Προεπιλεγμένη σειρά", subtitle: "Παρακολούθηση και διαχείριση ανανεώσεων ασφαλιστηρίων.", kicker: "PIPELINE", pending: "Εκκρεμεί", readyToContact: "Έτοιμο για επικοινωνία", noActiveConnection: "Χωρίς ενεργή σύνδεση", overdue: "Ληξιπρόθεσμο", expiresToday: "Σήμερα", expiresTomorrow: "Αύριο", daysLeftSuffix: " ημ.", completed: "Ολοκληρώθηκε", lapsed: "Εκπνοή", all: "Όλα", expiringThisWeek: "Λήγουν αυτή την εβδομάδα", expiringThisMonth: "Λήγουν αυτόν τον μήνα", completedThisMonth: "Ανανεώθηκαν", lapsedThisMonth: "Εκπνοή μήνα", premiumAtRisk: "Ασφάλιστρα σε κίνδυνο", totalTracked: "Σύνολο", filterBy: "Φίλτρο", timeframe: "Χρονικό πλαίσιο", days: "ημέρες", customer: "Πελάτης", policy: "Ασφαλιστήριο", insurer: "Ασφαλιστής", lob: "Κλάδος", premium: "Ασφάλιστρο", expires: "Λήξη", daysLeft: "Ημέρες", status: "Κατάσταση", actions: "Ενέργειες", markOutcome: "Καταγραφή Αποτελέσματος", renewedSame: "Ανανέωση (ίδιος ασφαλιστής)", renewedDifferent: "Ανανέωση (διαφορετικός)", cancelled: "Ακύρωση", sendReminder: "Αποστολή Υπενθύμισης", sendBatchReminder: "Αποστολή Υπενθυμίσεων", noRenewals: "Δεν υπάρχουν ανανεώσεις", noRenewalsDesc: "Οι ανανεώσεις θα εμφανιστούν εδώ καθώς πλησιάζουν οι ημερομηνίες λήξης.", emptyHeadline: "Κανένας συναγερμός ανανέωσης", emptyBenefit: "Μόλις προστεθούν ασφαλιστήρια πελατών, οι λήξεις εμφανίζονται εδώ 90 ημέρες πριν — ποτέ ξανά χαμένη ανανέωση.", emptyCta: "Προσθήκη ασφαλιστηρίων πελατών", emptyPreviewLabel: "Παράδειγμα", emptyExampleName: "Μαρία Κ. — Αυτοκίνητο", emptyExampleMeta: "Interamerican · €312/έτος", emptyExampleDays: "σε 45 ημέρες", selected: "επιλεγμένα", notes: "Σημειώσεις (προαιρετικά)", save: "Αποθήκευση", cancel: "Ακύρωση", outcomeRecorded: "Αποτέλεσμα καταγράφηκε", actionFailed: "Αποτυχία", }
 inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας έληξε χωρίς ανανέωση."
 inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας ακυρώθηκε."
