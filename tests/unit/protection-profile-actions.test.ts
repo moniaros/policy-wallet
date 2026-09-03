@@ -43,6 +43,10 @@ vi.mock("@/lib/auth-helpers", () => ({
     getAuthenticatedUser: vi.fn(async () => ({ dbUser: { id: "user-1", name: "Μαρία", aiProcessingConsentVersion: null, preferredLanguage: "el" } })),
 }))
 vi.mock("@/lib/services/gap-engine", () => ({ refreshProtectionScore }))
+// The engine work runs after the response; the test drains it explicitly.
+const afterQueue = vi.hoisted(() => ({ pending: [] as Promise<unknown>[] }))
+vi.mock("next/server", () => ({ after: (fn: () => unknown) => { afterQueue.pending.push(Promise.resolve().then(fn)) } }))
+const flushAfter = async () => { await Promise.all(afterQueue.pending.splice(0)) }
 vi.mock("@/lib/services/life-events/service", () => ({ declareLifeEvent }))
 vi.mock("@/lib/journey/conversion-events", () => ({ recordConversionEvent }))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
@@ -96,6 +100,7 @@ describe("completeProtectionProfile", () => {
         state.profile = { childrenCount: 1, dependentsCount: 1, employmentStatus: "employed", answeredFields: ["childrenCount", "dependentsCount", "employmentStatus"] }
         state.row = { intent: "find_gaps", riskConcerns: ["income"], recentChanges: ["new_child", "health_changed"], unsureSteps: [], confidenceLevel: "gaps", completedAt: null }
         const out = await completeProtectionProfile()
+        await flushAfter()
         expect(declareLifeEvent).toHaveBeenCalledTimes(1)
         expect((declareLifeEvent.mock.calls as any[])[0][0]).toMatchObject({ userId: "user-1", definitionId: "birth", source: "customer_declared", confidence: "high", applyDelta: false })
         expect((db.protectionProfile.update.mock.calls as any[])[0][0].data.completedAt).toBeInstanceOf(Date)
@@ -110,6 +115,7 @@ describe("completeProtectionProfile", () => {
         state.profile = { residenceType: "rented", answeredFields: ["residenceType"] }
         state.row = { recentChanges: [], unsureSteps: ["people"], completedAt: null }
         await completeProtectionProfile()
+        await flushAfter()
         expect(refreshProtectionScore).toHaveBeenCalledWith("user-1", "profile_update")
         expect(db.protectionProfile.update).toHaveBeenCalledTimes(1)
         vi.clearAllMocks()

@@ -12,6 +12,7 @@
  */
 
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import type { Prisma } from "@prisma/client"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
@@ -164,30 +165,6 @@ export async function completeProtectionProfile(): Promise<ProtectionProfileComp
     const priorities = deriveProtectionPriorities(ctx, statements)
 
     if (row && !row.completedAt) {
-        // Life changes → LifeEventInstance rows. The facts (children, home,
-        // vehicle) were written by the steps, so the registry's increments
-        // must not run again; the record, the bus event and the recalculation
-        // still do. A non-repeatable event already on file is simply skipped.
-        let declared = 0
-        const occurredAt = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)
-        for (const id of stringList(row.recentChanges)) {
-            const option = LIFE_CHANGE_OPTIONS.find((o) => o.id === id)
-            if (!option?.registry) continue
-            try {
-                const res = await declareLifeEvent({
-                    userId,
-                    definitionId: option.registry,
-                    occurredAt,
-                    source: "customer_declared",
-                    confidence: "high",
-                    applyDelta: false,
-                })
-                if (res.ok) declared++
-            } catch (error) {
-                console.error("protection profile: life event declaration failed", option.registry, error)
-            }
-        }
-
         await db.protectionProfile.update({
             where: { userId },
             data: {
@@ -196,13 +173,45 @@ export async function completeProtectionProfile(): Promise<ProtectionProfileComp
             },
         })
 
-        // Awaited, as the quick start does: the map renders from the persisted
-        // assessment. Each declaration above already ran the engine.
-        if (declared === 0) {
-            await refreshProtectionScore(userId, "profile_update").catch((err) => {
-                console.error("protection profile engine run failed:", err)
-            })
-        }
+        // The map renders from what this action computes in memory — the
+        // derived priorities and the pure insight — not from the persisted
+        // assessment. Everything that runs the engine (each life-event
+        // declaration, and the refresh when nothing was declared) reaches a
+        // model provider and took 20 s in front of the customer; it now runs
+        // after the response, and the dashboard reads the result when it lands.
+        const recentChanges = stringList(row.recentChanges)
+        after(async () => {
+            // Life changes → LifeEventInstance rows. The facts (children, home,
+            // vehicle) were written by the steps, so the registry's increments
+            // must not run again; the record, the bus event and the
+            // recalculation still do. A non-repeatable event already on file is
+            // simply skipped.
+            let declared = 0
+            const occurredAt = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)
+            for (const id of recentChanges) {
+                const option = LIFE_CHANGE_OPTIONS.find((o) => o.id === id)
+                if (!option?.registry) continue
+                try {
+                    const res = await declareLifeEvent({
+                        userId,
+                        definitionId: option.registry,
+                        occurredAt,
+                        source: "customer_declared",
+                        confidence: "high",
+                        applyDelta: false,
+                    })
+                    if (res.ok) declared++
+                } catch (error) {
+                    console.error("protection profile: life event declaration failed", option.registry, error)
+                }
+            }
+            // Each declaration already ran the engine; otherwise run it once.
+            if (declared === 0) {
+                await refreshProtectionScore(userId, "profile_update").catch((err) => {
+                    console.error("protection profile engine run failed:", err)
+                })
+            }
+        })
 
         const unsure = stringList(row.unsureSteps)
         await recordConversionEvent(userId, "protection_profile_completed", {
