@@ -504,7 +504,15 @@ export async function registerUser(formData: FormData) {
             if (error.message.includes("Unique constraint")) {
                 return { success: false, error: authErr(language, "Υπάρχει ήδη λογαριασμός με αυτά τα στοιχεία", "User already exists") }
             }
-            return { success: false, error: error.message }
+            // Never surface error.message raw. It is English on a Greek-default
+            // product, and a database or network failure carries INFRASTRUCTURE
+            // detail — seen live on 2026-09-03: «Authentication failed against
+            // database server at `aws-1-eu-west-3.pooler.supabase.com`, the
+            // provided database credentials for `postgres` are not valid» was
+            // rendered inside the sign-up form for every visitor while the
+            // production credential was stale. The cause belongs in the log;
+            // the visitor gets the same generic line as every other failure.
+            console.error("[registerUser] registration failed", error)
         }
         return { success: false, error: authErr(language, "Παρουσιάστηκε μη αναμενόμενο σφάλμα κατά την εγγραφή.", "An unexpected error occurred during registration.") }
     }
@@ -637,7 +645,10 @@ export async function resetPasswordWithToken(payload: {
 
     const { error } = await adminClient.auth.admin.updateUserById(supabaseUserId, { password })
     if (error) {
-        return { success: false, error: error.message }
+        // Supabase's message is English and names the auth server's rule;
+        // the reader gets the localized generic line, the cause goes to the log.
+        console.error("[resetPasswordWithToken] password update failed", error)
+        return { success: false, error: authErr(language, "Η ενημέρωση του κωδικού απέτυχε. Δοκιμάστε ξανά.", "Could not update the password. Please try again.") }
     }
 
     await consumePasswordResetToken(email, token)
@@ -650,7 +661,8 @@ export async function updateUserPassword(password: string) {
     try {
         const { error } = await supabase.auth.updateUser({ password })
         if (error) {
-            return { success: false, error: error.message }
+            console.error("[updateUserPassword] password update failed", error)
+            return { success: false, error: "Failed to update password" }
         }
         return { success: true }
     } catch {
