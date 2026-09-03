@@ -22,6 +22,7 @@ describe('Greek help content uses «ασφαλιστήριο» for the policy te
     })
 
     it('the first-upload article title now names the ασφαλιστήριο', () => {
-        expect(helpArticles.el['upload-policy'].title).toContain('Ασφαλιστήριο')
+        // Sentence-case since Direction A: the term is what matters, not its capital.
+        expect(helpArticles.el['upload-policy'].title).toMatch(/ασφαλιστήριο/i)
     })
 })

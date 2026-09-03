@@ -66,13 +66,10 @@ function filesWithDarkSurface(): string[] {
  */
 const MIXED_SURFACE_FILES = [
     'app/(protected)/wallet/[id]/loading.tsx',
-    'app/auth/forgot-password/page.tsx',
-    'app/auth/handover/page.tsx',
-    'app/auth/reset-password/page.tsx',
-    'app/auth/signin/page.tsx',
-    'app/auth/signup/confirmation/page.tsx',
+    // The auth pages left this list on 2026-09-03: their dark literals were
+    // hand-rolled dark-mode buttons and dialogs, now the Grafí Button and
+    // the surface tokens, which theme themselves.
     'components/landing/WorldClassLanding.tsx',
-    'components/shell/AppShell.tsx',
     'components/wallet/PolicyQA.tsx',
 ]
 

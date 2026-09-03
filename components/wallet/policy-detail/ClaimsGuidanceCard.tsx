@@ -81,10 +81,10 @@ export function ClaimsGuidanceCard({
     const hasWhatYouNeed = true
 
     return (
-        <div className="pw-card pw-pad sm:p-7">
+        <div>
             <div className="mb-1 flex items-center gap-2">
                 <LifeBuoy className="h-4 w-4 text-primary dark:text-mint" />
-                <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">{copy.claimsTitle}</h2>
+                <h2 className="text-body font-semibold text-foreground">{copy.claimsTitle}</h2>
             </div>
             <p className="mb-5 text-xs text-muted-foreground">{copy.claimsSubtitle}</p>
 
@@ -108,7 +108,7 @@ export function ClaimsGuidanceCard({
                 step list so branch bundles of any length still get them. */}
             {hasWhatYouNeed && (
                 <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
-                    <h3 className="mb-2.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                    <h3 className="mb-2.5 text-caption font-medium text-muted-foreground">
                         {copy.claimWhatYouNeedTitle}
                     </h3>
                     <div className="flex flex-wrap items-center gap-2">
@@ -128,7 +128,7 @@ export function ClaimsGuidanceCard({
                         )}
                         {policyNumber && (
                             <p className="inline-flex items-center gap-2 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
-                                <span className="text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                                <span className="text-caption font-medium text-muted-foreground">
                                     {copy.policyNumberLabel}
                                 </span>
                                 <span className="font-mono text-xs font-bold text-black dark:text-white">{policyNumber}</span>
@@ -141,7 +141,7 @@ export function ClaimsGuidanceCard({
             {/* Deadlines extracted from THIS policy — amber, never styled like
                 the editorial steps above; this is data, not guidance. */}
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
-                <h3 className="mb-2.5 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                <h3 className="mb-2.5 flex items-center gap-1.5 text-caption font-medium text-muted-foreground">
                     <CalendarClock className="h-3.5 w-3.5 text-status-warning" />
                     {copy.claimDeadlinesTitle}
                 </h3>

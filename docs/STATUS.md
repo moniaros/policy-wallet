@@ -14,6 +14,125 @@ mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry 
 partial with the remainder named per-goal in the ledger. Written system: `docs/design-system.md`;
 seams and hostile review: `docs/handover.md`.
 
+## In progress (2026-09-03)
+
+- **B2C app redesign — Direction A BUILT on `feat/b2c-direction-a` (`b73421e6`), draft PR #288
+  against NEW-UI, awaiting the owner's look on the preview.** Owner set aside `feat/grafi-b2c`
+  (PR #287) for the policyholder app and picked, from the proposals artifact
+  (https://claude.ai/code/artifact/ea4a5213-6b3b-4612-8769-d2e2a8d7161b), **Direction A · Inter ·
+  cool slate**. Shipped in this pass: the shell (three-group sidebar, desktop top bar with
+  accent-insensitive policy search ⌘K + bell + account, phone tab bar, flat slate canvas,
+  light-first default) and `/dashboard` re-cut on the reference grid (facts row inside the
+  same guarded h2, count bar instead of a score, renewal term bars, dedupe of duplicate
+  uploads by policy number, map tiles, advisor rail card, one upload offer). Every honesty
+  guard kept green; registers updated deliberately (clamp, token-debt, always-dark, Greek
+  inventory). 518 files / 5900 unit tests, tsc, eslint, i18n, utf8, api-auth all clean.
+  **Finish review (independent reviewer, degraded in-thread role via subagent):** first pass
+  `fix` → batch applied (`0c64c2cd`: three visible planes via `--surface-canvas`/`--surface-sunken`,
+  36px/10px slate-200 chips, 12px floor on every functional string, neutral term bars outside 30
+  days, soft-pill secondary actions, drawer sign-out dedupe) → verdict pass scored 6/8 resolved or
+  accepted-as-cited; regressions it found (pill arrow wrap, drawer label wrap) fixed in the
+  follow-up commit. **Open by decision, for the owner:** (a) the severity tone module uses blue
+  (`sky-500`) for the *medium* tier while the design rule says blue = info only — a product-wide
+  single source (`components/gaps/severity-tone.ts`), not repainted here; (b) DESIGN.md still
+  describes the pre-build canvas and lacks the sub-card/chip/count-bar devices — to be documented
+  from the built world after the remaining surfaces are re-cut. Preview: Vercel git integration
+  builds every push on `moniaros-projects/policy-wallet` (the second "AgentRise" team status fails
+  on author access and is pre-existing); the CSP blocks Vercel's live-feedback script on previews.
+  **Pass 2 (later 2026-09-03, same branch/PR): wallet, policy detail, protection and settings
+  bodies re-cut onto the same card anatomy.** `/wallet`: KPI tiles + completion ring → ONE overview
+  card of fact cells (every `data-count`/`data-fact` key kept, each rendered once), red notices box →
+  white card with sub-card rows and a «+N ακόμη» soft pill, segmented filter/view controls on the
+  sunken surface, sentence-case table headers, neutral chips, soft-pill row actions, the sticky
+  `PageHeader` replaced by the page's own header, FAB as a round brand button with a card menu.
+  `/wallet/[id]`: head without uppercase/mono (captions for labels, attention as a sub-card,
+  primary DO + soft-pill ASK in one row — still exactly two buttons, DO first), summary on
+  `CardHead` with the health donut turned into a fact cell, the six disclosure sections as cards
+  with chips, 60+ uppercase labels across the sub-cards → sentence case, inner cards flattened into
+  groups with sub-card tiles. `/protection`: header, segmented lens tabs (no green pill),
+  `RecommendationCards` → `CardHead` + sub-cards with white pill actions, `InsightCard` without the
+  coloured side bar and the six green blocks, raw branch id → localised branch name, expired notice
+  on the warning tint. `/account`: rail active = bar + tint, chips, tokens. Also fixed a REAL
+  hydration error on every expired policy (GlossaryHint's `<details>` inside a `<p>` in
+  KeyDatesCard). Register/guard moves: token-debt −4 (ImportantNotices hex), Greek inventory
+  (+«Επισκόπηση», +«Λήγουν σύντομα», «Αριθμός ασφαλιστηρίου» — the old ALL-CAPS label had evaded
+  the «συμβόλαιο» ban because capitals drop the tonos), ledger A-10 now asserts the localised branch
+  name rather than the raw id in capitals. Left as-is by decision: `policyStatus` labels stay
+  ALL-CAPS in the source (pinned by policy-status-wording + e2e), `.pw-card:hover` mint lift is
+  global, CoverageInsightsClient's verdict/stat tiles and the rest of its body, RecommendationCards'
+  urgency colour map (bypass-listed). 518 files / 5900 unit tests, tsc, eslint, i18n, utf8,
+  api-auth clean; browser console clean on all four surfaces at 1440 and 390.
+  DESIGN.md and `.impeccable/design.json` re-documented from the BUILT world (three planes, card head,
+  fact cells, soft pills, segmented control, count bar; MASTER.md gained the two app surface rows).
+  **Pass 3 (later 2026-09-03, same branch/PR): /agent, /notifications, /account, /help re-cut and
+  run through the finish reviewer until `disposition: ship` (three verdict passes; every material fix
+  and regression resolved on recaptures).** Notable: notifications as ONE card of day-grouped rows with
+  a fixed unread gutter; the advisor page as header + segmented tabs + white cards (connected state
+  seeded on dev via `scripts/seed-agent-demo.mjs e2e-agent@… e2e-ph@…`); help page on the card
+  anatomy with formal-plural copy and sentence-case article titles; every settings card opens with
+  `CardHead` and its OWN glyph, row actions are soft pills (`.pw-soft-button` is now `:where()`-scoped
+  so `text-status-danger` wins on destructive ones), quiet hours on the shared Switch, the ended plan
+  reads as ended (badge, no price, past-tense entitlements, over-limit meter copy), UsageMeter's label
+  is a caption (typography pin updated), TokenUsageCard on the ladder with a card head. Two shell
+  traps fixed: a second `min-h-screen` INSIDE `<main>` under the 64px bar (64px/144px of empty canvas
+  on every short page) and legacy `pb-28` tab-bar allowances stacked on the shell's own reserve.
+  **Marketing (same day): the dummy phone UIs are gone.** `components/landing/real-screens/
+  RealScreens.tsx` renders the REAL app components (ProtectionStatusHero + AttentionList, the
+  renewals timeline, the coverage map, the advisor's ClientCard rows) on fixture data, laid out at
+  390px and scaled into the hero DeviceFrame (now 300px, unpadded), both AudienceTabs phones and the
+  «Γιατί τώρα» band; each screen brings a pinned `LanguageProvider` + `TranslationsProvider` (the
+  public layouts mount neither), is `inert`, and is stamped as a sample; the mock-honesty guard now
+  scans that file. BranchCoverageMap sizes to its container (`@container` / `@sm:`), which is what
+  keeps it two-up inside a phone frame on a wide viewport. **Motion (same day, `/impeccable animate`):**
+  the phone screens now behave like the app — a status bar and the app's own tab bar frame each
+  screen; when a screen goes live (the hero frame switching to it, a static phone scrolling into
+  view) its content pushes in from the right while the chrome stays put, cards settle in with a
+  short stagger, bars fill to their values and counts tick up, and the tab bar's mark lands on the
+  screen's tab; the hero now plays home → wallet → coverage map as one session. CSS keyframes
+  (`.rs-live`, globals.css) + two small Web Animations tweens; reduced motion flattens everything;
+  nothing loops off-screen. Pre-existing, not touched: a hydration attribute mismatch on the
+  homepage comes from `PlanRecommender`'s range input (`caret-color` inline style).
+  **Polish on /protection (same day, `/impeccable polish`):** functional first — the risk lens
+  logged a React missing-key warning on every render (the RiskGraphPanel element is created in the
+  server component and handed to the client view; Flight's frozen element cannot be marked
+  validated, so it now carries a key), and the «Τι ελέγξαμε και είναι εντάξει» rows printed the
+  stored slug («health», «motor») as a title with an English «OK» pill (now the taxonomy label and
+  «Εντάξει»). Then the drift: the coverage summary is ONE card (CardHead · verdict sentence · tally ·
+  expired notice · three fact cells on the sunken surface) instead of a centred kicker block over
+  floating tiles; the empty states, free-tier gate, all-clear list and «Επόμενα βήματα» are cards
+  with soft pills; branch tiles are chip · title · caption with status-token pills and no faded
+  neutral state; life events, monitoring, risk profile, risk graph, household, trends, predictions
+  and the quick-start opener share CardHead, sunken rows, segmented filters on the track and
+  caption labels. Every bar, icon and pill colour is a status token (no `#1A2420`, no
+  `text-black`, no palette literals). One guard learned the token vocabulary
+  (`risk-assessment-panel-mobile`'s unknown-vs-unprotected check only knew `bg-red-50`-style
+  classes). Recaptured both lenses at 1440/390: 0 console errors. Commit `fc6b7cac`. A second
+  batch (captured as the FREE and DASH fixtures, whose thin profiles render the states the Pro
+  fixture hides) put RiskProfileWizard on the anatomy — CardHead, sentence-case section heads,
+  `.pw-input` recipe fields with a visible control edge, sunken chips with a primary ring when
+  ticked (ChipToggle's amber «warning» accent is gone: a ticked family-history chip is state, not
+  a finding), content-width submit — and moved every upgrade CTA on the page (lite gate, locked
+  empty state, UpgradeTriggerCard's card and inline variants) to soft pills, so the wizard's
+  submit is the screen's one primary. Not touched: the finding cards (already on the anatomy).
+  **Auth pages (same day, `/impeccable polish`):** the auth tree is the Grafí world (the split
+  AuthShell, `fg-*`/`surface-*`/`state-*` tokens) and sign-up already lived there; sign-in and the
+  five utility screens did not. Sign-in: the email/phone switch is a segmented pill on the sunken
+  surface, the error banner / field errors / reset dialog use the shared gap and covered notices,
+  the submit and dialog buttons are the design-system Button, the trust badge and links are on
+  tokens — no hex, no rose, no app-world `pw-*` recipes. Forgot / reset / verify / confirmation /
+  handover: one anatomy (state disc · display-md heading · body · one action) on the same
+  notices and Button; the reset page's two hand-rolled password inputs — `<label>`s with no
+  `htmlFor`, an unlabelled three-segment meter — are now the shared PasswordField (a `showRule`
+  prop hides the rule line on the confirm field). Shared recipes live in
+  `components/auth/FormField.tsx` (`AUTH_LINK_CLASS`, `AUTH_PRIMARY_LINK_CLASS`,
+  `AUTH_SECONDARY_LINK_CLASS`, `AUTH_NOTICE_GAP_CLASS`, `AUTH_NOTICE_COVERED_CLASS`). The five auth
+  pages left the always-dark register's MIXED list because they no longer carry a dark literal.
+  Captured unauthenticated at 1440/390: 0 console errors.
+  **Next:** owner review on the preview (four app pages + /protection both lenses + homepage
+  hero/audience/why-now); the severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
+  the first tab" was the Next dev-tools button; the identical renewal rows were fixture
+  duplicates, now collapsed).
+
 ## Done since the last entry
 
 - **Auth rebuild A0–A8 (brief: split-shell, phone removal, phased social login)**

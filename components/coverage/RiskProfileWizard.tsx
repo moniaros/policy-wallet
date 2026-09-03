@@ -4,12 +4,14 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { ChipToggle } from "@/components/ui/form/ChipToggle"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { ACTIVITY_LABELS, HIGH_RISK_ACTIVITIES } from "@/lib/services/gap-engine/life-context"
 import {
     Baby,
     Briefcase,
     Building2,
     Car,
+    Check,
     Heart,
     Home,
     Info,
@@ -340,11 +342,13 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
         }
     }
 
-    // Every field in the wizard shares this. It carried no dark variant, so in
-    // dark mode the surface flipped to near-black while the text stayed black —
-    // 1.1:1, i.e. the user could not see what they were typing, on the flow that
-    // feeds the whole gap engine.
-    const inputClass = "pw-input pw-input-sm mt-1 block border-black/10 bg-black/[0.03] text-black dark:border-white/15 dark:bg-white/5 dark:text-white"
+    // Every field in the wizard shares this. It once carried no dark variant, so
+    // in dark mode the surface flipped to near-black while the text stayed
+    // black — 1.1:1 on the flow that feeds the whole gap engine. The light look
+    // is now the `.pw-input` recipe's own (a visible control edge on the
+    // neutral fill); the dark utilities stay because the dark-mode-contrast
+    // guard pins them by name.
+    const inputClass = "pw-input pw-input-sm mt-1 block dark:bg-white/5 dark:text-white"
     // h-4 w-4 shrink-0: with no size of its own the UA default sat in a flex
     // row that squeezed it to 13x24 at 320px — a checkbox that is not square
     // reads as a rendering fault before it reads as a control.
@@ -354,29 +358,20 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
     // an icon and its text, so the whole row is the target; the box itself only
     // has to clear AA. Same call as the quiet-hours checkbox.
     const checkboxClass =
-        "h-6 w-6 shrink-0 rounded border-black/20 dark:border-white/25 text-primary focus:ring-primary"
-    const labelClass = "block text-sm font-medium text-black/75 dark:text-white/75"
+        "h-6 w-6 shrink-0 rounded border-[var(--pw-border-control)] text-primary focus:ring-primary"
+    const labelClass = "block text-caption font-medium text-muted-foreground"
 
     return (
         <div className="pw-card pw-pad">
-            <div className="flex items-center gap-3 mb-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
-                    <ShieldCheck className="h-5 w-5 text-primary dark:text-mint" />
-                </div>
-                <div>
-                    <h2 className="text-lg font-semibold text-black dark:text-white">
-                        {t("Προφίλ κινδύνου", "Risk Profile")}
-                    </h2>
-                    <p className="text-xs text-muted-foreground">
-                        {t(
-                            "Βοηθήστε μας να κατανοήσουμε τις ανάγκες σας για καλύτερη ανίχνευση κενών.",
-                            "Help us understand your needs for better gap detection."
-                        )}
-                    </p>
-                </div>
-            </div>
+            <CardHead icon={ShieldCheck} title={t("Προφίλ κινδύνου", "Risk Profile")} />
+            <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
+                {t(
+                    "Βοηθήστε μας να κατανοήσουμε τις ανάγκες σας για καλύτερη ανίχνευση κενών.",
+                    "Help us understand your needs for better gap detection."
+                )}
+            </p>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="mt-5 space-y-5">
                 {/* Row 1: Personal */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -445,8 +440,8 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                 </div>
 
                 {/* Row 4: Health & Lifestyle */}
-                <div className="pt-3 border-t border-black/8 dark:border-white/10">
-                    <p className="text-xs font-semibold text-black/60 dark:text-white/50 uppercase tracking-widest mb-3">
+                <div className="border-t border-border pt-4">
+                    <p className="mb-3 text-sm font-semibold text-foreground">
                         {t("Υγεία & Τρόπος ζωής", "Health & Lifestyle")}
                     </p>
 
@@ -455,9 +450,9 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                         purpose statement or optionality at the point of
                         collection. This states why we ask, that it is optional,
                         and that it is used only to tailor coverage suggestions. */}
-                    <div className="mb-4 flex items-start gap-2 rounded-xl border border-primary/20 bg-primary/[0.04] p-3 dark:border-primary/25 dark:bg-primary/10">
-                        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary dark:text-mint" aria-hidden="true" />
-                        <p className="text-caption leading-relaxed text-black/70 dark:text-white/70">
+                    <div className="pw-subcard mb-4 flex items-start gap-2 p-3">
+                        <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                        <p className="text-caption leading-relaxed text-foreground/80">
                             {t(
                                 "Τα στοιχεία υγείας είναι προαιρετικά. Τα χρησιμοποιούμε μόνο για να προσαρμόσουμε τις προτάσεις κάλυψης υγείας και ζωής στις ανάγκες σας — δεν κοινοποιούνται σε ασφαλιστές χωρίς τη ρητή συγκατάθεσή σας. Μπορείτε να τα αφήσετε κενά ή να τα διαγράψετε αργότερα.",
                                 "Health details are optional. We use them only to tailor health and life coverage suggestions to your needs — they are not shared with insurers without your explicit consent. You can leave them blank or remove them later."
@@ -514,7 +509,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 placeholder="75"
                             />
                             {heightCm !== "" && weightKg !== "" && (
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="mt-1 text-caption text-muted-foreground">
                                     {t("ΔΜΣ", "BMI")}: {(Number(weightKg) / ((Number(heightCm) / 100) ** 2)).toFixed(1)}
                                 </p>
                             )}
@@ -550,7 +545,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 )
                             })}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1.5">
+                        <p className="mt-1.5 text-caption text-muted-foreground">
                             {t("Επιλέξτε όλα όσα ισχύουν. Αφήστε κενό εάν δεν υπάρχουν.", "Select all that apply. Leave blank if none.")}
                         </p>
                     </div>
@@ -583,7 +578,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 )
                             })}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1.5">
+                        <p className="mt-1.5 text-caption text-muted-foreground">
                             {t("Κληρονομικές παθήσεις σε γονείς ή αδέλφια.", "Hereditary conditions in parents or siblings.")}
                         </p>
                     </div>
@@ -610,31 +605,31 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                     <div className="flex flex-wrap gap-4">
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={ownsHome} onChange={(e) => setOwnsHome(e.target.checked)} className={checkboxClass} />
-                            <Home className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Ιδιόκτητη κατοικία", "Own a home")}</span>
+                            <Home className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Ιδιόκτητη κατοικία", "Own a home")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={hasPets} onChange={(e) => setHasPets(e.target.checked)} className={checkboxClass} />
-                            <PawPrint className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Κατοικίδια", "Have pets")}</span>
+                            <PawPrint className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Κατοικίδια", "Have pets")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={travelsFrequently} onChange={(e) => setTravelsFrequently(e.target.checked)} className={checkboxClass} />
-                            <Plane className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Ταξιδεύω συχνά", "Travel frequently")}</span>
+                            <Plane className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Ταξιδεύω συχνά", "Travel frequently")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={hasLoans} onChange={(e) => setHasLoans(e.target.checked)} className={checkboxClass} />
-                            <Briefcase className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Δάνεια", "Have loans")}</span>
+                            <Briefcase className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Δάνεια", "Have loans")}</span>
                         </label>
                         {/* The διαχειριστής role carries personal liability for the
                             common areas and is not implied by owning the flat — it
                             falls to tenants just as readily. */}
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={isBuildingManager} onChange={(e) => setIsBuildingManager(e.target.checked)} className={checkboxClass} />
-                            <Building2 className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Διαχειριστής πολυκατοικίας", "Manager of a block of flats")}</span>
+                            <Building2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Διαχειριστής πολυκατοικίας", "Manager of a block of flats")}</span>
                         </label>
                     </div>
 
@@ -663,8 +658,8 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                     of the form; the dependent inputs only render once the
                     question above them is answered "yes", so a reader who owns no
                     business never sees an employee count. */}
-                <div className="space-y-3">
-                    <p className="text-kicker font-bold uppercase tracking-widest text-black/60 dark:text-white/55">
+                <div className="space-y-3 border-t border-border pt-4">
+                    <p className="text-sm font-semibold text-foreground">
                         {t("Η κατάστασή σας", "Your situation")}
                     </p>
 
@@ -712,23 +707,23 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                     <div className="flex flex-wrap gap-4">
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={rentsOutProperty} onChange={(e) => setRentsOutProperty(e.target.checked)} className={checkboxClass} />
-                            <Home className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Εκμισθώνω ακίνητο", "I let out property")}</span>
+                            <Home className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Εκμισθώνω ακίνητο", "I let out property")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={ownsBoat} onChange={(e) => setOwnsBoat(e.target.checked)} className={checkboxClass} />
-                            <Plane className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Έχω σκάφος", "I own a boat")}</span>
+                            <Plane className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Έχω σκάφος", "I own a boat")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={ownsBusiness} onChange={(e) => setOwnsBusiness(e.target.checked)} className={checkboxClass} />
-                            <Briefcase className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Έχω επιχείρηση", "I own a business")}</span>
+                            <Briefcase className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Έχω επιχείρηση", "I own a business")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={retirementPlanning} onChange={(e) => setRetirementPlanning(e.target.checked)} className={checkboxClass} />
-                            <User className="h-4 w-4 text-black/60 dark:text-white/50" />
-                            <span className="text-sm text-black/75 dark:text-white/75">{t("Έχω συνταξιοδοτικό πρόγραμμα", "I have a pension plan")}</span>
+                            <User className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            <span className="text-sm text-foreground">{t("Έχω συνταξιοδοτικό πρόγραμμα", "I have a pension plan")}</span>
                         </label>
                     </div>
 
@@ -758,12 +753,13 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                         type="button"
                                         aria-pressed={selected}
                                         onClick={() => toggleActivity(option.value)}
-                                        className={`inline-flex min-h-11 cursor-pointer items-center rounded-full border px-3 text-caption font-medium transition-colors ${
+                                        className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-caption font-semibold transition-colors ${
                                             selected
-                                                ? "border-primary bg-primary text-white dark:text-[#1A2420]"
-                                                : "border-black/12 text-black/65 hover:bg-black/4 dark:border-white/15 dark:text-white/65 dark:hover:bg-white/6"
+                                                ? "bg-muted text-foreground ring-1 ring-primary"
+                                                : "bg-muted text-muted-foreground hover:text-foreground"
                                         }`}
                                     >
+                                        {selected && <Check className="h-3.5 w-3.5 text-primary" aria-hidden="true" />}
                                         {t(option.el, option.en)}
                                     </button>
                                 )
@@ -773,17 +769,17 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                 </div>
 
                 {/* Life Events */}
-                <div className="pt-3 border-t border-black/8 dark:border-white/10">
-                    <div className="flex items-center justify-between mb-3">
-                        <label className={labelClass}>
+                <div className="border-t border-border pt-4">
+                    <div className="mb-3 flex items-center justify-between">
+                        <p className="text-sm font-semibold text-foreground">
                             {t("Γεγονότα ζωής", "Life events")}
-                        </label>
+                        </p>
                         <button
                             type="button"
                             onClick={() => setShowAddEvent(true)}
-                            className="text-xs font-semibold text-primary dark:text-mint hover:underline flex items-center gap-1 cursor-pointer"
+                            className="inline-flex min-h-11 cursor-pointer items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
                         >
-                            <Plus className="inline-flex min-h-[24px] items-center h-3 w-3" />
+                            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                             {t("Προσθήκη", "Add event")}
                         </button>
                     </div>
@@ -794,15 +790,15 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 const eventType = LIFE_EVENT_TYPES.find((t) => t.value === event.type)
                                 const Icon = eventType?.icon || User
                                 return (
-                                    <div key={i} className="flex items-center gap-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] p-2.5">
-                                        <Icon className="h-4 w-4 text-primary dark:text-mint flex-shrink-0" />
-                                        <span className="text-sm text-black dark:text-white flex-1">
+                                    <div key={i} className="pw-subcard flex items-center gap-3 p-2.5">
+                                        <Icon className="h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden="true" />
+                                        <span className="flex-1 text-sm text-foreground">
                                             {eventType?.label[lang] || event.type}
                                         </span>
-                                        <span className="text-xs text-black/60 dark:text-white/50">
+                                        <span className="text-caption text-muted-foreground">
                                             {event.date}
                                         </span>
-                                        <button type="button" onClick={() => removeLifeEvent(i)} aria-label={t("Αφαίρεση γεγονότος", "Remove event")} className="text-red-400 hover:text-red-700 cursor-pointer">
+                                        <button type="button" onClick={() => removeLifeEvent(i)} aria-label={t("Αφαίρεση γεγονότος", "Remove event")} className="grid h-8 w-8 cursor-pointer place-items-center rounded-full text-muted-foreground hover:text-status-danger">
                                             <Trash2 className="h-3.5 w-3.5" />
                                         </button>
                                     </div>
@@ -812,9 +808,9 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                     )}
 
                     {showAddEvent && (
-                        <div className="flex items-end gap-2 mb-3 rounded-xl border border-primary/30 bg-primary-tint dark:bg-primary/15 p-3">
+                        <div className="pw-subcard mb-3 flex flex-wrap items-end gap-2 p-3">
                             <div className="flex-1">
-                                <label htmlFor="newEventType" className="text-xs text-black/60 dark:text-white/50">{t("Τύπος", "Type")}</label>
+                                <label htmlFor="newEventType" className="text-caption font-medium text-muted-foreground">{t("Τύπος", "Type")}</label>
                                 <select id="newEventType" value={newEventType} onChange={(e) => setNewEventType(e.target.value)} className={inputClass}>
                                     <option value="">{t("Επιλέξτε...", "Select...")}</option>
                                     {LIFE_EVENT_TYPES.map((et) => (
@@ -825,7 +821,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 </select>
                             </div>
                             <div className="flex-1">
-                                <label htmlFor="newEventMonth" className="text-xs text-black/60 dark:text-white/50">{t("Ημερομηνία", "Date")}</label>
+                                <label htmlFor="newEventMonth" className="text-caption font-medium text-muted-foreground">{t("Ημερομηνία", "Date")}</label>
                                 <div className="flex gap-1.5">
                                     <select
                                         id="newEventMonth"
@@ -859,17 +855,17 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                     </select>
                                 </div>
                             </div>
-                            <button type="button" onClick={addLifeEvent} className="pw-primary-button">
-                                {t("OK", "OK")}
+                            <button type="button" onClick={addLifeEvent} className="pw-soft-button">
+                                {t("Προσθήκη", "Add")}
                             </button>
-                            <button type="button" onClick={() => setShowAddEvent(false)} aria-label={t("Ακύρωση", "Cancel")} className="p-2.5 text-muted-foreground hover:text-black dark:hover:text-white cursor-pointer">
+                            <button type="button" onClick={() => setShowAddEvent(false)} aria-label={t("Ακύρωση", "Cancel")} className="grid h-11 w-11 cursor-pointer place-items-center rounded-full text-muted-foreground hover:text-foreground">
                                 <X className="h-4 w-4" />
                             </button>
                         </div>
                     )}
 
                     {lifeEvents.length === 0 && !showAddEvent && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-caption text-muted-foreground">
                             {t(
                                 "Προσθέστε σημαντικά γεγονότα ζωής για ακριβέστερη ανίχνευση κενών.",
                                 "Add major life events for more accurate gap detection."
@@ -883,9 +879,9 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                     <button
                         type="submit"
                         disabled={loading}
-                        className="pw-primary-button w-full"
+                        className="pw-primary-button w-full sm:w-auto"
                     >
-                        <ShieldCheck className="h-4 w-4" />
+                        <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                         {loading
                             ? t("Αποθήκευση...", "Saving...")
                             : t("Αποθήκευση & Ανανέωση ανάλυσης", "Save & Update Analysis")}

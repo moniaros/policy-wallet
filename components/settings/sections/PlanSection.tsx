@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Check, ExternalLink, Loader2, Smartphone } from "lucide-react"
+import { Check, CreditCard, ExternalLink, Gauge, Loader2, Receipt, Smartphone } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
@@ -63,6 +63,9 @@ export function PlanSection({ data }: { data: PlanData }) {
     const storeManaged = data.subscription?.provider === "revenue_cat"
     const isAnnual = data.subscription?.billingPeriod === "annual"
     const willRenew = Boolean(data.subscription?.autoRenew)
+    const periodEnded = Boolean(
+        data.subscription && new Date(data.subscription.currentPeriodEnd).getTime() < Date.now()
+    )
 
     const featureList = (limits: EntitlementLimits): string[] => {
         const lines: string[] = []
@@ -141,18 +144,27 @@ export function PlanSection({ data }: { data: PlanData }) {
 
     return (
         <>
-            <SettingsSection title={copy.currentTitle} description={copy.currentDesc}>
-                <div className="rounded-xl border border-black/8 bg-black/[0.03] p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <p className="text-h3 font-semibold tracking-tight text-black dark:text-white">
+            <SettingsSection icon={CreditCard} title={copy.currentTitle} description={periodEnded && !willRenew ? copy.currentDescEnded : copy.currentDesc}>
+                <div className="pw-subcard p-4">
+                    <p className="flex flex-wrap items-center gap-2 text-h3 font-semibold tracking-tight text-foreground">
                         {data.plan?.displayName ?? copy.free}
+                        {periodEnded && !willRenew && (
+                            <span className="rounded-full bg-muted px-2 py-0.5 text-caption font-semibold text-muted-foreground">
+                                {copy.endedBadge}
+                            </span>
+                        )}
                     </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        {data.isPaid && data.plan
-                            ? `${formatPrice(isAnnual ? data.plan.annualEur : data.plan.monthlyEur)} ${
-                                  isAnnual ? copy.perYear : copy.perMonth
-                              }`
-                            : copy.freeForever}
-                    </p>
+                    {/* No price on a plan that has ended — a price beside an
+                        ended period reads as a charge that is still running. */}
+                    {!(periodEnded && !willRenew) && (
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            {data.isPaid && data.plan
+                                ? `${formatPrice(isAnnual ? data.plan.annualEur : data.plan.monthlyEur)} ${
+                                      isAnnual ? copy.perYear : copy.perMonth
+                                  }`
+                                : copy.freeForever}
+                        </p>
+                    )}
 
                     {/* A cancelled subscription must never read "renews on": the
                         date is the same, the promise is the opposite. Gated on
@@ -164,6 +176,14 @@ export function PlanSection({ data }: { data: PlanData }) {
                                 <>
                                     {t.billing.renewsOn} {formatDate(data.subscription.currentPeriodEnd)}
                                 </>
+                            ) : periodEnded ? (
+                                // A period end already in the past must read as
+                                // ended — «λήγει στις 28 Αυγούστου» on 3 September
+                                // is a statement the reader can check and find false.
+                                <>
+                                    {copy.endedOn} {formatDate(data.subscription.currentPeriodEnd)} —{" "}
+                                    {copy.endedOnNote}
+                                </>
                             ) : (
                                 <>
                                     {t.billing.endsOn} {formatDate(data.subscription.currentPeriodEnd)} —{" "}
@@ -174,10 +194,10 @@ export function PlanSection({ data }: { data: PlanData }) {
                     )}
                 </div>
 
-                <h3 className="pw-kicker mt-5">{copy.includedTitle}</h3>
+                <h3 className="mt-5 text-caption font-semibold text-muted-foreground">{periodEnded && !willRenew ? copy.includedPastTitle : copy.includedTitle}</h3>
                 <ul className="mt-2 space-y-2">
                     {included.map((line) => (
-                        <li key={line} className="flex items-start gap-2 text-sm text-black/80 dark:text-white/80">
+                        <li key={line} className="flex items-start gap-2 text-sm text-foreground/80">
                             <Check
                                 aria-hidden="true"
                                 className="mt-0.5 h-4 w-4 shrink-0 text-primary dark:text-mint"
@@ -188,8 +208,8 @@ export function PlanSection({ data }: { data: PlanData }) {
                 </ul>
 
                 {data.upgradeTarget && (
-                    <div className="mt-5 rounded-xl border border-primary/25 bg-primary-soft/40 p-4 dark:border-mint/25 dark:bg-primary/10">
-                        <p className="text-sm font-semibold text-black dark:text-white">
+                    <div className="pw-subcard mt-5 p-4">
+                        <p className="text-sm font-semibold text-foreground">
                             {copy.upgradeAddsTitle} {data.upgradeTarget.displayName}
                         </p>
                         <p className="mt-1 text-caption text-muted-foreground">
@@ -207,7 +227,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                                 )}
                                 {copy.upgradeTo} {data.upgradeTarget.displayName}
                             </button>
-                            <Link href="/upgrade" className="pw-secondary-button pw-btn-sm">
+                            <Link href="/upgrade" className="pw-soft-button">
                                 {copy.upgradeCta}
                             </Link>
                         </div>
@@ -215,14 +235,20 @@ export function PlanSection({ data }: { data: PlanData }) {
                 )}
             </SettingsSection>
 
-            <SettingsSection title={copy.usageTitle} description={copy.usageResets}>
+            <SettingsSection icon={Gauge} title={copy.usageTitle} description={copy.usageResets}>
                 <div className="space-y-5">
                     <UsageMeter
                         label={copy.storedPolicies}
                         used={data.usage.policiesStored}
                         limit={data.usage.policiesLimit}
                         unlimitedLabel={copy.analysesUnlimited}
-                        hint={data.usage.policiesLimit === null ? undefined : copy.storedPoliciesHint}
+                        hint={
+                            data.usage.policiesLimit === null
+                                ? undefined
+                                : data.usage.policiesStored > data.usage.policiesLimit
+                                    ? copy.storedPoliciesOver
+                                    : copy.storedPoliciesHint
+                        }
                     />
 
                     {data.usage.analysesLimit === null ? (
@@ -256,7 +282,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                 line above refers to. */}
             {data.usage.hasAiBudget && <TokenUsageCard />}
 
-            <SettingsSection title={copy.billingTitle} description={copy.billingDesc}>
+            <SettingsSection icon={Receipt} title={copy.billingTitle} description={copy.billingDesc}>
                 {storeManaged ? (
                     <Alert variant="info" title={t.settings.plan.billingTitle}>
                         <span className="inline-flex items-start gap-2">
@@ -276,7 +302,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                                         type="button"
                                         onClick={handlePortal}
                                         disabled={busy !== null}
-                                        className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                                        className="pw-soft-button disabled:opacity-60"
                                     >
                                         {busy === "portal" ? (
                                             <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
@@ -299,7 +325,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                                         type="button"
                                         onClick={handleAnnual}
                                         disabled={busy !== null}
-                                        className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                                        className="pw-soft-button disabled:opacity-60"
                                     >
                                         {busy === "annual" && (
                                             <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
@@ -318,7 +344,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                                     <button
                                         type="button"
                                         onClick={() => setCancelOpen(true)}
-                                        className="pw-secondary-button pw-btn-sm border-red-500/40 text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30"
+                                        className="pw-soft-button text-status-danger"
                                     >
                                         {copy.cancelCta}
                                     </button>

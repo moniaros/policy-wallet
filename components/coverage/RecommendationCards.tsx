@@ -30,6 +30,7 @@ import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyStat
 import type { SmartCardContent } from "@/lib/services/gap-engine/portfolio-rules"
 import { LockedInsightPreview } from "@/components/monetization/LockedInsightPreview"
 import { reasonCountKey } from "@/lib/instrumentation/reason-count-keys"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -114,35 +115,23 @@ interface RecommendationCardsProps {
 
 const URGENCY_STYLES: Record<
     string,
-    { border: string; bg: string; badge: string; badgeBg: string; icon: string }
+    { badge: string; badgeBg: string }
 > = {
     critical: {
-        border: "border-red-300 dark:border-red-800",
-        bg: "bg-red-50/50 dark:bg-red-950/20",
         badge: "text-red-700 dark:text-red-300",
         badgeBg: "bg-red-100 dark:bg-red-900/30",
-        icon: "text-red-500",
     },
     high: {
-        border: "border-orange-300 dark:border-orange-800",
-        bg: "bg-orange-50/50 dark:bg-orange-950/20",
         badge: "text-orange-700 dark:text-orange-300",
         badgeBg: "bg-orange-100 dark:bg-orange-900/30",
-        icon: "text-orange-700 dark:text-orange-400",
     },
     medium: {
-        border: "border-amber-200 dark:border-amber-800",
-        bg: "bg-amber-50/30 dark:bg-amber-950/10",
         badge: "text-amber-700 dark:text-amber-300",
         badgeBg: "bg-amber-100 dark:bg-amber-900/30",
-        icon: "text-amber-500",
     },
     low: {
-        border: "border-black/10 dark:border-white/10",
-        bg: "bg-black/[0.02] dark:bg-white/[0.02]",
         badge: "text-slate-600 dark:text-slate-300",
         badgeBg: "bg-slate-100 dark:bg-slate-800",
-        icon: "text-slate-500",
     },
 }
 
@@ -264,33 +253,31 @@ export function RecommendationCards({
 
     return (
         <div className="pw-card pw-pad">
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100/80 dark:bg-amber-900/25">
-                    <Lightbulb className="h-5 w-5 text-amber-700 dark:text-amber-400" />
-                </div>
-                <div className="flex-1">
-                    <h2 className="text-lg font-semibold text-black dark:text-white">
-                        {t("Προτάσεις κάλυψης", "Coverage Recommendations")}
-                    </h2>
-                    {/* On coverage-insights this is the SAME set the dashboard
-                        hero's «N κατηγορίες κινδύνου» states — one key, two
-                        surfaces. The branch page passes its own subset key. */}
-                    <p className="text-xs text-muted-foreground" data-count={countKey} data-count-subject={countSubject}>
+            {/* Header — the one card anatomy: chip · title · meta. The amber
+                icon box is gone; amber is the gap colour, and the card's TITLE
+                is not a gap. */}
+            <CardHead
+                icon={Lightbulb}
+                title={t("Προτάσεις κάλυψης", "Coverage Recommendations")}
+                meta={
+                    /* On coverage-insights this is the SAME set the dashboard
+                       hero's «N κατηγορίες κινδύνου» states — one key, two
+                       surfaces. The branch page passes its own subset key. */
+                    <p data-count={countKey} data-count-subject={countSubject}>
                         {t(
                             `${visible.length} προτάσεις βασισμένες στο προφίλ σας`,
                             `${visible.length} recommendation${visible.length !== 1 ? "s" : ""} based on your profile`
                         )}
                     </p>
-                </div>
-            </div>
+                }
+            />
 
             {/* The dashboard's gaps widget already qualified these priorities as
                 profile-based rather than a risk grade; this screen — the deeper
                 one, where the user comes to act — showed the same badges bare, so
                 "Κρίσιμη προτεραιότητα" read as a verdict on their risk. Same
                 sentence, same meaning, on both surfaces. */}
-            <p className="mb-3 text-caption leading-snug text-muted-foreground">
+            <p className="mb-3 mt-4 text-caption leading-snug text-muted-foreground">
                 {home.recPriorityNote}
             </p>
 
@@ -310,28 +297,28 @@ export function RecommendationCards({
                     // is a real navigation control, not a badge — it measured
                     // 88x28 on /protection at 320/390/430.
                     const reviewClasses =
-                        "inline-flex min-h-11 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                        "inline-flex min-h-11 items-center gap-1 rounded-full bg-card px-3.5 text-caption font-semibold text-foreground shadow-sm transition-colors hover:bg-muted"
 
                     return (
                         <div
                             key={rec.id}
-                            className={`rounded-2xl border ${styles.border} ${styles.bg} p-4 transition-all`}
+                            className="pw-subcard p-4"
                         >
                             <div className="flex items-start gap-3">
                                 {/* LOB icon */}
-                                <div className={`mt-0.5 flex-shrink-0 ${styles.icon}`}>
-                                    <Icon className="h-5 w-5" />
-                                </div>
+                                <span className="pw-card-chip" aria-hidden="true">
+                                    <Icon className="h-4 w-4" strokeWidth={1.75} />
+                                </span>
 
                                 {/* Content */}
                                 <div className="flex-1 min-w-0">
                                     {/* Risk detected + severity */}
                                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                        <h3 className="text-sm font-semibold text-black dark:text-white">
+                                        <h3 className="text-sm font-semibold text-foreground">
                                             {rec.title[lang] || rec.title.en}
                                         </h3>
                                         <span
-                                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider ${styles.badgeBg} ${styles.badge}`}
+                                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption font-semibold ${styles.badgeBg} ${styles.badge}`}
                                         >
                                             {rec.urgency === "critical" && (
                                                 <AlertTriangle className="h-2.5 w-2.5" />
@@ -346,10 +333,10 @@ export function RecommendationCards({
                                             question from the severity chip beside it. */}
                                         {rec.timing && rec.timing.level !== "no_deadline" && (
                                             <span
-                                                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-kicker font-semibold uppercase tracking-wider ${
+                                                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-caption font-semibold ${
                                                     rec.timing.level === "now"
                                                         ? "border-red-300 text-red-700 dark:border-red-800 dark:text-red-300"
-                                                        : "border-black/20 text-black/70 dark:border-white/25 dark:text-white/70"
+                                                        : "border-border text-foreground/80"
                                                 }`}
                                             >
                                                 <Clock className="h-2.5 w-2.5" aria-hidden="true" />
@@ -368,17 +355,17 @@ export function RecommendationCards({
                                             urgency badge alone says how loud, not
                                             how sure. */}
                                         {rec.riskStatus === "opportunity" && (
-                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider border border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
                                                 {t("Ευκαιρία", "Opportunity")}
                                             </span>
                                         )}
                                         {rec.riskStatus === "protection_gap" && (
-                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider border border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
                                                 {t("Κενό προστασίας", "Protection gap")}
                                             </span>
                                         )}
                                         {rec.confidence && (
-                                            <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-kicker text-muted-foreground">
+                                            <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-caption text-muted-foreground">
                                                 {rec.confidence === "high"
                                                     ? t("Υψηλή βεβαιότητα", "High confidence")
                                                     : rec.confidence === "medium"
@@ -387,7 +374,7 @@ export function RecommendationCards({
                                             </span>
                                         )}
                                         {(rec.gapValidationState === "confirmed" || rec.gapValidationState === "validated") && (
-                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider border border-primary/25 bg-primary/5 text-primary/90 dark:border-primary/30 dark:bg-primary/10 dark:text-mint/90">
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-semibold border border-primary/25 bg-primary/5 text-primary/90 dark:border-primary/30 dark:bg-primary/10 dark:text-mint/90">
                                                 {rec.gapValidationState === "validated" ? home.recAdvisorValidated : home.recAdvisorConfirmed}
                                             </span>
                                         )}
@@ -401,7 +388,7 @@ export function RecommendationCards({
                                         reason, so the two surfaces are comparable. */}
                                     <p
                                         data-count={reasonCountKey(rec)}
-                                        className="text-xs text-black/65 dark:text-white/65 leading-relaxed"
+                                        className="mt-1 text-body-sm leading-relaxed text-muted-foreground"
                                     >
                                         {rec.personalReason[lang] || rec.personalReason.en}
                                     </p>
@@ -413,15 +400,15 @@ export function RecommendationCards({
                                             triggerSource="recommendation_evidence"
                                             className="mt-2.5"
                                         >
-                                            <div className="rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                            <div className="rounded-[10px] bg-card p-3">
+                                                <p className="flex items-center gap-1.5 text-caption font-semibold text-muted-foreground">
                                                     <FileSearch className="h-3 w-3" />
                                                     {t("Από τα στοιχεία σας", "From your policy data")}
                                                 </p>
-                                                <p className="mt-1 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                                <p className="mt-1 text-xs leading-relaxed text-foreground/80">
                                                     {smart.evidence[lang] || smart.evidence.en}
                                                 </p>
-                                                <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                                <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-foreground/80">
                                                     <ArrowRight className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary dark:text-mint" />
                                                     <span>
                                                         <span className="font-semibold">{t("Επόμενο βήμα:", "Next step:")}</span>{" "}
@@ -432,16 +419,16 @@ export function RecommendationCards({
                                         </LockedInsightPreview>
                                     ) : smart ? (
                                         <>
-                                            <div className="mt-2.5 rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                            <div className="mt-2.5 rounded-[10px] bg-card p-3">
+                                                <p className="flex items-center gap-1.5 text-caption font-semibold text-muted-foreground">
                                                     <FileSearch className="h-3 w-3" />
                                                     {t("Από τα στοιχεία σας", "From your policy data")}
                                                 </p>
-                                                <p className="mt-1 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                                <p className="mt-1 text-xs leading-relaxed text-foreground/80">
                                                     {smart.evidence[lang] || smart.evidence.en}
                                                 </p>
                                             </div>
-                                            <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                            <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-foreground/80">
                                                 <ArrowRight className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary dark:text-mint" />
                                                 <span>
                                                     <span className="font-semibold">{t("Επόμενο βήμα:", "Next step:")}</span>{" "}
@@ -453,17 +440,17 @@ export function RecommendationCards({
 
                                     {/* Expanded details */}
                                     {isExpanded && (
-                                        <div className="mt-3 pt-3 border-t border-black/8 dark:border-white/10 space-y-2">
+                                        <div className="mt-3 space-y-2 border-t border-border pt-3">
                                             {/* Why this is on your screen at all — first, because
                                                 it is the question a reader has before any of the
                                                 detail below can matter. Links to the timeline,
                                                 where the causing change sits in context. */}
                                             {rec.cause && (
-                                                <div className="rounded-lg border border-primary/20 bg-primary/5 p-2.5 dark:border-primary/25 dark:bg-primary/10">
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-primary/90 dark:text-mint/90">
+                                                <div className="rounded-[10px] bg-card p-3">
+                                                    <p className="text-caption font-semibold text-primary/90 dark:text-mint/90">
                                                         {t("Γιατί το βλέπετε", "Why you are seeing this")}
                                                     </p>
-                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/75 dark:text-white/75">
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
                                                         {rec.cause.explanation[lang] || rec.cause.explanation.en}
                                                     </p>
                                                     <Link
@@ -476,7 +463,7 @@ export function RecommendationCards({
                                                 </div>
                                             )}
 
-                                            <p className="text-xs text-black/60 dark:text-white/60 leading-relaxed">
+                                            <p className="text-xs text-muted-foreground leading-relaxed">
                                                 {rec.description[lang] || rec.description.en}
                                             </p>
 
@@ -485,30 +472,30 @@ export function RecommendationCards({
                                                 just pressure. */}
                                             {rec.timing?.reason && (
                                                 <div>
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                    <p className="text-caption font-semibold text-muted-foreground">
                                                         {t("Γιατί τώρα", "Why now")}
                                                     </p>
-                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
                                                         {rec.timing.reason[lang] || rec.timing.reason.en}
                                                     </p>
                                                 </div>
                                             )}
                                             {rec.expectedImpact && (
                                                 <div>
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                    <p className="text-caption font-semibold text-muted-foreground">
                                                         {t("Πιθανή επίπτωση", "Expected impact")}
                                                     </p>
-                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
                                                         {rec.expectedImpact[lang] || rec.expectedImpact.en}
                                                     </p>
                                                 </div>
                                             )}
                                             {rec.suggestedSolution && (
                                                 <div>
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                    <p className="text-caption font-semibold text-muted-foreground">
                                                         {t("Τι το καλύπτει", "What covers it")}
                                                     </p>
-                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
                                                         {rec.suggestedSolution[lang] || rec.suggestedSolution.en}
                                                     </p>
                                                 </div>
@@ -519,17 +506,17 @@ export function RecommendationCards({
                                                 answer it. A claim the reader can check. */}
                                             {rec.evidence && rec.evidence.length > 0 && (
                                                 <div>
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                    <p className="text-caption font-semibold text-muted-foreground">
                                                         {t("Σε τι βασιζόμαστε", "What this rests on")}
                                                     </p>
                                                     <ul className="mt-1 space-y-1">
                                                         {rec.evidence.map((item, i) => (
                                                             <li
                                                                 key={`${item.kind}-${i}`}
-                                                                className="flex items-start gap-2 text-xs leading-relaxed text-black/70 dark:text-white/70"
+                                                                className="flex items-start gap-2 text-xs leading-relaxed text-foreground/80"
                                                             >
                                                                 <span
-                                                                    className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-black/30 dark:bg-white/30"
+                                                                    className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-muted-foreground/50"
                                                                     aria-hidden="true"
                                                                 />
                                                                 <span className="min-w-0 [overflow-wrap:anywhere]">
@@ -543,10 +530,10 @@ export function RecommendationCards({
 
                                             {rec.customerBenefit && (
                                                 <div>
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                    <p className="text-caption font-semibold text-muted-foreground">
                                                         {t("Τι κερδίζετε", "What you get")}
                                                     </p>
-                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
                                                         {rec.customerBenefit[lang] || rec.customerBenefit.en}
                                                     </p>
                                                 </div>
@@ -557,36 +544,36 @@ export function RecommendationCards({
                                                 unresolved. Under IDD / Law 4583/2018 the
                                                 regulated act is the advice, not this analysis. */}
                                             {rec.advisorOpportunity && (
-                                                <div className="rounded-lg border border-black/10 bg-black/[0.02] p-2.5 dark:border-white/12 dark:bg-white/[0.03]">
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                <div className="rounded-[10px] bg-card p-3">
+                                                    <p className="text-caption font-semibold text-muted-foreground">
                                                         {t("Πού βοηθά ένας σύμβουλος", "Where an advisor helps")}
                                                     </p>
-                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
                                                         {rec.advisorOpportunity[lang] || rec.advisorOpportunity.en}
                                                     </p>
                                                 </div>
                                             )}
 
                                             {rec.eligibilityNote && (
-                                                <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-2.5 dark:border-amber-900/40 dark:bg-amber-900/15">
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                                                <div className="rounded-[10px] bg-status-warning-tint p-3">
+                                                    <p className="text-caption font-semibold text-status-warning">
                                                         {t("Προσοχή στην αγορά", "Market reality")}
                                                     </p>
-                                                    <p className="mt-0.5 text-xs leading-relaxed text-amber-900 dark:text-amber-200/90">
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-foreground">
                                                         {rec.eligibilityNote[lang] || rec.eligibilityNote.en}
                                                     </p>
                                                 </div>
                                             )}
                                             {rec.matchedProduct && (
-                                                <div className="rounded-lg bg-black/[0.03] dark:bg-white/[0.04] p-2.5 space-y-1.5">
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                <div className="rounded-[10px] bg-card p-3 space-y-1.5">
+                                                    <p className="text-caption font-semibold text-muted-foreground">
                                                         {t("Ενδεικτική επιλογή στην αγορά", "One option on the market")}
                                                     </p>
-                                                    <p className="text-xs font-semibold text-black/80 dark:text-white/80">
+                                                    <p className="text-xs font-semibold text-foreground">
                                                         {rec.matchedProduct.name[lang] || rec.matchedProduct.name.en}
                                                     </p>
                                                     {rec.matchedProduct.premiumRangeLow != null && rec.matchedProduct.premiumRangeHigh != null && (
-                                                        <p className="text-xs text-black/60 dark:text-white/60">
+                                                        <p className="text-xs text-muted-foreground">
                                                             {t("Ενδεικτικό εύρος ασφαλίστρου", "Typical premium range")}:{" "}
                                                             <span className="font-medium text-primary dark:text-mint">
                                                                 {formatCurrency(rec.matchedProduct.premiumRangeLow, lang, { decimals: 0 })}–{formatCurrency(rec.matchedProduct.premiumRangeHigh, lang, { decimals: 0 })}{t("/έτος", "/yr")}
@@ -611,7 +598,7 @@ export function RecommendationCards({
                                                 factor that actually prices a policy. It is an order of magnitude,
                                                 and now says so. */}
                                             {!rec.matchedProduct && rec.estimatedCostEur != null && (
-                                                <p className="text-xs font-medium text-black/70 dark:text-white/70">
+                                                <p className="text-xs font-medium text-foreground/80">
                                                     {t("Τάξη μεγέθους ασφαλίστρου", "Rough order of magnitude")}:{" "}
                                                     <span className="text-primary dark:text-mint font-semibold">
                                                         ~{formatCurrency(rec.estimatedCostEur, lang, { decimals: 0 })}
@@ -663,7 +650,7 @@ export function RecommendationCards({
                                         <button
                                             type="button"
                                             onClick={() => handleDismiss(rec.id, "not_relevant")}
-                                            className="inline-flex min-h-[24px] items-center text-xs text-black/55 hover:text-black/70 hover:underline cursor-pointer dark:text-white/60 dark:hover:text-white/70"
+                                            className="inline-flex min-h-[24px] items-center text-xs text-muted-foreground hover:text-foreground hover:underline cursor-pointer"
                                         >
                                             {t("Μη σχετικό για εμένα", "Mark as not relevant")}
                                         </button>
@@ -695,7 +682,7 @@ export function RecommendationCards({
                 <button
                     type="button"
                     onClick={() => setShowAll(!showAll)}
-                    className="mt-4 w-full text-center text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer flex items-center justify-center gap-1"
+                    className="pw-soft-button mt-4 w-full cursor-pointer !text-caption"
                 >
                     {showAll ? (
                         t("Εμφάνιση λιγότερων", "Show fewer")

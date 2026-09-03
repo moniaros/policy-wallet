@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Bot, Check, Download, Loader2, ShieldCheck, Sparkles, X } from "lucide-react"
+import { Bot, Check, Database, Download, Hourglass, Loader2, ShieldCheck, Sparkles, Trash2, X } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
@@ -102,7 +102,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
 
     return (
         <>
-            <SettingsSection title={copy.dataTitle} description={copy.dataDesc}>
+            <SettingsSection icon={Database} title={copy.dataTitle} description={copy.dataDesc}>
                 <ul className="space-y-4">
                     {[
                         { icon: ShieldCheck, title: copy.whatWeStore, body: copy.whatWeStoreDesc },
@@ -112,12 +112,12 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                         <li key={item.title} className="flex items-start gap-3">
                             <span
                                 aria-hidden="true"
-                                className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
+                                className="pw-card-chip"
                             >
                                 <item.icon className="h-4 w-4" />
                             </span>
                             <span className="min-w-0">
-                                <span className="block text-sm font-semibold text-black dark:text-white">
+                                <span className="block text-sm font-semibold text-foreground">
                                     {item.title}
                                 </span>
                                 <span className="mt-0.5 block text-caption leading-relaxed text-muted-foreground">
@@ -129,7 +129,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                 </ul>
             </SettingsSection>
 
-            <SettingsSection title={copy.consentTitle} description={copy.consentDesc}>
+            <SettingsSection icon={ShieldCheck} title={copy.consentTitle} description={copy.consentDesc}>
                 <SettingsRowList>
                     {CONSENT_ROWS.map((row) => {
                         const consent = consentByType.get(row.type)
@@ -161,7 +161,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                                 }
                                 action={
                                     row.type === "ai_processing" && !granted ? (
-                                        <Link href="/consent/ai" className="pw-secondary-button pw-btn-sm">
+                                        <Link href="/consent/ai" className="pw-soft-button">
                                             {copy.consentAiCta}
                                         </Link>
                                     ) : undefined
@@ -175,12 +175,12 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                 </p>
             </SettingsSection>
 
-            <SettingsSection title={t.settings.myDataTitle} description={t.settings.myDataDesc}>
+            <SettingsSection icon={Download} title={t.settings.myDataTitle} description={t.settings.myDataDesc}>
                 <button
                     type="button"
                     onClick={handleExport}
                     disabled={exporting}
-                    className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                    className="pw-soft-button disabled:opacity-60"
                 >
                     {exporting ? (
                         <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
@@ -194,6 +194,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
             {pendingDeletion ? (
                 <SettingsSection
                     tone="danger"
+                    icon={Hourglass}
                     title={t.settings.deletionPendingTitle}
                     description={t.settings.deletionPendingDesc}
                 >
@@ -201,7 +202,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                         type="button"
                         onClick={handleWithdrawDeletion}
                         disabled={withdrawing}
-                        className="pw-secondary-button pw-btn-sm disabled:opacity-60"
+                        className="pw-soft-button disabled:opacity-60"
                     >
                         {withdrawing && <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />}
                         {withdrawing ? t.settings.processing : t.settings.cancelDeletion}
@@ -210,6 +211,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
             ) : (
                 <SettingsSection
                     tone="danger"
+                    icon={Trash2}
                     title={t.settings.nuclearDeletion}
                     description={t.settings.nuclearDesc}
                 >

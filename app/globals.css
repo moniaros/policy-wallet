@@ -272,6 +272,20 @@
   --dot-track: var(--dot-track-on-light);
   --dot-track-hover: var(--dot-track-hover-on-light);
 
+  /* ── THE APP'S THREE PLANES (Direction A, 2026-09-03) ─────────────────────
+     card (white) > sub-card (sunken) > canvas. The reference reads calm because
+     these three greys are DISTINCT: a nested row is visibly a rectangle on its
+     card, and a card is visibly white on its ground. The first build set both
+     the canvas and the sub-card to --muted (#f1f5f9): on a white card a 1.07:1
+     step is invisible on most panels, and the finish review measured the
+     sub-cards as "no perceptible container". Two steps on the slate hue,
+     between slate-100 and slate-200, are the fix — the ONE new system step
+     this pass introduces, recorded here so the ramp stays the ramp.
+     --muted-foreground (#5b6a7a) measures 4.6:1 on --surface-sunken, so meta
+     text inside a sub-card still clears AA. */
+  --surface-canvas: #E7ECF1;
+  --surface-sunken: #EDF1F5;
+
   --pw-primary: #29685B;
   --pw-primary-hover: #1C4E44;
   --pw-bg-dark: #000000;
@@ -554,7 +568,12 @@ pre {
 
 
   .pw-app-canvas {
-    @apply bg-[radial-gradient(circle_at_top_right,_rgba(41,104,91,0.06),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
+    /* Direction A (2026-09-03): a FLAT cool-slate ground. The radial green
+       wash + white gradient made every white card fight its own ground at the
+       page's top-right; the reference reads calm because the canvas is one
+       even grey and the cards are the only white. One step below the
+       sub-card, so the three planes read (see --surface-canvas). */
+    background: var(--surface-canvas);
   }
 
   /* The canvas under every authenticated page painted a white gradient in BOTH
@@ -569,8 +588,14 @@ pre {
   }
 
   .pw-page-shell {
-    @apply min-h-screen pb-24;
-    background: linear-gradient(140deg, #f8fafc 0%, #ffffff 50%, #f9fafb 100%);
+    /* No min-height: the shell root (AppShell) already paints a min-h-screen
+       canvas, and a second 100vh here added the top bar's 64px of empty ground
+       under every short page. */
+    @apply pb-24;
+    /* Transparent on purpose: the shell's .pw-app-canvas is the one ground.
+       A second gradient here painted a lighter rectangle inside the canvas
+       and the seam showed at the sidebar edge. */
+    background: transparent;
   }
 
   .dark .pw-page-shell {
@@ -933,6 +958,60 @@ pre {
     @apply p-6 sm:p-8;      /* feature cards, empty states   */
   }
 
+  /* The nested surface — a row or tile INSIDE a .pw-card. The reference's
+     one depth device: a slightly darker rectangle in a white card, never a
+     border, never a shadow, never a card inside a card. Same value as the
+     page canvas so it reads as "the ground showing through". */
+  .pw-subcard {
+    border-radius: 12px;
+    background: var(--surface-sunken);
+  }
+  .dark .pw-subcard {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  a.pw-subcard:hover,
+  button.pw-subcard:hover {
+    background: var(--accent);
+  }
+  .dark a.pw-subcard:hover,
+  .dark button.pw-subcard:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* The card header's icon chip — DESIGN.md's "36px tinted square, 10px
+     radius, 16px glyph", tinted one step darker than the sub-card so it reads
+     as a disc of ground, not a bare glyph. One anatomy for every card and
+     every row: chip · title · meta. */
+  .pw-card-chip {
+    @apply grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px];
+    background: var(--color-neutral-200);
+    color: var(--foreground);
+  }
+  .dark .pw-card-chip {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* The soft pill — the reference's secondary action («View all upcoming
+     payments»): a grey pill, same shape as the primary, no border. Text links
+     stay for tertiary actions inside a paragraph. */
+  /* `:where()` for the same reason as .pw-primary-button: zero specificity,
+     so a call-site utility (`text-status-danger` on a destructive pill,
+     `!px-3.5` on a compact one) wins over the recipe. */
+  :where(.pw-soft-button) {
+    @apply inline-flex min-h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0];
+    background: var(--surface-sunken);
+    color: var(--foreground);
+  }
+  :where(.pw-soft-button):hover {
+    background: var(--color-neutral-200);
+  }
+  :where(.dark .pw-soft-button) {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  :where(.dark .pw-soft-button):hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
   .pw-kicker {
     /* Tracking is narrower on small screens ON PURPOSE.
        0.24em on an eleven-letter Greek word is ~90px of label; inside a
@@ -953,6 +1032,51 @@ pre {
      contradicted the pill rule the design system states
      (--pw-radius-button: 9999px); MASTER.md flagged retiring it as backlog.
      Its 9 call sites now use .pw-primary-button / .pw-secondary-button. */
+
+  /* ── Real app screens on the marketing site (components/landing/real-screens)
+     A screen that goes live (.rs-live) settles its cards in with a short
+     stagger (each card's --rs-i is set by the screen) and draws the tab bar's
+     active mark; the bar fills and count tick-ups are Web Animations in the
+     same module. Cards are visible before the class lands, so a script that
+     never runs costs nothing. The global reduced-motion rule flattens these. */
+  @keyframes rs-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes rs-mark {
+    from {
+      transform: translateX(-50%) scaleX(0);
+    }
+    to {
+      transform: translateX(-50%) scaleX(1);
+    }
+  }
+  @keyframes rs-push {
+    from {
+      opacity: 0;
+      transform: translateX(28px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .rs-screen.rs-live .rs-content {
+    animation: rs-push 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .rs-screen.rs-live .pw-card {
+    animation: rs-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(140ms + var(--rs-i, 0) * 90ms);
+  }
+  .rs-screen.rs-live .rs-mark {
+    animation: rs-mark 420ms cubic-bezier(0.16, 1, 0.3, 1) 520ms both;
+  }
 
   .animate-blob {
     animation: blob 7s infinite;

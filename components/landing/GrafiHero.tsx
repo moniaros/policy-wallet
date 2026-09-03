@@ -9,69 +9,38 @@
  * readers. (HeroSlides.tsx remains in the tree for its unit baselines; nothing
  * renders it.)
  */
+import type React from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { CATEGORY, CTA_REASSURANCE, HERO_EMAIL_CTA, HERO_SUBHEAD, PRIMARY_ACTION, PROMISE, pick, type MarketingLocale } from "@/lib/marketing/positioning"
 import { authHref, localizeHref } from "@/lib/seo/locale-links"
-import { EmailCapture, StatusChip, DeviceFrame, ProtectionRing, PolicyStrip } from "@/src/design-system"
+import { EmailCapture, DeviceFrame } from "@/src/design-system"
+import { AppScreen, DashboardScreen, WalletScreen, CoverageMapScreen, SampleStamp, type AppTab } from "@/components/landing/real-screens/RealScreens"
 
 export function GrafiHero({ locale }: { locale: MarketingLocale }) {
     const router = useRouter()
     const t = (el: string, en: string) => (locale === "el" ? el : en)
 
-    /** Sample screens — every one stamped as a sample, none implies a real household. */
-    const stamp = (
-        <p className="absolute bottom-2 inset-x-0 text-center text-g-label uppercase tracking-widest text-fg-secondary">
-            {t("Δείγμα — όχι πραγματικό ασφαλιστήριο", "Sample — not a real policy")}
-        </p>
-    )
+    /**
+     * REAL app screens — one rehearsed session of the app: the home screen,
+     * the wallet, the coverage map — as the signed-in app renders them, on
+     * fixture data. The frame navigates between them the way the app does
+     * (DeviceFrame), and each screen plays its own entrance when it becomes
+     * the live one (AppScreen). The ring, the chips and the fake rows this
+     * frame used to show were a product the app does not look like.
+     */
+    const screen = (tab: AppTab, node: React.ReactNode) =>
+        function liveScreen(active: boolean) {
+            return (
+                <AppScreen locale={locale} fixed active={active} tab={tab} defaultScale={284 / 390}>
+                    {node}
+                </AppScreen>
+            )
+        }
     const screens = [
-        {
-            id: "ring",
-            label: t("Σύνοψη προστασίας", "Protection summary"),
-            content: (
-                <div className="relative flex h-full flex-col items-center justify-center gap-g-3">
-                    <p className="text-sm font-semibold text-fg-primary">{t("Η προστασία σας", "Your protection")}</p>
-                    <ProtectionRing covered={5} gap={1} review={1} label={t("καλύψεις", "covers")} className="flex-col gap-g-3 [&_svg]:size-28" />
-                    {stamp}
-                </div>
-            ),
-        },
-        {
-            id: "gap",
-            label: t("Εντοπισμένο κενό", "A found gap"),
-            content: (
-                <div className="relative flex h-full flex-col justify-center gap-g-3">
-                    <StatusChip state="gap">{t("Σεισμός: εκτός κάλυψης", "Earthquake: not covered")}</StatusChip>
-                    <p className="text-sm leading-relaxed text-fg-primary">
-                        {t(
-                            "Το ασφαλιστήριο κατοικίας δεν περιλαμβάνει σεισμό. Δείτε τις ερωτήσεις για τον ασφαλιστή σας.",
-                            "The home policy does not include earthquake. See the questions to ask your insurer."
-                        )}
-                    </p>
-                    <PolicyStrip items={[
-                        { name: t("Κατοικία", "Home"), state: "gap" },
-                        { name: t("Αυτοκίνητο", "Motor"), state: "covered" },
-                        { name: t("Υγεία", "Health"), state: "review" },
-                    ]} />
-                    {stamp}
-                </div>
-            ),
-        },
-        {
-            id: "renewal",
-            label: t("Υπενθύμιση ανανέωσης", "Renewal reminder"),
-            content: (
-                <div className="relative flex h-full flex-col justify-center gap-g-3">
-                    <p className="text-3xl font-bold text-fg-primary" style={{ fontVariantNumeric: "tabular-nums" }}>18</p>
-                    <p className="text-sm leading-relaxed text-fg-primary">
-                        {t("ημέρες μέχρι τη λήξη του συμβολαίου αυτοκινήτου.", "days until the motor policy runs out.")}
-                    </p>
-                    <StatusChip state="review">{t("Ερωτήσεις πριν την ανανέωση", "Questions before renewal")}</StatusChip>
-                    {stamp}
-                </div>
-            ),
-        },
+        { id: "home", label: t("Αρχική — τι περιέχει ο φάκελος", "Home — what the folder holds"), content: screen("home", <DashboardScreen locale={locale} />) },
+        { id: "wallet", label: t("Ο φάκελός μου", "My wallet"), content: screen("wallet", <WalletScreen locale={locale} />) },
+        { id: "map", label: t("Χάρτης κάλυψης", "Coverage map"), content: screen("protection", <CoverageMapScreen locale={locale} />) },
     ]
 
     return (
@@ -104,7 +73,10 @@ export function GrafiHero({ locale }: { locale: MarketingLocale }) {
                         </Link>
                     </div>
                 </div>
-                <DeviceFrame screens={screens} className="justify-self-center" />
+                <div className="flex flex-col items-center gap-g-2 justify-self-center">
+                    <DeviceFrame screens={screens} width={300} padded={false} />
+                    <SampleStamp locale={locale} />
+                </div>
             </div>
         </section>
     )

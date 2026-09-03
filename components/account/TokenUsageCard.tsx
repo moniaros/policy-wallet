@@ -6,6 +6,8 @@ import { TOKEN_PACKAGES as SHARED_TOKEN_PACKAGES } from "@/lib/billing/token-pac
 import { formatEur } from "@/lib/pricing/pricing-view-model"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
+import { CardHead } from "@/components/dashboard/home/CardHead"
+import { Coins } from "lucide-react"
 
 interface TokenUsageData {
     tier: PlanTier
@@ -148,19 +150,23 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
 
     return (
         <div className={`pw-card pw-pad space-y-5 ${className}`}>
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-black dark:text-white">{i18n.title}</h3>
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {tier.toUpperCase()}
-                </span>
-            </div>
+            {/* The one card head, with the tier as its meta. */}
+            <CardHead
+                icon={Coins}
+                title={i18n.title}
+                as="h3"
+                meta={
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-caption font-semibold text-muted-foreground">
+                        {tier.charAt(0).toUpperCase() + tier.slice(1)}
+                    </span>
+                }
+            />
 
             {/* Monthly subscription usage */}
             <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground font-medium">{i18n.monthlyUsage}</span>
-                    <span className="text-black dark:text-white font-bold tabular-nums">
+                    <span className="font-semibold tabular-nums text-foreground">
                         {formatTokens(subscription.tokens_used)} / {formatTokens(subscription.monthly_limit)}
                     </span>
                 </div>
@@ -170,24 +176,23 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
                         style={{ width: `${usagePct}%` }}
                     />
                 </div>
-                <p className="text-xs text-muted-foreground text-right">
+                <p className="text-right text-caption text-muted-foreground">
                     {formatTokens(subscription.tokens_remaining)} {i18n.remaining}
                 </p>
             </div>
 
             {/* Purchased token balance */}
+            {/* A fact cell on a sub-card — words over the number — not a
+                fourth plane: the mint box with a green hairline was the one
+                surface in the app outside the three-plane ladder. */}
             {isPaid && (
-                <div className="p-3 rounded-lg bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/30">
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-primary dark:text-mint">
-                            {i18n.extraTokens}
-                        </span>
-                        <span className="text-lg font-black text-primary dark:text-mint tabular-nums">
-                            {formatTokens(purchased.remaining)}
-                        </span>
-                    </div>
+                <div className="pw-subcard p-3">
+                    <p className="text-caption leading-snug text-muted-foreground">{i18n.extraTokens}</p>
+                    <p className="mt-1 text-title font-semibold leading-none tracking-tight tabular-nums text-foreground">
+                        {formatTokens(purchased.remaining)}
+                    </p>
                     {purchased.total_used > 0 && (
-                        <p className="text-xs text-primary/70 dark:text-mint/60 mt-0.5">
+                        <p className="mt-1.5 text-caption text-muted-foreground">
                             {formatTokens(purchased.total_used)} {i18n.used}
                         </p>
                     )}
@@ -196,12 +201,12 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
 
             {/* Success/Error messages */}
             {purchaseSuccess && (
-                <p className="text-sm text-[#166534] dark:text-mint bg-primary-soft dark:bg-primary/15 p-3 rounded-lg border border-primary/30 dark:border-primary/30">
+                <p className="pw-subcard p-3 text-sm text-status-success">
                     {purchaseSuccess}
                 </p>
             )}
             {purchaseError && (
-                <p className="text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/30 p-3 rounded-lg border border-red-200/50 dark:border-red-800/40">
+                <p className="rounded-[10px] bg-status-danger-tint p-3 text-sm text-status-danger">
                     {purchaseError}
                 </p>
             )}
@@ -214,24 +219,24 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
                             key={pkg.key}
                             onClick={() => handlePurchase(pkg.key)}
                             disabled={purchasing !== null}
-                            className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:border-primary hover:bg-primary-tint dark:hover:bg-primary/15 transition-colors text-sm text-black dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="pw-subcard flex w-full cursor-pointer items-center justify-between px-4 py-3 text-sm text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <div className="flex items-center gap-3">
-                                <span className="font-bold">{pkg.label}</span>
+                                <span className="font-semibold">{pkg.label}</span>
                                 {pkg.popular && (
                                     <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint font-semibold">
                                         {i18n.mostPopular}
                                     </span>
                                 )}
                             </div>
-                            <span className="font-bold tabular-nums">
+                            <span className="font-semibold tabular-nums">
                                 {purchasing === pkg.key ? "..." : pkg.price}
                             </span>
                         </button>
                     ))}
                     <button
                         onClick={() => setShowPackages(false)}
-                        className="mt-1 w-full py-1 text-sm text-muted-foreground transition-colors hover:text-black dark:hover:text-white"
+                        className="pw-soft-button mt-1 cursor-pointer !text-caption"
                     >
                         {i18n.cancel}
                     </button>
@@ -243,8 +248,9 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
                 <>
                     {isPaid ? (
                         <button
+                            type="button"
                             onClick={() => setShowPackages(true)}
-                            className="pw-primary-button w-full"
+                            className="pw-primary-button pw-btn-sm cursor-pointer"
                         >
                             {i18n.buyExtra}
                         </button>

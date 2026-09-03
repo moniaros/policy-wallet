@@ -149,7 +149,7 @@ export function BranchActionsCard({
                 >
                     <span className="min-w-0">{isPending ? copy.actionsWorking : item.label}</span>
                     {agentActionsLocked ? (
-                        <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-kicker font-black uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60">
+                        <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-caption font-semibold text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60">
                             <Lock className="h-2.5 w-2.5" aria-hidden />
                             {copy.actionsLocked}
                         </span>
@@ -228,15 +228,15 @@ export function BranchActionsCard({
     }
 
     return (
-        <div className="pw-card pw-pad sm:p-7">
-            <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+        <div>
+            <h2 className="flex items-center gap-2 text-body font-semibold text-foreground">
                 <ListChecks className="h-4 w-4 text-primary dark:text-mint" aria-hidden />
                 {copy.actionsTitle}
             </h2>
 
             {answered.length > 0 && (
                 <div className="mt-5">
-                    <h3 className="mb-2 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                    <h3 className="mb-2 text-caption font-medium text-muted-foreground">
                         {copy.actionsAnsweredHeading}
                     </h3>
                     <ul className="space-y-2">
@@ -258,7 +258,7 @@ export function BranchActionsCard({
 
             {todo.length > 0 && (
                 <div className="mt-5">
-                    <h3 className="mb-2 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                    <h3 className="mb-2 text-caption font-medium text-muted-foreground">
                         {copy.actionsTodoHeading}
                     </h3>
                     <ul className="space-y-2">

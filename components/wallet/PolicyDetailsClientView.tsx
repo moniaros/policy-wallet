@@ -792,8 +792,8 @@ export function PolicyDetailsClient({
                     >
                         {t.wallet.title}
                     </Link>
-                    <span className="text-black/35 dark:text-white/60">/</span>
-                    <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
+                    <span className="text-muted-foreground">/</span>
+                    <span className="font-semibold text-foreground">{displayPolicyNumber || localizedType}</span>
                 </nav>
 
                 {/* Extraction review banner — agent-only verification step. The
@@ -928,7 +928,7 @@ export function PolicyDetailsClient({
                 </div>
 
                 {/* ── SIX SECTIONS — the page's ONE navigation system ─────── */}
-                <div className="mt-6 border-t border-black/10 dark:border-white/12">
+                <div className="mt-4 space-y-3">
 
                     {/* 1 ── Cover: what is and is not covered ─────────────── */}
                     <PolicySection
@@ -1349,7 +1349,7 @@ export function PolicyDetailsClient({
 
                             {isOwner && (
                                 <div className="pw-card pw-pad">
-                                    <h3 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                    <h3 className="mb-2 flex items-center gap-2 text-body font-semibold text-foreground">
                                         <FileDown className="h-4 w-4 text-primary dark:text-mint" />
                                         {pickCopy(EXPORT_COPY.title, lang)}
                                     </h3>
@@ -1400,7 +1400,7 @@ export function PolicyDetailsClient({
                                 <div id="agent" className="scroll-mt-20">
                                     {canShowCollaborationTimeline ? (
                                         <div className="space-y-4">
-                                            <h3 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                            <h3 className="flex items-center gap-2 text-body font-semibold text-foreground">
                                                 <Users className="h-4 w-4 text-primary dark:text-mint" />
                                                 {detailsCopy.agentSectionTitle}
                                             </h3>
@@ -1412,7 +1412,7 @@ export function PolicyDetailsClient({
                                         </div>
                                     ) : (
                                         <div className="pw-card pw-pad">
-                                            <h3 className="mb-3 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                            <h3 className="mb-3 flex items-center gap-2 text-body font-semibold text-foreground">
                                                 <Lock className="h-4 w-4 text-primary dark:text-mint" />
                                                 {detailsCopy.agentSectionTitle}
                                             </h3>

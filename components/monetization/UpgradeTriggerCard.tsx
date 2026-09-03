@@ -99,8 +99,8 @@ export function UpgradeTriggerCard({
 
     if (variant === "inline") {
         return (
-            <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-primary/20 bg-primary-soft/60 p-3 dark:border-mint/20 dark:bg-primary/10 ${className}`}>
-                <Crown className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
+            <div className={`pw-subcard flex flex-wrap items-center gap-x-3 gap-y-2 p-3 ${className}`}>
+                <Crown className="h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden="true" />
                 {/* basis-40, not basis-0: `flex-1` alone gives the body a 0
                     basis, so on a phone the CTA's max-content width claimed
                     the line and the body got only the leftover ~40px — Greek
@@ -109,13 +109,13 @@ export function UpgradeTriggerCard({
                     Phase 5; pre-existing, identical in the before run). With
                     a real minimum the flex-wrap does its job: the CTA wraps
                     UNDER the copy when the two cannot share a line. */}
-                <p className="min-w-0 flex-1 basis-40 text-xs leading-relaxed text-muted-foreground">
+                <p className="min-w-0 flex-1 basis-40 text-caption leading-relaxed text-foreground/80">
                     {copy.body}
                 </p>
                 <button
                     type="button"
                     onClick={openModal}
-                    className="rounded text-xs font-bold text-primary hover:underline dark:text-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    className="inline-flex min-h-11 items-center rounded text-caption font-semibold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-mint"
                 >
                     {copy.primaryCta}
                 </button>
@@ -125,9 +125,8 @@ export function UpgradeTriggerCard({
     }
 
     return (
-        <div className={`pw-card relative overflow-hidden border-primary/25 p-5 ${className}`}>
-            <div className="pointer-events-none absolute inset-0 bg-primary/5" />
-            <div className="relative">
+        <div className={`pw-card pw-pad ${className}`}>
+            <div>
                 {meter && (
                     <UsageMeter
                         label={meter.label}
@@ -140,8 +139,8 @@ export function UpgradeTriggerCard({
                     />
                 )}
                 <div className="flex items-start gap-3">
-                    <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl bg-primary-soft dark:bg-primary/15">
-                        <Crown className="h-4 w-4 text-primary dark:text-mint" />
+                    <span className="pw-card-chip" aria-hidden="true">
+                        <Crown className="h-4 w-4" strokeWidth={1.75} />
                     </span>
                     <div className="min-w-0 flex-1">
                         {/* Level is a prop because this card appears both at page
@@ -151,8 +150,8 @@ export function UpgradeTriggerCard({
                             reader user jumps h1 → h3 and cannot tell what was
                             skipped. Only a rendered measurement catches this; a
                             source guard sees a perfectly ordinary heading tag. */}
-                        <Heading className="text-sm font-bold text-foreground">{copy.headline}</Heading>
-                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                        <Heading className="text-sm font-semibold text-foreground">{copy.headline}</Heading>
+                        <p className="mt-1 text-caption leading-relaxed text-muted-foreground">
                             {copy.body}
                         </p>
                     </div>
@@ -170,16 +169,16 @@ export function UpgradeTriggerCard({
                         // to work out which of four equally-loud controls was the
                         // thing to do. The offer still renders, and still reads
                         // as a button.
-                        className="pw-secondary-button min-h-9"
+                        className="pw-soft-button"
                     >
-                        <Crown className="h-3.5 w-3.5" />
+                        <Crown className="h-4 w-4" aria-hidden="true" />
                         {copy.primaryCta}
                     </button>
                     {dismissible && (
                         <button
                             type="button"
                             onClick={dismiss}
-                            className="rounded text-xs font-semibold text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                            className="inline-flex min-h-11 items-center rounded px-2 text-caption font-semibold text-muted-foreground hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                         >
                             {copy.secondaryCta}
                         </button>

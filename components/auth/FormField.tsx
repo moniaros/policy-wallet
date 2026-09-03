@@ -48,6 +48,32 @@ export function FormField({
     )
 }
 
+/** The Grafí focus ring — 3px outline, 3px offset, on every auth control. */
+export const AUTH_FOCUS_CLASS =
+    "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus"
+
+/** The inline text link of the auth pages — role switch, «Σύνδεση», «Ξέχασα τον κωδικό μου». */
+export const AUTH_LINK_CLASS =
+    `inline-block min-h-6 py-1 font-semibold text-fg-brand underline decoration-border-strong underline-offset-4 hover:decoration-current ${AUTH_FOCUS_CLASS}`
+
+/** A Link styled as the Grafí primary button — for a navigation that IS the screen's one action. */
+export const AUTH_PRIMARY_LINK_CLASS =
+    `inline-flex min-h-12 w-full items-center justify-center gap-g-2 rounded-g-pill bg-action-primary-bg px-g-6 py-g-3 text-base font-semibold text-fg-on-brand transition-colors duration-200 hover:bg-action-primary-hover ${AUTH_FOCUS_CLASS}`
+
+/** A Link styled as the Grafí secondary button — «Επιστροφή στη σύνδεση» and its kin. */
+export const AUTH_SECONDARY_LINK_CLASS =
+    `inline-flex min-h-11 w-full items-center justify-center gap-g-2 rounded-g-pill border border-action-secondary-border bg-surface-raised px-g-6 py-g-3 text-g-body-sm font-semibold text-fg-primary transition-colors duration-200 hover:border-border-strong hover:bg-surface-sunken ${AUTH_FOCUS_CLASS}`
+
+/**
+ * The two notice boxes of the auth flow: a refusal on the gap tokens, a
+ * confirmation on the covered tokens. The same three-state vocabulary as the
+ * trust panel — never a rose or an emerald of their own.
+ */
+export const AUTH_NOTICE_GAP_CLASS =
+    "flex items-start gap-g-2 rounded-g-md border border-state-gap-border bg-state-gap-fill px-g-4 py-g-3 text-g-body-sm text-state-gap"
+export const AUTH_NOTICE_COVERED_CLASS =
+    "flex items-start gap-g-2 rounded-g-md bg-state-covered-fill px-g-4 py-g-3 text-g-body-sm text-state-covered"
+
 /** The input look shared by every auth field — 16px floor so iOS does not zoom. */
 export const AUTH_INPUT_CLASS =
     // text-base is the 16px iOS no-zoom floor, stated as a ladder step.

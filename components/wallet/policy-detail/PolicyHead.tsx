@@ -27,6 +27,12 @@ import type { Attention, PrimaryAction } from "@/lib/wallet/policy-attention"
  * live in the documents section; asking the AI is the persistent affordance —
  * rendered at the foot of THIS card (see `askAi` below), not as a free-standing
  * block between the head and the summary.
+ *
+ * Direction A (2026-09-03): the uppercase tracked labels and the monospace
+ * values are gone — Greek capitals drop their accents, and a policy number is
+ * not code. Labels are sentence-case captions, values are body weight, the
+ * attention line is a sunken sub-card, and the two actions are the product's
+ * two button shapes: the green primary (DO) and the grey soft pill (ASK).
  */
 
 export type HeadCopy = {
@@ -40,7 +46,7 @@ export type HeadCopy = {
     unknownDuration: string
     attention: Record<string, string>
     attentionTitle: string
-    /** Per-kind override for the kicker, when "needs attention" would misdescribe the state. */
+    /** Per-kind override for the label, when "needs attention" would misdescribe the state. */
     attentionTitleByKind?: Record<string, string>
     action: Record<string, string>
     analyzing: string
@@ -106,6 +112,9 @@ const ACTION_ICON: Record<string, typeof Download> = {
     share: Share2,
 }
 
+/** The calendar states — the one place the head spends amber (gap/expiring rule). */
+const CALENDAR_ATTENTION = new Set(["expired", "expiring"])
+
 export function PolicyHead({
     displayInsurer,
     localizedType,
@@ -129,6 +138,7 @@ export function PolicyHead({
     const AttentionIcon = ATTENTION_ICON[attention.kind] || AlertTriangle
     const ActionIcon = ACTION_ICON[primaryAction.kind] || Download
     const isClear = attention.kind === "clear"
+    const isCalendar = CALENDAR_ATTENTION.has(attention.kind)
 
     // The attention copy carries {count} for the two states that have one.
     const attentionText = Object.entries(attention.values ?? {}).reduce(
@@ -136,14 +146,15 @@ export function PolicyHead({
         (copy.attention[attention.kind] || "").replace("{count}", String(attention.count ?? ""))
     )
 
+    const label = "text-caption font-medium text-muted-foreground"
+    const unreadable = "mt-0.5 text-sm italic text-muted-foreground"
+
     return (
         <header className="pw-card pw-pad sm:p-7">
             {/* 1 ── What is insured? ───────────────────────────────────── */}
-            <p className="text-kicker font-black uppercase tracking-widest text-primary dark:text-mint">
-                {localizedType}
-            </p>
+            <p className="text-caption font-semibold text-muted-foreground">{localizedType}</p>
             <h1
-                className="mt-1 text-2xl font-black leading-tight tracking-tight text-black dark:text-white sm:text-3xl"
+                className="mt-1 text-title font-semibold leading-tight tracking-tight text-foreground sm:text-h3"
                 data-fact="policy.insurerName"
             >
                 {displayInsurer}
@@ -151,22 +162,20 @@ export function PolicyHead({
 
             <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
                 <div data-fact="policy.policyNumber">
-                    <dt className="text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/60">
-                        {copy.policyId}
-                    </dt>
+                    <dt className={label}>{copy.policyId}</dt>
                     {policyNumberField.readable ? (
-                        <dd className="font-mono text-sm font-bold text-black dark:text-white">
+                        <dd className="mt-0.5 text-sm font-semibold text-foreground tabular-nums">
                             {policyNumberField.value}
                         </dd>
                     ) : (
-                        <dd className="text-sm font-semibold italic text-black/55 dark:text-white/55">
+                        <dd className={unreadable}>
                             {copy.valueUnreadable}
                             {documentHref && (
                                 <a
                                     href={documentHref}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="ml-2 inline-flex min-h-[44px] items-center gap-1 align-middle text-xs font-bold text-primary underline underline-offset-2 dark:text-mint"
+                                    className="ml-2 inline-flex min-h-11 items-center gap-1 align-middle text-caption font-semibold not-italic text-primary underline underline-offset-2 dark:text-mint"
                                 >
                                     <FileText className="h-3.5 w-3.5" aria-hidden />
                                     {copy.valueUnreadableCta}
@@ -178,17 +187,11 @@ export function PolicyHead({
 
                 {insuredSubject.value !== null && (
                     <div data-fact="policy.insuredSubject">
-                        <dt className="text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/60">
-                            {insuredSubject.label}
-                        </dt>
+                        <dt className={label}>{insuredSubject.label}</dt>
                         {subjectField.readable ? (
-                            <dd className="font-mono text-sm font-bold text-black dark:text-white">
-                                {subjectField.value}
-                            </dd>
+                            <dd className="mt-0.5 text-sm font-semibold text-foreground">{subjectField.value}</dd>
                         ) : (
-                            <dd className="text-sm font-semibold italic text-black/55 dark:text-white/55">
-                                {copy.valueUnreadable}
-                            </dd>
+                            <dd className={unreadable}>{copy.valueUnreadable}</dd>
                         )}
                     </div>
                 )}
@@ -200,12 +203,12 @@ export function PolicyHead({
                 them separately — which is how they came to disagree. */}
             <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span
-                    className={`inline-flex items-center rounded-full border px-3 py-1 text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}
+                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-caption font-semibold ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}
                     data-fact="policy.status"
                 >
                     {isAnalyzing ? copy.analyzing : statusLabel}
                 </span>
-                <p className="text-sm font-semibold text-black/75 dark:text-white/75" data-fact="policy.expiryDate">
+                <p className="text-sm font-medium text-foreground" data-fact="policy.expiryDate">
                     {endDate === null
                         ? copy.unknownDuration
                         : `${daysLeft !== null && daysLeft < 0 ? copy.expiredOn : copy.inForceUntil} ${formatPolicyDate(endDate, locale)}`}
@@ -216,42 +219,33 @@ export function PolicyHead({
             {/* Rendered in EVERY state, including "nothing". An empty space is
                 not an all-clear, and the reader cannot tell the difference
                 between "checked and fine" and "not checked" unless it is said. */}
-            <div
-                className={`mt-5 flex items-start gap-3 rounded-2xl border px-4 py-3 ${
-                    isClear
-                        ? "border-primary/25 bg-primary/[0.05] dark:border-mint/25 dark:bg-mint/10"
-                        : "border-black/10 bg-black/[0.03] dark:border-white/15 dark:bg-white/5"
-                }`}
-                data-fact="policy.attention"
-            >
+            <div className="pw-subcard mt-5 flex items-start gap-3 px-4 py-3" data-fact="policy.attention">
                 <AttentionIcon
-                    className={`mt-0.5 h-4 w-4 shrink-0 ${isClear ? "text-primary dark:text-mint" : "text-black/55 dark:text-white/55"}`}
+                    className={`mt-0.5 h-4 w-4 shrink-0 ${
+                        isClear ? "text-primary dark:text-mint" : isCalendar ? "text-status-warning" : "text-muted-foreground"
+                    }`}
                     aria-hidden
                 />
                 <div className="min-w-0 flex-1">
-                    <p className="text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/60">
-                        {copy.attentionTitleByKind?.[attention.kind] ?? copy.attentionTitle}
-                    </p>
-                    <p className="mt-0.5 text-sm font-semibold leading-snug text-black dark:text-white">
-                        {attentionText}
-                    </p>
+                    <p className={label}>{copy.attentionTitleByKind?.[attention.kind] ?? copy.attentionTitle}</p>
+                    <p className="mt-0.5 text-sm font-semibold leading-snug text-foreground">{attentionText}</p>
                 </div>
             </div>
 
-            {/* 4 ── What do I do next? — ONE action ────────────────────── */}
-            <button
-                type="button"
-                onClick={() => onPrimaryAction(primaryAction)}
-                className="mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
-            >
-                <ActionIcon className="h-4 w-4" aria-hidden />
-                {copy.action[primaryAction.kind]}
-            </button>
-
-            {/* Q4's other half — the ASK action, inside the same boundary as
-                the DO action. Always AFTER the primary button: the ten-second
-                test reads the header's first <button> as "what do I do next". */}
-            {askAi && <AskAiDock label={askAi.label} onOpen={askAi.onOpen} />}
+            {/* 4 ── What do I do next? — ONE action, plus the ASK affordance ── */}
+            {/* Always in this order: the ten-second test reads the header's
+                first <button> as "what do I do next". */}
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <button
+                    type="button"
+                    onClick={() => onPrimaryAction(primaryAction)}
+                    className="pw-primary-button w-full sm:w-auto"
+                >
+                    <ActionIcon className="h-4 w-4" aria-hidden />
+                    {copy.action[primaryAction.kind]}
+                </button>
+                {askAi && <AskAiDock label={askAi.label} onOpen={askAi.onOpen} />}
+            </div>
         </header>
     )
 }
@@ -259,16 +253,7 @@ export function PolicyHead({
 /** The persistent AI affordance — one of the two entry points the page keeps. */
 export function AskAiDock({ label, onOpen }: { label: string; onOpen: () => void }) {
     return (
-        <button
-            type="button"
-            onClick={onOpen}
-            /* `border-black/40`, not `/12`: measured at 1.04:1 against the page,
-               i.e. a control whose boundary a sighted user cannot locate
-               (WCAG 1.4.11 wants 3:1). The 0.5c edge-sampling pass is what
-               surfaced it — the text-only contrast check reported this page
-               clean. */
-            className="mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border border-[color:var(--pw-border-control)] bg-white px-5 text-sm font-bold text-black transition-colors hover:bg-black/[0.04] dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-        >
+        <button type="button" onClick={onOpen} className="pw-soft-button w-full cursor-pointer sm:w-auto">
             <MessageCircle className="h-4 w-4 text-primary dark:text-mint" aria-hidden />
             {label}
         </button>

@@ -3,6 +3,7 @@
 import React from "react"
 import { ShieldAlert, UserCheck, AlertTriangle, Activity, Users } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { PortfolioHealth as PortfolioHealthData } from "./types"
@@ -12,59 +13,29 @@ interface PortfolioHealthProps {
     isLoading?: boolean
 }
 
-function RadialProgress({ value, color, size = 64 }: { value: number; color: string; size?: number }) {
-    const radius = (size - 8) / 2
-    const circumference = 2 * Math.PI * radius
-    const offset = circumference - (value / 100) * circumference
-
-    return (
-        <svg width={size} height={size} className="transform -rotate-90">
-            <circle
-                cx={size / 2}
-                cy={size / 2}
-                r={radius}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={4}
-                className="text-neutral-200 dark:text-neutral-700"
-            />
-            <circle
-                cx={size / 2}
-                cy={size / 2}
-                r={radius}
-                fill="none"
-                stroke={color}
-                strokeWidth={4}
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
-                strokeLinecap="round"
-                className="transition-all duration-700 ease-out"
-            />
-        </svg>
-    )
-}
-
+/**
+ * Three facts about the book, as the card anatomy's fact cells (Direction A,
+ * 2026-09-03). The three rings this replaced painted each number red, amber
+ * or green by threshold — «100%» in a red ring over one client with one gap
+ * was a verdict on a book of one. A count is a count; the caption under it
+ * says what it counts, and the advisor draws the conclusion.
+ */
 export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
     const { language, t } = useLanguage()
 
     if (isLoading) return <PortfolioHealthSkeleton />
 
-    // With zero clients, the 0% rings read as *healthy* ("0% have coverage
+    // With zero clients, the 0% cells read as *healthy* ("0% have coverage
     // gaps") when they really mean "no clients". Show a first-run prompt instead.
     if (health.totalClients === 0) {
         return (
-            <BrandCard className="p-5">
-                <div className="flex items-center gap-2 mb-4">
-                    <Activity className="h-5 w-5 text-primary dark:text-mint" />
-                    <h2 className="text-base font-bold text-foreground">
-                        {t.agentUi.portfolioHealth}
-                    </h2>
-                </div>
+            <BrandCard className="pw-pad">
+                <CardHead icon={Activity} title={t.agentUi.portfolioHealth} />
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
-                        <Users className="h-5 w-5 text-primary dark:text-mint" />
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                        <Users className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                     </div>
-                    <p className="max-w-xs text-sm text-muted-foreground">
+                    <p className="max-w-xs text-caption leading-relaxed text-muted-foreground">
                         {t.agentUi.portfolioHealthEmpty}
                     </p>
                 </div>
@@ -72,30 +43,10 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
         )
     }
 
-    const gapColor = health.coverageGapPercent > 30
-        ? "#ef4444"
-        : health.coverageGapPercent > 15
-            ? "#f59e0b"
-            : "#29685B"
-
-    const profileColor = health.completeProfilePercent >= 80
-        ? "#29685B"
-        : health.completeProfilePercent >= 50
-            ? "#f59e0b"
-            : "#ef4444"
-
-    const atRiskColor = health.atRiskCount > 5
-        ? "#ef4444"
-        : health.atRiskCount > 0
-            ? "#f59e0b"
-            : "#29685B"
-
     const metrics = [
         {
             label: t.agentUi.coverageGaps,
-            value: health.coverageGapPercent,
             displayValue: `${health.coverageGapPercent}%`,
-            color: gapColor,
             icon: ShieldAlert,
             description: language === "el"
                 ? "πελατών με κενά κάλυψης"
@@ -103,9 +54,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
         },
         {
             label: t.agentUi.completeProfiles,
-            value: health.completeProfilePercent,
             displayValue: `${health.completeProfilePercent}%`,
-            color: profileColor,
             icon: UserCheck,
             description: language === "el"
                 ? "πελατών με πλήρες προφίλ"
@@ -113,9 +62,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
         },
         {
             label: t.agentUi.atRisk,
-            value: Math.min(100, (health.atRiskCount / Math.max(health.totalClients, 1)) * 100),
             displayValue: String(health.atRiskCount),
-            color: atRiskColor,
             icon: AlertTriangle,
             description: language === "el"
                 ? "πελάτες χρειάζονται προσοχή"
@@ -124,34 +71,22 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
     ]
 
     return (
-        <BrandCard className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-                <Activity className="h-5 w-5 text-primary dark:text-mint" />
-                <h2 className="text-base font-bold text-foreground">
-                    {t.agentUi.portfolioHealth}
-                </h2>
-            </div>
+        <BrandCard className="pw-pad">
+            <CardHead icon={Activity} title={t.agentUi.portfolioHealth} />
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {metrics.map((metric) => {
                     const Icon = metric.icon
                     return (
-                        <div key={metric.label} className="flex flex-col items-center text-center">
-                            <div className="relative">
-                                <RadialProgress value={metric.value} color={metric.color} />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-sm font-bold text-foreground">
-                                        {metric.displayValue}
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-center gap-1">
-                                <Icon className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-                                <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                                    {metric.label}
-                                </span>
-                            </div>
-                            <p className="mt-0.5 text-kicker text-neutral-500 dark:text-neutral-400">
+                        <div key={metric.label} className="pw-subcard px-3.5 py-3">
+                            <p className="flex items-center gap-1.5 text-caption font-medium text-muted-foreground">
+                                <Icon className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                                <span className="min-w-0">{metric.label}</span>
+                            </p>
+                            <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">
+                                {metric.displayValue}
+                            </p>
+                            <p className="mt-0.5 text-caption text-muted-foreground">
                                 {metric.description}
                             </p>
                         </div>
@@ -164,8 +99,8 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                 most common holes. Hidden with an empty pipeline — no verdict
                 on nothing. */}
             {health.qualification && health.qualification.pipelineCount > 0 && (
-                <div className="mt-5 border-t border-[var(--brand-border-subtle)] pt-4">
-                    <p className="mb-2 text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                <div className="mt-5 border-t border-border pt-4">
+                    <p className="mb-2 text-sm font-semibold text-foreground">
                         {t.agentUi.qualificationHealthTitle}
                     </p>
                     {(() => {
@@ -176,24 +111,24 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                         return (
                             <>
                                 <div className="flex items-center gap-2">
-                                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
                                         <div
-                                            className="h-full rounded-full bg-primary dark:bg-mint transition-all"
+                                            className="h-full rounded-full bg-primary transition-all"
                                             style={{ width: `${share}%` }}
                                         />
                                     </div>
-                                    <span className="font-mono text-xs font-bold text-foreground">{share}%</span>
+                                    <span className="text-caption font-semibold tabular-nums text-foreground">{share}%</span>
                                 </div>
-                                <p className="mt-1 text-kicker text-neutral-500 dark:text-neutral-400">
+                                <p className="mt-1 text-caption text-muted-foreground">
                                     {t.agentUi.qualificationShareDesc}
                                 </p>
-                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
+                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-caption text-muted-foreground">
                                     <span>
-                                        <b className="text-foreground">{q.missingEb}</b>{" "}
+                                        <b className="font-semibold tabular-nums text-foreground">{q.missingEb}</b>{" "}
                                         {t.agentUi.qualificationMissingEb}
                                     </span>
                                     <span>
-                                        <b className="text-foreground">{q.unconfirmedPain}</b>{" "}
+                                        <b className="font-semibold tabular-nums text-foreground">{q.unconfirmedPain}</b>{" "}
                                         {t.agentUi.qualificationUnconfirmedPain}
                                     </span>
                                 </div>
@@ -208,18 +143,14 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
 
 export function PortfolioHealthSkeleton() {
     return (
-        <BrandCard className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-                <Skeleton className="h-5 w-5 rounded" />
+        <BrandCard className="pw-pad">
+            <div className="mb-4 flex items-center gap-3">
+                <Skeleton className="h-9 w-9 rounded-[10px]" />
                 <Skeleton className="h-5 w-40" />
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex flex-col items-center">
-                        <Skeleton className="h-16 w-16 rounded-full" />
-                        <Skeleton className="mt-2 h-3 w-20" />
-                        <Skeleton className="mt-1 h-2 w-24" />
-                    </div>
+                    <Skeleton key={i} className="h-20 w-full rounded-xl" />
                 ))}
             </div>
         </BrandCard>

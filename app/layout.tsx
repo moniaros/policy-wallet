@@ -128,7 +128,10 @@ export default function RootLayout({
           <OfflineProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="system"
+              // Light-first (Direction A, 2026-09-03): the product's calm is a
+              // light one. Dark stays a real second theme through the same
+              // tokens, and a stored preference still wins over this default.
+              defaultTheme="light"
               enableSystem
               disableTransitionOnChange
             >

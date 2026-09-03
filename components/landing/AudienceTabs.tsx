@@ -2,22 +2,12 @@
 
 import { useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
-import {
-    ArrowRight,
-    BriefcaseBusiness,
-    CalendarClock,
-    Car,
-    CheckCircle2,
-    HeartPulse,
-    House,
-    TrendingUp,
-    UserRound,
-    type LucideIcon,
-} from "lucide-react"
+import { ArrowRight, BriefcaseBusiness, CheckCircle2, UserRound } from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 import { CHIP_GLYPH, STATE_LABELS } from "@/src/design-system/primitives"
 import { BrushUnderline, Eyebrow } from "@/src/design-system/layout"
+import { AppScreen, CoverageMapScreen, AdvisorScreen } from "@/components/landing/real-screens/RealScreens"
 
 /**
  * The «Για ποιον» tabs (§6): one pill switch, two role cards — copy on the
@@ -244,15 +234,6 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
         ),
     ]
 
-    // Consumer words in the mock («Αυτοκίνητο»); the catalogue keeps «Motor».
-    // States through the three-state system — which cover is fine, which one
-    // has a hole — never a score.
-    const rows: { Icon: LucideIcon; name: string; state: "covered" | "gap" }[] = [
-        { Icon: Car, name: t("Αυτοκίνητο", "Car"), state: "covered" },
-        { Icon: House, name: t("Σπίτι", "Home"), state: "gap" },
-        { Icon: HeartPulse, name: t("Υγεία", "Health"), state: "covered" },
-    ]
-
     return (
         <RoleCard
             copy={
@@ -288,37 +269,17 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                 <>
                     <PhoneSample
                         label={t(
-                            "Παράδειγμα: τρεις ασφάλειες σε μία οθόνη — αυτοκίνητο και υγεία καλύπτονται, στην κατοικία λείπει η κάλυψη πλημμύρας.",
-                            "Example: three policies on one screen — car and health are covered, the home is missing flood cover.",
+                            "Παράδειγμα: ο χάρτης κάλυψης της εφαρμογής — αυτοκίνητο και υγεία καλυμμένα, η κατοικία χρειάζεται προσοχή, ζωή χωρίς ασφαλιστήριο.",
+                            "Example: the app's coverage map — car and health covered, the home needs attention, no life policy held.",
                         )}
                     >
-                        <div className="flex items-center justify-between gap-g-2">
-                            <p className="text-sm font-semibold text-fg-primary">{t("Τα συμβόλαιά μου", "My policies")}</p>
-                            <MiniChip state="gap">1 {t("κενό", "gap")}</MiniChip>
-                        </div>
-                        <ul className="mt-g-3 flex flex-col gap-g-2">
-                            {rows.map((r) => (
-                                <li
-                                    key={r.name}
-                                    className="flex items-center gap-g-2 rounded-g-md border border-border-subtle bg-surface-raised px-g-3 py-g-2"
-                                >
-                                    <span
-                                        className={
-                                            r.state === "gap"
-                                                ? "flex size-8 shrink-0 items-center justify-center rounded-g-sm bg-state-gap-fill text-state-gap"
-                                                : "flex size-8 shrink-0 items-center justify-center rounded-g-sm bg-state-covered-fill text-state-covered"
-                                        }
-                                    >
-                                        <r.Icon aria-hidden className="size-4" />
-                                    </span>
-                                    <span className="flex-1 text-sm font-medium text-fg-primary">{r.name}</span>
-                                    <MiniChip state={r.state}>{pick(STATE_LABELS[r.state], locale)}</MiniChip>
-                                </li>
-                            ))}
-                        </ul>
-                        <p className="mt-g-3 flex items-center gap-g-2 rounded-g-md border border-state-gap-border bg-state-gap-fill px-g-3 py-g-2 text-sm font-medium text-state-gap">
-                            <span aria-hidden>◆</span>
-                            {t("Σπίτι: λείπει κάλυψη πλημμύρας", "Home: missing flood cover")}
+                        {/* The REAL coverage map the app renders, on sample data. */}
+                        <AppScreen locale={locale} tab="protection" defaultScale={280 / 390}>
+                            <CoverageMapScreen locale={locale} />
+                        </AppScreen>
+                        <p className="mt-g-3 flex flex-wrap items-center gap-g-2 text-sm text-fg-primary">
+                            <MiniChip state="gap">{pick(STATE_LABELS.gap, locale)}</MiniChip>
+                            {t("Κατοικία: λείπει η κάλυψη σεισμού", "Home: earthquake cover is missing")}
                         </p>
                     </PhoneSample>
                     {/* Names the plan: finding the gap is a Family job, and this
@@ -352,17 +313,6 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
         ),
     ]
 
-    // Lettered placeholders («Πελάτης Α»), matching AgentWidgets: a mock row
-    // needs a label, and an invented surname reads as a real book of business.
-    // A client whose cover is fine says so; one with a renewal coming says how
-    // many days — never a grade.
-    const clients = [
-        { initials: t("Α", "A"), name: t("Πελάτης Α", "Client A"), renewal: 7, alert: true },
-        { initials: t("Β", "B"), name: t("Πελάτης Β", "Client B"), renewal: 23, alert: false },
-        { initials: t("Γ", "C"), name: t("Πελάτης Γ", "Client C"), renewal: 45, alert: false },
-        { initials: t("Δ", "D"), name: t("Πελάτης Δ", "Client D"), renewal: 62, alert: true },
-    ]
-
     return (
         <RoleCard
             copy={
@@ -392,38 +342,15 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 <>
                     <PhoneSample
                         label={t(
-                            "Παράδειγμα: μία οθόνη με τους πελάτες σας, ποιανού η ασφάλεια λήγει σύντομα, και μια πρόταση για το τι λείπει σε έναν από αυτούς.",
-                            "Example: one screen with your clients, whose cover runs out soon, and a suggestion for what one of them is missing.",
+                            "Παράδειγμα: η λίστα πελατών της εφαρμογής συμβούλου — ποιος έχει ανανέωση σε λίγες ημέρες και ποιος ένα ανοιχτό κενό.",
+                            "Example: the advisor app's client list — who has a renewal in a few days and who has an open gap.",
                         )}
                     >
-                        <ul className="flex flex-col gap-g-2">
-                            {clients.map((c) => (
-                                <li
-                                    key={c.name}
-                                    className="flex items-center gap-g-2 rounded-g-md border border-border-subtle bg-surface-raised px-g-3 py-g-2"
-                                >
-                                    <span className="flex size-6 shrink-0 items-center justify-center rounded-g-pill bg-state-covered-fill text-xs font-bold text-fg-brand">
-                                        {c.initials}
-                                    </span>
-                                    <span className="flex-1 truncate text-sm font-medium text-fg-primary">{c.name}</span>
-                                    {c.alert ? (
-                                        <span
-                                            className="inline-flex min-h-7 items-center gap-g-1 rounded-g-pill bg-state-review-fill px-g-2 text-xs font-semibold text-state-review"
-                                            style={{ fontVariantNumeric: "tabular-nums lining-nums" }}
-                                        >
-                                            <CalendarClock aria-hidden className="size-3.5" />
-                                            {t(`${c.renewal} ημ.`, `${c.renewal}d`)}
-                                        </span>
-                                    ) : (
-                                        <MiniChip state="covered">{pick(STATE_LABELS.covered, locale)}</MiniChip>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                        <p className="mt-g-3 flex items-center gap-g-2 rounded-g-md bg-state-covered-fill px-g-3 py-g-2 text-sm font-medium text-state-covered">
-                            <TrendingUp aria-hidden className="size-4 shrink-0" />
-                            {t("Πελάτης Α — του λείπει ασφάλεια ζωής", "Client A — has no life cover")}
-                        </p>
+                        {/* The REAL client rows the advisor app renders — lettered
+                            placeholders («Πελάτης Α»), never an invented surname. */}
+                        <AppScreen locale={locale} chrome="bar" defaultScale={280 / 390}>
+                            <AdvisorScreen locale={locale} />
+                        </AppScreen>
                     </PhoneSample>
                     {/* The client names are invented, and this is the line that says so. */}
                     <SampleCaption>

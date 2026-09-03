@@ -1,6 +1,7 @@
 import { ShieldAlert } from "lucide-react"
 import { GAP_SEVERITIES, describeSeverity } from "@/lib/gaps/severity-display"
 import { toneDotClass } from "@/components/gaps/severity-tone"
+import { CardHead } from "./CardHead"
 
 export interface GapSeverityCounts {
     critical: number
@@ -21,10 +22,16 @@ export interface GapSeverityCounts {
  * again with less affordance (and put a `role="list"` inside an anchor,
  * which no screen reader announces cleanly). The numbers are the content;
  * the section's explicit links own the navigation.
+ *
+ * Direction A: the tally is a segmented bar of COUNTS — the reference's
+ * "score" slot, filled with something a reader can check («13 υψηλά» is
+ * thirteen rows) rather than a grade. `variant="embedded"` renders it inside
+ * another card (the attention list); `"card"` keeps it a card of its own.
  */
 export function CoverageGapsWidget({
     counts,
     labels,
+    variant = "card",
 }: {
     counts: GapSeverityCounts
     labels: {
@@ -37,57 +44,74 @@ export function CoverageGapsWidget({
         /** Accessible name for the chip group — a bare «4 υψηλά» has no subject. */
         groupLabel: string
     }
+    variant?: "card" | "embedded"
 }) {
     const total = counts.critical + counts.high + counts.medium + counts.low
+    const present = GAP_SEVERITIES.filter((key) => counts[key] > 0)
+
+    const body =
+        total === 0 ? (
+            <p className="text-sm text-muted-foreground">{labels.noGaps}</p>
+        ) : (
+            <>
+                {/* The bar is decoration for the numbers beneath it — proportion
+                    at a glance, nothing a reader has to read from it. Colour is
+                    never the only carrier: each segment's count and word sit in
+                    the named list right under it. */}
+                <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted" aria-hidden="true">
+                    {present.map((key) => (
+                        <span
+                            key={key}
+                            className={`block h-full ${toneDotClass(describeSeverity(key).tone)}`}
+                            style={{ width: `${(counts[key] / total) * 100}%` }}
+                        />
+                    ))}
+                </div>
+                {/* A LIST, with a name. Each chip reads «4 υψηλά» on its
+                    own, which is a number and an adjective with no
+                    subject; grouped and named, a screen reader announces
+                    what the four are and how many kinds there are. */}
+                <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5" role="list" aria-label={labels.groupLabel}>
+                    {present.map((key) => {
+                        // Order and tone come from the primitive; this
+                        // card no longer keeps its own severity table.
+                        const { tone } = describeSeverity(key)
+                        return (
+                            <span
+                                key={key}
+                                role="listitem"
+                                // Subject-scoped: one gap.severityCount per
+                                // severity, so four chips are four subjects,
+                                // never one key disagreeing with itself.
+                                data-count="gap.severityCount"
+                                data-count-subject={key}
+                                className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80 tabular-nums"
+                            >
+                                <span className={`h-2 w-2 rounded-full ${toneDotClass(tone)}`} aria-hidden />
+                                {`${counts[key]} ${labels.severity[key]}`}
+                            </span>
+                        )
+                    })}
+                </div>
+                {/* "Critical/high" read as a risk verdict; the gap engine treats
+                    them as a profile-based priority (the report itself omits
+                    severity as "unvalidated"). This says so plainly. */}
+                {labels.note && (
+                    <p className="mt-2 text-caption leading-snug text-muted-foreground">
+                        {labels.note}
+                    </p>
+                )}
+            </>
+        )
+
+    if (variant === "embedded") {
+        return <div>{body}</div>
+    }
 
     return (
         <div className="pw-card pw-pad">
-            <div className="flex items-center justify-between">
-                <p className="pw-kicker">{labels.kicker}</p>
-                <ShieldAlert className="h-4 w-4 text-muted-foreground" aria-hidden />
-            </div>
-            <div className="mt-3">
-                {total === 0 ? (
-                    <p className="text-sm text-muted-foreground">{labels.noGaps}</p>
-                ) : (
-                    <>
-                        {/* A LIST, with a name. Each chip reads «4 υψηλά» on its
-                            own, which is a number and an adjective with no
-                            subject; grouped and named, a screen reader announces
-                            what the four are and how many kinds there are. */}
-                        <div className="flex flex-wrap gap-2" role="list" aria-label={labels.groupLabel}>
-                            {GAP_SEVERITIES.filter((key) => counts[key] > 0).map((key) => {
-                                // Order and tone come from the primitive; this
-                                // card no longer keeps its own severity table.
-                                const { tone } = describeSeverity(key)
-                                return (
-                                    <span
-                                        key={key}
-                                        role="listitem"
-                                        // Subject-scoped: one gap.severityCount per
-                                        // severity, so four chips are four subjects,
-                                        // never one key disagreeing with itself.
-                                        data-count="gap.severityCount"
-                                        data-count-subject={key}
-                                        className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
-                                    >
-                                        <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(tone)}`} aria-hidden />
-                                        {counts[key]} {labels.severity[key]}
-                                    </span>
-                                )
-                            })}
-                        </div>
-                        {/* "Critical/high" read as a risk verdict; the gap engine treats
-                            them as a profile-based priority (the report itself omits
-                            severity as "unvalidated"). This says so plainly. */}
-                        {labels.note && (
-                            <p className="mt-2 text-caption leading-snug text-muted-foreground">
-                                {labels.note}
-                            </p>
-                        )}
-                    </>
-                )}
-            </div>
+            <CardHead icon={ShieldAlert} title={labels.kicker} as="p" />
+            <div className="mt-4">{body}</div>
         </div>
     )
 }

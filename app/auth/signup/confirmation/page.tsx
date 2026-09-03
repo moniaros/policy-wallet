@@ -7,6 +7,8 @@ import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowRight, CheckCircle2, CreditCard, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { AuthShell } from "@/components/auth/AuthShell"
+import { AUTH_NOTICE_COVERED_CLASS, AUTH_NOTICE_GAP_CLASS, AUTH_PRIMARY_LINK_CLASS } from "@/components/auth/FormField"
+import { Button } from "@/src/design-system"
 import { authHref } from "@/lib/seo/locale-links"
 import { completeOnboardingStep } from "@/app/onboarding/actions"
 import { resendVerificationEmail } from "@/app/auth/actions"
@@ -239,9 +241,9 @@ function SignupConfirmationContent() {
 
     return (
         <AuthShell>
-            <div className="mb-g-5 flex items-center justify-between text-xs font-semibold text-fg-secondary">
+            <div className="mb-g-5 flex items-center justify-between text-g-caption font-semibold text-fg-secondary">
                 <span className="rounded-g-pill bg-surface-sunken px-g-3 py-g-1">{copy.stepLabel}</span>
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-g-1">
                     <ShieldCheck aria-hidden className="size-3.5 text-fg-brand" />
                     {copy.secureSetup}
                 </span>
@@ -251,20 +253,21 @@ function SignupConfirmationContent() {
 
             <div className="mt-g-6">
                     {loadingState ? (
-                        <div className="flex items-center justify-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 text-[#5B6A7A] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
+                        <div className="flex items-center justify-center rounded-g-lg bg-surface-sunken p-g-6 text-g-body-sm text-fg-secondary">
+                            <Loader2 aria-hidden className="mr-g-2 size-4 animate-spin text-fg-brand" />
                             {copy.loading}
                         </div>
                     ) : null}
 
                     {!loadingState && !isAuthenticated ? (
-                        <div className="space-y-4">
-                            <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+                        <div className="flex flex-col gap-g-4">
+                            <div role="alert" className={AUTH_NOTICE_GAP_CLASS}>
+                                <AlertCircle aria-hidden className="mt-0.5 size-4 flex-shrink-0" />
                                 {copy.authMissing}
                             </div>
                             <Link
                                 href={authHref("/auth/signin", authLocale)}
-                                className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover dark:text-[#1A2420]"
+                                className={AUTH_PRIMARY_LINK_CLASS}
                             >
                                 {copy.signin}
                             </Link>
@@ -272,15 +275,15 @@ function SignupConfirmationContent() {
                     ) : null}
 
                     {!loadingState && isAuthenticated ? (
-                        <div className="space-y-4">
+                        <div className="flex flex-col gap-g-4">
                             {/* Onboarding shell card */}
-                            <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 dark:border-white/10 dark:bg-white/5">
-                                <p className="text-sm font-semibold text-[#0F172A] dark:text-white">{copy.shellTitle}</p>
-                                <p className="mt-1 text-sm text-[#5B6A7A] dark:text-white/65">{copy.shellDesc}</p>
-                                <ul className="mt-3 space-y-2 text-sm text-[#475569] dark:text-white/65">
+                            <div className="rounded-g-lg bg-surface-sunken p-g-4">
+                                <p className="text-g-body-sm font-semibold text-fg-primary">{copy.shellTitle}</p>
+                                <p className="mt-g-1 text-g-body-sm text-fg-secondary">{copy.shellDesc}</p>
+                                <ul className="mt-g-3 flex flex-col gap-g-2 text-g-body-sm text-fg-primary">
                                     {copy.trustedPoints.map((point) => (
-                                        <li key={point} className="flex items-center gap-2">
-                                            <CheckCircle2 className="h-4 w-4 text-primary" />
+                                        <li key={point} className="flex items-center gap-g-2">
+                                            <CheckCircle2 aria-hidden className="size-4 flex-shrink-0 text-state-covered" />
                                             <span>{point}</span>
                                         </li>
                                     ))}
@@ -289,28 +292,28 @@ function SignupConfirmationContent() {
 
                             {/* Selected plan */}
                             {planDisplayName ? (
-                                <div className="rounded-xl border border-[#D1FAE5] bg-[#F0FDF4] p-4 dark:border-primary/30 dark:bg-primary/15">
-                                    <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#065F46] dark:text-mint">
-                                        <CreditCard className="h-4 w-4" />
+                                <div className="rounded-g-lg bg-state-covered-fill p-g-4">
+                                    <div className="inline-flex items-center gap-g-2 text-g-body-sm font-semibold text-state-covered">
+                                        <CreditCard aria-hidden className="size-4" />
                                         {copy.selectedPlanTitle}
                                     </div>
-                                    <p className="mt-1 text-sm font-bold text-[#065F46] dark:text-mint">
+                                    <p className="mt-g-1 text-g-body-sm font-semibold text-fg-primary">
                                         {planDisplayName}
                                         {selectedBilling ? ` — ${selectedBilling === "annual" ? copy.selectedPlanBillingAnnual : copy.selectedPlanBillingMonthly}` : ""}
                                     </p>
-                                    <p className="mt-1 text-xs text-[#047857] dark:text-mint/80">{copy.selectedPlanNote}</p>
+                                    <p className="mt-g-1 text-g-caption text-fg-secondary">{copy.selectedPlanNote}</p>
                                 </div>
                             ) : null}
 
                             {/* Email verification card */}
                             {showVerificationCard ? (
-                                <div className="rounded-xl border border-[#D1FAE5] bg-[#F0FDF4] p-4 dark:border-primary/30 dark:bg-primary/15">
-                                    <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#065F46] dark:text-mint">
-                                        <Mail className="h-4 w-4" />
+                                <div className="rounded-g-lg bg-state-covered-fill p-g-4">
+                                    <div className="inline-flex items-center gap-g-2 text-g-body-sm font-semibold text-state-covered">
+                                        <Mail aria-hidden className="size-4" />
                                         {copy.verifyTitle}
                                     </div>
-                                    <p className="mt-1 text-sm text-[#047857] dark:text-mint/80">{copy.verifyDesc}</p>
-                                    <p className="mt-2 break-all rounded-lg bg-white px-2.5 py-1.5 text-xs font-semibold text-[#065F46] dark:bg-black/40 dark:text-mint">{email}</p>
+                                    <p className="mt-g-1 text-g-body-sm text-fg-secondary">{copy.verifyDesc}</p>
+                                    <p className="mt-g-2 break-all rounded-g-md bg-surface-raised px-g-3 py-g-2 text-g-caption font-semibold text-fg-primary">{email}</p>
                                 </div>
                             ) : null}
 
@@ -321,17 +324,13 @@ function SignupConfirmationContent() {
                                         initial={{ opacity: 0, y: -6 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0 }}
-                                        className={`flex items-start gap-2 rounded-xl border p-3 text-sm ${
-                                            notice.kind === "success"
-                                                ? "border-[#D1FAE5] bg-[#F0FDF4] text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint"
-                                                : "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
-                                        }`}
+                                        className={notice.kind === "success" ? AUTH_NOTICE_COVERED_CLASS : AUTH_NOTICE_GAP_CLASS}
                                         role="status"
                                     >
                                         {notice.kind === "success" ? (
-                                            <CheckCircle2 className="mt-0.5 h-4 w-4" />
+                                            <CheckCircle2 aria-hidden className="mt-0.5 size-4 flex-shrink-0" />
                                         ) : (
-                                            <AlertCircle className="mt-0.5 h-4 w-4" />
+                                            <AlertCircle aria-hidden className="mt-0.5 size-4 flex-shrink-0" />
                                         )}
                                         <span>{notice.message}</span>
                                     </motion.div>
@@ -339,49 +338,50 @@ function SignupConfirmationContent() {
                             </AnimatePresence>
 
                             {/* Action buttons */}
-                            <div className="space-y-2.5">
+                            <div className="flex flex-col gap-g-3">
                                 {showVerificationCard ? (
                                     <>
-                                        <button
+                                        <Button
                                             type="button"
+                                            size="lg"
                                             onClick={() => void handleCheckVerification()}
                                             disabled={busy}
-                                            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-70 dark:text-[#1A2420]"
+                                            loading={isCheckingVerification}
+                                            className="w-full"
                                         >
-                                            {isCheckingVerification ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                                            {!isCheckingVerification && <Sparkles aria-hidden className="size-4" />}
                                             {copy.checkVerified}
-                                        </button>
+                                        </Button>
 
-                                        <button
+                                        <Button
                                             type="button"
+                                            variant="secondary"
                                             onClick={() => void handleResend()}
                                             disabled={busy}
-                                            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-70 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
+                                            loading={isResending}
+                                            className="w-full"
                                         >
-                                            {isResending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                                            {!isResending && <RefreshCw aria-hidden className="size-4" />}
                                             {copy.resend}
-                                        </button>
+                                        </Button>
                                     </>
                                 ) : (
-                                    <button
+                                    <Button
                                         type="button"
+                                        size="lg"
                                         onClick={() => void continueToOnboarding()}
                                         disabled={busy}
-                                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-70 dark:text-[#1A2420]"
+                                        loading={isContinuing}
+                                        className="w-full"
                                     >
-                                        {isContinuing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                                        {!isContinuing && <ArrowRight aria-hidden className="size-4" />}
                                         {copy.startSetup}
-                                    </button>
+                                    </Button>
                                 )}
 
-                                <button
-                                    type="button"
-                                    onClick={handleSkip}
-                                    disabled={busy}
-                                    className="pw-secondary-button w-full"
-                                >
+                                <Button type="button" variant="ghost" onClick={handleSkip} disabled={busy} className="w-full">
                                     {copy.skip}
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     ) : null}

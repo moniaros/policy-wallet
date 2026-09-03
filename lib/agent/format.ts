@@ -127,24 +127,24 @@ export function getUrgencyTierDisplay(tier: UrgencyTier, locale: "en" | "el" = "
     const tiers = {
         needs_attention: {
             label: locale === "el" ? "Χρειάζεται προσοχή" : "Needs Attention",
-            color: "text-red-700 dark:text-red-400",
-            bgColor: "bg-red-50 dark:bg-red-950/30",
-            borderColor: "border-red-200 dark:border-red-900/30",
-            dotColor: "bg-red-500",
+            color: "text-status-danger",
+            bgColor: "bg-status-danger-tint",
+            borderColor: "border-status-danger-edge",
+            dotColor: "bg-status-danger",
         },
         on_track: {
             label: locale === "el" ? "Σε καλή πορεία" : "On Track",
-            color: "text-emerald-700 dark:text-emerald-400",
-            bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
-            borderColor: "border-emerald-200 dark:border-emerald-900/30",
-            dotColor: "bg-emerald-500",
+            color: "text-status-success",
+            bgColor: "bg-status-success-tint",
+            borderColor: "border-border",
+            dotColor: "bg-status-success",
         },
         inactive: {
             label: locale === "el" ? "Ανενεργοί" : "Inactive",
-            color: "text-slate-500 dark:text-slate-400",
-            bgColor: "bg-slate-50 dark:bg-slate-900/30",
-            borderColor: "border-slate-200 dark:border-slate-800",
-            dotColor: "bg-slate-400",
+            color: "text-muted-foreground",
+            bgColor: "bg-muted",
+            borderColor: "border-border",
+            dotColor: "bg-muted-foreground/50",
         },
     }
     return tiers[tier]

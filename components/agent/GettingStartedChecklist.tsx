@@ -118,14 +118,14 @@ export function AgentGettingStartedChecklist({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
-            className="pw-card rounded-3xl p-6"
+            className="pw-card pw-pad"
         >
-            <div className="flex items-center justify-between">
-                <div className="flex-1">
-                    <p className="pw-kicker">
+            <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                    <p className="text-body-lg font-semibold leading-snug tracking-tight text-foreground">
                         {t("Ξεκινώντας", "Getting started")}
                     </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-0.5 text-caption tabular-nums text-muted-foreground">
                         {completedCount}/{items.length} {t("ολοκληρωμένα", "completed")}
                     </p>
                 </div>
@@ -133,7 +133,7 @@ export function AgentGettingStartedChecklist({
                     <button
                         type="button"
                         onClick={() => setCollapsed(!collapsed)}
-                        className="rounded-lg p-1.5 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white/70"
+                        className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         // The label alone changes wording but never announces
                         // STATE, so a screen reader could not report whether the
                         // checklist is open — matching ActionQueueCard, which
@@ -151,7 +151,7 @@ export function AgentGettingStartedChecklist({
                                 localStorage.setItem("pw-agent-checklist-dismissed", "true")
                             }
                         }}
-                        className="rounded-lg p-1.5 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white/70"
+                        className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         aria-label={t("Απόρριψη", "Dismiss")}
                     >
                         <X className="h-4 w-4" />
@@ -159,7 +159,7 @@ export function AgentGettingStartedChecklist({
                 </div>
             </div>
 
-            <div className="mt-3 h-1.5 w-full rounded-full bg-black/8 dark:bg-white/10">
+            <div className="mt-3 h-1.5 w-full rounded-full bg-muted">
                 <motion.div
                     className="h-1.5 rounded-full bg-primary"
                     initial={{ width: 0 }}
@@ -189,37 +189,29 @@ export function AgentGettingStartedChecklist({
                                     >
                                         <Link
                                             href={item.href}
-                                            className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 transition ${
-                                                item.completed
-                                                    ? "border-primary/30 bg-primary/5 dark:border-primary/20 dark:bg-primary/5"
-                                                    : "border-black/8 bg-black/[0.02] hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.05]"
+                                            className={`pw-subcard flex min-h-11 items-center gap-3 px-3 py-2.5 transition-colors hover:bg-muted ${
+                                                item.completed ? "ring-1 ring-primary/40" : ""
                                             }`}
                                         >
-                                            <span
-                                                className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg ${
-                                                    item.completed
-                                                        ? "bg-primary text-white dark:text-[#1A2420]"
-                                                        : "bg-white text-black/60 dark:bg-black dark:text-white/60"
-                                                }`}
-                                            >
+                                            <span className={`pw-card-chip ${item.completed ? "text-status-success" : ""}`} aria-hidden="true">
                                                 {item.completed ? (
-                                                    <Check className="h-4 w-4" />
+                                                    <Check className="h-4 w-4" strokeWidth={2} />
                                                 ) : (
-                                                    <Icon className="h-4 w-4" />
+                                                    <Icon className="h-4 w-4" strokeWidth={1.75} />
                                                 )}
                                             </span>
                                             <div className="min-w-0 flex-1">
                                                 <p
-                                                    className={`text-xs font-semibold ${
+                                                    className={`text-sm font-semibold ${
                                                         item.completed
-                                                            ? "text-primary line-through dark:text-mint"
-                                                            : "text-black dark:text-white"
+                                                            ? "text-muted-foreground line-through"
+                                                            : "text-foreground"
                                                     }`}
                                                 >
                                                     {language === "el" ? item.titleEl : item.titleEn}
                                                 </p>
                                                 {!item.completed && (
-                                                    <p className="mt-0.5 text-micro text-black/60 dark:text-white/55">
+                                                    <p className="mt-0.5 text-caption text-muted-foreground">
                                                         {language === "el" ? item.descEl : item.descEn}
                                                     </p>
                                                 )}

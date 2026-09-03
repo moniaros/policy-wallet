@@ -56,7 +56,14 @@ export function ProtectionRiskLens({
                 predictions={intelligence.predictions}
                 wizardHref={wizardHref}
                 graphPanel={
+                    // `key`: this element is created HERE, in a server component,
+                    // and rendered by the client view among its siblings. Flight
+                    // hands the client a frozen element that jsx cannot mark as
+                    // validated, so React 19 warned «a child from
+                    // ProtectionRiskLens» has no key on every render of the risk
+                    // lens. A key says the placement is deliberate.
                     <RiskGraphPanel
+                        key="risk-graph"
                         risks={intelligence.graph.views}
                         summary={{
                             nodeCount: intelligence.graph.summary.nodeCount,

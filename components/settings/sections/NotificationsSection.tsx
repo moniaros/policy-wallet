@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { AlertTriangle, ArrowRight, Mail, MessageSquare, Shield, Zap } from "lucide-react"
+import { AlertTriangle, ArrowRight, Bell, Gauge, History, Mail, MessageSquare, MoonStar, Shield, Smartphone, Zap } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { SettingsSection } from "@/components/settings/SettingsSection"
@@ -80,7 +80,7 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
 
     return (
         <>
-            <SettingsSection title={copy.streamsTitle} description={copy.streamsDesc}>
+            <SettingsSection icon={Bell} title={copy.streamsTitle} description={copy.streamsDesc}>
                 <div className="divide-y divide-black/5 dark:divide-white/10">
                     {NOTIFICATION_PREFERENCE_GROUPS.map((group) => {
                         const Icon = GROUP_ICON[group.labelKey]
@@ -100,7 +100,7 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
                 </div>
             </SettingsSection>
 
-            <SettingsSection title={copy.deviceTitle} description={copy.deviceDesc}>
+            <SettingsSection icon={Smartphone} title={copy.deviceTitle} description={copy.deviceDesc}>
                 <PushOptIn />
             </SettingsSection>
 
@@ -108,7 +108,7 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
                 null on a read failure, and an empty "when we interrupt you" card
                 would imply we never do. */}
             {data.quietHours && (
-                <SettingsSection title={copy.timingTitle}>
+                <SettingsSection icon={MoonStar} title={copy.timingTitle}>
                     <QuietHours initial={data.quietHours} />
                 </SettingsSection>
             )}
@@ -116,15 +116,15 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
             {/* The §9.5 cadence controls — the global outbound off switch and
                 the monthly ceiling. Same null contract as quiet hours. */}
             {data.cadence && (
-                <SettingsSection title={t.settings.cadence.title}>
+                <SettingsSection icon={Gauge} title={t.settings.cadence.title}>
                     <CadenceControls initial={data.cadence} />
                 </SettingsSection>
             )}
 
-            <SettingsSection title={copy.historyTitle} description={copy.historyDesc}>
+            <SettingsSection icon={History} title={copy.historyTitle} description={copy.historyDesc}>
                 <Link
                     href="/notifications"
-                    className="pw-secondary-button pw-btn-sm inline-flex items-center gap-2"
+                    className="pw-soft-button inline-flex items-center gap-2"
                 >
                     {copy.historyCta}
                     <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />

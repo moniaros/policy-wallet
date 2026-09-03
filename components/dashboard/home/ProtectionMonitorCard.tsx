@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { ArrowRight, Check, CircleAlert, TriangleAlert } from "lucide-react"
+import { Activity, ArrowRight, Check, CircleAlert, TriangleAlert } from "lucide-react"
+import { CardHead } from "./CardHead"
 
 export interface MonitorSignalView {
     id: string
@@ -26,11 +27,11 @@ const VERDICT_STYLE: Record<
         icon: Check,
     },
     attention: {
-        chip: "bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300",
+        chip: "bg-status-warning-tint text-status-warning",
         icon: CircleAlert,
     },
     action: {
-        chip: "bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
+        chip: "bg-status-danger-tint text-status-danger",
         icon: TriangleAlert,
     },
 }
@@ -60,33 +61,33 @@ export function ProtectionMonitorCard({
 }) {
     return (
         <section className="pw-card pw-pad" aria-labelledby="protection-monitor-heading">
-            <div className="flex items-center justify-between">
-                <p className="pw-kicker" id="protection-monitor-heading">{labels.kicker}</p>
-                <p className="text-micro font-semibold text-muted-foreground">
-                    {lastCheckedLabel ?? labels.notYetAssessed}
-                </p>
-            </div>
-            <ul className="mt-3 space-y-2">
+            <CardHead
+                icon={Activity}
+                title={labels.kicker}
+                id="protection-monitor-heading"
+                meta={<span>{lastCheckedLabel ?? labels.notYetAssessed}</span>}
+            />
+            <ul className="mt-4 space-y-2">
                 {signals.map((signal) => {
                     const style = VERDICT_STYLE[signal.verdict]
                     const Icon = style.icon
                     return (
                         <li
                             key={signal.id}
-                            className="flex items-start gap-3 rounded-xl border border-black/8 bg-black/[0.02] p-2.5 dark:border-white/10 dark:bg-white/[0.02]"
+                            className="pw-subcard flex items-start gap-3 p-3"
                         >
                             <span
-                                className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-micro font-semibold ${style.chip}`}
+                                className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-caption font-semibold ${style.chip}`}
                             >
                                 <Icon className="h-3 w-3" aria-hidden />
                                 {signal.verdictLabel}
                             </span>
                             <span className="min-w-0 flex-1">
-                                <span className="block text-xs font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+                                <span className="block text-xs font-semibold text-foreground [overflow-wrap:anywhere]">
                                     {signal.label}
                                 </span>
                                 {(signal.detailParts?.length || signal.detail) && (
-                                    <span className="mt-0.5 block text-caption leading-snug text-black/65 dark:text-white/60">
+                                    <span className="mt-0.5 block text-caption leading-snug text-muted-foreground">
                                         {signal.detailParts?.length
                                             ? signal.detailParts.map((part, i) => (
                                                   <span
@@ -101,7 +102,7 @@ export function ProtectionMonitorCard({
                                     </span>
                                 )}
                                 {signal.action && (
-                                    <span className="mt-0.5 block text-caption font-semibold leading-snug text-black/75 dark:text-white/75">
+                                    <span className="mt-0.5 block text-caption font-semibold leading-snug text-foreground/80">
                                         {signal.action}
                                     </span>
                                 )}
@@ -110,10 +111,7 @@ export function ProtectionMonitorCard({
                     )
                 })}
             </ul>
-            <Link
-                href="/protection?lens=risk"
-                className="pw-inline-action mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
-            >
+            <Link href="/protection?lens=risk" className="pw-soft-button mt-4 !text-caption">
                 {labels.detailsLink}
                 <ArrowRight className="h-3 w-3" aria-hidden />
             </Link>

@@ -25,7 +25,7 @@ export function RefreshAnalysisButton({
         <button
             onClick={handleClick}
             disabled={isPending}
-            className="pw-secondary-button text-black/70"
+            className="pw-soft-button"
         >
             <RefreshCw className={`h-3.5 w-3.5 ${isPending ? "animate-spin" : ""}`} aria-hidden />
             {isPending ? labels.refreshing : labels.refresh}

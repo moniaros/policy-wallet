@@ -151,7 +151,7 @@ export function InlineEditRow({
                     <p className="text-caption font-medium text-muted-foreground">{label}</p>
                     <p
                         className={`mt-0.5 text-sm [overflow-wrap:anywhere] ${
-                            value ? "font-semibold text-black dark:text-white" : "text-muted-foreground"
+                            value ? "font-semibold text-foreground" : "text-muted-foreground"
                         }`}
                     >
                         {value || emptyLabel}
@@ -176,7 +176,7 @@ export function InlineEditRow({
                         type="button"
                         onClick={open}
                         disabled={disabled}
-                        className="pw-secondary-button pw-btn-sm disabled:cursor-not-allowed disabled:opacity-60"
+                        className="pw-soft-button disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {value ? t.common.edit : t.settings.addLabel}
                         <span className="sr-only"> — {label}</span>
@@ -235,7 +235,7 @@ export function InlineEditRow({
                         type="button"
                         onClick={cancel}
                         disabled={saving}
-                        className="pw-secondary-button pw-btn-sm flex-1 disabled:opacity-60 sm:flex-none"
+                        className="pw-soft-button flex-1 disabled:opacity-60 sm:flex-none"
                     >
                         {t.common.cancel}
                     </button>
@@ -243,7 +243,7 @@ export function InlineEditRow({
             </div>
 
             {error ? (
-                <p id={errorId} role="alert" className="mt-2 text-caption font-semibold text-red-700 dark:text-red-400">
+                <p id={errorId} role="alert" className="mt-2 text-caption font-semibold text-status-danger">
                     {error}
                 </p>
             ) : editHint ? (

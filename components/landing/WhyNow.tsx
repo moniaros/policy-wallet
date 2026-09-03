@@ -1,4 +1,4 @@
-import { PolicyWalletWidget } from "@/components/landing/PolicyWalletWidget"
+import { AppScreen, DashboardScreen, SampleStamp, StaticPhone } from "@/components/landing/real-screens/RealScreens"
 import { WHY_NOW, pick, type MarketingLocale } from "@/lib/marketing/positioning"
 
 /**
@@ -74,7 +74,19 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                     picture wedged between the argument and the next section —
                     the same reason it was hidden in the hero. */}
                 <div className="hidden lg:block">
-                    <PolicyWalletWidget isGreek={locale === "el"} />
+                    {/* The REAL dashboard, as the app renders it on a phone. */}
+                    <StaticPhone
+                        label={
+                            locale === "el"
+                                ? "Παράδειγμα: η αρχική οθόνη της εφαρμογής — τρία ασφαλιστήρια, ένα λήγει σύντομα, δύο ευρήματα προς έλεγχο."
+                                : "Example: the app's home screen — three policies, one expiring soon, two findings to review."
+                        }
+                    >
+                        <AppScreen locale={locale} tab="home" defaultScale={302 / 390}>
+                            <DashboardScreen locale={locale} />
+                        </AppScreen>
+                    </StaticPhone>
+                    <SampleStamp locale={locale} className="mt-g-3" />
                 </div>
             </div>
         </section>

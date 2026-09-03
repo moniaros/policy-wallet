@@ -58,8 +58,8 @@ export function RenewalOutlookCard({
                 : "text-black dark:text-white"
 
     return (
-        <div className="pw-card pw-pad">
-            <h3 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+        <div>
+            <h3 className="flex items-center gap-2 text-body font-semibold text-foreground">
                 <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
                 {copy.title}
             </h3>

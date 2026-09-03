@@ -100,10 +100,17 @@ export function DeviceFrame({
     screens,
     interval = 4500,
     className,
+    width = 248,
+    padded = true,
 }: {
-    screens: { id: string; label: string; content: ReactNode }[]
+    /** `content` may be a function of `active`, so a screen can play its own entrance when it becomes the live one. */
+    screens: { id: string; label: string; content: ReactNode | ((active: boolean) => ReactNode) }[]
     interval?: number
     className?: string
+    /** Outer width in px. The hero shows REAL app screens (390px layouts scaled down), which need a wider frame to stay legible. */
+    width?: number
+    /** False when a screen brings its own layout edge to edge (a real app screen). */
+    padded?: boolean
 }) {
     const [index, setIndex] = useState(0)
     const [reduced, setReduced] = useState(false)
@@ -137,19 +144,25 @@ export function DeviceFrame({
             onFocusCapture={() => (hold.current = true)}
             onBlurCapture={() => (hold.current = false)}
         >
-            <div className="w-[248px] rounded-[38px] border border-border-strong bg-surface-inverse p-g-2 shadow-[0_2px_4px_rgb(12_35_31/0.05),0_30px_70px_-28px_rgb(12_35_31/0.32)]">
+            <div className="rounded-[38px] border border-border-strong bg-surface-inverse p-g-2 shadow-[0_2px_4px_rgb(12_35_31/0.05),0_30px_70px_-28px_rgb(12_35_31/0.32)]" style={{ width }}>
                 <div className="relative aspect-[9/19] overflow-hidden rounded-[30px] bg-surface-base" aria-live={reduced ? undefined : "off"}>
                     {screens.map((s, i) => (
                         <div
                             key={s.id}
                             aria-hidden={i !== index}
-                            // reduced motion: no fade, first screen static
+                            // The outgoing screen leaves fast and the incoming one
+                            // arrives on a short fade; a screen that knows it is
+                            // active (a real app screen) pushes its own content in
+                            // while its chrome stays put, which is how the app
+                            // itself switches tabs. Reduced motion: no transition,
+                            // first screen static.
                             className={cn(
-                                "absolute inset-0 p-g-4 transition-opacity duration-[450ms] [transition-timing-function:var(--ease-out-g)] motion-reduce:transition-none",
-                                i === index ? "opacity-100" : "pointer-events-none opacity-0"
+                                "absolute inset-0 transition-opacity [transition-timing-function:var(--ease-out-g)] motion-reduce:transition-none",
+                                padded ? "p-g-4" : "p-0",
+                                i === index ? "opacity-100 duration-300" : "pointer-events-none opacity-0 duration-150"
                             )}
                         >
-                            {s.content}
+                            {typeof s.content === "function" ? s.content(i === index) : s.content}
                         </div>
                     ))}
                 </div>

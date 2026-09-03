@@ -310,12 +310,6 @@ const REGISTER: RegisterEntry[] = [
         note: "Fictional agent-dashboard mock on the landing page — demo set-dressing.",
     },
     {
-        file: "components/landing/AudienceTabs.tsx",
-        clamps: { truncate: 1 },
-        kind: "no-information-loss",
-        note: "Fictional client list in the landing mock — demo set-dressing.",
-    },
-    {
         file: "components/landing/PolicyWalletWidget.tsx",
         clamps: { truncate: 3 },
         kind: "no-information-loss",
@@ -357,6 +351,14 @@ const REGISTER: RegisterEntry[] = [
         clamps: { truncate: 1 },
         kind: "no-information-loss",
         note: "Dimension labels are authored fixed vocabulary sized for the row; the row expands to the dimension's detail.",
+    },
+    {
+        file: "components/shell/CommandSearch.tsx",
+        clamps: { truncate: 2 },
+        kind: "reachable",
+        note:
+            "Search result rows truncate the insurer line and the branch · number line; " +
+            "each row links to /wallet/[id], whose head renders insurer, branch and number in full.",
     },
     {
         file: "components/shell/RoleSwitcher.tsx",

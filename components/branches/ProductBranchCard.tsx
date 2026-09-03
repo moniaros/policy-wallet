@@ -7,6 +7,14 @@ import type { BranchTileState } from '@/lib/insurance/branch-page'
 /**
  * One insurance branch on the /protection branch-lens grid. Server-safe — all
  * copy (and the icon) arrives pre-resolved (EmptyState convention).
+ *
+ * Direction A (2026-09-03): the tile is the card anatomy — a 36px chip, a
+ * sentence-case title, a caption — and its state is a pill on the status
+ * tokens. Amber is reserved for «Χρειάζεται προσοχή»; a line the customer
+ * never bought and a line nothing has assessed both sit on the neutral pill,
+ * told apart by their LABEL, never by colour alone (WCAG 1.4.1). The tile no
+ * longer fades for the neutral state either: the label of the branches a
+ * policyholder holds no cover in is the one they most need to read.
  */
 export interface ProductBranchCardProps {
     icon: LucideIcon
@@ -23,30 +31,29 @@ export interface ProductBranchCardProps {
 
 const STATE_STYLES: Record<BranchTileState, { pill: string; dot: string }> = {
     covered: {
-        pill: 'bg-primary-tint text-status-success dark:bg-primary/15',
-        dot: 'bg-primary dark:bg-mint',
+        pill: 'bg-status-success-tint text-status-success',
+        dot: 'bg-status-success',
     },
     attention: {
-        pill: 'bg-amber-50 text-amber-700 dark:bg-amber-900/25 dark:text-amber-300',
-        dot: 'bg-amber-500',
+        pill: 'bg-status-warning-tint text-status-warning',
+        dot: 'bg-status-warning',
     },
     not_held: {
         // §2.2: an unowned line is *not held*, never a finding. This pill was
         // rose («Πιθανό κενό») — a red chip claiming exposure for a product
-        // the customer never bought. The register is now neutral and the
+        // the customer never bought. The register is neutral and the
         // distinction from 'neutral' (not assessed) is carried by the LABEL
         // text, never by colour alone (WCAG 1.4.1).
-        pill: 'bg-black/5 text-black/70 dark:bg-white/10 dark:text-white/85',
-        dot: 'bg-black/30 dark:bg-white/30',
+        pill: 'bg-muted text-foreground',
+        dot: 'bg-muted-foreground/50',
     },
     neutral: {
-        // Pixel audit measured the old text-black/55/text-white/60 at 3.15:1 in
-        // light and 3.92:1 in dark — under the 4.5 floor in BOTH themes, on the
-        // tiles a policyholder most needs to read: the branches they hold no
-        // cover in. De-emphasis belongs to the surface and the dot, not to the
+        // Full-contrast label on the grey pill: the pixel audit measured the
+        // old text-black/55 at 3.15:1 on the tiles a policyholder most needs
+        // to read. De-emphasis belongs to the pill and the dot, not to the
         // legibility of the label.
-        pill: 'bg-black/5 text-black/70 dark:bg-white/10 dark:text-white/85',
-        dot: 'bg-black/30 dark:bg-white/30',
+        pill: 'bg-muted text-foreground',
+        dot: 'bg-muted-foreground/50',
     },
 }
 
@@ -66,25 +73,25 @@ export function ProductBranchCard({
     return (
         <Link
             href={href}
-            className={cn(
-                'pw-card group flex flex-col gap-3 p-5 transition-transform hover:-translate-y-0.5',
-                state === 'neutral' && 'opacity-80 hover:opacity-100'
-            )}
+            className="pw-card group flex flex-col gap-3 p-5 transition-transform hover:-translate-y-0.5"
         >
             <div className="flex items-start justify-between gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-mint/10 dark:text-mint">
-                    <Icon className="h-5 w-5" aria-hidden />
-                </div>
-                <span className={cn('inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-micro font-bold', styles.pill)}>
+                <span className="pw-card-chip" aria-hidden="true">
+                    <Icon className="h-4 w-4" strokeWidth={1.75} />
+                </span>
+                <span
+                    className={cn(
+                        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-caption font-semibold',
+                        styles.pill
+                    )}
+                >
                     <span className={cn('h-1.5 w-1.5 rounded-full', styles.dot)} aria-hidden />
                     {stateLabel}
                 </span>
             </div>
             <div>
-                <h3 className="text-sm font-black text-black dark:text-white">{title}</h3>
-                {/* /55 measured 3.25:1 on the card surface — same shortfall as the
-                    neutral pill above. Body copy needs the 4.5 floor. */}
-                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-black/70 dark:text-white/75">{tagline}</p>
+                <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+                <p className="mt-1 line-clamp-2 text-caption leading-relaxed text-muted-foreground">{tagline}</p>
             </div>
             {policyCount > 0 && (
                 // Subject-scoped: «22 ασφαλιστήρια» on the motor tile and «7»
@@ -92,7 +99,7 @@ export function ProductBranchCard({
                 // wallet's portfolio.policyCount — the one §2.8 relation that
                 // already reconciled.
                 <p
-                    className="mt-auto text-xs font-bold text-black/70 dark:text-white/75"
+                    className="mt-auto text-caption font-semibold text-muted-foreground"
                     data-count="branch.policyCount"
                     data-count-subject={branchId}
                 >

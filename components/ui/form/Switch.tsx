@@ -54,13 +54,13 @@ export function Switch({
                 {icon && (
                     <span
                         aria-hidden="true"
-                        className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
+                        className="pw-card-chip mt-0.5"
                     >
                         {icon}
                     </span>
                 )}
                 <span className="min-w-0">
-                    <span id={labelId} className="block text-sm font-semibold text-black dark:text-white">
+                    <span id={labelId} className="block text-sm font-semibold text-foreground">
                         {label}
                     </span>
                     {description && (

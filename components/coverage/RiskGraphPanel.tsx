@@ -29,6 +29,7 @@
 
 import { useState } from "react"
 import { AlertTriangle, CircleDashed, CircleHelp, ShieldCheck, ShieldAlert } from "lucide-react"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import type { RiskState } from "@/lib/services/risk-graph/types"
 import type { GraphRiskView } from "@/lib/services/risk-graph/present"
@@ -60,30 +61,31 @@ const STATE_ORDER: PanelState[] = [
 const presentationState = (risk: GraphRiskView): PanelState =>
     risk.state === "unprotected" && risk.heldInLine === 0 ? "not_held" : risk.state
 
+/** State pills on the status tokens — each tint/on-colour pair is measured once in globals.css. */
 const STATE_STYLES: Record<PanelState, { chip: string; icon: typeof ShieldCheck }> = {
     unprotected: {
-        chip: "border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300",
+        chip: "bg-status-danger-tint text-status-danger",
         icon: AlertTriangle,
     },
     partially_protected: {
-        chip: "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300",
+        chip: "bg-status-warning-tint text-status-warning",
         icon: ShieldAlert,
     },
     unknown: {
         // Visually distinct from unprotected on purpose — "we cannot tell" and
         // "nothing covers this" are different statements.
-        chip: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/40 dark:bg-blue-900/20 dark:text-blue-300",
+        chip: "bg-status-info-tint text-status-info",
         icon: CircleHelp,
     },
     protected: {
-        chip: "border-primary/25 bg-primary/8 text-primary dark:border-primary/30 dark:bg-primary/12 dark:text-mint",
+        chip: "bg-status-success-tint text-status-success",
         icon: ShieldCheck,
     },
     not_held: {
         // Neutral on purpose (§2.2): not owning a product is not a gap, so
         // nothing here may read as a finding — no red, no alarm icon. The
         // label carries the distinction in words, never colour alone.
-        chip: "border-black/15 bg-black/5 text-black/70 dark:border-white/20 dark:bg-white/8 dark:text-white/75",
+        chip: "bg-muted text-foreground",
         icon: CircleDashed,
     },
 }
@@ -158,10 +160,8 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
     return (
         <div className="pw-card pw-pad">
             <div className="mb-4">
-                <h2 className="text-lg font-semibold text-black dark:text-white">
-                    {t("Τι προστατεύουμε", "What we are protecting")}
-                </h2>
-                <p className="text-caption text-muted-foreground">
+                <CardHead icon={ShieldCheck} title={t("Τι προστατεύουμε", "What we are protecting")} />
+                <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
                     {knowsSomething ? (
                         // Composed as spans so each count carries its key — a
                         // sentence with four quantities in one string is four
@@ -187,10 +187,11 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                 </p>
             </div>
 
-            {/* Scrollable strip rather than a wrapping row: five chips wrap to
-                three lines at 320px and push the content below the fold. */}
+            {/* A segmented control on the sunken track, and a scroll strip
+                rather than a wrapping row: five chips wrap to three lines at
+                320px and push the content below the fold. */}
             <div
-                className="-mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1"
+                className="pw-subcard pw-scroll-strip mb-4 flex gap-0.5 overflow-x-auto !rounded-full p-1"
                 role="group"
                 aria-label={t("Φίλτρο προστασίας", "Filter by protection")}
             >
@@ -208,7 +209,7 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                 ))}
             </div>
 
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
                 {ordered.map((risk) => {
                     const rowState = presentationState(risk)
                     const styles = STATE_STYLES[rowState]
@@ -217,14 +218,14 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
 
                     return (
                         <li key={risk.riskId}>
-                            <details className="group rounded-2xl border border-black/10 bg-white p-3.5 dark:border-white/12 dark:bg-white/[0.03] sm:p-4">
+                            <details className="group pw-subcard p-3.5 sm:p-4">
                                 <summary className="flex cursor-pointer list-none items-start gap-3 [&::-webkit-details-marker]:hidden">
-                                    <span className="mt-0.5 flex-shrink-0 text-black/60 dark:text-white/60">
+                                    <span className="mt-0.5 flex-shrink-0 text-muted-foreground">
                                         <BranchIcon className="h-5 w-5" aria-hidden="true" />
                                     </span>
 
                                     <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+                                        <span className="block text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
                                             {risk.name[lang] || risk.name.en}
                                         </span>
 
@@ -237,23 +238,23 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                                             condition): one long unbroken word would otherwise
                                             scroll the whole page sideways at 320px. */}
                                         {risk.anchors.length > 0 && (
-                                            <span className="mt-0.5 block text-caption text-black/60 dark:text-white/55 [overflow-wrap:anywhere]">
+                                            <span className="mt-0.5 block text-caption text-muted-foreground [overflow-wrap:anywhere]">
                                                 {risk.anchors.map((a) => a[lang] || a.en).join(" · ")}
                                             </span>
                                         )}
 
                                         <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
                                             <span
-                                                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-kicker font-semibold uppercase tracking-wider ${styles.chip}`}
+                                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption font-semibold ${styles.chip}`}
                                             >
-                                                <StateIcon className="h-2.5 w-2.5" aria-hidden="true" />
+                                                <StateIcon className="h-3 w-3" aria-hidden="true" />
                                                 {stateLabel(rowState)}
                                             </span>
                                         </span>
                                     </span>
 
                                     <span
-                                        className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center text-black/35 transition-transform group-open:rotate-180 dark:text-white/35"
+                                        className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center text-muted-foreground transition-transform group-open:rotate-180"
                                         aria-hidden="true"
                                     >
                                         <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
@@ -277,7 +278,7 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                                     the item DOES: facts and policies establish the
                                     picture; derived findings are what stops it being
                                     `protected`. */}
-                                <div className="mt-3 space-y-3 border-t border-black/8 pt-3 dark:border-white/10">
+                                <div className="mt-3 space-y-3 border-t border-border pt-3">
                                     <EvidenceList
                                         title={t("Σε τι βασιζόμαστε", "What this rests on")}
                                         items={risk.evidence.filter((e) =>
@@ -314,17 +315,17 @@ function EvidenceList({
     if (items.length === 0) return null
     return (
         <div>
-            <p className="mb-1.5 text-kicker font-bold uppercase tracking-widest text-black/60 dark:text-white/55">
+            <p className="mb-1.5 text-caption font-semibold text-muted-foreground">
                 {title}
             </p>
             <ul className="space-y-1.5">
                 {items.map((item, i) => (
                     <li
                         key={`${item.kind}-${i}`}
-                        className="flex items-start gap-2 text-caption leading-relaxed text-black/70 dark:text-white/70"
+                        className="flex items-start gap-2 text-caption leading-relaxed text-foreground/80"
                     >
                         <span
-                            className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-black/30 dark:bg-white/30"
+                            className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-muted-foreground/50"
                             aria-hidden="true"
                         />
                         <span className="min-w-0 [overflow-wrap:anywhere]">
@@ -358,15 +359,13 @@ function Chip({
             type="button"
             onClick={onClick}
             aria-pressed={active}
-            className={`inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-caption font-semibold transition-colors ${
-                active
-                    ? "border-primary bg-primary text-white dark:text-[#1A2420]"
-                    : "border-black/12 text-black/65 hover:bg-black/4 dark:border-white/15 dark:text-white/65 dark:hover:bg-white/6"
+            className={`inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-4 text-caption font-semibold transition-colors ${
+                active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
         >
             {label}
             <span
-                className={active ? "opacity-80" : "text-muted-foreground"}
+                className="tabular-nums text-muted-foreground"
                 data-count={countKey}
                 data-count-subject={countSubject}
             >

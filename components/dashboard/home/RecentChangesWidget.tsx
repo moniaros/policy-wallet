@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { History } from "lucide-react"
+import { CardHead } from "./CardHead"
 
 export interface RecentChange {
     id: string
@@ -34,25 +35,22 @@ export function RecentChangesWidget({
     }
 }) {
     return (
-        <Link href="/account/history" className="pw-card pw-pad">
-            <div className="flex items-center justify-between">
-                <p className="pw-kicker">{labels.kicker}</p>
-                <History className="h-4 w-4 text-muted-foreground" aria-hidden />
-            </div>
+        <Link href="/account/history" className="pw-card pw-pad block transition-colors hover:border-primary/40">
+            <CardHead icon={History} title={labels.kicker} as="p" />
 
             {changes.length === 0 ? (
-                <p className="mt-3 text-sm text-muted-foreground">{labels.empty}</p>
+                <p className="mt-4 text-sm text-muted-foreground">{labels.empty}</p>
             ) : (
                 <>
-                    <ul className="mt-3 space-y-2">
+                    <ul className="mt-4 divide-y divide-border">
                         {changes.map((change) => (
-                            <li key={change.id} className="flex items-start gap-2">
+                            <li key={change.id} className="flex items-start gap-2.5 py-2.5 first:pt-0 last:pb-0">
                                 <span
-                                    className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-black/25 dark:bg-white/30"
+                                    className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-muted-foreground/50"
                                     aria-hidden
                                 />
                                 <span className="min-w-0">
-                                    <span className="block text-xs leading-snug text-black/75 dark:text-white/75 [overflow-wrap:anywhere]">
+                                    <span className="block text-xs leading-snug text-foreground [overflow-wrap:anywhere]">
                                         {/* NO DELTA BADGE. A delta is a derivative of
                                             the score, and the score is not in this card
                                             — nor reachable from it in one tap. A number
@@ -65,7 +63,7 @@ export function RecentChangesWidget({
                                         {change.title}
                                     </span>
                                     {change.explained && (
-                                        <span className="mt-0.5 block text-micro text-muted-foreground">
+                                        <span className="mt-0.5 block text-caption text-muted-foreground">
                                             {labels.explained}
                                         </span>
                                     )}

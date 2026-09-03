@@ -6,6 +6,8 @@ import { BellRing, CheckCheck, ChevronRight, Settings2 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
+import { formatDate, formatTime } from "@/lib/i18n/format"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 
 /**
  * A stored message, clamped — with the rest reachable.
@@ -58,7 +60,7 @@ function ClampedMessage({
         <>
             <p
                 ref={ref}
-                className={`mt-1 text-sm text-black/65 dark:text-white/70 ${expanded ? "" : "line-clamp-3"}`}
+                className={`mt-1 text-sm leading-relaxed text-muted-foreground ${expanded ? "" : "line-clamp-3"}`}
             >
                 {text}
             </p>
@@ -72,7 +74,7 @@ function ClampedMessage({
                         })
                     }}
                     aria-expanded={expanded}
-                    className="mt-1 inline-flex min-h-11 items-center text-xs font-semibold text-primary underline-offset-2 hover:underline dark:text-mint"
+                    className="mt-1 inline-flex min-h-11 items-center text-caption font-semibold text-primary underline-offset-2 hover:underline dark:text-mint"
                 >
                     {expanded ? lessLabel : moreLabel}
                 </button>
@@ -192,156 +194,162 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
         }
     }, [historyItems, t])
 
+    // One card of DAY-GROUPED rows, not twenty-four same-size cards: the day
+    // is the group heading in the app's long-date register, each row keeps
+    // only its time of day, and the unread mark sits in a fixed left gutter so
+    // read and unread titles share one x. Grouping is Athens-pinned through
+    // the same formatter the rest of the app uses.
+    const lang = isGreek ? "el" : "en"
+    const groups: Array<{ key: string; heading: string; items: typeof historyItems }> = []
+    for (const event of historyItems) {
+        const createdAtDate = new Date(event.created_at)
+        const valid = !Number.isNaN(createdAtDate.getTime())
+        const key = valid ? formatDate(createdAtDate, lang) : event.created_at
+        let group = groups[groups.length - 1]
+        if (!group || group.key !== key) {
+            group = {
+                key,
+                heading: valid
+                    ? formatDate(createdAtDate, lang, { day: "numeric", month: "long", year: "numeric" })
+                    : event.created_at,
+                items: [],
+            }
+            groups.push(group)
+        }
+        group.items.push(event)
+    }
+
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-4xl px-4 py-6 pb-28 sm:px-6 lg:pb-10">
-                {/* No icon tile: it was a decorative bounded box on a page whose
-                    §11 container budget is 50% of a baseline the 24 event rows
-                    already consume — the one page-owned box that carried no
-                    information was this decoration. */}
-                <header className="pw-card pw-pad mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mx-auto max-w-page-wide px-4 pb-4 pt-6 sm:px-6 lg:px-8 lg:pb-10 lg:pt-8">
+                <div className="max-w-4xl">
+                <header className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h1 className="text-lg font-semibold text-black dark:text-white">
+                        <h1 className="text-h3 font-semibold tracking-tight text-foreground">
                             {t.notifications.pageTitle}
                         </h1>
-                        <p className="text-sm text-black/65 dark:text-white/70">
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                             {t.notifications.pageSubtitle}
                         </p>
                     </div>
-                    {/* Preferences live in settings — one screen, one source of truth.
-                        Not t.settings.nav.notifications.label: that is «Ειδοποιήσεις»,
-                        the same word as the page title two lines up — a button that
-                        repeats the heading tells the reader nothing about what it
-                        DOES. It opens the notification PREFERENCES. */}
-                    <Link
-                        href="/account/notifications"
-                        className="pw-secondary-button pw-btn-sm inline-flex shrink-0 items-center gap-2"
-                    >
-                        <Settings2 aria-hidden="true" className="h-3.5 w-3.5" />
-                        {t.notifications.preferences}
-                    </Link>
-                </header>
-
-                <section id="history" aria-label={t.notifications.pageTitle} className="space-y-3">
-                    {historyItems.length > 0 && unreadCount > 0 && (
-                        <div className="flex justify-end">
+                    {/* Both header actions on one row, one size. Preferences live
+                        in settings — one screen, one source of truth. Not
+                        t.settings.nav.notifications.label: that is «Ειδοποιήσεις»,
+                        the same word as the page title — a button that repeats
+                        the heading tells the reader nothing about what it DOES. */}
+                    <div className="flex flex-wrap gap-2">
+                        {historyItems.length > 0 && unreadCount > 0 && (
                             <button
                                 type="button"
                                 onClick={() => void handleMarkAllRead()}
                                 disabled={markingRead}
                                 data-action="dismiss"
-                                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold text-primary transition hover:bg-primary/10 disabled:opacity-60 dark:text-mint"
+                                className="pw-soft-button cursor-pointer disabled:opacity-60"
                             >
-                                <CheckCheck aria-hidden="true" className="h-3.5 w-3.5" />
+                                <CheckCheck aria-hidden="true" className="h-4 w-4" />
                                 {markingRead ? t.notifications.markingAllRead : t.notifications.markAllRead}
                             </button>
-                        </div>
-                    )}
+                        )}
+                        <Link href="/account/notifications" className="pw-soft-button shrink-0">
+                            <Settings2 aria-hidden="true" className="h-4 w-4" />
+                            {t.notifications.preferences}
+                        </Link>
+                    </div>
+                </header>
 
-                    {historyItems.length === 0 ? (
-                        <div className="pw-card pw-pad-roomy text-center">
-                            <BellRing aria-hidden="true" className="mx-auto h-5 w-5 text-muted-foreground" />
-                            {/* An empty history says it is empty — never "all clear".
-                                No notification having been sent is not evidence that
-                                nothing needs attention (CLAUDE.md, absence-is-not-
-                                reassurance). */}
-                            <p className="mt-2 text-sm text-black/65 dark:text-white/70">
-                                {t.notifications.noNotificationsYet}
-                            </p>
-                        </div>
-                    ) : (
-                        <ul role="list" className="space-y-3">
-                            {historyItems.map((event) => {
-                                const createdAtDate = new Date(event.created_at)
-                                const createdAtText = Number.isNaN(createdAtDate.getTime())
-                                    ? event.created_at
-                                    : createdAtDate.toLocaleString(isGreek ? "el-GR" : "en-GB", {
-                                          dateStyle: "short",
-                                          timeStyle: "short",
-                                      })
-                                const isRead = readIds.has(event.event_id)
+                {historyItems.length === 0 ? (
+                    <section id="history" aria-label={t.notifications.pageTitle} className="pw-card pw-pad-roomy text-center">
+                        <BellRing aria-hidden="true" className="mx-auto h-5 w-5 text-muted-foreground" />
+                        {/* An empty history says it is empty — never "all clear".
+                            No notification having been sent is not evidence that
+                            nothing needs attention (CLAUDE.md, absence-is-not-
+                            reassurance). */}
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            {t.notifications.noNotificationsYet}
+                        </p>
+                    </section>
+                ) : (
+                    <section id="history" aria-labelledby="history-heading" className="pw-card pw-pad">
+                        <CardHead icon={BellRing} title={t.notifications.pageTitle} id="history-heading" />
+                        <div className="mt-4 space-y-5">
+                            {groups.map((group) => (
+                                <div key={group.key}>
+                                    <h3 className="text-caption font-semibold text-muted-foreground">{group.heading}</h3>
+                                    <ul role="list" className="mt-1 divide-y divide-border">
+                                        {group.items.map((event) => {
+                                            const createdAtDate = new Date(event.created_at)
+                                            const timeText = Number.isNaN(createdAtDate.getTime())
+                                                ? ""
+                                                : formatTime(createdAtDate, lang, { hour: "numeric" })
+                                            const isRead = readIds.has(event.event_id)
 
-                                return (
-                                    <li key={event.event_id} className="pw-card pw-pad-tight">
-                                        {/* The timestamp sits ABOVE the title, not beside
-                                            it. Beside it, its ~95px of unbreakable
-                                            `whitespace-nowrap` date shared a 272px card
-                                            interior with the 44px mark-read button and a
-                                            12px gap, and the measured 320px capture showed
-                                            unread titles wrapping one word per line. A
-                                            full-width metadata line costs ~16px of height
-                                            per card and returns the whole width to the
-                                            title. */}
-                                        <div className="flex items-start gap-3">
-                                            {!isRead && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => void handleMarkRead(event.event_id)}
-                                                    aria-label={t.notifications.markRead}
-                                                    data-action="dismiss"
-                                                    data-action-subject={event.event_id}
-                                                    className="-my-2.5 -ml-2.5 flex h-11 w-11 shrink-0 items-center justify-center"
-                                                >
-                                                    {/* Unread is never colour alone: the dot
-                                                        pairs with the bold title, and the
-                                                        control names itself for a reader
-                                                        who cannot see either. 6px, not 10:
-                                                        a bounded element ≥8×8 reads as a
-                                                        CONTAINER to the §11 density metric,
-                                                        and 14 unread dots measured as 14
-                                                        extra containers on one list. */}
-                                                    <span
-                                                        aria-hidden="true"
-                                                        className="h-1.5 w-1.5 rounded-full bg-primary dark:bg-mint"
-                                                    />
-                                                </button>
-                                            )}
-                                            <div className="min-w-0 flex-1">
-                                                <p className="text-xs font-medium text-black/60 dark:text-white/60">
-                                                    {createdAtText}
-                                                </p>
-                                                <p
-                                                    className={`mt-0.5 text-sm text-black dark:text-white ${isRead ? "font-medium" : "font-bold"}`}
-                                                >
-                                                    {fixMojibakeText(event.subject || "")}
-                                                </p>
-                                                <ClampedMessage
-                                                    text={fixMojibakeText(event.message || "")}
-                                                    moreLabel={t.notifications.showFullMessage}
-                                                    lessLabel={t.notifications.showLessMessage}
-                                                    onFirstExpand={() => void handleMarkRead(event.event_id)}
-                                                />
-                                                {/* No channel chip. One card is one EVENT; which
-                                                    pipe delivered it (email, push, in-app) is not
-                                                    customer-facing information — and the chip's
-                                                    fallback leaked the raw enum `in_app`. */}
-                                                {event.related_policy_id && (
-                                                    <Link
-                                                        href={`/wallet/${event.related_policy_id}`}
-                                                        data-action="viewPolicy"
-                                                        // Subject = the EVENT, not the policy:
-                                                        // the offer is row-scoped («view the
-                                                        // policy this notification is about»),
-                                                        // and two notifications about one
-                                                        // policy are two rows, not one action
-                                                        // offered twice — the same discipline
-                                                        // that keeps 29 wallet «Προβολή»
-                                                        // controls from reading as 29 repeats.
-                                                        data-action-subject={event.event_id}
-                                                        className="mt-1 inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-primary underline-offset-2 hover:underline dark:text-mint"
-                                                    >
-                                                        {t.notifications.viewPolicy}
-                                                        <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
-                                                    </Link>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </li>
-                                )
-                            })}
-                        </ul>
-                    )}
-                </section>
+                                            return (
+                                                <li key={event.event_id} className="flex items-start gap-2 py-3">
+                                                    {/* Fixed gutter: the 44px mark-read control
+                                                        when unread, empty space when read, so
+                                                        every title starts on the same x. */}
+                                                    <span className="-ml-2.5 -my-2.5 flex h-11 w-9 shrink-0 items-center justify-center">
+                                                        {!isRead && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => void handleMarkRead(event.event_id)}
+                                                                aria-label={t.notifications.markRead}
+                                                                data-action="dismiss"
+                                                                data-action-subject={event.event_id}
+                                                                className="flex h-11 w-9 items-center justify-center"
+                                                            >
+                                                                {/* Unread is never colour alone: the dot
+                                                                    pairs with the semibold title, and the
+                                                                    control names itself. 6px, not 10: a
+                                                                    bounded element ≥8×8 reads as a
+                                                                    CONTAINER to the density metric. */}
+                                                                <span
+                                                                    aria-hidden="true"
+                                                                    className="h-1.5 w-1.5 rounded-full bg-primary dark:bg-mint"
+                                                                />
+                                                            </button>
+                                                        )}
+                                                    </span>
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex items-baseline justify-between gap-3">
+                                                            <p className={`text-sm text-foreground ${isRead ? "font-medium" : "font-semibold"}`}>
+                                                                {fixMojibakeText(event.subject || "")}
+                                                            </p>
+                                                            <p className="shrink-0 text-caption tabular-nums text-muted-foreground">{timeText}</p>
+                                                        </div>
+                                                        <ClampedMessage
+                                                            text={fixMojibakeText(event.message || "")}
+                                                            moreLabel={t.notifications.showFullMessage}
+                                                            lessLabel={t.notifications.showLessMessage}
+                                                            onFirstExpand={() => void handleMarkRead(event.event_id)}
+                                                        />
+                                                        {/* No channel chip. One row is one EVENT; which
+                                                            pipe delivered it is not customer-facing. */}
+                                                        {event.related_policy_id && (
+                                                            <Link
+                                                                href={`/wallet/${event.related_policy_id}`}
+                                                                data-action="viewPolicy"
+                                                                // Subject = the EVENT, not the policy: the
+                                                                // offer is row-scoped, and two notifications
+                                                                // about one policy are two rows.
+                                                                data-action-subject={event.event_id}
+                                                                className="mt-1 inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary underline-offset-2 hover:underline dark:text-mint"
+                                                            >
+                                                                {t.notifications.viewPolicy}
+                                                                <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
+                                                            </Link>
+                                                        )}
+                                                    </div>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+                </div>
             </div>
         </div>
     )

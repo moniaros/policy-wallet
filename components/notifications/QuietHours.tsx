@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { saveQuietHours } from "@/app/(protected)/account/quiet-hours-actions"
+import { Switch } from "@/components/ui/form/Switch"
 
 interface QuietHoursProps {
     initial: { enabled: boolean; start: number; end: number; timezone: string }
@@ -46,31 +47,17 @@ export function QuietHours({ initial }: QuietHoursProps) {
 
     return (
         <form action={onSubmit} className="space-y-3">
-            <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                    <label
-                        htmlFor="quietHoursEnabled"
-                        className="text-micro font-bold text-black/80 dark:text-white/70"
-                    >
-                        {copy.title}
-                    </label>
-                    <p className="text-caption text-muted-foreground mt-1">{copy.description}</p>
-                </div>
-                <input
-                    id="quietHoursEnabled"
-                    name="quietHoursEnabled"
-                    type="checkbox"
-                    checked={enabled}
-                    onChange={(e) => setEnabled(e.target.checked)}
-                    // h-6 w-6 = 24x24, the WCAG 2.5.8 (AA) target-size floor; it
-                    // measured 20x24 and failed on width. Not 44x44: the harness
-                    // uses the 2.5.5 AAA floor, and a 44px checkbox is not what
-                    // that criterion asks for when the control has a real label —
-                    // `htmlFor="quietHoursEnabled"` above makes the whole title a
-                    // second, much larger target for the same toggle.
-                    className="mt-1 h-6 w-6 shrink-0 accent-[var(--primary)]"
-                />
-            </div>
+            {/* The product's ONE switch — the same control the notification
+                streams above use — with a hidden field so the form still posts
+                `quietHoursEnabled=on` the way the checkbox did. */}
+            <Switch
+                checked={enabled}
+                onCheckedChange={setEnabled}
+                label={copy.title}
+                description={copy.description}
+                className="!py-0"
+            />
+            {enabled && <input type="hidden" name="quietHoursEnabled" value="on" />}
 
             {enabled && (
                 <>
@@ -125,7 +112,7 @@ export function QuietHours({ initial }: QuietHoursProps) {
                         <p
                             id="quiet-hours-error"
                             role="alert"
-                            className="text-caption text-red-600 dark:text-red-400"
+                            className="text-caption text-status-danger"
                         >
                             {copy.from} {label(start)} — {copy.to} {label(end)}
                         </p>

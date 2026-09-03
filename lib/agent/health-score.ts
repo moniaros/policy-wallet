@@ -82,9 +82,9 @@ export function getRelationshipScoreColor(score: number): string {
 }
 
 export function getRelationshipScoreDotColor(score: number): string {
-    if (score >= 70) return "bg-emerald-500"
-    if (score >= 40) return "bg-amber-500"
-    return "bg-red-500"
+    if (score >= 70) return "bg-status-success"
+    if (score >= 40) return "bg-status-warning"
+    return "bg-status-danger"
 }
 
 export function getRelationshipScoreLabel(score: number, locale: "en" | "el" = "el"): string {

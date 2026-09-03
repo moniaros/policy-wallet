@@ -8,7 +8,7 @@ import { PolicyTable } from './PolicyTable'
 import { EmptyState } from './EmptyState'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Skeleton } from '@/components/ui/skeleton'
-import { AlertCircle, FileUp, Grid3X3, List, PenSquare, Sparkles, Search } from 'lucide-react'
+import { AlertCircle, FileUp, Grid3X3, List, PenSquare, Plus, Sparkles, Search } from 'lucide-react'
 import { calculatePremiumFootprintDetailed } from '@/lib/wallet/premium-footprint'
 import { getPolicyStatusView, isAttentionKey } from '@/lib/wallet/policy-status-view'
 import { ImportantNotices, type Notice } from './ImportantNotices'
@@ -174,7 +174,7 @@ export function PolicyWallet({
     }
 
     return (
-        <div className="mx-auto max-w-7xl bg-transparent px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl bg-transparent px-4 pb-10 pt-4 sm:px-6 lg:px-8">
             {/* KPIs lead — they are the answer to "how is my cover doing?" and used to
                 sit below the filter bar, where nobody looked. */}
             <StatusSummary
@@ -192,7 +192,7 @@ export function PolicyWallet({
             <ImportantNotices notices={notices} onSelect={onViewPolicy} />
 
             <div className="mb-4">
-                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/60 dark:bg-black/60 backdrop-blur-md p-2 rounded-2xl border border-black/10 dark:border-white/15 shadow-sm">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="relative group w-full sm:max-w-md">
                         <input
                             type="text"
@@ -200,22 +200,22 @@ export function PolicyWallet({
                             placeholder={t.wallet.searchPlaceholder}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pw-input pw-input-sm pl-10 pr-4 border-black/10"
+                            className="pw-input pl-10 pr-4"
                         />
                         <svg className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
 
-                    <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                        <div className="flex bg-black/5 dark:bg-black p-1 rounded-lg border border-black/10 dark:border-white/15 overflow-x-auto max-w-[260px] sm:max-w-none">
+                    <div className="flex w-full min-w-0 items-center justify-end gap-2 sm:w-auto">
+                        <div className="pw-subcard pw-scroll-strip min-w-0 max-w-full gap-0.5 !rounded-full p-1">
                             {filters.map((filter) => (
                                 <button
                                     key={filter}
                                     onClick={() => setActiveFilter(filter)}
-                                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${activeFilter === filter
-                                        ? 'bg-black dark:bg-white shadow-sm text-white dark:text-black'
-                                        : 'text-black/60 dark:text-white/60 hover:text-black/80 dark:hover:text-white'
+                                    className={`inline-flex min-h-10 cursor-pointer items-center whitespace-nowrap rounded-full px-3.5 text-caption font-semibold transition-colors ${activeFilter === filter
+                                        ? 'bg-card text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
                                         }`}
                                 >
                                     {filter === 'all' ? t.common.all : t.policyTypes?.[filter as keyof typeof t.policyTypes] || filter}
@@ -226,13 +226,13 @@ export function PolicyWallet({
                         {/* xl:flex — the dense table only appears at xl (at lg the sidebar
                             leaves ~736px and the actions column clipped), so below that a
                             view toggle would be a no-op control. */}
-                        <div className="hidden xl:flex bg-black/5 dark:bg-black p-1 rounded-lg border border-black/10 dark:border-white/15">
+                        <div className="pw-subcard hidden gap-0.5 !rounded-full p-1 xl:flex">
                             <button
                                 onClick={() => {
                                     setViewMode('grid')
                                     localStorage.setItem('wallet_view_mode', 'grid')
                                 }}
-                                className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-black dark:bg-white shadow-sm text-white dark:text-black' : 'text-black/60 dark:text-white/60'}`}
+                                className={`grid h-10 w-10 cursor-pointer place-items-center rounded-full transition-colors ${viewMode === 'grid' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                 aria-label={roleCopy.walletDashboard.viewCard}
                             >
                                 <Grid3X3 className="w-4 h-4" />
@@ -242,7 +242,7 @@ export function PolicyWallet({
                                     setViewMode('list')
                                     localStorage.setItem('wallet_view_mode', 'list')
                                 }}
-                                className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-black dark:bg-white shadow-sm text-white dark:text-black' : 'text-black/60 dark:text-white/60'}`}
+                                className={`grid h-10 w-10 cursor-pointer place-items-center rounded-full transition-colors ${viewMode === 'list' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                 aria-label={roleCopy.walletDashboard.viewList}
                             >
                                 <List className="w-4 h-4" />
@@ -260,7 +260,7 @@ export function PolicyWallet({
             <section aria-labelledby="wallet-policy-list-heading">
                 <h2
                     id="wallet-policy-list-heading"
-                    className="mb-2 text-sm font-semibold text-black/70 dark:text-white/70"
+                    className="mb-3 text-body font-semibold text-foreground"
                 >
                     {t.dashboard.myPolicies}
                 </h2>
@@ -312,17 +312,17 @@ export function PolicyWallet({
 
             {filteredPolicies.length === 0 && policies.length > 0 && (
                 <div className="py-20 text-center">
-                    <div className="w-20 h-20 bg-black/5 dark:bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Search className="w-10 h-10 text-muted-foreground" />
+                    <div className="pw-subcard mx-auto mb-4 grid h-16 w-16 place-items-center !rounded-full">
+                        <Search className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-black text-black dark:text-white">{t.wallet.noPoliciesFound}</h3>
-                    <p className="text-black/60 dark:text-white/60 mt-2 font-medium">{t.wallet.noPoliciesFoundDesc}</p>
+                    <h3 className="text-title font-semibold tracking-tight text-foreground">{t.wallet.noPoliciesFound}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">{t.wallet.noPoliciesFoundDesc}</p>
                     <button
                         onClick={() => {
                             setSearchQuery('')
                             setActiveFilter('all')
                         }}
-                        className="mt-6 text-black dark:text-white font-black uppercase text-xs tracking-widest hover:underline cursor-pointer"
+                        className="pw-soft-button mt-6 cursor-pointer"
                     >
                         {roleCopy.walletDashboard.clearFilters}
                     </button>
@@ -345,10 +345,10 @@ export function PolicyWallet({
                                     onAddManually?.()
                                     setShowAddMenu(false)
                                 }}
-                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-black rounded-xl shadow-xl text-xs font-bold text-black/70 dark:text-white/70 whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                                className="pw-card flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap py-2 pl-4 pr-2 text-sm font-semibold text-foreground shadow-xl transition-colors hover:bg-muted"
                             >
                                 {roleCopy.walletDashboard.addDetailsManually}
-                                <span className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-black rounded-lg">
+                                <span className="pw-card-chip">
                                     <PenSquare className="w-4 h-4" />
                                 </span>
                             </button>
@@ -358,10 +358,10 @@ export function PolicyWallet({
                                     setShowAddMenu(false)
                                 }}
                                 data-testid="wallet-menu-upload-document"
-                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-black rounded-xl shadow-xl text-xs font-bold text-black/70 dark:text-white/70 whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                                className="pw-card flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap py-2 pl-4 pr-2 text-sm font-semibold text-foreground shadow-xl transition-colors hover:bg-muted"
                             >
                                 {roleCopy.walletDashboard.uploadDocument}
-                                <span className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-black rounded-lg">
+                                <span className="pw-card-chip">
                                     <FileUp className="w-4 h-4" />
                                 </span>
                             </button>
@@ -371,10 +371,10 @@ export function PolicyWallet({
                                     setShowAddMenu(false)
                                 }}
                                 data-testid="wallet-menu-batch-upload"
-                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-black rounded-xl shadow-xl text-xs font-bold text-black/70 dark:text-white/70 whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                                className="pw-card flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap py-2 pl-4 pr-2 text-sm font-semibold text-foreground shadow-xl transition-colors hover:bg-muted"
                             >
                                 {roleCopy.walletDashboard.batchUpload}
-                                <span className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-black rounded-lg">
+                                <span className="pw-card-chip">
                                     <List className="w-4 h-4" />
                                 </span>
                             </button>
@@ -382,12 +382,12 @@ export function PolicyWallet({
                         <button
                             id="tour-fab"
                             onClick={() => setShowAddMenu((prev) => !prev)}
-                            className="flex items-center justify-center w-16 h-16 bg-primary text-primary-foreground rounded-2xl shadow-2xl hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-primary/40"
+                            className="grid h-14 w-14 cursor-pointer place-items-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-200 hover:bg-primary-hover active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                             aria-label={roleCopy.walletDashboard.addPolicyAria}
                             aria-expanded={showAddMenu}
                             aria-haspopup="menu"
                         >
-                            <span className="text-2xl font-light">+</span>
+                            <Plus className="h-6 w-6" aria-hidden="true" />
                         </button>
                     </div>
                 ) : (

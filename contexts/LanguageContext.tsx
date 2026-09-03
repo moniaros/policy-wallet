@@ -77,16 +77,31 @@ export function StaticLanguageProvider({
     return <LanguageStateContext.Provider value={value}>{children}</LanguageStateContext.Provider>
 }
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-    const [language, setLanguageState] = useState<Language>('el')
+export function LanguageProvider({
+    children,
+    initialLanguage,
+    pinned = false,
+}: {
+    children: React.ReactNode
+    /** Start from this language instead of the default. */
+    initialLanguage?: Language
+    /**
+     * Ignore the stored preference and never touch <html lang>: for a
+     * subtree that must follow the PAGE's language (a real app screen shown
+     * on the marketing site), not the visitor's app preference.
+     */
+    pinned?: boolean
+}) {
+    const [language, setLanguageState] = useState<Language>(initialLanguage ?? 'el')
 
     useEffect(() => {
+        if (pinned) return
         // Load language preference from localStorage
         const savedLanguage = localStorage.getItem('language') as Language
         if (savedLanguage && (savedLanguage === 'el' || savedLanguage === 'en')) {
             setLanguageState(savedLanguage)
         }
-    }, [])
+    }, [pinned])
 
     useEffect(() => {
         // Wherever a StaticLanguageProvider is mounted it owns <html lang>.
@@ -98,6 +113,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         // (it holds even before the static provider's effect runs); the
         // ownership flag is what also covers /auth/*?lang=en, which is pinned
         // by AuthLanguageProvider and has no /en prefix to match on.
+        if (pinned) return
         if (document.documentElement.dataset.langOwner === 'static') return
         const path = window.location.pathname
         if (path === '/en' || path.startsWith('/en/')) return
@@ -108,7 +124,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
         html.setAttribute('lang', locale)
         html.setAttribute('data-locale', localeTag)
-    }, [language])
+    }, [language, pinned])
 
     const router = useRouter()
     const setLanguage = (lang: Language) => {

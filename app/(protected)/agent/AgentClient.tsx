@@ -11,7 +11,7 @@ import { redeemInviteCode } from "@/app/onboarding/actions"
 import { revokeShare } from "@/app/(protected)/wallet/actions"
 import { disconnectFromAgent, inviteAdvisorByEmail } from "@/app/(protected)/agent/relationship-actions"
 import { toast } from "sonner"
-import { BrandCard } from "@/components/ui/brand/BrandCard"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DocumentRequestRespond, DocumentRequestCard } from "@/components/collaboration/DocumentRequestFlow"
 import { ProposalView, type ProposalDeclineData } from "@/components/collaboration/ProposalCard"
@@ -66,6 +66,7 @@ const PAGE_COPY = {
     tablistLabel: { el: "Ενότητες", en: "Sections" },
     kicker: { el: "Ο σύμβουλός μου", en: "My Agent" },
     disconnect: { el: "Αποσύνδεση από τον σύμβουλο", en: "Disconnect from advisor" },
+    disconnectShort: { el: "Αποσύνδεση", en: "Disconnect" },
     disconnectDesc: { el: "Η σύνδεση τερματίζεται και η πρόσβαση του συμβούλου στα ασφαλιστήριά σας ανακαλείται.", en: "The connection ends and your advisor's access to your policies is revoked." },
     disconnectConfirm: { el: "Να αποσυνδεθείτε από τον σύμβουλό σας; Η πρόσβασή του στα ασφαλιστήριά σας θα ανακληθεί.", en: "Disconnect from your advisor? Their access to your policies will be revoked." },
     disconnectFailed: { el: "Η αποσύνδεση απέτυχε. Δοκιμάστε ξανά.", en: "Disconnect failed. Please try again." },
@@ -76,6 +77,7 @@ const PAGE_COPY = {
     tabProposals: { el: "Προτάσεις", en: "Proposals" },
     advisorFallback: { el: "Ασφαλιστικός σύμβουλος", en: "Insurance advisor" },
     call: { el: "Κλήση", en: "Call" },
+    licence: { el: "Αρ. αδείας", en: "Licence no." },
     noDocumentRequests: { el: "Δεν υπάρχουν αιτήματα εγγράφων", en: "No document requests yet" },
     completedSection: { el: "Ολοκληρωμένα", en: "Completed" },
     noProposals: { el: "Δεν υπάρχουν προτάσεις ακόμα", en: "No proposals yet" },
@@ -199,8 +201,8 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
     }
 
     return (
-        <div className="mx-auto max-w-3xl px-4 py-10">
-            <p className="pw-kicker mb-4">{PAGE_COPY.kicker[lang]}</p>
+        <div className="mx-auto max-w-page-wide px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+            <div className="max-w-3xl">
             <SharedEmptyState
                 icon={Handshake}
                 // This empty state IS the page for anyone without a linked
@@ -211,20 +213,20 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                 description={NO_AGENT_COPY.benefit[lang]}
                 previewLabel={NO_AGENT_COPY.previewLabel[lang]}
                 preview={
-                    <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm dark:bg-black">
+                    <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm">
                         <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
                             Γ
                         </div>
                         <div className="min-w-0 flex-1 text-left">
-                            <p className="truncate text-body-sm font-semibold text-[#0F172A] dark:text-white">
+                            <p className="truncate text-body-sm font-semibold text-foreground">
                                 {NO_AGENT_COPY.exampleName[lang]}
                             </p>
-                            <p className="inline-flex items-center gap-1 text-micro text-[#5B6A7A] dark:text-white/55">
+                            <p className="inline-flex items-center gap-1 text-caption text-muted-foreground">
                                 <ShieldCheck className="h-3 w-3 text-primary dark:text-mint" />
                                 {NO_AGENT_COPY.exampleMeta[lang]}
                             </p>
                         </div>
-                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-status-success dark:bg-primary/15">
+                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-status-success dark:bg-primary/15">
                             {NO_AGENT_COPY.exampleBadge[lang]}
                         </span>
                     </div>
@@ -233,19 +235,19 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                 secondary={
                     <div className="text-left">
                         {sent ? (
-                            <div className="rounded-xl border border-primary/20 bg-primary/[0.06] p-4 dark:border-mint/20 dark:bg-mint/10">
+                            <div className="pw-subcard p-4">
                                 <p className="text-sm font-semibold text-foreground">{NO_AGENT_COPY.sentTitle[lang]}</p>
-                                <p className="mt-1 text-xs text-muted-foreground">{NO_AGENT_COPY.sentBody[lang]}</p>
+                                <p className="mt-1 text-caption text-muted-foreground">{NO_AGENT_COPY.sentBody[lang]}</p>
                                 {sent.link && (
                                     <div className="mt-3">
-                                        <p className="text-xs text-muted-foreground">{NO_AGENT_COPY.linkFallback[lang]}</p>
+                                        <p className="text-caption text-muted-foreground">{NO_AGENT_COPY.linkFallback[lang]}</p>
                                         <button
                                             type="button"
                                             onClick={() => {
                                                 navigator.clipboard?.writeText(sent.link!)
                                                 toast.success(NO_AGENT_COPY.linkCopied[lang])
                                             }}
-                                            className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                            className="mt-2 inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-card px-4 text-caption font-semibold text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                         >
                                             {NO_AGENT_COPY.copyLink[lang]}
                                         </button>
@@ -254,7 +256,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                             </div>
                         ) : (
                             <>
-                                <label htmlFor="advisor-email" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <label htmlFor="advisor-email" className="mb-1.5 block text-caption font-medium text-muted-foreground">
                                     {NO_AGENT_COPY.emailLabel[lang]}
                                 </label>
                                 <div className="flex gap-2">
@@ -276,19 +278,19 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                         {sending ? NO_AGENT_COPY.sending[lang] : NO_AGENT_COPY.sendInvite[lang]}
                                     </button>
                                 </div>
-                                {emailError && <p className="mt-2 text-xs text-red-700 dark:text-red-300">{emailError}</p>}
+                                {emailError && <p className="mt-2 text-caption text-status-danger">{emailError}</p>}
 
                                 <button
                                     type="button"
                                     onClick={() => setShowCode((v) => !v)}
-                                    className="mt-4 rounded text-xs font-semibold text-primary underline-offset-2 hover:underline dark:text-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                    className="mt-4 inline-flex min-h-11 cursor-pointer items-center rounded text-caption font-semibold text-primary underline-offset-2 hover:underline dark:text-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                 >
                                     {NO_AGENT_COPY.haveCode[lang]}
                                 </button>
 
                                 {showCode && (
                                     <div className="mt-3">
-                                        <label htmlFor="agent-invite-code" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                        <label htmlFor="agent-invite-code" className="mb-1.5 block text-caption font-medium text-muted-foreground">
                                             {NO_AGENT_COPY.inputLabel[lang]}
                                         </label>
                                         <div className="flex gap-2">
@@ -304,12 +306,12 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                                 type="button"
                                                 onClick={redeem}
                                                 disabled={redeeming || !code.trim()}
-                                                className="flex-shrink-0 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition-all hover:bg-muted active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                                className="pw-soft-button flex-shrink-0 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
                                             >
                                                 {redeeming ? NO_AGENT_COPY.submitting[lang] : NO_AGENT_COPY.submit[lang]}
                                             </button>
                                         </div>
-                                        {codeError && <p className="mt-2 text-xs text-red-700 dark:text-red-300">{codeError}</p>}
+                                        {codeError && <p className="mt-2 text-caption text-status-danger">{codeError}</p>}
                                     </div>
                                 )}
                             </>
@@ -317,6 +319,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                     </div>
                 }
             />
+            </div>
         </div>
     )
 }
@@ -519,16 +522,17 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
     }
 
     return (
-        <div className="mx-auto w-full px-4 py-6 lg:max-w-3xl lg:py-10">
-            <div className="pw-card rounded-3xl p-6 sm:p-8">
-                <p className="pw-kicker mb-4">{pick(PAGE_COPY.kicker, language)}</p>
+        <div className="mx-auto w-full max-w-page-wide px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+            <div className="max-w-3xl">
+            <h1 className="text-h3 font-semibold tracking-tight text-foreground">{pick(PAGE_COPY.kicker, language)}</h1>
+            <div className="mt-5">
 
                 {/* Tabs — real tablist semantics via useTabs (role tab/tabpanel,
                     roving tabindex, arrow keys). */}
                 <div
                     role="tablist"
                     aria-label={pick(PAGE_COPY.tablistLabel, language)}
-                    className="flex gap-1 mb-6 overflow-x-auto scrollbar-hide -mx-2 px-2"
+                    className="pw-subcard pw-scroll-strip mb-4 max-w-full gap-0.5 !rounded-full p-1"
                 >
                     {tabs.map(tab => {
                         const Icon = tab.icon
@@ -538,20 +542,18 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                                 type="button"
                                 key={tab.id}
                                 {...tabProps(tab.id)}
-                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                                className={`inline-flex min-h-10 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-caption font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                                     isActive
-                                        ? 'bg-primary/15 text-primary dark:text-mint'
-                                        : 'text-black/60 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                                        ? 'bg-card text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
                                 }`}
                             >
                                 <Icon className="w-4 h-4" aria-hidden="true" />
                                 {tab.label}
-                                {/* amber-700, not amber-500: white on amber-500 is 2.14:1,
-                                    which fails even the 3:1 large-text floor — and this is a
-                                    `text-kicker` count, the smallest text on the page.
-                                    amber-700 is 5.03:1. */}
+                                {/* The pending count on the warning tint pair — a token pair
+                                    that clears 4.5:1 in both themes. */}
                                 {tab.count && tab.count > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-700 px-1 text-kicker font-bold text-white">
+                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-status-warning-tint px-1.5 text-caption font-semibold tabular-nums text-status-warning">
                                         {tab.count}
                                     </span>
                                 )}
@@ -572,18 +574,19 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                             revokingGrantId={revokingGrantId}
                         />
                         {relationshipId && (
-                            <div className="mt-6 rounded-2xl border border-dashed border-red-500/25 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="pw-card pw-pad mt-4 flex flex-col items-start justify-between gap-4 border-status-danger-edge sm:flex-row sm:items-center">
                                 <div>
-                                    <h3 className="text-sm font-bold text-red-700 dark:text-red-400">{pick(PAGE_COPY.disconnect, language)}</h3>
-                                    <p className="text-xs text-muted-foreground mt-1 max-w-md">{pick(PAGE_COPY.disconnectDesc, language)}</p>
+                                    <h3 className="text-sm font-semibold text-status-danger">{pick(PAGE_COPY.disconnect, language)}</h3>
+                                    <p className="mt-1 max-w-md text-caption leading-snug text-muted-foreground">{pick(PAGE_COPY.disconnectDesc, language)}</p>
                                 </div>
                                 <button
                                     type="button"
                                     disabled={isDisconnecting}
                                     onClick={() => setDisconnectConfirmOpen(true)}
-                                    className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
+                                    aria-label={pick(PAGE_COPY.disconnect, language)}
+                                    className="pw-soft-button shrink-0 cursor-pointer !text-caption text-status-danger disabled:opacity-50"
                                 >
-                                    {isDisconnecting ? pick(PAGE_COPY.disconnecting, language) : pick(PAGE_COPY.disconnect, language)}
+                                    {isDisconnecting ? pick(PAGE_COPY.disconnecting, language) : pick(PAGE_COPY.disconnectShort, language)}
                                 </button>
                             </div>
                         )}
@@ -623,6 +626,8 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                 </div>
             </div>
 
+            </div>
+
             <ConfirmDialog
                 open={disconnectConfirmOpen}
                 onOpenChange={setDisconnectConfirmOpen}
@@ -651,95 +656,80 @@ function OverviewTab({
 }) {
     return (
         <div className="space-y-6">
-            {/* Agent branded card */}
-            <div
-                className="rounded-2xl p-6 relative overflow-hidden"
-                style={{
-                    background: `linear-gradient(135deg, ${agent.branding?.brandColor || "#29685B"}15, ${agent.branding?.brandColor || "#29685B"}05)`,
-                    borderLeft: `4px solid ${agent.branding?.brandColor || "#29685B"}`,
-                }}
-            >
+            {/* The advisor card — white like every other card. The agency's
+                brand colour (a paid entitlement) tints the avatar only: a
+                gradient wash and a 4px coloured side bar were the one place the
+                app let a third party repaint a surface. */}
+            <div className="pw-card pw-pad">
                 <div className="flex items-start gap-4">
                     {agent.photoUrl ? (
-                        <img src={agent.photoUrl} alt={agent.name} className="w-14 h-14 rounded-2xl object-cover shadow-lg" />
+                        <img src={agent.photoUrl} alt={agent.name} className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
                     ) : (
                         <div
-                            className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-lg font-black shadow-lg"
-                            style={{ backgroundColor: agent.branding?.brandColor || "#29685B" }}
+                            className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary text-lg font-semibold text-primary-foreground"
+                            style={agent.branding?.brandColor ? { backgroundColor: agent.branding.brandColor, color: "white" } : undefined}
                         >
                             {agent.name.charAt(0)}
                         </div>
                     )}
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                            <h1 className="text-2xl font-black text-foreground truncate">{agent.name}</h1>
-                            {agent.branding?.verified && <ShieldCheck className="w-5 h-5 text-primary dark:text-mint flex-shrink-0" />}
+                            <h2 className="truncate text-title font-semibold tracking-tight text-foreground">{agent.name}</h2>
+                            {agent.branding?.verified && <ShieldCheck className="h-5 w-5 flex-shrink-0 text-primary dark:text-mint" aria-hidden="true" />}
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                            <Building2 className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
-                            <p className="text-sm font-medium text-muted-foreground">
-                                {agent.branding?.agencyName || agent.company || pick(PAGE_COPY.advisorFallback, language)}
-                            </p>
-                        </div>
+                        <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <Building2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                            {agent.branding?.agencyName || agent.company || pick(PAGE_COPY.advisorFallback, language)}
+                        </p>
                         {agent.branding?.licenseNumber && (
-                            <p className="text-kicker font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-1">
-                                License: {agent.branding.licenseNumber}
+                            <p className="mt-1 text-caption text-muted-foreground">
+                                {pick(PAGE_COPY.licence, language)}: {agent.branding.licenseNumber}
                             </p>
                         )}
                     </div>
                 </div>
-            </div>
 
-            {/* Action buttons */}
-            <div className="grid gap-3 sm:grid-cols-3">
-                <a
-                    href={`tel:${agent.phone}`}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white transition hover:opacity-90 shadow-lg min-h-[44px]"
-                    style={{ backgroundColor: agent.branding?.brandColor || "#29685B" }}
-                >
-                    <Phone className="h-4 w-4" /> {pick(PAGE_COPY.call, language)}
-                </a>
-                <a
-                    href={`mailto:${agent.email}`}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-neutral-200 dark:border-neutral-700 px-4 py-3 text-sm font-bold text-neutral-800 dark:text-white transition hover:bg-neutral-50 dark:hover:bg-neutral-800 min-h-[44px]"
-                >
-                    <Mail className="h-4 w-4" /> Email
-                </a>
-                {agent.branding?.website && (
-                    <a
-                        href={agent.branding.website.startsWith("http") ? agent.branding.website : `https://${agent.branding.website}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-neutral-200 dark:border-neutral-700 px-4 py-3 text-sm font-bold text-neutral-800 dark:text-white transition hover:bg-neutral-50 dark:hover:bg-neutral-800 min-h-[44px]"
-                    >
-                        <Globe className="h-4 w-4" /> Website
+                {/* One primary — the call — and soft pills beside it. */}
+                <div className="mt-5 flex flex-wrap gap-3">
+                    <a href={`tel:${agent.phone}`} className="pw-primary-button pw-btn-sm">
+                        <Phone className="h-4 w-4" aria-hidden="true" /> {pick(PAGE_COPY.call, language)}
                     </a>
-                )}
+                    <a href={`mailto:${agent.email}`} className="pw-soft-button">
+                        <Mail className="h-4 w-4" aria-hidden="true" /> Email
+                    </a>
+                    {agent.branding?.website && (
+                        <a
+                            href={agent.branding.website.startsWith("http") ? agent.branding.website : `https://${agent.branding.website}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="pw-soft-button"
+                        >
+                            <Globe className="h-4 w-4" aria-hidden="true" /> Website
+                        </a>
+                    )}
+                </div>
             </div>
 
             {/* Shared-access ledger — real, revocable control over what the
                 advisor can see (backs the "revoke at any time" promise). */}
-            <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 p-5">
-                <div className="flex items-center gap-2 mb-1">
-                    <ShieldCheck className="h-4 w-4 text-primary dark:text-mint" />
-                    <h2 className="text-sm font-bold text-foreground">{pick(PAGE_COPY.sharedAccessTitle, language)}</h2>
-                </div>
-                <p className="text-xs text-muted-foreground mb-4">{pick(PAGE_COPY.sharedAccessSubtitle, language)}</p>
+            <section className="pw-card pw-pad" aria-labelledby="shared-access-heading">
+                <CardHead icon={ShieldCheck} title={pick(PAGE_COPY.sharedAccessTitle, language)} id="shared-access-heading" />
+                <p className="mt-2 text-caption leading-snug text-muted-foreground">{pick(PAGE_COPY.sharedAccessSubtitle, language)}</p>
 
                 {sharedPolicies.length === 0 ? (
-                    <p className="text-sm text-muted-foreground py-2">{pick(PAGE_COPY.noShares, language)}</p>
+                    <p className="mt-4 text-sm text-muted-foreground">{pick(PAGE_COPY.noShares, language)}</p>
                 ) : (
-                    <ul className="space-y-2">
+                    <ul className="mt-4 space-y-2">
                         {sharedPolicies.map((sp) => (
                             <li
                                 key={sp.grantId}
-                                className="flex items-center justify-between gap-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 px-4 py-3"
+                                className="pw-subcard flex items-center justify-between gap-3 px-3 py-2.5"
                             >
                                 <div className="min-w-0">
                                     <p className="truncate text-sm font-semibold text-foreground">
                                         {[displayInsurerName(sp.insurerName), displayPolicyNumber(sp.policyNumber)].filter(Boolean).join(' · ')}
                                     </p>
-                                    <p className="text-micro text-muted-foreground">
+                                    <p className="text-caption text-muted-foreground">
                                         {sp.addedByAdvisor
                                             ? pick(PAGE_COPY.addedByAdvisor, language)
                                             : pick(PAGE_COPY.sharedByYou, language)}
@@ -749,9 +739,9 @@ function OverviewTab({
                                     type="button"
                                     onClick={() => onRevoke(sp.grantId)}
                                     disabled={revokingGrantId === sp.grantId}
-                                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 min-h-[36px]"
+                                    className="inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-card px-3.5 text-caption font-semibold text-status-danger shadow-sm transition-colors hover:bg-status-danger-tint disabled:opacity-50"
                                 >
-                                    <ShieldOff className="h-3.5 w-3.5" />
+                                    <ShieldOff className="h-3.5 w-3.5" aria-hidden="true" />
                                     {revokingGrantId === sp.grantId
                                         ? pick(PAGE_COPY.revoking, language)
                                         : pick(PAGE_COPY.revoke, language)}
@@ -760,7 +750,7 @@ function OverviewTab({
                         ))}
                     </ul>
                 )}
-            </div>
+            </section>
         </div>
     )
 }
@@ -790,9 +780,9 @@ function DocumentsTab({
 
     if (documentRequests.length === 0) {
         return (
-            <div className="flex flex-col items-center text-center py-10">
-                <FileText className="w-10 h-10 mb-3 text-black/20 dark:text-white/20" />
-                <p className="text-sm text-black/60 dark:text-white/60">
+            <div className="pw-card pw-pad-roomy flex flex-col items-center text-center">
+                <FileText className="mb-3 h-8 w-8 text-muted-foreground" aria-hidden="true" />
+                <p className="text-sm text-muted-foreground">
                     {pick(PAGE_COPY.noDocumentRequests, language)}
                 </p>
             </div>
@@ -815,7 +805,7 @@ function DocumentsTab({
             ))}
             {completed.length > 0 && (
                 <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mt-4 mb-2">
+                    <p className="mb-2 mt-4 text-caption font-semibold text-muted-foreground">
                         {pick(PAGE_COPY.completedSection, language)}
                     </p>
                     {completed.map(request => (
@@ -857,9 +847,9 @@ function ProposalsTab({
 
     if (proposals.length === 0) {
         return (
-            <div className="flex flex-col items-center text-center py-10">
-                <Send className="w-10 h-10 mb-3 text-black/20 dark:text-white/20" />
-                <p className="text-sm text-black/60 dark:text-white/60">
+            <div className="pw-card pw-pad-roomy flex flex-col items-center text-center">
+                <Send className="mb-3 h-8 w-8 text-muted-foreground" aria-hidden="true" />
+                <p className="text-sm text-muted-foreground">
                     {pick(PAGE_COPY.noProposals, language)}
                 </p>
             </div>

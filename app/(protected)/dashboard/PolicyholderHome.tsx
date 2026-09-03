@@ -223,11 +223,31 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         activePolicies.map((policy) => policy.insurerName).filter(Boolean)
     ).size
     const sixMonthsOut = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000)
-    const upcomingRenewals = policies
+    const renewalCandidates = policies
         .map((policy) => ({ policy, endDate: resolvePolicyLifecycle(policy, now).endDate }))
         .filter((entry): entry is { policy: typeof entry.policy; endDate: Date } =>
             entry.endDate !== null && entry.endDate > now && entry.endDate <= sixMonthsOut
         )
+    // Same number twice = one renewal. The premium footprint already collapses
+    // duplicate uploads of one policy number to the row holding the current
+    // term (selectPremiumBearingPolicies); the timeline did not, so a policy
+    // uploaded three times rendered three identical rows — one renewal read
+    // as three, and the header counted all of them. Same rule here: the
+    // latest term per number wins; rows with no number stay as they are.
+    const latestRenewalByNumber = new Map<string, (typeof renewalCandidates)[number]>()
+    const unnumberedRenewals: typeof renewalCandidates = []
+    for (const entry of renewalCandidates) {
+        const key = (entry.policy.policyNumber || "").trim().toLowerCase()
+        if (!key) {
+            unnumberedRenewals.push(entry)
+            continue
+        }
+        const existing = latestRenewalByNumber.get(key)
+        if (!existing || entry.endDate.getTime() > existing.endDate.getTime()) {
+            latestRenewalByNumber.set(key, entry)
+        }
+    }
+    const upcomingRenewals = [...latestRenewalByNumber.values(), ...unnumberedRenewals]
         .sort((a, b) => a.endDate.getTime() - b.endDate.getTime())
 
     const recentDocuments = policies
@@ -241,7 +261,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             }))
         )
         .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime())
-        .slice(0, 5)
+        .slice(0, 3)
 
     // Portfolio summary: total premium + LOB breakdown.
     //
@@ -531,9 +551,27 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             }
         })
 
-    const renewalItems = upcomingRenewals.slice(0, 6).map(({ policy, endDate }) => {
+    const renewalItems = upcomingRenewals.slice(0, 4).map(({ policy, endDate }) => {
         const branch = normalizeBranch(policy.lineOfBusiness)
         const days = daysUntil(endDate)
+        // The term bar: both ends are dates the document states. A start on
+        // or after the end is a placeholder, not a term — no bar then, rather
+        // than a full one claiming a year that was never read.
+        const termStart =
+            policy.startDate instanceof Date && policy.startDate.getTime() < endDate.getTime()
+                ? policy.startDate
+                : null
+        const termProgressPct = termStart
+            ? Math.max(
+                  0,
+                  Math.min(
+                      100,
+                      Math.round(
+                          ((now.getTime() - termStart.getTime()) / (endDate.getTime() - termStart.getTime())) * 100
+                      )
+                  )
+              )
+            : null
         // The SAME derivation the policy page's renewal outlook renders — one
         // module, one count, two surfaces that cannot disagree.
         const sections = extractPolicySections(policy.acordData)
@@ -562,6 +600,18 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             // owner knows «ΙΖΤ-1234», not «SYMB-2025-MOT-…». Null (health,
             // life, …) leaves the row exactly as before.
             assetLabel: policyAssetIdentifier(policy),
+            // Set below, once every row's identifier is known: two rows that
+            // share a plate get their policy numbers back.
+            showPolicyRef: false,
+            termProgressPct,
+            termStartLabel: termStart
+                ? home.renewalTermStart.replace('{start}', formatDate(termStart, lang))
+                : null,
+            termAria: termStart
+                ? home.renewalTermAria
+                      .replace('{start}', formatDate(termStart, lang))
+                      .replace('{end}', formatDate(endDate, lang))
+                : null,
             icon: getBranchIcon(branch.id),
             titleLabel:
                 days === 0
@@ -586,6 +636,17 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         : home.renewalCheckpointsMany.replace('{count}', String(checkpointCount)),
         }
     })
+
+    // D11, second sighting: the asset identifier REPLACED the policy number on
+    // the row (P5-wallet-01), so two contracts on one plate rendered as one
+    // row twice. When identifiers collide, the number comes back beside them.
+    const assetLabelCounts = new Map<string, number>()
+    for (const item of renewalItems) {
+        if (item.assetLabel) assetLabelCounts.set(item.assetLabel, (assetLabelCounts.get(item.assetLabel) ?? 0) + 1)
+    }
+    for (const item of renewalItems) {
+        item.showPolicyRef = Boolean(item.assetLabel) && (assetLabelCounts.get(item.assetLabel!) ?? 0) > 1
+    }
 
     // The advisor's stored name can be synthetic — fall back to the account
     // email, which identifies the real counterparty, never to a fixture token.
@@ -665,30 +726,50 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         />
     )
 
+    // The audited footprint as the overview row's last cell — the ONE render
+    // of portfolio.totalAnnualPremium on the page (it left the portfolio card).
+    const premiumKpi =
+        totalAnnualPremium > 0
+            ? {
+                  value: formatCurrencyValue(totalAnnualPremium, lang, premiumCurrency) || '€0',
+                  label: home.totalAnnualPremium,
+                  excludedParts: premiumExcludedParts,
+              }
+            : null
+
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-4xl px-4 py-6 pb-28 sm:px-6 lg:pb-6">
-                {/* SIX SECTIONS, each a `section[id]`.
-                    Thirteen top-level cards measured at Goal 2, every one of
-                    them a separate bordered box competing for the same
-                    attention. Grouping them says which things belong together —
-                    and the grouping is not cosmetic: the attention list, the
-                    severity tally and the renewals timeline are three SHAPES of
-                    "what needs doing", and presenting them as three peers made
-                    the reader count three problems where there is one list. */}
-                <section id="overview" aria-label={home.heroKicker} className="space-y-4">
-                <div className="mb-5">
-                    <p className="pw-kicker">{t.nav.home}</p>
-                    <h1 className="mt-1.5 text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
+            <div className="mx-auto max-w-page-wide px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+                {/* DIRECTION A (2026-09-03): the reference's grid — a main column of
+                    two card tracks and a right rail — replaces six stacked
+                    sections. Nothing left the page: the six section groups became
+                    positions in one grid, and every card kept its data, its keys
+                    and its honesty notes. What changed is what a reader meets
+                    first: the facts row, the findings, the renewals — then the
+                    map, the portfolio, and in the rail the people and the plan. */}
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+                    <h1 className="text-h2 font-semibold tracking-tight text-foreground">
                         {home.title}
                     </h1>
+                    {/* The page's ONE upload offer. The desktop FAB and the
+                        portfolio card's link are gone; on an empty wallet the
+                        hero's invitation is the offer, so this stands down. */}
+                    {hasPolicies && (
+                        <Link
+                            href="/wallet/add"
+                            className="pw-primary-button pw-btn-sm inline-flex min-h-11 items-center gap-2"
+                        >
+                            <Upload className="h-4 w-4" aria-hidden="true" />
+                            {home.addNewPolicy}
+                        </Link>
+                    )}
                 </div>
 
                 {/* The review, when one is open. Above everything else on
                     purpose: a review responds to something that happened in the
                     customer's life, and nothing below does. */}
                 {openReview && getReviewPolicy(openReview.trigger) && (
-                    <div className="mb-4">
+                    <div className="mb-5">
                         <RiskReviewCard
                             review={{
                                 id: openReview.id,
@@ -703,211 +784,211 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </div>
                 )}
 
-                    <ProtectionStatusHero
-                        hasPolicies={hasPolicies}
-                        facts={facts}
-                        areasLine={areasLine}
-                        openRecommendationCount={activeRecommendations.length}
-                        language={lang}
-                        labels={{
-                            kicker: home.heroKicker,
-                            cta: home.heroCta,
-                            emptyTitle: home.heroEmptyTitle,
-                            emptyBody: home.heroEmptyBody,
-                            emptyCta: home.heroEmptyCta,
-                        }}
-                    />
+                <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_340px]">
+                    {/* ── Main column ─────────────────────────────────────── */}
+                    <div className="grid min-w-0 gap-5 md:grid-cols-2">
+                        <div className="min-w-0 md:col-span-2">
+                            <ProtectionStatusHero
+                                hasPolicies={hasPolicies}
+                                facts={facts}
+                                areasLine={areasLine}
+                                openRecommendationCount={activeRecommendations.length}
+                                premium={premiumKpi}
+                                language={lang}
+                                labels={{
+                                    kicker: home.heroKicker,
+                                    meta: home.overviewMeta,
+                                    cta: home.heroCta,
+                                    emptyTitle: home.heroEmptyTitle,
+                                    emptyBody: home.heroEmptyBody,
+                                    emptyCta: home.heroEmptyCta,
+                                }}
+                            />
+                        </div>
 
-                    {/* Signup-selected plan continuity (never activated → offer checkout) */}
-                    {carriedPlan && <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />}
-                </section>
+                        {/* Signup-selected plan continuity (never activated → offer checkout) */}
+                        {carriedPlan && (
+                            <div className="min-w-0 md:col-span-2">
+                                <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />
+                            </div>
+                        )}
 
-                {/* ── What needs doing, in one place ───────────────────────
-                    The attention list, the severity tally and the renewals
-                    timeline all answer "what should I deal with". The timeline
-                    used to sit at ~70% page depth, below the plan and the
-                    portfolio, so the only items on the page with a DEADLINE
-                    were the hardest to reach. */}
-                {/* scroll-mt-20: the plan card's «+N ακόμη» cross-reference
-                    anchors here (ProtectionPlanCard renders href="#attention"),
-                    and the sticky shell header would otherwise cover the
-                    kicker on arrival — the same offset the /protection
-                    anchors use. */}
-                <section id="attention" aria-label={home.attentionKicker} className="scroll-mt-20 space-y-4">
-
-
-                    {/* What needs my attention + the severity tally beside it */}
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                        <AttentionList
-                            items={attentionItems}
-                            totalCount={activeRecommendations.length}
-                            language={lang}
-                            labels={{
-                                kicker: home.attentionKicker,
-                                viewAll: home.viewAllActions,
-                                emptyTitle: home.attentionEmptyTitle,
-                                emptyBody: home.attentionEmptyBody,
-                                priorityNote: home.recPriorityNote,
-                            }}
-                        />
-                        <CoverageGapsWidget
-                            counts={gapSeverityCounts}
-                            labels={{
-                                kicker: home.gapsKicker,
-                                noGaps: home.noGaps,
-                                severity: {
-                                    critical: home.severityCritical,
-                                    high: home.severityHigh,
-                                    medium: home.severityMedium,
-                                    low: home.severityLow,
-                                },
-                                // `severityNote` and `recPriorityNote` are the
-                                // same sentence authored under two keys, and the
-                                // attention list directly above already states
-                                // it. Passing null renders it once per page.
-                                note: null,
-                                groupLabel: home.severityGroupLabel,
-                            }}
-                        />
-                    </div>
-
-                    <RenewalsTimelineCard
-                        items={renewalItems}
-                        // The TRUE count, not the rendered rows: items is capped
-                        // at six, and the header used to count the capped list —
-                        // eight upcoming renewals read as «6 ασφαλιστήρια».
-                        totalCount={upcomingRenewals.length}
-                        hasPolicies={policies.length > 0}
-                        showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
-                        labels={{
-                            kicker: home.renewalTimeline,
-                            policiesSuffixOne: home.policiesSuffixOne,
-                            policiesSuffix: home.policiesSuffix,
-                            trackExpirationsTitle: home.trackExpirationsTitle,
-                            trackExpirationsBody: home.trackExpirationsBody,
-                            noExpirationsTitle: home.noExpirationsTitle,
-                            noExpirationsBody: home.noExpirationsBody,
-                        }}
-                    />
-                </section>
-
-                {/* ── The plan, and the standing watch beside it ─────────── */}
-                <section id="plan" aria-label={home.planKicker} className="space-y-4">
-
-                    {/* The plan, and the standing watch beside it. Non-entitled
-                        accounts see what monitoring IS — future tense, no
-                        fabricated signals. */}
-                    {monitorEntitled && !monitorSignals ? (
-                        planCard
-                    ) : (
-                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                            {planCard}
-                            {monitorEntitled && monitorSignals ? (
-                                <ProtectionMonitorCard
-                                    signals={monitorSignals}
-                                    lastCheckedLabel={monitorLastCheckedLabel}
-                                    labels={{
-                                        kicker: home.monitorKicker,
-                                        notYetAssessed: home.monitorNotAssessed,
-                                        detailsLink: home.monitorDetailsLink,
+                        {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
+                            The meter counts every stored policy — that is what checkPolicyLimit
+                            blocks on. Metering only the in-force ones would promise headroom the
+                            next upload does not actually have. */}
+                        {standaloneUpgrade === "policy_upload_limit" && (
+                            <div className="min-w-0 md:col-span-2">
+                                <UpgradeTriggerCard
+                                    featureKey="policy_upload_limit"
+                                    triggerSource="home_usage_banner"
+                                    returnTo="/dashboard"
+                                    dismissible
+                                    meter={{
+                                        label: home.freePlanPolicies,
+                                        used: policies.length,
+                                        limit: FREE_POLICY_LIMIT,
+                                        hint: home.freePlanHint,
+                                        // The meter's "used" IS the policy count; its
+                                        // limit is a PLAN fact, not a portfolio one —
+                                        // separate keys keep «2/10» from reading as a
+                                        // contradiction of «2 ασφαλιστήρια».
+                                        usedCountKey: "portfolio.policyCount",
+                                        limitCountKey: "entitlement.policyLimit",
                                     }}
                                 />
-                            ) : (
-                                <UpgradeTriggerCard
-                                    featureKey="protection_monitoring"
-                                    triggerSource="home_protection_monitor"
-                                    returnTo="/dashboard"
-                                />
-                            )}
+                            </div>
+                        )}
+
+                        {/* What needs my attention, with the severity tally INSIDE it —
+                            the reference's "score" slot, filled with counts. scroll-mt:
+                            the plan card's «+N ακόμη» anchors here (href="#attention")
+                            and the sticky top bar would otherwise cover the heading. */}
+                        <div id="attention" className="min-w-0 scroll-mt-20">
+                            <AttentionList
+                                items={attentionItems}
+                                totalCount={activeRecommendations.length}
+                                language={lang}
+                                tally={
+                                    <CoverageGapsWidget
+                                        variant="embedded"
+                                        counts={gapSeverityCounts}
+                                        labels={{
+                                            kicker: home.gapsKicker,
+                                            noGaps: home.noGaps,
+                                            severity: {
+                                                critical: home.severityCritical,
+                                                high: home.severityHigh,
+                                                medium: home.severityMedium,
+                                                low: home.severityLow,
+                                            },
+                                            // `severityNote` and `recPriorityNote` are the
+                                            // same sentence authored under two keys, and the
+                                            // attention list below states it. Passing null
+                                            // renders it once per page.
+                                            note: null,
+                                            groupLabel: home.severityGroupLabel,
+                                        }}
+                                    />
+                                }
+                                labels={{
+                                    kicker: home.attentionKicker,
+                                    viewAll: home.viewAllActions,
+                                    emptyTitle: home.attentionEmptyTitle,
+                                    emptyBody: home.attentionEmptyBody,
+                                    priorityNote: home.recPriorityNote,
+                                }}
+                            />
                         </div>
-                    )}
 
-                </section>
-
-                {/* ── What the wallet covers, by branch ─────────────────── */}
-                <section id="coverage" aria-label={home.coverageMapKicker} className="space-y-4">
-                    {/* Something changed? — the way into life-event reassessment */}
-                    <LifeEventPromptCard
-                        chips={lifeEventChips}
-                        labels={{
-                            kicker: home.lifeEventKicker,
-                            body: home.lifeEventBody,
-                            cta: home.lifeEventCta,
-                        }}
-                    />
-
-                    {/* Branch coverage map — every branch with its covered/gap state */}
-                    <BranchCoverageMap
-                        entries={coverageMapEntries}
-                        labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
-                    />
-
-
-                </section>
-
-                {/* ── The portfolio itself ──────────────────────────────── */}
-                <section id="portfolio" aria-label={home.portfolioKicker} className="space-y-4">
-
-                    {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
-                        The meter counts every stored policy — that is what checkPolicyLimit
-                        blocks on. Metering only the in-force ones would promise headroom the
-                        next upload does not actually have. */}
-                    {standaloneUpgrade === "policy_upload_limit" && (
-                        <UpgradeTriggerCard
-                            featureKey="policy_upload_limit"
-                            triggerSource="home_usage_banner"
-                            returnTo="/dashboard"
-                            dismissible
-                            meter={{
-                                label: home.freePlanPolicies,
-                                used: policies.length,
-                                limit: FREE_POLICY_LIMIT,
-                                hint: home.freePlanHint,
-                                // The meter's "used" IS the policy count; its
-                                // limit is a PLAN fact, not a portfolio one —
-                                // separate keys keep «2/10» from reading as a
-                                // contradiction of «2 ασφαλιστήρια».
-                                usedCountKey: "portfolio.policyCount",
-                                limitCountKey: "entitlement.policyLimit",
+                        <RenewalsTimelineCard
+                            items={renewalItems}
+                            // The TRUE count, not the rendered rows: items is capped
+                            // at four, and the header used to count the capped list —
+                            // eight upcoming renewals read as «6 ασφαλιστήρια».
+                            totalCount={upcomingRenewals.length}
+                            hasPolicies={policies.length > 0}
+                            showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
+                            labels={{
+                                kicker: home.renewalTimeline,
+                                policiesSuffixOne: home.policiesSuffixOne,
+                                policiesSuffix: home.policiesSuffix,
+                                trackExpirationsTitle: home.trackExpirationsTitle,
+                                trackExpirationsBody: home.trackExpirationsBody,
+                                noExpirationsTitle: home.noExpirationsTitle,
+                                noExpirationsBody: home.noExpirationsBody,
                             }}
                         />
-                    )}
 
-                    {/* Portfolio: premium footprint + documents + upload entry */}
-                    <PortfolioSummaryCard
-                        totalLabel={
-                            totalAnnualPremium > 0
-                                ? formatCurrencyValue(totalAnnualPremium, lang, premiumCurrency) || '€0'
-                                : null
-                        }
-                        chips={portfolioChips}
-                        recentDocuments={recentDocuments}
-                        labels={{
-                            kicker: home.portfolioKicker,
-                            totalAnnualPremium: home.totalAnnualPremium,
-                            recentDocuments: home.recentDocuments,
-                            noDocuments: home.noDocuments,
-                            addNewPolicy: home.addNewPolicy,
-                        }}
-                        excludedParts={premiumExcludedParts}
-                    />
+                        {/* What the wallet covers, by branch — and the way into
+                            life-event reassessment, attached to the map it moves. */}
+                        <div className="grid min-w-0 gap-3 md:col-span-2">
+                            <BranchCoverageMap
+                                entries={coverageMapEntries}
+                                labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
+                            />
+                            <LifeEventPromptCard
+                                chips={lifeEventChips}
+                                labels={{
+                                    kicker: home.lifeEventKicker,
+                                    body: home.lifeEventBody,
+                                    cta: home.lifeEventCta,
+                                }}
+                            />
+                        </div>
 
-                    {/* Trigger G: multi-insurer portfolio insight for free tier */}
-                    {standaloneUpgrade === "multi_insurer_insights" && (
-                        <UpgradeTriggerCard
-                            featureKey="multi_insurer_insights"
-                            triggerSource="home_multi_insurer"
-                            returnTo="/protection"
-                            dismissible
+                        {/* Portfolio: per-branch premium + documents. The total sits in
+                            the overview row above; the upload offer is the page header's. */}
+                        <div className="min-w-0 md:col-span-2">
+                            <PortfolioSummaryCard
+                                totalLabel={null}
+                                showAddLink={false}
+                                chips={portfolioChips}
+                                recentDocuments={recentDocuments}
+                                labels={{
+                                    kicker: home.portfolioKicker,
+                                    totalAnnualPremium: home.totalAnnualPremium,
+                                    recentDocuments: home.recentDocuments,
+                                    noDocuments: home.noDocuments,
+                                    addNewPolicy: home.addNewPolicy,
+                                }}
+                                excludedParts={premiumExcludedParts}
+                            />
+                        </div>
+
+                        {/* Trigger G: multi-insurer portfolio insight for free tier */}
+                        {standaloneUpgrade === "multi_insurer_insights" && (
+                            <div className="min-w-0 md:col-span-2">
+                                <UpgradeTriggerCard
+                                    featureKey="multi_insurer_insights"
+                                    triggerSource="home_multi_insurer"
+                                    returnTo="/protection"
+                                    dismissible
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ── Rail: the people and the plan ───────────────────── */}
+                    <aside className="grid min-w-0 gap-5">
+                        <AdvisorSupportRow
+                            agentConnected={Boolean(customerRelationship)}
+                            agentName={agentName || null}
+                            labels={{
+                                title: home.advisorTitle,
+                                agentStatus: home.agentStatus,
+                                agentLine: customerRelationship
+                                    ? home.agentConnected.replace('{name}', agentName)
+                                    : home.noAgent,
+                                hint: customerRelationship ? home.advisorConnectedHint : home.advisorNoneHint,
+                                cta: customerRelationship ? home.advisorOpen : home.advisorConnect,
+                                helpTitle: home.helpTitle,
+                                helpOpen: home.helpOpen,
+                            }}
                         />
-                    )}
 
-                </section>
+                        {planCard}
 
-                {/* ── History and the people who can help ───────────────── */}
-                <section id="activity" aria-label={home.recentChangesKicker} className="space-y-4">
-                    {/* What changed lately + advisor + help */}
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        {/* The standing watch. Non-entitled accounts see what
+                            monitoring IS — future tense, no fabricated signals. */}
+                        {monitorEntitled && monitorSignals ? (
+                            <ProtectionMonitorCard
+                                signals={monitorSignals}
+                                lastCheckedLabel={monitorLastCheckedLabel}
+                                labels={{
+                                    kicker: home.monitorKicker,
+                                    notYetAssessed: home.monitorNotAssessed,
+                                    detailsLink: home.monitorDetailsLink,
+                                }}
+                            />
+                        ) : !monitorEntitled ? (
+                            <UpgradeTriggerCard
+                                featureKey="protection_monitoring"
+                                triggerSource="home_protection_monitor"
+                                returnTo="/dashboard"
+                            />
+                        ) : null}
+
                         <RecentChangesWidget
                             changes={recentChanges}
                             labels={{
@@ -917,37 +998,9 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 explained: home.recentChangesExplained,
                             }}
                         />
-                        <AdvisorSupportRow
-                            agentConnected={Boolean(customerRelationship)}
-                            labels={{
-                                agentStatus: home.agentStatus,
-                                agentLine: customerRelationship
-                                    ? home.agentConnected.replace('{name}', agentName)
-                                    : home.noAgent,
-                                helpTitle: home.helpTitle,
-                                helpOpen: home.helpOpen,
-                            }}
-                        />
-                    </div>
-                </section>
+                    </aside>
+                </div>
             </div>
-
-            <Link
-                href="/wallet/add"
-                // Desktop only. On the phone this FAB has nowhere honest to
-                // live: centred it split the hero CTA's label in two, and
-                // bottom-right it clipped the same CTA's end — a floating
-                // action and a full-width primary CTA fundamentally compete on
-                // a 393px canvas, and the screen's one primary action wins.
-                // Upload stays one tab away (the wallet's own FAB) and inside
-                // the hero flow itself; on lg+ there is no bottom nav and no
-                // full-width CTA, so the quick-upload earns its corner back.
-                className="hidden lg:grid fixed bottom-8 right-8 z-30 h-14 w-14 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-xl transition hover:bg-primary-hover"
-                aria-label={home.quickUploadAria}
-            >
-                <Upload className="h-6 w-6" />
-            </Link>
-
         </div>
     )
 }

@@ -32,7 +32,7 @@ export function SettingRow({ label, value, hint, action, muted = false, classNam
                 {value !== undefined && (
                     <p
                         className={`mt-0.5 text-sm [overflow-wrap:anywhere] ${
-                            muted ? "text-muted-foreground" : "font-semibold text-black dark:text-white"
+                            muted ? "text-muted-foreground" : "font-semibold text-foreground"
                         }`}
                     >
                         {value}

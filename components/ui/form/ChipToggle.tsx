@@ -1,6 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
+import { Check } from "lucide-react"
 
 /**
  * A multi-select chip — the "select all that apply" control.
@@ -17,17 +18,18 @@ import type { ReactNode } from "react"
  * it is already focusable, already announces its checked state, and already
  * works with the space bar. What it lacked was a visible focus ring, since the
  * input itself is invisible — `has-[:focus-visible]` puts that on the chip.
+ *
+ * Direction A (2026-09-03): a sunken pill; ticked = a primary ring and a check
+ * glyph, never a fill. `accent` used to paint the family-history chips amber —
+ * a status colour on a control whose only state is "ticked", on a form where
+ * amber elsewhere means «Χρειάζεται προσοχή». The prop is kept so call sites
+ * compile; both accents render the same.
  */
 
 export type ChipAccent = "primary" | "warning"
 
-const SELECTED: Record<ChipAccent, string> = {
-    primary: "border-primary bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
-    warning: "border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
-}
-
-const UNSELECTED =
-    "border-black/10 text-black/60 dark:border-white/15 dark:text-white/60 hover:border-black/25 dark:hover:border-white/30"
+const SELECTED = "bg-muted text-foreground ring-1 ring-primary"
+const UNSELECTED = "bg-muted text-muted-foreground hover:text-foreground"
 
 interface ChipToggleProps {
     label: ReactNode
@@ -42,13 +44,12 @@ export function ChipToggle({
     label,
     checked,
     onChange,
-    accent = "primary",
     name,
     disabled,
 }: ChipToggleProps) {
     return (
         <label
-            className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg border px-3 text-caption font-medium transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#29685B] dark:has-[:focus-visible]:outline-[#A7F3D0] ${checked ? SELECTED[accent] : UNSELECTED} ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+            className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-caption font-semibold transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#29685B] dark:has-[:focus-visible]:outline-[#A7F3D0] ${checked ? SELECTED : UNSELECTED} ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
         >
             <input
                 type="checkbox"
@@ -58,6 +59,7 @@ export function ChipToggle({
                 onChange={(e) => onChange(e.target.checked)}
                 className="sr-only"
             />
+            {checked && <Check className="h-3.5 w-3.5 text-primary" aria-hidden="true" />}
             {label}
         </label>
     )

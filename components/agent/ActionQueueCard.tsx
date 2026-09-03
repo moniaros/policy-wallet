@@ -12,6 +12,7 @@ import {
     ChevronRight,
 } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -28,12 +29,11 @@ const ONE_TAP_LABELS: Record<OneTapAction, { en: string; el: string }> = {
     complete_profile: { en: "Complete", el: "Συμπλήρωση" },
 }
 
+/** Urgency tints the row's GLYPH on the status tokens — a whole tinted row per item read as five alarms. */
 function getUrgencyStyles(urgency: "low" | "medium" | "high") {
-    if (urgency === "high")
-        return "text-red-700 bg-red-50 border-red-100 dark:text-red-300 dark:bg-red-950/30 dark:border-red-900/30"
-    if (urgency === "medium")
-        return "text-amber-700 bg-amber-50 border-amber-100 dark:text-amber-300 dark:bg-amber-950/30 dark:border-amber-900/30"
-    return "text-blue-700 bg-blue-50 border-blue-100 dark:text-blue-300 dark:bg-blue-950/30 dark:border-blue-900/30"
+    if (urgency === "high") return "text-status-danger"
+    if (urgency === "medium") return "text-status-warning"
+    return "text-status-info"
 }
 
 interface ActionQueueCardProps {
@@ -84,29 +84,29 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onGapClientCli
     const totalCount = items.length
 
     return (
-        <BrandCard className="p-5">
-            {/* Header */}
+        <BrandCard className="pw-pad">
+            {/* Header — the count is a fact (a grey pill); only «N επείγοντα» carries a tone. */}
             <div className="mb-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 text-amber-700 dark:text-amber-400" />
-                        <h2 className="text-base font-bold text-foreground">
-                            {t.agentUi.actionQueue}
-                        </h2>
-                        {totalCount > 0 && (
-                            <span className="ml-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-bold text-white">
-                                {totalCount}
-                            </span>
-                        )}
-                    </div>
-                    {urgentCount > 0 && (
-                        <span className="text-xs font-medium text-red-700 dark:text-red-400">
-                            {urgentCount} {t.agentUi.urgent}
-                        </span>
-                    )}
-                </div>
+                <CardHead
+                    icon={AlertTriangle}
+                    title={t.agentUi.actionQueue}
+                    meta={
+                        <>
+                            {totalCount > 0 && (
+                                <span className="rounded-full bg-muted px-2.5 py-1 text-caption font-semibold tabular-nums text-foreground">
+                                    {totalCount}
+                                </span>
+                            )}
+                            {urgentCount > 0 && (
+                                <span className="text-caption font-semibold text-status-danger">
+                                    {urgentCount} {t.agentUi.urgent}
+                                </span>
+                            )}
+                        </>
+                    }
+                />
                 {revenueAtRisk !== undefined && revenueAtRisk > 0 && (
-                    <p className="mt-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
+                    <p className="mt-2 text-caption font-semibold text-status-warning">
                         {formatCurrencyCompact(revenueAtRisk, language)} {t.agentDashboard.inRenewalsAtRisk}
                     </p>
                 )}
@@ -133,24 +133,24 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onGapClientCli
                         return (
                             <div
                                 key={item.id}
-                                className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${getUrgencyStyles(item.urgency)}`}
+                                className="pw-subcard flex items-center gap-3 p-3"
                             >
-                                <Icon className="h-4 w-4 shrink-0" />
+                                <Icon className={`h-4 w-4 shrink-0 ${getUrgencyStyles(item.urgency)}`} aria-hidden="true" />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium truncate">
+                                    <p className="truncate text-sm font-semibold text-foreground">
                                         {item.clientName}
                                     </p>
-                                    <p className="text-xs opacity-75 truncate">
+                                    <p className="truncate text-caption text-muted-foreground">
                                         {description}
                                     </p>
                                 </div>
-                                <span className="text-kicker opacity-60 whitespace-nowrap">
+                                <span className="whitespace-nowrap text-caption text-muted-foreground">
                                     {formatRelativeDate(item.dueDate, language)}
                                 </span>
                                 <button
                                     type="button"
                                     onClick={() => onAction(item)}
-                                    className="shrink-0 rounded-lg bg-white/80 dark:bg-neutral-800/80 px-3 py-1.5 text-xs font-semibold shadow-sm transition hover:shadow-md"
+                                    className="pw-soft-button !min-h-9 shrink-0 !bg-card !px-3 text-caption"
                                 >
                                     {language === "el" ? label.el : label.en}
                                 </button>
@@ -171,7 +171,7 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onGapClientCli
                     type="button"
                     onClick={() => setShowAll((v) => !v)}
                     aria-expanded={showAll}
-                    className="mt-3 flex w-full items-center justify-center gap-1 text-xs font-medium text-primary dark:text-mint hover:underline"
+                    className="mt-3 flex min-h-11 w-full items-center justify-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {showAll
                         ? t.agentDashboard.queueShowFewer
@@ -195,15 +195,15 @@ function GapsSummaryBanner({
     const { criticalClientsCount, highClientsCount, topClients } = summary
 
     return (
-        <div className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900/40 dark:bg-red-950/20">
-            <div className="flex items-center gap-2 mb-2">
-                <Eye className="h-4 w-4 text-red-700 dark:text-red-400" />
-                <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+        <div className="mb-3 rounded-xl bg-status-danger-tint p-3">
+            <div className="mb-2 flex items-center gap-2">
+                <Eye className="h-4 w-4 text-status-danger" aria-hidden="true" />
+                <p className="text-sm font-semibold text-status-danger">
                     {language === "el"
                         ? `${criticalClientsCount} πελάτ${criticalClientsCount === 1 ? "ης" : "ες"} με κρίσιμα κενά`
                         : `${criticalClientsCount} client${criticalClientsCount === 1 ? "" : "s"} with critical gaps`}
                     {highClientsCount > 0 && (
-                        <span className="font-normal text-red-700/70 dark:text-red-400/70">
+                        <span className="font-normal opacity-80">
                             {" "}
                             {language === "el"
                                 ? `+ ${highClientsCount} υψηλής`
@@ -219,21 +219,21 @@ function GapsSummaryBanner({
                             key={client.clientId}
                             type="button"
                             onClick={() => onClientClick?.(client.clientId)}
-                            className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition hover:bg-red-100 dark:hover:bg-red-900/30"
+                            className="flex min-h-11 w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-caption transition-colors hover:bg-card/70"
                         >
-                            <span className="font-medium text-red-900 dark:text-red-200 truncate">
+                            <span className="truncate font-semibold text-foreground">
                                 {client.clientName}
                             </span>
-                            <span className="shrink-0 ml-2 text-red-700 dark:text-red-400">
+                            <span className="ml-2 shrink-0 tabular-nums text-status-danger">
                                 {client.criticalGaps > 0 && (
                                     <span className="inline-flex items-center gap-0.5">
-                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
+                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-status-danger" />
                                         {client.criticalGaps}
                                     </span>
                                 )}
                                 {client.highGaps > 0 && (
-                                    <span className="inline-flex items-center gap-0.5 ml-2">
-                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500" />
+                                    <span className="ml-2 inline-flex items-center gap-0.5">
+                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-status-warning" />
                                         {client.highGaps}
                                     </span>
                                 )}
@@ -256,20 +256,22 @@ function ActionQueueEmpty({ t, hasClients, onInviteClient }: { t: any; hasClient
     if (!hasClients) {
         return (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
-                    <UserPlus className="h-5 w-5 text-primary dark:text-mint" />
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                    <UserPlus className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                 </div>
-                <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                <p className="text-sm font-semibold text-foreground">
                     {t.agentUi.noClientsTitle}
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-caption text-muted-foreground">
                     {t.agentUi.inviteFirstClientPrompt}
                 </p>
+                {/* Soft, not primary: the page header already carries the one
+                    primary («Νέος πελάτης»), and this is the same action. */}
                 {onInviteClient && (
                     <button
                         type="button"
                         onClick={onInviteClient}
-                        className="pw-primary-button mt-4"
+                        className="pw-soft-button mt-4"
                     >
                         <UserPlus className="h-3.5 w-3.5" />
                         {t.agentUi.inviteClient}
@@ -281,13 +283,13 @@ function ActionQueueEmpty({ t, hasClients, onInviteClient }: { t: any; hasClient
 
     return (
         <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
-                <RefreshCw className="h-5 w-5 text-primary dark:text-mint" />
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                <RefreshCw className="h-5 w-5 text-status-success" aria-hidden="true" />
             </div>
-            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <p className="text-sm font-semibold text-foreground">
                 {t.agentUi.allCaughtUp}
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-caption text-muted-foreground">
                 {t.agentUi.reviewClientList}
             </p>
         </div>
@@ -296,7 +298,7 @@ function ActionQueueEmpty({ t, hasClients, onInviteClient }: { t: any; hasClient
 
 export function ActionQueueCardSkeleton() {
     return (
-        <BrandCard className="p-5">
+        <BrandCard className="pw-pad">
             <div className="flex items-center gap-2 mb-4">
                 <Skeleton className="h-5 w-5 rounded" />
                 <Skeleton className="h-5 w-32" />

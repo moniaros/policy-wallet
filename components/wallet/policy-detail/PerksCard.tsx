@@ -65,15 +65,15 @@ const PERK_ICON: Record<string, typeof Gift> = {
  */
 export function PerksCard({ perks, lang, copy, sourceDocumentHref }: PerksCardProps) {
     return (
-        <div className="pw-card pw-pad sm:p-7">
+        <div>
             <div className="mb-1 flex items-center gap-2">
                 <Gift className="h-4 w-4 text-primary dark:text-mint" />
-                <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">{copy.perksTitle}</h2>
+                <h2 className="text-body font-semibold text-foreground">{copy.perksTitle}</h2>
             </div>
             <p className="mb-5 text-xs text-muted-foreground">{copy.perksSubtitle}</p>
 
             {perks.length === 0 ? (
-                <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-4 dark:border-white/15 dark:bg-white/5">
+                <div className="pw-subcard px-4 py-4">
                     <p className="text-sm text-black/65 dark:text-white/70">{copy.noPerksDetected}</p>
                     <p className="mt-1 text-xs text-black/60 dark:text-white/55">{copy.exclusionsReanalyzeHint}</p>
                 </div>
@@ -85,7 +85,7 @@ export function PerksCard({ perks, lang, copy, sourceDocumentHref }: PerksCardPr
                         return (
                             <div
                                 key={i}
-                                className="flex flex-col rounded-2xl border border-black/10 bg-black/[0.02] p-4 dark:border-white/15 dark:bg-white/5"
+                                className="pw-subcard flex flex-col p-4"
                             >
                                 <div className="flex items-start gap-3">
                                     <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
@@ -94,7 +94,7 @@ export function PerksCard({ perks, lang, copy, sourceDocumentHref }: PerksCardPr
                                     <div className="min-w-0 flex-1">
                                         <p className="text-sm font-semibold text-black dark:text-white">{pickLang(perk.name, lang)}</p>
                                         <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                                            <span className="rounded-full bg-black/5 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:bg-white/10 dark:text-white/60">
+                                            <span className="rounded-full bg-black/5 px-2 py-0.5 text-caption font-semibold text-black/55 dark:bg-white/10 dark:text-white/60">
                                                 {typeLabel}
                                             </span>
                                             {perk.usageLimit && (
@@ -103,7 +103,7 @@ export function PerksCard({ perks, lang, copy, sourceDocumentHref }: PerksCardPr
                                                 </span>
                                             )}
                                             {perk.reminderRecommended && (
-                                                <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-status-warning">
+                                                <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-caption font-semibold text-status-warning">
                                                     {copy.dontForgetChip}
                                                 </span>
                                             )}

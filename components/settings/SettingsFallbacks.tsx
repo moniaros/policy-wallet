@@ -32,7 +32,7 @@ export function SettingsError({
             <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-amber-100/80 dark:bg-amber-900/25">
                 <AlertTriangle aria-hidden="true" className="h-6 w-6 text-amber-700 dark:text-amber-400" />
             </div>
-            <h2 className="text-lead font-semibold text-black dark:text-white">
+            <h2 className="text-body-lg font-semibold tracking-tight text-foreground">
                 {t.errors.somethingWentWrong}
             </h2>
             <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">

@@ -4,7 +4,6 @@ import { PolicyWallet } from "@/components/wallet/PolicyWallet"
 import React, { useRef } from "react"
 import type { Policy } from "@/components/wallet/types"
 import { useRouter } from "next/navigation"
-import { PageHeader } from "@/components/ui/PageHeader"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { isInForceKey, resolvePolicyStatusKey } from "@/lib/wallet/policy-status-view"
 import { toast } from "sonner"
@@ -297,14 +296,23 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
             {/* A stored display name can be synthetic ("E2E Policyholder",
                 "Policyholder 1234") — firstNameLabel greets only a real person,
                 and the greeting degrades to the wallet title otherwise. */}
-            <PageHeader title={firstNameLabel(user?.name) ? `${t.auth.welcomeBack}, ${firstNameLabel(user?.name)}!` : t.wallet.title} subtitle={t.wallet.manageTrack} />
+            {/* Direction A: the page's own header, not the shared sticky
+                PageHeader — the app shell already pins a top bar, and a
+                second sticky white band under it stacked two chrome strips
+                before any content (the same reason SettingsShell dropped it). */}
+            <header className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+                <h1 className="text-h3 font-semibold tracking-tight text-foreground">
+                    {firstNameLabel(user?.name) ? `${t.auth.welcomeBack}, ${firstNameLabel(user?.name)}!` : t.wallet.title}
+                </h1>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.wallet.manageTrack}</p>
+            </header>
 
             {hasComparablePolicies && (
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-4">
+                <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
                     <button
                         type="button"
                         onClick={() => setIsCompareOpen(true)}
-                        className="inline-flex items-center gap-2 rounded-full border border-black/15 bg-white px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10 cursor-pointer"
+                        className="pw-soft-button cursor-pointer"
                     >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
