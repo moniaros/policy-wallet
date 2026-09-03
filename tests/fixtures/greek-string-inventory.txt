@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3086
-# inline entries: 4781 across 213 files
+# inline entries: 4801 across 213 files
 # ternary entries: 285 across 44 files
 # call entries: 1146 across 86 files
 
@@ -7680,8 +7680,12 @@ inline	lib/services/risk-graph/protection.ts	`Σε ισχύ: το ασφαλισ
 inline	lib/services/risk-graph/protection.ts	`Το ασφαλισμένο κεφάλαιο (${formatCurrency(total, "el")}) καλύπτει το χρέος των ${formatCurrency(minimum, "el")} πίσω από αυτό.`
 inline	lib/services/risk-graph/protection.ts	`Το ασφαλισμένο κεφάλαιο (${formatCurrency(total, "el")}) υπολείπεται του χρέους των ${formatCurrency(minimum, "el")} που καλείται να καλύψει.`
 inline	lib/services/risk-graph/protection.ts	`Το ασφαλιστήριο αναφέρει μόνο: ${[...declared].join(", ")}.`
+inline	lib/services/risk-review/policy.ts	"Ένα δάνειο που συνεχίζει και χωρίς το εισόδημα είναι η πιο συνηθισμένη ακάλυπτη έκθεση — και μόλις δημιουργήθηκε."
+inline	lib/services/risk-review/policy.ts	"Ένα νέο ακίνητο συχνά μένει για λίγο χωρίς κάλυψη — και η κάλυψη σεισμού είναι αυτό που οι περισσότεροι θεωρούν δεδομένο."
+inline	lib/services/risk-review/policy.ts	"Ένα παιδί αλλάζει περισσότερο από οτιδήποτε άλλο το τι χρειάζεται προστασία. Δεν υπάρχει βιασύνη — γι' αυτό το περιθώριο είναι μεγάλο."
 inline	lib/services/risk-review/policy.ts	"Έναρξη επιχείρησης"
 inline	lib/services/risk-review/policy.ts	"Αγορά ακινήτου"
+inline	lib/services/risk-review/policy.ts	"Αλλάζει μία έκθεση, όχι όλη η εικόνα — το εύρημα μιλάει από μόνο του."
 inline	lib/services/risk-review/policy.ts	"Αλλαγή στη ζωή σας"
 inline	lib/services/risk-review/policy.ts	"Ανανέωση ασφαλιστηρίου"
 inline	lib/services/risk-review/policy.ts	"Απαίτηση"
@@ -7689,15 +7693,31 @@ inline	lib/services/risk-review/policy.ts	"Αυξημένα ταξίδια"
 inline	lib/services/risk-review/policy.ts	"Γάμος"
 inline	lib/services/risk-review/policy.ts	"Γέννηση παιδιού"
 inline	lib/services/risk-review/policy.ts	"Γενέθλια"
+inline	lib/services/risk-review/policy.ts	"Δεν καταφέραμε να διαβάσουμε καλά ένα έγγραφο — αυτό είναι δική μας δουλειά, όχι δική σας."
+inline	lib/services/risk-review/policy.ts	"Δηλώσατε μια αλλαγή στη ζωή σας — συνήθως σημαίνει ότι κάτι στα ασφαλιστήριά σας δεν ταιριάζει πια."
 inline	lib/services/risk-review/policy.ts	"Διαζύγιο"
+inline	lib/services/risk-review/policy.ts	"Δικαιούχοι και κοινά ασφαλιστήρια συχνά αναφέρουν ακόμη τον ή την πρώην σύντροφο. Με την ησυχία σας — δεν βιάζεται τίποτα."
+inline	lib/services/risk-review/policy.ts	"Δύο ζωές γίνονται μία: δικαιούχοι, κοινές υποχρεώσεις και διπλές καλύψεις αλλάζουν ταυτόχρονα."
 inline	lib/services/risk-review/policy.ts	"Ενημέρωση ερωτηματολογίου"
+inline	lib/services/risk-review/policy.ts	"Εντοπίστηκε ένα κρίσιμο σημείο — ένα από τα λίγα που αξίζουν δική τους ματιά."
 inline	lib/services/risk-review/policy.ts	"Ετήσιος έλεγχος"
+inline	lib/services/risk-review/policy.ts	"Η ανανέωση είναι η στιγμή που ήδη αποφασίζετε για την κάλυψή σας — η καλύτερη στιγμή για μια ματιά."
+inline	lib/services/risk-review/policy.ts	"Η προστασία σας έπεσε στο χαμηλότερο επίπεδο — αξίζει μια ματιά, όχι ανησυχία."
 inline	lib/services/risk-review/policy.ts	"Καιρό χωρίς έλεγχο"
 inline	lib/services/risk-review/policy.ts	"Κενό κάλυψης"
+inline	lib/services/risk-review/policy.ts	"Μια απαίτηση δείχνει αν η κάλυψη ήταν επαρκής — η μόνη πραγματική ανατροφοδότηση."
+inline	lib/services/risk-review/policy.ts	"Μια δική σας επιχείρηση ανοίγει εκθέσεις — ευθύνη, εργοδότη, διακοπή εργασιών — που ένα προσωπικό χαρτοφυλάκιο δεν καλύπτει."
+inline	lib/services/risk-review/policy.ts	"Μια νέα δεκαετία αλλάζει τι έχει σημασία να προστατέψετε — και τι κοστίζει."
+inline	lib/services/risk-review/policy.ts	"Μόλις ενημερώσατε τα στοιχεία σας — δεν χρειάζεται να το κάνετε δύο φορές."
+inline	lib/services/risk-review/policy.ts	"Μόλις προσθέσατε ένα ασφαλιστήριο — η ανάλυσή του είναι η απάντηση."
 inline	lib/services/risk-review/policy.ts	"Νέο ασφαλιστήριο"
 inline	lib/services/risk-review/policy.ts	"Νέο στεγαστικό δάνειο"
 inline	lib/services/risk-review/policy.ts	"Νέος σύμβουλος"
+inline	lib/services/risk-review/policy.ts	"Ξέρουμε ακόμη λίγα για την κατάστασή σας — λίγες απαντήσεις ακόμη κάνουν την εικόνα σας πιο αξιόπιστη."
+inline	lib/services/risk-review/policy.ts	"Πέρασε ένας χρόνος — η ζωή αλλάζει και χωρίς να το δηλώσει κανείς. Μια ματιά τον χρόνο αρκεί."
+inline	lib/services/risk-review/policy.ts	"Πέρασε καιρός από την τελευταία σας επίσκεψη — η εικόνα σας μπορεί να μην είναι πια επίκαιρη."
 inline	lib/services/risk-review/policy.ts	"Πτώση σκορ προστασίας"
+inline	lib/services/risk-review/policy.ts	"Συνδεθήκατε με σύμβουλο — μια κοινή αφετηρία βοηθά τη συζήτηση να ξεκινήσει από την εικόνα σας, όχι από το μηδέν."
 inline	lib/services/risk-review/policy.ts	"Τριμηνιαίος έλεγχος"
 inline	lib/services/risk-review/policy.ts	"Χαμηλή βεβαιότητα ανάγνωσης"
 inline	lib/services/risk-review/service.ts	`${policy.label.el}: αξίζει ένας γρήγορος έλεγχος της εικόνας σας.`
