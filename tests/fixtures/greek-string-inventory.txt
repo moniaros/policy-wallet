@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3082
+# bundle entries: 3086
 # inline entries: 4781 across 213 files
 # ternary entries: 285 across 44 files
 # call entries: 1146 across 86 files
@@ -1672,12 +1672,14 @@ bundle	onboarding.protectionProfile.advisor.send	"Αποστολή"
 bundle	onboarding.protectionProfile.advisor.sending	"Αποστολή…"
 bundle	onboarding.protectionProfile.advisor.title	"Έχεις σύμβουλο; Σύνδεσέ τον, αν θέλεις."
 bundle	onboarding.protectionProfile.back	"Πίσω"
+bundle	onboarding.protectionProfile.confirmStill	"Ναι, ισχύει ακόμη"
 bundle	onboarding.protectionProfile.helpMe	"Βοήθησέ με να το καταλάβω"
 bundle	onboarding.protectionProfile.kicker	"Πριν δούμε τι έχεις, ας δούμε τι έχει σημασία."
 bundle	onboarding.protectionProfile.next	"Συνέχεια"
 bundle	onboarding.protectionProfile.noneOfThese	"Κανένα από αυτά"
 bundle	onboarding.protectionProfile.proceedUnsure	"Προχώρα χωρίς απάντηση"
 bundle	onboarding.protectionProfile.progressLabel	"Πρόοδος"
+bundle	onboarding.protectionProfile.q.changes.cta	"Τώρα, πόσο σίγουρος/η νιώθεις"
 bundle	onboarding.protectionProfile.q.changes.none	"Τίποτα ιδιαίτερο"
 bundle	onboarding.protectionProfile.q.changes.options.bought_home	"Αγόρασα σπίτι"
 bundle	onboarding.protectionProfile.q.changes.options.health_changed	"Άλλαξε κάτι στην υγεία μου"
@@ -1771,6 +1773,7 @@ bundle	onboarding.protectionProfile.q.people.options.parents_or_others	"Οι γ�
 bundle	onboarding.protectionProfile.q.people.options.partner	"Ο/Η σύντροφός μου"
 bundle	onboarding.protectionProfile.q.people.prompt	"Ποιοι βασίζονται σε σένα σήμερα;"
 bundle	onboarding.protectionProfile.q.people.why	"Για να ξέρουμε ποιον θα επηρέαζε ένα απρόοπτο — όχι μόνο εσένα."
+bundle	onboarding.protectionProfile.q.plans.cta	"Τώρα, πόσο σίγουρος/η νιώθεις"
 bundle	onboarding.protectionProfile.q.plans.options.business	"Δική μου δουλειά"
 bundle	onboarding.protectionProfile.q.plans.options.child	"Παιδί"
 bundle	onboarding.protectionProfile.q.plans.options.home_purchase	"Αγορά σπιτιού"
@@ -1780,6 +1783,7 @@ bundle	onboarding.protectionProfile.q.plans.options.retirement	"Συνταξιο
 bundle	onboarding.protectionProfile.q.plans.options.unknown	"Δεν ξέρω ακόμη"
 bundle	onboarding.protectionProfile.q.plans.prompt	"Τι έρχεται τους επόμενους 12–18 μήνες;"
 bundle	onboarding.protectionProfile.q.plans.why	"Για να σε προλάβουμε — όχι να σε κυνηγήσουμε μετά."
+bundle	onboarding.protectionProfile.q.uncertainty_reason.cta	"Ένα τελευταίο πράγμα"
 bundle	onboarding.protectionProfile.q.uncertainty_reason.options.dont_know_coverage	"Δεν ξέρω τι ακριβώς καλύπτουν"
 bundle	onboarding.protectionProfile.q.uncertainty_reason.options.had_to	"Τα πήρα επειδή έπρεπε — τράπεζα, δουλειά, νόμος"
 bundle	onboarding.protectionProfile.q.uncertainty_reason.options.life_changed	"Η ζωή μου άλλαξε από τότε"

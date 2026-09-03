@@ -197,7 +197,7 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     setDraft({ [field]: value })
                     window.setTimeout(() => void save(step, { [field]: value }), 180)
                 }}
-                cta={{ label: labels.next, onClick: () => chosen && void save(step, { [field]: chosen }), visible: chosen !== undefined && state.status !== "saving" }}
+                cta={{ label: labels.confirmStill, onClick: () => chosen && void save(step, { [field]: chosen }), visible: chosen !== undefined && state.status !== "saving" }}
                 {...common}
                 {...extra}
             />
@@ -346,7 +346,7 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     }}
                     noneLabel={labels.q.changes.none}
                     onNone={() => setDraft({ changes: [], somethingComing: false })}
-                    cta={{ label: labels.next, onClick: () => void save("changes", { changes: changes ?? [], somethingComing: coming }), visible: true, disabled: changes === undefined }}
+                    cta={{ label: labels.q.changes.cta, onClick: () => void save("changes", { changes: changes ?? [], somethingComing: coming }), visible: true, disabled: changes === undefined }}
                     {...common}
                 />
             )
@@ -364,7 +364,7 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     selected={plans}
                     onSelect={() => undefined}
                     onToggle={(value) => toggleIn("plans", value)}
-                    cta={{ label: labels.next, onClick: () => void save("plans", { plans: plans ?? [] }), visible: true, disabled: !plans || plans.length === 0 }}
+                    cta={{ label: labels.q.plans.cta, onClick: () => void save("plans", { plans: plans ?? [] }), visible: true, disabled: !plans || plans.length === 0 }}
                     {...common}
                 />
             )
@@ -385,7 +385,7 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     selected={reasons}
                     onSelect={() => undefined}
                     onToggle={(value) => toggleIn("reasons", value)}
-                    cta={{ label: labels.next, onClick: () => void save("uncertainty_reason", { reasons: reasons ?? [] }), visible: true, disabled: !reasons || reasons.length === 0 }}
+                    cta={{ label: labels.q.uncertainty_reason.cta, onClick: () => void save("uncertainty_reason", { reasons: reasons ?? [] }), visible: true, disabled: !reasons || reasons.length === 0 }}
                     {...common}
                 />
             )
@@ -423,10 +423,16 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     onContinue={() => goto("upload")}
                     onLater={async () => {
                         setBusy(true)
+                        // «Θα το κάνω αργότερα» promises leaving, so it leaves: the
+                        // dashboard, where the picture waits as a card with the upload
+                        // link. A second ask (the advisor) right after a «later» is
+                        // pressure, not an option — that screen follows the UPLOAD
+                        // screen only, where the customer is already in the tail.
                         track.trackSkipped(language, "map")
                         await recordUploadChoice("later").catch(() => undefined)
-                        setBusy(false)
-                        goto("advisor")
+                        track.trackFinished(language, state.answeredSteps.length, false)
+                        const { redirectTo } = await finishProtectionOnboarding().catch(() => ({ redirectTo: "/dashboard" }))
+                        router.push(redirectTo)
                     }}
                 />
             )

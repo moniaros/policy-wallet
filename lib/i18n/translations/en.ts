@@ -3388,6 +3388,7 @@ export const en: TranslationKeys = {
             progressLabel: 'Progress',
             back: 'Back',
             next: 'Continue',
+            confirmStill: 'Yes, still true',
             retry: 'Try again',
             saving: 'Saving…',
             skipForNow: 'Skip for now',
@@ -3496,6 +3497,7 @@ export const en: TranslationKeys = {
                 },
                 changes: {
                     prompt: 'Did anything important change in the last year?',
+                    cta: 'Now, how sure you feel',
                     why: 'Policies are written for the life you had then. Changes are the most common reason they no longer fit.',
                     options: {
                         new_child: 'A child arrived',
@@ -3515,6 +3517,7 @@ export const en: TranslationKeys = {
                 },
                 plans: {
                     prompt: 'What is coming in the next 12–18 months?',
+                    cta: 'Now, how sure you feel',
                     why: 'So we get ahead of it — instead of chasing you afterwards.',
                     options: {
                         home_purchase: 'Buying a home',
@@ -3539,6 +3542,7 @@ export const en: TranslationKeys = {
                 },
                 uncertainty_reason: {
                     prompt: "What makes you unsure?",
+                    cta: 'One last thing',
                     why: 'So we explain exactly what is missing — not everything.',
                     options: {
                         dont_know_coverage: "I don't know exactly what they cover",
