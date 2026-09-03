@@ -92,8 +92,25 @@ seams and hostile review: `docs/handover.md`.
   (`.rs-live`, globals.css) + two small Web Animations tweens; reduced motion flattens everything;
   nothing loops off-screen. Pre-existing, not touched: a hydration attribute mismatch on the
   homepage comes from `PlanRecommender`'s range input (`caret-color` inline style).
-  **Next:** owner review on the preview (four app pages + homepage hero/audience/why-now); the
-  severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
+  **Polish on /protection (same day, `/impeccable polish`):** functional first — the risk lens
+  logged a React missing-key warning on every render (the RiskGraphPanel element is created in the
+  server component and handed to the client view; Flight's frozen element cannot be marked
+  validated, so it now carries a key), and the «Τι ελέγξαμε και είναι εντάξει» rows printed the
+  stored slug («health», «motor») as a title with an English «OK» pill (now the taxonomy label and
+  «Εντάξει»). Then the drift: the coverage summary is ONE card (CardHead · verdict sentence · tally ·
+  expired notice · three fact cells on the sunken surface) instead of a centred kicker block over
+  floating tiles; the empty states, free-tier gate, all-clear list and «Επόμενα βήματα» are cards
+  with soft pills; branch tiles are chip · title · caption with status-token pills and no faded
+  neutral state; life events, monitoring, risk profile, risk graph, household, trends, predictions
+  and the quick-start opener share CardHead, sunken rows, segmented filters on the track and
+  caption labels. Every bar, icon and pill colour is a status token (no `#1A2420`, no
+  `text-black`, no palette literals). One guard learned the token vocabulary
+  (`risk-assessment-panel-mobile`'s unknown-vs-unprotected check only knew `bg-red-50`-style
+  classes). Recaptured both lenses at 1440/390: 0 console errors. Not touched: RiskProfileWizard
+  (not rendered for the fixture profile — its 34 legacy label sites remain), the finding cards
+  (already on the anatomy). Commit `fc6b7cac`.
+  **Next:** owner review on the preview (four app pages + /protection both lenses + homepage
+  hero/audience/why-now); the severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
   the first tab" was the Next dev-tools button; the identical renewal rows were fixture
   duplicates, now collapsed).
 
