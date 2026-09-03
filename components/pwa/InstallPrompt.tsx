@@ -132,21 +132,21 @@ export function InstallPrompt() {
                 // z-40 this later-in-DOM banner painted over the tab labels.
                 className="fixed bottom-[calc(var(--pw-bottom-nav-h,5rem)+env(safe-area-inset-bottom,0px)+0.75rem)] left-3 right-3 z-40 sm:left-auto sm:right-6 sm:w-80"
             >
-                <Card className="p-3.5 shadow-xl border-primary/30 dark:border-mint/20 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
+                <Card className="pw-card pw-pad-tight shadow-xl backdrop-blur">
                     <div className="flex items-start gap-3">
-                        <div className="mt-0.5 w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
+                        <div className="pw-card-chip mt-0.5">
                             <Download className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-sm text-stone-900 dark:text-white">{t.notifications.pwaInstallTitle}</h3>
-                            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">{t.notifications.pwaInstallSubtitle}</p>
+                            <h3 className="text-sm font-semibold text-foreground">{t.notifications.pwaInstallTitle}</h3>
+                            <p className="mt-0.5 text-caption text-muted-foreground">{t.notifications.pwaInstallSubtitle}</p>
                         </div>
                         <button
                             onClick={dismissPrompt}
                             // A bare 16px icon before — the smallest tap target in the
                             // product, on its most transient surface. 44px box, negative
                             // margin so the card keeps its compact padding.
-                            className="-m-2.5 grid h-11 w-11 shrink-0 place-items-center rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            className="-m-2.5 grid h-11 w-11 shrink-0 place-items-center rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             aria-label={t.common.close}
                         >
                             <X className="w-4 h-4" />
@@ -154,7 +154,7 @@ export function InstallPrompt() {
                     </div>
 
                     {isIOS ? (
-                        <div className="mt-3 text-xs flex items-start gap-2 p-2.5 bg-stone-50 dark:bg-stone-800/70 rounded-lg text-stone-600 dark:text-stone-300">
+                        <div className="pw-subcard mt-3 flex items-start gap-2 p-2.5 text-caption text-muted-foreground">
                             <Share className="w-4 h-4 mt-0.5" />
                             <span>{t.notifications.pwaInstallIos}</span>
                         </div>

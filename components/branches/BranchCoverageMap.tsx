@@ -84,14 +84,20 @@ export function BranchCoverageMap({
                             // the question the map exists to answer.
                             entry.state === "attention" && "!bg-status-warning-tint/60 dark:!bg-status-warning-tint/40",
                             // A line the user does not hold reads as an empty
-                            // slot, not an alarm: dashed hairline, no tint.
-                            (entry.state === "neutral" || entry.state === "not_held") &&
-                                "border-dashed border border-border !bg-transparent"
+                            // slot, not an alarm: the same sunken tile, its state
+                            // carried by the grey pill alone — the label stays at
+                            // full contrast (contrast-tokens guards this). The
+                            // dashed outline this carried turned nine of ten tiles
+                            // into dotted boxes on a fresh wallet.
+                            (entry.state === "neutral" || entry.state === "not_held") && ""
                         )}
                     >
                         <span className="flex items-center gap-2">
                             <entry.icon className="h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden />
-                            <span className="min-w-0 flex-1 text-sm font-semibold text-foreground @sm:truncate">
+                            {/* Wraps rather than truncates: «Σύνταξη & Αποταμίευση»
+                                clipped to «Αποταμ…» three-up, and the label is the
+                                tile's whole meaning. */}
+                            <span className="min-w-0 flex-1 text-sm font-semibold leading-snug text-foreground [overflow-wrap:anywhere]">
                                 {entry.label}
                             </span>
                         </span>

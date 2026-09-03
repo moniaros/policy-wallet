@@ -26,7 +26,7 @@ export function LifeEventPromptCard({
     return (
         <Link
             href="/protection#life-events"
-            className="flex min-h-11 flex-col gap-3 rounded-xl border border-primary/15 bg-primary-tint px-4 py-3.5 transition-colors hover:border-primary/40 dark:border-mint/20 dark:bg-primary/10 sm:flex-row sm:items-center"
+            className="pw-card pw-pad flex min-h-11 flex-col gap-3 transition-colors hover:border-primary/40 sm:flex-row sm:items-center"
             aria-label={labels.cta}
         >
             <span className="pw-card-chip">
@@ -41,7 +41,7 @@ export function LifeEventPromptCard({
                         {chips.map((chip) => (
                             <span
                                 key={chip.id}
-                                className="inline-flex items-center rounded-full border border-border bg-card px-2.5 py-1 text-caption font-medium text-foreground/70"
+                                className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-caption font-medium text-foreground"
                             >
                                 {chip.label}
                             </span>
@@ -49,7 +49,7 @@ export function LifeEventPromptCard({
                     </span>
                 )}
             </span>
-            <span className="inline-flex flex-shrink-0 items-center gap-1 text-xs font-semibold text-primary dark:text-mint">
+            <span className="inline-flex flex-shrink-0 items-center gap-1 text-sm font-semibold text-primary dark:text-mint">
                 {labels.cta}
                 <ArrowRight className="h-3 w-3" aria-hidden />
             </span>

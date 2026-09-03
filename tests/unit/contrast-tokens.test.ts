@@ -87,9 +87,14 @@ describe('container opacity does not dim informational text', () => {
         const src = readFileSync('components/branches/BranchCoverageMap.tsx', 'utf-8')
         // Match the applied class, not the comment that explains the old bug.
         expect(src).not.toMatch(/"[^"\n]*opacity-70[^"\n]*"/)
+        // The unheld/unassessed branch adds NOTHING to the tile — no opacity,
+        // no muted label. It used to add a dashed outline (2026-09-03: retired,
+        // nine dotted boxes on a fresh wallet read as a form to fill); the
+        // state is carried by the grey pill, the label stays at full contrast.
         expect(src).toMatch(
-            /\(entry\.state === "neutral" \|\| entry\.state === "not_held"\) &&[\s\n]*"border-dashed/
+            /\(entry\.state === "neutral" \|\| entry\.state === "not_held"\) && ""/
         )
+        expect(src).not.toMatch(/\(entry\.state === "neutral" \|\| entry\.state === "not_held"\) &&[\s\n]*"[^"]*(opacity|text-muted-foreground)/)
     })
 
     it('the EmptyState preview is not dimmed — it teaches what the feature shows', () => {
