@@ -16,6 +16,26 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **Onboarding first stage — the Personal Protection Profile, BUILT on
+  `feat/onboarding-protection-profile` (off NEW-UI @ `addfb7e6`), not yet pushed.** Replaces the
+  five-step intake (`app/onboarding/flow.tsx`, deleted) with a life-first discovery: intent →
+  people → home → income → obligations → mobility → what would hurt most → changes (+plans) →
+  confidence (+why) → guidance → the protection map («Η εικόνα σου μέχρι τώρα») → «Τώρα ας δούμε
+  τι έχεις ήδη» upload → optional advisor. One question per screen, informal singular (owner's
+  call, onboarding only), «Γιατί ρωτάμε» under every heading, «Δεν είμαι σίγουρος/η» as an inline
+  panel that never dead-ends, constant denominator of ten, back on every screen, refresh-safe
+  resume, honest upload status. Facts go to the typed `PolicyholderProfile` columns through a
+  non-overwriting patch (`answeredFields`), statements to the new `protection_profiles` table
+  (migrated dev + prod 2026-09-03, DSR erase/export wired), priorities are DERIVED on read
+  (`deriveProtectionPriorities`) and never a score — needs → coverage → gap stay three layers.
+  Dashboard: entry gate once (no policies, no profile, no skip; every screen carries a skip),
+  «Η εικόνα σας» priorities card or a resume card above the hero, plan step 0, the AI risk prompt
+  receives stated priorities as CONTEXT only, recommendation order uses them as a TIE-BREAK only.
+  Typed journey events on every step plus the server mirror. Guards moved with the code
+  (aria-pressed, upload-accept, asfalistírio, accents, clamp register, icon map, journey-events
+  registry, upload-status honesty replaces the «AI Σύνοψη» subtitle guard). tsc, eslint, i18n,
+  utf8, api-auth clean. **Pending:** browser verification of the five personas at 390/1440,
+  keyboard + reduced-motion run, red-team pass, PR against NEW-UI (stacks after #290/#291).
 - **B2C app redesign — Direction A BUILT on `feat/b2c-direction-a` (`b73421e6`), draft PR #288
   against NEW-UI, awaiting the owner's look on the preview.** Owner set aside `feat/grafi-b2c`
   (PR #287) for the policyholder app and picked, from the proposals artifact
@@ -186,10 +206,13 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
-1. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix).
-2. Restyle the remaining legacy bands (WhyDifferent, ClearLimits, FAQ, final CTA — how-it-works and who-it-is-for done)
-   onto Grafí and finish the G4 primitive remainder.
-3. When legal returns Terms §3 + IDD: de-noindex the partners pair and add its hreflang link.
+1. Owner: walk the onboarding preview on a phone (PR to follow) — the five personas, the
+   «βοήθησέ με» path, the map, the upload — and decide whether the singular register should
+   spread to the app.
+2. Ship in stack order: #290 (Steady phone layer) → #291 (B2B batch B) → the onboarding PR; each
+   merge deploys via deploy.yml, so the journey smoke runs on the preview first.
+3. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix), then the
+   remaining Grafí bands and the Terms §3 + IDD de-noindex when legal returns.
 
 ---
 
