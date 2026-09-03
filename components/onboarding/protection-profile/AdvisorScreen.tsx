@@ -164,15 +164,20 @@ export const AdvisorScreen = forwardRef<HTMLHeadingElement, {
                 </div>
             )}
 
+            {/* ONE exit. The screen is optional, so until there is something to
+                finish with (a connection or an invite sent) the only way out is
+                the soft «later» — a primary «go home» next to it read as two
+                exits and made the invite look like the thing being skipped. */}
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center">
-                <button type="button" onClick={() => onFinish(connected)} disabled={busy} className="pw-primary-button w-full sm:w-auto">
-                    {labels.finish}
-                </button>
-                {!connected ? (
+                {connected || inviteSent ? (
+                    <button type="button" onClick={() => onFinish(connected)} disabled={busy} className="pw-primary-button w-full sm:w-auto">
+                        {labels.finish}
+                    </button>
+                ) : (
                     <button type="button" onClick={() => onFinish(null)} disabled={busy} className="pw-soft-button w-full sm:w-auto">
                         {labels.later}
                     </button>
-                ) : null}
+                )}
             </div>
         </section>
     )
