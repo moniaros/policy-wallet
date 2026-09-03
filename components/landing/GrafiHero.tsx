@@ -15,28 +15,32 @@ import Link from "next/link"
 import { CATEGORY, CTA_REASSURANCE, HERO_EMAIL_CTA, HERO_SUBHEAD, PRIMARY_ACTION, PROMISE, pick, type MarketingLocale } from "@/lib/marketing/positioning"
 import { authHref, localizeHref } from "@/lib/seo/locale-links"
 import { EmailCapture, DeviceFrame } from "@/src/design-system"
-import { AppScreen, DashboardScreen, RenewalsScreen, CoverageMapScreen, SampleStamp } from "@/components/landing/real-screens/RealScreens"
+import { AppScreen, DashboardScreen, WalletScreen, CoverageMapScreen, SampleStamp, type AppTab } from "@/components/landing/real-screens/RealScreens"
 
 export function GrafiHero({ locale }: { locale: MarketingLocale }) {
     const router = useRouter()
     const t = (el: string, en: string) => (locale === "el" ? el : en)
 
     /**
-     * REAL app screens — the dashboard, the renewals timeline and the coverage
-     * map as the signed-in app renders them, on fixture data — each stamped as
-     * a sample. The ring, the chips and the fake rows this frame used to show
-     * were a product the app does not look like.
+     * REAL app screens — one rehearsed session of the app: the home screen,
+     * the wallet, the coverage map — as the signed-in app renders them, on
+     * fixture data. The frame navigates between them the way the app does
+     * (DeviceFrame), and each screen plays its own entrance when it becomes
+     * the live one (AppScreen). The ring, the chips and the fake rows this
+     * frame used to show were a product the app does not look like.
      */
-    const screen = (node: React.ReactNode) => (
-        <div className="relative h-full overflow-hidden">
-            <AppScreen locale={locale} defaultScale={284 / 390}>{node}</AppScreen>
-            <SampleStamp locale={locale} className="absolute inset-x-0 bottom-0 bg-surface-base/95 py-g-2" />
-        </div>
-    )
+    const screen = (tab: AppTab, node: React.ReactNode) =>
+        function liveScreen(active: boolean) {
+            return (
+                <AppScreen locale={locale} fixed active={active} tab={tab} defaultScale={284 / 390}>
+                    {node}
+                </AppScreen>
+            )
+        }
     const screens = [
-        { id: "home", label: t("Αρχική — τι περιέχει ο φάκελος", "Home — what the folder holds"), content: screen(<DashboardScreen locale={locale} />) },
-        { id: "renewals", label: t("Χρονοδιάγραμμα ανανεώσεων", "Renewals timeline"), content: screen(<RenewalsScreen locale={locale} />) },
-        { id: "map", label: t("Χάρτης κάλυψης", "Coverage map"), content: screen(<CoverageMapScreen locale={locale} />) },
+        { id: "home", label: t("Αρχική — τι περιέχει ο φάκελος", "Home — what the folder holds"), content: screen("home", <DashboardScreen locale={locale} />) },
+        { id: "wallet", label: t("Ο φάκελός μου", "My wallet"), content: screen("wallet", <WalletScreen locale={locale} />) },
+        { id: "map", label: t("Χάρτης κάλυψης", "Coverage map"), content: screen("protection", <CoverageMapScreen locale={locale} />) },
     ]
 
     return (
@@ -69,7 +73,10 @@ export function GrafiHero({ locale }: { locale: MarketingLocale }) {
                         </Link>
                     </div>
                 </div>
-                <DeviceFrame screens={screens} width={300} padded={false} className="justify-self-center" />
+                <div className="flex flex-col items-center gap-g-2 justify-self-center">
+                    <DeviceFrame screens={screens} width={300} padded={false} />
+                    <SampleStamp locale={locale} />
+                </div>
             </div>
         </section>
     )

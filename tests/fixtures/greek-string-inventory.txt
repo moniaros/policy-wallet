@@ -22,7 +22,7 @@
 # bundle entries: 2847
 # inline entries: 4773 across 214 files
 # ternary entries: 285 across 44 files
-# call entries: 1217 across 88 files
+# call entries: 1220 across 88 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -8844,9 +8844,9 @@ call	components/landing/ClearLimits.tsx	"Σας λέμε τι γράφει το 
 call	components/landing/ClearLimits.tsx	"Τι δεν κάνουμε, γραμμένο πριν μας δώσετε το email σας."
 call	components/landing/GrafiHero.tsx	"Ή κάντε τον έλεγχο αναγκών σε 6 βήματα →"
 call	components/landing/GrafiHero.tsx	"Αρχική — τι περιέχει ο φάκελος"
+call	components/landing/GrafiHero.tsx	"Ο φάκελός μου"
 call	components/landing/GrafiHero.tsx	"Το email σας"
 call	components/landing/GrafiHero.tsx	"Χάρτης κάλυψης"
-call	components/landing/GrafiHero.tsx	"Χρονοδιάγραμμα ανανεώσεων"
 call	components/landing/HeroSlides.tsx	"Παύση εναλλαγής"
 call	components/landing/HeroSlides.tsx	"Συνέχεια εναλλαγής"
 call	components/landing/HeroSlides.tsx	"Τι κάνει το PolicyWallet"
@@ -8989,6 +8989,9 @@ call	components/landing/grafi/WhoItIsFor.tsx	"Ξεκάθαρα."
 call	components/landing/grafi/WhoItIsFor.tsx	"σωστή κάλυψη, τη σωστή στιγμή."
 call	components/landing/real-screens/RealScreens.tsx	"Α"
 call	components/landing/real-screens/RealScreens.tsx	"Ανανέωση σε 7 ημέρες"
+call	components/landing/real-screens/RealScreens.tsx	"Ασφαλιστική Α"
+call	components/landing/real-screens/RealScreens.tsx	"Ασφαλιστική Α"
+call	components/landing/real-screens/RealScreens.tsx	"Ασφαλιστική Β"
 call	components/landing/real-screens/RealScreens.tsx	"Αυτοκίνητο: ανανέωση σε 18 ημέρες"
 call	components/landing/real-screens/RealScreens.tsx	"Β"
 call	components/landing/real-screens/RealScreens.tsx	"Γ"

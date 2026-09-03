@@ -1033,6 +1033,51 @@ pre {
      (--pw-radius-button: 9999px); MASTER.md flagged retiring it as backlog.
      Its 9 call sites now use .pw-primary-button / .pw-secondary-button. */
 
+  /* ── Real app screens on the marketing site (components/landing/real-screens)
+     A screen that goes live (.rs-live) settles its cards in with a short
+     stagger (each card's --rs-i is set by the screen) and draws the tab bar's
+     active mark; the bar fills and count tick-ups are Web Animations in the
+     same module. Cards are visible before the class lands, so a script that
+     never runs costs nothing. The global reduced-motion rule flattens these. */
+  @keyframes rs-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes rs-mark {
+    from {
+      transform: translateX(-50%) scaleX(0);
+    }
+    to {
+      transform: translateX(-50%) scaleX(1);
+    }
+  }
+  @keyframes rs-push {
+    from {
+      opacity: 0;
+      transform: translateX(28px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .rs-screen.rs-live .rs-content {
+    animation: rs-push 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .rs-screen.rs-live .pw-card {
+    animation: rs-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(140ms + var(--rs-i, 0) * 90ms);
+  }
+  .rs-screen.rs-live .rs-mark {
+    animation: rs-mark 420ms cubic-bezier(0.16, 1, 0.3, 1) 520ms both;
+  }
+
   .animate-blob {
     animation: blob 7s infinite;
   }

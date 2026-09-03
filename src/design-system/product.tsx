@@ -103,7 +103,8 @@ export function DeviceFrame({
     width = 248,
     padded = true,
 }: {
-    screens: { id: string; label: string; content: ReactNode }[]
+    /** `content` may be a function of `active`, so a screen can play its own entrance when it becomes the live one. */
+    screens: { id: string; label: string; content: ReactNode | ((active: boolean) => ReactNode) }[]
     interval?: number
     className?: string
     /** Outer width in px. The hero shows REAL app screens (390px layouts scaled down), which need a wider frame to stay legible. */
@@ -149,14 +150,19 @@ export function DeviceFrame({
                         <div
                             key={s.id}
                             aria-hidden={i !== index}
-                            // reduced motion: no fade, first screen static
+                            // The outgoing screen leaves fast and the incoming one
+                            // arrives on a short fade; a screen that knows it is
+                            // active (a real app screen) pushes its own content in
+                            // while its chrome stays put, which is how the app
+                            // itself switches tabs. Reduced motion: no transition,
+                            // first screen static.
                             className={cn(
-                                "absolute inset-0 transition-opacity duration-[450ms] [transition-timing-function:var(--ease-out-g)] motion-reduce:transition-none",
+                                "absolute inset-0 transition-opacity [transition-timing-function:var(--ease-out-g)] motion-reduce:transition-none",
                                 padded ? "p-g-4" : "p-0",
-                                i === index ? "opacity-100" : "pointer-events-none opacity-0"
+                                i === index ? "opacity-100 duration-300" : "pointer-events-none opacity-0 duration-150"
                             )}
                         >
-                            {s.content}
+                            {typeof s.content === "function" ? s.content(i === index) : s.content}
                         </div>
                     ))}
                 </div>

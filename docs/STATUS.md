@@ -83,8 +83,17 @@ seams and hostile review: `docs/handover.md`.
   «Γιατί τώρα» band; each screen brings a pinned `LanguageProvider` + `TranslationsProvider` (the
   public layouts mount neither), is `inert`, and is stamped as a sample; the mock-honesty guard now
   scans that file. BranchCoverageMap sizes to its container (`@container` / `@sm:`), which is what
-  keeps it two-up inside a phone frame on a wide viewport. **Next:** owner review on the preview
-  (four app pages + homepage hero/audience/why-now); the severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
+  keeps it two-up inside a phone frame on a wide viewport. **Motion (same day, `/impeccable animate`):**
+  the phone screens now behave like the app — a status bar and the app's own tab bar frame each
+  screen; when a screen goes live (the hero frame switching to it, a static phone scrolling into
+  view) its content pushes in from the right while the chrome stays put, cards settle in with a
+  short stagger, bars fill to their values and counts tick up, and the tab bar's mark lands on the
+  screen's tab; the hero now plays home → wallet → coverage map as one session. CSS keyframes
+  (`.rs-live`, globals.css) + two small Web Animations tweens; reduced motion flattens everything;
+  nothing loops off-screen. Pre-existing, not touched: a hydration attribute mismatch on the
+  homepage comes from `PlanRecommender`'s range input (`caret-color` inline style).
+  **Next:** owner review on the preview (four app pages + homepage hero/audience/why-now); the
+  severity tone decision. Two proposal-backlog claims were retracted/corrected in the artifact (the "avatar over
   the first tab" was the Next dev-tools button; the identical renewal rows were fixture
   duplicates, now collapsed).
 

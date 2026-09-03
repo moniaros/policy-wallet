@@ -274,7 +274,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                         )}
                     >
                         {/* The REAL coverage map the app renders, on sample data. */}
-                        <AppScreen locale={locale} defaultScale={280 / 390}>
+                        <AppScreen locale={locale} tab="protection" defaultScale={280 / 390}>
                             <CoverageMapScreen locale={locale} />
                         </AppScreen>
                         <p className="mt-g-3 flex flex-wrap items-center gap-g-2 text-sm text-fg-primary">
@@ -348,7 +348,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     >
                         {/* The REAL client rows the advisor app renders — lettered
                             placeholders («Πελάτης Α»), never an invented surname. */}
-                        <AppScreen locale={locale} defaultScale={280 / 390}>
+                        <AppScreen locale={locale} chrome="bar" defaultScale={280 / 390}>
                             <AdvisorScreen locale={locale} />
                         </AppScreen>
                     </PhoneSample>

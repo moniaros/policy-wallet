@@ -82,7 +82,7 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                                 : "Example: the app's home screen — three policies, one expiring soon, two findings to review."
                         }
                     >
-                        <AppScreen locale={locale} defaultScale={302 / 390}>
+                        <AppScreen locale={locale} tab="home" defaultScale={302 / 390}>
                             <DashboardScreen locale={locale} />
                         </AppScreen>
                     </StaticPhone>
