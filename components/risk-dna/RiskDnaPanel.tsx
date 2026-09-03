@@ -18,7 +18,8 @@
  */
 
 import { useState } from "react"
-import { ChevronDown, Minus, TrendingDown, TrendingUp } from "lucide-react"
+import { ChevronDown, Dna, Minus, TrendingDown, TrendingUp } from "lucide-react"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import type { Bilingual } from "@/lib/services/gap-engine/risk-types"
 
 type Trend = "improving" | "worsening" | "steady" | "unknown"
@@ -58,12 +59,12 @@ interface RiskDnaPanelProps {
     language: "en" | "el"
 }
 
-/** Bar colour follows the SCORE, so the page is scannable without reading. */
+/** Bar colour follows the SCORE, so the page is scannable without reading — on the status tokens. */
 function barTone(score: number | null): string {
-    if (score === null) return "bg-black/15 dark:bg-white/15"
-    if (score >= 80) return "bg-primary dark:bg-mint"
-    if (score >= 50) return "bg-amber-500"
-    return "bg-red-500"
+    if (score === null) return "bg-muted-foreground/30"
+    if (score >= 80) return "bg-status-success"
+    if (score >= 50) return "bg-status-warning"
+    return "bg-status-danger"
 }
 
 export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
@@ -88,10 +89,8 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
     return (
         <div className="pw-card pw-pad">
             <div className="mb-4">
-                <h2 className="text-lg font-semibold text-black dark:text-white">
-                    {t("Το προφίλ κινδύνου σας", "Your risk profile")}
-                </h2>
-                <p className="text-caption text-muted-foreground">
+                <CardHead icon={Dna} title={t("Το προφίλ κινδύνου σας", "Your risk profile")} />
+                <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
                     {t(
                         "Εννέα διαστάσεις της ζωής σας. Δεν αθροίζονται σε έναν βαθμό — είναι φακοί, όχι βαθμολόγιο.",
                         "Nine dimensions of your life. They do not add up to one number — they are lenses, not a scoreboard.",
@@ -115,11 +114,11 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                 type="button"
                                 onClick={() => setOpenId(isOpen ? null : dimension.id)}
                                 aria-expanded={isOpen}
-                                className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-1 py-2 text-left transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+                                className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-1 py-2 text-left transition-colors hover:bg-muted/60"
                             >
                                 <span className="min-w-0 flex-1">
                                     <span className="flex items-baseline justify-between gap-2">
-                                        <span className="truncate text-sm font-semibold text-black dark:text-white">
+                                        <span className="truncate text-sm font-semibold text-foreground">
                                             {dimension.label[lang] || dimension.label.en}
                                         </span>
                                         <span className="flex flex-shrink-0 items-center gap-1.5">
@@ -127,16 +126,16 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                                 <TrendIcon
                                                     className={`h-3 w-3 ${
                                                         dimension.trend === "improving"
-                                                            ? "text-primary dark:text-mint"
+                                                            ? "text-status-success"
                                                             : dimension.trend === "worsening"
-                                                              ? "text-red-600 dark:text-red-400"
+                                                              ? "text-status-danger"
                                                               : "text-muted-foreground"
                                                     }`}
                                                     aria-hidden="true"
                                                 />
                                             )}
                                             <span
-                                                className="text-sm font-bold tabular-nums text-black dark:text-white"
+                                                className="text-sm font-semibold tabular-nums text-foreground"
                                                 data-fact="riskDimension.score"
                                                 data-fact-subject={dimension.id}
                                             >
@@ -153,7 +152,7 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                         aria-valuemin={0}
                                         aria-valuemax={100}
                                         aria-label={dimension.label[lang] || dimension.label.en}
-                                        className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full bg-black/8 dark:bg-white/10"
+                                        className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full bg-muted"
                                     >
                                         <span
                                             className={`block h-full rounded-full transition-all ${barTone(dimension.score)}`}
@@ -163,14 +162,14 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                 </span>
 
                                 <ChevronDown
-                                    className={`h-4 w-4 flex-shrink-0 text-black/35 transition-transform dark:text-white/35 ${isOpen ? "rotate-180" : ""}`}
+                                    className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
                                     aria-hidden="true"
                                 />
                             </button>
 
                             {isOpen && (
-                                <div className="space-y-3 rounded-xl bg-black/[0.02] px-3 py-3 dark:bg-white/[0.03]">
-                                    <p className="text-caption italic leading-relaxed text-black/60 dark:text-white/60">
+                                <div className="pw-subcard mt-1 space-y-3 px-3 py-3">
+                                    <p className="text-caption italic leading-relaxed text-muted-foreground">
                                         {dimension.question[lang] || dimension.question.en}
                                     </p>
 
@@ -196,11 +195,11 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                     />
 
                                     {dimension.ifActioned && (
-                                        <div className="rounded-lg border border-primary/20 bg-primary/5 p-2.5 dark:border-primary/25 dark:bg-primary/10">
-                                            <p className="text-kicker font-bold uppercase tracking-wider text-primary/90 dark:text-mint/90">
+                                        <div className="rounded-lg bg-status-success-tint p-2.5">
+                                            <p className="text-caption font-semibold text-status-success">
                                                 {t("Τι θα βελτίωνε", "What that would improve")}
                                             </p>
-                                            <p className="mt-0.5 text-xs leading-relaxed text-black/75 dark:text-white/75">
+                                            <p className="mt-0.5 text-caption leading-relaxed text-foreground/80">
                                                 {dimension.ifActioned.statement[lang] ||
                                                     dimension.ifActioned.statement.en}
                                             </p>
@@ -214,7 +213,7 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                         for themselves. */}
                                     {dimension.risks.length > 0 && (
                                         <div>
-                                            <p className="text-kicker font-bold uppercase tracking-widest text-muted-foreground">
+                                            <p className="text-caption font-semibold text-muted-foreground">
                                                 {t("Τι περιλαμβάνει", "What this covers")}
                                             </p>
                                             <ul className="mt-1 space-y-2">
@@ -227,16 +226,16 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                                             <span
                                                                 className={`mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${
                                                                     isOpen
-                                                                        ? "bg-amber-500"
-                                                                        : "bg-primary dark:bg-mint"
+                                                                        ? "bg-status-warning"
+                                                                        : "bg-status-success"
                                                                 }`}
                                                                 aria-hidden="true"
                                                             />
                                                             <span className="min-w-0">
-                                                                <span className="block text-xs font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+                                                                <span className="block text-caption font-semibold text-foreground [overflow-wrap:anywhere]">
                                                                     {risk.name[lang] || risk.name.en}
                                                                 </span>
-                                                                <span className="mt-0.5 block text-caption leading-relaxed text-black/65 dark:text-white/60 [overflow-wrap:anywhere]">
+                                                                <span className="mt-0.5 block text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
                                                                     {isOpen
                                                                         ? risk.whyItMatters[lang] || risk.whyItMatters.en
                                                                         : risk.whyItApplies[lang] || risk.whyItApplies.en}
@@ -256,11 +255,11 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                     )}
 
                                     <div>
-                                        <p className="text-kicker font-bold uppercase tracking-widest text-muted-foreground">
+                                        <p className="text-caption font-semibold text-muted-foreground">
                                             {confidenceLabel(dimension.confidence)}
                                         </p>
                                         {dimension.confidenceLimit && (
-                                            <p className="mt-0.5 text-caption leading-relaxed text-black/60 dark:text-white/60">
+                                            <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground">
                                                 {dimension.confidenceLimit[lang] || dimension.confidenceLimit.en}
                                             </p>
                                         )}
@@ -273,7 +272,7 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
             </ul>
 
             {notApplicable.length > 0 && (
-                <p className="mt-4 border-t border-black/8 pt-3 text-caption leading-relaxed text-muted-foreground dark:border-white/10">
+                <p className="mt-4 border-t border-border pt-3 text-caption leading-relaxed text-muted-foreground">
                     {t(
                         `Δεν σας αφορούν: ${notApplicable.map((d) => d.label.el).join(", ")}. Δεν βαθμολογούνται επειδή δεν υπάρχει έκθεση προς μέτρηση.`,
                         `Not yours to worry about: ${notApplicable.map((d) => d.label.en).join(", ")}. Unscored because there is no exposure to measure.`,
@@ -298,8 +297,8 @@ function Block({
     if (!body && !fallback) return null
     return (
         <div>
-            <p className="text-kicker font-bold uppercase tracking-widest text-muted-foreground">{title}</p>
-            <p className="mt-0.5 text-xs leading-relaxed text-black/75 dark:text-white/75 [overflow-wrap:anywhere]">
+            <p className="text-caption font-semibold text-muted-foreground">{title}</p>
+            <p className="mt-0.5 text-caption leading-relaxed text-foreground/80 [overflow-wrap:anywhere]">
                 {body ? body[lang] || body.en : fallback}
             </p>
         </div>

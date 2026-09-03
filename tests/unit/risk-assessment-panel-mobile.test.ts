@@ -92,7 +92,12 @@ describe("the risk graph panel is mobile-first", () => {
         const styles = GRAPH.slice(GRAPH.indexOf("STATE_STYLES"), GRAPH.indexOf("export function RiskGraphPanel"))
         const unprotected = styles.slice(styles.indexOf("unprotected:"), styles.indexOf("partially_protected:"))
         const unknown = styles.slice(styles.indexOf("unknown:"), styles.indexOf("protected:", styles.indexOf("unknown:")))
-        const palette = (s: string) => (s.match(/\b(?:border|bg|text)-([a-z]+)-\d{2,3}\b/g) ?? []).join(",")
+        // The colour vocabulary is the status TOKENS since Direction A
+        // (2026-09-03) — `bg-status-info-tint text-status-info` against
+        // `bg-status-danger-tint text-status-danger` — with the Tailwind
+        // palette form kept so a regression to hand-picked hues still counts.
+        const palette = (s: string) =>
+            (s.match(/\b(?:border|bg|text)-(?:status-[a-z]+(?:-tint|-edge)?|[a-z]+-\d{2,3})\b/g) ?? []).join(",")
         expect(palette(unknown)).not.toBe(palette(unprotected))
         expect(palette(unknown).length).toBeGreaterThan(0)
     })

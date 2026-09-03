@@ -15,12 +15,13 @@ import {
     AlertTriangle,
     ArrowRight,
     CheckCircle2,
+    Compass,
     Eye,
-    Minus,
     TrendingDown,
     TrendingUp,
     Users,
 } from "lucide-react"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { RiskDnaPanel, type DimensionView } from "./RiskDnaPanel"
 import type { Bilingual } from "@/lib/services/gap-engine/risk-types"
 
@@ -103,6 +104,12 @@ export interface RiskIntelligenceViewProps {
     wizardHref?: string
 }
 
+/** The verdict icon's colour is a status token — never a palette literal. */
+const VERDICT_ICON: Record<WatchView["verdict"], string> = {
+    clear: "text-status-success",
+    attention: "text-status-warning",
+    action: "text-status-danger",
+}
 
 export function RiskIntelligenceView({
     language,
@@ -132,7 +139,7 @@ export function RiskIntelligenceView({
     const movingTrends = trends.filter((tr) => tr.direction === "improving" || tr.direction === "worsening")
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* ── The completeness metric was REMOVED here (H-005) ──────
                 «Πόσο καλά σας γνωρίζουμε»: a 0-100 index, a coloured band
                 verdict («Καλή εικόνα»), and eight component percentages with
@@ -169,32 +176,24 @@ export function RiskIntelligenceView({
 
             {/* ── Continuous monitoring ─────────────────────────────── */}
             <div className="pw-card pw-pad">
-                <div className="mb-3 flex items-center gap-2">
-                    <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                    <h2 className="text-lg font-semibold text-black dark:text-white">
-                        {t("Τι παρακολουθούμε", "What we are watching")}
-                    </h2>
-                </div>
+                <CardHead icon={Eye} title={t("Τι παρακολουθούμε", "What we are watching")} />
 
-                <ul className="space-y-2.5">
+                <ul className="mt-4 space-y-3">
                     {[...active, ...clear].map((signal) => (
                         <li key={signal.id} className="flex items-start gap-2.5">
                             <span className="mt-0.5 flex-shrink-0">
                                 {signal.verdict === "clear" ? (
-                                    <CheckCircle2 className="h-4 w-4 text-primary dark:text-mint" aria-hidden="true" />
+                                    <CheckCircle2 className={`h-4 w-4 ${VERDICT_ICON.clear}`} aria-hidden="true" />
                                 ) : (
-                                    <AlertTriangle
-                                        className={`h-4 w-4 ${signal.verdict === "action" ? "text-red-600 dark:text-red-400" : "text-amber-600 dark:text-amber-400"}`}
-                                        aria-hidden="true"
-                                    />
+                                    <AlertTriangle className={`h-4 w-4 ${VERDICT_ICON[signal.verdict]}`} aria-hidden="true" />
                                 )}
                             </span>
                             <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-semibold text-black dark:text-white">
+                                <span className="block text-sm font-semibold text-foreground">
                                     {signal.label[lang] || signal.label.en}
                                 </span>
                                 {(signal.detailParts?.length || signal.detail) && (
-                                    <span className="mt-0.5 block text-caption leading-relaxed text-black/70 dark:text-white/70 [overflow-wrap:anywhere]">
+                                    <span className="mt-0.5 block text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
                                         {signal.detailParts?.length
                                             ? signal.detailParts.map((part, i) => (
                                                   <span key={i} data-count={part.countKey} data-fact={part.factKey}>
@@ -231,12 +230,7 @@ export function RiskIntelligenceView({
                 household.assetCount > 0 ||
                 household.obligationCount > 0) && (
             <div className="pw-card pw-pad">
-                <div className="mb-2 flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                    <h2 className="text-lg font-semibold text-black dark:text-white">
-                        {t("Το νοικοκυριό", "Your household")}
-                    </h2>
-                </div>
+                <CardHead icon={Users} title={t("Το νοικοκυριό", "Your household")} />
 
                 {/* Two columns only from 400px: four stat tiles at 320px leave
                     ~70px each, which cannot hold a Greek label. */}
@@ -244,14 +238,14 @@ export function RiskIntelligenceView({
                     same keys — the cross-check is the point: both derive from
                     one graph, and the attributes make an eventual drift a
                     measured failure instead of an argument. */}
-                <dl className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
+                <dl className="mt-4 grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
                     <Stat label={t("Μέλη", "People")} value={household.memberCount} countKey="household.memberCount" />
                     <Stat label={t("Εξαρτώμενα", "Dependants")} value={household.dependantCount} countKey="household.dependantCount" />
                     <Stat label={t("Περιουσιακά στοιχεία", "Assets")} value={household.assetCount} countKey="household.assetCount" />
                     <Stat label={t("Υποχρεώσεις", "Obligations")} value={household.obligationCount} countKey="household.obligationCount" />
                 </dl>
 
-                <p className="mt-3 text-caption leading-relaxed text-black/70 dark:text-white/70">
+                <p className="mt-3 text-caption leading-relaxed text-muted-foreground">
                     {household.whyItMatters[lang] || household.whyItMatters.en}
                 </p>
                 {household.nextAction && (
@@ -265,20 +259,18 @@ export function RiskIntelligenceView({
             {/* ── Trends ────────────────────────────────────────────── */}
             {movingTrends.length > 0 && (
                 <div className="pw-card pw-pad">
-                    <h2 className="mb-3 text-lg font-semibold text-black dark:text-white">
-                        {t("Πού κινείται", "Which way it is moving")}
-                    </h2>
-                    <ul className="space-y-2">
+                    <CardHead icon={TrendingUp} title={t("Πού κινείται", "Which way it is moving")} />
+                    <ul className="mt-4 space-y-2">
                         {movingTrends.map((trend) => (
                             <li key={trend.dimension} className="flex items-start gap-2.5">
                                 <span className="mt-0.5 flex-shrink-0">
                                     {trend.direction === "improving" ? (
-                                        <TrendingUp className="h-4 w-4 text-primary dark:text-mint" aria-hidden="true" />
+                                        <TrendingUp className="h-4 w-4 text-status-success" aria-hidden="true" />
                                     ) : (
-                                        <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" aria-hidden="true" />
+                                        <TrendingDown className="h-4 w-4 text-status-danger" aria-hidden="true" />
                                     )}
                                 </span>
-                                <span className="min-w-0 text-caption leading-relaxed text-black/75 dark:text-white/75 [overflow-wrap:anywhere]">
+                                <span className="min-w-0 text-caption leading-relaxed text-foreground/80 [overflow-wrap:anywhere]">
                                     {trend.whatChanged
                                         ? trend.whatChanged[lang] || trend.whatChanged.en
                                         : trend.label[lang] || trend.label.en}
@@ -292,14 +284,12 @@ export function RiskIntelligenceView({
             {/* ── Prediction hooks ──────────────────────────────────── */}
             {predictions.length > 0 && (
                 <div className="pw-card pw-pad">
-                    <h2 className="text-lg font-semibold text-black dark:text-white">
-                        {t("Τι βλέπουμε μπροστά", "What we can see ahead")}
-                    </h2>
+                    <CardHead icon={Compass} title={t("Τι βλέπουμε μπροστά", "What we can see ahead")} />
                     {/* Stated as observations, not forecasts. "You are 64 with no
                         pension arrangement" is a fact about today; "73% likely to
                         retire within 18 months" is a number this product cannot
                         honestly produce yet. */}
-                    <p className="mt-1 text-caption text-muted-foreground">
+                    <p className="mt-2 text-caption text-muted-foreground">
                         {t(
                             "Παρατηρήσεις για το σήμερα που αφορούν το αύριο — όχι προβλέψεις.",
                             "Observations about today that bear on tomorrow — not forecasts.",
@@ -308,11 +298,11 @@ export function RiskIntelligenceView({
                     <ul className="mt-3 space-y-2.5">
                         {predictions.map((prediction) => (
                             <li key={prediction.id}>
-                                <p className="text-sm font-semibold text-black dark:text-white">
+                                <p className="text-sm font-semibold text-foreground">
                                     {prediction.label[lang] || prediction.label.en}
                                 </p>
                                 <p
-                                    className="mt-0.5 text-caption leading-relaxed text-black/70 dark:text-white/70 [overflow-wrap:anywhere]"
+                                    className="mt-0.5 text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]"
                                     data-count={prediction.countKey}
                                 >
                                     {prediction.detail[lang] || prediction.detail.en}
@@ -326,11 +316,12 @@ export function RiskIntelligenceView({
     )
 }
 
+/** A fact cell: caption over a tabular number, on the sunken surface. */
 function Stat({ label, value, countKey }: { label: string; value: number; countKey?: string }) {
     return (
-        <div className="rounded-xl border border-black/8 px-3 py-2 dark:border-white/10">
-            <dt className="text-kicker uppercase tracking-wider text-muted-foreground">{label}</dt>
-            <dd className="text-lg font-bold tabular-nums text-black dark:text-white" data-count={countKey}>{value}</dd>
+        <div className="pw-subcard px-3.5 py-3">
+            <dt className="text-caption font-medium text-muted-foreground">{label}</dt>
+            <dd className="mt-0.5 text-title font-semibold tabular-nums text-foreground" data-count={countKey}>{value}</dd>
         </div>
     )
 }

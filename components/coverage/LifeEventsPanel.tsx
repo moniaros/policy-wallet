@@ -12,12 +12,17 @@
  * scrollable domain filter rather than a wrapping row (six chips wrap to four
  * lines at 320px and push the content below the fold), 44px targets throughout,
  * and disclosure that works before hydration.
+ *
+ * Direction A (2026-09-03): the card head, the sunken rows and the segmented
+ * filter are the same three primitives as every other card on /protection —
+ * no bordered rows, no brand-green filter pill, no uppercase form labels.
  */
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { CalendarPlus, Check, Loader2 } from "lucide-react"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 
 interface Bilingual {
     en: string
@@ -129,43 +134,32 @@ export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelPr
         }
     }
 
-    const inputClass =
-        "w-full rounded-xl border border-black/12 bg-white px-3 py-2.5 text-sm text-black outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
-    const labelClass =
-        "mb-1 block text-kicker font-bold uppercase tracking-widest text-black/60 dark:text-white/55"
+    const inputClass = "pw-input pw-input-sm"
+    const labelClass = "mb-1 block text-caption font-medium text-muted-foreground"
 
     return (
         <div className="pw-card pw-pad">
-            <div className="mb-4 flex items-start gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 dark:bg-primary/15">
-                    <CalendarPlus className="h-5 w-5 text-primary dark:text-mint" />
-                </div>
-                <div className="min-w-0 flex-1">
-                    <h2 className="text-lg font-semibold text-black dark:text-white">
-                        {t("Τι άλλαξε στη ζωή σας;", "What changed in your life?")}
-                    </h2>
-                    <p className="text-caption text-muted-foreground">
-                        {t(
-                            "Κάθε αλλαγή μετακινεί τους κινδύνους σας. Πείτε μας μία και θα επαναξιολογήσουμε αμέσως.",
-                            "Every change moves your risks. Tell us one and we will reassess straight away."
-                        )}
-                    </p>
-                </div>
-            </div>
+            <CardHead icon={CalendarPlus} title={t("Τι άλλαξε στη ζωή σας;", "What changed in your life?")} />
+            <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
+                {t(
+                    "Κάθε αλλαγή μετακινεί τους κινδύνους σας. Πείτε μας μία και θα επαναξιολογήσουμε αμέσως.",
+                    "Every change moves your risks. Tell us one and we will reassess straight away."
+                )}
+            </p>
 
             {recent.length > 0 && (
-                <div className="mb-4 rounded-xl border border-black/8 bg-black/[0.02] p-3 dark:border-white/10 dark:bg-white/[0.03]">
-                    <p className="mb-1.5 text-kicker font-bold uppercase tracking-widest text-black/60 dark:text-white/55">
+                <div className="pw-subcard mt-4 p-3">
+                    <p className="text-caption font-semibold text-muted-foreground">
                         {t("Πρόσφατα", "Recently")}
                     </p>
-                    <ul className="space-y-1">
+                    <ul className="mt-1.5 space-y-1">
                         {recent.slice(0, 3).map((event) => (
                             <li
                                 key={event.id}
-                                className="flex items-start gap-2 text-caption text-black/75 dark:text-white/70"
+                                className="flex items-start gap-2 text-caption text-foreground"
                             >
                                 <Check
-                                    className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-mint"
+                                    className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-status-success"
                                     aria-hidden="true"
                                 />
                                 <span className="min-w-0">
@@ -184,10 +178,12 @@ export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelPr
                 </div>
             )}
 
-            {/* Scrollable strip, not a wrapping row — eight domain chips wrap to
-                four lines at 320px and bury the events themselves. */}
+            {/* A segmented control on the sunken track — the page's lens
+                switcher, repeated. Still a scroll strip, not a wrapping row:
+                nine domain segments wrap to four lines at 320px and bury the
+                events themselves. */}
             <div
-                className="-mx-1 mb-3 flex gap-2 overflow-x-auto px-1 pb-1"
+                className="pw-subcard pw-scroll-strip mt-4 gap-0.5 !rounded-full p-1"
                 role="group"
                 aria-label={t("Φίλτρο κατηγορίας", "Filter by category")}
             >
@@ -206,7 +202,7 @@ export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelPr
                 ))}
             </div>
 
-            <ul className="space-y-2">
+            <ul className="mt-3 space-y-2">
                 {visible.map((option) => {
                     const isOpen = selected === option.id
                     return (
@@ -216,22 +212,16 @@ export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelPr
                                 disabled={option.alreadyRecorded}
                                 aria-expanded={isOpen}
                                 onClick={() => setSelected(isOpen ? null : option.id)}
-                                className={`flex min-h-11 w-full items-start gap-3 rounded-2xl border p-3 text-left transition-colors ${
+                                className={`pw-subcard flex min-h-11 w-full items-start gap-3 p-3 text-left transition-[background-color,box-shadow] ${
                                     option.alreadyRecorded
-                                        ? "cursor-not-allowed border-black/8 bg-black/[0.015] dark:border-white/10 dark:bg-white/[0.02]"
+                                        ? "cursor-not-allowed opacity-60"
                                         : isOpen
-                                          ? "cursor-pointer border-primary bg-primary/5 dark:border-primary/40 dark:bg-primary/10"
-                                          : "cursor-pointer border-black/10 hover:bg-black/[0.02] dark:border-white/12 dark:hover:bg-white/[0.03]"
+                                          ? "cursor-pointer ring-1 ring-primary"
+                                          : "cursor-pointer"
                                 }`}
                             >
                                 <span className="min-w-0 flex-1">
-                                    <span
-                                        className={`block text-sm font-semibold ${
-                                            option.alreadyRecorded
-                                                ? "text-black/50 dark:text-white/45"
-                                                : "text-black dark:text-white"
-                                        }`}
-                                    >
+                                    <span className="block text-sm font-semibold text-foreground">
                                         {option.label[lang] || option.label.en}
                                     </span>
                                     {/* The description is reassurance AFTER a
@@ -241,7 +231,7 @@ export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelPr
                                         knows what changed and only needs to
                                         locate it. */}
                                     {option.alreadyRecorded && (
-                                        <span className="mt-0.5 block text-caption leading-relaxed text-black/55 dark:text-white/50">
+                                        <span className="mt-0.5 block text-caption leading-relaxed text-muted-foreground">
                                             {t("Το έχετε ήδη καταγράψει", "Already recorded")}
                                         </span>
                                     )}
@@ -249,8 +239,8 @@ export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelPr
                             </button>
 
                             {isOpen && !option.alreadyRecorded && (
-                                <div className="mt-2 space-y-3 rounded-2xl border border-black/8 p-3 dark:border-white/10">
-                                    <p className="text-caption leading-relaxed text-black/70 dark:text-white/65">
+                                <div className="pw-subcard mt-2 space-y-3 p-3">
+                                    <p className="text-caption leading-relaxed text-foreground/80">
                                         {option.description[lang] || option.description.en}
                                     </p>
 
@@ -332,10 +322,8 @@ function FilterChip({
             type="button"
             onClick={onClick}
             aria-pressed={active}
-            className={`inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center whitespace-nowrap rounded-full border px-3 text-caption font-semibold transition-colors ${
-                active
-                    ? "border-primary bg-primary text-white dark:text-[#1A2420]"
-                    : "border-black/12 text-black/65 hover:bg-black/4 dark:border-white/15 dark:text-white/65 dark:hover:bg-white/6"
+            className={`inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center whitespace-nowrap rounded-full px-4 text-caption font-semibold transition-colors ${
+                active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
         >
             {label}

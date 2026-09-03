@@ -21,6 +21,8 @@ import { updateGapStatus } from '@/app/(protected)/protection/actions'
 import { toast } from 'sonner'
 import { AiDisclaimer } from '@/components/ui/AiDisclaimer'
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
+import { normalizeBranch } from '@/lib/insurance/taxonomy'
+import { CardHead } from '@/components/dashboard/home/CardHead'
 
 type PlanTier = 'free' | 'plus' | 'pro'
 
@@ -98,6 +100,7 @@ export function CoverageInsightsClient({
         allGoodTitle: lang === 'el' ? 'Δεν εντοπίστηκαν κενά' : 'No gaps detected',
         allGoodDescription: lang === 'el' ? 'Η κάλυψή σας φαίνεται ενημερωμένη.' : 'Your coverage appears up to date.',
         checkedAndGood: lang === 'el' ? 'Τι ελέγξαμε και είναι εντάξει' : 'Checked and looks good',
+        checkedOkPill: lang === 'el' ? 'Εντάξει' : 'OK',
         nextSteps: lang === 'el' ? 'Επόμενα βήματα' : 'Next steps',
         backToWallet: lang === 'el' ? 'Επιστροφή στο πορτοφόλι' : 'Back to wallet',
         unlockFull: lang === 'el' ? 'Ξεκλείδωσε πλήρη ανάλυση' : 'Unlock full analysis',
@@ -166,8 +169,8 @@ export function CoverageInsightsClient({
             summary: isDeepAnalysisLocked
                 ? { el: 'Δεν έχει γίνει ακόμη πλήρης ανάλυση κενών — ξεκλειδώστε την με το Plus.', en: "Full gap analysis hasn't run yet — unlock it with Plus." }
                 : { el: 'Η ανάλυση κενών εκκρεμεί — ανεβάστε ή ανανεώστε ένα ασφαλιστήριο.', en: 'Gap analysis pending — upload or refresh a policy.' },
-            color: 'text-black/60 dark:text-white/60',
-            bg: 'bg-black/5 dark:bg-white/10',
+            color: 'text-muted-foreground',
+            bg: 'pw-subcard',
         }
         : visibleGaps.length === 0
             ? {
@@ -177,8 +180,8 @@ export function CoverageInsightsClient({
                     en: 'No issues found in your active policies.',
                 },
                 summary: { el: 'Δεν εντοπίστηκαν κενά στα ενεργά σας ασφαλιστήρια.', en: 'No gaps found in your active policies.' },
-                color: 'text-[#166534] dark:text-mint',
-                bg: 'bg-primary-soft dark:bg-primary/15',
+                color: 'text-status-success',
+                bg: 'bg-status-success-tint',
             }
             : hasSevereGap
                 ? {
@@ -191,11 +194,12 @@ export function CoverageInsightsClient({
                         el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`,
                         en: `${visibleGaps.length} points to review across your policies.`,
                     },
-                    // The BACKGROUND flipped to dark while the text stayed
-                    // red-700 — measured 2.83:1 by the pixel audit. Exactly the
-                    // "text keeps the previous theme's colour" class.
-                    color: 'text-red-700 dark:text-red-300',
-                    bg: 'bg-red-100 dark:bg-red-900/30',
+                    // Status tokens: the tint and its on-colour are declared as
+                    // a pair in globals.css (@on … @min 4.5), so light/dark
+                    // contrast is measured once there — the previous hand-picked
+                    // red-700-on-dark pair measured 2.83:1.
+                    color: 'text-status-danger',
+                    bg: 'bg-status-danger-tint',
                 }
                 : {
                     label: { el: 'Σχεδόν έτοιμη', en: 'Almost there' },
@@ -207,9 +211,8 @@ export function CoverageInsightsClient({
                         el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`,
                         en: `${visibleGaps.length} points to review across your policies.`,
                     },
-                    // Same defect as the red variant above.
-                    color: 'text-amber-700 dark:text-amber-300',
-                    bg: 'bg-amber-100 dark:bg-amber-900/30',
+                    color: 'text-status-warning',
+                    bg: 'bg-status-warning-tint',
                 }
 
     const summaryText = gapVerdict.summary[lang]
@@ -302,16 +305,19 @@ export function CoverageInsightsClient({
     if (!hasPolicies) {
         return (
             <div>
-                <div className={containerClass}>
-                    <div className="mb-7 text-center">
-                        <Heading className="text-caption font-semibold text-muted-foreground mb-2">{copy.summaryTitle}</Heading>
-                        <p className="text-title font-semibold leading-tight tracking-tight text-foreground sm:text-h3">{copy.addFirstBody}</p>
+                <div className={`${containerClass} space-y-4`.trim()}>
+                    <div className="pw-card pw-pad">
+                        <CardHead icon={Shield} title={copy.summaryTitle} as={Heading} />
+                        <p className="mt-4 text-title font-semibold leading-tight tracking-tight text-foreground">{copy.addFirstBody}</p>
                     </div>
-                    <div className="text-center py-10 pw-card">
-                        <Sparkles className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
-                        <p className="text-black dark:text-white font-semibold">{copy.addFirstTitle}</p>
-                        <p className="text-muted-foreground text-sm mb-5">{copy.addFirstBody}</p>
-                        <button onClick={() => router.push('/wallet/add')} className="pw-primary-button text-sm cursor-pointer mx-auto">
+                    <div className="pw-card pw-pad">
+                        <div className="flex items-center gap-3">
+                            <span className="pw-card-chip" aria-hidden="true">
+                                <Sparkles className="h-4 w-4" strokeWidth={1.75} />
+                            </span>
+                            <p className="min-w-0 flex-1 text-sm font-semibold text-foreground">{copy.addFirstTitle}</p>
+                        </div>
+                        <button onClick={() => router.push('/wallet/add')} className="pw-primary-button mt-4 cursor-pointer">
                             {copy.addFirstCta}
                         </button>
                     </div>
@@ -324,11 +330,11 @@ export function CoverageInsightsClient({
         // No page shell here — the coverage-insights route provides the single
         // shared `.pw-page-shell` so the sections don't each claim a full screen.
         <div>
-            <div className={containerClass}>
-                <div className="mb-7 text-center">
-                    <Heading className="text-caption font-semibold text-muted-foreground mb-2">{copy.summaryTitle}</Heading>
+            <div className={`${containerClass} space-y-4`.trim()}>
+                <div className="pw-card pw-pad">
+                    <CardHead icon={Shield} title={copy.summaryTitle} as={Heading} />
                     <p
-                        className="text-title font-semibold leading-tight tracking-tight text-foreground sm:text-h3"
+                        className="mt-4 text-title font-semibold leading-tight tracking-tight text-foreground"
                         // «Εντοπίστηκαν 33 σημεία προς έλεγχο» is gap.openCount as
                         // prose — the same live-gap universe the dashboard's
                         // severity tally now sums to (gapsOnActiveCoverage), so
@@ -339,7 +345,7 @@ export function CoverageInsightsClient({
                     </p>
                     {hasDeepAnalysis && severityTally.length > 0 && (
                         <div
-                            className="mt-3 flex flex-wrap justify-center gap-2"
+                            className="mt-3 flex flex-wrap gap-2"
                             role="list"
                             aria-label={home.severityGroupLabel}
                         >
@@ -360,74 +366,77 @@ export function CoverageInsightsClient({
                             ))}
                         </div>
                     )}
-                </div>
 
-                {excludedExpired.length > 0 && (
-                    <div className="mb-6 flex items-start gap-3 rounded-2xl bg-status-warning-tint p-4">
-                        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" aria-hidden="true" />
-                        <div className="min-w-0">
-                            <p className="text-sm font-semibold text-status-warning">
-                                {copy.expiredExcludedTitle}
-                            </p>
-                            <p className="mt-0.5 text-caption leading-relaxed text-foreground/80">
-                                {copy.expiredExcludedBody} {excludedExpired.map((policy) => policy.label).join(' · ')}
+                    {excludedExpired.length > 0 && (
+                        <div className="mt-4 flex items-start gap-3 rounded-xl bg-status-warning-tint p-3.5">
+                            <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" aria-hidden="true" />
+                            <div className="min-w-0">
+                                <p className="text-sm font-semibold text-status-warning">
+                                    {copy.expiredExcludedTitle}
+                                </p>
+                                <p className="mt-0.5 text-caption leading-relaxed text-foreground/80">
+                                    {copy.expiredExcludedBody} {excludedExpired.map((policy) => policy.label).join(' · ')}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Three fact cells on the sunken surface: the verdict on its
+                        status tint, the two counts as caption-over-number. */}
+                    <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                        <div className={`rounded-xl px-3.5 py-3 ${gapVerdict.bg}`}>
+                            <p className={`text-caption font-semibold ${gapVerdict.color}`}>{gapVerdict.label[lang]}</p>
+                            <p className="mt-0.5 text-sm leading-snug text-foreground">{gapVerdict.desc[lang]}</p>
+                        </div>
+                        <div className="pw-subcard px-3.5 py-3">
+                            <p className="text-caption font-medium text-muted-foreground">{copy.policiesWithPoints}</p>
+                            <p
+                                className="mt-0.5 text-title font-semibold tabular-nums text-foreground"
+                                data-count={hasDeepAnalysis ? "portfolio.policiesWithFindingsCount" : undefined}
+                            >
+                                {hasDeepAnalysis ? policiesWithIssues.size : copy.unknownCount}
                             </p>
                         </div>
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-                    <div className={`rounded-2xl p-4 ${gapVerdict.bg}`}>
-                        <p className={`text-caption font-semibold mb-1 ${gapVerdict.color}`}>{gapVerdict.label[lang]}</p>
-                        <p className="text-sm text-black/85 dark:text-white/85">{gapVerdict.desc[lang]}</p>
-                    </div>
-                    <div className="pw-card rounded-2xl p-4">
-                        <p className="text-caption font-semibold text-muted-foreground mb-1">{copy.policiesWithPoints}</p>
-                        <p
-                            className="text-2xl font-semibold text-black dark:text-white"
-                            data-count={hasDeepAnalysis ? "portfolio.policiesWithFindingsCount" : undefined}
-                        >
-                            {hasDeepAnalysis ? policiesWithIssues.size : copy.unknownCount}
-                        </p>
-                    </div>
-                    <div className="pw-card rounded-2xl p-4">
-                        <p className="text-caption font-semibold text-muted-foreground mb-1">{copy.totalPolicies}</p>
-                        {/* isPolicyCoverageActive — cover in force TODAY, which
-                            also counts expiring-soon and unreadable-term cover.
-                            NOT the wallet's «Ενεργά» (strict lifecycle active):
-                            different predicate, different key, and the label
-                            says which («Σε ισχύ σήμερα»). §2.8's labelling case. */}
-                        <p className="text-2xl font-semibold text-black dark:text-white" data-count="portfolio.coverageActiveCount">
-                            {stats.totalPolicies}
-                        </p>
+                        <div className="pw-subcard px-3.5 py-3">
+                            <p className="text-caption font-medium text-muted-foreground">{copy.totalPolicies}</p>
+                            {/* isPolicyCoverageActive — cover in force TODAY, which
+                                also counts expiring-soon and unreadable-term cover.
+                                NOT the wallet's «Ενεργά» (strict lifecycle active):
+                                different predicate, different key, and the label
+                                says which («Σε ισχύ σήμερα»). §2.8's labelling case. */}
+                            <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground" data-count="portfolio.coverageActiveCount">
+                                {stats.totalPolicies}
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 {isFreeTier && (
-                    <div className="mb-8 rounded-2xl border border-primary/35 bg-primary-tint dark:bg-primary/15 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="pw-card pw-pad flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-start gap-3">
-                            <Lock className="w-5 h-5 text-primary dark:text-mint mt-0.5" />
-                            <div>
-                                <p className="font-semibold text-black dark:text-white">{copy.liteTitle}</p>
+                            <span className="pw-card-chip" aria-hidden="true">
+                                <Lock className="h-4 w-4" strokeWidth={1.75} />
+                            </span>
+                            <div className="min-w-0">
+                                <p className="text-sm font-semibold text-foreground">{copy.liteTitle}</p>
                                 {/* «τα 2 πιο σημαντικά» is a PLAN limit, not a
                                     portfolio fact — its own key keeps it out of
                                     the gap-count comparisons. */}
-                                <p className="text-sm text-black/75 dark:text-white/80" data-count="entitlement.freeInsightLimit">{copy.liteDescription}</p>
+                                <p className="mt-0.5 text-caption leading-relaxed text-muted-foreground" data-count="entitlement.freeInsightLimit">{copy.liteDescription}</p>
                             </div>
                         </div>
                         <button
                             onClick={() => router.push('/upgrade?reason=feature_locked')}
-                            className="pw-primary-button text-sm cursor-pointer"
+                            className="pw-primary-button flex-shrink-0 cursor-pointer"
                         >
-                            <Crown className="w-4 h-4" />
+                            <Crown className="h-4 w-4" aria-hidden="true" />
                             {copy.upgrade}
                         </button>
                     </div>
                 )}
 
-                <div className="mb-10">
-                    <h2 className="text-lg font-semibold text-black dark:text-white mb-5 flex items-center gap-2">
-                        <AlertCircle className="w-5 h-5" />
+                <div>
+                    <h2 className="mb-2 text-body-lg font-semibold leading-snug tracking-tight text-foreground">
                         {copy.reviewSectionTitle}
                     </h2>
 
@@ -453,75 +462,95 @@ export function CoverageInsightsClient({
                                 />
                             ))
                         ) : !hasDeepAnalysis ? (
-                            <div className="text-center py-10 pw-card">
-                                <Lock className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
-                                <p className="text-black dark:text-white font-semibold">{copy.notAnalyzedTitle}</p>
-                                <p className="text-muted-foreground text-sm mb-5">{copy.notAnalyzedBody}</p>
+                            <div className="pw-card pw-pad">
+                                <div className="flex items-start gap-3">
+                                    <span className="pw-card-chip" aria-hidden="true">
+                                        <Lock className="h-4 w-4" strokeWidth={1.75} />
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-semibold text-foreground">{copy.notAnalyzedTitle}</p>
+                                        <p className="mt-1 text-caption leading-relaxed text-muted-foreground">{copy.notAnalyzedBody}</p>
+                                    </div>
+                                </div>
                                 {isDeepAnalysisLocked ? (
                                     <button
                                         onClick={() => router.push('/upgrade?reason=feature_locked')}
-                                        className="pw-primary-button text-sm cursor-pointer mx-auto"
+                                        className="pw-primary-button mt-4 cursor-pointer"
                                     >
-                                        <Crown className="w-4 h-4" />
+                                        <Crown className="h-4 w-4" aria-hidden="true" />
                                         {copy.notAnalyzedLockedCta}
                                     </button>
                                 ) : (
-                                    <p className="text-xs text-muted-foreground">{copy.notAnalyzedRefreshHint}</p>
+                                    <p className="mt-3 text-caption text-muted-foreground">{copy.notAnalyzedRefreshHint}</p>
                                 )}
                             </div>
                         ) : (
-                            <div className="text-center py-10 pw-card">
-                                <Sparkles className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
-                                <p className="text-black dark:text-white font-semibold">{copy.allGoodTitle}</p>
-                                <p className="text-muted-foreground text-sm">{copy.allGoodDescription}</p>
+                            <div className="pw-card pw-pad">
+                                <div className="flex items-start gap-3">
+                                    <span className="pw-card-chip text-status-success" aria-hidden="true">
+                                        <Sparkles className="h-4 w-4" strokeWidth={1.75} />
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-semibold text-foreground">{copy.allGoodTitle}</p>
+                                        <p className="mt-1 text-caption leading-relaxed text-muted-foreground">{copy.allGoodDescription}</p>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
                 </div>
 
+                {/* The h3 stays a direct child of the card: the ledger guard
+                    (A-13) reads the list as the heading's parent element. */}
                 {hasDeepAnalysis && policiesOk.length > 0 && (
-                    <div className="mb-10">
-                        <h3 className="text-caption font-semibold text-muted-foreground mb-3 px-1">{copy.checkedAndGood}</h3>
-                        <div className="pw-card rounded-2xl divide-y divide-black/10 dark:divide-white/10">
+                    <div className="pw-card pw-pad">
+                        <h3 className="text-body-lg font-semibold leading-snug tracking-tight text-foreground">{copy.checkedAndGood}</h3>
+                        <ul className="mt-3 divide-y divide-border">
                             {policiesOk.map((policy) => (
-                                <div key={policy.id} className="p-4 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-[#166534] dark:text-mint">
-                                            <CheckCircle2 className="w-4 h-4" />
-                                        </div>
-                                        <div>
-                                            <div className="font-semibold text-black dark:text-white text-sm">{policy.lineOfBusiness?.name || (lang === 'el' ? 'Ασφαλιστήριο' : 'Policy')}</div>
-                                            <div className="text-xs text-muted-foreground">{displayInsurerName(policy.insurerName)}</div>
-                                        </div>
-                                    </div>
-                                    <span className="text-xs font-semibold text-black/70 dark:text-white/75 bg-black/5 dark:bg-white/10 px-2 py-1 rounded">OK</span>
-                                </div>
+                                <li key={policy.id} className="flex min-h-11 items-center gap-3 py-3 first:pt-0 last:pb-0">
+                                    <span className="pw-card-chip text-status-success" aria-hidden="true">
+                                        <CheckCircle2 className="h-4 w-4" strokeWidth={1.75} />
+                                    </span>
+                                    <span className="min-w-0 flex-1">
+                                        {/* The branch's localised label, never the stored
+                                            slug: `lineOfBusiness.name` is whatever the
+                                            extractor wrote («health», «motor»), and the
+                                            wallet renders branches through the taxonomy. */}
+                                        <span className="block text-sm font-semibold text-foreground">
+                                            {normalizeBranch(policy.lineOfBusiness?.code || policy.lineOfBusiness?.name).label[lang]}
+                                        </span>
+                                        <span className="mt-0.5 block text-caption text-muted-foreground">{displayInsurerName(policy.insurerName)}</span>
+                                    </span>
+                                    <span className="flex-shrink-0 rounded-full bg-status-success-tint px-2.5 py-1 text-caption font-semibold text-status-success">
+                                        {copy.checkedOkPill}
+                                    </span>
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     </div>
                 )}
 
-                <AiDisclaimer language={lang} className="mb-6 justify-center" />
+                <AiDisclaimer language={lang} />
 
-                <div className="pt-6 border-t border-black/10 dark:border-white/10 text-center">
-                    <h3 className="text-lg font-semibold text-black dark:text-white mb-4">{copy.nextSteps}</h3>
-                    <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+                <div className="pw-card pw-pad">
+                    <h3 className="text-body-lg font-semibold leading-snug tracking-tight text-foreground">{copy.nextSteps}</h3>
+                    <div className="mt-3 flex flex-wrap gap-2">
                         <button
                             onClick={() => router.push('/wallet')}
-                            className="flex-1 py-3.5 bg-primary text-white dark:text-[#1A2420] rounded-xl font-semibold transition-colors hover:bg-primary-hover flex items-center justify-center gap-2 cursor-pointer"
+                            className="pw-soft-button cursor-pointer"
                         >
                             <span>{copy.backToWallet}</span>
-                            <ArrowRight className="w-4 h-4" />
+                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
                         </button>
                         <button
                             onClick={() => router.push(isFreeTier ? '/upgrade?reason=feature_locked' : '/account')}
-                            className="flex-1 py-3.5 bg-transparent border border-black/15 dark:border-white/20 text-black dark:text-white rounded-xl font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                            className="pw-soft-button cursor-pointer"
                         >
-                            <Activity className="w-4 h-4" />
+                            <Activity className="h-4 w-4" aria-hidden="true" />
                             {isFreeTier ? copy.unlockFull : copy.coverageSettings}
                         </button>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-5 max-w-md mx-auto leading-relaxed">{copy.independentNote}</p>
+                    <p className="mt-3 text-caption leading-relaxed text-muted-foreground">{copy.independentNote}</p>
                 </div>
             </div>
         </div>

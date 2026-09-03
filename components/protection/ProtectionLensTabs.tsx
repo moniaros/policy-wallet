@@ -21,7 +21,7 @@ export interface ProtectionLensTabsProps {
  */
 export function ProtectionLensTabs({ active, labels }: ProtectionLensTabsProps) {
     const base =
-        "inline-flex min-h-10 flex-shrink-0 items-center whitespace-nowrap rounded-full px-4 text-caption font-semibold transition-colors"
+        "inline-flex min-h-11 flex-shrink-0 items-center whitespace-nowrap rounded-full px-4 text-caption font-semibold transition-colors"
     const activeStyle = "bg-card text-foreground shadow-sm"
     const idleStyle = "text-muted-foreground hover:text-foreground"
 

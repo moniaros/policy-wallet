@@ -77,25 +77,25 @@ export function QuickStart({ questions, language, onSubmit }: QuickStartProps) {
         return (
             <div className="pw-card pw-pad">
                 <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary dark:text-mint" aria-hidden="true" />
-                    <p className="pw-kicker">{t("Από όσα μας είπατε", "From what you told us")}</p>
+                    <Sparkles className="h-4 w-4 text-status-success" aria-hidden="true" />
+                    <p className="text-caption font-semibold text-muted-foreground">{t("Από όσα μας είπατε", "From what you told us")}</p>
                 </div>
 
                 {insight ? (
                     <>
-                        <h2 className="mt-2 text-lg font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+                        <h2 className="mt-2 text-title font-semibold leading-snug tracking-tight text-foreground [overflow-wrap:anywhere]">
                             {insight.headline[lang] || insight.headline.en}
                         </h2>
-                        <p className="mt-1.5 text-caption leading-relaxed text-black/75 dark:text-white/75 [overflow-wrap:anywhere]">
+                        <p className="mt-1.5 text-caption leading-relaxed text-foreground/80 [overflow-wrap:anywhere]">
                             {insight.detail[lang] || insight.detail.en}
                         </p>
-                        <p className="mt-2 text-caption leading-relaxed text-black/60 dark:text-white/55 [overflow-wrap:anywhere]">
+                        <p className="mt-2 text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
                             {insight.because[lang] || insight.because.en}
                         </p>
 
                         {/* Said plainly, because the alternative is letting them
                             infer we have checked their cover when we have not. */}
-                        <p className="mt-3 border-t border-black/8 pt-2.5 text-caption text-muted-foreground dark:border-white/10">
+                        <p className="mt-3 border-t border-border pt-2.5 text-caption text-muted-foreground">
                             {insight.alsoFound > 0
                                 ? t(
                                       `Βρήκαμε ακόμη ${insight.alsoFound} κινδύνους που σας αφορούν. Δεν έχουμε δει ακόμη τι καλύπτουν τα ασφαλιστήριά σας.`,
@@ -108,7 +108,7 @@ export function QuickStart({ questions, language, onSubmit }: QuickStartProps) {
                         </p>
                     </>
                 ) : (
-                    <p className="mt-2 text-caption leading-relaxed text-black/75 dark:text-white/75">
+                    <p className="mt-2 text-caption leading-relaxed text-foreground/80">
                         {t(
                             "Από όσα μας είπατε, δεν προκύπτει κάτι που να χρειάζεται προσοχή τώρα. Αυτό είναι καλό νέο.",
                             "From what you told us, nothing here needs your attention yet. That is good news.",
@@ -132,7 +132,7 @@ export function QuickStart({ questions, language, onSubmit }: QuickStartProps) {
     return (
         <div className="pw-card pw-pad">
             <div className="flex items-center justify-between gap-2">
-                <p className="pw-kicker">{t("Ας ξεκινήσουμε", "Let us start")}</p>
+                <p className="text-caption font-semibold text-muted-foreground">{t("Ας ξεκινήσουμε", "Let us start")}</p>
                 <p className="text-caption tabular-nums text-muted-foreground">
                     {step + 1}/{questions.length}
                 </p>
@@ -151,13 +151,13 @@ export function QuickStart({ questions, language, onSubmit }: QuickStartProps) {
                     <span
                         key={q.id}
                         className={`h-1 flex-1 rounded-full ${
-                            i <= step ? "bg-primary dark:bg-mint" : "bg-black/10 dark:bg-white/12"
+                            i <= step ? "bg-primary dark:bg-mint" : "bg-muted"
                         }`}
                     />
                 ))}
             </div>
 
-            <h2 className="mt-3 text-lg font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+            <h2 className="mt-3 text-title font-semibold leading-snug tracking-tight text-foreground [overflow-wrap:anywhere]">
                 {question.prompt[lang] || question.prompt.en}
             </h2>
 
@@ -172,13 +172,13 @@ export function QuickStart({ questions, language, onSubmit }: QuickStartProps) {
                                 type="button"
                                 disabled={pending}
                                 onClick={() => choose(question.id, option.value)}
-                                className="flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-black/12 px-3 py-2.5 text-left text-sm font-medium text-black transition-colors hover:border-primary hover:bg-primary/5 disabled:opacity-60 dark:border-white/15 dark:text-white dark:hover:border-mint dark:hover:bg-primary/10"
+                                className="pw-subcard flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 px-3.5 py-2.5 text-left text-sm font-medium text-foreground transition-colors disabled:opacity-60"
                             >
                                 <span className="min-w-0 [overflow-wrap:anywhere]">
                                     {option.label[lang] || option.label.en}
                                 </span>
                                 {chosen && (
-                                    <Check className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" aria-hidden="true" />
+                                    <Check className="h-4 w-4 flex-shrink-0 text-status-success" aria-hidden="true" />
                                 )}
                             </button>
                         </li>
@@ -187,7 +187,7 @@ export function QuickStart({ questions, language, onSubmit }: QuickStartProps) {
             </ul>
 
             {failed && (
-                <p className="mt-3 text-caption text-red-600 dark:text-red-400">
+                <p className="mt-3 text-caption text-status-danger">
                     {t("Κάτι πήγε στραβά. Δοκιμάστε ξανά.", "Something went wrong. Please try again.")}
                 </p>
             )}

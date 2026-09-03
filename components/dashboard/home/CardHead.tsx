@@ -31,7 +31,7 @@ export function CardHead({
     id?: string
     /** Right-aligned: a count, a link, a date. Already localised. */
     meta?: ReactNode
-    as?: "h2" | "h3" | "p"
+    as?: "h1" | "h2" | "h3" | "p"
     className?: string
 }) {
     const Heading = as
