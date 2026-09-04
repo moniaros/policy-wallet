@@ -19,6 +19,7 @@
 | `/wallet/add` | `app/(protected)/wallet/add/page.tsx` | Landing | Free+ | policyholder | Dashboard CTA, portfolio summary CTA |
 | `/protection` | `app/(protected)/protection/page.tsx` | Landing | Free+ | policyholder | Tab bar («Η προστασία μου», §4.2 — absorbed `/coverage-insights`, `/branches`, `/insights/risk-profile`) |
 | `/protection/[branch]` | `app/(protected)/protection/[branch]/page.tsx` | Subpage | Free+ | policyholder | Branch tiles on the ανά κλάδο lens |
+| `/protection/areas/[area]` | `app/(protected)/protection/areas/[area]/page.tsx` | Subpage | Free+ | policyholder | Area rows on the ανά κίνδυνο lens, «Τι χρειάζεται ακόμη να καταλάβουμε» rows (the personal risk profile, wave 2b) |
 | `/agent` | `app/(protected)/agent/page.tsx` | Landing | Free+ | policyholder | Tab bar (customer's adviser view) |
 | `/account` | `app/(protected)/account/page.tsx` | Landing | None | policyholder | Tab bar, bottom nav, settings rail |
 | `/account/profile` | `app/(protected)/account/profile/page.tsx` | Subpage | None | policyholder | Account nav rail |

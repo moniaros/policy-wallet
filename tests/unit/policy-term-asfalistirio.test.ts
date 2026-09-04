@@ -32,6 +32,8 @@ const UI_FILES = [
     // The agent-side copy module: its «Συμβόλαια» sat in the customers page's
     // column header and stat tiles until batch C. In-app product copy, not prose.
     'lib/i18n/role-copy.ts',
+    // The risk catalogue's mitigations and explanations render on the area detail.
+    'lib/services/gap-engine/risk-catalog.ts',
 ]
 
 describe('policy term is «ασφαλιστήριο», never «συμβόλαιο»', () => {

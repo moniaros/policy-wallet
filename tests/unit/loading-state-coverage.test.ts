@@ -10,6 +10,9 @@ import { existsSync } from 'node:fs'
  */
 const DATA_ROUTES = [
     'protection',
+    // One area of attention: auth, the attention bundle, entitlements, the
+    // policy rows — four awaits behind a back link.
+    'protection/areas/[area]',
     'dashboard',
     'dashboard/agent',
     'wallet',

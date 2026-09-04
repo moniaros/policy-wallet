@@ -323,7 +323,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
             },
             {
                 kind: "transfer",
-                label: { en: "Check the policy your lender already required", el: "Ελέγξτε το συμβόλαιο που ήδη ζήτησε η τράπεζα" },
+                label: { en: "Check the policy your lender already required", el: "Ελέγξτε το ασφαλιστήριο που ήδη ζήτησε η τράπεζα" },
                 detail: {
                     en: "Greek lenders commonly require an assigned borrower's life policy as a condition of the loan. It may already be in force — confirm before buying anything.",
                     el: "Οι ελληνικές τράπεζες συνήθως απαιτούν εκχωρημένο ασφαλιστήριο ζωής δανειολήπτη ως όρο του δανείου. Ενδέχεται να ισχύει ήδη — επιβεβαιώστε πριν συνάψετε άλλο.",
@@ -635,7 +635,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
                     blocking: false,
                     note: {
                         en: "Greek mortgage lenders normally require fire cover on the security as a condition of the loan, so a policy may already be in force through your bank. Worth confirming before buying another.",
-                        el: "Οι ελληνικές τράπεζες συνήθως απαιτούν ασφάλιση πυρός επί του ενυπόθηκου ακινήτου ως όρο του δανείου, οπότε ενδέχεται να υπάρχει ήδη συμβόλαιο μέσω της τράπεζάς σας. Αξίζει να επιβεβαιωθεί πριν συνάψετε άλλο.",
+                        el: "Οι ελληνικές τράπεζες συνήθως απαιτούν ασφάλιση πυρός επί του ενυπόθηκου ακινήτου ως όρο του δανείου, οπότε ενδέχεται να υπάρχει ήδη ασφαλιστήριο μέσω της τράπεζάς σας. Αξίζει να επιβεβαιωθεί πριν συνάψετε άλλο.",
                     },
                 }
             }

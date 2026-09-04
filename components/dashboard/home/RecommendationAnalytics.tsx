@@ -44,7 +44,7 @@ export function RecommendationSurface({
     const ref = useRef<HTMLDivElement>(null)
     // Per mount, not per render: the set survives re-renders and dies with the element.
     const emitted = useRef(new Set<string>())
-    const key = items.map((item) => `${item.ruleId}${item.area ?? ""}`).join("")
+    const key = items.map((item) => `${item.ruleId}${item.area ?? ""}`).join("")
 
     useEffect(() => {
         const emit = () => {

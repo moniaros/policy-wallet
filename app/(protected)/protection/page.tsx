@@ -15,6 +15,8 @@ import { getLifeEventHistory } from "@/lib/services/life-events/service"
 import { QUICK_START_QUESTIONS, quickStartComplete } from "@/lib/services/onboarding/quick-start"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { submitQuickStart } from "@/app/(protected)/protection/quick-start-actions"
+import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
+import { areaListItems, unknownFactorItems } from "@/components/protection/area-detail-model"
 import { ProtectionSurface } from "@/components/protection/ProtectionSurface"
 import type { ProtectionLens } from "@/components/protection/ProtectionLensTabs"
 import type { BranchTileState } from "@/lib/insurance/branch-page"
@@ -44,7 +46,7 @@ export default async function ProtectionPage({
     const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
     const t = getTranslations(lang)
 
-    const [entitlements, profileRecord, policies, score, allGapInstances] = await Promise.all([
+    const [entitlements, profileRecord, policies, score, allGapInstances, attention] = await Promise.all([
         resolveUserEntitlements(dbUser.id),
         db.policyholderProfile.findUnique({ where: { userId: dbUser.id } }),
         db.policy.findMany({
@@ -89,7 +91,15 @@ export default async function ProtectionPage({
             },
             orderBy: { detectedAt: 'desc' },
         }),
+        // The attention areas (PERSONAL_RISK_PROFILE.md §C) — one read seam,
+        // four layers, no writes. Read on both lenses: the risk lens renders
+        // it, and the wizard's gate («are there still unknown factors») reads it.
+        loadAttentionAreas({ userId: dbUser.id, language: lang }),
     ])
+
+    // «There are still unknown factors»: some area's composition lists a fact
+    // the engine lacks. The gate of the «Πλήρες προφίλ» path below the areas.
+    const hasUnknownFactors = attention.areas.some((area) => area.unknownFactors.length > 0)
 
     // CRITICAL (source-surface rule, verbatim): coverage insights describe the
     // protection you have TODAY. A lapsed policy is not protection — its
@@ -174,6 +184,12 @@ export default async function ProtectionPage({
         lens === "risk"
             ? {
                   intelligence: await getRiskIntelligence(dbUser.id),
+                  attention: {
+                      items: areaListItems(attention.areas, lang, t.protection.attention),
+                      summary: attention.summary,
+                      unknownFactors: unknownFactorItems(attention.factorsToResolve, attention.areas, lang),
+                      copy: t.protection.attention,
+                  },
                   // Gated on the opener's OWN questions, never the health index
                   // (source-surface rule: the index refuses to report below a
                   // third, so gating on it re-asked answered questions forever).
@@ -191,7 +207,7 @@ export default async function ProtectionPage({
               })),
               smartContent: engineResult.smartContent,
               profileIncomplete: engineResult.profileCompleteness < 80,
-              showWizard: engineResult.profileCompleteness < 80,
+              showWizard: hasUnknownFactors,
               wizardInitialData: profileRecord
                   ? {
                         maritalStatus: profileRecord.maritalStatus,
@@ -268,6 +284,10 @@ export default async function ProtectionPage({
                     refresh: t.insights.refreshAnalysis,
                     refreshing: t.insights.refreshingAnalysis,
                     failed: t.insights.refreshFailed,
+                },
+                fullProfile: {
+                    title: t.protection.attention.detail.fullProfileTitle,
+                    lead: t.protection.attention.detail.fullProfileLead,
                 },
             }}
             branchLens={branchLens}

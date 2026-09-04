@@ -1,12 +1,29 @@
 import { RiskIntelligenceView } from "@/components/risk-dna/RiskIntelligenceView"
 import { RiskGraphPanel } from "@/components/coverage/RiskGraphPanel"
 import { QuickStart } from "@/components/onboarding/QuickStart"
+import { AttentionAreasCard, type AttentionAreasCardProps } from "@/components/protection/AttentionAreasCard"
+import { UnknownFactorsCard } from "@/components/protection/UnknownFactorsCard"
+import type { UnknownFactorItemView } from "@/components/protection/area-detail-model"
 import type { QuickStartQuestion, QuickStartAnswers, FirstInsight } from "@/lib/services/onboarding/quick-start"
 import type { RiskIntelligence } from "@/lib/services/risk-dna/service"
+
+/**
+ * The attention areas (docs/planning/PERSONAL_RISK_PROFILE.md §D) as the
+ * page composed them from the read seam: the rows, the counts of words, and
+ * the factors the engine still needs — plus the dictionary slice they speak.
+ */
+export interface AttentionLensData {
+    items: AttentionAreasCardProps["items"]
+    summary: AttentionAreasCardProps["summary"]
+    unknownFactors: UnknownFactorItemView[]
+    copy: AttentionAreasCardProps["copy"]
+}
 
 interface ProtectionRiskLensProps {
     language: "en" | "el"
     intelligence: RiskIntelligence
+    /** The areas of attention and «Τι χρειάζεται ακόμη να καταλάβουμε». */
+    attention: AttentionLensData
     /**
      * The three-question opener, for a profile we know too little about to say
      * anything true (same gate as the source surface: the opener's OWN
@@ -33,6 +50,7 @@ interface ProtectionRiskLensProps {
 export function ProtectionRiskLens({
     language,
     intelligence,
+    attention,
     quickStart,
     wizardHref,
 }: ProtectionRiskLensProps) {
@@ -45,6 +63,11 @@ export function ProtectionRiskLens({
                     onSubmit={quickStart.onSubmit}
                 />
             )}
+
+            {/* The areas of attention, then what the engine still needs from
+                the person — each noun a link into the area that asks it. */}
+            <AttentionAreasCard items={attention.items} summary={attention.summary} copy={attention.copy} />
+            <UnknownFactorsCard items={attention.unknownFactors} copy={attention.copy.needs} />
 
             <RiskIntelligenceView
                 language={language}
