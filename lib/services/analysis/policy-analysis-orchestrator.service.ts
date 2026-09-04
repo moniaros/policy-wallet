@@ -435,6 +435,12 @@ export class PolicyAnalysisOrchestratorService {
                 })
             }
 
+            // Evidence closes a review: a held policy for the sphere an open
+            // review asked about IS the looking the review asked for. One
+            // closer for both completion paths; it never throws.
+            const { closeReviewsByPolicyEvidence } = await import("@/lib/services/risk-review/service")
+            await closeReviewsByPolicyEvidence({ policyId })
+
             return { status: "completed" }
         } catch (error) {
             logger("error", "extractBasicSummary failed", {
@@ -1929,6 +1935,19 @@ export class PolicyAnalysisOrchestratorService {
                 .catch((err) =>
                     logger("warn", "Post-analysis protection score refresh failed (non-blocking)", {
                         userId: run.userId,
+                        runId,
+                        error: err instanceof Error ? err.message : String(err),
+                    })
+                )
+
+            // Evidence closes a review — after the GapInstances above are
+            // persisted, through the same closer the basic-summary path calls.
+            // Non-blocking like the score refresh; the closer never throws.
+            import("@/lib/services/risk-review/service")
+                .then(({ closeReviewsByPolicyEvidence }) => closeReviewsByPolicyEvidence({ policyId: policy.id }))
+                .catch((err) =>
+                    logger("warn", "Post-analysis review close by evidence failed (non-blocking)", {
+                        policyId: policy.id,
                         runId,
                         error: err instanceof Error ? err.message : String(err),
                     })

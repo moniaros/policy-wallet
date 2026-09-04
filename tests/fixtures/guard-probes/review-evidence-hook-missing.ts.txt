@@ -1,0 +1,24 @@
+// PROBE — the regression the guard exists for: the basic-summary path refreshes
+// the score and forgets the closer, and the finalize path calls it BEFORE the
+// gaps are persisted (a comment mentioning it must not count). Both must fail.
+export class ProbeOrchestrator {
+    async extractBasicSummary(policyId: string) {
+        await db.policy.update({ where: { id: policyId }, data: { status: "active" } })
+        const { refreshProtectionScore } = await import("@/lib/services/gap-engine")
+        await refreshProtectionScore("owner")
+        // closeReviewsByPolicyEvidence({ policyId }) — TODO wire this up
+        return { status: "completed" }
+    }
+
+    private async executePipelineAttempt(policy: { id: string }) {
+        const { closeReviewsByPolicyEvidence } = await import("@/lib/services/risk-review/service")
+        await closeReviewsByPolicyEvidence({ policyId: policy.id })
+        const decidedGapSlugs = await this.persistAnalysisArtifacts({ policy })
+        await db.policyAnalysisRun.updateMany({ where: { id: "run" }, data: { status: "completed" } })
+        return decidedGapSlugs
+    }
+
+    private async executeStepWithRetry() {
+        return null
+    }
+}

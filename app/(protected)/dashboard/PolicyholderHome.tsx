@@ -50,6 +50,8 @@ import { ProtectionProfileResumeCard } from "@/components/dashboard/home/Protect
 import { resolveProtectionOnboardingState, shouldEnterProtectionOnboarding } from "@/lib/services/protection-profile/state"
 import { deriveProtectionPriorities } from "@/lib/services/protection-profile/derive-priorities"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
+import { areaForLob, areaForRisk } from "@/lib/protection/domains"
+import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 
 /**
  * Calendar days until a date, in Athens.
@@ -125,6 +127,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         recStatusGroups,
         timelineEntries,
         protectionProfileRow,
+        attentionBundle,
     ] = await Promise.all([
         db.policy.findMany({
             // status ≠ deleted: a soft-deleted row (the API's DELETE path) is
@@ -222,6 +225,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 },
             })
             .catch(() => null),
+        // The composed view behind «Η εικόνα σας» — needs, exposure and the
+        // documents, with a confidence (lib/protection/load-attention-areas.ts).
+        // Read-only; fails soft to no card rather than to a card with a claim.
+        loadAttentionAreas({ userId: dbUser.id, language: lang }).catch(() => null),
     ])
     const isFreeTier = entitlements.tier === "free"
 
@@ -424,6 +431,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     } as const
     const attentionItems: AttentionItem[] = activeRecommendations.slice(0, 3).map((rec) => ({
         id: rec.id,
+        // Analytics identity (§J): the rule that decided it, else the catalogue
+        // risk the engine assessed; the area from the same vocabulary the
+        // priorities card speaks (lib/protection/domains.ts).
+        ruleId: rec.ruleId ?? rec.riskId ?? "unknown",
+        area: (rec.riskId ? areaForRisk(rec.riskId) : undefined)?.id ?? areaForLob(normalizeBranch(rec.lineOfBusiness).id)?.id,
         title: rec.title[lang] || rec.title.en,
         reason: rec.personalReason ? rec.personalReason[lang] || rec.personalReason.en : null,
         // The reason is pre-composed prose; when the risk that wrote it leads
@@ -761,11 +773,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     // surface — and the upload ACTION stays the hero's; this card only links.
     const protectionCard =
         protectionState.status === "completed" ? (
-            protectionPriorities.length > 0 ? (
+            attentionBundle ? (
                 <ProtectionPrioritiesCard
-                    priorities={protectionPriorities}
-                    hasPolicies={hasPolicies}
+                    areas={attentionBundle.areas}
+                    summary={attentionBundle.summary}
+                    priorityCount={protectionPriorities.length}
                     unsureCount={protectionState.unsureSteps.length}
+                    // The hero's universe (status ≠ deleted), so both footers agree.
+                    policyCount={policies.length}
                     language={lang}
                     mapLabels={t.onboarding.protectionProfile.summary}
                     labels={{
@@ -773,14 +788,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         lead: home.prioritiesLead,
                         countLabel: home.prioritiesCountLabel,
                         unsureLabel: home.prioritiesUnsureLabel,
-                        confirmChip: home.prioritiesConfirmChip,
-                        declaredChip: home.prioritiesDeclaredChip,
+                        areaCountLabel: home.prioritiesAreaCountLabel,
+                        unknownCountLabel: home.prioritiesUnknownCountLabel,
+                        coveredCountLabel: home.prioritiesCoveredCountLabel,
+                        limitsUnread: home.prioritiesLimitsUnread,
                         noPolicies: home.prioritiesNoPolicies,
                         uploadCta: home.prioritiesUploadCta,
                         withPolicies: home.prioritiesWithPolicies,
                         alignmentCta: home.prioritiesAlignmentCta,
                         disclaimer: home.prioritiesDisclaimer,
-                        reason: home.priorityReason,
                     }}
                 />
             ) : null

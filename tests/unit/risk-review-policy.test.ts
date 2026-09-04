@@ -197,3 +197,178 @@ describe("claims are declared and honestly unwired", () => {
         expect(REVIEW_POLICIES.claim.rationale).toMatch(/NOT WIRED|no claims model/i)
     })
 })
+
+// ── Evidence closes a review (docs/planning/PERSONAL_RISK_PROFILE.md §I) ────
+
+import { globSync } from "../helpers/glob"
+import {
+    decideEvidenceClosures,
+    lifecycleBand,
+    policyEvidenceDomain,
+    reviewDomain,
+    REVIEW_OUTCOME_POLICY_EVIDENCE,
+} from "@/lib/services/risk-review/evidence"
+
+const openReviewRows = [
+    { id: "rv-birth", status: "open", trigger: "child_born" },
+    { id: "rv-marriage", status: "open", trigger: "marriage" },
+    { id: "rv-mortgage", status: "open", trigger: "mortgage_added" },
+    { id: "rv-home", status: "open", trigger: "property_purchased" },
+    { id: "rv-business", status: "open", trigger: "business_started" },
+    { id: "rv-pet", status: "open", trigger: "life_event", definitionId: "pet_adoption" },
+    { id: "rv-annual", status: "open", trigger: "annual" },
+    { id: "rv-quarterly", status: "open", trigger: "quarterly" },
+    { id: "rv-birthday", status: "open", trigger: "birthday" },
+    { id: "rv-advisor", status: "open", trigger: "advisor_assignment" },
+    { id: "rv-gap", status: "open", trigger: "coverage_gap" },
+]
+
+describe("a review's sphere comes from the life event it was raised for", () => {
+    it("the mapped triggers resolve through the registry, never a second table", () => {
+        const byId = new Map(LIFE_EVENT_REGISTRY.map((d) => [d.id, d.domain]))
+        expect(reviewDomain({ trigger: "child_born" })).toBe(byId.get("birth"))
+        expect(reviewDomain({ trigger: "marriage" })).toBe(byId.get("marriage"))
+        expect(reviewDomain({ trigger: "divorce" })).toBe(byId.get("divorce"))
+        expect(reviewDomain({ trigger: "mortgage_added" })).toBe(byId.get("mortgage"))
+        expect(reviewDomain({ trigger: "property_purchased" })).toBe(byId.get("property_purchase"))
+        expect(reviewDomain({ trigger: "business_started" })).toBe(byId.get("business_creation"))
+    })
+
+    it("the generic life_event trigger needs its causing definition, and an orphan has no sphere", () => {
+        expect(reviewDomain({ trigger: "life_event", definitionId: "pet_adoption" })).toBe("lifestyle")
+        expect(reviewDomain({ trigger: "life_event", definitionId: "vehicle_purchase" })).toBe("mobility")
+        expect(reviewDomain({ trigger: "life_event" })).toBeNull()
+        expect(reviewDomain({ trigger: "life_event", definitionId: "not-a-real-event" })).toBeNull()
+    })
+
+    it("whole-picture reviews have no sphere, so no single document can close them", () => {
+        for (const trigger of ["annual", "quarterly", "birthday", "customer_inactivity", "advisor_assignment", "protection_score_drop", "coverage_gap", "policy_renewal", "claim"]) {
+            expect(reviewDomain({ trigger }), trigger).toBeNull()
+        }
+    })
+
+    it("a policy's sphere is its attention area's domain; the residual line answers nothing", () => {
+        expect(policyEvidenceDomain("life")).toBe("household")
+        expect(policyEvidenceDomain("Auto Insurance")).toBe("mobility")
+        expect(policyEvidenceDomain("pension")).toBe("money")
+        expect(policyEvidenceDomain("other")).toBeNull()
+        expect(policyEvidenceDomain(null)).toBeNull()
+    })
+
+    it("maps the lifecycle onto Layer 4's bands the way the loader does — cancelled and undated are not held", () => {
+        expect(lifecycleBand("active")).toBe("active")
+        // In force with an incomplete identity: the cover exists, the label does not.
+        expect(lifecycleBand("action_needed")).toBe("active")
+        expect(lifecycleBand("expiring_soon")).toBe("expiring_soon")
+        expect(lifecycleBand("expired")).toBe("expired")
+        expect(lifecycleBand("cancelled")).toBe("other")
+        expect(lifecycleBand("unknown_duration")).toBe("other")
+    })
+})
+
+describe("the evidence matrix", () => {
+    it("same sphere closes — and only that sphere", () => {
+        expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle: "active", reviews: openReviewRows })).toEqual([
+            "rv-birth",
+            "rv-marriage",
+        ])
+        expect(decideEvidenceClosures({ lineOfBusiness: "home", lifecycle: "expiring_soon", reviews: openReviewRows })).toEqual(["rv-home"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "liability", lifecycle: "active", reviews: openReviewRows })).toEqual(["rv-business"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "pet", lifecycle: "active", reviews: openReviewRows })).toEqual(["rv-pet"])
+    })
+
+    it("another sphere stays open", () => {
+        const closed = decideEvidenceClosures({ lineOfBusiness: "motor", lifecycle: "active", reviews: openReviewRows })
+        expect(closed).toEqual([])
+    })
+
+    it("money is one sphere with three areas: a pension answers the mortgage review's sphere, a life policy does not", () => {
+        expect(decideEvidenceClosures({ lineOfBusiness: "pension", lifecycle: "active", reviews: openReviewRows })).toEqual(["rv-mortgage"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle: "active", reviews: openReviewRows })).not.toContain("rv-mortgage")
+    })
+
+    it("an expired, cancelled or undated policy closes nothing", () => {
+        for (const lifecycle of ["expired", "other"] as const) {
+            expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle, reviews: openReviewRows })).toEqual([])
+        }
+    })
+
+    it("a review already closed is never touched, whatever its sphere", () => {
+        const rows = [
+            { id: "rv-done", status: "completed", trigger: "child_born" },
+            { id: "rv-dismissed", status: "dismissed", trigger: "marriage" },
+            { id: "rv-expired", status: "expired", trigger: "child_born" },
+            { id: "rv-superseded", status: "superseded", trigger: "marriage" },
+            { id: "rv-open", status: "open", trigger: "child_born" },
+        ]
+        expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle: "active", reviews: rows })).toEqual(["rv-open"])
+    })
+
+    it("the outcome word is the one the row records", () => {
+        expect(REVIEW_OUTCOME_POLICY_EVIDENCE).toBe("policy_evidence")
+    })
+})
+
+/**
+ * Both completion paths call the ONE closer. The universe is stated: the
+ * orchestrator's `extractBasicSummary` (the basic-summary path every
+ * free/Starter upload takes) and `executePipelineAttempt` (the deep run, whose
+ * finalize follows `persistAnalysisArtifacts`). A comment naming the closer
+ * does not count, and in the deep path the call must come AFTER the gaps are
+ * persisted — a review closed before the finding exists would be closed on a
+ * promise.
+ */
+const ORCHESTRATOR = "lib/services/analysis/policy-analysis-orchestrator.service.ts"
+const CLOSER = "closeReviewsByPolicyEvidence"
+
+function stripComments(src: string): string {
+    return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/.*$/gm, "$1")
+}
+
+/** The method's own line to the line before the next method at class-member indentation. */
+function methodBody(src: string, name: string): string {
+    // Indentation only — `\s+` would also match the blank line above and slice nothing.
+    const start = src.search(new RegExp(`^[ \\t]+(?:private[ \\t]+|public[ \\t]+)?async[ \\t]+${name}\\(`, "m"))
+    if (start < 0) return ""
+    const rest = src.slice(start)
+    const next = rest.slice(1).search(/^[ \t]{4}(?:private[ \t]+|public[ \t]+)?async[ \t]+[a-zA-Z]+\(/m)
+    return next < 0 ? rest : rest.slice(0, next + 1)
+}
+
+export function evidenceHookFindings(src: string): string[] {
+    const clean = stripComments(src)
+    const findings: string[] = []
+    const basic = methodBody(clean, "extractBasicSummary")
+    if (!basic) findings.push("extractBasicSummary: method not found")
+    else if (!basic.includes(`${CLOSER}(`)) findings.push(`extractBasicSummary: does not call ${CLOSER}`)
+    const deep = methodBody(clean, "executePipelineAttempt")
+    if (!deep) findings.push("executePipelineAttempt: method not found")
+    else {
+        const persistAt = deep.indexOf("persistAnalysisArtifacts(")
+        const closeAt = deep.indexOf(`${CLOSER}(`)
+        if (closeAt < 0) findings.push(`executePipelineAttempt: does not call ${CLOSER}`)
+        else if (persistAt < 0) findings.push("executePipelineAttempt: gap persistence not found")
+        else if (closeAt < persistAt) findings.push(`executePipelineAttempt: ${CLOSER} runs before the gaps are persisted`)
+    }
+    return findings
+}
+
+describe("both completion paths close reviews through the one closer", () => {
+    it("the orchestrator's two completion paths are hooked, in order", () => {
+        expect(evidenceHookFindings(readFileSync(ORCHESTRATOR, "utf-8"))).toEqual([])
+    })
+
+    it("the outcome word is written by the review service alone", () => {
+        const writers = [...globSync("lib/**/*.ts"), ...globSync("app/**/*.{ts,tsx}"), ...globSync("components/**/*.{ts,tsx}")]
+            .filter((file) => /outcome\s*:\s*(["']policy_evidence["']|REVIEW_OUTCOME_POLICY_EVIDENCE)/.test(stripComments(readFileSync(file, "utf-8"))))
+        expect(writers).toEqual(["lib/services/risk-review/service.ts"])
+    })
+
+    it("is proven against committed probes", () => {
+        const probe = (name: string) => readFileSync(`tests/fixtures/guard-probes/${name}`, "utf-8")
+        expect(evidenceHookFindings(probe("review-evidence-hook-present.ts.txt"))).toEqual([])
+        const red = evidenceHookFindings(probe("review-evidence-hook-missing.ts.txt"))
+        expect(red).toContain(`extractBasicSummary: does not call ${CLOSER}`)
+        expect(red).toContain(`executePipelineAttempt: ${CLOSER} runs before the gaps are persisted`)
+    })
+})

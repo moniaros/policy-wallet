@@ -14,6 +14,7 @@ const LABELS = {
 
 const item = (overrides: Partial<AttentionItem> = {}): AttentionItem => ({
     id: 'r1',
+    ruleId: 'life_dependents',
     title: 'Your household may be exposed if your income stops',
     reason: 'You told us two people depend on your income.',
     urgency: 'high',
