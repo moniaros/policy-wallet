@@ -231,7 +231,7 @@ export function AreaQuestionFlow({ area, questions, unknownFactorCount, copy, on
             <div className="mt-3" aria-live="polite">
                 <p className="text-sm leading-relaxed text-foreground">{answered > 0 ? copy.done : copy.doneUnanswered}</p>
                 {remaining > 0 ? (
-                    <p className="mt-1 text-caption leading-relaxed text-muted-foreground">{copy.remaining.replace("{n}", String(remaining))}</p>
+                    <p className="mt-1 text-caption leading-relaxed text-muted-foreground">{remaining === 1 ? copy.remainingOne : copy.remaining.replace("{n}", String(remaining))}</p>
                 ) : null}
             </div>
         )

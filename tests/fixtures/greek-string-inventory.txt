@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3474
+# bundle entries: 3475
 # inline entries: 4810 across 217 files
 # ternary entries: 284 across 43 files
 # call entries: 1146 across 86 files
@@ -2241,6 +2241,7 @@ bundle	protection.attention.detail.questionsDone	"Ευχαριστούμε. Η �
 bundle	protection.attention.detail.questionsLead	"Μία ερώτηση κάθε φορά. Ό,τι ξέρουμε ήδη, δεν το ξαναρωτάμε."
 bundle	protection.attention.detail.questionsNone	"Ξέρουμε ό,τι χρειάζεται από εσάς για αυτή την περιοχή."
 bundle	protection.attention.detail.questionsRemaining	"Μένουν {n} στοιχεία που δεν ρωτήσαμε τώρα."
+bundle	protection.attention.detail.questionsRemainingOne	"Μένει 1 στοιχείο που δεν ρωτήσαμε τώρα."
 bundle	protection.attention.detail.questionsTitle	"Βοηθήστε μας να καταλάβουμε"
 bundle	protection.attention.detail.retain	"Να το αναλάβετε εσείς"
 bundle	protection.attention.detail.riskEligibility	"Τι ισχύει στην αγορά"

@@ -1763,6 +1763,7 @@ export const en: TranslationKeys = {
                 questionsNone: 'We know what we need from you for this area.',
                 questionsDone: 'Thank you. The picture of this area has been updated with what you told us.',
                 questionsRemaining: '{n} facts remain that we did not ask now.',
+                questionsRemainingOne: '1 fact remains that we did not ask now.',
                 policiesTitle: 'What your policies say',
                 policiesLead: 'Only the policies we have seen — and only as much of them as we have read.',
                 limitsRead: 'the limits were read',

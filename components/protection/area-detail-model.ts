@@ -699,5 +699,6 @@ export function questionFlowCopy(t: Translations): AssessmentUiCopy & { title: s
         none: detail.questionsNone,
         done: detail.questionsDone,
         remaining: detail.questionsRemaining,
+        remainingOne: detail.questionsRemainingOne,
     }
 }
