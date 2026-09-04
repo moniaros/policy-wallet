@@ -992,3 +992,78 @@ describe('rendered output — the timeline never prints a placeholder identity',
         expect(container.textContent).toContain('Προστέθηκε ασφαλιστήριο')
     })
 })
+
+// ─────────────────────────────────────────────────────────────────────────────
+// S7 — the agent's upload form is a render sink too.
+//
+// The providers substitute `Unknown Insurer` / `PENDING-<epoch>` for an empty
+// extraction on a SUCCESSFUL scan, and UploadPolicyModal pre-filled the raw
+// values into the insurer / policy-number inputs. A pre-filled sentinel
+// satisfies `required`, so the agent could commit «Unknown Insurer» as the
+// policy's name. The inputs now go through scrubPolicyIdentity: a placeholder
+// arrives EMPTY and `required` makes the agent type the real value.
+// ─────────────────────────────────────────────────────────────────────────────
+import { fireEvent, screen } from '@testing-library/react'
+import { UploadPolicyModal } from '@/components/agent/UploadPolicyModal'
+import { scanPolicyForResolution } from '@/app/(protected)/agent/actions'
+import { el as elDict } from '@/lib/i18n/translations/el'
+
+vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn(), warning: vi.fn() } }))
+vi.mock('@/app/(protected)/agent/actions', () => ({
+    scanPolicyForResolution: vi.fn(),
+    commitScannedPolicy: vi.fn(),
+    requestAiConsent: vi.fn(),
+}))
+
+describe('rendered output — the agent upload form never pre-fills a placeholder identity', () => {
+    const ac = elDict.agentModals.addCustomer
+    const up = elDict.agentModals.uploadPolicy
+
+    async function scanWith(extraction: Record<string, unknown>) {
+        vi.mocked(scanPolicyForResolution).mockResolvedValue({
+            success: true,
+            extraction: { lineOfBusiness: 'motor', startDate: '2026-01-01', endDate: '2027-01-01', ...extraction },
+            resolution: { candidates: [], conflict: false },
+        } as any)
+        const view = withProviders(
+            <UploadPolicyModal isOpen onClose={vi.fn()} presetCustomerId="cust-1" presetCustomerConsent="attestable" />
+        )
+        // The dropzone is disabled until the pre-scan mandate attestation is ticked.
+        fireEvent.click(screen.getByLabelText(up.preScanAttestation, { exact: false }))
+        const input = document.getElementById('upload-policy-file') as HTMLInputElement
+        Object.defineProperty(input, 'files', {
+            value: [new File(['%PDF-1.4 test'], 'policy.pdf', { type: 'application/pdf' })],
+            configurable: true,
+        })
+        fireEvent.change(input)
+        await screen.findByText(up.confirmKicker)
+        return view
+    }
+
+    it.each([
+        ['provider substitution on a successful scan', { insurerName: 'Unknown Insurer', policyNumber: 'PENDING-1786732800000' }],
+        ['wallet-form placeholder', { insurerName: '__PENDING_EXTRACTION__', policyNumber: 'PENDING-A1B2C3D4' }],
+        ['Greek provider substitution', { insurerName: 'Άγνωστος ασφαλιστής', policyNumber: 'PENDING-9' }],
+    ])('%s arrives empty, and the field stays required', async (_label, extraction) => {
+        const { container } = await scanWith(extraction)
+        const insurer = screen.getByLabelText(ac.insurer) as HTMLInputElement
+        const number = screen.getByLabelText(ac.policyNumber) as HTMLInputElement
+        expect(insurer.value).toBe('')
+        expect(number.value).toBe('')
+        expect(insurer.required).toBe(true)
+        expect(number.required).toBe(true)
+        // Nothing on the surface — text OR input values — carries a sentinel.
+        expectNoSentinel(container.textContent || '')
+        for (const field of Array.from(container.querySelectorAll('input'))) {
+            expectNoSentinel(field.value)
+        }
+        // A sentinel identity cannot be committed: the submit stays disabled.
+        expect((screen.getByText(up.submitAttach) as HTMLButtonElement).disabled).toBe(true)
+    })
+
+    it('a real identity is pre-filled untouched', async () => {
+        await scanWith({ insurerName: 'Interamerican', policyNumber: 'POL-42' })
+        expect((screen.getByLabelText(ac.insurer) as HTMLInputElement).value).toBe('Interamerican')
+        expect((screen.getByLabelText(ac.policyNumber) as HTMLInputElement).value).toBe('POL-42')
+    })
+})

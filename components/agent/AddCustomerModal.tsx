@@ -1,27 +1,31 @@
 "use client"
 
-import React, { useState, useRef } from 'react'
-import { UserPlus, PenLine, FileUp, Sparkles, CheckCircle2 } from 'lucide-react'
-import { addCustomerManually, parsePolicyPdfWithGemini } from '@/app/(protected)/agent/actions'
+import React, { useState } from 'react'
+import { UserPlus, PenLine, FileUp, CheckCircle2 } from 'lucide-react'
+import { addCustomerManually } from '@/app/(protected)/agent/actions'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
 import { CardHead } from '@/components/dashboard/home/CardHead'
 import { Checkbox } from '@/components/ui/form'
-import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
-import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
-
-// Mirrors the maxBytes parsePolicyPdfWithGemini validates with, and stays under
-// next.config.ts's serverActions.bodySizeLimit so we own the rejection message.
-const SCAN_MAX_BYTES = 10 * 1024 * 1024
+import { describeActionError } from '@/lib/i18n/action-error'
 
 interface Props {
     isOpen: boolean
     onClose: () => void
     onSuccess?: () => void
+    /**
+     * The second door. This modal never touches a document: the old «Έξυπνη
+     * Μεταφόρτωση PDF» door parsed the PDF, DROPPED the File and submitted
+     * addCustomerManually with no document, so the policy was created active
+     * with zero documents and no analysis. The parent closes this dialog and
+     * opens UploadPolicyModal, which uploads, resolves, confirms and commits
+     * WITH the file. Absent, the door is not offered.
+     */
+    onUploadInstead?: () => void
 }
 
-type View = 'choice' | 'manual' | 'pdf' | 'parsing' | 'success'
+type View = 'choice' | 'manual' | 'success'
 
 // Two steps whichever door the agent takes: choose a method, then the details.
 const TOTAL_STEPS = 2
@@ -31,14 +35,23 @@ const TOTAL_STEPS = 2
 // functional floor.
 const LABEL = "block text-caption font-semibold text-foreground"
 
-export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
+export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }: Props) {
     const { t } = useLanguage()
     const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
     const ac = t.agentModals.addCustomer
     const [view, setView] = useState<View>('choice')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const fileInputRef = useRef<HTMLInputElement>(null)
+    // Per-field messages from the action's Zod issues, keyed by the dotted
+    // path the schema reports (`taxId`, `policy.startDate`). Each input marks
+    // itself aria-invalid and points at its message with aria-describedby.
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    const fieldError = (path: string) => fieldErrors[path]
+    const errorId = (path: string) => `addcustomermodal-error-${path.replace(/\./g, '-')}`
+    const invalidProps = (path: string) =>
+        fieldError(path) ? { 'aria-invalid': true as const, 'aria-describedby': errorId(path) } : {}
+    const fieldMessage = (path: string) =>
+        fieldError(path) ? <p id={errorId(path)} className="text-caption font-semibold text-status-danger">{fieldError(path)}</p> : null
 
     // Manual Form State
     const [formData, setFormData] = useState({
@@ -64,6 +77,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
         e.preventDefault()
         setLoading(true)
         setError(null)
+        setFieldErrors({})
 
         // Transport-level Server Action failures (expired session redirected to
         // signin by proxy.ts, deployment skew, oversized body) reject rather
@@ -89,68 +103,21 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
             return
         }
 
-        if ('error' in result) {
-            setError(result.error as string)
+        if (!result.success) {
+            // A code, localised here — never the literal. The field messages
+            // land beside the inputs that own them; this form is one step, so
+            // the step that owns every field is the one already on screen.
+            const failure = result as { error?: string; details?: Array<{ path: string; code: string; message: string }> }
+            const described = describeActionError(t, failure.error, failure.details, failure as Record<string, unknown>)
+            setError(described.message)
+            setFieldErrors(described.fieldErrors)
+            if (Object.keys(described.fieldErrors).some((path) => path.startsWith('policy.'))) {
+                setFormData((current) => ({ ...current, addPolicy: true }))
+            }
+            setView('manual')
         } else {
             setView('success')
             onSuccess?.()
-        }
-        setLoading(false)
-    }
-
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        // Size pre-flight before the upload starts — the only size check that can
-        // fire ahead of Next's Server Action body limit. See UploadPolicyModal.
-        const tooBig = preflightUploadSize(file.size, SCAN_MAX_BYTES)
-        if (tooBig) {
-            setError(uploadRejectionMessage(t, tooBig, null, SCAN_MAX_BYTES))
-            setView('choice')
-            e.target.value = ''
-            return
-        }
-
-        setView('parsing')
-        setLoading(true)
-
-        const formDataObj = new FormData()
-        formDataObj.append('file', file)
-
-        // Same transport-failure guard — this one carries the PDF, so it is the
-        // call that actually hit the 1 MB Server Action body cap.
-        let result: Awaited<ReturnType<typeof parsePolicyPdfWithGemini>>
-        try {
-            result = await parsePolicyPdfWithGemini(formDataObj)
-        } catch {
-            setError(t.agentModals.uploadPolicy.scanError)
-            setView('choice')
-            setLoading(false)
-            return
-        }
-
-        if ('error' in result) {
-            setError(uploadRejectionMessage(t, (result as any).errorCode, result.error as string, SCAN_MAX_BYTES))
-            setView('choice')
-        } else if ('success' in result && result.data) {
-            const data = result.data
-            setFormData(prev => ({
-                ...prev,
-                name: data.customerName || '',
-                surname: data.customerSurname || '',
-                email: data.customerEmail || '',
-                addPolicy: true,
-                policy: {
-                    insurerName: data.insurerName || '',
-                    policyNumber: data.policyNumber || '',
-                    lineOfBusiness: data.lineOfBusiness || 'motor',
-                    startDate: data.startDate || '',
-                    endDate: data.endDate || '',
-                    premiumAmount: data.premiumAmount?.toString() || ''
-                }
-            }))
-            setView('manual')
         }
         setLoading(false)
     }
@@ -174,6 +141,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
             }
         })
         setError(null)
+        setFieldErrors({})
     }
 
     const stepCaption = (current: number) =>
@@ -234,26 +202,23 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 </span>
                             </button>
 
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current?.click()}
-                                className="pw-subcard flex min-h-11 items-start gap-3 p-4 text-left transition-colors"
-                            >
-                                <span className="pw-card-chip" aria-hidden="true">
-                                    <FileUp className="h-4 w-4" strokeWidth={1.75} />
-                                </span>
-                                <span className="min-w-0">
-                                    <span className="block text-sm font-semibold text-foreground">{ac.pdfTitle}</span>
-                                    <span className="mt-0.5 block text-caption text-muted-foreground">{ac.pdfDesc}</span>
-                                </span>
-                            </button>
-                            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept={acceptAttribute("policy")} className="hidden" />
+                            {onUploadInstead && (
+                                <button
+                                    type="button"
+                                    data-testid="add-customer-upload-door"
+                                    onClick={() => { reset(); onUploadInstead() }}
+                                    className="pw-subcard flex min-h-11 items-start gap-3 p-4 text-left transition-colors"
+                                >
+                                    <span className="pw-card-chip" aria-hidden="true">
+                                        <FileUp className="h-4 w-4" strokeWidth={1.75} />
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span className="block text-sm font-semibold text-foreground">{ac.uploadTitle}</span>
+                                        <span className="mt-0.5 block text-caption text-muted-foreground">{ac.uploadDesc}</span>
+                                    </span>
+                                </button>
+                            )}
                         </div>
-
-                        {/* A rejected or failed scan sends the agent back here, so
-                            the reason has to be readable here — it used to render
-                            only on the form step, which this door never reached. */}
-                        {error && <p role="alert" className="text-caption font-semibold text-status-danger">{error}</p>}
 
                         <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
                             <button
@@ -264,19 +229,6 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 {ac.goBack}
                             </button>
                         </div>
-                    </div>
-                )}
-
-                {view === 'parsing' && (
-                    <div className="py-10 text-center">
-                        <div className="relative mx-auto mb-6 h-20 w-20">
-                            <div className="absolute inset-0 animate-spin rounded-full border-4 border-primary/10 border-t-primary" />
-                            <div className="absolute inset-3 grid place-items-center rounded-full bg-primary/10 text-primary">
-                                <Sparkles className="h-7 w-7 animate-pulse" aria-hidden="true" />
-                            </div>
-                        </div>
-                        <h2 id="add-customer-title" className="text-title font-semibold text-foreground">{ac.analyzingTitle}</h2>
-                        <p className="mt-1 text-sm text-muted-foreground">{ac.analyzingDesc}</p>
                     </div>
                 )}
 
@@ -305,7 +257,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     className="pw-input"
                                     placeholder={ac.phFirstName}
+                                    {...invalidProps('name')}
                                 />
+                                {fieldMessage('name')}
                             </div>
                             <div className="space-y-1.5">
                                 <label htmlFor="addcustomermodal-f2" className={LABEL}>{ac.lastName}</label>
@@ -315,18 +269,25 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     onChange={e => setFormData({ ...formData, surname: e.target.value })}
                                     className="pw-input"
                                     placeholder={ac.phLastName}
+                                    {...invalidProps('surname')}
                                 />
+                                {fieldMessage('surname')}
                             </div>
+                            {/* Email is optional (D3): without it the customer is identified
+                                by ΑΦΜ + Greek mobile and cannot be invited until one is added. */}
                             <div className="space-y-1.5">
                                 <label htmlFor="addcustomermodal-f3" className={LABEL}>{ac.emailAddress}</label>
                                 <input id="addcustomermodal-f3"
-                                    required
                                     type="email"
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                                     className="pw-input"
-                                    placeholder="john@example.com"
+                                    placeholder={ac.phEmail}
+                                    aria-describedby={fieldError('email') ? errorId('email') : 'addcustomermodal-f3-hint'}
+                                    aria-invalid={fieldError('email') ? true : undefined}
                                 />
+                                {fieldMessage('email')}
+                                <p id="addcustomermodal-f3-hint" className="text-caption text-muted-foreground">{ac.emailOptionalHint}</p>
                             </div>
                             <div className="space-y-1.5">
                                 <label htmlFor="addcustomermodal-f4" className={LABEL}>{ac.phoneNumber}</label>
@@ -335,7 +296,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                     className="pw-input"
                                     placeholder="+30 690 000 0000"
+                                    {...invalidProps('phone')}
                                 />
+                                {fieldMessage('phone')}
                             </div>
                             <div className="space-y-1.5">
                                 <label htmlFor="addcustomermodal-f5" className={LABEL}>{ac.taxId}</label>
@@ -344,7 +307,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     onChange={e => setFormData({ ...formData, taxId: e.target.value })}
                                     className="pw-input"
                                     placeholder={ac.phTaxId}
+                                    {...invalidProps('taxId')}
                                 />
+                                {fieldMessage('taxId')}
                             </div>
                         </div>
 
@@ -368,7 +333,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, insurerName: e.target.value } })}
                                             className="pw-input"
                                             placeholder={ac.phInsurer}
+                                            {...invalidProps('policy.insurerName')}
                                         />
+                                        {fieldMessage('policy.insurerName')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f7" className={LABEL}>{ac.policyNumber}</label>
@@ -378,7 +345,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, policyNumber: e.target.value } })}
                                             className="pw-input"
                                             placeholder="POL-123456"
+                                            {...invalidProps('policy.policyNumber')}
                                         />
+                                        {fieldMessage('policy.policyNumber')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f8" className={LABEL}>{ac.lineOfBusiness}</label>
@@ -387,11 +356,13 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             value={formData.policy.lineOfBusiness}
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, lineOfBusiness: e.target.value } })}
                                             className="pw-input appearance-none"
+                                            {...invalidProps('policy.lineOfBusiness')}
                                         >
                                             {WRITE_BRANCH_IDS.map((id) => (
                                                 <option key={id} value={id}>{t.policyTypes[id] ?? id}</option>
                                             ))}
                                         </select>
+                                        {fieldMessage('policy.lineOfBusiness')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f9" className={LABEL}>{ac.premium}</label>
@@ -401,7 +372,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, premiumAmount: e.target.value } })}
                                             className="pw-input"
                                             placeholder="0.00"
+                                            {...invalidProps('policy.premiumAmount')}
                                         />
+                                        {fieldMessage('policy.premiumAmount')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f10" className={LABEL}>{ac.startDate}</label>
@@ -411,7 +384,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             value={formData.policy.startDate}
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, startDate: e.target.value } })}
                                             className="pw-input"
+                                            {...invalidProps('policy.startDate')}
                                         />
+                                        {fieldMessage('policy.startDate')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f11" className={LABEL}>{ac.endDate}</label>
@@ -421,7 +396,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             value={formData.policy.endDate}
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, endDate: e.target.value } })}
                                             className="pw-input"
+                                            {...invalidProps('policy.endDate')}
                                         />
+                                        {fieldMessage('policy.endDate')}
                                     </div>
                                 </div>
                             )}

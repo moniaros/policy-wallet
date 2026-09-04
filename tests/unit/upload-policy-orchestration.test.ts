@@ -25,6 +25,24 @@ vi.mock('@/lib/email/invite-emails', () => ({
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('next/server', () => ({ after: vi.fn() }))
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
+vi.mock('@sentry/nextjs', () => ({ captureException: vi.fn() }))
+vi.mock('@/lib/logger', () => ({ logger: vi.fn() }))
+
+// Storage + upload validation, so a document can travel through the action.
+const uploadFileDetailed = vi.fn()
+const deleteFile = vi.fn(async (_url?: string) => true)
+vi.mock('@/lib/storage', () => ({
+    uploadFileDetailed: (...a: unknown[]) => uploadFileDetailed(...a),
+    deleteFile: (url: string) => deleteFile(url),
+}))
+vi.mock('@/lib/security/file-upload', () => ({
+    validateUploadFile: vi.fn(async () => ({
+        ok: true,
+        value: { ext: '.pdf', canonicalMime: 'application/pdf', displayName: 'policy.pdf' },
+    })),
+    sanitizeDisplayName: (s: string) => s,
+    REJECTION_MESSAGES: {},
+}))
 
 const canAgentAddCustomer = vi.fn()
 const canAgentAddPolicyForCustomer = vi.fn()
@@ -34,6 +52,12 @@ vi.mock('@/lib/subscription-entitlements', () => ({
     canAgentAddPolicyForCustomer: (...a: unknown[]) => canAgentAddPolicyForCustomer(...a),
     canAgentRunAnalysis: (...a: unknown[]) => canAgentRunAnalysis(...a),
 }))
+// The token pre-flight the action now runs BEFORE it answers (H1) — the same
+// estimate + gate createRun applies inside the deferred run.
+const preflightAnalysisTokenGate = vi.fn()
+vi.mock('@/lib/services/analysis/run-preflight', () => ({
+    preflightAnalysisTokenGate: (...a: unknown[]) => preflightAnalysisTokenGate(...a),
+}))
 
 const userFindUnique = vi.fn()
 const userUpdate = vi.fn()
@@ -42,6 +66,9 @@ const relUpdate = vi.fn()
 const notifCreate = vi.fn()
 const dbTransaction = vi.fn()
 const policyFindFirst = vi.fn()
+const policyFindUnique = vi.fn()
+const policyUpdate = vi.fn()
+const policyDocumentUpdateMany = vi.fn()
 vi.mock('@/lib/db', () => ({
     db: {
         user: { findUnique: (...a: unknown[]) => userFindUnique(...a), update: (...a: unknown[]) => userUpdate(...a) },
@@ -49,14 +76,22 @@ vi.mock('@/lib/db', () => ({
             findFirst: (...a: unknown[]) => relFindFirst(...a),
             update: (...a: unknown[]) => relUpdate(...a),
         },
-        notificationEvent: { create: (...a: unknown[]) => notifCreate(...a) },
-        policy: { findFirst: (...a: unknown[]) => policyFindFirst(...a) },
+        // The bus reads preferences and checks the dedupe key before writing.
+        notificationEvent: { create: (...a: unknown[]) => notifCreate(...a), findFirst: vi.fn(async () => null) },
+        notificationPreference: { findMany: vi.fn(async () => []) },
+        policy: {
+            findFirst: (...a: unknown[]) => policyFindFirst(...a),
+            findUnique: (...a: unknown[]) => policyFindUnique(...a),
+            update: (...a: unknown[]) => policyUpdate(...a),
+        },
+        policyDocument: { updateMany: (...a: unknown[]) => policyDocumentUpdateMany(...a) },
         $transaction: (...a: unknown[]) => dbTransaction(...a),
     },
 }))
 
+import { after } from 'next/server'
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
-import { commitScannedPolicy } from '@/app/(protected)/agent/actions'
+import { addPolicyForCustomer, commitScannedPolicy } from '@/app/(protected)/agent/actions'
 
 const mockAuth = vi.mocked(getAuthenticatedUserOrNull)
 
@@ -81,18 +116,34 @@ beforeEach(() => {
     userFindUnique.mockResolvedValue(null)
     // No pre-existing duplicate by default.
     policyFindFirst.mockResolvedValue(null)
-    // Policy create + grant inside the atomic transaction.
-    dbTransaction.mockImplementation(async (fn: any) => fn({
-        policy: { create: vi.fn(async () => ({ id: 'pol-1', policyNumber: 'P-1', lineOfBusiness: 'motor', insurerName: 'Allianz' })) },
-        accessGrant: { findFirst: vi.fn(async () => null), create: vi.fn(async () => ({})) },
-    }))
+    policyFindUnique.mockResolvedValue({ acordData: { vehicle: { plateNumber: 'ΑΒΓ-1234' } } })
+    policyUpdate.mockResolvedValue({})
+    policyDocumentUpdateMany.mockResolvedValue({ count: 1 })
+    preflightAnalysisTokenGate.mockResolvedValue({ allowed: true, estimatedTokens: 211_000 })
+    // Policy create + grant (+ document row) inside the atomic transaction.
+    txPolicyDocumentCreate.mockResolvedValue({})
+    dbTransaction.mockImplementation(async (fn: any) => fn(txClient()))
+    uploadFileDetailed.mockResolvedValue({ url: 'https://storage/policies/k1', bucket: 'policies', key: 'k1', mimeType: 'application/pdf' })
 })
+
+const txPolicyDocumentCreate = vi.fn()
+const txClient = () => ({
+    policy: { create: vi.fn(async () => ({ id: 'pol-1', policyNumber: 'P-1', lineOfBusiness: 'motor', insurerName: 'Allianz' })) },
+    accessGrant: { findFirst: vi.fn(async () => null), create: vi.fn(async () => ({})) },
+    policyDocument: { create: (...a: unknown[]) => txPolicyDocumentCreate(...a) },
+})
+
+function documentForm(): FormData {
+    const fd = new FormData()
+    fd.append('file', new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], 'policy.pdf', { type: 'application/pdf' }))
+    return fd
+}
 
 describe('commitScannedPolicy', () => {
     it('rejects a non-agent caller', async () => {
         mockAuth.mockResolvedValue({ dbUser: { id: 'u', roles: 'policyholder' } } as any)
         const res = await commitScannedPolicy({ mode: 'attach', customerId: 'c1' }, POLICY)
-        expect(res).toEqual({ success: false, error: 'Unauthorized' })
+        expect(res).toEqual({ success: false, error: 'UNAUTHORIZED' })
     })
 
     it('create_new: gates the customer cap, creates the customer with ΑΦΜ, then the policy', async () => {
@@ -199,5 +250,156 @@ describe('commitScannedPolicy', () => {
         expect(res).toMatchObject({ success: true, policyId: 'pol-1' })
         expect(policyFindFirst).not.toHaveBeenCalled() // check skipped when confirmed
         expect(dbTransaction).toHaveBeenCalled()
+    })
+})
+
+/**
+ * Ordering of the commit. The policy row, its grant and the customer's
+ * notification used to be committed BEFORE the storage upload and the
+ * document row, so a storage failure left a live, document-less policy and a
+ * customer told about a document that did not exist.
+ */
+describe('addPolicyForCustomer — storage first, then ONE transaction, then notify', () => {
+    const input = { customerId: 'cust-9', policy: POLICY }
+
+    it('storage failure writes no policy, no grant and no notification', async () => {
+        uploadFileDetailed.mockRejectedValue(new Error('bucket unavailable'))
+
+        const res = await addPolicyForCustomer(input, documentForm())
+
+        expect(res).toEqual({ success: false, error: 'ADD_POLICY_FAILED' })
+        expect(dbTransaction).not.toHaveBeenCalled()
+        expect(notifCreate).not.toHaveBeenCalled()
+        expect(relUpdate).not.toHaveBeenCalled()
+    })
+
+    it('the document row lands in the same transaction as the policy', async () => {
+        // The bus resolves the recipient before it writes the notification row.
+        userFindUnique.mockResolvedValue({ id: 'cust-9', email: 'c@x.gr', preferredLanguage: 'el' })
+
+        const res = await addPolicyForCustomer(input, documentForm())
+
+        expect(res).toMatchObject({ success: true, policyId: 'pol-1' })
+        expect(uploadFileDetailed).toHaveBeenCalledTimes(1)
+        expect(dbTransaction).toHaveBeenCalledTimes(1)
+        // Written through the transaction client, keyed to the policy it created.
+        expect(txPolicyDocumentCreate).toHaveBeenCalledTimes(1)
+        expect(txPolicyDocumentCreate.mock.calls[0]![0].data).toMatchObject({
+            policyId: 'pol-1',
+            storageKey: 'k1',
+            storageBucket: 'policies',
+            mimeType: 'application/pdf',
+            source: 'agent',
+        })
+        expect(deleteFile).not.toHaveBeenCalled()
+        // The upload completed before the transaction opened.
+        expect(uploadFileDetailed.mock.invocationCallOrder[0]).toBeLessThan(dbTransaction.mock.invocationCallOrder[0])
+        // …and the customer is told only after the commit.
+        expect(notifCreate).toHaveBeenCalled()
+        expect(dbTransaction.mock.invocationCallOrder[0]).toBeLessThan(notifCreate.mock.invocationCallOrder[0])
+    })
+
+    it('a failed transaction removes the just-stored object and notifies nobody', async () => {
+        dbTransaction.mockRejectedValue(new Error('constraint'))
+
+        const res = await addPolicyForCustomer(input, documentForm())
+
+        expect(res).toEqual({ success: false, error: 'ADD_POLICY_FAILED' })
+        expect(deleteFile).toHaveBeenCalledWith('https://storage/policies/k1')
+        expect(notifCreate).not.toHaveBeenCalled()
+    })
+})
+
+/**
+ * H1 — the analysis verdict is decided BEFORE the action answers.
+ *
+ * The token gate used to run only inside after(): the modal had already said
+ * «εκτελείται στο παρασκήνιο» when createRun refused, and on the free agent
+ * tier it refused every time (a document run estimates at ~211k tokens
+ * against a 150k monthly budget), leaving the policy stuck in `analyzing`.
+ * The action now applies the same gates up front and returns one of four
+ * outcomes; a refused run is stamped the way the pipeline stamps one.
+ */
+describe('addPolicyForCustomer — the analysis outcome is decided before the action returns', () => {
+    const input = { customerId: 'cust-9', policy: POLICY }
+    // The customer (the policy OWNER) has consented; the bus reads the same row.
+    const consentedOwner = { id: 'cust-9', email: 'c@x.gr', preferredLanguage: 'el', aiProcessingConsentVersion: '2026-07' }
+
+    it('blocked_consent when the owner has not consented: nothing is scheduled, the policy stays active', async () => {
+        userFindUnique.mockResolvedValue({ id: 'cust-9', email: 'c@x.gr', aiProcessingConsentVersion: null })
+
+        const res = await addPolicyForCustomer(input, documentForm())
+
+        expect(res).toMatchObject({ success: true, analysis: 'blocked_consent' })
+        expect(after).not.toHaveBeenCalled()
+        expect(preflightAnalysisTokenGate).not.toHaveBeenCalled()
+        expect(policyUpdate).not.toHaveBeenCalled()
+    })
+
+    it('blocked_quota when the monthly analyses cap is reached: stamped action_needed, retryable, never analyzing', async () => {
+        userFindUnique.mockResolvedValue(consentedOwner)
+        canAgentRunAnalysis.mockResolvedValue({ allowed: false, reason: 'ai_analysis_limit', used: 5, limit: 5 })
+
+        const res = await addPolicyForCustomer(input, documentForm())
+
+        expect(res).toMatchObject({ success: true, analysis: 'blocked_quota' })
+        expect(after).not.toHaveBeenCalled()
+        expect(policyUpdate).toHaveBeenCalledTimes(1)
+        const stamp = policyUpdate.mock.calls[0]![0]
+        expect(stamp.where).toEqual({ id: 'pol-1' })
+        expect(stamp.data.status).toBe('action_needed')
+        expect(stamp.data.acordData).toMatchObject({
+            // The plate the agent typed survives the stamp.
+            vehicle: { plateNumber: 'ΑΒΓ-1234' },
+            processingError: { code: 'TOKEN_LIMIT_BLOCKED', retryable: true },
+        })
+        expect(policyUpdate).not.toHaveBeenCalledWith(expect.objectContaining({ data: { status: 'analyzing' } }))
+        expect(policyDocumentUpdateMany).toHaveBeenCalledWith({ where: { policyId: 'pol-1' }, data: { processingStatus: 'failed' } })
+    })
+
+    it('blocked_quota when the token gate refuses the estimated run — the same gate createRun applies', async () => {
+        userFindUnique.mockResolvedValue(consentedOwner)
+        preflightAnalysisTokenGate.mockResolvedValue({ allowed: false, reason: 'monthly_limit_reached', estimatedTokens: 211_000 })
+
+        const res = await addPolicyForCustomer(input, documentForm())
+
+        expect(res).toMatchObject({ success: true, analysis: 'blocked_quota' })
+        expect(preflightAnalysisTokenGate).toHaveBeenCalledWith('agent-1', { lineOfBusiness: 'motor', hasDocument: true })
+        expect(after).not.toHaveBeenCalled()
+        expect(policyUpdate.mock.calls[0]![0].data.status).toBe('action_needed')
+        expect(policyUpdate.mock.calls[0]![0].data.acordData.processingError.message).toContain('monthly_limit_reached')
+    })
+
+    it('queued only when consent, the run cap AND the token gate all pass — then it is scheduled and marked analyzing', async () => {
+        userFindUnique.mockResolvedValue(consentedOwner)
+
+        const res = await addPolicyForCustomer(input, documentForm())
+
+        expect(res).toMatchObject({ success: true, analysis: 'queued' })
+        expect(after).toHaveBeenCalledTimes(1)
+        expect(policyUpdate).toHaveBeenCalledWith({ where: { id: 'pol-1' }, data: { status: 'analyzing' } })
+        expect(policyDocumentUpdateMany).not.toHaveBeenCalled()
+    })
+
+    it('none when no document was uploaded: no gate is consulted and nothing is claimed', async () => {
+        userFindUnique.mockResolvedValue(consentedOwner)
+
+        const res = await addPolicyForCustomer(input)
+
+        expect(res).toMatchObject({ success: true, analysis: 'none' })
+        expect(canAgentRunAnalysis).not.toHaveBeenCalled()
+        expect(preflightAnalysisTokenGate).not.toHaveBeenCalled()
+        expect(after).not.toHaveBeenCalled()
+    })
+
+    it('commitScannedPolicy forwards the verdict unchanged', async () => {
+        userFindUnique.mockImplementation(async ({ where, select }: any) =>
+            select?.taxId ? { taxId: '123456783' } : where?.id === 'cust-9' ? consentedOwner : null,
+        )
+        preflightAnalysisTokenGate.mockResolvedValue({ allowed: false, reason: 'insufficient_tokens', estimatedTokens: 211_000 })
+
+        const res = await commitScannedPolicy({ mode: 'attach', customerId: 'cust-9' }, POLICY, false, documentForm())
+
+        expect(res).toMatchObject({ success: true, policyId: 'pol-1', customerId: 'cust-9', analysis: 'blocked_quota' })
     })
 })

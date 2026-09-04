@@ -1,0 +1,25 @@
+"use client"
+// Probe for the upload-surface arm of tests/unit/all-clear-honesty.test.ts.
+// GREEN: the "running in the background" copy renders only under the
+// action's own `queued` verdict; the quota and consent branches say what
+// actually happened.
+
+import { commitScannedPolicy } from "@/app/(protected)/agent/actions"
+
+type Outcome = "queued" | "blocked_quota" | "blocked_consent" | "none"
+
+export function ProbeSuccessView({ up, result }: { up: any; result: { analysis: Outcome } }) {
+    return (
+        <div>
+            {result.analysis === 'queued' && (
+                <p role="status">{up.analysisStarted}</p>
+            )}
+            {result.analysis === "queued" ? <p>{"Η ανάλυση τρέχει στο παρασκήνιο"}</p> : null}
+            {result.analysis === 'blocked_quota' && <p>{up.analysisBlockedQuota}</p>}
+        </div>
+    )
+}
+
+export async function probeCommit(fd: FormData) {
+    return commitScannedPolicy({ mode: "attach", customerId: "c" }, {} as any, false, fd)
+}

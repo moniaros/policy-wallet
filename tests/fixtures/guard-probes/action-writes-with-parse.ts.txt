@@ -1,0 +1,13 @@
+"use server"
+// PROBE — compliant control for tests/unit/agent-action-input-validation.test.ts.
+import { db } from "@/lib/db"
+import { AddPolicyForCustomerInput, validationFailure } from "@/lib/validations/agent-intake"
+
+export async function addPolicyProbe(data: unknown) {
+    const parsed = AddPolicyForCustomerInput.safeParse(data)
+    if (!parsed.success) return validationFailure(parsed.error)
+    const created = await db.policy.create({
+        data: { ownerUserId: parsed.data.customerId, startDate: new Date(parsed.data.policy.startDate) },
+    })
+    return { success: true, policyId: created.id }
+}

@@ -6,6 +6,9 @@ import { en } from '@/lib/i18n/translations/en'
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 const ROUTE = strip(readFileSync('app/api/v1/customers/bulk-import/route.ts', 'utf-8'))
 const MODAL = strip(readFileSync('components/agent/BulkImportModal.tsx', 'utf-8'))
+// The code → dictionary mapping moved out of the modal into the describer every
+// agent surface shares (phase 3 of the intake audit); the guard follows it.
+const DESCRIBER = strip(readFileSync('lib/i18n/action-error.ts', 'utf-8'))
 
 /**
  * The route knows exactly why an import was refused — the plan's row limit, the
@@ -40,7 +43,7 @@ describe('a refused import tells the agent why', () => {
     it('the modal reads the body instead of throwing it away', () => {
         expect(MODAL).not.toMatch(/throw new Error\('Import failed'\)/)
         expect(MODAL).toMatch(/await response\.json\(\)\.catch\(\(\) => null\)/)
-        expect(MODAL).toMatch(/toast\.error\(limitMessage\(body\?\.error\)\)/)
+        expect(MODAL).toMatch(/toast\.error\(bulkImportErrorMessage\(t, body\?\.error\)\)/)
     })
 
     it('every code maps to copy in both languages', () => {
@@ -58,6 +61,20 @@ describe('a refused import tells the agent why', () => {
     })
 
     it('falls back to the generic message for an unknown code', () => {
-        expect(MODAL).toMatch(/default:\s*\n\s*return t\.apiErrors\.generic/)
+        expect(MODAL).toMatch(/describeActionError\(t, err\?\.code/)
+        expect(DESCRIBER).toMatch(/template \?\? apiErrors\.generic/)
+    })
+
+    /**
+     * A malformed row (missing name, bad email) is refused as VALIDATION_ERROR
+     * — the most common refusal a CSV produces — and it used to fall through to
+     * the generic "something went wrong", which told the agent nothing about
+     * the file. It has its own key, and the modal must map to it.
+     */
+    it('VALIDATION_ERROR maps to its own message in both languages', () => {
+        expect(ROUTE).toContain('"VALIDATION_ERROR"')
+        expect(el.apiErrors.bulkImportValidationError).toBeTruthy()
+        expect(en.apiErrors.bulkImportValidationError).toBeTruthy()
+        expect(MODAL).toMatch(/err\?\.code === 'VALIDATION_ERROR'\) return t\.apiErrors\.bulkImportValidationError/)
     })
 })

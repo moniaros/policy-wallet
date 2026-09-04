@@ -52,6 +52,7 @@ import {
     estimatePolicyAnalysisTokenBudget,
     type PolicyAnalysisStepKey,
 } from "./token-budget-estimator"
+import { estimateAnalysisRunBudget } from "./run-preflight"
 import { getModelForStep, selectPrimaryProvider, fallbackModelFor, type AiRuntimeOverrides } from "@/lib/services/ai/model-router"
 import { getAiRuntimeOverrides } from "@/lib/services/ai/runtime-config"
 import { getPromptOverrides, resolveOperatorGuidance } from "@/lib/services/ai/prompt-overrides"
@@ -518,20 +519,12 @@ export class PolicyAnalysisOrchestratorService {
             })
         }
 
-        const gapDefinitionsCount = await db.gapDefinition.count({
-            where: {
-                lineOfBusiness: {
-                    equals: normalizeLineOfBusiness(policy.lineOfBusiness),
-                    mode: "insensitive",
-                },
-                isActive: true,
-            },
-        })
-
-        const estimation = estimatePolicyAnalysisTokenBudget({
+        // ONE estimator, shared with the agent upload's pre-flight
+        // (lib/services/analysis/run-preflight.ts): the number the modal
+        // decides on before it answers is the number this gate refuses on.
+        const estimation = await estimateAnalysisRunBudget({
+            lineOfBusiness: policy.lineOfBusiness,
             hasDocument: policy.documents.length > 0,
-            gapDefinitionsCount,
-            checklistPillarsCount: INSURANCE_CLARITY_CHECKLIST.length,
         })
 
         // Priority queue: for an agent-initiated run, honor the AGENT tier's

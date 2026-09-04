@@ -1,0 +1,11 @@
+"use server"
+// PROBE — must turn tests/unit/agent-action-input-validation.test.ts RED.
+// An exported action that writes a Policy straight from its argument.
+import { db } from "@/lib/db"
+
+export async function addPolicyProbe(data: { customerId: string; startDate: string }) {
+    const created = await db.policy.create({
+        data: { ownerUserId: data.customerId, startDate: new Date(data.startDate) },
+    })
+    return { success: true, policyId: created.id }
+}

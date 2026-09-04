@@ -7,6 +7,7 @@
  */
 
 import { sendEmail } from "@/lib/email/email-service"
+import { isSyntheticNoEmailAddress } from "@/lib/identity/synthetic-email"
 import { buildNotificationEmail } from "@/lib/mail-templates"
 import type { ChannelAdapter, DeliveryOutcome, DeliveryPayload } from "./index"
 
@@ -14,7 +15,11 @@ export const emailAdapter: ChannelAdapter = {
     configured: () => true,
 
     async send(payload: DeliveryPayload): Promise<DeliveryOutcome> {
-        if (!payload.email) {
+        // A customer with NO email carries a synthetic, non-deliverable
+        // address (User.contactEmailMissing). `sendEmail` refuses it anyway;
+        // recording "no address" here keeps the delivery log honest and
+        // stops the retry loop from re-attempting a send that can never land.
+        if (!payload.email || isSyntheticNoEmailAddress(payload.email)) {
             // Recorded, not silently dropped: "we have no address for you" is a
             // real and fixable reason a notification never arrived.
             return { status: "skipped", reason: "no_address" }

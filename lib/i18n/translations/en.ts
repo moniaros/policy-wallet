@@ -78,6 +78,56 @@ export const en: TranslationKeys = {
         bulkImportRowLimit: 'Your plan allows up to {limit} rows per import — you sent {submitted}. Split the file or upgrade.',
         customerLimitReached: 'You have reached your plan’s customer limit ({current}/{limit}). Upgrade to add more.',
         customerHeadroomExceeded: 'This import adds {adding} customers but only {headroom} slots remain ({current}/{limit}).',
+        bulkImportValidationError: 'Some rows in the file are not valid (a name is missing or an email is malformed). Fix them and try again.',
+        // Codes returned by the advisor server actions
+        // (app/(protected)/agent/actions.ts). One code per failure — never
+        // prose, so every surface localises it itself.
+        validationError: 'Some details are not valid. Check them and try again.',
+        rateLimited: 'Too many actions in a short time. Wait a moment and try again.',
+        scanRateLimited: 'Too many scans in a short time. Wait a moment and try again.',
+        policyPerCustomerLimit: 'You reached your plan’s per-customer policy limit ({current}/{limit}).',
+        relationshipTerminated: 'The relationship with this customer has ended. Only the customer can reconnect it.',
+        customerAccessDenied: 'You do not have access to this customer.',
+        customerExists: 'This customer is already in your list.',
+        addCustomerFailed: 'Adding the customer failed. Please try again.',
+        addPolicyFailed: 'Adding the policy failed. Please try again.',
+        noFile: 'No file was selected.',
+        aiNotConfigured: 'AI analysis is not available right now.',
+        scanFailed: 'Scanning the document failed. Try again or fill the details in manually.',
+        noteEmpty: 'The note is empty.',
+        noteTooLong: 'The note is too long.',
+        opportunityNotFound: 'Opportunity not found, or you do not have access to it.',
+        upgradeRequired: 'This feature requires a plan upgrade.',
+        profileUpdateFailed: 'Updating the profile failed. Please try again.',
+        policyNotFound: 'Policy not found.',
+        policyOwnerNotFound: 'The policy owner was not found.',
+        // The scan sends the document to an AI provider: it needs YOUR own
+        // recorded consent and a per-scan mandate attestation.
+        aiConsentRequired: 'Scanning documents with AI needs your own AI-processing consent first. Grant it in your privacy settings and try again.',
+        agentAttestationRequired: 'Confirm that you hold the customer\'s mandate before scanning.',
+        // A customer without an email (decision D3): identified by ΑΦΜ + mobile,
+        // and not invitable until an address is added.
+        customerNotContactable: 'This customer was added without an email and cannot be invited. Add an email to invite them.',
+        emailInUse: 'This email already belongs to another account.',
+        customerAccountOwned: 'This customer has an active account. Only they can change their contact details.',
+    },
+    // Per-field messages for the validation failures the server actions return
+    // (lib/i18n/action-error.ts). Key = Zod issue code or the check's slug
+    // (invalid_afm_checksum → invalidAfmChecksum). Short, shown beside the field.
+    formErrors: {
+        required: 'This field is required.',
+        invalid: 'This value is not valid.',
+        invalidEmail: 'The email address is not valid.',
+        reservedEmail: 'This address cannot be used.',
+        invalidFormat: 'The format is not valid.',
+        invalidNumber: 'Enter a valid number.',
+        tooLong: 'This value is too long.',
+        invalidChoice: 'Choose one of the available values.',
+        invalidDate: 'The date is not valid.',
+        endBeforeStart: 'The end date must be after the start date.',
+        invalidTaxId: 'The ΑΦΜ / VAT number is not valid.',
+        invalidAfmChecksum: 'The ΑΦΜ is not correct — check the digits.',
+        contactRequired: 'Enter an email, or a valid ΑΦΜ and a Greek mobile number.',
     },
     // Reasons a file upload was rejected by the shared validation gate
     // (lib/security/file-upload.ts). Keyed by UploadRejectionReason so any
@@ -2058,11 +2108,11 @@ export const en: TranslationKeys = {
             desc: 'Select how you want to ingest the customer data into your portfolio.',
             manualTitle: 'Manual Entry',
             manualDesc: 'Type in personal and policy details manually into the CRM.',
-            pdfTitle: 'Smart PDF Upload',
-            pdfDesc: 'Upload a policy PDF and let PolicyWallet AI extract all details automatically.',
+            // The second door opens Upload Policy, where the file is SAVED with
+            // the policy. The old "Smart PDF Upload" read the PDF and dropped it.
+            uploadTitle: 'Upload a policy',
+            uploadDesc: 'Upload the document: PolicyWallet AI extracts the details, you confirm them, and the policy is saved together with its file.',
             goBack: 'Nevermind, go back',
-            analyzingTitle: 'PolicyWallet AI is analyzing…',
-            analyzingDesc: 'Extracting customer and policy data from your document.',
             detailsTitle: 'Customer',
             detailsAccent: 'Details.',
             manualProtocol: 'Manual entry',
@@ -2070,10 +2120,14 @@ export const en: TranslationKeys = {
             firstName: 'First Name',
             lastName: 'Last Name',
             emailAddress: 'Email Address',
+            // Email is optional (decision D3): without it the customer's identity
+            // is the ΑΦΜ and mobile, and they cannot be invited.
+            emailOptionalHint: 'Optional. Without an email the customer needs a valid ΑΦΜ and a Greek mobile, and cannot be invited until you add an address.',
             phoneNumber: 'Phone Number',
             taxId: 'VAT / ΑΦΜ',
             phFirstName: 'John',
             phLastName: 'Doe',
+            phEmail: 'e.g. maria@example.com',
             phTaxId: 'e.g. 123456789',
             phInsurer: 'e.g. Allianz',
             includePolicy: 'Include Initial Policy Details',
@@ -2137,6 +2191,10 @@ export const en: TranslationKeys = {
             consentAttestableHint: 'Not activated — you can confirm consent below',
             consentBlockedTitle: 'This customer has not consented to AI analysis',
             consentBlockedDesc: 'Their account is active, so only they can give consent. The policy will be saved and you can request consent right after.',
+            // Third state: consent already on file — nothing for the advisor
+            // to attest, so no checkbox is shown.
+            consentGrantedTitle: 'AI consent is on file',
+            consentGrantedDesc: 'The customer has already consented to AI processing — the analysis starts as soon as the policy is saved.',
             back: 'Back',
             cancel: 'Cancel',
             submitCreate: 'Create & Add',
@@ -2146,10 +2204,24 @@ export const en: TranslationKeys = {
             successAccent: 'Added.',
             successCreatedDesc: 'A new customer was created and their policy was added.',
             successAttachedDesc: 'The policy was added to the customer.',
+            // Rendered ONLY when the action answered that the analysis was
+            // queued (analysis === 'queued') — never as a promise.
             analysisStarted: 'Analysis is running in the background — you can close this and keep working. We will notify you when it is ready.',
             analysisConsentRequired: 'The customer must consent before AI analysis can run.',
             analysisLimitReached: 'You reached your plan\'s monthly AI analysis limit.',
+            // The analysis allowance (monthly runs or tokens) is not enough:
+            // the policy was saved, the reading did not start. No "running".
+            analysisBlockedQuota: 'The policy was saved, but its AI reading did not start: it needs an advisor plan with analysis budget available. The document stays in the customer\'s file.',
+            // Mandate attestation BEFORE the scan — the document reaches an AI
+            // provider before the customer is resolved, so the mandate is
+            // confirmed here.
+            preScanAttestation: 'I confirm I hold the customer\'s mandate to process this policy on their behalf.',
+            preScanAttestationHint: 'The document is sent to an AI provider to extract its details. Your confirmation is recorded with the scan.',
             requestConsentCta: 'Request consent',
+            // The advisor's OWN AI consent is missing: asked in the flow, over
+            // the kept file. On dismiss this link to the standalone page keeps
+            // a way out.
+            agentConsentLink: 'Grant AI consent',
             viewCustomer: 'View customer',
             done: 'Done',
             genericError: 'Something went wrong. Please try again.',
@@ -2165,7 +2237,8 @@ export const en: TranslationKeys = {
             subtitle: 'Import multiple customers from a CSV file',
             csvFormatTitle: 'CSV Format Instructions',
             csvFormatDesc: 'Your CSV file should have the following columns:',
-            csvExample: 'Example: John,Doe,john@example.com,+306912345678',
+            csvHeadersHint: 'Headers are accepted in Greek or English, separated by a comma or a semicolon (the way Greek-locale Excel exports).',
+            csvExample: 'Example: Maria;Papadopoulou;maria@example.gr;+306912345678;123456789',
             processing: 'Processing...',
             clickToUpload: 'Click to upload CSV file',
             dragAndDrop: 'or drag and drop',
@@ -2191,6 +2264,29 @@ export const en: TranslationKeys = {
             importError: 'Failed to import customers. Please try again.',
             errMissingFields: 'Missing required fields',
             errInvalidEmail: 'Invalid email format',
+            errDuplicateInFile: 'Duplicate email in the file',
+            // The file can identify nobody: it needs an email column, or both a
+            // tax-id column and a phone column (decision D3).
+            errNoIdentityColumns: 'No email column found, and no ΑΦΜ and phone columns either. Check the first line of the file.',
+            errEmptyFile: 'The file contains no customer rows.',
+            colRow: 'Row',
+            colTaxId: 'VAT / ΑΦΜ',
+            // The complete step: one outcome per row, from the server's
+            // response (a code per row — never prose).
+            outcomesTitle: 'Outcome per row',
+            summaryImported: 'Imported',
+            summarySkipped: 'Skipped',
+            summaryFailed: 'Failed',
+            rowImported: 'Imported',
+            rowLinked: 'Imported — the account already existed',
+            rowAlreadyLinked: 'Skipped — already in your book',
+            rowRelationshipEnded: 'Skipped — the relationship has ended',
+            rowDuplicateInFile: 'Skipped — duplicate in the file',
+            rowWriteFailed: 'Failed — try again later',
+            rowValidationError: 'Failed — invalid details (check email and name)',
+            rowNotAttempted: 'Not imported — fix the rows in error and try again',
+            rowFailed: 'Failed',
+            done: 'Done',
         },
         createTask: {
             titlePrefix: 'Create Task for',
@@ -3281,6 +3377,19 @@ export const en: TranslationKeys = {
             import: 'Import',
             addClient: 'Add Client',
             uploadPolicy: 'Upload Policy',
+            // Activation derives from the relationship's activation_status: a
+            // customer who was merely added is NOT "invited".
+            statusNotInvited: 'Not invited',
+            sendInvite: 'Send invitation',
+            inviteSent: 'Invitation sent.',
+            // A customer without an email (decision D3): a neutral marker, and
+            // the one action that unblocks them — adding an address.
+            noEmail: 'No email',
+            addEmailToInvite: 'Add an email to invite them',
+            addEmailTitle: 'Add email',
+            addEmailDesc: 'This customer was added without an email. Add an address so they can receive the invitation.',
+            addEmailSave: 'Save and send invitation',
+            emailAdded: 'The email was saved.',
         },
         invite: {
             title: 'Invite Customer',

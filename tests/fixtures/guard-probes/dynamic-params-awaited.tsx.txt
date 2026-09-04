@@ -1,0 +1,5 @@
+// PROBE — compliant control for tests/unit/dynamic-page-params-awaited.test.ts.
+export default async function ProbePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
+    return <div>{id}</div>
+}

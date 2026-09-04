@@ -16,6 +16,7 @@ import { revalidatePath } from "next/cache"
 import { logger } from "@/lib/logger"
 import { absoluteUrl } from "@/lib/seo/site"
 import { INVITE_EXPIRY_DAYS, daysFromNow } from "@/lib/constants/time"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 type TerminationResult = { success: true } | { success: false; error: string }
 
@@ -125,10 +126,10 @@ export async function inviteAdvisorByEmail(rawEmail: string): Promise<InviteAdvi
 
     const parsed = AdvisorEmailSchema.safeParse(rawEmail)
     if (!parsed.success) return { success: false, error: "invalid_email" }
-    const email = parsed.data
+    const email = normalizeEmail(parsed.data)
 
     // Can't invite yourself as your own advisor.
-    if (dbUser.email && email === dbUser.email.trim().toLowerCase()) {
+    if (dbUser.email && email === normalizeEmail(dbUser.email)) {
         return { success: false, error: "self" }
     }
 
