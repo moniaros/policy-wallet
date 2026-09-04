@@ -5,6 +5,7 @@ import { createHash } from "crypto"
 import { db } from "@/lib/db"
 import { rateLimit } from "@/lib/rate-limit"
 import { sendEmail } from "@/lib/email/email-service"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 const OTP_IDENTIFIER_PREFIX = "password_reset_otp:"
 
@@ -105,7 +106,7 @@ export async function POST(req: Request) {
 
         try {
             const existingUser = await db.user.findUnique({
-                where: { email: parsedBody.email },
+                where: { email: normalizeEmail(parsedBody.email) },
                 select: { id: true },
             })
 

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest"
-import { readFileSync, readdirSync } from "node:fs"
+import { readFileSync, readdirSync, statSync } from "node:fs"
 import path from "node:path"
 import { monitorRisk, type MonitoringInputs } from "@/lib/services/risk-dna/monitoring"
+import { el } from "@/lib/i18n/translations/el"
 
 import { getBaseEmailTemplate } from "@/lib/email/templates/base-template"
 import {
@@ -433,5 +434,104 @@ describe("the day-7 snapshot tile states its basis in words", () => {
         const text = toText(getDay7Email("en", "Νίκος", NEVER_LOOKED).html)
         expect(text).toContain("Not analysed yet")
         expect(text).toContain("we do not know whether there are coverage gaps")
+    })
+})
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * THE UPLOAD-SURFACE ARM — "running in the background" is a report, not a promise.
+ *
+ * Same invariant, fourth surface. The agent upload modal rendered «Η ανάλυση
+ * εκτελείται στο παρασκήνιο» whenever the commit SUCCEEDED, while the token
+ * gate that decides whether a run may start ran later, inside after() — and
+ * on the free agent tier it refused every time. A verdict rendered before the
+ * check ran; the check then failed silently.
+ *
+ *   - The copy is enumerated from the el bundle: every leaf whose text claims
+ *     a background run («παρασκήνιο»), plus any inline literal saying so.
+ *   - The universe is every client component under components/ and app/ that
+ *     calls an agent upload/commit action — enumerated from the filesystem.
+ *   - Each reference must sit under the action's own `'queued'` verdict.
+ *   - The matcher is proven against committed probes: red on the removed
+ *     defect's shape (`result.success && …`), green on the honest one.
+ * ──────────────────────────────────────────────────────────────────────────── */
+const BACKGROUND_RUN_CLAIM = /παρασκήνιο|in the background/iu
+const UPLOAD_ACTION = /\b(?:commitScannedPolicy|addPolicyForCustomer|addCustomerManually|scanPolicyForResolution)\s*\(/
+
+/** Leaf keys of the el bundle whose text claims a background run. */
+function backgroundRunKeys(node: unknown, trail: string[] = [], out: Set<string> = new Set()): Set<string> {
+    if (typeof node === "string") {
+        if (BACKGROUND_RUN_CLAIM.test(node)) out.add(trail[trail.length - 1]!)
+        return out
+    }
+    if (node && typeof node === "object") {
+        for (const [key, value] of Object.entries(node as Record<string, unknown>)) backgroundRunKeys(value, [...trail, key], out)
+    }
+    return out
+}
+
+function stripSourceComments(source: string): string {
+    return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "").replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
+}
+
+/**
+ * Every reference to background-run copy (a bundle key, or an inline literal)
+ * that is not guarded by the action's `'queued'` verdict in the 240 characters
+ * before it — the span of one JSX conditional.
+ */
+export function unguardedBackgroundClaims(source: string, keys: Iterable<string>): string[] {
+    const code = stripSourceComments(source)
+    const offenders: string[] = []
+    const line = (at: number) => code.slice(0, at).split("\n").length
+    const guarded = (at: number) => /['"]queued['"]/.test(code.slice(Math.max(0, at - 240), at))
+    for (const key of keys) {
+        for (const m of code.matchAll(new RegExp(`\\.${key}\\b(?!\\s*[:=(])`, "g"))) {
+            if (!guarded(m.index!)) offenders.push(`${key} @ line ${line(m.index!)}`)
+        }
+    }
+    for (const m of code.matchAll(/(['"`])[^'"`\n]*?(?:παρασκήνιο|in the background)[^'"`\n]*?\1/giu)) {
+        if (!guarded(m.index!)) offenders.push(`inline ${m[0].slice(0, 40)} @ line ${line(m.index!)}`)
+    }
+    return offenders
+}
+
+function clientComponents(dirAbs: string, out: string[] = []): string[] {
+    for (const entry of readdirSync(dirAbs)) {
+        if (entry === "node_modules" || entry.startsWith(".")) continue
+        const p = path.join(dirAbs, entry)
+        if (statSync(p).isDirectory()) clientComponents(p, out)
+        else if (entry.endsWith(".tsx") && !/\.(test|spec)\.tsx$/.test(entry)) out.push(p)
+    }
+    return out
+}
+
+describe("no upload surface says the analysis is running unless the action said it was queued", () => {
+    const keys = backgroundRunKeys(el)
+    const surfaces = ["components", "app"]
+        .flatMap((root) => clientComponents(path.join(ROOT, root)))
+        .filter((file) => UPLOAD_ACTION.test(stripSourceComments(readFileSync(file, "utf-8"))))
+
+    it("enumerates a real universe (the copy keys from the bundle, the surfaces from disk)", () => {
+        expect([...keys]).toContain("analysisStarted")
+        expect(surfaces.map((f) => path.relative(ROOT, f))).toContain("components/agent/UploadPolicyModal.tsx")
+    })
+
+    it("every background-run claim on an upload surface is guarded by the queued verdict", () => {
+        const offenders = surfaces.flatMap((file) =>
+            unguardedBackgroundClaims(readFileSync(file, "utf-8"), keys).map((o) => `${path.relative(ROOT, file)}: ${o}`)
+        )
+        expect(
+            offenders,
+            "Background-run copy rendered without the action's `analysis === 'queued'` verdict — a promise the " +
+                "deferred token gate may break (it does, every time, on the free agent tier):\n" + offenders.join("\n")
+        ).toEqual([])
+    })
+
+    it("the matcher is proven against committed probes", () => {
+        const probe = (name: string) => readFileSync(path.join(ROOT, "tests/fixtures/guard-probes", name), "utf-8")
+        const red = unguardedBackgroundClaims(probe("upload-surface-background-unguarded.tsx.txt"), keys)
+        expect(red.length).toBe(2)
+        expect(red[0]).toMatch(/^analysisStarted @ line/)
+        expect(red[1]).toMatch(/^inline/)
+        expect(unguardedBackgroundClaims(probe("upload-surface-background-guarded.tsx.txt"), keys)).toEqual([])
     })
 })

@@ -227,8 +227,10 @@ export async function canAgentAddCustomer(userId: string): Promise<{
 
     if (limit === null) return { allowed: true }
 
+    // A terminated relationship has left the agent's book (getCustomers hides
+    // it, visibility is closed) — it must not keep occupying a plan seat.
     const customerCount = await prisma.customerRelationship.count({
-        where: { agentUserId: userId },
+        where: { agentUserId: userId, status: { not: "terminated" } },
     })
 
     if (customerCount >= limit) {

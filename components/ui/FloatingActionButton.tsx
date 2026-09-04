@@ -144,7 +144,7 @@ export function FloatingActionButton({
                             >
                                 {/* Label — aria-hidden because the button already carries it as its
                                     accessible name; announcing it twice is noise. */}
-                                <span aria-hidden="true" className="px-3 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold rounded-xl shadow-lg whitespace-nowrap border border-slate-200 dark:border-slate-700">
+                                <span aria-hidden="true" className="whitespace-nowrap rounded-xl border border-border bg-card px-3 py-2 text-sm font-semibold text-foreground shadow-lg">
                                     {action.label}
                                 </span>
 

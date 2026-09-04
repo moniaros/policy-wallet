@@ -15,6 +15,7 @@ vi.mock('@/lib/db', () => ({
 
 import { db } from '@/lib/db'
 import {
+    canAgentAddCustomer,
     canAgentAddPolicyForCustomer,
     canAgentRunAnalysis,
 } from '@/lib/subscription-entitlements'
@@ -77,6 +78,22 @@ describe('canAgentAddPolicyForCustomer — maxPoliciesPerCustomer', () => {
                 createdByUserId: AGENT,
                 status: { not: 'deleted' },
             },
+        })
+    })
+})
+
+describe('canAgentAddCustomer — maxCustomers', () => {
+    it('does not count terminated relationships against the seat', async () => {
+        // A terminated relationship has left the book (getCustomers hides it,
+        // visibility is closed) — it used to keep occupying a plan seat, so an
+        // agent who had parted ways with customers could not add new ones.
+        mockAgentPlan(null) // agent_free has a finite maxCustomers
+        vi.mocked(db.customerRelationship.count).mockResolvedValue(0)
+
+        await canAgentAddCustomer(AGENT)
+
+        expect(db.customerRelationship.count).toHaveBeenCalledWith({
+            where: { agentUserId: AGENT, status: { not: 'terminated' } },
         })
     })
 })

@@ -2,14 +2,18 @@
 
 import { useState, useMemo } from "react"
 import { CustomerList, AddCustomerModal } from "@/components/agent"
+import { customerHasNoEmail } from "@/components/agent/CustomerList"
 import { UploadPolicyModal } from "@/components/agent/UploadPolicyModal"
 import { BulkImportModal } from "@/components/agent/BulkImportModal"
+import { AddCustomerEmailModal } from "@/components/agent/AddCustomerEmailModal"
 import { AgentKpiStrip } from "@/components/agent/AgentKpiStrip"
 import { Customer } from "@/components/agent/types"
-import { getCustomers } from "../agent/actions"
+import { getCustomers, createAgentInvite } from "../agent/actions"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { Clock, User, FileText, AlertTriangle, Upload } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { describeActionError } from "@/lib/i18n/action-error"
 import type { AgentPortalStats } from "@/lib/services/agent-portal.service"
 
 interface Props {
@@ -58,8 +62,9 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
         const selected = ids.map((id) => customerById.get(id)).filter(Boolean) as Customer[]
 
         if (action === 'email') {
-            // BCC the customers' real email addresses (not their ids).
-            const emails = selected.map((c) => c.email).filter(Boolean)
+            // BCC the customers' real email addresses (not their ids) — a
+            // no-email customer's synthetic placeholder is never one of them.
+            const emails = selected.filter((c) => !customerHasNoEmail(c)).map((c) => c.email).filter(Boolean)
             if (emails.length) window.location.href = `mailto:?bcc=${emails.join(',')}`
             return
         }
@@ -91,8 +96,62 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
         if (phone) window.location.href = `tel:${phone}`
     }
     const handleEmail = (id: string) => {
-        const email = customerById.get(id)?.email
-        if (email) window.location.href = `mailto:${email}`
+        const customer = customerById.get(id)
+        // A no-email customer's address is a synthetic placeholder — never a mailto.
+        if (!customer || customerHasNoEmail(customer)) return
+        if (customer.email) window.location.href = `mailto:${customer.email}`
+    }
+
+    // «Προσθέστε email για να τον προσκαλέσετε» — the one action a customer
+    // added without an email (D3) needs before an invitation can leave.
+    const [addEmailFor, setAddEmailFor] = useState<string | null>(null)
+    const handleAddEmail = (id: string) => setAddEmailFor(id)
+
+    // «Αποστολή πρόσκλησης» on a customer the agent added but never invited —
+    // the same action and the same delivery handling the dashboard's invite
+    // modal uses. A rejected transport (expired session, deploy skew) is
+    // caught, never left to window.onunhandledrejection.
+    const sendInvite = async (id: string, email: string) => {
+        try {
+            const result = await createAgentInvite(email, 'portfolio')
+            if (result.success) {
+                if ("emailDelivered" in result && result.emailDelivered === false) {
+                    const link = "inviteLink" in result ? result.inviteLink : undefined
+                    if (link) navigator.clipboard?.writeText(link).catch(() => {})
+                    toast.warning(t.agentDashboard.inviteEmailFailed)
+                } else {
+                    toast.success(cust_t.inviteSent)
+                }
+                router.refresh()
+            } else if ("error" in result && result.error) {
+                // A code, localised here — never the literal. A customer without
+                // an email cannot be invited; open the add-email dialog instead.
+                const details = "details" in result ? (result.details as never) : undefined
+                toast.error(describeActionError(t, result.error, details, result as Record<string, unknown>).message)
+                if (result.error === 'CUSTOMER_NOT_CONTACTABLE') setAddEmailFor(id)
+            }
+        } catch {
+            toast.error(t.apiErrors.generic)
+        }
+    }
+    const handleInvite = async (id: string) => {
+        const customer = customerById.get(id)
+        if (!customer) return
+        if (customerHasNoEmail(customer)) { setAddEmailFor(id); return }
+        if (customer.email) await sendInvite(id, customer.email)
+    }
+    // The address was saved: send the invitation with it, as the button promised.
+    const handleEmailSaved = async (id: string, email: string) => {
+        setAddEmailFor(null)
+        toast.success(cust_t.emailAdded)
+        await sendInvite(id, email)
+    }
+
+    // The add-customer dialog's second door: close it and open the upload
+    // flow, which is the ONLY path that saves a document with the policy.
+    const openUploadInstead = () => {
+        setIsAddModalOpen(false)
+        setIsUploadModalOpen(true)
     }
 
     // Map Customer to CustomerListItem format (CustomerList expects 'Customer' interface which matches our agent/types Customer mostly but check compatibility)
@@ -147,12 +206,23 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                     onBulkAction={handleBulkAction}
                     onCall={handleCall}
                     onEmail={handleEmail}
+                    onInvite={handleInvite}
+                    onAddEmail={handleAddEmail}
+                />
+
+                <AddCustomerEmailModal
+                    isOpen={addEmailFor !== null}
+                    customerId={addEmailFor}
+                    customerName={addEmailFor ? `${customerById.get(addEmailFor)?.name ?? ''} ${customerById.get(addEmailFor)?.surname ?? ''}`.trim() : undefined}
+                    onClose={() => setAddEmailFor(null)}
+                    onSaved={handleEmailSaved}
                 />
 
                 <AddCustomerModal
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
                     onSuccess={handleSuccess}
+                    onUploadInstead={openUploadInstead}
                 />
 
                 <UploadPolicyModal

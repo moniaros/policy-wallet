@@ -10,11 +10,16 @@ import { readFileSync } from 'node:fs'
  *
  * These are the rows whose hidden container wraps real <button> actions
  * (decorative hover overlays/chevrons/hints are intentionally excluded).
+ *
+ * QuestionnairesClient left this list in the Direction A re-cut (batch C):
+ * its template-card edit/delete actions are now ALWAYS-VISIBLE soft pills,
+ * so there is no hover-revealed container left to guard there. A file with
+ * no `opacity-0 group-hover` container must not be listed — the assertion
+ * would then demand a reveal pattern the file has deliberately retired.
  */
 const FILES = [
     'app/(protected)/opportunities/OpportunitiesClient.tsx',
     'components/agent/CustomerList.tsx',
-    'app/(protected)/questionnaires/QuestionnairesClient.tsx',
 ]
 
 describe('hover-revealed row actions are also revealed by keyboard focus', () => {
