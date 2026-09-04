@@ -88,6 +88,12 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
     const enteredAt = useRef(state.enteredAt)
     const startedAt = useRef(Date.now())
     const firstRender = useRef(true)
+    // History entries THIS mount pushed. A flow restored from the server has a
+    // `visited` path the browser never saw — `history.back()` from there left
+    // the document (and the reload greeted the person with «Κρατήσαμε τις
+    // απαντήσεις σου» mid-flow). «Πίσω» walks the browser stack only as far as
+    // this mount built it, and the reducer the rest of the way.
+    const pushedDepth = useRef(0)
     const completedFor = useRef<string | null>(null)
     const announcedAreas = useRef<Set<string> | null>(null)
     const resumed = initialState.status !== "not_started"
@@ -111,17 +117,26 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
         track.trackStepViewed(language, state.current, def.kind)
         try {
             if (firstRender.current) window.history.replaceState({ stepId: state.current }, "", `?step=${state.current}`)
-            else if (state.direction === 1) window.history.pushState({ stepId: state.current }, "", `?step=${state.current}`)
+            else if (state.direction === 1) {
+                window.history.pushState({ stepId: state.current }, "", `?step=${state.current}`)
+                pushedDepth.current += 1
+            } else {
+                // Backwards: the URL follows the screen. After a popstate this
+                // rewrites the entry the browser just landed on; after an
+                // in-app back it corrects a URL the stack never had.
+                window.history.replaceState({ stepId: state.current }, "", `?step=${state.current}`)
+            }
         } catch {
             /* history unavailable */
         }
         firstRender.current = false
-         
+
     }, [state.current])
 
     useEffect(() => {
         const onPop = () => {
             if (TAIL.includes(state.current)) return
+            pushedDepth.current = Math.max(0, pushedDepth.current - 1)
             dispatch({ type: "back" })
         }
         window.addEventListener("popstate", onPop)
@@ -247,7 +262,10 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
         router.push(redirectTo)
     }
 
-    const onBack = state.visited.length > 1 && !TAIL.includes(state.current) ? () => window.history.back() : null
+    const onBack =
+        state.visited.length > 1 && !TAIL.includes(state.current)
+            ? () => (pushedDepth.current > 0 ? window.history.back() : dispatch({ type: "back" }))
+            : null
 
     // ── Screens ─────────────────────────────────────────────────────────
     const opt = (step: keyof PPLabels["q"], values: readonly string[]): QuestionOption[] => {
@@ -313,12 +331,12 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     body1={labels.q.orientation.body1}
                     body2={labels.q.orientation.body2}
                     chips={[
-                        { icon: Users, label: labels.summary.domainLabel.household },
-                        { icon: House, label: labels.summary.domainLabel.residence },
-                        { icon: Banknote, label: labels.summary.domainLabel.money_income },
-                        { icon: Briefcase, label: labels.summary.domainLabel.work },
-                        { icon: Car, label: labels.summary.domainLabel.mobility },
-                        { icon: HeartPulse, label: labels.summary.domainLabel.health },
+                        { icon: Users, label: domainLabelFor(labels.summary, AREAS.household.priorityId, language) },
+                        { icon: House, label: domainLabelFor(labels.summary, AREAS.residence.priorityId, language) },
+                        { icon: Banknote, label: domainLabelFor(labels.summary, AREAS.income.priorityId, language) },
+                        { icon: Briefcase, label: domainLabelFor(labels.summary, AREAS.work.priorityId, language) },
+                        { icon: Car, label: domainLabelFor(labels.summary, AREAS.mobility.priorityId, language) },
+                        { icon: HeartPulse, label: domainLabelFor(labels.summary, AREAS.health.priorityId, language) },
                     ]}
                     cta={{ label: labels.q.orientation.cta, onClick: () => void save("orientation", {}) }}
                 />
@@ -544,7 +562,7 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     : (completion?.priorities ?? []).filter((p) => p.importance === "high" || p.importance === "medium").map((p) => p.id)
             )
                 .slice(0, 3)
-                .map((id) => domainLabelFor(labels.summary, id))
+                .map((id) => domainLabelFor(labels.summary, id, language))
             screen = (
                 <UploadScreen
                     ref={headingRef}
@@ -609,7 +627,13 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     onSkip={() => void onSkip()}
                 />
             ) : null}
-            {resumed && firstRender.current && progress ? <p className="mb-4 text-caption text-muted-foreground">{labels.resumed}</p> : null}
+            {/* Said once, on the screen the server restored — the reducer clears
+                it on the first navigation, so it never follows «Πίσω». */}
+            {state.resumed && progress ? (
+                <p className="mb-4 text-caption text-muted-foreground" data-resumed="true">
+                    {labels.resumed}
+                </p>
+            ) : null}
             <ScreenFrame stepKey={state.current} direction={state.direction} onSettled={settle}>
                 {screen}
             </ScreenFrame>

@@ -1989,6 +1989,13 @@ export const en: TranslationKeys = {
                 invalid: 'Check the answer and try again.',
                 failed: 'Something went wrong. Please try again.',
                 saving: 'Saving…',
+                // The server recomposes the list after every write; a draft typed
+                // for a factor the list no longer asks is discarded — and the person
+                // is told, so the question changing under them is never silent.
+                resynced: 'The questions were updated in the meantime and what you were typing was not saved. We continue from the next open question.',
+                // The end of the flow when nothing was answered — a skip or a
+                // declined opt-in is not something the picture «was updated with».
+                doneUnanswered: 'All right — we will leave it for whenever you wish.',
                 // Art. 9: the health question renders only after this explicit
                 // opt-in, and the action refuses the write without it.
                 healthGate: {
@@ -4053,8 +4060,7 @@ export const en: TranslationKeys = {
             },
             summary: {
                 title: 'Your picture so far',
-                lead: 'From what you told us, {n} things seem to matter most to you.',
-                leadOne: 'From what you told us, one thing seems to matter most to you.',
+                lead: 'From what you told us, these seem to matter most to you.',
                 leadNone: 'From what you told us, nothing stands out yet. The picture fills in with your policies.',
                 countMeta: '{n} areas',
                 importance: {
@@ -4077,7 +4083,7 @@ export const en: TranslationKeys = {
                     money: 'Money',
                 },
                 worthNoticing: 'Worth paying attention to',
-                insightKicker: "One thing you may not have thought of",
+                insightLine: "One thing you may not have thought of: {name}. We'll look at it together in your picture.",
                 notAskedYet: "We haven't asked yet about travel, pets, activities, valuables.",
                 confidenceLabel: 'How you feel about your protection',
                 confidence: {

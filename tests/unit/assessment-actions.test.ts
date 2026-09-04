@@ -61,11 +61,20 @@ vi.mock("@/lib/auth-helpers", () => ({
 vi.mock("@/lib/services/gap-engine", () => ({ refreshProtectionScore }))
 vi.mock("next/cache", () => ({ revalidatePath }))
 vi.mock("@/lib/protection/load-attention-areas", () => ({ loadAttentionAreas }))
+// The engine work runs after the response; the test drains it explicitly
+// (the same seam tests/unit/protection-profile-actions.test.ts drains). The
+// callbacks are HELD until the drain — the real `after()` runs them once the
+// response is out, so nothing queued may have run by the time the action
+// resolves.
+const afterQueue = vi.hoisted(() => ({ pending: [] as Array<() => unknown> }))
+vi.mock("next/server", () => ({ after: (fn: () => unknown) => { afterQueue.pending.push(fn) } }))
+const flushAfter = async () => { for (const fn of afterQueue.pending.splice(0)) await fn() }
 
 import { answerAssessmentFactor } from "@/app/(protected)/protection/assessment-actions"
 
 beforeEach(() => {
     state.profile = null
+    afterQueue.pending.length = 0
     vi.clearAllMocks()
 })
 
@@ -82,6 +91,9 @@ describe("answerAssessmentFactor — the contract", () => {
         expect(create.dependentsCount).toBe(2)
         expect(create.answeredFields).toEqual(["dependentsCount"])
         expect(create.factProvenance.dependentsCount).toMatchObject({ source: "assessment", precision: "exact" })
+        // The engine is queued behind the response, not awaited in front of it.
+        expect(refreshProtectionScore).not.toHaveBeenCalled()
+        await flushAfter()
         expect(refreshProtectionScore).toHaveBeenCalledWith("user-1", "profile_update")
         expect(revalidatePath).toHaveBeenCalledWith("/protection")
         expect(revalidatePath).toHaveBeenCalledWith("/protection/areas/household")
@@ -197,6 +209,7 @@ describe("answerAssessmentFactor — validation, before any read", () => {
         expect(db.policyholderProfile.findUnique).not.toHaveBeenCalled()
         expect(db.policyholderProfile.upsert).not.toHaveBeenCalled()
         expect(refreshProtectionScore).not.toHaveBeenCalled()
+        expect(afterQueue.pending).toEqual([])
     })
 
     it("refuses a factor the area's risks do not need", async () => {
@@ -234,6 +247,66 @@ describe("answerAssessmentFactor — the Art. 9 gate", () => {
     })
 })
 
+describe("answerAssessmentFactor — the engine runs after the response, the next question comes from the cheap recomposition", () => {
+    it("returns next/remainingUnknown from the read seam before the engine has run, and runs the engine once the response is out", async () => {
+        const order: string[] = []
+        // After the write: the deciding facts (dependents, children) are on file exactly; the
+        // exposure stands, and its first refining factor — income — is the next question.
+        const exact = { source: "assessment", precision: "exact", at: "2026-09-04T00:00:00.000Z" }
+        loadAttentionAreas.mockImplementationOnce(async () => {
+            order.push("recompose")
+            return {
+                areas: [
+                    {
+                        area: "household",
+                        activated: true,
+                        unknownFactors: ["income"],
+                        refinableFactors: [],
+                        exposure: { risks: [{ id: "life_dependents", status: "needs_review", name: "", missingFactors: [] }] },
+                        protection: { lines: [], gaps: [], hasAnalysed: false },
+                    },
+                ],
+                ctx: { known: { dependents: true, children: true, income: false, age: false, maritalStatus: false, savings: false }, dependentsCount: 2, childrenCount: 1, incomeDependency: "primary" },
+                provenance: { dependentsCount: exact, childrenCount: exact },
+                needs: { uncertaintyReasons: [] },
+            } as any
+        })
+        refreshProtectionScore.mockImplementationOnce(async () => {
+            order.push("engine")
+            return {}
+        })
+        const res = await answerAssessmentFactor({ area: "household", factor: "dependents", value: 2 })
+        expect(res).toEqual({ ok: true, next: "income", remainingUnknown: 1, skipped: [] })
+        // The response is complete with the engine still queued.
+        expect(order).toEqual(["recompose"])
+        expect(afterQueue.pending.length).toBe(1)
+        await flushAfter()
+        expect(order).toEqual(["recompose", "engine"])
+        expect(refreshProtectionScore).toHaveBeenCalledTimes(1)
+        expect(refreshProtectionScore).toHaveBeenCalledWith("user-1", "profile_update")
+    })
+
+    it("an engine failure after the response is logged, never surfaced, and never undoes the write", async () => {
+        refreshProtectionScore.mockRejectedValueOnce(new Error("provider down"))
+        const errorLog = vi.spyOn(console, "error").mockImplementation(() => {})
+        const res = await answerAssessmentFactor({ area: "household", factor: "dependents", value: 2 })
+        expect(res).toMatchObject({ ok: true })
+        expect(db.policyholderProfile.upsert).toHaveBeenCalledTimes(1)
+        await expect(flushAfter()).resolves.toBeUndefined()
+        expect(errorLog).toHaveBeenCalledWith("Assessment engine run failed:", expect.any(Error))
+        errorLog.mockRestore()
+    })
+
+    it("the write, the revalidation and the recomposition all happen before the response; only the engine waits", async () => {
+        await answerAssessmentFactor({ area: "household", factor: "dependents", value: 2 })
+        expect(db.policyholderProfile.upsert).toHaveBeenCalledTimes(1)
+        expect(revalidatePath).toHaveBeenCalledWith("/protection")
+        expect(revalidatePath).toHaveBeenCalledWith("/protection/areas/household")
+        expect(loadAttentionAreas).toHaveBeenCalledTimes(1)
+        expect(refreshProtectionScore).not.toHaveBeenCalled()
+    })
+})
+
 describe("answerAssessmentFactor — the endpoint's shape (source)", () => {
     const SRC = readFileSync("app/(protected)/protection/assessment-actions.ts", "utf-8")
 
@@ -252,5 +325,19 @@ describe("answerAssessmentFactor — the endpoint's shape (source)", () => {
         expect(SRC).toContain("applyFactWrites(")
         expect(SRC).toContain('refreshProtectionScore(dbUser.id, "profile_update")')
         expect(SRC).not.toMatch(/db\.policyholderProfile\.update\(/)
+    })
+
+    it("the engine refresh sits inside after() from next/server; the recomposition and the revalidation do not", () => {
+        expect(SRC).toMatch(/import \{ after \} from "next\/server"/)
+        const afterAt = SRC.indexOf("after(async () =>")
+        const engineAt = SRC.indexOf('refreshProtectionScore(dbUser.id, "profile_update")')
+        const afterEnd = SRC.indexOf("})", engineAt)
+        expect(afterAt).toBeGreaterThan(-1)
+        expect(engineAt).toBeGreaterThan(afterAt)
+        expect(engineAt).toBeLessThan(afterEnd)
+        // One call site, and it is the one inside the callback.
+        expect(SRC.match(/refreshProtectionScore\(/g)!.length).toBe(1)
+        expect(SRC.indexOf("await loadAttentionAreas(")).toBeGreaterThan(afterEnd)
+        expect(SRC.indexOf('revalidatePath("/protection")')).toBeGreaterThan(afterEnd)
     })
 })

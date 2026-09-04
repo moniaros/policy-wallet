@@ -315,39 +315,69 @@ describe("liveness comes from the lifecycle, never from the stored column", () =
 
 // ── Unread rows ─────────────────────────────────────────────────────────
 
-describe("an unread row is the presence of a document, never of cover", () => {
+describe("an unread row is the presence of a document, never of a policy — it enters no layer", () => {
     // The Sept-2026 defect row: a one-line PDF, `active`, a future end date,
     // a placeholder identity — and the map credited the family with cover.
-    it("a placeholder identity with a future end date is NOT held, whatever the stored status says", async () => {
+    // Banded `other` instead, it made the area say the policy had LAPSED and
+    // the home's footer say «from the policies we have seen». So it is not a
+    // line at all: not held, not lapsed, not counted, not seen by the engine.
+    it("a placeholder identity with a future end date is NOT a line, whatever the stored status says", async () => {
         const b = await load({
             profile: FAMILY_PROFILE,
             statements: STATEMENTS,
             policies: [lifePolicy({ id: "placeholder", policyNumber: "", insurerName: "", status: "active" })],
         })
         const h = area(b, "household")
-        expect(h.protection.lines[0]).toMatchObject({ policyId: "placeholder", lifecycle: "other", held: false })
+        expect(h.protection.lines).toEqual([])
         expect(h.alignment).toBe("not_yet_checked")
+        expect(h.lapsedOnly).toBe(false)
         expect(b.summary.coveredCount).toBe(0)
-        expect(b.policyCount).toBe(1)
+        // Read policies only: a file on record is not a policy anyone has seen.
+        expect(b.policyCount).toBe(0)
+        expect(b.analysedCount).toBe(0)
     })
 
-    it("a document read and found to carry no policy (EXTRACTION_EMPTY) is NOT held", async () => {
+    it("a document read and found to carry no policy (EXTRACTION_EMPTY) is NOT a line, and the residual area never says it lapsed", async () => {
+        const empty = (over: Record<string, unknown>) =>
+            lifePolicy({
+                policyNumber: "",
+                insurerName: "",
+                status: "action_needed",
+                acordData: { processingError: { code: "EXTRACTION_EMPTY", retryable: true, occurredAt: AT } },
+                ...over,
+            })
         const b = await load({
             profile: FAMILY_PROFILE,
             statements: STATEMENTS,
-            policies: [
-                lifePolicy({
-                    id: "empty",
-                    policyNumber: "",
-                    insurerName: "",
-                    status: "action_needed",
-                    acordData: { processingError: { code: "EXTRACTION_EMPTY", retryable: true, occurredAt: AT } },
-                }),
-            ],
+            // The walk's row: no line of business could be read either, so
+            // it lands in the residual «Τρόπος ζωής» — which then read
+            // «Το ασφαλιστήριο που είχαμε δει για αυτό έχει λήξει».
+            policies: [empty({ id: "empty-life" }), empty({ id: "empty-other", lineOfBusiness: "other", endDate: null })],
         })
-        expect(area(b, "household").protection.lines[0]).toMatchObject({ lifecycle: "other", held: false })
-        expect(area(b, "household").alignment).toBe("not_yet_checked")
+        for (const id of ["household", "lifestyle"] as const) {
+            expect(area(b, id).protection.lines, id).toEqual([])
+            expect(area(b, id).lapsedOnly, id).toBe(false)
+            expect(area(b, id).alignment, id).not.toBe("appears_covered")
+        }
         expect(b.summary.coveredCount).toBe(0)
+        expect(b.policyCount).toBe(0)
+        // Beside a policy that WAS read, the count is that one.
+        const mixed = await load({ profile: FAMILY_PROFILE, policies: [empty({ id: "empty" }), lifePolicy({ id: "real" })] })
+        expect(mixed.policyCount).toBe(1)
+        expect(area(mixed, "household").protection.lines.map((l) => l.policyId)).toEqual(["real"])
+    })
+
+    it("the engine does not see an unread row either — a placeholder motor document does not answer the motor liability", async () => {
+        const driver = { ...FAMILY_PROFILE, vehiclesCount: 1, answeredFields: [...FAMILY_PROFILE.answeredFields, "vehiclesCount"] }
+        const unread = lifePolicy({ id: "motor-placeholder", lineOfBusiness: "motor", policyNumber: "", insurerName: "", status: "active" })
+        const b = await load({ profile: driver, policies: [unread] })
+        const motor = area(b, "mobility").exposure.risks.find((r) => r.id === "motor_liability")!
+        expect(motor.status).toBe("protection_gap")
+        expect(area(b, "mobility").protection.lines).toEqual([])
+        // The same document with an identity IS a policy, and the engine sees it.
+        const read = await load({ profile: driver, policies: [{ ...unread, id: "motor-real", policyNumber: "M-1", insurerName: "Ethniki" }] })
+        expect(area(read, "mobility").exposure.risks.find((r) => r.id === "motor_liability")!.status).toBe("already_covered")
+        expect(area(read, "mobility").protection.lines).toHaveLength(1)
     })
 
     it("an IDENTIFIED policy whose later deep run was blocked is still in force — a blocked re-read does not unmake it", async () => {

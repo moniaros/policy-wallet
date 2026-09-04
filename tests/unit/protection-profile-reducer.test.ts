@@ -43,6 +43,38 @@ describe("protection-profile flow reducer", () => {
         expect(flowReducer(s, { type: "back" }).current).toBe("home")
     })
 
+    it("«Κρατήσαμε τις απαντήσεις σου» is said only on the screen a restore with answers landed on — never after in-flow navigation", () => {
+        // A fresh start: nothing to keep, nothing to say.
+        expect(initialFlowState("intent").resumed).toBe(false)
+        const fresh = flowReducer(initialFlowState("intent"), { type: "restore", current: "intent", answers: {}, answeredSteps: [], unsureSteps: [] })
+        expect(fresh.resumed).toBe(false)
+
+        // A page load onto a flow in progress: the answers came back, say so.
+        let s = flowReducer(initialFlowState("intent"), {
+            type: "restore",
+            current: "home",
+            answers: { intent: { intent: "organise" }, people: { people: ["only_me"] } },
+            answeredSteps: ["intent", "people"],
+            unsureSteps: [],
+        })
+        expect(s.resumed).toBe(true)
+        // Staying on the screen keeps it: drafting, saving, a failed save.
+        s = flowReducer(s, { type: "answer", step: "home", value: { home: "rented" } })
+        s = flowReducer(s, { type: "saving" })
+        s = flowReducer(s, { type: "failed", errorCode: "failed" })
+        expect(s.resumed).toBe(true)
+
+        // Any navigation clears it: «Πίσω»…
+        expect(flowReducer(s, { type: "back" }).resumed).toBe(false)
+        // …moving on after a save…
+        expect(flowReducer(s, { type: "saved", step: "home", answeredSteps: ["intent", "people", "home"], next: "income" }).resumed).toBe(false)
+        // …and a jump into the tail.
+        expect(flowReducer(s, { type: "goto", step: "map" }).resumed).toBe(false)
+        // And it does not come back on the way forward again.
+        const after = flowReducer(flowReducer(s, { type: "back" }), { type: "saved", step: "people", answeredSteps: ["intent", "people"], next: "home" })
+        expect(after.resumed).toBe(false)
+    })
+
     it("an unsure answer is remembered as such and cleared when answered properly", () => {
         let s = initialFlowState("people")
         s = flowReducer(s, { type: "answer", step: "people", value: { unsure: true }, unsure: true })

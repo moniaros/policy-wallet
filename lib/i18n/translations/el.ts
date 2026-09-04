@@ -2009,6 +2009,13 @@ export const el = {
                 invalid: 'Ελέγξτε την απάντηση και δοκιμάστε ξανά.',
                 failed: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.',
                 saving: 'Αποθήκευση…',
+                // The server recomposes the list after every write; a draft typed
+                // for a factor the list no longer asks is discarded — and the person
+                // is told, so the question changing under them is never silent.
+                resynced: 'Οι ερωτήσεις ενημερώθηκαν στο μεταξύ και ό,τι γράφατε δεν αποθηκεύτηκε. Συνεχίζουμε από την επόμενη ανοιχτή ερώτηση.',
+                // The end of the flow when nothing was answered — a skip or a
+                // declined opt-in is not something the picture «was updated with».
+                doneUnanswered: 'Εντάξει — το αφήνουμε για όταν θελήσετε.',
                 // Art. 9: the health question renders only after this explicit
                 // opt-in, and the action refuses the write without it.
                 healthGate: {
@@ -4090,8 +4097,10 @@ export const el = {
             },
             summary: {
                 title: 'Η εικόνα σου μέχρι τώρα',
-                lead: 'Με βάση όσα μας είπες, {n} πράγματα φαίνεται να έχουν μεγαλύτερη σημασία για σένα.',
-                leadOne: 'Με βάση όσα μας είπες, ένα πράγμα φαίνεται να έχει μεγαλύτερη σημασία για σένα.',
+                // No number here: the only priority count is `needs.priorityCount`
+                // (lib/protection/priority-count.ts), and a second figure in the
+                // lead read as a contradiction beside the head's row count.
+                lead: 'Με βάση όσα μας είπες, αυτά φαίνεται να έχουν μεγαλύτερη σημασία για σένα.',
                 leadNone: 'Από όσα μας είπες, δεν ξεχωρίζει κάτι ακόμη. Η εικόνα θα γεμίσει με τα ασφαλιστήριά σου.',
                 countMeta: '{n} σημεία',
                 importance: {
@@ -4100,12 +4109,17 @@ export const el = {
                     watch: 'Να το έχουμε υπόψη',
                     needs_review: 'Χρειάζονται περισσότερα στοιχεία',
                 },
+                // The area nouns are `AREAS[area].label` (lib/protection/domains.ts)
+                // and the map reads THEM; this block is the singular-override
+                // table, consulted only for keys in SINGULAR_LABEL_OVERRIDES
+                // (ProtectionMapCard) — none today — and pinned equal to the
+                // table by tests/unit/protection-profile-summary.test.tsx.
                 domainLabel: {
                     household: 'Οικογένεια',
                     residence: 'Κατοικία',
                     property: 'Ακίνητα',
                     mobility: 'Οχήματα',
-                    work: 'Δουλειά',
+                    work: 'Εργασία',
                     health: 'Υγεία',
                     lifestyle: 'Τρόπος ζωής',
                     money_income: 'Εισόδημα',
@@ -4114,7 +4128,10 @@ export const el = {
                     money: 'Οικονομικά',
                 },
                 worthNoticing: 'Τι αξίζει να προσέξουμε',
-                insightKicker: 'Ένα πράγμα που ίσως δεν έχεις σκεφτεί',
+                // The engine's one derived finding, named only: the catalogue's
+                // body sentences are the formal register and belong to the area
+                // detail, never inside the onboarding's singular voice.
+                insightLine: 'Ένα πράγμα που ίσως δεν έχεις σκεφτεί: {name}. Θα το δούμε μαζί στην εικόνα σου.',
                 notAskedYet: 'Δεν ρωτήσαμε ακόμη για ταξίδια, κατοικίδια, δραστηριότητες, τιμαλφή.',
                 confidenceLabel: 'Πώς νιώθεις για την προστασία σου',
                 confidence: {

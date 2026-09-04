@@ -112,6 +112,17 @@ export function isHeldBand(lifecycle: PolicyLifecycleBand): boolean {
 }
 
 /**
+ * The one band that means «this policy ENDED»: `expired`. `other` is presence
+ * we cannot place in time — cancelled, still being read, of unknown duration —
+ * and saying «έχει λήξει» over it would be a claim the record does not make.
+ * The composition's `lapsedOnly` reads this, so a lifestyle row over a
+ * cancelled document never says the policy lapsed.
+ */
+export function isLapsedBand(lifecycle: PolicyLifecycleBand): boolean {
+    return lifecycle === "expired"
+}
+
+/**
  * The area a policy is listed under. Every writable line and every line the
  * catalogue can name resolves through the table; a branch that is neither
  * (the taxonomy's residual `other`, an unparented specialty) lands in

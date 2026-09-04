@@ -7,6 +7,11 @@ import {
 import { ALIGNMENTS, type NextStep } from "@/lib/protection/attention-areas"
 import { EVIDENCE_LEVELS } from "@/lib/protection/evidence"
 import { CONTEXT_FACTORS } from "@/lib/services/gap-engine/life-context"
+import { RISK_CATALOG } from "@/lib/services/gap-engine/risk-catalog"
+// The formal plural the onboarding must never speak («έχετε», «είστε»…);
+// «έχουμε» / «ξέρουμε» are «we» and allowed. Shared with the rendered insight
+// card in tests/unit/protection-profile-summary.test.tsx.
+import { FORMAL_PLURAL } from "../helpers/greek-register"
 
 const STEPS: Array<[string, readonly string[]]> = [
     ["intent", INTENT_VALUES], ["people", PEOPLE_VALUES], ["home", HOME_VALUES], ["income", INCOME_VALUES],
@@ -71,10 +76,15 @@ describe("the map's singular vocabulary is complete in both languages", () => {
         expect(leaves.length).toBeGreaterThan(200)
         // The pronouns and the second-person-plural verb forms the formal
         // nouns use («έχετε», «είστε»); «έχουμε» / «ξέρουμε» are «we» and allowed.
-        const offenders = leaves.filter((s) =>
-            /(?<![\p{L}])(σας|εσάς|εσείς|έχετε|είστε|βασίζεστε|ανήκετε|απασχολείτε|ταξιδεύετε|συνδεθήκατε|συνδεθείτε|δείτε|πείτε)(?![\p{L}])/iu.test(s)
-        )
+        const offenders = leaves.filter((s) => FORMAL_PLURAL.test(s))
         expect(offenders, `formal plural inside the onboarding stage: ${offenders.join(" | ")}`).toEqual([])
+        // The lead carries no number: the only priority count is `needs.priorityCount`.
+        expect(stage.summary.lead).toBe("Με βάση όσα μας είπες, αυτά φαίνεται να έχουν μεγαλύτερη σημασία για σένα.")
+        expect(stage.summary.lead).not.toMatch(/\d|\{n\}/)
+        expect(stage.summary).not.toHaveProperty("leadOne")
+        // The insight line names the risk and nothing else of the catalogue's prose.
+        expect(stage.summary.insightLine).toContain("{name}")
+        expect(stage.summary).not.toHaveProperty("insightKicker")
         expect(stage.advisor.connected).toBe("Έγινε η σύνδεση")
         expect(stage.advisor.inviteSentBody).toBe("Θα συνδεθείς αυτόματα μόλις ο σύμβουλός σου δεχτεί την πρόσκληση.")
         expect(stage.summary.unsureCount).toBe("{n} σημεία μένουν ανοιχτά — θα τα δούμε μαζί.")
@@ -93,5 +103,15 @@ describe("the map's singular vocabulary is complete in both languages", () => {
             expect(t.summary.afterUpload.notAPolicy).not.toMatch(/έτοιμ|ready|διαβάσαμε|we've read/i)
             expect(t.upload.status.needsReview).not.toMatch(/έτοιμ|ready|διαβάσαμε|we've read/i)
         }
+    })
+
+    it("every catalogue risk NAME is register-neutral — it is the one catalogue string the onboarding's insight line renders", () => {
+        // «Ένα πράγμα που ίσως δεν έχεις σκεφτεί: {name}» — a name that says
+        // «την επαγγελματική σας εργασία» puts the formal plural inside the
+        // singular sentence. The body sentences stay formal and stay on the
+        // area detail; the names must read in both voices.
+        expect(RISK_CATALOG.length).toBeGreaterThan(15)
+        const offenders = RISK_CATALOG.filter((r) => FORMAL_PLURAL.test(r.name.el)).map((r) => `${r.id}: ${r.name.el}`)
+        expect(offenders, `formal plural in a catalogue name: ${offenders.join(" | ")}`).toEqual([])
     })
 })

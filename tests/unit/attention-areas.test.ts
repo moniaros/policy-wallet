@@ -220,9 +220,18 @@ describe("household: dependency declared, then a policy, then a finding", () => 
         expect(asking.explanation.unknown).toMatch(/^Δεν ξέρουμε ακόμη: /)
         expect(asking.explanation.unknown).toContain(ATTENTION.caveats.lapsed_only)
         expect(asking.explanation.unknown).not.toContain(ATTENTION.caveats.absence_not_evidence)
-        // A cancelled or undated document is the same: presence we cannot place in time.
+        // A cancelled or undated document is NOT lapsed: presence we cannot
+        // place in time is neither held nor «έχει λήξει» — the row says no
+        // policy has been seen, with the absence caveat, exactly as if
+        // nothing had been uploaded. (Banded `other`, an unread one-line PDF
+        // once made the lifestyle row say the policy we saw had lapsed.)
         const other = area(build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy({ lifecycle: "other" })] }), "household")
-        expect(other.lapsedOnly).toBe(true)
+        expect(other.lapsedOnly).toBe(false)
+        expect(other.alignment).toBe("not_yet_checked")
+        expect(other.requiresValidation).toBe(true)
+        expect(other.protection.lines.map((l) => [l.lifecycle, l.held])).toEqual([["other", false]])
+        expect(other.explanation.unknown).toBe(`${ATTENTION.caveats.no_policy_seen} ${ATTENTION.caveats.absence_not_evidence}`)
+        expect(other.explanation.unknown).not.toContain(ATTENTION.caveats.lapsed_only)
         // Nothing seen at all: not lapsed, and the two absence sentences as before.
         const none = area(build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE }), "household")
         expect(none.lapsedOnly).toBe(false)

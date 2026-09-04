@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import { z } from "zod"
 
 import type { PolicyholderProfile } from "@prisma/client"
@@ -45,7 +46,9 @@ import { factWritesForAnswer, valueSchemaFor } from "@/components/protection/ass
  *
  * The response names the NEXT question from the recomposed area, so the
  * client never asks a factor the write just settled — or one another surface
- * settled meanwhile.
+ * settled meanwhile. The recomposition is the read seam's (three reads and
+ * pure assembly); the engine refresh, which reaches a model provider, runs
+ * in `after()` once the response is out.
  */
 
 const FACTOR_KEYS = FACTOR_QUESTIONS.map((q) => q.factor) as [AssessmentFactorKey, ...AssessmentFactorKey[]]
@@ -113,10 +116,17 @@ export async function answerAssessmentFactor(input: unknown): Promise<AnswerAsse
             create: { userId: dbUser.id, ...facts },
         })
 
-        // The same engine refresh the quick start runs, awaited for the same
-        // reason: the detail re-renders from the persisted assessment.
-        await refreshProtectionScore(dbUser.id, "profile_update").catch((err) => {
-            console.error("Assessment engine run failed:", err)
+        // The same engine refresh the quick start runs — but AFTER the
+        // response, the way the onboarding's completion runs it: it reaches a
+        // model provider and took 30–60 s in front of the customer, once per
+        // question. Nothing the detail renders next depends on it: the next
+        // question and the area's open facts come from the recomposition
+        // below (three reads and pure assembly), and the persisted score is
+        // read by the dashboard when it lands.
+        after(async () => {
+            await refreshProtectionScore(dbUser.id, "profile_update").catch((err) => {
+                console.error("Assessment engine run failed:", err)
+            })
         })
 
         revalidatePath("/protection")

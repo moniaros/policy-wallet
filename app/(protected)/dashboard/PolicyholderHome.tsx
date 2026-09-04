@@ -781,11 +781,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             attentionBundle ? (
                 <ProtectionPrioritiesCard
                     areas={attentionBundle.areas}
-                    summary={attentionBundle.summary}
-                    priorityCount={protectionPriorities.length}
+                    priorities={protectionPriorities}
                     unsureCount={protectionState.unsureSteps.length}
-                    // The hero's universe (status ≠ deleted), so both footers agree.
-                    policyCount={policies.length}
+                    // Policies READ (the bundle drops unread documents) — the
+                    // hero's universe is every stored row and stays the hero's.
+                    policyCount={attentionBundle.policyCount}
                     language={lang}
                     mapLabels={t.onboarding.protectionProfile.summary}
                     labels={{

@@ -231,7 +231,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
         partiallyCoveredBy: [PA_DEATH_BY_ACCIDENT_ONLY],
         name: {
             en: "Loss of the income your household depends on",
-            el: "Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας",
+            el: "Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό",
         },
         // Not "you have dependents". A retiree drawing a pension that carries
         // survivor rights has dependents and no income-replacement need, which is
@@ -310,7 +310,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
         partiallyCoveredBy: [PA_DEATH_BY_ACCIDENT_ONLY],
         name: {
             en: "Debt outliving you",
-            el: "Χρέος που σας επιβιώνει",
+            el: "Χρέος που μένει πίσω",
         },
         applies: (ctx) => outstandingDebt(ctx) > 0,
         riskExplanation: () => ({
@@ -595,7 +595,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
         supports: ["mortgage"],
         name: {
             en: "Damage to property you own",
-            el: "Ζημιά σε ακίνητο που σας ανήκει",
+            el: "Ζημιά σε ιδιόκτητο ακίνητο",
         },
         // An explicit count wins over the residence type. Selling your only
         // property decrements the count but leaves `residenceType` at "owned"
@@ -688,7 +688,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
         alsoCoveredBy: ["home", "liability"],
         name: {
             en: "Your belongings and damage you cause as a tenant",
-            el: "Τα υπάρχοντά σας και ζημιές που προκαλείτε ως ενοικιαστής",
+            el: "Υπάρχοντα και ευθύνη ως ενοικιαστής",
         },
         applies: (ctx) => ctx.residenceType === "rented",
         riskExplanation: () => ({
@@ -748,7 +748,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
         alsoCoveredBy: ["liability"],
         name: {
             en: "Property you let to tenants",
-            el: "Ακίνητο που εκμισθώνετε σε ενοικιαστές",
+            el: "Ακίνητο που εκμισθώνεται σε ενοικιαστές",
         },
         // You cannot be letting property you no longer own. Reading the flag
         // alone kept this open after a sale, because a disposal decrements the
@@ -1083,7 +1083,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
         alsoCoveredBy: ["professional_liability", "business"],
         name: {
             en: "Being sued over your professional work",
-            el: "Αγωγή για την επαγγελματική σας εργασία",
+            el: "Αγωγή για επαγγελματικό σφάλμα",
         },
         applies: (ctx) => ctx.isSelfEmployed || ctx.ownsBusiness,
         riskExplanation: (ctx) => {
@@ -1111,7 +1111,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
                     : "You are self-employed, so claims arising from your work reach you personally.",
                 el: ctx.ownsBusiness
                     ? "Έχετε επιχείρηση, οπότε αξιώσεις από τη δραστηριότητά της μπορούν να σας φτάσουν."
-                    : "Είστε ελεύθερος επαγγελματίας, οπότε οι αξιώσεις από την εργασία σας σας φτάνουν προσωπικά.",
+                    : "Είστε ελεύθερος επαγγελματίας, οπότε οι αξιώσεις από την εργασία σας φτάνουν σε εσάς προσωπικά.",
             }
         },
         expectedImpact: () => ({
@@ -1206,7 +1206,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
         alsoCoveredBy: ["business_property", "business_interruption", "equipment", "stock"],
         name: {
             en: "Your business stopping after a loss",
-            el: "Διακοπή της επιχείρησής σας μετά από ζημιά",
+            el: "Διακοπή της επιχείρησης μετά από ζημιά",
         },
         applies: (ctx) => ctx.ownsBusiness,
         riskExplanation: () => ({
@@ -1503,7 +1503,7 @@ export const RISK_CATALOG: RiskDefinition[] = [
         supports: ["income", "savings"],
         name: {
             en: "A pension that replaces less than you expect",
-            el: "Σύνταξη που αντικαθιστά λιγότερα από όσα περιμένετε",
+            el: "Σύνταξη μικρότερη από την αναμενόμενη",
         },
         // Only meaningful in the years when something can still be done about it.
         applies: (ctx) =>

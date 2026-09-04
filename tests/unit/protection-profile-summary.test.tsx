@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { render } from "@testing-library/react"
-import { ProtectionMapCard } from "@/components/onboarding/protection-profile/ProtectionMapCard"
+import { domainLabelFor, ProtectionMapCard, SINGULAR_LABEL_OVERRIDES } from "@/components/onboarding/protection-profile/ProtectionMapCard"
 import { getTranslations } from "@/lib/i18n"
 import { mapRowCounts, mapRowsFrom, movedRows } from "@/lib/onboarding/protection-profile/map-rows"
 import { buildAttentionAreas, type AttentionAreaView, type AttentionNeeds } from "@/lib/protection/attention-areas"
 import { buildCoverageModel, type PolicyEvidenceInput } from "@/lib/protection/coverage-model"
+import { AREAS, AREA_IDS } from "@/lib/protection/domains"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { assessRisks, type HeldPolicy } from "@/lib/services/gap-engine/risk-assessment"
+import { RISK_CATALOG } from "@/lib/services/gap-engine/risk-catalog"
+import { EVENT_DOMAIN_LABELS } from "@/lib/services/life-events/registry"
+import type { FirstInsight } from "@/lib/services/onboarding/quick-start"
+import { FORMAL_PLURAL } from "../helpers/greek-register"
 import {
     deriveProtectionPriorities,
     type ProtectionPriority,
@@ -136,25 +141,30 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         expect(text).toContain(labels.countMeta.replace("{n}", String(counts.areaCount)))
         expect(counts.unknownCount).toBeGreaterThan(0)
         expect(container.querySelector('[data-count="attention.unknownCount"]')?.textContent).toContain(String(counts.unknownCount))
-        // The headline counts the named priorities, uncapped — never «3» over a longer list.
-        const named = priorities.filter((p) => p.importance === "high" || p.importance === "medium")
-        expect(named.length).toBeLessThanOrEqual(counts.areaCount)
-        expect(text).toContain(named.length === 1 ? labels.leadOne : labels.lead.replace("{n}", String(named.length)))
+        // The lead names what matters without a number — the only priority
+        // count is `needs.priorityCount`, and the map renders none of its own.
+        expect(priorities.some((p) => p.importance === "high" || p.importance === "medium")).toBe(true)
+        expect(text).toContain(labels.lead)
+        expect(labels.lead).not.toMatch(/\d/)
+        expect(container.querySelector('[data-count="needs.priorityCount"]')).toBeNull()
         expect(text).toContain(labels.unsureCountOne)
         expect(container.querySelector('[data-count="needs.unsureCount"]')?.textContent).toContain("1")
         expect(container.querySelector('[aria-live="polite"]')).toBeTruthy()
     })
 
-    it("the headline never caps the named priorities at three while the list shows more", () => {
+    it("the lead carries no number, whatever is named — the head's «{n} σημεία» is the rows, and nothing else on the map counts priorities", () => {
         // Six things named: income, family, home, loan, vehicle, health — a
-        // «{3} πράγματα» headline over six rows was the contradiction.
+        // «3 πράγματα» lead over «5 σημεία» in the head over six rows was
+        // three numbers for one idea. Now the map states one: its rows.
         const profile = { ...FAMILY, residenceType: "owned", ownsHome: true, vehiclesCount: 1, hasLoans: true, answeredFields: [...FAMILY.answeredFields, "residenceType", "ownsHome", "vehiclesCount", "hasLoans"] }
         const said: ProtectionStatementsLike = { riskConcerns: ["income", "family"], recentChanges: ["bought_home", "new_vehicle", "health_changed"], commitments: ["mortgage"], unsureSteps: [] }
         const { text, priorities, areas, container } = draw({ profile, statements: said }, { unsureCount: 0 })
         const named = priorities.filter((p) => p.importance === "high" || p.importance === "medium")
         expect(named.length).toBeGreaterThan(3)
-        expect(text).toContain(labels.lead.replace("{n}", String(named.length)))
-        expect(text).not.toContain(labels.lead.replace("{n}", "3"))
+        expect(text).toContain(labels.lead)
+        expect(container.querySelector("section > p")?.textContent).toBe(labels.lead)
+        expect(container.querySelector("section > p")?.textContent).not.toMatch(/\d/)
+        expect(container.querySelector('[data-count="needs.priorityCount"]')).toBeNull()
         const rows = mapRowsFrom(areas, priorities)
         expect(text).toContain(labels.countMeta.replace("{n}", String(rows.length)))
         expect(container.querySelectorAll("li[data-alignment]")).toHaveLength(rows.length)
@@ -162,6 +172,62 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         const two = draw({ profile, statements: said }, { unsureCount: 2 })
         expect(two.text).toContain(labels.unsureCount.replace("{n}", "2"))
         expect(two.text).not.toContain(labels.unsureCountOne)
+    })
+
+    it("the area label is the one table's word — «Εργασία» on the map as on the dashboard and the lens, never «Δουλειά»", () => {
+        const owner = { ...FAMILY, employmentStatus: "self_employed", ownsBusiness: true, answeredFields: [...FAMILY.answeredFields, "ownsBusiness"] }
+        const { text, container, areas, priorities } = draw({ profile: owner, statements: { riskConcerns: ["business"] } })
+        expect(mapRowsFrom(areas, priorities).some((r) => r.area === "work")).toBe(true)
+        expect(text).toContain(AREAS.work.label.el)
+        expect(AREAS.work.label.el).toBe("Εργασία")
+        expect(text).not.toMatch(/Δουλειά/)
+        // Every row's label is the table's, in the requested language.
+        for (const row of mapRowsFrom(areas, priorities)) {
+            expect(text).toContain(AREAS[row.area].label.el)
+            expect(domainLabelFor(labels, row.priorityId, "el")).toBe(AREAS[row.area].label.el)
+            expect(domainLabelFor(labels, row.priorityId, "en")).toBe(AREAS[row.area].label.en)
+        }
+        expect(container.querySelectorAll("li[data-alignment]").length).toBeGreaterThan(0)
+        // The dictionary's `domainLabel` block is the singular-override table —
+        // a key may differ from the shared noun only when listed as a grammar
+        // override, and none is today. Both languages.
+        for (const lang of ["el", "en"] as const) {
+            const block = getTranslations(lang).onboarding.protectionProfile.summary.domainLabel as Record<string, string>
+            for (const id of AREA_IDS) {
+                const key = AREAS[id].priorityId.replace(":", "_")
+                if (SINGULAR_LABEL_OVERRIDES.has(key)) continue
+                expect(block[key], `${lang} summary.domainLabel.${key} drifted from AREAS.${id}.label`).toBe(AREAS[id].label[lang])
+            }
+            expect(block.money, `${lang} money`).toBe(EVENT_DOMAIN_LABELS.money[lang])
+        }
+        expect(SINGULAR_LABEL_OVERRIDES.size).toBe(0)
+    })
+
+    it("the insight card names the risk inside the singular frame and renders none of the catalogue's formal body — for EVERY catalogue risk", () => {
+        // «Ένα πράγμα που ίσως δεν έχεις σκεφτεί: {name}. Θα το δούμε μαζί στην
+        // εικόνα σου.» The body («Πείτε μας το εισόδημά σας…», «εργάζεστε»)
+        // is the formal register and stays on the area detail.
+        expect(RISK_CATALOG.length).toBeGreaterThan(15)
+        for (const risk of RISK_CATALOG) {
+            const insight: FirstInsight = {
+                riskId: risk.id,
+                headline: risk.name,
+                detail: { el: "ΣΩΜΑ-ΚΟΣΤΟΣ σας", en: "BODY-COST" },
+                because: { el: "ΣΩΜΑ-ΓΙΑΤΙ είστε", en: "BODY-WHY" },
+                alsoFound: 2,
+            }
+            const { container, text, unmount } = draw({ profile: FAMILY, statements: FAMILY_SAID }, { insight })
+            const card = container.querySelector(`[data-insight="${risk.id}"]`)
+            expect(card, risk.id).toBeTruthy()
+            expect(card?.textContent, risk.id).toBe(labels.insightLine.replace("{name}", risk.name.el))
+            expect(text, risk.id).not.toContain("ΣΩΜΑ-")
+            expect(text, `${risk.id}: ${card?.textContent}`).not.toMatch(FORMAL_PLURAL)
+            unmount()
+        }
+        // No insight, no card — and nothing formal either.
+        const none = draw({ profile: FAMILY, statements: FAMILY_SAID }, { insight: null })
+        expect(none.container.querySelector("[data-insight]")).toBeNull()
+        expect(none.text).not.toMatch(FORMAL_PLURAL)
     })
 
     it("«φαίνεται να καλύπτεται» appears only on a row with a policy in force behind it — and says the limits were not read", () => {

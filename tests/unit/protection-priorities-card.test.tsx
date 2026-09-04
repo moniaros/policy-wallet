@@ -4,9 +4,11 @@ import { fireEvent, render } from "@testing-library/react"
 import { alignmentText, ProtectionPrioritiesCard } from "@/components/dashboard/home/ProtectionPrioritiesCard"
 import { ProtectionProfileResumeCard } from "@/components/dashboard/home/ProtectionProfileResumeCard"
 import { getTranslations } from "@/lib/i18n"
-import { ALIGNMENTS, attentionSummary, type Alignment, type AttentionAreaView } from "@/lib/protection/attention-areas"
+import { ALIGNMENTS, type Alignment, type AttentionAreaView } from "@/lib/protection/attention-areas"
 import { AREAS, type AttentionAreaId } from "@/lib/protection/domains"
 import type { CoverageLine } from "@/lib/protection/coverage-model"
+import { priorityCount } from "@/lib/protection/priority-count"
+import type { ProtectionPriority } from "@/lib/services/protection-profile/derive-priorities"
 
 const track = vi.hoisted(() => vi.fn())
 vi.mock("@/lib/journey/funnel", () => ({ trackJourneyEvent: track }))
@@ -77,12 +79,19 @@ const areasByAlignment: Record<Alignment, AttentionAreaView> = {
     gap: areaView("residence", { alignment: "gap", confidence: "policy_verified", protection: { lines: [heldLine("residence", "analysed")], gaps: [RULE_GAP], hasAnalysed: true } }),
 }
 
-function renderCard(areas: AttentionAreaView[], policyCount: number) {
+/** One derived priority row, as deriveProtectionPriorities emits it. */
+function prio(id: string, importance: ProtectionPriority["importance"]): ProtectionPriority {
+    const domain = (id.split(":")[0] as ProtectionPriority["domain"]) ?? "household"
+    return { id, domain, importance, reason: { id: "dependants", text: { el: "", en: "" } }, confidence: "known", requiresValidation: true, status: "needs_review", source: "declared_fact" }
+}
+/** Three that count (high, medium, needs_review) and one that does not (watch). */
+const PRIORITIES: ProtectionPriority[] = [prio("household", "high"), prio("money:income", "medium"), prio("money:debt", "needs_review"), prio("health", "watch")]
+
+function renderCard(areas: AttentionAreaView[], policyCount: number, priorities: ProtectionPriority[] = PRIORITIES) {
     return render(
         <ProtectionPrioritiesCard
             areas={areas}
-            summary={attentionSummary(areas)}
-            priorityCount={3}
+            priorities={priorities}
             unsureCount={1}
             policyCount={policyCount}
             language="el"
@@ -125,15 +134,69 @@ describe("ProtectionPrioritiesCard — the top attention areas on the home", () 
         expect(rows[2].textContent).toContain(words.review)
     })
 
-    it("shows the top three of the composition's order and counts the whole set under the attention keys", () => {
+    it("shows the top three of the composition's order, and the attention keys count THOSE rows — never the whole set", () => {
+        // «6 περιοχές» under three visible rows was the contradiction: the
+        // number beside a list is the list's own (count-keys.ts).
         const all = [...THREE, areasByAlignment.appears_covered, areasByAlignment.gap, areaView("work", { alignment: "unknown" })]
         const { container } = renderCard(all, 2)
-        expect(container.querySelectorAll("li")).toHaveLength(3)
-        expect(container.querySelector('[data-count="needs.priorityCount"]')?.textContent).toBe("3")
+        const rows = container.querySelectorAll("li[data-area]")
+        expect(rows).toHaveLength(3)
+        expect(container.querySelector('[data-count="attention.areaCount"]')?.textContent).toBe(String(rows.length))
+        expect(container.querySelector('[data-count="attention.unknownCount"]')?.textContent).toBe(String([...rows].filter((li) => li.getAttribute("data-alignment") === "unknown").length))
+        expect(container.querySelector('[data-count="attention.unknownCount"]')?.textContent).toBe("1")
+        // The covered area is fourth in the order — off the card, so not counted by it.
+        expect(container.querySelector('[data-count="attention.coveredCount"]')?.textContent).toBe("0")
         expect(container.querySelector('[data-count="needs.unsureCount"]')?.textContent).toBe("1")
-        expect(container.querySelector('[data-count="attention.areaCount"]')?.textContent).toBe("6")
-        expect(container.querySelector('[data-count="attention.unknownCount"]')?.textContent).toBe("2")
-        expect(container.querySelector('[data-count="attention.coveredCount"]')?.textContent).toBe("1")
+        // Put the covered area first and the card's own count says so.
+        const coveredFirst = renderCard([areasByAlignment.appears_covered, ...THREE], 2)
+        expect(coveredFirst.container.querySelector('[data-count="attention.coveredCount"]')?.textContent).toBe("1")
+        expect(coveredFirst.container.querySelector('[data-count="attention.areaCount"]')?.textContent).toBe("3")
+    })
+
+    it("needs.priorityCount is the one definition — derived rows that are not `watch`, over the WHOLE set, never a rendered-row count", () => {
+        const { container } = renderCard(THREE, 0)
+        expect(container.querySelector('[data-count="needs.priorityCount"]')?.textContent).toBe(String(priorityCount(PRIORITIES)))
+        expect(container.querySelector('[data-count="needs.priorityCount"]')?.textContent).toBe("3")
+        // Watch rows are context, not priorities; needs_review rows ARE counted (a fact to settle is a thing to look at).
+        expect(priorityCount([prio("health", "watch"), prio("work", "watch")])).toBe(0)
+        expect(priorityCount([prio("household", "needs_review")])).toBe(1)
+        // Six derived rows over three shown rows still says six.
+        const six = [prio("household", "high"), prio("money:income", "high"), prio("residence", "medium"), prio("money:debt", "medium"), prio("mobility", "medium"), prio("health", "needs_review")]
+        expect(renderCard(THREE, 0, six).container.querySelector('[data-count="needs.priorityCount"]')?.textContent).toBe("6")
+        // The number is derived inside the card through the shared helper — no caller hands it a figure.
+        const src = readFileSync("components/dashboard/home/ProtectionPrioritiesCard.tsx", "utf-8")
+        expect(src).toMatch(/import \{ priorityCount \} from "@\/lib\/protection\/priority-count"/)
+        expect(src).toMatch(/\{priorityCount\(priorities\)\}/)
+        expect(src).not.toMatch(/priorityCount:\s*number/)
+    })
+
+    it("the footer's «policies seen» reads the bundle's READ count, never the hero's stored-row count", () => {
+        // An unread document (placeholder identity, EXTRACTION_EMPTY) is a
+        // stored row the hero counts and a policy nobody has seen; the footer
+        // that says «από τα ασφαλιστήρια που έχουμε δει» over it lies.
+        const HOME = readFileSync("app/(protected)/dashboard/PolicyholderHome.tsx", "utf-8")
+        const at = HOME.indexOf("<ProtectionPrioritiesCard")
+        expect(at).toBeGreaterThan(0)
+        const element = HOME.slice(at, HOME.indexOf("/>", at))
+        expect(element).toMatch(/policyCount=\{attentionBundle\.policyCount\}/)
+        expect(element).not.toMatch(/policyCount=\{policies\.length\}/)
+        expect(element).toMatch(/priorities=\{protectionPriorities\}/)
+        expect(element).not.toMatch(/priorityCount=/)
+    })
+
+    it("a line we cannot place in time is not «lapsed»: the card renders no lapsed line when the composition says none", () => {
+        // The composition sets `lapsedOnly` only for an EXPIRED line
+        // (isLapsedBand); an `other` line — cancelled, undated, still being
+        // read — arrives with it false, and the card must not invent the caveat.
+        const other = areaView("lifestyle", {
+            protection: { lines: [{ ...heldLine("lifestyle"), lifecycle: "other", held: false }], gaps: [], hasAnalysed: false },
+            lapsedOnly: false,
+        })
+        expect(other.requiresValidation).toBe(true)
+        const { container } = renderCard([other], 1)
+        expect(container.querySelector('[data-caveat="lapsed"]')).toBeNull()
+        expect(container.textContent).not.toContain(home.prioritiesLapsedOnly)
+        expect(container.querySelector("li")?.textContent).toContain(words.not_yet_checked)
     })
 
     it("absence is never evidence — the caveat renders with and without policies, and the two footer lines are separate", () => {

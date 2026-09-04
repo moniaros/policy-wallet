@@ -24,6 +24,14 @@ export interface FlowState {
     errorCode: string | null
     /** When the current screen was entered — for elapsed_ms. */
     enteredAt: number
+    /**
+     * «Κρατήσαμε τις απαντήσεις σου.» — true only right after a `restore`
+     * that brought answers back from the server (a page load onto a flow in
+     * progress), and false again on the first navigation. It appeared after
+     * an in-flow «Πίσω» when the screen read it off a render-time flag; the
+     * reducer owns it now, so it cannot outlive the screen it was said on.
+     */
+    resumed: boolean
 }
 
 export type FlowAction =
@@ -46,6 +54,7 @@ export function initialFlowState(current: ProtectionStepId, now = Date.now()): F
         status: "idle",
         errorCode: null,
         enteredAt: now,
+        resumed: false,
     }
 }
 
@@ -72,6 +81,7 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
                 status: "idle",
                 errorCode: null,
                 enteredAt: action.now ?? Date.now(),
+                resumed: false,
             }
         }
         case "failed":
@@ -89,6 +99,7 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
                 status: "idle",
                 errorCode: null,
                 enteredAt: action.now ?? Date.now(),
+                resumed: false,
             }
         }
         case "goto":
@@ -100,6 +111,7 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
                 status: "idle",
                 errorCode: null,
                 enteredAt: action.now ?? Date.now(),
+                resumed: false,
             }
         case "restore": {
             const path = computePath(action.answers)
@@ -115,6 +127,9 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
                 status: "idle",
                 errorCode: null,
                 enteredAt: action.now ?? Date.now(),
+                // Resumed = there were answers to keep. A fresh start restores
+                // an empty map and says nothing.
+                resumed: Object.keys(action.answers).length > 0,
             }
         }
     }

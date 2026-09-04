@@ -130,15 +130,17 @@ describe("one question at a time", () => {
         expect((primaryButtons(empty.container)[0] as HTMLButtonElement).disabled).toBe(true)
     })
 
-    it("skip moves on without calling the action; nothing written means no refresh", async () => {
+    it("skip moves on without calling the action; nothing written means no refresh — and the done line says nothing was answered", async () => {
         const onAnswer = vi.fn(async () => ok(null))
         const { container } = renderFlow([q("maritalStatus"), q("income")], onAnswer)
         fireEvent.click(screen.getByText(COPY.skip))
         expect(container.querySelector("[data-factor]")!.getAttribute("data-factor")).toBe("income")
         fireEvent.click(screen.getByText(COPY.skip))
-        await waitFor(() => expect(container.textContent).toContain(COPY.done))
+        await waitFor(() => expect(container.textContent).toContain(COPY.doneUnanswered))
+        expect(container.textContent).not.toContain(COPY.done)
         expect(onAnswer).not.toHaveBeenCalled()
         expect(refresh).not.toHaveBeenCalled()
+        expect(track).toHaveBeenCalledWith("risk_area_completed", { area: "household", remaining_unknown: 2 })
     })
 
     it("an action failure keeps the question on screen with the failure line", async () => {
@@ -178,6 +180,145 @@ describe("the health factor is gated on the Art. 9 opt-in", () => {
         expect(container.querySelector("[data-factor]")!.getAttribute("data-factor")).toBe("age")
         expect(onAnswer).not.toHaveBeenCalled()
         expect(screen.getByLabelText(COPY.yearLabel)).toBeTruthy()
+    })
+})
+
+// ── A draft is bound to the FACTOR it was typed for, never to a position ──
+//
+// The list is the server's, and it recomposes under the flow after every
+// write (the action revalidates the page). The definitive browser walk typed
+// `1985` for «Ποια χρονιά γεννηθήκατε;», the list recomposed without `age`,
+// the screen swapped to «Περίπου πόσες αποταμιεύσεις έχετε διαθέσιμες;» with
+// 1985 still in the box, and «Συνέχεια» wrote `savingsAmount = 1985`
+// {assessment, exact}. The flow kept an INDEX and a DRAFT across the
+// recomposition; it now keeps a factor id and a draft bound to a factor.
+
+describe("a draft is bound to the factor it was typed for — never to a position", () => {
+    const year = () => screen.getByLabelText(COPY.yearLabel) as HTMLInputElement
+    const euros = () => screen.getByLabelText(COPY.currencyLabel) as HTMLInputElement
+    const inView = (c: HTMLElement) => c.querySelector("[data-factor]")!.getAttribute("data-factor")
+    const flow = (questions: AreaQuestionView[], onAnswer: (i: AnswerInput) => Promise<AnswerResult>) => (
+        <AreaQuestionFlow area="retirement" questions={questions} unknownFactorCount={questions.length} copy={COPY} onAnswer={onAnswer} />
+    )
+
+    it("the walk's defect: a year typed for «age» is never written to savingsAmount when the list recomposes under it", async () => {
+        const onAnswer = vi.fn(async (_i: AnswerInput) => ok(null))
+        const { container, rerender } = render(flow([q("age"), q("savings"), q("income")], onAnswer))
+        fireEvent.change(year(), { target: { value: "1985" } })
+        expect(year().value).toBe("1985")
+        expect(container.querySelector('[role="status"]')).toBeNull()
+
+        // The server's recomposition lands without `age` (settled by another surface meanwhile).
+        rerender(flow([q("savings"), q("income")], onAnswer))
+        expect(inView(container)).toBe("savings")
+        expect(screen.queryByLabelText(COPY.yearLabel)).toBeNull()
+        // The draft was DISCARDED, not re-homed: the amount box is empty, the primary is disabled, the person is told.
+        expect(euros().value).toBe("")
+        expect((primaryButtons(container)[0] as HTMLButtonElement).disabled).toBe(true)
+        expect(container.querySelector('[role="status"]')!.textContent).toBe(COPY.resynced)
+        expect(container.textContent).toContain(COPY.progress.replace("{n}", "1").replace("{m}", "2"))
+        fireEvent.click(primaryButtons(container)[0])
+        expect(onAnswer).not.toHaveBeenCalled()
+
+        // A value typed for the question now in view goes to ITS column, and the notice clears.
+        fireEvent.change(euros(), { target: { value: "20000" } })
+        expect(container.querySelector('[role="status"]')).toBeNull()
+        fireEvent.click(screen.getByText(COPY.continue))
+        await waitFor(() => expect(onAnswer).toHaveBeenCalledTimes(1))
+        expect(onAnswer.mock.calls[0]![0]).toEqual({ area: "retirement", factor: "savings", value: 20000 })
+        for (const call of onAnswer.mock.calls) expect(call[0]).not.toMatchObject({ factor: "savings", value: 1985 })
+    })
+
+    it("a reorder keeps the draft on its factor: the question in view is found by id, the counter follows the live list", async () => {
+        const onAnswer = vi.fn(async (_i: AnswerInput) => ok(null))
+        const { container, rerender } = render(flow([q("age"), q("savings")], onAnswer))
+        fireEvent.change(year(), { target: { value: "1985" } })
+        expect(container.textContent).toContain(COPY.progress.replace("{n}", "1").replace("{m}", "2"))
+
+        rerender(flow([q("income"), q("savings"), q("age")], onAnswer))
+        expect(inView(container)).toBe("age")
+        expect(year().value).toBe("1985")
+        expect(container.querySelector('[role="status"]')).toBeNull()
+        expect(container.textContent).toContain(COPY.progress.replace("{n}", "3").replace("{m}", "3"))
+        fireEvent.click(screen.getByText(COPY.continue))
+        await waitFor(() => expect(onAnswer).toHaveBeenCalledWith({ area: "retirement", factor: "age", value: 1985 }))
+    })
+
+    it("after an answer the flow shows the factor the server names — even one the list it rendered from did not carry yet", async () => {
+        const onAnswer = vi.fn(async (_i: AnswerInput) => ok("mortgage", 1))
+        const { container, rerender } = render(flow([q("age"), q("savings")], onAnswer))
+        fireEvent.change(year(), { target: { value: "1985" } })
+        fireEvent.click(screen.getByText(COPY.continue))
+        await waitFor(() => expect(onAnswer).toHaveBeenCalledTimes(1))
+        // Until the recomposed list lands, the first open question is in view — silently, no notice.
+        await waitFor(() => expect(inView(container)).toBe("savings"))
+        expect(container.querySelector('[role="status"]')).toBeNull()
+        expect(euros().value).toBe("")
+        rerender(flow([q("mortgage"), q("savings")], onAnswer))
+        expect(inView(container)).toBe("mortgage")
+        expect(container.textContent).toContain(COPY.progress.replace("{n}", "1").replace("{m}", "2"))
+    })
+
+    it("a factor the server names that the person skipped is not re-asked; the next open one is", async () => {
+        const onAnswer = vi.fn(async (_i: AnswerInput) => ok("savings", 1))
+        const { container } = render(flow([q("age"), q("savings"), q("income")], onAnswer))
+        fireEvent.click(screen.getByText(COPY.skip))
+        expect(inView(container)).toBe("savings")
+        fireEvent.click(screen.getByText(COPY.skip))
+        expect(inView(container)).toBe("income")
+        fireEvent.change(euros(), { target: { value: "30000" } })
+        fireEvent.click(screen.getByText(COPY.continue))
+        await waitFor(() => expect(onAnswer).toHaveBeenCalledWith({ area: "retirement", factor: "income", value: 30000 }))
+        // The server said `savings` is next; the person skipped it, and nothing else is open.
+        await waitFor(() => expect(container.textContent).toContain(COPY.done))
+    })
+
+    it("inputs and both buttons are disabled while an answer is saving", async () => {
+        let resolve!: (r: AnswerResult) => void
+        const onAnswer = vi.fn(() => new Promise<AnswerResult>((r) => { resolve = r }))
+        const { container } = render(flow([q("age"), q("savings")], onAnswer))
+        fireEvent.change(year(), { target: { value: "1985" } })
+        fireEvent.click(screen.getByText(COPY.continue))
+        await waitFor(() => expect(year().disabled).toBe(true))
+        expect((primaryButtons(container)[0] as HTMLButtonElement).disabled).toBe(true)
+        expect((screen.getByText(COPY.skip) as HTMLButtonElement).disabled).toBe(true)
+        expect(container.textContent).toContain(COPY.saving)
+        resolve(ok("savings", 1))
+        await waitFor(() => expect(inView(container)).toBe("savings"))
+        expect(euros().disabled).toBe(false)
+    })
+
+    it("the flow never reads a question by position: no index state, the factor is the identity", () => {
+        const src = readFileSync("components/protection/AreaQuestionFlow.tsx", "utf-8")
+        expect(src).not.toMatch(/useState<number>|setIndex|questions\[index\]|index \+ 1/)
+        expect(src).toMatch(/factor: question\.factor/)
+    })
+})
+
+describe("the done line tells the truth about what was said", () => {
+    it("after declining the health notice and skipping the rest, nothing was answered — «Εντάξει — το αφήνουμε για όταν θελήσετε.»", async () => {
+        const onAnswer = vi.fn(async () => ok(null))
+        const { container } = renderFlow([q("health"), q("age")], onAnswer, "health")
+        fireEvent.click(screen.getByText(COPY.healthGate.decline))
+        fireEvent.click(screen.getByText(COPY.skip))
+        await waitFor(() => expect(container.textContent).toContain(COPY.doneUnanswered))
+        expect(COPY.doneUnanswered).toBe("Εντάξει — το αφήνουμε για όταν θελήσετε.")
+        expect(container.textContent).not.toContain(COPY.done)
+        expect(onAnswer).not.toHaveBeenCalled()
+        expect(refresh).not.toHaveBeenCalled()
+    })
+
+    it("after one answer and a skip, something was said — the «picture updated» line stays", async () => {
+        const onAnswer = vi.fn(async () => ok("age", 1))
+        const { container } = renderFlow([q("health"), q("age")], onAnswer, "health")
+        fireEvent.click(screen.getByText(COPY.healthGate.accept))
+        fireEvent.click(screen.getByLabelText("Διαβήτης"))
+        fireEvent.click(screen.getByText(COPY.continue))
+        await waitFor(() => expect(container.querySelector("[data-factor]")!.getAttribute("data-factor")).toBe("age"))
+        fireEvent.click(screen.getByText(COPY.skip))
+        await waitFor(() => expect(container.textContent).toContain(COPY.done))
+        expect(container.textContent).not.toContain(COPY.doneUnanswered)
+        expect(refresh).toHaveBeenCalled()
     })
 })
 

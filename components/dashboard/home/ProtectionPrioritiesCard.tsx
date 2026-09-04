@@ -3,13 +3,10 @@ import { CardHead } from "./CardHead"
 import { ActionLink } from "./RecommendationAnalytics"
 import { protectionDomainIcon } from "@/lib/services/protection-profile/domain-icons"
 import { IMPORTANCE_TONE, type ProtectionMapLabels } from "@/components/onboarding/protection-profile/ProtectionMapCard"
-import {
-    alignmentLabel,
-    confidenceLabel,
-    type AttentionAreaView,
-    type AttentionSummary,
-} from "@/lib/protection/attention-areas"
+import { alignmentLabel, confidenceLabel, type AttentionAreaView } from "@/lib/protection/attention-areas"
 import { AREAS } from "@/lib/protection/domains"
+import { priorityCount } from "@/lib/protection/priority-count"
+import type { ProtectionPriority } from "@/lib/services/protection-profile/derive-priorities"
 import type { Language } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
@@ -92,8 +89,7 @@ export function lapsedText(area: AttentionAreaView, labels: Pick<ProtectionPrior
  */
 export function ProtectionPrioritiesCard({
     areas,
-    summary,
-    priorityCount,
+    priorities,
     unsureCount,
     policyCount,
     language,
@@ -102,11 +98,15 @@ export function ProtectionPrioritiesCard({
 }: {
     /** All areas, in the composition's order (activated first); the card shows the top few. */
     areas: readonly AttentionAreaView[]
-    summary: AttentionSummary
-    /** Layer 1's own count — `needs.priorityCount`, kept where it was. */
-    priorityCount: number
+    /** Layer 1's rows — `needs.priorityCount` is derived HERE through the one definition, never handed in as a number. */
+    priorities: readonly ProtectionPriority[]
     unsureCount: number
-    /** The page's policy count (same universe as the hero), so the footers agree. */
+    /**
+     * Policies READ — the attention bundle's own `policyCount`, which leaves
+     * out an unread document (placeholder identity, EXTRACTION_EMPTY). The
+     * hero counts every stored row; this footer says «from the policies we
+     * have seen», and a one-line PDF is not a policy anyone has seen.
+     */
     policyCount: number
     language: Language
     mapLabels: ProtectionMapLabels
@@ -114,6 +114,14 @@ export function ProtectionPrioritiesCard({
 }) {
     const top = areas.slice(0, TOP_AREAS)
     const hasPolicies = policyCount > 0
+    // The `attention.*` cells count the rows THIS card shows — the three
+    // above them — never the ten-area universe: «6 περιοχές» under three rows
+    // was the contradiction. The lens counts its own rows the same way.
+    const shown = {
+        areaCount: top.length,
+        unknownCount: top.filter((a) => a.alignment === "unknown").length,
+        coveredCount: top.filter((a) => a.alignment === "appears_covered" && !a.requiresValidation).length,
+    }
 
     return (
         <section className="pw-card pw-pad" aria-labelledby="protection-priorities-heading">
@@ -150,7 +158,7 @@ export function ProtectionPrioritiesCard({
                 <div className="pw-subcard p-3">
                     <dt className="text-caption text-muted-foreground">{labels.countLabel}</dt>
                     <dd className="text-h3 font-semibold text-foreground" data-count="needs.priorityCount">
-                        {priorityCount}
+                        {priorityCount(priorities)}
                     </dd>
                 </div>
                 <div className="pw-subcard p-3">
@@ -161,19 +169,18 @@ export function ProtectionPrioritiesCard({
                 </div>
             </dl>
 
-            {/* Counts of WORDS across all ten areas — the same numbers the lens
-                renders under the same keys, never summable into one. */}
+            {/* Counts of WORDS over the rows shown above, never summable into one. */}
             <dl className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-caption text-muted-foreground">
                 <div className="flex items-baseline gap-1">
-                    <dd className="font-semibold text-foreground" data-count="attention.areaCount">{summary.areaCount}</dd>
+                    <dd className="font-semibold text-foreground" data-count="attention.areaCount">{shown.areaCount}</dd>
                     <dt>{labels.areaCountLabel}</dt>
                 </div>
                 <div className="flex items-baseline gap-1">
-                    <dd className="font-semibold text-foreground" data-count="attention.unknownCount">{summary.unknownCount}</dd>
+                    <dd className="font-semibold text-foreground" data-count="attention.unknownCount">{shown.unknownCount}</dd>
                     <dt>{labels.unknownCountLabel}</dt>
                 </div>
                 <div className="flex items-baseline gap-1">
-                    <dd className="font-semibold text-foreground" data-count="attention.coveredCount">{summary.coveredCount}</dd>
+                    <dd className="font-semibold text-foreground" data-count="attention.coveredCount">{shown.coveredCount}</dd>
                     <dt>{labels.coveredCountLabel}</dt>
                 </div>
             </dl>

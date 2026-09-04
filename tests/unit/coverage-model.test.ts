@@ -9,7 +9,9 @@ import {
     emptyCoverageModel,
     heldLines,
     isHeldBand,
+    isLapsedBand,
     type PolicyEvidenceInput,
+    type PolicyLifecycleBand,
 } from "@/lib/protection/coverage-model"
 
 /**
@@ -83,6 +85,16 @@ describe("buildCoverageModel — expired and unplaceable policies do not count a
         expect(isHeldBand("expiring_soon")).toBe(true)
         expect(isHeldBand("expired")).toBe(false)
         expect(isHeldBand("other")).toBe(false)
+    })
+
+    it("«lapsed» is the expired band alone — `other` is presence we cannot place in time, never a policy that ended", () => {
+        // A document read and found to carry no policy was banded `other`, and
+        // the lifestyle row then said «the policy we saw for this has lapsed».
+        const bands: PolicyLifecycleBand[] = ["active", "expiring_soon", "expired", "other"]
+        expect(bands.filter(isLapsedBand)).toEqual(["expired"])
+        // No band is both held and lapsed, and `other` is neither.
+        for (const band of bands) expect(isHeldBand(band) && isLapsedBand(band), band).toBe(false)
+        expect(isHeldBand("other") || isLapsedBand("other")).toBe(false)
     })
 
     it("keeps an expired policy in its area, flagged, and the area is NOT held", () => {

@@ -3,6 +3,7 @@ import { Map } from "lucide-react"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { mapRowCounts, mapRowsFrom, type MapRow, type MovedRow } from "@/lib/onboarding/protection-profile/map-rows"
 import type { AttentionAreaView } from "@/lib/protection/attention-areas"
+import { AREAS, AREA_IDS, type AttentionAreaId } from "@/lib/protection/domains"
 import { protectionDomainIcon } from "@/lib/services/protection-profile/domain-icons"
 import type { ProtectionPriority } from "@/lib/services/protection-profile/derive-priorities"
 import type { FirstInsight } from "@/lib/services/onboarding/quick-start"
@@ -24,9 +25,38 @@ export const IMPORTANCE_TONE: Record<ProtectionPriority["importance"], string> =
     needs_review: "bg-status-info-tint text-status-info",
 }
 
-export function domainLabelFor(labels: ProtectionMapLabels, id: string): string {
-    const key = id.replace(":", "_") as keyof ProtectionMapLabels["domainLabel"]
-    return labels.domainLabel[key] ?? labels.domainLabel[id.split(":")[0] as keyof ProtectionMapLabels["domainLabel"]] ?? id
+/**
+ * The dictionary keys under `summary.domainLabel` whose singular form differs
+ * in GRAMMAR from the shared area noun — the only entries `domainLabelFor`
+ * may read from the dictionary instead of the table. None today: every area
+ * noun («Οικογένεια», «Εργασία», «Εισόδημα»…) is the same word in both
+ * registers, and the guard in tests/unit/protection-profile-summary.test.tsx
+ * pins the rest of the block equal to `AREAS[area].label`.
+ */
+export const SINGULAR_LABEL_OVERRIDES: ReadonlySet<string> = new Set()
+
+// A plain record, not a `Map`: `Map` in this file is the lucide icon.
+const AREA_BY_PRIORITY_ID: Readonly<Record<string, AttentionAreaId>> = Object.fromEntries(
+    AREA_IDS.map((id) => [AREAS[id].priorityId, id])
+)
+
+/** The attention area behind a map row id (`household`, `money:income`, …). */
+export function areaForPriorityId(id: string): AttentionAreaId | undefined {
+    return Object.prototype.hasOwnProperty.call(AREA_BY_PRIORITY_ID, id) ? AREA_BY_PRIORITY_ID[id] : undefined
+}
+
+/**
+ * An area's label, in the onboarding's voice. Labels come from ONE place —
+ * `AREAS[area].label` (lib/protection/domains.ts), the word the dashboard and
+ * the lens render — so the map cannot say «Δουλειά» beside the home's
+ * «Εργασία». A singular override is read only for the keys listed above.
+ */
+export function domainLabelFor(labels: ProtectionMapLabels, id: string, language: "el" | "en"): string {
+    const key = id.replace(":", "_")
+    const override = SINGULAR_LABEL_OVERRIDES.has(key) ? (labels.domainLabel as Record<string, string | undefined>)[key] : undefined
+    if (override) return override
+    const area = areaForPriorityId(id)
+    return area ? AREAS[area].label[language] : id
 }
 
 /**
@@ -120,10 +150,12 @@ export function ProtectionMapCard({
     const rows = mapRowsFrom(areas, priorities)
     const counts = mapRowCounts(rows)
     const named = priorities.filter((p) => p.importance === "high" || p.importance === "medium")
-    // The headline counts what it says — the named priorities, uncapped — and
-    // the head's «{n} σημεία» counts the rows underneath it, so the two
-    // numbers on the page can never disagree with the list between them.
-    const lead = named.length === 0 ? labels.leadNone : named.length === 1 ? labels.leadOne : labels.lead.replace("{n}", String(named.length))
+    // The lead carries NO number. The head's «{n} σημεία» counts the rows
+    // underneath it (`attention.areaCount`), and the only priority count is
+    // `needs.priorityCount` (lib/protection/priority-count.ts) — a lead that
+    // said «3 πράγματα» over a head that said «5 σημεία» read as a
+    // contradiction, whichever one was right.
+    const lead = named.length === 0 ? labels.leadNone : labels.lead
     const confidenceLine = (confidence && (labels.confidence as Record<string, string>)[confidence]) || labels.confidence.none
     const unsureLine = unsureCount === 1 ? labels.unsureCountOne : labels.unsureCount.replace("{n}", String(unsureCount)).replace("{m}", String(countedTotal))
 
@@ -155,7 +187,7 @@ export function ProtectionMapCard({
                         <ul className="mt-2 space-y-1.5">
                             {afterUpload.moved.map((m) => (
                                 <li key={m.area} className="text-caption leading-snug text-foreground [overflow-wrap:anywhere]" data-moved={m.area}>
-                                    <span className="font-semibold">{domainLabelFor(labels, m.priorityId)}: </span>
+                                    <span className="font-semibold">{domainLabelFor(labels, m.priorityId, language)}: </span>
                                     <span className="sr-only">{labels.afterUpload.beforeLabel}: </span>
                                     <span className="text-muted-foreground">{m.before ? alignmentText(m.before, mapLabels, language) : labels.afterUpload.notOnMap}</span>
                                     <span aria-hidden="true"> → </span>
@@ -192,7 +224,7 @@ export function ProtectionMapCard({
                                     </span>
                                     <div className="min-w-0 flex-1">
                                         <div className="flex flex-wrap items-center gap-2">
-                                            <p className="text-sm font-semibold text-foreground">{domainLabelFor(labels, row.priorityId)}</p>
+                                            <p className="text-sm font-semibold text-foreground">{domainLabelFor(labels, row.priorityId, language)}</p>
                                             <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-caption font-semibold", IMPORTANCE_TONE[row.importance])}>
                                                 {labels.importance[row.importance]}
                                             </span>
@@ -250,16 +282,16 @@ export function ProtectionMapCard({
             ) : null}
 
             {/* «Τι αξίζει να προσέξουμε» — the engine's one derived finding when
-                it has one, then the honest edge of the map. */}
+                it has one, NAMED ONLY, then the honest edge of the map. The
+                catalogue's body sentences (what it costs, why it applies) are
+                written in the formal register for the area detail; rendered
+                here they put «Πείτε μας το εισόδημά σας» inside «η εικόνα σου». */}
             <div className="mt-5 border-t border-border pt-4">
                 <p className="text-caption font-semibold text-muted-foreground">{labels.worthNoticing}</p>
                 {insight ? (
-                    <div className="pw-subcard mt-2 p-3.5">
-                        <p className="text-caption font-semibold text-muted-foreground">{labels.insightKicker}</p>
-                        <p className="mt-1 text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{insight.headline[language] || insight.headline.en}</p>
-                        <p className="mt-1 text-caption leading-relaxed text-foreground/80 [overflow-wrap:anywhere]">{insight.detail[language] || insight.detail.en}</p>
-                        <p className="mt-1.5 text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">{insight.because[language] || insight.because.en}</p>
-                    </div>
+                    <p className="pw-subcard mt-2 p-3.5 text-sm leading-relaxed text-foreground [overflow-wrap:anywhere]" data-insight={insight.riskId}>
+                        {labels.insightLine.replace("{name}", insight.headline[language] || insight.headline.en)}
+                    </p>
                 ) : null}
                 <p className="mt-2 text-caption leading-relaxed text-muted-foreground">{labels.notAskedYet}</p>
             </div>

@@ -61,6 +61,7 @@ import {
 import {
     areaHasHeldLine,
     heldLines,
+    isLapsedBand,
     type AreaCoverage,
     type CoverageLine,
     type CoverageModel,
@@ -144,7 +145,12 @@ export interface AttentionAreaView {
     limitsUnread: boolean
     /** An answering line (or, for `gap`, the line the finding sits on) ends within the month. */
     expiringSoon: boolean
-    /** Nothing held, and the area holds a line that has expired or cannot be placed in time. */
+    /**
+     * Nothing held, and the area holds a line whose cover has EXPIRED
+     * (`isLapsedBand`). A line we cannot place in time (`other`: cancelled,
+     * still being read, undated) is not «lapsed» — the row says no policy has
+     * been seen — and an unread document never reaches the model at all.
+     */
     lapsedOnly: boolean
     explanation: AreaExplanation
 }
@@ -343,7 +349,10 @@ function composeArea(area: AttentionAreaId, env: Env): AttentionAreaView {
     const areaHeld = areaHasHeldLine(coverage, area)
     const answering = dedupeLines([...coveredRisks, ...partialRisks].flatMap((a) => answeringHeldLines(a, held)))
     const anyHeld = areaHeld || answering.length > 0
-    const lapsedOnly = !anyHeld && protection.lines.some((l) => !l.held)
+    // «Έχει λήξει» is a claim about a date the document stated: only the
+    // `expired` band earns it. A line we cannot place in time (`other`) is
+    // neither held nor lapsed — the row says no policy has been seen.
+    const lapsedOnly = !anyHeld && protection.lines.some((l) => isLapsedBand(l.lifecycle))
 
     // ── Alignment — §C's table, in this order ───────────────────────
     // The engine reports `protection_gap` for EVERY uncovered essential

@@ -99,7 +99,13 @@ export interface AttentionAreasBundle {
     ctx: LifeContext
     provenance: FactProvenanceMap
     needs: AttentionBundleNeeds
-    /** Owned policy rows read, whatever their band. */
+    /**
+     * Owned policy rows READ, whatever their band. An unread row — a
+     * placeholder identity, or a document read and found to carry no policy
+     * (`isUnreadPolicy`) — is not counted: it is a file on record, not a
+     * policy seen, and a footer that says «from the policies we have seen»
+     * over it would be lying. Not the wallet's `portfolio.policyCount`.
+     */
     policyCount: number
     /** Of those, the ones whose limits were read (`detail: analysed`). */
     analysedCount: number
@@ -217,15 +223,16 @@ function stringList(value: unknown): string[] {
 
 /**
  * The band the coverage model consumes, read off the resolved lifecycle
- * (lib/protection/coverage-model.ts documents the mapping). Three states the
+ * (lib/protection/coverage-model.ts documents the mapping). Two states the
  * contract does not name: `action_needed` on a policy with a REAL identity
  * is a policy in force whose reading is incomplete — the cover is not — so
  * it is held; a document still being read (`analyzing`, an ingestion state
- * the lifecycle does not model) is presence we cannot place in time; and an
+ * the lifecycle does not model) is presence we cannot place in time. An
  * UNREAD row — a placeholder identity, or a document read and found to carry
- * no policy (lib/wallet/unread-policy.ts) — is the presence of a file, never
- * of cover, whatever its dates say. That last one banded `active` is how the
- * map credited a one-line PDF as a policy in force.
+ * no policy (lib/wallet/unread-policy.ts) — never reaches this function: the
+ * loader drops it before either layer (see `readPolicies`). Banded `active`
+ * it once credited a one-line PDF as a policy in force; banded `other` it
+ * made the map say the policy had lapsed.
  */
 function lifecycleBand(stored: string | null | undefined, lifecycle: PolicyLifecycle): PolicyLifecycleBand {
     if (String(stored ?? "").toLowerCase() === "analyzing") return "other"
@@ -261,7 +268,7 @@ function toEvidence(policy: PolicyRow, now: Date): PolicyEvidenceInput {
     return {
         id: policy.id,
         lineOfBusiness: policy.lineOfBusiness,
-        lifecycle: isUnreadPolicy(policy) ? "other" : lifecycleBand(policy.status, resolvePolicyLifecycle(policy, now)),
+        lifecycle: lifecycleBand(policy.status, resolvePolicyLifecycle(policy, now)),
         detail,
         ...(detail === "analysed" ? { coverages } : {}),
         gaps: policy.gapInstances.map((gap) => toFinding(gap, policy.lineOfBusiness)),
@@ -311,11 +318,19 @@ export async function loadAttentionAreas({ userId, language, now = new Date() }:
         skippedAt: statementsRow?.skippedAt ?? null,
     }
 
+    // An UNREAD row — a placeholder identity, or a document read and found to
+    // carry no policy (lib/wallet/unread-policy.ts) — is the presence of a
+    // FILE, never of a policy. It enters neither layer: banded `other` it made
+    // the lifestyle row say «the policy we saw has lapsed» over a one-line PDF,
+    // and counted it made the home's footer say «from the policies we have
+    // seen». Filtered once, here, so the engine and the model see the same rows.
+    const readPolicies = policies.filter((policy) => !isUnreadPolicy(policy))
+
     // Layer 3 — the same rows the engine sees, through its own mapper.
-    const assessments = assessRisks(ctx, toPolicyFields(policies))
+    const assessments = assessRisks(ctx, toPolicyFields(readPolicies))
 
     // Layer 4 — from policies and rule findings alone.
-    const evidence = policies.map((policy) => toEvidence(policy, now))
+    const evidence = readPolicies.map((policy) => toEvidence(policy, now))
     const coverage = buildCoverageModel(evidence)
 
     const areas = buildAttentionAreas({

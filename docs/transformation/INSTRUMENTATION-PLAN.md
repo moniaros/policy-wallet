@@ -158,10 +158,14 @@ No new keys; four standing decisions:
 `needs.priorityCount` · `needs.unsureCount`
 
 Layer 1 of the needs → coverage → gap model. `needs.priorityCount` is the number of derived
-protection priorities a surface renders (the onboarding map, the dashboard's «Η εικόνα σας»);
-`needs.unsureCount` the number of onboarding screens answered «δεν είμαι σίγουρος/η». Neither is a
-score and neither may be summed with a coverage count: they describe what the customer said
-matters, not what any policy does.
+protection priorities whose importance is not `watch` — high, medium and needs_review — over the
+WHOLE derived set, the same number on every surface (`priorityCount()` in
+lib/protection/priority-count.ts); it is never a count of the rows a surface happens to render, and
+the onboarding map's lead sentence carries no number at all. `needs.unsureCount` is the number of
+onboarding screens answered «δεν είμαι σίγουρος/η». Neither is a score and neither may be summed
+with a coverage count: they describe what the customer said matters, not what any policy does.
+(Redefined 2026-09-04: the map's head said «5 σημεία», its lead «3 πράγματα» and the home «6» for
+the same idea.)
 
 ### Additions ratified 2026-09-04 (the personal risk profile — attention areas)
 

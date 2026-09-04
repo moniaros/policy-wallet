@@ -87,6 +87,18 @@ describe("the first upload reports the real status", () => {
         await waitFor(() => expect(triggerOnboardingAnalysis).toHaveBeenLastCalledWith("pol_2"))
     })
 
+    it("the hint («Όποιο έχεις πρόχειρο…») is on the screen exactly once — the dropzone's line, not a paragraph above it too", () => {
+        for (const lang of ["el", "en"] as const) {
+            const labels = getTranslations(lang).onboarding.protectionProfile.upload
+            const { container, unmount } = render(<UploadScreen labels={labels} startingFrom={[]} hasAiConsent={true} deepAnalysisAvailable={false} onUploaded={vi.fn()} onLater={vi.fn()} busy={false} />)
+            const text = container.textContent ?? ""
+            expect(text.split(labels.hint).length - 1, `${lang}: the hint renders once`).toBe(1)
+            // And the tier line is not a second copy of it.
+            expect(labels.limitsNeedFullAnalysis).not.toBe(labels.hint)
+            unmount()
+        }
+    })
+
     it("on a plan without the deep reading the hint says presence is what this upload establishes, not the limits", () => {
         for (const lang of ["el", "en"] as const) {
             const labels = getTranslations(lang).onboarding.protectionProfile.upload

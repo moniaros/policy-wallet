@@ -143,9 +143,11 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
                     ))}
                 </p>
             ) : null}
-            <p className="mt-3 text-caption leading-relaxed text-muted-foreground">{labels.hint}</p>
+            {/* The hint («Όποιο έχεις πρόχειρο…») is the dropzone's own line —
+                rendered ONCE, inside it. A second copy above the box read as
+                the same sentence twice on the screen. */}
             {!deepAnalysisAvailable ? (
-                <p className="mt-1 text-caption leading-relaxed text-muted-foreground" data-tier-hint="limits_need_full_analysis">
+                <p className="mt-3 text-caption leading-relaxed text-muted-foreground" data-tier-hint="limits_need_full_analysis">
                     {labels.limitsNeedFullAnalysis}
                 </p>
             ) : null}
