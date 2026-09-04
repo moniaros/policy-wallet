@@ -76,6 +76,16 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     },
     full_ai_policy_analysis: {
         featureKey: "full_ai_policy_analysis",
+        // This row is what canRunDeepAnalysis reads — the ONE predicate the
+        // orchestrator, the onboarding trigger and every display share since
+        // Sept 2026. Two written decisions disagree about its value: H-009
+        // (docs/transformation/HALTS.md, closed 2026-08-25) says both paid
+        // tiers unlock deep analysis; the pricing-v2 pins in
+        // tests/unit/monetization-config.test.ts and
+        // ai-processing-consent-gate.test.ts say the top tier only, which is
+        // what production has always enforced. Enforcement is kept as it is
+        // (changing what paying subscribers receive is the owner's call); the
+        // displays now read this predicate, so a Starter is told the truth.
         requiredPlan: "pro",
         upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",

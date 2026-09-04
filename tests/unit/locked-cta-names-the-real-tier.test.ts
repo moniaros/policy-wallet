@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { canRunDeepAnalysis } from "@/lib/monetization/feature-gates"
+import { DEFAULT_PLAN_FACTS } from "@/lib/pricing/plan-defaults"
 
 /**
  * A locked feature's CTA must name the plan that actually unlocks it.
@@ -37,47 +39,66 @@ describe("the deep-analysis lock names the tier its gate requires", () => {
     const page = readFileSync(PAGE, "utf-8")
     const client = readFileSync(CLIENT, "utf-8")
 
-    /** Tiers that clear the gate, derived from the gate expression itself. */
+    /**
+     * Tiers that clear the gate, derived from the ONE predicate every surface
+     * and the orchestrator now read (Sept 2026: `canRunDeepAnalysis` in
+     * lib/monetization/feature-gates.ts). The page must route its lock through
+     * it — a hand-rolled `tier !== 'x'` beside it would be the second
+     * definition H-009 was about.
+     */
     const unlocking = (() => {
-        const excl = page.match(/isDeepAnalysisLocked:\s*entitlements\.tier\s*!==\s*['"](\w+)['"]/)
-        if (excl) return [excl[1]]
-        const only = page.match(/isDeepAnalysisLocked:\s*entitlements\.tier\s*===\s*['"](\w+)['"]/)
-        if (only) return PAID_TIERS.filter((t) => t !== only[1])
-        return null
+        const routed = /isDeepAnalysisLocked:\s*!canRunDeepAnalysis\(/.test(page)
+        if (!routed) return null
+        return PAID_TIERS.filter((t) => canRunDeepAnalysis(t))
     })()
 
     it("finds the gate it claims to check", () => {
         expect(
             unlocking,
-            `no isDeepAnalysisLocked gate found in ${PAGE} — if it moved, re-point this guard rather than deleting it`
+            `${PAGE} must compute isDeepAnalysisLocked as !canRunDeepAnalysis(tier) — if the lock moved, re-point this guard rather than deleting it`
         ).toBeTruthy()
         expect(unlocking!.length).toBeGreaterThan(0)
     })
 
-    it("the CTA names the cheapest tier that actually unlocks it", () => {
+    it("the predicate never unlocks the free tier and unlocks at least one paid tier", () => {
+        expect(canRunDeepAnalysis("free")).toBe(false)
+        expect(PAID_TIERS.some((t) => canRunDeepAnalysis(t))).toBe(true)
+    })
+
+    /**
+     * The CTA may name NO plan (the modal then names the one the gate
+     * requires) or the CHEAPEST plan that clears the gate — by the plan's
+     * display name (lib/pricing/plan-defaults.ts: plus → «Plus», pro →
+     * «Family») or its code. It may never name a plan that does not clear it
+     * (H-009's original defect: «Ξεκλείδωμα με Plus» over a Pro-only gate) and
+     * never a dearer one than the cheapest that does.
+     */
+    it("the CTA names either no plan or the cheapest one that actually unlocks it", () => {
         const cta = client.match(/notAnalyzedLockedCta:[^\n]*/)?.[0] ?? ""
         expect(cta, "notAnalyzedLockedCta not found").toContain("Unlock")
 
         const cheapest = PAID_TIERS.find((t) => unlocking!.includes(t))!
-        expect(
-            cta.toLowerCase(),
-            `CTA must name "${cheapest}" — the cheapest tier clearing this gate`
-        ).toContain(cheapest)
+        const namesOf = (t: (typeof PAID_TIERS)[number]) =>
+            [t, ...DEFAULT_PLAN_FACTS.filter((p) => p.tierKey === t).map((p) => p.displayName)]
+        const named = PAID_TIERS.filter((t) =>
+            namesOf(t).some((n) => new RegExp(`\\b${n}\\b`, "i").test(cta))
+        )
 
-        for (const other of PAID_TIERS.filter((t) => t !== cheapest)) {
+        for (const t of named) {
             expect(
-                new RegExp(`\\b${other}\\b`, "i").test(cta),
-                unlocking!.includes(other)
-                    ? `CTA names "${other}", which unlocks but is dearer than "${cheapest}" — it sells an upgrade the customer does not need`
-                    : `CTA names "${other}", which does NOT clear this gate — that promises an upgrade that changes nothing`
-            ).toBe(false)
+                unlocking!.includes(t),
+                `CTA names "${t}", which does NOT clear this gate — that promises an upgrade that changes nothing`
+            ).toBe(true)
+            expect(
+                t,
+                `CTA names "${t}", which unlocks but is dearer than "${cheapest}" — it sells an upgrade the customer does not need`
+            ).toBe(cheapest)
         }
     })
 
-    it("both languages say the same tier", () => {
+    it("both languages name the same plan, or none", () => {
         const cta = client.match(/notAnalyzedLockedCta:[^\n]*/)?.[0] ?? ""
-        const mentions = (cta.match(/\b(plus|pro)\b/gi) ?? []).map((m) => m.toLowerCase())
-        expect(mentions.length, "expected the tier named in both el and en").toBeGreaterThanOrEqual(2)
-        expect(new Set(mentions).size, `el and en name different tiers: ${mentions.join(", ")}`).toBe(1)
+        const mentions = (cta.match(/\b(plus|pro|family)\b/gi) ?? []).map((m) => m.toLowerCase())
+        expect(new Set(mentions).size, `el and en name different plans: ${mentions.join(", ")}`).toBeLessThanOrEqual(1)
     })
 })

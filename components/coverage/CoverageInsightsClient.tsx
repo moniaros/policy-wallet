@@ -144,7 +144,12 @@ export function CoverageInsightsClient({
         // induces the purchase. Whether the feature SHOULD sit behind Pro is
         // H-009 and the owner's call; naming the plan that actually clears the
         // gate is not. Guarded by locked-cta-names-the-real-tier.test.ts.
-        notAnalyzedLockedCta: lang === 'el' ? 'Ξεκλείδωμα με Plus' : 'Unlock with Plus',
+        // Tier-agnostic on purpose (Sept 2026): the predicate that decides deep
+        // analysis (canRunDeepAnalysis) and the written decisions about which
+        // plan should clear it disagree — see lib/monetization/feature-gates.ts.
+        // Until the owner settles it, the sentence names the feature, and the
+        // upgrade modal names the plan the gate actually requires.
+        notAnalyzedLockedCta: lang === 'el' ? 'Ξεκλείδωμα πλήρους ανάλυσης' : 'Unlock full analysis',
         notAnalyzedRefreshHint: lang === 'el' ? 'Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει.' : 'Upload or refresh a policy to start it.',
         unknownCount: '—',
     }
