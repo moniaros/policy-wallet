@@ -169,7 +169,7 @@ health area with Art. 9 consent, and the free tier still gets a comparison again
 policy's *presence* even when limits are unread. Chosen: **B/D.**
 
 ```
-WELCOME → intent → (orientation) → people → (income dependency) → home → income →
+WELCOME → intent → (orientation) → people → home → income → (income dependency) →
 obligations → mobility → hurt_most → changes → (plans) → confidence →
 (uncertainty_reason) → guidance → THE MAP (areas + triplet)
    ├─ «Να δούμε τι έχω ήδη» → upload → analysis (queued/summary) → the map re-reads
@@ -210,8 +210,9 @@ never asks a factor whose column is already `exact`.
 
 ## F. Branching
 
-Onboarding: `orientation` iff `intent = help_me`; `income_dependency` iff people ≠
-«Μόνο εγώ» and income ≠ «Δεν δουλεύω / σπουδάζω» ; `plans` iff «Έρχεται κάτι σύντομα»;
+Onboarding: `orientation` iff `intent = help_me`; `income_dependency` (placed after
+`income`, because visibility may depend only on earlier answers) iff people ≠ «Μόνο εγώ»
+and income is an earning status; `plans` iff «Έρχεται κάτι σύντομα»;
 `uncertainty_reason` iff confidence in the low three; obligation and concern options
 filtered by earlier answers (unchanged). Assessment: an area is **activated** when its
 importance is `high` or `medium`, or a stated concern names it, or a life event touched
