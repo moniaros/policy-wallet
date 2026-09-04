@@ -137,7 +137,7 @@ export function PolicyPreviewRow({
     icon?: LucideIcon
 }) {
     return (
-        <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm">
+        <div className="pw-subcard flex items-center gap-3 p-3">
             <div
                 className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] ${warn ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-primary-soft dark:bg-primary/15"}`}
             >
@@ -172,7 +172,7 @@ export function CustomerPreviewRow({
     healthy?: boolean
 }) {
     return (
-        <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm">
+        <div className="pw-subcard flex items-center gap-3 p-3">
             <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-primary text-body-sm font-bold text-primary-foreground">
                 {initial}
             </div>
@@ -197,7 +197,7 @@ export function RenewalPreviewRow({
     daysLabel: string
 }) {
     return (
-        <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm">
+        <div className="pw-subcard flex items-center gap-3 p-3">
             <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft dark:bg-primary/15">
                 <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
             </div>

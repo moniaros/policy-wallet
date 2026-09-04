@@ -63,7 +63,7 @@ export function AdvisorBookView({
         <div className="space-y-6">
             {/* ── Executive view ────────────────────────────────────── */}
             <div className="pw-card pw-pad">
-                <p className="pw-kicker">{t("Το χαρτοφυλάκιό σας", "Your book")}</p>
+                <p className="text-caption font-semibold text-muted-foreground">{t("Το χαρτοφυλάκιό σας", "Your book")}</p>
 
                 {/* Every figure is a protection measure. Policies, premium and
                     conversion are measures of the seller; these are measures of
@@ -125,7 +125,7 @@ export function AdvisorBookView({
                                 className="rounded-2xl border border-black/10 p-3.5 dark:border-white/12 sm:p-4"
                             >
                                 <div className="flex items-start gap-3">
-                                    <span className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-black/5 text-sm font-bold tabular-nums text-black/70 dark:bg-white/10 dark:text-white/75">
+                                    <span className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold tabular-nums text-foreground">
                                         {household.impact}
                                     </span>
                                     <div className="min-w-0 flex-1">
@@ -197,8 +197,8 @@ function Stat({
               ? "text-red-600 dark:text-red-400"
               : "text-black dark:text-white"
     return (
-        <div className="rounded-xl border border-black/8 px-3 py-2 dark:border-white/10">
-            <dt className="text-kicker uppercase tracking-wider text-muted-foreground">{label}</dt>
+        <div className="pw-subcard px-3 py-2">
+            <dt className="text-caption text-muted-foreground">{label}</dt>
             <dd className={`text-lg font-bold tabular-nums ${toneClass}`}>{value}</dd>
         </div>
     )

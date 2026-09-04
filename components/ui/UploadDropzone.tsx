@@ -52,10 +52,10 @@ export function UploadDropzone({
     return (
         <div
             className={cn(
-                "border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer",
+                "cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-colors",
                 dragActive
                     ? "border-primary bg-primary-tint dark:bg-primary/15"
-                    : "border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-slate-50 dark:hover:bg-slate-800",
+                    : "border-border hover:border-primary/60 hover:bg-muted",
                 className
             )}
             onDragEnter={handleDrag}
@@ -76,11 +76,11 @@ export function UploadDropzone({
                 }}
             />
             <label htmlFor={inputId} className="cursor-pointer block">
-                <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-full shadow-lg flex items-center justify-center mx-auto mb-4 text-primary dark:text-mint">
-                    <FileText className="w-8 h-8" />
+                <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-muted text-primary dark:text-mint">
+                    <FileText className="h-7 w-7" aria-hidden="true" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{title}</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">{hint}</p>
+                <h3 className="mb-1 text-base font-semibold text-foreground">{title}</h3>
+                <p className="text-caption text-muted-foreground">{hint}</p>
             </label>
         </div>
     )
