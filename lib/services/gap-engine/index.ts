@@ -21,6 +21,7 @@ import { logger } from "@/lib/logger"
 import {
     detectProfileGaps,
     toProfileFields,
+    toPolicyFields,
     type ProfileGap,
     type ProfileFields,
     type PolicyFields,
@@ -294,10 +295,7 @@ export async function getEnrichedRecommendations(userId: string): Promise<Recomm
         }),
     ])
     const lifeContext = toLifeContext(profileRecord)
-    const policyFields: PolicyFields[] = policies.map((p) => ({
-        lineOfBusiness: p.lineOfBusiness,
-        status: coverageEngineStatus(p as any),
-    }))
+    const policyFields = toPolicyFields(policies)
     const { assessments, riskGraph } = reconciledAssessments(
         profileRecord,
         policies,
@@ -381,10 +379,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     // liveness is derived from the REAL end date (lib/policy-status).
     const profile = toProfileFields(profileRecord)
     const coverageActive = new Map(policies.map((p) => [p.id, isPolicyCoverageActive(p)]))
-    const policyFields: PolicyFields[] = policies.map((p) => ({
-        lineOfBusiness: p.lineOfBusiness,
-        status: coverageEngineStatus(p),
-    }))
+    const policyFields = toPolicyFields(policies)
     const activeLobs = [
         ...new Set(
             policies
@@ -657,10 +652,7 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
 
     const profile = toProfileFields(profileRecord)
     const coverageActive = new Map(policies.map((p) => [p.id, isPolicyCoverageActive(p)]))
-    const policyFields: PolicyFields[] = policies.map((p) => ({
-        lineOfBusiness: p.lineOfBusiness,
-        status: coverageEngineStatus(p),
-    }))
+    const policyFields = toPolicyFields(policies)
     const activeLobs = [
         ...new Set(
             policies
@@ -1050,7 +1042,7 @@ function calculateProfileCompleteness(profile: ProfileFields): number {
 
 // ── Re-exports ───────────────────────────────────────────────────────
 
-export { detectProfileGaps, toProfileFields } from "./profile-gap-rules"
+export { detectProfileGaps, toProfileFields, toPolicyFields } from "./profile-gap-rules"
 export { calculateProtectionScore, getScoreTier, SCORE_CATEGORIES } from "./protection-score"
 export {
     getActiveRecommendations,

@@ -291,6 +291,15 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
         reason:
             "Maps coverageEngineStatus over the fetched rows — per-policy lifecycle in code.",
     },
+    "lib/protection/load-attention-areas.ts": {
+        count: 1,
+        reason:
+            "The engine's own visibility (every owned row), by design: liveness is derived per " +
+            "policy in code — resolvePolicyLifecycle for the coverage-model band, toPolicyFields " +
+            "for the engine — and lib/protection/coverage-model.ts is contracted to KEEP expired " +
+            "rows (visible, not held) and place cancelled/analysing ones as `other`. A status " +
+            "filter here would drop the very rows that contract shows.",
+    },
     "lib/gap-detection.ts": {
         count: 1,
         reason:
