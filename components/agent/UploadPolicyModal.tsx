@@ -14,6 +14,7 @@ import { UploadDropzone } from '@/components/ui/UploadDropzone'
 import type { CandidateAiConsent, CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
 import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
 import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
+import { describeActionError } from "@/lib/i18n/action-error"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 import { displayInsurerName, displayPolicyNumber, scrubPolicyIdentity } from '@/lib/wallet/policy-identity'
 
@@ -89,6 +90,11 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     const [view, setView] = useState<View>('upload')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    // Per-field messages from the commit action's Zod issues, keyed by the
+    // dotted path the schemas report: `customer.taxId` / `taxId` belong to the
+    // resolve step, `startDate` / `premiumAmount` to the confirm step. The
+    // modal jumps back to the step that owns the field and marks the input.
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     // Bumped on a pre-flight rejection so the dropzone remounts with an empty
     // input — the shared dropzone owns its <input>, so this replaces the
     // `e.target.value = ''` reset and lets the same file be picked again.
@@ -120,7 +126,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     if (!isOpen) return null
 
     const reset = () => {
-        setView('upload'); setLoading(false); setError(null); setScannedFile(null)
+        setView('upload'); setLoading(false); setError(null); setFieldErrors({}); setScannedFile(null)
         setResolution(null); setSelected('new'); setResult(null); setConsentSent(false); setDuplicate(null)
         setCustomer({ name: '', surname: '', email: '', phone: '', taxId: '' })
         setPolicy({ insurerName: '', policyNumber: '', lineOfBusiness: 'motor', startDate: '', endDate: '', premiumAmount: '' })
@@ -276,7 +282,24 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         }
 
         if (!res.success) {
-            setError(uploadRejectionMessage(t, (res as any).errorCode, (res as any).error || up.genericError, SCAN_MAX_BYTES))
+            const failure = res as { error?: string; errorCode?: string; details?: Array<{ path: string; code: string; message: string }> }
+            // A file-level rejection carries its own reason code; everything
+            // else is an action code the dictionary knows — never the literal.
+            if (failure.errorCode) {
+                setError(uploadRejectionMessage(t, failure.errorCode, up.genericError, SCAN_MAX_BYTES))
+                return
+            }
+            const described = describeActionError(t, failure.error, failure.details, failure as Record<string, unknown>)
+            setError(described.message)
+            setFieldErrors(described.fieldErrors)
+            // A field the resolve step owns (the new customer's identity, or
+            // the ΑΦΜ on an attach) sends the agent back to that step; the
+            // policy fields stay here on confirm. The per-customer entry has
+            // no resolve step, so it stays put and shows the message.
+            const ownedByResolve = Object.keys(described.fieldErrors).some(
+                (path) => path.startsWith('customer.') || path === 'taxId' || path === 'customerId',
+            )
+            if (ownedByResolve && !presetCustomerId) setView('resolve')
             return
         }
         setResult({
@@ -318,8 +341,13 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         : isCreateNew
             ? 'attestable'
             : resolution?.candidates.find((c) => c.id === selected)?.aiConsent ?? null
+    // A new customer needs a name and a way to identify them: an email, or
+    // (D3) an ΑΦΜ plus a phone — the server applies the real checksum and
+    // Greek-mobile rules and sends the field back here if they fail.
     const canContinueResolve = selected !== '' && (
-        selected !== 'new' || Boolean(customer.email.trim() && customer.name.trim())
+        selected !== 'new' || Boolean(
+            customer.name.trim() && (customer.email.trim() || (customer.taxId.trim() && customer.phone.trim()))
+        )
     )
     // The confirm submit is a plain button (not a <form>), so the inputs'
     // `required` isn't enforced — guard the required policy fields here, else an
@@ -517,10 +545,16 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                         {/* Editable identity fields when creating a new customer */}
                         {isCreateNew && (
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 animate-in slide-in-from-top-2 duration-200">
-                                <Field label={ac.firstName}><input required value={customer.name} onChange={e => setCustomer({ ...customer, name: e.target.value })} placeholder={ac.phFirstName} className="pw-input" /></Field>
-                                <Field label={ac.lastName}><input value={customer.surname} onChange={e => setCustomer({ ...customer, surname: e.target.value })} placeholder={ac.phLastName} className="pw-input" /></Field>
-                                <Field label={ac.emailAddress}><input required type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} placeholder={ac.phEmail} className="pw-input" /></Field>
-                                <Field label={ac.taxId}><input value={customer.taxId} onChange={e => setCustomer({ ...customer, taxId: e.target.value })} placeholder={ac.phTaxId} className="pw-input" /></Field>
+                                <Field label={ac.firstName} error={fieldErrors['customer.name']}><input required value={customer.name} onChange={e => setCustomer({ ...customer, name: e.target.value })} placeholder={ac.phFirstName} className="pw-input" /></Field>
+                                <Field label={ac.lastName} error={fieldErrors['customer.surname']}><input value={customer.surname} onChange={e => setCustomer({ ...customer, surname: e.target.value })} placeholder={ac.phLastName} className="pw-input" /></Field>
+                                {/* Email is optional (D3): without it the customer is
+                                    identified by ΑΦΜ + Greek mobile and cannot be invited
+                                    until one is added. */}
+                                <Field label={ac.emailAddress} error={fieldErrors['customer.email']} hint={ac.emailOptionalHint}><input type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} placeholder={ac.phEmail} className="pw-input" /></Field>
+                                {/* The manual door always had a phone; this door dropped it,
+                                    so a scanned phone was shown above and then thrown away. */}
+                                <Field label={ac.phoneNumber} error={fieldErrors['customer.phone']}><input type="tel" value={customer.phone} onChange={e => setCustomer({ ...customer, phone: e.target.value })} placeholder="+30 690 000 0000" className="pw-input" /></Field>
+                                <Field label={ac.taxId} error={fieldErrors['customer.taxId']}><input value={customer.taxId} onChange={e => setCustomer({ ...customer, taxId: e.target.value })} placeholder={ac.phTaxId} className="pw-input" /></Field>
                             </div>
                         )}
 
@@ -545,18 +579,18 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                         </header>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <Field label={ac.insurer}><input required value={policy.insurerName} onChange={e => setPolicy({ ...policy, insurerName: e.target.value })} placeholder={ac.phInsurer} className="pw-input" /></Field>
-                            <Field label={ac.policyNumber}><input required value={policy.policyNumber} onChange={e => setPolicy({ ...policy, policyNumber: e.target.value })} placeholder="POL-123456" className="pw-input" /></Field>
-                            <Field label={ac.lineOfBusiness}>
+                            <Field label={ac.insurer} error={fieldErrors.insurerName}><input required value={policy.insurerName} onChange={e => setPolicy({ ...policy, insurerName: e.target.value })} placeholder={ac.phInsurer} className="pw-input" /></Field>
+                            <Field label={ac.policyNumber} error={fieldErrors.policyNumber}><input required value={policy.policyNumber} onChange={e => setPolicy({ ...policy, policyNumber: e.target.value })} placeholder="POL-123456" className="pw-input" /></Field>
+                            <Field label={ac.lineOfBusiness} error={fieldErrors.lineOfBusiness}>
                                 <select value={policy.lineOfBusiness} onChange={e => setPolicy({ ...policy, lineOfBusiness: e.target.value })} className="pw-input appearance-none">
                                     {WRITE_BRANCH_IDS.map((id) => (
                                         <option key={id} value={id}>{t.policyTypes[id] ?? id}</option>
                                     ))}
                                 </select>
                             </Field>
-                            <Field label={ac.premium}><input type="number" value={policy.premiumAmount} onChange={e => setPolicy({ ...policy, premiumAmount: e.target.value })} placeholder="0.00" className="pw-input" /></Field>
-                            <Field label={ac.startDate}><input required type="date" value={policy.startDate} onChange={e => setPolicy({ ...policy, startDate: e.target.value })} className="pw-input" /></Field>
-                            <Field label={ac.endDate}><input required type="date" value={policy.endDate} onChange={e => setPolicy({ ...policy, endDate: e.target.value })} className="pw-input" /></Field>
+                            <Field label={ac.premium} error={fieldErrors.premiumAmount}><input type="number" value={policy.premiumAmount} onChange={e => setPolicy({ ...policy, premiumAmount: e.target.value })} placeholder="0.00" className="pw-input" /></Field>
+                            <Field label={ac.startDate} error={fieldErrors.startDate}><input required type="date" value={policy.startDate} onChange={e => setPolicy({ ...policy, startDate: e.target.value })} className="pw-input" /></Field>
+                            <Field label={ac.endDate} error={fieldErrors.endDate}><input required type="date" value={policy.endDate} onChange={e => setPolicy({ ...policy, endDate: e.target.value })} className="pw-input" /></Field>
                         </div>
 
                         {/* Three states, the same on both entry points. Attestation
@@ -689,11 +723,22 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
  * <input>. A child that already carries an id keeps it, so an explicit one
  * always wins.
  */
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, error, hint, children }: { label: string; error?: string; hint?: string; children: React.ReactNode }) {
     const generatedId = React.useId()
     const child = React.isValidElement(children) ? children : null
     const childId = (child?.props as { id?: string } | undefined)?.id
     const fieldId = childId ?? generatedId
+    // The server's per-field message (or the caption) is what the control is
+    // described by, so a screen reader hears WHY the field is invalid, not
+    // just that it is.
+    const errorId = `${fieldId}-error`
+    const hintId = `${fieldId}-hint`
+    const describedBy = error ? errorId : hint ? hintId : undefined
+    const controlProps: { id?: string; "aria-invalid"?: boolean; "aria-describedby"?: string } = {
+        ...(childId ? {} : { id: fieldId }),
+        ...(error ? { "aria-invalid": true } : {}),
+        ...(describedBy ? { "aria-describedby": describedBy } : {}),
+    }
 
     return (
         <div className="space-y-1.5">
@@ -705,9 +750,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
             >
                 {label}
             </label>
-            {child && !childId
-                ? React.cloneElement(child as React.ReactElement<{ id?: string }>, { id: fieldId })
+            {child
+                ? React.cloneElement(child as React.ReactElement<typeof controlProps>, controlProps)
                 : children}
+            {error && <p id={errorId} className="text-caption font-semibold text-status-danger">{error}</p>}
+            {hint && !error && <p id={hintId} className="text-caption text-muted-foreground">{hint}</p>}
         </div>
     )
 }

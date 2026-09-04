@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { TranslationsProvider } from '@/contexts/TranslationsProvider'
 import { UploadPolicyModal } from '@/components/agent/UploadPolicyModal'
+import { scanPolicyForResolution } from '@/app/(protected)/agent/actions'
+import { el } from '@/lib/i18n/translations/el'
 
 /**
  * QA round 4. UploadPolicyModal's `Field` helper rendered a <label> as a
@@ -68,5 +70,37 @@ describe('UploadPolicyModal — field labelling', () => {
         const dialog = screen.getByRole('dialog')
         expect(dialog.getAttribute('aria-modal')).toBe('true')
         expect(dialog.getAttribute('aria-labelledby')).toBeTruthy()
+    })
+
+    /**
+     * The new-customer form on the resolve step had no phone field: the scan
+     * showed the extracted phone one card above and then threw it away, and
+     * the manual door always had one. It is also half of a no-email
+     * customer's identity (D3), so it has to be editable here.
+     */
+    it('the new-customer form on the resolve step has a labelled phone field', async () => {
+        vi.mocked(scanPolicyForResolution).mockResolvedValue({
+            success: true,
+            extraction: { customerName: 'Μαρία', customerPhone: '6912345678', insurerName: 'X', policyNumber: 'P-1' },
+            resolution: { candidates: [], conflict: false },
+        } as any)
+        renderModal()
+        fireEvent.click(screen.getByLabelText(el.agentModals.uploadPolicy.preScanAttestation, { exact: false }))
+        const input = document.getElementById('upload-policy-file') as HTMLInputElement
+        Object.defineProperty(input, 'files', { value: [new File(['%PDF-1.4'], 'p.pdf', { type: 'application/pdf' })], configurable: true })
+        fireEvent.change(input)
+        await screen.findByText(el.agentModals.uploadPolicy.resolveKicker)
+
+        const phone = screen.getByLabelText(el.agentModals.addCustomer.phoneNumber) as HTMLInputElement
+        expect(phone.tagName).toBe('INPUT')
+        expect(phone.type).toBe('tel')
+        expect(phone.value).toBe('6912345678')
+        // And the email field is no longer mandatory there (D3).
+        expect((screen.getByLabelText(el.agentModals.addCustomer.emailAddress) as HTMLInputElement).required).toBe(false)
+        // Every control on this step still resolves to a label.
+        for (const control of Array.from(document.querySelectorAll('input:not([type="file"]):not([type="radio"]):not([type="checkbox"])'))) {
+            const id = control.getAttribute('id')
+            expect(id && document.querySelector(`label[for="${id}"]`), `input#${id ?? '(no id)'} has no label`).toBeTruthy()
+        }
     })
 })

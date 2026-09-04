@@ -6,23 +6,33 @@ import { z } from 'zod'
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { rateLimit } from "@/lib/rate-limit"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
-import { agentEmailSchema, agentTaxIdSchema } from "@/lib/validations/agent-intake"
+import {
+    agentTaxIdSchema,
+    customerContactRule,
+    customerEmailIdentity,
+    optionalAgentEmailSchema,
+} from "@/lib/validations/agent-intake"
 import { ENDED_RELATIONSHIP_STATUSES } from "@/lib/agent-visibility"
 import { isPhantomCustomer } from "@/lib/agent-consent"
 
-const customerImportSchema = z.object({
-    // Trim + lowercase + NFC through the ONE normaliser auth uses, then the
-    // format check — `John@X.gr` and `john@x.gr` must be the same person.
-    email: agentEmailSchema,
-    name: z.string().trim().min(1).max(120),
-    // zod 4 rejects '' under min(1): a CSV without a surname column used to
-    // fail every row with VALIDATION_ERROR.
-    surname: z.string().trim().max(120).optional().default(''),
-    phone: z.string().trim().max(32).optional(),
-    // Same normaliser + Greek ΑΦΜ checksum as the single-customer schemas.
-    // The CSV parser already carried the column; the schema silently dropped it.
-    taxId: agentTaxIdSchema,
-})
+const customerImportSchema = z
+    .object({
+        // Trim + lowercase + NFC through the ONE normaliser auth uses, then the
+        // format check — `John@X.gr` and `john@x.gr` must be the same person.
+        // Optional under decision D3: a row with no email imports on a valid
+        // ΑΦΜ + Greek mobile (customerContactRule), the same rule as the
+        // single-customer doors.
+        email: optionalAgentEmailSchema,
+        name: z.string().trim().min(1).max(120),
+        // zod 4 rejects '' under min(1): a CSV without a surname column used to
+        // fail every row with VALIDATION_ERROR.
+        surname: z.string().trim().max(120).optional().default(''),
+        phone: z.string().trim().max(32).optional(),
+        // Same normaliser + Greek ΑΦΜ checksum as the single-customer schemas.
+        // The CSV parser already carried the column; the schema silently dropped it.
+        taxId: agentTaxIdSchema,
+    })
+    .superRefine(customerContactRule)
 
 const bulkImportSchema = z.object({
     customers: z.array(customerImportSchema).min(1),
@@ -90,13 +100,19 @@ export async function POST(req: Request) {
         // ── Resolve the whole file up front: one lookup per table, not per row ──
         // The same normaliser the schema applied, restated on the key the
         // lookups and writes actually use.
-        const rows = customers.map((customer, index) => ({
-            row: index + 1,
-            email: normalizeEmail(customer.email),
-            name: `${customer.name} ${customer.surname}`.trim(),
-            phone: customer.phone || null,
-            taxId: customer.taxId ?? null,
-        }))
+        const rows = customers.map((customer, index) => {
+            // A row with no email is keyed on the synthetic address its ΑΦΜ
+            // derives (customerContactRule guaranteed the ΑΦΜ + mobile).
+            const contact = customerEmailIdentity(customer)
+            return {
+                row: index + 1,
+                email: normalizeEmail(contact.email),
+                contactEmailMissing: contact.contactEmailMissing,
+                name: `${customer.name} ${customer.surname}`.trim(),
+                phone: customer.phone || null,
+                taxId: customer.taxId ?? null,
+            }
+        })
         const emails = [...new Set(rows.map((r) => r.email))]
 
         // password / emailVerified / taxId decide whether an ΑΦΜ in the file
@@ -145,7 +161,15 @@ export async function POST(req: Request) {
         // ── Classify every row, then write the writable ones in chunks ──
         const outcomes: RowOutcome[] = []
         const seenInFile = new Set<string>()
-        type Pending = { row: number; email: string; name: string; phone: string | null; taxId: string | null; userId: string | null }
+        type Pending = {
+            row: number
+            email: string
+            contactEmailMissing: boolean
+            name: string
+            phone: string | null
+            taxId: string | null
+            userId: string | null
+        }
         const pending: Pending[] = []
 
         for (const r of rows) {
@@ -177,12 +201,23 @@ export async function POST(req: Request) {
                         const created = await tx.user.createManyAndReturn({
                             data: toCreate.map((p) => ({
                                 email: p.email,
+                                contactEmailMissing: p.contactEmailMissing,
                                 name: p.name,
                                 phoneNumber: p.phone,
                                 taxId: p.taxId,
                                 roles: 'policyholder',
                             })),
                             select: { id: true, email: true },
+                        })
+                        // The same shape createCustomer gives a phantom
+                        // (customer.service: `policyholderProfile: { create: {} }`).
+                        // createMany cannot nest a relation, so the profiles land
+                        // as a second write in the SAME transaction — an imported
+                        // customer used to have no profile row at all, and every
+                        // read that joins on it (risk wizard, exports) saw nothing.
+                        await tx.policyholderProfile.createMany({
+                            data: created.map((u) => ({ userId: u.id })),
+                            skipDuplicates: true,
                         })
                         for (const u of created) {
                             const p = chunk.find((c) => c.email === normalizeEmail(u.email))

@@ -145,7 +145,16 @@ export interface CustomerCsvRow {
     taxId: string
 }
 
-export type CustomerCsvParseError = 'empty' | 'no_email_column'
+/**
+ * `no_identity_columns`: the file can identify nobody. A customer is
+ * identified by an email OR (owner decision D3) by ΑΦΜ + phone, so the file
+ * needs an email column, or both a tax-id column and a phone column.
+ */
+export type CustomerCsvParseError = 'empty' | 'no_identity_columns'
+
+export function hasIdentityColumns(columns: Record<CustomerCsvColumn, number | null>): boolean {
+    return columns.email !== null || (columns.taxId !== null && columns.phone !== null)
+}
 
 export interface CustomerCsvParseResult {
     rows: CustomerCsvRow[]
@@ -201,8 +210,11 @@ export function parseCustomerCsv(text: string): CustomerCsvParseResult {
         dataStart = header.some((cell) => cell.includes('@')) ? 0 : 1
     }
 
-    if (columns.email === null) {
-        return { rows: [], delimiter, columns, headerRecognised, error: 'no_email_column' }
+    // The file must be able to identify a customer: an email column, or (D3)
+    // both ΑΦΜ and phone. Whether a given ROW actually carries them is the
+    // schema's call (customerContactRule), row by row.
+    if (!hasIdentityColumns(columns)) {
+        return { rows: [], delimiter, columns, headerRecognised, error: 'no_identity_columns' }
     }
 
     const cellAt = (row: string[], index: number | null) => (index === null ? '' : (row[index] ?? '').trim())

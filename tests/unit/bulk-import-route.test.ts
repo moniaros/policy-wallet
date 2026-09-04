@@ -32,6 +32,7 @@ const relFindMany = vi.fn()
 const txUserCreateManyAndReturn = vi.fn()
 const txUserUpdate = vi.fn()
 const txRelCreateMany = vi.fn()
+const txProfileCreateMany = vi.fn()
 const dbTransaction = vi.fn()
 vi.mock('@/lib/db', () => ({
     db: {
@@ -56,12 +57,14 @@ beforeEach(() => {
     txUserCreateManyAndReturn.mockImplementation(async ({ data }: any) =>
         data.map((d: any, i: number) => ({ id: `u-${i}`, email: d.email })))
     txRelCreateMany.mockResolvedValue({ count: 1 })
+    txProfileCreateMany.mockResolvedValue({ count: 1 })
     txUserUpdate.mockResolvedValue({})
     dbTransaction.mockImplementation(async (fn: any) => fn({
         user: {
             createManyAndReturn: (...a: unknown[]) => txUserCreateManyAndReturn(...a),
             update: (...a: unknown[]) => txUserUpdate(...a),
         },
+        policyholderProfile: { createMany: (...a: unknown[]) => txProfileCreateMany(...a) },
         customerRelationship: { createMany: (...a: unknown[]) => txRelCreateMany(...a) },
     }))
 })
@@ -196,6 +199,76 @@ describe('POST /api/v1/customers/bulk-import', () => {
         const body = await res.json()
         expect(body.error.code).toBe('VALIDATION_ERROR')
         expect(dbTransaction).not.toHaveBeenCalled()
+    })
+
+    // ── The profile row createCustomer gives a phantom; the route gave none ──
+
+    it('creates a policyholder profile for every user it creates, in the same transaction', async () => {
+        const res = await POST(request({ customers: [{ name: 'A', email: 'a@x.gr' }, { name: 'B', email: 'b@x.gr' }] }))
+        expect(res.status).toBe(200)
+        expect(txProfileCreateMany).toHaveBeenCalledTimes(1)
+        expect(txProfileCreateMany).toHaveBeenCalledWith({
+            data: [{ userId: 'u-0' }, { userId: 'u-1' }],
+            skipDuplicates: true,
+        })
+        // Same transaction as the users: the profile write happens inside the
+        // callback the route handed to $transaction, never on the outer client.
+        expect(dbTransaction).toHaveBeenCalledTimes(1)
+    })
+
+    it('creates no profile for a row that only links an existing user', async () => {
+        userFindMany.mockResolvedValue([{ id: 'u-existing', email: 'maria@x.gr' }])
+        await POST(request({ customers: [{ name: 'Maria', email: 'maria@x.gr' }] }))
+        expect(txUserCreateManyAndReturn).not.toHaveBeenCalled()
+        expect(txProfileCreateMany).not.toHaveBeenCalled()
+    })
+
+    // ── D3: a row with no email imports on a valid ΑΦΜ + Greek mobile ──
+
+    it('imports a row without an email under the synthetic address, flagged', async () => {
+        const res = await POST(request({ customers: [{ name: 'Kostas', email: '', taxId: '123456783', phone: '6912345678' }] }))
+        expect(res.status).toBe(200)
+        const body = await res.json()
+        expect(body.data.outcomes).toEqual([{
+            row: 1, email: 'noemail+123456783@customers.policywallet.invalid', status: 'imported', code: 'CREATED',
+        }])
+        expect(txUserCreateManyAndReturn.mock.calls[0]![0].data[0]).toMatchObject({
+            email: 'noemail+123456783@customers.policywallet.invalid',
+            contactEmailMissing: true,
+            taxId: '123456783',
+            phoneNumber: '6912345678',
+        })
+        expect(userFindMany.mock.calls[0]![0].where.email.in).toEqual(['noemail+123456783@customers.policywallet.invalid'])
+    })
+
+    it('a row with a real email is never flagged', async () => {
+        await POST(request({ customers: [{ name: 'Nikos', email: 'nikos@x.gr' }] }))
+        expect(txUserCreateManyAndReturn.mock.calls[0]![0].data[0]).toMatchObject({ email: 'nikos@x.gr', contactEmailMissing: false })
+    })
+
+    it('refuses a row with no email and no ΑΦΜ, or a landline, as VALIDATION_ERROR on that row\'s email', async () => {
+        for (const row of [
+            { name: 'NoAfm', email: '', phone: '6912345678' },
+            { name: 'Landline', email: '', taxId: '123456783', phone: '2101234567' },
+            { name: 'ForeignVat', email: '', taxId: '12345678', phone: '6912345678' },
+        ]) {
+            const res = await POST(request({ customers: [row] }))
+            expect(res.status, row.name).toBe(400)
+            const body = await res.json()
+            expect(body.error.code).toBe('VALIDATION_ERROR')
+            expect(body.error.details.some((d: any) => d.path.join('.') === 'customers.0.email' && d.message === 'contact_required'), row.name).toBe(true)
+        }
+        expect(dbTransaction).not.toHaveBeenCalled()
+    })
+
+    it('two agents importing the same no-email customer converge on one row', async () => {
+        // The second agent's import finds the phantom the first one created.
+        userFindMany.mockResolvedValue([{ id: 'u-shared', email: 'noemail+123456783@customers.policywallet.invalid', password: null, emailVerified: null, taxId: '123456783' }])
+        const res = await POST(request({ customers: [{ name: 'Kostas', email: '', taxId: '123456783', phone: '6912345678' }] }))
+        const body = await res.json()
+        expect(body.data.outcomes[0]).toMatchObject({ status: 'imported', code: 'LINKED' })
+        expect(txUserCreateManyAndReturn).not.toHaveBeenCalled()
+        expect(txRelCreateMany.mock.calls[0]![0].data[0].policyholderUserId).toBe('u-shared')
     })
 })
 

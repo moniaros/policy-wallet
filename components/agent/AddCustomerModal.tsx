@@ -8,6 +8,7 @@ import { useDialog } from '@/hooks/useDialog'
 import { CardHead } from '@/components/dashboard/home/CardHead'
 import { Checkbox } from '@/components/ui/form'
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
+import { describeActionError } from '@/lib/i18n/action-error'
 
 interface Props {
     isOpen: boolean
@@ -41,6 +42,16 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
     const [view, setView] = useState<View>('choice')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    // Per-field messages from the action's Zod issues, keyed by the dotted
+    // path the schema reports (`taxId`, `policy.startDate`). Each input marks
+    // itself aria-invalid and points at its message with aria-describedby.
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    const fieldError = (path: string) => fieldErrors[path]
+    const errorId = (path: string) => `addcustomermodal-error-${path.replace(/\./g, '-')}`
+    const invalidProps = (path: string) =>
+        fieldError(path) ? { 'aria-invalid': true as const, 'aria-describedby': errorId(path) } : {}
+    const fieldMessage = (path: string) =>
+        fieldError(path) ? <p id={errorId(path)} className="text-caption font-semibold text-status-danger">{fieldError(path)}</p> : null
 
     // Manual Form State
     const [formData, setFormData] = useState({
@@ -66,6 +77,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
         e.preventDefault()
         setLoading(true)
         setError(null)
+        setFieldErrors({})
 
         // Transport-level Server Action failures (expired session redirected to
         // signin by proxy.ts, deployment skew, oversized body) reject rather
@@ -91,8 +103,18 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
             return
         }
 
-        if ('error' in result) {
-            setError(result.error as string)
+        if (!result.success) {
+            // A code, localised here — never the literal. The field messages
+            // land beside the inputs that own them; this form is one step, so
+            // the step that owns every field is the one already on screen.
+            const failure = result as { error?: string; details?: Array<{ path: string; code: string; message: string }> }
+            const described = describeActionError(t, failure.error, failure.details, failure as Record<string, unknown>)
+            setError(described.message)
+            setFieldErrors(described.fieldErrors)
+            if (Object.keys(described.fieldErrors).some((path) => path.startsWith('policy.'))) {
+                setFormData((current) => ({ ...current, addPolicy: true }))
+            }
+            setView('manual')
         } else {
             setView('success')
             onSuccess?.()
@@ -119,6 +141,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
             }
         })
         setError(null)
+        setFieldErrors({})
     }
 
     const stepCaption = (current: number) =>
@@ -234,7 +257,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     className="pw-input"
                                     placeholder={ac.phFirstName}
+                                    {...invalidProps('name')}
                                 />
+                                {fieldMessage('name')}
                             </div>
                             <div className="space-y-1.5">
                                 <label htmlFor="addcustomermodal-f2" className={LABEL}>{ac.lastName}</label>
@@ -244,18 +269,25 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                     onChange={e => setFormData({ ...formData, surname: e.target.value })}
                                     className="pw-input"
                                     placeholder={ac.phLastName}
+                                    {...invalidProps('surname')}
                                 />
+                                {fieldMessage('surname')}
                             </div>
+                            {/* Email is optional (D3): without it the customer is identified
+                                by ΑΦΜ + Greek mobile and cannot be invited until one is added. */}
                             <div className="space-y-1.5">
                                 <label htmlFor="addcustomermodal-f3" className={LABEL}>{ac.emailAddress}</label>
                                 <input id="addcustomermodal-f3"
-                                    required
                                     type="email"
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                                     className="pw-input"
                                     placeholder={ac.phEmail}
+                                    aria-describedby={fieldError('email') ? errorId('email') : 'addcustomermodal-f3-hint'}
+                                    aria-invalid={fieldError('email') ? true : undefined}
                                 />
+                                {fieldMessage('email')}
+                                <p id="addcustomermodal-f3-hint" className="text-caption text-muted-foreground">{ac.emailOptionalHint}</p>
                             </div>
                             <div className="space-y-1.5">
                                 <label htmlFor="addcustomermodal-f4" className={LABEL}>{ac.phoneNumber}</label>
@@ -264,7 +296,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                     className="pw-input"
                                     placeholder="+30 690 000 0000"
+                                    {...invalidProps('phone')}
                                 />
+                                {fieldMessage('phone')}
                             </div>
                             <div className="space-y-1.5">
                                 <label htmlFor="addcustomermodal-f5" className={LABEL}>{ac.taxId}</label>
@@ -273,7 +307,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                     onChange={e => setFormData({ ...formData, taxId: e.target.value })}
                                     className="pw-input"
                                     placeholder={ac.phTaxId}
+                                    {...invalidProps('taxId')}
                                 />
+                                {fieldMessage('taxId')}
                             </div>
                         </div>
 
@@ -297,7 +333,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, insurerName: e.target.value } })}
                                             className="pw-input"
                                             placeholder={ac.phInsurer}
+                                            {...invalidProps('policy.insurerName')}
                                         />
+                                        {fieldMessage('policy.insurerName')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f7" className={LABEL}>{ac.policyNumber}</label>
@@ -307,7 +345,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, policyNumber: e.target.value } })}
                                             className="pw-input"
                                             placeholder="POL-123456"
+                                            {...invalidProps('policy.policyNumber')}
                                         />
+                                        {fieldMessage('policy.policyNumber')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f8" className={LABEL}>{ac.lineOfBusiness}</label>
@@ -316,11 +356,13 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                             value={formData.policy.lineOfBusiness}
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, lineOfBusiness: e.target.value } })}
                                             className="pw-input appearance-none"
+                                            {...invalidProps('policy.lineOfBusiness')}
                                         >
                                             {WRITE_BRANCH_IDS.map((id) => (
                                                 <option key={id} value={id}>{t.policyTypes[id] ?? id}</option>
                                             ))}
                                         </select>
+                                        {fieldMessage('policy.lineOfBusiness')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f9" className={LABEL}>{ac.premium}</label>
@@ -330,7 +372,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, premiumAmount: e.target.value } })}
                                             className="pw-input"
                                             placeholder="0.00"
+                                            {...invalidProps('policy.premiumAmount')}
                                         />
+                                        {fieldMessage('policy.premiumAmount')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f10" className={LABEL}>{ac.startDate}</label>
@@ -340,7 +384,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                             value={formData.policy.startDate}
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, startDate: e.target.value } })}
                                             className="pw-input"
+                                            {...invalidProps('policy.startDate')}
                                         />
+                                        {fieldMessage('policy.startDate')}
                                     </div>
                                     <div className="space-y-1.5">
                                         <label htmlFor="addcustomermodal-f11" className={LABEL}>{ac.endDate}</label>
@@ -350,7 +396,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess, onUploadInstead }
                                             value={formData.policy.endDate}
                                             onChange={e => setFormData({ ...formData, policy: { ...formData.policy, endDate: e.target.value } })}
                                             className="pw-input"
+                                            {...invalidProps('policy.endDate')}
                                         />
+                                        {fieldMessage('policy.endDate')}
                                     </div>
                                 </div>
                             )}

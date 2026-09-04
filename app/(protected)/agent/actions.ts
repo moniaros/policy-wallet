@@ -36,6 +36,7 @@ import { hasAnyRole } from "@/lib/api-auth";
 import { validateUploadFile, sanitizeDisplayName, REJECTION_MESSAGES } from "@/lib/security/file-upload";
 import { buildCloseFields, recordStageTransition } from "@/lib/agent/opportunity-lifecycle";
 import { normalizeEmail } from "@/lib/identity/normalize-email";
+import { isSyntheticNoEmailAddress } from "@/lib/identity/synthetic-email";
 import { isPhantomCustomer } from "@/lib/agent-consent";
 import { ENDED_RELATIONSHIP_STATUSES } from "@/lib/agent-visibility";
 import { AppError } from "@/lib/errors";
@@ -46,6 +47,8 @@ import {
     AgentInviteInput,
     AgentPolicyInput,
     CommitDecisionInput,
+    UpdateCustomerContactInput,
+    customerEmailIdentity,
     validationFailure,
 } from "@/lib/validations/agent-intake";
 
@@ -181,6 +184,9 @@ export async function getCustomers(query?: string): Promise<Customer[]> {
             name: firstName,
             surname: lastName,
             email: c.email || '',
+            // The address above is a synthetic placeholder when this is true
+            // (D3) — the list shows «Χωρίς email» and offers to add one.
+            contactEmailMissing: c.contactEmailMissing === true,
             phone: c.phoneNumber || '',
             activationStatus: (c.status === 'pending_activation' ? 'invited' : c.status === 'active' ? 'activated' : 'inactive') as ActivationStatus,
             // The raw pair the pill should really be derived from: a
@@ -278,6 +284,7 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
             name: nameParts[0],
             surname: nameParts.slice(1).join(' ') || '',
             email: profile.customer.email || '',
+            contactEmailMissing: profile.customer.contactEmailMissing === true,
             phone: profile.customer.phone || '',
             activationStatus: (profile.relationship.status === 'pending_activation' ? 'invited' : profile.relationship.status === 'active' ? 'activated' : 'inactive') as ActivationStatus,
             relationshipStatus: profile.relationship.status,
@@ -739,6 +746,15 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "UNAUTHORIZED" }
     const agentId = authResult.dbUser.id
 
+    // A customer who has NO email (D3) carries a synthetic, non-deliverable
+    // address: nothing can be sent to it, so there is nothing to invite with.
+    // Refused before the parse (the schema would call the address invalid,
+    // which is the wrong story) and before any write — the UI offers «add an
+    // email» instead.
+    if (isSyntheticNoEmailAddress(email)) {
+        return { success: false, error: "CUSTOMER_NOT_CONTACTABLE" }
+    }
+
     // Trim + lowercase + NFC and a format check BEFORE anything is written: an
     // unnormalised address here minted a phantom user that the customer's own
     // signup (which lowercases) could never find, so the relationship never
@@ -871,7 +887,8 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
 export async function addCustomerManually(data: {
     name: string;
     surname: string;
-    email: string;
+    /** Optional (D3): without it a valid ΑΦΜ + Greek mobile identify the customer. */
+    email?: string;
     phone: string;
     taxId?: string;
     policy?: {
@@ -912,10 +929,14 @@ export async function addCustomerManually(data: {
         // 1. Customer (+ phantom user), relationship, first policy and its
         // management grant land in ONE transaction. The service is bound to
         // the transaction client, so nothing inside queries the outer pool.
+        // No email (D3): the row is keyed on the synthetic address the ΑΦΜ
+        // derives and flagged, so nothing is ever sent to it.
+        const contact = customerEmailIdentity(input)
         const committed = await db.$transaction(async (tx) => {
             const txCustomerService = new CustomerService(tx as unknown as typeof db)
             const relationship = await txCustomerService.createCustomer(agentId, {
-                email: input.email,
+                email: contact.email,
+                contactEmailMissing: contact.contactEmailMissing,
                 name: `${input.name} ${input.surname}`.trim(),
                 phoneNumber: input.phone,
                 taxId: input.taxId,
@@ -1486,7 +1507,8 @@ type CommitPolicyInput = {
 
 type CommitDecision =
     | { mode: 'attach'; customerId: string; taxId?: string }
-    | { mode: 'create_new'; customer: { name: string; surname?: string; email: string; phone?: string; taxId?: string } }
+    /** `email` optional under D3: a valid ΑΦΜ + Greek mobile identify the customer. */
+    | { mode: 'create_new'; customer: { name: string; surname?: string; email?: string; phone?: string; taxId?: string } }
 
 /**
  * SMART UPLOAD — commit the agent's resolution decision, then converge on the
@@ -1535,9 +1557,13 @@ export async function commitScannedPolicy(
             }
 
             const name = [input.customer.name, input.customer.surname].filter(Boolean).join(' ').trim()
+            // No email (D3): keyed on the synthetic address the ΑΦΜ derives, and
+            // flagged so nothing is ever sent to it.
+            const contact = customerEmailIdentity(input.customer)
             try {
                 const relationship = await customerService.createCustomer(agentId, {
-                    email: input.customer.email,
+                    email: contact.email,
+                    contactEmailMissing: contact.contactEmailMissing,
                     name,
                     phoneNumber: input.customer.phone,
                     taxId: input.customer.taxId,
@@ -1550,7 +1576,7 @@ export async function commitScannedPolicy(
                 // failing. createCustomer already backfilled the ΑΦΜ if null.
                 if (e?.code === 'CONFLICT') {
                     const existing = await db.user.findUnique({
-                        where: { email: normalizeEmail(input.customer.email) },
+                        where: { email: normalizeEmail(contact.email) },
                         select: { id: true },
                     })
                     if (!existing) throw e
@@ -1947,12 +1973,18 @@ export async function requestAiConsent(policyId: string) {
     const owner = await db.user.findUnique({
         where: { id: policy.ownerUserId },
         select: {
-            id: true, email: true, preferredLanguage: true,
+            id: true, email: true, contactEmailMissing: true, preferredLanguage: true,
             emailVerified: true, lastActiveAt: true, aiProcessingConsentVersion: true,
         },
     })
     if (!owner) return { error: "POLICY_OWNER_NOT_FOUND" }
     if (owner.aiProcessingConsentVersion) return { success: true, mode: "already_consented" as const }
+    // A customer with no email (D3) cannot be asked anything by email, and a
+    // signup invite to the synthetic address would be a link nobody can use.
+    // Refused before any invite row or notification is written.
+    if (owner.contactEmailMissing || isSyntheticNoEmailAddress(owner.email)) {
+        return { error: "CUSTOMER_NOT_CONTACTABLE" }
+    }
 
     const language = (owner.preferredLanguage as "en" | "el") || "el"
     const t = getTranslations(language)
@@ -2012,5 +2044,80 @@ export async function requestAiConsent(policyId: string) {
         mode: "invite" as const,
         emailDelivered: inviteEmailDelivered,
         inviteLink: inviteEmailDelivered ? undefined : absoluteUrl(`/invite/${invite.token}`),
+    }
+}
+
+/**
+ * A real email for a customer who was added WITHOUT one (owner decision D3).
+ *
+ * Replaces the synthetic placeholder and clears `contactEmailMissing`, so
+ * the invite flow and every sender stop refusing them. Guarded three ways:
+ * the agent holds a LIVING relationship with the customer; the account is a
+ * phantom (no password, never verified — an activated account's address is
+ * the customer's own to change, CUSTOMER_ACCOUNT_OWNED); and the address is
+ * not already someone else's key (EMAIL_IN_USE) — `User.email` is unique and
+ * a collision here would be a takeover of the other account's identity.
+ */
+export async function updateCustomerContact(data: { customerId: string; email: string }) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { success: false as const, error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false as const, error: "UNAUTHORIZED" }
+    const agentId = authResult.dbUser.id
+
+    // Validate BEFORE any read: the schema normalises the address and refuses
+    // the synthetic domain, so a placeholder can never be written back.
+    const parsed = UpdateCustomerContactInput.safeParse(data)
+    if (!parsed.success) return validationFailure(parsed.error)
+    const customerId = parsed.data.customerId
+    // Restated on the key the lookup and the write use (single-path guard).
+    const email = normalizeEmail(parsed.data.email)
+
+    try {
+        const relationship = await db.customerRelationship.findFirst({
+            where: { agentUserId: agentId, policyholderUserId: customerId },
+            select: { id: true, status: true },
+        })
+        if (!relationship || (ENDED_RELATIONSHIP_STATUSES as readonly string[]).includes(relationship.status)) {
+            return { success: false as const, error: "CUSTOMER_ACCESS_DENIED" }
+        }
+
+        const customer = await db.user.findUnique({
+            where: { id: customerId },
+            select: { id: true, email: true, password: true, emailVerified: true, lastActiveAt: true },
+        })
+        if (!customer) return { success: false as const, error: "CUSTOMER_ACCESS_DENIED" }
+        // Same "activated" rule as the consent attestation (addPolicyForCustomer
+        // step 6): a password, a verified email OR any activity means a live
+        // account, whose contact details only its owner may change.
+        if (!isPhantomCustomer(customer) || customer.lastActiveAt) {
+            return { success: false as const, error: "CUSTOMER_ACCOUNT_OWNED" }
+        }
+
+        const holder = await db.user.findUnique({ where: { email }, select: { id: true } })
+        if (holder && holder.id !== customerId) {
+            return { success: false as const, error: "EMAIL_IN_USE" }
+        }
+
+        await db.user.update({
+            where: { id: customerId },
+            data: { email, contactEmailMissing: false },
+        })
+        await db.activityLog.create({
+            data: {
+                adminUserId: agentId,
+                adminEmail: "",
+                actionType: "CUSTOMER_CONTACT_EMAIL_ADDED",
+                description: "Agent added an email address to a customer who had none",
+                targetUserId: customerId,
+                metadata: { relationshipId: relationship.id },
+            },
+        })
+
+        revalidatePath("/customers")
+        revalidatePath(`/customers/${customerId}`)
+        return { success: true as const, customerId, email }
+    } catch (e) {
+        await reportActionFailure("updateCustomerContact", e, { agentId, customerId })
+        return { success: false as const, error: "PROFILE_UPDATE_FAILED" }
     }
 }

@@ -73,6 +73,13 @@ model User {
   password                        String?
   phoneNumber                     String?                    @map("phone_number")
   taxId                           String?                    @map("tax_id")
+  /// The customer has NO email address. `email` is non-null and unique, so an
+  /// agent-created customer without one (owner decision D3: allowed, with
+  /// ΑΦΜ + Greek mobile as identity) carries a synthetic, non-deliverable
+  /// address built by lib/identity/synthetic-email.ts. Every email sender
+  /// refuses such an address; the invite flow refuses such a customer. Cleared
+  /// when a real address replaces the synthetic one (updateCustomerContact).
+  contactEmailMissing             Boolean                    @default(false) @map("contact_email_missing")
   /// Legacy single FCM token, superseded by `pushDevices`. Read-only: kept so
   /// any token registered before the Web Push cutover can still be reached, and
   /// so erasure keeps clearing it. Nothing writes it any more.

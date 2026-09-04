@@ -1,6 +1,17 @@
 import * as Sentry from "@sentry/nextjs"
 import { emailDomain, emailFingerprint, redactEmails } from "@/lib/observability/pii"
+import { isSyntheticNoEmailAddress } from "@/lib/identity/synthetic-email"
 import { outboundDispatchAllowed } from "@/lib/outbound/dispatch-guard"
+
+/**
+ * The `error` every sender sees when the recipient is a customer who has NO
+ * email (User.contactEmailMissing — lib/identity/synthetic-email.ts). Refused
+ * HERE, at the one transport, so no caller has to remember: invites, consent
+ * requests, digests, the notification bus and the auth mails all pass through
+ * this function. `tests/unit/no-email-sender-refusal.test.ts` pins that this
+ * file is the only thing in the repo that talks to the mail provider.
+ */
+export const RECIPIENT_NOT_CONTACTABLE = "RECIPIENT_NOT_CONTACTABLE"
 
 export interface EmailOptions {
     to: string
@@ -49,6 +60,14 @@ function stripHtml(html: string): string {
  * All transactional and operational emails must go through Brevo.
  */
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
+    // A customer who has no email carries a synthetic address that must never
+    // be dispatched — not in production, not as a dev log line. Decided before
+    // the environment guard so a test can prove the refusal without reaching
+    // the transport guard's throw.
+    if (isSyntheticNoEmailAddress(options.to)) {
+        return { success: false, error: RECIPIENT_NOT_CONTACTABLE }
+    }
+
     // ENVIRONMENT decides whether mail leaves this process — not whether a
     // credential happens to be present. The previous guard was `if (!apiKey)`,
     // and BREVO_API_KEY is set in `.env.local`, so it never fired locally: this

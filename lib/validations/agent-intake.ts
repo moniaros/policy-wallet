@@ -13,6 +13,8 @@
 import { z } from "zod"
 
 import { normalizeEmail } from "@/lib/identity/normalize-email"
+import { isGreekMobile } from "@/lib/identity/phone"
+import { isSyntheticNoEmailAddress, syntheticNoEmailAddress } from "@/lib/identity/synthetic-email"
 import { isValidGreekAfm, normalizeTaxId } from "@/lib/identity/tax-id"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 
@@ -41,11 +43,29 @@ export function validationFailure(error: z.ZodError): ValidationFailure {
 
 // ── Scalars ──────────────────────────────────────────────────────────
 
-/** Trimmed, lowercased, NFC — and it has to look like an address. */
+/**
+ * Trimmed, lowercased, NFC — and it has to look like an address. The
+ * synthetic no-email domain is refused here: it is minted by
+ * `customerEmailIdentity` only, never typed by an agent.
+ */
 export const agentEmailSchema = z
     .string()
     .transform((value) => normalizeEmail(value))
-    .pipe(z.string().min(1).max(254).email())
+    .pipe(
+        z
+            .string()
+            .min(1)
+            .max(254)
+            .email()
+            .refine((value) => !isSyntheticNoEmailAddress(value), "reserved_email"),
+    )
+
+/** The same address contract, with '' / whitespace / undefined meaning "not given". */
+export const optionalAgentEmailSchema = z
+    .string()
+    .optional()
+    .transform((value) => normalizeEmail(value) || undefined)
+    .pipe(agentEmailSchema.optional())
 
 /**
  * Greek ΑΦΜ, or a foreign VAT the existing normaliser tolerates.
@@ -99,14 +119,48 @@ export const lineOfBusinessSchema = z.enum(WRITE_BRANCH_IDS)
 
 // ── Composite inputs ─────────────────────────────────────────────────
 
-export const AgentCustomerInput = z.object({
+/**
+ * A customer without an email (owner decision D3) is identified by a VALID
+ * Greek ΑΦΜ (nine digits, mod-11 checksum — a foreign VAT is not enough)
+ * plus a Greek mobile. Anything less is refused on the `email` path, so the
+ * form marks the field the agent can actually fix.
+ */
+export function customerContactRule(
+    value: { email?: string; phone?: string; taxId?: string },
+    ctx: z.RefinementCtx,
+): void {
+    if (value.email) return
+    const afmOk = Boolean(value.taxId && value.taxId.length === 9 && isValidGreekAfm(value.taxId))
+    if (!afmOk || !isGreekMobile(value.phone)) {
+        ctx.addIssue({ code: "custom", path: ["email"], message: "contact_required" })
+    }
+}
+
+/**
+ * The email the User row is keyed on. A customer with no address gets the
+ * synthetic, non-deliverable one and the flag every sender checks; the
+ * ΑΦΜ is guaranteed valid here by `customerContactRule`.
+ */
+export function customerEmailIdentity(input: { email?: string; taxId?: string }): {
+    email: string
+    contactEmailMissing: boolean
+} {
+    if (input.email) return { email: input.email, contactEmailMissing: false }
+    if (!input.taxId) throw new Error("customerEmailIdentity: no email and no ΑΦΜ — the input was not parsed")
+    return { email: syntheticNoEmailAddress(input.taxId), contactEmailMissing: true }
+}
+
+/** The bare fields; the contact rule is applied on every composite that uses them. */
+const AgentCustomerFields = z.object({
     name: z.string().trim().min(1).max(120),
     /** zod 4 rejects '' under min(1); a surname is genuinely optional. */
     surname: z.string().trim().max(120).optional().default(""),
-    email: agentEmailSchema,
+    email: optionalAgentEmailSchema,
     phone: optionalTrimmed(32),
     taxId: agentTaxIdSchema,
 })
+
+export const AgentCustomerInput = AgentCustomerFields.superRefine(customerContactRule)
 export type AgentCustomerInputData = z.infer<typeof AgentCustomerInput>
 
 export const AgentPolicyInput = z
@@ -132,10 +186,20 @@ export const AgentPolicyInput = z
 export type AgentPolicyInputData = z.infer<typeof AgentPolicyInput>
 
 /** addCustomerManually — a customer, optionally with their first policy. */
-export const AddCustomerManuallyInput = AgentCustomerInput.extend({
+export const AddCustomerManuallyInput = AgentCustomerFields.extend({
     policy: AgentPolicyInput.optional(),
-})
+}).superRefine(customerContactRule)
 export type AddCustomerManuallyInputData = z.infer<typeof AddCustomerManuallyInput>
+
+/**
+ * updateCustomerContact — a real address for a customer who had none. The
+ * synthetic domain is refused by `agentEmailSchema` itself.
+ */
+export const UpdateCustomerContactInput = z.object({
+    customerId: z.string().trim().min(1).max(64),
+    email: agentEmailSchema,
+})
+export type UpdateCustomerContactInputData = z.infer<typeof UpdateCustomerContactInput>
 
 /** addPolicyForCustomer — a policy for a customer the agent already has. */
 export const AddPolicyForCustomerInput = z.object({

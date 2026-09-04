@@ -105,6 +105,29 @@ export const en: TranslationKeys = {
         // recorded consent and a per-scan mandate attestation.
         aiConsentRequired: 'Scanning documents with AI needs your own AI-processing consent first. Grant it in your privacy settings and try again.',
         agentAttestationRequired: 'Confirm that you hold the customer\'s mandate before scanning.',
+        // A customer without an email (decision D3): identified by ΑΦΜ + mobile,
+        // and not invitable until an address is added.
+        customerNotContactable: 'This customer was added without an email and cannot be invited. Add an email to invite them.',
+        emailInUse: 'This email already belongs to another account.',
+        customerAccountOwned: 'This customer has an active account. Only they can change their contact details.',
+    },
+    // Per-field messages for the validation failures the server actions return
+    // (lib/i18n/action-error.ts). Key = Zod issue code or the check's slug
+    // (invalid_afm_checksum → invalidAfmChecksum). Short, shown beside the field.
+    formErrors: {
+        required: 'This field is required.',
+        invalid: 'This value is not valid.',
+        invalidEmail: 'The email address is not valid.',
+        reservedEmail: 'This address cannot be used.',
+        invalidFormat: 'The format is not valid.',
+        invalidNumber: 'Enter a valid number.',
+        tooLong: 'This value is too long.',
+        invalidChoice: 'Choose one of the available values.',
+        invalidDate: 'The date is not valid.',
+        endBeforeStart: 'The end date must be after the start date.',
+        invalidTaxId: 'The ΑΦΜ / VAT number is not valid.',
+        invalidAfmChecksum: 'The ΑΦΜ is not correct — check the digits.',
+        contactRequired: 'Enter an email, or a valid ΑΦΜ and a Greek mobile number.',
     },
     // Reasons a file upload was rejected by the shared validation gate
     // (lib/security/file-upload.ts). Keyed by UploadRejectionReason so any
@@ -2097,6 +2120,9 @@ export const en: TranslationKeys = {
             firstName: 'First Name',
             lastName: 'Last Name',
             emailAddress: 'Email Address',
+            // Email is optional (decision D3): without it the customer's identity
+            // is the ΑΦΜ and mobile, and they cannot be invited.
+            emailOptionalHint: 'Optional. Without an email the customer needs a valid ΑΦΜ and a Greek mobile, and cannot be invited until you add an address.',
             phoneNumber: 'Phone Number',
             taxId: 'VAT / ΑΦΜ',
             phFirstName: 'John',
@@ -2235,7 +2261,9 @@ export const en: TranslationKeys = {
             errMissingFields: 'Missing required fields',
             errInvalidEmail: 'Invalid email format',
             errDuplicateInFile: 'Duplicate email in the file',
-            errNoEmailColumn: 'No email column found. Check the first line of the file.',
+            // The file can identify nobody: it needs an email column, or both a
+            // tax-id column and a phone column (decision D3).
+            errNoIdentityColumns: 'No email column found, and no ΑΦΜ and phone columns either. Check the first line of the file.',
             errEmptyFile: 'The file contains no customer rows.',
             colRow: 'Row',
             colTaxId: 'VAT / ΑΦΜ',
@@ -3350,6 +3378,14 @@ export const en: TranslationKeys = {
             statusNotInvited: 'Not invited',
             sendInvite: 'Send invitation',
             inviteSent: 'Invitation sent.',
+            // A customer without an email (decision D3): a neutral marker, and
+            // the one action that unblocks them — adding an address.
+            noEmail: 'No email',
+            addEmailToInvite: 'Add an email to invite them',
+            addEmailTitle: 'Add email',
+            addEmailDesc: 'This customer was added without an email. Add an address so they can receive the invitation.',
+            addEmailSave: 'Save and send invitation',
+            emailAdded: 'The email was saved.',
         },
         invite: {
             title: 'Invite Customer',

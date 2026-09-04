@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { TranslationsProvider } from '@/contexts/TranslationsProvider'
-import { CustomerList, customerActivationPill } from '@/components/agent/CustomerList'
+import { CustomerList, customerActivationPill, customerHasNoEmail } from '@/components/agent/CustomerList'
+import { el } from '@/lib/i18n/translations/el'
 
 vi.mock('next/navigation', () => ({
     usePathname: () => '/customers',
@@ -159,6 +160,53 @@ describe('CustomerList — activation pill derives from activation_status', () =
         fireEvent.click(buttons[0])
         expect(onInvite).toHaveBeenCalledWith('never')
         expect(onInvite).not.toHaveBeenCalledWith('already')
+    })
+
+    /**
+     * D3 — a customer with no email. The DTO carries `contactEmailMissing`
+     * and a synthetic, non-deliverable address; the row wears a neutral
+     * «Χωρίς email» pill, never renders the placeholder as an address, offers
+     * no mailto, and the invite action becomes «add an email».
+     */
+    it('a no-email customer wears «Χωρίς email», hides the placeholder, and offers to add one instead of inviting', () => {
+        const onInvite = vi.fn()
+        const onAddEmail = vi.fn()
+        render(
+            <LanguageProvider>
+                <TranslationsProvider>
+                    <CustomerList
+                        customers={[{
+                            ...base, id: 'noemail', name: 'Κώστας', surname: 'Δήμου',
+                            email: 'noemail+123456783@customers.policywallet.invalid', contactEmailMissing: true,
+                            activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'not_invited',
+                        }] as any}
+                        onCustomerClick={vi.fn()}
+                        onInvite={onInvite}
+                        onAddEmail={onAddEmail}
+                        onEmail={vi.fn()}
+                    />
+                </TranslationsProvider>
+            </LanguageProvider>
+        )
+        const pills = screen.getAllByTestId('customer-no-email-pill')
+        expect(pills.length).toBeGreaterThanOrEqual(2) // table row + card
+        for (const pill of pills) expect(pill.textContent).toBe('Χωρίς email')
+        expect(document.body.textContent).not.toContain('policywallet.invalid')
+        expect(screen.queryByTestId('customer-send-invite')).toBeNull()
+        expect(screen.queryByLabelText(el.a11yLabels.emailClient)).toBeNull()
+
+        const addEmail = screen.getAllByTestId('customer-add-email')
+        expect(addEmail.length).toBeGreaterThanOrEqual(1)
+        expect(addEmail[0].textContent).toContain('Προσθέστε email για να τον προσκαλέσετε')
+        fireEvent.click(addEmail[0])
+        expect(onAddEmail).toHaveBeenCalledWith('noemail')
+        expect(onInvite).not.toHaveBeenCalled()
+    })
+
+    it('recognises the synthetic address even when the DTO lacks the flag', () => {
+        expect(customerHasNoEmail({ email: 'noemail+123456783@customers.policywallet.invalid' } as any)).toBe(true)
+        expect(customerHasNoEmail({ email: 'x@example.com', contactEmailMissing: false } as any)).toBe(false)
+        expect(customerHasNoEmail({ email: 'x@example.com', contactEmailMissing: true } as any)).toBe(true)
     })
 
     it('falls back to the legacy field for a DTO that lacks the raw columns', () => {

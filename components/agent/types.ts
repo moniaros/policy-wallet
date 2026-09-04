@@ -90,6 +90,12 @@ export interface Customer {
     /** Raw CustomerRelationship.activationStatus: no_policies | not_invited |
      *  invited | activated | active — the value the pill should be derived from. */
     relationshipActivationStatus?: string
+    /**
+     * The customer has NO email: `email` is the synthetic, non-deliverable
+     * placeholder (lib/identity/synthetic-email.ts). Never render it as an
+     * address, never offer mailto/invite on it — offer «add an email» instead.
+     */
+    contactEmailMissing?: boolean
     accessScope: AccessScope
     permissions: Permission[]
     policyCount: number
@@ -152,6 +158,8 @@ export interface CustomerListProps {
     onBulkAction?: (action: 'export' | 'email' | 'delete', ids: string[]) => void
     /** «Αποστολή πρόσκλησης» on a customer who was added but never invited. */
     onInvite?: (customerId: string) => void
+    /** «Προσθέστε email για να τον προσκαλέσετε» on a customer who has no email. */
+    onAddEmail?: (customerId: string) => void
 }
 
 export interface CustomerProfileProps {

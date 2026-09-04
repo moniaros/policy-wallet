@@ -60,6 +60,9 @@ vi.mock('@/lib/db', () => ({
         invite: { create: (...a: unknown[]) => inviteCreate(...a) },
         $transaction: (fn: any) => fn({
             user: { createManyAndReturn: (...a: unknown[]) => txUserCreateManyAndReturn(...a) },
+            // The route now gives every created user the profile row
+            // createCustomer gives a phantom, in the same transaction.
+            policyholderProfile: { createMany: vi.fn(async () => ({ count: 0 })) },
             customerRelationship: { createMany: (...a: unknown[]) => txRelCreateMany(...a) },
         }),
     },

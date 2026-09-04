@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import {
+    hasIdentityColumns,
     mapCustomerHeader,
     normalizeHeader,
     parseCsv,
     parseCustomerCsv,
     sniffDelimiter,
 } from '@/lib/csv/parse-csv'
+import { AgentCustomerInput, customerEmailIdentity } from '@/lib/validations/agent-intake'
 
 /**
  * S4 — the bulk-import modal parsed CSV with `line.split(',')`. A Greek-locale
@@ -152,10 +154,48 @@ describe('parseCustomerCsv — the file an agent actually exports', () => {
         expect(parsed.rows[0]).toEqual({ line: 2, name: 'Μαρία', surname: '', email: 'maria@example.gr', phone: '', taxId: '' })
     })
 
-    it('refuses a header row with no email column', () => {
-        const parsed = parseCustomerCsv('Όνομα;Επώνυμο;Διεύθυνση\nΜαρία;Παπαδοπούλου;Αθήνα')
-        expect(parsed.error).toBe('no_email_column')
-        expect(parsed.rows).toEqual([])
+    /**
+     * Owner decision D3: ΑΦΜ + phone are a full identity, so a file needs an
+     * email column OR both a tax-id column and a phone column. One with
+     * neither can identify nobody and is refused as `no_identity_columns`.
+     */
+    it('accepts a file with ΑΦΜ and phone columns and no email column at all', () => {
+        const parsed = parseCustomerCsv('Όνομα;Επώνυμο;ΑΦΜ;Τηλέφωνο\nΚώστας;Δήμου;123456783;6912345678\nΜαρία;Ιωάννου;123456783;+30 691 000 0000')
+        expect(parsed.error).toBeNull()
+        expect(parsed.headerRecognised).toBe(true)
+        expect(parsed.columns.email).toBeNull()
+        expect(hasIdentityColumns(parsed.columns)).toBe(true)
+        expect(parsed.rows[0]).toEqual({ line: 2, name: 'Κώστας', surname: 'Δήμου', email: '', phone: '6912345678', taxId: '123456783' })
+    })
+
+    it('refuses a file with neither an email column nor ΑΦΜ + phone columns', () => {
+        for (const text of [
+            'Όνομα;Επώνυμο;Διεύθυνση\nΜαρία;Παπαδοπούλου;Αθήνα',
+            // ΑΦΜ alone, phone alone — half an identity is none.
+            'Όνομα;ΑΦΜ\nΜαρία;123456783',
+            'Όνομα;Τηλέφωνο\nΜαρία;6912345678',
+        ]) {
+            const parsed = parseCustomerCsv(text)
+            expect(parsed.error, text).toBe('no_identity_columns')
+            expect(parsed.rows).toEqual([])
+            expect(hasIdentityColumns(parsed.columns)).toBe(false)
+        }
+    })
+
+    it('rows of an ΑΦΜ + phone file go through the same synthetic-address branch as the single doors', () => {
+        const parsed = parseCustomerCsv('Όνομα;ΑΦΜ;Τηλέφωνο\nΚώστας;123456783;6912345678')
+        const row = parsed.rows[0]
+        const input = AgentCustomerInput.safeParse({ name: row.name, surname: row.surname, email: row.email, phone: row.phone, taxId: row.taxId })
+        expect(input.success).toBe(true)
+        expect(customerEmailIdentity(input.data!)).toEqual({
+            email: 'noemail+123456783@customers.policywallet.invalid',
+            contactEmailMissing: true,
+        })
+        // A row that fails the identity rule fails on the email path, like every other door.
+        const bad = parseCustomerCsv('Όνομα;ΑΦΜ;Τηλέφωνο\nΚώστας;123456783;2101234567').rows[0]
+        const refused = AgentCustomerInput.safeParse({ name: bad.name, email: bad.email, phone: bad.phone, taxId: bad.taxId })
+        expect(refused.success).toBe(false)
+        expect(refused.error?.issues.some((i) => i.path.join('.') === 'email' && i.message === 'contact_required')).toBe(true)
     })
 
     it('reports an empty file, and a header with no rows under it', () => {

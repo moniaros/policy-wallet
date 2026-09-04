@@ -17,6 +17,12 @@ export interface CustomerFilters {
 
 export interface CreateCustomerData {
     email: string;
+    /**
+     * `email` is the synthetic, non-deliverable placeholder because the
+     * customer has none (lib/validations/agent-intake.ts customerEmailIdentity).
+     * Written onto the phantom so every sender and the invite flow refuse it.
+     */
+    contactEmailMissing?: boolean;
     name: string;
     phoneNumber?: string;
     taxId?: string;
@@ -61,6 +67,8 @@ export class CustomerService extends BaseService {
                             id: true,
                             name: true,
                             email: true,
+                            // Whether `email` is the synthetic no-email placeholder.
+                            contactEmailMissing: true,
                             image: true,
                             phoneNumber: true,
                             createdAt: true,
@@ -104,6 +112,7 @@ export class CustomerService extends BaseService {
                     relationshipId: rel.id,
                     name: showIdentity ? rel.customer.name : null,
                     email: rel.customer.email,
+                    contactEmailMissing: rel.customer.contactEmailMissing,
                     image: showIdentity ? rel.customer.image : null,
                     phoneNumber: showIdentity ? rel.customer.phoneNumber : null,
                     status: rel.status,
@@ -228,6 +237,7 @@ export class CustomerService extends BaseService {
                 id: relationship.customer.id,
                 name: showIdentity ? relationship.customer.name : null,
                 email: relationship.customer.email,
+                contactEmailMissing: relationship.customer.contactEmailMissing,
                 phone: showIdentity ? relationship.customer.phoneNumber : null,
                 image: showIdentity ? relationship.customer.image : null,
             },
@@ -303,6 +313,9 @@ export class CustomerService extends BaseService {
             user = await this.db.user.create({
                 data: {
                     email,
+                    // A no-email customer (D3) is keyed on the synthetic address
+                    // and flagged, so every sender and the invite flow refuse it.
+                    contactEmailMissing: data.contactEmailMissing === true,
                     name: data.name,
                     phoneNumber: data.phoneNumber,
                     taxId,

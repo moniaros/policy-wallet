@@ -10,6 +10,9 @@ import { CardHead } from "@/components/dashboard/home/CardHead"
 import { TableShell } from "@/components/ui/TableShell"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { CUSTOMER_CSV_HEADER_EXAMPLES, parseCustomerCsv } from "@/lib/csv/parse-csv"
+import { describeActionError } from "@/lib/i18n/action-error"
+import { isGreekMobile } from "@/lib/identity/phone"
+import { isValidGreekAfm, normalizeTaxId } from "@/lib/identity/tax-id"
 
 interface BulkImportModalProps {
     isOpen: boolean
@@ -69,36 +72,36 @@ const TOTAL_STEPS = 2
 const PILL = "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-caption font-semibold"
 
 /**
- * Localised reason for a rejected import. The API returns a distinct code and
- * the numbers in `details`, so the message can be built in the reader's language
- * rather than shipped as English prose from the server.
+ * Localised reason for a rejected import — the same code → dictionary mapping
+ * every agent surface uses (lib/i18n/action-error.ts). The API returns a
+ * distinct code and either the numbers in `details` (limits) or the Zod
+ * issues (VALIDATION_ERROR); the whole-file validation message stays the
+ * bulk-specific one because the rows are attributed per line below.
  */
-function useLimitMessage(t: any) {
-    return (err: { code?: string; message?: string; details?: Record<string, unknown> } | null | undefined) => {
-        const d = (err?.details ?? {}) as Record<string, unknown>
-        const fill = (template: string) =>
-            template.replace(/\{(\w+)\}/g, (_, key) => String(d[key] ?? ''))
-        switch (err?.code) {
-            case 'BULK_IMPORT_ROW_LIMIT':
-                return fill(t.apiErrors.bulkImportRowLimit)
-            case 'CUSTOMER_LIMIT_REACHED':
-                return fill(t.apiErrors.customerLimitReached)
-            case 'CUSTOMER_HEADROOM_EXCEEDED':
-                return fill(t.apiErrors.customerHeadroomExceeded)
-            case 'VALIDATION_ERROR':
-                return t.apiErrors.bulkImportValidationError
-            case 'FORBIDDEN':
-                return t.apiErrors.forbidden
-            case 'UNAUTHORIZED':
-                return t.apiErrors.unauthorized
-            default:
-                return t.apiErrors.generic
-        }
-    }
+export function bulkImportErrorMessage(
+    t: any,
+    err: { code?: string; message?: string; details?: unknown } | null | undefined,
+): string {
+    if (err?.code === 'VALIDATION_ERROR') return t.apiErrors.bulkImportValidationError
+    const vars = err?.details && typeof err.details === 'object' && !Array.isArray(err.details)
+        ? (err.details as Record<string, unknown>)
+        : undefined
+    return describeActionError(t, err?.code, undefined, vars).message
 }
 
 /** Loose email shape — the server applies the real check; this stops obvious typos before the upload. */
 const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/**
+ * A row with no email imports on a valid Greek ΑΦΜ plus a Greek mobile
+ * (decision D3) — the route's `customerContactRule`, restated here so the
+ * preview says so before the upload instead of failing the whole file.
+ */
+function rowHasContact(row: { email: string; phone: string; taxId: string }): boolean {
+    if (row.email) return true
+    const afm = normalizeTaxId(row.taxId)
+    return Boolean(afm && afm.length === 9 && isValidGreekAfm(afm) && isGreekMobile(row.phone))
+}
 
 /**
  * Map the route's per-row response onto the rows that were submitted, in
@@ -185,7 +188,6 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
     const { t, language } = useLanguage()
     const dialogRef = useDialog<HTMLDivElement>(() => handleClose(), isOpen)
     const tt = t.agentModals.bulkImport
-    const limitMessage = useLimitMessage(t)
     const [step, setStep] = useState<'upload' | 'preview' | 'importing' | 'complete'>('upload')
     const [customers, setCustomers] = useState<CustomerRow[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
@@ -199,8 +201,11 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
             const text = await file.text()
             const parsed = parseCustomerCsv(text)
 
-            if (parsed.error === 'no_email_column') {
-                toast.error(tt.errNoEmailColumn)
+            // Both parser failures through the dictionary — a file that can
+            // identify nobody (no email column, and not ΑΦΜ + phone either:
+            // decision D3), or one with no rows.
+            if (parsed.error === 'no_identity_columns') {
+                toast.error(tt.errNoIdentityColumns)
                 return
             }
             if (parsed.error === 'empty') {
@@ -212,12 +217,13 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
             const rows: CustomerRow[] = parsed.rows.map((row) => {
                 let status: CustomerRow['status'] = 'valid'
                 let error: string | undefined
-                const key = row.email.toLowerCase()
+                // A no-email row is one person per ΑΦΜ — the route keys it the same way.
+                const key = row.email ? row.email.toLowerCase() : `afm:${normalizeTaxId(row.taxId) ?? ''}`
 
-                if (!row.name || !row.email) {
+                if (!row.name || !rowHasContact(row)) {
                     status = 'invalid'
                     error = tt.errMissingFields
-                } else if (!EMAIL_SHAPE.test(row.email)) {
+                } else if (row.email && !EMAIL_SHAPE.test(row.email)) {
                     status = 'invalid'
                     error = tt.errInvalidEmail
                 } else if (seen.has(key)) {
@@ -266,7 +272,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                 // remaining headroom, with the numbers. Throwing a bare Error
                 // discarded all of it and left the agent with "import failed" and
                 // no idea that splitting the file or upgrading would fix it.
-                toast.error(limitMessage(body?.error))
+                toast.error(bulkImportErrorMessage(t, body?.error))
                 if (body?.error?.code === 'VALIDATION_ERROR') {
                     // Per-row attribution from the zod issues, so the agent can
                     // see WHICH lines to fix rather than re-reading the file.
