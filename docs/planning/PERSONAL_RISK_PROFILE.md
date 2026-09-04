@@ -289,3 +289,29 @@ view/action events.
 **Wave 3 — validation and red teams**: gates, full suite, build; a 390px browser walk of
 five personas; behavioural, insurance and product red teams as independent reviews; fixes;
 the A–O report.
+
+## L. Decisions taken during implementation (2026-09-04)
+
+- `income_dependency` sits after `income` and is asked of a retiree with dependants (a
+  pension is income the household leans on). «Μόνο εγώ» writes no marital fact.
+- The map renders from structured fields with its own singular keys; the formal
+  explanation strings never enter onboarding.
+- `appears_covered` requires an exact line id or a substitute the catalogue declares;
+  `personal_accident` is a partial answer to the death risks and yields `review` with
+  «καλύπτει μόνο θάνατο από ατύχημα»; `group_life` / `group_pension` are full substitutes.
+- A review closes on evidence at AREA level (registry event → area map) and only from an
+  analysed policy; a summary-only policy leaves it open. `outcome: policy_evidence` is the
+  only record — `RiskReview` has no reason column and none was added.
+- `third_party_reported` sits between `inferred` and `user_reported`; at equal precision
+  the newer instant wins.
+- The recommendation order reads the live priorities; `priorityAreas` is analytics-only.
+- An extraction with no policy identity keeps the document, sets `action_needed` with
+  `EXTRACTION_EMPTY`, and never counts as cover.
+- **Open, for the owner — the deep-analysis tier.** H-009 (closed 2026-08-25) says both
+  paid tiers; the pricing-v2 test pins say the top tier only; `plan-defaults.ts` says every
+  tier. Production enforces the top tier only, now through the single predicate
+  `canRunDeepAnalysis`; the locked CTA names the feature, not a plan, until this is settled.
+- Not built here (next priorities): the needs-vs-limits adequacy rule (needs a benefit
+  vocabulary on `coverages[].name` and a currency/basis on `limit`), a month-2 return
+  cadence keyed on `factorsToResolve` and lapsing lines, prevention personalised by region
+  and building age, a change ledger per area from `factProvenance.at`.
