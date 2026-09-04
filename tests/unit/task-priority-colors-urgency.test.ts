@@ -8,8 +8,9 @@ import { readFileSync } from 'node:fs'
  * success/positive colour) while MEDIUM was amber, so the most urgent task
  * looked reassuring and a medium one looked more alarming — an inverted risk
  * signal, and inconsistent (amber meant "high" everywhere else but "medium"
- * here). High priority must use an urgency colour (amber), never the success
- * green.
+ * here). High priority must use an urgency colour — the amber palette pair
+ * historically, the `status-warning` token pair since the Direction A re-cut
+ * (2026-09-03) — never the success green.
  */
 const SRC = readFileSync('components/tasks/TasksClient.tsx', 'utf-8')
 
@@ -24,7 +25,7 @@ describe('task priority colours signal urgency, not success', () => {
     it('high priority uses the urgency colour (amber), not the brand-green success palette', () => {
         const body = priorityPillBody()
         // The high case must be amber…
-        expect(body).toMatch(/case 'high':\s*return '[^']*amber/)
+        expect(body).toMatch(/case 'high':\s*return '[^']*(amber|status-warning)/)
         // …and must NOT use the success/brand-green palette.
         const highCase = body.match(/case 'high':\s*return '([^']*)'/)
         expect(highCase, 'high case return not found').toBeTruthy()
@@ -34,6 +35,6 @@ describe('task priority colours signal urgency, not success', () => {
     it('the high-priority summary count is not coloured with the success green', () => {
         // The summary highlights the high count; it must not use text-primary/mint.
         expect(SRC).not.toMatch(/key === 'high' \? 'text-primary dark:text-mint'/)
-        expect(SRC).toMatch(/key === 'high' \? 'text-amber/)
+        expect(SRC).toMatch(/key === 'high' \? '(text-amber|text-status-warning)/)
     })
 })

@@ -19,15 +19,23 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { toast } from "sonner"
 import { FileText, Send, Plus, ClipboardList, Sparkles } from "lucide-react"
 import type { AgentTier } from "@/types/subscription-entitlements"
+import type { CandidateAiConsent } from "@/lib/services/customer-resolution.service"
 import type { DocumentRequestData, ProposalData, DocumentTypeKey, DocumentUrgency } from "@/components/collaboration/types"
 
 import { Modal } from "@/components/ui/Modal"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 
 interface Props {
     initialCustomer: Customer
     agentTier: AgentTier
     canBrandedReport: boolean
     healthScore: number
+    /**
+     * Whether an AI analysis can run for this customer if the advisor uploads
+     * now — derived by the page with deriveAiConsentState, the same verdict
+     * the resolution path renders per candidate.
+     */
+    customerAiConsent: CandidateAiConsent
 }
 
 const PROFILE_COPY = {
@@ -55,7 +63,7 @@ const PROFILE_COPY = {
     removing: { el: "Αφαίρεση...", en: "Removing..." },
 } as const
 
-export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore }: Props) {
+export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore, customerAiConsent }: Props) {
     const router = useRouter()
     const { language, t } = useLanguage()
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
@@ -279,13 +287,17 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 customerName={customerFullName}
             />
 
-            {/* Add Policy Modal — smart upload, customer already known */}
+            {/* Add Policy Modal — smart upload, customer already known. The
+                consent verdict travels with the preset so the confirm step
+                shows the real next step (granted / attestable / blocked)
+                rather than a checkbox that does nothing for a live account. */}
             <UploadPolicyModal
                 isOpen={isPolicyModalOpen}
                 onClose={() => setIsPolicyModalOpen(false)}
                 onSuccess={() => router.refresh()}
                 presetCustomerId={initialCustomer.id}
                 presetCustomerName={customerFullName}
+                presetCustomerConsent={customerAiConsent}
             />
 
             {/* Document Request Modal */}
@@ -336,41 +348,43 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 interactions={initialCustomer.interactions || []}
                 onBack={() => router.push("/customers")}
                 onUploadPolicy={() => setIsPolicyModalOpen(true)}
-            />
-
-            {/* Collaboration Section — below ClientDetailView */}
-            <div className="max-w-page mx-auto px-6 pb-32">
-                <div className="grid gap-6 lg:grid-cols-2 mt-6">
+            >
+                {/* Collaboration — rendered inside the profile's own page
+                    container, so the page has one column and one rhythm. */}
+                <div className="grid gap-4 lg:grid-cols-2">
                     {/* Document Requests */}
-                    <div className="pw-card rounded-2xl p-5">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-primary dark:text-mint" />
-                                {PROFILE_COPY.documentRequests[language]}
-                                {documentRequests.filter(r => r.status === "pending").length > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-kicker font-bold text-white">
-                                        {documentRequests.filter(r => r.status === "pending").length}
-                                    </span>
-                                )}
-                            </h3>
-                            <button
-                                type="button"
-                                onClick={() => setIsDocRequestFormOpen(true)}
-                                className="text-xs font-semibold text-primary dark:text-mint hover:underline"
-                            >
-                                + {PROFILE_COPY.newRequest[language]}
-                            </button>
-                        </div>
+                    <section className="pw-card pw-pad">
+                        <CardHead
+                            as="h3"
+                            icon={FileText}
+                            title={PROFILE_COPY.documentRequests[language]}
+                            meta={
+                                <span className="flex items-center gap-2">
+                                    {documentRequests.filter(r => r.status === "pending").length > 0 && (
+                                        <span className="rounded-full bg-status-warning-tint px-2 py-0.5 text-caption font-semibold tabular-nums text-status-warning">
+                                            {documentRequests.filter(r => r.status === "pending").length}
+                                        </span>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsDocRequestFormOpen(true)}
+                                        className="pw-soft-button"
+                                    >
+                                        + {PROFILE_COPY.newRequest[language]}
+                                    </button>
+                                </span>
+                            }
+                        />
                         {isLoadingDocs ? (
-                            <div className="space-y-2">
+                            <div className="mt-4 space-y-2">
                                 {[1, 2].map(i => <Skeleton key={i} className="h-14 w-full rounded-xl" />)}
                             </div>
                         ) : documentRequests.length === 0 ? (
-                            <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center py-4">
+                            <p className="mt-4 text-sm text-muted-foreground">
                                 {PROFILE_COPY.noDocumentRequests[language]}
                             </p>
                         ) : (
-                            <div className="space-y-2">
+                            <div className="mt-4 space-y-2">
                                 {documentRequests.map(request => (
                                     <DocumentRequestCard
                                         key={request.id}
@@ -380,38 +394,41 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </section>
 
                     {/* Proposals */}
-                    <div className="pw-card rounded-2xl p-5">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                                <Send className="h-5 w-5 text-primary dark:text-mint" />
-                                {PROFILE_COPY.proposals[language]}
-                                {proposals.filter(p => p.status === "pending").length > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold text-primary-foreground">
-                                        {proposals.filter(p => p.status === "pending").length}
-                                    </span>
-                                )}
-                            </h3>
-                            <button
-                                type="button"
-                                onClick={() => setIsProposalFormOpen(true)}
-                                className="text-xs font-semibold text-primary dark:text-mint hover:underline"
-                            >
-                                + {PROFILE_COPY.newProposal[language]}
-                            </button>
-                        </div>
+                    <section className="pw-card pw-pad">
+                        <CardHead
+                            as="h3"
+                            icon={Send}
+                            title={PROFILE_COPY.proposals[language]}
+                            meta={
+                                <span className="flex items-center gap-2">
+                                    {proposals.filter(p => p.status === "pending").length > 0 && (
+                                        <span className="rounded-full bg-status-info-tint px-2 py-0.5 text-caption font-semibold tabular-nums text-status-info">
+                                            {proposals.filter(p => p.status === "pending").length}
+                                        </span>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsProposalFormOpen(true)}
+                                        className="pw-soft-button"
+                                    >
+                                        + {PROFILE_COPY.newProposal[language]}
+                                    </button>
+                                </span>
+                            }
+                        />
                         {isLoadingProposals ? (
-                            <div className="space-y-2">
+                            <div className="mt-4 space-y-2">
                                 {[1, 2].map(i => <Skeleton key={i} className="h-32 w-full rounded-xl" />)}
                             </div>
                         ) : proposals.length === 0 ? (
-                            <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center py-4">
+                            <p className="mt-4 text-sm text-muted-foreground">
                                 {PROFILE_COPY.noProposals[language]}
                             </p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="mt-4 space-y-3">
                                 {proposals.map(proposal => (
                                     <ProposalView
                                         key={proposal.id}
@@ -421,35 +438,37 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </section>
                 </div>
 
                 {/* Inbox / Messages */}
-                <div className="pw-card rounded-2xl p-5 mt-6">
+                <section className="pw-card pw-pad">
                     <AgentInbox
                         relationshipId={initialCustomer.relationshipId}
                         onSelectThread={(threadId) => {
                             router.push(`/collaboration/threads/${threadId}`)
                         }}
                     />
-                </div>
+                </section>
 
-                {/* Relationship danger zone */}
-                <div className="mt-6 rounded-2xl border border-dashed border-red-500/25 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                {/* Relationship danger zone — a card like any other; the danger
+                    lives in the copy and the action's colour, not in a dashed
+                    red border around a box. */}
+                <section className="pw-card pw-pad flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                     <div>
-                        <h3 className="text-sm font-bold text-red-700 dark:text-red-400">{PROFILE_COPY.removeCustomer[language]}</h3>
-                        <p className="text-xs text-muted-foreground mt-1 max-w-md">{PROFILE_COPY.removeCustomerDesc[language]}</p>
+                        <h3 className="text-sm font-semibold text-status-danger">{PROFILE_COPY.removeCustomer[language]}</h3>
+                        <p className="mt-1 max-w-md text-caption text-muted-foreground">{PROFILE_COPY.removeCustomerDesc[language]}</p>
                     </div>
                     <button
                         type="button"
                         disabled={isRemovingCustomer}
                         onClick={() => setRemoveConfirmOpen(true)}
-                        className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
+                        className="pw-soft-button shrink-0 text-status-danger disabled:opacity-50"
                     >
                         {isRemovingCustomer ? PROFILE_COPY.removing[language] : PROFILE_COPY.removeCustomer[language]}
                     </button>
-                </div>
-            </div>
+                </section>
+            </ClientDetailView>
 
             <ConfirmDialog
                 open={removeConfirmOpen}

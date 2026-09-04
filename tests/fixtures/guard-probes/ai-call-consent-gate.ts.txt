@@ -1,0 +1,59 @@
+// Probe for tests/unit/ai-processing-consent-gate.test.ts — the source guard
+// that attributes every `.extractPolicyData(` / `.askQuestion(` call to its
+// enclosing named function and requires `aiProcessingConsentVersion` to be
+// read EARLIER in that function. Expected offenders: ungatedScanProbe and
+// lateReadProbe (a read AFTER the call is not a gate). gatedScanProbe and
+// gatedArrowProbe are clean; the object-literal method mirrors the gateway.
+
+import { db } from "@/lib/db"
+import { getAIService } from "@/lib/services/ai"
+
+// RED: sends the document with nobody's consent checked — the M2 shape.
+export async function ungatedScanProbe(formData: FormData) {
+    const file = formData.get("file") as File
+    const bytes = Buffer.from(await file.arrayBuffer()).toString("base64")
+    const aiService = getAIService()
+    return aiService.extractPolicyData({ data: bytes, mimeType: "application/pdf" }, { userId: "u" })
+}
+
+// GREEN: the owner's consent is read before the provider is called. The
+// return type carries a `;` inside an object type — the orchestrator's
+// extractBasicSummary shape, which once ended the header walk early.
+export async function gatedScanProbe(userId: string): Promise<{ status: "ok" | "blocked"; reason?: string }> {
+    const owner = await db.user.findUnique({
+        where: { id: userId },
+        select: { aiProcessingConsentVersion: true },
+    })
+    if (!owner?.aiProcessingConsentVersion) return { status: "blocked", reason: "ai_consent_missing" }
+    const aiService = getAIService()
+    await aiService.askQuestion(null, {} as any, "q", { userId })
+    return { status: "ok" }
+}
+
+// GREEN: arrow-function declaration, return type carries braces of its own.
+export const gatedArrowProbe = async (userId: string): Promise<{ answer: string }> => {
+    const me = await db.user.findUnique({ where: { id: userId }, select: { aiProcessingConsentVersion: true } })
+    if (!me?.aiProcessingConsentVersion) return { answer: "" }
+    const answer = await getAIService().askQuestion(null, {} as any, "q", { userId })
+    return { answer }
+}
+
+class ProbeService {
+    // RED: the read comes AFTER the call — the provider already has the bytes.
+    private async lateReadProbe(policyId: string): Promise<{ status: "ok" }> {
+        const answer = await getAIService().askQuestion(null, {} as any, "q", { policyId })
+        const owner = await db.user.findUnique({ where: { id: policyId }, select: { aiProcessingConsentVersion: true } })
+        return { status: owner ? "ok" : "ok", answer } as any
+    }
+}
+
+export const probeGateway = {
+    // GREEN: object-literal method (the aiGateway shape), gated inline.
+    async askQuestion(question: string, ctx: { userId: string; aiProcessingConsentVersion: string | null }) {
+        if (!ctx.aiProcessingConsentVersion) return null
+        const service = getAIService()
+        return service.askQuestion(null, {} as any, question, { userId: ctx.userId })
+    },
+}
+
+export { ProbeService }

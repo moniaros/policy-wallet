@@ -1,26 +1,49 @@
-
 "use client"
 
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { toast } from "sonner"
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { FileUp, FileText, Sparkles, UserRound, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { scanPolicyForResolution, commitScannedPolicy, requestAiConsent } from '@/app/(protected)/agent/actions'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
-import type { CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
+import { CardHead } from '@/components/dashboard/home/CardHead'
+import { Checkbox, Radio } from '@/components/ui/form'
+import { UploadDropzone } from '@/components/ui/UploadDropzone'
+import { AiConsentModal } from '@/components/ui/AiConsentModal'
+import { cn } from '@/lib/utils'
+import type { CandidateAiConsent, CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
 import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
 import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
+import { describeActionError } from "@/lib/i18n/action-error"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
-import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, displayPolicyNumber, scrubPolicyIdentity } from '@/lib/wallet/policy-identity'
 
-interface Props {
+interface BaseProps {
     isOpen: boolean
     onClose: () => void
     onSuccess?: () => void
-    /** When set, the customer is already known — skip the resolution step. */
-    presetCustomerId?: string
-    presetCustomerName?: string
 }
+
+/**
+ * Two entry points. The per-customer one (profile page) skips resolution, so
+ * nothing on the resolution path can tell the confirm step whether an AI
+ * analysis may run — the page has to say. The union makes that a compile
+ * error to forget: a preset customer ALWAYS travels with the consent verdict
+ * (deriveAiConsentState), never with a guess.
+ */
+type Props = BaseProps &
+    (
+        | { presetCustomerId?: undefined; presetCustomerName?: undefined; presetCustomerConsent?: undefined }
+        | {
+              /** The customer is already known — skip the resolution step. */
+              presetCustomerId: string
+              presetCustomerName?: string
+              /** Whether an AI analysis can run for that customer if the advisor uploads now. */
+              presetCustomerConsent: CandidateAiConsent
+          }
+    )
 
 type View = 'upload' | 'parsing' | 'resolve' | 'confirm' | 'duplicate' | 'success'
 
@@ -43,7 +66,13 @@ interface Extraction {
     premiumAmount?: number
 }
 
-type AnalysisState = 'started' | 'consent_required' | 'limit_reached' | 'none'
+/**
+ * What the action DECIDED about the analysis before it answered. `queued` is
+ * the only value under which this surface may say the analysis is running —
+ * the token gate is evaluated server-side before the result comes back, so
+ * «εκτελείται στο παρασκήνιο» is a report, never a promise.
+ */
+type AnalysisOutcome = 'queued' | 'blocked_quota' | 'blocked_consent' | 'none'
 
 // Derived from the server allowlist — this hand-written copy omitted HEIC, so
 // an agent could not select an iPhone photo of a client's policy.
@@ -52,19 +81,25 @@ const ACCEPTED = acceptAttribute('policy')
 // Kept below next.config.ts's serverActions.bodySizeLimit so the rejection is
 // ours (a clear, translated message) rather than the runtime's opaque failure.
 const SCAN_MAX_BYTES = 10 * 1024 * 1024
-const INPUT_CLASS = 'w-full h-12 px-5 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold'
 
-export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName }: Props) {
+export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName, presetCustomerConsent }: Props) {
     const { t } = useLanguage()
-    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
     const up = t.agentModals.uploadPolicy
     const ac = t.agentModals.addCustomer
     const router = useRouter()
-    const fileInputRef = useRef<HTMLInputElement>(null)
 
     const [view, setView] = useState<View>('upload')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    // Per-field messages from the commit action's Zod issues, keyed by the
+    // dotted path the schemas report: `customer.taxId` / `taxId` belong to the
+    // resolve step, `startDate` / `premiumAmount` to the confirm step. The
+    // modal jumps back to the step that owns the field and marks the input.
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    // Bumped on a pre-flight rejection so the dropzone remounts with an empty
+    // input — the shared dropzone owns its <input>, so this replaces the
+    // `e.target.value = ''` reset and lets the same file be picked again.
+    const [pickerKey, setPickerKey] = useState(0)
 
     const [scannedFile, setScannedFile] = useState<File | null>(null)
     const [resolution, setResolution] = useState<CustomerResolution | null>(null)
@@ -77,19 +112,55 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         insurerName: '', policyNumber: '', lineOfBusiness: 'motor', startDate: '', endDate: '', premiumAmount: '',
     })
     const [attestedAiConsent, setAttestedAiConsent] = useState(false)
+    // Pre-scan mandate attestation (M2 / D1). The scan sends the document to
+    // a model provider BEFORE any customer is resolved, so the agent attests
+    // — per scan, before the file is picked — that they hold the customer's
+    // mandate; the server refuses a scan without it and records it in the
+    // audit row. Distinct from `attestedAiConsent`, which is the customer's
+    // AI-consent attestation for the deep run on the confirm step.
+    const [preScanAttested, setPreScanAttested] = useState(false)
+    // The AGENT's OWN AI-processing consent, captured IN the flow. The scan
+    // refuses with AI_CONSENT_REQUIRED when the advisor has never consented
+    // (every fresh advisor account). That was a dead end: the message sent
+    // them to «ρυθμίσεις απορρήτου», the only consent page redirected to
+    // /dashboard afterwards, and the upload was gone. Now the file stays in
+    // `scannedFile`, the shared consent modal opens over this one, and an
+    // accept re-runs the scan with the same file and the same attestation.
+    const [consentOpen, setConsentOpen] = useState(false)
+    // Render the standalone /consent/ai page as a soft link under the refusal
+    // message — after a dismiss, or a refusal that survived the accept — so
+    // there is still a way out that is not a page reload.
+    const [consentLink, setConsentLink] = useState(false)
 
-    const [result, setResult] = useState<{ policyId?: string; customerId?: string; created?: boolean; analysisState?: AnalysisState } | null>(null)
+    // Two live dialogs would fight: both `useDialog` traps listen on
+    // `document`, so Tab would bounce between them and Escape would fire BOTH
+    // onCloses (stopPropagation does not stop a second listener on the same
+    // node) — closing this modal, and the file with it. Suspended while the
+    // consent modal is up; it re-arms, and re-takes focus, when that closes.
+    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen && !consentOpen)
+
+    const [result, setResult] = useState<{ policyId?: string; customerId?: string; created?: boolean; analysis?: AnalysisOutcome } | null>(null)
     const [consentSent, setConsentSent] = useState(false)
     const [duplicate, setDuplicate] = useState<DuplicatePolicy | null>(null)
 
     if (!isOpen) return null
 
     const reset = () => {
-        setView('upload'); setLoading(false); setError(null); setScannedFile(null)
+        setView('upload'); setLoading(false); setError(null); setFieldErrors({}); setScannedFile(null)
         setResolution(null); setSelected('new'); setResult(null); setConsentSent(false); setDuplicate(null)
         setCustomer({ name: '', surname: '', email: '', phone: '', taxId: '' })
         setPolicy({ insurerName: '', policyNumber: '', lineOfBusiness: 'motor', startDate: '', endDate: '', premiumAmount: '' })
         setAttestedAiConsent(false)
+        setPreScanAttested(false)
+        setConsentOpen(false); setConsentLink(false)
+    }
+
+    // Server codes this surface can name in the agent's language. Everything
+    // else falls through to the upload-rejection localiser and its fallback.
+    const scanErrorCopy = (code: string | null | undefined): string | null => {
+        if (code === 'AI_CONSENT_REQUIRED') return t.apiErrors.aiConsentRequired
+        if (code === 'AGENT_ATTESTATION_REQUIRED') return t.apiErrors.agentAttestationRequired
+        return null
     }
 
     const closeAll = () => { reset(); onClose() }
@@ -102,20 +173,28 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             phone: data.customerPhone || '',
             taxId: data.customerTaxId || '',
         })
+        // The providers substitute a placeholder identity (`Unknown Insurer`,
+        // `PENDING-…`) for an empty extraction. Pre-filled raw, it satisfied
+        // `required` and the agent committed a sentinel as the policy's name.
+        // Scrubbed, the field is empty and `required` makes the agent type it.
+        const identity = scrubPolicyIdentity({
+            insurerName: data.insurerName ?? '',
+            policyNumber: data.policyNumber ?? '',
+        })
         setPolicy({
-            insurerName: data.insurerName || '',
-            policyNumber: data.policyNumber || '',
+            insurerName: identity.insurerName,
+            policyNumber: identity.policyNumber,
             lineOfBusiness: data.lineOfBusiness || 'motor',
             startDate: data.startDate || '',
             endDate: data.endDate || '',
-            premiumAmount: data.premiumAmount != null ? String(data.premiumAmount) : '',
+            // A zero premium is the extractor's "not read", not a figure: the
+            // harness saw «0» pre-filled from an empty scan, which the agent
+            // would submit as the premium. Empty makes the field ask for it.
+            premiumAmount: data.premiumAmount ? String(data.premiumAmount) : '',
         })
     }
 
-    const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
+    const handleFile = async (file: File) => {
         // Size pre-flight BEFORE the upload starts. This is the only size check
         // that can fire ahead of Next's Server Action body limit — past that the
         // runtime kills the request before the action runs, so the server's own
@@ -125,15 +204,38 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         if (tooBig) {
             setError(uploadRejectionMessage(t, tooBig, null, SCAN_MAX_BYTES))
             setView('upload')
-            e.target.value = ''
+            setPickerKey((k) => k + 1)
+            return
+        }
+
+        // The dropzone is disabled until the attestation is ticked, so this is
+        // belt-and-braces: nothing is sent without it, and the server refuses
+        // anyway (AGENT_ATTESTATION_REQUIRED).
+        if (!preScanAttested) {
+            setError(t.apiErrors.agentAttestationRequired)
+            setView('upload')
             return
         }
 
         setScannedFile(file)
-        setView('parsing'); setLoading(true); setError(null)
+        await runScan(file)
+    }
+
+    /**
+     * The billable scan, split from the pre-flight so the in-flow consent
+     * accept can re-run it with the SAME file and the SAME attestation —
+     * nothing is re-picked and nothing is re-ticked.
+     *
+     * `afterConsent` marks the automatic retry: a refusal that survives a
+     * consent the agent just recorded is shown as the message plus the
+     * standalone page, never as a second modal — asking twice gains nothing.
+     */
+    const runScan = async (file: File, afterConsent = false) => {
+        setView('parsing'); setLoading(true); setError(null); setConsentLink(false)
 
         const fd = new FormData()
         fd.append('file', file)
+        fd.append('attested', 'true')
 
         // A Server Action can fail at the TRANSPORT layer — before the action
         // body ever runs — and then it rejects instead of returning a result:
@@ -154,8 +256,14 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setLoading(false)
 
         if (!res.success) {
-            setError(uploadRejectionMessage(t, (res as any).errorCode, res.error || up.scanError, SCAN_MAX_BYTES))
             setView('upload')
+            if (res.error === 'AI_CONSENT_REQUIRED') {
+                // The advisor's own consent — ask for it here, over the kept
+                // file; the retry runs from the modal's onConsented.
+                if (!afterConsent) { setConsentOpen(true); return }
+                setConsentLink(true)
+            }
+            setError(scanErrorCopy(res.error) ?? uploadRejectionMessage(t, (res as any).errorCode, res.error || up.scanError, SCAN_MAX_BYTES))
             return
         }
 
@@ -217,14 +325,31 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         }
 
         if (!res.success) {
-            setError(uploadRejectionMessage(t, (res as any).errorCode, (res as any).error || up.genericError, SCAN_MAX_BYTES))
+            const failure = res as { error?: string; errorCode?: string; details?: Array<{ path: string; code: string; message: string }> }
+            // A file-level rejection carries its own reason code; everything
+            // else is an action code the dictionary knows — never the literal.
+            if (failure.errorCode) {
+                setError(uploadRejectionMessage(t, failure.errorCode, up.genericError, SCAN_MAX_BYTES))
+                return
+            }
+            const described = describeActionError(t, failure.error, failure.details, failure as Record<string, unknown>)
+            setError(described.message)
+            setFieldErrors(described.fieldErrors)
+            // A field the resolve step owns (the new customer's identity, or
+            // the ΑΦΜ on an attach) sends the agent back to that step; the
+            // policy fields stay here on confirm. The per-customer entry has
+            // no resolve step, so it stays put and shows the message.
+            const ownedByResolve = Object.keys(described.fieldErrors).some(
+                (path) => path.startsWith('customer.') || path === 'taxId' || path === 'customerId',
+            )
+            if (ownedByResolve && !presetCustomerId) setView('resolve')
             return
         }
         setResult({
             policyId: (res as any).policyId,
             customerId: (res as any).customerId,
             created: (res as any).created,
-            analysisState: (res as any).analysisState,
+            analysis: (res as any).analysis,
         })
         setView('success')
         onSuccess?.()
@@ -250,14 +375,22 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
     const isCreateNew = selected === 'new'
     // AI-consent state of whoever the policy is about to be attached to. A NEW
-    // customer is created unactivated, so attestation applies; a preset customer
-    // (per-client entry point) carries no resolution, so leave the existing
-    // behaviour rather than guess.
-    const selectedConsent: CustomerCandidate['aiConsent'] | null = isCreateNew
-        ? 'attestable'
-        : resolution?.candidates.find((c) => c.id === selected)?.aiConsent ?? null
+    // customer is created unactivated, so attestation applies; a resolved
+    // candidate carries its own verdict; a preset customer (per-client entry
+    // point) carries the verdict the page derived. Null only while nothing is
+    // selected, which the confirm step cannot reach.
+    const selectedConsent: CandidateAiConsent | null = presetCustomerId
+        ? presetCustomerConsent
+        : isCreateNew
+            ? 'attestable'
+            : resolution?.candidates.find((c) => c.id === selected)?.aiConsent ?? null
+    // A new customer needs a name and a way to identify them: an email, or
+    // (D3) an ΑΦΜ plus a phone — the server applies the real checksum and
+    // Greek-mobile rules and sends the field back here if they fail.
     const canContinueResolve = selected !== '' && (
-        selected !== 'new' || Boolean(customer.email.trim() && customer.name.trim())
+        selected !== 'new' || Boolean(
+            customer.name.trim() && (customer.email.trim() || (customer.taxId.trim() && customer.phone.trim()))
+        )
     )
     // The confirm submit is a plain button (not a <form>), so the inputs'
     // `required` isn't enforced — guard the required policy fields here, else an
@@ -266,269 +399,396 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         policy.insurerName.trim() && policy.policyNumber.trim() && policy.startDate && policy.endDate
     )
 
+    // Upload → (resolve) → confirm. The per-customer entry skips resolution.
+    const totalSteps = presetCustomerId ? 2 : 3
+    const confirmStep = presetCustomerId ? 2 : 3
+    const stepCaption = (current: number) =>
+        t.common.stepOf.replace('{current}', String(current)).replace('{total}', String(totalSteps))
+
+    // The thin track under the card head — the onboarding's progress device,
+    // one segment per step, described once as a progressbar. A render helper,
+    // not a nested component, so the form does not remount on every keystroke.
+    const stepTrack = (current: number, meta?: string) => (
+        <div className="mt-3">
+            <div className="flex items-center justify-between gap-2 text-caption text-muted-foreground">
+                <span className="font-semibold">{stepCaption(current)}</span>
+                {meta && <span>{meta}</span>}
+            </div>
+            <div
+                className="mt-1.5 flex gap-1"
+                role="progressbar"
+                aria-valuenow={current}
+                aria-valuemin={1}
+                aria-valuemax={totalSteps}
+                aria-label={stepCaption(current)}
+            >
+                {Array.from({ length: totalSteps }, (_, i) => (
+                    <span key={i} className={`h-1 flex-1 rounded-full ${i < current ? "bg-primary" : "bg-muted"}`} />
+                ))}
+            </div>
+        </div>
+    )
+
+    const candidateRow = (checked: boolean) =>
+        `pw-subcard px-3 transition-shadow ${checked ? 'ring-2 ring-primary' : ''}`
+
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" onClick={closeAll} />
+        // The shared Modal (the consent dialog) sits at z-50 and portals to
+        // <body>; this root is a stacking context of its own, so it drops
+        // beneath that while the consent modal is up and the kept upload stays
+        // visible under the consent backdrop instead of hiding the dialog.
+        <div className={cn("fixed inset-0 flex items-center justify-center p-4", consentOpen ? "z-40" : "z-[100]")}>
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeAll} />
 
-            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="upload-policy-title" tabIndex={-1} className="relative w-full max-w-2xl bg-white dark:bg-neutral-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
-                <div className="p-12">
-                    {/* ── UPLOAD ── */}
-                    {view === 'upload' && (
-                        <div className="space-y-10">
-                            <header>
-                                <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.kicker}</span>
-                                <h2 id="upload-policy-title" className="text-3xl font-black text-foreground tracking-tighter mt-3 mb-2">
-                                    {up.title} <span className="text-neutral-500 dark:text-neutral-400 italic">{up.titleAccent}</span>
-                                </h2>
-                                <p className="text-base text-muted-foreground font-medium">{up.desc}</p>
-                            </header>
+            <AiConsentModal
+                isOpen={consentOpen}
+                onClose={() => {
+                    // Dismissed: the existing message plus the standalone
+                    // page. The picker remounts so the same file can be
+                    // chosen again once consent exists; `preScanAttested`
+                    // and the file itself are untouched.
+                    setConsentOpen(false)
+                    setError(t.apiErrors.aiConsentRequired)
+                    setConsentLink(true)
+                    setPickerKey((k) => k + 1)
+                }}
+                onConsented={() => {
+                    // Recorded server-side (the modal resolves only after
+                    // POST /api/v1/consents succeeds) — re-run the scan
+                    // with the file that was kept, attestation included.
+                    setConsentOpen(false)
+                    const file = scannedFile
+                    if (file) void runScan(file, true)
+                }}
+                source="agent_upload"
+            />
 
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="w-full p-12 rounded-[40px] border-2 border-dashed border-neutral-200 dark:border-neutral-700 hover:border-primary dark:hover:border-mint transition-all bg-neutral-50/50 dark:bg-neutral-800/30 flex flex-col items-center gap-4 group"
-                            >
-                                <div className="w-14 h-14 rounded-2xl bg-primary text-white dark:text-[#1A2420] flex items-center justify-center shadow-xl shadow-primary/25 group-hover:scale-110 transition-transform">
-                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-base font-black text-foreground">{up.uploadCta}</p>
-                                    <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-1">{up.dropHint}</p>
-                                    <p className="text-kicker text-neutral-500 dark:text-neutral-400 font-medium mt-2 uppercase tracking-widest">{up.uploadHint}</p>
-                                </div>
-                                <input type="file" ref={fileInputRef} onChange={handleFile} accept={ACCEPTED} className="hidden" />
-                            </button>
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="upload-policy-title" tabIndex={-1} className="pw-card pw-pad relative max-h-[90vh] w-full max-w-2xl overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
+                {/* ── UPLOAD ── */}
+                {view === 'upload' && (
+                    <div className="space-y-5">
+                        <header>
+                            <CardHead icon={FileUp} id="upload-policy-title" title={`${up.title} ${up.titleAccent}`} meta={up.kicker} />
+                            <p className="mt-2 text-sm text-muted-foreground">{up.desc}</p>
+                            {stepTrack(1)}
+                        </header>
 
-                            {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
+                        {/* Mandate attestation BEFORE the scan. The document
+                            reaches a model provider before the customer is even
+                            resolved, so the lawful basis is established here:
+                            the agent's own recorded AI consent (server-side)
+                            plus this per-scan attestation, sent as attested=true
+                            and written into the scan's audit row. The dropzone
+                            stays disabled until it is ticked. */}
+                        <div className="pw-subcard px-4 py-1.5" data-testid="upload-policy-prescan-attestation">
+                            <Checkbox
+                                checked={preScanAttested}
+                                onChange={e => setPreScanAttested(e.target.checked)}
+                                label={<span className="font-semibold">{up.preScanAttestation}</span>}
+                                hint={up.preScanAttestationHint}
+                            />
+                        </div>
 
-                            <button onClick={closeAll} className="w-full py-4 text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 transition-colors">
+                        {/* The shared dropzone: the old picker button promised
+                            «σύρετε και αποθέστε εδώ» and accepted no drop. */}
+                        <div>
+                            <UploadDropzone
+                                key={pickerKey}
+                                onFiles={(files) => { const file = files[0]; if (file) void handleFile(file) }}
+                                accept={ACCEPTED}
+                                multiple={false}
+                                inputId="upload-policy-file"
+                                title={up.uploadCta}
+                                hint={up.dropHint}
+                                disabled={!preScanAttested}
+                            />
+                            <p className="mt-2 text-center text-caption text-muted-foreground">{up.uploadHint}</p>
+                        </div>
+
+                        {error && (
+                            <div className="space-y-3">
+                                <p role="alert" className="text-caption font-semibold text-status-danger">{error}</p>
+                                {/* The consent modal was dismissed (or the scan still
+                                    refused after it): the message alone pointed at a
+                                    settings page and stopped. A soft link — the
+                                    primary of this screen is the dropzone's CTA. */}
+                                {consentLink && (
+                                    <Link href="/consent/ai" className="pw-soft-button" data-testid="upload-policy-agent-consent-link">
+                                        {up.agentConsentLink}
+                                    </Link>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
+                            <button type="button" onClick={closeAll} className="pw-soft-button">
                                 {up.cancel}
                             </button>
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    {/* ── PARSING ── */}
-                    {view === 'parsing' && (
-                        <div className="py-20 text-center">
-                            <div className="relative w-24 h-24 mx-auto mb-10">
-                                <div className="absolute inset-0 rounded-full border-4 border-primary/10 border-t-primary animate-spin" />
-                                <div className="absolute inset-4 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:text-mint">
-                                    <svg className="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.989-2.386l-.548-.547z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                </div>
+                {/* ── PARSING ── */}
+                {view === 'parsing' && (
+                    <div className="py-10 text-center">
+                        <div className="relative mx-auto mb-6 h-20 w-20">
+                            <div className="absolute inset-0 animate-spin rounded-full border-4 border-primary/10 border-t-primary" />
+                            <div className="absolute inset-3 grid place-items-center rounded-full bg-primary/10 text-primary">
+                                <Sparkles className="h-7 w-7 animate-pulse" aria-hidden="true" />
                             </div>
-                            <h2 className="text-2xl font-black text-foreground tracking-tighter mb-2">{up.analyzingTitle}</h2>
-                            <p className="text-neutral-500 dark:text-neutral-400 font-medium">{up.analyzingDesc}</p>
                         </div>
-                    )}
+                        <h2 id="upload-policy-title" className="text-title font-semibold text-foreground">{up.analyzingTitle}</h2>
+                        <p className="mt-1 text-sm text-muted-foreground">{up.analyzingDesc}</p>
+                    </div>
+                )}
 
-                    {/* ── RESOLVE ── */}
-                    {view === 'resolve' && resolution && (
-                        <div className="space-y-8">
-                            <header>
-                                <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.resolveKicker}</span>
-                                <h2 className="text-2xl font-black text-foreground tracking-tighter mt-2">
-                                    {up.resolveTitle} <span className="text-neutral-500 dark:text-neutral-400 italic">{up.resolveAccent}</span>
-                                </h2>
-                            </header>
+                {/* ── RESOLVE ── */}
+                {view === 'resolve' && resolution && (
+                    <div className="space-y-5">
+                        <header>
+                            <CardHead icon={UserRound} id="upload-policy-title" title={`${up.resolveTitle} ${up.resolveAccent}`} meta={up.resolveKicker} />
+                            {stepTrack(2)}
+                        </header>
 
-                            {/* Extracted identity card */}
-                            <div className="p-6 rounded-[28px] bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-                                <p className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3">{up.extractedTitle}</p>
-                                <div className="grid grid-cols-2 gap-3 text-sm">
-                                    <div><span className="text-neutral-500 dark:text-neutral-400 font-medium">{up.nameLabel}: </span><span className="font-bold text-foreground">{[customer.name, customer.surname].filter(Boolean).join(' ') || '—'}</span></div>
-                                    <div><span className="text-neutral-500 dark:text-neutral-400 font-medium">{up.afmLabel}: </span><span className="font-bold text-foreground">{customer.taxId || '—'}</span></div>
-                                    <div><span className="text-neutral-500 dark:text-neutral-400 font-medium">{up.emailLabel}: </span><span className="font-bold text-foreground">{customer.email || '—'}</span></div>
-                                    <div><span className="text-neutral-500 dark:text-neutral-400 font-medium">{up.phoneLabel}: </span><span className="font-bold text-foreground">{customer.phone || '—'}</span></div>
-                                </div>
-                            </div>
+                        {/* What the document said — a summary sub-card. */}
+                        <div className="pw-subcard p-4">
+                            <p className="text-caption font-semibold text-muted-foreground">{up.extractedTitle}</p>
+                            <dl className="mt-2 grid grid-cols-1 gap-x-4 gap-y-2 text-sm sm:grid-cols-2">
+                                <div className="min-w-0 [overflow-wrap:anywhere]"><dt className="inline text-muted-foreground">{up.nameLabel}: </dt><dd className="inline font-semibold text-foreground">{[customer.name, customer.surname].filter(Boolean).join(' ') || '—'}</dd></div>
+                                <div className="min-w-0 [overflow-wrap:anywhere]"><dt className="inline text-muted-foreground">{up.afmLabel}: </dt><dd className="inline font-semibold text-foreground">{customer.taxId || '—'}</dd></div>
+                                <div className="min-w-0 [overflow-wrap:anywhere]"><dt className="inline text-muted-foreground">{up.emailLabel}: </dt><dd className="inline font-semibold text-foreground">{customer.email || '—'}</dd></div>
+                                <div className="min-w-0 [overflow-wrap:anywhere]"><dt className="inline text-muted-foreground">{up.phoneLabel}: </dt><dd className="inline font-semibold text-foreground">{customer.phone || '—'}</dd></div>
+                            </dl>
+                        </div>
 
-                            {resolution.conflict && (
-                                <p className="text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-2xl px-4 py-3">{up.conflictNote}</p>
-                            )}
+                        {resolution.conflict && (
+                            <p role="note" className="pw-subcard flex items-start gap-2 p-3 text-caption font-semibold text-status-warning">
+                                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                                <span>{up.conflictNote}</span>
+                            </p>
+                        )}
 
-                            {resolution.candidates.length === 0 ? (
-                                <p className="text-sm font-bold text-foreground">
-                                    {up.newCustomerTitle}. <span className="font-medium text-neutral-500 dark:text-neutral-400">{up.newCustomerDesc}</span>
-                                </p>
-                            ) : (
-                                <div className="space-y-3">
-                                    <p className="text-sm font-bold text-foreground">
+                        {resolution.candidates.length === 0 ? (
+                            <p className="text-sm font-semibold text-foreground">
+                                {up.newCustomerTitle}. <span className="font-normal text-muted-foreground">{up.newCustomerDesc}</span>
+                            </p>
+                        ) : (
+                            <div className="space-y-2" role="radiogroup" aria-labelledby="upload-policy-candidates-title">
+                                <div>
+                                    <p id="upload-policy-candidates-title" className="text-sm font-semibold text-foreground">
                                         {resolution.exactMatch && !resolution.conflict ? up.matchedTitle : up.multipleTitle}
                                     </p>
-                                    <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium -mt-2">
+                                    <p className="text-caption text-muted-foreground">
                                         {resolution.exactMatch && !resolution.conflict ? up.matchedDesc : up.multipleDesc}
                                     </p>
-                                    {resolution.candidates.map((c: CustomerCandidate) => (
-                                        <label key={c.id} className={`flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${selected === c.id ? 'border-primary bg-primary-soft dark:bg-primary/15' : 'border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/40'}`}>
-                                            <input type="radio" name="candidate" checked={selected === c.id} onChange={() => setSelected(c.id)} className="w-4 h-4 text-primary focus:ring-primary/30" />
-                                            <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-bold text-foreground truncate">{c.name || c.email}</p>
-                                                <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium truncate">
-                                                    {c.email}{c.taxIdMasked ? ` · ${up.afmLabel} ${c.taxIdMasked}` : ''} · {c.policyCount} {up.policiesLabel}
-                                                </p>
-                                                {/* Say BEFORE the upload whether an analysis can run.
-                                                    Discovering "consent required" only afterwards cost a
-                                                    scan, a slice of the token budget and ~90s, and left the
-                                                    advisor with a policy carrying no intelligence. */}
-                                                {c.aiConsent === 'blocked' && (
-                                                    <p className="mt-1 text-xs font-bold text-amber-700 dark:text-amber-400">
-                                                        {up.consentBlockedHint}
-                                                    </p>
-                                                )}
-                                                {c.aiConsent === 'attestable' && (
-                                                    <p className="mt-1 text-xs font-bold text-neutral-500 dark:text-neutral-400">
-                                                        {up.consentAttestableHint}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </label>
+                                </div>
+                                {/* Each candidate is a sub-card row; the shared Radio
+                                    makes the whole row the target and the ring, not
+                                    colour alone, says which one is chosen. The group
+                                    is named by its heading so a screen reader hears
+                                    which question the radios answer. */}
+                                {resolution.candidates.map((c: CustomerCandidate) => (
+                                    <div key={c.id} className={candidateRow(selected === c.id)}>
+                                        <Radio
+                                            name="candidate"
+                                            checked={selected === c.id}
+                                            onChange={() => setSelected(c.id)}
+                                            label={<span className="font-semibold [overflow-wrap:anywhere]">{c.name || c.email}</span>}
+                                            hint={
+                                                <>
+                                                    <span className="block [overflow-wrap:anywhere]">
+                                                        {c.email}{c.taxIdMasked ? ` · ${up.afmLabel} ${c.taxIdMasked}` : ''} · {c.policyCount} {up.policiesLabel}
+                                                    </span>
+                                                    {/* Say BEFORE the upload whether an analysis can run.
+                                                        Discovering "consent required" only afterwards cost a
+                                                        scan, a slice of the token budget and ~90s, and left the
+                                                        advisor with a policy carrying no intelligence. */}
+                                                    {c.aiConsent === 'blocked' && (
+                                                        <span className="mt-1 block font-semibold text-status-warning">{up.consentBlockedHint}</span>
+                                                    )}
+                                                    {c.aiConsent === 'attestable' && (
+                                                        <span className="mt-1 block font-semibold">{up.consentAttestableHint}</span>
+                                                    )}
+                                                </>
+                                            }
+                                        />
+                                    </div>
+                                ))}
+                                <div className={candidateRow(selected === 'new')}>
+                                    <Radio
+                                        name="candidate"
+                                        checked={selected === 'new'}
+                                        onChange={() => setSelected('new')}
+                                        label={<span className="font-semibold">{up.createNewOption}</span>}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Editable identity fields when creating a new customer */}
+                        {isCreateNew && (
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 animate-in slide-in-from-top-2 duration-200">
+                                <Field label={ac.firstName} error={fieldErrors['customer.name']}><input required value={customer.name} onChange={e => setCustomer({ ...customer, name: e.target.value })} placeholder={ac.phFirstName} className="pw-input" /></Field>
+                                <Field label={ac.lastName} error={fieldErrors['customer.surname']}><input value={customer.surname} onChange={e => setCustomer({ ...customer, surname: e.target.value })} placeholder={ac.phLastName} className="pw-input" /></Field>
+                                {/* Email is optional (D3): without it the customer is
+                                    identified by ΑΦΜ + Greek mobile and cannot be invited
+                                    until one is added. */}
+                                <Field label={ac.emailAddress} error={fieldErrors['customer.email']} hint={ac.emailOptionalHint}><input type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} placeholder={ac.phEmail} className="pw-input" /></Field>
+                                {/* The manual door always had a phone; this door dropped it,
+                                    so a scanned phone was shown above and then thrown away. */}
+                                <Field label={ac.phoneNumber} error={fieldErrors['customer.phone']}><input type="tel" value={customer.phone} onChange={e => setCustomer({ ...customer, phone: e.target.value })} placeholder="+30 690 000 0000" className="pw-input" /></Field>
+                                <Field label={ac.taxId} error={fieldErrors['customer.taxId']}><input value={customer.taxId} onChange={e => setCustomer({ ...customer, taxId: e.target.value })} placeholder={ac.phTaxId} className="pw-input" /></Field>
+                            </div>
+                        )}
+
+                        {error && <p role="alert" className="text-caption font-semibold text-status-danger">{error}</p>}
+
+                        <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row">
+                            <button type="button" onClick={() => setView('upload')} className="pw-soft-button flex-1">{up.back}</button>
+                            <button type="button" disabled={!canContinueResolve} onClick={() => setView('confirm')} className="pw-primary-button flex-1">
+                                {isCreateNew ? up.createNewOption : up.confirmCustomer}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── CONFIRM ── */}
+                {view === 'confirm' && (
+                    <div className="space-y-5">
+                        <header>
+                            <CardHead icon={FileText} id="upload-policy-title" title={`${up.confirmTitle} ${up.confirmAccent}`} meta={up.confirmKicker} />
+                            {presetCustomerName && <p className="mt-1 text-caption text-muted-foreground">{presetCustomerName}</p>}
+                            {stepTrack(confirmStep)}
+                        </header>
+
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <Field label={ac.insurer} error={fieldErrors.insurerName}><input required value={policy.insurerName} onChange={e => setPolicy({ ...policy, insurerName: e.target.value })} placeholder={ac.phInsurer} className="pw-input" /></Field>
+                            <Field label={ac.policyNumber} error={fieldErrors.policyNumber}><input required value={policy.policyNumber} onChange={e => setPolicy({ ...policy, policyNumber: e.target.value })} placeholder="POL-123456" className="pw-input" /></Field>
+                            <Field label={ac.lineOfBusiness} error={fieldErrors.lineOfBusiness}>
+                                <select value={policy.lineOfBusiness} onChange={e => setPolicy({ ...policy, lineOfBusiness: e.target.value })} className="pw-input appearance-none">
+                                    {WRITE_BRANCH_IDS.map((id) => (
+                                        <option key={id} value={id}>{t.policyTypes[id] ?? id}</option>
                                     ))}
-                                    <label className={`flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${selected === 'new' ? 'border-primary bg-primary-soft dark:bg-primary/15' : 'border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/40'}`}>
-                                        <input type="radio" name="candidate" checked={selected === 'new'} onChange={() => setSelected('new')} className="w-4 h-4 text-primary focus:ring-primary/30" />
-                                        <span className="text-sm font-bold text-foreground">{up.createNewOption}</span>
-                                    </label>
-                                </div>
-                            )}
-
-                            {/* Editable identity fields when creating a new customer */}
-                            {isCreateNew && (
-                                <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2 duration-200">
-                                    <input required value={customer.name} onChange={e => setCustomer({ ...customer, name: e.target.value })} placeholder={ac.phFirstName} className="pw-input" />
-                                    <input value={customer.surname} onChange={e => setCustomer({ ...customer, surname: e.target.value })} placeholder={ac.phLastName} className="pw-input" />
-                                    <input required type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} placeholder="john@example.com" className="pw-input" />
-                                    <input value={customer.taxId} onChange={e => setCustomer({ ...customer, taxId: e.target.value })} placeholder={ac.phTaxId} className="pw-input" />
-                                </div>
-                            )}
-
-                            {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
-
-                            <div className="flex gap-4">
-                                <button onClick={() => setView('upload')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.back}</button>
-                                <button disabled={!canContinueResolve} onClick={() => setView('confirm')} className="flex-[2] px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-kicker font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-40">
-                                    {isCreateNew ? up.createNewOption : up.confirmCustomer}
-                                </button>
-                            </div>
+                                </select>
+                            </Field>
+                            <Field label={ac.premium} error={fieldErrors.premiumAmount}><input type="number" value={policy.premiumAmount} onChange={e => setPolicy({ ...policy, premiumAmount: e.target.value })} placeholder="0.00" className="pw-input" /></Field>
+                            <Field label={ac.startDate} error={fieldErrors.startDate}><input required type="date" value={policy.startDate} onChange={e => setPolicy({ ...policy, startDate: e.target.value })} className="pw-input" /></Field>
+                            <Field label={ac.endDate} error={fieldErrors.endDate}><input required type="date" value={policy.endDate} onChange={e => setPolicy({ ...policy, endDate: e.target.value })} className="pw-input" /></Field>
                         </div>
-                    )}
 
-                    {/* ── CONFIRM ── */}
-                    {view === 'confirm' && (
-                        <div className="space-y-8">
-                            <header>
-                                <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.confirmKicker}</span>
-                                <h2 className="text-2xl font-black text-foreground tracking-tighter mt-2">
-                                    {up.confirmTitle} <span className="text-neutral-500 dark:text-neutral-400 italic">{up.confirmAccent}</span>
-                                </h2>
-                                {presetCustomerName && <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-1">{presetCustomerName}</p>}
-                            </header>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <Field label={ac.insurer}><input required value={policy.insurerName} onChange={e => setPolicy({ ...policy, insurerName: e.target.value })} placeholder={ac.phInsurer} className={INPUT_CLASS} /></Field>
-                                <Field label={ac.policyNumber}><input required value={policy.policyNumber} onChange={e => setPolicy({ ...policy, policyNumber: e.target.value })} placeholder="POL-123456" className={INPUT_CLASS} /></Field>
-                                <Field label={ac.lineOfBusiness}>
-                                    <select value={policy.lineOfBusiness} onChange={e => setPolicy({ ...policy, lineOfBusiness: e.target.value })} className={`${INPUT_CLASS} appearance-none`}>
-                                        {WRITE_BRANCH_IDS.map((id) => (
-                                            <option key={id} value={id}>{t.policyTypes[id] ?? id}</option>
-                                        ))}
-                                    </select>
-                                </Field>
-                                <Field label={ac.premium}><input type="number" value={policy.premiumAmount} onChange={e => setPolicy({ ...policy, premiumAmount: e.target.value })} placeholder="0.00" className={INPUT_CLASS} /></Field>
-                                <Field label={ac.startDate}><input required type="date" value={policy.startDate} onChange={e => setPolicy({ ...policy, startDate: e.target.value })} className={INPUT_CLASS} /></Field>
-                                <Field label={ac.endDate}><input required type="date" value={policy.endDate} onChange={e => setPolicy({ ...policy, endDate: e.target.value })} className={INPUT_CLASS} /></Field>
-                            </div>
-
-                            {/* Attestation only exists for accounts the customer has
-                                never activated. Offering the checkbox for a live
-                                account was a control that silently did nothing: the
-                                server refuses to attest on their behalf (correctly),
-                                so the advisor ticked it and still got no analysis.
-                                Show the real next step instead. */}
-                            {selectedConsent === 'blocked' ? (
-                                <div
-                                    role="note"
-                                    className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/40"
-                                >
-                                    <span className="block text-sm font-black text-amber-900 dark:text-amber-300">{up.consentBlockedTitle}</span>
-                                    <span className="block text-xs text-amber-800 dark:text-amber-400/90 font-medium mt-0.5">{up.consentBlockedDesc}</span>
+                        {/* Three states, the same on both entry points. Attestation
+                            only exists for accounts the customer has never
+                            activated; offering the checkbox for a live account was
+                            a control that silently did nothing (the server refuses
+                            to attest on their behalf, correctly), and offering it
+                            for a customer whose consent is already on file asked
+                            the advisor to vouch for nothing. Show the real next
+                            step instead. */}
+                        {selectedConsent === 'blocked' ? (
+                            <div role="note" data-testid="upload-policy-consent-blocked" className="pw-subcard flex items-start gap-3 p-4">
+                                <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-status-warning" aria-hidden="true" />
+                                <div className="min-w-0">
+                                    <span className="block text-sm font-semibold text-foreground">{up.consentBlockedTitle}</span>
+                                    <span className="mt-0.5 block text-caption text-muted-foreground">{up.consentBlockedDesc}</span>
                                 </div>
-                            ) : (
-                                <label className="flex items-start gap-3 cursor-pointer p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-                                    <input type="checkbox" checked={attestedAiConsent} onChange={e => setAttestedAiConsent(e.target.checked)} className="w-5 h-5 mt-0.5 rounded-lg border-neutral-300 text-primary focus:ring-primary/30" />
-                                    <span>
-                                        <span className="block text-sm font-black text-foreground">{up.consentLabel}</span>
-                                        <span className="block text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-0.5">{up.consentDesc}</span>
-                                    </span>
-                                </label>
-                            )}
-
-                            {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
-
-                            <div className="flex gap-4">
-                                <button onClick={() => setView(presetCustomerId ? 'upload' : 'resolve')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.back}</button>
-                                <button disabled={loading || !canSubmitPolicy} onClick={() => handleSubmit()} className="flex-[2] px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-kicker font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50">
-                                    {loading ? up.submitting : (isCreateNew ? up.submitCreate : up.submitAttach)}
-                                </button>
                             </div>
+                        ) : selectedConsent === 'granted' ? (
+                            <div role="note" data-testid="upload-policy-consent-granted" className="pw-subcard flex items-start gap-3 p-4">
+                                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-status-success" aria-hidden="true" />
+                                <div className="min-w-0">
+                                    <span className="block text-sm font-semibold text-foreground">{up.consentGrantedTitle}</span>
+                                    <span className="mt-0.5 block text-caption text-muted-foreground">{up.consentGrantedDesc}</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="pw-subcard px-4 py-1.5" data-testid="upload-policy-consent-attestable">
+                                <Checkbox
+                                    checked={attestedAiConsent}
+                                    onChange={e => setAttestedAiConsent(e.target.checked)}
+                                    label={<span className="font-semibold">{up.consentLabel}</span>}
+                                    hint={up.consentDesc}
+                                />
+                            </div>
+                        )}
+
+                        {error && <p role="alert" className="text-caption font-semibold text-status-danger">{error}</p>}
+
+                        <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row">
+                            <button type="button" onClick={() => setView(presetCustomerId ? 'upload' : 'resolve')} className="pw-soft-button flex-1">{up.back}</button>
+                            <button type="button" disabled={loading || !canSubmitPolicy} onClick={() => handleSubmit()} className="pw-primary-button flex-1">
+                                {loading ? up.submitting : (isCreateNew ? up.submitCreate : up.submitAttach)}
+                            </button>
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    {/* ── DUPLICATE WARNING ── */}
-                    {view === 'duplicate' && duplicate && (
-                        <div className="space-y-8">
-                            <header>
-                                <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 flex items-center justify-center mb-5">
-                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                </div>
-                                <h2 className="text-2xl font-black text-foreground tracking-tighter">{up.duplicateTitle}</h2>
-                                <p className="text-sm text-muted-foreground font-medium mt-2">{up.duplicateDesc}</p>
-                            </header>
+                {/* ── DUPLICATE WARNING ── */}
+                {view === 'duplicate' && duplicate && (
+                    <div className="space-y-5">
+                        <header>
+                            <CardHead icon={AlertTriangle} id="upload-policy-title" title={up.duplicateTitle} />
+                            <p className="mt-2 text-sm text-muted-foreground">{up.duplicateDesc}</p>
+                        </header>
 
-                            <div className="p-6 rounded-[28px] bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-                                <p className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3">{up.duplicateExistingLabel}</p>
-                                <p className="text-base font-black text-foreground">{displayPolicyNumber(duplicate.policyNumber)} <span className="text-neutral-500 dark:text-neutral-400 font-medium">· {displayInsurerName(duplicate.insurerName)}</span></p>
-                            </div>
-
-                            {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
-
-                            <div className="flex gap-4">
-                                <button disabled={loading} onClick={() => setView('confirm')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all disabled:opacity-50">{up.duplicateCancel}</button>
-                                <button disabled={loading} onClick={() => handleSubmit(true)} className="flex-[2] px-6 py-4 bg-amber-500 text-white rounded-[20px] text-kicker font-black uppercase tracking-widest shadow-xl hover:bg-amber-600 transition-all disabled:opacity-50">
-                                    {loading ? up.submitting : up.duplicateKeep}
-                                </button>
-                            </div>
+                        <div className="pw-subcard p-4">
+                            <p className="text-caption font-semibold text-muted-foreground">{up.duplicateExistingLabel}</p>
+                            <p className="mt-1 text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
+                                {displayPolicyNumber(duplicate.policyNumber)} <span className="font-normal text-muted-foreground">· {displayInsurerName(duplicate.insurerName)}</span>
+                            </p>
                         </div>
-                    )}
 
-                    {/* ── SUCCESS ── */}
-                    {view === 'success' && result && (
-                        <div className="py-12 text-center space-y-6">
-                            <div className="w-20 h-20 rounded-[28px] bg-primary text-white dark:text-[#1A2420] flex items-center justify-center mx-auto shadow-2xl shadow-primary/25">
-                                <svg className="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        {error && <p role="alert" className="text-caption font-semibold text-status-danger">{error}</p>}
+
+                        <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row">
+                            <button type="button" disabled={loading} onClick={() => setView('confirm')} className="pw-soft-button flex-1 disabled:opacity-60">{up.duplicateCancel}</button>
+                            <button type="button" disabled={loading} onClick={() => handleSubmit(true)} className="pw-primary-button flex-1">
+                                {loading ? up.submitting : up.duplicateKeep}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── SUCCESS ── */}
+                {view === 'success' && result && (
+                    <div className="space-y-5 py-4 text-center">
+                        <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-status-success-tint text-status-success" aria-hidden="true">
+                            <CheckCircle2 className="h-7 w-7" />
+                        </span>
+                        <div>
+                            <h2 id="upload-policy-title" className="text-title font-semibold text-foreground">{up.successTitle} {up.successAccent}</h2>
+                            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">{result.created ? up.successCreatedDesc : up.successAttachedDesc}</p>
+                        </div>
+
+                        {/* What happened to the analysis — a status sentence on a
+                            sub-card, info when it is QUEUED, warning when it
+                            could not start. The action decided this before it
+                            answered; «εκτελείται» renders only under `queued`. */}
+                        {result.analysis === 'queued' && (
+                            <p role="status" className="pw-subcard p-3 text-left text-caption font-semibold text-status-info">{up.analysisStarted}</p>
+                        )}
+                        {result.analysis === 'blocked_quota' && (
+                            <div className="space-y-3" data-testid="upload-policy-analysis-blocked-quota">
+                                <p role="status" className="pw-subcard p-3 text-left text-caption font-semibold text-status-warning">{up.analysisBlockedQuota}</p>
+                                <Link href="/agent/pricing" className="pw-soft-button">{t.analysis.actions.viewAgentPlans}</Link>
                             </div>
-                            <div>
-                                <h2 className="text-3xl font-black text-foreground tracking-tighter mb-3">{up.successTitle} <span className="text-neutral-500 dark:text-neutral-400 italic">{up.successAccent}</span></h2>
-                                <p className="text-muted-foreground font-medium max-w-sm mx-auto">{result.created ? up.successCreatedDesc : up.successAttachedDesc}</p>
-                            </div>
-
-                            {result.analysisState === 'started' && <p className="text-xs font-bold text-primary dark:text-mint">{up.analysisStarted}</p>}
-                            {result.analysisState === 'limit_reached' && <p className="text-xs font-bold text-amber-700 dark:text-amber-400">{up.analysisLimitReached}</p>}
-                            {result.analysisState === 'consent_required' && (
-                                <div className="space-y-3">
-                                    <p className="text-xs font-bold text-amber-700 dark:text-amber-400">{up.analysisConsentRequired}</p>
-                                    {!consentSent && (
-                                        <button disabled={loading} onClick={handleRequestConsent} className="pw-primary-button text-kicker uppercase tracking-widest">{up.requestConsentCta}</button>
-                                    )}
-                                </div>
-                            )}
-
-                            <div className="flex gap-4 pt-2">
-                                {result.customerId && (
-                                    <button onClick={() => { const id = result.customerId; closeAll(); router.push(`/customers/${id}`) }} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.viewCustomer}</button>
+                        )}
+                        {result.analysis === 'blocked_consent' && (
+                            <div className="space-y-3">
+                                <p role="status" className="pw-subcard p-3 text-left text-caption font-semibold text-status-warning">{up.analysisConsentRequired}</p>
+                                {!consentSent && (
+                                    <button type="button" disabled={loading} onClick={handleRequestConsent} className="pw-soft-button disabled:opacity-60">{up.requestConsentCta}</button>
                                 )}
-                                <button onClick={closeAll} className="pw-primary-button flex-1 bg-neutral-900 dark:text-neutral-900 text-kicker uppercase tracking-widest">{up.done}</button>
                             </div>
+                        )}
+
+                        <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row">
+                            {result.customerId && (
+                                <button type="button" onClick={() => { const id = result.customerId; closeAll(); router.push(`/customers/${id}`) }} className="pw-soft-button flex-1">{up.viewCustomer}</button>
+                            )}
+                            <button type="button" onClick={closeAll} className="pw-primary-button flex-1">{up.done}</button>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     )
@@ -546,23 +806,38 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
  * <input>. A child that already carries an id keeps it, so an explicit one
  * always wins.
  */
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, error, hint, children }: { label: string; error?: string; hint?: string; children: React.ReactNode }) {
     const generatedId = React.useId()
     const child = React.isValidElement(children) ? children : null
     const childId = (child?.props as { id?: string } | undefined)?.id
     const fieldId = childId ?? generatedId
+    // The server's per-field message (or the caption) is what the control is
+    // described by, so a screen reader hears WHY the field is invalid, not
+    // just that it is.
+    const errorId = `${fieldId}-error`
+    const hintId = `${fieldId}-hint`
+    const describedBy = error ? errorId : hint ? hintId : undefined
+    const controlProps: { id?: string; "aria-invalid"?: boolean; "aria-describedby"?: string } = {
+        ...(childId ? {} : { id: fieldId }),
+        ...(error ? { "aria-invalid": true } : {}),
+        ...(describedBy ? { "aria-describedby": describedBy } : {}),
+    }
 
     return (
         <div className="space-y-1.5">
+            {/* Sentence case at the 12px functional floor — the uppercase
+                eyebrow it replaces stripped the tonos off every Greek label. */}
             <label
                 htmlFor={child ? fieldId : undefined}
-                className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 ml-1"
+                className="block text-caption font-semibold text-foreground"
             >
                 {label}
             </label>
-            {child && !childId
-                ? React.cloneElement(child as React.ReactElement<{ id?: string }>, { id: fieldId })
+            {child
+                ? React.cloneElement(child as React.ReactElement<typeof controlProps>, controlProps)
                 : children}
+            {error && <p id={errorId} className="text-caption font-semibold text-status-danger">{error}</p>}
+            {hint && !error && <p id={hintId} className="text-caption text-muted-foreground">{hint}</p>}
         </div>
     )
 }

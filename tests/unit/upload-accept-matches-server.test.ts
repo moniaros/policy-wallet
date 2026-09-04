@@ -78,7 +78,10 @@ describe('each picker names its own server category', () => {
         ['components/onboarding/agent/LicenseVerificationStep.tsx', 'policy', 'app/onboarding/agent/actions.ts'],
         ['components/wallet/AddPolicyClient.tsx', 'policy', 'lib/services/policy.service.ts'],
         ['components/wallet/BatchUploadModal.tsx', 'policy', 'lib/services/policy.service.ts'],
-        ['components/agent/AddCustomerModal.tsx', 'policy', 'app/(protected)/agent/actions.ts'],
+        // AddCustomerModal left this list on 2026-09-04: it no longer picks a
+        // file. Its «Έξυπνη Μεταφόρτωση PDF» door parsed the document and then
+        // DROPPED it (see the scan-without-commit guard below); the door now
+        // opens UploadPolicyModal, which is the picker.
         ['components/agent/UploadPolicyModal.tsx', 'policy', 'app/(protected)/agent/actions.ts'],
         // Policy-detail "add a document" card. Its booklet arm posts to the
         // documents REST route; its renewal arm goes through
@@ -99,5 +102,78 @@ describe('each picker names its own server category', () => {
                 new RegExp(`category: *(type === 'logo' \\? 'image' : )?["']${category}["']`)
             )
         }
+    })
+})
+
+/**
+ * A client component that SCANS a policy document must also COMMIT it.
+ *
+ * AddCustomerModal's «Έξυπνη Μεταφόρτωση PDF» door handed the File to
+ * parsePolicyPdfWithGemini, copied the extracted fields into the manual form,
+ * and then submitted addCustomerManually WITHOUT the file — the policy was
+ * created active with zero documents and no analysis (the incident class
+ * CLAUDE.md names: nothing threw, every piece worked, the seam broke).
+ *
+ * The universe is every client component under components/ and app/
+ * (enumerated from the filesystem, not listed) whose comment-stripped source
+ * calls a scan action. Each one must retain the scanned File across steps
+ * (`useState<File | null>`) and append it a SECOND time — into the FormData
+ * that goes to commitScannedPolicy — so the same file the model read is the
+ * file that gets stored. A component that scans and never commits is red.
+ */
+const SCAN_ACTION = /\b(?:parsePolicyPdfWithGemini|scanPolicyForResolution)\s*\(/
+const COMMIT_ACTION = /\bcommitScannedPolicy\s*\(/
+const FILE_APPEND = /\.append\(\s*['"]file['"]\s*,/g
+const RETAINED_FILE = /useState<\s*File\s*\|\s*null\s*>/
+
+export function scanWithoutCommitOffenders(file: string, rawSrc: string): string[] {
+    const code = strip(rawSrc)
+    if (!SCAN_ACTION.test(code)) return []
+    const appends = (code.match(FILE_APPEND) ?? []).length
+    const reasons: string[] = []
+    if (!COMMIT_ACTION.test(code)) reasons.push('scans a document but never calls commitScannedPolicy')
+    if (appends < 2) reasons.push(`appends the file ${appends} time(s) — the scan needs one and the commit another`)
+    if (!RETAINED_FILE.test(code)) reasons.push('does not retain the scanned File across steps (useState<File | null>)')
+    return reasons.length > 0 ? [`${file}: ${reasons.join('; ')}`] : []
+}
+
+function clientComponents(): string[] {
+    return [...globSync('components/**/*.tsx'), ...globSync('app/**/*.tsx')].filter((f) =>
+        /^\s*["']use client["']/.test(readFileSync(f, 'utf-8'))
+    )
+}
+
+describe('a client component that scans a policy document also commits it', () => {
+    const scanning = clientComponents().filter((f) => SCAN_ACTION.test(strip(readFileSync(f, 'utf-8'))))
+
+    it('finds the scanning components (a matcher that finds none guards nothing)', () => {
+        expect(scanning).toContain('components/agent/UploadPolicyModal.tsx')
+    })
+
+    it('AddCustomerModal no longer scans at all — its second door opens the upload flow', () => {
+        const src = strip(readFileSync('components/agent/AddCustomerModal.tsx', 'utf-8'))
+        expect(src).not.toMatch(SCAN_ACTION)
+        expect(src).not.toMatch(/type=["']file["']/)
+        expect(src).toMatch(/onUploadInstead/)
+    })
+
+    it('every scanning component hands the same File to the commit action', () => {
+        const offenders = clientComponents().flatMap((f) => scanWithoutCommitOffenders(f, readFileSync(f, 'utf-8')))
+        expect(
+            offenders,
+            `These scan a document without committing it — the policy would be created with no document:\n  ${offenders.join('\n  ')}`
+        ).toEqual([])
+    })
+
+    it('the matcher is proven red against the committed probe (the pre-fix door)', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/scan-without-commit.tsx.txt', 'utf-8')
+        const offenders = scanWithoutCommitOffenders('components/agent/AddCustomerModal.tsx', probe)
+        expect(offenders).toHaveLength(1)
+        expect(offenders[0]).toContain('never calls commitScannedPolicy')
+        expect(offenders[0]).toContain('appends the file 1 time(s)')
+    })
+
+    it('and green against the live UploadPolicyModal', () => {
+        expect(scanWithoutCommitOffenders('components/agent/UploadPolicyModal.tsx', readFileSync('components/agent/UploadPolicyModal.tsx', 'utf-8'))).toEqual([])
     })
 })

@@ -208,15 +208,14 @@ export function PolicyWallet({
                     </div>
 
                     <div className="flex w-full min-w-0 items-center justify-end gap-2 sm:w-auto">
-                        <div className="pw-subcard pw-scroll-strip min-w-0 max-w-full gap-0.5 !rounded-full p-1">
+                        <div className="pw-segmented pw-scroll-strip min-w-0">
                             {filters.map((filter) => (
                                 <button
                                     key={filter}
+                                    type="button"
                                     onClick={() => setActiveFilter(filter)}
-                                    className={`inline-flex min-h-10 cursor-pointer items-center whitespace-nowrap rounded-full px-3.5 text-caption font-semibold transition-colors ${activeFilter === filter
-                                        ? 'bg-card text-foreground shadow-sm'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                        }`}
+                                    aria-pressed={activeFilter === filter}
+                                    className="pw-segment"
                                 >
                                     {filter === 'all' ? t.common.all : t.policyTypes?.[filter as keyof typeof t.policyTypes] || filter}
                                 </button>
@@ -226,13 +225,15 @@ export function PolicyWallet({
                         {/* xl:flex — the dense table only appears at xl (at lg the sidebar
                             leaves ~736px and the actions column clipped), so below that a
                             view toggle would be a no-op control. */}
-                        <div className="pw-subcard hidden gap-0.5 !rounded-full p-1 xl:flex">
+                        <div className="pw-segmented hidden xl:flex">
                             <button
+                                type="button"
                                 onClick={() => {
                                     setViewMode('grid')
                                     localStorage.setItem('wallet_view_mode', 'grid')
                                 }}
-                                className={`grid h-10 w-10 cursor-pointer place-items-center rounded-full transition-colors ${viewMode === 'grid' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                                aria-pressed={viewMode === 'grid'}
+                                className="pw-segment grid h-10 w-10 place-items-center px-0"
                                 aria-label={roleCopy.walletDashboard.viewCard}
                             >
                                 <Grid3X3 className="w-4 h-4" />
@@ -242,7 +243,8 @@ export function PolicyWallet({
                                     setViewMode('list')
                                     localStorage.setItem('wallet_view_mode', 'list')
                                 }}
-                                className={`grid h-10 w-10 cursor-pointer place-items-center rounded-full transition-colors ${viewMode === 'list' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                                aria-pressed={viewMode === 'list'}
+                                className="pw-segment grid h-10 w-10 place-items-center px-0"
                                 aria-label={roleCopy.walletDashboard.viewList}
                             >
                                 <List className="w-4 h-4" />

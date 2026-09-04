@@ -41,6 +41,10 @@ export async function buildUserDataExportPayload(userId: string) {
             select: {
                 id: true,
                 email: true,
+                // Whether `email` is a synthetic placeholder because the person
+                // gave none (lib/identity/synthetic-email.ts) — disclosed with
+                // the address it explains.
+                contactEmailMissing: true,
                 name: true,
                 phoneNumber: true,
                 preferredLanguage: true,

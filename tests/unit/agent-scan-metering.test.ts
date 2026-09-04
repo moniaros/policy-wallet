@@ -48,4 +48,13 @@ describe("parsePolicyPdfWithGemini cost controls", () => {
         const body = scanBody()
         expect(body).not.toMatch(/adminEmail:\s*authResult\.dbUser\.email/)
     })
+
+    it("sends the provider the MIME type the validator established, not file.type", () => {
+        // `file.type` is whatever the browser supplied — empty for a phone's
+        // HEIC photo — and the provider rejected it. The validator has already
+        // read the magic bytes; its canonical type is the only honest one.
+        const body = scanBody()
+        expect(body).toMatch(/mimeType:\s*scanValidation\.value\.canonicalMime/)
+        expect(body).not.toMatch(/mimeType:\s*file\.type/)
+    })
 })

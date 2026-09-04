@@ -1,0 +1,6 @@
+// PROBE — must turn tests/unit/dynamic-page-params-awaited.test.ts RED.
+// Destructuring the Promise without awaiting it: `id` is undefined.
+export default async function ProbePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = params
+    return <div>{id}</div>
+}

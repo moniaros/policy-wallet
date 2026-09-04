@@ -26,8 +26,8 @@ export function AiDisclaimer({ language, variant = "block", className }: AiDiscl
         <p
             role="note"
             className={cn(
-                "flex items-start gap-1.5 text-xs leading-snug text-slate-500 dark:text-slate-400",
-                variant === "block" && "mt-3 border-t border-slate-200 dark:border-slate-700 pt-2",
+                "flex items-start gap-1.5 text-caption leading-snug text-muted-foreground",
+                variant === "block" && "mt-3 border-t border-border pt-2",
                 className
             )}
         >

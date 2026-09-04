@@ -1,5 +1,16 @@
 import Link from "next/link"
-import { ArrowRight, Eye, ShieldCheck, TriangleAlert, Upload } from "lucide-react"
+import {
+    ArrowRight,
+    CalendarX2,
+    Clock3,
+    Euro,
+    Eye,
+    FileSearch,
+    ShieldCheck,
+    TriangleAlert,
+    Upload,
+    type LucideIcon,
+} from "lucide-react"
 
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import type { Language } from "@/lib/i18n"
@@ -19,6 +30,35 @@ const KIND_COUNT_KEY: Record<string, string> = {
     neverAnalysed: "portfolio.neverAnalysedCount",
     analysisFailed: "portfolio.failedCount",
 }
+
+/**
+ * Phone-only glyphs for the ink pill's discs (the Steady layer, DESIGN.md →
+ * "The phone layer"). Decorative: aria-hidden, and display:none from lg up,
+ * where the cells are the plain facts row.
+ */
+const KIND_ICON: Record<string, LucideIcon> = {
+    expired: CalendarX2,
+    expiringSoon: Clock3,
+    neverAnalysed: FileSearch,
+    analysisFailed: TriangleAlert,
+}
+
+/*
+ * Cell recipes. Below lg the FIRST fact is the headline number and the rest
+ * ride in one ink pill — number · words, a white glyph disc each — which is
+ * how the reference states a total and its parts. From lg every cell is the
+ * same words-over-number fact cell with hairlines between (the pill wrapper
+ * is `contents` there, so the cells are the grid's own children again and
+ * each count is still rendered exactly once).
+ */
+const LEAD_CELL = "flex min-w-0 flex-col-reverse gap-1 lg:pr-4"
+const LEAD_NUMBER = "text-display font-semibold leading-none tracking-tight text-foreground tabular-nums lg:text-title"
+const LEAD_LABEL = "block text-body leading-snug text-muted-foreground lg:text-caption"
+const PILL = "flex flex-wrap items-center gap-1 rounded-3xl bg-foreground p-1.5 lg:contents"
+const PILL_CELL = "flex min-w-0 items-center gap-2 rounded-full bg-background/10 py-1.5 pl-1.5 pr-3.5 text-background lg:flex-col-reverse lg:items-stretch lg:gap-1 lg:rounded-none lg:border-l lg:border-border lg:bg-transparent lg:p-0 lg:pl-4 lg:pr-4 lg:text-foreground lg:last:pr-0"
+const PILL_DISC = "grid h-7 w-7 shrink-0 place-items-center rounded-full bg-background text-foreground lg:hidden"
+const PILL_NUMBER = "text-body font-semibold leading-none tabular-nums lg:text-title lg:tracking-tight lg:text-foreground"
+const PILL_LABEL = "text-caption leading-snug lg:block lg:text-muted-foreground"
 
 /**
  * «12 ασφαλιστήρια» → lead «12», rest «ασφαλιστήρια», so the number can be
@@ -136,49 +176,105 @@ export function ProtectionStatusHero({
                 «Χρειάζεται βελτίωση» over a wallet with no cover at all. The
                 cells below say what the wallet contains, which is what the
                 reader came for and what cannot be wrong. Hairlines between
-                cells at lg+ only: below that the row wraps, and a divider at a
-                wrapped row's start is a line with nothing to its left. */}
+                cells at lg+ only: below that the first fact is the headline
+                number and the rest sit in one ink pill (see the recipes
+                above), and a divider inside a pill is a line with nothing to
+                its left. */}
             <h2
                 id="protection-status-heading"
-                className="mt-5 grid grid-cols-2 gap-x-4 gap-y-5 font-normal sm:grid-cols-3 lg:grid-flow-col lg:auto-cols-fr lg:grid-cols-none lg:gap-x-0 lg:[&>*+*]:border-l lg:[&>*+*]:border-border lg:[&>*+*]:pl-4 lg:[&>*]:pr-4 lg:[&>*:last-child]:pr-0"
+                className="mt-5 flex flex-col gap-4 font-normal lg:grid lg:grid-flow-col lg:auto-cols-fr lg:gap-0"
             >
-                {facts.map((fact) => {
+                {facts.map((fact, index) => {
                     const parts = splitFact(fact.label, fact.count)
-                    return (
+                    const lead = index === 0
+                    const Glyph = lead ? null : KIND_ICON[fact.kind] ?? null
+                    const cell = (
                         <span
                             key={fact.kind}
                             data-count={KIND_COUNT_KEY[fact.kind] ?? `portfolio.${fact.kind}`}
-                            className="flex min-w-0 flex-col-reverse gap-1"
+                            className={lead ? LEAD_CELL : PILL_CELL}
                         >
                             {parts ? (
                                 <>
-                                    {/* Visual order is words-over-number (flex-col-reverse);
-                                        DOM order stays «count words», so the text reads
-                                        «12 ασφαλιστήρια» to every reader. */}
-                                    <span className="text-title font-semibold leading-none tracking-tight text-foreground tabular-nums">
+                                    {Glyph && (
+                                        <span aria-hidden="true" className={PILL_DISC}>
+                                            <Glyph className="h-3.5 w-3.5" strokeWidth={2} />
+                                        </span>
+                                    )}
+                                    {/* Visual order is words-over-number (flex-col-reverse)
+                                        from lg; DOM order stays «count words», so the text
+                                        reads «12 ασφαλιστήρια» to every reader. */}
+                                    <span className={lead ? LEAD_NUMBER : PILL_NUMBER}>
                                         {parts.lead}
                                     </span>{" "}
                                     {/* Lowercase-initial on purpose: the labels are the tails
                                         of the facts sentence («5 έχουν λήξει»), and CSS
                                         capitalisation under lang="el" strips the tonos
                                         («Εχουν»). The premium label is lowercased to match. */}
-                                    <span className="block text-caption leading-snug text-muted-foreground">{parts.rest}</span>
+                                    <span className={lead ? LEAD_LABEL : PILL_LABEL}>{parts.rest}</span>
                                 </>
                             ) : (
-                                <span className="text-body font-semibold text-foreground">{fact.label}</span>
+                                <span className="text-body font-semibold">{fact.label}</span>
                             )}
                         </span>
                     )
+                    if (lead) return cell
+                    // The pill opens on the second fact and closes after the
+                    // premium — one wrapper, rendered once, holding every
+                    // non-headline cell.
+                    if (index === 1) {
+                        const rest = facts.slice(1).map((f, i) => ({ f, i: i + 1 }))
+                        return (
+                            <span key="facts-pill" className={PILL}>
+                                {rest.map(({ f, i }) => {
+                                    const restParts = splitFact(f.label, f.count)
+                                    const RestGlyph = KIND_ICON[f.kind] ?? null
+                                    return (
+                                        <span
+                                            key={f.kind}
+                                            data-count={KIND_COUNT_KEY[f.kind] ?? `portfolio.${f.kind}`}
+                                            className={PILL_CELL}
+                                        >
+                                            {restParts ? (
+                                                <>
+                                                    {RestGlyph && (
+                                                        <span aria-hidden="true" className={PILL_DISC}>
+                                                            <RestGlyph className="h-3.5 w-3.5" strokeWidth={2} />
+                                                        </span>
+                                                    )}
+                                                    <span className={PILL_NUMBER}>{restParts.lead}</span>{" "}
+                                                    <span className={PILL_LABEL}>{restParts.rest}</span>
+                                                </>
+                                            ) : (
+                                                <span className="text-body font-semibold">{f.label}</span>
+                                            )}
+                                        </span>
+                                    )
+                                })}
+                                {premium && (
+                                    <span data-fact="portfolio.totalAnnualPremium" className={PILL_CELL}>
+                                        <span aria-hidden="true" className={PILL_DISC}>
+                                            <Euro className="h-3.5 w-3.5" strokeWidth={2} />
+                                        </span>
+                                        <span className={PILL_NUMBER}>{premium.value}</span>{" "}
+                                        <span className={`${PILL_LABEL} first-letter:lowercase`}>{premium.label}</span>
+                                    </span>
+                                )}
+                            </span>
+                        )
+                    }
+                    return null
                 })}
-                {premium && (
-                    <span
-                        data-fact="portfolio.totalAnnualPremium"
-                        className="flex min-w-0 flex-col-reverse gap-1"
-                    >
-                        <span className="text-title font-semibold leading-none tracking-tight text-foreground tabular-nums">
-                            {premium.value}
-                        </span>{" "}
-                        <span className="block text-caption leading-snug text-muted-foreground first-letter:lowercase">{premium.label}</span>
+                {/* A wallet with one fact and a premium still gets the pill. */}
+                {facts.length === 1 && premium && (
+                    <span className={PILL}>
+                        <span data-fact="portfolio.totalAnnualPremium" className={PILL_CELL}>
+                            <span aria-hidden="true" className={PILL_DISC}>
+                                <Euro className="h-3.5 w-3.5" strokeWidth={2} />
+                            </span>
+                            <span className={PILL_NUMBER}>{premium.value}</span>{" "}
+                            <span className={`${PILL_LABEL} first-letter:lowercase`}>{premium.label}</span>
+                        </span>
                     </span>
                 )}
             </h2>

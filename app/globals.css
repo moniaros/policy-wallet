@@ -681,7 +681,9 @@ pre {
      One variable, two consumers: the bar sizes itself from it and the layout
      reserves it, so they cannot drift apart again. */
   :root {
-    --pw-bottom-nav-h: 5rem;
+    /* 5.5rem since the Steady layer: a 60px floating pill plus the 12px it
+       floats above the safe area. */
+    --pw-bottom-nav-h: 5.5rem;
   }
 
   .pw-bottom-nav-reserve {
@@ -979,6 +981,97 @@ pre {
   .dark a.pw-subcard:hover,
   .dark button.pw-subcard:hover {
     background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* ── Segmented control ──────────────────────────────────────────────────
+     ONE recipe for every view switch (DESIGN.md → Chips and Pills); six call
+     sites used to spell the same three class strings by hand. The state is
+     read from the ARIA attribute the site already sets — aria-current on
+     links, aria-pressed on toggles, aria-selected on tabs — so the visual can
+     never disagree with what assistive tech is told. Desktop: a sunken
+     fully-round track, the active segment a white pill with a hairline
+     shadow. Phone (≤1023px, the Steady layer below): no track — idle segments
+     are plain text on the card and the active one is an ink pill, the way
+     the reference switches its periods. `:where()` on the bases so a site's
+     own utilities (a 44px floor, a square icon segment) still win. */
+  :where(.pw-segmented) {
+    @apply inline-flex max-w-full gap-0.5 p-1;
+    border-radius: 9999px;
+    background: var(--surface-sunken);
+  }
+  .dark :where(.pw-segmented) {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  :where(.pw-segment) {
+    @apply inline-flex min-h-10 flex-shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap px-3.5 text-caption font-semibold transition-colors;
+    border-radius: 9999px;
+    color: var(--muted-foreground);
+  }
+  :where(.pw-segment):hover {
+    color: var(--foreground);
+  }
+  .pw-segment[aria-current],
+  .pw-segment[aria-pressed="true"],
+  .pw-segment[aria-selected="true"] {
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  /* ── The phone layer (≤1023px) ──────────────────────────────────────────
+     Steady (balintbogdan.com/portfolio/steady), owner-pinned 2026-09-03 for
+     PHONES ONLY: a near-white ground, borderless white cards on a 20px
+     corner, ink pills for the active state, a floating ink tab bar. Desktop
+     keeps the cool-slate three-plane world untouched — this block re-tunes
+     the same tokens below the shell's one breakpoint and nothing else. The
+     card's hover lift goes too: there is no hover on a phone, and a card
+     that jumps under a scrolling thumb reads as a misfire. The canvas value
+     itself is overridden at the foot of this file, outside any layer, so it
+     beats the :root declaration above. */
+  @media (max-width: 1023px) {
+    .pw-card {
+      border-color: transparent;
+      border-radius: 20px;
+    }
+    .pw-card:hover {
+      transform: none;
+      border-color: transparent;
+      box-shadow: none;
+    }
+    /* Dark keeps its inner ring: a borderless #111 card on the black
+       gradient has nothing to read against. Only the lift goes. */
+    .dark .pw-card:hover {
+      transform: none;
+    }
+    .pw-subcard {
+      border-radius: 14px;
+    }
+    :where(.pw-segmented),
+    .dark :where(.pw-segmented) {
+      background: transparent;
+      padding: 0;
+      gap: 0.25rem;
+    }
+    .pw-segment[aria-current],
+    .pw-segment[aria-pressed="true"],
+    .pw-segment[aria-selected="true"] {
+      background: var(--foreground);
+      color: var(--background);
+      box-shadow: none;
+    }
+  }
+
+  /* The phone header sits ON the canvas, not on a white strip: the reference
+     has no header bar at all, just the avatar and the bell floating on the
+     ground. A translucent canvas with blur keeps scrolled content legible
+     under it. */
+  .pw-mobile-header {
+    background: color-mix(in srgb, var(--surface-canvas) 90%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .dark .pw-mobile-header {
+    background: rgba(0, 0, 0, 0.85);
   }
 
   /* The card header's icon chip — DESIGN.md's "36px tinted square, 10px
@@ -1287,4 +1380,13 @@ pre {
 @media (prefers-reduced-motion: reduce) {
   .g-scan-sweep { display: none; }
   .g-row-in { animation: none; }
+}
+
+/* The phone layer's ground (see "The phone layer" in the components block):
+   near-white under borderless white cards. Top-level on purpose — a :root
+   override inside a cascade layer would lose to the unlayered :root above. */
+@media (max-width: 1023px) {
+  :root {
+    --surface-canvas: #F1F4F7;
+  }
 }

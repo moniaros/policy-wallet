@@ -17,27 +17,26 @@ export interface ProtectionLensTabsProps {
  *
  * Direction A (2026-09-03): a segmented control on the sunken surface — the
  * active lens is the white segment, not a brand-green pill. Green is the
- * page's one primary action; a view switch is not an action.
+ * page's one primary action; a view switch is not an action. The recipe
+ * (`.pw-segmented` / `.pw-segment`, app/globals.css) reads the active state
+ * from aria-current, so the visual and the announced state are one fact.
  */
 export function ProtectionLensTabs({ active, labels }: ProtectionLensTabsProps) {
-    const base =
-        "inline-flex min-h-11 flex-shrink-0 items-center whitespace-nowrap rounded-full px-4 text-caption font-semibold transition-colors"
-    const activeStyle = "bg-card text-foreground shadow-sm"
-    const idleStyle = "text-muted-foreground hover:text-foreground"
+    const base = "pw-segment min-h-11 px-4"
 
     return (
-        <nav aria-label={labels.aria} className="pw-subcard inline-flex max-w-full gap-0.5 !rounded-full p-1">
+        <nav aria-label={labels.aria} className="pw-segmented">
             <Link
                 href="/protection"
                 aria-current={active === "branch" ? "page" : undefined}
-                className={`${base} ${active === "branch" ? activeStyle : idleStyle}`}
+                className={base}
             >
                 {labels.byBranch}
             </Link>
             <Link
                 href="/protection?lens=risk"
                 aria-current={active === "risk" ? "page" : undefined}
-                className={`${base} ${active === "risk" ? activeStyle : idleStyle}`}
+                className={base}
             >
                 {labels.byRisk}
             </Link>

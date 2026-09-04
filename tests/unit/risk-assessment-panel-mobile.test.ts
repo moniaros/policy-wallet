@@ -18,6 +18,7 @@ import { readFileSync } from "node:fs"
  */
 
 const WIZARD = readFileSync("components/coverage/RiskProfileWizard.tsx", "utf-8")
+const GLOBALS = readFileSync("app/globals.css", "utf-8")
 const GRAPH = readFileSync("components/coverage/RiskGraphPanel.tsx", "utf-8")
 
 describe("the risk graph panel is mobile-first", () => {
@@ -35,8 +36,18 @@ describe("the risk graph panel is mobile-first", () => {
     })
 
     it("keeps the state filter in a scrollable strip", () => {
-        expect(GRAPH).toMatch(/overflow-x-auto/)
-        expect(GRAPH).toMatch(/whitespace-nowrap/)
+        // `.pw-scroll-strip` IS the scrolling primitive (CLAUDE.md: a strip
+        // that is meant to scroll uses it) — a raw overflow-x-auto is the
+        // pre-primitive spelling and still accepted.
+        expect(GRAPH).toMatch(/pw-scroll-strip|overflow-x-auto/)
+        // The chips must never wrap mid-label. Since the segmented recipe
+        // moved into app/globals.css, the no-wrap can live on the chip's own
+        // class list OR on the `.pw-segment` rule the chip uses — but then
+        // the rule itself has to declare it, so a later edit to the recipe
+        // cannot quietly drop it either.
+        const segmentRule = GLOBALS.match(/:where\(\.pw-segment\)\s*\{[^}]*\}/)?.[0] ?? ""
+        const noWrapViaRecipe = /\bpw-segment\b/.test(GRAPH) && /whitespace-nowrap/.test(segmentRule)
+        expect(/whitespace-nowrap/.test(GRAPH) || noWrapViaRecipe).toBe(true)
     })
 
     it("holds the WCAG 2.5.8 touch floor on every interactive control", () => {

@@ -6,6 +6,7 @@ import { createBrevoContact } from "@/lib/brevo"
 import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
 import { consumeOAuthIntent, type OAuthIntent } from "@/lib/auth/oauth-intent"
 import { LEGAL_POLICY_VERSIONS } from "@/lib/compliance/consent"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 /**
  * The one exchange endpoint — magic links AND social login land here.
@@ -48,7 +49,7 @@ export async function GET(request: Request) {
     }
 
     const intent: OAuthIntent | null = await consumeOAuthIntent()
-    const email = user.email?.trim().toLowerCase() || null
+    const email = normalizeEmail(user.email) || null
 
     if (!email) {
         // Brief §2.3: never create an account without a verifiable email. The

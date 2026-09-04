@@ -440,6 +440,10 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                     image: null,
                     phoneNumber: null,
                     taxId: null,
+                    // The anonymized address replaces a synthetic no-email one
+                    // too; the flag that said "this person has no email" is a
+                    // fact about them and goes with the rest.
+                    contactEmailMissing: false,
                     pushToken: null,
                     password: null,
                     stripeCustomerId: null,

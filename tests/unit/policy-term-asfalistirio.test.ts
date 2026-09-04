@@ -28,6 +28,9 @@ const UI_FILES = [
     // not long-form editorial — a card must not say «συμβόλαιο» in its title and
     // «ασφαλιστήριο» in its evidence. Its sibling rule files already use «ασφαλιστήριο».
     'lib/services/gap-engine/portfolio-rules.ts',
+    // The agent-side copy module: its «Συμβόλαια» sat in the customers page's
+    // column header and stat tiles until batch C. In-app product copy, not prose.
+    'lib/i18n/role-copy.ts',
 ]
 
 describe('policy term is «ασφαλιστήριο», never «συμβόλαιο»', () => {

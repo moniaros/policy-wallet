@@ -3,8 +3,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { Shield, Calendar, TrendingUp, Eye, EyeOff, Filter, Plus, FileText } from "lucide-react"
-import { BrandCard } from "@/components/ui/brand/BrandCard"
-import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { EmptyState, PolicyPreviewRow } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatCurrencyCompact, formatCurrencyFull, formatDateShort } from "@/lib/agent/format"
@@ -36,19 +35,21 @@ const TAB_COPY = {
     add: { el: "Προσθήκη", en: "Add" },
     commissionUnit: { el: "προμήθεια", en: "commission" },
     managedByYou: { el: "Διαχειριζόμενο από εσάς", en: "Managed by you" },
+    policies: { el: "Ασφαλιστήρια", en: "Policies" },
 } as const
 
+// Status pills on the status TOKENS, the state as a word.
 const STATUS_STYLES: Record<string, string> = {
-    active: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
-    expiring_soon: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    active: "bg-status-success-tint text-status-success",
+    expiring_soon: "bg-status-warning-tint text-status-warning",
     // Expired is a calendar fact, not an alarm — same amber language as the
     // policyholder surfaces (never green, never a red siren).
-    expired: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
-    unknown_duration: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300",
-    action_needed: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-    cancelled: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
-    analyzing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-    incomplete: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
+    expired: "bg-status-warning-tint text-status-warning",
+    unknown_duration: "bg-muted text-muted-foreground",
+    action_needed: "bg-status-danger-tint text-status-danger",
+    cancelled: "bg-muted text-muted-foreground",
+    analyzing: "bg-status-info-tint text-status-info",
+    incomplete: "bg-muted text-muted-foreground",
 }
 
 const STATUS_LABELS: Record<string, { el: string; en: string }> = {
@@ -105,14 +106,15 @@ export function ClientPoliciesTab({
 
     return (
         <div className="space-y-4">
-            {/* Filters and actions */}
-            <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+            {/* Filters and actions — selects on the input recipe, the two
+                actions as soft pills (the page's primary lives in the FAB). */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                    <Filter className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                     <select
                         value={filterLob || ""}
                         onChange={(e) => setFilterLob(e.target.value || null)}
-                        className="pw-input pw-input-sm"
+                        className="pw-input pw-input-sm w-auto"
                     >
                         <option value="">{TAB_COPY.allTypes[language]}</option>
                         {uniqueLobs.map((lob) => (
@@ -124,7 +126,7 @@ export function ClientPoliciesTab({
                     <select
                         value={filterStatus || ""}
                         onChange={(e) => setFilterStatus(e.target.value || null)}
-                        className="pw-input pw-input-sm"
+                        className="pw-input pw-input-sm w-auto"
                     >
                         <option value="">{TAB_COPY.allStatuses[language]}</option>
                         {uniqueStatuses.map((status) => (
@@ -140,73 +142,80 @@ export function ClientPoliciesTab({
                         <button
                             type="button"
                             onClick={() => setShowCommission(!showCommission)}
-                            className="flex items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition cursor-pointer"
+                            aria-pressed={showCommission}
+                            className="pw-soft-button"
                         >
                             {showCommission ? (
-                                <EyeOff className="h-3.5 w-3.5" />
+                                <EyeOff className="h-4 w-4" aria-hidden="true" />
                             ) : (
-                                <Eye className="h-3.5 w-3.5" />
+                                <Eye className="h-4 w-4" aria-hidden="true" />
                             )}
                             {TAB_COPY.commission[language]}
                         </button>
                     )}
                     {onUploadPolicy && (
-                        <BrandActionButton onClick={onUploadPolicy} variant="secondary" className="text-xs py-1.5">
-                            <Plus className="h-3.5 w-3.5" />
+                        <button type="button" onClick={onUploadPolicy} className="pw-soft-button">
+                            <Plus className="h-4 w-4" aria-hidden="true" />
                             {TAB_COPY.add[language]}
-                        </BrandActionButton>
+                        </button>
                     )}
                 </div>
             </div>
 
-            {/* Policy list */}
-            {filteredPolicies.length === 0 ? (
-                /* "No policies at all" is handled above. This is the other empty
-                   state: both filters offer only values present in the data, but
-                   they combine, so type=motor + status=expired can match nothing
-                   on a client who holds an active motor policy and an expired
-                   health one. That rendered a blank strip under the filters with
-                   no explanation and no way back. */
-                <div className="rounded-xl border border-dashed border-neutral-200 dark:border-neutral-700 px-4 py-8 text-center">
-                    <p className="text-sm text-muted-foreground">{t.emptyStates.clientPolicies.noFilterMatch}</p>
-                    <button
-                        type="button"
-                        onClick={() => { setFilterLob(null); setFilterStatus(null) }}
-                        className="mt-3 text-xs font-semibold text-primary dark:text-mint hover:underline"
-                    >
-                        {t.emptyStates.clearFilters}
-                    </button>
-                </div>
-            ) : (
-            <div className="space-y-2">
-                {filteredPolicies.map((policy) => {
-                    const commissionRate = commissionRates?.[policy.lineOfBusiness] || 0
-                    const lobLabel = branchLabel(policy.lineOfBusiness, language === 'el' ? 'el' : 'en')
-                    // The detail page re-checks getPolicyAccess server-side, so a
-                    // link here can never widen access — it only stops hiding a
-                    // page the agent is already entitled to open.
-                    const canOpen = viewerRole === "agent" && !!customerId
-
-                    return (
-                        <BrandCard
-                            key={policy.policyId}
-                            className={`p-4 relative ${canOpen ? "transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03] focus-within:ring-2 focus-within:ring-primary" : ""}`}
+            {/* Policy list — ONE card of sub-card rows. */}
+            <section className="pw-card pw-pad">
+                <CardHead
+                    as="h3"
+                    icon={Shield}
+                    title={TAB_COPY.policies[language]}
+                    meta={<span className="tabular-nums">{filteredPolicies.length}</span>}
+                />
+                {filteredPolicies.length === 0 ? (
+                    /* "No policies at all" is handled above. This is the other empty
+                       state: both filters offer only values present in the data, but
+                       they combine, so type=motor + status=expired can match nothing
+                       on a client who holds an active motor policy and an expired
+                       health one. That rendered a blank strip under the filters with
+                       no explanation and no way back. */
+                    <div className="pw-subcard mt-4 px-4 py-8 text-center">
+                        <p className="text-sm text-muted-foreground">{t.emptyStates.clientPolicies.noFilterMatch}</p>
+                        <button
+                            type="button"
+                            onClick={() => { setFilterLob(null); setFilterStatus(null) }}
+                            className="mt-3 inline-flex min-h-9 items-center text-caption font-semibold text-primary hover:underline dark:text-mint"
                         >
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
-                                    <Shield className="h-5 w-5 text-primary dark:text-mint" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
+                            {t.emptyStates.clearFilters}
+                        </button>
+                    </div>
+                ) : (
+                <ul className="mt-4 space-y-2">
+                    {filteredPolicies.map((policy) => {
+                        const commissionRate = commissionRates?.[policy.lineOfBusiness] || 0
+                        const lobLabel = branchLabel(policy.lineOfBusiness, language === 'el' ? 'el' : 'en')
+                        // The detail page re-checks getPolicyAccess server-side, so a
+                        // link here can never widen access — it only stops hiding a
+                        // page the agent is already entitled to open.
+                        const canOpen = viewerRole === "agent" && !!customerId
+
+                        return (
+                            <li
+                                key={policy.policyId}
+                                className={`pw-subcard relative flex items-center gap-3 p-3 ${canOpen ? "transition-colors hover:bg-muted focus-within:ring-2 focus-within:ring-primary" : ""}`}
+                            >
+                                <span className="pw-card-chip" aria-hidden="true">
+                                    <Shield className="h-4 w-4" strokeWidth={1.75} />
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <p className="text-sm font-semibold text-foreground">
                                             {canOpen ? (
-                                                // Stretched link: the whole card is the hit target, but the
+                                                // Stretched link: the whole row is the hit target, but the
                                                 // anchor stays a real <a> (middle-click / open-in-new-tab
                                                 // work) and is not nested inside the branded-report anchor.
                                                 <Link
                                                     href={`/customers/${customerId}/policy/${policy.policyId}`}
                                                     aria-label={[lobLabel, displayInsurerName(policy.insurerName), displayPolicyNumber(policy.policyNumber)].filter(Boolean).join(' · ')}
-                                                    className="after:absolute after:inset-0 after:rounded-2xl focus:outline-none"
+                                                    className="after:absolute after:inset-0 after:rounded-[14px] focus:outline-none"
                                                 >
                                                     {lobLabel}
                                                 </Link>
@@ -214,35 +223,35 @@ export function ClientPoliciesTab({
                                                 lobLabel
                                             )}
                                         </p>
-                                        <span className={`rounded-full px-2 py-0.5 text-kicker font-medium ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`}>
+                                        <span className={`rounded-full px-2 py-0.5 text-caption font-semibold ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`}>
                                             {(STATUS_LABELS[policy.status] || STATUS_LABELS.incomplete)[language]}
                                         </span>
                                         {policy.managedByAgent && (
-                                            <span className="rounded-full px-2 py-0.5 text-kicker font-medium bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
+                                            <span className="rounded-full bg-status-success-tint px-2 py-0.5 text-caption font-semibold text-status-success">
                                                 {TAB_COPY.managedByYou[language]}
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-caption text-muted-foreground">
                                         {displayInsurerName(policy.insurerName)}
                                         {policy.assetLabel && ` · ${policy.assetLabel}`}
                                     </p>
                                 </div>
 
                                 <div className="text-right">
-                                    <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                        <Calendar className="h-3 w-3" />
+                                    <p className="flex items-center justify-end gap-1 text-caption text-muted-foreground">
+                                        <Calendar className="h-3 w-3" aria-hidden="true" />
                                         {formatDateShort(policy.endDate, language)}
-                                    </div>
+                                    </p>
                                     {showCommission && viewerRole === "agent" && commissionRate > 0 && (
-                                        <p className="text-kicker font-medium text-primary dark:text-mint mt-0.5">
+                                        <p className="mt-0.5 text-caption font-semibold text-primary dark:text-mint">
                                             {commissionRate}% {TAB_COPY.commissionUnit[language]}
                                         </p>
                                     )}
                                 </div>
 
                                 {/* Inline actions — z-10 keeps them clickable above the
-                                    card-wide stretched link. */}
+                                    row-wide stretched link. */}
                                 <div className="relative z-10 flex items-center gap-1.5">
                                     {/* Branded report — agent-only, needs a completed
                                         analysis and a Pro+ plan. Opens the print-ready
@@ -252,9 +261,9 @@ export function ClientPoliciesTab({
                                             href={`/api/v1/agent/policies/${policy.policyId}/branded-report`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition cursor-pointer flex items-center gap-1"
+                                            className="pw-soft-button bg-card"
                                         >
-                                            <FileText className="h-3 w-3" />
+                                            <FileText className="h-4 w-4" aria-hidden="true" />
                                             {t.agentUi.brandedReport}
                                         </a>
                                     )}
@@ -263,15 +272,15 @@ export function ClientPoliciesTab({
                                         of expiry — so an agent could not open a policy expiring in
                                         60 days, or an expired one, at all. It also navigated to a
                                         page that offers no renewal action, only review and edit.
-                                        The card itself is now the link; the expiry state is already
+                                        The row itself is now the link; the expiry state is already
                                         carried honestly by the status badge above. */}
                                 </div>
-                            </div>
-                        </BrandCard>
-                    )
-                })}
-            </div>
-            )}
+                            </li>
+                        )
+                    })}
+                </ul>
+                )}
+            </section>
         </div>
     )
 }

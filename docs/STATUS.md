@@ -1,7 +1,11 @@
 # STATUS
 
-**Production: `76f62a43`** — deployed 2026-08-30 via CI-green → deploy.yml (dpl_7DuAspuumiGFu9Cmokr4m3jFh3jb).
-The Grafí homepage is LIVE and smoked: fixed-promise H1, 16-line ticker, sourced numbers with
+**Production: `6cb43303`** — deployed 2026-09-03 via CI-green → deploy.yml: the Direction A
+policyholder app (shell, dashboard, wallet, policy detail, protection, settings, /agent,
+notifications, help), the /protection and auth polish, the agent dashboard on the same anatomy
+(PR #288). `addfb7e6` (PR #289 — the preview's dashboard defects: 45%-black link-card borders,
+dashed coverage-map tiles) is merged and its deploy was in flight at the time of writing.
+The Grafí homepage (`76f62a43`, 2026-08-30) is LIVE and smoked: fixed-promise H1, 16-line ticker, sourced numbers with
 their links, retired sentence absent, 4 steps + ReadingDemo, broker band, comparison, three
 pricing cards (€0/€4.99/€8.99) + recommender, CTA white-on-green, no h-scroll at 390; /en
 mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry groups in the
@@ -16,55 +20,65 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
-- **Onboarding first stage — the Personal Protection Profile, BUILT on
-  `feat/onboarding-protection-profile` (off NEW-UI @ `addfb7e6`), not yet pushed.** Replaces the
-  five-step intake (`app/onboarding/flow.tsx`, deleted) with a life-first discovery: intent →
-  people → home → income → obligations → mobility → what would hurt most → changes (+plans) →
-  confidence (+why) → guidance → the protection map («Η εικόνα σου μέχρι τώρα») → «Τώρα ας δούμε
-  τι έχεις ήδη» upload → optional advisor. One question per screen, informal singular (owner's
-  call, onboarding only), «Γιατί ρωτάμε» under every heading, «Δεν είμαι σίγουρος/η» as an inline
-  panel that never dead-ends, constant denominator of ten, back on every screen, refresh-safe
-  resume, honest upload status. Facts go to the typed `PolicyholderProfile` columns through a
-  non-overwriting patch (`answeredFields`), statements to the new `protection_profiles` table
-  (migrated dev + prod 2026-09-03, DSR erase/export wired), priorities are DERIVED on read
-  (`deriveProtectionPriorities`) and never a score — needs → coverage → gap stay three layers.
-  Dashboard: entry gate once (no policies, no profile, no skip; every screen carries a skip),
-  «Η εικόνα σας» priorities card or a resume card above the hero, plan step 0, the AI risk prompt
-  receives stated priorities as CONTEXT only, recommendation order uses them as a TIE-BREAK only.
-  Typed journey events on every step plus the server mirror. Guards moved with the code
-  (aria-pressed, upload-accept, asfalistírio, accents, clamp register, icon map, journey-events
-  registry, upload-status honesty replaces the «AI Σύνοψη» subtitle guard). tsc, eslint, i18n,
-  utf8, api-auth clean. **Verified in a browser (dev, scratch account, Playwright):** five
-  personas walked end to end at 390 (one at 1440 with reduced motion) — the help-me path,
-  «δεν είμαι σίγουρος/η» twice, the plans branch, skip → resume card → re-entry at the first
-  open step, back and reload-resume, keyboard activation, the upload with the consent modal and
-  the honest status sequence («Ανεβάζουμε…» → «Το διαβάζουμε…» → «Το διαβάσαμε»); zero console
-  errors, no horizontal scroll, one option pressed per pick, the map with no score word and the
-  honesty sentence; data after a walk: eight fact columns in `answeredFields`, the statements row
-  with `priorityAreas`, the life event with `appliedPatch.declaredAfterFacts`, one
-  `RiskProfileVersion`, and the uploaded policy WITH its document. Fixed from the walk: the
-  «Πόσα;» pills (relied on the unmerged phone-layer classes), a failed reading no longer
-  re-uploads, no CTA says «Συνέχεια», the map's «Θα το κάνω αργότερα» leaves instead of asking
-  for the advisor, the advisor screen has one exit, the engine runs in `after()` (the map waited
-  ~20 s for a model call), and the risk-review card told the customer the admin's English
-  rationale («this is a hard time, not a sales moment») — every trigger now carries a bilingual
-  customer `reason`. **Pending:** the PR against NEW-UI (stacks after #290/#291 and #292).
-- **BROKEN (gates launch), found by the onboarding walk, fixed: every upload through
-  `uploadAndParse` committed a policy with ZERO documents since `1057ab7d` (2026-08-21).**
-  The generated Greek label was passed to `create()` as the document name; its extension check
-  rejected it silently, the row was written without a document, the analysis had nothing to
-  read, and the object sat orphaned in the bucket (unreachable by export or erasure). Both
-  callers affected: the wallet's `uploadPolicyDocument` action and the onboarding upload.
-  Production had three such rows (two created 2026-09-03 by owner-family accounts, one on
-  09-01) and three orphaned objects — repaired in place on prod (unrehearsed, prod-only rows) by
-  inserting the missing `policy_documents` rows (`repair_*`, paired by timestamp within 60 ms);
-  verified 0 document-less policies in 45 days and 0 orphaned objects since 08-20 afterwards.
-  Those three policies still need a re-analysis from the wallet. Fix `502f597f` + guard
-  `tests/unit/upload-keeps-its-document.test.ts` (behavioural + probe + source), also
-  cherry-picked to `hotfix/upload-keeps-its-document` off NEW-UI so it can ship ahead of the
-  onboarding PR.
+- **2026-09-04 — B2B batch C on `feat/b2b-batch-c` (stacked on #291 → #290): insights,
+  benefits, commissions, questionnaires, team and the three customer modals are on the
+  Direction A anatomy.** Three parallel subagents re-cut the nine files against the batch B
+  exemplars; the lead swept the shared pieces the DOM audit still flagged (UploadDropzone,
+  EmptyState rows, ConsentStatusBadge, the FAB tooltip, AiDisclaimer, AdvisorBookView) and moved
+  the agent copy off «συμβόλαιο» (role-copy is now in the policy-term guard's file list). Fixed
+  along the way: the questionnaires' hover-only edit/delete became always-visible pills, the
+  team pipeline's raw `won`/`motor_liability` slugs became dictionary and taxonomy labels, the
+  insights coverage empty state no longer reassures («Η κάλυψη είναι πλήρης» → what was checked),
+  a rejected PDF scan in the add-customer modal now shows its reason. Verified in a browser as the
+  E2E agent at 1440 and 390: no horizontal scroll, one primary per page, no console errors except
+  one non-reproducing hydration warning on /customers. Trap: after a branch switch Turbopack
+  served a stylesheet without `.pw-segmented` — the questionnaires toggle rendered bare until the
+  cache was cleared. Gates green locally (CI does not run for a feature-branch base).
+- **Late 2026-09-03 — Direction A is LIVE; the phone layer is up for the owner's decision.**
+  PR #288 merged (`6cb43303`) after the owner's "error seen on production" turned out to be an
+  OLD PREVIEW deployment whose Preview-scope `DATABASE_URL`/`DIRECT_URL` still carry 55-day-old dev
+  credentials (Supabase `query_logs` showed the failed auths on the DEV project; production had
+  none) — the raw Prisma message that page leaked is now a localised generic (`7f6a2f5d`), but
+  the Preview env vars themselves are an OWNER action (`vercel env add` is classifier-blocked
+  for the agent): set Preview `DATABASE_URL` to the dev 6543 pooler URL (without the local
+  `connection_limit=5&pool_timeout=20`) and `DIRECT_URL` to the dev 5432 URL, then redeploy the
+  previews. The dashboard defects the owner then flagged on the preview shipped as PR #289
+  (`addfb7e6`): the element-scoped control-border rule painted every `a.pw-card` 45 % black
+  (retired; `.pw-control-boundary` stays as the explicit opt-in), and unassessed coverage-map
+  tiles were dashed and faded (plain sunken tiles now). **PR #290 (`feat/steady-mobile`) is the
+  Steady phone layer** the owner pinned ("for the mobile UIs only"): ≤1023px only — near-white
+  canvas, borderless 20px cards, one `.pw-segmented`/`.pw-segment` recipe (state from
+  aria-current/pressed/selected; ink pill active on phones, the sunken track + white pill on
+  desktop as before), avatar-left/bell-right header on the canvas, a floating ink icon-only tab
+  bar (still `fixed bottom-0` + safe-area, so the shell guards hold), and the ink stat pill /
+  panel under the headline number on the dashboard hero and the wallet overview (wrapper is
+  `lg:contents`; every count renders once, h2 text unchanged). NOT merged on purpose — it is a
+  design direction for the owner to look at on the preview at phone width. Guard moved in the
+  register direction: `risk-assessment-panel-mobile` accepts `.pw-scroll-strip` and checks
+  no-wrap on the `.pw-segment` rule itself. Deliberately not done: list rows as separate white
+  cards on the canvas, dark detail headers with bottom sheets. Still legacy: **B2B batches B**
+  (customers list/detail, renewals, opportunities, tasks, activity) **and C** (insights,
+  questionnaires, team, commissions, benefits). Owner question answered in the session report:
+  the Google consent screen's «to continue to cquudefwfwrmvpftuhyl.supabase.co» is the
+  Supabase-hosted OAuth redirect — brand verification and/or a Supabase custom auth domain fix
+  it, no code needed.
+  **B2B batch B is on PR #291 (`feat/b2b-batch-b`, stacked on #290 because it uses the segmented
+  recipe):** B-1 = tasks, activity, renewals, opportunities; B-2 = customers list, customer detail
+  (the four tabs, the collaboration cards, the danger zone) and invite — all on the card anatomy
+  (page names itself on the canvas, CardHead on every card, sub-card rows, fact cells / StatTiles,
+  status pills on tokens, segmented view switches with aria-pressed, one primary per screen).
+  `components/ui/PageHeader.tsx` deleted; SortableColumn headers in caption sentence case; the
+  FAB clears the phone bar (fix on #290). Registers moved in the register direction:
+  task-priority-colors-urgency (status-warning accepted), customer-list-responsive (toggle by
+  recipe class), design-token-debt (invite hex gone), gap-severity-display-single-source and
+  solid-panel-contrast (entries whose debt is paid), Greek inventory (+1 pair). 518 files / 5900
+  tests, tsc, eslint, i18n, utf8 clean after each batch; captured at 1440/390 with 0 console
+  errors. NOTE: CI does not run for a PR whose base is a feature branch — gates were run locally.
+  **Still legacy (batch C):** insights, questionnaires, team, commissions, benefits, and the
+  three customer modals (AddCustomerModal, UploadPolicyModal, BulkImportModal).
 - **B2C app redesign — Direction A BUILT on `feat/b2c-direction-a` (`b73421e6`), draft PR #288
-  against NEW-UI, awaiting the owner's look on the preview.** Owner set aside `feat/grafi-b2c`
+  against NEW-UI, awaiting the owner's look on the preview** (superseded by the entry above —
+  merged the same day). Owner set aside `feat/grafi-b2c`
   (PR #287) for the policyholder app and picked, from the proposals artifact
   (https://claude.ai/code/artifact/ea4a5213-6b3b-4612-8769-d2e2a8d7161b), **Direction A · Inter ·
   cool slate**. Shipped in this pass: the shell (three-group sidebar, desktop top bar with
@@ -233,13 +247,13 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
-1. Owner: walk the onboarding preview on a phone (PR to follow) — the five personas, the
-   «βοήθησέ με» path, the map, the upload — and decide whether the singular register should
-   spread to the app.
-2. Ship in stack order: #290 (Steady phone layer) → #291 (B2B batch B) → the onboarding PR; each
-   merge deploys via deploy.yml, so the journey smoke runs on the preview first.
-3. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix), then the
-   remaining Grafí bands and the Terms §3 + IDD de-noindex when legal returns.
+1. Owner: open PR #290's preview at phone width (dashboard, wallet, protection, /agent, account)
+   and decide on the Steady phone layer; then set the Preview-scope DB env vars and the Google
+   OAuth branding / custom auth domain (both owner-only, see In progress).
+2. B2B batch C (insights, questionnaires, team, commissions, benefits) and the three customer
+   modals onto the Direction A anatomy; then merge #290 → #291 in that order.
+3. Marketing carry-overs: split the marketing route group from the app providers (the mobile-LCP
+   fix), restyle the remaining legacy bands, and de-noindex the partners pair when legal returns.
 
 ---
 

@@ -13,9 +13,16 @@ export type EmailTemplateData = {
     actionUrl?: string;
     actionLabel?: string;
     footerText?: string;
+    /**
+     * A statutory notice rendered INSIDE the card, under the action, in
+     * smaller type — the GDPR Art. 14 paragraph an invite must carry when the
+     * recipient's data came from someone else (their agent). Pre-rendered
+     * HTML; the caller owns escaping.
+     */
+    legalNotice?: string;
 };
 
-export function getBaseTemplate({ title, description, actionUrl, actionLabel, footerText }: EmailTemplateData) {
+export function getBaseTemplate({ title, description, actionUrl, actionLabel, footerText, legalNotice }: EmailTemplateData) {
     return `
 <!DOCTYPE html>
 <html>
@@ -46,6 +53,11 @@ export function getBaseTemplate({ title, description, actionUrl, actionLabel, fo
             ${actionUrl && actionLabel ? `
             <div style="text-align: center; margin-top: 32px;">
                 <a href="${actionUrl}" class="button">${actionLabel}</a>
+            </div>
+            ` : ''}
+            ${legalNotice ? `
+            <div class="legal-notice" style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 13px; line-height: 1.5; color: #6b7280;">
+                ${legalNotice}
             </div>
             ` : ''}
         </div>

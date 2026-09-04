@@ -23,6 +23,8 @@ import { formatCurrencyFull } from "@/lib/agent/format"
 import { formatDate as formatDateShared } from "@/lib/i18n/format"
 import { daysLeftLabel } from "@/lib/wallet/days-left-label"
 import { EmptyState, RenewalPreviewRow } from "@/components/ui/EmptyState"
+import { StatTile } from "@/components/ui/StatTile"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import type { RenewalView } from "./actions"
 import { updateRenewalOutcome, getAgentRenewals, sendBatchRenewalReminder } from "./actions"
 import { useDialog } from "@/hooks/useDialog"
@@ -319,25 +321,28 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
     // has always been here was never put in front of it.)
     const dayLabels = { today: t.expiresToday, tomorrow: t.expiresTomorrow, suffix: t.daysLeftSuffix }
 
+    // Status pills on the status TOKENS, the state as a word: no palette
+    // literals, no CSS uppercase (Greek capitals drop the tonos).
+    const pill = "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-caption font-semibold"
     const getStatusBadge = (status: string, daysLeft: number) => {
         if (status === "completed") return (
-            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-status-success bg-primary-soft dark:bg-primary/15 px-2.5 py-1 rounded-full">
-                <CheckCircle2 className="w-3 h-3" /> {t.completed}
+            <span className={`${pill} bg-status-success-tint text-status-success`}>
+                <CheckCircle2 className="h-3 w-3" aria-hidden="true" /> {t.completed}
             </span>
         )
         if (status === "overdue" || status === "lapsed") return (
-            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-rose-700 bg-rose-50 dark:text-rose-400 dark:bg-rose-900/20 px-2.5 py-1 rounded-full">
-                <XCircle className="w-3 h-3" /> {status === "overdue" ? t.overdue : t.lapsed}
+            <span className={`${pill} bg-status-danger-tint text-status-danger`}>
+                <XCircle className="h-3 w-3" aria-hidden="true" /> {status === "overdue" ? t.overdue : t.lapsed}
             </span>
         )
         if (daysLeft <= 7) return (
-            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20 px-2.5 py-1 rounded-full">
-                <AlertTriangle className="w-3 h-3" /> {daysLeftLabel(daysLeft, dayLabels)}
+            <span className={`${pill} bg-status-warning-tint text-status-warning`}>
+                <AlertTriangle className="h-3 w-3" aria-hidden="true" /> {daysLeftLabel(daysLeft, dayLabels)}
             </span>
         )
         return (
-            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-neutral-600 bg-neutral-100 dark:text-neutral-400 dark:bg-neutral-800 px-2.5 py-1 rounded-full">
-                <Clock className="w-3 h-3" /> {daysLeftLabel(daysLeft, dayLabels)}
+            <span className={`${pill} bg-muted text-muted-foreground`}>
+                <Clock className="h-3 w-3" aria-hidden="true" /> {daysLeftLabel(daysLeft, dayLabels)}
             </span>
         )
     }
@@ -349,50 +354,44 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
         formatDateShared(iso, language === "el" ? "el" : "en", { day: "2-digit", month: "short", year: "numeric" })
 
     return (
-        <div className="pw-page-shell min-h-screen">
-            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-                {/* Header */}
-                <div className="mb-10 text-center sm:text-left">
-                    <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
-                        {t.title}
-                    </h1>
-                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
-                        {t.subtitle}
-                    </p>
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-page-wide space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* Header — what the screen is. The «PIPELINE» eyebrow is gone:
+                    the heading carries its own weight. */}
+                <div className="min-w-0">
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{t.title}</h1>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.subtitle}</p>
                 </div>
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-                    <StatCard icon={CalendarClock} label={t.expiringThisWeek} value={stats.expiringThisWeek} accent="amber" />
-                    <StatCard icon={Clock} label={t.expiringThisMonth} value={stats.expiringThisMonth} accent="blue" />
-                    <StatCard icon={ShieldAlert} label={t.overdue} value={stats.overdue} accent="rose" />
-                    <StatCard icon={CheckCircle2} label={t.completedThisMonth} value={stats.completedThisMonth} accent="emerald" />
-                    <StatCard icon={Euro} label={t.premiumAtRisk} value={formatCurrencyFull(stats.premiumAtRisk, language === "el" ? "el" : "en")} accent="orange" />
-                    <StatCard icon={TrendingUp} label={t.totalTracked} value={stats.total} accent="slate" />
+                {/* Six fact tiles on the shared StatTile — the accent tints the
+                    glyph only; the number stays in the text colour. */}
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+                    <StatTile icon={CalendarClock} label={t.expiringThisWeek} value={stats.expiringThisWeek} accent="warning" />
+                    <StatTile icon={Clock} label={t.expiringThisMonth} value={stats.expiringThisMonth} accent="brand" />
+                    <StatTile icon={ShieldAlert} label={t.overdue} value={stats.overdue} accent="critical" />
+                    <StatTile icon={CheckCircle2} label={t.completedThisMonth} value={stats.completedThisMonth} accent="positive" />
+                    <StatTile icon={Euro} label={t.premiumAtRisk} value={formatCurrencyFull(stats.premiumAtRisk, language === "el" ? "el" : "en")} accent="warning" />
+                    <StatTile icon={TrendingUp} label={t.totalTracked} value={stats.total} />
                 </div>
 
-                {/* Filters + Batch Actions */}
-                <div className="flex flex-wrap items-center gap-3 mb-6">
-                    <div className="flex items-center gap-1.5">
-                        <Filter className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
-                        <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.filterBy}:</span>
+                {/* Filters — the status switch on the segmented recipe, the
+                    timeframe as a select, the batch action when rows are ticked. */}
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="pw-segmented pw-scroll-strip min-w-0" role="group" aria-label={t.filterBy}>
+                        {["all", "pending", "overdue", "completed", "lapsed"].map((s) => (
+                            <button
+                                key={s}
+                                type="button"
+                                onClick={() => handleFilterChange(s)}
+                                disabled={isFiltering}
+                                aria-busy={isFiltering}
+                                aria-pressed={statusFilter === s}
+                                className="pw-segment disabled:cursor-progress"
+                            >
+                                {s === "all" ? t.all : s === "pending" ? t.pending : s === "overdue" ? t.overdue : s === "completed" ? t.completed : t.lapsed}
+                            </button>
+                        ))}
                     </div>
-                    {["all", "pending", "overdue", "completed", "lapsed"].map((s) => (
-                        <button
-                            key={s}
-                            onClick={() => handleFilterChange(s)}
-                            disabled={isFiltering}
-                            aria-busy={isFiltering}
-                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all disabled:cursor-progress ${
-                                statusFilter === s
-                                    ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
-                                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
-                            }`}
-                        >
-                            {s === "all" ? t.all : s === "pending" ? t.pending : s === "overdue" ? t.overdue : s === "completed" ? t.completed : t.lapsed}
-                        </button>
-                    ))}
 
                     <div className="ml-auto flex items-center gap-2">
                         <select
@@ -453,21 +452,28 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                     )
                 ) : (
                     <div className="pw-card overflow-hidden">
-                        {/* thead is sr-only below lg, so the column headers cannot be used
-                            on a phone — this drives the same sort state. */}
-                        <MobileSortControl
-                            sort={sort}
-                            onSort={toggle}
-                            onClear={() => setSort(null)}
-                            columns={[{ key: "customer", label: t.customer }, { key: "insurer", label: t.insurer }, { key: "lob", label: t.lob }, { key: "premium", label: t.premium }, { key: "expires", label: t.expires }]}
-                            label={t.sortLabel}
-                            defaultLabel={t.defaultOrder}
-                            className="mb-3"
-                        />
+                        <div className="pw-pad pb-0">
+                            <CardHead
+                                icon={CalendarClock}
+                                title={t.title}
+                                meta={<span className="tabular-nums">{renewals.length}</span>}
+                            />
+                            {/* thead is sr-only below lg, so the column headers cannot be used
+                                on a phone — this drives the same sort state. */}
+                            <MobileSortControl
+                                sort={sort}
+                                onSort={toggle}
+                                onClear={() => setSort(null)}
+                                columns={[{ key: "customer", label: t.customer }, { key: "insurer", label: t.insurer }, { key: "lob", label: t.lob }, { key: "premium", label: t.premium }, { key: "expires", label: t.expires }]}
+                                label={t.sortLabel}
+                                defaultLabel={t.defaultOrder}
+                                className="mt-3"
+                            />
+                        </div>
                         <TableShell label={t.title}>
                             <table className="pw-stacked-table w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-neutral-100 dark:border-neutral-800">
+                                    <tr className="border-b border-border">
                                         <th className="px-4 py-3 text-left">
                                             <RowCheckbox
                                                 label={t.all}
@@ -480,15 +486,15 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                         <SortableColumn columnKey="lob" sort={sort} onSort={toggle} label={t.lob} align="left" />
                                         <SortableColumn columnKey="premium" sort={sort} onSort={toggle} label={t.premium} align="right" />
                                         <SortableColumn columnKey="expires" sort={sort} onSort={toggle} label={t.expires} align="center" />
-                                        <th className="px-4 py-3 text-center text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.status}</th>
-                                        <th className="px-4 py-3 text-right text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.actions}</th>
+                                        <th className="px-4 py-3 text-center text-caption font-semibold text-muted-foreground">{t.status}</th>
+                                        <th className="px-4 py-3 text-right text-caption font-semibold text-muted-foreground">{t.actions}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {renewals.map((r) => {
                                         const isActionable = r.status === "pending" || r.status === "overdue"
                                         return (
-                                            <tr key={r.id} className="border-b border-neutral-50 dark:border-neutral-800/50 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors">
+                                            <tr key={r.id} className="border-b border-border/60 transition-colors hover:bg-muted/40">
                                                 <td className="px-4 py-3">
                                                     {isActionable && (
                                                         <RowCheckbox
@@ -499,20 +505,20 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                     )}
                                                 </td>
                                                 <td data-label={t.customer} className="px-4 py-3">
-                                                    <span className="font-bold text-foreground">{r.customerName}</span>
+                                                    <span className="font-semibold text-foreground">{r.customerName}</span>
                                                     <br />
-                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400">{r.policyNumber}</span>
+                                                    <span className="text-caption text-muted-foreground">{r.policyNumber}</span>
                                                 </td>
-                                                <td data-label={t.insurer} className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{displayInsurerName(r.insurerName)}</td>
+                                                <td data-label={t.insurer} className="px-4 py-3 text-foreground">{displayInsurerName(r.insurerName)}</td>
                                                 <td data-label={t.lob} className="px-4 py-3">
-                                                    <span className="text-xs font-bold text-neutral-500 bg-muted dark:text-neutral-400 px-2 py-0.5 rounded">
+                                                    <span className="rounded-full bg-muted px-2 py-0.5 text-caption font-medium text-foreground">
                                                         {normalizeBranch(r.lineOfBusiness).label[language]}
                                                     </span>
                                                 </td>
-                                                <td data-label={t.premium} className="px-4 py-3 text-right font-bold text-foreground">
+                                                <td data-label={t.premium} className="px-4 py-3 text-right font-semibold tabular-nums text-foreground">
                                                     {r.premiumAmount ? formatCurrencyFull(r.premiumAmount, language === "el" ? "el" : "en") : "—"}
                                                 </td>
-                                                <td data-label={t.expires} className="px-4 py-3 text-center text-neutral-600 dark:text-neutral-400">
+                                                <td data-label={t.expires} className="px-4 py-3 text-center text-muted-foreground">
                                                     {formatDate(r.policyEndDate)}
                                                 </td>
                                                 <td data-label={t.status} className="px-4 py-3 text-center">
@@ -522,12 +528,12 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                         missing connection is the one hole worth flagging.
                                                         Suppressed rows (completed/renewed) show nothing. */}
                                                     {r.readiness.ready && (
-                                                        <span className="mt-1 block text-kicker font-bold uppercase tracking-wider text-primary dark:text-mint">
+                                                        <span className="mt-1 block text-caption font-semibold text-primary dark:text-mint">
                                                             {t.readyToContact}
                                                         </span>
                                                     )}
                                                     {!r.readiness.ready && r.readiness.missing.includes('consent_to_contact') && (
-                                                        <span className="mt-1 block text-kicker font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                                        <span className="mt-1 block text-caption text-muted-foreground">
                                                             {t.noActiveConnection}
                                                         </span>
                                                     )}
@@ -540,14 +546,14 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                                 setOutcomeChoice("renewed_same_insurer")
                                                                 setOutcomeNotes("")
                                                             }}
-                                                            className="inline-flex items-center gap-1 text-xs font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
+                                                            className="inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary transition-colors hover:underline dark:text-mint"
                                                         >
                                                             <RefreshCw className="w-3.5 h-3.5" />
                                                             {t.markOutcome}
                                                         </button>
                                                     )}
                                                     {r.outcome && (
-                                                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                                                        <span className="text-caption text-muted-foreground">
                                                             {r.outcome.replace(/_/g, " ")}
                                                         </span>
                                                     )}
@@ -564,11 +570,11 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                 {/* Outcome Modal */}
                 {outcomeModal && (
                     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div ref={renewDialogRef} role="dialog" aria-modal="true" aria-labelledby={renewTitleId} tabIndex={-1} className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
-                            <h3 id={renewTitleId} className="text-lg font-black text-foreground">
+                        <div ref={renewDialogRef} role="dialog" aria-modal="true" aria-labelledby={renewTitleId} tabIndex={-1} className="pw-card w-full max-w-md space-y-5 p-6 shadow-xl">
+                            <h3 id={renewTitleId} className="text-title font-semibold text-foreground">
                                 {t.markOutcome}
                             </h3>
-                            <p className="text-sm text-neutral-500 dark:text-neutral-400">{outcomeModal.customerName}</p>
+                            <p className="text-sm text-muted-foreground">{outcomeModal.customerName}</p>
 
                             <div className="space-y-2">
                                 {([
@@ -579,10 +585,8 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                 ] as [OutcomeType, string][]).map(([value, label]) => (
                                     <label
                                         key={value}
-                                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
-                                            outcomeChoice === value
-                                                ? "bg-primary-tint dark:bg-primary/15 ring-2 ring-primary"
-                                                : "bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                                        className={`pw-subcard flex min-h-11 cursor-pointer items-center gap-3 p-3 transition-colors ${
+                                            outcomeChoice === value ? "ring-2 ring-primary" : "hover:bg-muted"
                                         }`}
                                     >
                                         <input
@@ -593,7 +597,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                             onChange={() => setOutcomeChoice(value)}
                                             className="accent-primary"
                                         />
-                                        <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200">{label}</span>
+                                        <span className="text-sm font-semibold text-foreground">{label}</span>
                                     </label>
                                 ))}
                             </div>
@@ -602,7 +606,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                 {/* Was a sibling <label> with no htmlFor, so the
                                     textarea had no accessible name — on the field
                                     that records WHY a renewal lapsed. */}
-                                <label htmlFor="renewal-outcome-notes" className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.notes}</label>
+                                <label htmlFor="renewal-outcome-notes" className="text-caption font-medium text-muted-foreground">{t.notes}</label>
                                 <textarea
                                     id="renewal-outcome-notes"
                                     value={outcomeNotes}
@@ -615,7 +619,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setOutcomeModal(null)}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-muted text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                                    className="pw-soft-button flex-1"
                                 >
                                     {t.cancel}
                                 </button>
@@ -631,41 +635,6 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                     </div>
                 )}
             </div>
-        </div>
-    )
-}
-
-// ---------------------------------------------------------------------------
-// Stat card
-// ---------------------------------------------------------------------------
-
-function StatCard({
-    icon: Icon,
-    label,
-    value,
-    accent,
-}: {
-    icon: React.ComponentType<{ className?: string }>
-    label: string
-    value: string | number
-    accent: string
-}) {
-    const accentMap: Record<string, string> = {
-        amber: "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20",
-        blue: "text-primary bg-primary-tint dark:text-mint dark:bg-primary/15",
-        rose: "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-900/20",
-        emerald: "text-primary bg-primary-soft dark:text-mint dark:bg-primary/15",
-        orange: "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20",
-        slate: "text-neutral-600 bg-neutral-50 dark:text-neutral-400 dark:bg-neutral-800",
-    }
-
-    return (
-        <div className="pw-card pw-pad-tight">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${accentMap[accent] ?? accentMap.slate}`}>
-                <Icon className="w-4 h-4" />
-            </div>
-            <p className="text-xl font-black text-foreground">{value}</p>
-            <p className="text-kicker font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-0.5">{label}</p>
         </div>
     )
 }

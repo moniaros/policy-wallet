@@ -53,14 +53,18 @@ export function FloatingActionButton({
         return () => document.removeEventListener('keydown', onKeyDown)
     }, [isExpanded])
 
+    // Below lg the shell's floating tab bar owns the bottom of the screen
+    // (--pw-bottom-nav-h plus the safe area), so the button sits just above
+    // it; from lg there is no bar and the classic corner offset returns.
+    const phoneBottom = 'bottom-[calc(var(--pw-bottom-nav-h)+env(safe-area-inset-bottom,0px)+0.5rem)] lg:bottom-6'
     const getPositionClasses = () => {
         switch (position) {
             case 'bottom-right':
-                return 'bottom-6 right-6'
+                return `${phoneBottom} right-6`
             case 'bottom-left':
-                return 'bottom-6 left-6'
+                return `${phoneBottom} left-6`
             case 'bottom-center':
-                return 'bottom-6 left-1/2 -translate-x-1/2'
+                return `${phoneBottom} left-1/2 -translate-x-1/2`
         }
     }
 
@@ -140,7 +144,7 @@ export function FloatingActionButton({
                             >
                                 {/* Label — aria-hidden because the button already carries it as its
                                     accessible name; announcing it twice is noise. */}
-                                <span aria-hidden="true" className="px-3 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold rounded-xl shadow-lg whitespace-nowrap border border-slate-200 dark:border-slate-700">
+                                <span aria-hidden="true" className="whitespace-nowrap rounded-xl border border-border bg-card px-3 py-2 text-sm font-semibold text-foreground shadow-lg">
                                     {action.label}
                                 </span>
 
