@@ -11,6 +11,7 @@ import { NotificationWatcher } from "@/components/notifications/NotificationWatc
 import { NeedsClaim } from "@/components/needs/NeedsClaim"
 import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
+import { AppProviders } from "@/components/providers/AppProviders"
 import { getClientPlanFacts } from "@/lib/pricing/plan-catalog"
 import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
@@ -199,6 +200,7 @@ export default async function ProtectedLayout({
         // Mounts the EL+EN dictionary for the whole protected tree. It wraps
         // AppShell rather than sitting inside it because the shell itself
         // (AppShell/MainNav/UserMenu) reads `t`.
+        <AppProviders>
         <TranslationsProvider>
         <AppShell
             user={{
@@ -230,5 +232,6 @@ export default async function ProtectedLayout({
             <PlanFactsProvider facts={planFacts}>{children}</PlanFactsProvider>
         </AppShell>
         </TranslationsProvider>
+        </AppProviders>
     )
 }

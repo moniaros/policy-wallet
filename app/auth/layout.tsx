@@ -1,4 +1,5 @@
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
+import { AppProviders } from "@/components/providers/AppProviders"
 import { AuthLanguageProvider } from "./AuthLanguageProvider"
 
 /**
@@ -22,8 +23,10 @@ export default function AuthLayout({
         // /auth/signin consumes `t`, so ?lang=en produced <html lang="en">
         // over an entirely Greek page there while its siblings (which call
         // getTranslations(language) directly) rendered English.
-        <AuthLanguageProvider>
-            <TranslationsProvider>{children}</TranslationsProvider>
-        </AuthLanguageProvider>
+        <AppProviders>
+            <AuthLanguageProvider>
+                <TranslationsProvider>{children}</TranslationsProvider>
+            </AuthLanguageProvider>
+        </AppProviders>
     )
 }

@@ -26,6 +26,13 @@ describe('reduced motion is honoured app-wide', () => {
         // initial/animate props — MotionConfig reducedMotion="user" does.
         const provider = readFileSync('components/providers/MotionProvider.tsx', 'utf-8')
         expect(provider).toContain('reducedMotion="user"')
-        expect(readFileSync('app/layout.tsx', 'utf-8')).toContain('MotionProvider')
+        // The config mounts through AppProviders in every layout that has
+        // framer-motion consumers — the marketing routes deliberately do not
+        // carry it (or framer-motion) at all.
+        expect(readFileSync('components/providers/AppProviders.tsx', 'utf-8')).toContain('<MotionProvider>')
+        for (const layout of ['app/(protected)/layout.tsx', 'app/auth/layout.tsx', 'app/onboarding/layout.tsx']) {
+            expect(readFileSync(layout, 'utf-8'), layout).toContain('<AppProviders>')
+        }
+        expect(readFileSync('app/layout.tsx', 'utf-8')).not.toContain('MotionProvider')
     })
 })
