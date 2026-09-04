@@ -186,7 +186,11 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
-1. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix).
+1. Marketing weight: the provider split is DONE (`perf/marketing-route-group`, AppProviders in
+   the app layouts) and measured — it removes one script and no bytes; the public routes load
+   ~2.1 MB raw JS either way (554 KB framework chunk, a 319 KB unattributed chunk, a 122 KB chunk
+   with framer-motion markers no home-page import explains). Next: a source-map build and cut
+   what the marketing routes actually pull. The «~220KB» estimate was wrong.
 2. Restyle the remaining legacy bands (WhyDifferent, ClearLimits, FAQ, final CTA — how-it-works and who-it-is-for done)
    onto Grafí and finish the G4 primitive remainder.
 3. When legal returns Terms §3 + IDD: de-noindex the partners pair and add its hreflang link.
