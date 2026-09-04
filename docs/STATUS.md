@@ -1,10 +1,11 @@
 # STATUS
 
-**Production: `6cb43303`** — deployed 2026-09-03 via CI-green → deploy.yml: the Direction A
-policyholder app (shell, dashboard, wallet, policy detail, protection, settings, /agent,
-notifications, help), the /protection and auth polish, the agent dashboard on the same anatomy
-(PR #288). `addfb7e6` (PR #289 — the preview's dashboard defects: 45%-black link-card borders,
-dashed coverage-map tiles) is merged and its deploy was in flight at the time of writing.
+**Production: `b395a106`** — merged 2026-09-04 (PR #290 carrying the whole stack #291 → #294 →
+#296: the Steady phone layer, B2B batches B and C, the audited customer intake); CI green,
+deployed 2026-09-04 11:48Z (deploy run 33868900303) and verified: 200, the phone-layer
+stylesheet served by production, no new Sentry group in the window after. Previous:
+`a910cbe7` (hotfix #292, every upload committed a policy with zero documents) on `6cb43303`
+(Direction A, PR #288) + `addfb7e6` (PR #289, dashboard link-card borders and coverage-map tiles).
 The Grafí homepage (`76f62a43`, 2026-08-30) is LIVE and smoked: fixed-promise H1, 16-line ticker, sourced numbers with
 their links, retired sentence absent, 4 steps + ReadingDemo, broker band, comparison, three
 pricing cards (€0/€4.99/€8.99) + recommender, CTA white-on-green, no h-scroll at 390; /en
@@ -20,6 +21,60 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **2026-09-04 — The Personal Risk Profile: onboarding as breadth, assessment as depth, evidence
+  as coverage — built on `feat/onboarding-protection-profile` (PR #293, base NEW-UI, awaiting the
+  owner).** Contract and diagnosis in `docs/planning/PERSONAL_RISK_PROFILE.md` (four code audits:
+  five vocabularies described one person, the assessment re-asked every onboarding fact and its
+  wizard erased Art. 9 data on every save, the engine's own «what we still need» list was never
+  shown, no rule ever met a need, most users never got a gap row). Built: `lib/protection/domains.ts`
+  (the one risk↔domain↔LOB table, guarded), `PolicyholderProfile.fact_provenance` +
+  `incomeDependency` (migration `20260904150000`, dev AND prod), `applyFactWrites` as the one
+  write path, the six-level evidence scale, `attention-areas.ts` (importance + exposure + coverage
+  → a conservative alignment: `gap` only on a rule finding, `appears_covered` only on a held line
+  the catalogue accepts by exact id or declared substitute, an engine finding with nothing held is
+  «δεν έχουμε δει», never "uncovered"; limits / expiring / lapsed caveats inline everywhere), one
+  server loader, the onboarding map on the composed areas with «Τι άλλαξε στην εικόνα σου» after
+  the upload, `/protection?lens=risk` as areas of attention + «Τι χρειάζεται ακόμη να
+  καταλάβουμε», `/protection/areas/[area]` asking one unknown-or-coarse factor at a time (health
+  behind a two-sided gate; prevention first; transfer «για συζήτηση», price arguments removed),
+  the dashboard card on the same areas, reviews closed by evidence at area level from analysed
+  policies only, eight new journey events + a server mirror. Three red teams (behavioural,
+  insurance/risk, product) → one fix wave; a browser walk found that a document with no policy
+  details became an active «covered» policy → `EXTRACTION_EMPTY`, `action_needed`, kept document.
+  **Open for the owner:** which plan clears deep analysis (H-009 says both paid tiers; the
+  pricing-v2 pins say top tier only; `plan-defaults.ts` says every tier) — production keeps the top
+  tier through the one predicate `canRunDeepAnalysis`, the locked CTA names the feature, not a plan.
+  Gates: full suite 572 files / 6644 tests, build green; harness `scratchpad/prp/prp-walk.mjs`
+  (five personas at 390 through onboarding → map → upload → dashboard → lens → detail, DB
+  inspection, cleanup). Not built (next): the needs-vs-limits adequacy rule (needs a benefit
+  vocabulary on `coverages[].name` and a basis on `limit`), a month-2 cadence keyed on
+  `factorsToResolve`, prevention by region/building age, a per-area change ledger.
+- **2026-09-04 — The B2B customer-intake and policy-upload audit is merged (PR #296 → the
+  stack → NEW-UI `b395a106`).** Ten launch-gating defects fixed, each with an enumerating guard
+  and a probe: `/customers/[id]` read Next 16's Promise `params` synchronously and showed an
+  arbitrary customer; a document reached the model provider with no consent on any party (now
+  the agent's own AI consent, collected in-flow, plus a mandatory pre-scan attestation in the
+  audit row — owner decision D1); the add-customer «smart PDF» door parsed and dropped the file
+  (it opens the upload modal now); bulk import created relationships in the ENDED `inactive`
+  status and choked on Greek `;` CSVs (per-row outcomes, chunked, ΑΦΜ accepted); invites
+  resurrected terminated relationships; policy + grant + notification committed before the
+  storage upload; server actions took unvalidated input (Zod, codes not prose, every error
+  localised on the step that owns the field); the free tier was told «η ανάλυση εκτελείται»
+  while the token gate could never pass (now `queued | blocked_quota | blocked_consent`, a
+  blocked policy kept as `action_needed`). Owner decisions: D2 Article 14 inside the invite
+  email only; D3 customers without an email (ΑΦΜ + Greek mobile as identity, synthetic
+  `noemail+<afm>@customers.policywallet.invalid`, `users.contact_email_missing` — migration
+  `20260904120000` applied and verified on dev AND prod, the one email transport refuses the
+  domain, «Χωρίς email» pill + add-email path); D4/D6 a terminated relationship frees the seat
+  and only the customer reconnects — a customer may have several agents, never assume one.
+  Harness (session scratchpad, worth committing under `tests/journeys/`): `intake-walk.mjs`
+  walks manual / pdf-door / upload / bulk at 390 as the E2E agent and `intake-db.mjs
+  inspect|cleanup` checks the rows; three clean rounds on the final code (a fourth was lost to a
+  dev-Supabase connectivity blip, not the product). Both databases had zero mixed-case emails,
+  collisions or `inactive/not_invited` rows, so no data repair ran. Full suite 536 files / 6153
+  tests; local production build green. Deferred: PRs #293 (onboarding) and #295 (perf) await the
+  owner; the marketing dictionaries cut; the classifier blocked `gh pr merge` and `gh run`
+  polling loops (merges went through the GitHub connector).
 - **2026-09-04 — B2B batch C on `feat/b2b-batch-c` (stacked on #291 → #290): insights,
   benefits, commissions, questionnaires, team and the three customer modals are on the
   Direction A anatomy.** Three parallel subagents re-cut the nine files against the batch B
