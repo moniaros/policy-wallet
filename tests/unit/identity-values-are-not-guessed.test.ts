@@ -74,9 +74,13 @@ describe("random values that are matched on come from a real generator", () => {
         expect(readFileSync("components/wallet/BatchUploadModal.tsx", "utf-8")).toContain(
             "crypto.randomUUID()"
         )
-        expect(readFileSync("lib/services/policy.service.ts", "utf-8")).toMatch(
-            /PENDING-\$\{crypto\.randomUUID\(\)/
+        // The upload path no longer mints its own placeholder: the ONE minter is
+        // lib/wallet/policy-identity.ts mintPlaceholderIdentity, which draws the
+        // suffix from crypto.randomUUID().
+        expect(readFileSync("lib/wallet/policy-identity.ts", "utf-8")).toMatch(
+            /\$\{PLACEHOLDER_POLICY_NUMBER_PREFIX\}\$\{crypto\.randomUUID\(\)/
         )
+        expect(readFileSync("lib/services/policy.service.ts", "utf-8")).not.toMatch(/PENDING-\$\{/)
     })
 })
 

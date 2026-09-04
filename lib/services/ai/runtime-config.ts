@@ -35,6 +35,7 @@ export const CONFIGURABLE_OPERATIONS: RouteOperation[] = [
     "askQuestion",
     "analyzeRiskProfile",
     "translate",
+    "classifyDocument",
 ]
 
 const VALID_PROVIDERS: ReadonlySet<string> = new Set(["gemini", "anthropic", "openai", "mock"])

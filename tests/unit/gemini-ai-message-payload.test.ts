@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { asValidatedForTests } from "../helpers/validated-document"
 import { providerDocumentFileName } from '@/lib/wallet/document-label'
 import type { AIDocument, GapDefinitionForAI, PolicyMetadata } from '@/lib/services/ai/ai-service.interface'
 import { GeminiAIService } from '@/lib/services/ai/gemini-ai.service'
@@ -129,7 +130,7 @@ describe('GeminiAIService message payload shape', () => {
 
     const service = new GeminiAIService('test-api-key')
 
-    await service.extractPolicyData(doc)
+    await service.extractPolicyData(asValidatedForTests(doc))
     await service.analyzeGaps(doc, metadata, gapDefinitions)
     await service.analyzePolicyClarity(doc, metadata, checklist)
 

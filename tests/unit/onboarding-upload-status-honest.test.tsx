@@ -9,6 +9,12 @@ vi.mock("@/app/onboarding/actions", () => ({
     triggerOnboardingAnalysis: (...a: unknown[]) => triggerOnboardingAnalysis(...(a as [])),
 }))
 vi.mock("@/components/ui/AiConsentModal", () => ({ AiConsentModal: () => null }))
+// The screen reads the shared gate copy (wallet.batchUpload.failures) through
+// useLanguage; render it with the Greek dictionary, no provider needed.
+vi.mock("@/contexts/LanguageContext", async () => {
+    const { el } = await import("@/lib/i18n/translations/el")
+    return { useLanguage: () => ({ t: el, language: "el", setLanguage: () => undefined }) }
+})
 
 import { UploadScreen } from "@/components/onboarding/protection-profile/UploadScreen"
 

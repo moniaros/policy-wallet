@@ -35,14 +35,16 @@ describe("the document extension check", () => {
         expect(isAcceptedImageFile("ae1c5683-7466-4c09-934c-c541a7100fa6.jpg")).toBe(true)
     })
 
-    it("is wired to the storage key in the add-policy action, not to fileName", () => {
+    it("the add-policy action no longer judges a document by any name or key: it hands the bytes to the ingestion service", () => {
+        // The browser→storage path is gone (Sept 2026). The file travels IN the
+        // action and lib/ingestion/ingest-policy-document.ts validates its
+        // CONTENT (magic bytes, then the document gate) before anything is
+        // stored — so there is no extension check left here to get wrong.
         const src = readFileSync("app/(protected)/wallet/actions.ts", "utf-8")
-        const call = /const hasValidExt = ([^\n]+)/.exec(src)
-        expect(call, "the extension check moved or was renamed").not.toBeNull()
-        expect(call![1]).toMatch(/storageKey/)
-        expect(
-            call![1],
-            "validating fileName means validating a generated label, which never has an extension"
-        ).not.toMatch(/\bfileName\b/)
+        expect(src).toMatch(/ingestPolicyDocument\(/)
+        expect(src).not.toMatch(/const hasValidExt = /)
+        expect(src).not.toMatch(/documentUrls/)
+        const ingest = readFileSync("lib/ingestion/ingest-policy-document.ts", "utf-8")
+        expect(ingest).toMatch(/validateUploadFile\(input\.file/)
     })
 })

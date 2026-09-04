@@ -1,0 +1,10 @@
+// Probe for tests/unit/document-gate-before-model.test.ts — RED. A brand cast
+// outside lib/ingestion/validated-document.ts forges a gate verdict. Expected
+// finding: one forged brand, in forgedProbe.
+import type { ValidatedAIDocument } from "@/lib/ingestion/validated-document"
+import { getAIService } from "@/lib/services/ai"
+
+export async function forgedProbe(data: string) {
+    const document = { data, mimeType: "application/pdf" } as ValidatedAIDocument
+    return getAIService().extractPolicyData(document)
+}

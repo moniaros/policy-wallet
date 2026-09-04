@@ -11,6 +11,16 @@ import type { DocumentKind, EvidenceVerdict } from "./document-kind"
 /**
  * Document to be analyzed by AI
  */
+/**
+ * The extraction contract takes a `ValidatedAIDocument` — an AIDocument the
+ * document gate has passed (lib/ingestion/validated-document.ts). Providers
+ * still implement the method over the plain shape; the brand is enforced at
+ * the call site, where the bytes and the verdict are both in hand.
+ */
+export type { ValidatedAIDocument } from "@/lib/ingestion/validated-document"
+import type { ValidatedAIDocument } from "@/lib/ingestion/validated-document"
+import type { BranchFamily, DocumentType } from "@/lib/ingestion/types"
+
 export interface AIDocument {
     /** Base64-encoded document data */
     data: string
@@ -337,6 +347,33 @@ export type AICapabilityOperation =
     | "analyzePolicyClarity"
     | "askQuestion"
     | "analyzeRiskProfile"
+    | "classifyDocument"
+
+// ── Document classification (the document gate's cheap model stage) ────────
+//
+// What the gate hands the model is an EXCERPT — the first ~6,000 characters of
+// text, or the first pages of a scan — never the whole document, and never
+// before the deterministic stages have failed to settle the question
+// (lib/ingestion/document-gate.ts). The answer is a closed vocabulary.
+
+export type AIClassificationInput =
+    | { kind: "text"; text: string; declaredBranch: string | null }
+    | { kind: "document"; data: string; mimeType: string; declaredBranch: string | null }
+
+export interface AIDocumentClassification {
+    documentType: DocumentType
+    isInsuranceDocument: boolean
+    /** 0..1 */
+    insuranceConfidence: number
+    detectedBranch: BranchFamily | null
+    /** 0..1 */
+    branchConfidence: number
+    /** False when the excerpt could not be read at all. */
+    readable: boolean
+    /** Short phrases from the excerpt that justify the verdict. */
+    signals: string[]
+    usage?: AITokenUsage
+}
 
 export interface AICapabilityMetadata {
     provider: "gemini" | "openai" | "anthropic" | "mock"
@@ -385,7 +422,14 @@ export interface IAIService {
      * @returns Extracted policy information
      * @throws {Error} If extraction fails
      */
-    extractPolicyData(document: AIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse>
+    extractPolicyData(document: ValidatedAIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse>
+
+    /**
+     * Classifies an EXCERPT of an upload for the document gate: what kind of
+     * document, how surely insurance, which branch family. Cheapest model,
+     * closed schema, untrusted-content framing. Never the whole document.
+     */
+    classifyDocument(input: AIClassificationInput, options?: AITrackingOptions): Promise<AIDocumentClassification>
 
     /**
      * Analyzes a policy for coverage gaps

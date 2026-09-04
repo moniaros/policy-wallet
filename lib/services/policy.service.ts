@@ -21,6 +21,9 @@ import { refreshProtectionScore } from '@/lib/services/gap-engine'
 import { resolveCoverageEndDate } from '@/lib/policy-status'
 import { policyLabel } from '@/lib/wallet/policy-identity'
 import { classifyAnalysisFailure, discardFailedPolicy, discardOrphanedUploads } from '@/lib/services/policy-discard'
+import { ingestPolicyDocument, DocumentGateError, type IngestFailure } from '@/lib/ingestion/ingest-policy-document'
+import type { GateSurface } from '@/lib/ingestion/types'
+import { hasPlaceholderIdentity } from '@/lib/wallet/policy-identity'
 import { recordConversionEvent } from '@/lib/journey/conversion-events'
 import type { Policy, PolicyDocument } from '@prisma/client'
 import type {
@@ -324,92 +327,36 @@ export class PolicyService extends BaseService {
     async uploadAndParse(
         userId: string,
         file: File,
-        language: 'en' | 'el' = 'en'
+        language: 'en' | 'el' = 'en',
+        options: {
+            surface?: Extract<GateSurface, 'wallet_upload' | 'onboarding'>
+            /** The branch the person selected, if the surface has a selector. */
+            declaredBranch?: string | null
+            /** The person resolved a `requires_review` verdict on these same bytes. */
+            branchConfirmed?: boolean
+        } = {}
     ): Promise<UploadAndParseResult> {
-        // 1. Initial Validation — content-based (magic bytes + extension
-        // allowlist), never the client Content-Type header alone. This is the
-        // localized-error front door; uploadFile re-validates centrally.
-        const validation = await validateUploadFile(file, { category: 'policy' })
-        if (!validation.ok) {
-            if (validation.reason === 'encrypted') {
-                throw AppError.validation({
-                    file: [language === 'el'
-                        ? 'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
-                        : 'This PDF is password-protected. Save an unlocked copy and upload that.']
-                })
-            }
-            if (validation.reason === 'too_large') {
-                throw AppError.validation({
-                    file: [language === 'el'
-                        ? `Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
-                        : `File too large. Maximum size is ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`]
-                })
-            }
-            throw AppError.validation({
-                file: [language === 'el'
-                    ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
-                    : 'Invalid file type. Allowed: PDF, JPG, PNG, WEBP, and HEIC']
-            })
-        }
+        // ONE door. Bytes, then the document gate, then storage, then the
+        // Policy + PolicyDocument rows in one transaction — in that order
+        // (lib/ingestion/ingest-policy-document.ts). Until Sept 2026 this
+        // method uploaded first and created the policy second, and asked what
+        // the file was only when the analysis ran.
+        const result = await ingestPolicyDocument({
+            actorUserId: userId,
+            ownerUserId: userId,
+            file,
+            surface: options.surface ?? 'wallet_upload',
+            mode: 'policy',
+            declaredBranch: options.declaredBranch ?? null,
+            declaredBranchSource: 'user',
+            branchConfirmed: options.branchConfirmed,
+            policyStatus: 'analyzing', // Marks it for background processing
+            processingStatus: 'processing',
+            source: 'policyholder',
+        })
+        if (!result.ok) throw this.ingestFailureToError(result, language)
 
-        // 2. Immediate Upload
-        let fileUrl: string
-        try {
-            fileUrl = await uploadFile(file, 'policies')
-        } catch (error) {
-            // Never log the raw client filename (PII) — uploadFile already
-            // logged the safe rejection reason when validation failed.
-            logger('error', 'File upload failed', { userId, error })
-            throw AppError.externalService('Storage', error instanceof Error ? error : new Error('Upload failed'))
-        }
-
-        // The user's file name is deliberately NOT read here. It is not
-        // sanitized-and-stored, it is discarded: see lib/wallet/document-label.ts.
-
-        // 3. Create 'Analyzing' record immediately
-        // We use placeholders that the AI will soon replace
-        let policy
-        try {
-            policy = await this.create(userId, {
-                insurerName: 'AI Analyzing...',
-                // A collision here is not cosmetic. The duplicate check below
-                // matches on (ownerUserId, policyNumber, insurerName), and every
-                // placeholder shares the insurer 'AI Analyzing...' — so two
-                // in-flight uploads for the same owner that drew the same suffix
-                // look like the same policy, and a merge request goes to the
-                // other party for approval. Approving it would fold two genuinely
-                // different policies into one.
-                //
-                // `Math.random().toString(36).substring(7)` yields fewer than
-                // four characters about once in 4,800 and can in principle yield
-                // none at all, which a batch upload makes concurrent by design.
-                policyNumber: `PENDING-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
-                lineOfBusiness: 'other',
-                startDate: new Date().toISOString(),
-                endDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString(),
-                premiumAmount: 0,
-                status: 'analyzing', // Marks it for background processing
-                documents: [{
-                    url: fileUrl,
-                    // SYNTHETIC, never the user's file name — and never the
-                    // display label either. `create()` reads `name` for ONE
-                    // thing, the extension allowlist, and stores a generated
-                    // label regardless (lib/wallet/document-label.ts). Passing
-                    // the Greek label here (`Ασφαλιστήριο …`, no extension)
-                    // failed that check, so every upload through this path
-                    // committed a policy with ZERO documents and an analysis
-                    // that had nothing to read. The extension is the one the
-                    // content validation established, not the client's.
-                    name: `upload${validation.value.ext}`,
-                    size: file.size
-                }]
-            }, language)
-        } catch (createError) {
-            // The object landed but no record references it — clean it up
-            // rather than leaving an orphan in the bucket.
-            await discardOrphanedUploads([fileUrl], { reason: 'policy_create_failed', userId })
-            throw createError
-        }
+        const policy = await this.db.policy.findUniqueOrThrow({ where: { id: result.policyId } })
 
         // No fileName here. Logs are a sink like any other: the 2026-08-14 run
         // recorded fileName:"motor.pdf", which is the line of business in
@@ -417,6 +364,7 @@ export class PolicyService extends BaseService {
         logger('info', 'Policy upload initiated - analysis deferred to background', {
             userId,
             policyId: policy.id,
+            documentType: result.verdict.documentType,
         })
 
         return {
@@ -424,6 +372,35 @@ export class PolicyService extends BaseService {
             extracted: false, // Will be true later
             policyId: policy.id
         }
+    }
+
+    /**
+     * A refused ingest, as the error each caller already knows how to show:
+     * a gate verdict travels as DocumentGateError (message = the code the
+     * wallet's error mapper localises); a byte-level rejection keeps the
+     * localised validation prose this method has always thrown.
+     */
+    private ingestFailureToError(failure: IngestFailure, language: 'en' | 'el'): Error {
+        if (failure.kind === 'gate') return new DocumentGateError(failure)
+        if (failure.reason === 'encrypted') {
+            return AppError.validation({
+                file: [language === 'el'
+                    ? 'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
+                    : 'This PDF is password-protected. Save an unlocked copy and upload that.']
+            })
+        }
+        if (failure.reason === 'too_large') {
+            return AppError.validation({
+                file: [language === 'el'
+                    ? `Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
+                    : `File too large. Maximum size is ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`]
+            })
+        }
+        return AppError.validation({
+            file: [language === 'el'
+                ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
+                : 'Invalid file type. Allowed: PDF, JPG, PNG, WEBP, and HEIC']
+        })
     }
 
     /**
@@ -452,85 +429,44 @@ export class PolicyService extends BaseService {
         file: File,
         language: 'en' | 'el' = 'en'
     ): Promise<{ documentId: string; policyId: string }> {
-        const validation = await validateUploadFile(file, { category: 'policy' })
-        if (!validation.ok) {
-            if (validation.reason === 'encrypted') {
-                throw AppError.validation({
-                    file: [language === 'el'
-                        ? 'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
-                        : 'This PDF is password-protected. Save an unlocked copy and upload that.']
-                })
-            }
-            if (validation.reason === 'too_large') {
-                throw AppError.validation({
-                    file: [language === 'el'
-                        ? `Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
-                        : `File too large. Maximum size is ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`]
-                })
-            }
-            throw AppError.validation({
-                file: [language === 'el'
-                    ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
-                    : 'Invalid file type. Allowed: PDF, JPG, PNG, WEBP, and HEIC']
-            })
-        }
+        const policy = await this.db.policy.findUnique({
+            where: { id: policyId },
+            select: { ownerUserId: true, lineOfBusiness: true, insurerName: true, policyNumber: true },
+        })
+        if (!policy) throw AppError.notFound('Policy', policyId)
 
-        let fileUrl: string
-        try {
-            fileUrl = await uploadFile(file, 'policies')
-        } catch (error) {
-            logger('error', 'Renewal upload failed', { userId, policyId, error })
-            throw AppError.externalService('Storage', error instanceof Error ? error : new Error('Upload failed'))
-        }
+        // The same door as uploadAndParse, with the policy named up front. The
+        // existing policy's branch is the declared one — read off an analysed
+        // row it is RELIABLE, so a confident cross-family read is refused
+        // outright (a health renewal attached to a motor policy is the wrong
+        // file). A placeholder-identity policy has not been read yet and
+        // declares nothing.
+        const result = await ingestPolicyDocument({
+            actorUserId: userId,
+            ownerUserId: policy.ownerUserId,
+            file,
+            surface: 'renewal',
+            mode: 'policy',
+            existingPolicyId: policyId,
+            declaredBranch: hasPlaceholderIdentity(policy) ? null : policy.lineOfBusiness,
+            declaredBranchSource: 'policy',
+            // Stated up front rather than inferred later: the user told us this
+            // is a renewal by choosing this action, and that is better evidence
+            // than a classifier guess.
+            documentKind: 'renewal_notice',
+            trustDeclaredKind: true,
+            processingStatus: 'processing',
+            // The renewal is in hand and NOTHING has read it yet. Mark the
+            // policy `analyzing` in the same write, synchronously — before the
+            // caller's `after()` defers the actual run — so every surface keyed
+            // on `status === 'analyzing'` stops asserting the pre-renewal verdict.
+            markPolicyAnalyzing: true,
+            source: 'policyholder',
+        })
+        if (!result.ok) throw this.ingestFailureToError(result, language)
 
-        try {
-            const document = await this.db.$transaction(async (tx) => {
-                const created = await tx.policyDocument.create({
-                    data: {
-                        policyId,
-                        fileUrl,
-                        // Generated. The renewal's own period is not known until
-                        // extraction, so the label starts as the renewal base and
-                        // the render path fills the period in.
-                        fileName: storedDocumentLabel({ documentKind: 'renewal_notice' }),
-                        fileSize: file.size,
-                        source: 'policyholder',
-                        processingStatus: 'processing',
-                        uploadedByUserId: userId,
-                        // Stated up front rather than inferred later: the user told
-                        // us this is a renewal by choosing this action, and that is
-                        // better evidence than a classifier guess.
-                        documentKind: 'renewal_notice',
-                    },
-                    select: { id: true },
-                })
-
-                // The renewal is in hand and NOTHING has read it yet. Mark the
-                // policy `analyzing` in the same write, synchronously — before
-                // the caller's `after()` defers the actual run.
-                //
-                // Without this the action returns, revalidatePath flushes, and
-                // the page re-renders the pre-renewal dates: it goes on saying
-                // «Το ασφαλιστήριο έχει λήξει. Δεν έχετε κάλυψη από αυτό.» — a
-                // verdict that is no longer established, over a document that
-                // may well disprove it. `retryAnalysis` has always set this
-                // before deferring; the renewal path was the one that skipped
-                // it, so every surface keyed on `status === 'analyzing'` (the
-                // head chip, AnalysisCard's progress, the wallet-list poller)
-                // stayed dark and the page had nothing honest to show.
-                await tx.policy.update({ where: { id: policyId }, data: { status: 'analyzing' } })
-
-                return created
-            })
-
-            logger('info', 'Renewal document attached', { userId, policyId, documentId: document.id })
-            return { documentId: document.id, policyId }
-        } catch (createError) {
-            // Same rule as the main path: the object landed but nothing
-            // references it, so it is personal data no export can reach.
-            await discardOrphanedUploads([fileUrl], { reason: 'renewal_document_create_failed', userId })
-            throw createError
-        }
+        logger('info', 'Renewal document attached', { userId, policyId, documentId: result.documentId })
+        return { documentId: result.documentId, policyId }
     }
 
     /**
@@ -577,7 +513,9 @@ export class PolicyService extends BaseService {
                     // policy, and this upload is exactly the file the person
                     // may need to look at again.
                     if (basic.status === 'needs_review') {
-                        await this.notifyAnalysisFailed(userId, policyId, language, 'EXTRACTION_EMPTY')
+                        // EXTRACTION_EMPTY, or the document gate's own code
+                        // (DOCUMENT_REJECTED_…) for a stored file it refused.
+                        await this.notifyAnalysisFailed(userId, policyId, language, basic.code ?? 'EXTRACTION_EMPTY')
                         return
                     }
 

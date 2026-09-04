@@ -120,11 +120,43 @@ export const BATCH_FAILURE_SPECS = {
     AI_TIMEOUT: { stage: 'extraction', retryable: true, autoRetry: false, severity: 'error' },
     AI_EXTRACTION_FAILED: { stage: 'extraction', retryable: true, autoRetry: false, severity: 'error' },
 
+    // ---- validation, continued: what the document gate reads locally ----
+    // (lib/ingestion/document-gate.ts — BEFORE storage, BEFORE any model call.)
+    /** More pages than MAX_DOCUMENT_PAGES. Refused before a page is read. */
+    TOO_MANY_PAGES: { stage: 'validation', retryable: false, autoRetry: false, severity: 'warning' },
+    /** A well-formed PDF with no pages. */
+    NO_READABLE_CONTENT: { stage: 'validation', retryable: false, autoRetry: false, severity: 'warning' },
+    /** The same bytes are already in this wallet (PolicyDocument.documentHash). */
+    DUPLICATE_DOCUMENT: { stage: 'portfolio', retryable: false, autoRetry: false, severity: 'info' },
+    /** Too many rejected uploads in the last hour. Clears on its own. */
+    UPLOAD_REJECTIONS_THROTTLED: { stage: 'quota', retryable: true, autoRetry: false, severity: 'warning' },
+
     // ---- recognition: the document is readable and is not a policy ----
+    /**
+     * Not about insurance at all — a menu, a statement, a CV. Decided by the
+     * document gate from the text itself, with no model involved.
+     */
+    NOT_AN_INSURANCE_DOCUMENT: { stage: 'recognition', retryable: false, autoRetry: false, severity: 'warning' },
     /** Classified as a booklet, a form, an invoice — see document-kind.ts. */
     NOT_AN_INSURANCE_POLICY: { stage: 'recognition', retryable: false, autoRetry: false, severity: 'warning' },
     /** Nothing identifying at all: no number, no party, no period. */
     DOCUMENT_NOT_RECOGNIZED: { stage: 'recognition', retryable: false, autoRetry: false, severity: 'warning' },
+    /**
+     * The document is an insurance policy of a DIFFERENT branch than the one
+     * selected (a health schedule declared as motor). Not a defect in the
+     * file: the person changes the type and resubmits.
+     */
+    BRANCH_MISMATCH: { stage: 'recognition', retryable: false, autoRetry: false, severity: 'warning' },
+    /**
+     * An insurance policy whose branch the gate could not confirm against the
+     * selected one. Resolvable: the person confirms the type or changes it.
+     */
+    BRANCH_UNCONFIRMED: { stage: 'recognition', retryable: false, autoRetry: false, severity: 'info' },
+    /**
+     * Plausibly insurance, not certainly a policy (a thin page, a scan the
+     * gate could not classify). Resolvable: the person confirms it is one.
+     */
+    DOCUMENT_REVIEW_REQUIRED: { stage: 'recognition', retryable: false, autoRetry: false, severity: 'info' },
 
     // ---- data quality ----
     REQUIRED_DATA_MISSING: { stage: 'data_quality', retryable: false, autoRetry: false, severity: 'warning' },
@@ -178,6 +210,12 @@ export function specFor(code: BatchFailureCode): BatchFailureSpec {
 export interface BatchFailureContext {
     /** Which kind of document it turned out to be (NOT_AN_INSURANCE_POLICY). */
     documentKind?: string
+    /** The gate's own type vocabulary (lib/ingestion/types.ts DocumentType). */
+    documentType?: string
+    /** Branch FAMILY the gate detected (BRANCH_MISMATCH / BRANCH_UNCONFIRMED), as a write-branch id. */
+    detectedBranch?: string
+    /** The branch the person selected. */
+    declaredBranch?: string
     /** Field names the wallet needed and the document did not state. */
     missingFields?: string[]
     /** Seconds until a throttle clears. */
@@ -321,6 +359,10 @@ function extractContext(payload: unknown): BatchFailureContext {
     const context: BatchFailureContext = {}
 
     if (typeof source.documentKind === 'string') context.documentKind = source.documentKind
+    // The document gate's verdict (lib/ingestion/document-gate.ts).
+    if (typeof source.documentType === 'string') context.documentType = source.documentType
+    if (typeof source.detectedBranch === 'string') context.detectedBranch = source.detectedBranch
+    if (typeof source.declaredBranch === 'string') context.declaredBranch = source.declaredBranch
     if (Array.isArray(source.missingFields)) {
         context.missingFields = source.missingFields.filter((f): f is string => typeof f === 'string')
     }

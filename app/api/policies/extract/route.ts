@@ -9,6 +9,9 @@ import {
     POLICY_EXTRACT_RATE_WINDOW_MS,
 } from "@/lib/constants/time"
 import { validateUploadFile, sanitizeDisplayName } from "@/lib/security/file-upload"
+import { validateDocumentForIngestion, documentKindFor } from "@/lib/ingestion/document-gate"
+import { toValidatedAIDocument } from "@/lib/ingestion/validated-document"
+import { FAMILY_DEFAULT_BRANCH, USER_RESOLVABLE_REVIEW_REASONS } from "@/lib/ingestion/types"
 import { withApiGuard } from "@/lib/api-guard"
 import { canUserAddPolicy } from "@/lib/subscription-limits"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
@@ -58,6 +61,16 @@ const STATUS_FOR_CODE: Partial<Record<BatchFailureCode, number>> = {
     NOT_AN_INSURANCE_POLICY: 422,
     DOCUMENT_NOT_RECOGNIZED: 422,
     REQUIRED_DATA_MISSING: 422,
+    // The document gate (lib/ingestion/document-gate.ts) — decided BEFORE the
+    // billable call, so none of these ever cost a token.
+    NOT_AN_INSURANCE_DOCUMENT: 422,
+    BRANCH_MISMATCH: 422,
+    BRANCH_UNCONFIRMED: 422,
+    DOCUMENT_REVIEW_REQUIRED: 422,
+    TOO_MANY_PAGES: 422,
+    NO_READABLE_CONTENT: 415,
+    DUPLICATE_DOCUMENT: 409,
+    UPLOAD_REJECTIONS_THROTTLED: 429,
 }
 
 function failure(
@@ -164,6 +177,59 @@ export const POST = withApiGuard(
                 return failure(code, { correlationId })
             }
 
+            // ── The document gate ────────────────────────────────────────────
+            // Reads the bytes locally (pages, text, what kind of document this
+            // is) BEFORE the daily spend cap is consumed and BEFORE any model
+            // sees the file. A menu, a bank statement or a booklet ends here at
+            // no cost; only a plausible policy goes on to the extraction.
+            const bytes = Buffer.from(await file.arrayBuffer())
+            const verdict = await validateDocumentForIngestion({
+                bytes,
+                canonicalMime: validation.value.canonicalMime,
+                declaredBranch: null,
+                declaredBranchSource: "user",
+                mode: "policy",
+                surface: "bulk_extract",
+                actorUserId: authResult.dbUser.id,
+                ownerUserId: authResult.dbUser.id,
+                branchConfirmed: formData.get("branchConfirmed") === "true",
+                correlationId,
+            })
+            if (verdict.status !== "validated") {
+                const code: BatchFailureCode = verdict.code ?? "DOCUMENT_NOT_RECOGNIZED"
+                trace("gate", "failed", {
+                    code,
+                    status: verdict.status,
+                    documentType: verdict.documentType,
+                    classifier: verdict.evidence.classifier,
+                    gateMs: verdict.latencyMs,
+                })
+                return failure(
+                    code,
+                    {
+                        correlationId,
+                        documentType: verdict.documentType,
+                        documentKind: documentKindFor(verdict.documentType),
+                        ...(verdict.detectedBranch ? { detectedBranch: FAMILY_DEFAULT_BRANCH[verdict.detectedBranch] } : {}),
+                        ...(verdict.existingPolicyId ? { existingPolicyId: verdict.existingPolicyId } : {}),
+                    },
+                    verdict.status === "requires_review"
+                        ? {
+                              review: {
+                                  reasons: verdict.reviewReasons,
+                                  // The modal may offer «confirm and continue» only for these.
+                                  resolvable: verdict.reviewReasons.every((r) => USER_RESOLVABLE_REVIEW_REASONS.has(r)),
+                              },
+                          }
+                        : undefined
+                )
+            }
+            trace("gate", "passed", {
+                documentType: verdict.documentType,
+                classifier: verdict.evidence.classifier,
+                gateMs: verdict.latencyMs,
+            })
+
             // Instance-independent daily backstop. The withApiGuard limiter above
             // is per-minute; this DB-backed 30/day cap counts the
             // POLICY_EXTRACT_REQUESTED rows written below and holds across
@@ -218,17 +284,14 @@ export const POST = withApiGuard(
                 })
             } catch { /* never fail the parse on a logging error */ }
 
-            const arrayBuffer = await file.arrayBuffer()
-            const base64Data = Buffer.from(arrayBuffer).toString("base64")
-
             trace("extraction", "started", { sizeBytes: file.size })
 
+            // Built from the gate's verdict and the validated bytes — the only
+            // constructor of an extraction input. The MIME is the one the
+            // content established, not the client's claim (this used to send
+            // `file.type`).
             const result = await aiService.extractPolicyData(
-                {
-                    data: base64Data,
-                    mimeType: file.type,
-                    // No file name at all — see AIDocument.
-                },
+                toValidatedAIDocument(verdict, bytes, validation.value.canonicalMime),
                 { userId: authResult.dbUser.id, modelOverride: extractionOverride?.model, operatorGuidance },
             )
 

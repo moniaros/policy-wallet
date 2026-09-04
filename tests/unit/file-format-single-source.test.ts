@@ -86,8 +86,14 @@ describe('one source decides what a file is', () => {
         // for every document and the add-policy flow committed policies with
         // none. Pinning the literal is what let that ship, so assert the
         // property and forbid the variable that cannot carry an extension.
-        expect(src).toMatch(/const hasValidExt = isPdfFile\(storageKey\) \|\| isAcceptedImageFile\(storageKey\)/)
-        expect(src).not.toMatch(/const hasValidExt = [^\n]*\bfileName\b/)
+        // Since Sept 2026 the action hands the FILE to the ingestion service,
+        // which runs validateUploadFile on the bytes — the one source — before
+        // the document gate and before storage. No extension check remains in
+        // the action to drift.
+        expect(src).toMatch(/ingestPolicyDocument\(/)
+        expect(src).not.toMatch(/const hasValidExt = /)
+        const ingest = strip(readFileSync('lib/ingestion/ingest-policy-document.ts', 'utf-8'))
+        expect(ingest).toMatch(/validateUploadFile\(input\.file, \{ category: "policy"/)
     })
 })
 

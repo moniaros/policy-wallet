@@ -62,13 +62,19 @@ vi.mock('@/lib/journey/conversion-events', () => ({
 const userFindUnique = vi.fn()
 const dbTransaction = vi.fn()
 const activityLogCreate = vi.fn()
+const policyCreate = vi.fn()
 vi.mock('@/lib/db', () => ({
     db: {
         user: { findUnique: (...a: unknown[]) => userFindUnique(...a) },
         activityLog: { create: (...a: unknown[]) => activityLogCreate(...a) },
+        // A manual entry (no document) is one atomic policy write.
+        policy: { create: (...a: unknown[]) => policyCreate(...a) },
         $transaction: (...a: unknown[]) => dbTransaction(...a),
     },
 }))
+// A document travels through the ingestion service (its own suite); this file
+// is about the policy cap and the manual entry.
+vi.mock('@/lib/ingestion/ingest-policy-document', () => ({ ingestPolicyDocument: vi.fn() }))
 
 import { createPolicy } from '@/app/(protected)/wallet/actions'
 
@@ -94,6 +100,7 @@ describe('createPolicy at the policy cap', () => {
 
         await expect(createPolicy(validFormData())).resolves.toEqual({ error: 'POLICY_LIMIT_REACHED' })
         expect(dbTransaction).not.toHaveBeenCalled()
+        expect(policyCreate).not.toHaveBeenCalled()
     })
 
     it('records the limit_hit conversion event', async () => {
@@ -110,16 +117,13 @@ describe('createPolicy at the policy cap', () => {
 })
 
 describe('createPolicy under the cap', () => {
-    it('creates the policy and returns success with the policyId', async () => {
+    it('creates a manual (document-less) policy as active and returns the policyId', async () => {
         canUserAddPolicy.mockResolvedValue({ allowed: true })
-        dbTransaction.mockImplementation(async (fn: (tx: unknown) => unknown) => fn({
-            policy: {
-                create: vi.fn(async () => ({ id: 'pol-1', policyNumber: 'PN-1', insurerName: 'Test Insurer' })),
-            },
-            policyDocument: { createMany: vi.fn() },
-        }))
+        policyCreate.mockResolvedValue({ id: 'pol-1', policyNumber: 'PN-1', insurerName: 'Test Insurer' })
         activityLogCreate.mockResolvedValue({})
 
         await expect(createPolicy(validFormData())).resolves.toEqual({ success: true, policyId: 'pol-1' })
+        expect(policyCreate).toHaveBeenCalledTimes(1)
+        expect(policyCreate.mock.calls[0]![0]).toMatchObject({ data: { status: 'active', lineOfBusiness: 'motor' } })
     })
 })

@@ -11,6 +11,7 @@ import {
     MAX_UPLOAD_SIZE_BYTES,
 } from "@/lib/security/file-upload"
 import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import type { DocumentKind } from "@/lib/services/ai/document-kind"
 
 /**
@@ -140,13 +141,26 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
             }
 
             let reason: string | null = null
+            let gateCode: string | null = null
+            let gateKind: string | null = null
             try {
                 const payload = await response.json()
                 reason = payload?.error?.details?.reason ?? null
+                gateCode = payload?.error?.details?.code ?? null
+                gateKind = payload?.error?.details?.documentKind ?? null
             } catch {
                 reason = null
             }
-            if (reason === "document_limit") {
+            if (gateCode) {
+                // The document gate refused the attachment BEFORE it was stored
+                // (lib/ingestion/document-gate.ts): the code picks the copy every
+                // upload surface shares.
+                const failures = t.wallet.batchUpload.failures as Record<string, { title: string; detail: string }>
+                const entry = failures[gateCode] ?? failures.UNKNOWN_ERROR
+                const kinds = t.wallet.batchUpload.documentKinds as Record<string, string>
+                const kind = kinds[gateKind ?? ""] ?? kinds.other
+                setError(`${entry.title} ${entry.detail.replace(/\{kind\}/g, kind)}`)
+            } else if (reason === "document_limit") {
                 setError(copy.limitReached)
             } else {
                 // The shared localised rejection copy; the generic failure
@@ -178,7 +192,13 @@ export function AddDocumentCard({ policyId, lifecycleStatus, t, copy }: AddDocum
 
             const result = await addRenewalDocument(policyId, formData)
             if (result?.error) {
-                setError(copy.renewalFailed)
+                // A gate verdict travels as DOCUMENT_REJECTED_<CODE> — the wallet
+                // error mapper localises it; anything else is the generic failure.
+                setError(
+                    typeof result.error === "string" && result.error.includes("DOCUMENT_REJECTED_")
+                        ? mapWalletErrorToMessage(result.error, t, "analysis")
+                        : copy.renewalFailed
+                )
                 return
             }
             setSuccess(copy.renewalUploaded)

@@ -43,6 +43,33 @@ vi.mock('@/lib/security/file-upload', () => ({
     sanitizeDisplayName: (s: string) => s,
     REJECTION_MESSAGES: {},
 }))
+// The document gate runs on the bytes inside the ingestion service, before
+// storage; its verdicts have their own suite (tests/unit/ingestion). Here it
+// passes the four `%PDF` bytes so this file keeps proving the ORDERING.
+vi.mock('@/lib/ingestion/document-gate', () => ({
+    validateDocumentForIngestion: vi.fn(async () => ({
+        status: 'validated',
+        documentType: 'insurance_policy',
+        insuranceConfidence: 0.9,
+        detectedBranch: 'motor',
+        branchConfidence: 0.9,
+        declaredBranch: 'motor',
+        branchConsistency: 'consistent',
+        reviewReasons: [],
+        evidence: { pageCount: 1, textChars: 500, imageOnly: false, groupsHit: [], branchScores: {}, negativeType: null, classifier: 'deterministic' },
+        documentHash: 'h'.repeat(64),
+        engineVersion: 'docgate-1',
+        latencyMs: 1,
+    })),
+    documentKindFor: () => 'policy_schedule',
+    GATE_ACTIVITY: { validated: 'DOCUMENT_VALIDATED', requires_review: 'DOCUMENT_REVIEW_REQUIRED', rejected: 'DOCUMENT_REJECTED' },
+}))
+vi.mock('@/lib/services/policy-discard', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@/lib/services/policy-discard')>()),
+    discardOrphanedUploads: vi.fn(async (urls: string[]) => {
+        for (const url of urls) await deleteFile(url)
+    }),
+}))
 
 const canAgentAddCustomer = vi.fn()
 const canAgentAddPolicyForCustomer = vi.fn()
@@ -134,8 +161,13 @@ const txClient = () => ({
 })
 
 function documentForm(): FormData {
+    const bytes = new Uint8Array([0x25, 0x50, 0x44, 0x46])
+    const file = new File([bytes], 'policy.pdf', { type: 'application/pdf' })
+    // jsdom's File has no arrayBuffer(); the ingestion service reads the bytes
+    // through it before storage (the document gate runs on them).
+    Object.defineProperty(file, 'arrayBuffer', { value: async () => bytes.buffer, configurable: true })
     const fd = new FormData()
-    fd.append('file', new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], 'policy.pdf', { type: 'application/pdf' }))
+    fd.append('file', file)
     return fd
 }
 

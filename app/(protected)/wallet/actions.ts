@@ -40,6 +40,27 @@ import { buildPolicyReviewData, sumInsuredTargetPath } from "@/lib/wallet/policy
 import { startOfAthensDay, startOfAthensMonth } from "@/lib/policy-status"
 import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
+import { ingestPolicyDocument } from "@/lib/ingestion/ingest-policy-document"
+
+/**
+ * The add-policy form WITH a document. The branch is the only thing the
+ * person must choose; identity and dates are optional because the extraction
+ * reads them off the document — the server mints the placeholders the
+ * identity layer knows how to hide (lib/wallet/policy-identity.ts). The
+ * client used to mint them itself, which is how `__PENDING_EXTRACTION__`
+ * became a literal in a component.
+ */
+const UploadPolicySchema = z.object({
+    lineOfBusiness: lineOfBusinessEnum,
+    insurerName: z.string().trim().optional(),
+    policyNumber: z.string().trim().optional(),
+    startDate: z.string().trim().optional(),
+    endDate: z.string().trim().optional(),
+    premiumAmount: z.coerce.number().optional(),
+}).refine(
+    (data) => !data.startDate || !data.endDate || new Date(data.endDate) > new Date(data.startDate),
+    { message: "End date must be after start date", path: ["endDate"] }
+)
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -88,135 +109,120 @@ export async function createPolicy(formData: FormData) {
     }
 
     const rawData = {
-        insurerName: formData.get("insurerName"),
-        policyNumber: formData.get("policyNumber"),
+        insurerName: formData.get("insurerName") || undefined,
+        policyNumber: formData.get("policyNumber") || undefined,
         lineOfBusiness: formData.get("lineOfBusiness"),
-        startDate: formData.get("startDate"),
-        endDate: formData.get("endDate"),
-        premiumAmount: formData.get("premiumAmount"),
+        startDate: formData.get("startDate") || undefined,
+        endDate: formData.get("endDate") || undefined,
+        premiumAmount: formData.get("premiumAmount") || undefined,
     }
+    const language = (user.user_metadata?.language as 'en' | 'el') || 'en'
 
-    const validatedData = PolicySchema.parse(rawData)
-
-    // Handle files (Files are now uploaded client-side to Supabase)
-    const documentUrls = formData.getAll("documentUrls") as string[]
-    const documentNames = formData.getAll("documentNames") as string[]
-    const documentSizes = formData.getAll("documentSizes") as string[]
-
-    // Validate documents FIRST — the status must derive from the documents
-    // that actually survive validation, or an all-invalid submission commits
-    // an 'analyzing' policy with zero documents (the eternal-spinner state).
-    // Bounded to the SAME IMPORTED cap the documents API enforces — this used
-    // to re-declare the literal 20, which drifts the day either side changes.
-    const validDocuments: Array<{ fileUrl: string; fileName: string; fileSize: number }> = []
-    for (let i = 0; i < Math.min(documentUrls.length, MAX_DOCUMENTS_PER_POLICY); i++) {
-        const fileUrl = documentUrls[i]
-        // Display metadata only — sanitized (Greek-safe), never used as a key.
-        // GENERATED. `documentNames` still arrives in the form because the
-        // browser sends it, but it is discarded here rather than stored —
-        // the label the customer sees is built from the policy, not the file.
-        const fileName = storedDocumentLabel({})
-        const fileSize = parseInt(documentSizes[i] || "0")
-
-        // The bytes were uploaded to storage client-side; only persist a
-        // reference that actually points at one of OUR storage objects — never
-        // an arbitrary client-supplied URL.
-        if (!fileUrl || !isOwnedStorageUrl(fileUrl)) {
-            logger('warn', 'Skipping policy document with untrusted URL')
-            continue
+    // ── With a document: ONE door ────────────────────────────────────────
+    // The file travels IN the action (bodySizeLimit is sized for it), so the
+    // server sees the bytes before anything exists. The ingestion service
+    // validates them, runs the document gate against the branch the person
+    // selected, and only then stores the object and creates the Policy +
+    // stamped PolicyDocument in one transaction. Until Sept 2026 the browser
+    // uploaded straight into the bucket and this action committed a policy
+    // for whatever landed there — a menu declared as «Αυτοκίνητο» became an
+    // analysing policy and a full extraction was spent finding that out.
+    const file = formData.get("file")
+    if (file instanceof File && file.size > 0) {
+        const parsed = UploadPolicySchema.safeParse(rawData)
+        if (!parsed.success) {
+            return { error: "VALIDATION_ERROR" as const }
         }
-
-        // Security: validate the extension against the SAME allowlist the
-        // upload validator enforces — read off the STORAGE KEY, which the
-        // server minted (`<uuid>.<ext>`), not off any client-supplied name.
-        //
-        // This read `fileName`, which stopped being a file name when documents
-        // started getting generated labels: `isPdfFile("Έγγραφο σε
-        // επεξεργασία")` is false, so hasValidExt was false for EVERY document,
-        // every one was skipped, and the policy committed with zero documents
-        // and status 'active' instead of 'analyzing' — an add-policy flow that
-        // silently analysed nothing. The key is also a better source than the
-        // old one: it is ours, so it cannot be spoofed.
-        //
-        // The allowlist once omitted .heic, which storage accepts and iPhones
-        // produce by default — so a phone photo of a policy uploaded fine and
-        // was then silently dropped here. Status derives from the documents
-        // that survive, so if the HEIC was the only one, the policy committed
-        // with none.
-        const storageKey = storageColumnsFor(fileUrl).storageKey || ""
-        const hasValidExt = isPdfFile(storageKey) || isAcceptedImageFile(storageKey)
-
-        if (!hasValidExt) {
-            // The EXTENSION is the diagnostic; the key is not.
-            logger('warn', 'Skipping policy document with invalid extension', {
-                extension: storageKey.slice(storageKey.lastIndexOf(".")) || 'none',
-            })
-            continue
-        }
-
-        validDocuments.push({ fileUrl, fileName, fileSize })
-    }
-    if (documentUrls.length > MAX_DOCUMENTS_PER_POLICY) {
-        logger('warn', 'Policy submission exceeded the document cap; extra entries dropped', {
-            submitted: documentUrls.length,
-            cap: MAX_DOCUMENTS_PER_POLICY,
+        const typed = parsed.data
+        const result = await ingestPolicyDocument({
+            actorUserId: userId,
+            ownerUserId: userId,
+            file,
+            surface: "wallet_add",
+            mode: "policy",
+            declaredBranch: typed.lineOfBusiness,
+            declaredBranchSource: "user",
+            branchConfirmed: formData.get("branchConfirmed") === "true",
+            typedMetadata: {
+                insurerName: typed.insurerName || null,
+                policyNumber: typed.policyNumber || null,
+                startDate: typed.startDate || null,
+                endDate: typed.endDate || null,
+                premiumAmount: typed.premiumAmount ?? null,
+            },
+            policyStatus: "analyzing",
+            processingStatus: "processing",
+            source: "policyholder",
         })
-    }
-
-    const initialStatus = validDocuments.length > 0 ? 'analyzing' : 'active'
-
-    // Policy + documents in ONE transaction (a crash between the two writes
-    // left a zero-document policy stuck 'analyzing'), with a single batched
-    // insert instead of a per-row round-trip loop.
-    const policy = await db.$transaction(async (tx) => {
-        const created = await tx.policy.create({
-            data: {
-                ownerUserId: userId,
-                createdByUserId: userId,
-                insurerName: validatedData.insurerName,
-                policyNumber: validatedData.policyNumber,
-                lineOfBusiness: validatedData.lineOfBusiness,
-                startDate: new Date(validatedData.startDate),
-                endDate: new Date(validatedData.endDate),
-                coverageEndDate: new Date(validatedData.endDate),
-                premiumAmount: validatedData.premiumAmount,
-                status: initialStatus,
+        if (!result.ok) {
+            if (result.kind === "upload_invalid") {
+                return { error: `DOCUMENT_REJECTED_${result.code}`, gate: { status: "rejected" as const, code: result.code } }
             }
-        })
-
-        if (validDocuments.length > 0) {
-            await tx.policyDocument.createMany({
-                data: validDocuments.map((doc) => ({
-                    policyId: created.id,
-                    fileUrl: doc.fileUrl,
-                    fileName: doc.fileName,
-                    fileSize: doc.fileSize,
-                    source: "policyholder",
-                    uploadedByUserId: userId,
-                    processingStatus: 'processing',
-                    // Resolve the locator ONCE, here, rather than re-deriving it
-                    // from the URL on every read for the life of the document.
-                    ...storageColumnsFor(doc.fileUrl),
-                })),
-            })
+            // Structured, NOT a throw — prod builds redact thrown server-action
+            // messages to a digest. The client renders the code's copy and the
+            // actions the verdict allows (change type / confirm / upload another).
+            return {
+                error: "DOCUMENT_REJECTED" as const,
+                gate: {
+                    status: result.status,
+                    code: result.code,
+                    documentType: result.documentType,
+                    documentKind: result.documentKind,
+                    detectedBranch: result.detectedBranch,
+                    declaredBranch: result.declaredBranch,
+                    resolvable: result.resolvable,
+                    reviewReasons: result.reviewReasons,
+                    ...(result.existingPolicyId ? { existingPolicyId: result.existingPolicyId } : {}),
+                },
+            }
         }
 
-        return created
-    })
-
-    // Trigger analysis if needed
-    if (initialStatus === 'analyzing') {
         const policyService = new PolicyService()
-        const language = (user.user_metadata?.language as 'en' | 'el') || 'en' // Get from metadata or default
-
+        const createdPolicyId = result.policyId
         after(async () => {
             try {
-                await policyService.runBackgroundAnalysis(policy.id, userId, language)
+                await policyService.runBackgroundAnalysis(createdPolicyId, userId, language)
             } catch (e) {
-                logger('error', 'Deferred analysis failed', { policyId: policy.id, error: e })
+                logger('error', 'Deferred analysis failed', { policyId: createdPolicyId, error: e })
             }
         })
+
+        await (db as any).activityLog.create({
+            data: {
+                adminUserId: userId,
+                adminEmail: "",
+                actionType: "POLICY_CREATED",
+                description: "Created policy from a validated document",
+                metadata: {
+                    policyId: createdPolicyId,
+                    lineOfBusiness: result.lineOfBusiness,
+                    documentType: result.verdict.documentType,
+                },
+            }
+        })
+
+        revalidatePath("/wallet")
+        return { success: true, policyId: createdPolicyId }
     }
+
+    // ── Without a document: a manual entry ───────────────────────────────
+    // Nothing to validate and nothing to analyse; every field is typed.
+    const validatedData = PolicySchema.parse(rawData)
+
+    const policy = await db.policy.create({
+        data: {
+            ownerUserId: userId,
+            createdByUserId: userId,
+            insurerName: validatedData.insurerName,
+            policyNumber: validatedData.policyNumber,
+            lineOfBusiness: validatedData.lineOfBusiness,
+            startDate: new Date(validatedData.startDate),
+            endDate: new Date(validatedData.endDate),
+            coverageEndDate: new Date(validatedData.endDate),
+            premiumAmount: validatedData.premiumAmount,
+            status: 'active',
+        }
+    })
 
     // Log Activity
     await (db as any).activityLog.create({

@@ -47,6 +47,20 @@ interface DashboardMetrics {
         paidActive: number
         triggerSources: Record<string, number>
     }
+    /** The document gate's 30-day KPI (lib/ingestion/gate-metrics.ts). */
+    documentGate?: {
+        uploads: number
+        validated: number
+        held: number
+        rejected: number
+        rejectedByCode: Record<string, number>
+        branchMismatches: number
+        analysesPrevented: number
+        tokensPrevented: number
+        classifierCalls: number
+        classifierTokens: number
+        medianLatencyMs: number
+    }
 }
 
 interface ActivityLog {
@@ -223,6 +237,60 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                                             className="rounded-full bg-stone-100 dark:bg-stone-700 px-2 py-0.5 font-medium text-stone-700 dark:text-stone-200"
                                         >
                                             {source} · {count}
+                                        </span>
+                                    ))}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Document gate (last 30 days) — every upload verdict, and the analyses it prevented */}
+            {metrics.documentGate && (
+                <div className="mb-8 p-6 bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700" data-testid="admin-document-gate">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-medium text-stone-600 dark:text-stone-400">
+                            Document gate — last 30 days
+                        </h3>
+                        <span className="text-xs text-stone-400">median {metrics.documentGate.medianLatencyMs} ms</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        {[
+                            { label: "Uploads judged", value: metrics.documentGate.uploads },
+                            { label: "Validated", value: metrics.documentGate.validated },
+                            { label: "Held for the person", value: metrics.documentGate.held },
+                            { label: "Rejected", value: metrics.documentGate.rejected },
+                            { label: "AI analyses prevented", value: metrics.documentGate.analysesPrevented },
+                            { label: "Tokens prevented", value: metrics.documentGate.tokensPrevented.toLocaleString("en-US") },
+                        ].map((step) => (
+                            <div key={step.label} className="text-center p-3 rounded-lg bg-stone-50 dark:bg-stone-900/40">
+                                <p className="text-2xl font-bold text-stone-900 dark:text-stone-100">{step.value}</p>
+                                <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">{step.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-stone-500 dark:text-stone-400">
+                        <span>
+                            Branch mismatches:{" "}
+                            <span className="font-semibold text-stone-900 dark:text-stone-100">{metrics.documentGate.branchMismatches}</span>
+                        </span>
+                        <span>
+                            Classifier calls (bounded spend, not prevented):{" "}
+                            <span className="font-semibold text-stone-900 dark:text-stone-100">{metrics.documentGate.classifierCalls}</span>
+                            {" · "}
+                            {metrics.documentGate.classifierTokens.toLocaleString("en-US")} tokens
+                        </span>
+                        {Object.keys(metrics.documentGate.rejectedByCode).length > 0 && (
+                            <span className="flex flex-wrap items-center gap-2">
+                                Rejections by reason:
+                                {Object.entries(metrics.documentGate.rejectedByCode)
+                                    .sort(([, a], [, b]) => b - a)
+                                    .map(([code, count]) => (
+                                        <span
+                                            key={code}
+                                            className="rounded-full bg-stone-100 dark:bg-stone-700 px-2 py-0.5 font-mono text-xs text-stone-700 dark:text-stone-200"
+                                        >
+                                            {code} · {count}
                                         </span>
                                     ))}
                             </span>

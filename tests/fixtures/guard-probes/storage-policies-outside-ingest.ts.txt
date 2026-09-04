@@ -1,0 +1,11 @@
+// Probe for tests/unit/document-gate-storage-single-path.test.ts — RED. A
+// policy document reaches the private bucket from outside the ingestion
+// service: two call shapes, both flagged (the default folder IS "policies").
+import { uploadFile, uploadFileDetailed } from "@/lib/storage"
+
+export async function storeExplicit(file: File) {
+    return uploadFileDetailed(file, "policies")
+}
+export async function storeByDefault(file: File) {
+    return uploadFile(file)
+}

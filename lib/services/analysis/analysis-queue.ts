@@ -35,6 +35,10 @@ export async function enqueueAnalysisRun(
         await client.publishJSON({
             url: `${base}/api/v1/jobs/execute-analysis`,
             body: { runId, language },
+            // A run is published once. If a retry of the caller publishes the
+            // same run again inside QStash's dedup window, it is dropped at the
+            // queue rather than racing the first delivery for the lease.
+            deduplicationId: runId,
             // Cap concurrent AI analyses across the fleet so a burst can't
             // exceed provider rate limits. Tune with AI_ANALYSIS_PARALLELISM.
             flowControl: {

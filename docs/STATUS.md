@@ -21,6 +21,38 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **2026-09-05 — The Document Validation Gate (`feat/document-validation-gate`, base NEW-UI
+  `d1924bdb`): no document enters expensive analysis unvalidated.** Root cause: nothing read a
+  PDF locally, so «is this a policy?» was answered only AFTER the whole file had been base64'd to
+  Gemini (~211k estimated tokens per run); `/wallet/add` uploaded from the browser straight into
+  the bucket and committed the Policy with an extension check; every other door persisted before
+  content was known; the selected branch was a prompt hint. Built: `lib/ingestion/` — `unpdf`
+  probe (page cap FIRST, text of the first 12 pages, image-only), a Greek/English lexical
+  classifier scored by distinct evidence groups (one repeated word can never look like a policy;
+  text that talks to a model is refused outright), the cheap model only for the middle band or a
+  scan (≤6k chars / ≤2-page pdf-lib excerpt, consent read first, closed schema, excerpt framed as
+  data), branch FAMILIES with mismatch only when lexicon and model agree, duplicate by
+  `documentHash`, a 20/h rejection budget; ONE persistence path `ingestPolicyDocument` (gate →
+  storage → Policy + stamped PolicyDocument in one tx) behind `/wallet/add` (file now travels in
+  the action; browser→storage code deleted), onboarding, wallet upload, renewal, the agent commit
+  (grant in the same tx) and the documents route (attachment mode); the extract route and the
+  agent scan gate BEFORE the daily spend cap; `extractPolicyData` takes a `ValidatedAIDocument`
+  only `toValidatedAIDocument` can mint; `prepareDocument` validates legacy rows lazily
+  (keep-and-inform); `createRun` returns the in-flight run, requires a document and marks
+  «analysing» only after the token gate; `executeRun` re-checks consent + deletion; QStash
+  `deduplicationId`. Migration `20260905120000_document_validation_stamp` on dev AND prod
+  (verified by query); the `policies` bucket INSERT policy dropped on dev (archived), prod drop
+  scheduled right after this deploys. Copy: one code-driven block for every surface (el/en), no
+  field counts; «Άλλαξε τύπο σε …» / «Συνέχισε ως …» / «Επιβεβαίωση και συνέχεια». KPI: ActivityLog
+  `DOCUMENT_*` rows → admin dashboard «Document gate» card («AI analyses prevented», tokens
+  prevented, classifier spend separately). Guards + probes: `document-gate-before-model`,
+  `document-gate-storage-single-path`, consent guard's `classifyDocument` arm. Journey:
+  `tests/document-gate.spec.ts` (policyholder, serial), `tests/document-gate-agent.spec.ts`;
+  fixtures `tests/fixtures/documents/` (built by `build.mjs`). Audit:
+  `docs/audits/document-validation-gate-2026-09.md`. **Deliberately not built:** OCR; a
+  DB-level unique constraint on in-flight runs (Prisma 5 partial indexes); stopping
+  `resolveLineOfBusiness`'s post-extraction overwrite.
+
 - **2026-09-04 — The Personal Risk Profile: onboarding as breadth, assessment as depth, evidence
   as coverage — built on `feat/onboarding-protection-profile` (PR #293, base NEW-UI, awaiting the
   owner).** Contract and diagnosis in `docs/planning/PERSONAL_RISK_PROFILE.md` (four code audits:
@@ -302,6 +334,10 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
+0. After the gate deploys: drop the `authenticated` INSERT policy on prod `storage.objects`
+   (`bucket_id='policies'`; definition in `docs/archive/2026-09-05-policies-bucket-insert-policy.sql`),
+   then smoke one junk PDF (rejected, no rows, no `token_usage`) and one real schedule on
+   `www.policywallet.gr`; watch the admin «Document gate» card and Sentry.
 1. Owner: open PR #290's preview at phone width (dashboard, wallet, protection, /agent, account)
    and decide on the Steady phone layer; then set the Preview-scope DB env vars and the Google
    OAuth branding / custom auth domain (both owner-only, see In progress).

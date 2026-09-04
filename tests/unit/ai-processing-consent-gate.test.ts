@@ -6,14 +6,17 @@ import { join, relative } from 'node:path'
 vi.mock('@/lib/db', () => ({
     db: {
         policy: { findUnique: vi.fn(), update: vi.fn() },
-        policyDocument: { updateMany: vi.fn() },
-        policyAnalysisRun: { create: vi.fn(), update: vi.fn() },
+        policyDocument: { updateMany: vi.fn(), findFirst: vi.fn(async () => null) },
+        // createRun returns an in-flight run instead of creating a second one;
+        // none is in flight in these fixtures.
+        policyAnalysisRun: { create: vi.fn(), update: vi.fn(), findFirst: vi.fn(async () => null) },
         gapDefinition: { count: vi.fn() },
         user: { findUnique: vi.fn(), updateMany: vi.fn() },
         accessGrant: { findFirst: vi.fn(), findMany: vi.fn(async () => []) },
         customerRelationship: { findFirst: vi.fn() },
-        // The agent scan writes its AGENT_POLICY_SCANNED audit row here.
-        activityLog: { create: vi.fn(async () => ({})) },
+        // The agent scan writes its AGENT_POLICY_SCANNED audit row here; the
+        // document gate writes its own verdict row and reads its budget.
+        activityLog: { create: vi.fn(async () => ({})), count: vi.fn(async () => 0) },
     },
 }))
 
@@ -46,6 +49,27 @@ vi.mock('@/lib/security/file-upload', () => ({
 }))
 vi.mock('@/lib/services/ai/guard', () => ({
     enforceBillableCallPolicy: vi.fn(async () => ({ allowed: true })),
+}))
+// The document gate runs on the scan's bytes BEFORE the provider is reached
+// (lib/ingestion/document-gate.ts); its own suite covers the verdicts. Here
+// it passes the four `%PDF` bytes so this file keeps proving the CONSENT gate.
+vi.mock('@/lib/ingestion/document-gate', () => ({
+    validateDocumentForIngestion: vi.fn(async () => ({
+        status: 'validated',
+        documentType: 'insurance_policy',
+        insuranceConfidence: 0.9,
+        detectedBranch: 'motor',
+        branchConfidence: 0.9,
+        declaredBranch: null,
+        branchConsistency: 'not_declared',
+        reviewReasons: [],
+        evidence: { pageCount: 1, textChars: 500, imageOnly: false, groupsHit: [], branchScores: {}, negativeType: null, classifier: 'deterministic' },
+        documentHash: 'h'.repeat(64),
+        engineVersion: 'docgate-1',
+        latencyMs: 1,
+    })),
+    documentKindFor: () => 'policy_schedule',
+    GATE_ACTIVITY: { validated: 'DOCUMENT_VALIDATED', requires_review: 'DOCUMENT_REVIEW_REQUIRED', rejected: 'DOCUMENT_REJECTED' },
 }))
 // The provider the scan reaches. One mock object so the call count is the
 // proof that the document did — or did not — leave the building.
@@ -132,7 +156,9 @@ const POLICY = {
     // the customer had uploaded privately.
     createdByUserId: AGENT_ID,
     lineOfBusiness: 'motor',
-    documents: [],
+    // createRun refuses a policy with no document before any run row exists
+    // (MISSING_DOCUMENT); these fixtures are about consent and the paywall.
+    documents: [{ id: 'doc-1' }],
     acordData: {},
 } as any
 
@@ -440,7 +466,7 @@ describe('agent scan — the agent consents and attests BEFORE the document is r
  * ──────────────────────────────────────────────────────────────────────────── */
 const REPO_ROOT = process.cwd()
 const CALLER_ROOTS = ['app', 'lib'] as const
-const AI_CALL = /\.(?:extractPolicyData|askQuestion)\s*\(/g
+const AI_CALL = /\.(?:extractPolicyData|askQuestion|classifyDocument)\s*\(/g
 const CONSENT_READ = /\baiProcessingConsentVersion\b/
 
 const NOT_A_FUNCTION_NAME = new Set([
@@ -708,6 +734,11 @@ function listSources(dirAbs: string, out: string[] = []): string[] {
  * reason each is nevertheless acceptable. Keyed `file#function`.
  */
 const AI_CALLER_EXEMPTIONS: Record<string, string> = {
+    'lib/ingestion/model-classifier.ts#classifyWithModel':
+        'The document gate\'s only model call. Its caller, consultModel in lib/ingestion/document-gate.ts, ' +
+        'reads the actor\'s aiProcessingConsentVersion immediately before invoking it and returns a held ' +
+        'verdict without it (pinned by tests/unit/ingestion/document-gate.test.ts «consent is read first»).',
+
     'lib/services/analysis/policy-analysis-orchestrator.service.ts#executePipelineAttempt':
         'Runs only for a PolicyAnalysisRun row that createRun already created — and createRun ' +
         'refuses with AI_CONSENT_REQUIRED before any run row exists (pinned above). The step ' +

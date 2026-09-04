@@ -207,6 +207,8 @@ export const AddPolicyForCustomerInput = z.object({
     policy: AgentPolicyInput,
     attestedAiConsent: z.boolean().optional(),
     confirmDuplicate: z.boolean().optional(),
+    /** The agent resolved the document gate's «confirm the type» hold on these same bytes. */
+    branchConfirmed: z.boolean().optional(),
 })
 export type AddPolicyForCustomerInputData = z.infer<typeof AddPolicyForCustomerInput>
 

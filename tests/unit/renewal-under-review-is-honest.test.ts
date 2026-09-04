@@ -79,11 +79,18 @@ describe("the write that makes the state reachable", () => {
         // Synchronously, before the caller's after() defers the run. Otherwise
         // the revalidate that follows can only ever flush the pre-renewal state,
         // and every surface keyed on `status === 'analyzing'` stays dark.
-        const src = strip(readFileSync("lib/services/policy.service.ts", "utf8"))
-        const fn = src.slice(src.indexOf("async attachRenewalDocument"))
-        const body = fn.slice(0, fn.indexOf("discardOrphanedUploads"))
-        expect(body).toMatch(/\$transaction/)
-        expect(body).toMatch(/status:\s*'analyzing'/)
+        // The write moved into the ONE persistence path (Sept 2026): the
+        // renewal attach asks the ingestion service to flip the policy in the
+        // same transaction as the document row, and the service does exactly that.
+        const svc = strip(readFileSync("lib/services/policy.service.ts", "utf8"))
+        const fn = svc.slice(svc.indexOf("async attachRenewalDocument"))
+        const body = fn.slice(0, fn.indexOf("runBackgroundAnalysis("))
+        expect(body).toMatch(/ingestPolicyDocument\(/)
+        expect(body).toMatch(/markPolicyAnalyzing:\s*true/)
+        const ingest = strip(readFileSync("lib/ingestion/ingest-policy-document.ts", "utf8"))
+        const attach = ingest.slice(ingest.indexOf("if (input.existingPolicyId)"), ingest.indexOf("// A NEW policy."))
+        expect(attach).toMatch(/\$transaction/)
+        expect(attach).toMatch(/markPolicyAnalyzing[\s\S]*status:\s*"analyzing"/)
     })
 
     /**

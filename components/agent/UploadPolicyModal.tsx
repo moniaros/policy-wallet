@@ -45,6 +45,18 @@ type Props = BaseProps &
           }
     )
 
+/** The document gate's verdict as the scan / commit actions return it. Nothing was stored. */
+type GateVerdict = {
+    status: 'rejected' | 'requires_review'
+    code: string
+    documentType?: string
+    documentKind?: string
+    detectedBranch: string | null
+    declaredBranch?: string | null
+    reviewReasons?: string[]
+    resolvable?: boolean
+}
+
 type View = 'upload' | 'parsing' | 'resolve' | 'confirm' | 'duplicate' | 'success'
 
 interface DuplicatePolicy {
@@ -142,6 +154,10 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     const [result, setResult] = useState<{ policyId?: string; customerId?: string; created?: boolean; analysis?: AnalysisOutcome } | null>(null)
     const [consentSent, setConsentSent] = useState(false)
     const [duplicate, setDuplicate] = useState<DuplicatePolicy | null>(null)
+    // The document gate's verdict on the scanned file (lib/ingestion/document-gate.ts):
+    // refused or held BEFORE anything was stored or any model read it. The
+    // code picks the copy; the actions depend on what was read.
+    const [gate, setGate] = useState<GateVerdict | null>(null)
 
     if (!isOpen) return null
 
@@ -153,6 +169,24 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setAttestedAiConsent(false)
         setPreScanAttested(false)
         setConsentOpen(false); setConsentLink(false)
+        setGate(null)
+    }
+
+    const branchLabel = (id: string | null | undefined): string =>
+        id ? ((t.policyTypes as Record<string, string>)[id] ?? id) : ''
+
+    /** The gate's copy — the ONE block every upload surface shares (wallet.batchUpload.failures). */
+    const gateCopy = (verdict: GateVerdict): string => {
+        const failures = t.wallet.batchUpload.failures as Record<string, { title: string; detail: string; action: string }>
+        const entry = failures[verdict.code] ?? failures.UNKNOWN_ERROR
+        const kinds = t.wallet.batchUpload.documentKinds as Record<string, string>
+        const vars: Record<string, string> = {
+            kind: kinds[verdict.documentKind ?? ''] ?? kinds.other,
+            detected: branchLabel(verdict.detectedBranch),
+            declared: branchLabel(verdict.declaredBranch ?? policy.lineOfBusiness),
+        }
+        const fill = (text: string) => text.replace(/\{(\w+)\}/g, (_m, key: string) => vars[key] ?? '')
+        return `${entry.title} ${fill(entry.detail)} ${fill(entry.action)}`
     }
 
     // Server codes this surface can name in the agent's language. Everything
@@ -218,6 +252,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         }
 
         setScannedFile(file)
+        setGate(null)
         await runScan(file)
     }
 
@@ -230,12 +265,14 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
      * consent the agent just recorded is shown as the message plus the
      * standalone page, never as a second modal — asking twice gains nothing.
      */
-    const runScan = async (file: File, afterConsent = false) => {
+    const runScan = async (file: File, afterConsent = false, branchConfirmed = false) => {
         setView('parsing'); setLoading(true); setError(null); setConsentLink(false)
 
         const fd = new FormData()
         fd.append('file', file)
         fd.append('attested', 'true')
+        // The agent read the gate's hold («needs a confirmation») and confirmed.
+        if (branchConfirmed) fd.append('branchConfirmed', 'true')
 
         // A Server Action can fail at the TRANSPORT layer — before the action
         // body ever runs — and then it rejects instead of returning a result:
@@ -257,6 +294,14 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
         if (!res.success) {
             setView('upload')
+            // The document gate refused or held the file BEFORE the billable
+            // scan. The verdict carries what the file turned out to be.
+            const verdict = (res as { gate?: GateVerdict }).gate
+            if (res.error === 'DOCUMENT_REJECTED' && verdict) {
+                setGate(verdict)
+                setError(gateCopy(verdict))
+                return
+            }
             if (res.error === 'AI_CONSENT_REQUIRED') {
                 // The advisor's own consent — ask for it here, over the kept
                 // file; the retry runs from the modal's onConsented.
@@ -285,9 +330,9 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setView('resolve')
     }
 
-    const handleSubmit = async (confirmDuplicate = false) => {
+    const handleSubmit = async (confirmDuplicate = false, branchConfirmed = false) => {
         if (!canSubmitPolicy) return
-        setLoading(true); setError(null)
+        setLoading(true); setError(null); setGate(null)
 
         const documentFormData = new FormData()
         if (scannedFile) documentFormData.append('file', scannedFile)
@@ -309,7 +354,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         // PDF too, so it hits the same body-size ceiling.
         let res: Awaited<ReturnType<typeof commitScannedPolicy>>
         try {
-            res = await commitScannedPolicy(decision, policyInput, attestedAiConsent, documentFormData, confirmDuplicate)
+            res = await commitScannedPolicy(decision, policyInput, attestedAiConsent, documentFormData, confirmDuplicate, branchConfirmed)
         } catch {
             setLoading(false)
             setError(up.genericError)
@@ -325,7 +370,17 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         }
 
         if (!res.success) {
-            const failure = res as { error?: string; errorCode?: string; details?: Array<{ path: string; code: string; message: string }> }
+            const failure = res as { error?: string; errorCode?: string; gate?: GateVerdict; details?: Array<{ path: string; code: string; message: string }> }
+            // The document gate refused the commit — most often the branch the
+            // agent selected is not the one the document is (a health schedule
+            // filed as motor). Nothing was stored; the agent changes the type
+            // or confirms, here on the confirm step.
+            if (failure.error === 'DOCUMENT_REJECTED' && failure.gate) {
+                setGate(failure.gate)
+                setError(gateCopy(failure.gate))
+                setView('confirm')
+                return
+            }
             // A file-level rejection carries its own reason code; everything
             // else is an action code the dictionary knows — never the literal.
             if (failure.errorCode) {
@@ -512,6 +567,11 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                     refused after it): the message alone pointed at a
                                     settings page and stopped. A soft link — the
                                     primary of this screen is the dropzone's CTA. */}
+                                {gate?.resolvable && scannedFile && (
+                                    <button type="button" onClick={() => void runScan(scannedFile, false, true)} className="pw-soft-button" data-testid="upload-policy-gate-confirm">
+                                        {t.wallet.addPolicyForm.gateConfirm}
+                                    </button>
+                                )}
                                 {consentLink && (
                                     <Link href="/consent/ai" className="pw-soft-button" data-testid="upload-policy-agent-consent-link">
                                         {up.agentConsentLink}
@@ -712,6 +772,24 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                         )}
 
                         {error && <p role="alert" className="text-caption font-semibold text-status-danger">{error}</p>}
+                        {gate && (
+                            <div className="flex flex-wrap gap-2" data-testid="upload-policy-gate-actions" data-gate-code={gate.code}>
+                                {gate.detectedBranch && gate.detectedBranch !== policy.lineOfBusiness && (
+                                    <button
+                                        type="button"
+                                        onClick={() => { setPolicy({ ...policy, lineOfBusiness: gate.detectedBranch! }); setGate(null); setError(null) }}
+                                        className="pw-primary-button"
+                                    >
+                                        {t.wallet.addPolicyForm.gateChangeType.replace('{branch}', branchLabel(gate.detectedBranch))}
+                                    </button>
+                                )}
+                                {gate.status === 'requires_review' && gate.resolvable && (
+                                    <button type="button" disabled={loading} onClick={() => handleSubmit(false, true)} className="pw-soft-button">
+                                        {t.wallet.addPolicyForm.gateContinueAs.replace('{branch}', branchLabel(policy.lineOfBusiness))}
+                                    </button>
+                                )}
+                            </div>
+                        )}
 
                         <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row">
                             <button type="button" onClick={() => setView(presetCustomerId ? 'upload' : 'resolve')} className="pw-soft-button flex-1">{up.back}</button>

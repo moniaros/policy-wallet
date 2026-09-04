@@ -25,6 +25,8 @@ import type {
     IAIService,
     PolicyMetadata,
     RiskProfileInput,
+    AIClassificationInput,
+    AIDocumentClassification,
 } from "./ai-service.interface"
 import { AcordDataSchema } from "@/lib/schemas/acord-data"
 import { enrichExtractionPayload } from "./extraction-enrichment"
@@ -39,6 +41,7 @@ import {
 } from "./prompts"
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from "../translation/greek-to-bilingual"
 
+import { runDocumentClassification } from './document-classification'
 const OPENAI_SUPPORTED_MIME_TYPES = [
     "application/pdf",
     "image/png",
@@ -114,6 +117,63 @@ export class OpenAIAIService implements IAIService {
             userMessageKey: "analysis.status.inProgress",
             metadata: capabilities,
         }
+    }
+
+
+    /**
+
+     * The document gate's classifier (OPENAI_MODEL_CLASSIFICATION). One shared runner over the
+
+     * SDK (lib/services/ai/document-classification.ts): an excerpt in, a closed
+
+     * schema out, the excerpt framed as untrusted data. Metered to the actor.
+
+     */
+
+    async classifyDocument(input: AIClassificationInput, options?: AITrackingOptions): Promise<AIDocumentClassification> {
+
+      if (!this.aiProvider) {
+
+        throw new Error('OpenAI AI service is not available')
+
+      }
+
+      const modelName = options?.modelOverride || env.OPENAI_MODEL_CLASSIFICATION
+
+      const { classification, usage } = await runDocumentClassification({
+
+        model: this.aiProvider(modelName as string),
+
+        modelName,
+
+        provider: 'openai',
+
+        input,
+
+      })
+
+      if (options?.userId && usage) {
+
+        await trackTokenUsage({
+
+          userId: options.userId,
+
+          operationType: 'policy_analysis',
+
+          policyId: options.policyId,
+
+          inputTokens: usage.inputTokens,
+
+          outputTokens: usage.outputTokens,
+
+          model: modelName as any,
+
+        })
+
+      }
+
+      return { ...classification, usage }
+
     }
 
     async extractPolicyData(document: AIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse> {

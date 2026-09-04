@@ -580,6 +580,9 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                         // Recorded as a failed upload with its reason, never as
                         // `first_policy_uploaded`.
                         else if (phase === "needs_review") track.trackUpload(language, "failed", map, errorCode ?? "extraction_empty")
+                        // The document gate refused or held the file before
+                        // anything was stored: a failed upload, with the code.
+                        else if (phase === "rejected") track.trackUpload(language, "failed", map, errorCode ?? "document_rejected")
                     }}
                     onUploaded={(_policyId, outcome) => void onUploaded(outcome)}
                     onLater={async () => {

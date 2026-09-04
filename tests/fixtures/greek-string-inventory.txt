@@ -19,9 +19,9 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3475
+# bundle entries: 3510
 # inline entries: 4810 across 217 files
-# ternary entries: 284 across 43 files
+# ternary entries: 281 across 43 files
 # call entries: 1146 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -1987,6 +1987,8 @@ bundle	onboarding.protectionProfile.upload.body	"Θα συγκρίνουμε α�
 bundle	onboarding.protectionProfile.upload.choose	"Επιλογή αρχείου PDF"
 bundle	onboarding.protectionProfile.upload.chosen	"Επιλεγμένο αρχείο"
 bundle	onboarding.protectionProfile.upload.cta	"Να ελέγξω το πρώτο μου ασφαλιστήριο"
+bundle	onboarding.protectionProfile.upload.gateAnother	"Ανέβασε άλλο έγγραφο"
+bundle	onboarding.protectionProfile.upload.gateConfirm	"Επιβεβαίωση και συνέχεια"
 bundle	onboarding.protectionProfile.upload.hint	"Όποιο έχεις πρόχειρο — αυτοκινήτου, σπιτιού, υγείας. Ένα αρκεί για αρχή."
 bundle	onboarding.protectionProfile.upload.later	"Δεν το έχω πρόχειρο τώρα"
 bundle	onboarding.protectionProfile.upload.laterNote	"Θα σου το θυμίσουμε. Η εικόνα σου σε περιμένει στην αρχική."
@@ -2671,8 +2673,14 @@ bundle	wallet.addFirstPolicy	"Προσθέστε το Πρώτο σας Ασφα
 bundle	wallet.addPolicy	"Προσθήκη ασφαλιστηρίου"
 bundle	wallet.addPolicyForm.addFailed	"Η προσθήκη ασφαλιστηρίου απέτυχε"
 bundle	wallet.addPolicyForm.addSuccess	"Το ασφαλιστήριο προστέθηκε επιτυχώς"
+bundle	wallet.addPolicyForm.attachmentsSkipped	"Το ασφαλιστήριο προστέθηκε· {count} συνοδευτικά αρχεία δεν επισυνάφθηκαν."
 bundle	wallet.addPolicyForm.coverageTypeRequired	"Παρακαλώ επιλέξτε είδος κάλυψης"
+bundle	wallet.addPolicyForm.gateChangeType	"Άλλαξε τύπο σε «{branch}»"
+bundle	wallet.addPolicyForm.gateConfirm	"Επιβεβαίωση και συνέχεια"
+bundle	wallet.addPolicyForm.gateContinueAs	"Συνέχισε ως «{branch}»"
+bundle	wallet.addPolicyForm.gateUploadAnother	"Ανέβασε άλλο έγγραφο"
 bundle	wallet.addPolicyForm.policyNumberPlaceholder	"π.χ. POL-123456789"
+bundle	wallet.addPolicyForm.tooManyFiles	"Έως {max} αρχεία ανά ασφαλιστήριο — το πρώτο διαβάζεται ως ασφαλιστήριο, τα υπόλοιπα επισυνάπτονται."
 bundle	wallet.addPolicyForm.unknownInsurer	"Άγνωστος ασφαλιστής"
 bundle	wallet.addPolicyForm.uploadDocumentRequired	"Παρακαλώ ανεβάστε το έγγραφο του ασφαλιστηρίου"
 bundle	wallet.addScan	"Προσθήκη σάρωσης"
@@ -2722,11 +2730,14 @@ bundle	wallet.batchUpload.cancel	"Ακύρωση"
 bundle	wallet.batchUpload.completeFields	"Συμπληρώστε τα στοιχεία που λείπουν"
 bundle	wallet.batchUpload.completed	"Ολοκληρώθηκαν"
 bundle	wallet.batchUpload.confidenceLabel	"Βεβαιότητα"
+bundle	wallet.batchUpload.confirmAndContinue	"Επιβεβαίωση και συνέχεια"
 bundle	wallet.batchUpload.documentKinds.certificate	"βεβαίωση ασφάλισης"
+bundle	wallet.batchUpload.documentKinds.claim	"δήλωση ζημιάς"
 bundle	wallet.batchUpload.documentKinds.forms	"έντυπο"
 bundle	wallet.batchUpload.documentKinds.invoice	"παραστατικό πληρωμής"
 bundle	wallet.batchUpload.documentKinds.other	"άλλο έγγραφο"
 bundle	wallet.batchUpload.documentKinds.policy_schedule	"πίνακας ασφαλιστηρίου"
+bundle	wallet.batchUpload.documentKinds.quotation	"προσφορά ασφάλισης"
 bundle	wallet.batchUpload.documentKinds.renewal_notice	"ειδοποίηση ανανέωσης"
 bundle	wallet.batchUpload.documentKinds.terms_and_conditions	"γενικοί όροι"
 bundle	wallet.batchUpload.dropSubtitle	"Αρχεία PDF ή εικόνας (έως {max} κάθε φορά)"
@@ -2748,15 +2759,27 @@ bundle	wallet.batchUpload.failures.AI_UNAVAILABLE.title	"Η αυτόματη α�
 bundle	wallet.batchUpload.failures.BATCH_THROTTLED.action	"Δοκιμάστε ξανά σε λίγο. Τα ασφαλιστήρια που ολοκληρώθηκαν παραμένουν."
 bundle	wallet.batchUpload.failures.BATCH_THROTTLED.detail	"Η επεξεργασία περιορίστηκε προσωρινά επειδή στάλθηκαν πολλά αρχεία μαζί. Το έγγραφο δεν διαβάστηκε καθόλου."
 bundle	wallet.batchUpload.failures.BATCH_THROTTLED.title	"Πολλά έγγραφα ταυτόχρονα."
+bundle	wallet.batchUpload.failures.BRANCH_MISMATCH.action	"Αλλάξτε τον τύπο ασφάλισης σε {detected} ή ανεβάστε άλλο έγγραφο."
+bundle	wallet.batchUpload.failures.BRANCH_MISMATCH.detail	"Το έγγραφο φαίνεται να είναι ασφάλιση {detected}, όχι {declared}. Δεν έγινε ανάλυση ως {declared}."
+bundle	wallet.batchUpload.failures.BRANCH_MISMATCH.title	"Διαφορετικός τύπος ασφάλισης."
+bundle	wallet.batchUpload.failures.BRANCH_UNCONFIRMED.action	"Συνεχίστε ως {declared} αν είστε σίγουροι, ή αλλάξτε τον τύπο ασφάλισης."
+bundle	wallet.batchUpload.failures.BRANCH_UNCONFIRMED.detail	"Το έγγραφο είναι ασφαλιστήριο, αλλά δεν μπορέσαμε να επιβεβαιώσουμε ότι αφορά {declared}."
+bundle	wallet.batchUpload.failures.BRANCH_UNCONFIRMED.title	"Δεν επιβεβαιώσαμε τον τύπο ασφάλισης."
 bundle	wallet.batchUpload.failures.DAILY_LIMIT_REACHED.action	"Δοκιμάστε ξανά αύριο ή προσθέστε το ασφαλιστήριο χειροκίνητα."
 bundle	wallet.batchUpload.failures.DAILY_LIMIT_REACHED.detail	"Υπάρχει ημερήσιο όριο στα έγγραφα που αναλύονται αυτόματα με AI."
 bundle	wallet.batchUpload.failures.DAILY_LIMIT_REACHED.title	"Φτάσατε το ημερήσιο όριο ανάλυσης."
 bundle	wallet.batchUpload.failures.DOCUMENT_NOT_RECOGNIZED.action	"Ανεβάστε ένα πιο καθαρό PDF ή ελέγξτε ότι η πρώτη σελίδα περιλαμβάνει τα βασικά στοιχεία."
 bundle	wallet.batchUpload.failures.DOCUMENT_NOT_RECOGNIZED.detail	"Δεν εντοπίσαμε αρκετά στοιχεία ώστε να αναγνωρίσουμε το έγγραφο ως ασφαλιστήριο."
 bundle	wallet.batchUpload.failures.DOCUMENT_NOT_RECOGNIZED.title	"Δεν αναγνωρίστηκε ασφαλιστήριο."
+bundle	wallet.batchUpload.failures.DOCUMENT_REVIEW_REQUIRED.action	"Επιβεβαιώστε ότι είναι το ασφαλιστήριό σας για να συνεχίσουμε, ή ανεβάστε ένα πιο καθαρό αντίγραφο."
+bundle	wallet.batchUpload.failures.DOCUMENT_REVIEW_REQUIRED.detail	"Το έγγραφο μοιάζει με ασφαλιστικό, αλλά δεν μπορέσαμε να το επιβεβαιώσουμε αυτόματα — ίσως είναι σκαναρισμένο ή έχει λίγο κείμενο."
+bundle	wallet.batchUpload.failures.DOCUMENT_REVIEW_REQUIRED.title	"Χρειάζεται μια επιβεβαίωση."
 bundle	wallet.batchUpload.failures.DOCUMENT_UPLOAD_FAILED.action	"Δοκιμάστε ξανά για να επισυνάψετε το έγγραφο. Το ασφαλιστήριο δεν θα δημιουργηθεί δεύτερη φορά."
 bundle	wallet.batchUpload.failures.DOCUMENT_UPLOAD_FAILED.detail	"Τα στοιχεία καταχωρήθηκαν κανονικά. Δεν καταφέραμε όμως να αποθηκεύσουμε το αρχείο PDF μαζί τους."
 bundle	wallet.batchUpload.failures.DOCUMENT_UPLOAD_FAILED.title	"Το ασφαλιστήριο προστέθηκε, αλλά όχι το έγγραφο."
+bundle	wallet.batchUpload.failures.DUPLICATE_DOCUMENT.action	"Ανοίξτε το υπάρχον ασφαλιστήριο — δεν χρειάζεται να το ανεβάσετε ξανά."
+bundle	wallet.batchUpload.failures.DUPLICATE_DOCUMENT.detail	"Το ίδιο ακριβώς αρχείο έχει ήδη ανέβει στο Wallet σας."
+bundle	wallet.batchUpload.failures.DUPLICATE_DOCUMENT.title	"Το έγγραφο υπάρχει ήδη."
 bundle	wallet.batchUpload.failures.DUPLICATE_POLICY.action	"Δεν χρειάζεται να το ανεβάσετε ξανά."
 bundle	wallet.batchUpload.failures.DUPLICATE_POLICY.detail	"Το ασφαλιστήριο έχει ήδη προστεθεί στο Wallet."
 bundle	wallet.batchUpload.failures.DUPLICATE_POLICY.title	"Το ασφαλιστήριο υπάρχει ήδη."
@@ -2773,7 +2796,7 @@ bundle	wallet.batchUpload.failures.FILE_TOO_LARGE.action	"Συμπιέστε τ�
 bundle	wallet.batchUpload.failures.FILE_TOO_LARGE.detail	"Ξεπερνά το μέγιστο επιτρεπόμενο μέγεθος μεταφόρτωσης."
 bundle	wallet.batchUpload.failures.FILE_TOO_LARGE.title	"Το αρχείο είναι πολύ μεγάλο."
 bundle	wallet.batchUpload.failures.FILE_UNREADABLE.action	"Ελέγξτε ότι το PDF ανοίγει κανονικά και δοκιμάστε ξανά."
-bundle	wallet.batchUpload.failures.FILE_UNREADABLE.detail	"Το περιεχόμενο δεν αντιστοιχεί σε PDF ή εικόνα — το αρχείο μπορεί να είναι κατεστραμμένο ή να έχει απλώς μετονομαστεί."
+bundle	wallet.batchUpload.failures.FILE_UNREADABLE.detail	"Δεν μπορέσαμε να ανοίξουμε το περιεχόμενο — το αρχείο μπορεί να είναι κατεστραμμένο, προστατευμένο ή σκαναρισμένο σε μορφή που δεν επεξεργαζόμαστε."
 bundle	wallet.batchUpload.failures.FILE_UNREADABLE.title	"Δεν μπορέσαμε να διαβάσουμε το αρχείο."
 bundle	wallet.batchUpload.failures.INVALID_POLICY_PERIOD.action	"Διορθώστε τις ημερομηνίες και δοκιμάστε ξανά."
 bundle	wallet.batchUpload.failures.INVALID_POLICY_PERIOD.detail	"Η ημερομηνία έναρξης και λήξης δεν σχηματίζουν έγκυρη περίοδο."
@@ -2781,9 +2804,15 @@ bundle	wallet.batchUpload.failures.INVALID_POLICY_PERIOD.title	"Μη έγκυρ�
 bundle	wallet.batchUpload.failures.NETWORK_ERROR.action	"Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
 bundle	wallet.batchUpload.failures.NETWORK_ERROR.detail	"Η μεταφόρτωση διακόπηκε πριν ολοκληρωθεί."
 bundle	wallet.batchUpload.failures.NETWORK_ERROR.title	"Χάθηκε η σύνδεση."
+bundle	wallet.batchUpload.failures.NOT_AN_INSURANCE_DOCUMENT.action	"Ανεβάστε το ασφαλιστήριό σας — συνήθως ένα PDF από τον ασφαλιστή με αριθμό ασφαλιστηρίου, διάρκεια και καλύψεις."
+bundle	wallet.batchUpload.failures.NOT_AN_INSURANCE_DOCUMENT.detail	"Δεν βρήκαμε αρκετά στοιχεία για να το αναγνωρίσουμε ως ασφαλιστήριο ή άλλο ασφαλιστικό έγγραφο. Δεν το αποθηκεύσαμε και δεν έγινε καμία ανάλυση."
+bundle	wallet.batchUpload.failures.NOT_AN_INSURANCE_DOCUMENT.title	"Αυτό δεν φαίνεται να είναι ασφαλιστικό έγγραφο."
 bundle	wallet.batchUpload.failures.NOT_AN_INSURANCE_POLICY.action	"Ανεβάστε τη σελίδα του πίνακα ασφαλιστηρίου από το ίδιο έγγραφο."
 bundle	wallet.batchUpload.failures.NOT_AN_INSURANCE_POLICY.detail	"Το αναγνωρίσαμε ως {kind}, όχι ως πίνακα ασφαλιστηρίου με αριθμό, διάρκεια και καλύψεις."
 bundle	wallet.batchUpload.failures.NOT_AN_INSURANCE_POLICY.title	"Το έγγραφο δεν είναι ασφαλιστήριο."
+bundle	wallet.batchUpload.failures.NO_READABLE_CONTENT.action	"Ελέγξτε ότι αποθηκεύσατε το σωστό αρχείο και ανεβάστε το ξανά."
+bundle	wallet.batchUpload.failures.NO_READABLE_CONTENT.detail	"Το PDF ανοίγει, αλλά δεν περιέχει καμία σελίδα."
+bundle	wallet.batchUpload.failures.NO_READABLE_CONTENT.title	"Το αρχείο δεν έχει περιεχόμενο."
 bundle	wallet.batchUpload.failures.PERSISTENCE_FAILED.action	"Δοκιμάστε ξανά — δεν θα δημιουργηθεί διπλή εγγραφή."
 bundle	wallet.batchUpload.failures.PERSISTENCE_FAILED.detail	"Το ασφαλιστήριο διαβάστηκε σωστά, αλλά δεν καταχωρήθηκε στο Wallet."
 bundle	wallet.batchUpload.failures.PERSISTENCE_FAILED.title	"Η αποθήκευση δεν ολοκληρώθηκε."
@@ -2793,12 +2822,18 @@ bundle	wallet.batchUpload.failures.POLICY_LIMIT_REACHED.title	"Φτάσατε τ
 bundle	wallet.batchUpload.failures.REQUIRED_DATA_MISSING.action	"Συμπληρώστε τα παρακάτω και το ασφαλιστήριο θα προστεθεί κανονικά."
 bundle	wallet.batchUpload.failures.REQUIRED_DATA_MISSING.detail	"Το ασφαλιστήριο αναγνωρίστηκε, αλλά δεν εντοπίσαμε: {fields}."
 bundle	wallet.batchUpload.failures.REQUIRED_DATA_MISSING.title	"Λείπουν βασικά στοιχεία."
+bundle	wallet.batchUpload.failures.TOO_MANY_PAGES.action	"Ανεβάστε μόνο τον πίνακα ασφαλιστηρίου — τις πρώτες σελίδες — ή χωρίστε το αρχείο."
+bundle	wallet.batchUpload.failures.TOO_MANY_PAGES.detail	"Δεχόμαστε έγγραφα έως 200 σελίδες. Δεν το αποθηκεύσαμε."
+bundle	wallet.batchUpload.failures.TOO_MANY_PAGES.title	"Το έγγραφο έχει πάρα πολλές σελίδες."
 bundle	wallet.batchUpload.failures.UNKNOWN_ERROR.action	"Δοκιμάστε ξανά."
 bundle	wallet.batchUpload.failures.UNKNOWN_ERROR.detail	"Δεν ολοκληρώθηκε η επεξεργασία του εγγράφου."
 bundle	wallet.batchUpload.failures.UNKNOWN_ERROR.title	"Προσωρινό σφάλμα."
 bundle	wallet.batchUpload.failures.UNSUPPORTED_FORMAT.action	"Μετατρέψτε το έγγραφο σε PDF και δοκιμάστε ξανά."
 bundle	wallet.batchUpload.failures.UNSUPPORTED_FORMAT.detail	"Δεχόμαστε αρχεία PDF και εικόνες (JPG, PNG, WEBP, HEIC)."
 bundle	wallet.batchUpload.failures.UNSUPPORTED_FORMAT.title	"Μη υποστηριζόμενος τύπος αρχείου."
+bundle	wallet.batchUpload.failures.UPLOAD_REJECTIONS_THROTTLED.action	"Δοκιμάστε ξανά σε λίγο, με το PDF του ασφαλιστηρίου σας."
+bundle	wallet.batchUpload.failures.UPLOAD_REJECTIONS_THROTTLED.detail	"Αρκετά έγγραφα απορρίφθηκαν την τελευταία ώρα, οπότε κάναμε μια παύση."
+bundle	wallet.batchUpload.failures.UPLOAD_REJECTIONS_THROTTLED.title	"Πολλές αποτυχημένες προσπάθειες."
 bundle	wallet.batchUpload.fieldNames.endDate	"ημερομηνία λήξης"
 bundle	wallet.batchUpload.fieldNames.insurerName	"ασφαλιστική εταιρεία"
 bundle	wallet.batchUpload.fieldNames.policyNumber	"αριθμός ασφαλιστηρίου"
@@ -8502,11 +8537,8 @@ ternary	lib/services/gap-engine/risk-catalog.ts	`Σας ανήκουν ${ctx.pro
 ternary	lib/services/policy.service.ts	'Δεν έχετε δικαίωμα επεξεργασίας αυτού του συμβολαίου'
 ternary	lib/services/policy.service.ts	'Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης'
 ternary	lib/services/policy.service.ts	'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
-ternary	lib/services/policy.service.ts	'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
-ternary	lib/services/policy.service.ts	'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
 ternary	lib/services/policy.service.ts	'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
 ternary	lib/services/policy.service.ts	'του εγγράφου που ανεβάσατε'
-ternary	lib/services/policy.service.ts	`Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
 ternary	lib/services/policy.service.ts	`Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
 ternary	lib/services/policy.service.ts	`του συμβολαίου ${label}`
 ternary	lib/services/renewal.service.ts	"αύριο"

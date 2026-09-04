@@ -4,7 +4,6 @@ import React, { useState, useTransition, useEffect, useRef, useCallback } from "
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { createPolicy, getPolicyAnalysisStatus, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(protected)/wallet/actions"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -38,6 +37,31 @@ interface AddPolicyClientProps {
 
 type Phase = 'form' | 'reviewing'
 
+/**
+ * How many files one submission may carry. The FIRST is the policy: it is the
+ * one the document gate must pass and the one the analysis reads. The rest are
+ * attached afterwards through the documents route (gated too, as attachments).
+ * Three, not twenty: the action body carries the file now, and a stack of
+ * scans is not what «add a policy» is for.
+ */
+const MAX_ADD_POLICY_FILES = 3
+
+/** The document gate's verdict, as createPolicy returns it. Nothing was stored. */
+type GateVerdict = {
+    status: 'rejected' | 'requires_review'
+    code: string
+    documentType?: string
+    documentKind?: string
+    detectedBranch?: string | null
+    declaredBranch?: string | null
+    resolvable?: boolean
+    existingPolicyId?: string
+}
+
+function fill(template: string, vars: Record<string, string>): string {
+    return template.replace(/\{(\w+)\}/g, (_m, key: string) => vars[key] ?? '')
+}
+
 function getAnalyzingStep(elapsed: number, t: any): string {
     const steps = t.wallet.review
     if (elapsed < 5) return steps.stepUploading
@@ -55,6 +79,12 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     // but pointed at no field, and vanished when the toast timed out.
     const [fieldErrors, setFieldErrors] = useState<{ files?: string; lineOfBusiness?: string }>({})
     const formCopy = t.wallet.addPolicyForm
+    // The document gate's verdict on the last submission — the file was not a
+    // policy, or not the type selected, or needs one confirmation. Rendered
+    // where the person is (above the dropzone), with the actions the verdict
+    // allows; the same FormData is kept so «change type» / «continue» resubmit.
+    const [gate, setGate] = useState<GateVerdict | null>(null)
+    const lastFormDataRef = useRef<FormData | null>(null)
 
     // AI-processing consent (GDPR): analysis starts in the background right after
     // createPolicy, so consent must be captured before the form is submitted.
@@ -98,23 +128,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
             return
         }
 
-        if (!formData.get("insurerName")) {
-            formData.set("insurerName", "__PENDING_EXTRACTION__")
-        }
-        if (!formData.get("policyNumber")) {
-            formData.set("policyNumber", `PENDING-${Date.now()}`)
-        }
-        // Creation placeholders for the NOT NULL date columns until extraction
-        // fills them — the lifecycle/display layers read the extracted envelope
-        // first and never trust these as real dates (see lib/policy-status).
-        if (!formData.get("startDate")) {
-            formData.set("startDate", new Date().toISOString().split('T')[0])
-        }
-        if (!formData.get("endDate")) {
-            const nextYear = new Date()
-            nextYear.setFullYear(nextYear.getFullYear() + 1)
-            formData.set("endDate", nextYear.toISOString().split('T')[0])
-        }
+        // Identity and dates stay empty when the person left them empty: the
+        // server mints the placeholders the extraction will replace
+        // (lib/wallet/policy-identity.ts). The client used to mint them here.
 
         if (!aiConsent) {
             pendingFormDataRef.current = formData
@@ -125,47 +141,21 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         submitPolicy(formData)
     }
 
-    const submitPolicy = (formData: FormData) => {
-        const supabase = createClient()
+    const submitPolicy = (formData: FormData, options: { branchConfirmed?: boolean } = {}) => {
         startTransition(async () => {
             try {
-                const uploadPromises = selectedFiles.map(async (file) => {
-                    // Opaque, server-unguessable storage name — the original
-                    // filename is never used as the storage key (it leaks the
-                    // user/policy/insurer). crypto UUID is collision-safe, so
-                    // upsert can't silently overwrite another object.
-                    const fileExt = (file.name.split('.').pop() || 'pdf')
-                        .toLowerCase()
-                        .replace(/[^a-z0-9]/g, '')
-                        .slice(0, 5) || 'pdf'
-                    const fileName = `${crypto.randomUUID()}.${fileExt}`
-
-                    const { error: uploadError } = await supabase.storage
-                        .from('policies')
-                        .upload(fileName, file)
-
-                    if (uploadError) throw uploadError
-
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('policies')
-                        .getPublicUrl(fileName)
-
-                    // No `name`. The server discards `documentNames` and
-                    // labels the document from the policy instead, so sending
-                    // the customer's file name only puts it in a request body
-                    // that nothing reads. The name still reaches us in the
-                    // multipart part header of the file itself; that is
-                    // unavoidable, this was not.
-                    return { url: publicUrl, size: file.size }
-                })
-
-                const uploadedDocs = await Promise.all(uploadPromises)
-
+                // The FIRST file travels IN the action, so the server validates
+                // the bytes and runs the document gate against the selected
+                // type BEFORE anything is stored or any model reads it. The
+                // browser used to upload every file straight into the bucket
+                // and the action then committed a policy for whatever landed.
                 formData.delete("files")
-                uploadedDocs.forEach(doc => {
-                    formData.append("documentUrls", doc.url)
-                    formData.append("documentSizes", doc.size.toString())
-                })
+                formData.delete("file")
+                formData.delete("branchConfirmed")
+                const [primary, ...attachments] = selectedFiles
+                if (primary) formData.set("file", primary)
+                if (options.branchConfirmed) formData.set("branchConfirmed", "true")
+                lastFormDataRef.current = formData
 
                 const result = await createPolicy(formData)
                 if ('error' in result) {
@@ -175,10 +165,33 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         setLimitModalOpen(true)
                         return
                     }
+                    // Any verdict from the document gate — a refused file type,
+                    // a non-insurance document, a hold — renders as the card.
+                    if ('gate' in result && result.gate) {
+                        setGate(result.gate as GateVerdict)
+                        document.getElementById("add-policy-gate")?.scrollIntoView({ block: "center", behavior: "smooth" })
+                        return
+                    }
                     toast.error(mapWalletErrorToMessage(result.error, t, "addPolicy"))
                     return
                 }
+                setGate(null)
                 if (result.policyId) {
+                    // Supporting files join the policy one by one through the
+                    // documents route, which gates each as an attachment. A
+                    // refused attachment never blocks the policy that exists.
+                    let skipped = 0
+                    for (const extra of attachments) {
+                        try {
+                            const body = new FormData()
+                            body.append("file", extra)
+                            const response = await fetch(`/api/v1/policies/${result.policyId}/documents`, { method: "POST", body })
+                            if (!response.ok) skipped++
+                        } catch {
+                            skipped++
+                        }
+                    }
+                    if (skipped > 0) toast.warning(fill(formCopy.attachmentsSkipped, { count: String(skipped) }))
                     setCreatedPolicyId(result.policyId)
                     pollingStartRef.current = Date.now()
                     setPhase('reviewing')
@@ -193,6 +206,43 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
             }
         })
     }
+
+    /** «Change type to X»: the gate named the family it read; resubmit as that. */
+    const resubmitAs = (branch: string) => {
+        const formData = lastFormDataRef.current
+        if (!formData) return
+        formData.set("lineOfBusiness", branch)
+        const select = document.getElementById("add-lineOfBusiness") as HTMLSelectElement | null
+        if (select) select.value = branch
+        setGate(null)
+        submitPolicy(formData)
+    }
+
+    /** «Continue as declared»: the hold was one the person may resolve. */
+    const resubmitConfirmed = () => {
+        const formData = lastFormDataRef.current
+        if (!formData) return
+        setGate(null)
+        submitPolicy(formData, { branchConfirmed: true })
+    }
+
+    const branchLabel = (id: string | null | undefined): string =>
+        id ? ((t.policyTypes as Record<string, string>)[id] ?? id) : ''
+
+    // The gate's copy is the ONE block every upload surface shares
+    // (wallet.batchUpload.failures), with the labels filled in.
+    const gateCopy = (() => {
+        if (!gate) return null
+        const failures = t.wallet.batchUpload.failures as Record<string, { title: string; detail: string; action: string }>
+        const entry = failures[gate.code] ?? failures.UNKNOWN_ERROR
+        const kinds = t.wallet.batchUpload.documentKinds as Record<string, string>
+        const vars = {
+            kind: kinds[gate.documentKind ?? ''] ?? kinds.other,
+            detected: branchLabel(gate.detectedBranch),
+            declared: branchLabel(gate.declaredBranch),
+        }
+        return { title: entry.title, detail: fill(entry.detail, vars), action: fill(entry.action, vars) }
+    })()
 
     // Poll the LIGHTWEIGHT status endpoint; fetch the full review payload
     // exactly once, on the terminal transition. The old loop fetched the
@@ -539,13 +589,52 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             </div>
 
                             <UploadDropzone
-                                onFiles={(files) => { setSelectedFiles(prev => [...prev, ...files]); setFieldErrors(prev => ({ ...prev, files: undefined })) }}
+                                onFiles={(files) => {
+                                    setGate(null)
+                                    setSelectedFiles(prev => {
+                                        const next = [...prev, ...files]
+                                        if (next.length > MAX_ADD_POLICY_FILES) {
+                                            setFieldErrors(e => ({ ...e, files: fill(formCopy.tooManyFiles, { max: String(MAX_ADD_POLICY_FILES) }) }))
+                                            return next.slice(0, MAX_ADD_POLICY_FILES)
+                                        }
+                                        setFieldErrors(e => ({ ...e, files: undefined }))
+                                        return next
+                                    })
+                                }}
                                 accept={acceptAttribute("policy")}
                                 inputId="file-upload"
                                 inputName="files"
                                 title={t.wallet.tapToUpload}
                                 hint={t.wallet.dragDrop}
                             />
+
+                            {gate && gateCopy && (
+                                <div id="add-policy-gate" role="alert" data-gate-code={gate.code} className="mt-4 rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/10 p-4">
+                                    <p className="flex items-start gap-2 text-sm font-semibold text-foreground">
+                                        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden="true" />
+                                        <span>{gateCopy.title}</span>
+                                    </p>
+                                    <p className="mt-1 text-sm text-muted-foreground">{gateCopy.detail}</p>
+                                    <p className="mt-1 text-sm text-foreground">{gateCopy.action}</p>
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        {gate.detectedBranch && gate.detectedBranch !== gate.declaredBranch && (
+                                            <button type="button" onClick={() => resubmitAs(gate.detectedBranch!)} disabled={isPending} className="pw-primary-button">
+                                                {fill(formCopy.gateChangeType, { branch: branchLabel(gate.detectedBranch) })}
+                                            </button>
+                                        )}
+                                        {gate.status === 'requires_review' && gate.resolvable && (
+                                            <button type="button" onClick={resubmitConfirmed} disabled={isPending} className="pw-soft-button">
+                                                {gate.declaredBranch
+                                                    ? fill(formCopy.gateContinueAs, { branch: branchLabel(gate.declaredBranch) })
+                                                    : formCopy.gateConfirm}
+                                            </button>
+                                        )}
+                                        <button type="button" onClick={() => { setGate(null); setSelectedFiles([]) }} className="pw-soft-button">
+                                            {formCopy.gateUploadAnother}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             {fieldErrors.files && (
                                 <p id="add-policy-files-error" role="alert" className="mt-2 ml-1 text-xs font-semibold text-red-700 dark:text-red-400">

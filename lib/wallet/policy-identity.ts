@@ -42,6 +42,22 @@ export const PLACEHOLDER_INSURER_NAMES: readonly string[] = [
 export const PLACEHOLDER_POLICY_NUMBER_PREFIX = 'PENDING-'
 
 /**
+ * The identity a policy carries BEFORE extraction has read its document.
+ *
+ * Minted HERE, the one file allowed to know the literals — the upload paths
+ * used to inline their own (`'AI Analyzing...'`, `PENDING-${Date.now()}`),
+ * and one of them drew the suffix from `Math.random().toString(36)`, which
+ * can collide for two concurrent uploads and did. Eight hex characters of a
+ * cryptographic UUID cannot, in practice.
+ */
+export function mintPlaceholderIdentity(): { insurerName: string; policyNumber: string } {
+    return {
+        insurerName: PLACEHOLDER_INSURER_NAMES[0],
+        policyNumber: `${PLACEHOLDER_POLICY_NUMBER_PREFIX}${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+    }
+}
+
+/**
  * Every literal a rendered surface must never contain. Used by the guard test
  * and by {@link containsPlaceholderText}.
  */

@@ -20,6 +20,8 @@ import type {
     AIRiskProfileAnalysisResponse,
     AITrackingOptions,
     RiskProfileInput,
+    AIClassificationInput,
+    AIDocumentClassification,
 } from './ai-service.interface'
 import { enrichExtractionPayload } from './extraction-enrichment'
 import { extractionCitationsEnabled } from './extraction-citations'
@@ -429,6 +431,27 @@ export class MockAIService implements IAIService {
         }
 
         return `This is a mock answer to your question: "${question}". I've analyzed your ${metadata.insurerName} policy.`
+    }
+
+    /**
+     * Deterministic: the excerpt is insurance unless it says «menu». Tests
+     * that need a specific verdict mock the gate's classifier directly.
+     */
+    async classifyDocument(input: AIClassificationInput, _options?: AITrackingOptions): Promise<AIDocumentClassification> {
+        await this.simulateDelay()
+        if (this.shouldFail) throw new Error('Mock AI failure: classifyDocument')
+        const text = input.kind === 'text' ? input.text.toLowerCase() : ''
+        const insurance = !/menu|μενου/.test(text)
+        return {
+            documentType: insurance ? 'insurance_policy' : 'non_insurance',
+            isInsuranceDocument: insurance,
+            insuranceConfidence: insurance ? 0.9 : 0.05,
+            detectedBranch: insurance ? ((input.declaredBranch as any) ?? 'motor') : null,
+            branchConfidence: insurance ? 0.9 : 0,
+            readable: true,
+            signals: insurance ? ['mock policy number', 'mock insurer', 'mock premium'] : ['mock menu'],
+            usage: { inputTokens: 200, outputTokens: 60, totalTokens: 260, model: 'mock', provider: 'mock' },
+        }
     }
 
     async analyzeRiskProfile(

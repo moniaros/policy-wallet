@@ -118,6 +118,20 @@ export async function getDashboardMetrics() {
             triggerSourceBreakdown[source] = (triggerSourceBreakdown[source] || 0) + 1
         }
 
+        // The document gate (30d): every verdict is one ActivityLog row with
+        // numbers and codes in its metadata — «how many AI analyses did we
+        // prevent» is read from these (lib/ingestion/gate-metrics.ts).
+        const { GATE_ACTIVITY } = await import("@/lib/ingestion/types")
+        const { summarizeDocumentGate } = await import("@/lib/ingestion/gate-metrics")
+        const gateRows = await db.activityLog.findMany({
+            where: {
+                actionType: { in: [GATE_ACTIVITY.validated, GATE_ACTIVITY.requires_review, GATE_ACTIVITY.rejected] },
+                timestamp: { gte: thirtyDaysAgo },
+            },
+            select: { actionType: true, metadata: true },
+        })
+        const documentGate = summarizeDocumentGate(gateRows)
+
         const paidActiveSubscriptions = subscriptions.filter(
             (sub) => Number(sub.plan.price) > 0
         ).length
@@ -163,7 +177,8 @@ export async function getDashboardMetrics() {
                 checkoutAbandoned: checkoutAbandonedLast30Days,
                 paidActive: paidActiveSubscriptions,
                 triggerSources: triggerSourceBreakdown,
-            }
+            },
+            documentGate,
         }
     } catch (error) {
         Sentry.captureException(error)

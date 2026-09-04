@@ -105,6 +105,20 @@ const ROUTING_TABLE: Record<
         },
         mock: { standard: "mock" },
     },
+    // The document gate's classifier: the cheapest tier of each provider. It
+    // reads an excerpt and answers a tiny schema; a premium model buys nothing.
+    classifyDocument: {
+        gemini: {
+            standard: env.GEMINI_MODEL_CLASSIFICATION,
+        },
+        openai: {
+            standard: env.OPENAI_MODEL_CLASSIFICATION,
+        },
+        anthropic: {
+            standard: env.CLAUDE_MODEL_CLASSIFICATION,
+        },
+        mock: { standard: "mock" },
+    },
 }
 
 /**
@@ -231,6 +245,26 @@ const MODEL_TIERS: Record<
     RouteOperation,
     Partial<Record<AIServiceType, Record<ModelTier, string>>>
 > = {
+    // The document gate's classifier maps to the cheapest model at every tier:
+    // an excerpt and a tiny schema gain nothing from a premium model.
+    classifyDocument: {
+        gemini: {
+            cheap: env.GEMINI_MODEL_CLASSIFICATION,
+            standard: env.GEMINI_MODEL_CLASSIFICATION,
+            premium: env.GEMINI_MODEL_CLASSIFICATION,
+        },
+        anthropic: {
+            cheap: env.CLAUDE_MODEL_CLASSIFICATION,
+            standard: env.CLAUDE_MODEL_CLASSIFICATION,
+            premium: env.CLAUDE_MODEL_CLASSIFICATION,
+        },
+        openai: {
+            cheap: env.OPENAI_MODEL_CLASSIFICATION,
+            standard: env.OPENAI_MODEL_CLASSIFICATION,
+            premium: env.OPENAI_MODEL_CLASSIFICATION,
+        },
+        mock: { cheap: "mock", standard: "mock", premium: "mock" },
+    },
     extractPolicyData: {
         gemini: { cheap: env.GEMINI_MODEL_CLARITY_ANALYSIS, standard: env.GEMINI_MODEL_EXTRACTION, premium: env.GEMINI_MODEL_FALLBACK },
         anthropic: { cheap: env.CLAUDE_MODEL_QA, standard: env.CLAUDE_MODEL_EXTRACTION, premium: env.CLAUDE_MODEL_EXTRACTION },
@@ -278,6 +312,7 @@ const MODEL_TIERS: Record<
  * are schema-bound large outputs and stay uncapped.
  */
 export const MAX_OUTPUT_TOKENS: Partial<Record<RouteOperation, number>> = {
+    classifyDocument: 400,
     askQuestion: 1500,
     analyzeRiskProfile: 4000,
     translate: 8000,

@@ -14,6 +14,7 @@
 
 import type { IAIService, AIDocument } from "@/lib/services/ai/ai-service.interface"
 import { MockAIService } from "@/lib/services/ai/mock-ai.service"
+import { asValidatedForTests } from "../tests/helpers/validated-document"
 import { EXTRACTION_CASES } from "./datasets/extraction/health-ethniki-1"
 import { GAP_CASES } from "./datasets/gaps/health-gaps-1"
 import { QA_CASES } from "./datasets/qa/qa-compliance-1"
@@ -51,7 +52,7 @@ async function buildService(provider: Provider): Promise<IAIService> {
 async function runExtraction(service: IAIService) {
     const results = []
     for (const c of EXTRACTION_CASES) {
-        const actual = await service.extractPolicyData(c.document as AIDocument, {})
+        const actual = await service.extractPolicyData(asValidatedForTests(c.document as AIDocument), {})
         const score = scoreExtraction(c.expected, actual)
         results.push({ id: c.id, accuracyPct: score.accuracyPct, passed: score.passed, total: score.total })
         console.log(`  [extraction] ${c.id}: ${score.accuracyPct}% (${score.passed}/${score.total} fields)`)
