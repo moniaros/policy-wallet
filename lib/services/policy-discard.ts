@@ -84,6 +84,14 @@ export function classifyAnalysisFailure(input: {
         return { kind: "inform", code: "AI_CONSENT_REQUIRED", retryable: true }
     }
 
+    // A document that was READ and carries no policy — no identity, no
+    // period, no coverages (lib/wallet/unread-policy.ts). Not a technical
+    // failure: the file may be the wrong one, or a scan the person can
+    // replace. Discarding it silently would make a readable upload vanish.
+    if (/extraction_empty/.test(haystack)) {
+        return { kind: "inform", code: "EXTRACTION_EMPTY", retryable: true }
+    }
+
     if (/timeout|deadline/.test(haystack)) {
         return { kind: "discard", code: "TIMEOUT", retryable: true }
     }

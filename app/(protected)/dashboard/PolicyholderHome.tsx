@@ -21,6 +21,7 @@ import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayPersonName, displayPolicyNumber, policyAssetIdentifier } from "@/lib/wallet/policy-identity"
+import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
 import { resolvePolicyLifecycle, effectivePolicyStatus } from "@/lib/policy-status"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
 import { premiumExclusionParts } from "@/lib/wallet/premium-exclusion-note"
@@ -726,17 +727,21 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         attention: t.branches.statusAttention,
         not_held: t.branches.statusNotHeld,
         neutral: t.branches.statusNeutral,
+        unread: t.branches.statusUnread,
     } as const
     // LIFECYCLE status in, never the stored string — buildBranchOverview's own
     // contract ("callers pass effectivePolicyStatus"), which /branches honours
     // and this page did not: an expired policy fed the map as stored-'active'
     // and painted its branch green while the /branches tile showed amber.
+    // And `unread` in: a placeholder identity or an empty extraction is a
+    // document on file, not cover — «Άλλο: Καλυμμένο» over a one-line PDF.
     const coverageMapEntries = buildBranchOverview(
         policies.map((policy) => ({
             id: policy.id,
             lineOfBusiness: policy.lineOfBusiness,
             status: effectivePolicyStatus(policy),
             endDate: policy.endDate,
+            unread: isUnreadPolicy(policy),
         })),
         cachedScore?.expectedLines ?? []
     ).map((entry) => ({

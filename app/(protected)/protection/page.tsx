@@ -21,6 +21,7 @@ import { areaListItems, unknownFactorItems } from "@/components/protection/area-
 import { ProtectionSurface } from "@/components/protection/ProtectionSurface"
 import type { ProtectionLens } from "@/components/protection/ProtectionLensTabs"
 import type { BranchTileState } from "@/lib/insurance/branch-page"
+import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
 
 /**
  * «Η προστασία μου» — the §4.2 consolidated protection surface.
@@ -165,6 +166,9 @@ export default async function ProtectionPage({
                       lineOfBusiness: policy.lineOfBusiness,
                       status: effectivePolicyStatus(policy),
                       endDate: policy.endDate,
+                      // A document never read as a policy is not cover —
+                      // the same predicate the home's coverage map applies.
+                      unread: isUnreadPolicy(policy),
                   })),
                   expectedLines: (score?.expectedLines as string[] | null) ?? [],
                   labels: {
@@ -173,6 +177,7 @@ export default async function ProtectionPage({
                           attention: t.branches.statusAttention,
                           not_held: t.branches.statusNotHeld,
                           neutral: t.branches.statusNeutral,
+                          unread: t.branches.statusUnread,
                       } as Record<BranchTileState, string>,
                       policyTypeLabels: t.policyTypes as Record<string, string>,
                       onePolicy: t.branches.onePolicy,

@@ -47,6 +47,46 @@ describe("the first upload reports the real status", () => {
         expect(onUploaded).toHaveBeenCalledWith("pol_1", "queued")
     })
 
+    it("a document that is not a policy: says so — never «διαβάσαμε» — re-opens the chooser for a NEW upload, keeps «later», and hands the map needs_review", async () => {
+        uploadOnboardingPolicy.mockClear()
+        triggerOnboardingAnalysis.mockClear()
+        triggerOnboardingAnalysis.mockResolvedValueOnce({ success: false, status: "needs_review" } as any)
+        const labels = getTranslations("el").onboarding.protectionProfile.upload
+        const onUploaded = vi.fn()
+        const onLater = vi.fn()
+        const { container } = render(
+            <UploadScreen labels={labels} startingFrom={[]} hasAiConsent={true} deepAnalysisAvailable={false} onUploaded={onUploaded} onLater={onLater} busy={false} />
+        )
+        const input = container.querySelector("#protection-upload-file") as HTMLInputElement
+        fireEvent.change(input, { target: { files: [new File(["%PDF-1.4"], "one-line.pdf", { type: "application/pdf" })] } })
+        fireEvent.click(screen.getByRole("button", { name: labels.cta }))
+        await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(labels.status.needsReview))
+
+        // The exact singular-register line, and none of the words that would claim a reading.
+        expect(labels.status.needsReview).toBe("Δεν βρήκαμε στοιχεία ασφαλιστηρίου σε αυτό το έγγραφο. Δες αν είναι το σωστό αρχείο — μπορείς να ανεβάσεις άλλο.")
+        expect(screen.getByRole("status").textContent).not.toMatch(/διαβάσαμε|έτοιμ|ready/i)
+        expect(container.querySelector('[data-upload-outcome="needs_review"]')).toBeTruthy()
+        for (const lang of ["el", "en"] as const) {
+            expect(getTranslations(lang).onboarding.protectionProfile.upload.status.needsReview).not.toMatch(/διαβάσαμε|έτοιμ|ready|we've read/i)
+        }
+
+        // The chooser is back and the CTA waits for ANOTHER file; the «later» exit stands.
+        expect(container.querySelector("#protection-upload-file")).toBeTruthy()
+        expect(screen.getByRole("button", { name: labels.cta })).toBeDisabled()
+        expect(screen.getByRole("button", { name: labels.later })).toBeTruthy()
+
+        // The picture is offered with the REAL outcome — the strip can never credit this file.
+        fireEvent.click(screen.getByRole("button", { name: labels.seePicture }))
+        expect(onUploaded).toHaveBeenCalledWith("pol_1", "needs_review")
+
+        // Another file is a NEW upload, never a re-read of the empty row.
+        uploadOnboardingPolicy.mockResolvedValueOnce({ success: true, policyId: "pol_2" })
+        fireEvent.change(container.querySelector("#protection-upload-file") as HTMLInputElement, { target: { files: [new File(["%PDF-1.4"], "real.pdf", { type: "application/pdf" })] } })
+        fireEvent.click(screen.getByRole("button", { name: labels.cta }))
+        await waitFor(() => expect(uploadOnboardingPolicy).toHaveBeenCalledTimes(2))
+        await waitFor(() => expect(triggerOnboardingAnalysis).toHaveBeenLastCalledWith("pol_2"))
+    })
+
     it("on a plan without the deep reading the hint says presence is what this upload establishes, not the limits", () => {
         for (const lang of ["el", "en"] as const) {
             const labels = getTranslations(lang).onboarding.protectionProfile.upload

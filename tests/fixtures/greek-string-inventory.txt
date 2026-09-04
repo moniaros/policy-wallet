@@ -19,8 +19,8 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3467
-# inline entries: 4809 across 217 files
+# bundle entries: 3473
+# inline entries: 4810 across 217 files
 # ternary entries: 284 across 43 files
 # call entries: 1146 across 86 files
 
@@ -511,6 +511,7 @@ bundle	analysis.errors.agentUpgradeRequired	"Η επανάληψη ανάλυσ�
 bundle	analysis.errors.agentUpgradeRequiredHint	"Η χειροκίνητη επανάληψη της ανάλυσης AI είναι διαθέσιμη στα πλάνα Starter, Pro και Agency. Η αυτόματη ανάλυση κατά τη μεταφόρτωση συνεχίζει να λειτουργεί κανονικά."
 bundle	analysis.errors.auth	"Απέτυχε η ταυτοποίηση προς τον AI provider. Δοκιμάστε σύντομα."
 bundle	analysis.errors.document	"Το έγγραφο ασφαλιστηρίου δεν μπόρεσε να αναλυθεί. Ανεβάστε το ξανά."
+bundle	analysis.errors.extractionEmpty	"Το έγγραφο διαβάστηκε, αλλά δεν περιέχει στοιχεία ασφαλιστηρίου — ούτε ασφαλιστική εταιρεία, ούτε αριθμό, ούτε περίοδο κάλυψης. Ελέγξτε αν ανεβάσατε το σωστό αρχείο."
 bundle	analysis.errors.generic	"Η ανάλυση απέτυχε. Δοκιμάστε ξανά."
 bundle	analysis.errors.schema	"Υπήρξε θέμα δομής απόκρισης AI. Δοκιμάστε ξανά."
 bundle	analysis.errors.timeout	"Η ανάλυση άργησε περισσότερο από το αναμενόμενο. Δοκιμάστε ξανά σε λίγο."
@@ -765,6 +766,7 @@ bundle	branches.statusAttention	"Χρειάζεται προσοχή"
 bundle	branches.statusCovered	"Καλυμμένο"
 bundle	branches.statusNeutral	"Δεν έχει αξιολογηθεί"
 bundle	branches.statusNotHeld	"Χωρίς ασφαλιστήριο"
+bundle	branches.statusUnread	"Δεν έχει διαβαστεί"
 bundle	branches.suggestedQuestions	"Ρώτησε το AI για το ασφαλιστήριό σου"
 bundle	branches.upcomingRenewals	"Επερχόμενες ανανεώσεις"
 bundle	branches.viewBranch	"Δες τον κλάδο"
@@ -1941,6 +1943,7 @@ bundle	onboarding.protectionProfile.stepOf	"Βήμα {n} από {m}"
 bundle	onboarding.protectionProfile.summary.afterUpload.afterLabel	"Τώρα"
 bundle	onboarding.protectionProfile.summary.afterUpload.beforeLabel	"Πριν"
 bundle	onboarding.protectionProfile.summary.afterUpload.cta	"Συνέχεια"
+bundle	onboarding.protectionProfile.summary.afterUpload.notAPolicy	"Δεν βρήκαμε στοιχεία ασφαλιστηρίου στο αρχείο που ανέβασες. Η εικόνα σου δεν άλλαξε."
 bundle	onboarding.protectionProfile.summary.afterUpload.notOnMap	"δεν ήταν στην εικόνα"
 bundle	onboarding.protectionProfile.summary.afterUpload.nothingYet	"Το ασφαλιστήριο αποθηκεύτηκε. Η εικόνα σου θα ενημερωθεί μόλις το διαβάσουμε."
 bundle	onboarding.protectionProfile.summary.afterUpload.readNoChange	"Το διαβάσαμε. Δεν άλλαξε κάτι στις περιοχές που βλέπεις εδώ."
@@ -1993,6 +1996,7 @@ bundle	onboarding.protectionProfile.upload.seePicture	"Δες την εικόν�
 bundle	onboarding.protectionProfile.upload.startingFrom	"Ξεκινάμε από"
 bundle	onboarding.protectionProfile.upload.status.completed	"Το διαβάσαμε. Η εικόνα σου περιμένει στην αρχική."
 bundle	onboarding.protectionProfile.upload.status.failed	"Δεν καταφέραμε να το διαβάσουμε. Μπορείς να δοκιμάσεις ξανά από το πορτοφόλι σου."
+bundle	onboarding.protectionProfile.upload.status.needsReview	"Δεν βρήκαμε στοιχεία ασφαλιστηρίου σε αυτό το έγγραφο. Δες αν είναι το σωστό αρχείο — μπορείς να ανεβάσεις άλλο."
 bundle	onboarding.protectionProfile.upload.status.queued	"Το λάβαμε. Η ανάγνωση θα ολοκληρωθεί σε λίγα λεπτά — θα σε ειδοποιήσουμε."
 bundle	onboarding.protectionProfile.upload.status.reading	"Το διαβάζουμε…"
 bundle	onboarding.protectionProfile.upload.status.uploading	"Ανεβάζουμε το ασφαλιστήριό σου…"
@@ -3381,6 +3385,8 @@ bundle	wallet.review.analysisNotCompletedHint	"Μπορείτε να δοκιμ�
 bundle	wallet.review.analyzing	"Διαβάζουμε το έγγραφό σας..."
 bundle	wallet.review.blockedConsent	"Δεν ξεκίνησε: λείπει η συγκατάθεση για AI"
 bundle	wallet.review.blockedConsentHint	"Το έγγραφό σας αποθηκεύτηκε. Δώστε τη συγκατάθεση επεξεργασίας με τεχνητή νοημοσύνη και δοκιμάστε ξανά."
+bundle	wallet.review.blockedExtractionEmpty	"Δεν βρέθηκαν στοιχεία ασφαλιστηρίου στο έγγραφο"
+bundle	wallet.review.blockedExtractionEmptyHint	"Το έγγραφό σας αποθηκεύτηκε, αλλά δεν αναγνωρίσαμε σε αυτό ασφαλιστική εταιρεία, αριθμό ή περίοδο κάλυψης. Ελέγξτε αν είναι το σωστό αρχείο και ανεβάστε άλλο αν χρειάζεται."
 bundle	wallet.review.blockedNotPermitted	"Δεν έχετε δικαίωμα ανάλυσης σε αυτό το ασφαλιστήριο"
 bundle	wallet.review.blockedNotPermittedHint	"Ζητήστε δικαίωμα επεξεργασίας από τον κάτοχο του ασφαλιστηρίου."
 bundle	wallet.review.blockedTokenLimit	"Δεν ξεκίνησε: εξαντλήθηκε το διαθέσιμο όριο AI"
@@ -7907,6 +7913,7 @@ inline	lib/services/policy.service.ts	'Η ανάλυση δεν ολοκληρώ
 inline	lib/services/policy.service.ts	'Η ανάλυση ολοκληρώθηκε'
 inline	lib/services/policy.service.ts	'Η ανάλυση ολοκληρώθηκε'
 inline	lib/services/policy.service.ts	'Η ανάλυση ολοκληρώθηκε'
+inline	lib/services/policy.service.ts	'Στο έγγραφο που ανεβάσατε δεν βρήκαμε στοιχεία ασφαλιστηρίου — ούτε ασφαλιστική εταιρεία, ούτε αριθμό, ούτε περίοδο κάλυψης. Ελέγξτε αν είναι το σωστό αρχείο· μπορείτε να ανεβάσετε άλλο. Το έγγραφό σας είναι αποθηκευμένο.'
 inline	lib/services/policy.service.ts	'Το έγγραφο που ανεβάσατε δεν μπόρεσε να αναλυθεί, οπότε δεν αποθηκεύτηκε. Δοκιμάστε ξανά με καθαρότερο αντίγραφο.'
 inline	lib/services/policy.service.ts	`Δεν έχετε δικαίωμα να εκτελέσετε ανάλυση ${subject.el}. Ζητήστε δικαίωμα επεξεργασίας από τον κάτοχο του ασφαλιστηρίου.`
 inline	lib/services/policy.service.ts	`Η ανάλυση ${subject.el} δεν ξεκίνησε επειδή εξαντλήθηκε το διαθέσιμο όριο AI. Αναβαθμίστε το πρόγραμμά σας ή αγοράστε credits και δοκιμάστε ξανά — το έγγραφό σας είναι αποθηκευμένο.`

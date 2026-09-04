@@ -307,6 +307,22 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         expect(still.text).toContain(labels.afterUpload.readNoChange)
         expect(still.text).not.toMatch(/έτοιμ/i)
 
+        // Read and found to carry no policy (needs_review): the strip says
+        // that — never the queued promise that the picture will update, never
+        // «Το διαβάσαμε» — and credits the file with nothing even when rows
+        // are handed in.
+        const notAPolicy = draw({ profile: FAMILY, statements: FAMILY_SAID }, { afterUpload: { read: false, moved: [], notAPolicy: true } })
+        const reviewStrip = notAPolicy.container.querySelector("[data-after-upload]")!
+        expect(reviewStrip.getAttribute("data-after-upload")).toBe("needs_review")
+        expect(reviewStrip.textContent).toContain(labels.afterUpload.notAPolicy)
+        expect(reviewStrip.textContent).not.toContain(labels.afterUpload.nothingYet)
+        expect(reviewStrip.textContent).not.toContain(labels.afterUpload.readNoChange)
+        expect(reviewStrip.textContent).not.toMatch(/διαβάσαμε|έτοιμ/i)
+        expect(notAPolicy.text).not.toMatch(FORMAL)
+        const credited = draw({ profile: FAMILY, statements: FAMILY_SAID, policies: [lifePolicy()] }, { afterUpload: { read: true, moved, notAPolicy: true } })
+        expect(credited.container.querySelector("[data-moved]")).toBeNull()
+        expect(credited.container.querySelector("[data-after-upload]")?.textContent).toContain(labels.afterUpload.notAPolicy)
+
         // No strip on the first visit.
         expect(draw({ profile: FAMILY, statements: FAMILY_SAID }).container.querySelector("[data-after-upload]")).toBeNull()
         // Identical maps move nothing.

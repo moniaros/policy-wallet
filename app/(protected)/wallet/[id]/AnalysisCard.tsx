@@ -135,6 +135,11 @@ export function AnalysisCard({
     const resolveErrorMessage = (code?: string | null, fallback?: string | null) => {
         const normalizedCode = String(code || "").toUpperCase()
         const normalizedFallback = String(fallback || "")
+        // The document was read and carries no policy — not a read failure,
+        // so it is named before the DOCUMENT/TIMEOUT matches below.
+        if (normalizedCode.includes("EXTRACTION_EMPTY")) {
+            return errorCopy.extractionEmpty
+        }
         if (
             normalizedCode.includes("TOKEN_LIMIT_BLOCKED") ||
             normalizedFallback.includes("monthly_limit_reached") ||
@@ -163,6 +168,7 @@ export function AnalysisCard({
     const resolveUserMessageKey = (messageKey?: string | null) => {
         if (!messageKey) return null
         if (messageKey === "analysis.errors.tokenLimit") return errorCopy.tokenLimit
+        if (messageKey === "analysis.errors.extractionEmpty") return errorCopy.extractionEmpty
         if (messageKey === "analysis.errors.schema") return errorCopy.schema
         if (messageKey === "analysis.errors.document") return errorCopy.document
         if (messageKey === "analysis.errors.auth") return errorCopy.auth

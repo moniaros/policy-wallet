@@ -109,6 +109,48 @@ describe('branch page data — buildBranchOverview', () => {
         expect(overview.find((entry) => entry.branch.id === 'life')!.state).toBe('neutral')
     })
 
+    it('an unread row is a document on file, never cover and never a finding', () => {
+        // The Sept-2026 defect row: a one-line PDF stored `active`, line «Άλλο»,
+        // placeholder identity — the map painted «Άλλο: Καλυμμένο».
+        const defect = buildBranchOverview([policy({ lineOfBusiness: 'other', status: 'active', unread: true })], [])
+        const other = defect.find((entry) => entry.branch.id === 'other')!
+        expect(other.state).toBe('unread')
+        expect(other.policyCount).toBe(1)
+        expect(other.activeCount).toBe(0)
+
+        // Stamped action_needed (EXTRACTION_EMPTY) it is still unread — not
+        // the amber «attention» ATTENTION_STATUSES would otherwise raise over
+        // a file nobody could read.
+        expect(
+            buildBranchOverview([policy({ lineOfBusiness: 'motor', status: 'action_needed', unread: true })], []).find((entry) => entry.branch.id === 'motor')!.state
+        ).toBe('unread')
+
+        // An expected line with only an unread document: unread, not not_held
+        // (something WAS uploaded) and not covered.
+        expect(
+            buildBranchOverview([policy({ lineOfBusiness: 'health', status: 'analyzing', unread: true })], ['health']).find((entry) => entry.branch.id === 'health')!.state
+        ).toBe('unread')
+
+        // Read evidence outranks it in both directions.
+        const withCover = buildBranchOverview(
+            [policy({ id: 'a', lineOfBusiness: 'motor', status: 'active' }), policy({ id: 'b', lineOfBusiness: 'motor', status: 'action_needed', unread: true })],
+            []
+        )
+        expect(withCover.find((entry) => entry.branch.id === 'motor')!.state).toBe('covered')
+        const withLapse = buildBranchOverview(
+            [policy({ id: 'a', lineOfBusiness: 'motor', status: 'expired' }), policy({ id: 'b', lineOfBusiness: 'motor', status: 'active', unread: true })],
+            []
+        )
+        expect(withLapse.find((entry) => entry.branch.id === 'motor')!.state).toBe('attention')
+    })
+
+    it('deriveBranchState: unread only fills the silence a read policy would otherwise decide', () => {
+        expect(deriveBranchState({ hasActivePolicy: false, needsAttention: false, expected: true, hasAnyPolicy: false, hasUnread: true })).toBe('unread')
+        expect(deriveBranchState({ hasActivePolicy: false, needsAttention: false, expected: false, hasAnyPolicy: false, hasUnread: true })).toBe('unread')
+        expect(deriveBranchState({ hasActivePolicy: true, needsAttention: false, expected: true, hasAnyPolicy: true, hasUnread: true })).toBe('covered')
+        expect(deriveBranchState({ hasActivePolicy: false, needsAttention: false, expected: true, hasAnyPolicy: true, hasUnread: true })).toBe('attention')
+    })
+
     it('attention wins over covered', () => {
         const overview = buildBranchOverview(
             [

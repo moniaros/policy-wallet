@@ -973,7 +973,11 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
         const locked = renderSurface(
             withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false, isDeepAnalysisLocked: true })
         )
-        expect(locked.container.textContent).toContain("Ξεκλείδωμα με Plus")
+        // Tier-agnostic since 57914f56: the predicate and the written decisions
+        // about which plan clears deep analysis disagree, so the sentence names
+        // the feature (tests/unit/locked-cta-names-the-real-tier.test.ts owns
+        // the tier-naming invariant).
+        expect(locked.container.textContent).toContain("Ξεκλείδωμα πλήρους ανάλυσης")
         expect(locked.container.textContent).not.toContain(
             "Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει."
         )

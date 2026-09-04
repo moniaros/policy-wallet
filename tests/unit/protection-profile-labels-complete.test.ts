@@ -82,12 +82,16 @@ describe("the map's singular vocabulary is complete in both languages", () => {
         expect(stage.q.hurt_most.hint).toMatch(/^Διάλεξε ένα — ή δύο/)
         for (const lang of ["el", "en"] as const) {
             const t = getTranslations(lang).onboarding.protectionProfile
-            for (const key of ["title", "nothingYet", "readNoChange", "notOnMap", "beforeLabel", "afterLabel", "cta"] as const) expect(t.summary.afterUpload[key], `${lang} summary.afterUpload.${key}`).toBeTruthy()
+            for (const key of ["title", "nothingYet", "readNoChange", "notOnMap", "beforeLabel", "afterLabel", "cta", "notAPolicy"] as const) expect(t.summary.afterUpload[key], `${lang} summary.afterUpload.${key}`).toBeTruthy()
             expect(t.summary.unsureCountOne).toBeTruthy()
             expect(t.upload.limitsNeedFullAnalysis).toBeTruthy()
+            expect(t.upload.status.needsReview).toBeTruthy()
             for (const key of ["expiringSoon", "lapsedOnly"] as const) expect(t.map[key], `${lang} map.${key}`).toBeTruthy()
-            // A queued reading is never «ready» on the map either.
+            // A queued reading is never «ready» on the map either — and a
+            // document that carries no policy is never «read» or «ready».
             expect(t.summary.afterUpload.nothingYet).not.toMatch(/έτοιμ|ready/i)
+            expect(t.summary.afterUpload.notAPolicy).not.toMatch(/έτοιμ|ready|διαβάσαμε|we've read/i)
+            expect(t.upload.status.needsReview).not.toMatch(/έτοιμ|ready|διαβάσαμε|we've read/i)
         }
     })
 })

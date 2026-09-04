@@ -254,4 +254,62 @@ describe('the free/Starter basic-summary path', () => {
         expect(db.policy.update).not.toHaveBeenCalled()
         expect(emit).not.toHaveBeenCalled()
     })
+
+    it('keeps and informs when the document was read and is not a policy (needs_review) — never the discard branch', async () => {
+        resolveUserEntitlements.mockResolvedValue({ tier: 'free' } as never)
+        extractBasicSummary.mockResolvedValue({ status: 'needs_review', reason: 'extraction_empty' })
+        const db = makeDb()
+
+        await new PolicyService(db as any).runBackgroundAnalysis('pol-1', 'user-1', 'el')
+
+        // Placeholder identity — the exact row the discard branch would delete.
+        expect(db.policy.delete).not.toHaveBeenCalled()
+        expect(deleteFile).not.toHaveBeenCalled()
+        // The orchestrator stamped the row itself; this path only speaks.
+        expect(updates(db).some((d: any) => d?.status === 'active')).toBe(false)
+        const [sent] = messages()
+        expect(sent.event).toBe('policy_analysis_failed')
+        expect(sent.message.el).toContain('στοιχεία ασφαλιστηρίου')
+        expect(sent.message.el).toContain('αποθηκευμένο')
+        expect(sent.message.el).not.toMatch(/EXTRACTION_EMPTY|PENDING-|__PENDING_EXTRACTION__/)
+    })
+})
+
+describe('INFORM — the deep run read the document and found no policy', () => {
+    it('keeps a placeholder row the run ended with EXTRACTION_EMPTY, stamps it retryable, and says why in Greek', async () => {
+        createAndExecuteRun.mockResolvedValue({
+            id: 'run-1',
+            status: 'failed',
+            failureCode: 'EXTRACTION_EMPTY',
+            failureMessage: 'The document was read but carries no policy identity, period of cover or coverages',
+        })
+        const db = makeDb()
+
+        await new PolicyService(db as any).runBackgroundAnalysis('pol-1', 'user-1', 'el')
+
+        expect(db.policy.delete).not.toHaveBeenCalled()
+        expect(deleteFile).not.toHaveBeenCalled()
+        const stamped = updates(db).find((d: any) => d?.status === 'action_needed')
+        expect(stamped.acordData.processingError.code).toBe('EXTRACTION_EMPTY')
+        expect(stamped.acordData.processingError.retryable).toBe(true)
+        expect(updates(db).some((d: any) => d?.status === 'active')).toBe(false)
+        const [sent] = messages()
+        expect(sent.message.el).toContain('στοιχεία ασφαλιστηρίου')
+        expect(sent.message.el).not.toContain('EXTRACTION_EMPTY')
+    })
+
+    it('a failed run with a TECHNICAL code on a placeholder row is still discarded — the code travels, the disposition does not blur', async () => {
+        createAndExecuteRun.mockResolvedValue({
+            id: 'run-1',
+            status: 'failed',
+            failureCode: 'PIPELINE_ERROR',
+            failureMessage: 'Gemini request failed: 503 Service Unavailable',
+        })
+        const db = makeDb()
+
+        await new PolicyService(db as any).runBackgroundAnalysis('pol-1', 'user-1', 'el')
+
+        expect(db.policy.delete).toHaveBeenCalledWith({ where: { id: 'pol-1' } })
+        expect(updates(db).some((d: any) => d?.status === 'action_needed')).toBe(false)
+    })
 })

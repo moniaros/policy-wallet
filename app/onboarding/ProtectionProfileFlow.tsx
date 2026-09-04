@@ -9,7 +9,7 @@ import { QuestionScreen, type QuestionOption } from "@/components/onboarding/pro
 import { InfoScreen } from "@/components/onboarding/protection-profile/InfoScreen"
 import { ScreenFrame } from "@/components/onboarding/protection-profile/ScreenFrame"
 import { SummaryScreen } from "@/components/onboarding/protection-profile/SummaryScreen"
-import { UploadScreen } from "@/components/onboarding/protection-profile/UploadScreen"
+import { UploadScreen, type UploadOutcome } from "@/components/onboarding/protection-profile/UploadScreen"
 import { AdvisorScreen } from "@/components/onboarding/protection-profile/AdvisorScreen"
 import { domainLabelFor, type AfterUploadView } from "@/components/onboarding/protection-profile/ProtectionMapCard"
 import { flowReducer, initialFlowState } from "@/lib/onboarding/protection-profile/reducer"
@@ -219,18 +219,22 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
      * goes BACK to the picture with what the document moved. A reading that
      * only queued has moved nothing yet, and the strip says exactly that; a
      * refresh straight onto the upload screen has no picture to diff
-     * against, so the honest «saved, will update» line stands in.
+     * against, so the honest «saved, will update» line stands in. A document
+     * that was read and is not a policy (`needs_review`) is recorded as an
+     * upload — a file IS on file — but credited with nothing: the strip says
+     * no policy details were found, never «Το διαβάσαμε».
      */
-    const onUploaded = async (outcome: "completed" | "queued") => {
+    const onUploaded = async (outcome: UploadOutcome) => {
         setBusy(true)
+        const notAPolicy = outcome === "needs_review"
         const refresh = await recordUploadChoice("done").catch(() => null)
         if (refresh && completion) {
             const before = mapRowsFrom(completion.areas, completion.priorities)
             const after = mapRowsFrom(refresh.areas, completion.priorities)
             setCompletion({ ...completion, ...refresh })
-            setAfterUpload({ read: outcome === "completed", moved: movedRows(before, after) })
+            setAfterUpload({ read: outcome === "completed", moved: notAPolicy ? [] : movedRows(before, after), notAPolicy })
         } else {
-            setAfterUpload({ read: false, moved: [] })
+            setAfterUpload({ read: false, moved: [], notAPolicy })
         }
         setBusy(false)
         goto("map")
@@ -554,6 +558,10 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                         if (phase === "uploading") track.trackUpload(language, "started", map)
                         else if (phase === "queued" || phase === "completed") track.trackUpload(language, "completed", map)
                         else if (phase === "failed") track.trackUpload(language, "failed", map, errorCode)
+                        // Not a first policy uploaded: the file carried none.
+                        // Recorded as a failed upload with its reason, never as
+                        // `first_policy_uploaded`.
+                        else if (phase === "needs_review") track.trackUpload(language, "failed", map, errorCode ?? "extraction_empty")
                     }}
                     onUploaded={(_policyId, outcome) => void onUploaded(outcome)}
                     onLater={async () => {

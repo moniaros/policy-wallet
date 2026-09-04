@@ -57,11 +57,20 @@ export function lapsedText(row: MapRow, labels: ProtectionMapRowLabels): string 
 /**
  * What the first upload moved. `read` is true only when the reading
  * COMPLETED; a queued one has changed nothing yet, and the line says so —
- * never «έτοιμη».
+ * never «έτοιμη». `notAPolicy` is the third outcome: the document was read
+ * and carries no policy (needs_review) — the strip says that, and never
+ * «Το διαβάσαμε» or the queued promise that the picture will update.
  */
 export interface AfterUploadView {
     read: boolean
     moved: MovedRow[]
+    notAPolicy?: boolean
+}
+
+/** The strip's state word, for the DOM and the tests. */
+export function afterUploadState(view: AfterUploadView): "needs_review" | "read" | "queued" {
+    if (view.notAPolicy) return "needs_review"
+    return view.read ? "read" : "queued"
 }
 
 function unknownText(row: MapRow, labels: ProtectionMapRowLabels): string | null {
@@ -135,9 +144,14 @@ export function ProtectionMapCard({
             <p className="mt-3 text-body leading-relaxed text-foreground">{lead}</p>
 
             {afterUpload ? (
-                <div className="pw-subcard mt-4 p-3.5" data-after-upload={afterUpload.read ? "read" : "queued"}>
+                <div className="pw-subcard mt-4 p-3.5" data-after-upload={afterUploadState(afterUpload)}>
                     <p className="text-caption font-semibold text-muted-foreground">{labels.afterUpload.title}</p>
-                    {afterUpload.moved.length > 0 ? (
+                    {afterUpload.notAPolicy ? (
+                        // An unread document moves nothing; even if a row did
+                        // move for another reason, nothing here may be credited
+                        // to a file that carries no policy.
+                        <p className="mt-1 text-caption leading-relaxed text-foreground">{labels.afterUpload.notAPolicy}</p>
+                    ) : afterUpload.moved.length > 0 ? (
                         <ul className="mt-2 space-y-1.5">
                             {afterUpload.moved.map((m) => (
                                 <li key={m.area} className="text-caption leading-snug text-foreground [overflow-wrap:anywhere]" data-moved={m.area}>

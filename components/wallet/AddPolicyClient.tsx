@@ -244,6 +244,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 return { title: reviewCopy.blockedConsent, hint: reviewCopy.blockedConsentHint }
             case 'ANALYSIS_NOT_PERMITTED':
                 return { title: reviewCopy.blockedNotPermitted, hint: reviewCopy.blockedNotPermittedHint }
+            // The document was read and is not a policy: kept, and the person
+            // is told to check the file (lib/wallet/unread-policy.ts).
+            case 'EXTRACTION_EMPTY':
+                return { title: reviewCopy.blockedExtractionEmpty, hint: reviewCopy.blockedExtractionEmptyHint }
             default:
                 return {
                     title: reviewCopy.analysisNotCompleted,

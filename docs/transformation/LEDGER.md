@@ -604,7 +604,7 @@ Three facts a later phase must not lose:
 - **A-10…A-21 render on one mount too** — the findings surface is ONE component,
   `CoverageInsightsClient`, and /protection is now its only mount. That includes **A-20's
   monetization pieces** (the lite banner, its «Αναβάθμιση» button, the «Ξεκλείδωσε πλήρη ανάλυση»
-  next-step and the A-17 «Ξεκλείδωμα με Plus» CTA). The transitional two-mount state V2-P2-01b
+  next-step and the A-17 locked-analysis CTA — «Ξεκλείδωμα πλήρους ανάλυσης» since 57914f56, tier-agnostic until the owner settles which plan clears deep analysis). The transitional two-mount state V2-P2-01b
   recorded existed only while both routes lived; it collapsed with the route, exactly as recorded.
 
 ## Περιοχή προσοχής — `/protection/areas/[area]` (personal risk profile, wave 2b — 2026-09-04)

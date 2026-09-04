@@ -296,22 +296,66 @@ describe("liveness comes from the lifecycle, never from the stored column", () =
         expect(area(b, "household").alignment).toBe("appears_covered")
     })
 
-    it("a placeholder identity with a future end date is in force; analysing, cancelled and unknown duration are not placeable", async () => {
+    it("analysing, cancelled and unknown duration are not placeable", async () => {
         const b = await load({
             profile: FAMILY_PROFILE,
             policies: [
-                lifePolicy({ id: "placeholder", policyNumber: "", insurerName: "" }),
                 lifePolicy({ id: "reading", status: "analyzing" }),
                 lifePolicy({ id: "cancelled", status: "cancelled" }),
                 lifePolicy({ id: "undated", acordData: { policy: { expirationDate: "??" } } }),
             ],
         })
         const byId = Object.fromEntries(area(b, "household").protection.lines.map((l) => [l.policyId, l]))
-        expect(byId.placeholder).toMatchObject({ lifecycle: "active", held: true })
         expect(byId.reading).toMatchObject({ lifecycle: "other", held: false })
         expect(byId.cancelled).toMatchObject({ lifecycle: "other", held: false })
         expect(byId.undated).toMatchObject({ lifecycle: "other", held: false })
-        expect(b.policyCount).toBe(4)
+        expect(b.policyCount).toBe(3)
+    })
+})
+
+// ── Unread rows ─────────────────────────────────────────────────────────
+
+describe("an unread row is the presence of a document, never of cover", () => {
+    // The Sept-2026 defect row: a one-line PDF, `active`, a future end date,
+    // a placeholder identity — and the map credited the family with cover.
+    it("a placeholder identity with a future end date is NOT held, whatever the stored status says", async () => {
+        const b = await load({
+            profile: FAMILY_PROFILE,
+            statements: STATEMENTS,
+            policies: [lifePolicy({ id: "placeholder", policyNumber: "", insurerName: "", status: "active" })],
+        })
+        const h = area(b, "household")
+        expect(h.protection.lines[0]).toMatchObject({ policyId: "placeholder", lifecycle: "other", held: false })
+        expect(h.alignment).toBe("not_yet_checked")
+        expect(b.summary.coveredCount).toBe(0)
+        expect(b.policyCount).toBe(1)
+    })
+
+    it("a document read and found to carry no policy (EXTRACTION_EMPTY) is NOT held", async () => {
+        const b = await load({
+            profile: FAMILY_PROFILE,
+            statements: STATEMENTS,
+            policies: [
+                lifePolicy({
+                    id: "empty",
+                    policyNumber: "",
+                    insurerName: "",
+                    status: "action_needed",
+                    acordData: { processingError: { code: "EXTRACTION_EMPTY", retryable: true, occurredAt: AT } },
+                }),
+            ],
+        })
+        expect(area(b, "household").protection.lines[0]).toMatchObject({ lifecycle: "other", held: false })
+        expect(area(b, "household").alignment).toBe("not_yet_checked")
+        expect(b.summary.coveredCount).toBe(0)
+    })
+
+    it("an IDENTIFIED policy whose later deep run was blocked is still in force — a blocked re-read does not unmake it", async () => {
+        const b = await load({
+            profile: FAMILY_PROFILE,
+            policies: [lifePolicy({ id: "blocked", status: "action_needed", acordData: { processingError: { code: "TOKEN_LIMIT_BLOCKED", retryable: true } } })],
+        })
+        expect(area(b, "household").protection.lines[0]).toMatchObject({ lifecycle: "active", held: true })
     })
 })
 
@@ -366,6 +410,9 @@ describe("by construction", () => {
         const src = stripComments(readFileSync(LOADER, "utf-8"))
         expect(src).toMatch(/\bresolvePolicyLifecycle\(/)
         expect(src).toMatch(/\btoPolicyFields\(/)
+        // Unread-ness is asked through the one predicate, never re-derived here.
+        expect(src).toMatch(/\bisUnreadPolicy\(/)
+        expect(src).not.toMatch(/PENDING-|__PENDING_EXTRACTION__|EXTRACTION_EMPTY/)
         expect(src).not.toMatch(/\bcoverageEngineStatus\(|\bisPolicyCoverageActive\(|Date\.now\(\)|\.getTime\(\)|86[_]?400[_]?000/)
         // Server-only by construction: the db import is what the client-bundle guard walks.
         expect(src).toMatch(/^import \{ db \} from "@\/lib\/db"$/m)

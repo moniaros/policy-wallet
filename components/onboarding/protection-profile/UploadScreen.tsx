@@ -9,14 +9,21 @@ import { triggerOnboardingAnalysis, uploadOnboardingPolicy } from "@/app/onboard
 import type { TranslationKeys } from "@/lib/i18n/translations/el"
 
 export type UploadLabels = TranslationKeys["onboarding"]["protectionProfile"]["upload"]
-export type UploadPhase = "idle" | "uploading" | "reading" | "queued" | "completed" | "failed"
+export type UploadPhase = "idle" | "uploading" | "reading" | "queued" | "completed" | "needs_review" | "failed"
+/**
+ * What the reading came to, as the flow receives it. `needs_review`: the
+ * document was read and carries no policy — kept in the wallet, credited
+ * with nothing on the map.
+ */
+export type UploadOutcome = "completed" | "queued" | "needs_review"
 
 /**
  * The reframed first upload: not «upload a policy» but «now let's see what
  * you already have» — the comparison against the map the person just saw.
  * A slim in-flow uploader on the existing onboarding actions and the
  * existing AI-consent gate; the status it reports is the real one, and it
- * never says «ready» unless the reading completed.
+ * never says «ready» unless the reading completed — and never «Το διαβάσαμε»
+ * over a document that turned out not to be a policy.
  */
 export const UploadScreen = forwardRef<HTMLHeadingElement, {
     labels: UploadLabels
@@ -28,7 +35,7 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
      * limits. Decided by the server state, never guessed on the client.
      */
     deepAnalysisAvailable: boolean
-    onUploaded: (policyId: string, outcome: "completed" | "queued") => void
+    onUploaded: (policyId: string, outcome: UploadOutcome) => void
     onLater: () => void
     onPhase?: (phase: UploadPhase, errorCode?: string) => void
     busy: boolean
@@ -49,7 +56,11 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
         // A retry after a failed READING must not upload the same document
         // again: the policy already exists, and a second tap produced a second
         // «AI Analyzing…» row in the wallet. Re-run the reading on the row we have.
-        let id = policyId
+        //
+        // After «needs_review» the opposite holds: the row we have holds a
+        // document that is not a policy, so the next file is a NEW upload —
+        // re-reading the empty one would only find nothing again.
+        let id = phase === "needs_review" ? null : policyId
         if (!id) {
             move("uploading")
             try {
@@ -70,6 +81,12 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
         try {
             move("reading")
             const analysis = await triggerOnboardingAnalysis(id).catch(() => ({ status: "queued" as const }))
+            if (analysis.status === "needs_review") {
+                // The chosen file is spent: the CTA waits for another one.
+                setFile(null)
+                move("needs_review", "extraction_empty")
+                return
+            }
             move(analysis.status === "completed" ? "completed" : analysis.status === "failed" ? "failed" : "queued", analysis.status === "failed" ? "analysis_failed" : undefined)
         } catch {
             move("failed", "upload_failed")
@@ -91,10 +108,12 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
         reading: labels.status.reading,
         queued: labels.status.queued,
         completed: labels.status.completed,
+        needs_review: labels.status.needsReview,
         failed: phase === "failed" && !policyId ? labels.uploadFailed : labels.status.failed,
     }
     const inFlight = phase === "uploading" || phase === "reading"
     const done = phase === "queued" || phase === "completed"
+    const needsReview = phase === "needs_review"
 
     return (
         <section aria-labelledby="protection-upload-heading">
@@ -132,6 +151,13 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
             ) : null}
 
             <div className="mt-5">
+                {/* The outcome line comes BEFORE the dropzone after a review
+                    verdict, so the person reads why before choosing again. */}
+                {needsReview ? (
+                    <p role="status" aria-live="polite" data-upload-outcome="needs_review" className="pw-subcard mb-3 p-3 text-sm leading-relaxed text-foreground">
+                        {statusText.needs_review}
+                    </p>
+                ) : null}
                 {done ? null : (
                     <UploadDropzone
                         onFiles={(files) => setFile(files[0] ?? null)}
@@ -149,7 +175,7 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
                         <span className="min-w-0 truncate">{file.name}</span>
                     </p>
                 ) : null}
-                {phase !== "idle" ? (
+                {phase !== "idle" && !needsReview ? (
                     <p role="status" aria-live="polite" className="mt-3 flex items-start gap-2 text-sm text-foreground">
                         {inFlight ? <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin text-primary" aria-hidden="true" /> : null}
                         <span>{statusText[phase]}</span>
@@ -168,6 +194,13 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
                         {labels.cta}
                     </button>
                 )}
+                {needsReview ? (
+                    // The picture is still there to see — with the honest strip,
+                    // never credited with a document that carries no policy.
+                    <button type="button" onClick={() => policyId && onUploaded(policyId, "needs_review")} disabled={busy} className="pw-soft-button w-full sm:w-auto">
+                        {labels.seePicture}
+                    </button>
+                ) : null}
                 {!done ? (
                     <button type="button" onClick={onLater} disabled={inFlight || busy} className="pw-soft-button w-full sm:w-auto">
                         {labels.later}

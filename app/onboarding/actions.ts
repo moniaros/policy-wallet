@@ -6,6 +6,7 @@ import { PolicyService } from "@/lib/services/policy.service"
 import { revalidatePath } from "next/cache"
 import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
 import { displayPersonName, firstNameLabel } from "@/lib/wallet/policy-identity"
+import { EXTRACTION_EMPTY_CODE } from "@/lib/wallet/unread-policy"
 import { PREFERENCE_CHANNELS } from "@/lib/notifications/preference-channels"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
@@ -255,9 +256,17 @@ export async function redeemInviteCode(code: string) {
  * Trigger real AI analysis for a policy uploaded during onboarding.
  * Uses the PolicyAnalysisOrchestrator for actual coverage analysis.
  */
+/**
+ * What the first upload's reading came to — the word the screen renders.
+ * `needs_review`: the document was read and carries no policy (no identity,
+ * no period, no coverages — lib/wallet/unread-policy.ts). The row is kept
+ * and stamped; it is NOT `completed`, because nothing was established.
+ */
+export type OnboardingAnalysisStatus = "completed" | "running" | "queued" | "failed" | "needs_review"
+
 export async function triggerOnboardingAnalysis(policyId: string): Promise<{
     success: boolean
-    status: "completed" | "running" | "queued" | "failed"
+    status: OnboardingAnalysisStatus
     gapCount?: number
     runId?: string
     error?: string
@@ -322,6 +331,12 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
             const entitlements = await resolveUserEntitlements(dbUser.id)
             if (!canRunDeepAnalysis(entitlements.tier)) {
                 const basic = await orchestrator.extractBasicSummary(policyId, dbUser.id)
+                // «needs_review» is its own word: the document was read and
+                // is not a policy. Not «completed» — the onboarding said «Το
+                // διαβάσαμε» over an empty extraction until Sept 2026.
+                if (basic.status === "needs_review") {
+                    return { success: false, status: "needs_review" }
+                }
                 return {
                     success: basic.status === "completed",
                     status: basic.status === "completed" ? "completed" : "failed",
@@ -338,6 +353,11 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
         if (result) {
             const isComplete = result.status === "completed" || result.status === "completed_with_warnings"
             const isFailed = result.status === "failed" || result.status === "blocked"
+            // The deep path ends an empty extraction as a failed run carrying
+            // the code; the screen gets the same honest word as the basic path.
+            if (result.status === "failed" && result.failureCode === EXTRACTION_EMPTY_CODE) {
+                return { success: false, status: "needs_review" }
+            }
             // `overallSuccessPct` used to be returned as `healthScore` here —
             // a pipeline success percentage dressed up as a protection figure.
             return {

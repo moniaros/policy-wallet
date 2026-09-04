@@ -15,6 +15,14 @@ export interface BranchPolicyFacts {
     lineOfBusiness: string | null
     status: string
     endDate: Date | null
+    /**
+     * True when the row is the presence of a DOCUMENT, not of a policy: a
+     * placeholder identity, or a document read and found to carry no policy
+     * (lib/wallet/unread-policy.ts `isUnreadPolicy`). Callers compute it from
+     * the full row; this module stays pure. Such a row never counts as
+     * active, never raises attention, and paints the tile `unread`.
+     */
+    unread?: boolean
 }
 
 /**
@@ -22,8 +30,13 @@ export interface BranchPolicyFacts {
  * but the wallet holds NO policy is a product the customer does not own, and
  * not owning a product is not a gap. The state renders in a neutral register
  * («Χωρίς ασφαλιστήριο»), never as a finding.
+ *
+ * `unread` (Sept 2026): a document is on file for the line but was never read
+ * as a policy. It is neither cover nor a finding — «Δεν έχει διαβαστεί»,
+ * never «Καλυμμένο». A one-line PDF with no policy details painted «Άλλο:
+ * Καλυμμένο» on the home before this state existed.
  */
-export type BranchTileState = 'covered' | 'attention' | 'not_held' | 'neutral'
+export type BranchTileState = 'covered' | 'attention' | 'not_held' | 'neutral' | 'unread'
 
 // Callers pass the LIFECYCLE status (effectivePolicyStatus), never the stale
 // stored string: a lapsed policy is 'expired' here, so the tile shows amber
@@ -72,9 +85,19 @@ export function deriveBranchState(args: {
      * neutral register) from a held product whose cover ended (a finding).
      */
     hasAnyPolicy: boolean
+    /**
+     * Whether an UNREAD row exists in this branch (see BranchPolicyFacts.unread).
+     * Only consulted when no read policy decides the state: real evidence
+     * — cover, or a finding — always outranks a document nobody could read.
+     */
+    hasUnread?: boolean
 }): BranchTileState {
     if (args.needsAttention) return 'attention'
     if (args.hasActivePolicy) return 'covered'
+    // A document is on file and nothing read decides the line: say that. Not
+    // `not_held` (something was uploaded), not `neutral` (something is there
+    // to look at), and never `covered`.
+    if (args.hasUnread && !args.hasAnyPolicy) return 'unread'
     if (!args.expected) return 'neutral'
     // Expected line, no active cover. If the wallet holds a policy here at
     // all (only reachable with cancelled-status rows — expired ones already
@@ -139,15 +162,21 @@ export function buildBranchOverview(
         )
     }).map((branch) => {
         const branchPolicies = byTopLevel.get(branch.id) ?? []
-        const activeCount = branchPolicies.filter((policy) => policy.status === 'active').length
-        const needsAttention = branchPolicies.some((policy) => ATTENTION_STATUSES.has(policy.status))
+        // Only rows that were READ as a policy carry evidence about the line.
+        // An unread row (placeholder identity, or read and found empty) is
+        // stored `action_needed`, which ATTENTION_STATUSES would otherwise
+        // turn into an amber finding over a file nobody could read.
+        const readPolicies = branchPolicies.filter((policy) => !policy.unread)
+        const activeCount = readPolicies.filter((policy) => policy.status === 'active').length
+        const needsAttention = readPolicies.some((policy) => ATTENTION_STATUSES.has(policy.status))
         return {
             branch,
             state: deriveBranchState({
                 hasActivePolicy: activeCount > 0,
                 needsAttention,
                 expected: expectedTopLevel.has(branch.id),
-                hasAnyPolicy: branchPolicies.length > 0,
+                hasAnyPolicy: readPolicies.length > 0,
+                hasUnread: readPolicies.length < branchPolicies.length,
             }),
             policyCount: branchPolicies.length,
             activeCount,

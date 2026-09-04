@@ -42,6 +42,13 @@ export function mapWalletErrorToMessage(
         return t?.common?.aiConsentRequired || byContext(context, t)
     }
 
+    // The document was read and carries no policy (lib/wallet/unread-policy).
+    // Before the generic DOCUMENT/TIMEOUT matches: this is not a failure to
+    // read, it is a file that is not a policy, and the copy must say so.
+    if (upper.includes("EXTRACTION_EMPTY")) {
+        return t?.analysis?.errors?.extractionEmpty || byContext(context, t)
+    }
+
     // Zero-cost guardrail rejections on the Q&A path (guardUserText).
     if (upper.includes("QUESTION_TOO_LONG")) {
         return t?.wallet?.errors?.questionTooLong || byContext(context, t)
