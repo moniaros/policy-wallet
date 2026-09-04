@@ -690,7 +690,7 @@ export function buildAreaDetail(input: BuildAreaDetailInput): AreaDetailModel {
 }
 
 /** The copy the client-side question flow needs, plucked so a client component carries no dictionary. */
-export function questionFlowCopy(t: Translations): AssessmentUiCopy & { title: string; lead: string; none: string; done: string; remaining: string } {
+export function questionFlowCopy(t: Translations): AssessmentUiCopy & { title: string; lead: string; none: string; done: string; remaining: string; remainingOne: string } {
     const detail = t.protection.attention.detail
     return {
         ...t.protection.assessment.ui,
