@@ -1,0 +1,13 @@
+// PROBE — must stay GREEN under tests/unit/attention-areas.test.ts.
+// Speaks only the closed vocabulary, and carries every near-miss shape the
+// scanner must NOT read as an alignment word.
+export function paint(area: { alignment: string }) {
+    const labels = { alignmentCta: "uncovered", textAlignment: "center" }
+    // alignment: "unprotected"  ← a comment is not a production
+    const row = { id: "household", alignment: "gap" }
+    if (area.alignment === "appears_covered") return labels.alignmentCta
+    if (area.alignment !== "not_yet_checked") return labels.textAlignment
+    let verdict = "review"
+    verdict = "unknown"
+    return row.alignment + verdict
+}

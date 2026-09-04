@@ -1,0 +1,9 @@
+// PROBE — must turn tests/unit/attention-areas.test.ts RED.
+// A surface that mints its own alignment words instead of the closed five.
+export function paint(area: { alignment: string }) {
+    const row = { id: "household", alignment: "uncovered" }
+    if (area.alignment === "unprotected") return "red"
+    let verdict = area.alignment
+    verdict = "exposed"
+    return row.alignment + verdict
+}

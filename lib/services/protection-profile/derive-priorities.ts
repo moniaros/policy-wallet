@@ -12,7 +12,7 @@
  * summed: three high-priority areas are three sentences, not a number.
  */
 
-import { AREAS, AREA_ORDER, type AttentionAreaId } from "@/lib/protection/domains"
+import { AREAS, AREA_IDS, AREA_ORDER, type AttentionAreaId } from "@/lib/protection/domains"
 import type { LifeContext } from "@/lib/services/gap-engine/life-context"
 import { totalDependents } from "@/lib/services/gap-engine/life-context"
 import type { Bilingual } from "@/lib/services/gap-engine/risk-types"
@@ -141,7 +141,29 @@ const PLAN_AREA: Record<string, string> = {
     large_purchase: ROW("property"),
 }
 
-const IMPORTANCE_ORDER: Record<PriorityImportance, number> = { high: 0, medium: 1, watch: 2, needs_review: 3 }
+/** row id → area id, the inverse of ROW. */
+const AREA_BY_ROW: Record<string, AttentionAreaId> = Object.fromEntries(
+    AREA_IDS.map((id) => [AREAS[id].priorityId, id])
+) as Record<string, AttentionAreaId>
+
+/**
+ * The attention area a stated concern («τι θα σε επηρέαζε περισσότερο;») names.
+ * `other` and an unknown id name nothing. Exported so the composition
+ * (lib/protection/attention-areas.ts) reads the SAME table the map reads —
+ * a second concern→area literal would be the drift this file exists to end.
+ */
+export function areaForConcern(concern: string): AttentionAreaId | undefined {
+    const row = CONCERN_AREA[concern]
+    return row ? AREA_BY_ROW[row] : undefined
+}
+
+/** The attention area a recent-change chip touches; `health_changed` → health. */
+export function areaForRecentChange(change: string): AttentionAreaId | undefined {
+    const row = CHANGE_AREA[change]
+    return row ? AREA_BY_ROW[row] : undefined
+}
+
+export const IMPORTANCE_ORDER: Record<PriorityImportance, number> = { high: 0, medium: 1, watch: 2, needs_review: 3 }
 
 /**
  * The rule inputs per area. Identity (domain, facet, row id) and display order

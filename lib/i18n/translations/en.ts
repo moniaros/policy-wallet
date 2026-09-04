@@ -1645,6 +1645,245 @@ export const en: TranslationKeys = {
         lensAria: 'Protection view',
         lensByBranch: 'By line',
         lensByRisk: 'By risk',
+        // The areas of attention — lib/protection/attention-areas.ts. The five
+        // alignment words are the ONLY verdict vocabulary (PERSONAL_RISK_PROFILE
+        // §C); «gap» rows render the rule's own title, this label is the heading.
+        attention: {
+            alignment: {
+                unknown: 'We have not settled this yet',
+                not_yet_checked: 'We have not yet seen a policy for this',
+                appears_covered: 'Appears to be covered',
+                review: 'Worth a look',
+                gap: 'A finding in your policy',
+            },
+            headings: {
+                why: 'Why you are seeing this',
+                unknown: 'What we do not know yet',
+                next: 'What happens next',
+                dormant: 'Not looked at yet',
+            },
+            next: {
+                answer_questions: 'Answer {count} short questions.',
+                answer_question_one: 'Answer one short question.',
+                check_first_policy: 'Add a policy for this so we can check it.',
+                review_finding: 'Look at the finding and what you can do.',
+                nothing_now: 'Nothing needed from you for now.',
+            },
+            caveats: {
+                limits_unread: 'The limits have not been read yet — we can see the policy exists, not exactly what it covers.',
+                no_policy_seen: 'We have not yet seen a policy for this.',
+                absence_not_evidence: 'Not having seen a policy does not mean there is none.',
+                limits_read: 'What your policy does not state, we do not know.',
+                unknown_list: 'We do not know yet: {list}.',
+            },
+            confidence: {
+                unknown: 'We do not have enough to go on',
+                inferred: 'We inferred it from what you told us',
+                user_reported: 'Based on what you told us',
+                policy_verified: 'Confirmed by a policy of yours',
+                externally_verified: 'Confirmed by an external source',
+            },
+            // The map's reason ids (derive-priorities), in the formal register.
+            reasons: {
+                stated_primary: 'You named it as what would affect you most.',
+                stated_secondary: 'You singled it out too.',
+                changed_recently: 'It changed recently — worth looking at first.',
+                planned: 'It is coming up — better to get ahead of it.',
+                dependants: 'Others depend on you.',
+                income_dependency: 'You told us others rely on your income.',
+                owned_home: 'You told us the home is yours.',
+                renting: 'You told us you rent — your things and your liability are still yours.',
+                debt: 'You told us a loan or another commitment is running.',
+                business: 'You told us the work is your own.',
+                vehicle: 'You told us you drive.',
+                health_everyone: 'It concerns everyone — and it is worth knowing what applies to you.',
+                mentioned_not_present: 'You mentioned it — it does not seem to apply today, but we keep it.',
+                unsure: 'We did not settle it — we will when we see your cover.',
+                dormant: 'You have not told us anything about this yet — we keep it on the list.',
+            },
+        },
+        // The assessment's questions — lib/protection/factor-questions.ts. One
+        // entry per context factor plus income dependency.
+        assessment: {
+            factors: {
+                age: {
+                    prompt: 'Which year were you born?',
+                    why: 'Age changes the cost and availability of some cover.',
+                    noun: 'your age',
+                },
+                maritalStatus: {
+                    prompt: 'What is your family status?',
+                    why: 'A partner or spouse changes who would be affected if something happened to you.',
+                    noun: 'your family status',
+                    options: {
+                        single: 'Single',
+                        married: 'Married',
+                        partnered: 'With a partner',
+                        divorced: 'Divorced',
+                        widowed: 'Widowed',
+                        other: 'Other',
+                    },
+                },
+                children: {
+                    prompt: 'How many children do you have?',
+                    why: 'Children are the ones who rely most on your income.',
+                    noun: 'how many children you have',
+                },
+                dependents: {
+                    prompt: 'How many people depend on you financially today?',
+                    why: 'Those who rely on your income would feel its loss first.',
+                    noun: 'who depends on you',
+                },
+                pets: {
+                    prompt: 'Do you have a pet?',
+                    why: 'Vet costs are among the few that can be planned for in advance.',
+                    noun: 'whether you have a pet',
+                },
+                vehicles: {
+                    prompt: 'How many vehicles do you drive or own?',
+                    why: 'Each vehicle on the road needs its own compulsory cover.',
+                    noun: 'how many vehicles you have',
+                },
+                residence: {
+                    prompt: 'Where do you live?',
+                    why: 'An owned and a rented home have different needs.',
+                    noun: 'whether you own or rent your home',
+                    options: {
+                        owned: 'In my own home',
+                        rented: 'In a rented home',
+                        family: 'In a family home',
+                        company: 'In a home my employer provides',
+                        other: 'Somewhere else',
+                    },
+                },
+                tenancy: {
+                    prompt: 'Where do you live?',
+                    why: 'As a tenant, your things and your liability are still yours.',
+                    noun: 'your housing arrangement',
+                    options: {
+                        owned: 'In my own home',
+                        rented: 'In a rented home',
+                        family: 'In a family home',
+                        company: 'In a home my employer provides',
+                        other: 'Somewhere else',
+                    },
+                },
+                propertyOwnership: {
+                    prompt: 'How many properties do you own?',
+                    why: 'Each property is a separate value that can be damaged.',
+                    noun: 'how many properties you own',
+                },
+                tenants: {
+                    prompt: 'Do you let out any property?',
+                    why: 'A tenant brings different responsibilities from living there yourself.',
+                    noun: 'whether you let out property',
+                },
+                boat: {
+                    prompt: 'Do you own a boat?',
+                    why: 'A boat carries its own compulsory liability cover.',
+                    noun: 'whether you own a boat',
+                },
+                businessOwnership: {
+                    prompt: 'Do you own a business?',
+                    why: 'A business has assets, revenue and liabilities that no personal cover answers.',
+                    noun: 'whether you own a business',
+                },
+                selfEmployed: {
+                    prompt: 'What is your work situation?',
+                    why: 'An employee and a self-employed person have different safety nets if they stop working.',
+                    noun: 'your work situation',
+                    options: {
+                        employed: 'Employed',
+                        self_employed: 'Self-employed',
+                        retired: 'Retired',
+                        unemployed: 'Not working at the moment',
+                        student: 'Student',
+                        other: 'Other',
+                    },
+                },
+                employees: {
+                    prompt: 'How many people do you employ?',
+                    why: 'An employer is responsible for the safety of the people they employ.',
+                    noun: 'whether you employ anyone',
+                },
+                income: {
+                    prompt: 'Roughly what is your annual income?',
+                    why: 'Without the figure we cannot say how much income would need replacing.',
+                    noun: 'your income',
+                },
+                savings: {
+                    prompt: 'Roughly how much do you have in savings?',
+                    why: 'Savings show how long you could manage without income — and which cover you can do without.',
+                    noun: 'your savings',
+                },
+                mortgage: {
+                    prompt: 'What is left on your mortgage? Enter 0 if you have none.',
+                    why: 'The loan keeps running even if the income stops.',
+                    noun: 'your mortgage',
+                },
+                loans: {
+                    prompt: 'What is left on your other loans? Enter 0 if you have none.',
+                    why: 'Commitments stay with the household whatever happens.',
+                    noun: 'your other loans',
+                },
+                travelFrequency: {
+                    prompt: 'Do you travel abroad often?',
+                    why: 'Outside Greece, public healthcare does not always follow you.',
+                    noun: 'how often you travel',
+                },
+                hobbies: {
+                    prompt: 'Do you do any of these?',
+                    why: 'Some activities are excluded from ordinary accident cover.',
+                    noun: 'sports and hobbies',
+                    options: {
+                        none: 'None of these',
+                    },
+                },
+                valuables: {
+                    prompt: 'Do you keep high-value items at home? Roughly what are they worth in total — 0 if none.',
+                    why: 'Ordinary home limits often fall short for jewellery, art or collections.',
+                    noun: 'high-value possessions',
+                },
+                cyberExposure: {
+                    prompt: 'How much of your finances do you manage online?',
+                    why: 'The more you do online, the more it is worth knowing what applies in case of fraud.',
+                    noun: 'your online exposure',
+                    options: {
+                        low: 'A little',
+                        moderate: 'A fair amount',
+                        high: 'Almost all of it',
+                    },
+                },
+                retirementPlanning: {
+                    prompt: 'Do you have a retirement plan of your own, beyond the state pension?',
+                    why: 'The state pension replaces only part of an income.',
+                    noun: 'your retirement planning',
+                },
+                health: {
+                    prompt: 'Do you have any ongoing health condition? Answering is optional.',
+                    why: 'We ask only to see whether pre-existing-condition exclusions concern you. It is health data — it stays with you and goes nowhere without your consent.',
+                    noun: 'any ongoing health conditions',
+                    options: {
+                        none: 'None',
+                    },
+                },
+                buildingManagerRole: {
+                    prompt: 'Do you act as the manager of your block of flats?',
+                    why: 'The manager is personally responsible for the common areas — lift, stairwell, pipework.',
+                    noun: 'whether you manage a block of flats',
+                },
+                incomeDependency: {
+                    prompt: 'How much does your household depend on your income?',
+                    why: 'It is the strongest signal of how important protecting your income is.',
+                    noun: 'how much your household depends on your income',
+                    options: {
+                        primary: 'Mostly on it',
+                        shared: 'About half',
+                        minor: 'A little — there are other sources',
+                    },
+                },
+            },
+        },
     },
 
     // Policy Status
