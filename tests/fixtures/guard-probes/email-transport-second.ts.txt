@@ -1,0 +1,12 @@
+// PROBE — a second mail transport, for tests/unit/no-email-sender-refusal.test.ts.
+// The refusal of a no-email customer's synthetic address lives in ONE place
+// (lib/email/email-service.ts sendEmail); a file like this one would bypass it.
+export async function sendDirectly(to: string, subject: string, html: string) {
+    // A comment naming api.brevo.com/v3/smtp/email must NOT count — only code does.
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: { "api-key": process.env.BREVO_API_KEY ?? "", "Content-Type": "application/json" },
+        body: JSON.stringify({ to: [{ email: to }], subject, htmlContent: html }),
+    })
+    return response.ok
+}

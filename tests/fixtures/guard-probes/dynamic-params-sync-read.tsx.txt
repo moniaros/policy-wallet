@@ -1,0 +1,13 @@
+// PROBE — must turn tests/unit/dynamic-page-params-awaited.test.ts RED.
+// A server page reading the Next 16 params Promise as if it were an object:
+// `params.id` is undefined at runtime and the lookup below matches anything.
+import { getCustomerProfile } from "../../agent/actions"
+
+interface Props {
+    params: { id: string }
+}
+
+export default async function ProbePage({ params }: Props) {
+    const customer = await getCustomerProfile(params.id)
+    return <div>{customer?.name}</div>
+}

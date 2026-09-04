@@ -1,0 +1,11 @@
+"use client"
+// PROBE — compliant control for tests/unit/dynamic-page-params-awaited.test.ts.
+// A client page gets a synchronous object from useParams(); `params.slug` is
+// a local binding, not the server props Promise.
+import { useParams } from "next/navigation"
+
+export default function ProbePage() {
+    const params = useParams()
+    const slug = params.slug as string
+    return <div>{slug}</div>
+}

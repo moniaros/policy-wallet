@@ -10,13 +10,14 @@ import { CommandSearch, type CommandSearchItem, type CommandSearchLabels } from 
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp, Bell } from 'lucide-react'
+import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp, Bell, User } from 'lucide-react'
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
 import { setActiveRole } from '@/app/(protected)/role-actions'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
+import { displayPersonName } from '@/lib/wallet/policy-identity'
 import { track } from '@vercel/analytics'
 
 export interface NavigationItem {
@@ -212,6 +213,15 @@ export function AppShell({
     const bellLabel = notificationCount > 0
         ? `${t.nav.notifications} (${notificationCount})`
         : t.nav.notifications
+    // The phone header's drawer trigger shows the person: the same synthetic-
+    // name scrub and the same two-letter initials as the desktop account menu.
+    // No real name → a person glyph, not the initials of a placeholder: the
+    // «Χ» of «Χρήστης» on an ink disc at the top-left corner reads as a close
+    // button.
+    const headerName = displayPersonName(user.name)
+    const headerInitials = headerName
+        ? headerName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+        : null
 
     return (
         <>
@@ -230,18 +240,24 @@ export function AppShell({
                     declares aria-modal, and the scrim only covers pointers — inert is
                     what actually removes these controls from focus and the
                     accessibility tree while the modal claims they are unreachable. */}
-                <header inert={sidebarOpen || undefined} className="lg:hidden sticky top-0 z-40 w-full h-16 bg-card/95 backdrop-blur-xl border-b border-border px-4 flex items-center justify-between">
+                <header inert={sidebarOpen || undefined} className="pw-mobile-header lg:hidden sticky top-0 z-40 w-full h-16 px-4 flex items-center justify-between">
+                    {/* The drawer trigger is the person, not a hamburger — the
+                        reference opens its menu from the avatar. Same initials as
+                        the desktop account menu, on an ink disc; the 44px hit area
+                        is the button, the disc is 36px inside it. */}
                     <button
                         onClick={() => setSidebarOpen(true)}
                         aria-label={t.nav.primaryNavigation}
                         aria-expanded={sidebarOpen}
                         aria-controls="app-sidebar"
-                        // 40x44 before: `p-2` on a 24px icon gives 40 wide, which
-                        // is under the 44px floor on the axis a thumb misses on.
-                        className="grid h-11 w-11 -ml-2 place-items-center text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
+                        className="grid h-11 w-11 -ml-1 place-items-center rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                        {user.avatarUrl ? (
+                            <img src={user.avatarUrl} alt="" aria-hidden="true" className="h-9 w-9 rounded-full object-cover" />
+                        ) : (
+                            <span aria-hidden="true" className="grid h-9 w-9 place-items-center rounded-full bg-foreground text-sm font-semibold text-background">
+                                {headerInitials ?? <User className="h-4 w-4" strokeWidth={2} />}
+                            </span>
+                        )}
                     </button>
 
                     <Link
@@ -261,9 +277,13 @@ export function AppShell({
                         href="/notifications"
                         onClick={() => handleNavigate('/notifications')}
                         aria-label={bellLabel}
-                        className="relative -mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        className="relative -mr-1 flex h-11 w-11 items-center justify-center rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
-                        <Bell className="h-6 w-6" strokeWidth={2} />
+                        {/* A white disc on the canvas — the reference's floating
+                            header control; the same 36-in-44 geometry as the avatar. */}
+                        <span aria-hidden="true" className="grid h-9 w-9 place-items-center rounded-full bg-card text-foreground shadow-sm">
+                            <Bell className="h-5 w-5" strokeWidth={1.75} />
+                        </span>
                         {notificationCount > 0 && (
                             /* data-count: the badge is a render of the unread
                                count (saturated at «9+», which the collector
@@ -452,12 +472,16 @@ export function AppShell({
                         aria-label={t.nav.bottomNavigation}
                         // inert while the drawer is open — see the header's comment.
                         inert={sidebarOpen || undefined}
-                        className="pw-above-consent lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-card/95 border-t border-border safe-area-inset-bottom backdrop-blur-xl"
+                        /* Steady's tab bar: a floating ink pill of icon-only tabs, not
+                           a full-width strip. The nav is still the fixed, bottom-
+                           anchored element (the shell guards locate it by
+                           `fixed bottom-0`) and still reserves the safe area — as the
+                           wrapper's bottom padding, so the pill floats 12px above
+                           the home indicator. pointer-events-none on the wrapper:
+                           the page stays tappable either side of the pill. */
+                        className="pw-above-consent lg:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-center px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] pointer-events-none"
                     >
-                        <div
-                            className="grid gap-1 px-2 py-1.5 min-h-[76px]"
-                            style={{ gridTemplateColumns: `repeat(${bottomNavItems.length}, minmax(0, 1fr))` }}
-                        >
+                        <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-foreground p-1.5 shadow-[0_12px_32px_rgba(15,23,42,0.28)]">
                             {bottomNavItems.map((item) => {
                                 const Icon = item.icon
                                 const isActive = !item.opensDrawer && (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)))
@@ -484,12 +508,14 @@ export function AppShell({
                                     <Tag
                                         key={item.id}
                                         {...tagProps}
-                                        /* The active tab is a MARK (the bar at the top of the
-                                           slot) plus a weight and colour change — never a filled
-                                           pill, which read as a button on a bar of buttons. */
-                                        className={`relative min-h-[44px] w-full rounded-xl flex flex-col items-center justify-center gap-1 pt-1.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
-                                            ? 'text-primary dark:text-mint'
-                                            : 'text-muted-foreground hover:text-foreground'
+                                        /* The active tab is the one white disc on the ink
+                                           pill — the reference's grammar. Icon-only: the
+                                           name lives in aria-label, and every glyph here is
+                                           the sidebar's own, so the pairing is learned the
+                                           first time the drawer opens. */
+                                        className={`relative grid h-11 w-11 place-items-center rounded-full transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-foreground ${isActive
+                                            ? 'bg-background text-foreground'
+                                            : 'text-background/70 hover:text-background'
                                             }`}
                                         /* The badge is purely visual, so fold the count into
                                            the accessible name — otherwise a screen-reader
@@ -499,28 +525,17 @@ export function AppShell({
                                             : item.label}
                                         aria-current={isActive ? 'page' : undefined}
                                     >
-                                        {isActive && (
-                                            <span aria-hidden="true" className="absolute top-0 left-1/2 h-[3px] w-7 -translate-x-1/2 rounded-b-full bg-primary dark:bg-mint" />
+                                        <Icon
+                                            className="h-5 w-5"
+                                            strokeWidth={isActive ? 2.25 : 1.75}
+                                        />
+                                        {item.showsNotificationBadge && notificationCount > 0 && (
+                                            /* Same fact as the header bell badge —
+                                               same key, same «9+» saturation. */
+                                            <span data-count="notification.unreadCount" className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold leading-none text-primary-foreground">
+                                                {notificationCount > 9 ? '9+' : notificationCount}
+                                            </span>
                                         )}
-                                        <div className="relative">
-                                            <Icon
-                                                className="w-6 h-6"
-                                                strokeWidth={isActive ? 2.25 : 1.75}
-                                            />
-                                            {item.showsNotificationBadge && notificationCount > 0 && (
-                                                /* Same fact as the header bell badge —
-                                                   same key, same «9+» saturation. */
-                                                <span data-count="notification.unreadCount" className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-primary-foreground text-kicker font-bold rounded-full flex items-center justify-center">
-                                                    {notificationCount > 9 ? '9+' : notificationCount}
-                                                </span>
-                                            )}
-                                        </div>
-                                        {/* 12px — the functional floor. Tab labels are read to
-                                            navigate; 10px was decorative-size copy doing a
-                                            functional job. */}
-                                        <span className={`text-caption whitespace-nowrap ${isActive ? 'font-semibold' : 'font-medium'}`}>
-                                            {item.label}
-                                        </span>
                                     </Tag>
                                 )
                             })}

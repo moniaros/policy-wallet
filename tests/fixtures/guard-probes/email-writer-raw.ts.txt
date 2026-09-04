@@ -1,0 +1,11 @@
+// PROBE — must turn tests/unit/email-normalization-single-path.test.ts RED.
+// A writer keyed on an email that never went through normalizeEmail.
+import { db } from "@/lib/db"
+
+export async function addPhantom(email: string, name: string) {
+    let user = await db.user.findUnique({ where: { email } })
+    if (!user) {
+        user = await db.user.create({ data: { email, name, roles: "policyholder" } })
+    }
+    return user.id
+}

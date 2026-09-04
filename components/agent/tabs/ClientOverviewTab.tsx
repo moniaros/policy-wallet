@@ -1,12 +1,10 @@
 "use client"
 
 import React from "react"
-import { Shield, AlertTriangle, Users, Plus, Calendar, ArrowUpRight } from "lucide-react"
-import { BrandCard } from "@/components/ui/brand/BrandCard"
-import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
+import { Shield, AlertTriangle, Users, Plus, Calendar, ArrowUpRight, Handshake } from "lucide-react"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { getRelationshipScoreColor } from "@/lib/agent/health-score"
 import { branchLabel } from "@/lib/insurance/taxonomy"
 import { formatDateShort } from "@/lib/agent/format"
 import type { Customer, Policy, Opportunity } from "../types"
@@ -28,216 +26,182 @@ export function ClientOverviewTab({
     onCreateProposal,
 }: ClientOverviewTabProps) {
     const { language, t } = useLanguage()
-    const scoreColor = getRelationshipScoreColor(healthScore)
 
     const activePolicies = policies.filter((p) => p.status === "active" || p.status === "expiring_soon")
     const openOpportunities = opportunities.filter((o) => o.status === "open" || o.status === "contacted")
 
     return (
-        <div className="grid grid-cols-12 gap-5">
+        <div className="grid gap-4 lg:grid-cols-3">
             {/*
-                Not a coverage verdict. This donut renders computeClientRelationshipScore,
+                Not a coverage verdict. This number is computeClientRelationshipScore,
                 40 of whose 100 points are the agent's own contact recency and the
                 client's account state — yet it was headed «Βαθμός υγείας κάλυψης» and
                 captioned «Κρίσιμα κενά» below 40, asserting critical gaps for a client
                 whose gap SEVERITIES were never consulted. It now describes the
-                relationship, which is what it measures.
+                relationship, which is what it measures — and as a fact cell, not a
+                ring: a gauge invites reading a ratio as a grade.
             */}
-            <div className="col-span-4">
-                <BrandCard className="p-6 flex flex-col items-center text-center">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
-                        {t.clientOverview.healthScore}
-                    </h3>
-                    <div className="relative mb-4">
-                        <svg width={120} height={120} className="transform -rotate-90">
-                            <circle cx={60} cy={60} r={52} fill="none" stroke="currentColor" strokeWidth={8} className="text-neutral-200 dark:text-neutral-700" />
-                            <circle
-                                cx={60} cy={60} r={52} fill="none"
-                                stroke={healthScore >= 70 ? "#29685B" : healthScore >= 40 ? "#f59e0b" : "#ef4444"}
-                                strokeWidth={8}
-                                strokeDasharray={2 * Math.PI * 52}
-                                strokeDashoffset={2 * Math.PI * 52 * (1 - healthScore / 100)}
-                                strokeLinecap="round"
-                                className="transition-all duration-700"
-                            />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className={`text-3xl font-black ${scoreColor}`}>{healthScore}</span>
-                        </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                        {healthScore >= 70
-                            ? t.clientOverview.goodCoverage
-                            : healthScore >= 40
-                                ? t.clientOverview.needsImprovement
-                                : t.clientOverview.criticalGaps}
-                    </p>
-                    <p className="mt-2 text-micro leading-snug text-muted-foreground">
-                        {t.clientOverview.healthScoreHint}
-                    </p>
-                </BrandCard>
-            </div>
+            <section className="pw-card pw-pad lg:col-span-1">
+                <CardHead as="h3" icon={Handshake} title={t.clientOverview.healthScore} />
+                <p className="mt-4 text-display font-semibold leading-none tracking-tight tabular-nums text-foreground">
+                    {healthScore}
+                    <span className="text-title text-muted-foreground">/100</span>
+                </p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                    {healthScore >= 70
+                        ? t.clientOverview.goodCoverage
+                        : healthScore >= 40
+                            ? t.clientOverview.needsImprovement
+                            : t.clientOverview.criticalGaps}
+                </p>
+                <p className="mt-2 text-caption leading-snug text-muted-foreground">
+                    {t.clientOverview.healthScoreHint}
+                </p>
+            </section>
 
             {/* Active Policies Summary */}
-            <div className="col-span-8">
-                <BrandCard className="p-5">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                            <Shield className="h-5 w-5 text-primary dark:text-mint" />
-                            {t.clientOverview.activePolicies}
-                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-normal">({activePolicies.length})</span>
-                        </h3>
-                    </div>
-                    {activePolicies.length === 0 ? (
-                        <EmptyState
-                            className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
-                            icon={Shield}
-                            headline={t.emptyStates.overviewPolicies.headline}
-                            description={t.emptyStates.overviewPolicies.description}
-                        />
-                    ) : (
-                        <div className="space-y-2">
-                            {activePolicies.map((policy) => (
-                                <div
-                                    key={policy.policyId}
-                                    className="flex items-center gap-3 rounded-xl border border-neutral-200/60 dark:border-neutral-700/60 p-3"
-                                >
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-soft dark:bg-primary/15">
-                                        <Shield className="h-4 w-4 text-primary dark:text-mint" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-foreground">
-                                            {/* Was a hand-kept map of five lines, so anything outside it —
-                                            motorbike, truck, renters, pet, liability, legal
-                                            expenses, every business line — rendered its raw id
-                                            ("motorbike") to the agent. The taxonomy already owns
-                                            these labels, in both languages, for the whole
-                                            vocabulary. */}
-                                            {branchLabel(policy.lineOfBusiness, language === 'el' ? 'el' : 'en')}
-                                        </p>
-                                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                            {displayInsurerName(policy.insurerName)}
-                                        </p>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                            <Calendar className="h-3 w-3" />
-                                            {formatDateShort(policy.endDate, language)}
-                                        </div>
-                                        {policy.status === "expiring_soon" && (
-                                            <span className="text-kicker font-medium text-amber-700 dark:text-amber-400">
-                                                {t.clientOverview.expiringSoon}
-                                            </span>
-                                        )}
-                                    </div>
+            <section className="pw-card pw-pad lg:col-span-2">
+                <CardHead
+                    as="h3"
+                    icon={Shield}
+                    title={t.clientOverview.activePolicies}
+                    meta={<span className="tabular-nums">{activePolicies.length}</span>}
+                />
+                {activePolicies.length === 0 ? (
+                    <EmptyState
+                        className="!border-0 !bg-transparent px-0 py-6 !shadow-none dark:!bg-transparent"
+                        icon={Shield}
+                        headline={t.emptyStates.overviewPolicies.headline}
+                        description={t.emptyStates.overviewPolicies.description}
+                    />
+                ) : (
+                    <ul className="mt-4 space-y-2">
+                        {activePolicies.map((policy) => (
+                            <li
+                                key={policy.policyId}
+                                className="pw-subcard flex items-center gap-3 p-3"
+                            >
+                                <span className="pw-card-chip" aria-hidden="true">
+                                    <Shield className="h-4 w-4" strokeWidth={1.75} />
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-semibold text-foreground">
+                                        {/* Was a hand-kept map of five lines, so anything outside it —
+                                        motorbike, truck, renters, pet, liability, legal
+                                        expenses, every business line — rendered its raw id
+                                        ("motorbike") to the agent. The taxonomy already owns
+                                        these labels, in both languages, for the whole
+                                        vocabulary. */}
+                                        {branchLabel(policy.lineOfBusiness, language === 'el' ? 'el' : 'en')}
+                                    </p>
+                                    <p className="text-caption text-muted-foreground">
+                                        {displayInsurerName(policy.insurerName)}
+                                    </p>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </BrandCard>
-            </div>
+                                <div className="text-right">
+                                    <p className="flex items-center justify-end gap-1 text-caption text-muted-foreground">
+                                        <Calendar className="h-3 w-3" aria-hidden="true" />
+                                        {formatDateShort(policy.endDate, language)}
+                                    </p>
+                                    {policy.status === "expiring_soon" && (
+                                        <span className="mt-1 inline-flex rounded-full bg-status-warning-tint px-2 py-0.5 text-caption font-semibold text-status-warning">
+                                            {t.clientOverview.expiringSoon}
+                                        </span>
+                                    )}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </section>
 
-            {/* Identified Gaps */}
+            {/* Identified Gaps — tiles on the sunken surface. The severity used
+                to paint a coloured side bar per tile; severity is not a verdict
+                until an underwriter says so, so the tile carries the finding, the
+                likelihood pill and the note, and nothing else. */}
             {openOpportunities.length > 0 && (
-                <div className="col-span-12">
-                    <BrandCard className="p-5">
-                        <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
-                            <AlertTriangle className="h-5 w-5 text-amber-500" />
-                            {t.clientOverview.identifiedGaps}
-                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-normal">({openOpportunities.length})</span>
-                        </h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            {openOpportunities.map((opp) => {
-                                const severityColors = {
-                                    critical: "border-l-red-500 bg-red-50/50 dark:bg-red-950/20",
-                                    high: "border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/20",
-                                    medium: "border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20",
-                                    low: "border-l-neutral-400 bg-neutral-50/50 dark:bg-neutral-900/20",
-                                }
-                                return (
-                                    <div
-                                        key={opp.opportunityId}
-                                        className={`border-l-4 rounded-xl p-4 ${severityColors[opp.severity] || severityColors.medium}`}
+                <section className="pw-card pw-pad lg:col-span-3">
+                    <CardHead
+                        as="h3"
+                        icon={AlertTriangle}
+                        title={t.clientOverview.identifiedGaps}
+                        meta={<span className="tabular-nums">{openOpportunities.length}</span>}
+                    />
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                        {openOpportunities.map((opp) => (
+                            <div key={opp.opportunityId} className="pw-subcard p-3">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <p className="text-sm font-semibold text-foreground">
+                                        {opp.gapTitle}
+                                    </p>
+                                    {opp.conversionLikelihood && (
+                                        <span className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-caption font-semibold ${
+                                            opp.conversionLikelihood === "high"
+                                                ? "bg-status-success-tint text-status-success"
+                                                : opp.conversionLikelihood === "medium"
+                                                    ? "bg-status-warning-tint text-status-warning"
+                                                    : "bg-muted text-muted-foreground"
+                                        }`}>
+                                            <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                                            {/* When there's no numeric score, fall back to the LOCALISED
+                                                likelihood label (as OpportunitiesClient does) — the raw
+                                                "high"/"medium"/"low" enum was shown to Greek agents. */}
+                                            {opp.conversionScore != null ? `${opp.conversionScore}%` : t.agentPages.opportunities.likelihood[opp.conversionLikelihood]}
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="mt-1 line-clamp-2 text-caption text-muted-foreground">
+                                    {opp.notes}
+                                </p>
+                                {onCreateProposal && (
+                                    <button
+                                        type="button"
+                                        onClick={() => onCreateProposal(opp.gapId)}
+                                        className="mt-2 inline-flex min-h-9 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
                                     >
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <p className="text-sm font-medium text-foreground">
-                                                {opp.gapTitle}
-                                            </p>
-                                            {opp.conversionLikelihood && (
-                                                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-kicker font-semibold ${
-                                                    opp.conversionLikelihood === "high"
-                                                        ? "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
-                                                        : opp.conversionLikelihood === "medium"
-                                                            ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                                                            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
-                                                }`}>
-                                                    <ArrowUpRight className="w-2.5 h-2.5" />
-                                                    {/* When there's no numeric score, fall back to the LOCALISED
-                                                        likelihood label (as OpportunitiesClient does) — the raw
-                                                        "high"/"medium"/"low" enum was shown to Greek agents. */}
-                                                    {opp.conversionScore != null ? `${opp.conversionScore}%` : t.agentPages.opportunities.likelihood[opp.conversionLikelihood]}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 line-clamp-2">
-                                            {opp.notes}
-                                        </p>
-                                        {onCreateProposal && (
-                                            <button
-                                                type="button"
-                                                onClick={() => onCreateProposal(opp.gapId)}
-                                                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer"
-                                            >
-                                                <Plus className="h-3 w-3" />
-                                                {t.clientOverview.createProposal}
-                                            </button>
-                                        )}
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </BrandCard>
-                </div>
+                                        <Plus className="h-3 w-3" aria-hidden="true" />
+                                        {t.clientOverview.createProposal}
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </section>
             )}
 
             {/* Family Unit Visualization */}
             {customer.crossSell && (
-                <div className="col-span-12">
-                    <BrandCard className="p-5">
-                        <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
-                            <Users className="h-5 w-5 text-primary dark:text-mint" />
-                            {t.clientOverview.coverageNeeds}
-                        </h3>
-                        <div className="flex items-center gap-3">
-                            <div className="text-center">
-                                <div className="text-3xl font-black text-foreground">
-                                    {customer.crossSell.coverageScore}%
-                                </div>
-                                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                    {t.clientOverview.coverage}
-                                </p>
-                            </div>
-                            <div className="flex-1 flex flex-wrap gap-2">
-                                {customer.crossSell.existingLines.map((line) => (
-                                    <span
-                                        key={line}
-                                        className="rounded-full bg-primary-soft dark:bg-primary/15 px-3 py-1 text-xs font-medium text-[#166534] dark:text-mint"
-                                    >
-                                        {branchLabel(line, language === 'el' ? 'el' : 'en')}
-                                    </span>
-                                ))}
-                                {customer.crossSell.missingLines.map((line) => (
-                                    <span
-                                        key={line.lob}
-                                        className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-3 py-1 text-xs font-medium text-amber-700 dark:text-amber-400"
-                                    >
-                                        {line.label[language] || line.lob}
-                                    </span>
-                                ))}
-                            </div>
+                <section className="pw-card pw-pad lg:col-span-3">
+                    <CardHead as="h3" icon={Users} title={t.clientOverview.coverageNeeds} />
+                    <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <div className="flex min-w-0 flex-col gap-1 sm:border-r sm:border-border sm:pr-4">
+                            <p className="text-caption leading-snug text-muted-foreground">
+                                {t.clientOverview.coverage}
+                            </p>
+                            <p className="text-title font-semibold leading-none tracking-tight tabular-nums text-foreground">
+                                {customer.crossSell.coverageScore}%
+                            </p>
                         </div>
-                    </BrandCard>
-                </div>
+                        <div className="flex flex-1 flex-wrap gap-1.5">
+                            {customer.crossSell.existingLines.map((line) => (
+                                <span
+                                    key={line}
+                                    className="rounded-full bg-status-success-tint px-2.5 py-1 text-caption font-semibold text-status-success"
+                                >
+                                    {branchLabel(line, language === 'el' ? 'el' : 'en')}
+                                </span>
+                            ))}
+                            {customer.crossSell.missingLines.map((line) => (
+                                <span
+                                    key={line.lob}
+                                    className="rounded-full bg-status-warning-tint px-2.5 py-1 text-caption font-semibold text-status-warning"
+                                >
+                                    {line.label[language] || line.lob}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </section>
             )}
         </div>
     )

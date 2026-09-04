@@ -10,11 +10,12 @@ import {
     FileText,
     Bell,
     ChevronRight,
-    Filter,
-    SortAsc,
+    ListChecks,
     Target
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { CardHead } from '@/components/dashboard/home/CardHead'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 interface ActionItem {
     id: string
@@ -105,19 +106,19 @@ export function TasksClient({ actionItems }: TasksClientProps) {
     const priorityLabel = (p: ActionItem['priority']): string =>
         t.tasks.priorities[p] || p
 
-    // Priority colours follow the app's urgency ramp (see CoverageGapsWidget:
-    // critical=rose, high=amber, medium=sky, low=grey). Tasks top out at "high",
-    // so high=amber — the app's high-urgency colour. The old ramp coloured HIGH
-    // with the brand green (a success/positive colour) while MEDIUM was amber, so
-    // the most urgent task looked reassuring and the medium one looked alarming —
-    // an inverted risk signal, and inconsistent (amber meant "high" everywhere
-    // else but "medium" here).
+    // Priority colours follow the app's urgency ramp (critical=danger,
+    // high=warning, medium=info, low=grey), now on the status TOKENS rather
+    // than palette literals. Tasks top out at "high", so high = the warning
+    // (amber) pair. The old ramp coloured HIGH with the brand green (a
+    // success/positive colour) while MEDIUM was amber, so the most urgent task
+    // looked reassuring and the medium one looked alarming — an inverted risk
+    // signal. task-priority-colors-urgency guards it.
     const priorityPill = (p: ActionItem['priority']): string => {
         switch (p) {
             case 'high':
-                return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                return 'bg-status-warning-tint text-status-warning'
             case 'medium':
-                return 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400'
+                return 'bg-status-info-tint text-status-info'
             default:
                 return 'bg-muted text-muted-foreground'
         }
@@ -145,122 +146,134 @@ export function TasksClient({ actionItems }: TasksClientProps) {
     ]
 
     return (
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-            {/* Priority summary */}
+        <div className="space-y-4">
+            {/* Priority summary — a row of fact cells in ONE card, not three
+                floating tiles. The high count keeps the urgency colour: amber
+                means «look here», and the brand green would read as
+                reassurance (task-priority-colors-urgency). */}
             {actionItems.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {summary.map(({ key, count }) => (
-                        <div key={key} className="rounded-2xl border border-border bg-background dark:bg-neutral-900 p-4">
-                            <p className="text-micro font-semibold uppercase tracking-wide text-muted-foreground">
-                                {t.tasks.priorities[key]}
-                            </p>
-                            <p className={`mt-1 text-2xl font-bold ${key === 'high' ? 'text-amber-600 dark:text-amber-400' : 'text-foreground'}`}>
-                                {count}
-                            </p>
-                        </div>
-                    ))}
-                </div>
+                <section className="pw-card pw-pad" aria-label={t.common.priority}>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3 sm:gap-x-0 sm:[&>*+*]:border-l sm:[&>*+*]:border-border sm:[&>*+*]:pl-4 sm:[&>*]:pr-4 sm:[&>*:last-child]:pr-0">
+                        {summary.map(({ key, count }) => (
+                            <div key={key} className="flex min-w-0 flex-col gap-1">
+                                <p className="text-caption leading-snug text-muted-foreground">{t.tasks.priorities[key]}</p>
+                                <p className={`text-title font-semibold leading-none tracking-tight tabular-nums ${key === 'high' ? 'text-status-warning' : 'text-foreground'}`}>
+                                    {count}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
             )}
 
-            {/* Filters */}
+            {/* Filters — view switches on the segmented recipe, never green
+                pills; the type strip scrolls rather than wraps on a phone. */}
             <div className="space-y-3">
-                <div className="flex flex-wrap gap-2">
-                    {typeFilters.map(({ key, label, icon: Icon }) => (
+                <div className="pw-segmented pw-scroll-strip">
+                    {typeFilters.map(({ key, label, icon: Icon, count }) => (
                         <button
                             key={key}
+                            type="button"
                             onClick={() => setFilter(key)}
-                            className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
-                                filter === key
-                                    ? 'bg-primary text-white dark:text-[#1A2420]'
-                                    : 'bg-muted text-muted-foreground hover:text-foreground'
-                            }`}
+                            aria-pressed={filter === key}
+                            className="pw-segment"
                         >
-                            <Icon className="h-3.5 w-3.5" />
+                            <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                             {label}
+                            {count > 0 && <span className="tabular-nums font-medium">{count}</span>}
                         </button>
                     ))}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                        <Filter className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium text-muted-foreground">{t.common.priority}:</span>
-                        {priorityFilters.map((p) => (
-                            <button
-                                key={p}
-                                onClick={() => setPriorityFilter(p)}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
-                                    priorityFilter === p
-                                        ? 'bg-foreground text-background'
-                                        : 'text-muted-foreground hover:bg-muted'
-                                }`}
-                            >
-                                {p === 'all' ? t.common.all : priorityLabel(p)}
-                            </button>
-                        ))}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <div className="flex items-center gap-2" role="group" aria-label={t.common.priority}>
+                        <span className="text-caption font-medium text-muted-foreground">{t.common.priority}</span>
+                        <div className="pw-segmented">
+                            {priorityFilters.map((p) => (
+                                <button
+                                    key={p}
+                                    type="button"
+                                    onClick={() => setPriorityFilter(p)}
+                                    aria-pressed={priorityFilter === p}
+                                    className="pw-segment"
+                                >
+                                    {p === 'all' ? t.common.all : priorityLabel(p)}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <SortAsc className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium text-muted-foreground">{t.common.sort}:</span>
-                        {sortOptions.map(({ key, label }) => (
-                            <button
-                                key={key}
-                                onClick={() => setSort(key)}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
-                                    sort === key
-                                        ? 'bg-foreground text-background'
-                                        : 'text-muted-foreground hover:bg-muted'
-                                }`}
-                            >
-                                {label}
-                            </button>
-                        ))}
+                    <div className="flex items-center gap-2" role="group" aria-label={t.common.sort}>
+                        <span className="text-caption font-medium text-muted-foreground">{t.common.sort}</span>
+                        <div className="pw-segmented">
+                            {sortOptions.map(({ key, label }) => (
+                                <button
+                                    key={key}
+                                    type="button"
+                                    onClick={() => setSort(key)}
+                                    aria-pressed={sort === key}
+                                    className="pw-segment"
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* List / empty */}
-            {sortedTasks.length === 0 ? (
-                <div className="rounded-2xl border border-border bg-background dark:bg-neutral-900 px-6 py-16 text-center">
-                    <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
-                        <CheckCircle2 className="h-8 w-8 text-primary dark:text-mint" />
-                    </div>
-                    <h2 className="mb-2 text-xl font-bold text-foreground">{t.tasks.everythingPerfect}</h2>
-                    <p className="mx-auto max-w-md text-sm text-muted-foreground">{t.tasks.completedAllTasks}</p>
-                </div>
-            ) : (
-                <div className="space-y-3">
-                    {sortedTasks.map((task) => {
-                        const Icon = getTaskIcon(task.type)
-                        return (
-                            <Link
-                                key={task.id}
-                                href={task.actionUrl || '#'}
-                                className="group flex items-center gap-4 rounded-2xl border border-border bg-background dark:bg-neutral-900 p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 dark:hover:border-mint/40"
-                            >
-                                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors group-hover:bg-primary-soft group-hover:text-primary dark:group-hover:bg-primary/15 dark:group-hover:text-mint">
-                                    <Icon className="h-5 w-5" />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <h3 className="truncate text-sm font-semibold text-foreground">{task.title}</h3>
-                                    <p className="truncate text-xs text-muted-foreground">
-                                        {task.description || typeLabel(task.type)}
-                                    </p>
-                                </div>
-                                <span className={`hidden flex-shrink-0 rounded-full px-2.5 py-1 text-kicker font-bold uppercase tracking-wide sm:inline-block ${priorityPill(task.priority)}`}>
-                                    {priorityLabel(task.priority)}
-                                </span>
-                                <ChevronRight className="h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                            </Link>
-                        )
-                    })}
-                    {/* Task rows carry a priority pill, and some titles were written
-                        into the database as the English string "Critical coverage
-                        gap". Either way a person reads a severity verdict here. */}
-                    <SeverityCaveat />
-                </div>
-            )}
+            {/* The list — one card of sub-card rows: chip · title/description ·
+                priority pill · chevron. */}
+            <section className="pw-card pw-pad" aria-labelledby="tasks-list-heading">
+                <CardHead
+                    icon={ListChecks}
+                    title={t.tasks.actionRequired}
+                    id="tasks-list-heading"
+                    meta={sortedTasks.length > 0 ? <span className="tabular-nums">{sortedTasks.length}</span> : undefined}
+                />
+                {sortedTasks.length === 0 ? (
+                    <EmptyState
+                        icon={CheckCircle2}
+                        headline={t.tasks.everythingPerfect}
+                        description={t.tasks.completedAllTasks}
+                        className="!border-0 !bg-transparent px-0 py-6 !shadow-none"
+                    />
+                ) : (
+                    <>
+                        <ul className="mt-4 space-y-2">
+                            {sortedTasks.map((task) => {
+                                const Icon = getTaskIcon(task.type)
+                                return (
+                                    <li key={task.id}>
+                                        <Link
+                                            href={task.actionUrl || '#'}
+                                            className="pw-subcard flex min-h-11 items-center gap-3 p-3 transition-colors"
+                                        >
+                                            <span className="pw-card-chip" aria-hidden="true">
+                                                <Icon className="h-4 w-4" strokeWidth={1.75} />
+                                            </span>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="truncate text-sm font-semibold text-foreground">{task.title}</p>
+                                                <p className="truncate text-caption text-muted-foreground">
+                                                    {task.description || typeLabel(task.type)}
+                                                </p>
+                                            </div>
+                                            <span className={`hidden shrink-0 rounded-full px-2.5 py-1 text-caption font-semibold sm:inline-block ${priorityPill(task.priority)}`}>
+                                                {priorityLabel(task.priority)}
+                                            </span>
+                                            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                                        </Link>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                        {/* Task rows carry a priority pill, and some titles were written
+                            into the database as the English string "Critical coverage
+                            gap". Either way a person reads a severity verdict here. */}
+                        <SeverityCaveat />
+                    </>
+                )}
+            </section>
         </div>
     )
 }

@@ -1,0 +1,12 @@
+// PROBE — compliant control for tests/unit/email-normalization-single-path.test.ts.
+import { db } from "@/lib/db"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
+
+export async function addPhantom(rawEmail: string, name: string) {
+    const email = normalizeEmail(rawEmail)
+    let user = await db.user.findUnique({ where: { email } })
+    if (!user) {
+        user = await db.user.create({ data: { email, name, roles: "policyholder" } })
+    }
+    return user.id
+}

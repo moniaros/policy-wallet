@@ -20,9 +20,13 @@ import {
 import Link from "next/link"
 import type { InsightsData } from "./actions"
 
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { EmptyState } from "@/components/ui/EmptyState"
+import { StatGrid, StatTile } from "@/components/ui/StatTile"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { describeSeverity, type SeverityDescription } from "@/lib/gaps/severity-display"
 import { daysLeftLabel } from "@/lib/wallet/days-left-label"
+import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 
 interface InsightsClientProps {
     data: InsightsData
@@ -55,35 +59,46 @@ const fmtNum = (n: number, lang: string) =>
         maximumFractionDigits: 1,
     }).format(n)
 
-const lobLabels: Record<string, { en: string; el: string; color: string }> = {
-    motor: { en: "Motor", el: "Αυτοκίνητο", color: "#29685B" },
-    health: { en: "Health", el: "Υγεία", color: "#3b82f6" },
-    home: { en: "Home", el: "Κατοικία", color: "#8b5cf6" },
-    life: { en: "Life", el: "Ζωή", color: "#f59e0b" },
-    travel: { en: "Travel", el: "Ταξίδι", color: "#ec4899" },
-    pet: { en: "Pet", el: "Κατοικίδιο", color: "#89D9B2" },
-    other: { en: "Other", el: "Άλλο", color: "#64748b" },
+// Labels only. The per-line hex colours that used to sit beside these are
+// gone: a bar's row label already says which line it is, so the fill carries
+// no meaning and paints in the one brand colour like every other bar in the
+// app.
+const lobLabels: Record<string, { en: string; el: string }> = {
+    motor: { en: "Motor", el: "Αυτοκίνητο" },
+    health: { en: "Health", el: "Υγεία" },
+    home: { en: "Home", el: "Κατοικία" },
+    life: { en: "Life", el: "Ζωή" },
+    travel: { en: "Travel", el: "Ταξίδι" },
+    pet: { en: "Pet", el: "Κατοικίδιο" },
+    other: { en: "Other", el: "Άλλο" },
 }
 
-const getLobLabel = (lob: string, lang: string, t: any) => {
-    const fallback = lobLabels[lob]?.[lang === "el" ? "el" : "en"] ?? lob
-    // Optional: hook it up to t.policyTypes if we want pure translation instead of hardcoded lobLabels
-    return fallback
+const getLobLabel = (lob: string, lang: string) =>
+    lobLabels[lob]?.[lang === "el" ? "el" : "en"] ?? lob
+
+// A TIMING pill on the status tokens — the state as a word beside it, never
+// colour alone. The coloured side bar and tinted row that used to carry this
+// are gone (DESIGN.md: no coloured border or side bar on a callout).
+const urgencyPill = (days: number) => {
+    if (days <= 7) return "bg-status-danger-tint text-status-danger"
+    if (days <= 30) return "bg-status-warning-tint text-status-warning"
+    return "bg-muted text-foreground"
 }
 
-const getLobColor = (lob: string) => lobLabels[lob]?.color ?? "#64748b"
-
-const urgencyColor = (days: number) => {
-    if (days <= 7)  return { border: "border-l-red-500", bg: "bg-red-50 dark:bg-red-950/20", text: "text-red-700 dark:text-red-400", badge: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300" }
-    if (days <= 30) return { border: "border-l-amber-500", bg: "bg-amber-50 dark:bg-amber-950/20", text: "text-amber-700 dark:text-amber-400", badge: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300" }
-    return { border: "border-l-primary", bg: "bg-primary-tint dark:bg-primary/15", text: "text-status-success", badge: "bg-primary-soft dark:bg-primary/15 text-status-success" }
+// Keyed by TONE, never by the severity words — the same decision
+// components/gaps/severity-tone.ts makes for a dot, made here for a pill.
+// Which tone a severity gets is describeSeverity()'s call, not this file's.
+const SEVERITY_PILL: Record<SeverityDescription["tone"], string> = {
+    urgent: "bg-status-danger-tint text-status-danger",
+    elevated: "bg-status-warning-tint text-status-warning",
+    moderate: "bg-status-info-tint text-status-info",
+    informational: "bg-muted text-foreground",
 }
 
-const severityConfig: Record<string, { color: string; bg: string; label: { en: string; el: string } }> = {
-    critical: { color: "text-red-700 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30", label: { en: "Critical", el: "Κρίσιμο" } },
-    high:     { color: "text-orange-700 dark:text-orange-400", bg: "bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30", label: { en: "High", el: "Υψηλό" } },
-    medium:   { color: "text-amber-700 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30", label: { en: "Medium", el: "Μεσαίο" } },
-    low:      { color: "text-blue-700 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30", label: { en: "Low", el: "Χαμηλό" } },
+/** Resolves a dotted i18n key («dashboard.home.recPriorityHigh») in the dictionary. */
+const resolveKey = (dict: unknown, key: string): string | undefined => {
+    const value = key.split(".").reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], dict)
+    return typeof value === "string" ? value : undefined
 }
 
 /* ─── Fade-in helper ────────────────────────────────── */
@@ -108,7 +123,9 @@ function DonutChart({
     size = 180,
     strokeWidth = 22,
 }: {
-    segments: { value: number; color: string; label: string }[]
+    // Segments paint through currentColor so the ring reads from the theme
+    // tokens and flips with dark mode; a hex stroke could not.
+    segments: { value: number; className: string; label: string }[]
     size?: number
     strokeWidth?: number
 }) {
@@ -118,9 +135,9 @@ function DonutChart({
 
     if (total === 0) {
         return (
-            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block">
+            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block" aria-hidden="true">
                 <circle cx={size / 2} cy={size / 2} r={radius} fill="none"
-                    stroke="currentColor" className="text-neutral-200 dark:text-neutral-800"
+                    stroke="currentColor" className="text-muted"
                     strokeWidth={strokeWidth} />
             </svg>
         )
@@ -132,9 +149,9 @@ function DonutChart({
     )
 
     return (
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block" aria-hidden="true">
             <circle cx={size / 2} cy={size / 2} r={radius} fill="none"
-                stroke="currentColor" className="text-neutral-100 dark:text-neutral-800"
+                stroke="currentColor" className="text-muted"
                 strokeWidth={strokeWidth} />
             {segments.map((seg, i) => {
                 const ratio = seg.value / total
@@ -143,7 +160,7 @@ function DonutChart({
                 const offset = circumference * offsets[i] - circumference * 0.25
                 return (
                     <circle key={i} cx={size / 2} cy={size / 2} r={radius}
-                        fill="none" stroke={seg.color} strokeWidth={strokeWidth}
+                        fill="none" stroke="currentColor" className={seg.className} strokeWidth={strokeWidth}
                         strokeDasharray={`${dashLength} ${dashGap}`}
                         strokeDashoffset={-offset}
                         strokeLinecap="round"
@@ -163,39 +180,39 @@ export function InsightsClient({ data }: InsightsClientProps) {
     const lang = language || "en"
     const p = t.insights.practice
 
-    /* KPI cards data */
+    /* KPI tiles — the shared fact cell; the accent tints the glyph only. */
     const kpis = useMemo(() => [
         {
             label: p.totalPremium,
             value: fmtCompact(data.premiumSummary.totalPremium, lang),
             icon: DollarSign,
-            bgAccent: "bg-primary-tint dark:bg-primary/15",
+            accent: "brand" as const,
         },
         {
             label: p.avgPremiumPerCustomer,
             value: fmt(data.premiumSummary.avgPremiumPerCustomer, lang),
             icon: TrendingUp,
-            bgAccent: "bg-mint/20 dark:bg-primary/15",
+            accent: "neutral" as const,
         },
         {
             label: p.policiesPerCustomer,
             value: fmtNum(data.premiumSummary.avgPoliciesPerCustomer, lang),
             icon: FileText,
-            bgAccent: "bg-muted",
+            accent: "neutral" as const,
         },
         {
             label: p.activationRate,
             value: `${data.portfolioHealth.activationRate}%`,
             icon: Zap,
-            bgAccent: "bg-amber-50 dark:bg-amber-950/30",
+            accent: "neutral" as const,
         },
     ], [data, lang, p])
 
-    /* Donut segments */
+    /* Donut segments — stroke and legend dot from the same token each. */
     const donutSegments = useMemo(() => [
-        { value: data.portfolioHealth.activeCustomers, color: "#29685B", label: p.active },
-        { value: data.portfolioHealth.invitedCustomers, color: "#f59e0b", label: p.invited },
-        { value: data.portfolioHealth.inactiveCustomers, color: "#94a3b8", label: p.inactive },
+        { value: data.portfolioHealth.activeCustomers, className: "text-primary", dot: "bg-primary", label: p.active },
+        { value: data.portfolioHealth.invitedCustomers, className: "text-status-warning", dot: "bg-status-warning", label: p.invited },
+        { value: data.portfolioHealth.inactiveCustomers, className: "text-muted-foreground", dot: "bg-muted-foreground", label: p.inactive },
     ], [data.portfolioHealth, p])
 
     /* Premium breakdown max */
@@ -209,133 +226,120 @@ export function InsightsClient({ data }: InsightsClientProps) {
         const m = data.opportunityMetrics
         const maxStage = Math.max(m.open, m.contacted, m.quoted, m.won, m.lost, 1)
         return [
-            { key: "open", label: p.stageOpen, value: m.open, color: "#3b82f6", pct: (m.open / maxStage) * 100 },
-            { key: "contacted", label: p.stageContacted, value: m.contacted, color: "#8b5cf6", pct: (m.contacted / maxStage) * 100 },
-            { key: "quoted", label: p.stageQuoted, value: m.quoted, color: "#f59e0b", pct: (m.quoted / maxStage) * 100 },
-            { key: "won", label: p.stageWon, value: m.won, color: "#29685B", pct: (m.won / maxStage) * 100 },
-            { key: "lost", label: p.stageLost, value: m.lost, color: "#ef4444", pct: (m.lost / maxStage) * 100 },
+            { key: "open", label: p.stageOpen, value: m.open, pct: (m.open / maxStage) * 100 },
+            { key: "contacted", label: p.stageContacted, value: m.contacted, pct: (m.contacted / maxStage) * 100 },
+            { key: "quoted", label: p.stageQuoted, value: m.quoted, pct: (m.quoted / maxStage) * 100 },
+            { key: "won", label: p.stageWon, value: m.won, pct: (m.won / maxStage) * 100 },
+            { key: "lost", label: p.stageLost, value: m.lost, pct: (m.lost / maxStage) * 100 },
         ]
     }, [data.opportunityMetrics, p])
 
-    return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-            {/* ── Header ── */}
-            <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
-                <div className="absolute inset-0 bg-primary/5" />
-                <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
-                    <div className="flex items-center gap-4">
-                        <div className="relative bg-primary text-primary-foreground p-3 rounded-2xl shadow-lg shadow-primary/25">
-                            <BarChart3 className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl font-black text-foreground tracking-tight">
-                                {p.heading}
-                            </h1>
-                            <p className="text-sm text-muted-foreground mt-0.5">
-                                {p.subheading}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    const qualifiedPct = data.qualification.pipelineEur > 0
+        ? Math.round((data.qualification.qualifiedEur / data.qualification.pipelineEur) * 100)
+        : 0
 
-            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* ── KPI Cards ── */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-                    {kpis.map((kpi, i) => {
-                        const Icon = kpi.icon
-                        return (
-                            <FadeIn key={kpi.label} delay={i * 0.08} className="pw-card pw-pad">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className={`p-3 rounded-xl ${kpi.bgAccent}`}>
-                                        <Icon className="w-5 h-5 text-neutral-700 dark:text-neutral-200" />
-                                    </div>
-                                </div>
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                                    {kpi.label}
-                                </p>
-                                <p className="text-3xl font-black text-foreground tracking-tight">
-                                    {kpi.value}
-                                </p>
-                            </FadeIn>
-                        )
-                    })}
+    const renewalMetricCells = data.renewalMetrics
+        ? [
+            { label: p.tracked, value: data.renewalMetrics.totalTracked },
+            { label: p.pending, value: data.renewalMetrics.pendingRenewals },
+            { label: p.overdue, value: data.renewalMetrics.overdueRenewals },
+            { label: p.renewed, value: data.renewalMetrics.renewedThisMonth },
+            { label: p.lapsed, value: data.renewalMetrics.lapsedThisMonth },
+            { label: p.renewalRate, value: `${data.renewalMetrics.renewalRate}%` },
+            { label: p.premiumAtRisk, value: fmt(data.renewalMetrics.premiumAtRisk, lang) },
+        ]
+        : []
+
+    return (
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-page-wide space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* Header — the page names itself on the canvas; the blurred
+                    white bar with the shadowed icon is gone. */}
+                <div className="min-w-0">
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{p.heading}</h1>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{p.subheading}</p>
                 </div>
+
+                {/* ── KPI tiles ── */}
+                <StatGrid>
+                    {kpis.map((kpi, i) => (
+                        <FadeIn key={kpi.label} delay={i * 0.08}>
+                            <StatTile icon={kpi.icon} label={kpi.label} value={kpi.value} accent={kpi.accent} className="h-full" />
+                        </FadeIn>
+                    ))}
+                </StatGrid>
 
                 {/* ── Row: Portfolio Health + Premium Breakdown ── */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     {/* Portfolio Health Ring */}
                     <FadeIn delay={0.35} className="pw-card pw-pad">
-                        <h2 className="text-lg font-extrabold text-foreground mb-6 flex items-center gap-2">
-                            <Users className="w-5 h-5 text-primary dark:text-mint" />
-                            {p.portfolioHealth}
-                        </h2>
-                        <div className="flex flex-col sm:flex-row items-center gap-8">
+                        <CardHead
+                            icon={Users}
+                            title={p.portfolioHealth}
+                            id="insights-portfolio-health"
+                            meta={<span className="tabular-nums">{data.portfolioHealth.totalCustomers}</span>}
+                        />
+                        <div className="mt-4 flex flex-col items-center gap-6 sm:flex-row sm:gap-8">
                             <div className="relative flex-shrink-0">
                                 <DonutChart segments={donutSegments} size={180} strokeWidth={22} />
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-3xl font-black text-foreground">
+                                    <span className="text-h3 font-semibold leading-none tracking-tight tabular-nums text-foreground">
                                         {data.portfolioHealth.totalCustomers}
                                     </span>
-                                    <span className="text-micro font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                    <span className="mt-1 text-caption text-muted-foreground">
                                         {p.customers}
                                     </span>
                                 </div>
                             </div>
-                            <div className="flex-1 space-y-4 w-full">
+                            <ul className="w-full flex-1 divide-y divide-border">
                                 {donutSegments.map((seg) => (
-                                    <div key={seg.label} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-3 h-3 rounded-full" style={{ background: seg.color }} />
-                                            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{seg.label}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-lg font-black text-foreground">{seg.value}</span>
-                                            <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
+                                    <li key={seg.label} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+                                        <span className="flex items-center gap-2.5 text-sm text-foreground">
+                                            <span className={`h-2.5 w-2.5 flex-shrink-0 rounded-full ${seg.dot}`} aria-hidden="true" />
+                                            {seg.label}
+                                        </span>
+                                        <span className="flex items-baseline gap-2 tabular-nums">
+                                            <span className="text-sm font-semibold text-foreground">{seg.value}</span>
+                                            <span className="text-caption text-muted-foreground">
                                                 {data.portfolioHealth.totalCustomers > 0
                                                     ? `${Math.round((seg.value / data.portfolioHealth.totalCustomers) * 100)}%`
                                                     : "0%"}
                                             </span>
-                                        </div>
-                                    </div>
+                                        </span>
+                                    </li>
                                 ))}
-                            </div>
+                            </ul>
                         </div>
                     </FadeIn>
 
                     {/* Premium Breakdown */}
                     <FadeIn delay={0.45} className="pw-card pw-pad">
-                        <h2 className="text-lg font-extrabold text-foreground mb-6 flex items-center gap-2">
-                            <BarChart3 className="w-5 h-5 text-primary dark:text-mint" />
-                            {p.premiumBreakdown}
-                        </h2>
+                        <CardHead icon={BarChart3} title={p.premiumBreakdown} id="insights-premium-breakdown" />
                         {data.policyBreakdown.length === 0 ? (
                             <EmptyState
-                                className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                                className="!border-0 !bg-transparent px-0 py-6 !shadow-none dark:!bg-transparent"
                                 icon={BarChart3}
                                 headline={p.noData}
                                 description={t.emptyStates.insights.premiumBreakdownDesc}
                             />
                         ) : (
-                            <div className="space-y-4">
+                            <div className="mt-4 space-y-3">
                                 {data.policyBreakdown.map((item) => {
-                                    const color = getLobColor(item.lineOfBusiness)
                                     const pct = (item.totalPremium / maxPremium) * 100
                                     return (
                                         <div key={item.lineOfBusiness}>
-                                            <div className="flex items-center justify-between mb-1.5">
-                                                <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                                                    {getLobLabel(item.lineOfBusiness, lang, t)}
+                                            <div className="mb-1.5 flex items-center justify-between gap-3">
+                                                <span className="min-w-0 truncate text-sm font-medium text-foreground">
+                                                    {getLobLabel(item.lineOfBusiness, lang)}
                                                 </span>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">{item.count} {p.policiesAbbr}</span>
-                                                    <span className="text-sm font-black text-foreground">{fmt(item.totalPremium, lang)}</span>
-                                                </div>
+                                                <span className="flex flex-shrink-0 items-baseline gap-3 tabular-nums">
+                                                    <span className="text-caption text-muted-foreground">{item.count} {p.policiesAbbr}</span>
+                                                    <span className="text-sm font-semibold text-foreground">{fmt(item.totalPremium, lang)}</span>
+                                                </span>
                                             </div>
-                                            <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                                            <div className="h-2 overflow-hidden rounded-full bg-muted" aria-hidden="true">
                                                 <motion.div
-                                                    className="h-full rounded-full"
-                                                    style={{ background: color }}
+                                                    className="h-full rounded-full bg-primary"
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${Math.max(pct, 2)}%` }}
                                                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
@@ -350,57 +354,50 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 </div>
 
                 {/* ── Row: Opportunity Funnel + Renewal Timeline ── */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     {/* Opportunity Funnel */}
                     <FadeIn delay={0.55} className="pw-card pw-pad">
-                        <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
-                            <Target className="w-5 h-5 text-primary dark:text-mint" />
-                            {p.opportunityFunnel}
-                        </h2>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6">
+                        <CardHead icon={Target} title={p.opportunityFunnel} id="insights-opportunity-funnel" />
+                        <p className="mt-2 text-caption text-muted-foreground">
                             {p.conversionRate}:{" "}
-                            <span className="font-black text-primary dark:text-mint">{data.opportunityMetrics.conversionRate}%</span>
+                            <span className="font-semibold tabular-nums text-foreground">{data.opportunityMetrics.conversionRate}%</span>
                             {" · "}
                             {p.total}:{" "}
-                            <span className="font-black text-foreground">{data.opportunityMetrics.total}</span>
+                            <span className="font-semibold tabular-nums text-foreground">{data.opportunityMetrics.total}</span>
                         </p>
 
                         {/* Manager deal-review (MEDIC §K): how much of the open
                             pipeline's € rests on real qualification evidence,
                             and the two most common holes — the coaching view.
-                            Hidden with an empty pipeline. */}
+                            Hidden with an empty pipeline. A callout is a
+                            sub-card; the track is the card colour because the
+                            muted token is the sunken surface's own value. */}
                         {data.qualification.pipelineCount > 0 && (
-                            <div className="mb-6 rounded-xl border border-black/10 bg-black/[0.02] p-3 dark:border-white/15 dark:bg-white/5">
-                                <p className="mb-2 text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                            <div className="pw-subcard mt-4 p-3">
+                                <p className="text-caption font-semibold text-foreground">
                                     {t.agentUi.qualificationHealthTitle}
                                 </p>
-                                <div className="flex items-center gap-2">
-                                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                                <div className="mt-2 flex items-center gap-2">
+                                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-card" aria-hidden="true">
                                         <div
-                                            className="h-full rounded-full bg-primary dark:bg-mint transition-all"
-                                            style={{
-                                                width: `${data.qualification.pipelineEur > 0
-                                                    ? Math.round((data.qualification.qualifiedEur / data.qualification.pipelineEur) * 100)
-                                                    : 0}%`,
-                                            }}
+                                            className="h-full rounded-full bg-primary transition-all"
+                                            style={{ width: `${qualifiedPct}%` }}
                                         />
                                     </div>
-                                    <span className="font-mono text-xs font-bold text-foreground">
-                                        {data.qualification.pipelineEur > 0
-                                            ? Math.round((data.qualification.qualifiedEur / data.qualification.pipelineEur) * 100)
-                                            : 0}%
+                                    <span className="text-caption font-semibold tabular-nums text-foreground">
+                                        {qualifiedPct}%
                                     </span>
                                 </div>
-                                <p className="mt-1 text-kicker text-neutral-500 dark:text-neutral-400">
+                                <p className="mt-1 text-caption text-muted-foreground">
                                     {t.agentUi.qualificationShareDesc}
                                 </p>
-                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
+                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-caption text-muted-foreground">
                                     <span>
-                                        <b className="text-foreground">{data.qualification.missingEb}</b>{" "}
+                                        <b className="font-semibold tabular-nums text-foreground">{data.qualification.missingEb}</b>{" "}
                                         {t.agentUi.qualificationMissingEb}
                                     </span>
                                     <span>
-                                        <b className="text-foreground">{data.qualification.unconfirmedPain}</b>{" "}
+                                        <b className="font-semibold tabular-nums text-foreground">{data.qualification.unconfirmedPain}</b>{" "}
                                         {t.agentUi.qualificationUnconfirmedPain}
                                     </span>
                                 </div>
@@ -409,26 +406,22 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                         {data.opportunityMetrics.total === 0 ? (
                             <EmptyState
-                                className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                                className="!border-0 !bg-transparent px-0 py-6 !shadow-none dark:!bg-transparent"
                                 icon={Target}
                                 headline={p.noOpportunities}
                                 description={t.emptyStates.insights.opportunitiesDesc}
                             />
                         ) : (
-                            <div className="space-y-3.5">
+                            <div className="mt-4 space-y-3">
                                 {funnel.map((stage, i) => (
                                     <div key={stage.key}>
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full" style={{ background: stage.color }} />
-                                                <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">{stage.label}</span>
-                                            </div>
-                                            <span className="text-lg font-black text-foreground">{stage.value}</span>
+                                        <div className="mb-1.5 flex items-center justify-between gap-3">
+                                            <span className="text-sm font-medium text-foreground">{stage.label}</span>
+                                            <span className="text-sm font-semibold tabular-nums text-foreground">{stage.value}</span>
                                         </div>
-                                        <div className="h-3 bg-muted rounded-full overflow-hidden">
+                                        <div className="h-2 overflow-hidden rounded-full bg-muted" aria-hidden="true">
                                             <motion.div
-                                                className="h-full rounded-full"
-                                                style={{ background: stage.color, opacity: 0.85 }}
+                                                className="h-full rounded-full bg-primary"
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${Math.max(stage.pct, 3)}%` }}
                                                 transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 + i * 0.1 }}
@@ -442,147 +435,130 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                     {/* Renewal Timeline */}
                     <FadeIn delay={0.65} className="pw-card pw-pad">
-                        <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
-                            <CalendarClock className="w-5 h-5 text-amber-500" />
-                            {p.renewalTimeline}
-                        </h2>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-5">
+                        <CardHead
+                            icon={CalendarClock}
+                            title={p.renewalTimeline}
+                            id="insights-renewal-timeline"
+                            meta={data.renewalTimeline.length > 0 ? <span className="tabular-nums">{data.renewalTimeline.length}</span> : undefined}
+                        />
+                        <p className="mt-2 text-caption text-muted-foreground">
                             {p.expiringWithin90}
                         </p>
 
                         {data.renewalTimeline.length === 0 ? (
                             <EmptyState
-                                className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                                className="!border-0 !bg-transparent px-0 py-6 !shadow-none dark:!bg-transparent"
                                 icon={CheckCircle2}
                                 headline={p.noUpcomingRenewals}
                                 description={t.emptyStates.insights.renewalsDesc}
                             />
                         ) : (
-                            <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar">
-                                {data.renewalTimeline.slice(0, 15).map((item) => {
-                                    const uc = urgencyColor(item.daysUntilExpiry)
-                                    return (
-                                        <div
-                                            key={item.policyId}
-                                            className={`border-l-4 ${uc.border} ${uc.bg} rounded-xl px-4 py-3 transition-all hover:shadow-sm`}
-                                        >
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="text-sm font-bold text-foreground truncate">
-                                                        {item.customerName}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground mt-0.5">
-                                                        {item.insurerName} · {getLobLabel(item.lineOfBusiness, lang, t)} · {item.policyNumber}
-                                                    </p>
-                                                </div>
-                                                <div className="text-right flex-shrink-0">
-                                                    <span className={`inline-block text-kicker font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${uc.badge}`}>
-                                                        {/* A policy expiring today used to be dropped from this
-                                                            list entirely; now that it is here, "0 ημ." is not
-                                                            what an agent should read on the last day of cover. */}
-                                                        {daysLeftLabel(item.daysUntilExpiry, {
-                                                            today: p.expiresTodayBadge,
-                                                            tomorrow: p.expiresTomorrowBadge,
-                                                            suffix: p.daysAbbr,
-                                                        })}
-                                                    </span>
-                                                    <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400 mt-1">
-                                                        {fmt(item.premiumAmount, lang)}
-                                                    </p>
-                                                </div>
-                                            </div>
+                            <ul className="mt-4 max-h-[340px] space-y-2 overflow-y-auto pr-1">
+                                {data.renewalTimeline.slice(0, 15).map((item) => (
+                                    <li key={item.policyId} className="pw-subcard flex items-start justify-between gap-3 p-3">
+                                        <div className="min-w-0 flex-1">
+                                            <p className="truncate text-sm font-semibold text-foreground">
+                                                {item.customerName}
+                                            </p>
+                                            <p className="mt-0.5 text-caption text-muted-foreground">
+                                                {displayInsurerName(item.insurerName)} · {getLobLabel(item.lineOfBusiness, lang)}
+                                                {displayPolicyNumber(item.policyNumber) ? ` · ${displayPolicyNumber(item.policyNumber)}` : ""}
+                                            </p>
                                         </div>
-                                    )
-                                })}
-                            </div>
+                                        <div className="flex-shrink-0 text-right">
+                                            <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-caption font-semibold ${urgencyPill(item.daysUntilExpiry)}`}>
+                                                {/* A policy expiring today used to be dropped from this
+                                                    list entirely; now that it is here, "0 ημ." is not
+                                                    what an agent should read on the last day of cover. */}
+                                                {daysLeftLabel(item.daysUntilExpiry, {
+                                                    today: p.expiresTodayBadge,
+                                                    tomorrow: p.expiresTomorrowBadge,
+                                                    suffix: p.daysAbbr,
+                                                })}
+                                            </span>
+                                            <p className="mt-1 text-caption tabular-nums text-muted-foreground">
+                                                {fmt(item.premiumAmount, lang)}
+                                            </p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
                         )}
                     </FadeIn>
                 </div>
 
-                {/* ── Renewal Metrics ── */}
+                {/* ── Renewal Metrics — seven fact cells on the sunken surface.
+                    The number stays in the text colour: a count painted red
+                    is a verdict, and «3 ληξιπρόθεσμες» is a count. ── */}
                 {data.renewalMetrics && (
-                    <FadeIn delay={0.7} className="pw-card pw-pad mb-6">
-                        <div className="flex items-center justify-between mb-5">
-                            <h2 className="text-lg font-extrabold text-foreground flex items-center gap-2">
-                                <RefreshCw className="w-5 h-5 text-primary dark:text-mint" />
-                                {p.renewalMetrics}
-                            </h2>
-                            <Link
-                                href="/renewals"
-                                className="inline-flex min-h-[24px] items-center text-xs font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint/80 transition-colors"
-                            >
-                                {p.manageRenewals}
-                            </Link>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
-                            {[
-                                { label: p.tracked, value: data.renewalMetrics.totalTracked, color: "text-foreground" },
-                                { label: p.pending, value: data.renewalMetrics.pendingRenewals, color: "text-amber-700 dark:text-amber-400" },
-                                { label: p.overdue, value: data.renewalMetrics.overdueRenewals, color: "text-rose-600 dark:text-rose-400" },
-                                { label: p.renewed, value: data.renewalMetrics.renewedThisMonth, color: "text-status-success" },
-                                { label: p.lapsed, value: data.renewalMetrics.lapsedThisMonth, color: "text-rose-600 dark:text-rose-400" },
-                                { label: p.renewalRate, value: `${data.renewalMetrics.renewalRate}%`, color: "text-primary dark:text-mint" },
-                                { label: p.premiumAtRisk, value: fmt(data.renewalMetrics.premiumAtRisk, lang), color: "text-orange-600 dark:text-orange-400" },
-                            ].map((metric) => (
-                                <div key={metric.label} className="text-center">
-                                    <p className={`text-2xl font-black ${metric.color}`}>{metric.value}</p>
-                                    <p className="text-kicker font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-1">{metric.label}</p>
+                    <FadeIn delay={0.7} className="pw-card pw-pad">
+                        <CardHead
+                            icon={RefreshCw}
+                            title={p.renewalMetrics}
+                            id="insights-renewal-metrics"
+                            meta={
+                                <Link href="/renewals" className="pw-soft-button">
+                                    {p.manageRenewals}
+                                </Link>
+                            }
+                        />
+                        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+                            {renewalMetricCells.map((metric) => (
+                                <div key={metric.label} className="pw-subcard p-3">
+                                    <p className="text-caption leading-snug text-muted-foreground">{metric.label}</p>
+                                    <p className="mt-1 text-title font-semibold leading-none tracking-tight tabular-nums text-foreground">{metric.value}</p>
                                 </div>
                             ))}
                         </div>
                         {data.renewalMetrics.overdueRenewals > 0 && (
-                            <div className="mt-4 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-xl px-4 py-2.5">
-                                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                                <span className="font-bold">
-                                    {p.expiredWithoutAction.replace("{n}", String(data.renewalMetrics.overdueRenewals))}
-                                </span>
-                            </div>
+                            <p className="pw-subcard mt-3 flex items-center gap-2 px-3 py-2.5 text-caption font-semibold text-status-warning">
+                                <AlertTriangle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+                                {p.expiredWithoutAction.replace("{n}", String(data.renewalMetrics.overdueRenewals))}
+                            </p>
                         )}
                     </FadeIn>
                 )}
 
-                {/* ── Coverage Gaps Summary ── */}
+                {/* ── Coverage Gaps Summary — tiles on the sunken surface; the
+                    severity word is a pill on the status tokens, through the
+                    primitive. No count in the head: this is a RECENT slice,
+                    and a count over a slice reads as the book's total. ── */}
                 <FadeIn delay={0.75} className="pw-card pw-pad">
-                    <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
-                        <ShieldAlert className="w-5 h-5 text-red-500" />
-                        {p.coverageGaps}
-                    </h2>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-5">
+                    <CardHead icon={ShieldAlert} title={p.coverageGaps} id="insights-coverage-gaps" />
+                    <p className="mt-2 text-caption text-muted-foreground">
                         {p.recentGapsDesc}
                     </p>
 
                     {data.recentGaps.length === 0 ? (
                         <EmptyState
-                            className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                            className="!border-0 !bg-transparent px-0 py-6 !shadow-none dark:!bg-transparent"
                             icon={CheckCircle2}
                             headline={p.noGaps}
                             description={p.wellCovered}
                         />
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                             {data.recentGaps.map((gap) => {
-                                const sev = severityConfig[gap.severity] ?? severityConfig.low
+                                const sev = describeSeverity(gap.severity)
                                 return (
-                                    <div key={gap.id} className={`rounded-xl p-4 ${sev.bg}`}>
-                                        <div className="flex items-start justify-between mb-2">
-                                            <ShieldAlert className={`w-4 h-4 flex-shrink-0 mt-0.5 ${sev.color}`} />
-                                            <span className={`text-kicker font-black uppercase tracking-wider ${sev.color}`}>
-                                                {sev.label[language === "el" ? "el" : "en"]}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm font-bold text-foreground line-clamp-2 mb-1">
+                                    <div key={gap.id} className="pw-subcard p-3">
+                                        <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-caption font-semibold ${SEVERITY_PILL[sev.tone]}`}>
+                                            {resolveKey(t, sev.labelKey) ?? sev.severity}
+                                        </span>
+                                        <p className="mt-2 line-clamp-2 text-sm font-semibold text-foreground">
                                             {gap.title}
                                         </p>
-                                        <p className="text-xs text-muted-foreground truncate">{gap.customerName}</p>
-                                        <p className="text-micro text-neutral-600 dark:text-neutral-400 mt-2">
-                                            {gap.policyNumber} · {new Date(gap.detectedAt).toLocaleDateString(locale)}
+                                        <p className="truncate text-caption text-muted-foreground">{gap.customerName}</p>
+                                        <p className="mt-2 text-caption text-muted-foreground">
+                                            {displayPolicyNumber(gap.policyNumber) ? `${displayPolicyNumber(gap.policyNumber)} · ` : ""}
+                                            {new Date(gap.detectedAt).toLocaleDateString(locale)}
                                         </p>
                                     </div>
                                 )
                             })}
                         </div>
                     )}
-                    {/* Each card prints a severity word ("Critical"/«Κρίσιμο») to an
+                    {/* Each tile prints a severity word ("Critical"/«Κρίσιμο») to an
                         advisor. Gate 3b is open, so the grid carries the caveat once
                         rather than repeating it on every tile. */}
                     {data.recentGaps.length > 0 && (

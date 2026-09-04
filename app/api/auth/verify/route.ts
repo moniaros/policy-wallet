@@ -2,6 +2,7 @@ import { db } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 const verifyEmailPayloadSchema = z.object({
     token: z.string().min(1),
@@ -59,7 +60,7 @@ export const POST = withApiGuard(
 
             // 3. Mark user as verified in local database
             await db.user.update({
-                where: { email },
+                where: { email: normalizeEmail(email) },
                 data: { emailVerified: new Date() }
             })
 

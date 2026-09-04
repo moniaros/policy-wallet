@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 import {
     Activity,
     Shield,
@@ -9,8 +8,6 @@ import {
     Target,
     Bell,
     Clock,
-    FileText,
-    CheckCircle2,
     XCircle,
     ChevronRight,
     Star,
@@ -20,6 +17,7 @@ import type { ActivityEvent, ActivityCategory } from "./actions"
 import Link from "next/link"
 
 import { EmptyState } from "@/components/ui/EmptyState"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { useLanguage } from "@/contexts/LanguageContext"
 
 interface ActivityClientProps {
@@ -54,33 +52,20 @@ const formatRelativeTime = (date: Date, t: any, lang: string) => {
     }).format(d)
 }
 
-const getCategoryDetails = (category: ActivityCategory, type: string) => {
+// The category picks the glyph only. The chip stays the neutral card chip:
+// status never tints it (DESIGN.md → Icon chip), and an activity row is a
+// record, not a verdict.
+const getCategoryIcon = (category: ActivityCategory, type: string) => {
     switch (category) {
         case 'policy':
-            return {
-                icon: Shield,
-                bgClass: "bg-primary-soft dark:bg-primary/15",
-                textClass: "text-primary dark:text-mint"
-            }
+            return Shield
         case 'opportunity':
-            return {
-                icon: type.includes('won') ? Star : (type.includes('lost') ? XCircle : Target),
-                bgClass: "bg-mint/25 dark:bg-primary/15",
-                textClass: "text-primary dark:text-mint"
-            }
+            return type.includes('won') ? Star : (type.includes('lost') ? XCircle : Target)
         case 'customer':
-            return {
-                icon: type.includes('questionnaire') ? MessageSquare : Users,
-                bgClass: "bg-primary-tint dark:bg-primary/15",
-                textClass: "text-primary dark:text-mint"
-            }
+            return type.includes('questionnaire') ? MessageSquare : Users
         case 'system':
         default:
-            return {
-                icon: Bell,
-                bgClass: "bg-muted",
-                textClass: "text-neutral-600 dark:text-neutral-400"
-            }
+            return Bell
     }
 }
 
@@ -119,135 +104,97 @@ export function ActivityClient({ events, isAgent = false }: ActivityClientProps)
         return events.filter(e => e.category === filter)
     }, [events, filter])
 
+    const isEl = language === "el"
+
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pb-12">
-            
-            {/* ── Header ── */}
-            <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
-                <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-6 lg:py-8 pt-8 relative z-10">
-                    <div className="flex flex-col gap-6">
-                        <div className="flex items-center gap-4">
-                            <div className="relative bg-primary text-primary-foreground p-3 rounded-2xl shadow-lg shadow-primary/25">
-                                <Activity className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-black text-foreground tracking-tight">
-                                    {t.activity.title}
-                                </h1>
-                                <p className="text-sm text-muted-foreground mt-0.5">
-                                    {isAgent ? t.activity.desc : t.activity.descPersonal}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* ── Tabs ── */}
-                        <div className="flex flex-wrap items-center gap-2">
-                            {tabs.map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setFilter(tab.id)}
-                                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
-                                        filter === tab.id
-                                            ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-sm"
-                                            : "bg-white text-neutral-600 border border-neutral-200 dark:border-white/10 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                                    }`}
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-form space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                <div className="min-w-0">
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{t.activity.title}</h1>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{isAgent ? t.activity.desc : t.activity.descPersonal}</p>
                 </div>
-            </div>
 
-            {/* ── Feed Timeline ── */}
-            <div className="max-w-[800px] mx-auto px-4 sm:px-6 pt-10">
-                {filteredEvents.length === 0 ? (
-                    <EmptyState
-                        icon={Clock}
-                        headline={t.activity.emptyTitle}
-                        description={t.activity.emptyDesc}
-                        cta={{ label: t.emptyStates.viewClients, href: "/customers" }}
+                {/* The category filter is a view switch — the segmented recipe,
+                    scrolling rather than wrapping on a phone. */}
+                <div className="pw-segmented pw-scroll-strip" role="group" aria-label={t.activity.title}>
+                    {tabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setFilter(tab.id)}
+                            aria-pressed={filter === tab.id}
+                            className="pw-segment"
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* ONE card of rows — chip · title and time · description ·
+                    who — instead of a timeline rail with a floating card per
+                    event. The unread mark sits on the chip. */}
+                <section className="pw-card pw-pad" aria-labelledby="activity-feed-heading">
+                    <CardHead
+                        icon={Activity}
+                        title={t.activity.title}
+                        id="activity-feed-heading"
+                        meta={filteredEvents.length > 0 ? <span className="tabular-nums">{filteredEvents.length}</span> : undefined}
                     />
-                ) : (
-                    <div className="relative">
-                        {/* Vertical line connecting timeline */}
-                        <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-neutral-200 dark:bg-neutral-800 rounded-full" />
-                        
-                        <div className="space-y-6 relative">
-                            <AnimatePresence mode="popLayout">
-                                {filteredEvents.map((event, i) => {
-                                    const { icon: Icon, bgClass, textClass } = getCategoryDetails(event.category, event.type)
-                                    const isEl = language === "el"
-
-                                    return (
-                                        <motion.div
-                                            key={event.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, scale: 0.95 }}
-                                            transition={{ duration: 0.3, delay: i * 0.05 }}
-                                            className="flex gap-4 relative group"
+                    {filteredEvents.length === 0 ? (
+                        <EmptyState
+                            icon={Clock}
+                            headline={t.activity.emptyTitle}
+                            description={t.activity.emptyDesc}
+                            // «Δείτε τους πελάτες» is an agent's action; a policyholder
+                            // has no customers page to be sent to.
+                            cta={isAgent ? { label: t.emptyStates.viewClients, href: "/customers" } : undefined}
+                            ctaVariant="soft"
+                            className="!border-0 !bg-transparent px-0 py-6 !shadow-none"
+                        />
+                    ) : (
+                        <ul className="mt-4 space-y-2">
+                            {filteredEvents.map((event) => {
+                                const Icon = getCategoryIcon(event.category, event.type)
+                                return (
+                                    <li key={event.id}>
+                                        <Link
+                                            href={getEntityLink(event)}
+                                            className="pw-subcard flex min-h-11 items-start gap-3 p-3 transition-colors"
                                         >
-                                            {/* Icon */}
-                                            <div className="relative z-10 w-[54px] flex-shrink-0 flex justify-center pt-1.5">
-                                                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm border border-white/50 dark:border-transparent ${bgClass}`}>
-                                                    <Icon className={`w-4 h-4 ${textClass}`} />
+                                            <span className="pw-card-chip relative" aria-hidden="true">
+                                                <Icon className="h-4 w-4" strokeWidth={1.75} />
+                                                {event.isUnread && (
+                                                    <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-primary" />
+                                                )}
+                                            </span>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                                                    <p className="text-sm font-semibold text-foreground">
+                                                        {event.title[isEl ? "el" : "en"]}
+                                                    </p>
+                                                    <span className="flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
+                                                        <Clock className="h-3 w-3" aria-hidden="true" />
+                                                        {formatRelativeTime(event.timestamp, t, language || "en")}
+                                                    </span>
                                                 </div>
+                                                <p className="mt-0.5 text-sm text-muted-foreground">
+                                                    {event.description[isEl ? "el" : "en"]}
+                                                </p>
+                                                {event.customerName && (
+                                                    <p className="mt-2 flex items-center gap-1.5 text-caption font-medium text-muted-foreground">
+                                                        <Users className="h-3 w-3" aria-hidden="true" />
+                                                        {event.customerName}
+                                                    </p>
+                                                )}
                                             </div>
-
-                                            {/* Content Card */}
-                                            <div className="flex-1">
-                                                <Link 
-                                                    href={getEntityLink(event)}
-                                                    className="block pw-card hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 group-hover:border-neutral-300 dark:group-hover:border-neutral-700"
-                                                >
-                                                    <div className="p-4 sm:p-5">
-                                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
-                                                            <div>
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    {event.isUnread && (
-                                                                        <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                                                                    )}
-                                                                    <h3 className="text-sm font-bold text-foreground">
-                                                                        {event.title[isEl ? "el" : "en"]}
-                                                                    </h3>
-                                                                </div>
-                                                                <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                                                                    {event.description[isEl ? "el" : "en"]}
-                                                                </p>
-                                                            </div>
-                                                            <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400 text-micro font-semibold tracking-wider uppercase flex-shrink-0 whitespace-nowrap">
-                                                                <Clock className="w-3.5 h-3.5" />
-                                                                {formatRelativeTime(event.timestamp, t, language || "en")}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Footer metadata */}
-                                                        {event.customerName && (
-                                                            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800/60 flex items-center justify-between">
-                                                                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                                                                    <Users className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
-                                                                    {event.customerName}
-                                                                </div>
-                                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                    <div className="flex items-center gap-1 text-micro font-bold text-primary dark:text-mint">
-                                                                        {t.activity.view}
-                                                                        <ChevronRight className="w-3 h-3" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                        </motion.div>
-                                    )
-                                })}
-                            </AnimatePresence>
-                        </div>
-                    </div>
-                )}
+                                            <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                                        </Link>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    )}
+                </section>
             </div>
         </div>
     )

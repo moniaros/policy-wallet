@@ -96,7 +96,7 @@ export function SortableColumn<K extends string>({
             <button
                 type="button"
                 onClick={() => onSort(columnKey)}
-                className={`group inline-flex w-full items-center gap-1 ${justify} text-kicker font-black uppercase tracking-widest text-neutral-500 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-white`}
+                className={`group inline-flex w-full items-center gap-1 ${justify} text-caption font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`}
             >
                 {label}
                 <Icon
@@ -169,7 +169,7 @@ export function MobileSortControl<K extends string>({
                     onClick={() => onSort(sort.key)}
                     aria-label={`${label} — ${sort.direction === "asc" ? "↑" : "↓"}`}
                     aria-pressed={sort.direction === "desc"}
-                    className="pw-secondary-button pw-btn-sm shrink-0"
+                    className="pw-soft-button shrink-0"
                 >
                     {sort.direction === "asc"
                         ? <ArrowUp className="h-4 w-4" aria-hidden="true" />

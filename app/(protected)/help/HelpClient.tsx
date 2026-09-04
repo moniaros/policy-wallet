@@ -247,7 +247,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
 
                         {/* A segmented strip on the sunken plane — a view filter, not
                             an action, so no green pill (the wallet's filter grammar). */}
-                        <div className="pw-subcard pw-scroll-strip mt-4 max-w-full gap-0.5 !rounded-full p-1">
+                        <div className="pw-segmented pw-scroll-strip mt-4">
                             {(Object.keys(categoryLabels) as CategoryKey[]).map((category) => {
                                 const Icon = getCategoryIcon(category)
                                 const isActive = activeCategory === category
@@ -258,11 +258,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                         type="button"
                                         onClick={() => setActiveCategory(category)}
                                         aria-pressed={isActive}
-                                        className={`inline-flex min-h-10 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-caption font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                                            isActive
-                                                ? 'bg-card text-foreground shadow-sm'
-                                                : 'text-muted-foreground hover:text-foreground'
-                                        }`}
+                                        className="pw-segment focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                     >
                                         <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                                         {categoryLabels[category]}

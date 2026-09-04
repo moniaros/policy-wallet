@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { sendNotification } from "@/lib/notifications"
 import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 // ────────────────────────────────────────────────
 // Types
@@ -146,7 +147,7 @@ export async function inviteTeamMember(
     }
 
     // Find user by email
-    const invitee = await db.user.findUnique({ where: { email: inviteeEmail } })
+    const invitee = await db.user.findUnique({ where: { email: normalizeEmail(inviteeEmail) } })
     if (!invitee) {
         throw new Error("No user found with that email. They must register first.")
     }
