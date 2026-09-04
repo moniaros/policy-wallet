@@ -74,10 +74,12 @@ describe('the file picker offers what the server accepts', () => {
 describe('each picker names its own server category', () => {
     const PAIRS: Array<[string, string, string]> = [
         // picker file, category it asks for, server file that validates it
-        ['components/onboarding/protection-profile/UploadScreen.tsx', 'policy', 'lib/services/policy.service.ts'],
+        // The wallet, onboarding and agent-commit doors all validate inside the
+        // ONE ingestion path (Sept 2026); the bulk modal's door is the extract route.
+        ['components/onboarding/protection-profile/UploadScreen.tsx', 'policy', 'lib/ingestion/ingest-policy-document.ts'],
         ['components/onboarding/agent/LicenseVerificationStep.tsx', 'policy', 'app/onboarding/agent/actions.ts'],
-        ['components/wallet/AddPolicyClient.tsx', 'policy', 'lib/services/policy.service.ts'],
-        ['components/wallet/BatchUploadModal.tsx', 'policy', 'lib/services/policy.service.ts'],
+        ['components/wallet/AddPolicyClient.tsx', 'policy', 'lib/ingestion/ingest-policy-document.ts'],
+        ['components/wallet/BatchUploadModal.tsx', 'policy', 'app/api/policies/extract/route.ts'],
         // AddCustomerModal left this list on 2026-09-04: it no longer picks a
         // file. Its «Έξυπνη Μεταφόρτωση PDF» door parsed the document and then
         // DROPPED it (see the scan-without-commit guard below); the door now

@@ -54,7 +54,10 @@ describe("parsePolicyPdfWithGemini cost controls", () => {
         // HEIC photo — and the provider rejected it. The validator has already
         // read the magic bytes; its canonical type is the only honest one.
         const body = scanBody()
-        expect(body).toMatch(/mimeType:\s*scanValidation\.value\.canonicalMime/)
+        // The extraction input is built by toValidatedAIDocument(verdict, bytes,
+        // mime) — the document gate's constructor — so the canonical type is
+        // its third argument rather than an object-literal field.
+        expect(body).toMatch(/toValidatedAIDocument\([^)]*scanValidation\.value\.canonicalMime/)
         expect(body).not.toMatch(/mimeType:\s*file\.type/)
     })
 })

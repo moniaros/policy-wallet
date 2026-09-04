@@ -92,6 +92,19 @@ export function classifyAnalysisFailure(input: {
         return { kind: "inform", code: "EXTRACTION_EMPTY", retryable: true }
     }
 
+    // The document gate (lib/ingestion/document-gate.ts) refused a stored
+    // document on its lazy pass — a legacy row whose file turned out not to be
+    // an insurance document, or one it could not read. Not technical, and the
+    // person may have typed the identity themselves: keep the row, keep the
+    // code (it names the reason in the wallet), never discard.
+    if (/document_gate_unavailable|classifier_unavailable/.test(haystack)) {
+        return { kind: "inform", code: "AI_UNAVAILABLE", retryable: true }
+    }
+    const gateCode = /document_rejected_([a-z_]+)/.exec(haystack)
+    if (gateCode) {
+        return { kind: "inform", code: `DOCUMENT_REJECTED_${gateCode[1].toUpperCase()}`, retryable: false }
+    }
+
     if (/timeout|deadline/.test(haystack)) {
         return { kind: "discard", code: "TIMEOUT", retryable: true }
     }

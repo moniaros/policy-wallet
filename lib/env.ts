@@ -20,11 +20,14 @@ const envSchema = z.object({
     GEMINI_MODEL_QA: z.string().default("gemini-3.1-flash-lite"),
     GEMINI_MODEL_FALLBACK: z.string().default("gemini-3.5-flash"),
     GEMINI_MODEL_TRANSLATION: z.string().default("gemini-3.1-flash-lite"),
+    // The document gate's cheap classifier (lib/ingestion/model-classifier.ts): an excerpt, a tiny schema.
+    GEMINI_MODEL_CLASSIFICATION: z.string().default("gemini-3.1-flash-lite"),
     OPENAI_API_KEY: z.string().optional(),
     OPENAI_MODEL_EXTRACTION: z.string().default("gpt-4.1-mini"),
     OPENAI_MODEL_GAP_ANALYSIS: z.string().default("gpt-4.1-mini"),
     OPENAI_MODEL_CLARITY_ANALYSIS: z.string().default("gpt-4.1-mini"),
     OPENAI_MODEL_QA: z.string().default("gpt-4.1-mini"),
+    OPENAI_MODEL_CLASSIFICATION: z.string().default("gpt-4.1-mini"),
     // Anthropic / Claude (premium failover). claude-sonnet-4-20250514 is
     // deprecated (retirement announced for 2026) and claude-haiku-4-20250414
     // never existed — both 404 exactly when the failover chain is needed.
@@ -33,6 +36,7 @@ const envSchema = z.object({
     CLAUDE_MODEL_GAP_ANALYSIS: z.string().default("claude-sonnet-5"),
     CLAUDE_MODEL_CLARITY_ANALYSIS: z.string().default("claude-sonnet-5"),
     CLAUDE_MODEL_QA: z.string().default("claude-haiku-4-5"),
+    CLAUDE_MODEL_CLASSIFICATION: z.string().default("claude-haiku-4-5"),
     // Per-provider model-fallback targets (the router's model-fallback branch).
     // Before this, only Gemini had a fallback model — a transient failure on
     // Claude/OpenAI skipped the cheaper same-provider retry. Haiku / gpt-4.1-mini

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { asValidatedForTests } from "../helpers/validated-document"
 import { providerDocumentFileName } from '@/lib/wallet/document-label'
 import type { AIDocument, GapDefinitionForAI, PolicyMetadata } from '@/lib/services/ai/ai-service.interface'
 import { OpenAIAIService } from '@/lib/services/ai/openai-ai.service'
@@ -121,7 +122,7 @@ describe('OpenAIAIService message payload shape', () => {
 
     const service = new OpenAIAIService('test-openai-api-key')
 
-    await service.extractPolicyData(doc)
+    await service.extractPolicyData(asValidatedForTests(doc))
     await service.analyzeGaps(doc, metadata, gapDefinitions)
     await service.analyzePolicyClarity(doc, metadata, checklist)
 

@@ -39,6 +39,10 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "16mb",
     },
   },
+  // unpdf ships its own ~2 MB pdf.js build behind a dynamic import. Kept out
+  // of the bundle graph and resolved from node_modules at runtime (Vercel's
+  // file tracing follows it), which is how the document gate reads PDFs.
+  serverExternalPackages: ["unpdf"],
   turbopack: {
     // Pin the app root to avoid workspace root inference from parent lockfiles.
     root: process.cwd(),

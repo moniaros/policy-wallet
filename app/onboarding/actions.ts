@@ -3,6 +3,7 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { PolicyService } from "@/lib/services/policy.service"
+import { DocumentGateError } from "@/lib/ingestion/ingest-policy-document"
 import { revalidatePath } from "next/cache"
 import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
 import { displayPersonName, firstNameLabel } from "@/lib/wallet/policy-identity"
@@ -149,7 +150,12 @@ export async function uploadOnboardingPolicy(formData: FormData) {
     const policyService = new PolicyService(db)
 
     try {
-        const result = await policyService.uploadAndParse(userId, file, dbUser.preferredLanguage as "en" | "el")
+        const result = await policyService.uploadAndParse(userId, file, dbUser.preferredLanguage as "en" | "el", {
+            surface: "onboarding",
+            // The person resolved a «needs a confirmation» verdict on these
+            // same bytes (UploadScreen re-submits with the flag).
+            branchConfirmed: formData.get("branchConfirmed") === "true",
+        })
 
         // Trigger background analysis if not already handled by service (service usually returns 'analyzing' status)
         // The service method uploadAndParse creates a record with 'analyzing' status.
@@ -179,6 +185,25 @@ export async function uploadOnboardingPolicy(formData: FormData) {
 
         return { success: true, policyId: result.policyId }
     } catch (error) {
+        // The document gate refused or held the file BEFORE anything was
+        // stored or analysed. The CODE travels (wallet.batchUpload.failures
+        // localises it); never prose, never the verdict's internals.
+        if (error instanceof DocumentGateError) {
+            const r = error.rejection
+            return {
+                success: false as const,
+                error: error.code,
+                gate: {
+                    status: r.status,
+                    code: r.code,
+                    documentType: r.documentType,
+                    documentKind: r.documentKind,
+                    detectedBranch: r.detectedBranch,
+                    resolvable: r.resolvable,
+                    existingPolicyId: r.existingPolicyId ?? null,
+                },
+            }
+        }
         // Log the real error, but do NOT return error.message to the client — it
         // was rendered in a toast during first-run onboarding, leaking a raw
         // (English, sometimes technical) exception. flow.tsx shows a localised
@@ -335,7 +360,7 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
                 // is not a policy. Not «completed» — the onboarding said «Το
                 // διαβάσαμε» over an empty extraction until Sept 2026.
                 if (basic.status === "needs_review") {
-                    return { success: false, status: "needs_review" }
+                    return { success: false, status: "needs_review", error: basic.code }
                 }
                 return {
                     success: basic.status === "completed",
@@ -355,8 +380,11 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
             const isFailed = result.status === "failed" || result.status === "blocked"
             // The deep path ends an empty extraction as a failed run carrying
             // the code; the screen gets the same honest word as the basic path.
-            if (result.status === "failed" && result.failureCode === EXTRACTION_EMPTY_CODE) {
-                return { success: false, status: "needs_review" }
+            if (
+                result.status === "failed" &&
+                (result.failureCode === EXTRACTION_EMPTY_CODE || result.failureCode?.startsWith("DOCUMENT_REJECTED_"))
+            ) {
+                return { success: false, status: "needs_review", error: result.failureCode ?? undefined }
             }
             // `overallSuccessPct` used to be returned as `healthScore` here —
             // a pipeline success percentage dressed up as a protection figure.

@@ -195,8 +195,8 @@ describe("getAiPerformanceSnapshot", () => {
     it("reports the active configuration per operation (env defaults when no DB rows)", async () => {
         wireMocks()
         const s = await getAiPerformanceSnapshot({})
-        // Six operations + the primaryProvider sentinel.
-        expect(s.activeConfiguration).toHaveLength(7)
+        // Seven operations (incl. the document gate's classifyDocument) + the primaryProvider sentinel.
+        expect(s.activeConfiguration).toHaveLength(8)
         const qa = s.activeConfiguration.find((c) => c.configKey === "askQuestion")
         expect(qa).toMatchObject({ provider: "gemini", model: "gemini-3.1-flash-lite", source: "env_default" })
         const primary = s.activeConfiguration.find((c) => c.configKey === "primaryProvider")

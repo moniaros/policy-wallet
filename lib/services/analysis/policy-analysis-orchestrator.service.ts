@@ -68,6 +68,9 @@ import {
     emitAnalysisStepTelemetry,
 } from "./step-telemetry"
 import { documentMimeType } from "@/lib/security/file-upload"
+import { validateDocumentForIngestion } from "@/lib/ingestion/document-gate"
+import { toValidatedAIDocument, type ValidatedAIDocument } from "@/lib/ingestion/validated-document"
+import { USER_RESOLVABLE_REVIEW_REASONS, type DocumentValidationResult } from "@/lib/ingestion/types"
 import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
 import { isPlaceholderInsurerName, isPlaceholderPolicyNumber } from "@/lib/wallet/policy-identity"
 import {
@@ -368,7 +371,7 @@ export class PolicyAnalysisOrchestratorService {
     async extractBasicSummary(
         policyId: string,
         userId: string
-    ): Promise<{ status: "completed" | "needs_review" | "blocked" | "failed"; reason?: string }> {
+    ): Promise<{ status: "completed" | "needs_review" | "blocked" | "failed"; reason?: string; code?: string }> {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
 
         // GDPR Art. 9 consent gate — same as the deep pipeline: no document
@@ -478,6 +481,22 @@ export class PolicyAnalysisOrchestratorService {
 
             return { status: "completed" }
         } catch (error) {
+            // The gate refused the stored document before any model saw it.
+            // Not a technical failure and never a discard: the file is kept and
+            // the wallet names the reason. (Before this branch existed, the
+            // generic catch below reported it as `extraction_failed`, which the
+            // caller's failure handler classified as a discard.)
+            if (error instanceof OrchestrationError && error.code.startsWith("DOCUMENT_REJECTED_")) {
+                await this.markDocumentRejected(policyId, policy.acordData, error.code)
+                logger("warn", "Stored document refused by the document gate — kept for review", {
+                    policyId,
+                    code: error.code,
+                })
+                return { status: "needs_review", reason: "document_rejected", code: error.code }
+            }
+            if (error instanceof OrchestrationError && error.code === "DOCUMENT_GATE_UNAVAILABLE") {
+                return { status: "failed", reason: "document_gate_unavailable" }
+            }
             logger("error", "extractBasicSummary failed", {
                 policyId,
                 userId,
@@ -518,6 +537,17 @@ export class PolicyAnalysisOrchestratorService {
 
     async createRun(policyId: string, userId: string) {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
+
+        // ONE run in flight per policy. Every trigger (upload, retry, review,
+        // admin requeue, a QStash redelivery of the caller) used to create its
+        // own row, and nothing stopped two `queued` runs racing for the same
+        // document. The existing run is returned instead — idempotent
+        // initiation; the execution lease then keeps a single executor.
+        const inFlight = await db.policyAnalysisRun.findFirst({
+            where: { policyId, status: { in: ["queued", "running"] } },
+            orderBy: { createdAt: "desc" },
+        })
+        if (inFlight) return inFlight
 
         // Primary provider comes from the router (admin DB override ->
         // AI_SERVICE_TYPE -> key priority), not a hardcoded "gemini". Under the
@@ -585,6 +615,24 @@ export class PolicyAnalysisOrchestratorService {
             })
         }
 
+        // No document, no run. `prepareDocument` used to discover this only
+        // after a run row existed and the policy already read «analysing».
+        if (!policy.documents?.length) {
+            return db.policyAnalysisRun.create({
+                data: {
+                    policyId,
+                    userId,
+                    provider: primaryProvider,
+                    model: primaryRunModel,
+                    status: "blocked",
+                    blockedReason: "missing_document",
+                    failureCode: "MISSING_DOCUMENT",
+                    failureMessage: "No policy document uploaded",
+                    finishedAt: new Date(),
+                },
+            })
+        }
+
         // ONE estimator, shared with the agent upload's pre-flight
         // (lib/services/analysis/run-preflight.ts): the number the modal
         // decides on before it answers is the number this gate refuses on.
@@ -612,16 +660,6 @@ export class PolicyAnalysisOrchestratorService {
                 priority: queuePriority,
                 estimatedTokens: estimation.totalEstimatedTokens,
             },
-        })
-
-        await db.policy.update({
-            where: { id: policyId },
-            data: { status: "analyzing" },
-        })
-
-        await db.policyDocument.updateMany({
-            where: { policyId },
-            data: { processingStatus: "processing" },
         })
 
         // Only pro (Plus) policyholders and agents reach here; the token budget
@@ -667,15 +705,19 @@ export class PolicyAnalysisOrchestratorService {
                 },
             })
 
-            // Documents were set to "processing" before the token gate — reset them
-            // so the wallet UI doesn't show a perpetual spinner for a blocked run.
-            await db.policyDocument.updateMany({
-                where: { policyId, processingStatus: "processing" },
-                data: { processingStatus: "failed" },
-            })
-
             return blockedRun
         }
+
+        // Every gate passed: only now does the policy read «analysing». These
+        // writes used to precede the token gate, which then had to undo them.
+        await db.policy.update({
+            where: { id: policyId },
+            data: { status: "analyzing" },
+        })
+        await db.policyDocument.updateMany({
+            where: { policyId },
+            data: { processingStatus: "processing" },
+        })
 
         return run
     }
@@ -976,6 +1018,37 @@ export class PolicyAnalysisOrchestratorService {
             existing.status === "completed_with_warnings"
         ) {
             return existing
+        }
+
+        // The worker re-checks what the enqueuer checked. Between publish and
+        // delivery a policy can be deleted and consent withdrawn; a queued run
+        // used to trust the moment it was created and read the document anyway.
+        const subject = await db.policy.findUnique({
+            where: { id: existing.policyId },
+            select: { status: true, owner: { select: { aiProcessingConsentVersion: true } } },
+        })
+        const blockedReason = !subject || subject.status === "deleted"
+            ? { blockedReason: "policy_deleted", failureCode: "POLICY_DELETED", failureMessage: "The policy no longer exists" }
+            : !subject.owner?.aiProcessingConsentVersion
+              ? { blockedReason: "ai_consent_missing", failureCode: "AI_CONSENT_REQUIRED", failureMessage: "Policy owner has not granted AI-processing consent" }
+              : null
+        if (blockedReason) {
+            const blocked = await db.policyAnalysisRun.update({
+                where: { id: runId },
+                data: { status: "blocked", ...blockedReason, finishedAt: new Date() },
+            })
+            if (subject && subject.status !== "deleted") {
+                await db.policy.update({ where: { id: existing.policyId }, data: { status: "action_needed" } })
+                await db.policyDocument.updateMany({
+                    where: { policyId: existing.policyId, processingStatus: "processing" },
+                    data: { processingStatus: "failed" },
+                })
+            }
+            logger("warn", "Queued analysis refused at execution: enqueue-time precondition no longer holds", {
+                runId,
+                blockedReason: blockedReason.blockedReason,
+            })
+            return blocked
         }
 
         const leaseId = randomUUID()
@@ -2516,7 +2589,7 @@ export class PolicyAnalysisOrchestratorService {
         )
     }
     private async prepareDocument(policyId: string): Promise<{
-        document: AIDocument
+        document: ValidatedAIDocument
         documentId: string
         documentHash: string
     }> {
@@ -2618,14 +2691,143 @@ export class PolicyAnalysisOrchestratorService {
         const docHash = await hashDocumentBuffer(buffer)
         await setDocumentHash(document.id, docHash)
 
+        // THE GATE. Nothing leaves this method for a provider without a
+        // `validated` verdict: a document stamped at ingest passes on its
+        // stamp; a row from before the gate existed is validated now, on the
+        // bytes already in hand; a refused document fails the run here, before
+        // the extraction step spends anything.
+        const verdict = await this.ensureDocumentValidated(document, buffer, mimeType, docHash)
+
         return {
             documentId: document.id,
             documentHash: docHash,
-            document: {
-                data: buffer.toString("base64"),
-                mimeType,
-            },
+            document: toValidatedAIDocument(verdict, buffer, mimeType),
         }
+    }
+
+    /**
+     * The lazy arm of the document gate, for stored documents.
+     *
+     * Ingest stamps every document it persists (lib/ingestion/ingest-policy-document.ts),
+     * so on the happy path this is one column read. Rows written before Sept
+     * 2026 carry no stamp and are validated here with no declared branch and
+     * the OWNER's consent for any model stage; the verdict is stamped so the
+     * next run does not repeat the work.
+     *
+     * Leniency for legacy rows, stated once: a `requires_review` verdict whose
+     * reasons a person could have resolved (an unclear scan, a thin page) lets
+     * the run proceed and is recorded as such — the owner uploaded this file
+     * deliberately, before the gate existed, and there is nobody at the
+     * keyboard to ask. A classifier outage is retryable, not a verdict. A
+     * `rejected` verdict fails the run as keep-and-inform.
+     */
+    private async ensureDocumentValidated(
+        document: {
+            id: string
+            policyId: string
+            validationStatus?: string | null
+            validationJson?: unknown
+        },
+        buffer: Buffer,
+        mimeType: string,
+        documentHash: string
+    ): Promise<Pick<DocumentValidationResult, "status" | "code">> {
+        if (document.validationStatus === "validated") return { status: "validated" }
+        if (document.validationStatus === "rejected" || document.validationStatus === "requires_review") {
+            const stored = (document.validationJson ?? null) as Partial<DocumentValidationResult> | null
+            throw this.documentRejectedError(stored?.code)
+        }
+
+        const policy = await db.policy.findUnique({
+            where: { id: document.policyId },
+            select: { ownerUserId: true },
+        })
+        const ownerUserId = policy?.ownerUserId ?? ""
+        const verdict = await validateDocumentForIngestion({
+            bytes: buffer,
+            canonicalMime: mimeType,
+            declaredBranch: null,
+            declaredBranchSource: "user",
+            mode: "policy",
+            surface: "worker_lazy",
+            actorUserId: ownerUserId,
+            ownerUserId,
+            excludeDocumentId: document.id,
+            correlationId: `lazy:${document.id}`,
+        })
+
+        const legacyLenient =
+            verdict.status === "requires_review" &&
+            verdict.reviewReasons.length > 0 &&
+            verdict.reviewReasons.every((reason) => USER_RESOLVABLE_REVIEW_REASONS.has(reason))
+        const effectiveStatus: DocumentValidationResult["status"] = legacyLenient ? "validated" : verdict.status
+
+        try {
+            await db.policyDocument.update({
+                where: { id: document.id },
+                data: {
+                    validationStatus: effectiveStatus,
+                    validationJson: { ...verdict, legacyLenient } as any,
+                    validatedAt: new Date(),
+                    documentHash,
+                },
+            })
+        } catch (error) {
+            logger("warn", "Could not stamp lazy document validation", {
+                documentId: document.id,
+                error: error instanceof Error ? error.message : String(error),
+            })
+        }
+
+        if (effectiveStatus === "requires_review") {
+            // Consent or classifier availability — not a verdict about the file.
+            throw new OrchestrationError("The document gate could not classify the document yet", {
+                code: "DOCUMENT_GATE_UNAVAILABLE",
+                retryable: true,
+                failureClass: "document",
+                userMessageKey: "analysis.errors.unavailable",
+            })
+        }
+        if (effectiveStatus === "rejected") throw this.documentRejectedError(verdict.code)
+        return { status: "validated" }
+    }
+
+    /** A gate refusal, in the shape `failRun` stamps onto the policy (processingError.code). */
+    private documentRejectedError(code: string | undefined): OrchestrationError {
+        return new OrchestrationError("The document did not pass the validation gate", {
+            code: `DOCUMENT_REJECTED_${code ?? "DOCUMENT_NOT_RECOGNIZED"}`,
+            hardFailure: true,
+            retryable: false,
+            failureClass: "document",
+            userMessageKey: "analysis.errors.document",
+        })
+    }
+
+    /**
+     * KEEP-AND-INFORM for a stored document the gate refused: the same shape
+     * as markExtractionEmpty, with the gate's code so the wallet can say what
+     * the file turned out to be. Nothing is deleted; the person replaces it.
+     */
+    private async markDocumentRejected(policyId: string, storedAcordData: unknown, code: string): Promise<void> {
+        await db.policy.update({
+            where: { id: policyId },
+            data: {
+                status: "action_needed",
+                acordData: {
+                    ...(((storedAcordData as Record<string, unknown> | null) ?? {}) as Record<string, unknown>),
+                    processingError: {
+                        code,
+                        message: "The stored document did not pass the document validation gate",
+                        retryable: false,
+                        occurredAt: new Date().toISOString(),
+                    },
+                } as any,
+            },
+        })
+        await db.policyDocument.updateMany({
+            where: { policyId },
+            data: { processingStatus: "failed" },
+        })
     }
 
     /**

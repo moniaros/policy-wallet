@@ -1,7 +1,8 @@
 "use client"
 
 import { forwardRef, useRef, useState } from "react"
-import { FileText, Loader2, Upload } from "lucide-react"
+import { AlertTriangle, FileText, Loader2, Upload } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { acceptAttribute } from "@/lib/security/file-upload"
@@ -9,7 +10,21 @@ import { triggerOnboardingAnalysis, uploadOnboardingPolicy } from "@/app/onboard
 import type { TranslationKeys } from "@/lib/i18n/translations/el"
 
 export type UploadLabels = TranslationKeys["onboarding"]["protectionProfile"]["upload"]
-export type UploadPhase = "idle" | "uploading" | "reading" | "queued" | "completed" | "needs_review" | "failed"
+export type UploadPhase = "idle" | "uploading" | "reading" | "queued" | "completed" | "needs_review" | "failed" | "rejected"
+
+/**
+ * The document gate's verdict on the chosen file, as the upload action returns
+ * it (lib/ingestion/document-gate.ts). Nothing was stored and nothing was
+ * analysed: the CODE picks the copy, `resolvable` decides whether the person
+ * may confirm and continue with the same file.
+ */
+export type UploadGateVerdict = {
+    status: "rejected" | "requires_review"
+    code: string
+    documentKind: string
+    detectedBranch: string | null
+    resolvable: boolean
+}
 /**
  * What the reading came to, as the flow receives it. `needs_review`: the
  * document was read and carries no policy — kept in the wallet, credited
@@ -40,8 +55,10 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
     onPhase?: (phase: UploadPhase, errorCode?: string) => void
     busy: boolean
 }>(function UploadScreen({ labels, startingFrom, hasAiConsent, deepAnalysisAvailable, onUploaded, onLater, onPhase, busy }, headingRef) {
+    const { t } = useLanguage()
     const [file, setFile] = useState<File | null>(null)
     const [phase, setPhase] = useState<UploadPhase>("idle")
+    const [gate, setGate] = useState<UploadGateVerdict | null>(null)
     const [aiConsent, setAiConsent] = useState(hasAiConsent)
     const [consentOpen, setConsentOpen] = useState(false)
     const [policyId, setPolicyId] = useState<string | null>(null)
@@ -52,25 +69,39 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
         onPhase?.(next, errorCode)
     }
 
-    const submit = async (chosen: File) => {
+    const submit = async (chosen: File, confirmed = false) => {
         // A retry after a failed READING must not upload the same document
         // again: the policy already exists, and a second tap produced a second
         // «AI Analyzing…» row in the wallet. Re-run the reading on the row we have.
         //
         // After «needs_review» the opposite holds: the row we have holds a
         // document that is not a policy, so the next file is a NEW upload —
-        // re-reading the empty one would only find nothing again.
-        let id = phase === "needs_review" ? null : policyId
+        // re-reading the empty one would only find nothing again. After a gate
+        // verdict nothing was stored at all, so there is no row to reuse.
+        let id = phase === "needs_review" || phase === "rejected" ? null : policyId
         if (!id) {
             move("uploading")
             try {
                 const formData = new FormData()
                 formData.append("file", chosen)
+                // The person read the hold («needs a confirmation») and confirmed.
+                if (confirmed) formData.append("branchConfirmed", "true")
                 const result = await uploadOnboardingPolicy(formData)
                 if (!result.success || !result.policyId) {
+                    // The document gate refused or held the file BEFORE anything
+                    // was stored or analysed. Say what it was; keep the file only
+                    // when confirming can resolve it.
+                    const verdict = "gate" in result ? (result.gate as UploadGateVerdict | undefined) : undefined
+                    if (verdict) {
+                        setGate(verdict)
+                        if (!verdict.resolvable) setFile(null)
+                        move("rejected", verdict.code)
+                        return
+                    }
                     move("failed", "upload_failed")
                     return
                 }
+                setGate(null)
                 id = result.policyId
                 setPolicyId(id)
             } catch {
@@ -114,6 +145,19 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
     const inFlight = phase === "uploading" || phase === "reading"
     const done = phase === "queued" || phase === "completed"
     const needsReview = phase === "needs_review"
+    const rejected = phase === "rejected" && gate !== null
+
+    // The gate's copy is the ONE block every upload surface shares
+    // (wallet.batchUpload.failures); the kind label fills `{kind}`.
+    const gateCopy = (() => {
+        if (!gate) return null
+        const failures = t.wallet.batchUpload.failures as Record<string, { title: string; detail: string; action: string }>
+        const entry = failures[gate.code] ?? failures.UNKNOWN_ERROR
+        const kinds = t.wallet.batchUpload.documentKinds as Record<string, string>
+        const kind = kinds[gate.documentKind] ?? kinds.other
+        const fill = (text: string) => text.replace(/\{(\w+)\}/g, (_m, key: string) => (key === "kind" ? kind : ""))
+        return { title: entry.title, detail: fill(entry.detail), action: fill(entry.action) }
+    })()
 
     return (
         <section aria-labelledby="protection-upload-heading">
@@ -159,6 +203,21 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
                     <p role="status" aria-live="polite" data-upload-outcome="needs_review" className="pw-subcard mb-3 p-3 text-sm leading-relaxed text-foreground">
                         {statusText.needs_review}
                     </p>
+                ) : null}
+                {rejected && gateCopy ? (
+                    <div role="alert" data-upload-outcome="rejected" data-gate-code={gate.code} className="pw-subcard mb-3 p-3 text-sm leading-relaxed text-foreground">
+                        <p className="flex items-start gap-2 font-semibold">
+                            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden="true" />
+                            <span>{gateCopy.title}</span>
+                        </p>
+                        <p className="mt-1 text-muted-foreground">{gateCopy.detail}</p>
+                        <p className="mt-1">{gateCopy.action}</p>
+                        {gate.resolvable && file ? (
+                            <button type="button" onClick={() => void submit(file, true)} disabled={inFlight || busy} className="pw-soft-button mt-3 w-full sm:w-auto">
+                                {labels.gateConfirm}
+                            </button>
+                        ) : null}
+                    </div>
                 ) : null}
                 {done ? null : (
                     <UploadDropzone

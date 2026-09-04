@@ -5,7 +5,8 @@ import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { msFromNow, DOWNLOAD_SIGNED_URL_EXPIRY_SECONDS } from "@/lib/constants/time"
 import { getPolicyAccess } from "@/lib/policy-access"
-import { uploadFileDetailed, deleteFile } from "@/lib/storage"
+import { ingestPolicyDocument } from "@/lib/ingestion/ingest-policy-document"
+import { hasPlaceholderIdentity } from "@/lib/wallet/policy-identity"
 import { createSignedUrlForStoredObject } from "@/lib/supabase/storage-download"
 import {
     validateUploadFile,
@@ -106,47 +107,51 @@ export const POST = withApiGuard(
             // never trust the form value for provenance.
             const source = access.isOwner ? "policyholder" : "agent"
 
-            // Real upload into the private 'policies' bucket (service-role),
-            // replacing a fabricated storage.googleapis.com URL that persisted a
-            // phantom document record no file ever backed.
-            let stored
-            try {
-                stored = await uploadFileDetailed(file, "policies")
-            } catch (uploadError) {
-                console.error("Policy document upload failed:", uploadError)
-                return createApiError("INTERNAL_ERROR", "Document upload failed", 500)
-            }
-            const fileUrl = stored.url
-
-            // If the DB write fails AFTER the object landed, remove the object —
-            // otherwise it sits orphaned (and unreferenced) in the bucket forever.
-            let document
-            try {
-                document = await db.policyDocument.create({
-                    data: {
-                        policyId: id,
-                        fileUrl,
-                        // GENERATED, never the client's file name. The
-                        // object key was already anonymous; this closes the
-                        // half a person actually reads.
-                        fileName: storedDocumentLabel({}),
-                        fileSize: file.size,
-                        source: source as string,
-                        uploadedByUserId: authResult.dbUser.id,
-                        processingStatus: "pending",
-                        // The authoritative locator, so retrieval never has to
-                        // parse it back out of the URL.
-                        storageBucket: stored.bucket || null,
-                        storageKey: stored.key,
-                        storageProvider: stored.bucket ? "supabase" : null,
-                        mimeType: stored.mimeType,
-                        documentKind: documentKind || null,
-                    }
+            // ONE door for policy documents (lib/ingestion/ingest-policy-document.ts):
+            // bytes, then the document gate — in ATTACHMENT mode, which admits
+            // the terms booklet, the premium receipt or a claim form and
+            // refuses a menu — then storage, then the row carrying the gate's
+            // stamp. The client's `documentKind` is a hint the gate's own
+            // reading overrides; the policy's branch is the declared one when
+            // the policy has been read (a placeholder identity declares nothing).
+            // This route used to attach anything with the right magic bytes as
+            // `pending`, and `selectSourceDocument` then preferred a client-
+            // declared `policy_schedule` for the next analysis run.
+            const ingest = await ingestPolicyDocument({
+                actorUserId: authResult.dbUser.id,
+                ownerUserId: policy.ownerUserId,
+                file,
+                surface: "attachment",
+                mode: "attachment",
+                existingPolicyId: id,
+                declaredBranch: hasPlaceholderIdentity(policy) ? null : policy.lineOfBusiness,
+                declaredBranchSource: "policy",
+                documentKind: documentKind as any,
+                processingStatus: "pending",
+                source: source as "policyholder" | "agent",
+            })
+            if (!ingest.ok) {
+                if (ingest.kind === "upload_invalid") {
+                    return createApiError("BAD_REQUEST", REJECTION_MESSAGES[ingest.reason], 400, {
+                        reason: ingest.reason,
+                    })
+                }
+                const status =
+                    ingest.code === "DUPLICATE_DOCUMENT" ? 409
+                    : ingest.code === "UPLOAD_REJECTIONS_THROTTLED" ? 429
+                    : ingest.code === "AI_UNAVAILABLE" ? 503
+                    : 422
+                return createApiError("DOCUMENT_REJECTED", "The document did not pass validation", status, {
+                    code: ingest.code,
+                    status: ingest.status,
+                    documentType: ingest.documentType,
+                    documentKind: ingest.documentKind,
+                    detectedBranch: ingest.detectedBranch,
+                    resolvable: ingest.resolvable,
+                    ...(ingest.existingPolicyId ? { existingPolicyId: ingest.existingPolicyId } : {}),
                 })
-            } catch (dbError) {
-                await deleteFile(fileUrl)
-                throw dbError
             }
+            const document = await db.policyDocument.findUniqueOrThrow({ where: { id: ingest.documentId } })
 
             await (db.activityLog as any).create({
                 data: {
@@ -159,6 +164,7 @@ export const POST = withApiGuard(
                     // "Uploaded document CASH IN SAFE.pdf" into prod, which
                     // names the covered contents to anyone reading the log.
                     description: `Uploaded document ${storedDocumentLabel({})} for policy ${policy.policyNumber}`,
+                    metadata: { policyId: id, documentId: document.id, documentType: ingest.verdict.documentType },
                     timestamp: new Date()
                 }
             })

@@ -105,6 +105,21 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   also uses). Check `aiProcessingConsentVersion` **before reading the request body**, so a
   refusal never touches the document. The extract path was ungated until Aug 2026 while
   `/trust` promised the opposite.
+- **A document reaches a model, and the `policies` bucket, only through the document gate.**
+  Until Sept 2026 any PDF declared «Motor» became an `analyzing` Policy and a full extraction
+  (~211k estimated tokens) found out it was a menu. Now `ingestPolicyDocument`
+  ([lib/ingestion/ingest-policy-document.ts](lib/ingestion/ingest-policy-document.ts)) is the
+  ONE path that stores a policy document, and it runs `validateDocumentForIngestion`
+  ([lib/ingestion/document-gate.ts](lib/ingestion/document-gate.ts)) first — bytes, a local
+  pdf.js read (page cap, text), a Greek/English lexical classifier, the cheap model only for
+  the middle band or a scan, branch consistency, a duplicate check — and persists NOTHING for a
+  rejected or held verdict but one `ActivityLog` row (the «analyses prevented» KPI).
+  `extractPolicyData` takes a `ValidatedAIDocument`, a brand only `toValidatedAIDocument`
+  mints for a `validated` verdict; the orchestrator's `prepareDocument` validates legacy rows
+  lazily. The selected branch is a HINT the gate checks; it never authorises anything. Guards:
+  `tests/unit/document-gate-before-model.test.ts`, `tests/unit/document-gate-storage-single-path.test.ts`,
+  the consent guard's `classifyDocument` arm. Do not add a second upload path or a cast; add a
+  caller of the service. Details: `docs/audits/document-validation-gate-2026-09.md`.
 - **Severity is not a verdict until an underwriter says so.** Render it through
   `describeSeverity()` ([lib/gaps/severity-display.ts](lib/gaps/severity-display.ts)) and show
   its `caveatKey`. `tests/unit/gap-severity-display-single-source.test.ts` fails on a new

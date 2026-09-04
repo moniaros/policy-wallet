@@ -42,6 +42,18 @@ export function mapWalletErrorToMessage(
         return t?.common?.aiConsentRequired || byContext(context, t)
     }
 
+    // The document gate refused or held the document BEFORE any model call
+    // (lib/ingestion/document-gate.ts). The code after the prefix is one of
+    // wallet.batchUpload.failures — the same copy every upload surface shows.
+    // Before EXTRACTION_EMPTY and the generic DOCUMENT match: this is not a
+    // failure to read, it is a verdict about what the file is.
+    const gateMatch = /DOCUMENT_REJECTED_([A-Z_]+)/.exec(upper)
+    if (gateMatch) {
+        const spec = t?.wallet?.batchUpload?.failures?.[gateMatch[1]]
+        if (spec?.title) return [spec.title, spec.detail].filter(Boolean).join(" ")
+        return t?.analysis?.errors?.document || byContext(context, t)
+    }
+
     // The document was read and carries no policy (lib/wallet/unread-policy).
     // Before the generic DOCUMENT/TIMEOUT matches: this is not a failure to
     // read, it is a file that is not a policy, and the copy must say so.

@@ -464,6 +464,13 @@ model PolicyDocument {
   /// lib/services/ai/document-kind.ts): policy_schedule, terms_and_conditions,
   /// renewal_notice, forms, certificate, invoice, other.
   documentKind    String?         @map("document_kind")
+  /// The document gate's verdict (lib/ingestion/document-gate.ts): 'validated'
+  /// | 'requires_review' | 'rejected'. NULL = uploaded before the gate existed;
+  /// the orchestrator validates such rows lazily before its first model call.
+  validationStatus String?        @map("validation_status")
+  /// The full DocumentValidationResult: type, confidences, branches, evidence. No text, no filename.
+  validationJson   Json?          @map("validation_json")
+  validatedAt      DateTime?      @map("validated_at")
   /// The period this DOCUMENT covers, as distinct from the policy's period.
   ///
   /// A Greek policy is a chain: the πρωτασφαλιστήριο carries the full terms and

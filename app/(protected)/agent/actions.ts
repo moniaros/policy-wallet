@@ -52,6 +52,11 @@ import {
     validationFailure,
 } from "@/lib/validations/agent-intake";
 
+import type { Prisma } from "@prisma/client"
+import { validateDocumentForIngestion, documentKindFor } from "@/lib/ingestion/document-gate"
+import { ingestPolicyDocument } from "@/lib/ingestion/ingest-policy-document"
+import { toValidatedAIDocument } from "@/lib/ingestion/validated-document"
+import { FAMILY_DEFAULT_BRANCH, USER_RESOLVABLE_REVIEW_REASONS } from "@/lib/ingestion/types"
 const customerService = new CustomerService(db);
 
 /**
@@ -1009,6 +1014,8 @@ export async function addPolicyForCustomer(data: {
     attestedAiConsent?: boolean;
     /** Agent saw the duplicate warning and chose to add the policy anyway. */
     confirmDuplicate?: boolean;
+    /** The agent resolved the document gate's «confirm the type» hold on these same bytes. */
+    branchConfirmed?: boolean;
 }, documentFormData?: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "UNAUTHORIZED" }
@@ -1050,18 +1057,11 @@ export async function addPolicyForCustomer(data: {
             }
         }
 
-        // 3. Optional document from the AI scanner step — validate before any writes
-        let file: File | null = null
-        if (documentFormData) {
-            const candidate = documentFormData.get("file")
-            if (candidate instanceof File && candidate.size > 0) {
-                const docValidation = await validateUploadFile(candidate, { category: "policy", maxBytes: 10 * 1024 * 1024 })
-                if (!docValidation.ok) {
-                    return { success: false, error: REJECTION_MESSAGES[docValidation.reason], errorCode: docValidation.reason }
-                }
-                file = candidate
-            }
-        }
+        // 3. Optional document from the AI scanner step. Validated in FULL by the
+        // ingestion service below — bytes, then the document gate with the
+        // branch the agent selected as the declared one — before any write.
+        const candidate = documentFormData?.get("file")
+        const file = candidate instanceof File && candidate.size > 0 ? candidate : null
 
         // 3b. Pre-add duplicate guard. The only other dedup runs post-analysis
         // and is skipped when analysis doesn't run (no consent/quota), so the
@@ -1098,22 +1098,94 @@ export async function addPolicyForCustomer(data: {
             }
         }
 
-        // 4. Storage FIRST. The policy row, its grant and the customer's
-        // notification used to be committed before the upload ran, so a storage
-        // failure left a live, document-less policy and a customer told about
-        // a document that did not exist. An object that fails to get a row is
-        // cheap to delete; a row that never gets its object is a lie.
-        let stored: { url: string; bucket: string; key: string; mimeType: string } | null = null
-        if (file) {
-            const { uploadFileDetailed } = await import("@/lib/storage")
-            stored = await uploadFileDetailed(file, "policies")
+        // The auto-minted, owner-revocable management grant. No unique
+        // constraint exists on (granter, grantee, scope) — idempotency is
+        // enforced here. Committed in the SAME transaction as the policy.
+        const grantManagement = async (tx: Prisma.TransactionClient, policyId: string) => {
+            const existingGrant = await tx.accessGrant.findFirst({
+                where: {
+                    granterUserId: customerId,
+                    granteeUserId: agentId,
+                    scope: `policy:${policyId}`,
+                    status: 'active',
+                }
+            })
+            if (!existingGrant) {
+                await tx.accessGrant.create({
+                    data: {
+                        granterUserId: customerId,
+                        granteeUserId: agentId,
+                        scope: `policy:${policyId}`,
+                        permissions: 'manage',
+                        status: 'active',
+                    }
+                })
+            }
         }
+        const carPlateData = input.policy.carPlate ? { vehicle: { plateNumber: input.policy.carPlate } } : undefined
 
-        // 5. ONE transaction: policy + management grant + document row. The
-        // owner stays the customer; the agent's capabilities flow from the
-        // grant, which the customer can revoke at any time.
+        // 4–5. With a document: ONE door (lib/ingestion/ingest-policy-document.ts)
+        // — the gate decides on the bytes and the agent's selected branch, then
+        // storage, then policy + grant + stamped document in one transaction,
+        // with the object deleted again if the commit fails. The policy row,
+        // its grant and the customer's notification used to be committed
+        // before anything had asked what the file was.
         let policy: { id: string; policyNumber: string }
-        try {
+        let hasDocument = false
+        if (file) {
+            const ingest = await ingestPolicyDocument({
+                actorUserId: agentId,
+                ownerUserId: customerId,
+                createdByUserId: agentId,
+                file,
+                surface: 'agent_commit',
+                mode: 'policy',
+                declaredBranch: input.policy.lineOfBusiness,
+                declaredBranchSource: 'user',
+                branchConfirmed: input.branchConfirmed,
+                // The scan step classified these bytes minutes ago; reuse its
+                // model reading rather than paying for a second one.
+                reusePriorVerdict: true,
+                maxBytes: 10 * 1024 * 1024,
+                typedMetadata: {
+                    insurerName: input.policy.insurerName,
+                    policyNumber: input.policy.policyNumber,
+                    startDate: input.policy.startDate,
+                    endDate: input.policy.endDate,
+                    premiumAmount: input.policy.premiumAmount ?? null,
+                    premiumCurrency: input.policy.premiumCurrency || 'EUR',
+                },
+                policyStatus: 'active',
+                acordData: carPlateData,
+                source: 'agent',
+                processingStatus: 'pending',
+                afterCreate: (tx, created) => grantManagement(tx, created.id),
+            })
+            if (!ingest.ok) {
+                if (ingest.kind === 'upload_invalid') {
+                    return { success: false, error: REJECTION_MESSAGES[ingest.reason], errorCode: ingest.reason }
+                }
+                return {
+                    success: false as const,
+                    error: "DOCUMENT_REJECTED",
+                    errorCode: ingest.code,
+                    gate: {
+                        status: ingest.status,
+                        code: ingest.code,
+                        documentType: ingest.documentType,
+                        documentKind: ingest.documentKind,
+                        detectedBranch: ingest.detectedBranch,
+                        declaredBranch: ingest.declaredBranch,
+                        reviewReasons: ingest.reviewReasons,
+                        resolvable: ingest.resolvable,
+                    },
+                }
+            }
+            policy = { id: ingest.policyId, policyNumber: input.policy.policyNumber }
+            hasDocument = true
+        } else {
+            // No document: policy + grant only. Nothing to validate and
+            // nothing to analyse.
             policy = await db.$transaction(async (tx) => {
                 const created = await tx.policy.create({
                     data: {
@@ -1128,70 +1200,12 @@ export async function addPolicyForCustomer(data: {
                         premiumAmount: input.policy.premiumAmount,
                         premiumCurrency: input.policy.premiumCurrency || 'EUR',
                         status: 'active',
-                        // Store car plate in acordData JSON field
-                        acordData: input.policy.carPlate ? { vehicle: { plateNumber: input.policy.carPlate } } : undefined
+                        acordData: carPlateData,
                     }
                 })
-
-                // No unique constraint exists on (granter, grantee, scope) —
-                // idempotency is enforced here.
-                const existingGrant = await tx.accessGrant.findFirst({
-                    where: {
-                        granterUserId: customerId,
-                        granteeUserId: agentId,
-                        scope: `policy:${created.id}`,
-                        status: 'active',
-                    }
-                })
-                if (!existingGrant) {
-                    await tx.accessGrant.create({
-                        data: {
-                            granterUserId: customerId,
-                            granteeUserId: agentId,
-                            scope: `policy:${created.id}`,
-                            permissions: 'manage',
-                            status: 'active',
-                        }
-                    })
-                }
-
-                if (stored && file) {
-                    await tx.policyDocument.create({
-                        data: {
-                            policyId: created.id,
-                            fileUrl: stored.url,
-                            fileName: storedDocumentLabel({}),
-                            fileSize: file.size,
-                            source: 'agent',
-                            uploadedByUserId: agentId,
-                            processingStatus: 'pending',
-                            // Straight from the upload result — more authoritative
-                            // than parsing the locator back out of the URL.
-                            storageBucket: stored.bucket || null,
-                            storageKey: stored.key,
-                            storageProvider: stored.bucket ? 'supabase' : null,
-                            mimeType: stored.mimeType,
-                        }
-                    })
-                }
-
+                await grantManagement(tx, created.id)
                 return created
             })
-        } catch (txError) {
-            // Nothing committed — remove the just-stored object rather than
-            // orphaning it (an orphaned object is personal data no export reaches).
-            if (stored) {
-                const { deleteFile } = await import("@/lib/storage")
-                await deleteFile(stored.url).catch((cleanupError: unknown) => {
-                    logger("error", "[agent/actions] orphaned upload after failed policy commit", {
-                        agentId,
-                        customerId,
-                        storageKey: stored?.key,
-                        error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
-                    })
-                })
-            }
-            throw txError
         }
 
         // 6. Agent-attested AI consent for unactivated owners (D1 decision).
@@ -1271,7 +1285,7 @@ export async function addPolicyForCustomer(data: {
         // retryable) and the modal says the policy was saved and what it
         // would take to read it. Never «εκτελείται» unless it is queued.
         let analysis: AnalysisOutcome = 'none'
-        if (stored) {
+        if (hasDocument) {
             const owner = await db.user.findUnique({
                 where: { id: customerId },
                 select: { aiProcessingConsentVersion: true },
@@ -1363,6 +1377,45 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
         return { error: "AI_NOT_CONFIGURED" }
     }
 
+    // ── The document gate ──────────────────────────────────────────────────
+    // Local read of the bytes (pages, text, kind of document) BEFORE the
+    // hourly scan cap is consumed and BEFORE any model sees the file. The
+    // agent's own consent above is the lawful basis for the gate's cheap
+    // classifier, exactly as for the extraction. No branch is declared yet —
+    // the agent picks it on the form the scan pre-fills — so the branch check
+    // happens at commit (addPolicyForCustomer), where the selection exists.
+    const scanBytes = Buffer.from(await file.arrayBuffer())
+    const gateVerdict = await validateDocumentForIngestion({
+        bytes: scanBytes,
+        canonicalMime: scanValidation.value.canonicalMime,
+        declaredBranch: null,
+        declaredBranchSource: "user",
+        mode: "policy",
+        surface: "agent_scan",
+        actorUserId: authResult.dbUser.id,
+        ownerUserId: authResult.dbUser.id,
+        branchConfirmed: formData.get("branchConfirmed") === "true",
+    })
+    if (gateVerdict.status !== "validated") {
+        return {
+            success: false as const,
+            error: "DOCUMENT_REJECTED",
+            errorCode: gateVerdict.code ?? "DOCUMENT_NOT_RECOGNIZED",
+            gate: {
+                status: gateVerdict.status,
+                code: gateVerdict.code ?? "DOCUMENT_NOT_RECOGNIZED",
+                documentType: gateVerdict.documentType,
+                documentKind: documentKindFor(gateVerdict.documentType),
+                detectedBranch: gateVerdict.detectedBranch ? FAMILY_DEFAULT_BRANCH[gateVerdict.detectedBranch] : null,
+                reviewReasons: gateVerdict.reviewReasons,
+                resolvable:
+                    gateVerdict.status === "requires_review" &&
+                    gateVerdict.reviewReasons.length > 0 &&
+                    gateVerdict.reviewReasons.every((reason) => USER_RESOLVABLE_REVIEW_REASONS.has(reason)),
+            },
+        }
+    }
+
     // Abuse/cost cap: this is a real, billable AI extraction. Without a limit an
     // agent could scan unbounded PDFs and never create a policy, running up cost
     // outside the analysis-quota gate that addPolicyForCustomer enforces.
@@ -1412,21 +1465,13 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     try {
         const aiService = getAIService();
 
-        const arrayBuffer = await file.arrayBuffer();
-        const base64Data = Buffer.from(arrayBuffer).toString("base64");
-
+        // Built from the gate's verdict and the validated bytes — the only
+        // constructor of an extraction input. The MIME is the one the
+        // VALIDATOR established from the magic bytes, not `file.type`: a
+        // phone's HEIC photo arrives with an empty browser-supplied type. No
+        // file name at all — AIDocument has no such field.
         const result = await aiService.extractPolicyData(
-            {
-                data: base64Data,
-                // The type the VALIDATOR established from the magic bytes, not
-                // `file.type`: a phone's HEIC photo arrives with an empty
-                // browser-supplied type, and the provider rejected it.
-                mimeType: scanValidation.value.canonicalMime,
-                // No file name at all. The old comment here said the raw name
-                // "should not reach the third-party AI provider" — but
-                // sanitizeDisplayName only TIDIED it, so it reached them
-                // anyway. AIDocument no longer has the field.
-            },
+            toValidatedAIDocument(gateVerdict, scanBytes, scanValidation.value.canonicalMime),
             // Attribute the token cost to the agent — the scan used to run
             // entirely off the books.
             { userId: authResult.dbUser.id },
@@ -1460,6 +1505,8 @@ export async function scanPolicyForResolution(formData: FormData) {
             error: ('error' in parsed && parsed.error) || "SCAN_FAILED",
             // Forward the rejection code so the modal can localise it.
             errorCode: ('errorCode' in parsed && parsed.errorCode) || undefined,
+            // The document gate's verdict, when it refused or held the file.
+            gate: ('gate' in parsed && parsed.gate) || undefined,
         }
     }
 
@@ -1523,6 +1570,8 @@ export async function commitScannedPolicy(
     attestedAiConsent?: boolean,
     documentFormData?: FormData,
     confirmDuplicate?: boolean,
+    /** The agent resolved the document gate's «confirm the type» hold on these same bytes. */
+    branchConfirmed?: boolean,
 ) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "UNAUTHORIZED" }
@@ -1590,7 +1639,7 @@ export async function commitScannedPolicy(
         }
 
         const result = await addPolicyForCustomer(
-            { customerId, policy: parsedPolicy.data, attestedAiConsent, confirmDuplicate },
+            { customerId, policy: parsedPolicy.data, attestedAiConsent, confirmDuplicate, branchConfirmed },
             documentFormData,
         )
 

@@ -954,8 +954,15 @@ export const en: TranslationKeys = {
             addFailed: 'Failed to add policy',
             policyNumberPlaceholder: 'e.g. POL-123456789',
             unknownInsurer: 'Unknown Insurer',
+            gateChangeType: 'Change type to “{branch}”',
+            gateContinueAs: 'Continue as “{branch}”',
+            gateConfirm: 'Confirm and continue',
+            gateUploadAnother: 'Upload another document',
+            tooManyFiles: 'Up to {max} files per policy — the first is read as the policy, the rest are attached.',
+            attachmentsSkipped: 'The policy was added; {count} supporting files were not attached.',
         },
         batchUpload: {
+            confirmAndContinue: 'Confirm and continue',
             badge: 'Batch Upload',
             title: 'Upload Multiple Policies.',
             subtitle: 'Drop up to {max} documents and let AI extract and organise their details.',
@@ -1025,6 +1032,8 @@ export const en: TranslationKeys = {
                 certificate: 'a certificate of insurance',
                 invoice: 'an invoice',
                 other: 'another kind of document',
+                quotation: 'insurance quotation',
+                claim: 'claim form',
             },
             /**
              * One entry per code in lib/wallet/batch-upload-errors.ts. Each
@@ -1054,7 +1063,7 @@ export const en: TranslationKeys = {
                 },
                 FILE_UNREADABLE: {
                     title: 'We could not read the file.',
-                    detail: 'Its contents do not match a PDF or an image — the file may be corrupt, or simply renamed.',
+                    detail: "We couldn't open its contents — the file may be corrupt, protected, or scanned in a format we can't process.",
                     action: 'Check that the PDF opens normally and try again.',
                 },
                 FILE_REJECTED_SECURITY: {
@@ -1097,10 +1106,50 @@ export const en: TranslationKeys = {
                     detail: 'Reading the document did not complete.',
                     action: 'Try again. If it keeps happening, upload a cleaner copy.',
                 },
+                TOO_MANY_PAGES: {
+                    title: 'This document has too many pages.',
+                    detail: 'We accept documents of up to 200 pages. It was not saved.',
+                    action: 'Upload only the policy schedule — the first pages — or split the file.',
+                },
+                NO_READABLE_CONTENT: {
+                    title: 'The file has no content.',
+                    detail: 'The PDF opens, but it contains no pages.',
+                    action: 'Check that you saved the right file and upload it again.',
+                },
+                DUPLICATE_DOCUMENT: {
+                    title: 'This document is already here.',
+                    detail: 'The exact same file has already been uploaded to your Wallet.',
+                    action: 'Open the existing policy — there is no need to upload it again.',
+                },
+                UPLOAD_REJECTIONS_THROTTLED: {
+                    title: 'Too many failed attempts.',
+                    detail: 'Several documents were rejected in the last hour, so we paused for a moment.',
+                    action: 'Try again shortly, with the PDF of your policy.',
+                },
+                NOT_AN_INSURANCE_DOCUMENT: {
+                    title: "This doesn't appear to be an insurance document.",
+                    detail: "We couldn't find enough information to identify it as an insurance policy or any other insurance document. It was not saved and no analysis ran.",
+                    action: 'Upload your policy — usually a PDF from your insurer with a policy number, a period and the cover.',
+                },
                 NOT_AN_INSURANCE_POLICY: {
                     title: 'This document is not a policy.',
                     detail: 'We recognised it as {kind}, not a policy schedule with a number, a period and cover.',
                     action: 'Upload the schedule page from the same document.',
+                },
+                BRANCH_MISMATCH: {
+                    title: 'Different type of insurance.',
+                    detail: 'This document appears to be {detected} insurance rather than {declared}. No {declared} analysis ran.',
+                    action: 'Change the insurance type to {detected} or upload another document.',
+                },
+                BRANCH_UNCONFIRMED: {
+                    title: "We couldn't confirm the insurance type.",
+                    detail: "The document is an insurance policy, but we couldn't confirm that it is a {declared} one.",
+                    action: 'Continue as {declared} if you are sure, or change the insurance type.',
+                },
+                DOCUMENT_REVIEW_REQUIRED: {
+                    title: 'One confirmation needed.',
+                    detail: "The document looks like an insurance document, but we couldn't confirm it automatically — it may be scanned or carry little text.",
+                    action: 'Confirm that this is your policy to continue, or upload a clearer copy.',
                 },
                 DOCUMENT_NOT_RECOGNIZED: {
                     title: 'No policy was recognised.',
@@ -4191,6 +4240,8 @@ export const en: TranslationKeys = {
                     failed: "We couldn't read it. You can try again from your wallet.",
                     needsReview: "We found no policy details in this document. Check it's the right file — you can upload another.",
                 },
+                gateConfirm: 'Confirm and continue',
+                gateAnother: 'Upload another document',
                 uploadFailed: 'The file was not uploaded. Try again.',
                 seePicture: 'See your picture',
             },

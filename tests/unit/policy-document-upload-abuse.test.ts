@@ -24,15 +24,43 @@ vi.mock('@/lib/rate-limit', () => ({
 vi.mock('@/lib/policy-access', () => ({
     getPolicyAccess: (...args: any[]) => getPolicyAccess(...args),
 }))
-vi.mock('@/lib/db', () => ({
-    db: {
+vi.mock('@/lib/db', () => {
+    // The ingestion service writes the row inside a transaction and the route
+    // reads it back; the transaction client is this same object.
+    const db: any = {
         policy: { findUnique: (...args: any[]) => findUniquePolicy(...args) },
         policyDocument: {
             count: (...args: any[]) => countDocuments(...args),
             create: (...args: any[]) => createDocument(...args),
+            findUniqueOrThrow: (...args: any[]) => createDocument(...args),
+            findFirst: async () => null,
         },
-        activityLog: { create: (...args: any[]) => createActivityLog(...args) },
-    },
+        activityLog: { create: (...args: any[]) => createActivityLog(...args), count: async () => 0 },
+        user: { findUnique: async () => ({ aiProcessingConsentVersion: 'v1' }) },
+    }
+    db.$transaction = async (fn: (tx: unknown) => unknown) => fn(db)
+    return { db }
+})
+// The document gate judges the bytes inside the ingestion service, before
+// storage; its verdicts have their own suite. Here it passes the four `%PDF`
+// bytes so this file keeps proving the route's abuse and failure handling.
+vi.mock('@/lib/ingestion/document-gate', () => ({
+    validateDocumentForIngestion: vi.fn(async () => ({
+        status: 'validated',
+        documentType: 'insurance_terms_or_guide',
+        insuranceConfidence: 0.9,
+        detectedBranch: null,
+        branchConfidence: 0,
+        declaredBranch: null,
+        branchConsistency: 'not_declared',
+        reviewReasons: [],
+        evidence: { pageCount: 1, textChars: 500, imageOnly: false, groupsHit: [], branchScores: {}, negativeType: null, classifier: 'deterministic' },
+        documentHash: 'h'.repeat(64),
+        engineVersion: 'docgate-1',
+        latencyMs: 1,
+    })),
+    documentKindFor: () => 'terms_and_conditions',
+    GATE_ACTIVITY: { validated: 'DOCUMENT_VALIDATED', requires_review: 'DOCUMENT_REVIEW_REQUIRED', rejected: 'DOCUMENT_REJECTED' },
 }))
 vi.mock('@/lib/storage', () => ({
     uploadFileDetailed: (...args: any[]) => uploadFileDetailed(...args),

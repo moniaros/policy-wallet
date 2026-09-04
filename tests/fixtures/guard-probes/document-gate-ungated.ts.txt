@@ -1,0 +1,10 @@
+// Probe for tests/unit/document-gate-before-model.test.ts — RED. The extraction
+// receives an object literal built from whatever was uploaded: the shape every
+// call site had before the gate existed. Expected offender: ungatedProbe.
+import { getAIService } from "@/lib/services/ai"
+
+export async function ungatedProbe(formData: FormData) {
+    const file = formData.get("file") as File
+    const bytes = Buffer.from(await file.arrayBuffer())
+    return getAIService().extractPolicyData({ data: bytes.toString("base64"), mimeType: file.type })
+}

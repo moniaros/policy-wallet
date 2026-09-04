@@ -63,6 +63,12 @@ interface BatchRow {
     notices: string[]
     detailsOpen: boolean
     /**
+     * The document gate HELD the file rather than refusing it (a scan it could
+     * not classify, a thin page). `resolvable` means re-sending the same file
+     * with the person's confirmation may pass — the row offers that.
+     */
+    review?: { reasons: string[]; resolvable: boolean }
+    /**
      * Set once the policy exists in the wallet.
      *
      * Its presence changes what "retry" means: the policy is already saved, so
@@ -134,11 +140,13 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
      * `new Error(response.statusText)` — empty on HTTP/2 — which is how a
      * throttle, an outage and a rejected file all became "saving failed".
      */
-    const extractOne = async (row: BatchRow, attempt = 0): Promise<void> => {
+    const extractOne = async (row: BatchRow, attempt = 0, options: { branchConfirmed?: boolean } = {}): Promise<void> => {
         try {
             const formData = new FormData()
             formData.append("file", row.file)
             formData.append("extractOnly", "true")
+            // The person read the gate's hold and confirmed this is their policy.
+            if (options.branchConfirmed) formData.append("branchConfirmed", "true")
 
             const response = await fetch("/api/policies/extract", {
                 method: "POST",
@@ -169,11 +177,16 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                 // document DID yield, so the user completes one field instead of
                 // uploading the file again.
                 const partial = payload && typeof payload === "object" ? (payload as any).partial : undefined
+                const review = payload && typeof payload === "object" ? (payload as any).review : undefined
                 patchRow(row.id, {
                     status: "failed",
                     failure,
                     data: partial ?? undefined,
                     notices: [],
+                    review:
+                        review && typeof review === "object"
+                            ? { reasons: Array.isArray(review.reasons) ? review.reasons : [], resolvable: Boolean(review.resolvable) }
+                            : undefined,
                 })
                 return
             }
@@ -500,11 +513,31 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
             .map((field) => (copy.fieldNames as Record<string, string>)[field] ?? field)
             .join(", ")
 
+        // The gate's branch verdicts name families as write-branch ids.
+        const branchLabel = (id: string | undefined) =>
+            id ? ((t.policyTypes as Record<string, string>)[id] ?? id) : ""
+        const vars = {
+            kind: kindLabel,
+            fields: fieldList,
+            detected: branchLabel(failure.context?.detectedBranch),
+            declared: branchLabel(failure.context?.declaredBranch),
+        }
+
         return {
             title: entry.title,
-            detail: withVars(entry.detail, { kind: kindLabel, fields: fieldList }),
-            action: entry.action,
+            detail: withVars(entry.detail, vars),
+            action: withVars(entry.action, vars),
         }
+    }
+
+    /** The gate held the row; the person confirms and the same file is re-sent. */
+    const handleConfirm = async (id: string) => {
+        const row = rows.find((r) => r.id === id)
+        if (!row) return
+        patchRow(id, { status: "processing", failure: undefined, review: undefined, detailsOpen: false })
+        setIsProcessing(true)
+        await extractOne({ ...row, status: "processing" }, 0, { branchConfirmed: true })
+        setIsProcessing(false)
     }
 
     const severityStyles: Record<string, string> = {
@@ -681,6 +714,17 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                                                 />
                                                                 {row.detailsOpen ? copy.hideDetails : copy.whyItFailed}
                                                             </button>
+                                                            {row.review?.resolvable && (
+                                                                <button
+                                                                    onClick={() => handleConfirm(row.id)}
+                                                                    disabled={isProcessing}
+                                                                    data-testid="batch-upload-confirm"
+                                                                    className="inline-flex items-center gap-1.5 px-3 min-h-11 rounded-full border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                                                >
+                                                                    <Check className="w-3.5 h-3.5" aria-hidden="true" />
+                                                                    {copy.confirmAndContinue}
+                                                                </button>
+                                                            )}
                                                             {failure?.retryable && (
                                                                 <button
                                                                     onClick={() => handleRetry(row.id)}
