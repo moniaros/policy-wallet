@@ -20,6 +20,20 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **2026-09-04 — B2B batch C on `feat/b2b-batch-c` (stacked on #291 → #290): insights,
+  benefits, commissions, questionnaires, team and the three customer modals are on the
+  Direction A anatomy.** Three parallel subagents re-cut the nine files against the batch B
+  exemplars; the lead swept the shared pieces the DOM audit still flagged (UploadDropzone,
+  EmptyState rows, ConsentStatusBadge, the FAB tooltip, AiDisclaimer, AdvisorBookView) and moved
+  the agent copy off «συμβόλαιο» (role-copy is now in the policy-term guard's file list). Fixed
+  along the way: the questionnaires' hover-only edit/delete became always-visible pills, the
+  team pipeline's raw `won`/`motor_liability` slugs became dictionary and taxonomy labels, the
+  insights coverage empty state no longer reassures («Η κάλυψη είναι πλήρης» → what was checked),
+  a rejected PDF scan in the add-customer modal now shows its reason. Verified in a browser as the
+  E2E agent at 1440 and 390: no horizontal scroll, one primary per page, no console errors except
+  one non-reproducing hydration warning on /customers. Trap: after a branch switch Turbopack
+  served a stylesheet without `.pw-segmented` — the questionnaires toggle rendered bare until the
+  cache was cleared. Gates green locally (CI does not run for a feature-branch base).
 - **Late 2026-09-03 — Direction A is LIVE; the phone layer is up for the owner's decision.**
   PR #288 merged (`6cb43303`) after the owner's "error seen on production" turned out to be an
   OLD PREVIEW deployment whose Preview-scope `DATABASE_URL`/`DIRECT_URL` still carry 55-day-old dev
