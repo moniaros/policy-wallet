@@ -71,6 +71,39 @@ describe("an agent's access ends when the relationship does", () => {
         expect(/accessGrant\.updateMany/.test(source)).toBe(true)
         expect(/status:\s*["']revoked["']/.test(source)).toBe(true)
     })
+
+    /**
+     * 3. createAgentInvite — the path that could UNDO an ending. Its upsert
+     *    wrote `update: { status: 'pending_activation' }` on the existing row,
+     *    so re-inviting a terminated customer's email re-opened the upload arm
+     *    of lib/agent-visibility.ts (createdByUserId + a living relationship)
+     *    on every policy the agent had ever uploaded for them. Revoking the
+     *    grants is pointless if the status can be flipped back from the
+     *    agent's side.
+     */
+    it("createAgentInvite refuses a terminated relationship and never writes status on update", () => {
+        // Comments stripped: a docstring DESCRIBING the old upsert must not
+        // satisfy (or fail) a check about what the code does.
+        const body = functionBody(read("app/(protected)/agent/actions.ts"), "createAgentInvite")
+            .replace(/\/\*[\s\S]*?\*\//g, "")
+            .replace(/^\s*\/\/.*$/gm, "")
+
+        expect(
+            /RELATIONSHIP_TERMINATED/.test(body),
+            "createAgentInvite does not refuse a terminated relationship — only the customer may reconnect."
+        ).toBe(true)
+
+        expect(
+            /update:\s*\{[^}]*\bstatus\s*:/.test(body),
+            "createAgentInvite writes `status` in the upsert's update arm: the agent's invite " +
+                "resurrects a relationship the customer or the agent had ended."
+        ).toBe(false)
+
+        const refuse = body.indexOf("RELATIONSHIP_TERMINATED")
+        const upsert = body.indexOf("customerRelationship.upsert")
+        expect(upsert).toBeGreaterThan(-1)
+        expect(refuse < upsert, "the terminated check must run before the upsert").toBe(true)
+    })
 })
 
 describe("no document reaches a model provider without consent", () => {

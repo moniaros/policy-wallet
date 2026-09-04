@@ -1,13 +1,16 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useId, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { branchLabel } from "@/lib/insurance/taxonomy"
 import { EmptyState } from "@/components/ui/EmptyState"
+import { CardHead } from "@/components/dashboard/home/CardHead"
+import { StatGrid, StatTile } from "@/components/ui/StatTile"
 import { toast } from "sonner"
 import {
     Users, UserPlus, Crown, Shield, User, ArrowRightLeft,
     TrendingUp, Euro, Briefcase, Building2, MoreVertical,
-    ChevronDown, X, AlertCircle, Loader2
+    X, AlertCircle, Loader2
 } from "lucide-react"
 import type { TeamOverview } from "@/lib/services/team.service"
 import { TableShell } from "@/components/ui/TableShell"
@@ -139,6 +142,10 @@ interface Props {
 
 type TeamSortKey = "customer" | "agent" | "lob" | "status" | "value"
 
+// State pills on the status TOKENS, the state as a word: no palette literals,
+// no CSS uppercase (Greek capitals drop the tonos).
+const pill = "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-caption font-semibold"
+
 export function TeamClient({ team, pipeline }: Props) {
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
@@ -157,48 +164,27 @@ export function TeamClient({ team, pipeline }: Props) {
 
 
     return (
-        <div className="pw-page-shell min-h-screen">
-            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-                {/* Header */}
-                <div className="mb-10 text-center sm:text-left">
-                    <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
-                        {t.title}
-                    </h1>
-                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
-                        {t.subtitle}
-                    </p>
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-page-wide space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* Header — what the screen is. The «ΠΡΑΚΤΟΡΕΙΟ» eyebrow is gone:
+                    the heading carries its own weight, and CSS uppercase strips
+                    the tonos off Greek. */}
+                <div className="min-w-0">
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{t.title}</h1>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.subtitle}</p>
                 </div>
 
-                {/* Team Stats */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <StatCard
-                        icon={<Users className="w-5 h-5 text-primary dark:text-mint" />}
-                        label={t.totalMembers}
-                        value={String(team.stats.totalMembers)}
-                        color="primary"
-                    />
-                    <StatCard
-                        icon={<Briefcase className="w-5 h-5 text-muted-foreground" />}
-                        label={t.totalCustomers}
-                        value={String(team.stats.totalCustomers)}
-                        color="slate"
-                    />
-                    <StatCard
-                        icon={<TrendingUp className="w-5 h-5 text-amber-500" />}
-                        label={t.totalPipeline}
-                        value={fmt(team.stats.totalPipeline)}
-                        color="amber"
-                    />
-                    <StatCard
-                        icon={<Euro className="w-5 h-5 text-primary dark:text-mint" />}
-                        label={t.totalWon}
-                        value={fmt(team.stats.totalWon)}
-                        color="primary"
-                    />
-                </div>
+                {/* Four fact tiles on the shared StatTile — the accent tints the
+                    glyph only; the number stays in the text colour. The local
+                    StatCard this page carried was a second implementation of it. */}
+                <StatGrid>
+                    <StatTile icon={Users} label={t.totalMembers} value={team.stats.totalMembers} accent="brand" />
+                    <StatTile icon={Briefcase} label={t.totalCustomers} value={team.stats.totalCustomers} />
+                    <StatTile icon={TrendingUp} label={t.totalPipeline} value={fmt(team.stats.totalPipeline)} />
+                    <StatTile icon={Euro} label={t.totalWon} value={fmt(team.stats.totalWon)} accent="positive" />
+                </StatGrid>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     {/* Team Members */}
                     <div className="lg:col-span-1">
                         <MembersPanel team={team} t={t} fmt={fmt} />
@@ -216,31 +202,9 @@ export function TeamClient({ team, pipeline }: Props) {
 
 // ── Sub-components ──
 
-function StatCard({ icon, label, value, color }: {
-    icon: React.ReactNode
-    label: string
-    value: string
-    color: string
-}) {
-    const bgMap: Record<string, string> = {
-        primary: "bg-primary-soft dark:bg-primary/15",
-        slate: "bg-muted",
-        amber: "bg-amber-50 dark:bg-amber-900/20",
-    }
-    return (
-        <div className="pw-card pw-pad">
-            <div className="flex items-center gap-3 mb-2">
-                <div className={`w-9 h-9 rounded-xl ${bgMap[color] ?? bgMap.slate} flex items-center justify-center`}>
-                    {icon}
-                </div>
-            </div>
-            <p className="text-2xl font-black text-foreground">{value}</p>
-            <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-1">{label}</p>
-        </div>
-    )
-}
-
 function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en; fmt: (n: number) => string }) {
+    const { t: gt } = useLanguage()
+    const headingId = useId()
     const [showInvite, setShowInvite] = useState(false)
     const [inviteEmail, setInviteEmail] = useState("")
     const [inviteRole, setInviteRole] = useState<"member" | "manager">("member")
@@ -293,37 +257,40 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
     const roleIcon = (role: string) => {
         const label = roleLabel(role)
         const icon =
-            role === "owner" ? <Crown className="w-3.5 h-3.5 text-amber-500" aria-hidden="true" />
-                : role === "manager" ? <Shield className="w-3.5 h-3.5 text-primary dark:text-mint" aria-hidden="true" />
-                    : <User className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
+            role === "owner" ? <Crown className="h-3.5 w-3.5 text-primary dark:text-mint" aria-hidden="true" />
+                : role === "manager" ? <Shield className="h-3.5 w-3.5 text-primary dark:text-mint" aria-hidden="true" />
+                    : <User className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
         return <span role="img" aria-label={label} title={label} className="inline-flex">{icon}</span>
     }
 
     const statusBadge = (status: string) => {
-        if (status === "invited") return <span className="text-kicker font-black text-amber-700 dark:text-amber-200 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full uppercase tracking-widest">{t.invited}</span>
-        if (status === "suspended") return <span className="text-kicker font-black text-red-700 dark:text-rose-200 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase tracking-widest">{t.suspended}</span>
+        if (status === "invited") return <span className={`${pill} bg-status-warning-tint text-status-warning`}>{t.invited}</span>
+        if (status === "suspended") return <span className={`${pill} bg-status-danger-tint text-status-danger`}>{t.suspended}</span>
         return null
     }
 
     return (
-        <div className="pw-card pw-pad">
-            <div className="flex items-center justify-between mb-5">
-                <h3 className="text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
-                    <Users className="w-4 h-4 text-primary dark:text-mint" />
-                    {t.members}
-                </h3>
-                <button
-                    onClick={() => setShowInvite(!showInvite)}
-                    className="text-kicker font-black text-primary hover:text-primary-hover dark:text-mint uppercase tracking-widest flex items-center gap-1"
-                >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    {t.invite}
-                </button>
-            </div>
+        <section className="pw-card pw-pad" aria-labelledby={headingId}>
+            <CardHead
+                icon={Users}
+                title={t.members}
+                id={headingId}
+                meta={
+                    <button
+                        type="button"
+                        onClick={() => setShowInvite(!showInvite)}
+                        aria-expanded={showInvite}
+                        className="pw-soft-button"
+                    >
+                        <UserPlus className="h-4 w-4" aria-hidden="true" />
+                        {t.invite}
+                    </button>
+                }
+            />
 
-            {/* Invite form */}
+            {/* Invite form — a sub-card inside the card. */}
             {showInvite && (
-                <div className="mb-5 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 space-y-3">
+                <div className="pw-subcard mt-4 space-y-3 p-3 sm:p-4">
                     <input
                         type="email"
                         aria-label={t.email}
@@ -333,6 +300,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         className="pw-input pw-input-sm"
                     />
                     <select
+                        aria-label={t.role}
                         value={inviteRole}
                         onChange={(e) => setInviteRole(e.target.value as "member" | "manager")}
                         className="pw-input pw-input-sm"
@@ -341,20 +309,23 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         <option value="manager">{t.manager}</option>
                     </select>
                     {inviteError && (
-                        <p className="text-xs text-red-700 dark:text-red-300 font-bold flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" /> {inviteError}
+                        <p role="alert" className="flex items-center gap-1 text-caption font-semibold text-status-danger">
+                            <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" /> {inviteError}
                         </p>
                     )}
                     <div className="flex gap-2">
                         <button
+                            type="button"
                             onClick={() => setShowInvite(false)}
-                            className="flex-1 px-3 py-2 text-xs font-bold text-neutral-500 dark:text-neutral-400 hover:text-neutral-700"
+                            className="pw-soft-button flex-1"
                         >
                             {t.cancel}
                         </button>
                         <button
+                            type="button"
                             onClick={handleInvite}
                             disabled={inviteLoading || !inviteEmail}
+                            aria-busy={inviteLoading}
                             className="pw-primary-button flex-1"
                         >
                             {inviteLoading ? "..." : t.invite}
@@ -363,45 +334,51 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                 </div>
             )}
 
-            {/* Members list */}
-            <div className="space-y-3">
+            {/* Members list — each member a sub-card row: avatar · name with the
+                role glyph and state pill · facts as a caption · the row menu. */}
+            <ul className="mt-4 space-y-2">
                 {team.members.map((m) => (
-                    <div key={m.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors relative">
+                    <li key={m.id} className="pw-subcard relative flex min-h-11 items-center gap-3 p-3">
                         {m.photoUrl ? (
-                            <img src={m.photoUrl} alt={m.name} className="w-10 h-10 rounded-xl object-cover" />
+                            <img src={m.photoUrl} alt={m.name} className="h-10 w-10 shrink-0 rounded-full object-cover" />
                         ) : (
-                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-sm font-black text-neutral-500 dark:text-neutral-400">
+                            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary dark:bg-primary/15 dark:text-mint">
                                 {m.name.charAt(0)}
-                            </div>
+                            </span>
                         )}
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                                <p className="text-sm font-bold text-foreground truncate">{m.name}</p>
+                        <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <p className="truncate text-sm font-semibold text-foreground">{m.name}</p>
                                 {roleIcon(m.role)}
                                 {statusBadge(m.status)}
                             </div>
-                            <div className="flex items-center gap-3 mt-0.5">
-                                <span className="text-kicker font-bold text-neutral-500 dark:text-neutral-400">
+                            <div className="mt-0.5 flex items-center gap-3 text-caption text-muted-foreground">
+                                <span>
                                     {m.customerCount} {t.customers}
                                 </span>
-                                <span className="text-kicker font-bold text-primary dark:text-mint">
+                                <span className="font-semibold tabular-nums text-foreground">
                                     {fmt(m.wonValue)}
                                 </span>
                             </div>
                         </div>
                         {m.role !== "owner" && (
                             <button
+                                type="button"
                                 onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)}
-                                className="p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400"
+                                aria-label={`${gt.common.actions}: ${m.name}`}
+                                aria-expanded={menuOpen === m.id}
+                                className="pw-soft-button h-11 w-11 shrink-0 px-0"
                             >
-                                <MoreVertical className="w-4 h-4" />
+                                <MoreVertical className="h-4 w-4" aria-hidden="true" />
                             </button>
                         )}
 
-                        {/* Context menu */}
+                        {/* Context menu — a floating surface, so its shadow answers
+                            to state rather than resting on a card. */}
                         {menuOpen === m.id && (
-                            <div className="absolute right-0 top-full z-10 mt-1 w-44 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                            <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-2xl border border-border bg-card p-1 shadow-xl">
                                 <button
+                                    type="button"
                                     onClick={() =>
                                         runMemberAction(m.userId, () =>
                                             updateRoleAction(
@@ -411,33 +388,34 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                                         )
                                     }
                                     disabled={memberBusy === m.userId}
-                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     {memberBusy === m.userId ? (
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                                     ) : (
-                                        <ArrowRightLeft className="w-3.5 h-3.5" />
+                                        <ArrowRightLeft className="h-4 w-4" aria-hidden="true" />
                                     )}
                                     {t.changeRole}
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => runMemberAction(m.userId, () => removeMemberAction(m.userId))}
                                     disabled={memberBusy === m.userId}
-                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-red-700 dark:text-rose-200 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 text-left text-sm font-medium text-status-danger transition-colors hover:bg-status-danger-tint disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     {memberBusy === m.userId ? (
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                                     ) : (
-                                        <X className="w-3.5 h-3.5" />
+                                        <X className="h-4 w-4" aria-hidden="true" />
                                     )}
                                     {t.remove}
                                 </button>
                             </div>
                         )}
-                    </div>
+                    </li>
                 ))}
-            </div>
-        </div>
+            </ul>
+        </section>
     )
 }
 
@@ -447,6 +425,11 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
     t: typeof copy.en
     fmt: (n: number) => string
 }) {
+    const headingId = useId()
+    // Stage and line labels come from the dictionary and the taxonomy — a raw
+    // `won` / `motor_liability` slug is not a word a customer-facing table shows.
+    const { t: gt, language } = useLanguage()
+    const stageLabel = gt.agentPages.opportunities.status as Record<string, string>
     const { sort, toggle, setSort } = useTableSort<TeamSortKey>()
     const sortedPipeline = useMemo(
         () => applySort<PipelineItem, TeamSortKey>(pipeline, sort, {
@@ -459,75 +442,83 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
         }),
         [pipeline, sort]
     )
-    const statusColor: Record<string, string> = {
-        open: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
-        contacted: "bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint",
-        quoted: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
-        won: "bg-primary-soft text-status-success dark:bg-primary/15",
-        lost: "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400",
+    // Pipeline stage pills on the status TOKENS: info = in conversation,
+    // warning = waiting on a quote, success = won, danger = lost, neutral = open.
+    const statusTone: Record<string, string> = {
+        open: "bg-muted text-foreground",
+        contacted: "bg-status-info-tint text-status-info",
+        quoted: "bg-status-warning-tint text-status-warning",
+        won: "bg-status-success-tint text-status-success",
+        lost: "bg-status-danger-tint text-status-danger",
     }
+    const isEmpty = pipeline.length === 0
 
     return (
-        <div className="pw-card pw-pad">
-            <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-primary dark:text-mint" />
-                {t.sharedPipeline}
-            </h3>
+        <section className={`pw-card ${isEmpty ? "pw-pad" : "overflow-hidden"}`} aria-labelledby={headingId}>
+            <div className={isEmpty ? undefined : "pw-pad pb-0"}>
+                <CardHead
+                    icon={TrendingUp}
+                    title={t.sharedPipeline}
+                    id={headingId}
+                    meta={isEmpty ? undefined : <span className="tabular-nums">{pipeline.length}</span>}
+                />
+                {/* thead is sr-only below lg, so the column headers cannot be used
+                    on a phone — this drives the same sort state. */}
+                {!isEmpty && (
+                    <MobileSortControl
+                        sort={sort}
+                        onSort={toggle}
+                        onClear={() => setSort(null)}
+                        columns={[{ key: "customer", label: t.customer }, { key: "agent", label: t.agent }, { key: "lob", label: t.lob }, { key: "status", label: t.status }, { key: "value", label: t.value }]}
+                        label={t.sortLabel}
+                        defaultLabel={t.defaultOrder}
+                        className="mt-3"
+                    />
+                )}
+            </div>
 
-            {pipeline.length === 0 ? (
+            {isEmpty ? (
                 <EmptyState
-                    className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                    className="!border-0 !bg-transparent px-0 py-6 !shadow-none"
                     icon={TrendingUp}
                     headline={t.noOpps}
                     description={t.noOppsDesc}
                 />
             ) : (
-                <>
-                {/* thead is sr-only below lg, so the column headers cannot be used
-                    on a phone — this drives the same sort state. */}
-                <MobileSortControl
-                    sort={sort}
-                    onSort={toggle}
-                    onClear={() => setSort(null)}
-                    columns={[{ key: "customer", label: t.customer }, { key: "agent", label: t.agent }, { key: "lob", label: t.lob }, { key: "status", label: t.status }, { key: "value", label: t.value }]}
-                    label={t.sortLabel}
-                    defaultLabel={t.defaultOrder}
-                    className="mb-3"
-                />
                 <TableShell label={t.title}>
                     <table className="pw-stacked-table w-full text-sm">
                         <thead>
-                            <tr className="border-b border-neutral-100 dark:border-neutral-800">
-                                <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={t.customer} align="left" className="pb-3" />
-                                <SortableColumn columnKey="agent" sort={sort} onSort={toggle} label={t.agent} align="left" className="pb-3" />
-                                <SortableColumn columnKey="lob" sort={sort} onSort={toggle} label={t.lob} align="left" className="pb-3" />
-                                <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={t.status} align="left" className="pb-3" />
-                                <SortableColumn columnKey="value" sort={sort} onSort={toggle} label={t.value} align="right" className="pb-3" />
+                            <tr className="border-b border-border">
+                                <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={t.customer} align="left" />
+                                <SortableColumn columnKey="agent" sort={sort} onSort={toggle} label={t.agent} align="left" />
+                                <SortableColumn columnKey="lob" sort={sort} onSort={toggle} label={t.lob} align="left" />
+                                <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={t.status} align="left" />
+                                <SortableColumn columnKey="value" sort={sort} onSort={toggle} label={t.value} align="right" />
                             </tr>
                         </thead>
                         <tbody>
                             {sortedPipeline.map((item) => (
-                                <tr key={item.id} className="border-b border-neutral-50 dark:border-neutral-800/50">
-                                    <td data-label={t.customer} className="py-3 font-bold text-foreground">{item.customerName}</td>
-                                    <td data-label={t.agent} className="py-3">
+                                <tr key={item.id} className="border-b border-border/60 transition-colors hover:bg-muted/40">
+                                    <td data-label={t.customer} className="px-4 py-3 font-semibold text-foreground">{item.customerName}</td>
+                                    <td data-label={t.agent} className="px-4 py-3">
                                         <div className="flex items-center gap-2">
                                             {item.agentPhoto ? (
-                                                <img src={item.agentPhoto} alt="" className="w-6 h-6 rounded-lg object-cover" />
+                                                <img src={item.agentPhoto} alt="" className="h-6 w-6 rounded-full object-cover" />
                                             ) : (
-                                                <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-kicker font-black text-neutral-500 dark:text-neutral-400">
+                                                <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full bg-muted text-caption font-semibold text-foreground">
                                                     {item.agentName.charAt(0)}
-                                                </div>
+                                                </span>
                                             )}
-                                            <span className="text-sm text-neutral-600 dark:text-neutral-400">{item.agentName}</span>
+                                            <span className="text-sm text-muted-foreground">{item.agentName}</span>
                                         </div>
                                     </td>
-                                    <td data-label={t.lob} className="py-3 text-neutral-500 dark:text-neutral-400 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
-                                    <td data-label={t.status} className="py-3">
-                                        <span className={`text-kicker font-black uppercase tracking-widest px-2 py-1 rounded-full ${statusColor[item.status] || statusColor.open}`}>
-                                            {item.status}
+                                    <td data-label={t.lob} className="px-4 py-3 text-muted-foreground">{item.lineOfBusiness ? branchLabel(item.lineOfBusiness, language === "en" ? "en" : "el") : "—"}</td>
+                                    <td data-label={t.status} className="px-4 py-3">
+                                        <span className={`${pill} ${statusTone[item.status] || statusTone.open}`}>
+                                            {stageLabel[item.status] ?? item.status}
                                         </span>
                                     </td>
-                                    <td data-label={t.value} className="py-3 text-right font-bold text-foreground">
+                                    <td data-label={t.value} className="px-4 py-3 text-right font-semibold tabular-nums text-foreground">
                                         {item.estimatedPremium ? fmt(item.wonPremium || item.estimatedPremium) : "—"}
                                     </td>
                                 </tr>
@@ -535,9 +526,8 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                         </tbody>
                     </table>
                 </TableShell>
-                </>
             )}
-        </div>
+        </section>
     )
 }
 
@@ -560,26 +550,26 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
     }
 
     return (
-        <div className="pw-page-shell min-h-screen">
-            <div className="max-w-lg mx-auto px-4 py-16">
-                <div className="pw-card pw-pad-roomy text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-6">
-                        <Building2 className="w-8 h-8 text-primary dark:text-mint" />
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-lg px-4 pb-10 pt-6 sm:px-6 lg:pt-8">
+                <section className="pw-card pw-pad-roomy text-center">
+                    <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15">
+                        <Building2 className="h-7 w-7 text-primary dark:text-mint" aria-hidden="true" />
                     </div>
                     {/* This branch is a whole PAGE, not a card inside one — it is
                         what an agent or admin without a team lands on. Its title
                         was an <h2>, so the route rendered no <h1> at all and a
                         screen-reader user had nothing naming the page. */}
-                    <h1 className="text-2xl font-black text-foreground mb-2">
+                    <h1 className="mt-5 text-h3 font-semibold tracking-tight text-foreground">
                         {t.noTeam}
                     </h1>
-                    <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
+                    <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
                         {t.noTeamDesc}
                     </p>
 
-                    <div className="space-y-3 text-left">
+                    <div className="mt-8 space-y-3 text-left">
                         <div>
-                            <label htmlFor="team-name" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
+                            <label htmlFor="team-name" className="mb-1.5 block text-caption font-medium text-muted-foreground">{t.agencyName} *</label>
                             <input id="team-name"
                                 type="text"
                                 value={name}
@@ -590,7 +580,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label htmlFor="team-phone" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.phone}</label>
+                                <label htmlFor="team-phone" className="mb-1.5 block text-caption font-medium text-muted-foreground">{t.phone}</label>
                                 <input
                                     id="team-phone"
                                     type="tel"
@@ -600,7 +590,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                 />
                             </div>
                             <div>
-                                <label htmlFor="team-taxId" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.taxId}</label>
+                                <label htmlFor="team-taxId" className="mb-1.5 block text-caption font-medium text-muted-foreground">{t.taxId}</label>
                                 <input
                                     id="team-taxId"
                                     type="text"
@@ -611,7 +601,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="team-website" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.website}</label>
+                            <label htmlFor="team-website" className="mb-1.5 block text-caption font-medium text-muted-foreground">{t.website}</label>
                             <input
                                     id="team-website"
                                 type="url"
@@ -621,7 +611,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                             />
                         </div>
                         <div>
-                            <label htmlFor="team-address" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.address}</label>
+                            <label htmlFor="team-address" className="mb-1.5 block text-caption font-medium text-muted-foreground">{t.address}</label>
                             <input
                                     id="team-address"
                                 type="text"
@@ -633,19 +623,21 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                     </div>
 
                     {error && (
-                        <p className="mt-4 text-xs text-red-700 dark:text-red-300 font-bold flex items-center justify-center gap-1">
-                            <AlertCircle className="w-3 h-3" /> {error}
+                        <p role="alert" className="mt-4 flex items-center justify-center gap-1 text-caption font-semibold text-status-danger">
+                            <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" /> {error}
                         </p>
                     )}
 
                     <button
+                        type="button"
                         onClick={handleCreate}
                         disabled={loading || !name.trim()}
-                        className="mt-6 w-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-4 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                        aria-busy={loading}
+                        className="pw-primary-button mt-6 w-full"
                     >
                         {loading ? "..." : t.createAgency}
                     </button>
-                </div>
+                </section>
             </div>
         </div>
     )

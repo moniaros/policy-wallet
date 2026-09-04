@@ -80,14 +80,15 @@ const KNOWN_BYPASSES = new Set([
     // that is tidying; the truth fix is done.
     "components/agent/ActionQueueCard.tsx",
     "components/tasks/TasksClient.tsx",
-    "app/(protected)/insights/InsightsClient.tsx",
     "components/coverage/InsightCard.tsx",
+    // MIGRATED 2026-09-04 (B2B batch C): InsightsClient now takes tone and
+    // label from describeSeverity() and keys its pill classes by TONE; it
+    // stays in CAVEAT_REQUIRED because the pill still prints the word.
 
     // Already carried a caveat before this pass — the list used to claim otherwise.
     // CoverageInsightsClient renders `recPriorityNote`; ClientOverviewTab carries a
     // stronger, surface-specific one ("not an assessment of insurance adequacy").
     "components/coverage/CoverageInsightsClient.tsx",
-    "components/agent/tabs/ClientOverviewTab.tsx",
 
     // Colour ONLY — no severity word reaches the reader. PolicyBriefCard's dot is
     // even aria-hidden. A disclaimer bolted to a coloured dot is noise, not honesty.
@@ -377,7 +378,7 @@ describe("no new hand-rolled severity presentation", () => {
     it("the debt list does not silently grow", () => {
         // A ceiling, so the list can only shrink without someone noticing. Drop
         // it as surfaces migrate; never raise it to make a new screen pass.
-        expect(KNOWN_BYPASSES.size).toBeLessThanOrEqual(9)
+        expect(KNOWN_BYPASSES.size).toBeLessThanOrEqual(8)
     })
 
     it("the i18n-store exemption asserts its own precondition: the labels really live there", () => {

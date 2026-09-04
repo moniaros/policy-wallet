@@ -3,9 +3,16 @@
 import { useState } from "react"
 import * as Sentry from "@sentry/nextjs"
 import { toast } from "sonner"
+import { X, FileSpreadsheet, CheckCircle2 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useDialog } from "@/hooks/useDialog"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { TableShell } from "@/components/ui/TableShell"
+import { UploadDropzone } from "@/components/ui/UploadDropzone"
+import { CUSTOMER_CSV_HEADER_EXAMPLES, parseCustomerCsv } from "@/lib/csv/parse-csv"
+import { describeActionError } from "@/lib/i18n/action-error"
+import { isGreekMobile } from "@/lib/identity/phone"
+import { isValidGreekAfm, normalizeTaxId } from "@/lib/identity/tax-id"
 
 interface BulkImportModalProps {
     isOpen: boolean
@@ -14,84 +21,223 @@ interface BulkImportModalProps {
 }
 
 interface CustomerRow {
+    /** 1-based line in the file, the header counted — what the agent sees in Excel. */
+    line: number
     name: string
     surname: string
     email: string
     phone: string
+    taxId: string
     status: 'valid' | 'invalid' | 'duplicate'
     error?: string
 }
 
 /**
- * Localised reason for a rejected import. The API returns a distinct code and
- * the numbers in `details`, so the message can be built in the reader's language
- * rather than shipped as English prose from the server.
+ * One line of the complete step. `RowOutcomeCode` is the route's per-row
+ * vocabulary (app/api/v1/customers/bulk-import/route.ts); `VALIDATION_ERROR`
+ * is the whole-request refusal, attributed to the rows its zod issues name.
  */
-function useLimitMessage(t: any) {
-    return (err: { code?: string; message?: string; details?: Record<string, unknown> } | null | undefined) => {
-        const d = (err?.details ?? {}) as Record<string, unknown>
-        const fill = (template: string) =>
-            template.replace(/\{(\w+)\}/g, (_, key) => String(d[key] ?? ''))
-        switch (err?.code) {
-            case 'BULK_IMPORT_ROW_LIMIT':
-                return fill(t.apiErrors.bulkImportRowLimit)
-            case 'CUSTOMER_LIMIT_REACHED':
-                return fill(t.apiErrors.customerLimitReached)
-            case 'CUSTOMER_HEADROOM_EXCEEDED':
-                return fill(t.apiErrors.customerHeadroomExceeded)
-            case 'FORBIDDEN':
-                return t.apiErrors.forbidden
-            case 'UNAUTHORIZED':
-                return t.apiErrors.unauthorized
-            default:
-                return t.apiErrors.generic
+type RowOutcomeStatus = 'imported' | 'skipped' | 'failed'
+type RowOutcomeCode =
+    | 'CREATED'
+    | 'LINKED'
+    | 'ALREADY_LINKED'
+    | 'RELATIONSHIP_ENDED'
+    | 'DUPLICATE_IN_FILE'
+    | 'WRITE_FAILED'
+    | 'VALIDATION_ERROR'
+    /** The request was refused as a whole; this row was never attempted. */
+    | 'NOT_ATTEMPTED'
+    | 'UNKNOWN'
+
+interface RowOutcome {
+    line: number
+    name: string
+    email: string
+    status: RowOutcomeStatus
+    code: RowOutcomeCode
+}
+
+/** What the route returns per row (its `row` is the 1-based position in the submitted array). */
+interface ServerRowOutcome {
+    row?: number
+    email?: string
+    status?: RowOutcomeStatus
+    code?: string
+}
+
+// Upload the file, then review what it parsed to.
+const TOTAL_STEPS = 2
+
+const PILL = "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-caption font-semibold"
+
+/**
+ * Localised reason for a rejected import — the same code → dictionary mapping
+ * every agent surface uses (lib/i18n/action-error.ts). The API returns a
+ * distinct code and either the numbers in `details` (limits) or the Zod
+ * issues (VALIDATION_ERROR); the whole-file validation message stays the
+ * bulk-specific one because the rows are attributed per line below.
+ */
+export function bulkImportErrorMessage(
+    t: any,
+    err: { code?: string; message?: string; details?: unknown } | null | undefined,
+): string {
+    if (err?.code === 'VALIDATION_ERROR') return t.apiErrors.bulkImportValidationError
+    const vars = err?.details && typeof err.details === 'object' && !Array.isArray(err.details)
+        ? (err.details as Record<string, unknown>)
+        : undefined
+    return describeActionError(t, err?.code, undefined, vars).message
+}
+
+/** Loose email shape — the server applies the real check; this stops obvious typos before the upload. */
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/**
+ * A row with no email imports on a valid Greek ΑΦΜ plus a Greek mobile
+ * (decision D3) — the route's `customerContactRule`, restated here so the
+ * preview says so before the upload instead of failing the whole file.
+ */
+function rowHasContact(row: { email: string; phone: string; taxId: string }): boolean {
+    if (row.email) return true
+    const afm = normalizeTaxId(row.taxId)
+    return Boolean(afm && afm.length === 9 && isValidGreekAfm(afm) && isGreekMobile(row.phone))
+}
+
+/**
+ * Map the route's per-row response onto the rows that were submitted, in
+ * submission order. Tolerates the legacy shape (`imported` + `errors: string[]`
+ * naming the failed emails) so an older deployment still yields a list.
+ *
+ * Exported for the render test; a pure function of the two inputs.
+ */
+export function reconcileOutcomes(
+    submitted: Array<Pick<CustomerRow, 'line' | 'name' | 'surname' | 'email'>>,
+    body: unknown
+): RowOutcome[] {
+    const data = (body && typeof body === 'object' && 'data' in (body as any) ? (body as any).data : body) as
+        | { outcomes?: ServerRowOutcome[]; errors?: string[]; imported?: number }
+        | null
+        | undefined
+    const outcomes = Array.isArray(data?.outcomes) ? data!.outcomes! : null
+    const byEmail = new Map<string, ServerRowOutcome>()
+    const byRow = new Map<number, ServerRowOutcome>()
+    if (outcomes) {
+        for (const o of outcomes) {
+            if (typeof o.row === 'number') byRow.set(o.row, o)
+            if (o.email) byEmail.set(o.email.trim().toLowerCase(), o)
         }
     }
+    const legacyFailed = new Set(
+        (Array.isArray(data?.errors) ? data!.errors! : [])
+            .map((message) => /([^\s]+@[^\s]+)/.exec(String(message))?.[1]?.toLowerCase())
+            .filter((email): email is string => Boolean(email))
+    )
+
+    return submitted.map((row, index) => {
+        const name = `${row.name} ${row.surname}`.trim()
+        const server = byRow.get(index + 1) ?? byEmail.get(row.email.trim().toLowerCase())
+        if (server) {
+            const status: RowOutcomeStatus =
+                server.status === 'imported' || server.status === 'skipped' || server.status === 'failed'
+                    ? server.status
+                    : 'failed'
+            const code = (server.code as RowOutcomeCode | undefined) ?? (status === 'imported' ? 'CREATED' : 'UNKNOWN')
+            return { line: row.line, name, email: row.email, status, code }
+        }
+        if (outcomes) {
+            // The route answered per row and said nothing about this one — do
+            // not report it as imported.
+            return { line: row.line, name, email: row.email, status: 'failed', code: 'UNKNOWN' }
+        }
+        // Legacy response: everything not named in `errors` was imported.
+        return legacyFailed.has(row.email.trim().toLowerCase())
+            ? { line: row.line, name, email: row.email, status: 'failed', code: 'WRITE_FAILED' }
+            : { line: row.line, name, email: row.email, status: 'imported', code: 'CREATED' }
+    })
+}
+
+/**
+ * A whole-request VALIDATION_ERROR carries zod issues whose path names the
+ * submitted index (`customers.<i>.email`). Attribute it to those rows, and
+ * to every row when the issues name none.
+ */
+export function outcomesFromValidationError(
+    submitted: Array<Pick<CustomerRow, 'line' | 'name' | 'surname' | 'email'>>,
+    details: unknown
+): RowOutcome[] {
+    const issues = Array.isArray(details) ? (details as Array<{ path?: unknown[] }>) : []
+    const flagged = new Set<number>()
+    for (const issue of issues) {
+        const path = Array.isArray(issue?.path) ? issue.path : []
+        const index = path[0] === 'customers' ? Number(path[1]) : Number.NaN
+        if (Number.isInteger(index)) flagged.add(index)
+    }
+    return submitted.map((row, index) => {
+        const invalid = flagged.size === 0 || flagged.has(index)
+        return {
+            line: row.line,
+            name: `${row.name} ${row.surname}`.trim(),
+            email: row.email,
+            status: invalid ? 'failed' : 'skipped',
+            code: invalid ? 'VALIDATION_ERROR' : 'NOT_ATTEMPTED',
+        }
+    })
 }
 
 export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const dialogRef = useDialog<HTMLDivElement>(() => handleClose(), isOpen)
     const tt = t.agentModals.bulkImport
-    const limitMessage = useLimitMessage(t)
     const [step, setStep] = useState<'upload' | 'preview' | 'importing' | 'complete'>('upload')
     const [customers, setCustomers] = useState<CustomerRow[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
-    const [importedCount, setImportedCount] = useState(0)
+    const [outcomes, setOutcomes] = useState<RowOutcome[]>([])
 
     if (!isOpen) return null
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
+    const handleFileUpload = async (file: File) => {
         setIsProcessing(true)
         try {
             const text = await file.text()
-            const lines = text.split('\n').filter(line => line.trim())
+            const parsed = parseCustomerCsv(text)
 
-            // Skip header row
-            const dataLines = lines.slice(1)
+            // Both parser failures through the dictionary — a file that can
+            // identify nobody (no email column, and not ΑΦΜ + phone either:
+            // decision D3), or one with no rows.
+            if (parsed.error === 'no_identity_columns') {
+                toast.error(tt.errNoIdentityColumns)
+                return
+            }
+            if (parsed.error === 'empty') {
+                toast.error(tt.errEmptyFile)
+                return
+            }
 
-            const parsed: CustomerRow[] = dataLines.map((line, index) => {
-                const [name, surname, email, phone] = line.split(',').map(s => s.trim())
-
-                // Basic validation
-                let status: 'valid' | 'invalid' | 'duplicate' = 'valid'
+            const seen = new Set<string>()
+            const rows: CustomerRow[] = parsed.rows.map((row) => {
+                let status: CustomerRow['status'] = 'valid'
                 let error: string | undefined
+                // A no-email row is one person per ΑΦΜ — the route keys it the same way.
+                const key = row.email ? row.email.toLowerCase() : `afm:${normalizeTaxId(row.taxId) ?? ''}`
 
-                if (!name || !email) {
+                if (!row.name || !rowHasContact(row)) {
                     status = 'invalid'
                     error = tt.errMissingFields
-                } else if (!email.includes('@')) {
+                } else if (row.email && !EMAIL_SHAPE.test(row.email)) {
                     status = 'invalid'
                     error = tt.errInvalidEmail
+                } else if (seen.has(key)) {
+                    // The route would skip it as DUPLICATE_IN_FILE; saying so
+                    // here saves the agent a round trip.
+                    status = 'duplicate'
+                    error = tt.errDuplicateInFile
                 }
+                if (status === 'valid') seen.add(key)
 
-                return { name, surname, email, phone, status, error }
+                return { ...row, status, error }
             })
 
-            setCustomers(parsed)
+            setCustomers(rows)
             setStep('preview')
         } catch (error) {
             Sentry.captureException(error, {
@@ -107,34 +253,43 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
         setStep('importing')
         setIsProcessing(true)
 
+        const validCustomers = customers.filter(c => c.status === 'valid')
         try {
-            const validCustomers = customers.filter(c => c.status === 'valid')
-
             const response = await fetch('/api/v1/customers/bulk-import', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ customers: validCustomers })
+                body: JSON.stringify({
+                    customers: validCustomers.map(({ name, surname, email, phone, taxId }) => ({
+                        name, surname, email, phone: phone || undefined, taxId: taxId || undefined,
+                    })),
+                })
             })
+
+            const body = await response.json().catch(() => null)
 
             if (!response.ok) {
                 // The server knows exactly why — plan row limit, customer limit,
                 // remaining headroom, with the numbers. Throwing a bare Error
                 // discarded all of it and left the agent with "import failed" and
                 // no idea that splitting the file or upgrading would fix it.
-                const body = await response.json().catch(() => null)
-                toast.error(limitMessage(body?.error))
+                toast.error(bulkImportErrorMessage(t, body?.error))
+                if (body?.error?.code === 'VALIDATION_ERROR') {
+                    // Per-row attribution from the zod issues, so the agent can
+                    // see WHICH lines to fix rather than re-reading the file.
+                    setOutcomes(outcomesFromValidationError(validCustomers, body.error.details))
+                    setStep('complete')
+                    return
+                }
                 setStep('preview')
                 return
             }
 
-            const result = await response.json()
-            setImportedCount(result.imported || validCustomers.length)
+            const reconciled = reconcileOutcomes(validCustomers, body)
+            setOutcomes(reconciled)
             setStep('complete')
-
-            setTimeout(() => {
-                onSuccess(result.imported || validCustomers.length)
-                handleClose()
-            }, 2000)
+            // The list behind the dialog refreshes now; the dialog stays open
+            // until the agent has read the per-row outcome.
+            onSuccess(reconciled.filter((o) => o.status === 'imported').length)
         } catch (error) {
             Sentry.captureException(error, {
                 tags: { component: 'BulkImportModal', action: 'import' }
@@ -149,132 +304,184 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
     const handleClose = () => {
         setStep('upload')
         setCustomers([])
-        setImportedCount(0)
+        setOutcomes([])
         onClose()
     }
 
     const validCount = customers.filter(c => c.status === 'valid').length
-    const invalidCount = customers.filter(c => c.status === 'invalid').length
+    const invalidCount = customers.filter(c => c.status !== 'valid').length
+
+    const importedCount = outcomes.filter((o) => o.status === 'imported').length
+    const skippedCount = outcomes.filter((o) => o.status === 'skipped').length
+    const failedCount = outcomes.filter((o) => o.status === 'failed').length
+
+    // One dictionary line per outcome code; the code never reaches the DOM.
+    const outcomeLabel = (o: RowOutcome): string => {
+        switch (o.code) {
+            case 'CREATED': return tt.rowImported
+            case 'LINKED': return tt.rowLinked
+            case 'ALREADY_LINKED': return tt.rowAlreadyLinked
+            case 'RELATIONSHIP_ENDED': return tt.rowRelationshipEnded
+            case 'DUPLICATE_IN_FILE': return tt.rowDuplicateInFile
+            case 'WRITE_FAILED': return tt.rowWriteFailed
+            case 'VALIDATION_ERROR': return tt.rowValidationError
+            case 'NOT_ATTEMPTED': return tt.rowNotAttempted
+            default:
+                return o.status === 'imported' ? tt.rowImported : o.status === 'skipped' ? tt.rowAlreadyLinked : tt.rowFailed
+        }
+    }
+    const outcomeTone = (status: RowOutcomeStatus) =>
+        status === 'imported'
+            ? "bg-status-success-tint text-status-success"
+            : status === 'skipped'
+                ? "bg-status-warning-tint text-status-warning"
+                : "bg-status-danger-tint text-status-danger"
+
+    const stepCaption = (current: number) =>
+        t.common.stepOf.replace('{current}', String(current)).replace('{total}', String(TOTAL_STEPS))
+
+    // The thin track under the card head — the onboarding's progress device,
+    // one segment per step, described once as a progressbar. A render helper,
+    // not a nested component, so the panel does not remount on every render.
+    const stepTrack = (current: number) => (
+        <div className="mt-3">
+            <p className="text-caption font-semibold text-muted-foreground">{stepCaption(current)}</p>
+            <div
+                className="mt-1.5 flex gap-1"
+                role="progressbar"
+                aria-valuenow={current}
+                aria-valuemin={1}
+                aria-valuemax={TOTAL_STEPS}
+                aria-label={stepCaption(current)}
+            >
+                {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+                    <span key={i} className={`h-1 flex-1 rounded-full ${i < current ? "bg-primary" : "bg-muted"}`} />
+                ))}
+            </div>
+        </div>
+    )
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" tabIndex={-1} className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
-                {/* Header */}
-                <div className="border-b border-neutral-200 dark:border-neutral-700 px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 id="bulk-import-title" className="text-2xl font-bold text-foreground">
-                                {tt.title}
-                            </h2>
-                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                                {tt.subtitle}
-                            </p>
-                        </div>
-                        <button
-                            onClick={handleClose}
-                            aria-label={t.common.close}
-                            className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" tabIndex={-1} className="pw-card pw-pad relative max-h-[90vh] w-full max-w-4xl overflow-y-auto">
+                {/* Header — persistent across the steps, so the dialog's name
+                    resolves on every one of them. */}
+                <header>
+                    <CardHead
+                        icon={FileSpreadsheet}
+                        id="bulk-import-title"
+                        title={tt.title}
+                        meta={
+                            <button
+                                type="button"
+                                onClick={handleClose}
+                                aria-label={t.common.close}
+                                className="pw-soft-button h-11 w-11 px-0"
+                            >
+                                <X className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                        }
+                    />
+                    <p className="mt-2 text-sm text-muted-foreground">{tt.subtitle}</p>
+                    {step === 'upload' && stepTrack(1)}
+                    {step === 'preview' && stepTrack(2)}
+                </header>
 
                 {/* Content */}
-                <div className="p-6">
+                <div className="mt-5">
                     {step === 'upload' && (
-                        <div className="space-y-6">
-                            {/* Instructions */}
-                            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                                <h3 className="font-bold text-blue-900 dark:text-blue-300 mb-2">{tt.csvFormatTitle}</h3>
-                                <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">
+                        <div className="space-y-4">
+                            {/* Instructions — a sub-card, not a blue panel. The two
+                                header rows are the machine format, not prose: the
+                                Greek one is what a Greek-locale Excel writes. */}
+                            <div className="pw-subcard p-4">
+                                <h3 className="text-sm font-semibold text-foreground">{tt.csvFormatTitle}</h3>
+                                <p className="mt-1 text-caption text-muted-foreground">
                                     {tt.csvFormatDesc}
                                 </p>
-                                <code className="block bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-300 p-3 rounded text-xs font-mono">
-                                    name,surname,email,phone
+                                <code className="mt-2 block rounded-lg bg-card px-3 py-2 font-mono text-caption text-foreground [overflow-wrap:anywhere]">
+                                    {CUSTOMER_CSV_HEADER_EXAMPLES[language === 'el' ? 'el' : 'en']}
                                 </code>
-                                <p className="text-xs text-blue-700 dark:text-blue-400 mt-2">
+                                <p className="mt-2 text-caption text-muted-foreground">
+                                    {tt.csvHeadersHint}
+                                </p>
+                                <p className="mt-1 text-caption text-muted-foreground [overflow-wrap:anywhere]">
                                     {tt.csvExample}
                                 </p>
                             </div>
 
-                            {/* File Upload */}
-                            <div className="border-2 border-dashed border-neutral-300 dark:border-neutral-600 rounded-xl p-8 text-center">
-                                <input
-                                    type="file"
-                                    accept=".csv"
-                                    onChange={handleFileUpload}
-                                    className="hidden"
-                                    id="csv-upload"
-                                    disabled={isProcessing}
+                            {/* File Upload — the shared dropzone, so «σύρετε και
+                                αποθέστε» is true. Inert while a file is parsing,
+                                which is what `disabled` on the old input did. */}
+                            <div className={isProcessing ? "pointer-events-none opacity-60" : undefined} aria-busy={isProcessing || undefined}>
+                                <UploadDropzone
+                                    onFiles={(files) => { const file = files[0]; if (file) void handleFileUpload(file) }}
+                                    accept=".csv,text/csv"
+                                    multiple={false}
+                                    inputId="csv-upload"
+                                    title={isProcessing ? tt.processing : tt.clickToUpload}
+                                    hint={tt.dragAndDrop}
                                 />
-                                <label
-                                    htmlFor="csv-upload"
-                                    className="cursor-pointer inline-flex flex-col items-center"
-                                >
-                                    <svg className="w-16 h-16 text-neutral-500 dark:text-neutral-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                    </svg>
-                                    <span className="text-lg font-bold text-neutral-700 dark:text-neutral-300">
-                                        {isProcessing ? tt.processing : tt.clickToUpload}
-                                    </span>
-                                    <span className="text-sm text-muted-foreground mt-1">
-                                        {tt.dragAndDrop}
-                                    </span>
-                                </label>
                             </div>
                         </div>
                     )}
 
                     {step === 'preview' && (
                         <div className="space-y-4">
-                            {/* Stats */}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                <div className="bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 rounded-xl p-4">
-                                    <div className="text-3xl font-bold text-[#166534] dark:text-mint">{validCount}</div>
-                                    <div className="text-sm font-medium text-primary dark:text-mint">{tt.valid}</div>
+                            {/* Stats — three fact cells: the word above, the count
+                                below, each rendered exactly once. */}
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.valid}</p>
+                                    <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">{validCount}</p>
                                 </div>
-                                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-                                    <div className="text-3xl font-bold text-red-700 dark:text-red-400">{invalidCount}</div>
-                                    <div className="text-sm font-medium text-red-700 dark:text-red-500">{tt.invalid}</div>
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.invalid}</p>
+                                    <p className={`mt-0.5 text-title font-semibold tabular-nums ${invalidCount > 0 ? "text-status-danger" : "text-foreground"}`}>{invalidCount}</p>
                                 </div>
-                                <div className="bg-neutral-50 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-xl p-4">
-                                    <div className="text-3xl font-bold text-neutral-700 dark:text-neutral-300">{customers.length}</div>
-                                    <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400">{tt.total}</div>
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.total}</p>
+                                    <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">{customers.length}</p>
                                 </div>
                             </div>
 
-                            {/* Preview Table */}
-                            {/* overflow-x was missing entirely here, so a wide preview was CLIPPED
-                                    rather than scrollable. */}
-                            <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl max-h-96 overflow-y-auto">
+                            {/* Preview Table — a sub-card that scrolls both ways:
+                                overflow-x was missing entirely here, so a wide
+                                preview was CLIPPED rather than scrollable. */}
+                            <div className="pw-subcard max-h-96 overflow-y-auto">
                                 <TableShell label={tt.title}>
-                                <table className="w-full text-sm">
-                                    <thead className="bg-neutral-50 dark:bg-neutral-900/50 sticky top-0">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="sticky top-0 border-b border-border bg-muted text-caption font-semibold text-muted-foreground">
                                         <tr>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colName}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colEmail}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colPhone}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colStatus}</th>
+                                            <th className="px-4 py-3 text-right tabular-nums">{tt.colRow}</th>
+                                            <th className="px-4 py-3">{tt.colName}</th>
+                                            <th className="px-4 py-3">{tt.colEmail}</th>
+                                            <th className="px-4 py-3">{tt.colPhone}</th>
+                                            <th className="px-4 py-3">{tt.colTaxId}</th>
+                                            <th className="px-4 py-3">{tt.colStatus}</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-neutral-100 dark:divide-neutral-700">
-                                        {customers.map((customer, index) => (
-                                            <tr key={index} className={customer.status === 'invalid' ? 'bg-red-50 dark:bg-red-900/10' : ''}>
-                                                <td className="px-4 py-3 text-foreground">
+                                    <tbody className="divide-y divide-border">
+                                        {customers.map((customer) => (
+                                            <tr key={customer.line} data-testid="bulk-import-preview-row">
+                                                <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">{customer.line}</td>
+                                                <td className="px-4 py-3 font-medium text-foreground">
                                                     {customer.name} {customer.surname}
                                                 </td>
-                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{customer.email}</td>
-                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{customer.phone}</td>
+                                                <td className="px-4 py-3 text-muted-foreground [overflow-wrap:anywhere]">{customer.email}</td>
+                                                <td className="px-4 py-3 text-muted-foreground">{customer.phone}</td>
+                                                <td className="px-4 py-3 tabular-nums text-muted-foreground">{customer.taxId}</td>
                                                 <td className="px-4 py-3">
                                                     {customer.status === 'valid' ? (
-                                                        <span className="px-2 py-1 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-full text-xs font-bold">
+                                                        <span className={`${PILL} bg-status-success-tint text-status-success`}>
                                                             {tt.validBadge}
                                                         </span>
+                                                    ) : customer.status === 'duplicate' ? (
+                                                        <span className={`${PILL} bg-status-warning-tint text-status-warning`}>
+                                                            {customer.error}
+                                                        </span>
                                                     ) : (
-                                                        <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold">
+                                                        <span className={`${PILL} bg-status-danger-tint text-status-danger`}>
                                                             {customer.error}
                                                         </span>
                                                     )}
@@ -287,17 +494,20 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                             </div>
 
                             {/* Actions */}
-                            <div className="flex gap-3 pt-4">
+                            <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row">
                                 <button
+                                    type="button"
                                     onClick={() => setStep('upload')}
-                                    className="flex-1 px-6 py-3 rounded-xl font-bold text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
+                                    className="pw-soft-button flex-1"
                                 >
                                     {tt.back}
                                 </button>
                                 <button
+                                    type="button"
+                                    data-testid="bulk-import-submit"
                                     onClick={handleImport}
                                     disabled={validCount === 0 || isProcessing}
-                                    className="pw-primary-button flex-1 shadow-primary/25"
+                                    className="pw-primary-button flex-1"
                                 >
                                     {tt.importBtn} {validCount} {validCount !== 1 ? tt.custBtnPlural : tt.custBtnSingular}
                                 </button>
@@ -306,24 +516,78 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                     )}
 
                     {step === 'importing' && (
-                        <div className="py-12 text-center">
-                            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mb-4"></div>
-                            <h3 className="text-xl font-bold text-foreground">{tt.importingTitle}</h3>
-                            <p className="text-neutral-600 dark:text-neutral-400 mt-2">{tt.importingDesc}</p>
+                        <div className="py-10 text-center">
+                            <div className="mx-auto mb-6 h-16 w-16 animate-spin rounded-full border-4 border-primary/10 border-t-primary" />
+                            <h3 className="text-title font-semibold text-foreground">{tt.importingTitle}</h3>
+                            <p className="mt-1 text-sm text-muted-foreground">{tt.importingDesc}</p>
                         </div>
                     )}
 
                     {step === 'complete' && (
-                        <div className="py-12 text-center">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-soft dark:bg-primary/15 rounded-full mb-4">
-                                <svg className="w-8 h-8 text-primary dark:text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
+                        <div className="space-y-4">
+                            {/* The verdict is per row, not a single green tick: an
+                                import that skipped half the file and failed two
+                                rows used to say «Η Εισαγωγή Ολοκληρώθηκε!» and
+                                close itself two seconds later. */}
+                            <div className="flex items-start gap-3">
+                                <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${failedCount > 0 ? "bg-status-warning-tint text-status-warning" : "bg-status-success-tint text-status-success"}`} aria-hidden="true">
+                                    <CheckCircle2 className="h-6 w-6" />
+                                </span>
+                                <div className="min-w-0">
+                                    <h3 className="text-title font-semibold text-foreground">{tt.completeTitle}</h3>
+                                    <p className="mt-1 text-sm text-muted-foreground">
+                                        {tt.successfullyImported} {importedCount} {importedCount !== 1 ? tt.custPlural : tt.custSingular}
+                                    </p>
+                                </div>
                             </div>
-                            <h3 className="text-xl font-bold text-foreground">{tt.completeTitle}</h3>
-                            <p className="text-neutral-600 dark:text-neutral-400 mt-2">
-                                {tt.successfullyImported} {importedCount} {importedCount !== 1 ? tt.custPlural : tt.custSingular}
-                            </p>
+
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.summaryImported}</p>
+                                    <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">{importedCount}</p>
+                                </div>
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.summarySkipped}</p>
+                                    <p className={`mt-0.5 text-title font-semibold tabular-nums ${skippedCount > 0 ? "text-status-warning" : "text-foreground"}`}>{skippedCount}</p>
+                                </div>
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.summaryFailed}</p>
+                                    <p className={`mt-0.5 text-title font-semibold tabular-nums ${failedCount > 0 ? "text-status-danger" : "text-foreground"}`}>{failedCount}</p>
+                                </div>
+                            </div>
+
+                            <div className="pw-subcard max-h-96 overflow-y-auto">
+                                <TableShell label={tt.outcomesTitle}>
+                                <table className="w-full text-left text-sm">
+                                    <thead className="sticky top-0 border-b border-border bg-muted text-caption font-semibold text-muted-foreground">
+                                        <tr>
+                                            <th className="px-4 py-3 text-right tabular-nums">{tt.colRow}</th>
+                                            <th className="px-4 py-3">{tt.colName}</th>
+                                            <th className="px-4 py-3">{tt.colEmail}</th>
+                                            <th className="px-4 py-3">{tt.colStatus}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-border">
+                                        {outcomes.map((o) => (
+                                            <tr key={o.line} data-testid="bulk-import-outcome-row" data-status={o.status}>
+                                                <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">{o.line}</td>
+                                                <td className="px-4 py-3 font-medium text-foreground">{o.name}</td>
+                                                <td className="px-4 py-3 text-muted-foreground [overflow-wrap:anywhere]">{o.email}</td>
+                                                <td className="px-4 py-3">
+                                                    <span className={`${PILL} ${outcomeTone(o.status)}`}>{outcomeLabel(o)}</span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                </TableShell>
+                            </div>
+
+                            <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
+                                <button type="button" onClick={handleClose} className="pw-primary-button">
+                                    {tt.done}
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>

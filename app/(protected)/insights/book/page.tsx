@@ -17,7 +17,10 @@ export default async function AdvisorBookPage() {
 
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-4xl px-4 pb-10 pt-7 sm:px-6 lg:px-8 lg:pt-10">
+            {/* Same shell rhythm as every Direction A page — the same top
+                offset and gutter as /tasks and /renewals, so the book lines up
+                with its neighbours. */}
+            <div className="mx-auto max-w-4xl px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
                 <AdvisorBookView
                     language={language}
                     overview={book.overview}

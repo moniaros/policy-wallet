@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db"
 import { createClient } from "@supabase/supabase-js"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 // Bilingual: these errors are shown VERBATIM on the verify-email page
 // (result.error), so on the Greek-default app they must be localised at source —
@@ -41,7 +42,7 @@ export async function verifyEmailToken(token: string, email: string, language: "
 
         // 2. Update local database (Primary Source of Truth for App)
         const dbUser = await db.user.findUnique({
-            where: { email: verificationToken.identifier }
+            where: { email: normalizeEmail(verificationToken.identifier) }
         })
 
         if (!dbUser) {

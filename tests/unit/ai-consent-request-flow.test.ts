@@ -58,7 +58,7 @@ describe('requestAiConsent — agent asks the policy owner instead of being dead
     it('rejects non-agent callers', async () => {
         mockAuth.mockResolvedValue({ dbUser: { id: 'u1', roles: 'policyholder' } } as any)
         const res = await requestAiConsent('pol-1')
-        expect(res).toEqual({ error: 'Unauthorized' })
+        expect(res).toEqual({ error: 'UNAUTHORIZED' })
         expect(mockNotifCreate).not.toHaveBeenCalled()
     })
 
@@ -66,7 +66,7 @@ describe('requestAiConsent — agent asks the policy owner instead of being dead
         mockGrantFind.mockResolvedValue(null)
         vi.mocked(db.customerRelationship.findFirst).mockResolvedValue(null)
         const res = await requestAiConsent('pol-1')
-        expect(res).toEqual({ error: 'Unauthorized' })
+        expect(res).toEqual({ error: 'UNAUTHORIZED' })
     })
 
     it('short-circuits when the owner already consented', async () => {

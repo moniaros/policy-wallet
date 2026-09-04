@@ -21,6 +21,7 @@ import { LEGAL_POLICY_VERSIONS } from "@/lib/compliance/consent"
 import { isAgentRole } from "@/lib/auth/require-agent"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { VALID_PLAN_IDS } from "@/lib/pricing/public-pricing-content"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 const RegisterSchema = z.object({
     name: z.preprocess((v) => (typeof v === "string" && v.trim().length === 0 ? undefined : v), z.string().min(1).optional()),
@@ -338,7 +339,10 @@ export async function registerUser(formData: FormData) {
     // The account identity is the email, full stop. Synthetic phone emails are
     // minted for NO new account; existing ones keep signing in through
     // resolveAuthEmailIdentifier (docs/auth-audit.md headline §3).
-    const authEmail = email
+    // The schema already trims + lowercases; this is the SAME normaliser the
+    // agent intake paths use, so a phantom row and the signup that activates
+    // it can never disagree on the key.
+    const authEmail = normalizeEmail(email)
     const displayName = name?.trim()?.length
         ? name.trim()
         : role === "agent"
@@ -525,7 +529,7 @@ export async function signOut() {
 }
 
 export async function resendVerificationEmail(email: string, language: "el" | "en" = "el") {
-    const normalizedEmail = email.trim().toLowerCase()
+    const normalizedEmail = normalizeEmail(email)
 
     if (isSyntheticPhoneEmail(normalizedEmail)) {
         return { success: true }
@@ -558,7 +562,7 @@ export async function resendVerificationEmail(email: string, language: "el" | "e
 }
 
 export async function resetPasswordForEmail(email: string, language: "el" | "en" = "en") {
-    const normalizedEmail = email.trim().toLowerCase()
+    const normalizedEmail = normalizeEmail(email)
     const ip = await getRequestIp()
 
     const resetRateLimit = await rateLimit(`auth:reset-password:${ip}:${normalizedEmail}`, 5, 15 * 60 * 1000)

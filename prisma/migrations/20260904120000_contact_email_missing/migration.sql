@@ -1,0 +1,13 @@
+-- A customer with no email address (owner decision D3).
+--
+-- `users.email` stays NOT NULL UNIQUE: an agent-created customer without an
+-- address carries a synthetic, non-deliverable one
+-- (noemail+<afm>@customers.policywallet.invalid — lib/identity/synthetic-email.ts)
+-- and this flag says so. Every email sender refuses the synthetic domain; the
+-- invite flow refuses a flagged customer; the flag is cleared when a real
+-- address replaces the synthetic one (updateCustomerContact).
+--
+-- Verify (dev, then prod):
+--   SELECT column_name FROM information_schema.columns
+--    WHERE table_name = 'users' AND column_name = 'contact_email_missing';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_email_missing BOOLEAN NOT NULL DEFAULT false;

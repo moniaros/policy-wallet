@@ -1,0 +1,22 @@
+"use client"
+// Probe for the upload-surface arm of tests/unit/all-clear-honesty.test.ts.
+// RED: says the analysis is running whenever the commit SUCCEEDED — the
+// pre-Sept-2026 shape, where the token gate ran later inside after() and
+// refused on the free agent tier every time. `success` is not `queued`.
+
+import { commitScannedPolicy } from "@/app/(protected)/agent/actions"
+
+export function ProbeSuccessView({ up, result }: { up: any; result: { success: boolean } }) {
+    return (
+        <div>
+            {result.success && (
+                <p role="status">{up.analysisStarted}</p>
+            )}
+            <p>{"Η ανάλυση τρέχει στο παρασκήνιο"}</p>
+        </div>
+    )
+}
+
+export async function probeCommit(fd: FormData) {
+    return commitScannedPolicy({ mode: "attach", customerId: "c" }, {} as any, false, fd)
+}

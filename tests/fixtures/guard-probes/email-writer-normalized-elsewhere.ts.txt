@@ -1,0 +1,13 @@
+// PROBE — must turn tests/unit/email-normalization-single-path.test.ts RED.
+// normalizeEmail IS imported and called — in a different function. The
+// writer itself still takes whatever it was handed.
+import { db } from "@/lib/db"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
+
+export function keyFor(rawEmail: string) {
+    return normalizeEmail(rawEmail)
+}
+
+export async function addPhantom(email: string, name: string) {
+    return db.user.create({ data: { email, name, roles: "policyholder" } })
+}

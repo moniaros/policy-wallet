@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { db } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { logger } from "@/lib/logger"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 // Request-scoped memo (React cache): a single render tree calls these from the
 // layout, the page, and several server actions/components — each call was a
@@ -24,8 +25,9 @@ export const getAuthenticatedUser = cache(async function getAuthenticatedUser() 
     }
 
     // Find the user in our database by email
+    // Rows are keyed on the normalised address (see lib/identity/normalize-email).
     const dbUser = await db.user.findUnique({
-        where: { email: user.email! }
+        where: { email: normalizeEmail(user.email) }
     })
 
     if (!dbUser) {
@@ -59,8 +61,9 @@ export const getAuthenticatedUserOrNull = cache(async function getAuthenticatedU
     }
 
     // Find the user in our database by email
+    // Rows are keyed on the normalised address (see lib/identity/normalize-email).
     const dbUser = await db.user.findUnique({
-        where: { email: user.email! }
+        where: { email: normalizeEmail(user.email) }
     })
 
     if (!dbUser) {

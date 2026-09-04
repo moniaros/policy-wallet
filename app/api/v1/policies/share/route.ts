@@ -7,6 +7,7 @@ import { sendPolicySharedAccessEmail, sendPolicyInviteEmail } from "@/lib/email/
 import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
 import { withApiGuard } from '@/lib/api-guard'
 import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 const sharePolicySchema = z.object({
     policyId: z.string().min(1),
@@ -49,7 +50,7 @@ export const POST = withApiGuard(
             // minted a placeholder User row + a silently ACTIVE grant for any
             // address a caller typed (account-enumeration and spam vector).
             const granteeUser = await db.user.findUnique({
-                where: { email }
+                where: { email: normalizeEmail(email) }
             })
 
             if (!granteeUser) {

@@ -1,0 +1,12 @@
+"use server"
+// PROBE — must turn tests/unit/agent-actions-error-codes.test.ts RED (catch).
+// The code is fine; the catch swallows the cause with a console.error.
+export async function probeAction() {
+    try {
+        await Promise.reject(new Error("boom"))
+        return { success: true }
+    } catch (e) {
+        console.error(e)
+        return { success: false, error: "ADD_POLICY_FAILED" }
+    }
+}

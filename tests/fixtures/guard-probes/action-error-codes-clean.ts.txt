@@ -1,0 +1,13 @@
+"use server"
+// PROBE — compliant control for tests/unit/agent-actions-error-codes.test.ts.
+import { logger } from "@/lib/logger"
+
+export async function probeAction() {
+    try {
+        await Promise.reject(new Error("boom"))
+        return { success: true }
+    } catch (e) {
+        logger("error", "probeAction failed", { error: String(e) })
+        return { success: false, error: "ADD_POLICY_FAILED" }
+    }
+}

@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { TranslationsProvider } from '@/contexts/TranslationsProvider'
-import { CustomerList } from '@/components/agent/CustomerList'
+import { CustomerList, customerActivationPill, customerHasNoEmail } from '@/components/agent/CustomerList'
+import { el } from '@/lib/i18n/translations/el'
 
 vi.mock('next/navigation', () => ({
     usePathname: () => '/customers',
@@ -61,7 +62,9 @@ describe('CustomerList — responsive presentation', () => {
 
     it('does not offer the view toggle below xl, where it would be a no-op', () => {
         const { container } = renderList()
-        const toggle = container.querySelector('div[class*="xl:flex"][class*="rounded-xl"]')
+        // The toggle sits on the `.pw-segmented` recipe since batch B (2026-09-03).
+        const toggle = container.querySelector('div[class*="xl:flex"][class*="pw-segmented"]')
+        expect(toggle, 'view toggle missing').toBeTruthy()
         expect(toggle?.className).toContain('hidden')
     })
 
@@ -69,5 +72,155 @@ describe('CustomerList — responsive presentation', () => {
         renderList()
         // Name appears in the table row and in the card.
         expect(screen.getAllByText(/Παπαδόπουλος/).length).toBeGreaterThanOrEqual(2)
+    })
+})
+
+/**
+ * S6 — the activation pill. The legacy `activationStatus` derives from the
+ * relationship's `status` alone, and `pending_activation` is the DEFAULT, so a
+ * customer the agent merely added wore «Προσκεκλημένοι» though no invitation
+ * ever left. The pill now derives from the relationship's `activation_status`
+ * and a never-invited customer gets the one action they need on the row.
+ */
+describe('CustomerList — activation pill derives from activation_status', () => {
+    const base = {
+        email: 'x@example.com',
+        phone: '',
+        policyCount: 0,
+        lastInteractionDate: new Date().toISOString(),
+        openGapsCount: 0,
+    }
+    const renderWith = (customers: any[], onInvite?: (id: string) => void) =>
+        render(
+            <LanguageProvider>
+                <TranslationsProvider>
+                    <CustomerList customers={customers} onCustomerClick={vi.fn()} onInvite={onInvite} />
+                </TranslationsProvider>
+            </LanguageProvider>
+        )
+
+    it('a merely-added customer is «Χωρίς πρόσκληση», never «Προσκεκλημένοι»', () => {
+        renderWith([{
+            ...base, id: 'c1', name: 'Μαρία', surname: 'Παπαδοπούλου',
+            activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'not_invited',
+        }])
+        const pills = screen.getAllByTestId('customer-activation-pill')
+        expect(pills.length).toBeGreaterThanOrEqual(2) // table row + card
+        for (const pill of pills) {
+            expect(pill.getAttribute('data-activation')).toBe('not_invited')
+            expect(pill.textContent).toBe('Χωρίς πρόσκληση')
+        }
+        expect(screen.queryByText('Προσκεκλημένοι', { selector: '[data-testid="customer-activation-pill"]' })).toBeNull()
+    })
+
+    it("the column's default (no_policies) reads the same way: nobody invited them either", () => {
+        renderWith([{
+            ...base, id: 'c1', name: 'Μαρία', surname: 'Παπαδοπούλου',
+            activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'no_policies',
+        }])
+        for (const pill of screen.getAllByTestId('customer-activation-pill')) {
+            expect(pill.getAttribute('data-activation')).toBe('not_invited')
+        }
+    })
+
+    it('an invited customer still reads «Προσκεκλημένοι», and an activated one «Ενεργοί»', () => {
+        renderWith([
+            { ...base, id: 'c1', name: 'Α', surname: 'Β', activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'invited' },
+            { ...base, id: 'c2', name: 'Γ', surname: 'Δ', activationStatus: 'activated', relationshipStatus: 'active', relationshipActivationStatus: 'activated' },
+        ])
+        const values = screen.getAllByTestId('customer-activation-pill').map((p) => p.getAttribute('data-activation'))
+        expect(values.filter((v) => v === 'invited')).toHaveLength(2)
+        expect(values.filter((v) => v === 'activated')).toHaveLength(2)
+        expect(screen.getAllByText('Προσκεκλημένοι').length).toBeGreaterThanOrEqual(2)
+    })
+
+    it('an ended relationship is «Ανενεργοί» whatever the activation column says', () => {
+        renderWith([{
+            ...base, id: 'c1', name: 'Α', surname: 'Β',
+            activationStatus: 'inactive', relationshipStatus: 'inactive', relationshipActivationStatus: 'not_invited',
+        }])
+        for (const pill of screen.getAllByTestId('customer-activation-pill')) {
+            expect(pill.getAttribute('data-activation')).toBe('inactive')
+        }
+        expect(screen.queryByTestId('customer-send-invite')).toBeNull()
+    })
+
+    it('offers «Αποστολή πρόσκλησης» only to a never-invited customer, and calls back with the id', () => {
+        const onInvite = vi.fn()
+        renderWith([
+            { ...base, id: 'never', name: 'Α', surname: 'Β', activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'not_invited' },
+            { ...base, id: 'already', name: 'Γ', surname: 'Δ', activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'invited' },
+        ], onInvite)
+        const buttons = screen.getAllByTestId('customer-send-invite')
+        expect(buttons.length).toBeGreaterThanOrEqual(1)
+        for (const b of buttons) {
+            expect(b.textContent).toContain('Αποστολή πρόσκλησης')
+            expect(b.className).toContain('pw-soft-button')
+        }
+        fireEvent.click(buttons[0])
+        expect(onInvite).toHaveBeenCalledWith('never')
+        expect(onInvite).not.toHaveBeenCalledWith('already')
+    })
+
+    /**
+     * D3 — a customer with no email. The DTO carries `contactEmailMissing`
+     * and a synthetic, non-deliverable address; the row wears a neutral
+     * «Χωρίς email» pill, never renders the placeholder as an address, offers
+     * no mailto, and the invite action becomes «add an email».
+     */
+    it('a no-email customer wears «Χωρίς email», hides the placeholder, and offers to add one instead of inviting', () => {
+        const onInvite = vi.fn()
+        const onAddEmail = vi.fn()
+        render(
+            <LanguageProvider>
+                <TranslationsProvider>
+                    <CustomerList
+                        customers={[{
+                            ...base, id: 'noemail', name: 'Κώστας', surname: 'Δήμου',
+                            email: 'noemail+123456783@customers.policywallet.invalid', contactEmailMissing: true,
+                            activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'not_invited',
+                        }] as any}
+                        onCustomerClick={vi.fn()}
+                        onInvite={onInvite}
+                        onAddEmail={onAddEmail}
+                        onEmail={vi.fn()}
+                    />
+                </TranslationsProvider>
+            </LanguageProvider>
+        )
+        const pills = screen.getAllByTestId('customer-no-email-pill')
+        expect(pills.length).toBeGreaterThanOrEqual(2) // table row + card
+        for (const pill of pills) expect(pill.textContent).toBe('Χωρίς email')
+        expect(document.body.textContent).not.toContain('policywallet.invalid')
+        expect(screen.queryByTestId('customer-send-invite')).toBeNull()
+        expect(screen.queryByLabelText(el.a11yLabels.emailClient)).toBeNull()
+
+        const addEmail = screen.getAllByTestId('customer-add-email')
+        expect(addEmail.length).toBeGreaterThanOrEqual(1)
+        expect(addEmail[0].textContent).toContain('Προσθέστε email για να τον προσκαλέσετε')
+        fireEvent.click(addEmail[0])
+        expect(onAddEmail).toHaveBeenCalledWith('noemail')
+        expect(onInvite).not.toHaveBeenCalled()
+    })
+
+    it('recognises the synthetic address even when the DTO lacks the flag', () => {
+        expect(customerHasNoEmail({ email: 'noemail+123456783@customers.policywallet.invalid' } as any)).toBe(true)
+        expect(customerHasNoEmail({ email: 'x@example.com', contactEmailMissing: false } as any)).toBe(false)
+        expect(customerHasNoEmail({ email: 'x@example.com', contactEmailMissing: true } as any)).toBe(true)
+    })
+
+    it('falls back to the legacy field for a DTO that lacks the raw columns', () => {
+        expect(customerActivationPill({ activationStatus: 'activated' } as any)).toBe('activated')
+        expect(customerActivationPill({ activationStatus: 'invited' } as any)).toBe('invited')
+    })
+
+    it('the status filter has a «Χωρίς πρόσκληση» segment whose count matches the pill', () => {
+        renderWith([
+            { ...base, id: 'c1', name: 'Α', surname: 'Β', activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'not_invited' },
+            { ...base, id: 'c2', name: 'Γ', surname: 'Δ', activationStatus: 'invited', relationshipStatus: 'pending_activation', relationshipActivationStatus: 'invited' },
+        ])
+        const segment = screen.getByRole('button', { name: /Χωρίς πρόσκληση\s*1/ })
+        expect(segment).toBeTruthy()
+        expect(screen.getByRole('button', { name: /Προσκεκλημένοι\s*1/ })).toBeTruthy()
     })
 })

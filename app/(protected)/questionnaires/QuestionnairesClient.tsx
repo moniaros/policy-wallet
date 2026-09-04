@@ -5,13 +5,14 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import {
     ClipboardList, Plus, Trash2, GripVertical, Eye, Send,
-    Sparkles, ChevronDown, CheckCircle2, Clock, FileQuestion,
+    Sparkles, CheckCircle2, Clock, FileQuestion,
     AlertCircle, X
 } from "lucide-react"
 import type { TemplateData, InstanceData, TemplateQuestion } from "./actions"
 import { createTemplate, updateTemplate, deleteTemplate, analyzeQuestionnaireResponse } from "./actions"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 import { toast } from "sonner"
 import { useDialog } from "@/hooks/useDialog"
 import { TableShell } from "@/components/ui/TableShell"
@@ -30,6 +31,11 @@ const copy = {
         questions: "questions",
         sentCount: "sent",
         editTemplate: "Edit",
+        moreQuestions: "+{n} more",
+        namePlaceholder: "e.g. Annual coverage check",
+        errorNameRequired: "Give the template a name",
+        errorAddQuestion: "Add at least one question",
+        errorQuestionText: "Every question needs its text",
         deleteTemplate: "Delete",
         deleteTemplateTitle: "Delete this template?",
         deleteTemplateBody: "The template is removed from your library. Questionnaires already sent keep their answers.",
@@ -86,6 +92,11 @@ const copy = {
         questions: "ερωτήσεις",
         sentCount: "αποστολές",
         editTemplate: "Επεξεργασία",
+        moreQuestions: "+{n} ακόμη",
+        namePlaceholder: "π.χ. Ετήσιος έλεγχος κάλυψης",
+        errorNameRequired: "Δώστε ένα όνομα στο πρότυπο",
+        errorAddQuestion: "Προσθέστε τουλάχιστον μία ερώτηση",
+        errorQuestionText: "Κάθε ερώτηση χρειάζεται κείμενο",
         deleteTemplate: "Διαγραφή",
         deleteTemplateTitle: "Διαγραφή του προτύπου;",
         deleteTemplateBody: "Το πρότυπο αφαιρείται από τη βιβλιοθήκη σας. Τα ερωτηματολόγια που έχουν ήδη σταλεί διατηρούν τις απαντήσεις τους.",
@@ -150,6 +161,10 @@ interface Props {
 
 type QSortKey = "customer" | "template" | "status" | "sentAt"
 
+// State pills on the status TOKENS, the state as a word: no palette literals,
+// no CSS uppercase (Greek capitals drop the tonos).
+const pill = "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-caption font-semibold"
+
 export function QuestionnairesClient({ templates, instances }: Props) {
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
@@ -159,43 +174,50 @@ export function QuestionnairesClient({ templates, instances }: Props) {
 
 
     return (
-        <div className="pw-page-shell min-h-screen">
-            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-10">
-                    <div>
-                        <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
-                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
-                            {t.title}
-                        </h1>
-                        <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
-                            {t.subtitle}
-                        </p>
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-page-wide space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* Header — what the screen is, with its ONE primary action to the
+                    right. The «ΕΡΩΤΗΜΑΤΟΛΟΓΙΑ» eyebrow is gone: the heading carries
+                    its own weight, and CSS uppercase strips the tonos off Greek. */}
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                        <h1 className="text-h3 font-semibold tracking-tight text-foreground">{t.title}</h1>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.subtitle}</p>
                     </div>
                     <button
+                        type="button"
                         onClick={() => { setShowBuilder(true); setEditingId(null) }}
-                        className="inline-flex items-center gap-2 px-5 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all shadow-lg"
+                        className="pw-primary-button"
                     >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="h-4 w-4" aria-hidden="true" />
                         {t.createNew}
                     </button>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex gap-1 mb-8 bg-slate-100 dark:bg-slate-800 rounded-xl p-1 w-fit">
+                {/* View switch on the segmented recipe — aria-pressed drives the
+                    active look, so the visual cannot disagree with what assistive
+                    tech is told. A view is switched with a segment; an action is a
+                    pill. */}
+                <div className="pw-segmented pw-scroll-strip">
                     <button
+                        type="button"
                         onClick={() => setTab("templates")}
-                        className={`px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === "templates" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"}`}
+                        aria-pressed={tab === "templates"}
+                        className="pw-segment"
                     >
-                        <ClipboardList className="w-3.5 h-3.5 inline mr-1.5" />
-                        {t.templates} ({templates.length})
+                        <ClipboardList className="h-3.5 w-3.5" aria-hidden="true" />
+                        {t.templates}
+                        <span className="tabular-nums font-medium">{templates.length}</span>
                     </button>
                     <button
+                        type="button"
                         onClick={() => setTab("sent")}
-                        className={`px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === "sent" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"}`}
+                        aria-pressed={tab === "sent"}
+                        className="pw-segment"
                     >
-                        <Send className="w-3.5 h-3.5 inline mr-1.5" />
-                        {t.sent} ({instances.length})
+                        <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                        {t.sent}
+                        <span className="tabular-nums font-medium">{instances.length}</span>
                     </button>
                 </div>
 
@@ -273,56 +295,65 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {templates.map((tpl) => (
-                <div key={tpl.id} className="pw-card pw-pad group">
-                    <div className="flex items-start justify-between mb-3">
-                        <div>
-                            <span className={`text-kicker font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${tpl.isSystem
-                                ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                                : "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
-                                }`}>
+                /* One white card per template: the template as the card head with
+                   its kind as the meta pill, facts as a caption, the first
+                   questions as a list, and — for a custom template — the row
+                   actions as ALWAYS-VISIBLE soft pills. They used to appear only
+                   on hover, which a touch user never gets and a keyboard user
+                   reached blind. */
+                <div key={tpl.id} className="pw-card pw-pad flex flex-col">
+                    <CardHead
+                        icon={ClipboardList}
+                        title={tpl.name}
+                        meta={
+                            <span className={`${pill} bg-muted text-foreground`}>
                                 {tpl.isSystem ? t.system : t.custom}
                             </span>
-                        </div>
-                        {!tpl.isSystem && (
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-                                <button
-                                    onClick={() => onEdit(tpl.id)}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-600"
-                                >
-                                    <Eye className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                    onClick={() => setPendingDeleteId(tpl.id)}
-                                    aria-label={`${t.deleteTemplate}: ${tpl.name}`}
-                                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-500 dark:text-slate-400 hover:text-red-700"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{tpl.name}</h4>
-                    <p className="text-kicker font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                        }
+                    />
+                    <p className="mt-2 text-caption text-muted-foreground">
                         {normalizeBranch(tpl.lineOfBusiness).label[language === 'el' ? 'el' : 'en']} · {tpl.questions.length} {t.questions} · {tpl.instanceCount} {t.sentCount}
                     </p>
 
                     {/* Question preview */}
-                    <div className="space-y-1.5">
-                        {tpl.questions.slice(0, 3).map((q, i) => (
-                            <div key={i} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                                <span className="w-4 h-4 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-kicker font-bold flex-shrink-0">
-                                    {i + 1}
-                                </span>
-                                <span className="truncate">{language === "el" && q.labelEl ? q.labelEl : q.label}</span>
-                            </div>
-                        ))}
+                    <div className="mt-3 flex-1">
+                        <ol className="space-y-1.5">
+                            {tpl.questions.slice(0, 3).map((q, i) => (
+                                <li key={i} className="flex items-center gap-2 text-caption text-muted-foreground">
+                                    <span className="grid h-5 w-5 flex-shrink-0 place-items-center rounded-md bg-muted text-caption font-semibold tabular-nums text-foreground" aria-hidden="true">
+                                        {i + 1}
+                                    </span>
+                                    <span className="truncate">{language === "el" && q.labelEl ? q.labelEl : q.label}</span>
+                                </li>
+                            ))}
+                        </ol>
                         {tpl.questions.length > 3 && (
-                            <p className="text-kicker text-slate-500 dark:text-slate-400 pl-6">+{tpl.questions.length - 3} more...</p>
+                            <p className="mt-1.5 pl-7 text-caption text-muted-foreground">{t.moreQuestions.replace("{n}", String(tpl.questions.length - 3))}</p>
                         )}
                     </div>
+
+                    {!tpl.isSystem && (
+                        <div className="mt-4 flex gap-2 border-t border-border pt-3">
+                            <button
+                                type="button"
+                                onClick={() => onEdit(tpl.id)}
+                                className="pw-soft-button flex-1"
+                            >
+                                <Eye className="h-4 w-4" aria-hidden="true" />
+                                {t.editTemplate}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setPendingDeleteId(tpl.id)}
+                                aria-label={`${t.deleteTemplate}: ${tpl.name}`}
+                                className="pw-soft-button h-11 w-11 px-0 text-status-danger"
+                            >
+                                <Trash2 className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                        </div>
+                    )}
                 </div>
             ))}
             <ConfirmDialog
@@ -349,6 +380,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
     const [name, setName] = useState(editingTemplate?.name || "")
     // Mounted only while open, so the trap is unconditional here.
     const builderDialogRef = useDialog<HTMLDivElement>(onClose)
+    const builderTitleId = useId()
     const [lob, setLob] = useState(editingTemplate?.lineOfBusiness || "motor")
     const [questions, setQuestions] = useState<TemplateQuestion[]>(
         editingTemplate?.questions || []
@@ -380,9 +412,9 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
     }
 
     const handleSave = async () => {
-        if (!name.trim()) return setError("Name is required")
-        if (questions.length === 0) return setError("Add at least one question")
-        if (questions.some((q) => !q.label.trim())) return setError("All questions need text")
+        if (!name.trim()) return setError(t.errorNameRequired)
+        if (questions.length === 0) return setError(t.errorAddQuestion)
+        if (questions.some((q) => !q.label.trim())) return setError(t.errorQuestionText)
 
         setSaving(true)
         setError("")
@@ -411,40 +443,41 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 overflow-y-auto">
-            <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-md" onClick={onClose} />
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-16">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
             <div
                 ref={builderDialogRef}
                 role="dialog"
                 aria-modal="true"
+                aria-labelledby={builderTitleId}
                 tabIndex={-1}
-                className="relative bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-slate-700 mb-16"
+                className="pw-card relative mb-16 w-full max-w-2xl shadow-xl"
             >
-                <div className="p-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-black text-slate-900 dark:text-white">
+                <div className="pw-pad">
+                    <div className="flex items-center justify-between gap-3">
+                        <h2 id={builderTitleId} className="text-title font-semibold text-foreground">
                             {editingTemplate ? t.editTemplate : t.createNew}
-                        </h3>
-                        <button onClick={onClose} aria-label={t.cancel} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                            <X className="w-5 h-5" />
+                        </h2>
+                        <button type="button" onClick={onClose} aria-label={t.cancel} className="pw-soft-button h-11 w-11 shrink-0 px-0">
+                            <X className="h-4 w-4" aria-hidden="true" />
                         </button>
                     </div>
 
                     {/* Meta */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <label htmlFor="qtpl-name" className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.templateName}</label>
+                            <label htmlFor="qtpl-name" className="mb-1.5 block text-caption font-medium text-muted-foreground">{t.templateName}</label>
                             <input
                                 id="qtpl-name"
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 className="pw-input"
-                                placeholder="My Custom Template"
+                                placeholder={t.namePlaceholder}
                             />
                         </div>
                         <div>
-                            <label htmlFor="qtpl-lob" className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.lob}</label>
+                            <label htmlFor="qtpl-lob" className="mb-1.5 block text-caption font-medium text-muted-foreground">{t.lob}</label>
                             <select
                                 id="qtpl-lob"
                                 value={lob}
@@ -460,13 +493,13 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                         </div>
                     </div>
 
-                    {/* Questions */}
-                    <div className="space-y-4 mb-6">
+                    {/* Questions — each one a sub-card inside the dialog card. */}
+                    <div className="mt-6 space-y-3">
                         {questions.map((q, i) => (
-                            <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <GripVertical className="w-4 h-4 text-slate-300" />
-                                    <span className="text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                            <div key={i} className="pw-subcard p-3 sm:p-4">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <GripVertical className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                                    <span className="text-caption font-semibold text-muted-foreground">
                                         Q{i + 1}
                                     </span>
                                     <div className="flex-1" />
@@ -474,22 +507,22 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                         aria-label={`${t.questionType} — Q${i + 1}`}
                                         value={q.type}
                                         onChange={(e) => updateQuestion(i, "type", e.target.value)}
-                                        className="pw-input pw-input-sm"
+                                        className="pw-input pw-input-sm w-auto"
                                     >
                                         <option value="text">{t.text}</option>
                                         <option value="number">{t.number}</option>
                                         <option value="boolean">{t.boolean}</option>
                                         <option value="select">{t.select}</option>
                                     </select>
+                                    {/* A toggle, not a status: the pressed state is the
+                                        ink pill, and the word changes with it, so the
+                                        state never rests on colour alone. */}
                                     <button
                                         type="button"
                                         aria-pressed={q.required}
                                         aria-label={`${t.markRequired} — Q${i + 1}`}
                                         onClick={() => updateQuestion(i, "required", !q.required)}
-                                        className={`px-2 py-1 rounded-lg text-kicker font-black uppercase tracking-widest ${q.required
-                                            ? "bg-amber-50 text-amber-700 dark:text-amber-200 dark:bg-amber-900/20"
-                                            : "bg-slate-100 text-slate-600 dark:bg-slate-700"
-                                            }`}
+                                        className={`pw-soft-button ${q.required ? "bg-foreground text-background" : ""}`}
                                     >
                                         {q.required ? t.required : t.optional}
                                     </button>
@@ -497,13 +530,13 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                         type="button"
                                         aria-label={`${t.removeQuestion} — Q${i + 1}`}
                                         onClick={() => removeQuestion(i)}
-                                        className="p-1 rounded-lg hover:bg-red-50 text-slate-500 dark:text-slate-400 hover:text-red-500"
+                                        className="pw-soft-button h-11 w-11 px-0 text-status-danger"
                                     >
-                                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                                     </button>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     <input
                                         type="text"
                                         value={q.label}
@@ -523,10 +556,11 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                 </div>
 
                                 {q.type === "select" && (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                                    <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                                         <input
                                             type="text"
                                             value={q.options?.map((o) => o.label).join(", ") || ""}
+                                            aria-label={`${t.options} — Q${i + 1}`}
                                             onChange={(e) => {
                                                 const labels = e.target.value.split(",").map((s) => s.trim())
                                                 updateQuestion(i, "options", labels.map((l, idx) => ({
@@ -541,6 +575,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                         <input
                                             type="text"
                                             value={q.options?.map((o) => o.labelEl || "").join(", ") || ""}
+                                            aria-label={`${t.optionsEl} — Q${i + 1}`}
                                             onChange={(e) => {
                                                 const labelsEl = e.target.value.split(",").map((s) => s.trim())
                                                 updateQuestion(i, "options", (q.options || []).map((o, idx) => ({
@@ -558,28 +593,31 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                     </div>
 
                     <button
+                        type="button"
                         onClick={addQuestion}
-                        className="w-full py-3 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-all flex items-center justify-center gap-2"
+                        className="pw-soft-button mt-4 w-full"
                     >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="h-4 w-4" aria-hidden="true" />
                         {t.addQuestion}
                     </button>
 
                     {error && (
-                        <p className="mt-4 text-xs text-red-700 dark:text-red-300 font-bold flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" /> {error}
+                        <p role="alert" className="mt-4 flex items-center gap-1 text-caption font-semibold text-status-danger">
+                            <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" /> {error}
                         </p>
                     )}
                 </div>
 
-                <div className="p-6 bg-slate-50 dark:bg-slate-800/50 flex gap-3 border-t border-slate-100 dark:border-slate-700 rounded-b-3xl">
-                    <button onClick={onClose} className="flex-1 px-4 py-3 text-sm font-bold text-slate-500 dark:text-slate-400">
+                <div className="flex gap-3 border-t border-border px-4 py-4 sm:px-6">
+                    <button type="button" onClick={onClose} className="pw-soft-button flex-1">
                         {t.cancel}
                     </button>
                     <button
+                        type="button"
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex-[2] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                        aria-busy={saving}
+                        className="pw-primary-button flex-[2]"
                     >
                         {saving ? "..." : t.save}
                     </button>
@@ -596,6 +634,7 @@ function SentList({ instances, t, language }: {
     t: typeof copy.en
     language: string
 }) {
+    const { t: gt } = useLanguage()
     const { sort, toggle, setSort } = useTableSort<QSortKey>()
     const sortedInstances = useMemo(
         () => applySort<InstanceData, QSortKey>(instances, sort, {
@@ -608,6 +647,7 @@ function SentList({ instances, t, language }: {
     )
     const [analysisData, setAnalysisData] = useState<any>(null)
     const analysisDialogRef = useDialog<HTMLDivElement>(() => setAnalysisData(null), Boolean(analysisData))
+    const analysisTitleId = useId()
     const [analyzingId, setAnalyzingId] = useState<string | null>(null)
 
     const handleAnalyze = async (instanceId: string) => {
@@ -632,56 +672,67 @@ function SentList({ instances, t, language }: {
 
     return (
         <>
-            <div className="pw-card">
-                {/* thead is sr-only below lg, so the column headers cannot be used
-                    on a phone — this drives the same sort state. */}
-                <MobileSortControl
-                    sort={sort}
-                    onSort={toggle}
-                    onClear={() => setSort(null)}
-                    columns={[{ key: "customer", label: t.customer }, { key: "template", label: t.template }, { key: "status", label: t.status }, { key: "sentAt", label: t.sentAt }]}
-                    label={t.sortLabel}
-                    defaultLabel={t.defaultOrder}
-                    className="mb-3"
-                />
+            <div className="pw-card overflow-hidden">
+                <div className="pw-pad pb-0">
+                    <CardHead
+                        icon={Send}
+                        title={t.sent}
+                        meta={<span className="tabular-nums">{instances.length}</span>}
+                    />
+                    {/* thead is sr-only below lg, so the column headers cannot be used
+                        on a phone — this drives the same sort state. */}
+                    <MobileSortControl
+                        sort={sort}
+                        onSort={toggle}
+                        onClear={() => setSort(null)}
+                        columns={[{ key: "customer", label: t.customer }, { key: "template", label: t.template }, { key: "status", label: t.status }, { key: "sentAt", label: t.sentAt }]}
+                        label={t.sortLabel}
+                        defaultLabel={t.defaultOrder}
+                        className="mt-3"
+                    />
+                </div>
                 <TableShell label={t.sent}>
                 <table className="pw-stacked-table w-full text-sm">
                     <thead>
-                        <tr className="border-b border-slate-100 dark:border-slate-800">
-                            <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={t.customer} align="left" className="pb-3" />
-                            <SortableColumn columnKey="template" sort={sort} onSort={toggle} label={t.template} align="left" className="pb-3" />
-                            <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={t.status} align="left" className="pb-3" />
-                            <SortableColumn columnKey="sentAt" sort={sort} onSort={toggle} label={t.sentAt} align="left" className="pb-3" />
-                            <th className="text-right text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest p-4"></th>
+                        <tr className="border-b border-border">
+                            <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={t.customer} align="left" />
+                            <SortableColumn columnKey="template" sort={sort} onSort={toggle} label={t.template} align="left" />
+                            <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={t.status} align="left" />
+                            <SortableColumn columnKey="sentAt" sort={sort} onSort={toggle} label={t.sentAt} align="left" />
+                            <th className="px-4 py-3 text-right text-caption font-semibold text-muted-foreground">
+                                <span className="sr-only">{gt.common.actions}</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         {sortedInstances.map((inst) => (
-                            <tr key={inst.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                                <td data-label={t.customer} className="p-4 font-bold text-slate-900 dark:text-white">{inst.customerName}</td>
-                                <td data-label={t.template} className="p-4 text-slate-600 dark:text-slate-400">{inst.templateName}</td>
-                                <td data-label={t.status} className="p-4">
+                            <tr key={inst.id} className="border-b border-border/60 transition-colors hover:bg-muted/40">
+                                <td data-label={t.customer} className="px-4 py-3 font-semibold text-foreground">{inst.customerName}</td>
+                                <td data-label={t.template} className="px-4 py-3 text-muted-foreground">{inst.templateName}</td>
+                                <td data-label={t.status} className="px-4 py-3">
                                     {inst.status === "completed" ? (
-                                        <span className="inline-flex items-center gap-1 text-kicker font-black text-status-success bg-primary-soft dark:bg-primary/15 px-2.5 py-1 rounded-full uppercase tracking-widest">
-                                            <CheckCircle2 className="w-3 h-3" /> {t.completed}
+                                        <span className={`${pill} bg-status-success-tint text-status-success`}>
+                                            <CheckCircle2 className="h-3 w-3" aria-hidden="true" /> {t.completed}
                                         </span>
                                     ) : (
-                                        <span className="inline-flex items-center gap-1 text-kicker font-black text-amber-700 dark:text-amber-200 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
-                                            <Clock className="w-3 h-3" /> {t.pending}
+                                        <span className={`${pill} bg-status-warning-tint text-status-warning`}>
+                                            <Clock className="h-3 w-3" aria-hidden="true" /> {t.pending}
                                         </span>
                                     )}
                                 </td>
-                                <td data-label={t.sentAt} className="p-4 text-xs text-slate-500 dark:text-slate-400">
+                                <td data-label={t.sentAt} className="px-4 py-3 text-caption text-muted-foreground">
                                     {new Date(inst.sentAt).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
                                 </td>
-                                <td className="p-4 text-right">
+                                <td className="px-4 py-3 text-right">
                                     {inst.status === "completed" && inst.responseCount > 0 && (
                                         <button
+                                            type="button"
                                             onClick={() => handleAnalyze(inst.id)}
                                             disabled={analyzingId === inst.id}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-kicker font-black uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50"
+                                            aria-busy={analyzingId === inst.id}
+                                            className="pw-soft-button disabled:pointer-events-none disabled:opacity-60"
                                         >
-                                            <Sparkles className="w-3 h-3" />
+                                            <Sparkles className="h-4 w-4" aria-hidden="true" />
                                             {analyzingId === inst.id ? "..." : t.analyze}
                                         </button>
                                     )}
@@ -695,86 +746,82 @@ function SentList({ instances, t, language }: {
 
             {/* Analysis modal */}
             {analysisData && (
-                <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 overflow-y-auto">
-                    <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-md" onClick={() => setAnalysisData(null)} />
+                <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-16">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setAnalysisData(null)} />
                     <div
                         ref={analysisDialogRef}
                         role="dialog"
                         aria-modal="true"
+                        aria-labelledby={analysisTitleId}
                         tabIndex={-1}
-                        className="relative bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-slate-700 mb-16"
+                        className="pw-card relative mb-16 w-full max-w-2xl shadow-xl"
                     >
-                        <div className="p-8">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
-                                        <Sparkles className="w-5 h-5 text-indigo-500" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-black text-slate-900 dark:text-white">{t.analysisTitle}</h3>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">{analysisData.customerName} · {analysisData.templateName}</p>
-                                    </div>
+                        <div className="pw-pad">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0 flex-1">
+                                    <CardHead icon={Sparkles} title={t.analysisTitle} id={analysisTitleId} />
+                                    <p className="mt-1 pl-12 text-caption text-muted-foreground">{analysisData.customerName} · {analysisData.templateName}</p>
                                 </div>
-                                <button type="button" aria-label={t.cancel} onClick={() => setAnalysisData(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                    <X className="w-5 h-5" aria-hidden="true" />
+                                <button type="button" aria-label={t.cancel} onClick={() => setAnalysisData(null)} className="pw-soft-button h-11 w-11 shrink-0 px-0">
+                                    <X className="h-4 w-4" aria-hidden="true" />
                                 </button>
                             </div>
 
-                            {/* Answer summary */}
-                            <div className="mb-6">
-                                <h4 className="text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">{t.answers}</h4>
-                                <div className="space-y-2">
+                            {/* Answer summary — each answer a sub-card row. */}
+                            <section className="mt-6">
+                                <h3 className="text-caption font-semibold text-muted-foreground">{t.answers}</h3>
+                                <dl className="mt-3 space-y-2">
                                     {analysisData.answerSummary.map((a: any, i: number) => (
-                                        <div key={i} className="flex items-start justify-between gap-4 py-2 border-b border-slate-50 dark:border-slate-800">
-                                            <span className="text-xs text-slate-600 dark:text-slate-400">{a.question}</span>
-                                            <span className="text-xs font-bold text-slate-900 dark:text-white text-right flex-shrink-0">{String(a.answer)}</span>
+                                        <div key={i} className="pw-subcard flex items-start justify-between gap-4 p-3">
+                                            <dt className="text-caption text-muted-foreground">{a.question}</dt>
+                                            <dd className="flex-shrink-0 text-right text-caption font-semibold text-foreground">{String(a.answer)}</dd>
                                         </div>
                                     ))}
-                                </div>
-                            </div>
+                                </dl>
+                            </section>
 
                             {/* Needs */}
-                            <div className="mb-6">
-                                <h4 className="text-kicker font-black text-amber-700 dark:text-amber-200 uppercase tracking-widest mb-3">{t.needs}</h4>
-                                <div className="space-y-2">
+                            <section className="mt-6">
+                                <h3 className="text-caption font-semibold text-muted-foreground">{t.needs}</h3>
+                                <ul className="mt-3 space-y-2">
                                     {analysisData.needsIdentified.map((n: string, i: number) => (
-                                        <div key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                                            <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                                        <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                                            <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" aria-hidden="true" />
                                             {n}
-                                        </div>
+                                        </li>
                                     ))}
-                                </div>
-                            </div>
+                                </ul>
+                            </section>
 
                             {/* Recommendations */}
-                            <div className="mb-6">
-                                <h4 className="text-kicker font-black text-primary dark:text-mint uppercase tracking-widest mb-3">{t.recommendations}</h4>
-                                <div className="space-y-2">
+                            <section className="mt-6">
+                                <h3 className="text-caption font-semibold text-muted-foreground">{t.recommendations}</h3>
+                                <ul className="mt-3 space-y-2">
                                     {analysisData.recommendations.map((r: string, i: number) => (
-                                        <div key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                                            <CheckCircle2 className="w-4 h-4 text-primary dark:text-mint flex-shrink-0 mt-0.5" />
+                                        <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                                            <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-mint" aria-hidden="true" />
                                             {r}
-                                        </div>
+                                        </li>
                                     ))}
-                                </div>
-                            </div>
+                                </ul>
+                            </section>
 
                             {/* Missing coverage */}
                             {analysisData.missingCoverage.length > 0 && (
-                                <div>
-                                    <h4 className="text-kicker font-black text-red-700 dark:text-rose-200 uppercase tracking-widest mb-3">{t.missingCoverage}</h4>
-                                    <div className="flex flex-wrap gap-2">
+                                <section className="mt-6">
+                                    <h3 className="text-caption font-semibold text-muted-foreground">{t.missingCoverage}</h3>
+                                    <div className="mt-3 flex flex-wrap gap-2">
                                         {analysisData.missingCoverage.map((mc: any, i: number) => (
-                                            <span key={i} className={`px-3 py-1.5 rounded-full text-xs font-bold ${mc.essential
-                                                ? "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                                                : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                                            <span key={i} className={`${pill} ${mc.essential
+                                                ? "bg-status-danger-tint text-status-danger"
+                                                : "bg-muted text-foreground"
                                                 }`}>
                                                 {mc.label}
-                                                {mc.essential && <span className="ml-1 text-kicker">({t.essential})</span>}
+                                                {mc.essential && <span className="ml-1">({t.essential})</span>}
                                             </span>
                                         ))}
                                     </div>
-                                </div>
+                                </section>
                             )}
                         </div>
                     </div>

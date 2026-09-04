@@ -3,7 +3,6 @@ export const runtime = 'nodejs'
 import { getPendingActionItems } from "./actions"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { TasksClient } from "@/components/tasks/TasksClient"
-import { PageHeader } from "@/components/ui/PageHeader"
 import { getTranslations } from "@/lib/i18n"
 
 export default async function TasksPage() {
@@ -20,15 +19,19 @@ export default async function TasksPage() {
     const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
 
     return (
-        <div className="min-h-screen bg-transparent">
-            <PageHeader
-                title={t.tasks.actionCenter}
-                subtitle={t.tasks.manageTasks}
-            />
-            <TasksClient
-                actionItems={serializedItems}
-                userLanguage={dbUser.preferredLanguage || 'en'}
-            />
+        <div className="pw-page-shell">
+            <div className="mx-auto max-w-4xl space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+                {/* The sticky white PageHeader bar is gone: the page names itself
+                    on the canvas, the way every Direction A surface does. */}
+                <div className="min-w-0">
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{t.tasks.actionCenter}</h1>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.tasks.manageTasks}</p>
+                </div>
+                <TasksClient
+                    actionItems={serializedItems}
+                    userLanguage={dbUser.preferredLanguage || 'en'}
+                />
+            </div>
         </div>
     )
 }

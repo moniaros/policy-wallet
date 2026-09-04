@@ -5,9 +5,10 @@ import Link from "next/link"
 import { submitQuestionnaireResponse } from "@/app/(protected)/tasks/actions"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { CheckCircle2, Save, AlertCircle } from "lucide-react"
+import { CheckCircle2, ClipboardList, Save } from "lucide-react"
 
 import { Alert } from "@/components/ui/Alert"
+import { CardHead } from "@/components/dashboard/home/CardHead"
 interface Question {
     id: string
     type: 'text' | 'boolean' | 'number' | 'select'
@@ -79,84 +80,105 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
 
     if (isSuccess) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in zoom-in duration-500">
-                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
-                    <CheckCircle2 className="h-10 w-10 text-primary dark:text-mint" />
-                </div>
-                <h2 className="mb-2 text-2xl font-bold text-foreground">
+            <section className="pw-card pw-pad-roomy flex flex-col items-center text-center animate-in fade-in duration-500">
+                <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15" aria-hidden="true">
+                    <CheckCircle2 className="h-7 w-7 text-primary dark:text-mint" />
+                </span>
+                <h2 className="mt-4 text-title font-semibold text-foreground">
                     {t.tasks.responsesSentToAdvisor}
                 </h2>
                 {/* The protection score rendered here until Aug 2026 («Το σκορ
                     προστασίας σας: 72%») — removed from the product
                     (PW-MOBILE-TRANSFORM-01, H-001). What the customer did is a
                     fact; what it "scores" was a verdict. */}
-                <p className="mb-8 text-muted-foreground">{t.agentUi.responsesSubmitted}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t.agentUi.responsesSubmitted}</p>
                 <Link
                     href="/protection"
                     data-action="reviewCoverage"
-                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-white dark:text-[#1A2420] transition-transform hover:-translate-y-0.5"
+                    className="pw-primary-button mt-5"
                 >
                     {t.tasks.viewCoverageInsights}
-                    <CheckCircle2 className="h-4 w-4" />
+                    <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                 </Link>
-            </div>
+            </section>
         )
     }
 
+    // The single-select answer shapes share one recipe: a sunken tile that
+    // takes the primary ring when chosen. aria-pressed is the state the guard
+    // reads; the ring is only its picture.
+    const choice = (pressed: boolean) =>
+        `pw-subcard min-h-11 px-4 py-2.5 text-sm font-semibold transition-colors ${
+            pressed ? "ring-2 ring-primary text-foreground" : "text-muted-foreground hover:text-foreground"
+        }`
+
     return (
-        <div className="space-y-6">
-            {/* Progress header */}
-            <div className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-background dark:bg-neutral-900 p-5">
-                <div className="flex-1">
-                    <div className="mb-2 flex items-center justify-between">
-                        <span className="text-micro font-semibold uppercase tracking-wide text-muted-foreground">{t.tasks.completion}</span>
-                        <span className="text-xs font-bold text-foreground">{progress}%</span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-muted">
-                        <div
-                            className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
+        <div className="space-y-4">
+            {/* Progress — the count bar: answered over total, said as a fact
+                under a head that names the questionnaire. */}
+            <section className="pw-card pw-pad">
+                <CardHead
+                    icon={ClipboardList}
+                    title={templateName}
+                    meta={<span className="tabular-nums">{answeredCount}/{totalCount}</span>}
+                />
+                <div className="mt-4 flex items-center justify-between gap-4">
+                    <span className="text-caption text-muted-foreground">{t.tasks.completion}</span>
+                    <span className="text-caption font-semibold tabular-nums text-foreground">{progress}%</span>
                 </div>
-                <div className="text-right">
-                    <span className="block text-micro font-semibold uppercase tracking-wide text-muted-foreground">{t.tasks.questions}</span>
-                    <span className="text-lg font-bold text-foreground">{answeredCount}/{totalCount}</span>
+                <div
+                    className="mt-2 h-2 overflow-hidden rounded-full bg-muted"
+                    role="progressbar"
+                    aria-label={t.tasks.completion}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={progress}
+                >
+                    <div
+                        className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
+                        style={{ width: `${progress}%` }}
+                    />
                 </div>
-            </div>
+            </section>
 
-            <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-background dark:bg-neutral-900 p-6 md:p-8">
-                <h2 className="mb-8 flex items-center gap-2 text-2xl font-bold text-foreground">
-                    {templateName}
-                    <span className="h-2 w-2 rounded-full bg-primary dark:bg-mint" />
-                </h2>
-
-                <div className="space-y-10">
-                    {questions.map((q, idx) => (
-                        <div key={q.id} className="group space-y-4">
-                            <div className="flex items-start gap-4">
-                                <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-xs font-semibold text-muted-foreground transition-colors group-focus-within:border-primary group-focus-within:text-primary dark:group-focus-within:text-mint">
-                                    {String(idx + 1).padStart(2, '0')}
+            <form onSubmit={handleSubmit} className="pw-card pw-pad">
+                <ol className="space-y-8">
+                    {questions.map((q, idx) => {
+                        const inputId = `question-${q.id}`
+                        const labelId = `${inputId}-label`
+                        const isField = q.type === 'text' || q.type === 'number'
+                        return (
+                            <li key={q.id} className="group flex items-start gap-3">
+                                {/* The question's ordinal carries information here —
+                                    «3 of 7» is where the reader is in the form. */}
+                                <span className="pw-card-chip text-caption font-semibold tabular-nums transition-colors group-focus-within:text-primary" aria-hidden="true">
+                                    {idx + 1}
                                 </span>
-                                <div className="flex-1 space-y-4">
-                                    <label className="block text-base font-semibold text-foreground">
-                                        {q.label}
-                                        {q.required && <span className="ml-1 text-primary dark:text-mint">*</span>}
-                                    </label>
+                                <div className="min-w-0 flex-1 space-y-3">
+                                    {/* A <label> names a control; the tile groups below
+                                        are named through aria-labelledby instead, so the
+                                        association is real in both shapes. */}
+                                    {isField ? (
+                                        <label htmlFor={inputId} className="block text-sm font-semibold text-foreground">
+                                            {q.label}
+                                            {q.required && <span className="ml-1 text-primary dark:text-mint">*</span>}
+                                        </label>
+                                    ) : (
+                                        <p id={labelId} className="text-sm font-semibold text-foreground">
+                                            {q.label}
+                                            {q.required && <span className="ml-1 text-primary dark:text-mint">*</span>}
+                                        </p>
+                                    )}
 
                                     {q.type === 'boolean' && (
-                                        <div className="flex max-w-sm gap-3">
+                                        <div className="flex max-w-sm gap-2" role="group" aria-labelledby={labelId}>
                                             {[true, false].map((val) => (
                                                 <button
                                                     key={String(val)}
                                                     type="button"
                                                     aria-pressed={answers[q.id] === val}
                                                     onClick={() => setAnswers({ ...answers, [q.id]: val })}
-                                                    className={`flex-1 rounded-xl border py-3.5 text-sm font-semibold transition-colors ${
-                                                        answers[q.id] === val
-                                                            ? 'border-primary bg-primary text-white dark:text-[#1A2420]'
-                                                            : 'border-border bg-background text-muted-foreground hover:border-primary/40'
-                                                    }`}
+                                                    className={`flex-1 ${choice(answers[q.id] === val)}`}
                                                 >
                                                     {val ? t.common.yes : t.common.no}
                                                 </button>
@@ -166,6 +188,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
 
                                     {q.type === 'text' && (
                                         <input
+                                            id={inputId}
                                             type="text"
                                             required={q.required}
                                             value={answers[q.id] ?? ''}
@@ -177,6 +200,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
 
                                     {q.type === 'number' && (
                                         <input
+                                            id={inputId}
                                             type="number"
                                             required={q.required}
                                             value={answers[q.id] ?? ''}
@@ -187,18 +211,14 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                     )}
 
                                     {q.type === 'select' && (
-                                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
+                                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3" role="group" aria-labelledby={labelId}>
                                             {q.options?.map((opt) => (
                                                 <button
                                                     key={opt}
                                                     type="button"
                                                     aria-pressed={answers[q.id] === opt}
                                                     onClick={() => setAnswers({ ...answers, [q.id]: opt })}
-                                                    className={`rounded-xl border px-4 py-3 text-sm font-medium transition-colors ${
-                                                        answers[q.id] === opt
-                                                            ? 'border-primary bg-primary text-white dark:text-[#1A2420]'
-                                                            : 'border-border bg-muted text-muted-foreground hover:border-primary/40'
-                                                    }`}
+                                                    className={`text-left ${choice(answers[q.id] === opt)}`}
                                                 >
                                                     {opt}
                                                 </button>
@@ -206,13 +226,13 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                            </li>
+                        )
+                    })}
+                </ol>
 
                 {submitError && (
-                    <Alert variant="error" className="mt-8">{t.tasks.submitError}</Alert>
+                    <Alert variant="error" className="mt-6">{t.tasks.submitError}</Alert>
                 )}
 
                 {/* Data-handling note. The health/life templates collect GDPR
@@ -220,7 +240,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     the client must be told who receives it and how it's handled
                     before they submit — consistent with the app's AI-consent and
                     provenance-disclaimer discipline. */}
-                <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
+                <p className="mt-6 text-caption leading-relaxed text-muted-foreground">
                     {t.tasks.questionnairePrivacyNote}{" "}
                     <Link href="/privacy" className="underline hover:text-foreground">
                         {t.tasks.questionnairePrivacyLink}
@@ -228,13 +248,13 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     .
                 </p>
 
-                <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
+                <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-border pt-5 md:flex-row">
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        className="pw-soft-button w-full md:w-auto"
                     >
-                        <Save className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
+                        <Save className="h-4 w-4" aria-hidden="true" />
                         {t.tasks.saveForLater}
                     </button>
                     <button
@@ -244,7 +264,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     >
                         {isSubmitting ? (
                             <>
-                                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" aria-hidden="true">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
@@ -253,7 +273,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                         ) : (
                             <>
                                 {t.tasks.completeSubmission}
-                                <CheckCircle2 className="h-4 w-4" />
+                                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                             </>
                         )}
                     </button>
