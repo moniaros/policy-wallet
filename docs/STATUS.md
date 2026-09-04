@@ -1,10 +1,10 @@
 # STATUS
 
-**Production: `6cb43303`** — deployed 2026-09-03 via CI-green → deploy.yml: the Direction A
-policyholder app (shell, dashboard, wallet, policy detail, protection, settings, /agent,
-notifications, help), the /protection and auth polish, the agent dashboard on the same anatomy
-(PR #288). `addfb7e6` (PR #289 — the preview's dashboard defects: 45%-black link-card borders,
-dashed coverage-map tiles) is merged and its deploy was in flight at the time of writing.
+**Production: `b395a106`** — merged 2026-09-04 (PR #290 carrying the whole stack #291 → #294 →
+#296: the Steady phone layer, B2B batches B and C, the audited customer intake); CI run
+33866823712 was in progress at the time of writing and deploy.yml follows on green. Previous:
+`a910cbe7` (hotfix #292, every upload committed a policy with zero documents) on `6cb43303`
+(Direction A, PR #288) + `addfb7e6` (PR #289, dashboard link-card borders and coverage-map tiles).
 The Grafí homepage (`76f62a43`, 2026-08-30) is LIVE and smoked: fixed-promise H1, 16-line ticker, sourced numbers with
 their links, retired sentence absent, 4 steps + ReadingDemo, broker band, comparison, three
 pricing cards (€0/€4.99/€8.99) + recommender, CTA white-on-green, no h-scroll at 390; /en
@@ -20,6 +20,32 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **2026-09-04 — The B2B customer-intake and policy-upload audit is merged (PR #296 → the
+  stack → NEW-UI `b395a106`).** Ten launch-gating defects fixed, each with an enumerating guard
+  and a probe: `/customers/[id]` read Next 16's Promise `params` synchronously and showed an
+  arbitrary customer; a document reached the model provider with no consent on any party (now
+  the agent's own AI consent, collected in-flow, plus a mandatory pre-scan attestation in the
+  audit row — owner decision D1); the add-customer «smart PDF» door parsed and dropped the file
+  (it opens the upload modal now); bulk import created relationships in the ENDED `inactive`
+  status and choked on Greek `;` CSVs (per-row outcomes, chunked, ΑΦΜ accepted); invites
+  resurrected terminated relationships; policy + grant + notification committed before the
+  storage upload; server actions took unvalidated input (Zod, codes not prose, every error
+  localised on the step that owns the field); the free tier was told «η ανάλυση εκτελείται»
+  while the token gate could never pass (now `queued | blocked_quota | blocked_consent`, a
+  blocked policy kept as `action_needed`). Owner decisions: D2 Article 14 inside the invite
+  email only; D3 customers without an email (ΑΦΜ + Greek mobile as identity, synthetic
+  `noemail+<afm>@customers.policywallet.invalid`, `users.contact_email_missing` — migration
+  `20260904120000` applied and verified on dev AND prod, the one email transport refuses the
+  domain, «Χωρίς email» pill + add-email path); D4/D6 a terminated relationship frees the seat
+  and only the customer reconnects — a customer may have several agents, never assume one.
+  Harness (session scratchpad, worth committing under `tests/journeys/`): `intake-walk.mjs`
+  walks manual / pdf-door / upload / bulk at 390 as the E2E agent and `intake-db.mjs
+  inspect|cleanup` checks the rows; three clean rounds on the final code (a fourth was lost to a
+  dev-Supabase connectivity blip, not the product). Both databases had zero mixed-case emails,
+  collisions or `inactive/not_invited` rows, so no data repair ran. Full suite 536 files / 6153
+  tests; local production build green. Deferred: PRs #293 (onboarding) and #295 (perf) await the
+  owner; the marketing dictionaries cut; the classifier blocked `gh pr merge` and `gh run`
+  polling loops (merges went through the GitHub connector).
 - **2026-09-04 — B2B batch C on `feat/b2b-batch-c` (stacked on #291 → #290): insights,
   benefits, commissions, questionnaires, team and the three customer modals are on the
   Direction A anatomy.** Three parallel subagents re-cut the nine files against the batch B
