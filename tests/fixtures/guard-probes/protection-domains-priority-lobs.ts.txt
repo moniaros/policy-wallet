@@ -1,0 +1,26 @@
+/**
+ * PROBE — the exact `PRIORITY_LOBS` table deleted from
+ * lib/services/gap-engine/recommendation-generator.ts when the attention-area
+ * table (lib/protection/domains.ts) became the single source
+ * (docs/planning/PERSONAL_RISK_PROFILE.md §K, wave 1a). The guard must stay
+ * red on the very code whose removal it protects.
+ */
+const PRIORITY_LOBS: Record<string, readonly string[]> = {
+    health: ["health"],
+    household: ["life"],
+    "money:income": ["income_protection", "disability", "life"],
+    "money:debt": ["life", "income_protection"],
+    "money:retirement": ["pension", "life"],
+    residence: ["home"],
+    property: ["home"],
+    mobility: ["motor"],
+    work: ["liability", "income_protection", "disability"],
+    lifestyle: ["travel", "pet", "boat"],
+}
+
+export function statedPriorityRank(lineOfBusiness: string, stated: readonly string[] | null | undefined): number {
+    if (!stated || stated.length === 0) return Number.MAX_SAFE_INTEGER
+    const lob = String(lineOfBusiness || "").toLowerCase().split(/[:/]/)[0]
+    const index = stated.findIndex((id) => (PRIORITY_LOBS[id] ?? []).includes(lob))
+    return index === -1 ? Number.MAX_SAFE_INTEGER : index
+}

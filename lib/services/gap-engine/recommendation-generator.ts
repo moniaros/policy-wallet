@@ -7,6 +7,7 @@
  */
 
 import { db } from "@/lib/db"
+import { areaForLob } from "@/lib/protection/domains"
 import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { resolveGapConcept, resolveGapContent } from "@/lib/wallet/gap-report"
 import type { ProfileGap, GapSeverity } from "./profile-gap-rules"
@@ -451,24 +452,20 @@ const SEVERITY_ORDER: Record<GapSeverity, number> = {
  * domain the customer said matters comes first. A stated priority never
  * promotes a finding past a more urgent one, and never demotes anything —
  * it only orders equals, which is the only thing a self-report is evidence of.
+ *
+ * Which area a line belongs to is the attention-area table's answer
+ * (lib/protection/domains.ts), not a private list here: every writable line
+ * resolves to exactly one area, so `group_health`, `roadside`, `pension` and
+ * `cyber` rank like any other line instead of falling through. `stated` holds
+ * the protection map's row ids — what `topPriorityIds` emits and
+ * `protection_profiles.priorityAreas` stores — so the match is on the area's
+ * `priorityId` (`money:income`), which keeps the three faces of money apart.
  */
-const PRIORITY_LOBS: Record<string, readonly string[]> = {
-    health: ["health"],
-    household: ["life"],
-    "money:income": ["income_protection", "disability", "life"],
-    "money:debt": ["life", "income_protection"],
-    "money:retirement": ["pension", "life"],
-    residence: ["home"],
-    property: ["home"],
-    mobility: ["motor"],
-    work: ["liability", "income_protection", "disability"],
-    lifestyle: ["travel", "pet", "boat"],
-}
-
 export function statedPriorityRank(lineOfBusiness: string, stated: readonly string[] | null | undefined): number {
     if (!stated || stated.length === 0) return Number.MAX_SAFE_INTEGER
-    const lob = String(lineOfBusiness || "").toLowerCase().split(/[:/]/)[0]
-    const index = stated.findIndex((id) => (PRIORITY_LOBS[id] ?? []).includes(lob))
+    const area = areaForLob(lineOfBusiness)
+    if (!area) return Number.MAX_SAFE_INTEGER
+    const index = stated.indexOf(area.priorityId)
     return index === -1 ? Number.MAX_SAFE_INTEGER : index
 }
 

@@ -1,0 +1,40 @@
+/**
+ * PROBE — a compliant surface full of near-miss shapes. It names spheres and
+ * lines, keeps a label map keyed by domain, carries ONE coincidental
+ * `health: "health"` pair (an i18n section key — the shape
+ * lib/wallet/coverage-sections.ts has), reads the taxonomy's `scoreCategory`,
+ * quotes the old table in comments — and takes every line→area answer from
+ * `areaForLob`. The guard must NOT flag it.
+ */
+import { areaForLob } from "@/lib/protection/domains"
+import type { EventDomain } from "@/lib/services/life-events/types"
+
+// const PRIORITY_LOBS = { mobility: ["motor"], residence: ["home"] }
+/* const LOB_DOMAIN = { motor: "mobility", home: "residence", life: "household" } */
+
+export const SPHERE_LABELS: Record<EventDomain, { en: string }> = {
+    household: { en: "Family" },
+    residence: { en: "Home" },
+    property: { en: "Property" },
+    mobility: { en: "Vehicles" },
+    work: { en: "Work" },
+    money: { en: "Money" },
+    health: { en: "Health" },
+    lifestyle: { en: "Lifestyle" },
+}
+
+export const SECTION_KEY = {
+    health: "health",
+    motorAndVehicles: "motor",
+    homeAndProperty: "home",
+} as const
+
+const branch = { id: "motor", scoreCategory: "property", writeEnabled: true }
+
+export function sphereOf(lob: string): EventDomain | undefined {
+    return areaForLob(lob)?.domain
+}
+
+export function isMobility(lob: string): boolean {
+    return areaForLob(lob)?.id === "mobility" || branch.id === lob
+}

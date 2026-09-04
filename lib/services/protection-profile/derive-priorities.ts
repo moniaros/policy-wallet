@@ -12,6 +12,7 @@
  * summed: three high-priority areas are three sentences, not a number.
  */
 
+import { AREAS, AREA_ORDER, type AttentionAreaId } from "@/lib/protection/domains"
 import type { LifeContext } from "@/lib/services/gap-engine/life-context"
 import { totalDependents } from "@/lib/services/gap-engine/life-context"
 import type { Bilingual } from "@/lib/services/gap-engine/risk-types"
@@ -82,59 +83,74 @@ type Presence = "yes" | "no" | "unsure"
 type Concern = "primary" | "secondary" | "none"
 type Change = "recent" | "planned" | "none"
 
-interface Area {
-    id: string
-    domain: PriorityDomain
-    facet?: MoneyFacet
+/** What the facts and statements say about one area — the rule inputs. */
+interface AreaRule {
     presence: Presence
     /** Reason used when the area is present and essential. */
     essential: PriorityReasonId | null
     confidence: PriorityConfidence
 }
 
+/** A rule joined to its row identity, which comes from the attention-area table. */
+interface Area extends AreaRule {
+    id: string
+    domain: PriorityDomain
+    facet?: MoneyFacet
+}
+
 function list(value: unknown): string[] {
     return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : []
 }
 
-/** concern id → area id */
+/** The map's row id for an attention area — `money:income` for the faces of money, the domain otherwise. */
+const ROW = (area: AttentionAreaId): string => AREAS[area].priorityId
+
+/** concern id → row id */
 const CONCERN_AREA: Record<string, string> = {
-    health: "health",
-    family: "household",
-    income: "money:income",
-    home: "residence",
-    obligation: "money:debt",
-    vehicle: "mobility",
-    business: "work",
+    health: ROW("health"),
+    family: ROW("household"),
+    income: ROW("income"),
+    home: ROW("residence"),
+    obligation: ROW("debt"),
+    vehicle: ROW("mobility"),
+    business: ROW("work"),
 }
 
-/** recent change id → area id */
+/** recent change id → row id */
 const CHANGE_AREA: Record<string, string> = {
-    new_child: "household",
-    married: "household",
-    separated: "household",
-    bought_home: "residence",
-    started_renting: "residence",
-    took_mortgage: "money:debt",
-    income_changed: "money:income",
-    started_business: "work",
-    retired: "money:retirement",
-    new_vehicle: "mobility",
-    health_changed: "health",
+    new_child: ROW("household"),
+    married: ROW("household"),
+    separated: ROW("household"),
+    bought_home: ROW("residence"),
+    started_renting: ROW("residence"),
+    took_mortgage: ROW("debt"),
+    income_changed: ROW("income"),
+    started_business: ROW("work"),
+    retired: ROW("retirement"),
+    new_vehicle: ROW("mobility"),
+    health_changed: ROW("health"),
 }
 
-/** future consideration id → area id */
+/** future consideration id → row id */
 const PLAN_AREA: Record<string, string> = {
-    home_purchase: "residence",
-    child: "household",
-    business: "work",
-    retirement: "money:retirement",
-    move: "residence",
-    large_purchase: "property",
+    home_purchase: ROW("residence"),
+    child: ROW("household"),
+    business: ROW("work"),
+    retirement: ROW("retirement"),
+    move: ROW("residence"),
+    large_purchase: ROW("property"),
 }
 
 const IMPORTANCE_ORDER: Record<PriorityImportance, number> = { high: 0, medium: 1, watch: 2, needs_review: 3 }
 
-function areas(ctx: LifeContext, s: ProtectionStatementsLike): Area[] {
+/**
+ * The rule inputs per area. Identity (domain, facet, row id) and display order
+ * are NOT authored here — they come from the attention-area table
+ * (lib/protection/domains.ts). `lifestyle` has no rule yet: the onboarding
+ * never asks about travel, pets, activities or valuables («Δεν ρωτήσαμε
+ * ακόμη…»), so the map has no row for it.
+ */
+function areaRules(ctx: LifeContext, s: ProtectionStatementsLike): Partial<Record<AttentionAreaId, AreaRule>> {
     const unsure = new Set(list(s.unsureSteps))
     const commitments = new Set(list(s.commitments))
     const plans = new Set(list(s.futureConsiderations))
@@ -151,27 +167,20 @@ function areas(ctx: LifeContext, s: ProtectionStatementsLike): Area[] {
               : "no"
     const retired = ctx.employmentStatus === "retired" || plans.has("retirement")
 
-    return [
-        {
-            id: "household",
-            domain: "household",
+    return {
+        household: {
             presence: householdPresence,
             essential: "dependants",
             confidence: householdKnown ? "known" : "unknown",
         },
-        {
-            id: "health",
-            domain: "health",
+        health: {
             // Everyone has health to protect; we never asked a health fact, so
             // this area is a statement-only row by construction.
             presence: "yes",
             essential: null,
             confidence: "unknown",
         },
-        {
-            id: "money:income",
-            domain: "money",
-            facet: "income",
+        income: {
             presence: employmentKnown ? (earning ? "yes" : "no") : "unsure",
             // Income is essential when someone else lives on it.
             essential: dependants ? "income_dependency" : null,
@@ -179,51 +188,50 @@ function areas(ctx: LifeContext, s: ProtectionStatementsLike): Area[] {
             // confidence while the income itself is unknown to the engine.
             confidence: ctx.known.income ? "known" : employmentKnown ? "partial" : "unknown",
         },
-        {
-            id: "residence",
-            domain: "residence",
+        residence: {
             presence: "yes",
             essential: ctx.residenceType === "owned" ? "owned_home" : ctx.residenceType === "rented" ? "renting" : null,
             confidence: ctx.known.residence ? "known" : "unknown",
         },
-        {
-            id: "money:debt",
-            domain: "money",
-            facet: "debt",
+        debt: {
             presence: debtPresence,
             essential: "debt",
             confidence: debtPresence === "unsure" ? "unknown" : ctx.known.loans || ctx.known.mortgage ? "known" : "partial",
         },
-        {
-            id: "mobility",
-            domain: "mobility",
+        mobility: {
             presence: ctx.known.vehicles ? (ctx.vehiclesCount > 0 ? "yes" : "no") : "unsure",
             essential: "vehicle",
             confidence: ctx.known.vehicles ? "known" : "unknown",
         },
-        {
-            id: "work",
-            domain: "work",
+        work: {
             presence: employmentKnown ? (ctx.isSelfEmployed || ctx.ownsBusiness ? "yes" : "no") : "unsure",
             essential: "business",
             confidence: employmentKnown ? "known" : "unknown",
         },
-        {
-            id: "money:retirement",
-            domain: "money",
-            facet: "retirement",
+        retirement: {
             presence: retired ? "yes" : "no",
             essential: null,
             confidence: employmentKnown ? "known" : "unknown",
         },
-        {
-            id: "property",
-            domain: "property",
+        property: {
             presence: ctx.propertiesOwned > 1 || ctx.rentsOutProperty || (ctx.valuablesValue ?? 0) > 0 ? "yes" : "no",
             essential: null,
             confidence: ctx.known.propertyOwnership ? "known" : "unknown",
         },
-    ]
+    }
+}
+
+/** The rows in the table's display order, skipping areas the onboarding has no rule for. */
+function areas(ctx: LifeContext, s: ProtectionStatementsLike): Area[] {
+    const rules = areaRules(ctx, s)
+    const out: Area[] = []
+    for (const areaId of AREA_ORDER) {
+        const rule = rules[areaId]
+        if (!rule) continue
+        const { domain, facet, priorityId } = AREAS[areaId]
+        out.push({ id: priorityId, domain, ...(facet ? { facet } : {}), ...rule })
+    }
+    return out
 }
 
 /**

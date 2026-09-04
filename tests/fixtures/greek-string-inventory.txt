@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3160
-# inline entries: 4799 across 214 files
+# inline entries: 4802 across 215 files
 # ternary entries: 284 across 43 files
 # call entries: 1146 across 86 files
 
@@ -6948,6 +6948,9 @@ inline	lib/product/lob-faqs.ts	"Τρία πράγματα: την αποζημί
 inline	lib/product/lob-faqs.ts	"Χαρτογραφούμε το πολυασφαλιστήριό σας ανά σκέλος — με τα όρια και τις απαλλαγές του καθενός — ώστε να δείτε τι έχετε αγοράσει και τι λείπει. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια."
 inline	lib/product/lob-faqs.ts	"Χρειάζομαι ατομική ασφάλεια αν έχω ομαδικό στη δουλειά;"
 inline	lib/product/lob-faqs.ts	"Χρειάζομαι ξεχωριστό ασφαλιστήριο αστικής ευθύνης;"
+inline	lib/protection/domains.ts	"Δάνειο και υποχρεώσεις"
+inline	lib/protection/domains.ts	"Εισόδημα"
+inline	lib/protection/domains.ts	"Σύνταξη"
 inline	lib/schemas/acord-data.ts	z.string()
 inline	lib/schemas/acord-data.ts	z.string()
 inline	lib/schemas/acord-data.ts	z.string()
