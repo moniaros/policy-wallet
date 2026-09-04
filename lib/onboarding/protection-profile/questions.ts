@@ -10,6 +10,7 @@ import {
     FUTURE_CONSIDERATIONS,
     GUIDANCE_PREFERENCES,
     HOME_VALUES,
+    INCOME_DEPENDENCY_ANSWERS,
     INCOME_VALUES,
     INTENT_VALUES,
     LIFE_CHANGE_OPTIONS,
@@ -34,6 +35,9 @@ export function homeOptions(): readonly string[] {
 }
 export function incomeOptions(): readonly string[] {
     return INCOME_VALUES
+}
+export function incomeDependencyOptions(): readonly string[] {
+    return INCOME_DEPENDENCY_ANSWERS
 }
 
 /** Mortgage only for an owner (or «somewhere else»); rent only for a tenant. */

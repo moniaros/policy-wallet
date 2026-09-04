@@ -256,6 +256,26 @@ function areas(ctx: LifeContext, s: ProtectionStatementsLike): Area[] {
     return out
 }
 
+/** The rows §E's income-dependency answer speaks about: the household that lives on the income, and the income itself. */
+const INCOME_DEPENDENCY_ROWS: readonly string[] = [ROW("household"), ROW("income")]
+
+/**
+ * §E / §H: «πόσο βασίζεται το νοικοκυριό σου στο εισόδημά σου;» is the single
+ * strongest signal for the household and income rows — a FLOOR, never a
+ * ceiling. `primary` with any dependant lifts both rows to at least `high`,
+ * `shared` to at least `medium`, `minor` changes nothing; a row the person
+ * already rated higher keeps its own reason. Only a PRESENT row is lifted: a
+ * row that is unsure stays «χρειάζονται περισσότερα στοιχεία», and an income
+ * row that is absent (a retiree's earned income) is not conjured into being.
+ */
+function incomeDependencyFloor(ctx: LifeContext, areaId: string): PriorityImportance | null {
+    if (!INCOME_DEPENDENCY_ROWS.includes(areaId)) return null
+    if (totalDependents(ctx) <= 0) return null
+    if (ctx.incomeDependency === "primary") return "high"
+    if (ctx.incomeDependency === "shared") return "medium"
+    return null
+}
+
 /**
  * The rule table, first match wins:
  *   1. presence unsure                     → needs_review
@@ -265,6 +285,8 @@ function areas(ctx: LifeContext, s: ProtectionStatementsLike): Area[] {
  *   5. secondary concern ∨ planned         → medium
  *   6. present and essential               → medium
  *   7. present                             → watch
+ * then, on the household and income rows only, the income-dependency floor
+ * (`incomeDependencyFloor`): a present row is lifted to at least the floor.
  */
 export function deriveProtectionPriorities(
     ctx: LifeContext,
@@ -305,25 +327,29 @@ export function deriveProtectionPriorities(
         }
         const source: ProtectionPriority["source"] = stated ? (area.essential ? "both" : "stated_priority") : "declared_fact"
         const status: ProtectionPriority["status"] = area.id === "health" ? "unverified" : "needs_review"
+        let row: ProtectionPriority
         if (concern === "primary" || change === "recent") {
-            out.push({ ...base, importance: "high", reason: reason(change === "recent" && concern !== "primary" ? "changed_recently" : "stated_primary"), status, source })
-            continue
+            row = { ...base, importance: "high", reason: reason(change === "recent" && concern !== "primary" ? "changed_recently" : "stated_primary"), status, source }
+        } else if (concern === "secondary" || change === "planned") {
+            row = { ...base, importance: "medium", reason: reason(change === "planned" && concern !== "secondary" ? "planned" : "stated_secondary"), status, source }
+        } else if (area.essential) {
+            row = { ...base, importance: "medium", reason: reason(area.essential), status, source }
+        } else {
+            row = {
+                ...base,
+                importance: "watch",
+                reason: reason(area.id === "health" ? "health_everyone" : area.essential ?? "dependants"),
+                status,
+                source,
+            }
         }
-        if (concern === "secondary" || change === "planned") {
-            out.push({ ...base, importance: "medium", reason: reason(change === "planned" && concern !== "secondary" ? "planned" : "stated_secondary"), status, source })
-            continue
+        const floor = incomeDependencyFloor(ctx, area.id)
+        if (floor && IMPORTANCE_ORDER[floor] < IMPORTANCE_ORDER[row.importance]) {
+            // Lifted by a declared fact: the reason says so, and the source
+            // gains the fact even where a statement had already named the area.
+            row = { ...row, importance: floor, reason: reason("income_dependency"), source: stated ? "both" : "declared_fact" }
         }
-        if (area.essential) {
-            out.push({ ...base, importance: "medium", reason: reason(area.essential), status, source })
-            continue
-        }
-        out.push({
-            ...base,
-            importance: "watch",
-            reason: reason(area.id === "health" ? "health_everyone" : area.essential ?? "dependants"),
-            status,
-            source,
-        })
+        out.push(row)
     }
 
     // high → medium → watch → needs_review; inside a tier, the person's own

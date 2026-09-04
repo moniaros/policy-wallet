@@ -27,6 +27,15 @@ describe("journey-event registry ↔ emitters", () => {
         expect(unregistered, `emitted but not in JourneyEventName: ${unregistered.join(", ")}`).toEqual([])
     })
 
+    it("the dashboard's recommendation events are emitted somewhere", () => {
+        // §J of docs/planning/PERSONAL_RISK_PROFILE.md — registered on
+        // 2e22616f, emitted by components/dashboard/home/RecommendationAnalytics.tsx.
+        for (const name of ["recommendation_viewed", "action_started"]) {
+            expect(NAMES.has(name), `${name} is not registered`).toBe(true)
+            expect(EMITTED.has(name), `${name} is registered but never emitted`).toBe(true)
+        }
+    })
+
     it("every first-stage onboarding name is emitted somewhere", () => {
         const onboarding = [...NAMES].filter((n) =>
             /^(onboarding_|intent_|life_context_|risk_concern_|confidence_level_|life_change_|future_consideration_|guidance_preference_|protection_)/.test(n)

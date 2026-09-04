@@ -22,6 +22,9 @@ import { declareLifeEvent } from "@/lib/services/life-events/service"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { firstNameLabel } from "@/lib/wallet/policy-identity"
 import { insightFromContext, type FirstInsight } from "@/lib/services/onboarding/quick-start"
+import type { AttentionAreaView, AttentionSummary } from "@/lib/protection/attention-areas"
+import type { AttentionAreaId } from "@/lib/protection/domains"
+import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 import {
     deriveProtectionPriorities,
     topPriorityIds,
@@ -136,6 +139,17 @@ export async function saveProtectionProfileStep(input: unknown): Promise<SavePro
 
 export interface ProtectionProfileCompletion {
     priorities: ProtectionPriority[]
+    /**
+     * The attention areas (lib/protection/load-attention-areas.ts) — what the
+     * map's rows render: alignment, unknown facts, confidence, density. The
+     * bundle's `ctx` (Art. 9 columns among it) never crosses to the client.
+     */
+    areas: AttentionAreaView[]
+    attention: AttentionSummary
+    /** `areas` filtered to `activated`, same order — «Ξεκινάμε από». */
+    activatedAreas: AttentionAreaId[]
+    policyCount: number
+    analysedCount: number
     insight: FirstInsight | null
     unsureCount: number
     countedTotal: number
@@ -153,6 +167,7 @@ export interface ProtectionProfileCompletion {
 export async function completeProtectionProfile(): Promise<ProtectionProfileCompletion> {
     const { dbUser } = await getAuthenticatedUser()
     const userId = dbUser.id
+    const language = dbUser.preferredLanguage === "en" ? "en" : "el"
 
     const [profile, row] = await Promise.all([
         db.policyholderProfile.findUnique({ where: { userId } }),
@@ -232,9 +247,20 @@ export async function completeProtectionProfile(): Promise<ProtectionProfileComp
         revalidatePath("/protection")
     }
 
+    // The map's rows: the four layers composed on read, with the person's
+    // guidance preference and uncertainty reasons already folded into each
+    // area's density and order. Read after the seal so a completed row's
+    // statements are the ones the composition sees; nothing here writes.
+    const bundle = await loadAttentionAreas({ userId, language })
+
     const insight = insightFromContext(ctx)
     return {
         priorities,
+        areas: bundle.areas,
+        attention: bundle.summary,
+        activatedAreas: bundle.activatedAreas,
+        policyCount: bundle.policyCount,
+        analysedCount: bundle.analysedCount,
         insight,
         unsureCount: stringList(row?.unsureSteps).length,
         countedTotal: COUNTED_STEPS.length,

@@ -40,9 +40,10 @@ export function trackAnswer(locale: Locale, stepId: ProtectionStepId, value: Rec
         case "people":
         case "home":
         case "income":
+        case "income_dependency":
         case "obligations":
         case "mobility": {
-            const raw = value.people ?? value.home ?? value.income ?? value.commitments ?? value.vehicles
+            const raw = value.people ?? value.home ?? value.income ?? value.dependency ?? value.commitments ?? value.vehicles
             const option = Array.isArray(raw) ? raw.join("+") : raw === undefined ? undefined : String(raw)
             trackJourneyEvent("life_context_selected", { locale, step_id: stepId, option, dont_know_used: value.unsure === true })
             return
@@ -75,6 +76,16 @@ export function trackAnswer(locale: Locale, stepId: ProtectionStepId, value: Rec
         default:
             return
     }
+}
+
+/** The last life-context screen (mobility) saved — the facts are in. */
+export function trackLifeContextCompleted(locale: Locale, input: { intent: string | undefined; dontKnowCount: number }) {
+    trackJourneyEvent("life_context_completed", { locale, intent: input.intent, dont_know_count: input.dontKnowCount })
+}
+
+/** One per area the map renders, the first time this session shows it. */
+export function trackAttentionAreaCreated(input: { area: string; importance: string; confidence: string; alignment: string }) {
+    trackJourneyEvent("attention_area_created", input)
 }
 
 export function trackCompleted(locale: Locale, input: { stepsCompleted: number; elapsedMs: number; dontKnowCount: number; priorityCount: number; resumed: boolean }) {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { ProtectionProfileStepSchema } from "@/lib/validations/protection-profile"
-import { LIFE_CHANGE_OPTIONS } from "@/lib/services/protection-profile/vocabulary"
+import { INCOME_DEPENDENCY_ANSWERS, LIFE_CHANGE_OPTIONS, PROTECTION_STEP_IDS } from "@/lib/services/protection-profile/vocabulary"
+import { INCOME_DEPENDENCY_VALUES } from "@/lib/services/gap-engine/life-context"
 import { getLifeEvent } from "@/lib/services/life-events/registry"
 
 describe("protection profile — the zod boundary", () => {
@@ -12,6 +13,10 @@ describe("protection profile — the zod boundary", () => {
             { step: "people", unsure: true },
             { step: "home", home: "rented" },
             { step: "income", income: "business" },
+            { step: "income_dependency", dependency: "primary" },
+            { step: "income_dependency", dependency: "shared" },
+            { step: "income_dependency", dependency: "minor" },
+            { step: "income_dependency", unsure: true },
             { step: "obligations", commitments: ["mortgage"] },
             { step: "mobility", vehicles: "1" },
             { step: "hurt_most", concerns: ["income", "family"] },
@@ -45,6 +50,16 @@ describe("protection profile — the zod boundary", () => {
         expect(ProtectionProfileStepSchema.safeParse({ step: "health", condition: "diabetes" }).success).toBe(false)
         expect(ProtectionProfileStepSchema.safeParse({ step: "intent", intent: "free text" }).success).toBe(false)
         expect(ProtectionProfileStepSchema.safeParse({ step: "hurt_most", concerns: ["health", "family", "income"] }).success).toBe(false)
+    })
+
+    it("income dependency is the engine's own three words — an amount or a fourth word is refused", () => {
+        expect([...INCOME_DEPENDENCY_ANSWERS]).toEqual([...INCOME_DEPENDENCY_VALUES])
+        expect(PROTECTION_STEP_IDS.indexOf("income_dependency")).toBe(PROTECTION_STEP_IDS.indexOf("income") + 1)
+        expect(ProtectionProfileStepSchema.safeParse({ step: "income_dependency", dependency: "all" }).success).toBe(false)
+        expect(ProtectionProfileStepSchema.safeParse({ step: "income_dependency", dependency: 0.8 }).success).toBe(false)
+        const parsed = ProtectionProfileStepSchema.safeParse({ step: "income_dependency", dependency: "primary", annualIncome: 30000 })
+        expect(parsed.success).toBe(true)
+        if (parsed.success) expect(parsed.data).not.toHaveProperty("annualIncome")
     })
 
     it("every life-change chip maps to a registry event or is an explicit flag", () => {

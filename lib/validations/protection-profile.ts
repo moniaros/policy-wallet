@@ -6,6 +6,7 @@ import {
     FUTURE_CONSIDERATIONS,
     GUIDANCE_PREFERENCES,
     HOME_VALUES,
+    INCOME_DEPENDENCY_ANSWERS,
     INCOME_VALUES,
     INTENT_VALUES,
     LIFE_CHANGE_IDS,
@@ -38,6 +39,12 @@ export const ProtectionProfileStepSchema = z.discriminatedUnion("step", [
     }),
     z.object({ step: z.literal("home"), home: z.enum(HOME_VALUES) }),
     z.object({ step: z.literal("income"), income: z.enum(INCOME_VALUES) }),
+    z.object({
+        step: z.literal("income_dependency"),
+        /** Absent together with `unsure` reads as unsure: a missing value is never a guess. */
+        dependency: z.enum(INCOME_DEPENDENCY_ANSWERS).optional(),
+        unsure,
+    }),
     z.object({
         step: z.literal("obligations"),
         commitments: z.array(z.enum(COMMITMENT_VALUES)).max(COMMITMENT_VALUES.length).default([]),

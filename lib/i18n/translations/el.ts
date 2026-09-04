@@ -2261,8 +2261,15 @@ export const el = {
             prioritiesDeclaredChip: 'Όπως το δηλώσατε',
             prioritiesNoPolicies: 'Από όσα μας είπατε. Δεν έχουμε δει ακόμη τι καλύπτουν τα ασφαλιστήριά σας.',
             prioritiesUploadCta: 'Δείτε αν είστε σωστά προστατευμένοι',
-            prioritiesWithPolicies: 'Από όσα μας είπατε — τώρα μπορούμε να το δούμε δίπλα στις καλύψεις σας.',
+            prioritiesWithPolicies: 'Το ότι δεν έχουμε δει ασφαλιστήριο για κάτι δεν σημαίνει ότι δεν υπάρχει.',
             prioritiesAlignmentCta: 'Δείτε πώς ταιριάζουν με τις καλύψεις σας',
+            // The composed view (lib/protection/attention-areas.ts): counts of
+            // areas in a state, and the limits caveat that keeps «Φαίνεται να
+            // καλύπτεται» honest when only a summary was read.
+            prioritiesAreaCountLabel: 'Περιοχές',
+            prioritiesUnknownCountLabel: 'Δεν ξεκαθαρίστηκαν ακόμη',
+            prioritiesCoveredCountLabel: 'Με ένδειξη κάλυψης',
+            prioritiesLimitsUnread: 'τα όρια δεν έχουν διαβαστεί ακόμη',
             prioritiesDisclaimer: 'Αυτό δεν σημαίνει ότι σας λείπει κάποια συγκεκριμένη κάλυψη. Σημαίνει ότι υπάρχουν σημεία που αξίζει να ελέγξουμε.',
             priorityReason: {
                 stated_primary: 'Το αναφέρατε ως αυτό που θα σας επηρέαζε περισσότερο.',
@@ -3838,6 +3845,16 @@ export const el = {
                         student_other: 'Σπουδάζω ή κάτι άλλο',
                     },
                 },
+                income_dependency: {
+                    prompt: 'Πόσο βασίζεται το νοικοκυριό σου στο εισόδημά σου;',
+                    why: 'Αν σταματούσε, ποιος θα το ένιωθε; Από εδώ ξεκινά η προστασία της οικογένειας.',
+                    options: {
+                        primary: 'Κυρίως σε αυτό',
+                        shared: 'Περίπου στο μισό',
+                        minor: 'Λίγο — υπάρχουν κι άλλα εισοδήματα',
+                    },
+                    discovery: 'Σκέψου τι θα άλλαζε στο σπίτι αν το εισόδημά σου σταματούσε για μήνες. Αν δεν είναι ξεκάθαρο, το αφήνουμε ανοιχτό.',
+                },
                 obligations: {
                     prompt: 'Τρέχει κάποια σταθερή υποχρέωση;',
                     why: 'Οι υποχρεώσεις δεν σταματούν όταν σταματά το εισόδημα. Και συχνά έρχονται με ασφάλιση που όρισε η τράπεζα — αξίζει να ξέρουμε ότι υπάρχει.',
@@ -3987,6 +4004,70 @@ export const el = {
                 cta: 'Να δούμε τι έχω ήδη',
                 later: 'Θα το κάνω αργότερα',
             },
+            // The map's rows, composed from the attention areas
+            // (lib/protection/attention-areas.ts) in the onboarding's own
+            // singular voice — the structured fields only, never the formal
+            // explanation strings /protection renders.
+            map: {
+                alignment: {
+                    unknown: 'Δεν το ξεκαθαρίσαμε ακόμη',
+                    not_yet_checked: 'Δεν έχουμε δει ακόμη ασφαλιστήριο για αυτό',
+                    appears_covered: 'Φαίνεται να καλύπτεται',
+                    review: 'Αξίζει να το εξετάσουμε',
+                    gap: 'Εύρημα στο ασφαλιστήριό σου',
+                },
+                limitsUnread: 'τα όρια δεν έχουν διαβαστεί ακόμη',
+                unknownList: 'Δεν ξέρουμε ακόμη: {list}.',
+                confidence: {
+                    unknown: 'Δεν έχουμε αρκετά στοιχεία.',
+                    inferred: 'Το συμπεράναμε από όσα μας είπες.',
+                    user_reported: 'Βασίζεται σε όσα μας είπες.',
+                    policy_verified: 'Επιβεβαιώνεται από ασφαλιστήριό σου.',
+                    externally_verified: 'Επιβεβαιώνεται από εξωτερική πηγή.',
+                },
+                next: {
+                    answer_questions: 'Θα σε ρωτήσουμε λίγα ακόμη.',
+                    check_first_policy: 'Ας δούμε το πρώτο σου ασφαλιστήριο για αυτό.',
+                    review_finding: 'Δες το εύρημα και τι μπορείς να κάνεις.',
+                    nothing_now: 'Δεν χρειάζεται κάτι από σένα τώρα.',
+                },
+                // The assessment's factor nouns (protection.assessment.factors.*.noun)
+                // in the singular — one per context factor, same keys.
+                factorNoun: {
+                    age: 'την ηλικία σου',
+                    maritalStatus: 'την οικογενειακή σου κατάσταση',
+                    children: 'πόσα παιδιά έχεις',
+                    dependents: 'ποιοι βασίζονται σε σένα',
+                    pets: 'αν έχεις κατοικίδιο',
+                    vehicles: 'πόσα οχήματα έχεις',
+                    residence: 'αν το σπίτι σου είναι δικό σου ή νοικιασμένο',
+                    tenancy: 'τη μορφή της κατοικίας σου',
+                    propertyOwnership: 'πόσα ακίνητα σου ανήκουν',
+                    tenants: 'αν νοικιάζεις ακίνητο σε άλλους',
+                    boat: 'αν έχεις σκάφος',
+                    businessOwnership: 'αν έχεις επιχείρηση',
+                    selfEmployed: 'την εργασιακή σου κατάσταση',
+                    employees: 'αν απασχολείς προσωπικό',
+                    income: 'το εισόδημά σου',
+                    savings: 'τις αποταμιεύσεις σου',
+                    mortgage: 'το στεγαστικό σου δάνειο',
+                    loans: 'τα άλλα δάνειά σου',
+                    travelFrequency: 'πόσο συχνά ταξιδεύεις',
+                    hobbies: 'αθλήματα και χόμπι',
+                    valuables: 'αντικείμενα μεγάλης αξίας',
+                    cyberExposure: 'πόσο κινείσαι στο διαδίκτυο',
+                    retirementPlanning: 'τον σχεδιασμό σου για τη σύνταξη',
+                    health: 'τυχόν χρόνιες παθήσεις',
+                    buildingManagerRole: 'αν είσαι διαχειριστής πολυκατοικίας',
+                },
+                absenceCaveat: 'Το ότι δεν έχουμε δει ασφαλιστήριο δεν σημαίνει ότι δεν υπάρχει.',
+                areaCount: '{n} περιοχές',
+                unknownCount: '{n} δεν τις ξεκαθαρίσαμε ακόμη',
+                coveredCount: '{n} φαίνεται να καλύπτονται',
+                whyLabel: 'Γιατί το βλέπεις',
+                unknownLabel: 'Τι δεν ξέρουμε ακόμη',
+                nextLabel: 'Τι γίνεται μετά',
+            },
             upload: {
                 title: 'Τώρα ας δούμε τι έχεις ήδη',
                 body: 'Θα συγκρίνουμε αυτά που θεωρείς σημαντικά με αυτά που πραγματικά προβλέπει το ασφαλιστήριό σου.',
@@ -3994,7 +4075,7 @@ export const el = {
                 hint: 'Όποιο έχεις πρόχειρο — αυτοκινήτου, σπιτιού, υγείας. Ένα αρκεί για αρχή.',
                 choose: 'Επιλογή αρχείου PDF',
                 chosen: 'Επιλεγμένο αρχείο',
-                cta: 'Να δω αν είμαι σωστά προστατευμένος/η',
+                cta: 'Να ελέγξω το πρώτο μου ασφαλιστήριο',
                 later: 'Δεν το έχω πρόχειρο τώρα',
                 laterNote: 'Θα σου το θυμίσουμε. Η εικόνα σου σε περιμένει στην αρχική.',
                 status: {

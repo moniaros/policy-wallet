@@ -13,9 +13,11 @@ import { UploadScreen } from "@/components/onboarding/protection-profile/UploadS
 import { AdvisorScreen } from "@/components/onboarding/protection-profile/AdvisorScreen"
 import { domainLabelFor } from "@/components/onboarding/protection-profile/ProtectionMapCard"
 import { flowReducer, initialFlowState } from "@/lib/onboarding/protection-profile/reducer"
+import { mapRowsFrom } from "@/lib/onboarding/protection-profile/map-rows"
 import { progressFor, stepDef } from "@/lib/onboarding/protection-profile/steps"
 import * as q from "@/lib/onboarding/protection-profile/questions"
 import * as track from "@/lib/onboarding/protection-profile/analytics"
+import { AREAS } from "@/lib/protection/domains"
 import { UNSURE, type ProtectionStepId } from "@/lib/services/protection-profile/vocabulary"
 import type { TranslationKeys } from "@/lib/i18n/translations/el"
 import {
@@ -34,6 +36,27 @@ type Draft = Record<string, unknown> | undefined
 
 const TAIL: ProtectionStepId[] = ["map", "upload", "advisor"]
 const SOMETHING_COMING = "something_coming"
+/** The last life-context screen: when it saves, the facts are in. */
+const LAST_LIFE_CONTEXT_STEP: ProtectionStepId = "mobility"
+const AREA_CREATED_KEY = "pw:onboarding:attention_area_created"
+
+/** «Once per session»: the areas already announced, kept across a refresh. */
+function areasAlreadyAnnounced(): Set<string> {
+    try {
+        const raw = window.sessionStorage.getItem(AREA_CREATED_KEY)
+        const list: unknown = raw ? JSON.parse(raw) : []
+        return new Set(Array.isArray(list) ? list.filter((v): v is string => typeof v === "string") : [])
+    } catch {
+        return new Set()
+    }
+}
+function rememberAnnounced(areas: Set<string>) {
+    try {
+        window.sessionStorage.setItem(AREA_CREATED_KEY, JSON.stringify([...areas]))
+    } catch {
+        /* storage unavailable — the in-memory set still holds for this mount */
+    }
+}
 
 /**
  * The first-stage onboarding: reflect on what matters, discover where to
@@ -60,7 +83,12 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
     const startedAt = useRef(Date.now())
     const firstRender = useRef(true)
     const completedFor = useRef<string | null>(null)
+    const announcedAreas = useRef<Set<string> | null>(null)
     const resumed = initialState.status !== "not_started"
+    // The save callback is memoised on the language alone; the facts it
+    // reports at the end of the life context come from the latest state.
+    const stateRef = useRef(state)
+    stateRef.current = state
 
     const def = stepDef(state.current)
     const progress = progressFor(state.current)
@@ -113,6 +141,15 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
             if (unsure) track.trackDontKnow(language, step)
             track.trackAnswer(language, step, value)
             track.trackStepCompleted(language, step, stepDef(step).kind, Date.now() - enteredAt.current, unsure)
+            if (step === LAST_LIFE_CONTEXT_STEP) {
+                // The reducer already holds this answer (dispatched above), so
+                // the unsure set is current — including or excluding this step.
+                const latest = stateRef.current
+                track.trackLifeContextCompleted(language, {
+                    intent: latest.answers.intent?.intent,
+                    dontKnowCount: new Set(unsure ? [...latest.unsureSteps, step] : latest.unsureSteps.filter((s) => s !== step)).size,
+                })
+            }
             dispatch({ type: "saved", step, answeredSteps: res.answeredSteps, next: res.next })
         },
         [language]
@@ -141,6 +178,16 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     applicableRiskCount: result.applicableRiskCount,
                     firstRiskId: result.insight?.riskId ?? null,
                 })
+                // One `attention_area_created` per area the map renders, the
+                // first time this session shows it — a refresh must not re-emit.
+                const announced = announcedAreas.current ?? areasAlreadyAnnounced()
+                for (const row of mapRowsFrom(result.areas, result.priorities)) {
+                    if (announced.has(row.area)) continue
+                    announced.add(row.area)
+                    track.trackAttentionAreaCreated({ area: row.area, importance: row.importance, confidence: row.confidence, alignment: row.alignment })
+                }
+                announcedAreas.current = announced
+                rememberAnnounced(announced)
                 void markProtectionSummaryViewed()
             })
             .catch(() => {
@@ -192,7 +239,7 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                 prompt={(labels.q[key] as { prompt: string }).prompt}
                 why={(labels.q[key] as { why: string }).why}
                 options={opt(key, values)}
-                selected={single(chosen)}
+                selected={draft?.unsure ? UNSURE : single(chosen)}
                 onSelect={(value) => {
                     setDraft({ [field]: value })
                     window.setTimeout(() => void save(step, { [field]: value }), 180)
@@ -282,6 +329,11 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
             break
         case "income":
             screen = singleScreen("income", "income", q.incomeOptions(), "income")
+            break
+        case "income_dependency":
+            screen = singleScreen("income_dependency", "income_dependency", q.incomeDependencyOptions(), "dependency", {
+                unsure: unsureFor("income_dependency", labels.q.income_dependency.discovery),
+            })
             break
         case "obligations": {
             const commitments = multiValues("commitments")
@@ -417,6 +469,7 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                 <SummaryScreen
                     ref={headingRef}
                     labels={labels.summary}
+                    mapLabels={labels.map}
                     language={language}
                     completion={completion}
                     busy={busy}
@@ -438,10 +491,16 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
             )
             break
         case "upload": {
-            const startingFrom = (completion?.priorities ?? [])
-                .filter((p) => p.importance === "high" || p.importance === "medium")
+            // «Ξεκινάμε από» the activated areas; the priorities stand in
+            // until the composition has run (a refresh straight onto this screen).
+            const activated = (completion?.activatedAreas ?? []).map((area) => AREAS[area].priorityId)
+            const startingFrom = (
+                activated.length > 0
+                    ? activated
+                    : (completion?.priorities ?? []).filter((p) => p.importance === "high" || p.importance === "medium").map((p) => p.id)
+            )
                 .slice(0, 3)
-                .map((p) => domainLabelFor(labels.summary, p.id))
+                .map((id) => domainLabelFor(labels.summary, id))
             screen = (
                 <UploadScreen
                     ref={headingRef}

@@ -53,6 +53,42 @@ describe("protection profile → profile facts", () => {
         expect(patch.unsure).toBe(true)
     })
 
+    it("«Ο/Η σύντροφός μου» says there is a partner: maritalStatus=partnered as a COARSE bucket; otherwise nothing", () => {
+        const withPartner = protectionProfilePatch(parse({ step: "people", people: ["partner", "children"], childrenCount: "1" }))
+        expect(withPartner.columns.maritalStatus).toBe("partnered")
+        expect(withPartner.precision.maritalStatus).toBe("coarse")
+        expect(withPartner.answeredFields).toContain("maritalStatus")
+        // The engine reads it as KNOWN, and «has a partner» is what it means.
+        const ctx = toLifeContext(applyAll([{ step: "people", people: ["partner"] }]) as any)
+        expect(ctx.known.maritalStatus).toBe(true)
+        expect(ctx.maritalStatus).toBe("partnered")
+        // Not choosing a partner says nothing about civil status — single,
+        // divorced and widowed all look the same here, so no column is written.
+        for (const people of [["only_me"], ["children"], ["parents_or_others"], ["children", "parents_or_others"]]) {
+            const patch = protectionProfilePatch(parse({ step: "people", people, childrenCount: "2" }))
+            expect(patch.columns, people.join("+")).not.toHaveProperty("maritalStatus")
+            expect(patch.answeredFields, people.join("+")).not.toContain("maritalStatus")
+        }
+    })
+
+    it("income dependency is the person's own word — exact — and «unsure» or no value leaves the column alone", () => {
+        for (const dependency of ["primary", "shared", "minor"] as const) {
+            const patch = protectionProfilePatch(parse({ step: "income_dependency", dependency }))
+            expect(patch.columns).toEqual({ incomeDependency: dependency })
+            expect(patch.precision.incomeDependency ?? "exact").toBe("exact")
+            expect(patch.answeredFields).toEqual(["incomeDependency"])
+            expect(patch.unsure).toBe(false)
+            expect(patch.statements).toEqual({})
+            expect(toLifeContext(applyAll([{ step: "income_dependency", dependency }]) as any).incomeDependency).toBe(dependency)
+        }
+        for (const input of [{ step: "income_dependency", unsure: true }, { step: "income_dependency" }]) {
+            const patch = protectionProfilePatch(parse(input))
+            expect(patch.columns, JSON.stringify(input)).toEqual({})
+            expect(patch.answeredFields).toEqual([])
+            expect(patch.unsure).toBe(true)
+        }
+    })
+
     it("a business owner is self-employed to the engine and owns a business", () => {
         const patch = protectionProfilePatch(parse({ step: "income", income: "business" }))
         expect(patch.columns).toEqual({ employmentStatus: "self_employed", ownsBusiness: true })
@@ -75,6 +111,7 @@ describe("protection profile → profile facts", () => {
             { step: "people", people: ["children"], childrenCount: "3" },
             { step: "home", home: "rented" },
             { step: "income", income: "self_employed" },
+            { step: "income_dependency", dependency: "primary" },
             { step: "obligations", commitments: ["mortgage", "loan", "rent"] },
             { step: "mobility", vehicles: "2" },
             { step: "hurt_most", concerns: ["health"] },

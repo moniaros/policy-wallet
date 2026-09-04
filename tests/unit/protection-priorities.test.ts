@@ -54,6 +54,75 @@ describe("deriveProtectionPriorities — the protection map rules", () => {
         expect(planned.find((r) => r.id === "money:retirement")?.importance).toBe("medium")
     })
 
+    it("§E: «πόσο βασίζεται το νοικοκυριό σου στο εισόδημά σου;» is a floor on the household and income rows", () => {
+        const family = {
+            childrenCount: 1, dependentsCount: 2, employmentStatus: "employed",
+            answeredFields: ["childrenCount", "dependentsCount", "employmentStatus", "incomeDependency"],
+        }
+        const rowsOf = (over: Record<string, unknown>, statements: Parameters<typeof deriveProtectionPriorities>[1] = null) =>
+            deriveProtectionPriorities(ctxOf({ ...family, ...over }), statements)
+        const importanceOf = (rows: ReturnType<typeof deriveProtectionPriorities>, id: string) => rows.find((r) => r.id === id)?.importance
+        const reasonOf = (rows: ReturnType<typeof deriveProtectionPriorities>, id: string) => rows.find((r) => r.id === id)?.reason.id
+
+        // Without the answer: dependants make both rows essential → medium.
+        const none = rowsOf({})
+        expect(importanceOf(none, "household")).toBe("medium")
+        expect(importanceOf(none, "money:income")).toBe("medium")
+
+        // «Κυρίως σε αυτό» with any dependant → both at least high, and the reason says so.
+        const primary = rowsOf({ incomeDependency: "primary" })
+        expect(importanceOf(primary, "household")).toBe("high")
+        expect(importanceOf(primary, "money:income")).toBe("high")
+        expect(reasonOf(primary, "household")).toBe("income_dependency")
+        expect(reasonOf(primary, "money:income")).toBe("income_dependency")
+        expect(primary.find((r) => r.id === "household")?.source).toBe("declared_fact")
+
+        // «Περίπου στο μισό» → at least medium (already medium here: unchanged, reason kept).
+        const shared = rowsOf({ incomeDependency: "shared" })
+        expect(importanceOf(shared, "household")).toBe("medium")
+        expect(importanceOf(shared, "money:income")).toBe("medium")
+        expect(reasonOf(shared, "household")).toBe("dependants")
+        expect(reasonOf(shared, "money:income")).toBe("income_dependency")
+
+        // «Λίγο» → no change at all.
+        expect(rowsOf({ incomeDependency: "minor" })).toEqual(none)
+
+        // A floor never lowers: a stated primary concern keeps its own reason at high.
+        const stated = rowsOf({ incomeDependency: "shared" }, { riskConcerns: ["family"] })
+        expect(importanceOf(stated, "household")).toBe("high")
+        expect(reasonOf(stated, "household")).toBe("stated_primary")
+        // …and a stated area lifted by the fact keeps both sources.
+        const both = rowsOf({ incomeDependency: "primary" }, { riskConcerns: ["home", "family"] })
+        expect(importanceOf(both, "household")).toBe("high")
+        expect(reasonOf(both, "household")).toBe("income_dependency")
+        expect(both.find((r) => r.id === "household")?.source).toBe("both")
+
+        // No dependant → the answer speaks about nobody: no floor.
+        const alone = deriveProtectionPriorities(
+            ctxOf({ childrenCount: 0, dependentsCount: 0, employmentStatus: "employed", incomeDependency: "primary", answeredFields: ["childrenCount", "dependentsCount", "employmentStatus", "incomeDependency"] }),
+            null
+        )
+        expect(alone.find((r) => r.id === "household")).toBeUndefined()
+        expect(importanceOf(alone, "money:income")).toBe("watch")
+
+        // A row a fact could not settle is not lifted out of «χρειάζονται περισσότερα στοιχεία»…
+        const unsettled = deriveProtectionPriorities(
+            ctxOf({ childrenCount: 1, dependentsCount: 2, incomeDependency: "primary", answeredFields: ["childrenCount", "dependentsCount", "incomeDependency"] }),
+            null
+        )
+        expect(importanceOf(unsettled, "money:income")).toBe("needs_review")
+        expect(importanceOf(unsettled, "household")).toBe("high")
+        // …and an income row that is absent (a retiree) is not conjured up.
+        const retired = rowsOf({ employmentStatus: "retired", incomeDependency: "primary" })
+        expect(retired.find((r) => r.id === "money:income")).toBeUndefined()
+        expect(importanceOf(retired, "household")).toBe("high")
+
+        // The floor touches nothing else.
+        for (const id of ["health", "residence", "money:debt", "mobility", "work", "money:retirement", "property"]) {
+            expect(importanceOf(primary, id), id).toBe(importanceOf(none, id))
+        }
+    })
+
     it("never emits a coverage word or a score, and never reads a health column", () => {
         const base = { childrenCount: 1, dependentsCount: 1, employmentStatus: "employed", answeredFields: ["childrenCount", "dependentsCount", "employmentStatus"] }
         const without = deriveProtectionPriorities(ctxOf(base), { riskConcerns: ["health"] })

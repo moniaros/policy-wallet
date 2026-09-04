@@ -11,6 +11,7 @@
  * hurt most — and the mapping to the engine's factors happens in `patch.ts`.
  */
 
+import { INCOME_DEPENDENCY_VALUES } from "@/lib/services/gap-engine/life-context"
 import { EVENT_DOMAINS, type EventDomain } from "@/lib/services/life-events/types"
 
 /** Every screen the flow can show, in authored order. */
@@ -20,6 +21,7 @@ export const PROTECTION_STEP_IDS = [
     "people",
     "home",
     "income",
+    "income_dependency",
     "obligations",
     "mobility",
     "hurt_most",
@@ -36,8 +38,9 @@ export type ProtectionStepId = (typeof PROTECTION_STEP_IDS)[number]
 
 /**
  * The steps that count toward «Βήμα n από m». Conditional inserts
- * (orientation, plans, uncertainty_reason) and the tail (map, upload, advisor)
- * never change the denominator, so the number a person sees can only go down.
+ * (orientation, income_dependency, plans, uncertainty_reason) and the tail
+ * (map, upload, advisor) never change the denominator, so the number a person
+ * sees can only go down.
  */
 export const COUNTED_STEPS = [
     "intent",
@@ -85,6 +88,22 @@ export const INCOME_VALUES = [
     "student_other",
 ] as const
 export type IncomeValue = (typeof INCOME_VALUES)[number]
+
+/**
+ * The income answers that mean the household lives on something the person
+ * brings in — the ones that earn the «πόσο βασίζεται το νοικοκυριό σου στο
+ * εισόδημά σου;» follow-up (§F: asked unless «Δεν δουλεύω / σπουδάζω»). A
+ * pension is income the household may lean on, so a retiree is asked too.
+ */
+export const INCOME_ASKED_FOR_DEPENDENCY: readonly IncomeValue[] = ["employed", "self_employed", "business", "retired"]
+
+/**
+ * «Κυρίως σε αυτό / περίπου στο μισό / λίγο» — the engine's own three values
+ * (`PolicyholderProfile.incomeDependency`), so the onboarding and the
+ * assessment cannot drift apart on the one fact that decides importance.
+ */
+export const INCOME_DEPENDENCY_ANSWERS = INCOME_DEPENDENCY_VALUES
+export type IncomeDependencyAnswer = (typeof INCOME_DEPENDENCY_ANSWERS)[number]
 
 /** Flags only — an amount is the /protection wizard's job, never asked here. */
 export const COMMITMENT_VALUES = ["mortgage", "loan", "rent"] as const

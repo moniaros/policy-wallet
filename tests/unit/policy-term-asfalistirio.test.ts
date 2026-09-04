@@ -22,6 +22,7 @@ const UI_FILES = [
     'components/onboarding/protection-profile/ProtectionMapCard.tsx',
     'components/onboarding/protection-profile/UploadScreen.tsx',
     'components/onboarding/protection-profile/AdvisorScreen.tsx',
+    'lib/onboarding/protection-profile/map-rows.ts',
     'lib/monetization/upgrade-copy.el.ts',
     'lib/pricing/public-pricing-content.ts',
     // Gap-engine findings are short customer-facing cards (title + evidence),

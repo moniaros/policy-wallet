@@ -2,17 +2,18 @@
 
 import { forwardRef } from "react"
 import { Loader2 } from "lucide-react"
-import { ProtectionMapCard, type ProtectionMapLabels } from "./ProtectionMapCard"
+import { ProtectionMapCard, type ProtectionMapLabels, type ProtectionMapRowLabels } from "./ProtectionMapCard"
 import type { ProtectionProfileCompletion } from "@/app/onboarding/protection-profile-actions"
 
 export const SummaryScreen = forwardRef<HTMLHeadingElement, {
     labels: ProtectionMapLabels
+    mapLabels: ProtectionMapRowLabels
     language: "el" | "en"
     completion: ProtectionProfileCompletion | null
     onContinue: () => void
     onLater: () => void
     busy: boolean
-}>(function SummaryScreen({ labels, language, completion, onContinue, onLater, busy }, headingRef) {
+}>(function SummaryScreen({ labels, mapLabels, language, completion, onContinue, onLater, busy }, headingRef) {
     if (!completion) {
         return (
             <div className="pw-card pw-pad flex items-center gap-3 text-sm text-muted-foreground" role="status" aria-busy="true">
@@ -29,7 +30,9 @@ export const SummaryScreen = forwardRef<HTMLHeadingElement, {
             </h1>
             <ProtectionMapCard
                 labels={labels}
+                mapLabels={mapLabels}
                 language={language}
+                areas={completion.areas}
                 priorities={completion.priorities}
                 insight={completion.insight}
                 confidence={completion.confidence}

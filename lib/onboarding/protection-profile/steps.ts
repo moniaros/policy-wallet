@@ -10,11 +10,26 @@
 
 import {
     COUNTED_STEPS,
+    INCOME_ASKED_FOR_DEPENDENCY,
     LOW_CONFIDENCE,
     PROTECTION_STEP_IDS,
     type ProtectionStepId,
 } from "@/lib/services/protection-profile/vocabulary"
 import type { ProtectionAnswers } from "@/lib/validations/protection-profile"
+
+/**
+ * §F: «πόσο βασίζεται το νοικοκυριό σου στο εισόδημά σου;» is asked when
+ * someone other than the person may live on that income — people ≠ «Μόνο
+ * εγώ» (an unsure answer is not «only me», so it is still asked) — and the
+ * income answer is one the household can lean on (not «Δεν δουλεύω» /
+ * «Σπουδάζω ή κάτι άλλο»). Both are EARLIER answers; an unanswered one keeps
+ * the screen on the predicted path.
+ */
+function incomeDependencyApplies(a: ProtectionAnswers): boolean {
+    const onlyMe = a.people !== undefined && a.people.unsure !== true && (a.people.people ?? []).includes("only_me")
+    const notEarning = a.income !== undefined && !INCOME_ASKED_FOR_DEPENDENCY.includes(a.income.income)
+    return !onlyMe && !notEarning
+}
 
 export type StepKind = "single" | "multi" | "info" | "summary" | "upload" | "advisor"
 
@@ -40,6 +55,13 @@ export const STEPS: readonly StepDef[] = [
     { id: "people", kind: "multi", allowsUnsure: true },
     { id: "home", kind: "single" },
     { id: "income", kind: "single" },
+    {
+        id: "income_dependency",
+        kind: "single",
+        dependsOn: ["people", "income"],
+        visibleIf: incomeDependencyApplies,
+        allowsUnsure: true,
+    },
     { id: "obligations", kind: "multi", allowsUnsure: true },
     { id: "mobility", kind: "single" },
     { id: "hurt_most", kind: "multi", allowsUnsure: true },

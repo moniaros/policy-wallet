@@ -76,15 +76,23 @@ export function protectionProfilePatch(input: ProtectionProfileStepInput): Prote
             const others = (people.has("partner") ? 1 : 0) + (people.has("parents_or_others") ? 1 : 0)
             // «3» is «three or more» — a bound, not the figure.
             const childrenCoarse = people.has("children") && input.childrenCount === "3"
-            return {
-                ...EMPTY,
-                columns: { childrenCount: children, dependentsCount: children + others },
-                precision: {
-                    childrenCount: childrenCoarse ? "coarse" : "exact",
-                    dependentsCount: others > 0 || childrenCoarse ? "coarse" : "exact",
-                },
-                answeredFields: ["childrenCount", "dependentsCount"],
+            const columns: Record<string, unknown> = { childrenCount: children, dependentsCount: children + others }
+            const precision: Record<string, FactPrecision> = {
+                childrenCount: childrenCoarse ? "coarse" : "exact",
+                dependentsCount: others > 0 || childrenCoarse ? "coarse" : "exact",
             }
+            const answeredFields = ["childrenCount", "dependentsCount"]
+            // «Ο/Η σύντροφός μου» says there IS a partner — a bucket, not the
+            // civil status: married and cohabiting both land here, so it is
+            // coarse and the wizard's «married» / «partnered» replaces it. Not
+            // choosing a partner says nothing about marital status, so nothing
+            // is written (single, divorced and widowed all look the same here).
+            if (people.has("partner")) {
+                columns.maritalStatus = "partnered"
+                precision.maritalStatus = "coarse"
+                answeredFields.push("maritalStatus")
+            }
+            return { ...EMPTY, columns, precision, answeredFields }
         }
 
         case "home": {
@@ -112,6 +120,18 @@ export function protectionProfilePatch(input: ProtectionProfileStepInput): Prote
                 answeredFields.push("ownsBusiness")
             }
             return { ...EMPTY, columns, answeredFields }
+        }
+
+        case "income_dependency": {
+            // The one fact that decides importance (§E). The person's own
+            // word, so it is exact; «Δεν είμαι σίγουρος/η» — or no value at
+            // all — leaves the column untouched rather than guessing «minor».
+            if (input.unsure || !input.dependency) return { ...EMPTY, unsure: true }
+            return {
+                ...EMPTY,
+                columns: { incomeDependency: input.dependency },
+                answeredFields: ["incomeDependency"],
+            }
         }
 
         case "obligations": {

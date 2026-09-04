@@ -50,6 +50,22 @@ const flushAfter = async () => { await Promise.all(afterQueue.pending.splice(0))
 vi.mock("@/lib/services/life-events/service", () => ({ declareLifeEvent }))
 vi.mock("@/lib/journey/conversion-events", () => ({ recordConversionEvent }))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
+// The read seam the map renders from (lib/protection/load-attention-areas.ts)
+// has its own test over the real assembly; here it is a recorded call.
+const loadAttentionAreas = vi.hoisted(() =>
+    vi.fn(async () => ({
+        areas: [],
+        summary: { areaCount: 0, activatedCount: 0, unknownCount: 0, coveredCount: 0, gapCount: 0 },
+        factorsToResolve: [],
+        ctx: { chronicConditions: ["diabetes"] },
+        provenance: {},
+        needs: { guidancePreference: "explain_everything" },
+        policyCount: 2,
+        analysedCount: 1,
+        activatedAreas: ["household", "income"],
+    }))
+)
+vi.mock("@/lib/protection/load-attention-areas", () => ({ loadAttentionAreas }))
 
 import { completeProtectionProfile, saveProtectionProfileStep, skipProtectionProfile } from "@/app/onboarding/protection-profile-actions"
 
@@ -64,11 +80,19 @@ describe("saveProtectionProfileStep", () => {
         const res = await saveProtectionProfileStep({ step: "people", people: ["children", "partner"], childrenCount: "2" })
         expect(res).toEqual({ ok: true, next: "home", answeredSteps: ["people"] })
         const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
-        expect(upsert.create).toMatchObject({ userId: "user-1", childrenCount: 2, dependentsCount: 3, answeredFields: ["childrenCount", "dependentsCount"] })
+        expect(upsert.create).toMatchObject({
+            userId: "user-1",
+            childrenCount: 2,
+            dependentsCount: 3,
+            maritalStatus: "partnered",
+            answeredFields: ["childrenCount", "dependentsCount", "maritalStatus"],
+        })
         // Who said so, and how precisely: two children is the figure; «+ my
-        // partner» makes the dependant count a floor.
+        // partner» makes the dependant count a floor, and «has a partner» a
+        // bucket the wizard's civil status may refine.
         expect(upsert.create.factProvenance.childrenCount).toMatchObject({ source: "onboarding", precision: "exact" })
         expect(upsert.create.factProvenance.dependentsCount).toMatchObject({ source: "onboarding", precision: "coarse" })
+        expect(upsert.create.factProvenance.maritalStatus).toMatchObject({ source: "onboarding", precision: "coarse" })
         expect(state.row).toMatchObject({ answers: { people: { people: ["children", "partner"], childrenCount: "2" } }, answeredSteps: ["people"], unsureSteps: [] })
     })
 
@@ -76,6 +100,7 @@ describe("saveProtectionProfileStep", () => {
         // «My partner and my children (three or more)» → childrenCount 3 and
         // dependentsCount 4 are BOUNDS. The wizard said 3 and 4 exactly; the
         // bounds lose, the provenance stays the wizard's, nothing is rewritten.
+        // The partner bucket is new to this row, so it lands — coarse.
         const wizard = { source: "assessment", precision: "exact", at: "2026-08-01T00:00:00.000Z" }
         state.profile = {
             childrenCount: 3,
@@ -86,9 +111,37 @@ describe("saveProtectionProfileStep", () => {
         await saveProtectionProfileStep({ step: "people", people: ["partner", "children"], childrenCount: "3" })
         const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
         expect(upsert.update).toEqual({
-            answeredFields: ["childrenCount", "dependentsCount"],
-            factProvenance: { childrenCount: wizard, dependentsCount: wizard },
+            maritalStatus: "partnered",
+            answeredFields: ["childrenCount", "dependentsCount", "maritalStatus"],
+            factProvenance: { childrenCount: wizard, dependentsCount: wizard, maritalStatus: expect.objectContaining({ source: "onboarding", precision: "coarse" }) },
         })
+    })
+
+    it("«my partner» never overwrites a civil status the person gave exactly", async () => {
+        // The wizard recorded «married»; the onboarding's «partnered» is a
+        // bucket that contains it, so the exact value stands and its
+        // provenance stays the wizard's.
+        const wizard = { source: "assessment", precision: "exact", at: "2026-08-01T00:00:00.000Z" }
+        state.profile = { maritalStatus: "married", answeredFields: ["maritalStatus"], factProvenance: { maritalStatus: wizard } }
+        await saveProtectionProfileStep({ step: "people", people: ["partner"] })
+        const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
+        expect(upsert.update.maritalStatus).toBeUndefined()
+        expect(upsert.update.factProvenance.maritalStatus).toEqual(wizard)
+        expect(upsert.update).toMatchObject({ childrenCount: 0, dependentsCount: 1 })
+    })
+
+    it("income dependency is written exact, from the onboarding, and «unsure» leaves the column alone", async () => {
+        const res = await saveProtectionProfileStep({ step: "income_dependency", dependency: "primary" })
+        expect(res.ok).toBe(true)
+        const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
+        expect(upsert.create).toMatchObject({ userId: "user-1", incomeDependency: "primary", answeredFields: ["incomeDependency"] })
+        expect(upsert.create.factProvenance.incomeDependency).toMatchObject({ source: "onboarding", precision: "exact" })
+        expect(state.row).toMatchObject({ answers: { income_dependency: { dependency: "primary" } }, answeredSteps: ["income_dependency"], unsureSteps: [] })
+
+        vi.clearAllMocks()
+        await saveProtectionProfileStep({ step: "income_dependency", unsure: true })
+        expect(tx.policyholderProfile.upsert).not.toHaveBeenCalled()
+        expect(state.row).toMatchObject({ unsureSteps: ["income_dependency"] })
     })
 
     it("a value the person chose outright replaces an older figure — and records who said so", async () => {
@@ -112,7 +165,7 @@ describe("saveProtectionProfileStep", () => {
         // No factProvenance at all — the wizard as it wrote for a year. An
         // answered column is a declared exact value, so the floor still loses.
         state.profile = { childrenCount: 3, dependentsCount: 4, answeredFields: ["childrenCount", "dependentsCount"] }
-        await saveProtectionProfileStep({ step: "people", people: ["partner", "children"], childrenCount: "3" })
+        await saveProtectionProfileStep({ step: "people", people: ["children"], childrenCount: "3" })
         const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
         expect(upsert.update).toEqual({ answeredFields: ["childrenCount", "dependentsCount"], factProvenance: {} })
     })
@@ -151,6 +204,15 @@ describe("completeProtectionProfile", () => {
         expect(recordConversionEvent).toHaveBeenCalledWith("user-1", "protection_profile_completed", expect.objectContaining({ intent: "find_gaps", confidence: "gaps" }))
         expect(out.priorities.find((p) => p.id === "money:income")?.importance).toBe("high")
         expect(out.countedTotal).toBe(10)
+        // The map's rows come from the read seam, in the person's language,
+        // AFTER the seal — and the bundle's `ctx` (Art. 9 among it) stays behind.
+        expect(loadAttentionAreas).toHaveBeenCalledWith({ userId: "user-1", language: "el" })
+        expect(loadAttentionAreas.mock.invocationCallOrder[0]).toBeGreaterThan(db.protectionProfile.update.mock.invocationCallOrder[0])
+        expect(out).toMatchObject({ areas: [], activatedAreas: ["household", "income"], policyCount: 2, analysedCount: 1 })
+        expect(out.attention).toEqual({ areaCount: 0, activatedCount: 0, unknownCount: 0, coveredCount: 0, gapCount: 0 })
+        expect(out).not.toHaveProperty("ctx")
+        expect(out).not.toHaveProperty("needs")
+        expect(JSON.stringify(out)).not.toContain("diabetes")
     })
 
     it("runs the engine once when there was nothing to declare, and is read-only the second time", async () => {
