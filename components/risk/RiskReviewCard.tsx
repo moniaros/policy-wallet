@@ -66,9 +66,9 @@ export function RiskReviewCard({ review, label, reason }: RiskReviewCardProps) {
     return (
         <section
             aria-labelledby="risk-review-heading"
-            className="pw-card pw-pad border-l-4 border-l-[var(--primary)]"
+            className="pw-card pw-pad"
         >
-            <p className="text-kicker font-black uppercase tracking-widest text-primary">
+            <p className="text-caption font-semibold text-primary">
                 {copy.title}
             </p>
             <h2
