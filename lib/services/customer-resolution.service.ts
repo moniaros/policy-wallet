@@ -1,6 +1,7 @@
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility";
 import { normalizeTaxId, isValidGreekAfm, maskTaxId } from "@/lib/identity/tax-id";
+import { normalizeEmail } from "@/lib/identity/normalize-email";
 
 export interface ResolveCustomerInput {
     taxId?: string | null;
@@ -100,7 +101,7 @@ export class CustomerResolutionService extends BaseService {
         const taxId = normalizeTaxId(input.taxId);
         // Only a structurally valid ΑΦΜ is trusted as a strong single-match key.
         const canVatMatch = isValidGreekAfm(taxId);
-        const email = input.email?.trim().toLowerCase() || null;
+        const email = normalizeEmail(input.email) || null;
         const phone = normalizePhone(input.phone);
         const name = input.name?.trim() || null;
 
@@ -155,7 +156,7 @@ export class CustomerResolutionService extends BaseService {
             if (canVatMatch && candTax && candTax === taxId) {
                 matchReason = "vat";
                 score = 100;
-            } else if (email && c.email?.toLowerCase() === email) {
+            } else if (email && normalizeEmail(c.email) === email) {
                 matchReason = "email";
                 score = 90;
             } else if (phone && phonesMatch(c.phoneNumber, phone)) {

@@ -5,30 +5,53 @@ import { emailDomain, emailFingerprint } from '@/lib/observability/pii'
 import { z } from 'zod'
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { rateLimit } from "@/lib/rate-limit"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
+import { agentEmailSchema, agentTaxIdSchema } from "@/lib/validations/agent-intake"
+import { ENDED_RELATIONSHIP_STATUSES } from "@/lib/agent-visibility"
+import { isPhantomCustomer } from "@/lib/agent-consent"
 
 const customerImportSchema = z.object({
-    email: z.string().email(),
-    name: z.string().min(1),
-    surname: z.string().min(1).optional().default(''),
-    phone: z.string().optional(),
+    // Trim + lowercase + NFC through the ONE normaliser auth uses, then the
+    // format check — `John@X.gr` and `john@x.gr` must be the same person.
+    email: agentEmailSchema,
+    name: z.string().trim().min(1).max(120),
+    // zod 4 rejects '' under min(1): a CSV without a surname column used to
+    // fail every row with VALIDATION_ERROR.
+    surname: z.string().trim().max(120).optional().default(''),
+    phone: z.string().trim().max(32).optional(),
+    // Same normaliser + Greek ΑΦΜ checksum as the single-customer schemas.
+    // The CSV parser already carried the column; the schema silently dropped it.
+    taxId: agentTaxIdSchema,
 })
 
 const bulkImportSchema = z.object({
     customers: z.array(customerImportSchema).min(1),
 })
 
+/** Writes go to the database in batches of this many rows. */
+const CHUNK_SIZE = 50
+
+type RowOutcome = {
+    /** 1-based position in the submitted file. */
+    row: number
+    email: string
+    status: 'imported' | 'skipped' | 'failed'
+    code: 'CREATED' | 'LINKED' | 'ALREADY_LINKED' | 'RELATIONSHIP_ENDED' | 'DUPLICATE_IN_FILE' | 'WRITE_FAILED'
+}
+
 export async function POST(req: Request) {
     const authCheck = await requireApiUser({ roles: ["agent", "admin"] })
     if ("error" in authCheck) return authCheck.error
     const authResult = authCheck.auth
+    const agentId = authResult.dbUser.id
 
     // Throttle mass-attach per agent — without this an agent could enumerate/
     // attach the whole user base by email. Independent of the global /api limit.
     const limitCheck = await rateLimit(
-        authResult.dbUser.id,
+        agentId,
         5,
         60_000,
-        `bulk-import:${authResult.dbUser.id}`
+        `bulk-import:${agentId}`
     )
     if (!limitCheck.success && limitCheck.error) return limitCheck.error
 
@@ -37,7 +60,7 @@ export async function POST(req: Request) {
 
         // Check bulk import limit
         const { resolveAgentEntitlements } = await import("@/lib/subscription-entitlements")
-        const agentEntitlements = await resolveAgentEntitlements(authResult.dbUser.id)
+        const agentEntitlements = await resolveAgentEntitlements(agentId)
         const bulkLimit = agentEntitlements.limits.bulkImportLimit
         if (bulkLimit !== null && customers.length > bulkLimit) {
             // Distinct code, and the numbers in `details` — the client cannot
@@ -54,7 +77,7 @@ export async function POST(req: Request) {
         // current count. Without this, an agent at 95/100 could import 50 rows
         // (the up-front check only saw 95 < 100) and end up at 145.
         const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
-        const customerCheck = await canAgentAddCustomer(authResult.dbUser.id)
+        const customerCheck = await canAgentAddCustomer(agentId)
         if (!customerCheck.allowed) {
             return createApiError(
                 "CUSTOMER_LIMIT_REACHED",
@@ -63,13 +86,51 @@ export async function POST(req: Request) {
                 { current: customerCheck.current, limit: customerCheck.limit }
             )
         }
-        if (customerCheck.limit != null && customerCheck.current != null) {
-            // Only rows that aren't already this agent's customers consume headroom.
-            const emails = [...new Set(customers.map((c) => c.email.toLowerCase()))]
-            const alreadyLinked = await db.customerRelationship.count({
-                where: { agentUserId: authResult.dbUser.id, customer: { email: { in: emails } } },
+
+        // ── Resolve the whole file up front: one lookup per table, not per row ──
+        // The same normaliser the schema applied, restated on the key the
+        // lookups and writes actually use.
+        const rows = customers.map((customer, index) => ({
+            row: index + 1,
+            email: normalizeEmail(customer.email),
+            name: `${customer.name} ${customer.surname}`.trim(),
+            phone: customer.phone || null,
+            taxId: customer.taxId ?? null,
+        }))
+        const emails = [...new Set(rows.map((r) => r.email))]
+
+        // password / emailVerified / taxId decide whether an ΑΦΜ in the file
+        // may be written onto an EXISTING account — same rule as
+        // customer.service createCustomer: only onto a phantom (no password,
+        // never verified) that has none. An activated account's tax id is the
+        // customer's to set.
+        const existingUsers = await db.user.findMany({
+            where: { email: { in: emails } },
+            select: { id: true, email: true, password: true, emailVerified: true, taxId: true },
+        })
+        const userIdByEmail = new Map(existingUsers.map((u) => [normalizeEmail(u.email), u.id]))
+        const taxIdBackfillable = new Set(
+            existingUsers
+                .filter((u) => !u.taxId && isPhantomCustomer({ password: u.password ?? null, emailVerified: u.emailVerified ?? null }))
+                .map((u) => u.id)
+        )
+
+        const existingRelationships = existingUsers.length
+            ? await db.customerRelationship.findMany({
+                where: { agentUserId: agentId, policyholderUserId: { in: existingUsers.map((u) => u.id) } },
+                select: { policyholderUserId: true, status: true },
             })
-            const newCount = emails.length - alreadyLinked
+            : []
+        const relationshipStatusByUserId = new Map(
+            existingRelationships.map((r) => [r.policyholderUserId, r.status])
+        )
+
+        // Only rows that aren't already this agent's customers consume headroom.
+        if (customerCheck.limit != null && customerCheck.current != null) {
+            const newCount = emails.filter((email) => {
+                const userId = userIdByEmail.get(email)
+                return !userId || !relationshipStatusByUserId.has(userId)
+            }).length
             const headroom = customerCheck.limit - customerCheck.current
             if (newCount > headroom) {
                 return createApiError(
@@ -81,67 +142,113 @@ export async function POST(req: Request) {
             }
         }
 
-        let imported = 0
-        const errors: string[] = []
+        // ── Classify every row, then write the writable ones in chunks ──
+        const outcomes: RowOutcome[] = []
+        const seenInFile = new Set<string>()
+        type Pending = { row: number; email: string; name: string; phone: string | null; taxId: string | null; userId: string | null }
+        const pending: Pending[] = []
 
-        for (const customer of customers) {
+        for (const r of rows) {
+            if (seenInFile.has(r.email)) {
+                outcomes.push({ row: r.row, email: r.email, status: 'skipped', code: 'DUPLICATE_IN_FILE' })
+                continue
+            }
+            seenInFile.add(r.email)
+
+            const userId = userIdByEmail.get(r.email) ?? null
+            const relStatus = userId ? relationshipStatusByUserId.get(userId) : undefined
+            if (relStatus !== undefined) {
+                // NEVER touch an existing relationship — a re-imported CSV row
+                // used to downgrade an already active/invited customer. An
+                // ended one is not re-opened either: only the customer can.
+                const ended = (ENDED_RELATIONSHIP_STATUSES as readonly string[]).includes(relStatus)
+                outcomes.push({ row: r.row, email: r.email, status: 'skipped', code: ended ? 'RELATIONSHIP_ENDED' : 'ALREADY_LINKED' })
+                continue
+            }
+            pending.push({ ...r, userId })
+        }
+
+        for (let start = 0; start < pending.length; start += CHUNK_SIZE) {
+            const chunk = pending.slice(start, start + CHUNK_SIZE)
             try {
-                // Check if user already exists
-                let user = await db.user.findUnique({
-                    where: { email: customer.email }
-                })
-
-                // Create user if doesn't exist
-                if (!user) {
-                    user = await db.user.create({
-                        data: {
-                            email: customer.email,
-                            name: `${customer.name} ${customer.surname}`.trim(),
-                            phoneNumber: customer.phone || null,
-                            roles: 'policyholder'
+                await db.$transaction(async (tx) => {
+                    const toCreate = chunk.filter((p) => !p.userId)
+                    if (toCreate.length > 0) {
+                        const created = await tx.user.createManyAndReturn({
+                            data: toCreate.map((p) => ({
+                                email: p.email,
+                                name: p.name,
+                                phoneNumber: p.phone,
+                                taxId: p.taxId,
+                                roles: 'policyholder',
+                            })),
+                            select: { id: true, email: true },
+                        })
+                        for (const u of created) {
+                            const p = chunk.find((c) => c.email === normalizeEmail(u.email))
+                            if (p) p.userId = u.id
                         }
+                    }
+                    // ΑΦΜ backfill onto EXISTING phantoms only (see the select
+                    // above); an activated account keeps whatever it has.
+                    for (const p of chunk) {
+                        if (!p.taxId || !p.userId || !taxIdBackfillable.has(p.userId)) continue
+                        await tx.user.update({ where: { id: p.userId }, data: { taxId: p.taxId } })
+                    }
+                    // Imported customers start where every agent-added customer
+                    // starts: PENDING, not yet invited. 'inactive' is an ENDED
+                    // status (lib/agent-visibility.ts) — rows created with it
+                    // were invisible and nobody could upload for them.
+                    await tx.customerRelationship.createMany({
+                        data: chunk
+                            .filter((p) => p.userId)
+                            .map((p) => ({
+                                agentUserId: agentId,
+                                policyholderUserId: p.userId as string,
+                                status: 'pending_activation',
+                                activationStatus: 'not_invited',
+                                lastInteractionAt: new Date(),
+                            })),
+                        skipDuplicates: true,
+                    })
+                })
+                for (const p of chunk) {
+                    outcomes.push({
+                        row: p.row,
+                        email: p.email,
+                        status: 'imported',
+                        code: userIdByEmail.has(p.email) ? 'LINKED' : 'CREATED',
                     })
                 }
-
-                // Create the relationship if it's new; NEVER touch an existing
-                // one — a re-imported CSV row used to downgrade an already
-                // active/invited customer back to 'inactive'.
-                await db.customerRelationship.upsert({
-                    where: {
-                        agentUserId_policyholderUserId: {
-                            agentUserId: authResult.dbUser.id,
-                            policyholderUserId: user.id
-                        }
-                    },
-                    update: {},
-                    create: {
-                        agentUserId: authResult.dbUser.id,
-                        policyholderUserId: user.id,
-                        status: 'inactive', // Imported but not yet invited
-                        activationStatus: 'not_invited'
-                    }
-                })
-
-                imported++
             } catch (error) {
-                Sentry.captureException(error, {
-                    tags: {
-                        endpoint: '/api/v1/customers/bulk-import',
-                        // Fingerprint, not the address: a Sentry tag is indexed
-                        // and searchable, and an imported customer never agreed
-                        // to appear in our error tracker.
-                        recipient: emailFingerprint(customer.email),
-                        recipient_domain: emailDomain(customer.email)
-                    }
-                })
-                errors.push(`Failed to import ${customer.email}`)
+                for (const p of chunk) {
+                    Sentry.captureException(error, {
+                        tags: {
+                            endpoint: '/api/v1/customers/bulk-import',
+                            // Fingerprint, not the address: a Sentry tag is indexed
+                            // and searchable, and an imported customer never agreed
+                            // to appear in our error tracker.
+                            recipient: emailFingerprint(p.email),
+                            recipient_domain: emailDomain(p.email)
+                        }
+                    })
+                    outcomes.push({ row: p.row, email: p.email, status: 'failed', code: 'WRITE_FAILED' })
+                }
             }
         }
 
+        outcomes.sort((a, b) => a.row - b.row)
+        const imported = outcomes.filter((o) => o.status === 'imported').length
+        const failed = outcomes.filter((o) => o.status === 'failed')
+
         return createApiResponse({
             imported,
+            skipped: outcomes.filter((o) => o.status === 'skipped').length,
+            failed: failed.length,
             total: customers.length,
-            errors: errors.length > 0 ? errors : undefined
+            outcomes,
+            // Legacy shape the modal already reads.
+            errors: failed.length > 0 ? failed.map((o) => `Failed to import ${o.email}`) : undefined
         })
     } catch (error) {
         if (error instanceof z.ZodError) {

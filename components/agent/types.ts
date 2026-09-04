@@ -81,7 +81,15 @@ export interface Customer {
     surname: string
     email: string
     phone: string
+    /** Legacy three-way pill, kept for compatibility. Derived from the raw
+     *  relationship status alone, so it says "invited" for a customer the
+     *  agent merely added and never invited. Prefer the two raw fields below. */
     activationStatus: ActivationStatus
+    /** Raw CustomerRelationship.status: pending_activation | active | inactive | terminated. */
+    relationshipStatus?: string
+    /** Raw CustomerRelationship.activationStatus: no_policies | not_invited |
+     *  invited | activated | active — the value the pill should be derived from. */
+    relationshipActivationStatus?: string
     accessScope: AccessScope
     permissions: Permission[]
     policyCount: number
@@ -142,6 +150,8 @@ export interface CustomerListProps {
     onEmail?: (customerId: string) => void
     onWhatsApp?: (customerId: string) => void
     onBulkAction?: (action: 'export' | 'email' | 'delete', ids: string[]) => void
+    /** «Αποστολή πρόσκλησης» on a customer who was added but never invited. */
+    onInvite?: (customerId: string) => void
 }
 
 export interface CustomerProfileProps {

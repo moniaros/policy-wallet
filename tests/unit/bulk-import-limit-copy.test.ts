@@ -60,4 +60,17 @@ describe('a refused import tells the agent why', () => {
     it('falls back to the generic message for an unknown code', () => {
         expect(MODAL).toMatch(/default:\s*\n\s*return t\.apiErrors\.generic/)
     })
+
+    /**
+     * A malformed row (missing name, bad email) is refused as VALIDATION_ERROR
+     * — the most common refusal a CSV produces — and it used to fall through to
+     * the generic "something went wrong", which told the agent nothing about
+     * the file. It has its own key, and the modal must map to it.
+     */
+    it('VALIDATION_ERROR maps to its own message in both languages', () => {
+        expect(ROUTE).toContain('"VALIDATION_ERROR"')
+        expect(el.apiErrors.bulkImportValidationError).toBeTruthy()
+        expect(en.apiErrors.bulkImportValidationError).toBeTruthy()
+        expect(MODAL).toMatch(/case 'VALIDATION_ERROR':\s*\n\s*return t\.apiErrors\.bulkImportValidationError/)
+    })
 })

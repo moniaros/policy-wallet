@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { toast } from "sonner"
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FileUp, FileText, Sparkles, UserRound, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { scanPolicyForResolution, commitScannedPolicy, requestAiConsent } from '@/app/(protected)/agent/actions'
@@ -10,20 +11,36 @@ import { useDialog } from '@/hooks/useDialog'
 import { CardHead } from '@/components/dashboard/home/CardHead'
 import { Checkbox, Radio } from '@/components/ui/form'
 import { UploadDropzone } from '@/components/ui/UploadDropzone'
-import type { CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
+import type { CandidateAiConsent, CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
 import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
 import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
-import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, displayPolicyNumber, scrubPolicyIdentity } from '@/lib/wallet/policy-identity'
 
-interface Props {
+interface BaseProps {
     isOpen: boolean
     onClose: () => void
     onSuccess?: () => void
-    /** When set, the customer is already known — skip the resolution step. */
-    presetCustomerId?: string
-    presetCustomerName?: string
 }
+
+/**
+ * Two entry points. The per-customer one (profile page) skips resolution, so
+ * nothing on the resolution path can tell the confirm step whether an AI
+ * analysis may run — the page has to say. The union makes that a compile
+ * error to forget: a preset customer ALWAYS travels with the consent verdict
+ * (deriveAiConsentState), never with a guess.
+ */
+type Props = BaseProps &
+    (
+        | { presetCustomerId?: undefined; presetCustomerName?: undefined; presetCustomerConsent?: undefined }
+        | {
+              /** The customer is already known — skip the resolution step. */
+              presetCustomerId: string
+              presetCustomerName?: string
+              /** Whether an AI analysis can run for that customer if the advisor uploads now. */
+              presetCustomerConsent: CandidateAiConsent
+          }
+    )
 
 type View = 'upload' | 'parsing' | 'resolve' | 'confirm' | 'duplicate' | 'success'
 
@@ -46,7 +63,13 @@ interface Extraction {
     premiumAmount?: number
 }
 
-type AnalysisState = 'started' | 'consent_required' | 'limit_reached' | 'none'
+/**
+ * What the action DECIDED about the analysis before it answered. `queued` is
+ * the only value under which this surface may say the analysis is running —
+ * the token gate is evaluated server-side before the result comes back, so
+ * «εκτελείται στο παρασκήνιο» is a report, never a promise.
+ */
+type AnalysisOutcome = 'queued' | 'blocked_quota' | 'blocked_consent' | 'none'
 
 // Derived from the server allowlist — this hand-written copy omitted HEIC, so
 // an agent could not select an iPhone photo of a client's policy.
@@ -56,7 +79,7 @@ const ACCEPTED = acceptAttribute('policy')
 // ours (a clear, translated message) rather than the runtime's opaque failure.
 const SCAN_MAX_BYTES = 10 * 1024 * 1024
 
-export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName }: Props) {
+export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName, presetCustomerConsent }: Props) {
     const { t } = useLanguage()
     const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
     const up = t.agentModals.uploadPolicy
@@ -82,8 +105,15 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         insurerName: '', policyNumber: '', lineOfBusiness: 'motor', startDate: '', endDate: '', premiumAmount: '',
     })
     const [attestedAiConsent, setAttestedAiConsent] = useState(false)
+    // Pre-scan mandate attestation (M2 / D1). The scan sends the document to
+    // a model provider BEFORE any customer is resolved, so the agent attests
+    // — per scan, before the file is picked — that they hold the customer's
+    // mandate; the server refuses a scan without it and records it in the
+    // audit row. Distinct from `attestedAiConsent`, which is the customer's
+    // AI-consent attestation for the deep run on the confirm step.
+    const [preScanAttested, setPreScanAttested] = useState(false)
 
-    const [result, setResult] = useState<{ policyId?: string; customerId?: string; created?: boolean; analysisState?: AnalysisState } | null>(null)
+    const [result, setResult] = useState<{ policyId?: string; customerId?: string; created?: boolean; analysis?: AnalysisOutcome } | null>(null)
     const [consentSent, setConsentSent] = useState(false)
     const [duplicate, setDuplicate] = useState<DuplicatePolicy | null>(null)
 
@@ -95,6 +125,15 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setCustomer({ name: '', surname: '', email: '', phone: '', taxId: '' })
         setPolicy({ insurerName: '', policyNumber: '', lineOfBusiness: 'motor', startDate: '', endDate: '', premiumAmount: '' })
         setAttestedAiConsent(false)
+        setPreScanAttested(false)
+    }
+
+    // Server codes this surface can name in the agent's language. Everything
+    // else falls through to the upload-rejection localiser and its fallback.
+    const scanErrorCopy = (code: string | null | undefined): string | null => {
+        if (code === 'AI_CONSENT_REQUIRED') return t.apiErrors.aiConsentRequired
+        if (code === 'AGENT_ATTESTATION_REQUIRED') return t.apiErrors.agentAttestationRequired
+        return null
     }
 
     const closeAll = () => { reset(); onClose() }
@@ -107,9 +146,17 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             phone: data.customerPhone || '',
             taxId: data.customerTaxId || '',
         })
+        // The providers substitute a placeholder identity (`Unknown Insurer`,
+        // `PENDING-…`) for an empty extraction. Pre-filled raw, it satisfied
+        // `required` and the agent committed a sentinel as the policy's name.
+        // Scrubbed, the field is empty and `required` makes the agent type it.
+        const identity = scrubPolicyIdentity({
+            insurerName: data.insurerName ?? '',
+            policyNumber: data.policyNumber ?? '',
+        })
         setPolicy({
-            insurerName: data.insurerName || '',
-            policyNumber: data.policyNumber || '',
+            insurerName: identity.insurerName,
+            policyNumber: identity.policyNumber,
             lineOfBusiness: data.lineOfBusiness || 'motor',
             startDate: data.startDate || '',
             endDate: data.endDate || '',
@@ -131,11 +178,21 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             return
         }
 
+        // The dropzone is disabled until the attestation is ticked, so this is
+        // belt-and-braces: nothing is sent without it, and the server refuses
+        // anyway (AGENT_ATTESTATION_REQUIRED).
+        if (!preScanAttested) {
+            setError(t.apiErrors.agentAttestationRequired)
+            setView('upload')
+            return
+        }
+
         setScannedFile(file)
         setView('parsing'); setLoading(true); setError(null)
 
         const fd = new FormData()
         fd.append('file', file)
+        fd.append('attested', 'true')
 
         // A Server Action can fail at the TRANSPORT layer — before the action
         // body ever runs — and then it rejects instead of returning a result:
@@ -156,7 +213,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setLoading(false)
 
         if (!res.success) {
-            setError(uploadRejectionMessage(t, (res as any).errorCode, res.error || up.scanError, SCAN_MAX_BYTES))
+            setError(scanErrorCopy(res.error) ?? uploadRejectionMessage(t, (res as any).errorCode, res.error || up.scanError, SCAN_MAX_BYTES))
             setView('upload')
             return
         }
@@ -226,7 +283,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             policyId: (res as any).policyId,
             customerId: (res as any).customerId,
             created: (res as any).created,
-            analysisState: (res as any).analysisState,
+            analysis: (res as any).analysis,
         })
         setView('success')
         onSuccess?.()
@@ -252,12 +309,15 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
     const isCreateNew = selected === 'new'
     // AI-consent state of whoever the policy is about to be attached to. A NEW
-    // customer is created unactivated, so attestation applies; a preset customer
-    // (per-client entry point) carries no resolution, so leave the existing
-    // behaviour rather than guess.
-    const selectedConsent: CustomerCandidate['aiConsent'] | null = isCreateNew
-        ? 'attestable'
-        : resolution?.candidates.find((c) => c.id === selected)?.aiConsent ?? null
+    // customer is created unactivated, so attestation applies; a resolved
+    // candidate carries its own verdict; a preset customer (per-client entry
+    // point) carries the verdict the page derived. Null only while nothing is
+    // selected, which the confirm step cannot reach.
+    const selectedConsent: CandidateAiConsent | null = presetCustomerId
+        ? presetCustomerConsent
+        : isCreateNew
+            ? 'attestable'
+            : resolution?.candidates.find((c) => c.id === selected)?.aiConsent ?? null
     const canContinueResolve = selected !== '' && (
         selected !== 'new' || Boolean(customer.email.trim() && customer.name.trim())
     )
@@ -315,6 +375,22 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             {stepTrack(1)}
                         </header>
 
+                        {/* Mandate attestation BEFORE the scan. The document
+                            reaches a model provider before the customer is even
+                            resolved, so the lawful basis is established here:
+                            the agent's own recorded AI consent (server-side)
+                            plus this per-scan attestation, sent as attested=true
+                            and written into the scan's audit row. The dropzone
+                            stays disabled until it is ticked. */}
+                        <div className="pw-subcard px-4 py-1.5" data-testid="upload-policy-prescan-attestation">
+                            <Checkbox
+                                checked={preScanAttested}
+                                onChange={e => setPreScanAttested(e.target.checked)}
+                                label={<span className="font-semibold">{up.preScanAttestation}</span>}
+                                hint={up.preScanAttestationHint}
+                            />
+                        </div>
+
                         {/* The shared dropzone: the old picker button promised
                             «σύρετε και αποθέστε εδώ» and accepted no drop. */}
                         <div>
@@ -326,6 +402,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 inputId="upload-policy-file"
                                 title={up.uploadCta}
                                 hint={up.dropHint}
+                                disabled={!preScanAttested}
                             />
                             <p className="mt-2 text-center text-caption text-muted-foreground">{up.uploadHint}</p>
                         </div>
@@ -385,9 +462,9 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 {up.newCustomerTitle}. <span className="font-normal text-muted-foreground">{up.newCustomerDesc}</span>
                             </p>
                         ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-2" role="radiogroup" aria-labelledby="upload-policy-candidates-title">
                                 <div>
-                                    <p className="text-sm font-semibold text-foreground">
+                                    <p id="upload-policy-candidates-title" className="text-sm font-semibold text-foreground">
                                         {resolution.exactMatch && !resolution.conflict ? up.matchedTitle : up.multipleTitle}
                                     </p>
                                     <p className="text-caption text-muted-foreground">
@@ -396,7 +473,9 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 </div>
                                 {/* Each candidate is a sub-card row; the shared Radio
                                     makes the whole row the target and the ring, not
-                                    colour alone, says which one is chosen. */}
+                                    colour alone, says which one is chosen. The group
+                                    is named by its heading so a screen reader hears
+                                    which question the radios answer. */}
                                 {resolution.candidates.map((c: CustomerCandidate) => (
                                     <div key={c.id} className={candidateRow(selected === c.id)}>
                                         <Radio
@@ -440,7 +519,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 animate-in slide-in-from-top-2 duration-200">
                                 <Field label={ac.firstName}><input required value={customer.name} onChange={e => setCustomer({ ...customer, name: e.target.value })} placeholder={ac.phFirstName} className="pw-input" /></Field>
                                 <Field label={ac.lastName}><input value={customer.surname} onChange={e => setCustomer({ ...customer, surname: e.target.value })} placeholder={ac.phLastName} className="pw-input" /></Field>
-                                <Field label={ac.emailAddress}><input required type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} placeholder="john@example.com" className="pw-input" /></Field>
+                                <Field label={ac.emailAddress}><input required type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} placeholder={ac.phEmail} className="pw-input" /></Field>
                                 <Field label={ac.taxId}><input value={customer.taxId} onChange={e => setCustomer({ ...customer, taxId: e.target.value })} placeholder={ac.phTaxId} className="pw-input" /></Field>
                             </div>
                         )}
@@ -480,22 +559,32 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             <Field label={ac.endDate}><input required type="date" value={policy.endDate} onChange={e => setPolicy({ ...policy, endDate: e.target.value })} className="pw-input" /></Field>
                         </div>
 
-                        {/* Attestation only exists for accounts the customer has
-                            never activated. Offering the checkbox for a live
-                            account was a control that silently did nothing: the
-                            server refuses to attest on their behalf (correctly),
-                            so the advisor ticked it and still got no analysis.
-                            Show the real next step instead. */}
+                        {/* Three states, the same on both entry points. Attestation
+                            only exists for accounts the customer has never
+                            activated; offering the checkbox for a live account was
+                            a control that silently did nothing (the server refuses
+                            to attest on their behalf, correctly), and offering it
+                            for a customer whose consent is already on file asked
+                            the advisor to vouch for nothing. Show the real next
+                            step instead. */}
                         {selectedConsent === 'blocked' ? (
-                            <div role="note" className="pw-subcard flex items-start gap-3 p-4">
+                            <div role="note" data-testid="upload-policy-consent-blocked" className="pw-subcard flex items-start gap-3 p-4">
                                 <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-status-warning" aria-hidden="true" />
                                 <div className="min-w-0">
                                     <span className="block text-sm font-semibold text-foreground">{up.consentBlockedTitle}</span>
                                     <span className="mt-0.5 block text-caption text-muted-foreground">{up.consentBlockedDesc}</span>
                                 </div>
                             </div>
+                        ) : selectedConsent === 'granted' ? (
+                            <div role="note" data-testid="upload-policy-consent-granted" className="pw-subcard flex items-start gap-3 p-4">
+                                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-status-success" aria-hidden="true" />
+                                <div className="min-w-0">
+                                    <span className="block text-sm font-semibold text-foreground">{up.consentGrantedTitle}</span>
+                                    <span className="mt-0.5 block text-caption text-muted-foreground">{up.consentGrantedDesc}</span>
+                                </div>
+                            </div>
                         ) : (
-                            <div className="pw-subcard px-4 py-1.5">
+                            <div className="pw-subcard px-4 py-1.5" data-testid="upload-policy-consent-attestable">
                                 <Checkbox
                                     checked={attestedAiConsent}
                                     onChange={e => setAttestedAiConsent(e.target.checked)}
@@ -553,15 +642,20 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">{result.created ? up.successCreatedDesc : up.successAttachedDesc}</p>
                         </div>
 
-                        {/* What happens to the analysis — a status sentence on a
-                            sub-card, info while it runs, warning when it cannot. */}
-                        {result.analysisState === 'started' && (
+                        {/* What happened to the analysis — a status sentence on a
+                            sub-card, info when it is QUEUED, warning when it
+                            could not start. The action decided this before it
+                            answered; «εκτελείται» renders only under `queued`. */}
+                        {result.analysis === 'queued' && (
                             <p role="status" className="pw-subcard p-3 text-left text-caption font-semibold text-status-info">{up.analysisStarted}</p>
                         )}
-                        {result.analysisState === 'limit_reached' && (
-                            <p role="status" className="pw-subcard p-3 text-left text-caption font-semibold text-status-warning">{up.analysisLimitReached}</p>
+                        {result.analysis === 'blocked_quota' && (
+                            <div className="space-y-3" data-testid="upload-policy-analysis-blocked-quota">
+                                <p role="status" className="pw-subcard p-3 text-left text-caption font-semibold text-status-warning">{up.analysisBlockedQuota}</p>
+                                <Link href="/agent/pricing" className="pw-soft-button">{t.analysis.actions.viewAgentPlans}</Link>
+                            </div>
                         )}
-                        {result.analysisState === 'consent_required' && (
+                        {result.analysis === 'blocked_consent' && (
                             <div className="space-y-3">
                                 <p role="status" className="pw-subcard p-3 text-left text-caption font-semibold text-status-warning">{up.analysisConsentRequired}</p>
                                 {!consentSent && (

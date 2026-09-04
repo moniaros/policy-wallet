@@ -35,8 +35,100 @@ import { isAgentRole } from "@/lib/auth/require-agent";
 import { hasAnyRole } from "@/lib/api-auth";
 import { validateUploadFile, sanitizeDisplayName, REJECTION_MESSAGES } from "@/lib/security/file-upload";
 import { buildCloseFields, recordStageTransition } from "@/lib/agent/opportunity-lifecycle";
+import { normalizeEmail } from "@/lib/identity/normalize-email";
+import { isPhantomCustomer } from "@/lib/agent-consent";
+import { ENDED_RELATIONSHIP_STATUSES } from "@/lib/agent-visibility";
+import { AppError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
+import {
+    AddCustomerManuallyInput,
+    AddPolicyForCustomerInput,
+    AgentInviteInput,
+    AgentPolicyInput,
+    CommitDecisionInput,
+    validationFailure,
+} from "@/lib/validations/agent-intake";
 
 const customerService = new CustomerService(db);
+
+/**
+ * Every failure an action swallows is reported here — Sentry (tagged by
+ * action + agent, ids in `extra`) and the structured logger. A bare
+ * `console.error(e)` in a server action is invisible in production: the
+ * catches in this file used to be exactly that, so a storage outage or a
+ * Prisma error surfaced only as "Failed to add policy" in a modal.
+ * Not exported: a "use server" export is a public endpoint.
+ */
+async function reportActionFailure(
+    action: string,
+    error: unknown,
+    context: { agentId?: string; policyId?: string; customerId?: string; opportunityId?: string } = {},
+) {
+    logger("error", `[agent/actions] ${action} failed`, {
+        action,
+        ...context,
+        error: error instanceof Error ? error.message : String(error),
+    })
+    try {
+        const Sentry = await import("@sentry/nextjs")
+        Sentry.captureException(error, {
+            tags: { action, agentId: context.agentId ?? "anonymous" },
+            extra: {
+                policyId: context.policyId,
+                customerId: context.customerId,
+                opportunityId: context.opportunityId,
+            },
+        })
+    } catch (reportError) {
+        // Reporting must never mask the failure being reported.
+        logger("warn", "[agent/actions] Sentry capture failed", {
+            action,
+            error: reportError instanceof Error ? reportError.message : String(reportError),
+        })
+    }
+}
+
+/**
+ * What happened to the analysis when an agent added a policy with a document.
+ * Decided BEFORE the action answers — never a promise the deferred run may
+ * break. `queued` is the only value under which a surface may say the
+ * analysis is running.
+ */
+type AnalysisOutcome = 'queued' | 'blocked_quota' | 'blocked_consent' | 'none'
+
+/**
+ * Stamp a just-added policy the way the pipeline stamps a run its token gate
+ * refused (orchestrator createRun / policy.service markAnalysisIncomplete):
+ * `action_needed`, a retryable TOKEN_LIMIT_BLOCKED processingError the
+ * wallet localises, and the document out of its pending spinner. The policy
+ * itself stays — KEEP-AND-INFORM, never delete on a quota block.
+ * Not exported: a "use server" export is a public endpoint.
+ */
+async function markPolicyAnalysisBlockedByQuota(policyId: string, reason: string) {
+    const current = await db.policy.findUnique({
+        where: { id: policyId },
+        select: { acordData: true },
+    })
+    await db.policy.update({
+        where: { id: policyId },
+        data: {
+            status: 'action_needed',
+            acordData: {
+                ...((current?.acordData as Record<string, unknown> | null) || {}),
+                processingError: {
+                    code: 'TOKEN_LIMIT_BLOCKED',
+                    message: `Policy analysis did not start: ${reason}`,
+                    retryable: true,
+                    occurredAt: new Date().toISOString(),
+                },
+            },
+        },
+    })
+    await db.policyDocument.updateMany({
+        where: { policyId },
+        data: { processingStatus: 'failed' },
+    })
+}
 
 /**
  * AGENT DASHBOARD ACTIONS
@@ -91,6 +183,12 @@ export async function getCustomers(query?: string): Promise<Customer[]> {
             email: c.email || '',
             phone: c.phoneNumber || '',
             activationStatus: (c.status === 'pending_activation' ? 'invited' : c.status === 'active' ? 'activated' : 'inactive') as ActivationStatus,
+            // The raw pair the pill should really be derived from: a
+            // pending_activation row is "invited" only when an invite went
+            // out (activationStatus 'invited'), not merely because the agent
+            // added the customer ('no_policies' / 'not_invited').
+            relationshipStatus: c.status,
+            relationshipActivationStatus: c.activationStatus,
             accessScope: 'portfolio' as AccessScope,
             permissions: ['view', 'upload'] as any,
             policyCount: c.policyCount || 0,
@@ -105,6 +203,9 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
     if (!isAgentRole(authResult.dbUser.roles)) return null
+    // A missing id must be "not found", never "whichever customer sorts
+    // first" — the service refuses it too, but refuse here before the read.
+    if (typeof customerId !== "string" || customerId.length === 0) return null
 
     try {
         const profile = await customerService.getCustomerProfile(authResult.dbUser.id, customerId)
@@ -179,6 +280,8 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
             email: profile.customer.email || '',
             phone: profile.customer.phone || '',
             activationStatus: (profile.relationship.status === 'pending_activation' ? 'invited' : profile.relationship.status === 'active' ? 'activated' : 'inactive') as ActivationStatus,
+            relationshipStatus: profile.relationship.status,
+            relationshipActivationStatus: profile.relationship.activationStatus,
             accessScope: 'portfolio',
             permissions: ['view', 'upload', 'suggest', 'message'],
             policyCount: profile.policies.length,
@@ -213,9 +316,13 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
                     const { scoreOpportunitiesBatch } = await import("@/lib/services/gap-engine/opportunity-scoring")
                     const scored = await scoreOpportunitiesBatch(profile.opportunities.map(o => o.id))
                     scores = new Map([...scored].map(([id, s]) => [id, { likelihood: s.likelihood, score: s.score }]))
-                } catch {
+                } catch (scoringError) {
                     // Best-effort enrichment: scoring is non-critical. On failure
                     // opportunities render without a conversion score.
+                    logger("warn", "[agent/actions] opportunity scoring skipped", {
+                        customerId,
+                        error: scoringError instanceof Error ? scoringError.message : String(scoringError),
+                    })
                 }
                 return profile.opportunities.map((o) => {
                     const scored = scores.get(o.id)
@@ -237,6 +344,11 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
             interactions
         }
     } catch (e) {
+        // NOT_FOUND from the service is the normal "not your customer" outcome;
+        // anything else is an incident that used to vanish into `return null`.
+        if (!(e instanceof AppError && e.code === 'NOT_FOUND')) {
+            await reportActionFailure("getCustomerProfile", e, { agentId: authResult.dbUser.id, customerId })
+        }
         return null
     }
 }
@@ -254,12 +366,12 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
  */
 export async function logOpportunityNote(opportunityId: string, body: string) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
 
     const trimmed = (body || "").trim()
-    if (!trimmed) return { error: "Empty note" }
-    if (trimmed.length > 4000) return { error: "Note too long" }
+    if (!trimmed) return { error: "NOTE_EMPTY" }
+    if (trimmed.length > 4000) return { error: "NOTE_TOO_LONG" }
 
     const opp = await db.opportunity.findUnique({
         where: { id: opportunityId },
@@ -270,7 +382,7 @@ export async function logOpportunityNote(opportunityId: string, body: string) {
         },
     })
     if (!opp || opp.relationship?.agentUserId !== authResult.dbUser.id) {
-        return { error: "Opportunity not found or access denied" }
+        return { error: "OPPORTUNITY_NOT_FOUND" }
     }
 
     let thread = await db.collaborationThread.findFirst({
@@ -351,16 +463,22 @@ async function loadOpportunityNotes(opportunityId: string, agentUserId: string) 
  */
 export async function suggestQualificationFromNotes(opportunityId: string) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
 
     const loaded = await loadOpportunityNotes(opportunityId, authResult.dbUser.id)
-    if (!loaded) return { error: "Opportunity not found or access denied" }
+    if (!loaded) return { error: "OPPORTUNITY_NOT_FOUND" }
     if (loaded.notes.length === 0) return { error: "NO_NOTES" }
+
+    // Nothing reaches a model provider without AI-processing consent — on
+    // every path. The notes are the agent's own text about a customer; the
+    // agent's own recorded consent is the lawful basis for sending them
+    // (D1). Checked before the prompt is built.
+    if (!authResult.dbUser.aiProcessingConsentVersion) return { error: "AI_CONSENT_REQUIRED" }
 
     const { getAIService } = await import("@/lib/services/ai")
     const aiService = getAIService()
-    if (!aiService.isAvailable()) return { error: "AI service is not configured" }
+    if (!aiService.isAvailable()) return { error: "AI_NOT_CONFIGURED" }
 
     const { buildSuggestQualificationPrompt, parseSuggestions, filterByEvidence, estimateSuggestTokens } =
         await import("@/lib/medic/suggest")
@@ -422,7 +540,8 @@ export async function suggestQualificationFromNotes(opportunityId: string) {
     let raw: string
     try {
         raw = await aiService.askQuestion(null, metadata, prompt, { userId: authResult.dbUser.id })
-    } catch {
+    } catch (e) {
+        await reportActionFailure("suggestQualificationFromNotes", e, { agentId: authResult.dbUser.id, opportunityId })
         return { error: "SUGGESTION_FAILED" }
     }
 
@@ -440,7 +559,13 @@ export async function suggestQualificationFromNotes(opportunityId: string) {
                 metadata: { opportunityId, noteCount: notes.length, estimatedTokens },
             },
         })
-    } catch { /* never fail the action on a logging error */ }
+    } catch (logError) {
+        // Never fail the action on a logging error — but do not lose it either.
+        logger("warn", "[agent/actions] MEDIC_SUGGESTION_REQUESTED audit row failed", {
+            agentId: authResult.dbUser.id,
+            error: logError instanceof Error ? logError.message : String(logError),
+        })
+    }
 
     const parsed = parseSuggestions(raw)
     if (!parsed) return { error: "SUGGESTION_UNPARSEABLE" }
@@ -457,11 +582,11 @@ export async function suggestQualificationFromNotes(opportunityId: string) {
  */
 export async function applyQualificationSuggestions(opportunityId: string, accepted: unknown) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
 
     const loaded = await loadOpportunityNotes(opportunityId, authResult.dbUser.id)
-    if (!loaded) return { error: "Opportunity not found or access denied" }
+    if (!loaded) return { error: "OPPORTUNITY_NOT_FOUND" }
 
     const { validateAcceptedSuggestions, filterByEvidence, mergeAcceptedSuggestions } =
         await import("@/lib/medic/suggest")
@@ -504,15 +629,15 @@ export async function applyQualificationSuggestions(opportunityId: string, accep
  */
 export async function patchOpportunityMedic(opportunityId: string, patch: unknown) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
 
     const opp = await db.opportunity.findUnique({
         where: { id: opportunityId },
         select: { relationship: { select: { agentUserId: true } } },
     })
     if (!opp || opp.relationship?.agentUserId !== authResult.dbUser.id) {
-        return { error: "Opportunity not found or access denied" }
+        return { error: "OPPORTUNITY_NOT_FOUND" }
     }
 
     const { validateMedicPatch, applyMedicPatch } = await import("@/lib/medic/patch")
@@ -539,8 +664,8 @@ export async function updateOpportunityStatus(
     outcomeNotes?: string
 ) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
 
     // Verify ownership
     const oppAuth = await db.opportunity.findUnique({
@@ -553,7 +678,7 @@ export async function updateOpportunityStatus(
     })
 
     if (!oppAuth || oppAuth.relationship?.agentUserId !== authResult.dbUser.id) {
-        return { error: "Opportunity not found or access denied" }
+        return { error: "OPPORTUNITY_NOT_FOUND" }
     }
 
     const closeFields = buildCloseFields(status, outcome, outcomeNotes)
@@ -597,66 +722,105 @@ export async function updateOpportunityStatus(
 
 export async function inviteCustomer(formData: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { success: false, error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
+    if (!authResult) return { success: false, error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "UNAUTHORIZED" }
 
-    const email = formData.get("email") as string
-    if (!email) return { success: false, error: "Email is required" }
+    const email = formData.get("email")
+    if (typeof email !== "string" || email.trim().length === 0) {
+        return { success: false, error: "VALIDATION_ERROR" }
+    }
 
     return await createAgentInvite(email, "portfolio")
 }
 
 export async function createAgentInvite(email: string, scope: AccessScope) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { success: false, error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
+    if (!authResult) return { success: false, error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "UNAUTHORIZED" }
+    const agentId = authResult.dbUser.id
+
+    // Trim + lowercase + NFC and a format check BEFORE anything is written: an
+    // unnormalised address here minted a phantom user that the customer's own
+    // signup (which lowercases) could never find, so the relationship never
+    // activated.
+    const parsedInput = AgentInviteInput.safeParse({ email, scope })
+    if (!parsedInput.success) return validationFailure(parsedInput.error)
+    // The schema already normalised; restated on the key the lookup and the
+    // write below actually use, so the single-path guard can see it here.
+    const inviteeEmail = normalizeEmail(parsedInput.data.email)
+    const inviteScope = parsedInput.data.scope
 
     // Sends an email — cap per agent so re-inviting an existing customer (which
     // doesn't consume the customer count) can't be used to email-bomb an address.
     const { rateLimit } = await import("@/lib/rate-limit")
-    const inviteLimit = await rateLimit(authResult.dbUser.id, 20, 60 * 60 * 1000, `agent-invite:${authResult.dbUser.id}`)
+    const inviteLimit = await rateLimit(agentId, 20, 60 * 60 * 1000, `agent-invite:${agentId}`)
     if (!inviteLimit.success) {
-        return { success: false, error: "Too many invites sent. Please wait a bit and try again." }
+        return { success: false, error: "RATE_LIMITED" }
     }
 
     // Check customer limit
     const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
-    const customerCheck = await canAgentAddCustomer(authResult.dbUser.id)
+    const customerCheck = await canAgentAddCustomer(agentId)
     if (!customerCheck.allowed) {
         return {
             success: false,
-            error: `Customer limit reached (${customerCheck.current}/${customerCheck.limit}). Upgrade your plan to add more customers.`,
+            error: "CUSTOMER_LIMIT_REACHED",
+            reason: customerCheck.reason,
+            current: customerCheck.current,
+            limit: customerCheck.limit,
         }
     }
 
     // 1. Ensure User exists (Placeholder if new)
     let customer = await db.user.findUnique({
-        where: { email }
+        where: { email: inviteeEmail }
     })
 
     if (!customer) {
         customer = await db.user.create({
             data: {
-                email,
-                name: email.split('@')[0], // Placeholder name
+                email: inviteeEmail,
+                name: inviteeEmail.split('@')[0], // Placeholder name
                 roles: "policyholder"
             }
         })
     }
 
-    // 2. Ensure Relationship exists
-    await db.customerRelationship.upsert({
+    // 2. Ensure Relationship exists — and never resurrect one that ended.
+    // The upsert's update arm used to set the row back to pending_activation,
+    // which silently re-opened the upload-visibility arm (lib/agent-visibility.ts)
+    // that a termination had closed. Only the customer can reconnect.
+    const existingRelationship = await db.customerRelationship.findUnique({
         where: {
             agentUserId_policyholderUserId: {
-                agentUserId: authResult.dbUser.id,
+                agentUserId: agentId,
                 policyholderUserId: customer.id
             }
         },
-        update: {
-            status: 'pending_activation'
+        select: { status: true, activationStatus: true },
+    })
+    if (existingRelationship?.status === 'terminated') {
+        return { success: false, error: "RELATIONSHIP_TERMINATED" }
+    }
+
+    // An existing row keeps its status — the agent's invite is not the
+    // customer's acceptance. Only the stage marker moves, and only forward
+    // from "never invited" on a living relationship.
+    const markInvited =
+        existingRelationship !== null &&
+        !(ENDED_RELATIONSHIP_STATUSES as readonly string[]).includes(existingRelationship.status) &&
+        (existingRelationship.activationStatus === 'no_policies' || existingRelationship.activationStatus === 'not_invited')
+
+    await db.customerRelationship.upsert({
+        where: {
+            agentUserId_policyholderUserId: {
+                agentUserId: agentId,
+                policyholderUserId: customer.id
+            }
         },
+        update: markInvited ? { activationStatus: 'invited' } : {},
         create: {
-            agentUserId: authResult.dbUser.id,
+            agentUserId: agentId,
             policyholderUserId: customer.id,
             status: 'pending_activation',
             activationStatus: 'invited'
@@ -666,12 +830,12 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     // 3. Create Invite
     const invite = await db.invite.create({
         data: {
-            inviterUserId: authResult.dbUser.id,
-            inviteeEmail: email,
+            inviterUserId: agentId,
+            inviteeEmail,
             token: crypto.randomUUID().replace(/-/g, ''),
             inviteType: 'signup',
             relationshipType: 'agent_client',
-            scope,
+            scope: inviteScope,
             expiresAt: daysFromNow(INVITE_EXPIRY_DAYS)
         }
     })
@@ -682,14 +846,14 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     let emailDelivered = false
     try {
         const emailResult = await sendPolicyInviteEmail({
-            to: email,
+            to: inviteeEmail,
             token: invite.token,
             inviterName: authResult.dbUser.name || authResult.dbUser.email,
             language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
         })
         emailDelivered = emailResult.success
     } catch (error) {
-        console.error("Failed to send agent invite email", error)
+        await reportActionFailure("createAgentInvite.sendEmail", error, { agentId, customerId: customer.id })
     }
 
     revalidatePath("/dashboard/agent")
@@ -720,10 +884,16 @@ export async function addCustomerManually(data: {
     }
 }) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { success: false, error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "UNAUTHORIZED" }
 
     const agentId = authResult.dbUser.id
+
+    // Validate BEFORE any write. `new Date('')`, a NaN premium, a free-text
+    // line of business and an address with no `@` all used to reach Prisma.
+    const parsed = AddCustomerManuallyInput.safeParse(data)
+    if (!parsed.success) return validationFailure(parsed.error)
+    const input = parsed.data
 
     try {
         // 0. Subscription gate — same cap the invite/bulk paths enforce
@@ -731,35 +901,39 @@ export async function addCustomerManually(data: {
         const customerGate = await canAgentAddCustomer(agentId)
         if (!customerGate.allowed) {
             return {
-                error: `Customer limit reached (${customerGate.current}/${customerGate.limit}). Upgrade your plan.`,
+                success: false,
+                error: "CUSTOMER_LIMIT_REACHED",
                 reason: customerGate.reason,
                 current: customerGate.current,
                 limit: customerGate.limit,
             }
         }
 
-        // 1. Create Customer Relationship via Service
-        const relationship = await customerService.createCustomer(agentId, {
-            email: data.email,
-            name: `${data.name} ${data.surname}`,
-            phoneNumber: data.phone,
-            taxId: data.taxId,
-        });
+        // 1. Customer (+ phantom user), relationship, first policy and its
+        // management grant land in ONE transaction. The service is bound to
+        // the transaction client, so nothing inside queries the outer pool.
+        const committed = await db.$transaction(async (tx) => {
+            const txCustomerService = new CustomerService(tx as unknown as typeof db)
+            const relationship = await txCustomerService.createCustomer(agentId, {
+                email: input.email,
+                name: `${input.name} ${input.surname}`.trim(),
+                phoneNumber: input.phone,
+                taxId: input.taxId,
+            })
 
-        // 2. Create policy if provided, minting the management grant with it
-        if (data.policy) {
-            await db.$transaction(async (tx) => {
+            let policyId: string | undefined
+            if (input.policy) {
                 const created = await tx.policy.create({
                     data: {
                         ownerUserId: relationship.policyholderUserId,
                         createdByUserId: agentId,
-                        insurerName: data.policy!.insurerName,
-                        policyNumber: data.policy!.policyNumber,
-                        lineOfBusiness: data.policy!.lineOfBusiness,
-                        startDate: new Date(data.policy!.startDate),
-                        endDate: new Date(data.policy!.endDate),
-                        coverageEndDate: new Date(data.policy!.endDate),
-                        premiumAmount: data.policy!.premiumAmount,
+                        insurerName: input.policy.insurerName,
+                        policyNumber: input.policy.policyNumber,
+                        lineOfBusiness: input.policy.lineOfBusiness,
+                        startDate: new Date(input.policy.startDate),
+                        endDate: new Date(input.policy.endDate),
+                        coverageEndDate: new Date(input.policy.endDate),
+                        premiumAmount: input.policy.premiumAmount,
                         status: 'active'
                     }
                 })
@@ -772,19 +946,29 @@ export async function addCustomerManually(data: {
                         status: 'active',
                     }
                 })
-            })
-        }
+                policyId = created.id
+            }
+
+            return {
+                customerId: relationship.policyholderUserId,
+                taxIdIgnored: relationship.taxIdIgnored === true,
+                policyId,
+            }
+        })
 
         revalidatePath("/customers")
-        return { success: true, customerId: relationship.policyholderUserId }
+        return { success: true, ...committed }
     } catch (e) {
         // Expected conflicts (e.g. "customer already exists") are a normal user
         // outcome, not an incident — don't spam the error dashboards at scale.
-        if (e && typeof e === 'object' && 'userMessage' in e) {
-            return { error: (e as any).userMessage }
+        if (e instanceof AppError && e.code === 'CONFLICT') {
+            return { success: false, error: "CUSTOMER_EXISTS" }
         }
-        console.error(e)
-        return { error: "Failed to add customer" }
+        if (e instanceof AppError && e.code === 'VALIDATION') {
+            return { success: false, error: "VALIDATION_ERROR" }
+        }
+        await reportActionFailure("addCustomerManually", e, { agentId })
+        return { success: false, error: "ADD_CUSTOMER_FAILED" }
     }
 }
 
@@ -806,35 +990,39 @@ export async function addPolicyForCustomer(data: {
     confirmDuplicate?: boolean;
 }, documentFormData?: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { success: false, error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
+    if (!authResult) return { success: false, error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "UNAUTHORIZED" }
 
     const agentId = authResult.dbUser.id
     const agentUser = authResult.dbUser as { name?: string | null; email?: string | null }
     const language = ((authResult.dbUser as any).preferredLanguage as 'en' | 'el') || 'en'
+
+    // Validate BEFORE any write — see addCustomerManually.
+    const parsed = AddPolicyForCustomerInput.safeParse(data)
+    if (!parsed.success) return validationFailure(parsed.error)
+    const input = parsed.data
+    const customerId = input.customerId
 
     try {
         // 1. Verify the agent has a usable relationship with this customer
         const relationship = await db.customerRelationship.findFirst({
             where: {
                 agentUserId: agentId,
-                policyholderUserId: data.customerId
+                policyholderUserId: customerId
             }
         })
 
-        if (!relationship || ['inactive', 'terminated'].includes(relationship.status)) {
-            return { success: false, error: "You don't have access to this customer" }
+        if (!relationship || (ENDED_RELATIONSHIP_STATUSES as readonly string[]).includes(relationship.status)) {
+            return { success: false, error: "CUSTOMER_ACCESS_DENIED" }
         }
 
         // 2. Subscription gate: maxPoliciesPerCustomer for this tier
         const { canAgentAddPolicyForCustomer } = await import("@/lib/subscription-entitlements")
-        const policyGate = await canAgentAddPolicyForCustomer(agentId, data.customerId)
+        const policyGate = await canAgentAddPolicyForCustomer(agentId, customerId)
         if (!policyGate.allowed) {
             return {
                 success: false,
-                error: language === 'el'
-                    ? `Φτάσατε το όριο συμβολαίων ανά πελάτη του πλάνου σας (${policyGate.current}/${policyGate.limit}).`
-                    : `You reached your plan's per-customer policy limit (${policyGate.current}/${policyGate.limit}).`,
+                error: "POLICY_PER_CUSTOMER_LIMIT",
                 reason: policyGate.reason,
                 current: policyGate.current,
                 limit: policyGate.limit,
@@ -860,20 +1048,17 @@ export async function addPolicyForCustomer(data: {
         // second row for the same customer + policy number + branch + start date
         // (startDate is the issue-date proxy — a genuine renewal has a different
         // term, so it's not flagged). The agent can "Add anyway" (confirmDuplicate).
-        if (!data.confirmDuplicate && data.policy.policyNumber.trim() && data.policy.startDate) {
-            const startDate = new Date(data.policy.startDate)
-            const existing = !isNaN(startDate.getTime())
-                ? await db.policy.findFirst({
-                    where: {
-                        ownerUserId: data.customerId,
-                        policyNumber: { equals: data.policy.policyNumber.trim(), mode: 'insensitive' },
-                        lineOfBusiness: data.policy.lineOfBusiness,
-                        startDate,
-                        NOT: { status: 'cancelled' },
-                    },
-                    select: { policyNumber: true, insurerName: true },
-                })
-                : null
+        if (!input.confirmDuplicate) {
+            const existing = await db.policy.findFirst({
+                where: {
+                    ownerUserId: customerId,
+                    policyNumber: { equals: input.policy.policyNumber, mode: 'insensitive' },
+                    lineOfBusiness: input.policy.lineOfBusiness,
+                    startDate: new Date(input.policy.startDate),
+                    NOT: { status: 'cancelled' },
+                },
+                select: { policyNumber: true, insurerName: true },
+            })
             if (existing) {
                 return {
                     success: false as const,
@@ -892,57 +1077,106 @@ export async function addPolicyForCustomer(data: {
             }
         }
 
-        // 4. Create the policy + mint the management grant atomically. The
+        // 4. Storage FIRST. The policy row, its grant and the customer's
+        // notification used to be committed before the upload ran, so a storage
+        // failure left a live, document-less policy and a customer told about
+        // a document that did not exist. An object that fails to get a row is
+        // cheap to delete; a row that never gets its object is a lie.
+        let stored: { url: string; bucket: string; key: string; mimeType: string } | null = null
+        if (file) {
+            const { uploadFileDetailed } = await import("@/lib/storage")
+            stored = await uploadFileDetailed(file, "policies")
+        }
+
+        // 5. ONE transaction: policy + management grant + document row. The
         // owner stays the customer; the agent's capabilities flow from the
         // grant, which the customer can revoke at any time.
-        const policy = await db.$transaction(async (tx) => {
-            const created = await tx.policy.create({
-                data: {
-                    ownerUserId: data.customerId,
-                    createdByUserId: agentId,
-                    insurerName: data.policy.insurerName,
-                    policyNumber: data.policy.policyNumber,
-                    lineOfBusiness: data.policy.lineOfBusiness,
-                    startDate: new Date(data.policy.startDate),
-                    endDate: new Date(data.policy.endDate),
-                    coverageEndDate: new Date(data.policy.endDate),
-                    premiumAmount: data.policy.premiumAmount,
-                    premiumCurrency: data.policy.premiumCurrency || 'EUR',
-                    status: 'active',
-                    // Store car plate in acordData JSON field
-                    acordData: data.policy.carPlate ? { vehicle: { plateNumber: data.policy.carPlate } } : undefined
-                }
-            })
-
-            // No unique constraint exists on (granter, grantee, scope) —
-            // idempotency is enforced here.
-            const existingGrant = await tx.accessGrant.findFirst({
-                where: {
-                    granterUserId: data.customerId,
-                    granteeUserId: agentId,
-                    scope: `policy:${created.id}`,
-                    status: 'active',
-                }
-            })
-            if (!existingGrant) {
-                await tx.accessGrant.create({
+        let policy: { id: string; policyNumber: string }
+        try {
+            policy = await db.$transaction(async (tx) => {
+                const created = await tx.policy.create({
                     data: {
-                        granterUserId: data.customerId,
+                        ownerUserId: customerId,
+                        createdByUserId: agentId,
+                        insurerName: input.policy.insurerName,
+                        policyNumber: input.policy.policyNumber,
+                        lineOfBusiness: input.policy.lineOfBusiness,
+                        startDate: new Date(input.policy.startDate),
+                        endDate: new Date(input.policy.endDate),
+                        coverageEndDate: new Date(input.policy.endDate),
+                        premiumAmount: input.policy.premiumAmount,
+                        premiumCurrency: input.policy.premiumCurrency || 'EUR',
+                        status: 'active',
+                        // Store car plate in acordData JSON field
+                        acordData: input.policy.carPlate ? { vehicle: { plateNumber: input.policy.carPlate } } : undefined
+                    }
+                })
+
+                // No unique constraint exists on (granter, grantee, scope) —
+                // idempotency is enforced here.
+                const existingGrant = await tx.accessGrant.findFirst({
+                    where: {
+                        granterUserId: customerId,
                         granteeUserId: agentId,
                         scope: `policy:${created.id}`,
-                        permissions: 'manage',
                         status: 'active',
                     }
                 })
+                if (!existingGrant) {
+                    await tx.accessGrant.create({
+                        data: {
+                            granterUserId: customerId,
+                            granteeUserId: agentId,
+                            scope: `policy:${created.id}`,
+                            permissions: 'manage',
+                            status: 'active',
+                        }
+                    })
+                }
+
+                if (stored && file) {
+                    await tx.policyDocument.create({
+                        data: {
+                            policyId: created.id,
+                            fileUrl: stored.url,
+                            fileName: storedDocumentLabel({}),
+                            fileSize: file.size,
+                            source: 'agent',
+                            uploadedByUserId: agentId,
+                            processingStatus: 'pending',
+                            // Straight from the upload result — more authoritative
+                            // than parsing the locator back out of the URL.
+                            storageBucket: stored.bucket || null,
+                            storageKey: stored.key,
+                            storageProvider: stored.bucket ? 'supabase' : null,
+                            mimeType: stored.mimeType,
+                        }
+                    })
+                }
+
+                return created
+            })
+        } catch (txError) {
+            // Nothing committed — remove the just-stored object rather than
+            // orphaning it (an orphaned object is personal data no export reaches).
+            if (stored) {
+                const { deleteFile } = await import("@/lib/storage")
+                await deleteFile(stored.url).catch((cleanupError: unknown) => {
+                    logger("error", "[agent/actions] orphaned upload after failed policy commit", {
+                        agentId,
+                        customerId,
+                        storageKey: stored?.key,
+                        error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
+                    })
+                })
             }
+            throw txError
+        }
 
-            return created
-        })
-
-        // 5. Agent-attested AI consent for unactivated owners (D1 decision).
-        if (data.attestedAiConsent) {
+        // 6. Agent-attested AI consent for unactivated owners (D1 decision).
+        if (input.attestedAiConsent) {
             const owner = await db.user.findUnique({
-                where: { id: data.customerId },
+                where: { id: customerId },
                 select: { aiProcessingConsentVersion: true, password: true, emailVerified: true, lastActiveAt: true },
             })
             // "Unactivated" MUST match the canonical activation check
@@ -957,7 +1191,7 @@ export async function addPolicyForCustomer(data: {
             if (owner && !owner.aiProcessingConsentVersion && isUnactivated) {
                 const { AGENT_ATTESTED_CONSENT_PREFIX } = await import("@/lib/ai-consent")
                 await db.user.update({
-                    where: { id: data.customerId },
+                    where: { id: customerId },
                     data: { aiProcessingConsentVersion: `${AGENT_ATTESTED_CONSENT_PREFIX}${agentId}` },
                 })
                 await (db.activityLog as any).create({
@@ -966,27 +1200,27 @@ export async function addPolicyForCustomer(data: {
                         adminEmail: authResult.dbUser.email || "unknown",
                         actionType: "AI_CONSENT_AGENT_ATTESTED",
                         description: `Agent attested customer AI-processing consent for policy ${policy.policyNumber}`,
-                        metadata: { policyId: policy.id, customerId: data.customerId },
+                        metadata: { policyId: policy.id, customerId },
                     }
                 })
             }
         }
 
-        // 6. Update relationship last interaction
+        // 7. Update relationship last interaction
         await db.customerRelationship.update({
             where: { id: relationship.id },
             data: { lastInteractionAt: new Date() }
         })
 
-        // 7. Notify the customer — and say plainly what the agent can now see.
-        // The agent's access is limited to THIS policy (the auto-minted, owner-
-        // revocable grant above); it never extends to policies the customer
-        // uploaded themselves.
+        // 8. Notify the customer — AFTER the commit, and say plainly what the
+        // agent can now see. The agent's access is limited to THIS policy (the
+        // auto-minted, owner-revocable grant above); it never extends to
+        // policies the customer uploaded themselves.
         const agentLabel = agentUser?.name || agentUser?.email || 'Your agent'
-        const addedBranch = normalizeBranch(data.policy.lineOfBusiness)
+        const addedBranch = normalizeBranch(input.policy.lineOfBusiness)
         await emit({
             event: 'policy_added',
-            userId: data.customerId,
+            userId: customerId,
             title: {
                 el: 'Προστέθηκε νέο ασφαλιστήριο',
                 en: 'New Policy Added',
@@ -995,55 +1229,50 @@ export async function addPolicyForCustomer(data: {
             // someone another party can now see their policy — it was
             // English-only, branch label included.
             message: {
-                el: `Ο/Η ${agentLabel} πρόσθεσε ένα ασφαλιστήριο ${addedBranch.label.el} από ${data.policy.insurerName} στο wallet σας και μπορεί να το βλέπει και να το διαχειρίζεται. Μπορείτε να ανακαλέσετε αυτή την πρόσβαση οποτεδήποτε από «Ο σύμβουλός μου».`,
-                en: `${agentLabel} added a ${addedBranch.label.en} policy from ${data.policy.insurerName} to your wallet and can view and manage that policy. You can revoke this access at any time from My Agent.`,
+                el: `Ο/Η ${agentLabel} πρόσθεσε ένα ασφαλιστήριο ${addedBranch.label.el} από ${input.policy.insurerName} στο wallet σας και μπορεί να το βλέπει και να το διαχειρίζεται. Μπορείτε να ανακαλέσετε αυτή την πρόσβαση οποτεδήποτε από «Ο σύμβουλός μου».`,
+                en: `${agentLabel} added a ${addedBranch.label.en} policy from ${input.policy.insurerName} to your wallet and can view and manage that policy. You can revoke this access at any time from My Agent.`,
             },
             relatedObjectType: 'policy',
             relatedObjectId: policy.id,
         })
 
-        // 8. Persist the scanned document (if provided), then run analysis
-        // attributed to the AGENT (agent-plan run count + token budget).
-        let analysisState: 'started' | 'consent_required' | 'limit_reached' | 'none' = 'none'
-        if (file) {
-            const { uploadFileDetailed, deleteFile } = await import("@/lib/storage")
-            const stored = await uploadFileDetailed(file, "policies")
-            const fileUrl = stored.url
-            try {
-                await db.policyDocument.create({
-                    data: {
-                        policyId: policy.id,
-                        fileUrl,
-                        fileName: storedDocumentLabel({}),
-                        fileSize: file.size,
-                        source: 'agent',
-                        uploadedByUserId: agentId,
-                        processingStatus: 'pending',
-                        // Straight from the upload result — more authoritative
-                        // than parsing the locator back out of the URL.
-                        storageBucket: stored.bucket || null,
-                        storageKey: stored.key,
-                        storageProvider: stored.bucket ? 'supabase' : null,
-                        mimeType: stored.mimeType,
-                    }
-                })
-            } catch (dbError) {
-                // Remove the just-stored object rather than orphaning it.
-                await deleteFile(fileUrl).catch(() => {})
-                throw dbError
-            }
-
+        // 9. Run analysis on the persisted document, attributed to the AGENT
+        // (agent-plan run count + token budget).
+        //
+        // The verdict is decided HERE, before the action answers, with the
+        // same gates the deferred run applies (H1). The token gate used to
+        // run only inside after(): the modal had already said «εκτελείται
+        // στο παρασκήνιο» when createRun refused — and on the free agent
+        // tier it refused every time (a document run estimates at ~211k
+        // tokens against a 150k monthly budget), leaving the policy stuck in
+        // `analyzing`. A refused run is now stamped the way the pipeline
+        // stamps one (`action_needed` + processingError TOKEN_LIMIT_BLOCKED,
+        // retryable) and the modal says the policy was saved and what it
+        // would take to read it. Never «εκτελείται» unless it is queued.
+        let analysis: AnalysisOutcome = 'none'
+        if (stored) {
             const owner = await db.user.findUnique({
-                where: { id: data.customerId },
+                where: { id: customerId },
                 select: { aiProcessingConsentVersion: true },
             })
             if (!owner?.aiProcessingConsentVersion) {
-                analysisState = 'consent_required'
+                analysis = 'blocked_consent'
             } else {
                 const { canAgentRunAnalysis } = await import("@/lib/subscription-entitlements")
                 const analysisGate = await canAgentRunAnalysis(agentId)
-                if (!analysisGate.allowed) {
-                    analysisState = 'limit_reached'
+                let quotaReason: string | null = analysisGate.allowed ? null : (analysisGate.reason || 'ai_analysis_limit')
+                if (!quotaReason) {
+                    const { preflightAnalysisTokenGate } = await import("@/lib/services/analysis/run-preflight")
+                    const tokenGate = await preflightAnalysisTokenGate(agentId, {
+                        lineOfBusiness: input.policy.lineOfBusiness,
+                        hasDocument: true,
+                    })
+                    if (!tokenGate.allowed) quotaReason = tokenGate.reason
+                }
+
+                if (quotaReason) {
+                    analysis = 'blocked_quota'
+                    await markPolicyAnalysisBlockedByQuota(policy.id, quotaReason)
                 } else {
                     await db.policy.update({
                         where: { id: policy.id },
@@ -1054,37 +1283,50 @@ export async function addPolicyForCustomer(data: {
                     // runs — the action used to await it, so the "Adding…"
                     // spinner blocked for the whole run and closing the modal
                     // lost the result.
-                    analysisState = 'started'
+                    analysis = 'queued'
+                    const policyId = policy.id
                     after(async () => {
                         try {
                             const { PolicyService } = await import("@/lib/services/policy.service")
                             const policyService = new PolicyService()
-                            await policyService.runBackgroundAnalysis(policy.id, agentId, language)
+                            await policyService.runBackgroundAnalysis(policyId, agentId, language)
                         } catch (e) {
-                            console.error("Failed to run background analysis", e)
+                            await reportActionFailure("addPolicyForCustomer.backgroundAnalysis", e, { agentId, policyId, customerId })
                         }
                     })
                 }
             }
         }
 
-        revalidatePath(`/customers/${data.customerId}`)
+        revalidatePath(`/customers/${customerId}`)
         revalidatePath("/customers")
         revalidatePath("/wallet")
-        return { success: true, policyId: policy.id, analysisState }
+        return { success: true, policyId: policy.id, analysis }
     } catch (e) {
-        console.error(e)
-        return { success: false, error: "Failed to add policy" }
+        await reportActionFailure("addPolicyForCustomer", e, { agentId, customerId })
+        return { success: false, error: "ADD_POLICY_FAILED" }
     }
 }
 
 export async function parsePolicyPdfWithGemini(formData: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
+
+    // Consent BEFORE the body. The scan sends the document to a model
+    // provider before any customer is resolved, so nobody's consent used to
+    // be checked on this path at all (M2). Owner decision D1: the agent's own
+    // recorded AI-processing consent plus an explicit, per-scan attestation
+    // that they hold the customer's mandate is the lawful basis for the
+    // extraction — the deep analysis still needs the customer's own consent
+    // (addPolicyForCustomer, step 9). Both checks run before the file is read
+    // so a refusal never touches the document.
+    const agentConsentVersion = authResult.dbUser.aiProcessingConsentVersion
+    if (!agentConsentVersion) return { success: false as const, error: "AI_CONSENT_REQUIRED" }
+    if (formData.get("attested") !== "true") return { success: false as const, error: "AGENT_ATTESTATION_REQUIRED" }
 
     const file = formData.get("file") as File
-    if (!file) return { error: "No file provided" }
+    if (!file) return { error: "NO_FILE" }
 
     // Full validation (size, extension allowlist, content-type, magic bytes)
     // before the file is handed to the AI — don't feed a disguised payload in.
@@ -1097,7 +1339,7 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
 
     const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0 || apiKey === 'undefined') {
-        return { error: "PolicyWallet AI is not configured" }
+        return { error: "AI_NOT_CONFIGURED" }
     }
 
     // Abuse/cost cap: this is a real, billable AI extraction. Without a limit an
@@ -1120,12 +1362,14 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
         dbWindowMs: 60 * 60 * 1000,
     })
     if (!scanGate.allowed) {
-        return { error: "Too many scans. Please wait a bit and try again." }
+        return { error: "SCAN_RATE_LIMITED" }
     }
 
     // Auditable spend, written BEFORE the billable call so every committed
     // attempt (success or failure) counts toward the DB backstop above. userId
     // only — no email, no customer identifiers in the row (GDPR audit M3).
+    // The lawful basis travels with the row: the agent attested to the
+    // customer's mandate, under the consent version they themselves hold.
     try {
         await db.activityLog.create({
             data: {
@@ -1133,9 +1377,16 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
                 adminEmail: "",
                 actionType: "AGENT_POLICY_SCANNED",
                 description: "Agent scanned a policy PDF for extraction",
+                metadata: { attested: true, agentConsentVersion },
             },
         })
-    } catch { /* never fail the scan on a logging error */ }
+    } catch (logError) {
+        // Never fail the scan on a logging error — but do not lose it either.
+        logger("warn", "[agent/actions] AGENT_POLICY_SCANNED audit row failed", {
+            agentId: authResult.dbUser.id,
+            error: logError instanceof Error ? logError.message : String(logError),
+        })
+    }
 
     try {
         const aiService = getAIService();
@@ -1146,7 +1397,10 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
         const result = await aiService.extractPolicyData(
             {
                 data: base64Data,
-                mimeType: file.type,
+                // The type the VALIDATOR established from the magic bytes, not
+                // `file.type`: a phone's HEIC photo arrives with an empty
+                // browser-supplied type, and the provider rejected it.
+                mimeType: scanValidation.value.canonicalMime,
                 // No file name at all. The old comment here said the raw name
                 // "should not reach the third-party AI provider" — but
                 // sanitizeDisplayName only TIDIED it, so it reached them
@@ -1159,8 +1413,8 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
 
         return { success: true, data: result }
     } catch (e) {
-        console.error(e)
-        return { error: "Failed to parse PDF" }
+        await reportActionFailure("parsePolicyPdfWithGemini", e, { agentId: authResult.dbUser.id })
+        return { error: "SCAN_FAILED" }
     }
 }
 
@@ -1174,15 +1428,15 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
  */
 export async function scanPolicyForResolution(formData: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { success: false as const, error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { success: false as const, error: "Unauthorized" }
+    if (!authResult) return { success: false as const, error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false as const, error: "UNAUTHORIZED" }
     const agentId = authResult.dbUser.id
 
     const parsed = await parsePolicyPdfWithGemini(formData)
     if (!('data' in parsed) || !parsed.data) {
         return {
             success: false as const,
-            error: ('error' in parsed && parsed.error) || "Failed to parse PDF",
+            error: ('error' in parsed && parsed.error) || "SCAN_FAILED",
             // Forward the rejection code so the modal can localise it.
             errorCode: ('errorCode' in parsed && parsed.errorCode) || undefined,
         }
@@ -1201,12 +1455,20 @@ export async function scanPolicyForResolution(formData: FormData) {
     return { success: true as const, extraction: data, resolution }
 }
 
-/** Backfill a customer's ΑΦΜ only when the record has none — never overwrite. */
+/**
+ * Backfill a customer's ΑΦΜ only when the record has none — never overwrite —
+ * and only onto a PHANTOM (no password, never email-verified). An activated
+ * account's tax id is the customer's to set; an agent who knows the email
+ * must not be able to annotate it.
+ */
 async function backfillCustomerTaxId(customerId: string, rawTaxId?: string | null) {
     const taxId = normalizeTaxId(rawTaxId)
     if (!taxId) return
-    const user = await db.user.findUnique({ where: { id: customerId }, select: { taxId: true } })
-    if (user && !user.taxId) {
+    const user = await db.user.findUnique({
+        where: { id: customerId },
+        select: { taxId: true, password: true, emailVerified: true },
+    })
+    if (user && !user.taxId && isPhantomCustomer(user)) {
         await db.user.update({ where: { id: customerId }, data: { taxId } })
     }
 }
@@ -1241,15 +1503,23 @@ export async function commitScannedPolicy(
     confirmDuplicate?: boolean,
 ) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { success: false, error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
+    if (!authResult) return { success: false, error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "UNAUTHORIZED" }
     const agentId = authResult.dbUser.id
+
+    // Validate BOTH halves before any write — the extraction is model output
+    // the agent may have edited, and neither is trusted.
+    const parsedDecision = CommitDecisionInput.safeParse(decision)
+    if (!parsedDecision.success) return validationFailure(parsedDecision.error)
+    const parsedPolicy = AgentPolicyInput.safeParse(policy)
+    if (!parsedPolicy.success) return validationFailure(parsedPolicy.error)
+    const input = parsedDecision.data
 
     try {
         let customerId: string
         let created = false
 
-        if (decision.mode === 'create_new') {
+        if (input.mode === 'create_new') {
             // createCustomer does not self-gate — enforce the customer cap here,
             // matching addCustomerManually.
             const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
@@ -1257,20 +1527,20 @@ export async function commitScannedPolicy(
             if (!gate.allowed) {
                 return {
                     success: false,
-                    error: `Customer limit reached (${gate.current}/${gate.limit}). Upgrade your plan.`,
+                    error: "CUSTOMER_LIMIT_REACHED",
                     reason: gate.reason,
                     current: gate.current,
                     limit: gate.limit,
                 }
             }
 
-            const name = [decision.customer.name, decision.customer.surname].filter(Boolean).join(' ').trim()
+            const name = [input.customer.name, input.customer.surname].filter(Boolean).join(' ').trim()
             try {
                 const relationship = await customerService.createCustomer(agentId, {
-                    email: decision.customer.email,
+                    email: input.customer.email,
                     name,
-                    phoneNumber: decision.customer.phone,
-                    taxId: decision.customer.taxId,
+                    phoneNumber: input.customer.phone,
+                    taxId: input.customer.taxId,
                 })
                 customerId = relationship.policyholderUserId
                 created = true
@@ -1280,7 +1550,7 @@ export async function commitScannedPolicy(
                 // failing. createCustomer already backfilled the ΑΦΜ if null.
                 if (e?.code === 'CONFLICT') {
                     const existing = await db.user.findUnique({
-                        where: { email: decision.customer.email },
+                        where: { email: normalizeEmail(input.customer.email) },
                         select: { id: true },
                     })
                     if (!existing) throw e
@@ -1290,11 +1560,11 @@ export async function commitScannedPolicy(
                 }
             }
         } else {
-            customerId = decision.customerId
+            customerId = input.customerId
         }
 
         const result = await addPolicyForCustomer(
-            { customerId, policy, attestedAiConsent, confirmDuplicate },
+            { customerId, policy: parsedPolicy.data, attestedAiConsent, confirmDuplicate },
             documentFormData,
         )
 
@@ -1303,14 +1573,14 @@ export async function commitScannedPolicy(
         // an agent write a tax ID onto ANY account (arbitrary decision.customerId)
         // before the relationship gate ran. create_new already backfilled via
         // createCustomer, so this covers the attach path only.
-        if (result?.success && decision.mode === "attach") {
-            await backfillCustomerTaxId(customerId, decision.taxId)
+        if (result?.success && input.mode === "attach") {
+            await backfillCustomerTaxId(customerId, input.taxId)
         }
 
         return { ...result, customerId, created }
     } catch (e) {
-        console.error(e)
-        return { success: false, error: "Failed to add policy" }
+        await reportActionFailure("commitScannedPolicy", e, { agentId })
+        return { success: false, error: "ADD_POLICY_FAILED" }
     }
 }
 
@@ -1430,8 +1700,8 @@ export async function updateAgentProfile(data: {
     commissionRates?: Record<string, number>;
 }) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
 
     const agentId = authResult.dbUser.id
 
@@ -1458,8 +1728,8 @@ export async function updateAgentProfile(data: {
         revalidatePath("/agent/settings")
         return { success: true }
     } catch (e) {
-        console.error(e)
-        return { error: "Failed to update profile" }
+        await reportActionFailure("updateAgentProfile", e, { agentId })
+        return { error: "PROFILE_UPDATE_FAILED" }
     }
 }
 
@@ -1561,11 +1831,11 @@ export async function getCustomerCrossSell(customerId: string) {
 
 export async function createCrossSellOpportunities(customerId: string) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
     const { canAgentUseFeature } = await import("@/lib/subscription-entitlements")
     if (!(await canAgentUseFeature(authResult.dbUser.id, "crossSellIntelligence"))) {
-        return { error: "Cross-sell intelligence requires the Pro plan or higher." }
+        return { error: "UPGRADE_REQUIRED" }
     }
 
     const { runCrossSellForCustomer } = await import("@/lib/services/cross-sell.service")
@@ -1587,12 +1857,12 @@ export async function createCrossSellOpportunities(customerId: string) {
  */
 export async function runBookCrossSell() {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" as const }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" as const }
+    if (!authResult) return { error: "UNAUTHORIZED" as const }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" as const }
 
     const { canAgentUseFeature } = await import("@/lib/subscription-entitlements")
     if (!(await canAgentUseFeature(authResult.dbUser.id, "crossSellIntelligence"))) {
-        return { error: "upgrade_required" as const }
+        return { error: "UPGRADE_REQUIRED" as const }
     }
 
     // Rule-based, not billable AI — so the cap is about database work and
@@ -1605,7 +1875,7 @@ export async function runBookCrossSell() {
         60 * 60 * 1000,
         `agent-bulk-crosssell:${authResult.dbUser.id}`
     )
-    if (!limit.success) return { error: "rate_limited" as const }
+    if (!limit.success) return { error: "RATE_LIMITED" as const }
 
     const { runBulkCrossSell } = await import("@/lib/services/cross-sell.service")
     const result = await runBulkCrossSell(authResult.dbUser.id)
@@ -1634,18 +1904,18 @@ export async function runBookCrossSell() {
  */
 export async function requestAiConsent(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    if (!authResult) return { error: "UNAUTHORIZED" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "UNAUTHORIZED" }
 
     // Sends an email/notification to the policy owner — cap per agent.
     const { rateLimit } = await import("@/lib/rate-limit")
     const consentLimit = await rateLimit(authResult.dbUser.id, 20, 60 * 60 * 1000, `agent-consent:${authResult.dbUser.id}`)
     if (!consentLimit.success) {
-        return { error: "Too many consent requests. Please wait a bit and try again." }
+        return { error: "RATE_LIMITED" }
     }
 
     const policy = await db.policy.findUnique({ where: { id: policyId } })
-    if (!policy) return { error: "Policy not found" }
+    if (!policy) return { error: "POLICY_NOT_FOUND" }
 
     const hasGrant = await db.accessGrant.findFirst({
         where: {
@@ -1672,7 +1942,7 @@ export async function requestAiConsent(policyId: string) {
                 status: "active",
             },
         })
-    if (!hasGrant && !hasRelationship) return { error: "Unauthorized" }
+    if (!hasGrant && !hasRelationship) return { error: "UNAUTHORIZED" }
 
     const owner = await db.user.findUnique({
         where: { id: policy.ownerUserId },
@@ -1681,7 +1951,7 @@ export async function requestAiConsent(policyId: string) {
             emailVerified: true, lastActiveAt: true, aiProcessingConsentVersion: true,
         },
     })
-    if (!owner) return { error: "Policy owner not found" }
+    if (!owner) return { error: "POLICY_OWNER_NOT_FOUND" }
     if (owner.aiProcessingConsentVersion) return { success: true, mode: "already_consented" as const }
 
     const language = (owner.preferredLanguage as "en" | "el") || "el"

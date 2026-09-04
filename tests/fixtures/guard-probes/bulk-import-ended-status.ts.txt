@@ -1,0 +1,14 @@
+// PROBE — must turn tests/unit/bulk-import-route.test.ts RED.
+// A relationship created in an ENDED status: nobody can see or upload for it.
+import { db } from "@/lib/db"
+
+export async function importRow(agentUserId: string, policyholderUserId: string) {
+    await db.customerRelationship.create({
+        data: {
+            agentUserId,
+            policyholderUserId,
+            status: 'inactive', // Imported but not yet invited
+            activationStatus: 'not_invited',
+        },
+    })
+}

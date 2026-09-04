@@ -1,0 +1,7 @@
+"use server"
+// PROBE — must turn tests/unit/agent-actions-error-codes.test.ts RED (prose).
+export async function probeAction() {
+    const ok = false
+    if (!ok) return { success: false, error: "You don't have access to this customer" }
+    return { success: true }
+}

@@ -39,6 +39,7 @@ import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
 import { buildPolicyReviewData, sumInsuredTargetPath } from "@/lib/wallet/policy-review"
 import { startOfAthensDay, startOfAthensMonth } from "@/lib/policy-status"
 import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -72,7 +73,7 @@ export async function createPolicy(formData: FormData) {
     // But earlier we used db.user.create without specifying ID, so it generated a UUID.
     // And we didn't force Supabase ID. 
     // Let's rely on email for robust linking.
-    const dbUser = await db.user.findUnique({ where: { email: user.email! } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
     if (!dbUser) throw new Error("User record not found")
 
     const userId = dbUser.id
@@ -313,7 +314,7 @@ export async function getPolicyReviewData(policyId: string) {
     if (!user?.id || !user.email) return { error: "Unauthorized" }
 
     // Use email-based lookup to match the local DB user ID (same as createPolicy)
-    const dbUser = await db.user.findUnique({ where: { email: user.email } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
     if (!dbUser) return { error: "User not found" }
 
     const policy = await db.policy.findFirst({
@@ -670,7 +671,7 @@ export async function retryPolicyAnalysis(policyId: string) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user?.id || !user.email) return { error: "Unauthorized" }
 
-    const dbUser = await db.user.findUnique({ where: { email: user.email } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
     if (!dbUser) return { error: "User not found" }
 
     const policy = await db.policy.findFirst({
@@ -948,7 +949,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
 
     // 1. Find the agent
     const agent = await db.user.findUnique({
-        where: { email: agentEmail }
+        where: { email: normalizeEmail(agentEmail) }
     })
 
     if (!agent) {

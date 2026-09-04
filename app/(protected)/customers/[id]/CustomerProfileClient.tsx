@@ -19,6 +19,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { toast } from "sonner"
 import { FileText, Send, Plus, ClipboardList, Sparkles } from "lucide-react"
 import type { AgentTier } from "@/types/subscription-entitlements"
+import type { CandidateAiConsent } from "@/lib/services/customer-resolution.service"
 import type { DocumentRequestData, ProposalData, DocumentTypeKey, DocumentUrgency } from "@/components/collaboration/types"
 
 import { Modal } from "@/components/ui/Modal"
@@ -29,6 +30,12 @@ interface Props {
     agentTier: AgentTier
     canBrandedReport: boolean
     healthScore: number
+    /**
+     * Whether an AI analysis can run for this customer if the advisor uploads
+     * now — derived by the page with deriveAiConsentState, the same verdict
+     * the resolution path renders per candidate.
+     */
+    customerAiConsent: CandidateAiConsent
 }
 
 const PROFILE_COPY = {
@@ -56,7 +63,7 @@ const PROFILE_COPY = {
     removing: { el: "Αφαίρεση...", en: "Removing..." },
 } as const
 
-export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore }: Props) {
+export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore, customerAiConsent }: Props) {
     const router = useRouter()
     const { language, t } = useLanguage()
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
@@ -280,13 +287,17 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 customerName={customerFullName}
             />
 
-            {/* Add Policy Modal — smart upload, customer already known */}
+            {/* Add Policy Modal — smart upload, customer already known. The
+                consent verdict travels with the preset so the confirm step
+                shows the real next step (granted / attestable / blocked)
+                rather than a checkbox that does nothing for a live account. */}
             <UploadPolicyModal
                 isOpen={isPolicyModalOpen}
                 onClose={() => setIsPolicyModalOpen(false)}
                 onSuccess={() => router.refresh()}
                 presetCustomerId={initialCustomer.id}
                 presetCustomerName={customerFullName}
+                presetCustomerConsent={customerAiConsent}
             />
 
             {/* Document Request Modal */}

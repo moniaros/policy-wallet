@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useMemo, useState } from "react"
-import { Search, Phone, Mail, LayoutList, LayoutGrid, Download, UserPlus, Sparkles, FileText, ChevronRight, ArrowDownUp, Users } from "lucide-react"
+import { Search, Phone, Mail, LayoutList, LayoutGrid, Download, UserPlus, Sparkles, FileText, ChevronRight, ArrowDownUp, Users, Send } from "lucide-react"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 
 import { Customer, CustomerListProps } from "./types"
@@ -12,6 +12,36 @@ import { ConsentStatusBadge, type ConsentStatus } from "@/components/ui/ConsentS
 import { TableShell } from "@/components/ui/TableShell"
 import { RowCheckbox } from "@/components/ui/form"
 
+/**
+ * The activation pill a customer row wears.
+ *
+ * It used to be the DTO's three-way `activationStatus`, which is derived from
+ * the relationship's `status` alone — and `pending_activation` is the DEFAULT
+ * status, so every customer the agent merely added (manual entry, bulk
+ * import, a scanned policy) wore «Προσκεκλημένοι» without an invitation ever
+ * leaving. The pill now derives from the relationship's `activation_status`
+ * (`not_invited` / `no_policies` / `invited` / `activated` / `active`), with
+ * an ended relationship (`inactive` / `terminated`) winning regardless, and
+ * the legacy field only as the fallback for a DTO that lacks the raw columns.
+ * `no_policies` is the column's DEFAULT: nobody has invited that customer
+ * either, so it reads as «Χωρίς πρόσκληση» too.
+ */
+export type CustomerActivationPill = "activated" | "invited" | "not_invited" | "inactive"
+
+export function customerActivationPill(
+    customer: Pick<Customer, "activationStatus" | "relationshipStatus" | "relationshipActivationStatus">,
+): CustomerActivationPill {
+    if (customer.relationshipStatus === "inactive" || customer.relationshipStatus === "terminated") return "inactive"
+    const raw = customer.relationshipActivationStatus
+    if (raw === "activated" || raw === "active") return "activated"
+    if (raw === "invited") return "invited"
+    if (raw === "not_invited" || raw === "no_policies") return "not_invited"
+    return customer.activationStatus
+}
+
+const STATUS_FILTERS = ["all", "activated", "invited", "not_invited", "inactive"] as const
+type StatusFilter = (typeof STATUS_FILTERS)[number]
+
 export function CustomerList({
     customers,
     onCustomerClick,
@@ -19,11 +49,13 @@ export function CustomerList({
     onCall,
     onEmail,
     onBulkAction,
+    onInvite,
 }: CustomerListProps) {
     const { language, t } = useLanguage()
     const roleCopy = getRoleCopy(language)
+    const custCopy = t.agentPages.customers
     const [searchQuery, setSearchQuery] = useState("")
-    const [statusFilter, setStatusFilter] = useState<"all" | "activated" | "invited" | "inactive">("all")
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
     const [sortBy, setSortBy] = useState<"name" | "policyCount" | "lastInteractionDate">("name")
     const [viewMode, setViewMode] = useState<"table" | "grid">("table")
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -41,7 +73,7 @@ export function CustomerList({
             )
         }
         if (statusFilter !== "all") {
-            filtered = filtered.filter((c) => c.activationStatus === statusFilter)
+            filtered = filtered.filter((c) => customerActivationPill(c) === statusFilter)
         }
 
         filtered = [...filtered].sort((a, b) => {
@@ -56,15 +88,14 @@ export function CustomerList({
         return filtered
     }, [customers, searchQuery, statusFilter, sortBy])
 
-    const statusCounts = useMemo(
-        () => ({
-            all: customers.length,
-            activated: customers.filter((c) => c.activationStatus === "activated").length,
-            invited: customers.filter((c) => c.activationStatus === "invited").length,
-            inactive: customers.filter((c) => c.activationStatus === "inactive").length,
-        }),
-        [customers],
-    )
+    const statusCounts = useMemo(() => {
+        const counts: Record<StatusFilter, number> = { all: customers.length, activated: 0, invited: 0, not_invited: 0, inactive: 0 }
+        for (const c of customers) counts[customerActivationPill(c)] += 1
+        return counts
+    }, [customers])
+
+    const statusLabel = (status: CustomerActivationPill) =>
+        status === "not_invited" ? custCopy.statusNotInvited : roleCopy.customerList[status]
 
     const toggleSelection = (id: string) => {
         const next = new Set(selectedIds)
@@ -156,8 +187,8 @@ export function CustomerList({
 
                 <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
                     <div className="pw-segmented pw-scroll-strip min-w-0" role="group" aria-label={roleCopy.customerList.tableClient}>
-                        {(["all", "activated", "invited", "inactive"] as const).map((status) => {
-                            const label = status === "all" ? roleCopy.customerList.all : roleCopy.customerList[status]
+                        {STATUS_FILTERS.map((status) => {
+                            const label = status === "all" ? roleCopy.customerList.all : statusLabel(status)
                             return (
                                 <button
                                     key={status}
@@ -318,11 +349,24 @@ export function CustomerList({
                                             <RowCheckbox label={`${customer.name} ${customer.surname}`} checked={selectedIds.has(customer.id)} onChange={() => toggleSelection(customer.id)} />
                                         </td>
                                         <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex flex-wrap items-center gap-2">
                                                 <span className="text-sm font-semibold text-foreground">{customer.name} {customer.surname}</span>
-                                                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-caption font-medium text-foreground">
-                                                    {roleCopy.customerList[customer.activationStatus]}
+                                                <span data-testid="customer-activation-pill" data-activation={customerActivationPill(customer)} className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-caption font-medium text-foreground">
+                                                    {statusLabel(customerActivationPill(customer))}
                                                 </span>
+                                                {/* The one action a never-invited customer needs, on the
+                                                    row that says so — a soft pill, 44px tall. */}
+                                                {onInvite && customerActivationPill(customer) === "not_invited" && (
+                                                    <button
+                                                        type="button"
+                                                        data-testid="customer-send-invite"
+                                                        onClick={(e) => { e.stopPropagation(); onInvite(customer.id) }}
+                                                        className="pw-soft-button"
+                                                    >
+                                                        <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                                                        {custCopy.sendInvite}
+                                                    </button>
+                                                )}
                                             </div>
                                             <div className="mt-0.5 max-w-[200px] truncate text-caption text-muted-foreground">{customer.email}</div>
                                         </td>
@@ -389,8 +433,8 @@ export function CustomerList({
                             <div className="mb-3 flex items-start justify-between gap-3">
                                 <div className="min-w-0">
                                     <h3 className="text-sm font-semibold text-foreground">{customer.name} {customer.surname}</h3>
-                                    <span className="mt-1 inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-caption font-medium text-foreground">
-                                        {roleCopy.customerList[customer.activationStatus]}
+                                    <span data-testid="customer-activation-pill" data-activation={customerActivationPill(customer)} className="mt-1 inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-caption font-medium text-foreground">
+                                        {statusLabel(customerActivationPill(customer))}
                                     </span>
                                 </div>
                                 <RowCheckbox label={`${customer.name} ${customer.surname}`} checked={selectedIds.has(customer.id)} onChange={(e) => { e.stopPropagation(); toggleSelection(customer.id) }} />
@@ -415,11 +459,22 @@ export function CustomerList({
                                     <span>{customer.openGapsCount} {customer.openGapsCount === 1 ? roleCopy.customerList.openOpportunityOne : roleCopy.customerList.openOpportunityMany}</span>
                                 </div>
                             )}
-                            <div className="flex gap-2 border-t border-border pt-3">
+                            <div className="flex flex-wrap gap-2 border-t border-border pt-3">
                                 <button type="button" className="pw-soft-button flex-1">
                                     {roleCopy.customerList.profile}
                                     <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
                                 </button>
+                                {onInvite && customerActivationPill(customer) === "not_invited" && (
+                                    <button
+                                        type="button"
+                                        data-testid="customer-send-invite"
+                                        onClick={(e) => { e.stopPropagation(); onInvite(customer.id) }}
+                                        className="pw-soft-button flex-1"
+                                    >
+                                        <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                                        {custCopy.sendInvite}
+                                    </button>
+                                )}
                                 {customer.phone && <button type="button" aria-label={t.a11yLabels.callClient} onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="pw-soft-button h-11 w-11 px-0"><Phone className="h-4 w-4" aria-hidden="true" /></button>}
                                 <button type="button" aria-label={t.a11yLabels.emailClient} onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="pw-soft-button h-11 w-11 px-0"><Mail className="h-4 w-4" aria-hidden="true" /></button>
                             </div>

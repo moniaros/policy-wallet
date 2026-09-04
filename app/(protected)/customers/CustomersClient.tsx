@@ -6,8 +6,9 @@ import { UploadPolicyModal } from "@/components/agent/UploadPolicyModal"
 import { BulkImportModal } from "@/components/agent/BulkImportModal"
 import { AgentKpiStrip } from "@/components/agent/AgentKpiStrip"
 import { Customer } from "@/components/agent/types"
-import { getCustomers } from "../agent/actions"
+import { getCustomers, createAgentInvite } from "../agent/actions"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { Clock, User, FileText, AlertTriangle, Upload } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { AgentPortalStats } from "@/lib/services/agent-portal.service"
@@ -95,6 +96,39 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
         if (email) window.location.href = `mailto:${email}`
     }
 
+    // «Αποστολή πρόσκλησης» on a customer the agent added but never invited —
+    // the same action and the same delivery handling the dashboard's invite
+    // modal uses. A rejected transport (expired session, deploy skew) is
+    // caught, never left to window.onunhandledrejection.
+    const handleInvite = async (id: string) => {
+        const email = customerById.get(id)?.email
+        if (!email) return
+        try {
+            const result = await createAgentInvite(email, 'portfolio')
+            if (result.success) {
+                if ("emailDelivered" in result && result.emailDelivered === false) {
+                    const link = "inviteLink" in result ? result.inviteLink : undefined
+                    if (link) navigator.clipboard?.writeText(link).catch(() => {})
+                    toast.warning(t.agentDashboard.inviteEmailFailed)
+                } else {
+                    toast.success(cust_t.inviteSent)
+                }
+                router.refresh()
+            } else if ("error" in result && result.error) {
+                toast.error(result.error)
+            }
+        } catch {
+            toast.error(t.apiErrors.generic)
+        }
+    }
+
+    // The add-customer dialog's second door: close it and open the upload
+    // flow, which is the ONLY path that saves a document with the policy.
+    const openUploadInstead = () => {
+        setIsAddModalOpen(false)
+        setIsUploadModalOpen(true)
+    }
+
     // Map Customer to CustomerListItem format (CustomerList expects 'Customer' interface which matches our agent/types Customer mostly but check compatibility)
     // The CustomerList defines its own Customer interface at top of file.
     // I should probably export/import the shared type to be safe, but for now I'll let TS check or cast.
@@ -147,12 +181,14 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                     onBulkAction={handleBulkAction}
                     onCall={handleCall}
                     onEmail={handleEmail}
+                    onInvite={handleInvite}
                 />
 
                 <AddCustomerModal
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
                     onSuccess={handleSuccess}
+                    onUploadInstead={openUploadInstead}
                 />
 
                 <UploadPolicyModal

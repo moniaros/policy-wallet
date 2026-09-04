@@ -20,6 +20,7 @@ export function UploadDropzone({
     title,
     hint,
     className,
+    disabled = false,
 }: {
     onFiles: (files: File[]) => void
     accept: string
@@ -31,12 +32,19 @@ export function UploadDropzone({
     title: string
     hint: string
     className?: string
+    /**
+     * A precondition the caller has not met yet (an attestation the agent
+     * must tick before a document may be scanned). The input is disabled,
+     * drops are ignored and the box says so — nothing can reach `onFiles`.
+     */
+    disabled?: boolean
 }) {
     const [dragActive, setDragActive] = useState(false)
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
+        if (disabled) return
         setDragActive(e.type === "dragenter" || e.type === "dragover")
     }
 
@@ -44,6 +52,7 @@ export function UploadDropzone({
         e.preventDefault()
         e.stopPropagation()
         setDragActive(false)
+        if (disabled) return
         if (e.dataTransfer.files?.length) {
             onFiles(Array.from(e.dataTransfer.files))
         }
@@ -52,12 +61,15 @@ export function UploadDropzone({
     return (
         <div
             className={cn(
-                "cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-colors",
-                dragActive
-                    ? "border-primary bg-primary-tint dark:bg-primary/15"
-                    : "border-border hover:border-primary/60 hover:bg-muted",
+                "rounded-2xl border-2 border-dashed p-8 text-center transition-colors",
+                disabled
+                    ? "cursor-not-allowed border-border opacity-60"
+                    : dragActive
+                        ? "cursor-pointer border-primary bg-primary-tint dark:bg-primary/15"
+                        : "cursor-pointer border-border hover:border-primary/60 hover:bg-muted",
                 className
             )}
+            aria-disabled={disabled || undefined}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -70,12 +82,14 @@ export function UploadDropzone({
                 data-testid={inputTestId}
                 multiple={multiple}
                 accept={accept}
+                disabled={disabled}
                 className="hidden"
                 onChange={(e) => {
+                    if (disabled) return
                     if (e.target.files?.length) onFiles(Array.from(e.target.files))
                 }}
             />
-            <label htmlFor={inputId} className="cursor-pointer block">
+            <label htmlFor={inputId} className={disabled ? "block cursor-not-allowed" : "cursor-pointer block"}>
                 <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-muted text-primary dark:text-mint">
                     <FileText className="h-7 w-7" aria-hidden="true" />
                 </div>

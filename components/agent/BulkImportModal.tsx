@@ -9,6 +9,7 @@ import { useDialog } from "@/hooks/useDialog"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { TableShell } from "@/components/ui/TableShell"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
+import { CUSTOMER_CSV_HEADER_EXAMPLES, parseCustomerCsv } from "@/lib/csv/parse-csv"
 
 interface BulkImportModalProps {
     isOpen: boolean
@@ -17,12 +18,49 @@ interface BulkImportModalProps {
 }
 
 interface CustomerRow {
+    /** 1-based line in the file, the header counted — what the agent sees in Excel. */
+    line: number
     name: string
     surname: string
     email: string
     phone: string
+    taxId: string
     status: 'valid' | 'invalid' | 'duplicate'
     error?: string
+}
+
+/**
+ * One line of the complete step. `RowOutcomeCode` is the route's per-row
+ * vocabulary (app/api/v1/customers/bulk-import/route.ts); `VALIDATION_ERROR`
+ * is the whole-request refusal, attributed to the rows its zod issues name.
+ */
+type RowOutcomeStatus = 'imported' | 'skipped' | 'failed'
+type RowOutcomeCode =
+    | 'CREATED'
+    | 'LINKED'
+    | 'ALREADY_LINKED'
+    | 'RELATIONSHIP_ENDED'
+    | 'DUPLICATE_IN_FILE'
+    | 'WRITE_FAILED'
+    | 'VALIDATION_ERROR'
+    /** The request was refused as a whole; this row was never attempted. */
+    | 'NOT_ATTEMPTED'
+    | 'UNKNOWN'
+
+interface RowOutcome {
+    line: number
+    name: string
+    email: string
+    status: RowOutcomeStatus
+    code: RowOutcomeCode
+}
+
+/** What the route returns per row (its `row` is the 1-based position in the submitted array). */
+interface ServerRowOutcome {
+    row?: number
+    email?: string
+    status?: RowOutcomeStatus
+    code?: string
 }
 
 // Upload the file, then review what it parsed to.
@@ -47,6 +85,8 @@ function useLimitMessage(t: any) {
                 return fill(t.apiErrors.customerLimitReached)
             case 'CUSTOMER_HEADROOM_EXCEEDED':
                 return fill(t.apiErrors.customerHeadroomExceeded)
+            case 'VALIDATION_ERROR':
+                return t.apiErrors.bulkImportValidationError
             case 'FORBIDDEN':
                 return t.apiErrors.forbidden
             case 'UNAUTHORIZED':
@@ -57,15 +97,99 @@ function useLimitMessage(t: any) {
     }
 }
 
+/** Loose email shape — the server applies the real check; this stops obvious typos before the upload. */
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/**
+ * Map the route's per-row response onto the rows that were submitted, in
+ * submission order. Tolerates the legacy shape (`imported` + `errors: string[]`
+ * naming the failed emails) so an older deployment still yields a list.
+ *
+ * Exported for the render test; a pure function of the two inputs.
+ */
+export function reconcileOutcomes(
+    submitted: Array<Pick<CustomerRow, 'line' | 'name' | 'surname' | 'email'>>,
+    body: unknown
+): RowOutcome[] {
+    const data = (body && typeof body === 'object' && 'data' in (body as any) ? (body as any).data : body) as
+        | { outcomes?: ServerRowOutcome[]; errors?: string[]; imported?: number }
+        | null
+        | undefined
+    const outcomes = Array.isArray(data?.outcomes) ? data!.outcomes! : null
+    const byEmail = new Map<string, ServerRowOutcome>()
+    const byRow = new Map<number, ServerRowOutcome>()
+    if (outcomes) {
+        for (const o of outcomes) {
+            if (typeof o.row === 'number') byRow.set(o.row, o)
+            if (o.email) byEmail.set(o.email.trim().toLowerCase(), o)
+        }
+    }
+    const legacyFailed = new Set(
+        (Array.isArray(data?.errors) ? data!.errors! : [])
+            .map((message) => /([^\s]+@[^\s]+)/.exec(String(message))?.[1]?.toLowerCase())
+            .filter((email): email is string => Boolean(email))
+    )
+
+    return submitted.map((row, index) => {
+        const name = `${row.name} ${row.surname}`.trim()
+        const server = byRow.get(index + 1) ?? byEmail.get(row.email.trim().toLowerCase())
+        if (server) {
+            const status: RowOutcomeStatus =
+                server.status === 'imported' || server.status === 'skipped' || server.status === 'failed'
+                    ? server.status
+                    : 'failed'
+            const code = (server.code as RowOutcomeCode | undefined) ?? (status === 'imported' ? 'CREATED' : 'UNKNOWN')
+            return { line: row.line, name, email: row.email, status, code }
+        }
+        if (outcomes) {
+            // The route answered per row and said nothing about this one — do
+            // not report it as imported.
+            return { line: row.line, name, email: row.email, status: 'failed', code: 'UNKNOWN' }
+        }
+        // Legacy response: everything not named in `errors` was imported.
+        return legacyFailed.has(row.email.trim().toLowerCase())
+            ? { line: row.line, name, email: row.email, status: 'failed', code: 'WRITE_FAILED' }
+            : { line: row.line, name, email: row.email, status: 'imported', code: 'CREATED' }
+    })
+}
+
+/**
+ * A whole-request VALIDATION_ERROR carries zod issues whose path names the
+ * submitted index (`customers.<i>.email`). Attribute it to those rows, and
+ * to every row when the issues name none.
+ */
+export function outcomesFromValidationError(
+    submitted: Array<Pick<CustomerRow, 'line' | 'name' | 'surname' | 'email'>>,
+    details: unknown
+): RowOutcome[] {
+    const issues = Array.isArray(details) ? (details as Array<{ path?: unknown[] }>) : []
+    const flagged = new Set<number>()
+    for (const issue of issues) {
+        const path = Array.isArray(issue?.path) ? issue.path : []
+        const index = path[0] === 'customers' ? Number(path[1]) : Number.NaN
+        if (Number.isInteger(index)) flagged.add(index)
+    }
+    return submitted.map((row, index) => {
+        const invalid = flagged.size === 0 || flagged.has(index)
+        return {
+            line: row.line,
+            name: `${row.name} ${row.surname}`.trim(),
+            email: row.email,
+            status: invalid ? 'failed' : 'skipped',
+            code: invalid ? 'VALIDATION_ERROR' : 'NOT_ATTEMPTED',
+        }
+    })
+}
+
 export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const dialogRef = useDialog<HTMLDivElement>(() => handleClose(), isOpen)
     const tt = t.agentModals.bulkImport
     const limitMessage = useLimitMessage(t)
     const [step, setStep] = useState<'upload' | 'preview' | 'importing' | 'complete'>('upload')
     const [customers, setCustomers] = useState<CustomerRow[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
-    const [importedCount, setImportedCount] = useState(0)
+    const [outcomes, setOutcomes] = useState<RowOutcome[]>([])
 
     if (!isOpen) return null
 
@@ -73,30 +197,41 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
         setIsProcessing(true)
         try {
             const text = await file.text()
-            const lines = text.split('\n').filter(line => line.trim())
+            const parsed = parseCustomerCsv(text)
 
-            // Skip header row
-            const dataLines = lines.slice(1)
+            if (parsed.error === 'no_email_column') {
+                toast.error(tt.errNoEmailColumn)
+                return
+            }
+            if (parsed.error === 'empty') {
+                toast.error(tt.errEmptyFile)
+                return
+            }
 
-            const parsed: CustomerRow[] = dataLines.map((line, index) => {
-                const [name, surname, email, phone] = line.split(',').map(s => s.trim())
-
-                // Basic validation
-                let status: 'valid' | 'invalid' | 'duplicate' = 'valid'
+            const seen = new Set<string>()
+            const rows: CustomerRow[] = parsed.rows.map((row) => {
+                let status: CustomerRow['status'] = 'valid'
                 let error: string | undefined
+                const key = row.email.toLowerCase()
 
-                if (!name || !email) {
+                if (!row.name || !row.email) {
                     status = 'invalid'
                     error = tt.errMissingFields
-                } else if (!email.includes('@')) {
+                } else if (!EMAIL_SHAPE.test(row.email)) {
                     status = 'invalid'
                     error = tt.errInvalidEmail
+                } else if (seen.has(key)) {
+                    // The route would skip it as DUPLICATE_IN_FILE; saying so
+                    // here saves the agent a round trip.
+                    status = 'duplicate'
+                    error = tt.errDuplicateInFile
                 }
+                if (status === 'valid') seen.add(key)
 
-                return { name, surname, email, phone, status, error }
+                return { ...row, status, error }
             })
 
-            setCustomers(parsed)
+            setCustomers(rows)
             setStep('preview')
         } catch (error) {
             Sentry.captureException(error, {
@@ -112,34 +247,43 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
         setStep('importing')
         setIsProcessing(true)
 
+        const validCustomers = customers.filter(c => c.status === 'valid')
         try {
-            const validCustomers = customers.filter(c => c.status === 'valid')
-
             const response = await fetch('/api/v1/customers/bulk-import', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ customers: validCustomers })
+                body: JSON.stringify({
+                    customers: validCustomers.map(({ name, surname, email, phone, taxId }) => ({
+                        name, surname, email, phone: phone || undefined, taxId: taxId || undefined,
+                    })),
+                })
             })
+
+            const body = await response.json().catch(() => null)
 
             if (!response.ok) {
                 // The server knows exactly why — plan row limit, customer limit,
                 // remaining headroom, with the numbers. Throwing a bare Error
                 // discarded all of it and left the agent with "import failed" and
                 // no idea that splitting the file or upgrading would fix it.
-                const body = await response.json().catch(() => null)
                 toast.error(limitMessage(body?.error))
+                if (body?.error?.code === 'VALIDATION_ERROR') {
+                    // Per-row attribution from the zod issues, so the agent can
+                    // see WHICH lines to fix rather than re-reading the file.
+                    setOutcomes(outcomesFromValidationError(validCustomers, body.error.details))
+                    setStep('complete')
+                    return
+                }
                 setStep('preview')
                 return
             }
 
-            const result = await response.json()
-            setImportedCount(result.imported || validCustomers.length)
+            const reconciled = reconcileOutcomes(validCustomers, body)
+            setOutcomes(reconciled)
             setStep('complete')
-
-            setTimeout(() => {
-                onSuccess(result.imported || validCustomers.length)
-                handleClose()
-            }, 2000)
+            // The list behind the dialog refreshes now; the dialog stays open
+            // until the agent has read the per-row outcome.
+            onSuccess(reconciled.filter((o) => o.status === 'imported').length)
         } catch (error) {
             Sentry.captureException(error, {
                 tags: { component: 'BulkImportModal', action: 'import' }
@@ -154,12 +298,38 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
     const handleClose = () => {
         setStep('upload')
         setCustomers([])
-        setImportedCount(0)
+        setOutcomes([])
         onClose()
     }
 
     const validCount = customers.filter(c => c.status === 'valid').length
-    const invalidCount = customers.filter(c => c.status === 'invalid').length
+    const invalidCount = customers.filter(c => c.status !== 'valid').length
+
+    const importedCount = outcomes.filter((o) => o.status === 'imported').length
+    const skippedCount = outcomes.filter((o) => o.status === 'skipped').length
+    const failedCount = outcomes.filter((o) => o.status === 'failed').length
+
+    // One dictionary line per outcome code; the code never reaches the DOM.
+    const outcomeLabel = (o: RowOutcome): string => {
+        switch (o.code) {
+            case 'CREATED': return tt.rowImported
+            case 'LINKED': return tt.rowLinked
+            case 'ALREADY_LINKED': return tt.rowAlreadyLinked
+            case 'RELATIONSHIP_ENDED': return tt.rowRelationshipEnded
+            case 'DUPLICATE_IN_FILE': return tt.rowDuplicateInFile
+            case 'WRITE_FAILED': return tt.rowWriteFailed
+            case 'VALIDATION_ERROR': return tt.rowValidationError
+            case 'NOT_ATTEMPTED': return tt.rowNotAttempted
+            default:
+                return o.status === 'imported' ? tt.rowImported : o.status === 'skipped' ? tt.rowAlreadyLinked : tt.rowFailed
+        }
+    }
+    const outcomeTone = (status: RowOutcomeStatus) =>
+        status === 'imported'
+            ? "bg-status-success-tint text-status-success"
+            : status === 'skipped'
+                ? "bg-status-warning-tint text-status-warning"
+                : "bg-status-danger-tint text-status-danger"
 
     const stepCaption = (current: number) =>
         t.common.stepOf.replace('{current}', String(current)).replace('{total}', String(TOTAL_STEPS))
@@ -215,16 +385,21 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                 <div className="mt-5">
                     {step === 'upload' && (
                         <div className="space-y-4">
-                            {/* Instructions — a sub-card, not a blue panel. */}
+                            {/* Instructions — a sub-card, not a blue panel. The two
+                                header rows are the machine format, not prose: the
+                                Greek one is what a Greek-locale Excel writes. */}
                             <div className="pw-subcard p-4">
                                 <h3 className="text-sm font-semibold text-foreground">{tt.csvFormatTitle}</h3>
                                 <p className="mt-1 text-caption text-muted-foreground">
                                     {tt.csvFormatDesc}
                                 </p>
-                                <code className="mt-2 block rounded-lg bg-card px-3 py-2 font-mono text-caption text-foreground">
-                                    name,surname,email,phone
+                                <code className="mt-2 block rounded-lg bg-card px-3 py-2 font-mono text-caption text-foreground [overflow-wrap:anywhere]">
+                                    {CUSTOMER_CSV_HEADER_EXAMPLES[language === 'el' ? 'el' : 'en']}
                                 </code>
                                 <p className="mt-2 text-caption text-muted-foreground">
+                                    {tt.csvHeadersHint}
+                                </p>
+                                <p className="mt-1 text-caption text-muted-foreground [overflow-wrap:anywhere]">
                                     {tt.csvExample}
                                 </p>
                             </div>
@@ -235,7 +410,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                             <div className={isProcessing ? "pointer-events-none opacity-60" : undefined} aria-busy={isProcessing || undefined}>
                                 <UploadDropzone
                                     onFiles={(files) => { const file = files[0]; if (file) void handleFileUpload(file) }}
-                                    accept=".csv"
+                                    accept=".csv,text/csv"
                                     multiple={false}
                                     inputId="csv-upload"
                                     title={isProcessing ? tt.processing : tt.clickToUpload}
@@ -272,24 +447,32 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                 <table className="w-full text-left text-sm">
                                     <thead className="sticky top-0 border-b border-border bg-muted text-caption font-semibold text-muted-foreground">
                                         <tr>
+                                            <th className="px-4 py-3 text-right tabular-nums">{tt.colRow}</th>
                                             <th className="px-4 py-3">{tt.colName}</th>
                                             <th className="px-4 py-3">{tt.colEmail}</th>
                                             <th className="px-4 py-3">{tt.colPhone}</th>
+                                            <th className="px-4 py-3">{tt.colTaxId}</th>
                                             <th className="px-4 py-3">{tt.colStatus}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-border">
-                                        {customers.map((customer, index) => (
-                                            <tr key={index}>
+                                        {customers.map((customer) => (
+                                            <tr key={customer.line} data-testid="bulk-import-preview-row">
+                                                <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">{customer.line}</td>
                                                 <td className="px-4 py-3 font-medium text-foreground">
                                                     {customer.name} {customer.surname}
                                                 </td>
-                                                <td className="px-4 py-3 text-muted-foreground">{customer.email}</td>
+                                                <td className="px-4 py-3 text-muted-foreground [overflow-wrap:anywhere]">{customer.email}</td>
                                                 <td className="px-4 py-3 text-muted-foreground">{customer.phone}</td>
+                                                <td className="px-4 py-3 tabular-nums text-muted-foreground">{customer.taxId}</td>
                                                 <td className="px-4 py-3">
                                                     {customer.status === 'valid' ? (
                                                         <span className={`${PILL} bg-status-success-tint text-status-success`}>
                                                             {tt.validBadge}
+                                                        </span>
+                                                    ) : customer.status === 'duplicate' ? (
+                                                        <span className={`${PILL} bg-status-warning-tint text-status-warning`}>
+                                                            {customer.error}
                                                         </span>
                                                     ) : (
                                                         <span className={`${PILL} bg-status-danger-tint text-status-danger`}>
@@ -315,6 +498,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                 </button>
                                 <button
                                     type="button"
+                                    data-testid="bulk-import-submit"
                                     onClick={handleImport}
                                     disabled={validCount === 0 || isProcessing}
                                     className="pw-primary-button flex-1"
@@ -334,14 +518,70 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                     )}
 
                     {step === 'complete' && (
-                        <div className="py-10 text-center">
-                            <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-status-success-tint text-status-success" aria-hidden="true">
-                                <CheckCircle2 className="h-7 w-7" />
-                            </span>
-                            <h3 className="mt-4 text-title font-semibold text-foreground">{tt.completeTitle}</h3>
-                            <p className="mt-1 text-sm text-muted-foreground">
-                                {tt.successfullyImported} {importedCount} {importedCount !== 1 ? tt.custPlural : tt.custSingular}
-                            </p>
+                        <div className="space-y-4">
+                            {/* The verdict is per row, not a single green tick: an
+                                import that skipped half the file and failed two
+                                rows used to say «Η Εισαγωγή Ολοκληρώθηκε!» and
+                                close itself two seconds later. */}
+                            <div className="flex items-start gap-3">
+                                <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${failedCount > 0 ? "bg-status-warning-tint text-status-warning" : "bg-status-success-tint text-status-success"}`} aria-hidden="true">
+                                    <CheckCircle2 className="h-6 w-6" />
+                                </span>
+                                <div className="min-w-0">
+                                    <h3 className="text-title font-semibold text-foreground">{tt.completeTitle}</h3>
+                                    <p className="mt-1 text-sm text-muted-foreground">
+                                        {tt.successfullyImported} {importedCount} {importedCount !== 1 ? tt.custPlural : tt.custSingular}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.summaryImported}</p>
+                                    <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">{importedCount}</p>
+                                </div>
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.summarySkipped}</p>
+                                    <p className={`mt-0.5 text-title font-semibold tabular-nums ${skippedCount > 0 ? "text-status-warning" : "text-foreground"}`}>{skippedCount}</p>
+                                </div>
+                                <div className="pw-subcard p-3">
+                                    <p className="text-caption text-muted-foreground">{tt.summaryFailed}</p>
+                                    <p className={`mt-0.5 text-title font-semibold tabular-nums ${failedCount > 0 ? "text-status-danger" : "text-foreground"}`}>{failedCount}</p>
+                                </div>
+                            </div>
+
+                            <div className="pw-subcard max-h-96 overflow-y-auto">
+                                <TableShell label={tt.outcomesTitle}>
+                                <table className="w-full text-left text-sm">
+                                    <thead className="sticky top-0 border-b border-border bg-muted text-caption font-semibold text-muted-foreground">
+                                        <tr>
+                                            <th className="px-4 py-3 text-right tabular-nums">{tt.colRow}</th>
+                                            <th className="px-4 py-3">{tt.colName}</th>
+                                            <th className="px-4 py-3">{tt.colEmail}</th>
+                                            <th className="px-4 py-3">{tt.colStatus}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-border">
+                                        {outcomes.map((o) => (
+                                            <tr key={o.line} data-testid="bulk-import-outcome-row" data-status={o.status}>
+                                                <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">{o.line}</td>
+                                                <td className="px-4 py-3 font-medium text-foreground">{o.name}</td>
+                                                <td className="px-4 py-3 text-muted-foreground [overflow-wrap:anywhere]">{o.email}</td>
+                                                <td className="px-4 py-3">
+                                                    <span className={`${PILL} ${outcomeTone(o.status)}`}>{outcomeLabel(o)}</span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                </TableShell>
+                            </div>
+
+                            <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
+                                <button type="button" onClick={handleClose} className="pw-primary-button">
+                                    {tt.done}
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>

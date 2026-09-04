@@ -1,8 +1,9 @@
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
-import { agentMaySeeCustomerIdentity } from "@/lib/agent-consent";
+import { agentMaySeeCustomerIdentity, isPhantomCustomer } from "@/lib/agent-consent";
 import { effectivePolicyStatus, isPolicyCoverageActive, isCoveredByEndDate, resolvePolicyLifecycle } from "@/lib/policy-status";
 import { normalizeTaxId } from "@/lib/identity/tax-id";
+import { normalizeEmail } from "@/lib/identity/normalize-email";
 import { Prisma } from "@prisma/client";
 import { AppError } from "@/lib/errors";
 import { policyRowIdentity } from "@/lib/wallet/policy-identity"
@@ -106,6 +107,10 @@ export class CustomerService extends BaseService {
                     image: showIdentity ? rel.customer.image : null,
                     phoneNumber: showIdentity ? rel.customer.phoneNumber : null,
                     status: rel.status,
+                    // The consent/invite stage, distinct from `status`: a
+                    // pending_activation row is "invited" only when an invite
+                    // actually went out.
+                    activationStatus: rel.activationStatus,
                     joinedAt: rel.customer.createdAt,
                     policyCount: rel.customer.policiesOwned.length,
                     activePolicyCount: rel.customer.policiesOwned.filter(p => isCoveredByEndDate(p)).length,
@@ -126,6 +131,19 @@ export class CustomerService extends BaseService {
      * Get detailed customer profile
      */
     async getCustomerProfile(agentUserId: string, customerId: string) {
+        // Prisma DROPS an undefined where-condition rather than matching
+        // nothing, so `policyholderUserId: undefined` below would return
+        // whichever of this agent's customers sorts first — and the page
+        // would then attach uploads to that person. Refuse a missing id here,
+        // at the one place every profile read goes through.
+        if (!agentUserId || !customerId) {
+            throw new AppError({
+                code: 'VALIDATION',
+                message: "Customer id is required",
+                statusCode: 400
+            });
+        }
+
         const visibilityWhere = agentPolicyVisibilityWhere(
             agentUserId,
             await getGrantedPolicyIds(agentUserId)
@@ -216,6 +234,7 @@ export class CustomerService extends BaseService {
             relationship: {
                 id: relationship.id,
                 status: relationship.status,
+                activationStatus: relationship.activationStatus,
                 joinedAt: relationship.createdAt,
                 lastInteraction: relationship.lastInteractionAt,
             },
@@ -264,17 +283,26 @@ export class CustomerService extends BaseService {
      */
     async createCustomer(agentUserId: string, data: CreateCustomerData) {
         const taxId = normalizeTaxId(data.taxId);
+        // Same key auth signs the customer up under — see lib/identity/normalize-email.
+        const email = normalizeEmail(data.email);
+        if (!email) {
+            throw new AppError({ code: 'VALIDATION', message: "Email is required", statusCode: 400 });
+        }
 
         // 1. Check if user exists
         let user = await this.db.user.findUnique({
-            where: { email: data.email }
+            where: { email }
         });
+
+        // Whether the agent's ΑΦΜ was dropped because the account is not theirs
+        // to annotate (see below).
+        let taxIdIgnored = false;
 
         if (!user) {
             // Create phantom user
             user = await this.db.user.create({
                 data: {
-                    email: data.email,
+                    email,
                     name: data.name,
                     phoneNumber: data.phoneNumber,
                     taxId,
@@ -287,12 +315,19 @@ export class CustomerService extends BaseService {
                 }
             });
         } else if (taxId && !user.taxId) {
-            // Backfill ΑΦΜ only when the existing record has none — never
-            // overwrite a value the customer or another source already set.
-            await this.db.user.update({
-                where: { id: user.id },
-                data: { taxId },
-            });
+            // Backfill ΑΦΜ only onto a PHANTOM the agent side owns (no
+            // password, never email-verified — nobody else to consent), and
+            // only when the record has none. This runs BEFORE any relationship
+            // exists, so for an activated account it would let anyone who
+            // knows an email write a tax id onto a stranger's profile.
+            if (isPhantomCustomer(user)) {
+                await this.db.user.update({
+                    where: { id: user.id },
+                    data: { taxId },
+                });
+            } else {
+                taxIdIgnored = true;
+            }
         }
 
         // 2. Check if relationship exists
@@ -332,7 +367,7 @@ export class CustomerService extends BaseService {
             relationshipId: relationship.id
         });
 
-        return relationship;
+        return { ...relationship, taxIdIgnored };
     }
 
     /**

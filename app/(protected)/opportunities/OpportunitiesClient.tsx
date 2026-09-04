@@ -94,9 +94,9 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
             const res = await runBookCrossSell()
             if ('error' in res) {
                 setScanMessage(
-                    res.error === 'upgrade_required'
+                    res.error === 'UPGRADE_REQUIRED'
                         ? opp_t.scanBookUpgrade
-                        : res.error === 'rate_limited'
+                        : res.error === 'RATE_LIMITED'
                             ? opp_t.scanBookRateLimited
                             : t.apiErrors.generic
                 )
