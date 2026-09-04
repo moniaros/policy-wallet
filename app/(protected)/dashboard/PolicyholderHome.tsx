@@ -792,9 +792,12 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         unknownCountLabel: home.prioritiesUnknownCountLabel,
                         coveredCountLabel: home.prioritiesCoveredCountLabel,
                         limitsUnread: home.prioritiesLimitsUnread,
+                        expiringSoon: home.prioritiesExpiringSoon,
+                        lapsedOnly: home.prioritiesLapsedOnly,
                         noPolicies: home.prioritiesNoPolicies,
                         uploadCta: home.prioritiesUploadCta,
                         withPolicies: home.prioritiesWithPolicies,
+                        absenceCaveat: home.prioritiesAbsenceCaveat,
                         alignmentCta: home.prioritiesAlignmentCta,
                         disclaimer: home.prioritiesDisclaimer,
                     }}

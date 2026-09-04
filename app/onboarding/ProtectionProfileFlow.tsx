@@ -11,9 +11,10 @@ import { ScreenFrame } from "@/components/onboarding/protection-profile/ScreenFr
 import { SummaryScreen } from "@/components/onboarding/protection-profile/SummaryScreen"
 import { UploadScreen } from "@/components/onboarding/protection-profile/UploadScreen"
 import { AdvisorScreen } from "@/components/onboarding/protection-profile/AdvisorScreen"
-import { domainLabelFor } from "@/components/onboarding/protection-profile/ProtectionMapCard"
+import { domainLabelFor, type AfterUploadView } from "@/components/onboarding/protection-profile/ProtectionMapCard"
 import { flowReducer, initialFlowState } from "@/lib/onboarding/protection-profile/reducer"
-import { mapRowsFrom } from "@/lib/onboarding/protection-profile/map-rows"
+import { mapRowCounts, mapRowsFrom, movedRows } from "@/lib/onboarding/protection-profile/map-rows"
+import { canRunDeepAnalysis } from "@/lib/monetization/feature-gates"
 import { progressFor, stepDef } from "@/lib/onboarding/protection-profile/steps"
 import * as q from "@/lib/onboarding/protection-profile/questions"
 import * as track from "@/lib/onboarding/protection-profile/analytics"
@@ -77,7 +78,12 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
         })
     )
     const [completion, setCompletion] = useState<ProtectionProfileCompletion | null>(null)
+    /** Set once the first upload is recorded: the map is shown again with what moved. */
+    const [afterUpload, setAfterUpload] = useState<AfterUploadView | null>(null)
     const [busy, setBusy] = useState(false)
+    // Whether the first upload's reading includes the limits — the plan the
+    // SERVER resolved, carried on the state; never inferred client-side.
+    const deepAnalysisAvailable = canRunDeepAnalysis(initialState.tier)
     const headingRef = useRef<HTMLHeadingElement>(null)
     const enteredAt = useRef(state.enteredAt)
     const startedAt = useRef(Date.now())
@@ -201,6 +207,34 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
     }, [state.current])
 
     const goto = (step: ProtectionStepId) => dispatch({ type: "goto", step })
+
+    /** The map as it stood when the upload was asked for — for the upload events. */
+    const uploadMapContext = (): track.UploadMapContext => {
+        const rows = completion ? mapRowsFrom(completion.areas, completion.priorities) : []
+        return { activatedAreas: completion?.activatedAreas ?? [], notYetCheckedCount: mapRowCounts(rows).notYetCheckedCount }
+    }
+
+    /**
+     * The upload is recorded, the map is re-read on the server, and the flow
+     * goes BACK to the picture with what the document moved. A reading that
+     * only queued has moved nothing yet, and the strip says exactly that; a
+     * refresh straight onto the upload screen has no picture to diff
+     * against, so the honest «saved, will update» line stands in.
+     */
+    const onUploaded = async (outcome: "completed" | "queued") => {
+        setBusy(true)
+        const refresh = await recordUploadChoice("done").catch(() => null)
+        if (refresh && completion) {
+            const before = mapRowsFrom(completion.areas, completion.priorities)
+            const after = mapRowsFrom(refresh.areas, completion.priorities)
+            setCompletion({ ...completion, ...refresh })
+            setAfterUpload({ read: outcome === "completed", moved: movedRows(before, after) })
+        } else {
+            setAfterUpload({ read: false, moved: [] })
+        }
+        setBusy(false)
+        goto("map")
+    }
 
     const onSkip = async () => {
         setBusy(true)
@@ -367,6 +401,7 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     kind="multi"
                     prompt={labels.q.hurt_most.prompt}
                     why={labels.q.hurt_most.why}
+                    hint={labels.q.hurt_most.hint}
                     options={opt("hurt_most", q.hurtMostOptions(state.answers))}
                     selected={draft?.unsure ? UNSURE : concerns}
                     onSelect={() => undefined}
@@ -457,7 +492,9 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                         setDraft({ guidance: value })
                         window.setTimeout(() => void save("guidance", { guidance: value }), 180)
                     }}
-                    unsure={{ label: labels.q.guidance.later, discovery: labels.q.guidance.why, proceedLabel: labels.q.guidance.cta, onUnsure: () => void save("guidance", { guidance: null }) }}
+                    // «Θα το αποφασίσω αργότερα» is the answer itself — no panel, so
+                    // the why line is rendered once, above the options.
+                    unsure={{ label: labels.q.guidance.later, proceedLabel: labels.q.guidance.cta, onUnsure: () => void save("guidance", { guidance: null }) }}
                     cta={{ label: labels.q.guidance.cta, onClick: () => void save("guidance", { guidance: chosen ?? null }), visible: chosen !== undefined && state.status !== "saving" }}
                     {...common}
                 />
@@ -472,8 +509,11 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     mapLabels={labels.map}
                     language={language}
                     completion={completion}
+                    afterUpload={afterUpload}
                     busy={busy}
-                    onContinue={() => goto("upload")}
+                    // First visit: the upload is the way forward. Second visit
+                    // (after the upload): the optional advisor screen is.
+                    onContinue={() => goto(afterUpload ? "advisor" : "upload")}
                     onLater={async () => {
                         setBusy(true)
                         // «Θα το κάνω αργότερα» promises leaving, so it leaves: the
@@ -507,18 +547,15 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     labels={labels.upload}
                     startingFrom={startingFrom}
                     hasAiConsent={initialState.hasAiConsent}
+                    deepAnalysisAvailable={deepAnalysisAvailable}
                     busy={busy}
                     onPhase={(phase, errorCode) => {
-                        if (phase === "uploading") track.trackUpload(language, "started")
-                        else if (phase === "queued" || phase === "completed") track.trackUpload(language, "completed")
-                        else if (phase === "failed") track.trackUpload(language, "failed", errorCode)
+                        const map = uploadMapContext()
+                        if (phase === "uploading") track.trackUpload(language, "started", map)
+                        else if (phase === "queued" || phase === "completed") track.trackUpload(language, "completed", map)
+                        else if (phase === "failed") track.trackUpload(language, "failed", map, errorCode)
                     }}
-                    onUploaded={async () => {
-                        setBusy(true)
-                        await recordUploadChoice("done").catch(() => undefined)
-                        setBusy(false)
-                        goto("advisor")
-                    }}
+                    onUploaded={(_policyId, outcome) => void onUploaded(outcome)}
                     onLater={async () => {
                         setBusy(true)
                         track.trackSkipped(language, "upload")
@@ -538,7 +575,10 @@ export function ProtectionProfileFlow({ initialState, labels, language }: { init
                     busy={busy}
                     onFinish={async () => {
                         setBusy(true)
-                        track.trackFinished(language, state.answeredSteps.length, Boolean(completion) && initialState.status !== "not_started")
+                        // A document is on file when this session recorded the
+                        // upload, or when the person came back to this screen
+                        // after recording it earlier (uploadChoice = done).
+                        track.trackFinished(language, state.answeredSteps.length, afterUpload !== null || initialState.stepId === "advisor")
                         const { redirectTo } = await finishProtectionOnboarding().catch(() => ({ redirectTo: "/dashboard" }))
                         router.push(redirectTo)
                     }}

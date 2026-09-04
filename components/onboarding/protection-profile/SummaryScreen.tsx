@@ -2,18 +2,26 @@
 
 import { forwardRef } from "react"
 import { Loader2 } from "lucide-react"
-import { ProtectionMapCard, type ProtectionMapLabels, type ProtectionMapRowLabels } from "./ProtectionMapCard"
+import { ProtectionMapCard, type AfterUploadView, type ProtectionMapLabels, type ProtectionMapRowLabels } from "./ProtectionMapCard"
 import type { ProtectionProfileCompletion } from "@/app/onboarding/protection-profile-actions"
 
+/**
+ * The map screen — twice. First as the end of the questions, with the
+ * upload as the way forward; then again straight after the first upload,
+ * with what the document moved and the (optional) advisor screen as the one
+ * way on. The picture is the destination, not a status line.
+ */
 export const SummaryScreen = forwardRef<HTMLHeadingElement, {
     labels: ProtectionMapLabels
     mapLabels: ProtectionMapRowLabels
     language: "el" | "en"
     completion: ProtectionProfileCompletion | null
+    /** Present on the second visit: the map was re-read after the upload. */
+    afterUpload?: AfterUploadView | null
     onContinue: () => void
     onLater: () => void
     busy: boolean
-}>(function SummaryScreen({ labels, mapLabels, language, completion, onContinue, onLater, busy }, headingRef) {
+}>(function SummaryScreen({ labels, mapLabels, language, completion, afterUpload = null, onContinue, onLater, busy }, headingRef) {
     if (!completion) {
         return (
             <div className="pw-card pw-pad flex items-center gap-3 text-sm text-muted-foreground" role="status" aria-busy="true">
@@ -38,16 +46,23 @@ export const SummaryScreen = forwardRef<HTMLHeadingElement, {
                 confidence={completion.confidence}
                 unsureCount={completion.unsureCount}
                 countedTotal={completion.countedTotal}
+                afterUpload={afterUpload}
                 headingId="protection-map-heading"
                 actions={
-                    <>
+                    afterUpload ? (
                         <button type="button" onClick={onContinue} disabled={busy} className="pw-primary-button w-full sm:w-auto">
-                            {labels.cta}
+                            {labels.afterUpload.cta}
                         </button>
-                        <button type="button" onClick={onLater} disabled={busy} className="pw-soft-button w-full sm:w-auto">
-                            {labels.later}
-                        </button>
-                    </>
+                    ) : (
+                        <>
+                            <button type="button" onClick={onContinue} disabled={busy} className="pw-primary-button w-full sm:w-auto">
+                                {labels.cta}
+                            </button>
+                            <button type="button" onClick={onLater} disabled={busy} className="pw-soft-button w-full sm:w-auto">
+                                {labels.later}
+                            </button>
+                        </>
+                    )
                 }
             />
         </>

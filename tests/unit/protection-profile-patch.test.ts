@@ -92,7 +92,33 @@ describe("protection profile → profile facts", () => {
     it("a business owner is self-employed to the engine and owns a business", () => {
         const patch = protectionProfilePatch(parse({ step: "income", income: "business" }))
         expect(patch.columns).toEqual({ employmentStatus: "self_employed", ownsBusiness: true })
+        expect(patch.precision.ownsBusiness ?? "exact").toBe("exact")
         expect(patch.answeredFields).toEqual(["employmentStatus", "ownsBusiness"])
+    })
+
+    it("a salary, a pension, «not working» or «studying» say «no business» as a COARSE bucket; a freelancer leaves it unknown", () => {
+        for (const income of ["employed", "retired", "not_working", "student_other"] as const) {
+            const patch = protectionProfilePatch(parse({ step: "income", income }))
+            expect(patch.columns.ownsBusiness, income).toBe(false)
+            expect(patch.precision.ownsBusiness, income).toBe("coarse")
+            expect(patch.answeredFields, income).toContain("ownsBusiness")
+            // The engine reads it as KNOWN — «no» is an answer, not silence.
+            const ctx = toLifeContext(applyAll([{ step: "income", income }]) as any)
+            expect(ctx.known.businessOwnership, income).toBe(true)
+            expect(ctx.ownsBusiness, income).toBe(false)
+        }
+        const freelancer = protectionProfilePatch(parse({ step: "income", income: "self_employed" }))
+        expect(freelancer.columns).toEqual({ employmentStatus: "self_employed" })
+        expect(freelancer.answeredFields).toEqual(["employmentStatus"])
+        expect(toLifeContext(applyAll([{ step: "income", income: "self_employed" }]) as any).known.businessOwnership).toBe(false)
+    })
+
+    it("«Μόνο εγώ» writes no marital status — it is not a marital fact", () => {
+        const patch = protectionProfilePatch(parse({ step: "people", people: ["only_me"] }))
+        expect(patch.columns).toEqual({ childrenCount: 0, dependentsCount: 0 })
+        expect(patch.columns).not.toHaveProperty("maritalStatus")
+        expect(patch.answeredFields).not.toContain("maritalStatus")
+        expect(toLifeContext(applyAll([{ step: "people", people: ["only_me"] }]) as any).known.maritalStatus).toBe(false)
     })
 
     it("obligations set the loan FLAG and never an amount; rent stays a statement", () => {

@@ -31,7 +31,7 @@
 
 import type { LifeContext } from "./life-context"
 import { conditionLabels, outstandingDebt, totalDependents } from "./life-context"
-import type { Bilingual, RiskDefinition, RiskPriority } from "./risk-types"
+import type { Bilingual, PartialSubstitute, RiskDefinition, RiskPriority } from "./risk-types"
 
 // ── Formatting ───────────────────────────────────────────────────────
 
@@ -58,6 +58,31 @@ function plural(n: number, one: string, many: string): string {
 // ── Priority helpers ─────────────────────────────────────────────────
 
 const ORDER: Record<RiskPriority, number> = { critical: 0, high: 1, medium: 2, low: 3 }
+
+// ── Partial substitutes ──────────────────────────────────────────────
+//
+// Lines that answer PART of a risk. Named here once and shared, so the note
+// the customer reads is the same wherever the line is held. A partial line
+// can reach `needs_review` with its note, never `already_covered`
+// (risk-assessment.ts step 3b).
+
+/** A personal-accident policy against a death risk: pays on accident only. */
+const PA_DEATH_BY_ACCIDENT_ONLY: PartialSubstitute = {
+    line: "personal_accident",
+    note: {
+        en: "A personal-accident policy covers death by accident only — not by illness, which is the more common cause.",
+        el: "Η ασφάλιση προσωπικών ατυχημάτων καλύπτει μόνο θάνατο από ατύχημα — όχι από ασθένεια, που είναι η συχνότερη αιτία.",
+    },
+}
+
+/** A hull policy against the boat's liability: covers the vessel, and may or may not carry third-party liability. */
+const BOAT_HULL_NOT_LIABILITY: PartialSubstitute = {
+    line: "boat_hull",
+    note: {
+        en: "A hull policy covers damage to the vessel itself; check whether it also carries the compulsory third-party liability, which is sold separately.",
+        el: "Η ασφάλιση ιδίων ζημιών καλύπτει το ίδιο το σκάφος· ελέγξτε αν περιλαμβάνει και την υποχρεωτική αστική ευθύνη προς τρίτους, που πωλείται χωριστά.",
+    },
+}
 
 /** Raise a priority by `steps` levels, clamped at critical. */
 function escalate(base: RiskPriority, steps = 1): RiskPriority {
@@ -201,7 +226,9 @@ export const RISK_CATALOG: RiskDefinition[] = [
         kind: "essential",
         requires: ["dependents", "children"],
         supports: ["income", "age", "maritalStatus", "savings"],
-        alsoCoveredBy: ["personal_accident"],
+        // An employer's group life scheme is the same promise, bought at work.
+        alsoCoveredBy: ["group_life"],
+        partiallyCoveredBy: [PA_DEATH_BY_ACCIDENT_ONLY],
         name: {
             en: "Loss of the income your household depends on",
             el: "Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας",
@@ -240,8 +267,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Check what your employer already provides", el: "Ελέγξτε τι παρέχει ήδη ο εργοδότης σας" },
                 detail: {
-                    en: "Death-in-service benefit of one to four times salary is common and costs you nothing. Size anything new against what it already leaves uncovered, not against the whole need.",
-                    el: "Παροχή θανάτου εν υπηρεσία ενός έως τεσσάρων ετήσιων μισθών είναι συνηθισμένη και δεν σας κοστίζει τίποτα. Υπολογίστε οτιδήποτε νέο πάνω σε ό,τι μένει ακάλυπτο, όχι στη συνολική ανάγκη.",
+                    en: "Death-in-service benefit of one to four times salary is common. Size anything new against what it already leaves uncovered, not against the whole need.",
+                    el: "Παροχή θανάτου εν υπηρεσία ενός έως τεσσάρων ετήσιων μισθών είναι συνηθισμένη. Υπολογίστε οτιδήποτε νέο πάνω σε ό,τι μένει ακάλυπτο, όχι στη συνολική ανάγκη.",
                 },
             },
             {
@@ -279,7 +306,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
         kind: "essential",
         requires: ["mortgage", "loans"],
         supports: ["age", "dependents", "income"],
-        alsoCoveredBy: ["personal_accident"],
+        alsoCoveredBy: ["group_life"],
+        partiallyCoveredBy: [PA_DEATH_BY_ACCIDENT_ONLY],
         name: {
             en: "Debt outliving you",
             el: "Χρέος που σας επιβιώνει",
@@ -333,8 +361,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Decreasing term cover", el: "Ασφάλιση φθίνοντος κεφαλαίου" },
                 detail: {
-                    en: "A sum insured that falls with the outstanding balance, on a term running to the end of the loan — cheaper than level cover for the same protection.",
-                    el: "Ασφαλισμένο κεφάλαιο που μειώνεται μαζί με το υπόλοιπο, με διάρκεια έως τη λήξη του δανείου — φθηνότερο από σταθερό κεφάλαιο για την ίδια προστασία.",
+                    en: "A sum insured that falls with the outstanding balance, on a term running to the end of the loan.",
+                    el: "Ασφαλισμένο κεφάλαιο που μειώνεται μαζί με το υπόλοιπο, με διάρκεια έως τη λήξη του δανείου.",
                 },
                 line: "life",
             },
@@ -431,8 +459,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Income protection", el: "Ασφάλιση προστασίας εισοδήματος" },
                 detail: {
-                    en: "A monthly benefit after a deferred period you choose to match your savings. The longer you can self-fund, the less it costs.",
-                    el: "Μηνιαίο επίδομα μετά από περίοδο αναμονής που επιλέγετε ώστε να ταιριάζει με τις αποταμιεύσεις σας. Όσο περισσότερο αντέχετε μόνοι, τόσο λιγότερο κοστίζει.",
+                    en: "A monthly benefit after a deferred period you choose to match your savings.",
+                    el: "Μηνιαίο επίδομα μετά από περίοδο αναμονής που επιλέγετε ώστε να ταιριάζει με τις αποταμιεύσεις σας.",
                 },
                 line: "income_protection",
             },
@@ -455,6 +483,9 @@ export const RISK_CATALOG: RiskDefinition[] = [
         id: "motor_liability",
         lineOfBusiness: "motor",
         kind: "essential",
+        // The two motor children carry the same compulsory liability; named
+        // here because the engine expands no family on its own.
+        alsoCoveredBy: ["motorbike", "truck"],
         requires: ["vehicles"],
         supports: [],
         name: {
@@ -611,8 +642,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Buildings cover including earthquake", el: "Ασφάλιση οικοδομής με κάλυψη σεισμού" },
                 detail: {
-                    en: "Sized to rebuild cost, not market value. Insuring a home against fire, earthquake and flood also earns an ΕΝΦΙΑ discount, which offsets part of the premium.",
-                    el: "Υπολογισμένη στο κόστος ανακατασκευής, όχι στην εμπορική αξία. Η ασφάλιση κατοικίας για πυρκαγιά, σεισμό και πλημμύρα δίνει και έκπτωση ΕΝΦΙΑ, που αντισταθμίζει μέρος του ασφαλίστρου.",
+                    en: "Sized to rebuild value, not market value, and covering fire, earthquake and flood.",
+                    el: "Υπολογισμένη στην αξία ανακατασκευής, όχι στην εμπορική αξία, με κάλυψη πυρκαγιάς, σεισμού και πλημμύρας.",
                 },
                 line: "home",
             },
@@ -699,8 +730,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Contents cover with tenant's liability", el: "Ασφάλιση περιεχομένου με αστική ευθύνη ενοικιαστή" },
                 detail: {
-                    en: "Usually one of the cheapest policies on the market, and the liability section is the reason to hold it.",
-                    el: "Συνήθως από τα φθηνότερα ασφαλιστήρια της αγοράς, και το τμήμα της αστικής ευθύνης είναι ο λόγος να το έχετε.",
+                    en: "Covers your belongings, and your liability as a tenant towards the landlord and the neighbours.",
+                    el: "Καλύπτει τα υπάρχοντά σας και την ευθύνη σας ως ενοικιαστή απέναντι στον ιδιοκτήτη και τους γείτονες.",
                 },
                 line: "renters",
             },
@@ -749,8 +780,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Push what you can into the tenancy agreement", el: "Μεταφέρετε ό,τι μπορείτε στο μισθωτήριο" },
                 detail: {
-                    en: "A deposit and clear repair obligations transfer part of the exposure contractually, at no premium. They do not cover the building or lost rent.",
-                    el: "Μια εγγύηση και σαφείς υποχρεώσεις επισκευών μεταφέρουν μέρος της έκθεσης συμβατικά, χωρίς ασφάλιστρο. Δεν καλύπτουν όμως το κτίριο ούτε την απώλεια μισθωμάτων.",
+                    en: "A deposit and clear repair obligations transfer part of the exposure contractually. They do not cover the building or lost rent.",
+                    el: "Μια εγγύηση και σαφείς υποχρεώσεις επισκευών μεταφέρουν μέρος της έκθεσης συμβατικά. Δεν καλύπτουν όμως το κτίριο ούτε την απώλεια μισθωμάτων.",
                 },
             },
             {
@@ -775,6 +806,9 @@ export const RISK_CATALOG: RiskDefinition[] = [
         id: "boat_liability",
         lineOfBusiness: "boat",
         kind: "essential",
+        // `boat_tpl` IS the compulsory liability; a hull policy only might carry it.
+        alsoCoveredBy: ["boat_tpl"],
+        partiallyCoveredBy: [BOAT_HULL_NOT_LIABILITY],
         requires: ["boat"],
         supports: ["valuables", "hobbies"],
         name: {
@@ -942,16 +976,16 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Check your employer's group scheme", el: "Ελέγξτε το ομαδικό πρόγραμμα του εργοδότη σας" },
                 detail: {
-                    en: "Group health cover is common in larger Greek employers and often extends to family at low cost. It usually answers this entirely.",
-                    el: "Η ομαδική ασφάλιση υγείας είναι συνηθισμένη σε μεγαλύτερους ελληνικούς εργοδότες και συχνά επεκτείνεται στην οικογένεια με χαμηλό κόστος. Συνήθως το καλύπτει πλήρως.",
+                    en: "Group health cover is common in larger Greek employers and often extends to family. It usually answers this entirely.",
+                    el: "Η ομαδική ασφάλιση υγείας είναι συνηθισμένη σε μεγαλύτερους ελληνικούς εργοδότες και συχνά επεκτείνεται στην οικογένεια. Συνήθως το καλύπτει πλήρως.",
                 },
             },
             {
                 kind: "transfer",
                 label: { en: "Private health cover", el: "Ιδιωτική ασφάλιση υγείας" },
                 detail: {
-                    en: "Or a lower-cost hospital-only plan if the speed of surgery is the main concern rather than outpatient access.",
-                    el: "Ή ένα οικονομικότερο πρόγραμμα μόνο νοσοκομειακής περίθαλψης, αν το κύριο ζητούμενο είναι η ταχύτητα χειρουργείου και όχι η εξωνοσοκομειακή πρόσβαση.",
+                    en: "Or a hospital-only plan if the speed of surgery is the main concern rather than outpatient access.",
+                    el: "Ή ένα πρόγραμμα μόνο νοσοκομειακής περίθαλψης, αν το κύριο ζητούμενο είναι η ταχύτητα χειρουργείου και όχι η εξωνοσοκομειακή πρόσβαση.",
                 },
                 line: "health",
             },
@@ -1089,8 +1123,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Cap your liability in the engagement", el: "Περιορίστε την ευθύνη σας στη σύμβαση" },
                 detail: {
-                    en: "A written scope of work with a liability cap moves part of the exposure back to the client contractually, before any premium is paid. It is the cheapest control available and most freelancers skip it.",
-                    el: "Ένα γραπτό αντικείμενο εργασιών με ανώτατο όριο ευθύνης μεταφέρει μέρος της έκθεσης συμβατικά στον πελάτη, πριν πληρωθεί οποιοδήποτε ασφάλιστρο. Είναι ο φθηνότερος διαθέσιμος έλεγχος και οι περισσότεροι ελεύθεροι επαγγελματίες τον παραλείπουν.",
+                    en: "A written scope of work with a liability cap moves part of the exposure back to the client contractually.",
+                    el: "Ένα γραπτό αντικείμενο εργασιών με ανώτατο όριο ευθύνης μεταφέρει μέρος της έκθεσης συμβατικά στον πελάτη.",
                 },
             },
             {
@@ -1264,8 +1298,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Travel cover with repatriation", el: "Ταξιδιωτική ασφάλιση με επαναπατρισμό" },
                 detail: {
-                    en: "The part neither the ΕΚΑΑ card nor savings answer. An annual multi-trip policy is usually cheaper than three single trips.",
-                    el: "Το σκέλος που δεν καλύπτει ούτε η ΕΚΑΑ ούτε οι αποταμιεύσεις. Ένα ετήσιο πολλαπλών ταξιδιών είναι συνήθως φθηνότερο από τρία μεμονωμένα.",
+                    en: "The part neither the ΕΚΑΑ card nor savings answer — medical treatment and repatriation from abroad.",
+                    el: "Το σκέλος που δεν καλύπτει ούτε η ΕΚΑΑ ούτε οι αποταμιεύσεις — ιατρική περίθαλψη και επαναπατρισμός από το εξωτερικό.",
                 },
                 line: "travel",
             },
@@ -1317,8 +1351,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Extend the cover you already hold", el: "Επεκτείνετε την κάλυψη που ήδη έχετε" },
                 detail: {
-                    en: "Where an exclusion exists, an endorsement removing it is usually far cheaper than a standalone policy, and keeps everything in one place.",
-                    el: "Όπου υπάρχει εξαίρεση, μια πρόσθετη πράξη που την αίρει είναι συνήθως πολύ φθηνότερη από αυτοτελές ασφαλιστήριο, και κρατά τα πάντα σε ένα σημείο.",
+                    en: "Where an exclusion exists, an endorsement removing it keeps everything in one policy.",
+                    el: "Όπου υπάρχει εξαίρεση, μια πρόσθετη πράξη που την αίρει κρατά τα πάντα σε ένα ασφαλιστήριο.",
                 },
             },
             {
@@ -1463,6 +1497,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
         id: "retirement_shortfall",
         lineOfBusiness: "pension",
         kind: "discretionary",
+        // An employer's group pension is the same provision, made at work.
+        alsoCoveredBy: ["group_pension"],
         requires: ["retirementPlanning", "age"],
         supports: ["income", "savings"],
         name: {
@@ -1583,8 +1619,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                     el: "Αστική ευθύνη κοινόχρηστων χώρων",
                 },
                 detail: {
-                    en: "Written for the manager in that capacity, typically naming lift operation and pipe burst or leakage as separate heads, with limits per person, per event and for the year. The premium is commonly shared through the building’s common expenses.",
-                    el: "Εκδίδεται για τον διαχειριστή υπό αυτή την ιδιότητα, συνήθως κατονομάζοντας χωριστά τη λειτουργία ανελκυστήρων και τη διάρρηξη ή διαρροή σωληνώσεων, με όρια ανά άτομο, ανά γεγονός και για το έτος. Το ασφάλιστρο συνήθως επιμερίζεται στα κοινόχρηστα.",
+                    en: "Written for the manager in that capacity, typically naming lift operation and pipe burst or leakage as separate heads, with limits per person, per event and for the year.",
+                    el: "Εκδίδεται για τον διαχειριστή υπό αυτή την ιδιότητα, συνήθως κατονομάζοντας χωριστά τη λειτουργία ανελκυστήρων και τη διάρρηξη ή διαρροή σωληνώσεων, με όρια ανά άτομο, ανά γεγονός και για το έτος.",
                 },
                 line: "liability",
             },

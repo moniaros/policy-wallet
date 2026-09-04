@@ -1692,10 +1692,15 @@ export const el = {
                 absence_not_evidence: 'Το ότι δεν έχουμε δει ασφαλιστήριο δεν σημαίνει ότι δεν υπάρχει.',
                 limits_read: 'Ό,τι δεν αναφέρει το ασφαλιστήριό σας, δεν το γνωρίζουμε.',
                 unknown_list: 'Δεν ξέρουμε ακόμη: {list}.',
+                // Inline after the alignment word (never inside a disclosure).
+                expiring_soon: 'λήγει σύντομα',
+                // Replaces «Δεν έχουμε δει ακόμη ασφαλιστήριο» when the only policy seen has lapsed.
+                lapsed_only: 'Το ασφαλιστήριο που είχαμε δει για αυτό έχει λήξει — δεν ξέρουμε αν ανανεώθηκε.',
             },
             confidence: {
                 unknown: 'Δεν έχουμε αρκετά στοιχεία',
                 inferred: 'Το συμπεράναμε από όσα μας είπατε',
+                third_party_reported: 'Βασίζεται σε όσα μας είπε ο σύμβουλός σας',
                 user_reported: 'Βασίζεται σε όσα μας είπατε',
                 policy_verified: 'Επιβεβαιώνεται από ασφαλιστήριό σας',
                 externally_verified: 'Επιβεβαιώνεται από εξωτερική πηγή',
@@ -1726,10 +1731,19 @@ export const el = {
                 lead: 'Τι δείχνουν όσα μας είπατε και τα ασφαλιστήρια που έχουμε δει, ανά περιοχή της ζωής σας.',
                 open: 'Άνοιγμα: {area}',
                 dormantHint: 'Περιοχές για τις οποίες δεν μας έχετε πει κάτι ακόμη.',
-                areaCount: '{n} περιοχές',
+                // One sentence, counting the rows the card renders (folded dormant rows excluded).
+                areaCount: '{n} περιοχές σε εξέταση',
+                areaCountOne: '1 περιοχή σε εξέταση',
+                areaCountNone: 'Καμία περιοχή σε εξέταση ακόμη',
                 unknownCount: '{n} δεν ξεκαθαρίστηκαν ακόμη',
+                unknownCountOne: '1 δεν ξεκαθαρίστηκε ακόμη',
                 coveredCount: '{n} φαίνεται να καλύπτονται',
-                activatedMeta: '{n} σε εξέταση',
+                coveredCountOne: '1 φαίνεται να καλύπτεται',
+            },
+            // The automatic checks below the areas — framed as monitoring, never a verdict.
+            monitoring: {
+                title: 'Παρακολούθηση',
+                lead: 'Αυτόματοι έλεγχοι στα ασφαλιστήρια και στο προφίλ σας — παρακολούθηση, όχι κρίση για την προστασία σας. Το τι ισχύει ανά περιοχή το βλέπετε παραπάνω.',
             },
             importance: {
                 high: 'Σημαντικό',
@@ -1768,7 +1782,9 @@ export const el = {
                 policiesLead: 'Μόνο όσα ασφαλιστήρια έχουμε δει — και μόνο όσο από αυτά έχουμε διαβάσει.',
                 limitsRead: 'τα όρια διαβάστηκαν',
                 limitsUnread: 'μόνο περίληψη — τα όρια δεν έχουν διαβαστεί ακόμη',
-                upgradeHint: 'Η ανάγνωση των ορίων είναι μέρος της πλήρους ανάλυσης.',
+                // A fact about this account's tier, not a pitch; the CTA below it is a text link.
+                upgradeHint: 'Τα όρια αυτού του ασφαλιστηρίου δεν έχουν διαβαστεί — η ανάγνωση ορίων είναι μέρος της πλήρους ανάλυσης.',
+                fromOtherArea: 'από άλλη περιοχή: {area}',
                 upgradeCta: 'Ξεκλείδωμα πλήρους ανάλυσης',
                 openPolicy: 'Προβολή ασφαλιστηρίου',
                 findingsTitle: 'Ευρήματα από τους κανόνες',
@@ -1795,7 +1811,7 @@ export const el = {
             factors: {
                 age: {
                     prompt: 'Ποια χρονιά γεννηθήκατε;',
-                    why: 'Η ηλικία αλλάζει το κόστος και τη διαθεσιμότητα ορισμένων καλύψεων.',
+                    why: 'Με την ηλικία σας υπολογίζουμε πόσα χρόνια εισοδήματος μένουν να προστατευτούν και αν η σύνταξη είναι κοντά.',
                     noun: 'την ηλικία σας',
                 },
                 maritalStatus: {
@@ -1928,7 +1944,7 @@ export const el = {
                 },
                 valuables: {
                     prompt: 'Έχετε αντικείμενα μεγάλης αξίας στο σπίτι; Περίπου πόσο αξίζουν συνολικά — 0 αν όχι.',
-                    why: 'Τα συνηθισμένα όρια κατοικίας συχνά δεν φτάνουν για κοσμήματα, έργα τέχνης ή συλλογές.',
+                    why: 'Με το ποσό ελέγχουμε αν αυτά τα αντικείμενα χωρούν στα όρια του ασφαλιστηρίου κατοικίας σας ή χρειάζονται δική τους δήλωση.',
                     noun: 'αντικείμενα μεγάλης αξίας',
                 },
                 cyberExposure: {
@@ -1943,7 +1959,7 @@ export const el = {
                 },
                 retirementPlanning: {
                     prompt: 'Έχετε κάποιο δικό σας σχέδιο για τη σύνταξη, πέρα από τη δημόσια;',
-                    why: 'Η δημόσια σύνταξη αντικαθιστά μέρος μόνο του εισοδήματος.',
+                    why: 'Έτσι ξέρουμε αν πρέπει να δούμε τη διαφορά ανάμεσα στη δημόσια σύνταξη και το σημερινό σας εισόδημα.',
                     noun: 'τον συνταξιοδοτικό σας σχεδιασμό',
                 },
                 health: {
@@ -1984,7 +2000,7 @@ export const el = {
                 currencyLabel: 'Ποσό σε ευρώ',
                 currencyHint: 'Κατά προσέγγιση — ένα στρογγυλό ποσό αρκεί.',
                 multiHint: 'Επιλέξτε όσα ισχύουν.',
-                prefilled: 'Προσυμπληρωμένο από όσα μας είπατε — αλλάξτε το αν χρειάζεται.',
+                prefilled: 'Προσυμπληρωμένο — επιβεβαιώστε ή διορθώστε.',
                 invalid: 'Ελέγξτε την απάντηση και δοκιμάστε ξανά.',
                 failed: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.',
                 saving: 'Αποθήκευση…',
@@ -2358,8 +2374,13 @@ export const el = {
             prioritiesConfirmChip: 'Χρειάζεται επιβεβαίωση',
             prioritiesDeclaredChip: 'Όπως το δηλώσατε',
             prioritiesNoPolicies: 'Από όσα μας είπατε. Δεν έχουμε δει ακόμη τι καλύπτουν τα ασφαλιστήριά σας.',
-            prioritiesUploadCta: 'Δείτε αν είστε σωστά προστατευμένοι',
-            prioritiesWithPolicies: 'Το ότι δεν έχουμε δει ασφαλιστήριο για κάτι δεν σημαίνει ότι δεν υπάρχει.',
+            prioritiesUploadCta: 'Δείτε τι λένε τα ασφαλιστήριά σας',
+            prioritiesWithPolicies: 'Από όσα μας είπατε και από τα ασφαλιστήρια που έχουμε δει.',
+            // Renders whatever the policy count — absence is never evidence.
+            prioritiesAbsenceCaveat: 'Το ότι δεν έχουμε δει ασφαλιστήριο για κάτι δεν σημαίνει ότι δεν υπάρχει.',
+            // Liveness words, from the composition's fields (formal register).
+            prioritiesExpiringSoon: 'λήγει σύντομα',
+            prioritiesLapsedOnly: 'Το ασφαλιστήριό σας για αυτό έχει λήξει.',
             prioritiesAlignmentCta: 'Δείτε πώς ταιριάζουν με τις καλύψεις σας',
             // The composed view (lib/protection/attention-areas.ts): counts of
             // areas in a state, and the limits caveat that keeps «Φαίνεται να
@@ -3976,7 +3997,8 @@ export const el = {
                 },
                 hurt_most: {
                     prompt: 'Αν συνέβαινε κάτι απρόοπτο, ποιο θα επηρέαζε περισσότερο τη ζωή σου;',
-                    why: 'Διάλεξε ένα — ή δύο, αν δεν ξεχωρίζεις. Δεν υπάρχει σωστή απάντηση.',
+                    why: 'Αυτό ορίζει από πού ξεκινά η εικόνα σου — δεν υπάρχει σωστή απάντηση.',
+                    hint: 'Διάλεξε ένα — ή δύο, αν δεν ξεχωρίζεις.',
                     options: {
                         health: 'Η υγεία μου',
                         family: 'Η οικογένειά μου',
@@ -4097,10 +4119,23 @@ export const el = {
                     no_idea: 'Δεν έχεις εικόνα — γι\' αυτό είμαστε εδώ. Ξεκινάμε από το μηδέν, χωρίς όρους που δεν καταλαβαίνεις.',
                     none: 'Δεν μας είπες ακόμη πόσο σίγουρος/η νιώθεις.',
                 },
-                unsureCount: 'Άφησες ανοιχτά {n} από {m} σημεία',
+                unsureCount: '{n} σημεία μένουν ανοιχτά — θα τα δούμε μαζί.',
+                unsureCountOne: '1 σημείο μένει ανοιχτό — θα το δούμε μαζί.',
                 disclaimer: 'Αυτό δεν σημαίνει ότι σου λείπει κάποια συγκεκριμένη κάλυψη. Σημαίνει ότι υπάρχουν σημεία που αξίζει να ελέγξουμε.',
                 cta: 'Να δούμε τι έχω ήδη',
                 later: 'Θα το κάνω αργότερα',
+                // The map, seen again right after the first upload: what moved
+                // between the picture before it and the one re-read after it.
+                // Never «έτοιμη» — a queued reading has changed nothing yet.
+                afterUpload: {
+                    title: 'Τι άλλαξε στην εικόνα σου',
+                    nothingYet: 'Το ασφαλιστήριο αποθηκεύτηκε. Η εικόνα σου θα ενημερωθεί μόλις το διαβάσουμε.',
+                    readNoChange: 'Το διαβάσαμε. Δεν άλλαξε κάτι στις περιοχές που βλέπεις εδώ.',
+                    notOnMap: 'δεν ήταν στην εικόνα',
+                    beforeLabel: 'Πριν',
+                    afterLabel: 'Τώρα',
+                    cta: 'Συνέχεια',
+                },
             },
             // The map's rows, composed from the attention areas
             // (lib/protection/attention-areas.ts) in the onboarding's own
@@ -4119,6 +4154,7 @@ export const el = {
                 confidence: {
                     unknown: 'Δεν έχουμε αρκετά στοιχεία.',
                     inferred: 'Το συμπεράναμε από όσα μας είπες.',
+                    third_party_reported: 'Βασίζεται σε όσα ανέφερε ο σύμβουλός σου.',
                     user_reported: 'Βασίζεται σε όσα μας είπες.',
                     policy_verified: 'Επιβεβαιώνεται από ασφαλιστήριό σου.',
                     externally_verified: 'Επιβεβαιώνεται από εξωτερική πηγή.',
@@ -4159,6 +4195,10 @@ export const el = {
                     buildingManagerRole: 'αν είσαι διαχειριστής πολυκατοικίας',
                 },
                 absenceCaveat: 'Το ότι δεν έχουμε δει ασφαλιστήριο δεν σημαίνει ότι δεν υπάρχει.',
+                // Liveness, from the composition's own fields — never from
+                // string-matching a sentence.
+                expiringSoon: 'λήγει σύντομα',
+                lapsedOnly: 'Το ασφαλιστήριο που είδαμε γι\' αυτό έχει λήξει.',
                 areaCount: '{n} περιοχές',
                 unknownCount: '{n} δεν τις ξεκαθαρίσαμε ακόμη',
                 coveredCount: '{n} φαίνεται να καλύπτονται',
@@ -4171,6 +4211,9 @@ export const el = {
                 body: 'Θα συγκρίνουμε αυτά που θεωρείς σημαντικά με αυτά που πραγματικά προβλέπει το ασφαλιστήριό σου.',
                 startingFrom: 'Ξεκινάμε από',
                 hint: 'Όποιο έχεις πρόχειρο — αυτοκινήτου, σπιτιού, υγείας. Ένα αρκεί για αρχή.',
+                // Tier-honest: on a plan without the deep reading, presence is
+                // what the first upload establishes; the limits are not.
+                limitsNeedFullAnalysis: 'Θα δούμε ποιες καλύψεις υπάρχουν· η ανάγνωση των ορίων είναι μέρος της πλήρους ανάλυσης.',
                 choose: 'Επιλογή αρχείου PDF',
                 chosen: 'Επιλεγμένο αρχείο',
                 cta: 'Να ελέγξω το πρώτο μου ασφαλιστήριο',
@@ -4195,10 +4238,10 @@ export const el = {
                 haveCode: 'Έχεις κωδικό πρόσκλησης;',
                 codePlaceholder: 'Κωδικός πρόσκλησης',
                 connect: 'Σύνδεση',
-                connected: 'Συνδεθήκατε!',
+                connected: 'Έγινε η σύνδεση',
                 advisorLabel: 'Σύμβουλος',
                 inviteSent: 'Η πρόσκληση στάλθηκε',
-                inviteSentBody: 'Θα συνδεθείτε αυτόματα μόλις ο σύμβουλός σου αποδεχτεί την πρόσκληση.',
+                inviteSentBody: 'Θα συνδεθείς αυτόματα μόλις ο σύμβουλός σου δεχτεί την πρόσκληση.',
                 emailFailed: 'Δεν στάλθηκε το email. Αντίγραψε τον σύνδεσμο και στείλ\' τον στον σύμβουλό σου:',
                 copyLink: 'Αντιγραφή συνδέσμου',
                 linkCopied: 'Ο σύνδεσμος αντιγράφηκε',

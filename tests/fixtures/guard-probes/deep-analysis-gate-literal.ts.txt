@@ -1,0 +1,9 @@
+// PROBE (red): a server gate spelling the deep-analysis rule out on its own.
+export async function triggerAnalysis(policyId: string, userId: string) {
+    const entitlements = await resolveUserEntitlements(userId)
+    if (entitlements.tier !== "pro") {
+        return orchestrator.extractBasicSummary(policyId, userId)
+    }
+    if (tier === 'free') return null
+    return orchestrator.createAndExecuteRun(policyId, userId)
+}

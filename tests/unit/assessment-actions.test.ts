@@ -9,7 +9,7 @@ import { readFileSync } from "node:fs"
  * provenance the action stamps is the rule's own output, not a re-statement.
  */
 
-const { state, db, refreshProtectionScore, revalidatePath, loadAttentionAreas } = vi.hoisted(() => {
+const { state, db, refreshProtectionScore, revalidatePath, loadAttentionAreas, recordConversionEvent } = vi.hoisted(() => {
     const state: { profile: Record<string, unknown> | null } = { profile: null }
     const db = {
         policyholderProfile: {
@@ -25,15 +25,27 @@ const { state, db, refreshProtectionScore, revalidatePath, loadAttentionAreas } 
         db,
         refreshProtectionScore: vi.fn(async () => ({})),
         revalidatePath: vi.fn(),
+        recordConversionEvent: vi.fn(async () => undefined),
         loadAttentionAreas: vi.fn(async () => ({
             areas: [
                 {
                     area: "household",
+                    activated: true,
                     unknownFactors: ["dependents", "income"],
+                    refinableFactors: [],
+                    // The area's own risk still wants the facts — the question filter reads the exposure.
+                    exposure: { risks: [{ id: "life_dependents", status: "needs_review", name: "", missingFactors: ["dependents"] }] },
                     protection: { lines: [], gaps: [], hasAnalysed: false },
                     explanation: { why: "", unknown: "", next: "", nextStep: "answer_questions", density: "collapsed" },
                 },
-                { area: "health", unknownFactors: ["health"], protection: { lines: [], gaps: [], hasAnalysed: false } },
+                {
+                    area: "health",
+                    activated: true,
+                    unknownFactors: ["health"],
+                    refinableFactors: [],
+                    exposure: { risks: [{ id: "chronic_condition_costs", status: "needs_review", name: "", missingFactors: ["health"] }] },
+                    protection: { lines: [], gaps: [], hasAnalysed: false },
+                },
             ],
             ctx: { known: { dependents: false, income: false, health: false }, incomeDependency: "primary" },
             provenance: {},
@@ -42,6 +54,7 @@ const { state, db, refreshProtectionScore, revalidatePath, loadAttentionAreas } 
     }
 })
 vi.mock("@/lib/db", () => ({ db }))
+vi.mock("@/lib/journey/conversion-events", () => ({ recordConversionEvent }))
 vi.mock("@/lib/auth-helpers", () => ({
     getAuthenticatedUser: vi.fn(async () => ({ dbUser: { id: "user-1", preferredLanguage: "el" } })),
 }))
@@ -62,6 +75,8 @@ describe("answerAssessmentFactor — the contract", () => {
     it("writes the answer through applyFactWrites: source assessment, precision exact, column answered", async () => {
         const res = await answerAssessmentFactor({ area: "household", factor: "dependents", value: 2 })
         expect(res).toEqual({ ok: true, next: "dependents", remainingUnknown: 2, skipped: [] })
+        // Two deciding facts still missing: no completion is mirrored.
+        expect(recordConversionEvent).not.toHaveBeenCalled()
         const { create } = lastUpsert()
         expect(create.userId).toBe("user-1")
         expect(create.dependentsCount).toBe(2)
@@ -114,6 +129,53 @@ describe("answerAssessmentFactor — the contract", () => {
         expect(lastUpsert().create).toMatchObject({ loanAmount: 12000, hasLoans: true })
         await answerAssessmentFactor({ area: "debt", factor: "loans", value: 0 })
         expect(lastUpsert().update).toMatchObject({ loanAmount: 0, hasLoans: false })
+    })
+})
+
+describe("answerAssessmentFactor — the server mirror of an area's completion (P3)", () => {
+    /** After the write the area has no deciding fact left; one other activated area still does. */
+    function settled() {
+        loadAttentionAreas.mockResolvedValueOnce({
+            areas: [
+                { area: "household", activated: true, unknownFactors: [], refinableFactors: [], exposure: { risks: [] }, protection: { lines: [], gaps: [], hasAnalysed: false } },
+                { area: "health", activated: true, unknownFactors: ["health"], refinableFactors: [], exposure: { risks: [] }, protection: { lines: [], gaps: [], hasAnalysed: false } },
+                { area: "mobility", activated: false, unknownFactors: [], refinableFactors: [], exposure: { risks: [] }, protection: { lines: [], gaps: [], hasAnalysed: false } },
+            ],
+            ctx: { known: { dependents: true, income: true, health: false }, incomeDependency: "primary" },
+            provenance: {},
+            needs: { uncertaintyReasons: [] },
+        } as any)
+    }
+
+    it("records risk_assessment_completed when this answer takes the area's deciding facts to zero", async () => {
+        settled()
+        const res = await answerAssessmentFactor({ area: "household", factor: "dependents", value: 2 })
+        expect(res).toMatchObject({ ok: true, remainingUnknown: 0 })
+        expect(recordConversionEvent).toHaveBeenCalledTimes(1)
+        expect(recordConversionEvent).toHaveBeenCalledWith("user-1", "risk_assessment_completed", {
+            source: "protection_area:household",
+            // Activated areas only: household settled, health still waiting; dormant mobility is not counted.
+            areas_completed: 1,
+            remaining_unknown: 1,
+        })
+    })
+
+    it("does not record a completion for a refining answer on an area that was already settled", async () => {
+        state.profile = {
+            dependentsCount: 1,
+            answeredFields: ["dependentsCount"],
+            factProvenance: { dependentsCount: { source: "onboarding", precision: "coarse", at: "2026-09-01T00:00:00.000Z" } },
+        }
+        settled()
+        const res = await answerAssessmentFactor({ area: "household", factor: "dependents", value: 3 })
+        expect(res).toMatchObject({ ok: true, remainingUnknown: 0 })
+        expect(recordConversionEvent).not.toHaveBeenCalled()
+    })
+
+    it("does not record a completion for income dependency, which is not a catalogue factor", async () => {
+        settled()
+        await answerAssessmentFactor({ area: "household", factor: "incomeDependency", value: "primary" })
+        expect(recordConversionEvent).not.toHaveBeenCalled()
     })
 })
 

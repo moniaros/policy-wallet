@@ -15,16 +15,20 @@ import {
  * risk engine down with it.
  */
 describe("evidence levels", () => {
-    it("orders weakest to strongest with inferred below user_reported", () => {
+    it("orders weakest to strongest with inferred below a third party's word, and that below the person's own", () => {
         expect(EVIDENCE_LEVELS).toEqual([
             "unknown",
             "inferred",
+            "third_party_reported",
             "user_reported",
             "policy_verified",
             "externally_verified",
         ])
         expect(evidenceAtLeast("user_reported", "inferred")).toBe(true)
         expect(evidenceAtLeast("inferred", "user_reported")).toBe(false)
+        expect(evidenceAtLeast("third_party_reported", "inferred")).toBe(true)
+        expect(evidenceAtLeast("third_party_reported", "user_reported")).toBe(false)
+        expect(lowestEvidence(["user_reported", "third_party_reported"])).toBe("third_party_reported")
     })
 
     it("a composed conclusion is as sure as its weakest input", () => {
@@ -44,6 +48,18 @@ describe("fact provenance", () => {
         expect(factEvidence({ source: "policy", precision: "exact", at })).toBe("policy_verified")
         expect(factEvidence(undefined)).toBe("unknown")
         expect(factEvidence(null)).toBe("unknown")
+    })
+
+    it("an advisor's exact figure is third_party_reported — never attributed to the person; an advisor's floor is still inferred", () => {
+        const at = "2026-09-04T12:00:00.000Z"
+        expect(factEvidence({ source: "advisor", precision: "exact", at })).toBe("third_party_reported")
+        expect(factEvidence({ source: "advisor", precision: "coarse", at })).toBe("inferred")
+        // A life event the person declared is their own word; one the advisor
+        // recorded reaches the ledger as `advisor` (lib/services/life-events/service.ts).
+        expect(factEvidence({ source: "life_event", precision: "exact", at })).toBe("user_reported")
+        for (const source of ["onboarding", "quick_start", "assessment", "life_event", "questionnaire"] as const) {
+            expect(factEvidence({ source, precision: "exact", at }), source).toBe("user_reported")
+        }
     })
 
     it("parses the stored JSON leniently, dropping malformed entries rather than failing", () => {

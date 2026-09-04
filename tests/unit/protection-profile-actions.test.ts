@@ -67,7 +67,7 @@ const loadAttentionAreas = vi.hoisted(() =>
 )
 vi.mock("@/lib/protection/load-attention-areas", () => ({ loadAttentionAreas }))
 
-import { completeProtectionProfile, saveProtectionProfileStep, skipProtectionProfile } from "@/app/onboarding/protection-profile-actions"
+import { completeProtectionProfile, recordUploadChoice, saveProtectionProfileStep, skipProtectionProfile } from "@/app/onboarding/protection-profile-actions"
 
 beforeEach(() => {
     state.profile = null
@@ -225,6 +225,36 @@ describe("completeProtectionProfile", () => {
         vi.clearAllMocks()
         await completeProtectionProfile()
         expect(db.protectionProfile.update).not.toHaveBeenCalled()
+        expect(recordConversionEvent).not.toHaveBeenCalled()
+    })
+})
+
+describe("recordUploadChoice", () => {
+    it("«done» records the choice, mirrors the first-upload milestone and returns the map RE-READ — rows only, no Art. 9", async () => {
+        const out = await recordUploadChoice("done")
+        expect(state.row).toMatchObject({ uploadChoice: "done" })
+        expect(recordConversionEvent).toHaveBeenCalledWith("user-1", "first_policy_uploaded", { source: "onboarding" })
+        // Read AFTER the choice is on file, in the person's language.
+        expect(loadAttentionAreas).toHaveBeenCalledWith({ userId: "user-1", language: "el" })
+        expect(loadAttentionAreas.mock.invocationCallOrder[0]).toBeGreaterThan(db.protectionProfile.upsert.mock.invocationCallOrder[0])
+        expect(out).toEqual({
+            areas: [],
+            attention: { areaCount: 0, activatedCount: 0, unknownCount: 0, coveredCount: 0, gapCount: 0 },
+            activatedAreas: ["household", "income"],
+            policyCount: 2,
+            analysedCount: 1,
+        })
+        expect(out).not.toHaveProperty("ctx")
+        expect(out).not.toHaveProperty("needs")
+        expect(out).not.toHaveProperty("provenance")
+        expect(JSON.stringify(out)).not.toContain("diabetes")
+    })
+
+    it("«later» records the choice and reads nothing", async () => {
+        const out = await recordUploadChoice("later")
+        expect(out).toBeNull()
+        expect(state.row).toMatchObject({ uploadChoice: "later" })
+        expect(loadAttentionAreas).not.toHaveBeenCalled()
         expect(recordConversionEvent).not.toHaveBeenCalled()
     })
 })

@@ -24,9 +24,12 @@ const labels = {
     unknownCountLabel: home.prioritiesUnknownCountLabel,
     coveredCountLabel: home.prioritiesCoveredCountLabel,
     limitsUnread: home.prioritiesLimitsUnread,
+    expiringSoon: home.prioritiesExpiringSoon,
+    lapsedOnly: home.prioritiesLapsedOnly,
     noPolicies: home.prioritiesNoPolicies,
     uploadCta: home.prioritiesUploadCta,
     withPolicies: home.prioritiesWithPolicies,
+    absenceCaveat: home.prioritiesAbsenceCaveat,
     alignmentCta: home.prioritiesAlignmentCta,
     disclaimer: home.prioritiesDisclaimer,
 }
@@ -38,6 +41,8 @@ function heldLine(area: AttentionAreaId, detail: "summary_only" | "analysed" = "
 /** One composed area, shaped exactly as buildAttentionAreas returns it. */
 function areaView(area: AttentionAreaId, over: Partial<AttentionAreaView> = {}): AttentionAreaView {
     const lines = over.protection?.lines ?? []
+    const held = lines.filter((l) => l.held)
+    const alignment = over.alignment ?? "not_yet_checked"
     return {
         area,
         domain: AREAS[area].domain,
@@ -46,10 +51,16 @@ function areaView(area: AttentionAreaId, over: Partial<AttentionAreaView> = {}):
         activated: true,
         exposure: { risks: [] },
         unknownFactors: [],
-        protection: { lines, gaps: [], hasAnalysed: lines.some((l) => l.held && l.detail === "analysed") },
-        alignment: "not_yet_checked",
+        refinableFactors: [],
+        protection: { lines, gaps: [], hasAnalysed: held.some((l) => l.detail === "analysed") },
+        alignment,
         confidence: "user_reported",
-        requiresValidation: !lines.some((l) => l.held),
+        requiresValidation: held.length === 0,
+        answeredBy: held,
+        // As the composition derives them from the ANSWERING lines.
+        limitsUnread: alignment === "appears_covered" && !held.some((l) => l.detail === "analysed"),
+        expiringSoon: held.some((l) => l.lifecycle === "expiring_soon"),
+        lapsedOnly: held.length === 0 && lines.length > 0,
         explanation: { why: "", unknown: "", next: "", nextStep: "check_first_policy", density: "collapsed" },
         ...over,
     }
@@ -125,11 +136,45 @@ describe("ProtectionPrioritiesCard — the top attention areas on the home", () 
         expect(container.querySelector('[data-count="attention.coveredCount"]')?.textContent).toBe("1")
     })
 
-    it("with policies, the footer says absence is not evidence and links to the risk lens", () => {
-        const { container } = renderCard(THREE, 2)
-        expect(container.textContent).toContain("Το ότι δεν έχουμε δει ασφαλιστήριο για κάτι δεν σημαίνει ότι δεν υπάρχει.")
-        expect(container.textContent).not.toContain(home.prioritiesNoPolicies)
-        expect(container.querySelector("a")?.getAttribute("href")).toBe("/protection?lens=risk")
+    it("absence is never evidence — the caveat renders with and without policies, and the two footer lines are separate", () => {
+        const CAVEAT = "Το ότι δεν έχουμε δει ασφαλιστήριο για κάτι δεν σημαίνει ότι δεν υπάρχει."
+        const none = renderCard(THREE, 0)
+        expect(none.container.querySelector('[data-caveat="absence"]')?.textContent).toBe(CAVEAT)
+        expect(none.container.querySelector('[data-footer="no_policies"]')?.textContent).toBe(home.prioritiesNoPolicies)
+        expect(none.container.textContent).not.toContain(home.prioritiesWithPolicies)
+        // The CTA names what the person will see — what the policies say — not a verdict on their protection.
+        expect(none.container.querySelector("a")?.textContent).toContain("Δείτε τι λένε τα ασφαλιστήριά σας")
+        expect(none.container.textContent).not.toMatch(/σωστά προστατευμ/)
+        none.unmount()
+
+        const some = renderCard(THREE, 2)
+        expect(some.container.querySelector('[data-caveat="absence"]')?.textContent).toBe(CAVEAT)
+        expect(some.container.querySelector('[data-footer="with_policies"]')?.textContent).toBe(home.prioritiesWithPolicies)
+        expect(some.container.textContent).not.toContain(home.prioritiesNoPolicies)
+        expect(home.prioritiesWithPolicies).not.toBe(CAVEAT)
+        expect(some.container.querySelector("a")?.getAttribute("href")).toBe("/protection?lens=risk")
+    })
+
+    it("the home's monitor verdict words stay inside the entitled monitor card — never beside this card's alignment vocabulary", () => {
+        // The pro-only watch speaks in verdicts («Εντάξει / Προσοχή / Απαιτείται
+        // ενέργεια»); this card speaks in alignments. The two vocabularies
+        // must not share a surface: the verdict labels are read only inside
+        // the `monitorEntitled` branch, and this card never imports them.
+        const HOME = readFileSync("app/(protected)/dashboard/PolicyholderHome.tsx", "utf-8")
+        const uses = [...HOME.matchAll(/home\.monitorVerdict(Clear|Attention|Action)/g)].map((m) => m.index ?? 0)
+        expect(uses).toHaveLength(3)
+        const branch = HOME.indexOf("if (monitorEntitled && (hasPolicies || recentVersions.length > 0)) {")
+        expect(branch).toBeGreaterThan(0)
+        const branchEnd = HOME.indexOf("const monitorPlaceholderShown", branch)
+        for (const at of uses) {
+            expect(at).toBeGreaterThan(branch)
+            expect(at).toBeLessThan(branchEnd)
+        }
+        const CARD = readFileSync("components/dashboard/home/ProtectionPrioritiesCard.tsx", "utf-8")
+        expect(CARD).not.toMatch(/monitorVerdict|verdictLabel|MonitorSignalView/)
+        for (const word of [home.monitorVerdictClear, home.monitorVerdictAttention, home.monitorVerdictAction]) {
+            expect(renderCard(THREE, 1).container.textContent).not.toContain(word)
+        }
     })
 
     it("its one link records what the person set out to do", () => {
@@ -169,6 +214,74 @@ describe("one alignment, one word", () => {
         const { container } = renderCard([analysed], 1)
         expect(container.querySelector("li")?.textContent).toContain(COVERED)
         expect(container.querySelector("li")?.textContent).not.toContain(home.prioritiesLimitsUnread)
+    })
+
+    it("the limits caveat follows the composition's `limitsUnread`, not the area's own lines", () => {
+        // Answered by an ANALYSED line held under another area: the area's own
+        // `hasAnalysed` is false, the composition says the limits were read.
+        const readElsewhere = areaView("household", {
+            alignment: "appears_covered",
+            confidence: "policy_verified",
+            protection: { lines: [], gaps: [], hasAnalysed: false },
+            requiresValidation: false,
+            answeredBy: [heldLine("income", "analysed")],
+            limitsUnread: false,
+        })
+        const read = renderCard([readElsewhere], 1)
+        expect(read.container.querySelector("li")?.textContent).toContain(COVERED)
+        expect(read.container.querySelector("li")?.textContent).not.toContain(home.prioritiesLimitsUnread)
+        read.unmount()
+        // And the other way round: the field says unread, the caveat renders.
+        const unread = areaView("household", { ...readElsewhere, limitsUnread: true })
+        expect(renderCard([unread], 1).container.querySelector("li")?.textContent).toContain(`${COVERED} — ${home.prioritiesLimitsUnread}`)
+    })
+
+    it("«λήγει σύντομα» rides on `expiringSoon` — on a held line only", () => {
+        const expiring = areaView("mobility", {
+            alignment: "appears_covered",
+            confidence: "policy_verified",
+            protection: { lines: [{ ...heldLine("mobility"), lifecycle: "expiring_soon" }], gaps: [], hasAnalysed: false },
+        })
+        expect(expiring.expiringSoon).toBe(true)
+        const { container, unmount } = renderCard([expiring], 1)
+        expect(container.querySelector("li")?.textContent).toContain(`${COVERED} — ${home.prioritiesLimitsUnread}, ${home.prioritiesExpiringSoon}`)
+        unmount()
+        // A finding on a line that ends within the month says so too.
+        const gapExpiring = areaView("residence", { ...areasByAlignment.gap, expiringSoon: true })
+        expect(renderCard([gapExpiring], 1).container.querySelector("li")?.textContent).toContain(`${GAP_TITLE.el} — ${home.prioritiesExpiringSoon}`)
+        // Nothing held ⇒ nothing can be «about to end».
+        const malformed = areaView("health", { expiringSoon: true })
+        expect(renderCard([malformed], 1).container.textContent).not.toContain(home.prioritiesExpiringSoon)
+    })
+
+    it("a lapsed-only area says the policy ended — in the formal register, under the alignment word, never as cover", () => {
+        const lapsed = areaView("residence", {
+            protection: { lines: [{ ...heldLine("residence"), lifecycle: "expired", held: false }], gaps: [], hasAnalysed: false },
+        })
+        expect(lapsed.lapsedOnly).toBe(true)
+        expect(lapsed.requiresValidation).toBe(true)
+        const { container } = renderCard([lapsed], 1)
+        const li = container.querySelector("li")!
+        expect(li.textContent).toContain(words.not_yet_checked)
+        expect(li.querySelector('[data-caveat="lapsed"]')?.textContent).toBe(home.prioritiesLapsedOnly)
+        expect(home.prioritiesLapsedOnly).toMatch(/σας/)
+        expect(li.textContent).not.toContain(COVERED)
+        // A held line ⇒ no lapsed line, whatever the flag says.
+        const held = areaView("residence", { ...areasByAlignment.appears_covered, lapsedOnly: true })
+        expect(renderCard([held], 1).container.querySelector('[data-caveat="lapsed"]')).toBeNull()
+        expect(renderCard(THREE, 0).container.querySelector('[data-caveat="lapsed"]')).toBeNull()
+    })
+
+    it("the caveats are read off the view's fields — the card never re-derives them from lines or matches a sentence", () => {
+        const src = readFileSync("components/dashboard/home/ProtectionPrioritiesCard.tsx", "utf-8")
+            .replace(/\/\*[\s\S]*?\*\//g, "")
+            .replace(/(^|[^:"'`])\/\/.*$/gm, "$1")
+        expect(src).toMatch(/area\.limitsUnread/)
+        expect(src).toMatch(/area\.expiringSoon/)
+        expect(src).toMatch(/area\.lapsedOnly/)
+        expect(src).not.toMatch(/hasAnalysed/)
+        expect(src).not.toMatch(/lifecycle\s*===/)
+        expect(src).not.toMatch(/explanation\.(why|unknown|next)\b.*(includes|match|indexOf)/)
     })
 })
 

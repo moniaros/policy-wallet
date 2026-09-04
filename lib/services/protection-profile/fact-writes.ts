@@ -22,10 +22,13 @@
  *      explicit — a cleared input is not a declaration of «none».
  *   3. `exact` replaces `coarse`.
  *   4. `coarse` never replaces `exact`.
- *   5. Equal precision → the newer write wins (the incoming write is by
- *      definition the newer one) — EXCEPT that `source: "policy"` never
- *      replaces a declared value, coarse or exact. A document is evidence
- *      about a policy, not a statement by the person.
+ *   5. Equal precision → the NEWER INSTANT wins, not the later call. A write
+ *      carries the instant it was made (`at`, defaulting to `now`); a stored
+ *      entry stamped later than the incoming write is fresher, and a replayed
+ *      queued delta must not overwrite an answer the person gave after it.
+ *      A stored entry with no stamp (rule 6) never blocks. EXCEPT that
+ *      `source: "policy"` never replaces a declared value, coarse or exact. A
+ *      document is evidence about a policy, not a statement by the person.
  *   6. A column that is already KNOWN to the engine (`isColumnKnown`: listed
  *      in `answeredFields`, or holding a non-default value) but carries no
  *      provenance was written by a surface that predates provenance. It is
@@ -56,6 +59,12 @@ export interface FactWrite {
     precision: FactPrecision
     /** Only an explicit clear may write `null`. A bare null/undefined is ignored. */
     clear?: boolean
+    /**
+     * The instant the write was MADE — a replayed delta carries its original
+     * one. Defaults to the call's `now`. At equal precision the newer instant
+     * wins (rule 5), and the winning entry is stamped with it.
+     */
+    at?: Date | string
 }
 
 export interface ExistingFacts {
@@ -80,7 +89,7 @@ export interface ApplyFactWritesArgs {
     alsoAnswered?: readonly string[]
 }
 
-export type FactWriteSkipReason = "no_value" | "coarse_over_exact" | "policy_over_declared"
+export type FactWriteSkipReason = "no_value" | "coarse_over_exact" | "policy_over_declared" | "stale_write"
 
 export interface AppliedFactWrites {
     /** Only the columns whose stored value changes. */
@@ -144,6 +153,8 @@ interface Claim {
     precision: FactPrecision
     /** null = declared by a surface that predates provenance. */
     source: FactSource | null
+    /** Epoch ms of the stored stamp; null when the row predates provenance. */
+    at: number | null
 }
 
 function claimOn(
@@ -153,15 +164,25 @@ function claimOn(
     column: string
 ): Claim | null {
     const p = provenance[column]
-    if (p) return { precision: p.precision, source: p.source }
-    if (isColumnKnown(existing.columns, answered, column)) return { precision: "exact", source: null }
+    if (p) return { precision: p.precision, source: p.source, at: Date.parse(p.at) }
+    if (isColumnKnown(existing.columns, answered, column)) return { precision: "exact", source: null, at: null }
     return null
 }
 
-function refusal(write: FactWrite, claim: Claim | null): FactWriteSkipReason | null {
+/** The instant a write was made, as ISO — its own `at` when it carries one, else the call's. */
+function writeInstant(write: FactWrite, fallback: Date): string {
+    if (write.at === undefined) return fallback.toISOString()
+    const d = write.at instanceof Date ? write.at : new Date(write.at)
+    return Number.isNaN(d.getTime()) ? fallback.toISOString() : d.toISOString()
+}
+
+function refusal(write: FactWrite, claim: Claim | null, at: string): FactWriteSkipReason | null {
     if (!claim) return null
     if (write.source === "policy" && claim.source !== "policy") return "policy_over_declared"
     if (write.precision === "coarse" && claim.precision === "exact") return "coarse_over_exact"
+    // Equal precision: the newer instant wins. Strictly older only — an equal
+    // stamp is the same moment, and the later write in one batch still wins.
+    if (write.precision === claim.precision && claim.at != null && Date.parse(at) < claim.at) return "stale_write"
     return null
 }
 
@@ -198,7 +219,6 @@ function sameValue(a: unknown, b: unknown): boolean {
 
 export function applyFactWrites(args: ApplyFactWritesArgs): AppliedFactWrites {
     const { existing, writes, now } = args
-    const at = now.toISOString()
     const provenance: FactProvenanceMap = { ...parseFactProvenance(existing.factProvenance) }
     const answered = new Set(stringList(existing.answeredFields))
     const stored = existing.columns ?? {}
@@ -212,14 +232,15 @@ export function applyFactWrites(args: ApplyFactWritesArgs): AppliedFactWrites {
             skipped.push({ column, reason: "no_value" })
             continue
         }
-        const reason = refusal(write, claimOn(existing, provenance, answered, column))
+        const writeAt = writeInstant(write, now)
+        const reason = refusal(write, claimOn(existing, provenance, answered, column), writeAt)
         if (reason) {
             skipped.push({ column, reason })
             continue
         }
         pending[column] = blank ? null : write.value
         answered.add(column)
-        const entry: FactProvenance = { source: write.source, precision: write.precision, at }
+        const entry: FactProvenance = { source: write.source, precision: write.precision, at: writeAt }
         provenance[column] = entry
     }
 

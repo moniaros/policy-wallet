@@ -57,18 +57,37 @@ describe("the map's singular vocabulary is complete in both languages", () => {
         })
     }
 
-    it("the Greek map copy is the singular register — never «σας», «εσάς», «εσείς»", () => {
-        const map = getTranslations("el").onboarding.protectionProfile.map
+    it("the Greek onboarding copy is the singular register — never «σας», «εσάς», «εσείς», «συνδεθήκατε»", () => {
+        // The WHOLE stage: questions, map, upload, advisor. The formal plural
+        // is the dashboard's voice; one screen that slips («Συνδεθήκατε!»
+        // did) breaks the register mid-flow.
+        const stage = getTranslations("el").onboarding.protectionProfile
         const leaves: string[] = []
         const visit = (node: unknown) => {
             if (typeof node === "string") leaves.push(node)
             else if (node && typeof node === "object") Object.values(node).forEach(visit)
         }
-        visit(map)
-        expect(leaves.length).toBeGreaterThan(30)
+        visit(stage)
+        expect(leaves.length).toBeGreaterThan(200)
         // The pronouns and the second-person-plural verb forms the formal
         // nouns use («έχετε», «είστε»); «έχουμε» / «ξέρουμε» are «we» and allowed.
-        const offenders = leaves.filter((s) => /(?<![\p{L}])(σας|εσάς|εσείς|έχετε|είστε|βασίζεστε|ανήκετε|απασχολείτε|ταξιδεύετε)(?![\p{L}])/u.test(s))
-        expect(offenders, `formal plural inside the onboarding map: ${offenders.join(" | ")}`).toEqual([])
+        const offenders = leaves.filter((s) =>
+            /(?<![\p{L}])(σας|εσάς|εσείς|έχετε|είστε|βασίζεστε|ανήκετε|απασχολείτε|ταξιδεύετε|συνδεθήκατε|συνδεθείτε|δείτε|πείτε)(?![\p{L}])/iu.test(s)
+        )
+        expect(offenders, `formal plural inside the onboarding stage: ${offenders.join(" | ")}`).toEqual([])
+        expect(stage.advisor.connected).toBe("Έγινε η σύνδεση")
+        expect(stage.advisor.inviteSentBody).toBe("Θα συνδεθείς αυτόματα μόλις ο σύμβουλός σου δεχτεί την πρόσκληση.")
+        expect(stage.summary.unsureCount).toBe("{n} σημεία μένουν ανοιχτά — θα τα δούμε μαζί.")
+        expect(stage.q.hurt_most.why).toBe("Αυτό ορίζει από πού ξεκινά η εικόνα σου — δεν υπάρχει σωστή απάντηση.")
+        expect(stage.q.hurt_most.hint).toMatch(/^Διάλεξε ένα — ή δύο/)
+        for (const lang of ["el", "en"] as const) {
+            const t = getTranslations(lang).onboarding.protectionProfile
+            for (const key of ["title", "nothingYet", "readNoChange", "notOnMap", "beforeLabel", "afterLabel", "cta"] as const) expect(t.summary.afterUpload[key], `${lang} summary.afterUpload.${key}`).toBeTruthy()
+            expect(t.summary.unsureCountOne).toBeTruthy()
+            expect(t.upload.limitsNeedFullAnalysis).toBeTruthy()
+            for (const key of ["expiringSoon", "lapsedOnly"] as const) expect(t.map[key], `${lang} map.${key}`).toBeTruthy()
+            // A queued reading is never «ready» on the map either.
+            expect(t.summary.afterUpload.nothingYet).not.toMatch(/έτοιμ|ready/i)
+        }
     })
 })

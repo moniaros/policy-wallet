@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { Map } from "lucide-react"
 import { CardHead } from "@/components/dashboard/home/CardHead"
-import { mapRowCounts, mapRowsFrom, type MapRow } from "@/lib/onboarding/protection-profile/map-rows"
+import { mapRowCounts, mapRowsFrom, type MapRow, type MovedRow } from "@/lib/onboarding/protection-profile/map-rows"
 import type { AttentionAreaView } from "@/lib/protection/attention-areas"
 import { protectionDomainIcon } from "@/lib/services/protection-profile/domain-icons"
 import type { ProtectionPriority } from "@/lib/services/protection-profile/derive-priorities"
@@ -35,13 +35,33 @@ export function domainLabelFor(labels: ProtectionMapLabels, id: string): string 
  * one the row can only say that no policy has been seen. A finding speaks
  * with its own title.
  */
-function alignmentText(row: MapRow, labels: ProtectionMapRowLabels, language: "el" | "en"): string {
-    if (row.alignment === "gap") return row.finding ? row.finding[language] || row.finding.en : labels.alignment.gap
-    if (row.alignment === "appears_covered") {
-        if (!row.heldLine) return labels.alignment.not_yet_checked
-        return row.limitsUnread ? `${labels.alignment.appears_covered} — ${labels.limitsUnread}` : labels.alignment.appears_covered
-    }
-    return labels.alignment[row.alignment]
+export function alignmentText(row: MapRow, labels: ProtectionMapRowLabels, language: "el" | "en"): string {
+    let word: string
+    if (row.alignment === "gap") word = row.finding ? row.finding[language] || row.finding.en : labels.alignment.gap
+    else if (row.alignment === "appears_covered" && !row.heldLine) return labels.alignment.not_yet_checked
+    else word = labels.alignment[row.alignment]
+    // The caveats ride on the composition's fields, never on the sentence:
+    // limits not read (summary-only), and a line that ends within the month.
+    const caveats = [
+        row.alignment === "appears_covered" && row.limitsUnread ? labels.limitsUnread : null,
+        row.heldLine && row.expiringSoon ? labels.expiringSoon : null,
+    ].filter((c): c is string => c !== null)
+    return caveats.length > 0 ? `${word} — ${caveats.join(", ")}` : word
+}
+
+/** The lapsed caveat — the only policy seen for the area has ended; nothing is held. */
+export function lapsedText(row: MapRow, labels: ProtectionMapRowLabels): string | null {
+    return !row.heldLine && row.lapsedOnly ? labels.lapsedOnly : null
+}
+
+/**
+ * What the first upload moved. `read` is true only when the reading
+ * COMPLETED; a queued one has changed nothing yet, and the line says so —
+ * never «έτοιμη».
+ */
+export interface AfterUploadView {
+    read: boolean
+    moved: MovedRow[]
 }
 
 function unknownText(row: MapRow, labels: ProtectionMapRowLabels): string | null {
@@ -68,6 +88,7 @@ export function ProtectionMapCard({
     confidence,
     unsureCount,
     countedTotal,
+    afterUpload,
     headingId = "protection-map-heading",
     actions,
     className,
@@ -81,17 +102,21 @@ export function ProtectionMapCard({
     confidence: string | null
     unsureCount: number
     countedTotal: number
+    /** Present on the second visit — the map re-read after the first upload. */
+    afterUpload?: AfterUploadView | null
     headingId?: string
     actions?: ReactNode
     className?: string
 }) {
     const rows = mapRowsFrom(areas, priorities)
     const counts = mapRowCounts(rows)
-    const stated = priorities.filter((p) => p.importance !== "watch")
     const named = priorities.filter((p) => p.importance === "high" || p.importance === "medium")
-    const lead =
-        named.length === 0 ? labels.leadNone : named.length === 1 ? labels.leadOne : labels.lead.replace("{n}", String(Math.min(named.length, 3)))
+    // The headline counts what it says — the named priorities, uncapped — and
+    // the head's «{n} σημεία» counts the rows underneath it, so the two
+    // numbers on the page can never disagree with the list between them.
+    const lead = named.length === 0 ? labels.leadNone : named.length === 1 ? labels.leadOne : labels.lead.replace("{n}", String(named.length))
     const confidenceLine = (confidence && (labels.confidence as Record<string, string>)[confidence]) || labels.confidence.none
+    const unsureLine = unsureCount === 1 ? labels.unsureCountOne : labels.unsureCount.replace("{n}", String(unsureCount)).replace("{m}", String(countedTotal))
 
     return (
         <section className={cn("pw-card pw-pad", className)} aria-labelledby={headingId} aria-live="polite">
@@ -100,14 +125,36 @@ export function ProtectionMapCard({
                 title={labels.title}
                 id={headingId}
                 meta={
-                    stated.length > 0 ? (
-                        <span data-count="needs.priorityCount" className="tabular-nums">
-                            {labels.countMeta.replace("{n}", String(stated.length))}
+                    rows.length > 0 ? (
+                        <span data-count="attention.areaCount" className="tabular-nums">
+                            {labels.countMeta.replace("{n}", String(counts.areaCount))}
                         </span>
                     ) : undefined
                 }
             />
             <p className="mt-3 text-body leading-relaxed text-foreground">{lead}</p>
+
+            {afterUpload ? (
+                <div className="pw-subcard mt-4 p-3.5" data-after-upload={afterUpload.read ? "read" : "queued"}>
+                    <p className="text-caption font-semibold text-muted-foreground">{labels.afterUpload.title}</p>
+                    {afterUpload.moved.length > 0 ? (
+                        <ul className="mt-2 space-y-1.5">
+                            {afterUpload.moved.map((m) => (
+                                <li key={m.area} className="text-caption leading-snug text-foreground [overflow-wrap:anywhere]" data-moved={m.area}>
+                                    <span className="font-semibold">{domainLabelFor(labels, m.priorityId)}: </span>
+                                    <span className="sr-only">{labels.afterUpload.beforeLabel}: </span>
+                                    <span className="text-muted-foreground">{m.before ? alignmentText(m.before, mapLabels, language) : labels.afterUpload.notOnMap}</span>
+                                    <span aria-hidden="true"> → </span>
+                                    <span className="sr-only">{labels.afterUpload.afterLabel}: </span>
+                                    <span>{alignmentText(m.after, mapLabels, language)}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="mt-1 text-caption leading-relaxed text-foreground">{afterUpload.read ? labels.afterUpload.readNoChange : labels.afterUpload.nothingYet}</p>
+                    )}
+                </div>
+            ) : null}
 
             {rows.length > 0 ? (
                 <>
@@ -117,7 +164,13 @@ export function ProtectionMapCard({
                             const why = row.why ? row.why[language] || row.why.en : null
                             const unknown = unknownText(row, mapLabels)
                             const next = mapLabels.next[row.nextStep]
-                            const coaching = row.density !== "minimal"
+                            // Density decides how much coaching is OPEN, never
+                            // whether it exists: «on my own» folds the why
+                            // behind a disclosure exactly as «just what
+                            // matters» does, and the next step — the one
+                            // line that asks something of the person — is
+                            // always in view.
+                            const whyInline = row.density === "expanded"
                             return (
                                 <li key={row.area} className="pw-subcard flex items-start gap-3 p-3" data-alignment={row.alignment}>
                                     <span className="pw-card-chip" aria-hidden="true">
@@ -131,7 +184,12 @@ export function ProtectionMapCard({
                                             </span>
                                         </div>
                                         <p className="mt-0.5 text-caption leading-snug text-foreground [overflow-wrap:anywhere]">{alignmentText(row, mapLabels, language)}</p>
-                                        {coaching && why && row.density === "expanded" ? (
+                                        {lapsedText(row, mapLabels) ? (
+                                            <p className="mt-0.5 text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]" data-caveat="lapsed">
+                                                {lapsedText(row, mapLabels)}
+                                            </p>
+                                        ) : null}
+                                        {whyInline && why ? (
                                             <p className="mt-1 text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]">
                                                 <span className="sr-only">{mapLabels.whyLabel}: </span>
                                                 {why}
@@ -144,19 +202,16 @@ export function ProtectionMapCard({
                                             </p>
                                         ) : null}
                                         <p className="mt-1 text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]">{mapLabels.confidence[row.confidence]}</p>
-                                        {coaching && row.density === "expanded" ? (
-                                            <p className="mt-1 text-caption leading-snug text-foreground/80 [overflow-wrap:anywhere]">
-                                                <span className="sr-only">{mapLabels.nextLabel}: </span>
-                                                {next}
-                                            </p>
-                                        ) : null}
-                                        {coaching && row.density === "collapsed" && (why || next) ? (
+                                        {!whyInline && why ? (
                                             <details className="mt-1 text-caption text-muted-foreground">
                                                 <summary className="cursor-pointer select-none font-medium text-foreground/80">{mapLabels.whyLabel}</summary>
-                                                {why ? <p className="mt-1 leading-snug [overflow-wrap:anywhere]">{why}</p> : null}
-                                                <p className="mt-1 leading-snug text-foreground/80 [overflow-wrap:anywhere]">{next}</p>
+                                                <p className="mt-1 leading-snug [overflow-wrap:anywhere]">{why}</p>
                                             </details>
                                         ) : null}
+                                        <p className="mt-1 text-caption leading-snug text-foreground/80 [overflow-wrap:anywhere]" data-next-step={row.nextStep}>
+                                            <span className="sr-only">{mapLabels.nextLabel}: </span>
+                                            {next}
+                                        </p>
                                     </div>
                                 </li>
                             )
@@ -203,7 +258,7 @@ export function ProtectionMapCard({
                 {unsureCount > 0 ? (
                     <p className="text-caption text-muted-foreground sm:text-right">
                         <span data-count="needs.unsureCount" className="tabular-nums">
-                            {labels.unsureCount.replace("{n}", String(unsureCount)).replace("{m}", String(countedTotal))}
+                            {unsureLine}
                         </span>
                     </p>
                 ) : null}

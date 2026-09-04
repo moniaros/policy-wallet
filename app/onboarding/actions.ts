@@ -318,8 +318,9 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
         const isAgent = Boolean(initiator?.roles?.includes("agent"))
         if (!isAgent) {
             const { resolveUserEntitlements } = await import("@/lib/subscription-entitlements")
+            const { canRunDeepAnalysis } = await import("@/lib/monetization/feature-gates")
             const entitlements = await resolveUserEntitlements(dbUser.id)
-            if (entitlements.tier !== "pro") {
+            if (!canRunDeepAnalysis(entitlements.tier)) {
                 const basic = await orchestrator.extractBasicSummary(policyId, dbUser.id)
                 return {
                     success: basic.status === "completed",

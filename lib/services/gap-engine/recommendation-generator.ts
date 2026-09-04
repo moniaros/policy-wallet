@@ -869,15 +869,20 @@ export async function actionRecommendation(
 
 /**
  * Get active recommendations for a user, sorted by priority.
+ *
+ * `stated` is what the customer said matters — the tie-break for the order,
+ * nothing more — as the protection map's row ids, derived LIVE by the caller
+ * (`statedPriorityIds` in ./index.ts, from the facts and statements it already
+ * loads). This function never reads `protection_profiles.priorityAreas`: that
+ * column is the analytics snapshot taken at completion, frozen at that
+ * moment, and it was ordering recommendations against a map the customer's
+ * later answers had already redrawn.
  */
 export async function getActiveRecommendations(
-    userId: string
+    userId: string,
+    stated: readonly string[] | null = null
 ): Promise<RecommendationOutput[]> {
-    // What the customer said matters — a tie-break for the order, nothing more.
-    const stated = await db.protectionProfile.findUnique({ where: { userId }, select: { completedAt: true, priorityAreas: true } })
-    const statedIds = stated?.completedAt && Array.isArray(stated.priorityAreas)
-        ? (stated.priorityAreas as unknown[]).filter((id): id is string => typeof id === "string")
-        : null
+    const statedIds = stated
     const recs = await db.recommendationInstance.findMany({
         where: {
             userId,

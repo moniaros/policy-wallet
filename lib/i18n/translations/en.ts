@@ -1675,10 +1675,15 @@ export const en: TranslationKeys = {
                 absence_not_evidence: 'Not having seen a policy does not mean there is none.',
                 limits_read: 'What your policy does not state, we do not know.',
                 unknown_list: 'We do not know yet: {list}.',
+                // Inline after the alignment word (never inside a disclosure).
+                expiring_soon: 'ends soon',
+                // Replaces «We have not yet seen a policy» when the only policy seen has lapsed.
+                lapsed_only: 'The policy we had seen for this has ended — we do not know whether it was renewed.',
             },
             confidence: {
                 unknown: 'We do not have enough to go on',
                 inferred: 'We inferred it from what you told us',
+                third_party_reported: 'Based on what your advisor told us',
                 user_reported: 'Based on what you told us',
                 policy_verified: 'Confirmed by a policy of yours',
                 externally_verified: 'Confirmed by an external source',
@@ -1708,10 +1713,19 @@ export const en: TranslationKeys = {
                 lead: 'What you told us and the policies we have seen show, per area of your life.',
                 open: 'Open: {area}',
                 dormantHint: 'Areas you have not told us anything about yet.',
-                areaCount: '{n} areas',
+                // One sentence, counting the rows the card renders (folded dormant rows excluded).
+                areaCount: '{n} areas under review',
+                areaCountOne: '1 area under review',
+                areaCountNone: 'No area under review yet',
                 unknownCount: '{n} not settled yet',
+                unknownCountOne: '1 not settled yet',
                 coveredCount: '{n} appear to be covered',
-                activatedMeta: '{n} under review',
+                coveredCountOne: '1 appears to be covered',
+            },
+            // The automatic checks below the areas — framed as monitoring, never a verdict.
+            monitoring: {
+                title: 'Monitoring',
+                lead: 'Automatic checks on your policies and your profile — monitoring, not a verdict on your protection. What applies per area is shown above.',
             },
             importance: {
                 high: 'Important',
@@ -1750,7 +1764,9 @@ export const en: TranslationKeys = {
                 policiesLead: 'Only the policies we have seen — and only as much of them as we have read.',
                 limitsRead: 'the limits were read',
                 limitsUnread: 'summary only — the limits have not been read yet',
-                upgradeHint: 'Reading the limits is part of the full analysis.',
+                // A fact about this account's tier, not a pitch; the CTA below it is a text link.
+                upgradeHint: 'The limits of this policy have not been read — reading limits is part of the full analysis.',
+                fromOtherArea: 'from another area: {area}',
                 upgradeCta: 'Unlock the full analysis',
                 openPolicy: 'View policy',
                 findingsTitle: 'Findings from the rules',
@@ -1777,7 +1793,7 @@ export const en: TranslationKeys = {
             factors: {
                 age: {
                     prompt: 'Which year were you born?',
-                    why: 'Age changes the cost and availability of some cover.',
+                    why: 'Your age tells us how many earning years are left to protect and whether retirement is close.',
                     noun: 'your age',
                 },
                 maritalStatus: {
@@ -1910,7 +1926,7 @@ export const en: TranslationKeys = {
                 },
                 valuables: {
                     prompt: 'Do you keep high-value items at home? Roughly what are they worth in total — 0 if none.',
-                    why: 'Ordinary home limits often fall short for jewellery, art or collections.',
+                    why: 'The amount lets us check whether these items fit within your home policy\'s limits or need declaring separately.',
                     noun: 'high-value possessions',
                 },
                 cyberExposure: {
@@ -1925,7 +1941,7 @@ export const en: TranslationKeys = {
                 },
                 retirementPlanning: {
                     prompt: 'Do you have a retirement plan of your own, beyond the state pension?',
-                    why: 'The state pension replaces only part of an income.',
+                    why: 'This tells us whether the difference between the state pension and your current income is something to look at.',
                     noun: 'your retirement planning',
                 },
                 health: {
@@ -1966,7 +1982,7 @@ export const en: TranslationKeys = {
                 currencyLabel: 'Amount in euros',
                 currencyHint: 'Roughly — a round figure is enough.',
                 multiHint: 'Select all that apply.',
-                prefilled: 'Pre-filled from what you told us — change it if needed.',
+                prefilled: 'Pre-filled — confirm or correct.',
                 invalid: 'Check the answer and try again.',
                 failed: 'Something went wrong. Please try again.',
                 saving: 'Saving…',
@@ -2328,8 +2344,11 @@ export const en: TranslationKeys = {
             prioritiesConfirmChip: 'Needs confirming',
             prioritiesDeclaredChip: 'As you stated it',
             prioritiesNoPolicies: 'From what you told us. We have not yet seen what your policies cover.',
-            prioritiesUploadCta: 'See whether you are properly protected',
-            prioritiesWithPolicies: 'Not having seen a policy for something does not mean there is none.',
+            prioritiesUploadCta: 'See what your policies say',
+            prioritiesWithPolicies: 'From what you told us and the policies we have seen.',
+            prioritiesAbsenceCaveat: 'Not having seen a policy for something does not mean there is none.',
+            prioritiesExpiringSoon: 'ends soon',
+            prioritiesLapsedOnly: 'Your policy for this has ended.',
             prioritiesAlignmentCta: 'See how they line up with your cover',
             prioritiesAreaCountLabel: 'Areas',
             prioritiesUnknownCountLabel: 'Not settled yet',
@@ -3943,7 +3962,8 @@ export const en: TranslationKeys = {
                 },
                 hurt_most: {
                     prompt: 'If something unexpected happened, what would affect your life most?',
-                    why: "Pick one — or two, if you can't tell them apart. There is no right answer.",
+                    why: 'This sets where your picture starts — there is no right answer.',
+                    hint: "Pick one — or two, if you can't tell them apart.",
                     options: {
                         health: 'My health',
                         family: 'My family',
@@ -4064,10 +4084,20 @@ export const en: TranslationKeys = {
                     no_idea: "You have no picture — that's why we're here. We start from zero, without terms you don't understand.",
                     none: "You haven't told us yet how sure you feel.",
                 },
-                unsureCount: 'You left {n} of {m} points open',
+                unsureCount: "{n} points are still open — we'll go through them together.",
+                unsureCountOne: "1 point is still open — we'll go through it together.",
                 disclaimer: "This does not mean you are missing a specific cover. It means there are points worth checking.",
                 cta: "Let's see what I already have",
                 later: "I'll do it later",
+                afterUpload: {
+                    title: 'What changed in your picture',
+                    nothingYet: "The policy is saved. Your picture will update once we've read it.",
+                    readNoChange: "We've read it. Nothing changed in the areas you see here.",
+                    notOnMap: 'was not in the picture',
+                    beforeLabel: 'Before',
+                    afterLabel: 'Now',
+                    cta: 'Continue',
+                },
             },
             map: {
                 alignment: {
@@ -4082,6 +4112,7 @@ export const en: TranslationKeys = {
                 confidence: {
                     unknown: "We don't have enough to go on.",
                     inferred: 'We inferred it from what you told us.',
+                    third_party_reported: "It's based on what your advisor reported.",
                     user_reported: "It's based on what you told us.",
                     policy_verified: "It's confirmed by a policy of yours.",
                     externally_verified: "It's confirmed by an outside source.",
@@ -4120,6 +4151,8 @@ export const en: TranslationKeys = {
                     buildingManagerRole: 'whether you manage a block of flats',
                 },
                 absenceCaveat: "Not having seen a policy doesn't mean there isn't one.",
+                expiringSoon: 'ends soon',
+                lapsedOnly: 'The policy we saw for this has ended.',
                 areaCount: '{n} areas',
                 unknownCount: '{n} not settled yet',
                 coveredCount: '{n} appear to be covered',
@@ -4132,6 +4165,7 @@ export const en: TranslationKeys = {
                 body: "We'll compare what you consider important with what your policy actually provides.",
                 startingFrom: 'Starting from',
                 hint: 'Whichever you have handy — car, home, health. One is enough to start.',
+                limitsNeedFullAnalysis: "We'll see which covers exist; reading the limits is part of the full analysis.",
                 choose: 'Choose a PDF file',
                 chosen: 'Selected file',
                 cta: 'Check my first policy',
@@ -4156,7 +4190,7 @@ export const en: TranslationKeys = {
                 haveCode: 'Have an invite code?',
                 codePlaceholder: 'Invite code',
                 connect: 'Connect',
-                connected: 'Connected!',
+                connected: 'Connected',
                 advisorLabel: 'Advisor',
                 inviteSent: 'Invitation sent',
                 inviteSentBody: "You'll be connected automatically once your advisor accepts the invitation.",

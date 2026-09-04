@@ -47,6 +47,32 @@ describe("QuestionScreen", () => {
         expect(onNone).toHaveBeenCalled()
     })
 
+    it("a hint about HOW to answer sits under the options, apart from the why", () => {
+        const { container } = render(
+            <QuestionScreen {...base} kind="multi" hint="Διάλεξε ένα — ή δύο, αν δεν ξεχωρίζεις." selected={[]} onSelect={vi.fn()} onToggle={vi.fn()} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: true }} />
+        )
+        const hint = screen.getByText("Διάλεξε ένα — ή δύο, αν δεν ξεχωρίζεις.")
+        const list = container.querySelector('ul[role="group"]')!
+        // After the options, before the CTA.
+        expect(list.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+        const why = screen.getByText(base.why, { exact: false })
+        expect(why.textContent).not.toContain("Διάλεξε")
+    })
+
+    it("an unsure control without a discovery panel IS the answer: one tap proceeds, nothing repeats the why", () => {
+        const onUnsure = vi.fn()
+        render(
+            <QuestionScreen {...base} kind="single" selected={undefined} onSelect={vi.fn()} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: false }}
+                unsure={{ label: "Θα το αποφασίσω αργότερα", proceedLabel: "Να δω την εικόνα μου", onUnsure }} />
+        )
+        const later = screen.getByRole("button", { name: "Θα το αποφασίσω αργότερα" })
+        expect(later).not.toHaveAttribute("aria-expanded")
+        fireEvent.click(later)
+        expect(onUnsure).toHaveBeenCalledTimes(1)
+        expect(screen.queryByRole("button", { name: "Να δω την εικόνα μου" })).toBeNull()
+        expect(screen.getAllByText(base.why, { exact: false })).toHaveLength(1)
+    })
+
     it("«δεν είμαι σίγουρος/η» reveals an inline panel and never a new screen", () => {
         const onUnsure = vi.fn()
         render(

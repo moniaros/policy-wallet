@@ -22,11 +22,17 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
     labels: UploadLabels
     startingFrom: string[]
     hasAiConsent: boolean
-    onUploaded: (policyId: string) => void
+    /**
+     * False when the server-resolved plan does not include the deep reading:
+     * the hint then says presence is what this upload establishes, not the
+     * limits. Decided by the server state, never guessed on the client.
+     */
+    deepAnalysisAvailable: boolean
+    onUploaded: (policyId: string, outcome: "completed" | "queued") => void
     onLater: () => void
     onPhase?: (phase: UploadPhase, errorCode?: string) => void
     busy: boolean
-}>(function UploadScreen({ labels, startingFrom, hasAiConsent, onUploaded, onLater, onPhase, busy }, headingRef) {
+}>(function UploadScreen({ labels, startingFrom, hasAiConsent, deepAnalysisAvailable, onUploaded, onLater, onPhase, busy }, headingRef) {
     const [file, setFile] = useState<File | null>(null)
     const [phase, setPhase] = useState<UploadPhase>("idle")
     const [aiConsent, setAiConsent] = useState(hasAiConsent)
@@ -119,6 +125,11 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
                 </p>
             ) : null}
             <p className="mt-3 text-caption leading-relaxed text-muted-foreground">{labels.hint}</p>
+            {!deepAnalysisAvailable ? (
+                <p className="mt-1 text-caption leading-relaxed text-muted-foreground" data-tier-hint="limits_need_full_analysis">
+                    {labels.limitsNeedFullAnalysis}
+                </p>
+            ) : null}
 
             <div className="mt-5">
                 {done ? null : (
@@ -148,7 +159,7 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
 
             <div className="sticky bottom-0 -mx-4 mt-6 flex flex-col gap-2 border-t border-border bg-background/95 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+var(--pw-bottom-obstruction,0px))] pt-3 backdrop-blur sm:static sm:mx-0 sm:flex-row sm:items-center sm:border-0 sm:bg-transparent sm:p-0 sm:pt-6">
                 {done ? (
-                    <button type="button" onClick={() => policyId && onUploaded(policyId)} disabled={busy} className="pw-primary-button w-full sm:w-auto">
+                    <button type="button" onClick={() => policyId && onUploaded(policyId, phase === "completed" ? "completed" : "queued")} disabled={busy} className="pw-primary-button w-full sm:w-auto">
                         {labels.seePicture}
                     </button>
                 ) : (

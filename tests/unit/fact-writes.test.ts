@@ -73,14 +73,53 @@ describe("the precedence matrix", () => {
         }
     )
 
-    it("equal precision → the newer write wins, whatever the stored timestamp says", () => {
-        const existing = stored(
-            { childrenCount: 2 },
-            { childrenCount: prov("questionnaire", "exact", "2099-01-01T00:00:00.000Z") }
-        )
+    it("equal precision → the newer INSTANT wins: a write dated after the stored stamp replaces it", () => {
+        const existing = stored({ childrenCount: 2 }, { childrenCount: prov("questionnaire", "exact", EARLIER) })
         const out = applyFactWrites({ existing, writes: [write("childrenCount", 3)], now: NOW })
         expect(out.data).toEqual({ childrenCount: 3 })
-        expect(out.factProvenance.childrenCount.source).toBe("assessment")
+        expect(out.factProvenance.childrenCount).toEqual({ source: "assessment", precision: "exact", at: NOW.toISOString() })
+        expect(out.skipped).toEqual([])
+    })
+
+    it("equal precision → a write dated BEFORE the stored stamp is stale and does not apply — a replayed delta cannot overwrite a fresher answer", () => {
+        const fresh = "2026-09-04T09:00:00.000Z"
+        const existing = stored({ childrenCount: 3 }, { childrenCount: prov("assessment", "exact", fresh) })
+        // The queued life-event delta was made an hour earlier, replayed now.
+        const out = applyFactWrites({
+            existing,
+            writes: [write("childrenCount", 2, { source: "life_event", at: "2026-09-04T08:00:00.000Z" })],
+            now: NOW,
+        })
+        expect(out.data).toEqual({})
+        expect(out.skipped).toEqual([{ column: "childrenCount", reason: "stale_write" }])
+        expect(out.factProvenance.childrenCount).toEqual(prov("assessment", "exact", fresh))
+        // The same delta, made after the answer, applies and is stamped with ITS instant, not the replay's.
+        const later = applyFactWrites({
+            existing,
+            writes: [write("childrenCount", 2, { source: "life_event", at: new Date("2026-09-04T09:30:00.000Z") })],
+            now: NOW,
+        })
+        expect(later.data).toEqual({ childrenCount: 2 })
+        expect(later.factProvenance.childrenCount.at).toBe("2026-09-04T09:30:00.000Z")
+    })
+
+    it("the instant compares only at EQUAL precision: an exact figure dated earlier still replaces a coarse floor stamped later", () => {
+        const existing = stored({ dependentsCount: 1 }, { dependentsCount: prov("onboarding", "coarse", "2026-09-04T09:00:00.000Z") })
+        const out = applyFactWrites({
+            existing,
+            writes: [write("dependentsCount", 3, { at: "2026-09-04T08:00:00.000Z" })],
+            now: NOW,
+        })
+        expect(out.data).toEqual({ dependentsCount: 3 })
+        expect(out.skipped).toEqual([])
+    })
+
+    it("a stored entry with no stamp (pre-provenance) never blocks on the instant, and an unparseable `at` falls back to now", () => {
+        const legacy = stored({ childrenCount: 2 }, {}, ["childrenCount"])
+        const out = applyFactWrites({ existing: legacy, writes: [write("childrenCount", 3, { at: "2020-01-01T00:00:00.000Z" })], now: NOW })
+        expect(out.data).toEqual({ childrenCount: 3 })
+        const bad = applyFactWrites({ existing: legacy, writes: [write("childrenCount", 4, { at: "not a date" })], now: NOW })
+        expect(bad.factProvenance.childrenCount.at).toBe(NOW.toISOString())
     })
 
     it("`policy` never replaces a declared value — coarse or exact", () => {

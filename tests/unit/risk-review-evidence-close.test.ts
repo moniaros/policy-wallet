@@ -2,11 +2,13 @@
  * `closeReviewsByPolicyEvidence` — the service half of "evidence closes a
  * review" (docs/planning/PERSONAL_RISK_PROFILE.md §I), against a fake client.
  *
- * The pure matrix (same sphere closes, another stays, not-held closes nothing,
- * closed rows untouched) lives in tests/unit/risk-review-policy.test.ts. This
- * file pins what the SERVICE adds: the row it writes, the owner scoping, the
- * `life_event` sphere resolved through the causing business event, idempotence,
- * and that it never throws.
+ * The pure matrix (same area closes, another stays, not-held and summary-only
+ * close nothing, closed rows untouched) lives in
+ * tests/unit/risk-review-policy.test.ts. This file pins what the SERVICE adds:
+ * the row it writes, the owner scoping, the `analysed` reading taken from the
+ * stored `acordData` through the one coverage-model helper, the `life_event`
+ * area resolved through the causing business event, idempotence, and that it
+ * never throws.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -25,13 +27,16 @@ import { REVIEW_OUTCOME_POLICY_EVIDENCE } from "@/lib/services/risk-review/evide
 const NEXT_YEAR = new Date(Date.now() + 200 * 24 * 3600_000)
 const LAST_YEAR = new Date(Date.now() - 200 * 24 * 3600_000)
 
-function policyRow(over: Partial<{ lineOfBusiness: string; endDate: Date; status: string }> = {}) {
+/** A deep run's envelope: coverages present, so the limits were read. */
+const ANALYSED = { coverages: [{ name: "Death", limit: 100_000 }] }
+
+function policyRow(over: Partial<{ lineOfBusiness: string; endDate: Date; status: string; acordData: unknown }> = {}) {
     return {
         ownerUserId: "owner-1",
         lineOfBusiness: "life",
         status: "active",
         endDate: NEXT_YEAR,
-        acordData: null,
+        acordData: ANALYSED,
         policyNumber: "LIFE-1",
         insurerName: "Ethniki",
         ...over,
@@ -46,7 +51,7 @@ beforeEach(() => {
 })
 
 describe("closeReviewsByPolicyEvidence", () => {
-    it("closes the open review for the policy's sphere with the evidence outcome, scoped to the owner", async () => {
+    it("closes the open review for the policy's area with the evidence outcome, scoped to the owner", async () => {
         dbMock.policy.findUnique.mockResolvedValue(policyRow())
         dbMock.riskReview.findMany.mockResolvedValue([
             { id: "rv-birth", status: "open", trigger: "child_born", causedByEventId: "evt-1" },
@@ -67,7 +72,7 @@ describe("closeReviewsByPolicyEvidence", () => {
         expect(call[0].data.completedAt).toBeInstanceOf(Date)
     })
 
-    it("leaves a review for another sphere open, and never touches the whole-picture reviews", async () => {
+    it("leaves a review for another area open, and never touches the whole-picture reviews", async () => {
         dbMock.policy.findUnique.mockResolvedValue(policyRow({ lineOfBusiness: "motor" }))
         dbMock.riskReview.findMany.mockResolvedValue([
             { id: "rv-birth", status: "open", trigger: "child_born", causedByEventId: null },
@@ -93,7 +98,32 @@ describe("closeReviewsByPolicyEvidence", () => {
         expect(dbMock.riskReview.updateMany).not.toHaveBeenCalled()
     })
 
-    it("resolves the generic life_event sphere through the causing event's definitionId", async () => {
+    it("a summary-only policy leaves the review open and writes nothing — the basic-summary path never closes", async () => {
+        for (const acordData of [null, {}, { coverages: [] }, { coverageSummary: "Ασφάλιση ζωής" }]) {
+            dbMock.riskReview.updateMany.mockClear()
+            dbMock.policy.findUnique.mockResolvedValue(policyRow({ acordData }))
+            dbMock.riskReview.findMany.mockResolvedValue([
+                { id: "rv-birth", status: "open", trigger: "child_born", causedByEventId: null },
+            ])
+
+            const outcome = await closeReviewsByPolicyEvidence({ policyId: "pol-1" })
+
+            expect(outcome, JSON.stringify(acordData)).toEqual({ closed: 0, reason: "summary_only" })
+            expect(dbMock.riskReview.updateMany).not.toHaveBeenCalled()
+        }
+    })
+
+    it("a sibling area of the same sphere stays open: an analysed pension does not close the mortgage review", async () => {
+        dbMock.policy.findUnique.mockResolvedValue(policyRow({ lineOfBusiness: "pension" }))
+        dbMock.riskReview.findMany.mockResolvedValue([
+            { id: "rv-mortgage", status: "open", trigger: "mortgage_added", causedByEventId: null },
+        ])
+
+        expect((await closeReviewsByPolicyEvidence({ policyId: "pol-1" })).closed).toBe(0)
+        expect(dbMock.riskReview.updateMany).not.toHaveBeenCalled()
+    })
+
+    it("resolves the generic life_event area through the causing event's definitionId", async () => {
         dbMock.policy.findUnique.mockResolvedValue(policyRow({ lineOfBusiness: "pet" }))
         dbMock.riskReview.findMany.mockResolvedValue([
             { id: "rv-pet", status: "open", trigger: "life_event", causedByEventId: "evt-pet" },
@@ -125,13 +155,13 @@ describe("closeReviewsByPolicyEvidence", () => {
         expect(dbMock.riskReview.updateMany).toHaveBeenCalledTimes(1)
     })
 
-    it("a line that answers no sphere (the residual `other`) closes nothing", async () => {
+    it("a line that answers no area (the residual `other`) closes nothing", async () => {
         dbMock.policy.findUnique.mockResolvedValue(policyRow({ lineOfBusiness: "other" }))
         dbMock.riskReview.findMany.mockResolvedValue([
             { id: "rv-pet", status: "open", trigger: "life_event", causedByEventId: "evt-pet" },
         ])
 
-        expect(await closeReviewsByPolicyEvidence({ policyId: "pol-1" })).toEqual({ closed: 0, reason: "no_domain" })
+        expect(await closeReviewsByPolicyEvidence({ policyId: "pol-1" })).toEqual({ closed: 0, reason: "no_area" })
         expect(dbMock.riskReview.findMany).not.toHaveBeenCalled()
     })
 

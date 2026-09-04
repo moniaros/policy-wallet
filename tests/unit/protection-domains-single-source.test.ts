@@ -47,7 +47,9 @@ const areasHolding = (pick: (a: AttentionArea) => readonly string[], value: stri
     allAreas.filter((a) => pick(a).includes(value)).map((a) => a.id)
 
 const catalogueIds = RISK_CATALOG.map((r) => r.id)
-const catalogueLines = [...new Set(RISK_CATALOG.flatMap((r) => [r.lineOfBusiness, ...(r.alsoCoveredBy ?? [])]))]
+const catalogueLines = [
+    ...new Set(RISK_CATALOG.flatMap((r) => [r.lineOfBusiness, ...(r.alsoCoveredBy ?? []), ...(r.partiallyCoveredBy ?? []).map((p) => p.line)])),
+]
 
 // ─── 3. The table's own invariants ──────────────────────────────────────────
 
@@ -159,7 +161,7 @@ describe("every line of business belongs to exactly one area", () => {
         }
     })
 
-    it("resolves every line the catalogue can name — primary and alsoCoveredBy", () => {
+    it("resolves every line the catalogue can name — primary, alsoCoveredBy and partiallyCoveredBy", () => {
         expect(catalogueLines.length).toBeGreaterThanOrEqual(15)
         for (const line of catalogueLines) expect(areaForLob(line)?.id, line).toBeDefined()
     })

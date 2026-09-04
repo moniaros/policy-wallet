@@ -62,6 +62,7 @@ import { getPromptOverrides, resolveOperatorGuidance } from "@/lib/services/ai/p
 import { pickCanonicalGapDefinition } from "@/lib/wallet/gap-report"
 import { detectDeterministicSavings } from "./deterministic-savings"
 import { resolveUserEntitlements, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
+import { canRunDeepAnalysis } from "@/lib/monetization/feature-gates"
 import {
     emitAnalysisRunTelemetry,
     emitAnalysisStepTelemetry,
@@ -509,7 +510,7 @@ export class PolicyAnalysisOrchestratorService {
         // Resolve tier for priority queue: pro=2, plus=1, free=0
         const userEntitlements = await resolveUserEntitlements(userId)
 
-        if (!isAgentInitiator && userEntitlements.tier !== "pro") {
+        if (!isAgentInitiator && !canRunDeepAnalysis(userEntitlements.tier)) {
             return db.policyAnalysisRun.create({
                 data: {
                     policyId,

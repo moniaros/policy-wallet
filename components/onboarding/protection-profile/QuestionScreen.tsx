@@ -18,6 +18,8 @@ export interface QuestionScreenProps {
     /** The one-line «Γιατί ρωτάμε». */
     why: string
     whyLabel: string
+    /** An instruction about HOW to answer («Διάλεξε ένα — ή δύο»), under the options — never mixed into the why. */
+    hint?: string
     options: QuestionOption[]
     /** single: the value; multi: the values ([] = «none of these»); or UNSURE. */
     selected: string | string[] | typeof UNSURE | undefined
@@ -26,10 +28,14 @@ export interface QuestionScreenProps {
     /** multi only — the renderer-drawn «Κανένα από αυτά» (an empty array is the answer). */
     noneLabel?: string
     onNone?: () => void
-    /** The «Δεν είμαι σίγουρος/η» control and its inline discovery panel. */
+    /**
+     * The «Δεν είμαι σίγουρος/η» control and its inline discovery panel. With
+     * no `discovery` the control IS the answer: one tap proceeds, and nothing
+     * repeats the why line in a panel (the guidance screen's «later»).
+     */
     unsure?: {
         label: string
-        discovery: string
+        discovery?: string
         proceedLabel: string
         onUnsure: () => void
     }
@@ -55,7 +61,7 @@ export interface QuestionScreenProps {
  * button (single) or a real checkbox (multi). Tap targets 44px throughout.
  */
 export const QuestionScreen = forwardRef<HTMLHeadingElement, QuestionScreenProps>(function QuestionScreen(
-    { kind, kicker, prompt, why, whyLabel, options, selected, onSelect, onToggle, noneLabel, onNone, unsure, subChoice, cta, status, savingLabel, retryLabel, errorText },
+    { kind, kicker, prompt, why, whyLabel, hint, options, selected, onSelect, onToggle, noneLabel, onNone, unsure, subChoice, cta, status, savingLabel, retryLabel, errorText },
     headingRef
 ) {
     const groupId = useId()
@@ -157,21 +163,23 @@ export const QuestionScreen = forwardRef<HTMLHeadingElement, QuestionScreenProps
                 </ul>
             )}
 
+            {hint ? <p className="mt-3 text-caption leading-relaxed text-muted-foreground">{hint}</p> : null}
+
             {unsure ? (
                 <div className="mt-3">
                     <button
                         type="button"
                         disabled={saving}
                         aria-pressed={selected === UNSURE}
-                        aria-expanded={discoveryOpen}
-                        aria-controls={`${groupId}-discovery`}
-                        onClick={() => setDiscoveryOpen((v) => !v)}
+                        aria-expanded={unsure.discovery ? discoveryOpen : undefined}
+                        aria-controls={unsure.discovery ? `${groupId}-discovery` : undefined}
+                        onClick={() => (unsure.discovery ? setDiscoveryOpen((v) => !v) : unsure.onUnsure())}
                         className="inline-flex min-h-11 items-center gap-1.5 text-body-sm font-semibold text-muted-foreground hover:text-foreground"
                     >
                         <HelpCircle className="h-4 w-4" aria-hidden="true" />
                         {unsure.label}
                     </button>
-                    {discoveryOpen ? (
+                    {unsure.discovery && discoveryOpen ? (
                         <div id={`${groupId}-discovery`} className="pw-subcard mt-2 p-3.5">
                             <p className="text-body-sm leading-relaxed text-foreground">{unsure.discovery}</p>
                             <button type="button" disabled={saving} onClick={unsure.onUnsure} className="pw-soft-button mt-3">

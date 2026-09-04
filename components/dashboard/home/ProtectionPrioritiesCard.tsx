@@ -23,9 +23,17 @@ export interface ProtectionPrioritiesLabels {
     coveredCountLabel: string
     /** Appended to «Φαίνεται να καλύπτεται» when the area's limits were never read. */
     limitsUnread: string
+    /** Appended when the line behind the word ends within the month. */
+    expiringSoon: string
+    /** Its own line: nothing held, and the only policy seen for the area has ended. */
+    lapsedOnly: string
+    /** The footer line with no policy seen — where the picture comes from. */
     noPolicies: string
     uploadCta: string
+    /** The footer line with policies seen — where the picture comes from now. */
     withPolicies: string
+    /** «Δεν έχουμε δει ≠ δεν υπάρχει» — renders whatever the policy count. */
+    absenceCaveat: string
     alignmentCta: string
     disclaimer: string
 }
@@ -44,20 +52,33 @@ const TOP_AREAS = 3
  *   - `appears_covered` is spoken only when the area no longer requires
  *     validation — i.e. a held line exists. A view that claims cover with
  *     nothing held is a bug upstream, and the card says «δεν έχουμε δει»
- *     rather than repeating the claim. A summary-only area adds the limits
- *     caveat, because presence is not adequacy.
+ *     rather than repeating the claim.
+ *
+ * The caveats — limits not read, ends within the month — come from the
+ * composition's own fields (`limitsUnread`, `expiringSoon`), which know
+ * which lines ANSWERED the area wherever they are held; never re-derived
+ * here from the area's own lines, and never matched out of a sentence.
  */
-export function alignmentText(area: AttentionAreaView, language: Language, labels: Pick<ProtectionPrioritiesLabels, "limitsUnread">): string {
+export function alignmentText(area: AttentionAreaView, language: Language, labels: Pick<ProtectionPrioritiesLabels, "limitsUnread" | "expiringSoon">): string {
+    let word: string
     if (area.alignment === "gap") {
         const finding = area.protection.gaps.find((g) => g.onHeldPolicy)
-        return finding ? finding.title[language] : alignmentLabel("gap", language)
+        word = finding ? finding.title[language] : alignmentLabel("gap", language)
+    } else if (area.alignment === "appears_covered" && area.requiresValidation) {
+        return alignmentLabel("not_yet_checked", language)
+    } else {
+        word = alignmentLabel(area.alignment, language)
     }
-    if (area.alignment === "appears_covered") {
-        if (area.requiresValidation) return alignmentLabel("not_yet_checked", language)
-        const word = alignmentLabel("appears_covered", language)
-        return area.protection.hasAnalysed ? word : `${word} — ${labels.limitsUnread}`
-    }
-    return alignmentLabel(area.alignment, language)
+    const caveats = [
+        area.alignment === "appears_covered" && area.limitsUnread ? labels.limitsUnread : null,
+        !area.requiresValidation && area.expiringSoon ? labels.expiringSoon : null,
+    ].filter((c): c is string => c !== null)
+    return caveats.length > 0 ? `${word} — ${caveats.join(", ")}` : word
+}
+
+/** The lapsed line — nothing held, and the only policy seen for the area has ended. */
+export function lapsedText(area: AttentionAreaView, labels: Pick<ProtectionPrioritiesLabels, "lapsedOnly">): string | null {
+    return area.requiresValidation && area.lapsedOnly ? labels.lapsedOnly : null
 }
 
 /**
@@ -114,6 +135,11 @@ export function ProtectionPrioritiesCard({
                                 {mapLabels.importance[a.importance]}
                             </span>
                             <p className="text-sm leading-snug text-foreground [overflow-wrap:anywhere]">{alignmentText(a, language, labels)}</p>
+                            {lapsedText(a, labels) ? (
+                                <p className="text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]" data-caveat="lapsed">
+                                    {lapsedText(a, labels)}
+                                </p>
+                            ) : null}
                             <span className="text-caption text-muted-foreground">{confidenceLabel(a.confidence, language)}</span>
                         </li>
                     )
@@ -152,10 +178,17 @@ export function ProtectionPrioritiesCard({
                 </div>
             </dl>
 
-            <p className="mt-3 text-caption text-muted-foreground">{labels.disclaimer}</p>
+            {/* Absence is never evidence — said whether or not a policy has
+                been seen, because the row that says «δεν έχουμε δει» exists
+                in both states. */}
+            <p className="mt-3 text-caption text-muted-foreground">
+                {labels.disclaimer} <span data-caveat="absence">{labels.absenceCaveat}</span>
+            </p>
 
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-muted-foreground">{hasPolicies ? labels.withPolicies : labels.noPolicies}</p>
+                <p className="text-sm text-muted-foreground" data-footer={hasPolicies ? "with_policies" : "no_policies"}>
+                    {hasPolicies ? labels.withPolicies : labels.noPolicies}
+                </p>
                 <ActionLink
                     kind={hasPolicies ? "review_finding" : "check_first_policy"}
                     href={hasPolicies ? "/protection?lens=risk" : "/wallet/add"}

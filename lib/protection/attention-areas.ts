@@ -18,12 +18,26 @@
  *                    essential risk the engine could decide is answered.
  *                    `summary_only` lines add the limits caveat.
  *   review           the engine found an uncovered exposure (`protection_gap`
- *                    or `opportunity`), or the person named the area as a
- *                    concern and nothing is held. A stated priority raises
- *                    attention; it never becomes a gap (§I).
+ *                    or `opportunity`), or a held line answers a risk only in
+ *                    PART (the engine's `partialCover`), or the person named
+ *                    the area as a concern and nothing is held. A stated
+ *                    priority raises attention; it never becomes a gap (§I).
  *   unknown          a deciding fact is still missing (`needs_review`).
  *   not_yet_checked  exposure known, no policy seen — and «δεν έχουμε δει»
- *                    is never rendered as «δεν έχετε».
+ *                    is never rendered as «δεν έχετε». When the only policy
+ *                    seen has lapsed the view says so (`lapsedOnly`) and the
+ *                    unknown line never claims we saw nothing.
+ *
+ * A held line answers a risk by EXACT id — the engine's own `coveredBy` —
+ * never by taxonomy family: the family is how the wallet aggregates for
+ * display, and an income-protection policy filed under `life` answered the
+ * household's death risk until Sept 2026.
+ *
+ * Beside the alignment the view carries the facts a surface renders inline:
+ * `answeredBy` (the held lines, from any area, that produced the word),
+ * `limitsUnread`, `expiringSoon`, `lapsedOnly`, and `refinableFactors` (facts
+ * known only as a floor or a bucket, which the assessment may ask again «to
+ * confirm or correct» — the engine's `known` is untouched by this).
  *
  * Confidence is the weakest link: the lowest evidence level among the facts
  * the area's risks condition on and, when a line decided the alignment, the
@@ -35,7 +49,6 @@
  * Guards: tests/unit/attention-areas.test.ts (source assertion).
  */
 
-import { getBranchFamily } from "@/lib/insurance/taxonomy"
 import { getTranslations, type Language } from "@/lib/i18n"
 import { AREAS, AREA_IDS, AREA_ORDER, type AttentionAreaId } from "@/lib/protection/domains"
 import {
@@ -108,11 +121,31 @@ export interface AttentionAreaView {
     exposure: { risks: AreaRiskExposure[] }
     /** Requires first, then supports, across the area's in-scope risks, deduped. */
     unknownFactors: ContextFactorKey[]
+    /**
+     * Factors the area's risks quantify (requires or supports) that are KNOWN
+     * only as a floor or a bucket — every stamped column `coarse`, evidence
+     * `inferred`. The assessment may ask them again to confirm or correct;
+     * nothing here changes what the engine treats as known.
+     */
+    refinableFactors: ContextFactorKey[]
     protection: AreaCoverage
     alignment: Alignment
     confidence: EvidenceLevel
     /** True until a held line exists for the area or answers one of its risks. */
     requiresValidation: boolean
+    /**
+     * The held lines — from ANY area — that answered one of this area's risks
+     * in full or in part, deduped by policy. A surface lists them under «Τι
+     * λένε τα ασφαλιστήριά σας», labelled as belonging to their own area when
+     * that differs. Empty unless something answered.
+     */
+    answeredBy: CoverageLine[]
+    /** `appears_covered` with no ANALYSED answering line — the limits were not read. */
+    limitsUnread: boolean
+    /** An answering line (or, for `gap`, the line the finding sits on) ends within the month. */
+    expiringSoon: boolean
+    /** Nothing held, and the area holds a line that has expired or cannot be placed in time. */
+    lapsedOnly: boolean
     explanation: AreaExplanation
 }
 
@@ -152,7 +185,15 @@ interface AttentionCopy {
     alignment: Record<Alignment, string>
     headings: { why: string; unknown: string; next: string; dormant: string }
     next: Record<NextStep, string> & { answer_question_one: string }
-    caveats: { limits_unread: string; no_policy_seen: string; absence_not_evidence: string; limits_read: string; unknown_list: string }
+    caveats: {
+        limits_unread: string
+        no_policy_seen: string
+        absence_not_evidence: string
+        limits_read: string
+        unknown_list: string
+        expiring_soon: string
+        lapsed_only: string
+    }
     confidence: Record<EvidenceLevel, string>
     reasons: Record<PriorityReasonId | "dormant", string>
 }
@@ -208,15 +249,27 @@ export function factorEvidence(factor: ContextFactorKey, ctx: LifeContext, prove
     return highestEvidence(stamped.map((p) => factEvidence(p)))
 }
 
-/** The held lines that answer an `already_covered` risk — by id or by family (motorbike ∈ motor). */
-function coveringHeldLines(a: RiskAssessment, held: readonly CoverageLine[]): CoverageLine[] {
-    if (a.status !== "already_covered" || a.coveredBy.length === 0) return []
-    return held.filter((line) =>
-        a.coveredBy.some((lob) => {
-            const key = lob.toLowerCase()
-            return line.lob === key || getBranchFamily(key).includes(line.lob)
-        })
-    )
+/** A risk the engine settled on cover held in PART — `needs_review` with a note, not a missing fact. */
+function answeredInPart(a: RiskAssessment): boolean {
+    return a.status === "needs_review" && a.partialCover !== null
+}
+
+/**
+ * The held lines that answer a risk — the engine's own `coveredBy`, by EXACT
+ * id. For an `already_covered` risk those are the full substitutes; for one
+ * answered in part, the partial ones. No family expansion here either.
+ */
+function answeringHeldLines(a: RiskAssessment, held: readonly CoverageLine[]): CoverageLine[] {
+    if (a.coveredBy.length === 0) return []
+    if (a.status !== "already_covered" && !answeredInPart(a)) return []
+    const ids = new Set(a.coveredBy.map((lob) => lob.toLowerCase()))
+    return held.filter((line) => ids.has(line.lob))
+}
+
+/** One entry per policy, in first-seen order. */
+function dedupeLines(lines: readonly CoverageLine[]): CoverageLine[] {
+    const seen = new Set<string>()
+    return lines.filter((l) => (seen.has(l.policyId) ? false : (seen.add(l.policyId), true)))
 }
 
 function densityFor(preference: string | null | undefined): ExplanationDensity {
@@ -255,23 +308,42 @@ function composeArea(area: AttentionAreaId, env: Env): AttentionAreaView {
     const areaRisks = assessments.filter((a) => table.riskIds.includes(a.riskId)).sort(byEngineOrder)
     const inScope = areaRisks.filter((a) => a.status !== "not_applicable")
     const decidedEssential = inScope.filter((a) => a.applicability === "applicable" && a.kind === "essential")
-    const coveredRisks = inScope.filter((a) => coveringHeldLines(a, held).length > 0)
+    const coveredRisks = inScope.filter((a) => a.status === "already_covered" && answeringHeldLines(a, held).length > 0)
+    const partialRisks = inScope.filter((a) => answeredInPart(a) && answeringHeldLines(a, held).length > 0)
     const engineFinding = inScope.some((a) => a.status === "protection_gap" || a.status === "opportunity")
 
     const requiresUnknown: ContextFactorKey[] = []
     const supportsUnknown: ContextFactorKey[] = []
+    const refinable: ContextFactorKey[] = []
+    const isRefinable = (f: ContextFactorKey): boolean =>
+        ctx.known[f] &&
+        FACTOR_COLUMNS[f].some((column) => provenance[column] != null) &&
+        factorEvidence(f, ctx, provenance) === "inferred"
     for (const a of inScope) {
         const def = CATALOGUE_BY_ID.get(a.riskId)
-        for (const f of def?.requires ?? a.missingFactors) if (!ctx.known[f] && !requiresUnknown.includes(f)) requiresUnknown.push(f)
-        for (const f of def?.supports ?? []) if (!ctx.known[f] && !supportsUnknown.includes(f)) supportsUnknown.push(f)
+        for (const f of def?.requires ?? a.missingFactors) {
+            if (!ctx.known[f] && !requiresUnknown.includes(f)) requiresUnknown.push(f)
+            if (isRefinable(f) && !refinable.includes(f)) refinable.push(f)
+        }
+        for (const f of def?.supports ?? []) {
+            if (!ctx.known[f] && !supportsUnknown.includes(f)) supportsUnknown.push(f)
+            if (isRefinable(f) && !refinable.includes(f)) refinable.push(f)
+        }
     }
     const unknownFactors = [...requiresUnknown, ...supportsUnknown.filter((f) => !requiresUnknown.includes(f))]
+    // Deciding facts first, then refining, in first-seen order — the same rule as unknownFactors.
+    const refinableFactors = [
+        ...refinable.filter((f) => inScope.some((a) => (CATALOGUE_BY_ID.get(a.riskId)?.requires ?? []).includes(f))),
+        ...refinable.filter((f) => !inScope.some((a) => (CATALOGUE_BY_ID.get(a.riskId)?.requires ?? []).includes(f))),
+    ]
 
     // ── Layer 4: protection ─────────────────────────────────────────
     const protection = coverage[area]
     const heldGaps = protection.gaps.filter((g) => g.onHeldPolicy)
     const areaHeld = areaHasHeldLine(coverage, area)
-    const anyHeld = areaHeld || coveredRisks.length > 0
+    const answering = dedupeLines([...coveredRisks, ...partialRisks].flatMap((a) => answeringHeldLines(a, held)))
+    const anyHeld = areaHeld || answering.length > 0
+    const lapsedOnly = !anyHeld && protection.lines.some((l) => !l.held)
 
     // ── Alignment — §C's table, in this order ───────────────────────
     // The engine reports `protection_gap` for EVERY uncovered essential
@@ -281,15 +353,19 @@ function composeArea(area: AttentionAreaId, env: Env): AttentionAreaView {
     // only when the area has evidence (a held line that answers something else
     // in it, or a line elsewhere that answers one of its risks). A stated
     // concern with nothing held is the other `review` row.
+    // A risk answered only in PART (a personal-accident policy against a death
+    // risk) is the engine's `needs_review` with a note, not a missing fact: it
+    // reads as «αξίζει να το εξετάσουμε», never as «δεν το ξεκαθαρίσαμε» and
+    // never as «φαίνεται να καλύπτεται».
     const reviewFromEngine = engineFinding && anyHeld
     let alignment: Alignment
     if (heldGaps.length > 0) {
         alignment = "gap"
     } else if (coveredRisks.length > 0 && decidedEssential.every((a) => coveredRisks.includes(a))) {
         alignment = "appears_covered"
-    } else if (reviewFromEngine || (stated && !anyHeld)) {
+    } else if (reviewFromEngine || partialRisks.length > 0 || (stated && !anyHeld)) {
         alignment = "review"
-    } else if (inScope.some((a) => a.status === "needs_review")) {
+    } else if (inScope.some((a) => a.status === "needs_review" && !answeredInPart(a))) {
         alignment = "unknown"
     } else {
         alignment = "not_yet_checked"
@@ -298,24 +374,27 @@ function composeArea(area: AttentionAreaId, env: Env): AttentionAreaView {
     // ── Confidence — the weakest link ───────────────────────────────
     const usedFactors = [...new Set(areaRisks.flatMap((a) => CATALOGUE_BY_ID.get(a.riskId)?.requires ?? a.missingFactors))]
     const usedLines: CoverageLine[] =
-        alignment === "appears_covered"
-            ? coveredRisks.flatMap((a) => coveringHeldLines(a, held))
-            : alignment === "gap"
-              ? protection.lines.filter((l) => l.held && heldGaps.some((g) => g.policyId === l.policyId))
+        alignment === "gap"
+            ? protection.lines.filter((l) => l.held && heldGaps.some((g) => g.policyId === l.policyId))
+            : alignment === "appears_covered" || alignment === "review"
+              ? answering
               : []
     const confidence = lowestEvidence([
         ...usedFactors.map((f) => factorEvidence(f, ctx, provenance)),
         ...usedLines.map((l) => l.evidence),
     ])
     const requiresValidation = !anyHeld
+    const limitsUnread = alignment === "appears_covered" && !answering.some((l) => l.detail === "analysed")
+    const expiringSoon = usedLines.some((l) => l.lifecycle === "expiring_soon")
 
     // ── The triplet ─────────────────────────────────────────────────
     // One question per written column (residence and tenancy share one), and
     // the deciding facts before the refining ones.
     const requiredQuestions: FactorQuestion[] = questionsForArea(area, requiresUnknown)
     const questions: FactorQuestion[] = questionsForArea(area, unknownFactors)
+    // For the unknown line: whichever lines the area rests on (or holds).
     const limitsLines = alignment === "appears_covered" ? usedLines : protection.lines.filter((l) => l.held)
-    const limitsUnread = anyHeld && !limitsLines.some((l) => l.detail === "analysed")
+    const heldLimitsUnread = anyHeld && !limitsLines.some((l) => l.detail === "analysed")
 
     const topApplies =
         (alignment === "appears_covered" ? coveredRisks[0] : undefined) ?? inScope.find((a) => a.applicability === "applicable")
@@ -326,31 +405,39 @@ function composeArea(area: AttentionAreaId, env: Env): AttentionAreaView {
     else if (outOfScope) why = outOfScope.whyItApplies[language]
     else why = copy.reasons.dormant
 
+    // The unknown line. The facts we lack come first as nouns; then the
+    // policy caveat that belongs to the row — and it is ALWAYS this line that
+    // carries it, whatever else is on it, so a surface can rely on one place:
+    //   not_yet_checked  «δεν έχουμε δει» — or, when the only policy seen has
+    //                    lapsed, that it lapsed: never «we saw nothing».
+    //   appears_covered  the limits were not read (summary-only), or what a
+    //                    read policy does not state we do not know.
+    const lapsedCaveat = lapsedOnly ? copy.caveats.lapsed_only : `${copy.caveats.no_policy_seen} ${copy.caveats.absence_not_evidence}`
     let unknown: string
     if (questions.length > 0) {
         unknown = fill(copy.caveats.unknown_list, { list: questions.map((q) => q.shortNoun[language]).join(", ") })
         // «Δεν έχουμε δει» is never «δεν έχετε»: the not-yet-checked row keeps
         // its caveat even when the line is busy listing facts.
-        if (alignment === "not_yet_checked") unknown = `${unknown} ${copy.caveats.absence_not_evidence}`
+        if (alignment === "not_yet_checked") unknown = `${unknown} ${lapsedOnly ? copy.caveats.lapsed_only : copy.caveats.absence_not_evidence}`
         // «Φαίνεται να καλύπτεται» on a summary-only line must still say the
-        // limits were not read — the unknown line is busy, so the why carries it.
-        if (alignment === "appears_covered" && limitsUnread) why = `${why} ${copy.caveats.limits_unread}`
+        // limits were not read — on this line, not the why.
+        if (alignment === "appears_covered" && limitsUnread) unknown = `${unknown} ${copy.caveats.limits_unread}`
     } else if (!anyHeld) {
-        unknown = `${copy.caveats.no_policy_seen} ${copy.caveats.absence_not_evidence}`
-    } else if (limitsUnread) {
+        unknown = lapsedCaveat
+    } else if (heldLimitsUnread) {
         unknown = copy.caveats.limits_unread
     } else {
         unknown = copy.caveats.limits_read
     }
 
     // What happens next: a missing DECIDING fact is always the first ask; a
-    // finding (rule gap, engine finding on evidence, or a question the market
-    // rather than the person must answer) is read; an area nothing has been
-    // seen for asks for its first policy; a covered area asks its refining
-    // questions or nothing.
+    // finding (rule gap, engine finding on evidence, a partial answer with its
+    // note, or a question the market rather than the person must answer) is
+    // read; an area nothing has been seen for asks for its first policy; a
+    // covered area asks its refining questions or nothing.
     let nextStep: NextStep
     if (requiredQuestions.length > 0) nextStep = "answer_questions"
-    else if (alignment === "gap" || alignment === "unknown" || (alignment === "review" && reviewFromEngine)) nextStep = "review_finding"
+    else if (alignment === "gap" || alignment === "unknown" || (alignment === "review" && (reviewFromEngine || partialRisks.length > 0))) nextStep = "review_finding"
     else if (alignment === "appears_covered") nextStep = questions.length > 0 ? "answer_questions" : "nothing_now"
     else nextStep = inScope.length > 0 || stated ? "check_first_policy" : "nothing_now"
     const next =
@@ -370,10 +457,15 @@ function composeArea(area: AttentionAreaId, env: Env): AttentionAreaView {
             risks: areaRisks.map((a) => ({ id: a.riskId, status: a.status, name: a.name[language], missingFactors: [...a.missingFactors] })),
         },
         unknownFactors,
+        refinableFactors,
         protection,
         alignment,
         confidence,
         requiresValidation,
+        answeredBy: answering,
+        limitsUnread,
+        expiringSoon,
+        lapsedOnly,
         explanation: { why, unknown, next, nextStep, density: densityFor(input.needs.guidancePreference) },
     }
 }

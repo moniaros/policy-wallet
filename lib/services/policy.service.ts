@@ -559,8 +559,9 @@ export class PolicyService extends BaseService {
             const isAgent = Boolean(initiator?.roles?.includes('agent'))
             if (!isAgent) {
                 const { resolveUserEntitlements } = await import('@/lib/subscription-entitlements')
+                const { canRunDeepAnalysis } = await import('@/lib/monetization/feature-gates')
                 const entitlements = await resolveUserEntitlements(userId)
-                if (entitlements.tier !== 'pro') {
+                if (!canRunDeepAnalysis(entitlements.tier)) {
                     // The result was previously awaited and thrown away, so for
                     // every free/Starter user — the majority — a failed or
                     // consent-blocked extraction left the policy stuck at

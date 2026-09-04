@@ -122,6 +122,35 @@ export function areaForPolicyLine(lineOfBusiness: string): { area: AttentionArea
     return { area: areaForLob(lob)?.id ?? AREAS.lifestyle.id, lob }
 }
 
+/**
+ * `acordData.coverages[]` as the model's plain shape — carried, never
+ * interpreted. Only a completed deep run writes coverages (the upload-time
+ * extraction writes a summary), so a non-empty list is what `analysed` means.
+ * Shared by the attention-areas loader and the review closer so the two
+ * cannot disagree about whether a policy's limits were read.
+ */
+export function coverageInputsFrom(acordData: unknown): CoverageInput[] {
+    const raw = (acordData as { coverages?: unknown } | null | undefined)?.coverages
+    if (!Array.isArray(raw)) return []
+    const out: CoverageInput[] = []
+    for (const entry of raw) {
+        if (!entry || typeof entry !== "object") continue
+        const c = entry as Record<string, unknown>
+        if (typeof c.name !== "string" || c.name.trim().length === 0) continue
+        out.push({
+            name: c.name.trim(),
+            ...(typeof c.limit === "number" && Number.isFinite(c.limit) ? { limit: c.limit } : {}),
+            ...(typeof c.status === "string" && c.status.length > 0 ? { status: c.status } : {}),
+        })
+    }
+    return out
+}
+
+/** `analysed` only when a deep run produced coverages; a run without them is still `summary_only`. */
+export function protectionDetailFrom(acordData: unknown): ProtectionDetail {
+    return coverageInputsFrom(acordData).length > 0 ? "analysed" : "summary_only"
+}
+
 export function emptyCoverageModel(): CoverageModel {
     const model = {} as CoverageModel
     for (const id of AREA_IDS) model[id] = { lines: [], gaps: [], hasAnalysed: false }

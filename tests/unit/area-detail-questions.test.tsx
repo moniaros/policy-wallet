@@ -456,3 +456,245 @@ describe("AreaDetail — the sections, the register, one primary button", () => 
         expect(text).not.toMatch(/\d+\s*%/)
     })
 })
+
+// ── The question rule (I6 / B6 / B7), the policies section (I2 / I3), the limits fact (B3 / P2) ──
+
+import { readFileSync } from "node:fs"
+import { AttentionAreasCard } from "@/components/protection/AttentionAreasCard"
+import { areaListItems } from "@/components/protection/area-detail-model"
+import { attentionSummary } from "@/lib/protection/attention-areas"
+
+const stamp = (source: "onboarding" | "assessment" | "questionnaire", precision: "coarse" | "exact") => ({ source, precision, at: AT })
+
+describe("areaQuestions — a question is open while one of its OWN columns is blank or written only coarsely", () => {
+    it("asks the mortgage and loan AMOUNTS when the engine knows the factors only through proxy columns", () => {
+        // residenceType «owned» makes `mortgage` known to the engine; hasLoans makes `loans` known. Neither amount was ever written.
+        const { ctx, areas, provenance } = areasFor(
+            { residenceType: "owned", hasLoans: true, dependentsCount: 1, answeredFields: ["residenceType", "hasLoans", "dependentsCount"] },
+            { residenceType: stamp("onboarding", "exact"), hasLoans: stamp("onboarding", "exact"), dependentsCount: stamp("onboarding", "exact") }
+        )
+        expect(ctx.known.mortgage).toBe(true)
+        expect(ctx.known.loans).toBe(true)
+        const debt = areas.find((a) => a.area === "debt")!
+        expect(debt.unknownFactors).not.toContain("mortgage")
+        const asked = areaQuestions(debt, ctx, provenance, "el", NOW)
+        const mortgage = asked.find((q) => q.factor === "mortgage")
+        const loans = asked.find((q) => q.factor === "loans")
+        expect(mortgage, "mortgageAmount is blank — the amount must be asked").toBeTruthy()
+        expect(mortgage!.prefill).toBeNull()
+        expect(loans, "loanAmount is blank — the amount must be asked").toBeTruthy()
+        expect(loans!.prefill).toBeNull()
+    })
+
+    it("re-asks a coarsely known fact, pre-filled, so the person can confirm or correct the floor", () => {
+        const { ctx, areas, provenance } = areasFor(
+            { dependentsCount: 1, childrenCount: 0, employmentStatus: "employed", answeredFields: ["dependentsCount", "childrenCount", "employmentStatus"] },
+            { dependentsCount: stamp("onboarding", "coarse"), childrenCount: stamp("onboarding", "exact"), employmentStatus: stamp("onboarding", "exact") }
+        )
+        const household = areas.find((a) => a.area === "household")!
+        expect(household.refinableFactors).toContain("dependents")
+        const asked = areaQuestions(household, ctx, provenance, "el", NOW)
+        const dependents = asked.find((q) => q.factor === "dependents")
+        expect(dependents).toBeTruthy()
+        expect(dependents!.prefill).toBe(1)
+        expect(asked.map((q) => q.factor)).not.toContain("children")
+        // The flow labels it as pre-filled, to confirm or correct.
+        renderFlow([q("dependents", { prefill: 1 })], async () => ok(null))
+        expect(screen.getByText(COPY.prefilled)).toBeTruthy()
+        expect(COPY.prefilled).toBe("Προσυμπληρωμένο — επιβεβαιώστε ή διορθώστε.")
+    })
+
+    it("never re-asks the year of birth the assessment itself wrote — a year is as exact as that question gets", () => {
+        // No private pension: the retirement risk applies, and it requires the age.
+        const profile = { dateOfBirth: new Date("1985-07-01T00:00:00Z"), retirementPlanning: false, annualIncome: 30000, answeredFields: ["dateOfBirth", "retirementPlanning", "annualIncome"] }
+        const { ctx, areas, provenance } = areasFor(profile, {
+            dateOfBirth: stamp("assessment", "coarse"),
+            retirementPlanning: stamp("assessment", "exact"),
+            annualIncome: stamp("assessment", "exact"),
+        })
+        const retirement = areas.find((a) => a.area === "retirement")!
+        expect(retirement.exposure.risks.some((r) => r.id === "retirement_shortfall" && r.status !== "not_applicable")).toBe(true)
+        expect(areaQuestions(retirement, ctx, provenance, "el", NOW).map((q) => q.factor)).not.toContain("age")
+        // But an onboarding bucket IS refined.
+        const coarse = areasFor(profile, {
+            dateOfBirth: stamp("onboarding", "coarse"),
+            retirementPlanning: stamp("assessment", "exact"),
+            annualIncome: stamp("assessment", "exact"),
+        })
+        const again = coarse.areas.find((a) => a.area === "retirement")!
+        expect(areaQuestions(again, coarse.ctx, coarse.provenance, "el", NOW).map((q) => q.factor)).toContain("age")
+    })
+
+    it("B7: a salaried person is never asked «Έχετε δική σας επιχείρηση;» — a refining factor is asked only for an established exposure", () => {
+        const { ctx, areas, provenance } = areasFor(
+            { employmentStatus: "employed", ownsBusiness: false, answeredFields: ["employmentStatus", "ownsBusiness"] },
+            { employmentStatus: stamp("onboarding", "exact"), ownsBusiness: stamp("onboarding", "coarse") }
+        )
+        for (const view of areas) {
+            const factors = areaQuestions(view, ctx, provenance, "el", NOW).map((q) => q.factor)
+            expect(factors, view.area).not.toContain("businessOwnership")
+        }
+        // The same factor IS asked once the exposure is established — a self-employed person refining professional liability.
+        const self = areasFor(
+            { employmentStatus: "self_employed", ownsBusiness: false, answeredFields: ["employmentStatus", "ownsBusiness"] },
+            { employmentStatus: stamp("onboarding", "exact"), ownsBusiness: stamp("onboarding", "coarse") }
+        )
+        const work = self.areas.find((a) => a.area === "work")!
+        expect(areaQuestions(work, self.ctx, self.provenance, "el", NOW).map((q) => q.factor)).toContain("businessOwnership")
+    })
+})
+
+describe("the policies section — what answered the area, from wherever it is listed (I2)", () => {
+    const LIFE_ROW: AreaPolicyRow = {
+        id: "life-1",
+        insurerName: "Interamerican",
+        policyNumber: "L-1",
+        lineOfBusiness: "life",
+        status: "active",
+        endDate: new Date("2027-09-04T00:00:00Z"),
+        acordData: { policy: { expirationDate: "2027-09-04" } },
+    }
+    const LIFE: PolicyEvidenceInput = { id: "life-1", lineOfBusiness: "life", lifecycle: "active", detail: "summary_only", gaps: [] }
+    /** A person with a mortgage: the debt area's risk is answered by the LIFE policy, which is listed under the household. */
+    function debtDetail(policies: PolicyEvidenceInput[], deepAnalysisLocked = false) {
+        const { ctx, assessments, areas, provenance } = areasFor(
+            { mortgageAmount: 120000, hasLoans: false, dependentsCount: 2, answeredFields: ["mortgageAmount", "hasLoans", "dependentsCount"] },
+            { mortgageAmount: stamp("onboarding", "exact"), hasLoans: stamp("onboarding", "exact"), dependentsCount: stamp("onboarding", "exact") },
+            policies
+        )
+        const view = areas.find((a) => a.area === "debt")!
+        const model = buildAreaDetail({
+            view,
+            assessments,
+            ctx,
+            provenance,
+            policyRows: new Map(policies.map((p) => [p.id, LIFE_ROW])),
+            uncertaintyReasons: [],
+            deepAnalysisLocked,
+            t,
+            language: "el",
+            now: NOW,
+        })
+        return { view, model, ...render(<AreaDetail model={model} copy={t.protection.attention} flowCopy={COPY} onAnswer={async () => ok(null)} />) }
+    }
+
+    it("lists the line from the other area, labelled, and never says «Δεν έχουμε δει ασφαλιστήριο» under «Φαίνεται να καλύπτεται»", () => {
+        const { view, model, container } = debtDetail([LIFE])
+        expect(view.alignment).toBe("appears_covered")
+        expect(view.protection.lines).toEqual([])
+        expect(model.answeredBy.length).toBe(1)
+        const header = container.querySelector("header")!
+        expect(header.querySelector("[data-alignment-line]")!.textContent).toContain(t.protection.attention.alignment.appears_covered)
+        const policies = container.querySelector("section[aria-labelledby='area-policies-heading']")!
+        const line = policies.querySelector('[data-policy="life-1"][data-answered-by="true"]')!
+        expect(line, "the answering line renders").toBeTruthy()
+        expect(line.textContent).toContain("Interamerican (L-1)")
+        expect(line.textContent).toContain(
+            t.protection.attention.detail.fromOtherArea.replace("{area}", t.onboarding.protectionProfile.summary.domainLabel.household)
+        )
+        expect(policies.textContent).not.toContain(t.protection.attention.detail.noPolicies)
+        expect(policies.querySelector('a[href="/wallet/add"]')).toBeNull()
+    })
+
+    it("I3: the header carries the limits caveat inline with the word, never behind a disclosure", () => {
+        const { view, container } = debtDetail([LIFE])
+        expect(view.limitsUnread).toBe(true)
+        const line = container.querySelector("header [data-alignment-line]")!
+        expect(line.textContent).toBe(`${t.protection.attention.alignment.appears_covered} — ${t.protection.attention.caveats.limits_unread}`)
+        expect(line.closest("details")).toBeNull()
+    })
+
+    it("with nothing seen anywhere, the «not seen» sentence and the first-policy ask render", () => {
+        const { model, container } = debtDetail([])
+        expect(model.answeredBy).toEqual([])
+        const policies = container.querySelector("section[aria-labelledby='area-policies-heading']")!
+        expect(policies.textContent).toContain(t.protection.attention.detail.noPolicies)
+        expect(policies.querySelector('a[href="/wallet/add"]')).toBeTruthy()
+    })
+
+    it("B3: unread limits on a locked tier are stated as a fact with a text link — no card, no button; and the locked view is emitted once", () => {
+        track.mockClear()
+        const { model, container } = debtDetail([LIFE], true)
+        expect(model.limitsUnread && model.deepAnalysisLocked).toBe(true)
+        const locked = container.querySelector("[data-limits-locked]")!
+        expect(locked, "the fact renders").toBeTruthy()
+        expect(locked.textContent).toContain(t.protection.attention.detail.upgradeHint)
+        expect(locked.querySelector(".pw-subcard")).toBeNull()
+        const link = locked.querySelector('a[href="/upgrade?reason=feature_locked"]')!
+        expect(link.className).not.toContain("pw-soft-button")
+        expect(link.className).not.toContain("pw-primary-button")
+        expect(track).toHaveBeenCalledWith("feature_locked_viewed", { feature_requested: "limits", screen: "protection_area", area: "debt" })
+        expect(track.mock.calls.filter((c) => c[0] === "feature_locked_viewed").length).toBe(1)
+        // Still exactly one primary button on the page (the question's continue).
+        expect(container.querySelectorAll(".pw-primary-button").length).toBeLessThanOrEqual(1)
+    })
+
+    it("B3: on a tier that can run the analysis, no lock renders and nothing is emitted", () => {
+        track.mockClear()
+        const { container } = debtDetail([LIFE], false)
+        expect(container.querySelector("[data-limits-locked]")).toBeNull()
+        expect(track.mock.calls.some((c) => c[0] === "feature_locked_viewed")).toBe(false)
+    })
+
+    it("P2: both /protection surfaces read the ONE deep-analysis predicate, never a tier literal", () => {
+        for (const file of ["app/(protected)/protection/areas/[area]/page.tsx", "app/(protected)/protection/page.tsx"]) {
+            const src = readFileSync(file, "utf-8")
+            const gates = [...src.matchAll(/(?:isDeepAnalysisLocked|deepAnalysisLocked):\s*([^,\n]+)/g)].map((m) => m[1].trim())
+            expect(gates.length, `${file} passes the deep-analysis gate`).toBeGreaterThan(0)
+            for (const gate of gates) expect(gate, file).toBe("!canRunDeepAnalysis(entitlements.tier)")
+        }
+    })
+})
+
+describe("the lapsed-only area on the detail (I9)", () => {
+    it("the header speaks the lapsed caveat instead of «δεν έχουμε δει», and the policies section lists the expired line without the «not seen» sentence", () => {
+        const EXPIRED: PolicyEvidenceInput = { id: "life-1", lineOfBusiness: "life", lifecycle: "expired", detail: "summary_only", gaps: [] }
+        const ROW: AreaPolicyRow = {
+            id: "life-1",
+            insurerName: "Interamerican",
+            policyNumber: "L-1",
+            lineOfBusiness: "life",
+            status: "expired",
+            endDate: new Date("2026-01-01T00:00:00Z"),
+            acordData: { policy: { expirationDate: "2026-01-01" } },
+        }
+        const ctx = toLifeContext({ childrenCount: 1, dependentsCount: 2, employmentStatus: "employed", answeredFields: ["childrenCount", "dependentsCount", "employmentStatus"] } as any, NOW)
+        const assessments = assessRisks(ctx, [])
+        const areas = buildAttentionAreas({
+            priorities: deriveProtectionPriorities(ctx, null),
+            assessments,
+            coverage: buildCoverageModel([EXPIRED]),
+            provenance: {},
+            ctx,
+            needs: {},
+            language: "el",
+        })
+        const view = areas.find((a) => a.area === "household")!
+        expect(view.lapsedOnly).toBe(true)
+        const model = buildAreaDetail({
+            view,
+            assessments,
+            ctx,
+            provenance: {},
+            policyRows: new Map([[ROW.id, ROW]]),
+            uncertaintyReasons: [],
+            deepAnalysisLocked: false,
+            t,
+            language: "el",
+            now: NOW,
+        })
+        const { container } = render(<AreaDetail model={model} copy={t.protection.attention} flowCopy={COPY} onAnswer={async () => ok(null)} />)
+        const line = container.querySelector("header [data-alignment-line]")!
+        expect(line.textContent).toBe(t.protection.attention.caveats.lapsed_only)
+        expect(container.querySelector("header")!.textContent).not.toContain(t.protection.attention.alignment.not_yet_checked)
+        const policies = container.querySelector("section[aria-labelledby='area-policies-heading']")!
+        expect(policies.querySelector('[data-policy="life-1"]')).toBeTruthy()
+        expect(policies.textContent).not.toContain(t.protection.attention.detail.noPolicies)
+        // The first-policy ask stays: nothing of this area's own is in force.
+        expect(policies.querySelector('a[href="/wallet/add"]')).toBeTruthy()
+        expect(container.textContent).not.toMatch(/δεν έχετε/i)
+        // The list row agrees with the header.
+        const list = render(<AttentionAreasCard items={areaListItems(areas, "el", t.protection.attention)} summary={attentionSummary(areas)} copy={t.protection.attention} />)
+        expect(list.container.querySelector('a[data-area="household"] [data-alignment-line]')!.textContent).toBe(t.protection.attention.caveats.lapsed_only)
+    })
+})

@@ -114,12 +114,25 @@ export function protectionProfilePatch(input: ProtectionProfileStepInput): Prote
             const columns: Record<string, unknown> = {
                 employmentStatus: INCOME_TO_EMPLOYMENT[input.income] ?? "other",
             }
+            const precision: Record<string, FactPrecision> = {}
             const answeredFields = ["employmentStatus"]
             if (input.income === "business") {
+                // «Έχω δική μου επιχείρηση» is the fact itself — exact.
                 columns.ownsBusiness = true
                 answeredFields.push("ownsBusiness")
+            } else if (input.income !== "self_employed") {
+                // A salary, a pension, «not working» or «studying» say the
+                // household does not live on a business of the person's own —
+                // a bucket, not a declaration (a retiree may still own one),
+                // so it is COARSE and an exact «yes» from the wizard survives
+                // it. Freelancers are the one answer that says nothing either
+                // way: a sole trader may or may not call it a business, so the
+                // column stays unknown and the work area keeps asking.
+                columns.ownsBusiness = false
+                precision.ownsBusiness = "coarse"
+                answeredFields.push("ownsBusiness")
             }
-            return { ...EMPTY, columns, answeredFields }
+            return { ...EMPTY, columns, precision, answeredFields }
         }
 
         case "income_dependency": {

@@ -33,6 +33,9 @@ export type ConversionEventType =
     // needs layer's funnel is measurable without a consent cookie.
     | "protection_profile_completed"
     | "first_policy_uploaded"
+    // The risk assessment (/protection, one area at a time) reached the end
+    // of its questions. Emitted by app/(protected)/protection/assessment-actions.ts.
+    | "risk_assessment_completed"
 
 export interface ConversionEventDetails {
     /** Trigger surface, e.g. "upgrade_modal", "carried_plan", "token_topup". */
@@ -54,6 +57,10 @@ export interface ConversionEventDetails {
     dontKnowCount?: number
     /** protection_profile_completed: CONFIDENCE_LEVELS. */
     confidence?: string
+    /** risk_assessment_completed: areas whose deciding facts are all answered. */
+    areas_completed?: number
+    /** risk_assessment_completed: areas still `unknown` after the pass. */
+    remaining_unknown?: number
 }
 
 export async function recordConversionEvent(

@@ -178,7 +178,13 @@ export async function completeReview(
 
 export type EvidenceCloseOutcome =
     | { closed: number; reason: "closed" }
-    | { closed: 0; reason: "not_held" | "no_domain" | "nothing_open" | "error" }
+    /**
+     * `summary_only`: the policy is held and its area has an open review, but
+     * only the basic extraction ran — the limits were not read, so the review
+     * stays open. Nothing is written for it: the model has no evidence field
+     * and none is added.
+     */
+    | { closed: 0; reason: "not_held" | "summary_only" | "no_area" | "nothing_open" | "error" }
 
 /**
  * A finished policy analysis closes the open reviews it answers.
@@ -198,10 +204,11 @@ export type EvidenceCloseOutcome =
  */
 export async function closeReviewsByPolicyEvidence(args: { policyId: string }): Promise<EvidenceCloseOutcome> {
     try {
-        const { decideEvidenceClosures, lifecycleBand, policyEvidenceDomain, REVIEW_OUTCOME_POLICY_EVIDENCE } = await import(
+        const { decideEvidenceClosures, lifecycleBand, policyEvidenceArea, REVIEW_OUTCOME_POLICY_EVIDENCE } = await import(
             "./evidence"
         )
         const { resolvePolicyLifecycle } = await import("@/lib/policy-status")
+        const { protectionDetailFrom } = await import("@/lib/protection/coverage-model")
 
         const policy = await db.policy.findUnique({
             where: { id: args.policyId },
@@ -218,7 +225,10 @@ export async function closeReviewsByPolicyEvidence(args: { policyId: string }): 
         if (!policy) return { closed: 0, reason: "nothing_open" }
 
         const lifecycle = lifecycleBand(resolvePolicyLifecycle(policy).status)
-        if (!policyEvidenceDomain(policy.lineOfBusiness)) return { closed: 0, reason: "no_domain" }
+        // The one reading of «were the limits read» — the same the attention
+        // areas use, so a policy the wallet shows as summary-only cannot close.
+        const detail = protectionDetailFrom(policy.acordData)
+        if (!policyEvidenceArea(policy.lineOfBusiness)) return { closed: 0, reason: "no_area" }
 
         const open = await db.riskReview.findMany({
             where: { userId: policy.ownerUserId, status: "open" },
@@ -247,6 +257,7 @@ export async function closeReviewsByPolicyEvidence(args: { policyId: string }): 
         const ids = decideEvidenceClosures({
             lineOfBusiness: policy.lineOfBusiness,
             lifecycle,
+            detail,
             reviews: open.map((r) => ({
                 id: r.id,
                 status: r.status,
@@ -254,7 +265,11 @@ export async function closeReviewsByPolicyEvidence(args: { policyId: string }): 
                 definitionId: r.causedByEventId ? definitionByEvent.get(r.causedByEventId) ?? null : null,
             })),
         })
-        if (ids.length === 0) return { closed: 0, reason: lifecycle === "active" || lifecycle === "expiring_soon" ? "nothing_open" : "not_held" }
+        if (ids.length === 0) {
+            if (lifecycle !== "active" && lifecycle !== "expiring_soon") return { closed: 0, reason: "not_held" }
+            if (detail !== "analysed") return { closed: 0, reason: "summary_only" }
+            return { closed: 0, reason: "nothing_open" }
+        }
 
         const score = await db.protectionScore.findUnique({
             where: { userId: policy.ownerUserId },

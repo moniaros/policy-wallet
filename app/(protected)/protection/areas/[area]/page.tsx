@@ -8,6 +8,7 @@ import { buildAreaDetail, isAttentionAreaId, questionFlowCopy, type AreaPolicyRo
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getTranslations } from "@/lib/i18n"
+import { canRunDeepAnalysis } from "@/lib/monetization/feature-gates"
 import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 import { toPolicyFields } from "@/lib/services/gap-engine/profile-gap-rules"
 import { assessRisks } from "@/lib/services/gap-engine/risk-assessment"
@@ -60,9 +61,10 @@ export default async function ProtectionAreaPage({ params }: { params: Promise<{
         provenance: bundle.provenance,
         policyRows: rows,
         uncertaintyReasons: bundle.needs.uncertaintyReasons,
-        // Same gate as the findings surface: limits are read by the deep run,
-        // which both paid tiers get (H-009).
-        deepAnalysisLocked: entitlements.tier === "free",
+        // Limits are read by the deep run, and whether THIS tier may run it is
+        // the one predicate every gate reads (lib/monetization/feature-gates.ts).
+        // A paying Starter is locked too, and the detail says so as a fact.
+        deepAnalysisLocked: !canRunDeepAnalysis(entitlements.tier),
         t,
         language: lang,
         now,

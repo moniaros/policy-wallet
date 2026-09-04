@@ -18,16 +18,16 @@ import { preventionActions, type PreventionAction } from "@/lib/insurance/policy
 import {
     alignmentLabel,
     confidenceLabel,
-    factorEvidence,
     type Alignment,
+    type AreaRiskExposure,
     type AttentionAreaView,
     type ExplanationDensity,
     type NextStep,
     UNCERTAINTY_DONT_KNOW_COVERAGE,
 } from "@/lib/protection/attention-areas"
-import type { CoverageLine } from "@/lib/protection/coverage-model"
+import { areaForPolicyLine, type CoverageLine } from "@/lib/protection/coverage-model"
 import { AREA_ORDER, AREAS, type AttentionAreaId } from "@/lib/protection/domains"
-import type { EvidenceLevel, FactProvenanceMap, ProtectionDetail } from "@/lib/protection/evidence"
+import { factEvidence, type EvidenceLevel, type FactProvenanceMap, type ProtectionDetail } from "@/lib/protection/evidence"
 import {
     INCOME_DEPENDENCY_FACTOR,
     questionForFactor,
@@ -37,6 +37,7 @@ import {
     type QuestionInput,
 } from "@/lib/protection/factor-questions"
 import type { ContextFactorKey, LifeContext } from "@/lib/services/gap-engine/life-context"
+import { RISK_CATALOG } from "@/lib/services/gap-engine/risk-catalog"
 import type { Mitigation, MitigationKind, RiskAssessment, RiskStatus } from "@/lib/services/gap-engine/risk-types"
 import type { PriorityImportance } from "@/lib/services/protection-profile/derive-priorities"
 import { getPolicyStatusView, type StatusTone } from "@/lib/wallet/policy-status-view"
@@ -65,9 +66,35 @@ export interface AreaListItemView {
     confidenceWord: string
     activated: boolean
     unknownFactorCount: number
-    /** «Φαίνεται να καλύπτεται» on a summary-only line — the composition put the caveat in `why`; the row repeats it. */
+    /** A held line answers the area but its limits were not read — the composition's own flag, rendered inline. */
     limitsCaveat: boolean
+    /** The line that answers the area is about to end — «λήγει σύντομα», inline. */
+    expiringSoon: boolean
+    /** The only policy seen for the area has lapsed: the row speaks the lapsed caveat, not «δεν έχουμε δει». */
+    lapsedOnly: boolean
     href: string
+}
+
+/**
+ * The alignment sentence: the composition's word, or — when the only policy
+ * seen has lapsed — the lapsed caveat, because «δεν έχουμε δει ακόμη
+ * ασφαλιστήριο» would be false and «δεν έχετε» is never said.
+ */
+export function alignmentWordFor(view: Pick<AttentionAreaView, "alignment" | "lapsedOnly">, language: Language, copy: AttentionCopy): string {
+    return view.lapsedOnly ? copy.caveats.lapsed_only : alignmentLabel(view.alignment, language)
+}
+
+/**
+ * The one line that carries the verdict and its caveats, INLINE — the areas
+ * list row and the detail header render exactly this, never a caveat behind
+ * a disclosure: «Φαίνεται να καλύπτεται — τα όρια δεν έχουν διαβαστεί ακόμη
+ * … — λήγει σύντομα».
+ */
+export function alignmentLine(item: Pick<AreaListItemView, "alignmentWord" | "limitsCaveat" | "expiringSoon">, copy: AttentionCopy): string {
+    const parts = [item.alignmentWord]
+    if (item.limitsCaveat) parts.push(copy.caveats.limits_unread)
+    if (item.expiringSoon) parts.push(copy.caveats.expiring_soon)
+    return parts.join(" — ")
 }
 
 export function areaListItems(areas: readonly AttentionAreaView[], language: Language, copy: AttentionCopy): AreaListItemView[] {
@@ -77,12 +104,14 @@ export function areaListItems(areas: readonly AttentionAreaView[], language: Lan
         importance: view.importance,
         importanceWord: copy.importance[view.importance],
         alignment: view.alignment,
-        alignmentWord: alignmentLabel(view.alignment, language),
+        alignmentWord: alignmentWordFor(view, language, copy),
         confidence: view.confidence,
         confidenceWord: confidenceLabel(view.confidence, language),
         activated: view.activated,
         unknownFactorCount: view.unknownFactors.length,
-        limitsCaveat: view.alignment === "appears_covered" && view.explanation.why.includes(copy.caveats.limits_unread),
+        limitsCaveat: view.limitsUnread,
+        expiringSoon: view.expiringSoon,
+        lapsedOnly: view.lapsedOnly,
         href: areaHref(view.area),
     }))
 }
@@ -217,14 +246,107 @@ function toQuestionView(q: FactorQuestion, language: Language, ctx: LifeContext,
     }
 }
 
+const CATALOGUE_BY_ID = new Map(RISK_CATALOG.map((r) => [r.id, r]))
+
 /**
- * The questions an area still has for the person: its composition's unknown
- * factors (requires first), through `questionsForArea`'s three filters, and
- * then — because "unknown to the engine" and "written by nobody" are the
- * same thing only until a column gets a value from a surface that predates
- * provenance — only the factors whose evidence is still `unknown`. Income
- * dependency (not a catalogue factor, §E) is appended for the household and
- * income areas while it is still null.
+ * The engine's applicability, read off the exposure row: a `needs_review`
+ * with a deciding fact still missing is «cannot decide»; a `needs_review`
+ * with none missing (a policy count shortfall, a market that will not sell
+ * the cover) is an exposure that EXISTS. Everything but `not_applicable` and
+ * the first kind is applicable.
+ */
+function isApplicableExposure(risk: AreaRiskExposure): boolean {
+    if (risk.status === "not_applicable") return false
+    return !(risk.status === "needs_review" && risk.missingFactors.length > 0)
+}
+
+/**
+ * A factor the engine counts as known although the column its question
+ * writes was never written — knownness rests on a PROXY column (`mortgage`
+ * on `residenceType`, `loans` on `hasLoans`, `propertyOwnership` on
+ * `ownsHome`). The engine then reads the blank amount as zero and may decide
+ * a risk away on it; the question is the only way to find out.
+ */
+export function knownThroughProxy(factor: ContextFactorKey, ctx: LifeContext, provenance: FactProvenanceMap, now: Date): boolean {
+    const q = questionForFactor(factor)
+    if (!q || !ctx.known[factor]) return false
+    return provenance[q.columns[0]] === undefined && prefillFor(factor, ctx, now) === null
+}
+
+/**
+ * The factors one of the area's risks still wants, deciding ones first.
+ *
+ *   - a DECIDING factor (`requires`) of any in-scope risk;
+ *   - a REFINING factor (`supports`) only of a risk whose exposure is
+ *     established — a salaried person is not asked «Έχετε δική σας
+ *     επιχείρηση;» to refine a liability that does not apply to them, nor to
+ *     refine a risk the engine could not decide;
+ *   - a deciding factor of a risk the engine dismissed (`not_applicable`) only
+ *     when that decision rests on a proxy — the amount the question writes was
+ *     never written, so «no debt» is the engine reading a blank as zero. A
+ *     dismissal on a fact the person actually gave, coarse or exact, stands.
+ */
+export function factorsWantedByArea(
+    view: Pick<AttentionAreaView, "exposure">,
+    ctx: LifeContext,
+    provenance: FactProvenanceMap,
+    now: Date = new Date()
+): ContextFactorKey[] {
+    const requires: ContextFactorKey[] = []
+    const supports: ContextFactorKey[] = []
+    for (const risk of view.exposure.risks) {
+        const def = CATALOGUE_BY_ID.get(risk.id)
+        if (!def) continue
+        if (risk.status === "not_applicable") {
+            for (const f of def.requires) if (!requires.includes(f) && knownThroughProxy(f, ctx, provenance, now)) requires.push(f)
+            continue
+        }
+        for (const f of def.requires) if (!requires.includes(f)) requires.push(f)
+        if (!isApplicableExposure(risk)) continue
+        for (const f of def.supports ?? []) if (!supports.includes(f)) supports.push(f)
+    }
+    return [...requires, ...supports.filter((f) => !requires.includes(f))]
+}
+
+/**
+ * Does this question still have something to settle? It does when the engine
+ * lacks the factor, or when one of the question's OWN columns is written only
+ * at `inferred` evidence (a floor, a bucket), or when the column it writes is
+ * still BLANK although the engine counts the factor as known through a proxy:
+ * `mortgage` is «known» the moment `residenceType` says owned, but
+ * `mortgageAmount` — the column this question writes — is empty. One
+ * exception: a coarse stamp the assessment itself wrote for `age` is as exact
+ * as a year-of-birth question gets, so it is settled rather than re-asked
+ * forever. A value with no stamp at all was declared by a surface that
+ * predates provenance and is treated as the person's own (the writer's rule 6).
+ */
+export function questionOpen(
+    q: Pick<FactorQuestion, "factor" | "columns">,
+    ctx: LifeContext,
+    provenance: FactProvenanceMap,
+    now: Date = new Date()
+): boolean {
+    if (q.factor === INCOME_DEPENDENCY_FACTOR) return ctx.incomeDependency === null
+    if (!ctx.known[q.factor]) return true
+    const coarse = q.columns.some((column) => {
+        const stamped = provenance[column]
+        if (!stamped || factEvidence(stamped) !== "inferred") return false
+        return !(q.factor === "age" && stamped.source === "assessment")
+    })
+    const blank = provenance[q.columns[0]] === undefined && prefillFor(q.factor, ctx, now) === null
+    return coarse || blank
+}
+
+/**
+ * The questions an area still has for the person. The candidates are the
+ * composition's unknown factors (requires first), its refinable ones (known
+ * only coarsely), and then every other factor the area's risks want — kept
+ * only while a risk wants them (`factorsWantedByArea`), through
+ * `questionsForArea`'s three filters, and then only while the question itself
+ * is still open at the column level (`questionOpen`). A pre-filled question is
+ * one whose own column holds a value — the flow labels it «Προσυμπληρωμένο —
+ * επιβεβαιώστε ή διορθώστε». Income dependency (not a catalogue factor, §E)
+ * is appended for the household and income areas while it is still null.
  */
 export function areaQuestions(
     view: AttentionAreaView,
@@ -233,9 +355,12 @@ export function areaQuestions(
     language: Language,
     now: Date = new Date()
 ): AreaQuestionView[] {
-    const asked = questionsForArea(view.area, view.unknownFactors).filter(
-        (q) => q.factor === INCOME_DEPENDENCY_FACTOR || factorEvidence(q.factor, ctx, provenance) === "unknown"
-    )
+    const wanted = factorsWantedByArea(view, ctx, provenance, now)
+    const candidates: AssessmentFactorKey[] = []
+    for (const factor of [...view.unknownFactors, ...view.refinableFactors, ...wanted]) {
+        if (!candidates.includes(factor) && wanted.includes(factor)) candidates.push(factor)
+    }
+    const asked = questionsForArea(view.area, candidates).filter((q) => questionOpen(q, ctx, provenance, now))
     const dependency = questionForFactor(INCOME_DEPENDENCY_FACTOR)
     if (
         dependency &&
@@ -352,6 +477,8 @@ export interface AreaPolicyLineView {
     held: boolean
     detail: ProtectionDetail
     limitsWord: string
+    /** Set on a line listed under ANOTHER area that answers one of this area's risks — «από άλλη περιοχή: {area}». */
+    fromAreaLabel: string | null
     href: string
 }
 
@@ -387,7 +514,9 @@ export function areaPolicyLines(
     rows: ReadonlyMap<string, AreaPolicyRow>,
     t: Translations,
     language: Language,
-    now: Date = new Date()
+    now: Date = new Date(),
+    /** Label each line with the area it is listed under (the answered-by lines). */
+    fromOtherArea = false
 ): AreaPolicyLineView[] {
     const copy = t.protection.attention.detail
     return lines.flatMap((line) => {
@@ -405,6 +534,7 @@ export function areaPolicyLines(
                 held: line.held,
                 detail: line.detail,
                 limitsWord: line.detail === "analysed" ? copy.limitsRead : copy.limitsUnread,
+                fromAreaLabel: fromOtherArea ? AREAS[areaForPolicyLine(line.lob).area].label[language] : null,
                 href: `/wallet/${line.policyId}`,
             },
         ]
@@ -484,11 +614,19 @@ export interface AreaDetailModel {
     questions: AreaQuestionView[]
     /** Factors the area still lacks in total — the `remaining_unknown` of the completed event. */
     unknownFactorCount: number
+    /** The policies listed under THIS area, whatever their band. */
     lines: AreaPolicyLineView[]
+    /** Held lines listed under another area that answer one of this area's risks, each naming that area. */
+    answeredBy: AreaPolicyLineView[]
     findings: AreaFindingView[]
+    /** A line listed under this area is in force. */
     anyHeld: boolean
-    /** A held line exists but no held line's limits were read. */
+    /** The composition's flag: a held line answers the area, and no such line's limits were read. */
     limitsUnread: boolean
+    /** The header repeats the row's inline caveats. */
+    limitsCaveat: boolean
+    expiringSoon: boolean
+    lapsedOnly: boolean
     deepAnalysisLocked: boolean
     mitigations: MitigationGroups
     preventionFromPolicies: PreventionFromPolicyView[]
@@ -512,6 +650,15 @@ export function buildAreaDetail(input: BuildAreaDetailInput): AreaDetailModel {
     const now = input.now ?? new Date()
     const copy = t.protection.attention
     const lines = areaPolicyLines(view.protection.lines, policyRows, t, language, now)
+    const own = new Set(view.protection.lines.map((l) => l.policyId))
+    const answeredBy = areaPolicyLines(
+        view.answeredBy.filter((l) => !own.has(l.policyId)),
+        policyRows,
+        t,
+        language,
+        now,
+        true
+    )
     const held = view.protection.lines.filter((l) => l.held)
     return {
         area: view.area,
@@ -519,7 +666,7 @@ export function buildAreaDetail(input: BuildAreaDetailInput): AreaDetailModel {
         importance: view.importance,
         importanceWord: copy.importance[view.importance],
         alignment: view.alignment,
-        alignmentWord: alignmentLabel(view.alignment, language),
+        alignmentWord: alignmentWordFor(view, language, copy),
         confidence: view.confidence,
         confidenceWord: confidenceLabel(view.confidence, language),
         activated: view.activated,
@@ -529,9 +676,13 @@ export function buildAreaDetail(input: BuildAreaDetailInput): AreaDetailModel {
         questions: areaQuestions(view, ctx, provenance, language, now),
         unknownFactorCount: view.unknownFactors.length,
         lines,
+        answeredBy,
         findings: areaFindings(view.protection.gaps, policyRows, t, language),
         anyHeld: held.length > 0,
-        limitsUnread: held.length > 0 && !held.some((l) => l.detail === "analysed"),
+        limitsUnread: view.limitsUnread,
+        limitsCaveat: view.limitsUnread,
+        expiringSoon: view.expiringSoon,
+        lapsedOnly: view.lapsedOnly,
         deepAnalysisLocked: input.deepAnalysisLocked,
         mitigations: groupMitigations(assessments, view.area, language),
         preventionFromPolicies: preventionFromPolicies(view.protection.lines, policyRows, language),

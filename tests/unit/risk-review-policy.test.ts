@@ -203,11 +203,14 @@ describe("claims are declared and honestly unwired", () => {
 import { globSync } from "../helpers/glob"
 import {
     decideEvidenceClosures,
+    EVENT_AREA,
+    EVENT_AREA_CROSSES_SPHERE,
     lifecycleBand,
-    policyEvidenceDomain,
-    reviewDomain,
+    policyEvidenceArea,
+    reviewArea,
     REVIEW_OUTCOME_POLICY_EVIDENCE,
 } from "@/lib/services/risk-review/evidence"
+import { AREAS, AREA_IDS } from "@/lib/protection/domains"
 
 const openReviewRows = [
     { id: "rv-birth", status: "open", trigger: "child_born" },
@@ -216,6 +219,9 @@ const openReviewRows = [
     { id: "rv-home", status: "open", trigger: "property_purchased" },
     { id: "rv-business", status: "open", trigger: "business_started" },
     { id: "rv-pet", status: "open", trigger: "life_event", definitionId: "pet_adoption" },
+    { id: "rv-boat", status: "open", trigger: "life_event", definitionId: "boat_purchase" },
+    { id: "rv-retire", status: "open", trigger: "life_event", definitionId: "retirement" },
+    { id: "rv-raise", status: "open", trigger: "life_event", definitionId: "income_increase" },
     { id: "rv-annual", status: "open", trigger: "annual" },
     { id: "rv-quarterly", status: "open", trigger: "quarterly" },
     { id: "rv-birthday", status: "open", trigger: "birthday" },
@@ -223,36 +229,69 @@ const openReviewRows = [
     { id: "rv-gap", status: "open", trigger: "coverage_gap" },
 ]
 
-describe("a review's sphere comes from the life event it was raised for", () => {
-    it("the mapped triggers resolve through the registry, never a second table", () => {
-        const byId = new Map(LIFE_EVENT_REGISTRY.map((d) => [d.id, d.domain]))
-        expect(reviewDomain({ trigger: "child_born" })).toBe(byId.get("birth"))
-        expect(reviewDomain({ trigger: "marriage" })).toBe(byId.get("marriage"))
-        expect(reviewDomain({ trigger: "divorce" })).toBe(byId.get("divorce"))
-        expect(reviewDomain({ trigger: "mortgage_added" })).toBe(byId.get("mortgage"))
-        expect(reviewDomain({ trigger: "property_purchased" })).toBe(byId.get("property_purchase"))
-        expect(reviewDomain({ trigger: "business_started" })).toBe(byId.get("business_creation"))
+const analysed = { lifecycle: "active", detail: "analysed" } as const
+
+describe("every registry event asks the customer to look at exactly one area", () => {
+    it("maps every life event once — enumerated from the registry, no omission and no stray key", () => {
+        const registryIds = LIFE_EVENT_REGISTRY.map((d) => d.id)
+        expect(registryIds.length).toBeGreaterThan(15)
+        expect(Object.keys(EVENT_AREA).sort()).toEqual([...registryIds].sort())
+        for (const id of registryIds) expect(AREA_IDS, `${id} maps to a real area`).toContain(EVENT_AREA[id])
     })
 
-    it("the generic life_event trigger needs its causing definition, and an orphan has no sphere", () => {
-        expect(reviewDomain({ trigger: "life_event", definitionId: "pet_adoption" })).toBe("lifestyle")
-        expect(reviewDomain({ trigger: "life_event", definitionId: "vehicle_purchase" })).toBe("mobility")
-        expect(reviewDomain({ trigger: "life_event" })).toBeNull()
-        expect(reviewDomain({ trigger: "life_event", definitionId: "not-a-real-event" })).toBeNull()
+    it("stays inside the event's own sphere unless the exception is named with its reason", () => {
+        for (const def of LIFE_EVENT_REGISTRY) {
+            const area = AREAS[EVENT_AREA[def.id]]
+            if (EVENT_AREA_CROSSES_SPHERE.has(def.id)) expect(area.domain, def.id).not.toBe(def.domain)
+            else expect(area.domain, `${def.id}: ${area.id} is not in ${def.domain}`).toBe(def.domain)
+        }
+        // The three crossings, and why: the boat lines and the boat risk are
+        // listed under lifestyle; valuables and the fine-art line under
+        // property; retiring is the pension question.
+        expect([...EVENT_AREA_CROSSES_SPHERE].sort()).toEqual(["boat_purchase", "high_value_purchase", "retirement"])
+        expect(EVENT_AREA.boat_purchase).toBe("lifestyle")
+        expect(EVENT_AREA.high_value_purchase).toBe("property")
+        expect(EVENT_AREA.retirement).toBe("retirement")
     })
 
-    it("whole-picture reviews have no sphere, so no single document can close them", () => {
+    it("splits money three ways — a mortgage is debt, a raise is income", () => {
+        expect(EVENT_AREA.mortgage).toBe("debt")
+        expect(EVENT_AREA.mortgage_cleared).toBe("debt")
+        expect(EVENT_AREA.income_increase).toBe("income")
+    })
+})
+
+describe("a review's area comes from the life event it was raised for", () => {
+    it("the mapped triggers resolve through the registry and the one event→area table, never a second table", () => {
+        expect(reviewArea({ trigger: "child_born" })).toBe(EVENT_AREA.birth)
+        expect(reviewArea({ trigger: "marriage" })).toBe(EVENT_AREA.marriage)
+        expect(reviewArea({ trigger: "divorce" })).toBe(EVENT_AREA.divorce)
+        expect(reviewArea({ trigger: "mortgage_added" })).toBe("debt")
+        expect(reviewArea({ trigger: "property_purchased" })).toBe("residence")
+        expect(reviewArea({ trigger: "business_started" })).toBe("work")
+    })
+
+    it("the generic life_event trigger needs its causing definition, and an orphan has no area", () => {
+        expect(reviewArea({ trigger: "life_event", definitionId: "pet_adoption" })).toBe("lifestyle")
+        expect(reviewArea({ trigger: "life_event", definitionId: "vehicle_purchase" })).toBe("mobility")
+        expect(reviewArea({ trigger: "life_event", definitionId: "boat_purchase" })).toBe("lifestyle")
+        expect(reviewArea({ trigger: "life_event" })).toBeNull()
+        expect(reviewArea({ trigger: "life_event", definitionId: "not-a-real-event" })).toBeNull()
+    })
+
+    it("whole-picture reviews have no area, so no single document can close them", () => {
         for (const trigger of ["annual", "quarterly", "birthday", "customer_inactivity", "advisor_assignment", "protection_score_drop", "coverage_gap", "policy_renewal", "claim"]) {
-            expect(reviewDomain({ trigger }), trigger).toBeNull()
+            expect(reviewArea({ trigger }), trigger).toBeNull()
         }
     })
 
-    it("a policy's sphere is its attention area's domain; the residual line answers nothing", () => {
-        expect(policyEvidenceDomain("life")).toBe("household")
-        expect(policyEvidenceDomain("Auto Insurance")).toBe("mobility")
-        expect(policyEvidenceDomain("pension")).toBe("money")
-        expect(policyEvidenceDomain("other")).toBeNull()
-        expect(policyEvidenceDomain(null)).toBeNull()
+    it("a policy's area is its attention area (areaForLob); the residual line answers nothing", () => {
+        expect(policyEvidenceArea("life")).toBe("household")
+        expect(policyEvidenceArea("Auto Insurance")).toBe("mobility")
+        expect(policyEvidenceArea("pension")).toBe("retirement")
+        expect(policyEvidenceArea("boat_tpl")).toBe("lifestyle")
+        expect(policyEvidenceArea("other")).toBeNull()
+        expect(policyEvidenceArea(null)).toBeNull()
     })
 
     it("maps the lifecycle onto Layer 4's bands the way the loader does — cancelled and undated are not held", () => {
@@ -267,33 +306,46 @@ describe("a review's sphere comes from the life event it was raised for", () => 
 })
 
 describe("the evidence matrix", () => {
-    it("same sphere closes — and only that sphere", () => {
-        expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle: "active", reviews: openReviewRows })).toEqual([
+    it("same area closes — and only that area", () => {
+        expect(decideEvidenceClosures({ lineOfBusiness: "life", ...analysed, reviews: openReviewRows })).toEqual([
             "rv-birth",
             "rv-marriage",
         ])
-        expect(decideEvidenceClosures({ lineOfBusiness: "home", lifecycle: "expiring_soon", reviews: openReviewRows })).toEqual(["rv-home"])
-        expect(decideEvidenceClosures({ lineOfBusiness: "liability", lifecycle: "active", reviews: openReviewRows })).toEqual(["rv-business"])
-        expect(decideEvidenceClosures({ lineOfBusiness: "pet", lifecycle: "active", reviews: openReviewRows })).toEqual(["rv-pet"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "home", lifecycle: "expiring_soon", detail: "analysed", reviews: openReviewRows })).toEqual(["rv-home"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "liability", ...analysed, reviews: openReviewRows })).toEqual(["rv-business"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "fine_art", ...analysed, reviews: [...openReviewRows, { id: "rv-ring", status: "open", trigger: "life_event", definitionId: "high_value_purchase" }] })).toEqual(["rv-ring"])
     })
 
-    it("another sphere stays open", () => {
-        const closed = decideEvidenceClosures({ lineOfBusiness: "motor", lifecycle: "active", reviews: openReviewRows })
-        expect(closed).toEqual([])
+    it("lifestyle is ONE area — travel, pet, cyber and boat share it — so a pet policy answers the boat review too; the vocabulary's limit, stated", () => {
+        expect(decideEvidenceClosures({ lineOfBusiness: "pet", ...analysed, reviews: openReviewRows })).toEqual(["rv-pet", "rv-boat"])
     })
 
-    it("money is one sphere with three areas: a pension answers the mortgage review's sphere, a life policy does not", () => {
-        expect(decideEvidenceClosures({ lineOfBusiness: "pension", lifecycle: "active", reviews: openReviewRows })).toEqual(["rv-mortgage"])
-        expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle: "active", reviews: openReviewRows })).not.toContain("rv-mortgage")
+    it("another area stays open", () => {
+        expect(decideEvidenceClosures({ lineOfBusiness: "motor", ...analysed, reviews: openReviewRows })).toEqual([])
+    })
+
+    it("a sibling area of the same sphere is another area: a pension does not close the mortgage review, a car does not close the boat review", () => {
+        // money: pension ↔ retirement, mortgage ↔ debt, raise ↔ income.
+        expect(decideEvidenceClosures({ lineOfBusiness: "pension", ...analysed, reviews: openReviewRows })).toEqual(["rv-retire"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "income_protection", ...analysed, reviews: openReviewRows })).toEqual(["rv-raise"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "life", ...analysed, reviews: openReviewRows })).not.toContain("rv-mortgage")
+        // mobility: the boat lives with lifestyle, so a car answers nothing about it.
+        expect(decideEvidenceClosures({ lineOfBusiness: "motor", ...analysed, reviews: openReviewRows })).not.toContain("rv-boat")
+        expect(decideEvidenceClosures({ lineOfBusiness: "boat_tpl", ...analysed, reviews: openReviewRows })).toContain("rv-boat")
+        expect(decideEvidenceClosures({ lineOfBusiness: "boat_tpl", ...analysed, reviews: openReviewRows })).not.toContain("rv-mortgage")
     })
 
     it("an expired, cancelled or undated policy closes nothing", () => {
         for (const lifecycle of ["expired", "other"] as const) {
-            expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle, reviews: openReviewRows })).toEqual([])
+            expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle, detail: "analysed", reviews: openReviewRows })).toEqual([])
         }
     })
 
-    it("a review already closed is never touched, whatever its sphere", () => {
+    it("a summary-only policy closes nothing — the limits were not read, so the looking has not happened", () => {
+        expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle: "active", detail: "summary_only", reviews: openReviewRows })).toEqual([])
+    })
+
+    it("a review already closed is never touched, whatever its area", () => {
         const rows = [
             { id: "rv-done", status: "completed", trigger: "child_born" },
             { id: "rv-dismissed", status: "dismissed", trigger: "marriage" },
@@ -301,7 +353,7 @@ describe("the evidence matrix", () => {
             { id: "rv-superseded", status: "superseded", trigger: "marriage" },
             { id: "rv-open", status: "open", trigger: "child_born" },
         ]
-        expect(decideEvidenceClosures({ lineOfBusiness: "life", lifecycle: "active", reviews: rows })).toEqual(["rv-open"])
+        expect(decideEvidenceClosures({ lineOfBusiness: "life", ...analysed, reviews: rows })).toEqual(["rv-open"])
     })
 
     it("the outcome word is the one the row records", () => {

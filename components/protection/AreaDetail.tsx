@@ -4,9 +4,16 @@ import { ArrowLeft, ClipboardList, FileText, MessageCircleQuestion, ShieldCheck 
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { IMPORTANCE_TONE } from "@/components/onboarding/protection-profile/ProtectionMapCard"
 import { ActionLink } from "@/components/protection/ActionLink"
-import { AreaOpenedBeacon } from "@/components/protection/AssessmentBeacons"
+import { AreaOpenedBeacon, LimitsLockedBeacon } from "@/components/protection/AssessmentBeacons"
 import { AreaQuestionFlow, type AnswerInput, type AnswerResult, type QuestionFlowCopy } from "@/components/protection/AreaQuestionFlow"
-import type { AreaDetailModel, AreaRiskView, MitigationView, PreventionFromPolicyView } from "@/components/protection/area-detail-model"
+import {
+    alignmentLine,
+    type AreaDetailModel,
+    type AreaPolicyLineView,
+    type AreaRiskView,
+    type MitigationView,
+    type PreventionFromPolicyView,
+} from "@/components/protection/area-detail-model"
 import type { getTranslations } from "@/lib/i18n"
 import { AREAS } from "@/lib/protection/domains"
 import { protectionDomainIcon } from "@/lib/services/protection-profile/domain-icons"
@@ -97,6 +104,36 @@ function RiskRow({ risk, copy, density, open }: { risk: AreaRiskView; copy: Atte
     )
 }
 
+/** One policy line: identity through policy-identity, status through the one pipeline, the limits word, and where it is listed. */
+function PolicyLineRow({ line, copy }: { line: AreaPolicyLineView; copy: AttentionCopy }) {
+    return (
+        <li
+            className="pw-subcard p-3"
+            data-policy={line.policyId}
+            data-detail={line.detail}
+            data-answered-by={line.fromAreaLabel !== null ? "true" : undefined}
+        >
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                <p className="text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{line.label}</p>
+                <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-caption font-semibold", TONE_PILL[line.statusTone])}>
+                    {line.statusWord}
+                </span>
+            </div>
+            <p className="mt-0.5 text-caption text-muted-foreground [overflow-wrap:anywhere]">
+                {line.lineLabel} · {line.limitsWord}
+            </p>
+            {line.fromAreaLabel !== null ? (
+                <p className="mt-0.5 text-caption text-muted-foreground [overflow-wrap:anywhere]">
+                    {copy.detail.fromOtherArea.replace("{area}", line.fromAreaLabel)}
+                </p>
+            ) : null}
+            <Link href={line.href} className="pw-soft-button mt-2 bg-background shadow-sm !text-caption">
+                {copy.detail.openPolicy}
+            </Link>
+        </li>
+    )
+}
+
 function MitigationRow({ item }: { item: MitigationView }) {
     return (
         <li className="pw-subcard p-3" data-mitigation={item.kind}>
@@ -164,7 +201,10 @@ export function AreaDetail({ model, copy, flowCopy, onAnswer }: AreaDetailProps)
                             </span>
                         }
                     />
-                    <p className="mt-3 text-body font-semibold leading-snug text-foreground [overflow-wrap:anywhere]">{model.alignmentWord}</p>
+                    {/* The verdict and its caveats on ONE line, never behind a disclosure. */}
+                    <p className="mt-3 text-body font-semibold leading-snug text-foreground [overflow-wrap:anywhere]" data-alignment-line>
+                        {alignmentLine(model, copy)}
+                    </p>
                     <p className="mt-1 text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">{model.confidenceWord}</p>
                     <div className="mt-4 space-y-3 border-t border-border pt-4">
                         <Explanation heading={copy.headings.why} body={model.explanation.why} density={density} />
@@ -204,31 +244,31 @@ export function AreaDetail({ model, copy, flowCopy, onAnswer }: AreaDetailProps)
                     <CardHead icon={FileText} title={copy.detail.policiesTitle} id="area-policies-heading" />
                     <p className="mt-2 text-caption leading-relaxed text-muted-foreground">{copy.detail.policiesLead}</p>
 
-                    {model.lines.length > 0 ? (
+                    {model.lines.length + model.answeredBy.length > 0 ? (
                         <ul className="mt-3 space-y-2">
                             {model.lines.map((line) => (
-                                <li key={line.policyId} className="pw-subcard p-3" data-policy={line.policyId} data-detail={line.detail}>
-                                    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                                        <p className="text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{line.label}</p>
-                                        <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-caption font-semibold", TONE_PILL[line.statusTone])}>
-                                            {line.statusWord}
-                                        </span>
-                                    </div>
-                                    <p className="mt-0.5 text-caption text-muted-foreground [overflow-wrap:anywhere]">
-                                        {line.lineLabel} · {line.limitsWord}
-                                    </p>
-                                    <Link href={line.href} className="pw-soft-button mt-2 bg-background shadow-sm !text-caption">
-                                        {copy.detail.openPolicy}
-                                    </Link>
-                                </li>
+                                <PolicyLineRow key={line.policyId} line={line} copy={copy} />
+                            ))}
+                            {/* A held line listed under another area that answers one of
+                                this area's risks — so «Φαίνεται να καλύπτεται» above never
+                                sits over «Δεν έχουμε δει ασφαλιστήριο για αυτή την περιοχή». */}
+                            {model.answeredBy.map((line) => (
+                                <PolicyLineRow key={`answered-by:${line.policyId}`} line={line} copy={copy} />
                             ))}
                         </ul>
                     ) : null}
 
+                    {/* The limits were not read and this tier cannot run the analysis
+                        that reads them: a FACT about the account, with the upgrade
+                        path as a text link — never a card that sells. */}
                     {model.limitsUnread && model.deepAnalysisLocked ? (
-                        <div className="pw-subcard mt-3 p-3">
-                            <p className="text-caption leading-relaxed text-foreground/80">{copy.detail.upgradeHint}</p>
-                            <Link href="/upgrade?reason=feature_locked" className="pw-soft-button mt-2 bg-background shadow-sm !text-caption">
+                        <div className="mt-3" data-limits-locked>
+                            <LimitsLockedBeacon area={model.area} />
+                            <p className="text-caption leading-relaxed text-foreground/80 [overflow-wrap:anywhere]">{copy.detail.upgradeHint}</p>
+                            <Link
+                                href="/upgrade?reason=feature_locked"
+                                className="pw-inline-action inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
+                            >
                                 {copy.detail.upgradeCta}
                             </Link>
                         </div>
@@ -257,12 +297,18 @@ export function AreaDetail({ model, copy, flowCopy, onAnswer }: AreaDetailProps)
                         </div>
                     ) : null}
 
-                    {!model.anyHeld ? (
+                    {/* «Δεν έχουμε δει» only when nothing at all has been seen — not
+                        over a lapsed line, not over a line from another area. The
+                        first-policy ask stays while nothing of this area's own is in
+                        force and nothing elsewhere answers it. */}
+                    {model.lines.length === 0 && model.answeredBy.length === 0 ? (
+                        <p className="mt-3 text-sm leading-relaxed text-foreground">
+                            {copy.detail.noPolicies} {copy.caveats.absence_not_evidence}
+                        </p>
+                    ) : null}
+                    {!model.anyHeld && model.answeredBy.length === 0 ? (
                         <div className="mt-3">
-                            <p className="text-sm leading-relaxed text-foreground">
-                                {copy.detail.noPolicies} {copy.caveats.absence_not_evidence}
-                            </p>
-                            <ActionLink href="/wallet/add" kind="check_first_policy" area={model.area} className="pw-soft-button mt-3">
+                            <ActionLink href="/wallet/add" kind="check_first_policy" area={model.area} className="pw-soft-button">
                                 {copy.detail.addPolicy}
                             </ActionLink>
                         </div>

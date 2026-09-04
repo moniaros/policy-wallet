@@ -3,12 +3,16 @@
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
+import type { PolicyholderProfile } from "@prisma/client"
+
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { AREA_IDS, type AttentionAreaId } from "@/lib/protection/domains"
-import { FACTOR_QUESTIONS, questionForFactor, type AssessmentFactorKey } from "@/lib/protection/factor-questions"
+import { FACTOR_QUESTIONS, INCOME_DEPENDENCY_FACTOR, questionForFactor, type AssessmentFactorKey } from "@/lib/protection/factor-questions"
 import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
+import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { applyFactWrites, existingFacts, profileFactData } from "@/lib/services/protection-profile/fact-writes"
 import { areaQuestions } from "@/components/protection/area-detail-model"
 import { factWritesForAnswer, valueSchemaFor } from "@/components/protection/assessment-answer"
@@ -93,6 +97,10 @@ export async function answerAssessmentFactor(input: unknown): Promise<AnswerAsse
 
     try {
         const existing = await db.policyholderProfile.findUnique({ where: { userId: dbUser.id } })
+        // Before the write: was this factor one the engine still lacked? Income
+        // dependency is not a catalogue factor (§E) and never settles an area.
+        const wasDecidingFactUnknown =
+            factor !== INCOME_DEPENDENCY_FACTOR && !toLifeContext(existing as PolicyholderProfile | null, now).known[factor]
         const applied = applyFactWrites({
             existing: existingFacts(existing as Record<string, unknown> | null),
             writes: factWritesForAnswer(question, value.data),
@@ -117,10 +125,28 @@ export async function answerAssessmentFactor(input: unknown): Promise<AnswerAsse
         const bundle = await loadAttentionAreas({ userId: dbUser.id, language, now })
         const view = bundle.areas.find((a) => a.area === (area as AttentionAreaId))
         const remaining = view ? areaQuestions(view, bundle.ctx, bundle.provenance, language, now) : []
+        const remainingUnknown = view?.unknownFactors.length ?? 0
+
+        // The server mirror of the area's completion (§J): this answer took
+        // the area's deciding facts from «one still missing» to «none» — so a
+        // refining answer on an already-settled area, or a floor the rule
+        // refused, never records a completion. `areas_completed` counts the
+        // activated areas with no deciding fact left; `remaining_unknown` the
+        // activated areas still waiting on one. Never throws (the recorder
+        // swallows), never on the money path.
+        if (wasDecidingFactUnknown && remainingUnknown === 0) {
+            const activated = bundle.areas.filter((a) => a.activated)
+            await recordConversionEvent(dbUser.id, "risk_assessment_completed", {
+                source: `protection_area:${area}`,
+                areas_completed: activated.filter((a) => a.unknownFactors.length === 0).length,
+                remaining_unknown: activated.filter((a) => a.unknownFactors.length > 0).length,
+            })
+        }
+
         return {
             ok: true,
             next: remaining[0]?.factor ?? null,
-            remainingUnknown: view?.unknownFactors.length ?? 0,
+            remainingUnknown,
             skipped: applied.skipped,
         }
     } catch (error) {

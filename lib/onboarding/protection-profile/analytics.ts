@@ -112,11 +112,23 @@ export function trackSkipped(locale: Locale, location: string) {
     trackJourneyEvent("onboarding_skipped", { locale, location })
 }
 
-export function trackUpload(locale: Locale, phase: "started" | "completed" | "failed", errorCode?: string) {
-    if (phase === "started") trackJourneyEvent("policy_upload_started", { locale, source: "onboarding" })
+/**
+ * What the map looked like when the upload was asked for — so «which areas
+ * drive uploads» is answerable. Area ids only, joined with `+`; the count is
+ * of rows that read «δεν έχουμε δει ακόμη ασφαλιστήριο» at that moment.
+ */
+export interface UploadMapContext {
+    activatedAreas: readonly string[]
+    notYetCheckedCount: number
+}
+
+export function trackUpload(locale: Locale, phase: "started" | "completed" | "failed", map: UploadMapContext, errorCode?: string) {
+    const activated_areas = map.activatedAreas.join("+")
+    const not_yet_checked_count = map.notYetCheckedCount
+    if (phase === "started") trackJourneyEvent("policy_upload_started", { locale, source: "onboarding", activated_areas, not_yet_checked_count })
     else if (phase === "completed") {
         trackJourneyEvent("policy_upload_completed", { locale, source: "onboarding" })
-        trackJourneyEvent("first_policy_uploaded", { source: "onboarding" })
+        trackJourneyEvent("first_policy_uploaded", { source: "onboarding", activated_areas, not_yet_checked_count })
     } else trackJourneyEvent("policy_upload_failed", { locale, source: "onboarding", error_code: errorCode })
 }
 

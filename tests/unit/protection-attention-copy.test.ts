@@ -69,7 +69,15 @@ describe("protection.attention / protection.assessment — both dictionaries car
             "review_finding",
             "nothing_now",
         ])
-        expect(Object.keys(attention.caveats as Tree)).toEqual(["limits_unread", "no_policy_seen", "absence_not_evidence", "limits_read", "unknown_list"])
+        expect(Object.keys(attention.caveats as Tree)).toEqual([
+            "limits_unread",
+            "no_policy_seen",
+            "absence_not_evidence",
+            "limits_read",
+            "unknown_list",
+            "expiring_soon",
+            "lapsed_only",
+        ])
         expect(Object.keys(attention.confidence as Tree)).toEqual([...EVIDENCE_LEVELS])
         expect((attention.next as Tree).answer_questions).toContain("{count}")
         expect((attention.caveats as Tree).unknown_list).toContain("{list}")
@@ -88,10 +96,54 @@ describe("protection.attention / protection.assessment — both dictionaries car
         expect(a.confidence).toEqual({
             unknown: "Δεν έχουμε αρκετά στοιχεία",
             inferred: "Το συμπεράναμε από όσα μας είπατε",
+            third_party_reported: "Βασίζεται σε όσα μας είπε ο σύμβουλός σας",
             user_reported: "Βασίζεται σε όσα μας είπατε",
             policy_verified: "Επιβεβαιώνεται από ασφαλιστήριό σας",
             externally_verified: "Επιβεβαιώνεται από εξωτερική πηγή",
         })
+    })
+
+    it("the lapsed caveat says we HAD seen a policy and do not know whether it was renewed — never «δεν έχετε»", () => {
+        const caveats = (EL.attention as Tree).caveats as Tree
+        expect(caveats.lapsed_only).toMatch(/είχαμε δει/)
+        expect(caveats.lapsed_only).toMatch(/έχει λήξει/)
+        expect(caveats.lapsed_only).not.toMatch(/δεν έχετε/)
+        expect(caveats.expiring_soon).toBe("λήγει σύντομα")
+    })
+
+    it("the limits fact states the tier as a fact, not a pitch", () => {
+        const detail = (EL.attention as Tree).detail as Tree
+        expect(detail.upgradeHint).toBe("Τα όρια αυτού του ασφαλιστηρίου δεν έχουν διαβαστεί — η ανάγνωση ορίων είναι μέρος της πλήρους ανάλυσης.")
+        expect(detail.fromOtherArea).toContain("{area}")
+    })
+})
+
+describe("a question's «why» explains the decision the answer informs — never a product argument (B10)", () => {
+    const factors = (EL.assessment as Tree).factors as Record<string, Tree>
+    const enFactors = (EN.assessment as Tree).factors as Record<string, Tree>
+
+    it("age: what we work out from it, not what it costs", () => {
+        expect(factors.age.why).not.toMatch(/κόστος|διαθεσιμότητα/)
+        expect(factors.age.why).toMatch(/υπολογίζουμε/)
+        expect(enFactors.age.why).not.toMatch(/cost|availability/i)
+    })
+
+    it("valuables: whether the items fit the home policy's limits, not that limits «often fall short»", () => {
+        expect(factors.valuables.why).not.toMatch(/συχνά δεν φτάνουν/)
+        expect(factors.valuables.why).toMatch(/ελέγχουμε/)
+        expect(factors.valuables.why).toMatch(/ασφαλιστηρίου/)
+        expect(enFactors.valuables.why).not.toMatch(/often fall short/i)
+    })
+
+    it("retirement: what we look at, not that the state pension «replaces only part»", () => {
+        expect(factors.retirementPlanning.why).not.toMatch(/μέρος μόνο/)
+        expect(factors.retirementPlanning.why).toMatch(/ξέρουμε αν/)
+        expect(enFactors.retirementPlanning.why).not.toMatch(/only part/i)
+    })
+
+    it("the pre-filled label asks for confirmation or correction", () => {
+        const ui = (EL.assessment as Tree).ui as Tree
+        expect(ui.prefilled).toBe("Προσυμπληρωμένο — επιβεβαιώστε ή διορθώστε.")
     })
 })
 

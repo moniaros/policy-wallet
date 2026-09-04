@@ -1,0 +1,10 @@
+// PROBE (red): a transfer mitigation whose detail carries price and persuasion clauses.
+{
+    kind: "transfer",
+    label: { en: "Contents cover with tenant's liability", el: "Ασφάλιση περιεχομένου με αστική ευθύνη ενοικιαστή" },
+    detail: {
+        en: "Usually one of the cheapest policies on the market, and the liability section is the reason to hold it. An annual policy is cheaper than three single trips, and the ΕΝΦΙΑ discount offsets part of the premium.",
+        el: "Συνήθως από τα φθηνότερα ασφαλιστήρια της αγοράς, και το τμήμα της αστικής ευθύνης είναι ο λόγος να το έχετε. Όσο περισσότερο αντέχετε μόνοι, τόσο λιγότερο κοστίζει, και η έκπτωση ΕΝΦΙΑ αντισταθμίζει μέρος του ασφαλίστρου.",
+    },
+    line: "renters",
+}

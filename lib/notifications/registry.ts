@@ -1676,6 +1676,7 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
     conv_free_ai_call_blocked: analyticsEvent("A free-tier AI call was blocked"),
     conv_protection_profile_completed: analyticsEvent("A protection profile was completed"),
     conv_first_policy_uploaded: analyticsEvent("A first policy was uploaded"),
+    conv_risk_assessment_completed: analyticsEvent("A risk assessment was completed"),
     conv_paid_ai_call_started: analyticsEvent("A paid AI call started"),
     conv_paid_ai_call_completed: analyticsEvent("A paid AI call completed"),
     conv_proposal_accepted: analyticsEvent("A proposal was accepted (funnel mirror)"),

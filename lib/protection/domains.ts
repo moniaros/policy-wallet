@@ -109,10 +109,15 @@ export const AREAS: Record<AttentionAreaId, AttentionArea> = {
         facet: "debt",
         priorityId: "money:debt",
         riskIds: ["life_debt"],
-        // No writable line is sold as loan or mortgage protection in the taxonomy
-        // today — no branch, no alias. `life_debt` is answered by `life` (listed
-        // with household) and `personal_accident` (income). When a
-        // mortgage-protection branch is authored, it belongs here.
+        // Deliberately empty, and verified against the taxonomy (Sept 2026): no
+        // branch and no alias is sold as loan, mortgage or credit-life
+        // protection — grep `mortgage|loan|credit` in lib/insurance/taxonomy.ts
+        // finds nothing. So no policy is LISTED here; the area is answered
+        // through `life_debt`'s own line instead: `life` (listed with
+        // household) and `group_life` in full, `personal_accident` in part
+        // (death by accident only — the engine reports `needs_review` with the
+        // note, never `already_covered`). When a mortgage-protection branch is
+        // authored it belongs here, and areaForLob will then list it.
         lobFamilies: [],
         scoreCategory: "life",
         label: { el: "Δάνειο και υποχρεώσεις", en: "Loans and commitments" },

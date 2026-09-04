@@ -159,9 +159,17 @@ export async function declareLifeEvent(
     // precedence rule a declared event replaces the wizard's figure, as it
     // always did. A registry `clear` is a deliberate erasure (`null` in the
     // patch), which is the one shape applyFactWrites will not infer.
+    //
+    // Provenance names WHO said it: an event the advisor recorded is a third
+    // party's statement (`advisor` → third_party_reported in
+    // lib/protection/evidence.ts); every other source is the person's own.
     const facts = applyFactWrites({
         existing: existingFacts(profile as Record<string, unknown> | null),
-        writes: factWritesFrom(applied.patch, { source: "life_event", precision: "exact", clearNulls: true }),
+        writes: factWritesFrom(applied.patch, {
+            source: source === "advisor_recorded" ? "advisor" : "life_event",
+            precision: "exact",
+            clearNulls: true,
+        }),
         alsoAnswered: applied.answeredColumns,
         now: new Date(),
     })

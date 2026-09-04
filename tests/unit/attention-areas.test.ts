@@ -158,15 +158,23 @@ describe("household: dependency declared, then a policy, then a finding", () => 
         expect(h.protection.hasAnalysed).toBe(false)
         // The line is policy_verified; the facts it rests on are user_reported; the weaker wins.
         expect(h.confidence).toBe("user_reported")
-        expect(`${h.explanation.why} ${h.explanation.unknown}`).toContain(ATTENTION.caveats.limits_unread)
+        // The limits caveat lives on the unknown line, and the flag says it inline.
+        expect(h.explanation.unknown).toBe(ATTENTION.caveats.limits_unread)
+        expect(h.explanation.why).not.toContain(ATTENTION.caveats.limits_unread)
+        expect(h.limitsUnread).toBe(true)
+        expect(h.answeredBy.map((l) => [l.lob, l.policyId])).toEqual([["life", "life-1"]])
+        expect(h.expiringSoon).toBe(false)
+        expect(h.lapsedOnly).toBe(false)
         expect(h.explanation.nextStep).toBe("nothing_now")
     })
 
-    it("summary-only with refining facts unknown: the why carries the limits caveat, the unknown line lists the facts", () => {
+    it("summary-only with refining facts unknown: the unknown line lists the facts AND keeps the limits caveat — the why never carries it", () => {
         const h = area(build({ profile: FAMILY, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy()] }), "household")
         expect(h.alignment).toBe("appears_covered")
-        expect(h.explanation.why).toContain(ATTENTION.caveats.limits_unread)
+        expect(h.explanation.why).not.toContain(ATTENTION.caveats.limits_unread)
         expect(h.explanation.unknown).toMatch(/^Δεν ξέρουμε ακόμη: το εισόδημά σας/)
+        expect(h.explanation.unknown).toContain(ATTENTION.caveats.limits_unread)
+        expect(h.limitsUnread).toBe(true)
         expect(h.explanation.nextStep).toBe("answer_questions")
         expect(h.explanation.next).toBe("Απαντήστε 4 σύντομες ερωτήσεις.")
     })
@@ -176,7 +184,15 @@ describe("household: dependency declared, then a policy, then a finding", () => 
         expect(h.alignment).toBe("appears_covered")
         expect(h.protection.hasAnalysed).toBe(true)
         expect(h.explanation.unknown).toBe(ATTENTION.caveats.limits_read)
+        expect(h.limitsUnread).toBe(false)
         expect(h.confidence).toBe("user_reported")
+    })
+
+    it("an answering line that ends within the month is flagged inline — the word stays «φαίνεται να καλύπτεται»", () => {
+        const h = area(build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy({ lifecycle: "expiring_soon" })] }), "household")
+        expect(h.alignment).toBe("appears_covered")
+        expect(h.expiringSoon).toBe(true)
+        expect(h.answeredBy.map((l) => l.lifecycle)).toEqual(["expiring_soon"])
     })
 
     it("a rule-decided finding on that policy is the only `gap`", () => {
@@ -188,23 +204,73 @@ describe("household: dependency declared, then a policy, then a finding", () => 
         expect(h.requiresValidation).toBe(false)
     })
 
-    it("an expired-only line does not count — not for cover, not for its finding", () => {
+    it("an expired-only line does not count — not for cover, not for its finding — and the unknown line says it lapsed, never that we saw nothing", () => {
         const h = area(build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy({ lifecycle: "expired", gaps: [RULE_GAP] })] }), "household")
         expect(h.alignment).toBe("not_yet_checked")
         expect(h.requiresValidation).toBe(true)
         expect(h.protection.lines.map((l) => [l.lifecycle, l.held])).toEqual([["expired", false]])
         expect(h.protection.gaps[0].onHeldPolicy).toBe(false)
-        expect(h.explanation.unknown).toContain(ATTENTION.caveats.absence_not_evidence)
+        expect(h.lapsedOnly).toBe(true)
+        expect(h.answeredBy).toEqual([])
+        expect(h.explanation.unknown).toBe(ATTENTION.caveats.lapsed_only)
+        expect(h.explanation.unknown).not.toContain(ATTENTION.caveats.no_policy_seen)
+        // With facts still to ask, the list comes first and the lapse caveat follows.
+        const asking = area(build({ profile: FAMILY, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy({ lifecycle: "expired" })] }), "household")
+        expect(asking.lapsedOnly).toBe(true)
+        expect(asking.explanation.unknown).toMatch(/^Δεν ξέρουμε ακόμη: /)
+        expect(asking.explanation.unknown).toContain(ATTENTION.caveats.lapsed_only)
+        expect(asking.explanation.unknown).not.toContain(ATTENTION.caveats.absence_not_evidence)
+        // A cancelled or undated document is the same: presence we cannot place in time.
+        const other = area(build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy({ lifecycle: "other" })] }), "household")
+        expect(other.lapsedOnly).toBe(true)
+        // Nothing seen at all: not lapsed, and the two absence sentences as before.
+        const none = area(build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE }), "household")
+        expect(none.lapsedOnly).toBe(false)
+        expect(none.explanation.unknown).toBe(`${ATTENTION.caveats.no_policy_seen} ${ATTENTION.caveats.absence_not_evidence}`)
     })
 
-    it("a line held under another area that answers the risk still counts, and validation is satisfied", () => {
+    it("a personal-accident policy (held under income) answers the death risk in PART: review with the note, listed under answeredBy, never «φαίνεται να καλύπτεται»", () => {
         const views = build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy({ id: "pa", lineOfBusiness: "personal_accident" })] })
         const h = area(views, "household")
         expect(h.protection.lines).toEqual([])
         expect(area(views, "income").protection.lines.map((l) => l.lob)).toEqual(["personal_accident"])
-        expect(h.alignment).toBe("appears_covered")
+        const risk = h.exposure.risks.find((r) => r.id === "life_dependents")
+        expect(risk?.status).toBe("needs_review")
+        expect(h.alignment).toBe("review")
+        expect(h.alignment).not.toBe("appears_covered")
+        expect(h.answeredBy.map((l) => [l.lob, l.policyId])).toEqual([["personal_accident", "pa"]])
         expect(h.requiresValidation).toBe(false)
         expect(h.confidence).toBe("user_reported")
+        expect(h.explanation.nextStep).toBe("review_finding")
+        expect(h.limitsUnread).toBe(false)
+    })
+
+    it("an employer's group life scheme answers the household in full; an income-protection policy answers it not at all", () => {
+        const group = area(build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy({ id: "gl", lineOfBusiness: "group_life" })] }), "household")
+        expect(group.alignment).toBe("appears_covered")
+        expect(group.answeredBy.map((l) => l.lob)).toEqual(["group_life"])
+        // Filed under `life` by the taxonomy, an income line — and it answers income, not death.
+        const views = build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE, policies: [lifePolicy({ id: "ip", lineOfBusiness: "income_protection" })] })
+        const h = area(views, "household")
+        expect(h.alignment).toBe("not_yet_checked")
+        expect(h.answeredBy).toEqual([])
+        expect(h.requiresValidation).toBe(true)
+        expect(area(views, "income").protection.lines.map((l) => l.lob)).toEqual(["income_protection"])
+    })
+
+    it("refinableFactors: a fact known only as a floor may be asked again to confirm or correct; an exact one may not; the engine's `known` is untouched", () => {
+        const floor = area(build({ profile: FAMILY, priorities: [HOUSEHOLD_HIGH], provenance: { ...FAMILY_PROVENANCE, dependentsCount: coarse() } }), "household")
+        expect(floor.refinableFactors).toEqual(["dependents"])
+        expect(floor.unknownFactors).not.toContain("dependents")
+        expect(floor.exposure.risks.find((r) => r.id === "life_dependents")?.missingFactors).toEqual([])
+        const exact = area(build({ profile: FAMILY, priorities: [HOUSEHOLD_HIGH], provenance: FAMILY_PROVENANCE }), "household")
+        expect(exact.refinableFactors).toEqual([])
+        // Known but unstamped (a row older than provenance) is treated as declared: not refinable.
+        const unstamped = area(build({ profile: FAMILY, priorities: [HOUSEHOLD_HIGH] }), "household")
+        expect(unstamped.refinableFactors).toEqual([])
+        // Deciding facts first, then refining ones.
+        const both = area(build({ profile: FAMILY_FULL, priorities: [HOUSEHOLD_HIGH], provenance: { ...FAMILY_PROVENANCE, savingsAmount: coarse(), dependentsCount: coarse() } }), "household")
+        expect(both.refinableFactors).toEqual(["dependents", "savings"])
     })
 })
 
@@ -261,6 +327,18 @@ describe("alignment rows", () => {
         const without = area(build({ profile: owner }), "residence")
         expect(without.alignment).toBe("not_yet_checked")
         expect(without.explanation.nextStep).toBe("check_first_policy")
+    })
+
+    it("a tenant's contents policy does not answer the owner's building; a motorbike policy answers the motor liability because the catalogue names it", () => {
+        const owner = { residenceType: "owned", ownsHome: true, propertiesOwned: 1, rentsOutProperty: false, isBuildingManager: false, vehiclesCount: 1, answeredFields: ["residenceType", "ownsHome", "propertiesOwned", "rentsOutProperty", "isBuildingManager", "vehiclesCount"] }
+        const renters = (): PolicyEvidenceInput => ({ id: "r1", lineOfBusiness: "renters", lifecycle: "active", detail: "summary_only", gaps: [] })
+        const res = area(build({ profile: owner, policies: [renters()] }), "residence")
+        expect(res.exposure.risks.find((r) => r.id === "home_building_damage")?.status).toBe("protection_gap")
+        expect(res.alignment).not.toBe("appears_covered")
+        const bike = (): PolicyEvidenceInput => ({ id: "m1", lineOfBusiness: "motorbike", lifecycle: "active", detail: "summary_only", gaps: [] })
+        const mob = area(build({ profile: owner, policies: [bike()] }), "mobility")
+        expect(mob.exposure.risks.find((r) => r.id === "motor_liability")?.status).toBe("already_covered")
+        expect(mob.answeredBy.map((l) => l.lob)).toEqual(["motorbike"])
     })
 
     it("an area whose risks are all out of scope has nothing to do", () => {

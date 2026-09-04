@@ -196,6 +196,24 @@ export function tierUnlocks(tier: PlanTier, gate: FeatureGate): boolean {
     return TIER_RANK[tier] >= TIER_RANK[gate.requiredPlan]
 }
 
+/**
+ * May this B2C tier run the DEEP analysis pipeline (clarity, gaps, translation)?
+ *
+ * The ONE predicate. The orchestrator's `createRun` gate, the onboarding's
+ * `triggerOnboardingAnalysis`, the policy service's post-upload trigger and
+ * every locked-state display read it; none compares `tier` to a literal.
+ * Until Sept 2026 three server gates and two displays each spelled the rule
+ * out on their own — the displays as `tier === "free"`, the gates as
+ * `tier !== "pro"` — so Starter (code `plus`) was told the analysis was
+ * unlocked by a page whose server refused to run it. Agents are metered by
+ * their own agent plan and never pass through here (`isAgentInitiator`).
+ * tests/unit/deep-analysis-gate-single-predicate.test.ts enumerates app/ and
+ * lib/ for a second spelling.
+ */
+export function canRunDeepAnalysis(tier: PlanTier): boolean {
+    return tierUnlocks(tier, FEATURE_GATES.full_ai_policy_analysis)
+}
+
 /** The plan the modal should recommend for a given gate + current tier. */
 export function recommendedPlan(tier: PlanTier, gate: FeatureGate): Exclude<PlanTier, "free"> {
     if (gate.requiredPlan === "pro") return "pro"

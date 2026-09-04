@@ -433,14 +433,33 @@ describe("«ανά κίνδυνο» lens renders the attention areas (PA-01, PA-
         }
     })
 
-    it("PA-01: the counts carry the registered attention.* keys and agree with attentionSummary", () => {
+    it("PA-01: the counts carry the registered attention.* keys and count the rows the card shows — the activated ones, folded dormant rows excluded", () => {
         const { container } = renderSurface(riskLensProps)
         const areaCount = container.querySelector('[data-count="attention.areaCount"]')
         expect(areaCount).toBeTruthy()
-        expect(Number((areaCount!.textContent || "").match(/\d+/)?.[0])).toBe(ATTENTION.summary.areaCount)
+        const rendered = ATTENTION_AREAS.filter((a) => a.activated)
+        expect(Number((areaCount!.textContent || "").match(/\d+/)?.[0])).toBe(rendered.length)
+        expect(rendered.length).toBeLessThan(ATTENTION.summary.areaCount)
         for (const key of ["attention.areaCount", "attention.unknownCount", "attention.coveredCount"]) {
             expect(isRegisteredCountKey(key), `${key} is not registered`).toBe(true)
         }
+        // One sentence, not figures: the three keys sit in one paragraph.
+        const sentence = container.querySelector("[data-attention-counts]")!
+        for (const el of Array.from(container.querySelectorAll('[data-count^="attention."]'))) expect(sentence.contains(el)).toBe(true)
+    })
+
+    it("I8: the watch renders LAST, inside the monitoring section, below the areas card — one verdict vocabulary above it", () => {
+        const { container } = renderSurface(riskLensProps)
+        const monitoring = container.querySelector('[data-surface="monitoring"]')!
+        expect(monitoring, "no monitoring section").toBeTruthy()
+        expect(monitoring.textContent).toContain(t.protection.attention.monitoring.title)
+        expect(monitoring.textContent).toContain(t.protection.attention.monitoring.lead)
+        // Every watch label still renders (R-06) — inside the framed section, never beside the areas.
+        for (const signal of watch) expect(monitoring.textContent).toContain(signal.label.el)
+        const areas = container.querySelector("section[aria-labelledby='attention-areas-heading']")!
+        expect(areas.compareDocumentPosition(monitoring) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+        // The verdict words of the watch appear nowhere in the areas card.
+        for (const signal of watch) expect(areas.textContent).not.toContain(signal.label.el)
     })
 
     it("PA-02: every factor the engine still needs renders as its noun, linking to the area that asks it", () => {

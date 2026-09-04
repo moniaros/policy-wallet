@@ -3,8 +3,8 @@ import Link from "next/link"
 import { ChevronRight, Map } from "lucide-react"
 
 import { CardHead } from "@/components/dashboard/home/CardHead"
-import { AssessmentStartedBeacon } from "@/components/protection/AssessmentBeacons"
-import type { AreaListItemView } from "@/components/protection/area-detail-model"
+import { AreasCreatedBeacon, AssessmentStartedBeacon } from "@/components/protection/AssessmentBeacons"
+import { alignmentLine, type AreaListItemView } from "@/components/protection/area-detail-model"
 import { IMPORTANCE_TONE } from "@/components/onboarding/protection-profile/ProtectionMapCard"
 import type { getTranslations } from "@/lib/i18n"
 import { AREAS } from "@/lib/protection/domains"
@@ -15,12 +15,17 @@ type AttentionCopy = ReturnType<typeof getTranslations>["protection"]["attention
 
 export interface AttentionAreasCardProps {
     items: AreaListItemView[]
-    /** Counts of words (attentionSummary) — never a figure. */
+    /** Counts of words (attentionSummary) — never a figure. `activatedCount` feeds the started beacon. */
     summary: { areaCount: number; activatedCount: number; unknownCount: number; coveredCount: number }
     copy: AttentionCopy
     headingId?: string
 }
 
+/**
+ * One row: label, importance word, then the one line under it — the
+ * alignment word with its caveats INLINE (`alignmentLine`), never in a
+ * disclosure — and the confidence phrase.
+ */
 function AreaRow({ item, copy }: { item: AreaListItemView; copy: AttentionCopy }) {
     return (
         <li>
@@ -41,9 +46,8 @@ function AreaRow({ item, copy }: { item: AreaListItemView; copy: AttentionCopy }
                             {item.importanceWord}
                         </span>
                     </span>
-                    <span className="mt-0.5 block text-caption leading-snug text-foreground [overflow-wrap:anywhere]">
-                        {item.alignmentWord}
-                        {item.limitsCaveat ? ` — ${copy.caveats.limits_unread}` : null}
+                    <span className="mt-0.5 block text-caption leading-snug text-foreground [overflow-wrap:anywhere]" data-alignment-line>
+                        {alignmentLine(item, copy)}
                     </span>
                     <span className="mt-0.5 block text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]">{item.confidenceWord}</span>
                 </span>
@@ -53,32 +57,36 @@ function AreaRow({ item, copy }: { item: AreaListItemView; copy: AttentionCopy }
     )
 }
 
+function countText(n: number, many: string, one: string, none?: string): string {
+    if (n === 0 && none) return none
+    return n === 1 ? one : many.replace("{n}", String(n))
+}
+
 /**
  * «Οι περιοχές που αξίζει να προσέξετε» — the attention areas on the risk
  * lens (docs/planning/PERSONAL_RISK_PROFILE.md §D). Activated areas first,
- * each a row: label, importance WORD, alignment WORD, confidence phrase, and
- * the chevron into its detail. Dormant areas collapse under «Δεν το
- * εξετάσαμε ακόμη». The counts are counts of words, under the registered
- * `attention.*` keys; nothing here is a figure.
+ * each a row: label, importance WORD, alignment WORD with its inline caveats,
+ * confidence phrase, and the chevron into its detail. Dormant areas collapse
+ * under «Δεν το εξετάσαμε ακόμη».
+ *
+ * The counts are ONE sentence about the rows this card shows — the activated
+ * rows, folded dormant ones excluded — under the registered `attention.*`
+ * keys. They are counts of words, never a figure, and they are derived from
+ * the rendered rows, not from a summary computed over rows the reader cannot
+ * see.
  */
 export function AttentionAreasCard({ items, summary, copy, headingId = "attention-areas-heading" }: AttentionAreasCardProps) {
     const active = items.filter((i) => i.activated)
     const dormant = items.filter((i) => !i.activated)
+    const unknownCount = active.filter((i) => i.alignment === "unknown").length
+    const coveredCount = active.filter((i) => i.alignment === "appears_covered").length
     return (
         <section className="pw-card pw-pad" aria-labelledby={headingId}>
             <AssessmentStartedBeacon activatedCount={summary.activatedCount} />
-            <CardHead
-                icon={Map}
-                title={copy.list.title}
-                id={headingId}
-                meta={
-                    summary.activatedCount > 0 ? (
-                        <span className="text-caption tabular-nums text-muted-foreground">
-                            {copy.list.activatedMeta.replace("{n}", String(summary.activatedCount))}
-                        </span>
-                    ) : undefined
-                }
+            <AreasCreatedBeacon
+                areas={items.map((i) => ({ area: i.area, importance: i.importance, confidence: i.confidence, alignment: i.alignment }))}
             />
+            <CardHead icon={Map} title={copy.list.title} id={headingId} />
             <p className="mt-3 text-body leading-relaxed text-foreground">{copy.list.lead}</p>
 
             {active.length > 0 ? (
@@ -103,20 +111,27 @@ export function AttentionAreasCard({ items, summary, copy, headingId = "attentio
                 </details>
             ) : null}
 
-            <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-caption text-muted-foreground">
+            <p className="mt-3 text-caption leading-relaxed text-muted-foreground" data-attention-counts>
                 <span data-count="attention.areaCount" className="tabular-nums">
-                    {copy.list.areaCount.replace("{n}", String(items.length))}
+                    {countText(active.length, copy.list.areaCount, copy.list.areaCountOne, copy.list.areaCountNone)}
                 </span>
-                {summary.unknownCount > 0 ? (
-                    <span data-count="attention.unknownCount" className="tabular-nums">
-                        {copy.list.unknownCount.replace("{n}", String(summary.unknownCount))}
-                    </span>
+                {unknownCount > 0 ? (
+                    <>
+                        {" — "}
+                        <span data-count="attention.unknownCount" className="tabular-nums">
+                            {countText(unknownCount, copy.list.unknownCount, copy.list.unknownCountOne)}
+                        </span>
+                    </>
                 ) : null}
-                {summary.coveredCount > 0 ? (
-                    <span data-count="attention.coveredCount" className="tabular-nums">
-                        {copy.list.coveredCount.replace("{n}", String(summary.coveredCount))}
-                    </span>
+                {coveredCount > 0 ? (
+                    <>
+                        {unknownCount > 0 ? ", " : " — "}
+                        <span data-count="attention.coveredCount" className="tabular-nums">
+                            {countText(coveredCount, copy.list.coveredCount, copy.list.coveredCountOne)}
+                        </span>
+                    </>
                 ) : null}
+                .
             </p>
             <p className="mt-2 text-caption leading-relaxed text-muted-foreground">{copy.caveats.absence_not_evidence}</p>
         </section>

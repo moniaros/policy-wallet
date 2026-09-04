@@ -48,6 +48,7 @@ import {
 } from "@/lib/services/protection-profile/vocabulary"
 import { nextStep } from "@/lib/onboarding/protection-profile/steps"
 import { ProtectionProfileStepSchema, type ProtectionAnswers } from "@/lib/validations/protection-profile"
+import type { PlanTier } from "@/types/subscription-entitlements"
 
 type Json = Prisma.InputJsonValue
 
@@ -278,22 +279,48 @@ export async function markProtectionSummaryViewed(): Promise<void> {
     })
 }
 
-/** «Θα το κάνω αργότερα» / «Δεν το έχω πρόχειρο τώρα» — or the upload done. */
-export async function recordUploadChoice(choice: "done" | "later"): Promise<void> {
+/**
+ * The map, re-read after the first upload — the same fields the completion
+ * carries for the rows, so the client can diff the picture before the upload
+ * against the one after it. Nothing else from the bundle: `ctx` (Art. 9
+ * among it), `needs` and `provenance` stay on the server.
+ */
+export type ProtectionMapRefresh = Pick<ProtectionProfileCompletion, "areas" | "attention" | "activatedAreas" | "policyCount" | "analysedCount">
+
+function mapRefreshFrom(bundle: Awaited<ReturnType<typeof loadAttentionAreas>>): ProtectionMapRefresh {
+    return {
+        areas: bundle.areas,
+        attention: bundle.summary,
+        activatedAreas: bundle.activatedAreas,
+        policyCount: bundle.policyCount,
+        analysedCount: bundle.analysedCount,
+    }
+}
+
+/**
+ * «Θα το κάνω αργότερα» / «Δεν το έχω πρόχειρο τώρα» — or the upload done.
+ * After a `done` the map is re-read and returned, so the flow can go BACK to
+ * the picture and show what the document moved; a `later` returns nothing.
+ */
+export async function recordUploadChoice(choice: "done" | "later"): Promise<ProtectionMapRefresh | null> {
     const { dbUser } = await getAuthenticatedUser()
     const userId = dbUser.id
+    const language = dbUser.preferredLanguage === "en" ? "en" : "el"
     await db.protectionProfile.upsert({
         where: { userId },
         create: { userId, uploadChoice: choice },
         update: { uploadChoice: choice },
     })
-    if (choice === "done") {
-        const count = await db.policy.count({ where: { ownerUserId: userId, status: { not: "deleted" } } })
-        if (count === 1) {
-            await recordConversionEvent(userId, "first_policy_uploaded", { source: "onboarding" })
-        }
+    if (choice !== "done") {
+        revalidatePath("/dashboard")
+        return null
+    }
+    const count = await db.policy.count({ where: { ownerUserId: userId, status: { not: "deleted" } } })
+    if (count === 1) {
+        await recordConversionEvent(userId, "first_policy_uploaded", { source: "onboarding" })
     }
     revalidatePath("/dashboard")
+    return mapRefreshFrom(await loadAttentionAreas({ userId, language }))
 }
 
 /** «Παράλειψη για τώρα» — recorded so the dashboard never redirects again. */
@@ -341,13 +368,21 @@ export interface ProtectionOnboardingViewState extends ResolvedProtectionOnboard
     language: "el" | "en"
     /** The stage was finished (legacy flag) — the page redirects to the dashboard. */
     finished: boolean
+    /**
+     * The plan the server resolved — what decides whether the first upload's
+     * reading will include the limits. The upload screen's tier-honest line
+     * reads this and never a client-side guess.
+     */
+    tier: PlanTier
 }
 
 export async function getProtectionOnboardingState(): Promise<ProtectionOnboardingViewState> {
     const { dbUser } = await getAuthenticatedUser()
-    const [row, profile] = await Promise.all([
+    const { resolveUserEntitlements } = await import("@/lib/subscription-entitlements")
+    const [row, profile, entitlements] = await Promise.all([
         db.protectionProfile.findUnique({ where: { userId: dbUser.id } }),
         db.policyholderProfile.findUnique({ where: { userId: dbUser.id }, select: { preferences: true } }),
+        resolveUserEntitlements(dbUser.id),
     ])
     return {
         ...resolveProtectionOnboardingState(row),
@@ -355,5 +390,6 @@ export async function getProtectionOnboardingState(): Promise<ProtectionOnboardi
         hasAiConsent: Boolean(dbUser.aiProcessingConsentVersion),
         language: dbUser.preferredLanguage === "en" ? "en" : "el",
         finished: objectOf(profile?.preferences).onboardingCompleted === true,
+        tier: entitlements.tier,
     }
 }

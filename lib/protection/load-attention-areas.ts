@@ -55,7 +55,8 @@ import {
 } from "@/lib/protection/attention-areas"
 import {
     buildCoverageModel,
-    type CoverageInput,
+    coverageInputsFrom,
+    protectionDetailFrom,
     type GapFindingInput,
     type PolicyEvidenceInput,
     type PolicyLifecycleBand,
@@ -235,24 +236,6 @@ function lifecycleBand(stored: string | null | undefined, lifecycle: PolicyLifec
     }
 }
 
-/** `acordData.coverages[]`, carried as the model's plain shape — never interpreted. */
-function coverageList(acordData: unknown): CoverageInput[] {
-    const raw = (acordData as { coverages?: unknown } | null | undefined)?.coverages
-    if (!Array.isArray(raw)) return []
-    const out: CoverageInput[] = []
-    for (const entry of raw) {
-        if (!entry || typeof entry !== "object") continue
-        const c = entry as Record<string, unknown>
-        if (typeof c.name !== "string" || c.name.trim().length === 0) continue
-        out.push({
-            name: c.name.trim(),
-            ...(typeof c.limit === "number" && Number.isFinite(c.limit) ? { limit: c.limit } : {}),
-            ...(typeof c.status === "string" && c.status.length > 0 ? { status: c.status } : {}),
-        })
-    }
-    return out
-}
-
 /** One rule-decided finding, titled and graded through the single sources. */
 function toFinding(gap: GapRow, lineOfBusiness: string): GapFindingInput {
     const slug = gap.definition.slug
@@ -267,8 +250,9 @@ function toFinding(gap: GapRow, lineOfBusiness: string): GapFindingInput {
 }
 
 function toEvidence(policy: PolicyRow, now: Date): PolicyEvidenceInput {
-    const coverages = coverageList(policy.acordData)
-    const detail: ProtectionDetail = coverages.length > 0 ? "analysed" : "summary_only"
+    // The one reading of «were the limits read» — shared with the review closer.
+    const coverages = coverageInputsFrom(policy.acordData)
+    const detail: ProtectionDetail = protectionDetailFrom(policy.acordData)
     return {
         id: policy.id,
         lineOfBusiness: policy.lineOfBusiness,

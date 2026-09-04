@@ -125,6 +125,10 @@ export interface JourneyEventPayloadMap {
         file_type?: string
         file_size_kb?: number
         source?: string
+        /** Onboarding map context (§J): activated area ids joined with `+`. */
+        activated_areas?: string
+        /** Rows reading «δεν έχουμε δει ακόμη ασφαλιστήριο» when the upload began. */
+        not_yet_checked_count?: number
     }
     policy_upload_completed: {
         locale?: string
@@ -210,6 +214,10 @@ export interface JourneyEventPayloadMap {
     first_policy_uploaded: {
         policy_id?: string
         source?: string
+        /** Onboarding map context (§J): activated area ids joined with `+`. */
+        activated_areas?: string
+        /** Rows reading «δεν έχουμε δει ακόμη ασφαλιστήριο» when the upload began. */
+        not_yet_checked_count?: number
     }
     life_context_completed: {
         locale?: string
@@ -225,6 +233,8 @@ export interface JourneyEventPayloadMap {
     risk_assessment_started: {
         source: "protection" | "dashboard" | "onboarding_map"
         activated_count?: number
+        /** Whole days since this browser last rendered the areas list; null on a first visit or without storage. */
+        days_since_last_visit?: number | null
     }
     risk_area_opened: {
         area: string
