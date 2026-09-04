@@ -70,6 +70,13 @@ export const COUNT_KEYS: Record<string, string> = {
     "needs.priorityCount": "Derived protection priorities rendered by the protection map / priorities card.",
     "needs.unsureCount": "Onboarding screens answered «δεν είμαι σίγουρος/η» — the honest lower-confidence signal.",
 
+    // attention.* — the composed needs → risk → coverage view (attentionSummary in
+    // lib/protection/attention-areas.ts). Counts of AREAS in a state, never a score
+    // and never summable with each other into one number.
+    "attention.areaCount": "Attention areas a surface renders (activated first).",
+    "attention.unknownCount": "Areas whose alignment is «Δεν το ξεκαθαρίσαμε ακόμη» — a deciding fact is still unknown.",
+    "attention.coveredCount": "Areas that «φαίνεται να καλύπτονται» — a held policy the catalogue accepts, limits read or not.",
+
     // household.* — the customer's household as the risk graph records it.
     "household.memberCount": "1 + dependants.",
     "household.dependantCount":

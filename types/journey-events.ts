@@ -21,6 +21,17 @@ export type JourneyEventName =
     | "protection_summary_viewed"
     | "onboarding_completed"
     | "first_policy_uploaded"
+    // Personal risk profile (docs/planning/PERSONAL_RISK_PROFILE.md §J): the
+    // needs → risk → coverage chain, so product questions about which area
+    // drives uploads and returns can be answered. Options are enum ids only.
+    | "life_context_completed"
+    | "attention_area_created"
+    | "risk_assessment_started"
+    | "risk_area_opened"
+    | "risk_factor_answered"
+    | "risk_area_completed"
+    | "recommendation_viewed"
+    | "action_started"
     | "first_ai_answer_received"
     | "first_policy_shared"
     | "upgrade_prompt_viewed"
@@ -199,6 +210,44 @@ export interface JourneyEventPayloadMap {
     first_policy_uploaded: {
         policy_id?: string
         source?: string
+    }
+    life_context_completed: {
+        locale?: string
+        intent?: string
+        dont_know_count?: number
+    }
+    attention_area_created: {
+        area: string
+        importance: string
+        confidence: string
+        alignment?: string
+    }
+    risk_assessment_started: {
+        source: "protection" | "dashboard" | "onboarding_map"
+        activated_count?: number
+    }
+    risk_area_opened: {
+        area: string
+        importance: string
+        alignment: string
+        confidence: string
+    }
+    risk_factor_answered: {
+        area: string
+        factor: string
+        special_category?: boolean
+    }
+    risk_area_completed: {
+        area: string
+        remaining_unknown: number
+    }
+    recommendation_viewed: {
+        rule_id: string
+        area?: string
+    }
+    action_started: {
+        kind: "answer_questions" | "check_first_policy" | "review_finding" | "prevention" | "contact_advisor"
+        area?: string
     }
     first_ai_answer_received: {
         policy_id?: string
