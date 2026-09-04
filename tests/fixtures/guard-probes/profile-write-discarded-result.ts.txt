@@ -1,0 +1,23 @@
+// PROBE FIXTURE for tests/unit/profile-writes-single-path.test.ts.
+// Calls applyFactWrites — and then writes the RAW patch, discarding what it
+// decided. The precedence rule ran and changed nothing. The guard must flag
+// this as `result_discarded`, not accept the call as proof.
+import { db } from "@/lib/db"
+import { applyFactWrites, existingFacts, factWritesFrom, profileFactData } from "@/lib/services/protection-profile/fact-writes"
+
+export async function probeDiscardedResult(userId: string, patch: Record<string, unknown>) {
+    const existing = await db.policyholderProfile.findUnique({ where: { userId } })
+    const facts = profileFactData(
+        applyFactWrites({
+            existing: existingFacts(existing as Record<string, unknown> | null),
+            writes: factWritesFrom(patch, { source: "assessment", precision: "exact" }),
+            now: new Date(),
+        })
+    )
+    void facts
+    await db.policyholderProfile.upsert({
+        where: { userId },
+        update: { ...patch },
+        create: { userId, ...patch },
+    })
+}

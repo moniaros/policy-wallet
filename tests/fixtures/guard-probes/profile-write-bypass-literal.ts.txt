@@ -1,0 +1,13 @@
+// PROBE FIXTURE for tests/unit/profile-writes-single-path.test.ts.
+// A fact column written as a literal, with no applyFactWrites in sight — the
+// shape of the risk-profile route before Sept 2026. The guard must flag this.
+// Committed per the "guards must enumerate, not assume" rule in CLAUDE.md.
+import { db } from "@/lib/db"
+
+export async function probeBypassLiteral(userId: string) {
+    await db.policyholderProfile.upsert({
+        where: { userId },
+        update: { childrenCount: 2, answeredFields: ["childrenCount"] },
+        create: { userId, childrenCount: 2, answeredFields: ["childrenCount"] },
+    })
+}

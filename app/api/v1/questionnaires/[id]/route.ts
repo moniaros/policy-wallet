@@ -5,9 +5,14 @@ import { requireApiUser } from "@/lib/api-auth"
 import { z } from "zod"
 import {
     mapAnswersToProfile,
-    mergeAnsweredFields,
     type MappableQuestion,
 } from "@/lib/services/questionnaire/profile-mapping"
+import {
+    applyFactWrites,
+    existingFacts,
+    factWritesFrom,
+    profileFactData,
+} from "@/lib/services/protection-profile/fact-writes"
 import type { QuestionnaireAnswers } from "@/types/questionnaire"
 
 const questionnaireAnswersSchema = z.object({
@@ -116,15 +121,26 @@ export async function POST(
             if (applied.length > 0) {
                 // Record that these questions were ASKED, not just what they
                 // answered — a "no" is indistinguishable from a default value.
+                // One precedence rule for every writer (fact-writes.ts): the
+                // client's own answers are exact and newer, so they replace
+                // what is stored, as they always did.
                 const existing = await tx.policyholderProfile.findUnique({
                     where: { userId: authResult.dbUser.id },
-                    select: { answeredFields: true },
                 })
-                const answeredFields = mergeAnsweredFields(existing?.answeredFields, applied)
+                const facts = profileFactData(
+                    applyFactWrites({
+                        existing: existingFacts(existing as Record<string, unknown> | null),
+                        writes: factWritesFrom(profileUpdates as Record<string, unknown>, {
+                            source: "questionnaire",
+                            precision: "exact",
+                        }),
+                        now: new Date(),
+                    })
+                )
                 await tx.policyholderProfile.upsert({
                     where: { userId: authResult.dbUser.id },
-                    create: { userId: authResult.dbUser.id, ...profileUpdates, answeredFields },
-                    update: { ...profileUpdates, answeredFields },
+                    create: { userId: authResult.dbUser.id, ...facts },
+                    update: { ...facts },
                 })
             }
             return created

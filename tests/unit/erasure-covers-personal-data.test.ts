@@ -198,18 +198,25 @@ describe("every personal-data store is erased or explicitly exempt", () => {
         expect(ERASER).toMatch(/tx\.protectionProfile\.deleteMany/)
     })
 
-    it("scrubs the life-context columns and the answered-fields ledger, not only the 2025 fields", () => {
+    it("scrubs EVERY PolicyholderProfile column the schema carries — derived, not listed", () => {
         // Found surviving in Sept 2026: the columns added with the life-context
         // migration were never added to the scrub, so an erased profile still
-        // said "owns a boat, runs a business, three properties".
-        for (const column of [
-            "childrenCount", "residenceType", "propertiesOwned", "rentsOutProperty", "ownsBoat",
-            "ownsBusiness", "businessEmployees", "savingsAmount", "valuablesValue", "activities",
-            "cyberExposure", "retirementPlanning", "isBuildingManager", "coverHeldElsewhere",
-            "answeredFields",
-        ]) {
-            expect(ERASER, `${column} is not scrubbed`).toMatch(new RegExp(`\\b${column}:`))
-        }
+        // said "owns a boat, runs a business, three properties". This check
+        // was a hand-kept list of fifteen names when that happened, which is
+        // how it happened: the list is now the schema itself, and a column
+        // added tomorrow is covered by a test written today.
+        const profile = models().find((m) => m.name === "PolicyholderProfile")!
+        const columns = [...profile.body.matchAll(/^\s{2}([a-zA-Z][a-zA-Z0-9]*)\s+\S/gm)]
+            .map((m) => m[1])
+            .filter((name) => !["id", "userId", "user", "createdAt", "updatedAt"].includes(name))
+        expect(columns).toContain("factProvenance")
+        expect(columns).toContain("incomeDependency")
+        const scrub = ERASER.slice(
+            ERASER.indexOf("tx.policyholderProfile.updateMany("),
+            ERASER.indexOf("tx.agentProfile.updateMany(")
+        )
+        const missing = columns.filter((column) => !new RegExp(`\\b${column}:`).test(scrub))
+        expect(missing, `not scrubbed on erasure:\n${missing.join("\n")}`).toEqual([])
     })
 
     it("matches the business event on its subject, not its actor", () => {

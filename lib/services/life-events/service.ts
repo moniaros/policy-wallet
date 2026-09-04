@@ -15,6 +15,12 @@
 
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
+import {
+    applyFactWrites,
+    existingFacts,
+    factWritesFrom,
+    profileFactData,
+} from "@/lib/services/protection-profile/fact-writes"
 import { applyLifeEvent, checkDependencies } from "./apply"
 import { getLifeEvent } from "./registry"
 import { recordRiskProfileVersion } from "./risk-profile-version"
@@ -146,19 +152,29 @@ export async function declareLifeEvent(
 
     // Answered columns union into `answeredFields` — without this an event can
     // change a value and still leave the risk in `needs_review`, which is the
-    // state meaning "we have not asked".
-    const previouslyAnswered = Array.isArray(profile?.answeredFields)
-        ? (profile.answeredFields as unknown[]).filter((f): f is string => typeof f === "string")
-        : []
-    const answeredFields = [...new Set([...previouslyAnswered, ...applied.answeredColumns])]
+    // state meaning "we have not asked". A `mark_known` delta settles its
+    // column with no value, so it travels as `alsoAnswered`.
+    //
+    // Exact, from the person, and newer than whatever is stored: under the one
+    // precedence rule a declared event replaces the wizard's figure, as it
+    // always did. A registry `clear` is a deliberate erasure (`null` in the
+    // patch), which is the one shape applyFactWrites will not infer.
+    const facts = applyFactWrites({
+        existing: existingFacts(profile as Record<string, unknown> | null),
+        writes: factWritesFrom(applied.patch, { source: "life_event", precision: "exact", clearNulls: true }),
+        alsoAnswered: applied.answeredColumns,
+        now: new Date(),
+    })
+    const profileData = profileFactData(facts)
+    const skippedWrites = facts.skipped.map((s) => ({ column: s.column, reason: s.reason as string }))
 
-    const hasPatch = Object.keys(applied.patch).length > 0
+    const hasPatch = Object.keys(facts.data).length > 0
     const event = await db.$transaction(async (tx) => {
         if (hasPatch || applied.answeredColumns.length > 0) {
             await tx.policyholderProfile.upsert({
                 where: { userId },
-                create: { userId, ...applied.patch, answeredFields },
-                update: { ...applied.patch, answeredFields },
+                create: { userId, ...profileData },
+                update: { ...profileData },
             })
         }
         return tx.lifeEventInstance.create({
@@ -231,7 +247,7 @@ export async function declareLifeEvent(
         ok: true,
         eventId: event.id,
         backfilled,
-        skipped: applied.skipped,
+        skipped: [...applied.skipped, ...skippedWrites],
         profileChanged: hasPatch,
         version,
     }

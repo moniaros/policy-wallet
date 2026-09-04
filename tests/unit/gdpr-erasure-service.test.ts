@@ -145,6 +145,8 @@ describe('eraseUserData — DB coverage', () => {
             'ownsBusiness', 'businessEmployees', 'savingsAmount', 'valuablesValue', 'activities',
             'cyberExposure', 'retirementPlanning', 'isBuildingManager', 'coverHeldElsewhere',
             'answeredFields',
+            // Sept 2026 (fact provenance).
+            'incomeDependency', 'factProvenance',
         ]) {
             expect(profileData, `profile scrub must cover ${field}`).toHaveProperty(field)
         }

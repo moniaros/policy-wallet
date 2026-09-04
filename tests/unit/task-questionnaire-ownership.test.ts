@@ -198,19 +198,19 @@ describe('submitQuestionnaireResponse — only the recipient may answer', () => 
         // don't own a home" writes `ownsHome: false`, which is the column
         // default — so without a record of the question having been ASKED, a
         // completed questionnaire could not move the risk assessment at all.
+        // Since Sept 2026 the write goes through applyFactWrites, so the row
+        // also records WHO said so and how precisely (fact_provenance).
+        const questionnaire = { source: 'questionnaire', precision: 'exact', at: expect.any(String) }
+        const facts = {
+            dependentsCount: 2,
+            ownsHome: true,
+            answeredFields: ['dependentsCount', 'ownsHome'],
+            factProvenance: { dependentsCount: questionnaire, ownsHome: questionnaire },
+        }
         expect(tx.policyholderProfile.upsert).toHaveBeenCalledWith({
             where: { userId: 'user-1' },
-            create: {
-                userId: 'user-1',
-                dependentsCount: 2,
-                ownsHome: true,
-                answeredFields: ['dependentsCount', 'ownsHome'],
-            },
-            update: {
-                dependentsCount: 2,
-                ownsHome: true,
-                answeredFields: ['dependentsCount', 'ownsHome'],
-            },
+            create: { userId: 'user-1', ...facts },
+            update: facts,
         })
     })
 

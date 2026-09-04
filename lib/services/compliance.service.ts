@@ -114,6 +114,12 @@ export async function buildUserDataExportPayload(userId: string) {
                         isBuildingManager: true,
                         coverHeldElsewhere: true,
                         answeredFields: true,
+                        // Sept 2026: how far the household leans on this
+                        // income, and WHO wrote each fact and how precisely
+                        // (fact_provenance) — the record of the exchange is
+                        // itself personal data, like answeredFields above.
+                        incomeDependency: true,
+                        factProvenance: true,
                         createdAt: true,
                         updatedAt: true,
                     },

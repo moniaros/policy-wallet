@@ -282,6 +282,17 @@ model PolicyholderProfile {
   /// columns are NOT NULL with defaults, so without this record an untouched
   /// profile is byte-identical to one whose owner answered "no" to everything.
   answeredFields     Json?    @map("answered_fields") // string[] of column names
+  /// How far the household leans on this person's income — 'primary' |
+  /// 'shared' | 'minor'. A plain fact the importance table reads; deliberately
+  /// NOT a risk-catalogue factor (the factor vocabulary is the engine's own).
+  incomeDependency   String?  @map("income_dependency")
+  /// Who wrote each fact, and how precisely: keyed by column name,
+  /// `{ source, precision, at }` (lib/protection/evidence.ts). Written only
+  /// through applyFactWrites (lib/services/protection-profile/fact-writes.ts),
+  /// which is what lets an exact answer replace a coarse floor and never the
+  /// reverse. `answeredFields` stays the derived union the engine reads; rows
+  /// written before this column keep their knownness unchanged (no backfill).
+  factProvenance     Json?    @map("fact_provenance")
 
   // Health & Lifestyle Risk Fields
   gender               String? @map("gender") // 'male', 'female', 'prefer_not_to_say'

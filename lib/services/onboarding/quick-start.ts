@@ -22,6 +22,7 @@
 import type { Bilingual } from "@/lib/services/gap-engine/risk-types"
 import { toLifeContext, type LifeContext } from "@/lib/services/gap-engine/life-context"
 import { assessRisks } from "@/lib/services/gap-engine/risk-assessment"
+import { factWritesFrom, type FactWrite } from "@/lib/services/protection-profile/fact-writes"
 
 export type QuickStartQuestionId = "residence" | "children" | "vehicles"
 
@@ -130,6 +131,28 @@ export function quickStartPatch(answers: QuickStartAnswers): Record<string, unkn
 
     patch.answeredFields = answered
     return patch
+}
+
+/**
+ * The same three answers as fact writes, with their precision.
+ *
+ * Every column here is a bound or an inference except the residence itself:
+ * «I own my home» → one property (a floor), «three or more» → 3, «two or
+ * more» → 2, the dependant count is the child count (someone may also support
+ * a parent), and «employed» is read off «children who depend on you». Marking
+ * them coarse is what lets the wizard's figure replace them and never the
+ * reverse — the non-overwrite rule this action used to hand-roll, now decided
+ * by applyFactWrites.
+ */
+export function quickStartFactWrites(answers: QuickStartAnswers): FactWrite[] {
+    const { answeredFields: _answered, ...columns } = quickStartPatch(answers)
+    const coarse = new Set<string>(["propertiesOwned", "dependentsCount", "employmentStatus"])
+    if (answers.children === "3") coarse.add("childrenCount")
+    if (answers.vehicles === "2") coarse.add("vehiclesCount")
+    return factWritesFrom(columns, {
+        source: "quick_start",
+        precision: Object.fromEntries([...coarse].map((c) => [c, "coarse" as const])),
+    })
 }
 
 /**

@@ -27,6 +27,12 @@ import {
     topPriorityIds,
     type ProtectionPriority,
 } from "@/lib/services/protection-profile/derive-priorities"
+import {
+    applyFactWrites,
+    existingFacts,
+    factWritesFrom,
+    profileFactData,
+} from "@/lib/services/protection-profile/fact-writes"
 import { protectionProfilePatch, type ProtectionStatements } from "@/lib/services/protection-profile/patch"
 import {
     resolveProtectionOnboardingState,
@@ -81,21 +87,22 @@ export async function saveProtectionProfileStep(input: unknown): Promise<SavePro
 
     const result = await db.$transaction(async (tx) => {
         if (Object.keys(patch.columns).length > 0 || patch.answeredFields.length > 0) {
-            const existing = await tx.policyholderProfile.findUnique({
-                where: { userId },
-                select: { answeredFields: true },
+            const existing = await tx.policyholderProfile.findUnique({ where: { userId } })
+            // One precedence rule for every writer (fact-writes.ts): a floor
+            // from these screens never replaces a figure the /protection
+            // wizard recorded; a value the person chose here replaces an older
+            // floor — and, being newer, an older exact answer.
+            const applied = applyFactWrites({
+                existing: existingFacts(existing as Record<string, unknown> | null),
+                writes: factWritesFrom(patch.columns, { source: "onboarding", precision: patch.precision }),
+                alsoAnswered: patch.answeredFields,
+                now: new Date(),
             })
-            const previously = stringList(existing?.answeredFields)
-            // Never overwrite an answer the customer has already given properly
-            // (the /protection wizard is more precise than these screens).
-            const fresh = Object.fromEntries(
-                Object.entries(patch.columns).filter(([column]) => !previously.includes(column))
-            )
-            const answered = [...new Set([...previously, ...patch.answeredFields])]
+            const facts = profileFactData(applied)
             await tx.policyholderProfile.upsert({
                 where: { userId },
-                update: { ...fresh, answeredFields: answered },
-                create: { userId, ...patch.columns, answeredFields: answered },
+                update: { ...facts },
+                create: { userId, ...facts },
             })
         }
 

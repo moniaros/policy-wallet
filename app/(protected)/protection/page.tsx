@@ -210,6 +210,27 @@ export default async function ProtectionPage({
                         lifeEvents: Array.isArray(profileRecord.lifeEvents)
                             ? (profileRecord.lifeEvents as Array<{ type: string; date: string }>)
                             : undefined,
+                        // Health & lifestyle, and the building-manager role.
+                        // Audit B (Sept 2026): these eight were never passed,
+                        // so the wizard rendered them empty and every save sent
+                        // the empty state back — erasing the stored Art. 9
+                        // answers. A stored null is passed as null on purpose:
+                        // it tells the wizard «nothing here to protect».
+                        // tests/unit/risk-profile-save-never-erases-health
+                        // derives the wizard's prop keys and fails if one is
+                        // omitted here again.
+                        gender: profileRecord.gender,
+                        heightCm: profileRecord.heightCm,
+                        weightKg: profileRecord.weightKg,
+                        chronicConditions: Array.isArray(profileRecord.chronicConditions)
+                            ? (profileRecord.chronicConditions as string[])
+                            : null,
+                        familyMedicalHistory: Array.isArray(profileRecord.familyMedicalHistory)
+                            ? (profileRecord.familyMedicalHistory as string[])
+                            : null,
+                        drivingRecord: profileRecord.drivingRecord,
+                        activityLevel: profileRecord.activityLevel,
+                        isBuildingManager: profileRecord.isBuildingManager,
                         childrenCount: profileRecord.childrenCount,
                         residenceType: profileRecord.residenceType,
                         propertiesOwned: profileRecord.propertiesOwned,

@@ -5,10 +5,15 @@ import { db } from "@/lib/db"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import {
     firstInsight,
-    quickStartPatch,
+    quickStartFactWrites,
     type FirstInsight,
     type QuickStartAnswers,
 } from "@/lib/services/onboarding/quick-start"
+import {
+    applyFactWrites,
+    existingFacts,
+    profileFactData,
+} from "@/lib/services/protection-profile/fact-writes"
 
 /**
  * Save the three answers and return the one true thing they imply.
@@ -21,17 +26,8 @@ export async function submitQuickStart(
     answers: QuickStartAnswers
 ): Promise<{ insight: FirstInsight | null }> {
     const { dbUser } = await getAuthenticatedUser()
-    const patch = quickStartPatch(answers)
-    const { answeredFields, ...columns } = patch as Record<string, unknown>
 
-    const existing = await db.policyholderProfile.findUnique({
-        where: { userId: dbUser.id },
-        select: { answeredFields: true },
-    })
-    const previously = Array.isArray(existing?.answeredFields)
-        ? (existing.answeredFields as unknown[]).filter((f): f is string => typeof f === "string")
-        : []
-    const answered = [...new Set([...previously, ...((answeredFields as string[]) ?? [])])]
+    const existing = await db.policyholderProfile.findUnique({ where: { userId: dbUser.id } })
 
     // Never overwrite an answer the customer has already given properly.
     //
@@ -39,15 +35,20 @@ export async function submitQuickStart(
     // `propertiesOwned: 1`, and the dependant count is a floor taken from the
     // number of children. Writing them over a completed wizard would silently
     // destroy better information. The screen only renders for a profile we know
-    // too little about, but a mutation must not depend on the UI to be safe.
-    const fresh = Object.fromEntries(
-        Object.entries(columns).filter(([column]) => !previously.includes(column))
-    )
+    // too little about, but a mutation must not depend on the UI to be safe —
+    // so the writes carry their precision and applyFactWrites refuses a coarse
+    // value over an exact one.
+    const applied = applyFactWrites({
+        existing: existingFacts(existing as Record<string, unknown> | null),
+        writes: quickStartFactWrites(answers),
+        now: new Date(),
+    })
+    const facts = profileFactData(applied)
 
     await db.policyholderProfile.upsert({
         where: { userId: dbUser.id },
-        update: { ...fresh, answeredFields: answered },
-        create: { userId: dbUser.id, ...columns, answeredFields: answered },
+        update: { ...facts },
+        create: { userId: dbUser.id, ...facts },
     })
 
     // Awaited, like every other profile write: the page re-renders immediately

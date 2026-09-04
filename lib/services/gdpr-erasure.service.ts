@@ -344,6 +344,10 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                         isBuildingManager: false,
                         coverHeldElsewhere: Prisma.JsonNull,
                         answeredFields: Prisma.JsonNull,
+                        // Sept 2026 (fact provenance): the income-dependency
+                        // fact and the per-column record of who wrote what.
+                        incomeDependency: null,
+                        factProvenance: Prisma.JsonNull,
                     },
                 }),
                 tx.agentProfile.updateMany({

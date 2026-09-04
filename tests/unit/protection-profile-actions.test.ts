@@ -65,14 +65,56 @@ describe("saveProtectionProfileStep", () => {
         expect(res).toEqual({ ok: true, next: "home", answeredSteps: ["people"] })
         const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
         expect(upsert.create).toMatchObject({ userId: "user-1", childrenCount: 2, dependentsCount: 3, answeredFields: ["childrenCount", "dependentsCount"] })
+        // Who said so, and how precisely: two children is the figure; «+ my
+        // partner» makes the dependant count a floor.
+        expect(upsert.create.factProvenance.childrenCount).toMatchObject({ source: "onboarding", precision: "exact" })
+        expect(upsert.create.factProvenance.dependentsCount).toMatchObject({ source: "onboarding", precision: "coarse" })
         expect(state.row).toMatchObject({ answers: { people: { people: ["children", "partner"], childrenCount: "2" } }, answeredSteps: ["people"], unsureSteps: [] })
     })
 
-    it("never overwrites a column the wizard already answered", async () => {
-        state.profile = { childrenCount: 3, dependentsCount: 4, answeredFields: ["childrenCount", "dependentsCount"] }
-        await saveProtectionProfileStep({ step: "people", people: ["only_me"] })
+    it("a floor from these screens never replaces a figure the wizard recorded", async () => {
+        // «My partner and my children (three or more)» → childrenCount 3 and
+        // dependentsCount 4 are BOUNDS. The wizard said 3 and 4 exactly; the
+        // bounds lose, the provenance stays the wizard's, nothing is rewritten.
+        const wizard = { source: "assessment", precision: "exact", at: "2026-08-01T00:00:00.000Z" }
+        state.profile = {
+            childrenCount: 3,
+            dependentsCount: 4,
+            answeredFields: ["childrenCount", "dependentsCount"],
+            factProvenance: { childrenCount: wizard, dependentsCount: wizard },
+        }
+        await saveProtectionProfileStep({ step: "people", people: ["partner", "children"], childrenCount: "3" })
         const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
-        expect(upsert.update).toEqual({ answeredFields: ["childrenCount", "dependentsCount"] })
+        expect(upsert.update).toEqual({
+            answeredFields: ["childrenCount", "dependentsCount"],
+            factProvenance: { childrenCount: wizard, dependentsCount: wizard },
+        })
+    })
+
+    it("a value the person chose outright replaces an older figure — and records who said so", async () => {
+        // The same row, but the person now says «only my two children». Exact
+        // over exact: the newer statement wins, and the ledger says onboarding.
+        const wizard = { source: "assessment", precision: "exact", at: "2026-08-01T00:00:00.000Z" }
+        state.profile = {
+            childrenCount: 3,
+            dependentsCount: 4,
+            answeredFields: ["childrenCount", "dependentsCount"],
+            factProvenance: { childrenCount: wizard, dependentsCount: wizard },
+        }
+        await saveProtectionProfileStep({ step: "people", people: ["children"], childrenCount: "2" })
+        const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
+        expect(upsert.update).toMatchObject({ childrenCount: 2, dependentsCount: 2 })
+        expect(upsert.update.factProvenance.childrenCount).toMatchObject({ source: "onboarding", precision: "exact" })
+        expect(upsert.update.factProvenance.dependentsCount).toMatchObject({ source: "onboarding", precision: "exact" })
+    })
+
+    it("a row written before provenance existed keeps its answers against a floor", async () => {
+        // No factProvenance at all — the wizard as it wrote for a year. An
+        // answered column is a declared exact value, so the floor still loses.
+        state.profile = { childrenCount: 3, dependentsCount: 4, answeredFields: ["childrenCount", "dependentsCount"] }
+        await saveProtectionProfileStep({ step: "people", people: ["partner", "children"], childrenCount: "3" })
+        const upsert = tx.policyholderProfile.upsert.mock.calls[0]![0]
+        expect(upsert.update).toEqual({ answeredFields: ["childrenCount", "dependentsCount"], factProvenance: {} })
     })
 
     it("«δεν είμαι σίγουρος/η» touches no fact column and marks the step", async () => {

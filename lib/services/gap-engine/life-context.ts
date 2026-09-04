@@ -86,6 +86,16 @@ export type ResidenceType = "owned" | "rented" | "family" | "company" | "other"
 export type CyberExposureLevel = "low" | "moderate" | "high"
 
 /**
+ * How far the household leans on this person's income. A plain fact the
+ * importance table reads (PERSONAL_RISK_PROFILE.md §C Layer 1) — deliberately
+ * NOT a `CONTEXT_FACTORS` entry: the factor vocabulary is the risk catalogue's
+ * own, and a fact that no risk conditions on has no business making a risk
+ * `needs_review`.
+ */
+export const INCOME_DEPENDENCY_VALUES = ["primary", "shared", "minor"] as const
+export type IncomeDependency = (typeof INCOME_DEPENDENCY_VALUES)[number]
+
+/**
  * Hobby / sport ids that materially change accident and liability exposure.
  * Kept deliberately short and specific: a vague "sporty" signal is not
  * actionable, and a long taxonomy invites the model to guess.
@@ -178,6 +188,8 @@ export interface LifeContext {
 
     // Money
     annualIncome: number | null
+    /** How far the household leans on this income. Not a factor — see INCOME_DEPENDENCY_VALUES. */
+    incomeDependency: IncomeDependency | null
     savingsAmount: number | null
     mortgageAmount: number | null
     loanAmount: number | null
@@ -246,8 +258,13 @@ export function heldElsewhere(ctx: LifeContext, lob: string): boolean {
  * Which profile columns decide each factor. A factor is known when ANY of its
  * columns is known — asking "how many vehicles?" settles the vehicles factor
  * whether the answer is 0 or 3.
+ *
+ * Exported for the protection composition (lib/protection/attention-areas.ts),
+ * which reads each column's provenance to say how sure an area may claim to be,
+ * and for the guard that proves every assessment question writes a column the
+ * engine actually reads. Read-only elsewhere: the table stays authored here.
  */
-const FACTOR_COLUMNS: Record<ContextFactorKey, string[]> = {
+export const FACTOR_COLUMNS: Record<ContextFactorKey, string[]> = {
     age: ["dateOfBirth"],
     maritalStatus: ["maritalStatus"],
     children: ["childrenCount"],
@@ -412,6 +429,11 @@ export function toLifeContext(
         businessEmployees: num(p?.businessEmployees) ?? 0,
 
         annualIncome: num(p?.annualIncome),
+        incomeDependency: (INCOME_DEPENDENCY_VALUES as readonly string[]).includes(
+            p?.incomeDependency as string
+        )
+            ? (p!.incomeDependency as IncomeDependency)
+            : null,
         savingsAmount: num(p?.savingsAmount),
         mortgageAmount: num(p?.mortgageAmount),
         loanAmount: p?.hasLoans === true || num(p?.loanAmount) ? num(p?.loanAmount) : null,

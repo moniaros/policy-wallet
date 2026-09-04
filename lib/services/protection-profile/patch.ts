@@ -12,6 +12,7 @@
  * `mortgageAmount` would read as "no debt" to every rule downstream.
  */
 
+import type { FactPrecision } from "@/lib/protection/evidence"
 import type { ProtectionProfileStepInput } from "@/lib/validations/protection-profile"
 
 export interface ProtectionStatements {
@@ -26,8 +27,18 @@ export interface ProtectionStatements {
 }
 
 export interface ProtectionPatch {
-    /** Typed `PolicyholderProfile` columns to set (never overwriting an answered one). */
+    /**
+     * Typed `PolicyholderProfile` columns to set. Written through
+     * `applyFactWrites`, so a FLOOR here never replaces a figure the person
+     * gave elsewhere, and an exact answer here replaces an older floor.
+     */
     columns: Record<string, unknown>
+    /**
+     * Per column: `coarse` for a floor or a bucket («my partner» → one
+     * dependant, «3+» children, «2+» vehicles, «owner» → one property), `exact`
+     * for the value the person actually chose. Columns not listed are exact.
+     */
+    precision: Record<string, FactPrecision>
     /** The columns this answer makes KNOWN — «no» must not read as «never asked». */
     answeredFields: string[]
     statements: ProtectionStatements
@@ -35,7 +46,7 @@ export interface ProtectionPatch {
     unsure: boolean
 }
 
-const EMPTY: ProtectionPatch = { columns: {}, answeredFields: [], statements: {}, unsure: false }
+const EMPTY: ProtectionPatch = { columns: {}, precision: {}, answeredFields: [], statements: {}, unsure: false }
 
 const INCOME_TO_EMPLOYMENT: Record<string, string> = {
     employed: "employed",
@@ -63,9 +74,15 @@ export function protectionProfilePatch(input: ProtectionProfileStepInput): Prote
             // A FLOOR, exactly as the quick start does: a partner or a parent
             // counts as one dependant each; the wizard refines the number.
             const others = (people.has("partner") ? 1 : 0) + (people.has("parents_or_others") ? 1 : 0)
+            // «3» is «three or more» — a bound, not the figure.
+            const childrenCoarse = people.has("children") && input.childrenCount === "3"
             return {
                 ...EMPTY,
                 columns: { childrenCount: children, dependentsCount: children + others },
+                precision: {
+                    childrenCount: childrenCoarse ? "coarse" : "exact",
+                    dependentsCount: others > 0 || childrenCoarse ? "coarse" : "exact",
+                },
                 answeredFields: ["childrenCount", "dependentsCount"],
             }
         }
@@ -80,6 +97,7 @@ export function protectionProfilePatch(input: ProtectionProfileStepInput): Prote
                     // Owning where you live is one property; the wizard refines the rest.
                     propertiesOwned: owned ? 1 : 0,
                 },
+                precision: { propertiesOwned: "coarse" },
                 answeredFields: ["residenceType", "ownsHome", "propertiesOwned"],
             }
         }
@@ -113,6 +131,8 @@ export function protectionProfilePatch(input: ProtectionProfileStepInput): Prote
             return {
                 ...EMPTY,
                 columns: { vehiclesCount: Number(input.vehicles) },
+                // «2» is «two or more».
+                precision: { vehiclesCount: input.vehicles === "2" ? "coarse" : "exact" },
                 answeredFields: ["vehiclesCount"],
             }
 
