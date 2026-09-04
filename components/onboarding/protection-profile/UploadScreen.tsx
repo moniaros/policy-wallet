@@ -146,7 +146,7 @@ export const UploadScreen = forwardRef<HTMLHeadingElement, {
                 ) : null}
             </div>
 
-            <div className="sticky bottom-0 -mx-4 mt-6 flex flex-col gap-2 border-t border-border bg-background/95 px-4 pb-[env(safe-area-inset-bottom)] pt-3 backdrop-blur sm:static sm:mx-0 sm:flex-row sm:items-center sm:border-0 sm:bg-transparent sm:p-0 sm:pt-6">
+            <div className="sticky bottom-0 -mx-4 mt-6 flex flex-col gap-2 border-t border-border bg-background/95 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+var(--pw-bottom-obstruction,0px))] pt-3 backdrop-blur sm:static sm:mx-0 sm:flex-row sm:items-center sm:border-0 sm:bg-transparent sm:p-0 sm:pt-6">
                 {done ? (
                     <button type="button" onClick={() => policyId && onUploaded(policyId)} disabled={busy} className="pw-primary-button w-full sm:w-auto">
                         {labels.seePicture}

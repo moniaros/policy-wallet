@@ -189,7 +189,7 @@ export const QuestionScreen = forwardRef<HTMLHeadingElement, QuestionScreenProps
             ) : null}
 
             {cta.visible ? (
-                <div className="sticky bottom-0 -mx-4 mt-6 border-t border-border bg-background/95 px-4 pb-[env(safe-area-inset-bottom)] pt-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:pt-6">
+                <div className="sticky bottom-0 -mx-4 mt-6 border-t border-border bg-background/95 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+var(--pw-bottom-obstruction,0px))] pt-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:pt-6">
                     <button type="button" onClick={cta.onClick} disabled={cta.disabled || saving} aria-busy={saving} className="pw-primary-button min-h-11 w-full">
                         {saving ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
                         {status === "error" ? retryLabel : saving ? savingLabel : cta.label}
