@@ -1,0 +1,320 @@
+import type { ReactNode } from "react"
+import { Map } from "lucide-react"
+import { CardHead } from "@/components/dashboard/home/CardHead"
+import { mapRowCounts, mapRowsFrom, type MapRow, type MovedRow } from "@/lib/onboarding/protection-profile/map-rows"
+import type { AttentionAreaView } from "@/lib/protection/attention-areas"
+import { AREAS, AREA_IDS, type AttentionAreaId } from "@/lib/protection/domains"
+import { protectionDomainIcon } from "@/lib/services/protection-profile/domain-icons"
+import type { ProtectionPriority } from "@/lib/services/protection-profile/derive-priorities"
+import type { FirstInsight } from "@/lib/services/onboarding/quick-start"
+import type { TranslationKeys } from "@/lib/i18n/translations/el"
+import { cn } from "@/lib/utils"
+
+export type ProtectionMapLabels = TranslationKeys["onboarding"]["protectionProfile"]["summary"]
+export type ProtectionMapRowLabels = TranslationKeys["onboarding"]["protectionProfile"]["map"]
+
+/**
+ * Importance as a WORD on a tone that never accuses: the brand's emphasis
+ * tint for high, the sunken neutral for medium and watch, the info tint for
+ * «more detail needed». Never amber (means gap) and never red.
+ */
+export const IMPORTANCE_TONE: Record<ProtectionPriority["importance"], string> = {
+    high: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
+    medium: "bg-muted text-foreground",
+    watch: "bg-muted text-muted-foreground",
+    needs_review: "bg-status-info-tint text-status-info",
+}
+
+/**
+ * The dictionary keys under `summary.domainLabel` whose singular form differs
+ * in GRAMMAR from the shared area noun — the only entries `domainLabelFor`
+ * may read from the dictionary instead of the table. None today: every area
+ * noun («Οικογένεια», «Εργασία», «Εισόδημα»…) is the same word in both
+ * registers, and the guard in tests/unit/protection-profile-summary.test.tsx
+ * pins the rest of the block equal to `AREAS[area].label`.
+ */
+export const SINGULAR_LABEL_OVERRIDES: ReadonlySet<string> = new Set()
+
+// A plain record, not a `Map`: `Map` in this file is the lucide icon.
+const AREA_BY_PRIORITY_ID: Readonly<Record<string, AttentionAreaId>> = Object.fromEntries(
+    AREA_IDS.map((id) => [AREAS[id].priorityId, id])
+)
+
+/** The attention area behind a map row id (`household`, `money:income`, …). */
+export function areaForPriorityId(id: string): AttentionAreaId | undefined {
+    return Object.prototype.hasOwnProperty.call(AREA_BY_PRIORITY_ID, id) ? AREA_BY_PRIORITY_ID[id] : undefined
+}
+
+/**
+ * An area's label, in the onboarding's voice. Labels come from ONE place —
+ * `AREAS[area].label` (lib/protection/domains.ts), the word the dashboard and
+ * the lens render — so the map cannot say «Δουλειά» beside the home's
+ * «Εργασία». A singular override is read only for the keys listed above.
+ */
+export function domainLabelFor(labels: ProtectionMapLabels, id: string, language: "el" | "en"): string {
+    const key = id.replace(":", "_")
+    const override = SINGULAR_LABEL_OVERRIDES.has(key) ? (labels.domainLabel as Record<string, string | undefined>)[key] : undefined
+    if (override) return override
+    const area = areaForPriorityId(id)
+    return area ? AREAS[area].label[language] : id
+}
+
+/**
+ * The alignment as a WORD, in the singular — and only with the evidence to
+ * say it. «Φαίνεται να καλύπτεται» needs a policy in force behind it; without
+ * one the row can only say that no policy has been seen. A finding speaks
+ * with its own title.
+ */
+export function alignmentText(row: MapRow, labels: ProtectionMapRowLabels, language: "el" | "en"): string {
+    let word: string
+    if (row.alignment === "gap") word = row.finding ? row.finding[language] || row.finding.en : labels.alignment.gap
+    else if (row.alignment === "appears_covered" && !row.heldLine) return labels.alignment.not_yet_checked
+    else word = labels.alignment[row.alignment]
+    // The caveats ride on the composition's fields, never on the sentence:
+    // limits not read (summary-only), and a line that ends within the month.
+    const caveats = [
+        row.alignment === "appears_covered" && row.limitsUnread ? labels.limitsUnread : null,
+        row.heldLine && row.expiringSoon ? labels.expiringSoon : null,
+    ].filter((c): c is string => c !== null)
+    return caveats.length > 0 ? `${word} — ${caveats.join(", ")}` : word
+}
+
+/** The lapsed caveat — the only policy seen for the area has ended; nothing is held. */
+export function lapsedText(row: MapRow, labels: ProtectionMapRowLabels): string | null {
+    return !row.heldLine && row.lapsedOnly ? labels.lapsedOnly : null
+}
+
+/**
+ * What the first upload moved. `read` is true only when the reading
+ * COMPLETED; a queued one has changed nothing yet, and the line says so —
+ * never «έτοιμη». `notAPolicy` is the third outcome: the document was read
+ * and carries no policy (needs_review) — the strip says that, and never
+ * «Το διαβάσαμε» or the queued promise that the picture will update.
+ */
+export interface AfterUploadView {
+    read: boolean
+    moved: MovedRow[]
+    notAPolicy?: boolean
+}
+
+/** The strip's state word, for the DOM and the tests. */
+export function afterUploadState(view: AfterUploadView): "needs_review" | "read" | "queued" {
+    if (view.notAPolicy) return "needs_review"
+    return view.read ? "read" : "queued"
+}
+
+function unknownText(row: MapRow, labels: ProtectionMapRowLabels): string | null {
+    if (row.unknownFactors.length === 0) return null
+    const nouns = labels.factorNoun as Record<string, string>
+    return labels.unknownList.replace("{list}", row.unknownFactors.map((f) => nouns[f] ?? f).join(", "))
+}
+
+/**
+ * The protection map — «Η εικόνα σου μέχρι τώρα». Each row is an attention
+ * area: what seems to matter, what the policies we have seen say about it,
+ * what we still do not know, how sure we are — and the sentence that keeps it
+ * honest. No score, no verdict without evidence; a row without a policy in
+ * force never reads as covered. Label-driven so the dashboard can reuse the
+ * pieces in its own register.
+ */
+export function ProtectionMapCard({
+    labels,
+    mapLabels,
+    language,
+    areas,
+    priorities,
+    insight,
+    confidence,
+    unsureCount,
+    countedTotal,
+    afterUpload,
+    headingId = "protection-map-heading",
+    actions,
+    className,
+}: {
+    labels: ProtectionMapLabels
+    mapLabels: ProtectionMapRowLabels
+    language: "el" | "en"
+    areas: AttentionAreaView[]
+    priorities: ProtectionPriority[]
+    insight: FirstInsight | null
+    confidence: string | null
+    unsureCount: number
+    countedTotal: number
+    /** Present on the second visit — the map re-read after the first upload. */
+    afterUpload?: AfterUploadView | null
+    headingId?: string
+    actions?: ReactNode
+    className?: string
+}) {
+    const rows = mapRowsFrom(areas, priorities)
+    const counts = mapRowCounts(rows)
+    const named = priorities.filter((p) => p.importance === "high" || p.importance === "medium")
+    // The lead carries NO number. The head's «{n} σημεία» counts the rows
+    // underneath it (`attention.areaCount`), and the only priority count is
+    // `needs.priorityCount` (lib/protection/priority-count.ts) — a lead that
+    // said «3 πράγματα» over a head that said «5 σημεία» read as a
+    // contradiction, whichever one was right.
+    const lead = named.length === 0 ? labels.leadNone : labels.lead
+    const confidenceLine = (confidence && (labels.confidence as Record<string, string>)[confidence]) || labels.confidence.none
+    const unsureLine = unsureCount === 1 ? labels.unsureCountOne : labels.unsureCount.replace("{n}", String(unsureCount)).replace("{m}", String(countedTotal))
+
+    return (
+        <section className={cn("pw-card pw-pad", className)} aria-labelledby={headingId} aria-live="polite">
+            <CardHead
+                icon={Map}
+                title={labels.title}
+                id={headingId}
+                meta={
+                    rows.length > 0 ? (
+                        <span data-count="attention.areaCount" className="tabular-nums">
+                            {labels.countMeta.replace("{n}", String(counts.areaCount))}
+                        </span>
+                    ) : undefined
+                }
+            />
+            <p className="mt-3 text-body leading-relaxed text-foreground">{lead}</p>
+
+            {afterUpload ? (
+                <div className="pw-subcard mt-4 p-3.5" data-after-upload={afterUploadState(afterUpload)}>
+                    <p className="text-caption font-semibold text-muted-foreground">{labels.afterUpload.title}</p>
+                    {afterUpload.notAPolicy ? (
+                        // An unread document moves nothing; even if a row did
+                        // move for another reason, nothing here may be credited
+                        // to a file that carries no policy.
+                        <p className="mt-1 text-caption leading-relaxed text-foreground">{labels.afterUpload.notAPolicy}</p>
+                    ) : afterUpload.moved.length > 0 ? (
+                        <ul className="mt-2 space-y-1.5">
+                            {afterUpload.moved.map((m) => (
+                                <li key={m.area} className="text-caption leading-snug text-foreground [overflow-wrap:anywhere]" data-moved={m.area}>
+                                    <span className="font-semibold">{domainLabelFor(labels, m.priorityId, language)}: </span>
+                                    <span className="sr-only">{labels.afterUpload.beforeLabel}: </span>
+                                    <span className="text-muted-foreground">{m.before ? alignmentText(m.before, mapLabels, language) : labels.afterUpload.notOnMap}</span>
+                                    <span aria-hidden="true"> → </span>
+                                    <span className="sr-only">{labels.afterUpload.afterLabel}: </span>
+                                    <span>{alignmentText(m.after, mapLabels, language)}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="mt-1 text-caption leading-relaxed text-foreground">{afterUpload.read ? labels.afterUpload.readNoChange : labels.afterUpload.nothingYet}</p>
+                    )}
+                </div>
+            ) : null}
+
+            {rows.length > 0 ? (
+                <>
+                    <ul className="mt-4 space-y-2">
+                        {rows.map((row) => {
+                            const Icon = protectionDomainIcon(row.priorityId)
+                            const why = row.why ? row.why[language] || row.why.en : null
+                            const unknown = unknownText(row, mapLabels)
+                            const next = mapLabels.next[row.nextStep]
+                            // Density decides how much coaching is OPEN, never
+                            // whether it exists: «on my own» folds the why
+                            // behind a disclosure exactly as «just what
+                            // matters» does, and the next step — the one
+                            // line that asks something of the person — is
+                            // always in view.
+                            const whyInline = row.density === "expanded"
+                            return (
+                                <li key={row.area} className="pw-subcard flex items-start gap-3 p-3" data-alignment={row.alignment}>
+                                    <span className="pw-card-chip" aria-hidden="true">
+                                        <Icon className="h-4 w-4" strokeWidth={1.75} />
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <p className="text-sm font-semibold text-foreground">{domainLabelFor(labels, row.priorityId, language)}</p>
+                                            <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-caption font-semibold", IMPORTANCE_TONE[row.importance])}>
+                                                {labels.importance[row.importance]}
+                                            </span>
+                                        </div>
+                                        <p className="mt-0.5 text-caption leading-snug text-foreground [overflow-wrap:anywhere]">{alignmentText(row, mapLabels, language)}</p>
+                                        {lapsedText(row, mapLabels) ? (
+                                            <p className="mt-0.5 text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]" data-caveat="lapsed">
+                                                {lapsedText(row, mapLabels)}
+                                            </p>
+                                        ) : null}
+                                        {whyInline && why ? (
+                                            <p className="mt-1 text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]">
+                                                <span className="sr-only">{mapLabels.whyLabel}: </span>
+                                                {why}
+                                            </p>
+                                        ) : null}
+                                        {unknown ? (
+                                            <p className="mt-1 text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]">
+                                                <span className="sr-only">{mapLabels.unknownLabel}: </span>
+                                                {unknown}
+                                            </p>
+                                        ) : null}
+                                        <p className="mt-1 text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]">{mapLabels.confidence[row.confidence]}</p>
+                                        {!whyInline && why ? (
+                                            <details className="mt-1 text-caption text-muted-foreground">
+                                                <summary className="cursor-pointer select-none font-medium text-foreground/80">{mapLabels.whyLabel}</summary>
+                                                <p className="mt-1 leading-snug [overflow-wrap:anywhere]">{why}</p>
+                                            </details>
+                                        ) : null}
+                                        <p className="mt-1 text-caption leading-snug text-foreground/80 [overflow-wrap:anywhere]" data-next-step={row.nextStep}>
+                                            <span className="sr-only">{mapLabels.nextLabel}: </span>
+                                            {next}
+                                        </p>
+                                    </div>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                    <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-caption text-muted-foreground">
+                        <span data-count="attention.areaCount" className="tabular-nums">
+                            {mapLabels.areaCount.replace("{n}", String(counts.areaCount))}
+                        </span>
+                        {counts.unknownCount > 0 ? (
+                            <span data-count="attention.unknownCount" className="tabular-nums">
+                                {mapLabels.unknownCount.replace("{n}", String(counts.unknownCount))}
+                            </span>
+                        ) : null}
+                        {counts.coveredCount > 0 ? (
+                            <span data-count="attention.coveredCount" className="tabular-nums">
+                                {mapLabels.coveredCount.replace("{n}", String(counts.coveredCount))}
+                            </span>
+                        ) : null}
+                    </p>
+                </>
+            ) : null}
+
+            {/* «Τι αξίζει να προσέξουμε» — the engine's one derived finding when
+                it has one, NAMED ONLY, then the honest edge of the map. The
+                catalogue's body sentences (what it costs, why it applies) are
+                written in the formal register for the area detail; rendered
+                here they put «Πείτε μας το εισόδημά σας» inside «η εικόνα σου». */}
+            <div className="mt-5 border-t border-border pt-4">
+                <p className="text-caption font-semibold text-muted-foreground">{labels.worthNoticing}</p>
+                {insight ? (
+                    <p className="pw-subcard mt-2 p-3.5 text-sm leading-relaxed text-foreground [overflow-wrap:anywhere]" data-insight={insight.riskId}>
+                        {labels.insightLine.replace("{name}", insight.headline[language] || insight.headline.en)}
+                    </p>
+                ) : null}
+                <p className="mt-2 text-caption leading-relaxed text-muted-foreground">{labels.notAskedYet}</p>
+            </div>
+
+            <div className="mt-4 grid gap-4 border-t border-border pt-4 sm:grid-cols-[1fr_auto]">
+                <div className="min-w-0">
+                    <p className="text-caption leading-snug text-muted-foreground">{labels.confidenceLabel}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-foreground">{confidenceLine}</p>
+                </div>
+                {unsureCount > 0 ? (
+                    <p className="text-caption text-muted-foreground sm:text-right">
+                        <span data-count="needs.unsureCount" className="tabular-nums">
+                            {unsureLine}
+                        </span>
+                    </p>
+                ) : null}
+            </div>
+
+            <p className="mt-4 border-t border-border pt-3 text-caption leading-relaxed text-muted-foreground">
+                {labels.disclaimer} {mapLabels.absenceCaveat}
+            </p>
+
+            {actions ? <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">{actions}</div> : null}
+        </section>
+    )
+}

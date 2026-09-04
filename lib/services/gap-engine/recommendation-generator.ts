@@ -7,6 +7,7 @@
  */
 
 import { db } from "@/lib/db"
+import { areaForLob } from "@/lib/protection/domains"
 import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { resolveGapConcept, resolveGapContent } from "@/lib/wallet/gap-report"
 import type { ProfileGap, GapSeverity } from "./profile-gap-rules"
@@ -445,21 +446,55 @@ const SEVERITY_ORDER: Record<GapSeverity, number> = {
  * by an insurance judgement, and one the rest of the product already stands
  * behind. Ties fall back to the rule id so the order is stable between renders.
  */
-export function prioritizeRecommendations(
-    recs: RecommendationInput[]
-): RecommendationInput[] {
-    return [...recs].sort((a, b) => {
+/**
+ * Layer 1 as a TIE-BREAK, and only a tie-break. Urgency and the protection
+ * model still decide; among findings they cannot separate, the one touching a
+ * domain the customer said matters comes first. A stated priority never
+ * promotes a finding past a more urgent one, and never demotes anything —
+ * it only orders equals, which is the only thing a self-report is evidence of.
+ *
+ * Which area a line belongs to is the attention-area table's answer
+ * (lib/protection/domains.ts), not a private list here: every writable line
+ * resolves to exactly one area, so `group_health`, `roadside`, `pension` and
+ * `cyber` rank like any other line instead of falling through. `stated` holds
+ * the protection map's row ids — what `topPriorityIds` emits and
+ * `protection_profiles.priorityAreas` stores — so the match is on the area's
+ * `priorityId` (`money:income`), which keeps the three faces of money apart.
+ */
+export function statedPriorityRank(lineOfBusiness: string, stated: readonly string[] | null | undefined): number {
+    if (!stated || stated.length === 0) return Number.MAX_SAFE_INTEGER
+    const area = areaForLob(lineOfBusiness)
+    if (!area) return Number.MAX_SAFE_INTEGER
+    const index = stated.indexOf(area.priorityId)
+    return index === -1 ? Number.MAX_SAFE_INTEGER : index
+}
+
+type Orderable = { urgency: string; lineOfBusiness: string; ruleId?: string | null }
+
+/** The ONE comparator both read paths use — urgency, protection weight, stated priority, rule id. */
+export function recommendationOrder(stated: readonly string[] | null | undefined = null) {
+    return (a: Orderable, b: Orderable): number => {
         const sevDiff =
-            (SEVERITY_ORDER[a.urgency] ?? 3) -
-            (SEVERITY_ORDER[b.urgency] ?? 3)
+            (SEVERITY_ORDER[a.urgency as GapSeverity] ?? 3) -
+            (SEVERITY_ORDER[b.urgency as GapSeverity] ?? 3)
         if (sevDiff !== 0) return sevDiff
 
         const weightDiff =
             lobProtectionWeight(b.lineOfBusiness) - lobProtectionWeight(a.lineOfBusiness)
         if (weightDiff !== 0) return weightDiff
 
+        const statedDiff = statedPriorityRank(a.lineOfBusiness, stated) - statedPriorityRank(b.lineOfBusiness, stated)
+        if (statedDiff !== 0) return statedDiff
+
         return String(a.ruleId || "").localeCompare(String(b.ruleId || ""))
-    })
+    }
+}
+
+export function prioritizeRecommendations(
+    recs: RecommendationInput[],
+    stated: readonly string[] | null = null
+): RecommendationInput[] {
+    return [...recs].sort(recommendationOrder(stated))
 }
 
 // ── Product Matching ─────────────────────────────────────────────────
@@ -834,10 +869,20 @@ export async function actionRecommendation(
 
 /**
  * Get active recommendations for a user, sorted by priority.
+ *
+ * `stated` is what the customer said matters — the tie-break for the order,
+ * nothing more — as the protection map's row ids, derived LIVE by the caller
+ * (`statedPriorityIds` in ./index.ts, from the facts and statements it already
+ * loads). This function never reads `protection_profiles.priorityAreas`: that
+ * column is the analytics snapshot taken at completion, frozen at that
+ * moment, and it was ordering recommendations against a map the customer's
+ * later answers had already redrawn.
  */
 export async function getActiveRecommendations(
-    userId: string
+    userId: string,
+    stated: readonly string[] | null = null
 ): Promise<RecommendationOutput[]> {
+    const statedIds = stated
     const recs = await db.recommendationInstance.findMany({
         where: {
             userId,
@@ -862,16 +907,7 @@ export async function getActiveRecommendations(
 
     // Same order as prioritizeRecommendations — urgency, then how much the
     // missing cover matters, never what it costs to buy.
-    const sorted = recs.sort((a, b) => {
-        const sevDiff =
-            (SEVERITY_ORDER[(a.urgency as GapSeverity)] ?? 3) -
-            (SEVERITY_ORDER[(b.urgency as GapSeverity)] ?? 3)
-        if (sevDiff !== 0) return sevDiff
-        const weightDiff =
-            lobProtectionWeight(b.lineOfBusiness) - lobProtectionWeight(a.lineOfBusiness)
-        if (weightDiff !== 0) return weightDiff
-        return String(a.ruleId || "").localeCompare(String(b.ruleId || ""))
-    })
+    const sorted = recs.sort(recommendationOrder(statedIds))
 
     // Belt to the unique constraint's suspender: never render the same FINDING
     // twice, whatever legacy rows survive in the table. The constraint only

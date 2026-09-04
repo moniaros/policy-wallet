@@ -1,0 +1,26 @@
+// PROBE — a completion path that calls the one closer, in the right order.
+// The guard in tests/unit/risk-review-policy.test.ts must find BOTH methods
+// hooked here and the finalize call AFTER the gap persistence.
+export class ProbeOrchestrator {
+    async extractBasicSummary(policyId: string) {
+        await db.policy.update({ where: { id: policyId }, data: { status: "active" } })
+        const { refreshProtectionScore } = await import("@/lib/services/gap-engine")
+        await refreshProtectionScore("owner")
+        const { closeReviewsByPolicyEvidence } = await import("@/lib/services/risk-review/service")
+        await closeReviewsByPolicyEvidence({ policyId })
+        return { status: "completed" }
+    }
+
+    private async executePipelineAttempt(policy: { id: string }) {
+        const decidedGapSlugs = await this.persistAnalysisArtifacts({ policy })
+        await db.policyAnalysisRun.updateMany({ where: { id: "run" }, data: { status: "completed" } })
+        import("@/lib/services/risk-review/service")
+            .then(({ closeReviewsByPolicyEvidence }) => closeReviewsByPolicyEvidence({ policyId: policy.id }))
+            .catch(() => undefined)
+        return decidedGapSlugs
+    }
+
+    private async executeStepWithRetry() {
+        return null
+    }
+}

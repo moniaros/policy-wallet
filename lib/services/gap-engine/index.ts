@@ -16,10 +16,12 @@
  */
 
 import { db } from "@/lib/db"
+import { deriveProtectionPriorities, type ProtectionStatementsLike } from "@/lib/services/protection-profile/derive-priorities"
 import { logger } from "@/lib/logger"
 import {
     detectProfileGaps,
     toProfileFields,
+    toPolicyFields,
     type ProfileGap,
     type ProfileFields,
     type PolicyFields,
@@ -34,7 +36,7 @@ import {
     policyGapsToRecommendations,
     prioritizeRecommendations,
     syncRecommendations,
-    getActiveRecommendations,
+    getActiveRecommendations as readActiveRecommendations,
     matchProductsToRecommendations,
     deriveProfileTags,
     type RecommendationInput,
@@ -263,6 +265,58 @@ async function enrichRecommendations(
     })
 }
 
+// ── What the person said matters — derived live, never the snapshot ──
+
+/** The statement columns the priority rules read, plus the completion stamp that gates them. */
+const STATEMENTS_SELECT = {
+    completedAt: true,
+    riskConcerns: true,
+    commitments: true,
+    recentChanges: true,
+    futureConsiderations: true,
+    unsureSteps: true,
+} as const
+
+/**
+ * The protection map's row ids the customer's statements raise to high or
+ * medium, in the map's order — the recommendation tie-break's `stated` list.
+ *
+ * Derived on read from the facts (`ctx`) and the statements through the ONE
+ * rule table (`deriveProtectionPriorities`), so the list a recommendation is
+ * ordered by is the list the map shows. `protection_profiles.priorityAreas`
+ * is the analytics snapshot taken when the onboarding completed; it is not
+ * read here or anywhere on a read path — an assessment answer given a month
+ * later redraws the map, and the snapshot would still order by the old one.
+ * Null until the onboarding completed: statements nobody finished giving are
+ * not a stated priority.
+ */
+export function statedPriorityIds(
+    ctx: LifeContext,
+    statements: (ProtectionStatementsLike & { completedAt?: Date | null }) | null | undefined
+): string[] | null {
+    if (!statements?.completedAt) return null
+    return deriveProtectionPriorities(ctx, statements)
+        .filter((p) => p.importance === "high" || p.importance === "medium")
+        .map((p) => p.id)
+}
+
+async function loadStatedPriorityIds(userId: string, ctx: LifeContext): Promise<string[] | null> {
+    const statements = await db.protectionProfile.findUnique({ where: { userId }, select: STATEMENTS_SELECT })
+    return statedPriorityIds(ctx, statements)
+}
+
+/**
+ * Active recommendations, ordered — with the stated-priority tie-break
+ * derived live. The raw row read (`readActiveRecommendations`) takes the list
+ * as an argument and never reads the snapshot; this is the entry the surfaces
+ * import.
+ */
+export async function getActiveRecommendations(userId: string): Promise<RecommendationOutput[]> {
+    const profileRecord = await db.policyholderProfile.findUnique({ where: { userId } })
+    const stated = await loadStatedPriorityIds(userId, toLifeContext(profileRecord))
+    return readActiveRecommendations(userId, stated)
+}
+
 /**
  * The recommendation list for a user, complete.
  *
@@ -293,10 +347,7 @@ export async function getEnrichedRecommendations(userId: string): Promise<Recomm
         }),
     ])
     const lifeContext = toLifeContext(profileRecord)
-    const policyFields: PolicyFields[] = policies.map((p) => ({
-        lineOfBusiness: p.lineOfBusiness,
-        status: coverageEngineStatus(p as any),
-    }))
+    const policyFields = toPolicyFields(policies)
     const { assessments, riskGraph } = reconciledAssessments(
         profileRecord,
         policies,
@@ -305,7 +356,7 @@ export async function getEnrichedRecommendations(userId: string): Promise<Recomm
     )
     return enrichRecommendations(
         userId,
-        await getActiveRecommendations(userId),
+        await readActiveRecommendations(userId, await loadStatedPriorityIds(userId, lifeContext)),
         assessments,
         lifeContext,
         riskGraph
@@ -380,10 +431,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     // liveness is derived from the REAL end date (lib/policy-status).
     const profile = toProfileFields(profileRecord)
     const coverageActive = new Map(policies.map((p) => [p.id, isPolicyCoverageActive(p)]))
-    const policyFields: PolicyFields[] = policies.map((p) => ({
-        lineOfBusiness: p.lineOfBusiness,
-        status: coverageEngineStatus(p),
-    }))
+    const policyFields = toPolicyFields(policies)
     const activeLobs = [
         ...new Set(
             policies
@@ -550,7 +598,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     // then attach the four context fields from the LIVE assessment.
     const recommendations = await enrichRecommendations(
         userId,
-        await getActiveRecommendations(userId),
+        await readActiveRecommendations(userId, await loadStatedPriorityIds(userId, lifeContext)),
         riskAssessments,
         lifeContext,
         riskGraph
@@ -656,10 +704,7 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
 
     const profile = toProfileFields(profileRecord)
     const coverageActive = new Map(policies.map((p) => [p.id, isPolicyCoverageActive(p)]))
-    const policyFields: PolicyFields[] = policies.map((p) => ({
-        lineOfBusiness: p.lineOfBusiness,
-        status: coverageEngineStatus(p),
-    }))
+    const policyFields = toPolicyFields(policies)
     const activeLobs = [
         ...new Set(
             policies
@@ -723,7 +768,7 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
 
     const recommendations = await enrichRecommendations(
         userId,
-        await getActiveRecommendations(userId),
+        await readActiveRecommendations(userId, await loadStatedPriorityIds(userId, lifeContext)),
         riskAssessments,
         lifeContext,
         riskGraph
@@ -873,8 +918,19 @@ async function runAiRiskAnalysis(
         const ifKnown = <T,>(factor: Parameters<typeof ctxKnown>[1], value: T): T | null =>
             ctxKnown(ctx, factor) ? value : null
 
+        // Layer 1 as context: what the customer said matters, if they finished
+        // saying it. Derived on read from the same rule table the map uses, so
+        // the model and the customer see one list.
+        const statements = await db.protectionProfile.findUnique({ where: { userId }, select: STATEMENTS_SELECT })
+        const statedPriorities = statements?.completedAt
+            ? deriveProtectionPriorities(ctx, statements)
+                  .filter((p) => p.importance === "high" || p.importance === "medium")
+                  .map((p) => ({ domain: p.id, importance: p.importance }))
+            : null
+
         return await aiGateway.analyzeRiskProfile(
             {
+                statedPriorities,
                 maritalStatus: profile.maritalStatus,
                 dependentsCount: ifKnown("dependents", profile.dependentsCount),
                 employmentStatus: profile.employmentStatus,
@@ -1035,10 +1091,9 @@ function calculateProfileCompleteness(profile: ProfileFields): number {
 
 // ── Re-exports ───────────────────────────────────────────────────────
 
-export { detectProfileGaps, toProfileFields } from "./profile-gap-rules"
+export { detectProfileGaps, toProfileFields, toPolicyFields } from "./profile-gap-rules"
 export { calculateProtectionScore, getScoreTier, SCORE_CATEGORIES } from "./protection-score"
 export {
-    getActiveRecommendations,
     dismissRecommendation,
     actionRecommendation,
     getEstimatedPremium,

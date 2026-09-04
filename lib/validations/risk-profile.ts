@@ -13,7 +13,7 @@
  */
 
 import { z } from 'zod'
-import { HIGH_RISK_ACTIVITIES } from '@/lib/services/gap-engine/life-context'
+import { HIGH_RISK_ACTIVITIES, INCOME_DEPENDENCY_VALUES } from '@/lib/services/gap-engine/life-context'
 import { WRITE_BRANCH_IDS } from '@/lib/insurance/taxonomy'
 
 export const RiskProfileSchema = z.object({
@@ -33,6 +33,8 @@ export const RiskProfileSchema = z.object({
   // Enhanced risk fields (Gap Detection Engine)
   dateOfBirth: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
   annualIncome: z.number().min(0).optional(),
+  /** How far the household leans on this income (PERSONAL_RISK_PROFILE.md §C Layer 1). */
+  incomeDependency: z.enum(INCOME_DEPENDENCY_VALUES).optional(),
   occupation: z.string().max(100).optional(),
   riskTolerance: z.enum(['conservative', 'moderate', 'aggressive']).optional(),
   hasLoans: z.boolean().optional(),

@@ -16,7 +16,8 @@ export interface RiskReviewCardProps {
     }
     /** The trigger's own words, resolved server-side from the review policy. */
     label: { el: string; en: string }
-    rationale: string
+    /** The customer-facing reason (`ReviewPolicy.reason`) — never the admin rationale. */
+    reason: { el: string; en: string }
 }
 
 /**
@@ -32,7 +33,7 @@ export interface RiskReviewCardProps {
  * it tells us we asked at the wrong moment, which a silently ignored card does
  * not.
  */
-export function RiskReviewCard({ review, label, rationale }: RiskReviewCardProps) {
+export function RiskReviewCard({ review, label, reason }: RiskReviewCardProps) {
     const { t, language } = useLanguage()
     const [pending, startTransition] = useTransition()
     const [gone, setGone] = useState(false)
@@ -65,9 +66,9 @@ export function RiskReviewCard({ review, label, rationale }: RiskReviewCardProps
     return (
         <section
             aria-labelledby="risk-review-heading"
-            className="pw-card pw-pad border-l-4 border-l-[var(--primary)]"
+            className="pw-card pw-pad"
         >
-            <p className="text-kicker font-black uppercase tracking-widest text-primary">
+            <p className="text-caption font-semibold text-primary">
                 {copy.title}
             </p>
             <h2
@@ -80,7 +81,7 @@ export function RiskReviewCard({ review, label, rationale }: RiskReviewCardProps
             {/* Why, in the product's own words — a review that cannot say why it
                 opened is one the customer distrusts. */}
             <p className="text-caption text-muted-foreground mt-2">
-                <span className="font-semibold">{copy.openedBecause}:</span> {rationale}
+                <span className="font-semibold">{copy.openedBecause}:</span> {reason[language === "en" ? "en" : "el"]}
             </p>
 
             <dl className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-caption">

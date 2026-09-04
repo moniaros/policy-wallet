@@ -5,19 +5,33 @@ export type JourneyEventName =
     | "onboarding_started"
     | "onboarding_resumed"
     | "onboarding_skipped"
-    | "segment_selected"
-    | "goal_selected"
-    | "familiarity_selected"
-    | "file_ready_selected"
     | "policy_upload_started"
     | "policy_upload_completed"
     | "policy_upload_failed"
-    | "sample_analysis_started"
-    | "sample_analysis_viewed"
-    | "reminders_opt_in"
     | "next_best_action_clicked"
+    | "intent_selected"
+    | "life_context_selected"
+    | "risk_concern_selected"
+    | "confidence_level_selected"
+    | "life_change_selected"
+    | "future_consideration_selected"
+    | "guidance_preference_selected"
+    | "onboarding_dont_know_used"
+    | "protection_profile_completed"
+    | "protection_summary_viewed"
     | "onboarding_completed"
     | "first_policy_uploaded"
+    // Personal risk profile (docs/planning/PERSONAL_RISK_PROFILE.md §J): the
+    // needs → risk → coverage chain, so product questions about which area
+    // drives uploads and returns can be answered. Options are enum ids only.
+    | "life_context_completed"
+    | "attention_area_created"
+    | "risk_assessment_started"
+    | "risk_area_opened"
+    | "risk_factor_answered"
+    | "risk_area_completed"
+    | "recommendation_viewed"
+    | "action_started"
     | "first_ai_answer_received"
     | "first_policy_shared"
     | "upgrade_prompt_viewed"
@@ -98,28 +112,12 @@ export interface JourneyEventPayloadMap {
     onboarding_resumed: {
         locale?: string
         step?: number
+        step_id?: string
     }
     onboarding_skipped: {
         locale?: string
         step?: number
         location?: string
-    }
-    segment_selected: {
-        locale?: string
-        user_segment?: "individual" | "family_manager" | "small_business"
-    }
-    goal_selected: {
-        locale?: string
-        selected_goals?: string
-    }
-    familiarity_selected: {
-        locale?: string
-        insurance_familiarity?: "beginner" | "intermediate" | "experienced"
-    }
-    file_ready_selected: {
-        locale?: string
-        has_file_ready?: boolean
-        source?: string
     }
     policy_upload_started: {
         locale?: string
@@ -127,6 +125,10 @@ export interface JourneyEventPayloadMap {
         file_type?: string
         file_size_kb?: number
         source?: string
+        /** Onboarding map context (§J): activated area ids joined with `+`. */
+        activated_areas?: string
+        /** Rows reading «δεν έχουμε δει ακόμη ασφαλιστήριο» when the upload began. */
+        not_yet_checked_count?: number
     }
     policy_upload_completed: {
         locale?: string
@@ -141,26 +143,67 @@ export interface JourneyEventPayloadMap {
         source?: string
         error_code?: string
     }
-    sample_analysis_started: {
-        locale?: string
-        step_id?: string
-        first_category_engaged?: "motor" | "health" | "property" | "life" | "other"
-    }
-    sample_analysis_viewed: {
-        locale?: string
-        first_category_engaged?: "motor" | "health" | "property" | "life" | "other"
-    }
-    reminders_opt_in: {
-        locale?: string
-        enabled?: boolean
-        channels?: string
-    }
     next_best_action_clicked: {
         locale?: string
         step_id?: string
         step_variant?: string
         target_route?: string
         location?: string
+    }
+    // ── First-stage onboarding: the Personal Protection Profile ──────────
+    // `option` is always an enum id from lib/services/protection-profile/
+    // vocabulary.ts — never free text, and never a household count.
+    intent_selected: {
+        locale?: string
+        step_id?: string
+        option?: string
+    }
+    life_context_selected: {
+        locale?: string
+        step_id?: string
+        option?: string
+        dont_know_used?: boolean
+    }
+    risk_concern_selected: {
+        locale?: string
+        option?: string
+        answer_count?: number
+        position?: number
+    }
+    confidence_level_selected: {
+        locale?: string
+        option?: string
+    }
+    life_change_selected: {
+        locale?: string
+        option?: string
+        branch?: "registry" | "flag"
+    }
+    future_consideration_selected: {
+        locale?: string
+        option?: string
+    }
+    guidance_preference_selected: {
+        locale?: string
+        option?: string | null
+    }
+    onboarding_dont_know_used: {
+        locale?: string
+        step_id?: string
+    }
+    protection_profile_completed: {
+        locale?: string
+        steps_completed?: number
+        elapsed_ms?: number
+        dont_know_count?: number
+        priority_count?: number
+        resumed?: boolean
+    }
+    protection_summary_viewed: {
+        locale?: string
+        priority_count?: number
+        applicable_risk_count?: number
+        first_risk_id?: string | null
     }
     onboarding_completed: {
         locale?: string
@@ -171,6 +214,50 @@ export interface JourneyEventPayloadMap {
     first_policy_uploaded: {
         policy_id?: string
         source?: string
+        /** Onboarding map context (§J): activated area ids joined with `+`. */
+        activated_areas?: string
+        /** Rows reading «δεν έχουμε δει ακόμη ασφαλιστήριο» when the upload began. */
+        not_yet_checked_count?: number
+    }
+    life_context_completed: {
+        locale?: string
+        intent?: string
+        dont_know_count?: number
+    }
+    attention_area_created: {
+        area: string
+        importance: string
+        confidence: string
+        alignment?: string
+    }
+    risk_assessment_started: {
+        source: "protection" | "dashboard" | "onboarding_map"
+        activated_count?: number
+        /** Whole days since this browser last rendered the areas list; null on a first visit or without storage. */
+        days_since_last_visit?: number | null
+    }
+    risk_area_opened: {
+        area: string
+        importance: string
+        alignment: string
+        confidence: string
+    }
+    risk_factor_answered: {
+        area: string
+        factor: string
+        special_category?: boolean
+    }
+    risk_area_completed: {
+        area: string
+        remaining_unknown: number
+    }
+    recommendation_viewed: {
+        rule_id: string
+        area?: string
+    }
+    action_started: {
+        kind: "answer_questions" | "check_first_policy" | "review_finding" | "prevention" | "contact_advisor"
+        area?: string
     }
     first_ai_answer_received: {
         policy_id?: string

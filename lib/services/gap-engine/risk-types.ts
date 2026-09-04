@@ -133,6 +133,14 @@ export interface Mitigation {
     line?: string
 }
 
+/** A line that answers part of a risk, with the note the surfaces show. */
+export interface PartialSubstitute {
+    /** Exact branch id. */
+    line: string
+    /** What this line covers and leaves open — «καλύπτει μόνο θάνατο από ατύχημα». */
+    note: Bilingual
+}
+
 export interface RiskDefinition {
     id: string
     /** The line that answers this risk. Also the score-category attribution key. */
@@ -180,10 +188,25 @@ export interface RiskDefinition {
     eligibility?: (ctx: LifeContext) => EligibilityCaveat | null
 
     /**
-     * Extra lines that also answer this risk, beyond `lineOfBusiness`.
-     * Checked as branch families, so a motorbike policy answers the motor risk.
+     * Extra lines that FULLY answer this risk, beyond `lineOfBusiness`. Every
+     * entry is an exact branch id — there is no family expansion anywhere in
+     * the engine, so a child line answers a risk only where a risk names it
+     * (`motor_liability` names `motorbike` and `truck`; `home_building_damage`
+     * names nothing, so a renters policy no longer answers a building risk,
+     * and an income-protection policy no longer answers a death risk because
+     * the taxonomy files it under `life`).
      */
     alsoCoveredBy?: string[]
+
+    /**
+     * Lines that answer PART of this risk — a personal-accident policy pays on
+     * death by accident only, a hull policy may or may not carry the boat's
+     * liability. A partial line never makes the risk `already_covered`: with
+     * nothing full held it reports `needs_review` with the entry's note as
+     * `partialCover`, so the surfaces say «αξίζει να το εξετάσουμε» with the
+     * reason, never «φαίνεται να καλύπτεται».
+     */
+    partiallyCoveredBy?: PartialSubstitute[]
 
     /**
      * How many matching policies it takes to actually answer this risk. Default 1.
@@ -230,6 +253,17 @@ export interface RiskAssessment {
     /** Factors that were unanswered — what to ask next to resolve this card. */
     missingFactors: ContextFactorKey[]
 
-    /** Lines that satisfied the risk, when `already_covered`. */
+    /**
+     * Lines that answered the risk: the full substitutes when `already_covered`,
+     * the partial ones when `needs_review` carries a `partialCover` note.
+     */
     coveredBy: string[]
+
+    /**
+     * Set when the only answer held is a partial one (`partiallyCoveredBy`):
+     * the note saying what the held line does and does not cover. Null
+     * otherwise. The status is then `needs_review` with `applicability`
+     * `applicable` — an exposure that exists, answered in part.
+     */
+    partialCover: Bilingual | null
 }

@@ -15,6 +15,12 @@
 
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
+import {
+    applyFactWrites,
+    existingFacts,
+    factWritesFrom,
+    profileFactData,
+} from "@/lib/services/protection-profile/fact-writes"
 import { applyLifeEvent, checkDependencies } from "./apply"
 import { getLifeEvent } from "./registry"
 import { recordRiskProfileVersion } from "./risk-profile-version"
@@ -27,6 +33,14 @@ export interface DeclareLifeEventArgs {
     magnitude?: number | null
     source?: EventSource
     confidence?: EventConfidence
+    /**
+     * False when the FACTS the event implies were already written by the
+     * caller (the first-stage onboarding records «ήρθε παιδί» after it has
+     * written `childrenCount`): the instance is still recorded, published and
+     * recalculated, but the registry's delta — an increment — is not applied a
+     * second time. Default true.
+     */
+    applyDelta?: boolean
 }
 
 export interface DeclareLifeEventResult {
@@ -95,6 +109,7 @@ export async function declareLifeEvent(
         magnitude = null,
         source = "customer_declared",
         confidence = "high",
+        applyDelta = true,
     } = args
 
     const definition = getLifeEvent(definitionId)
@@ -131,23 +146,43 @@ export async function declareLifeEvent(
         confidence,
         magnitude,
     }
-    const applied = applyLifeEvent(occurrence, profile as Record<string, unknown> | null)
+    const computed = applyLifeEvent(occurrence, profile as Record<string, unknown> | null)
+    // Declared after the facts: keep the record, skip the delta.
+    const applied = applyDelta ? computed : { ...computed, patch: {}, answeredColumns: [], skipped: [] }
 
     // Answered columns union into `answeredFields` — without this an event can
     // change a value and still leave the risk in `needs_review`, which is the
-    // state meaning "we have not asked".
-    const previouslyAnswered = Array.isArray(profile?.answeredFields)
-        ? (profile.answeredFields as unknown[]).filter((f): f is string => typeof f === "string")
-        : []
-    const answeredFields = [...new Set([...previouslyAnswered, ...applied.answeredColumns])]
+    // state meaning "we have not asked". A `mark_known` delta settles its
+    // column with no value, so it travels as `alsoAnswered`.
+    //
+    // Exact, from the person, and newer than whatever is stored: under the one
+    // precedence rule a declared event replaces the wizard's figure, as it
+    // always did. A registry `clear` is a deliberate erasure (`null` in the
+    // patch), which is the one shape applyFactWrites will not infer.
+    //
+    // Provenance names WHO said it: an event the advisor recorded is a third
+    // party's statement (`advisor` → third_party_reported in
+    // lib/protection/evidence.ts); every other source is the person's own.
+    const facts = applyFactWrites({
+        existing: existingFacts(profile as Record<string, unknown> | null),
+        writes: factWritesFrom(applied.patch, {
+            source: source === "advisor_recorded" ? "advisor" : "life_event",
+            precision: "exact",
+            clearNulls: true,
+        }),
+        alsoAnswered: applied.answeredColumns,
+        now: new Date(),
+    })
+    const profileData = profileFactData(facts)
+    const skippedWrites = facts.skipped.map((s) => ({ column: s.column, reason: s.reason as string }))
 
-    const hasPatch = Object.keys(applied.patch).length > 0
+    const hasPatch = Object.keys(facts.data).length > 0
     const event = await db.$transaction(async (tx) => {
         if (hasPatch || applied.answeredColumns.length > 0) {
             await tx.policyholderProfile.upsert({
                 where: { userId },
-                create: { userId, ...applied.patch, answeredFields },
-                update: { ...applied.patch, answeredFields },
+                create: { userId, ...profileData },
+                update: { ...profileData },
             })
         }
         return tx.lifeEventInstance.create({
@@ -159,7 +194,7 @@ export async function declareLifeEvent(
                 confidence,
                 magnitude,
                 status: "applied",
-                appliedPatch: applied.patch as any,
+                appliedPatch: (applyDelta ? applied.patch : { declaredAfterFacts: true }) as any,
             },
         })
     })
@@ -220,7 +255,7 @@ export async function declareLifeEvent(
         ok: true,
         eventId: event.id,
         backfilled,
-        skipped: applied.skipped,
+        skipped: [...applied.skipped, ...skippedWrites],
         profileChanged: hasPatch,
         version,
     }

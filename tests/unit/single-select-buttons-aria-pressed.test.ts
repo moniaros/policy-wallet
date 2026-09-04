@@ -13,7 +13,10 @@ import { readFileSync } from 'node:fs'
  *  announces its state natively. The codebase already uses aria-pressed widely.)
  */
 const cases: Array<{ file: string; expr: RegExp[] }> = [
-    { file: 'app/onboarding/flow.tsx', expr: [/aria-pressed=\{goal === g\.key\}/] },
+    {
+        file: 'components/onboarding/protection-profile/QuestionScreen.tsx',
+        expr: [/aria-pressed=\{option\.value === selected\}/, /aria-pressed=\{selected === UNSURE\}/],
+    },
     {
         file: 'components/tasks/QuestionnaireForm.tsx',
         expr: [/aria-pressed=\{answers\[q\.id\] === val\}/, /aria-pressed=\{answers\[q\.id\] === opt\}/],

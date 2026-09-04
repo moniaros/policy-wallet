@@ -1,0 +1,136 @@
+import { describe, expect, it, vi } from "vitest"
+import { fireEvent, render, screen } from "@testing-library/react"
+import { QuestionScreen } from "@/components/onboarding/protection-profile/QuestionScreen"
+import { UNSURE } from "@/lib/services/protection-profile/vocabulary"
+
+const base = {
+    prompt: "Πού μένεις;",
+    why: "Το σπίτι είναι συνήθως το μεγαλύτερο πράγμα που έχει κανείς να προστατέψει.",
+    whyLabel: "Γιατί ρωτάμε",
+    options: [
+        { value: "owned", label: "Σε δικό μου σπίτι" },
+        { value: "rented", label: "Σε νοικιασμένο" },
+    ],
+    savingLabel: "Αποθήκευση…",
+    retryLabel: "Δοκίμασε ξανά",
+    errorText: "Δεν αποθηκεύτηκε.",
+}
+
+describe("QuestionScreen", () => {
+    it("single-select: real buttons with aria-pressed, an h1, 44px targets", () => {
+        const onSelect = vi.fn()
+        const { container } = render(
+            <QuestionScreen {...base} kind="single" selected="owned" onSelect={onSelect} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: true }} />
+        )
+        expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Πού μένεις;")
+        const pressed = container.querySelectorAll('button[aria-pressed="true"]')
+        expect(pressed).toHaveLength(1)
+        fireEvent.click(screen.getByRole("button", { name: "Σε νοικιασμένο" }))
+        expect(onSelect).toHaveBeenCalledWith("rented")
+        for (const button of Array.from(container.querySelectorAll("button"))) {
+            expect(button.className, button.textContent ?? "").toMatch(/min-h-11|h-11/)
+        }
+    })
+
+    it("multi-select: real checkboxes plus the «none of these» answer", () => {
+        const onToggle = vi.fn()
+        const onNone = vi.fn()
+        const { container } = render(
+            <QuestionScreen {...base} kind="multi" selected={["owned"]} onSelect={vi.fn()} onToggle={onToggle} noneLabel="Κανένα από αυτά" onNone={onNone} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: true }} />
+        )
+        const boxes = container.querySelectorAll('input[type="checkbox"]')
+        expect(boxes).toHaveLength(2)
+        expect((boxes[0] as HTMLInputElement).checked).toBe(true)
+        fireEvent.click(boxes[1])
+        expect(onToggle).toHaveBeenCalledWith("rented")
+        fireEvent.click(screen.getByRole("button", { name: "Κανένα από αυτά" }))
+        expect(onNone).toHaveBeenCalled()
+    })
+
+    it("a hint about HOW to answer sits under the options, apart from the why", () => {
+        const { container } = render(
+            <QuestionScreen {...base} kind="multi" hint="Διάλεξε ένα — ή δύο, αν δεν ξεχωρίζεις." selected={[]} onSelect={vi.fn()} onToggle={vi.fn()} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: true }} />
+        )
+        const hint = screen.getByText("Διάλεξε ένα — ή δύο, αν δεν ξεχωρίζεις.")
+        const list = container.querySelector('ul[role="group"]')!
+        // After the options, before the CTA.
+        expect(list.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+        const why = screen.getByText(base.why, { exact: false })
+        expect(why.textContent).not.toContain("Διάλεξε")
+    })
+
+    it("an unsure control without a discovery panel IS the answer: one tap proceeds, nothing repeats the why", () => {
+        const onUnsure = vi.fn()
+        render(
+            <QuestionScreen {...base} kind="single" selected={undefined} onSelect={vi.fn()} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: false }}
+                unsure={{ label: "Θα το αποφασίσω αργότερα", proceedLabel: "Να δω την εικόνα μου", onUnsure }} />
+        )
+        const later = screen.getByRole("button", { name: "Θα το αποφασίσω αργότερα" })
+        expect(later).not.toHaveAttribute("aria-expanded")
+        fireEvent.click(later)
+        expect(onUnsure).toHaveBeenCalledTimes(1)
+        expect(screen.queryByRole("button", { name: "Να δω την εικόνα μου" })).toBeNull()
+        expect(screen.getAllByText(base.why, { exact: false })).toHaveLength(1)
+    })
+
+    it("«δεν είμαι σίγουρος/η» reveals an inline panel and never a new screen", () => {
+        const onUnsure = vi.fn()
+        render(
+            <QuestionScreen {...base} kind="single" selected={undefined} onSelect={vi.fn()} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: false }}
+                unsure={{ label: "Δεν είμαι σίγουρος/η", discovery: "Σκέψου ποιος θα δυσκολευόταν.", proceedLabel: "Προχώρα χωρίς απάντηση", onUnsure }} />
+        )
+        const toggle = screen.getByRole("button", { name: "Δεν είμαι σίγουρος/η" })
+        expect(toggle).toHaveAttribute("aria-expanded", "false")
+        fireEvent.click(toggle)
+        expect(toggle).toHaveAttribute("aria-expanded", "true")
+        expect(screen.getByText("Σκέψου ποιος θα δυσκολευόταν.")).toBeTruthy()
+        fireEvent.click(screen.getByRole("button", { name: "Προχώρα χωρίς απάντηση" }))
+        expect(onUnsure).toHaveBeenCalled()
+    })
+
+    it("a single-select with an unsure control: the option and «δεν είμαι σίγουρος/η» are never both pressed", () => {
+        // The income-dependency screen is the first SINGLE screen that offers
+        // «Δεν είμαι σίγουρος/η». A chosen option is the answer; the unsure
+        // control stays unpressed, and choosing it is a real button press.
+        const onSelect = vi.fn()
+        const onUnsure = vi.fn()
+        const options = [
+            { value: "primary", label: "Κυρίως σε αυτό" },
+            { value: "shared", label: "Περίπου στο μισό" },
+        ]
+        const { rerender } = render(
+            <QuestionScreen {...base} prompt="Πόσο βασίζεται το νοικοκυριό σου στο εισόδημά σου;" options={options} kind="single" selected="primary" onSelect={onSelect} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: true }}
+                unsure={{ label: "Δεν είμαι σίγουρος/η", discovery: "Σκέψου τι θα άλλαζε στο σπίτι.", proceedLabel: "Προχώρα χωρίς απάντηση", onUnsure }} />
+        )
+        expect(screen.getByRole("button", { name: "Κυρίως σε αυτό" })).toHaveAttribute("aria-pressed", "true")
+        expect(screen.getByRole("button", { name: "Δεν είμαι σίγουρος/η" })).toHaveAttribute("aria-pressed", "false")
+        rerender(
+            <QuestionScreen {...base} prompt="Πόσο βασίζεται το νοικοκυριό σου στο εισόδημά σου;" options={options} kind="single" selected={UNSURE} onSelect={onSelect} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: false }}
+                unsure={{ label: "Δεν είμαι σίγουρος/η", discovery: "Σκέψου τι θα άλλαζε στο σπίτι.", proceedLabel: "Προχώρα χωρίς απάντηση", onUnsure }} />
+        )
+        expect(screen.getByRole("button", { name: "Δεν είμαι σίγουρος/η" })).toHaveAttribute("aria-pressed", "true")
+        for (const o of options) expect(screen.getByRole("button", { name: o.label })).toHaveAttribute("aria-pressed", "false")
+        fireEvent.click(screen.getByRole("button", { name: "Περίπου στο μισό" }))
+        expect(onSelect).toHaveBeenCalledWith("shared")
+    })
+
+    it("an unsure answer shows as pressed on the unsure control", () => {
+        render(
+            <QuestionScreen {...base} kind="single" selected={UNSURE} onSelect={vi.fn()} status="idle" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: false }}
+                unsure={{ label: "Δεν είμαι σίγουρος/η", discovery: "…", proceedLabel: "Προχώρα", onUnsure: vi.fn() }} />
+        )
+        expect(screen.getByRole("button", { name: "Δεν είμαι σίγουρος/η" })).toHaveAttribute("aria-pressed", "true")
+    })
+
+    it("saving keeps the label and disables; an error is an alert and the answer stays", () => {
+        const { rerender } = render(
+            <QuestionScreen {...base} kind="single" selected="owned" onSelect={vi.fn()} status="saving" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: true }} />
+        )
+        const cta = screen.getByRole("button", { name: /Αποθήκευση/ })
+        expect(cta).toBeDisabled()
+        rerender(<QuestionScreen {...base} kind="single" selected="owned" onSelect={vi.fn()} status="error" cta={{ label: "Συνέχεια", onClick: vi.fn(), visible: true }} />)
+        expect(screen.getByRole("alert")).toHaveTextContent("Δεν αποθηκεύτηκε.")
+        expect(screen.getByRole("button", { name: "Σε δικό μου σπίτι" })).toHaveAttribute("aria-pressed", "true")
+        expect(screen.getByRole("button", { name: "Δοκίμασε ξανά" })).toBeTruthy()
+    })
+})

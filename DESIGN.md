@@ -375,6 +375,9 @@ Borders are hairlines. A coloured border thicker than 1px on a card, list item o
 ### Signature: the facts row and the honest empty state
 The system's most distinctive component is not decorative. The page's headline is a row of verifiable counts — «12 ασφαλιστήρια · 3 λήγουν σύντομα · 2 δεν έχουν αναλυθεί» — set as fact cells inside one heading, so the reader gets the wallet's state as a sentence they can check against their own folder. Under a list of findings, the same idea becomes the count bar. And where data is missing, the product says what is missing, why, and what would fill it — rather than showing a zero, a placeholder chart, or a skeleton that never resolves. This is the same doctrine as the anti-reference: an unverifiable number is worse than an absent one, and a verifiable one is worth a whole ring.
 
+### Signature: the onboarding sheet
+The first stage asks one question per screen on the bare canvas — no card around the question, a `text-h3` heading, a one-line «Γιατί ρωτάμε» under it, and answers as full-width option rows (44px, `rounded-2xl`, a ring and a check when chosen) rather than chips. «Δεν είμαι σίγουρος/η» is a real answer on every reflective screen: an inline panel that opens under the options, never a new screen and never a dead end. Progress is a caption plus a thin track with a constant denominator, so a conditional screen never makes the bar move backwards. The register is informal singular here and only here; the app stays plural. The stage ends on the protection map — a `pw-card` of domain sub-cards with an importance WORD on a neutral or brand tint (never amber, never red), a reason caption, and the sentence that keeps it honest — before a single policy is asked for.
+
 ## Do's and Don'ts
 
 ### Do:

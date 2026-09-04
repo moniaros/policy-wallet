@@ -18,7 +18,23 @@
  *    buy, and it is only expressible if the events exist.
  */
 
-import type { LifeEventDefinition } from "./types"
+import type { EventDomain, LifeEventDefinition } from "./types"
+
+/**
+ * The "spheres of life" the product speaks in — one label set for the life
+ * events panel, the protection map and the dashboard's priorities card, so
+ * «Οικογένεια» is spelled the same wherever a domain is named.
+ */
+export const EVENT_DOMAIN_LABELS: Record<EventDomain, { en: string; el: string }> = {
+    household: { en: "Family", el: "Οικογένεια" },
+    residence: { en: "Home", el: "Κατοικία" },
+    property: { en: "Property", el: "Ακίνητα" },
+    mobility: { en: "Vehicles", el: "Οχήματα" },
+    work: { en: "Work", el: "Εργασία" },
+    money: { en: "Money", el: "Οικονομικά" },
+    health: { en: "Health", el: "Υγεία" },
+    lifestyle: { en: "Lifestyle", el: "Τρόπος ζωής" },
+}
 
 const W = (days: number, decay: "linear" | "cliff" | "none" = "linear") => ({ days, decay })
 const DECLARED_ONLY = [{ source: "customer_declared" as const, confidence: "high" as const }]

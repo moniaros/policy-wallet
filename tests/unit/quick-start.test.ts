@@ -4,8 +4,10 @@ import {
     QUICK_START_QUESTIONS,
     firstInsight,
     quickStartComplete,
+    quickStartFactWrites,
     quickStartPatch,
 } from "@/lib/services/onboarding/quick-start"
+import { applyFactWrites, existingFacts } from "@/lib/services/protection-profile/fact-writes"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { assessRisks } from "@/lib/services/gap-engine/risk-assessment"
 
@@ -203,9 +205,49 @@ describe("the opener is mobile-first and honest on screen", () => {
         // The three answers are coarse by design — "I own my home" becomes one
         // property, and the dependant count is a floor from the children. A
         // mutation must not rely on the UI to be safe.
+        //
+        // Sept 2026: the action used to hand-roll this as «skip any column in
+        // answeredFields». The invariant now lives in the writes' PRECISION and
+        // in applyFactWrites, which refuses a coarse value over an exact one —
+        // so the guard moved from a regex on the skip to the register itself.
         const action = readFileSync("app/(protected)/protection/quick-start-actions.ts", "utf-8")
-        expect(action).toMatch(/!previously\.includes\(column\)/)
-        expect(action).toMatch(/update: \{ \.\.\.fresh/)
+        expect(action).toMatch(/applyFactWrites\(\{/)
+        expect(action).toMatch(/writes: quickStartFactWrites\(answers\)/)
+        expect(action).not.toMatch(/update: \{ \.\.\.columns/)
+
+        const writes = quickStartFactWrites({ residence: "owned", children: "3", vehicles: "2" })
+        const precision = Object.fromEntries(writes.map((w) => [w.column, w.precision]))
+        expect(precision).toEqual({
+            residenceType: "exact",
+            propertiesOwned: "coarse",
+            childrenCount: "coarse", // «three or more»
+            dependentsCount: "coarse", // a floor from the children
+            employmentStatus: "coarse", // read off «children who depend on you»
+            vehiclesCount: "coarse", // «two or more»
+        })
+        expect(quickStartFactWrites({ children: "1", vehicles: "1" }).map((w) => [w.column, w.precision])).toEqual(
+            expect.arrayContaining([["childrenCount", "exact"], ["vehiclesCount", "exact"]])
+        )
+        for (const w of writes) expect(w.source).toBe("quick_start")
+
+        // The behaviour the regex used to stand for: a completed wizard survives.
+        const wizardSaid = existingFacts({
+            propertiesOwned: 3,
+            dependentsCount: 4,
+            childrenCount: 2,
+            answeredFields: ["propertiesOwned", "dependentsCount", "childrenCount"],
+            factProvenance: {
+                propertiesOwned: { source: "assessment", precision: "exact", at: "2026-08-01T00:00:00.000Z" },
+                dependentsCount: { source: "assessment", precision: "exact", at: "2026-08-01T00:00:00.000Z" },
+                childrenCount: { source: "assessment", precision: "exact", at: "2026-08-01T00:00:00.000Z" },
+            },
+        })
+        const out = applyFactWrites({ existing: wizardSaid, writes, now: NOW })
+        expect(out.data).not.toHaveProperty("propertiesOwned")
+        expect(out.data).not.toHaveProperty("dependentsCount")
+        expect(out.data).not.toHaveProperty("childrenCount")
+        // …while the residence, which the person chose outright, is recorded.
+        expect(out.data).toMatchObject({ residenceType: "owned" })
     })
 
     it("re-runs the engine before the page re-reads it", () => {

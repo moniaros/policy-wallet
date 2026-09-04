@@ -20,7 +20,7 @@ export default async function OnboardingLayout({
         <TranslationsProvider>
             {/* A landmark, not a plain div: onboarding is the first screen a
                 new user meets, and it had no skip-link destination. */}
-            <main className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col">
+            <main className="pw-app-canvas pw-page-shell flex min-h-screen flex-col">
                 {children}
             </main>
         </TranslationsProvider>

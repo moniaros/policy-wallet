@@ -176,6 +176,132 @@ export async function completeReview(
     }
 }
 
+export type EvidenceCloseOutcome =
+    | { closed: number; reason: "closed" }
+    /**
+     * `summary_only`: the policy is held and its area has an open review, but
+     * only the basic extraction ran — the limits were not read, so the review
+     * stays open. Nothing is written for it: the model has no evidence field
+     * and none is added.
+     */
+    | { closed: 0; reason: "not_held" | "summary_only" | "no_area" | "nothing_open" | "error" }
+
+/**
+ * A finished policy analysis closes the open reviews it answers.
+ *
+ * Called from BOTH completion paths — the deep run's finalize (after the
+ * GapInstances are persisted) and the basic-summary extraction — through this
+ * one function, so the two cannot drift (tests/unit/risk-review-policy.test.ts
+ * enumerates both call sites). The decision is the pure matrix in ./evidence.ts;
+ * this reads the policy AFTER the analysis wrote its line of business and
+ * dates, resolves the lifecycle on the one clock, and writes.
+ *
+ * Idempotent: only `status: "open"` rows match, so a retry closes nothing
+ * twice. Silent to the customer on purpose — the analysis result is already
+ * the message, and a «review completed» notification for a review they never
+ * opened would be noise. Never throws: a review is a prompt, not a
+ * precondition, and failing to close one must not fail the analysis.
+ */
+export async function closeReviewsByPolicyEvidence(args: { policyId: string }): Promise<EvidenceCloseOutcome> {
+    try {
+        const { decideEvidenceClosures, lifecycleBand, policyEvidenceArea, REVIEW_OUTCOME_POLICY_EVIDENCE } = await import(
+            "./evidence"
+        )
+        const { resolvePolicyLifecycle } = await import("@/lib/policy-status")
+        const { protectionDetailFrom } = await import("@/lib/protection/coverage-model")
+
+        const policy = await db.policy.findUnique({
+            where: { id: args.policyId },
+            select: {
+                ownerUserId: true,
+                lineOfBusiness: true,
+                status: true,
+                endDate: true,
+                acordData: true,
+                policyNumber: true,
+                insurerName: true,
+            },
+        })
+        if (!policy) return { closed: 0, reason: "nothing_open" }
+
+        const lifecycle = lifecycleBand(resolvePolicyLifecycle(policy).status)
+        // The one reading of «were the limits read» — the same the attention
+        // areas use, so a policy the wallet shows as summary-only cannot close.
+        const detail = protectionDetailFrom(policy.acordData)
+        if (!policyEvidenceArea(policy.lineOfBusiness)) return { closed: 0, reason: "no_area" }
+
+        const open = await db.riskReview.findMany({
+            where: { userId: policy.ownerUserId, status: "open" },
+            select: { id: true, status: true, trigger: true, causedByEventId: true },
+        })
+        if (open.length === 0) return { closed: 0, reason: "nothing_open" }
+
+        // The generic `life_event` trigger knows its sphere only through the
+        // event that raised it: the declared definition id sits on that
+        // event's payload.
+        const causeIds = open
+            .filter((r) => r.trigger === "life_event" && r.causedByEventId)
+            .map((r) => r.causedByEventId as string)
+        const definitionByEvent = new Map<string, string>()
+        if (causeIds.length > 0) {
+            const events = await db.businessEvent.findMany({
+                where: { id: { in: causeIds } },
+                select: { id: true, payload: true },
+            })
+            for (const e of events) {
+                const definitionId = (e.payload as Record<string, unknown> | null)?.definitionId
+                if (typeof definitionId === "string") definitionByEvent.set(e.id, definitionId)
+            }
+        }
+
+        const ids = decideEvidenceClosures({
+            lineOfBusiness: policy.lineOfBusiness,
+            lifecycle,
+            detail,
+            reviews: open.map((r) => ({
+                id: r.id,
+                status: r.status,
+                trigger: r.trigger,
+                definitionId: r.causedByEventId ? definitionByEvent.get(r.causedByEventId) ?? null : null,
+            })),
+        })
+        if (ids.length === 0) {
+            if (lifecycle !== "active" && lifecycle !== "expiring_soon") return { closed: 0, reason: "not_held" }
+            if (detail !== "analysed") return { closed: 0, reason: "summary_only" }
+            return { closed: 0, reason: "nothing_open" }
+        }
+
+        const score = await db.protectionScore.findUnique({
+            where: { userId: policy.ownerUserId },
+            select: { overallScore: true },
+        })
+        const updated = await db.riskReview.updateMany({
+            // Scoped to the owner and to OPEN rows: a second run matches nothing.
+            where: { id: { in: ids }, userId: policy.ownerUserId, status: "open" },
+            data: {
+                status: "completed",
+                completedAt: new Date(),
+                scoreAtClose: score?.overallScore ?? null,
+                outcome: REVIEW_OUTCOME_POLICY_EVIDENCE,
+            },
+        })
+        if (updated.count > 0) {
+            logger("info", "risk review closed by policy evidence", {
+                userId: policy.ownerUserId,
+                policyId: args.policyId,
+                closed: updated.count,
+            })
+        }
+        return { closed: updated.count, reason: "closed" }
+    } catch (error) {
+        logger("error", "failed to close risk reviews by policy evidence", {
+            policyId: args.policyId,
+            error: error instanceof Error ? error.message : String(error),
+        })
+        return { closed: 0, reason: "error" }
+    }
+}
+
 export async function dismissReview(reviewId: string, userId: string): Promise<boolean> {
     try {
         const updated = await db.riskReview.updateMany({

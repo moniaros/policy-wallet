@@ -74,7 +74,7 @@ describe('the file picker offers what the server accepts', () => {
 describe('each picker names its own server category', () => {
     const PAIRS: Array<[string, string, string]> = [
         // picker file, category it asks for, server file that validates it
-        ['app/onboarding/flow.tsx', 'policy', 'lib/services/policy.service.ts'],
+        ['components/onboarding/protection-profile/UploadScreen.tsx', 'policy', 'lib/services/policy.service.ts'],
         ['components/onboarding/agent/LicenseVerificationStep.tsx', 'policy', 'app/onboarding/agent/actions.ts'],
         ['components/wallet/AddPolicyClient.tsx', 'policy', 'lib/services/policy.service.ts'],
         ['components/wallet/BatchUploadModal.tsx', 'policy', 'lib/services/policy.service.ts'],

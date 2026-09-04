@@ -1,0 +1,25 @@
+/**
+ * PROBE — two shapes a component or service grows "just for this screen":
+ * a line→domain map (which sphere a policy card sits under) and a risk→domain
+ * map (where a finding is filed). Both are the attention-area table's job;
+ * the guard must flag each.
+ */
+import type { EventDomain } from "@/lib/services/life-events/types"
+
+export const LOB_DOMAIN: Record<string, EventDomain> = {
+    motor: "mobility",
+    home: "residence",
+    life: "household",
+    health: "health",
+    travel: "lifestyle",
+}
+
+export const RISK_DOMAIN = {
+    life_dependents: "household",
+    income_interruption: "money",
+    motor_liability: "mobility",
+} as const
+
+export function sphereOf(lob: string): EventDomain {
+    return LOB_DOMAIN[lob] ?? "lifestyle"
+}

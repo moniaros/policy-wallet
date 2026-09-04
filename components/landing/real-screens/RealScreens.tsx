@@ -333,6 +333,7 @@ export function DashboardScreen({ locale }: { locale: ScreenLocale }) {
     const items: AttentionItem[] = [
         {
             id: "sample-home",
+            ruleId: "sample-home",
             title: tr("Κατοικία: ο σεισμός δεν καλύπτεται", "Home: earthquake is not covered"),
             reason: tr(
                 "Το ασφαλιστήριο κατοικίας δεν περιλαμβάνει σεισμό — ρωτήστε τον ασφαλιστή σας πριν την ανανέωση.",
@@ -344,6 +345,7 @@ export function DashboardScreen({ locale }: { locale: ScreenLocale }) {
         },
         {
             id: "sample-motor",
+            ruleId: "sample-motor",
             title: tr("Αυτοκίνητο: ανανέωση σε 18 ημέρες", "Motor: renewal in 18 days"),
             reason: tr(
                 "Ελέγξτε ότι οι ίδιες καλύψεις και απαλλαγές ισχύουν και στη νέα περίοδο.",

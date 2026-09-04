@@ -25,7 +25,22 @@ const EXEMPT = new Set([
 const FILES = [
     'lib/i18n/translations/el.ts',
     'components/coverage/CoverageInsightsClient.tsx',
-    'app/onboarding/flow.tsx',
+    'app/onboarding/ProtectionProfileFlow.tsx',
+    'components/onboarding/protection-profile/QuestionScreen.tsx',
+    'components/onboarding/protection-profile/SummaryScreen.tsx',
+    'components/onboarding/protection-profile/ProtectionMapCard.tsx',
+    'components/onboarding/protection-profile/UploadScreen.tsx',
+    'components/onboarding/protection-profile/AdvisorScreen.tsx',
+    // The attention surfaces (personal risk profile, wave 2b) — dictionary-
+    // driven, so any Greek literal here is a regression of the register.
+    'components/protection/AttentionAreasCard.tsx',
+    'components/protection/UnknownFactorsCard.tsx',
+    'components/protection/AreaDetail.tsx',
+    'components/protection/AreaQuestionFlow.tsx',
+    'components/protection/ProtectionSurface.tsx',
+    'components/protection/ProtectionRiskLens.tsx',
+    'app/(protected)/protection/areas/[area]/page.tsx',
+    'lib/onboarding/protection-profile/map-rows.ts',
     'lib/monetization/upgrade-copy.el.ts',
     'lib/pricing/public-pricing-content.ts',
     'lib/help-content.ts',

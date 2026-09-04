@@ -29,6 +29,13 @@ export type ConversionEventType =
     | "paid_ai_call_completed"
     // Agent B2B — a client accepted an agent's proposal (a closed sale).
     | "proposal_accepted"
+    // The first-stage onboarding's two milestones, mirrored server-side so the
+    // needs layer's funnel is measurable without a consent cookie.
+    | "protection_profile_completed"
+    | "first_policy_uploaded"
+    // The risk assessment (/protection, one area at a time) reached the end
+    // of its questions. Emitted by app/(protected)/protection/assessment-actions.ts.
+    | "risk_assessment_completed"
 
 export interface ConversionEventDetails {
     /** Trigger surface, e.g. "upgrade_modal", "carried_plan", "token_topup". */
@@ -42,6 +49,18 @@ export interface ConversionEventDetails {
     tokens?: number
     /** For report_unlock: which policy's report was purchased. */
     policyId?: string
+    /** protection_profile_completed: why the person came (INTENT_VALUES). */
+    intent?: string
+    /** protection_profile_completed: how many areas the map raised. */
+    priorityCount?: number
+    /** protection_profile_completed: screens answered «δεν είμαι σίγουρος/η». */
+    dontKnowCount?: number
+    /** protection_profile_completed: CONFIDENCE_LEVELS. */
+    confidence?: string
+    /** risk_assessment_completed: areas whose deciding facts are all answered. */
+    areas_completed?: number
+    /** risk_assessment_completed: areas still `unknown` after the pass. */
+    remaining_unknown?: number
 }
 
 export async function recordConversionEvent(

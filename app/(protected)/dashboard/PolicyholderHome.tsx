@@ -21,6 +21,7 @@ import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayPersonName, displayPolicyNumber, policyAssetIdentifier } from "@/lib/wallet/policy-identity"
+import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
 import { resolvePolicyLifecycle, effectivePolicyStatus } from "@/lib/policy-status"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
 import { premiumExclusionParts } from "@/lib/wallet/premium-exclusion-note"
@@ -45,6 +46,13 @@ import { PortfolioSummaryCard } from "@/components/dashboard/home/PortfolioSumma
 import { RenewalsTimelineCard } from "@/components/dashboard/home/RenewalsTimelineCard"
 import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidget"
 import { RecentChangesWidget } from "@/components/dashboard/home/RecentChangesWidget"
+import { ProtectionPrioritiesCard } from "@/components/dashboard/home/ProtectionPrioritiesCard"
+import { ProtectionProfileResumeCard } from "@/components/dashboard/home/ProtectionProfileResumeCard"
+import { resolveProtectionOnboardingState, shouldEnterProtectionOnboarding } from "@/lib/services/protection-profile/state"
+import { deriveProtectionPriorities } from "@/lib/services/protection-profile/derive-priorities"
+import { toLifeContext } from "@/lib/services/gap-engine/life-context"
+import { areaForLob, areaForRisk } from "@/lib/protection/domains"
+import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 
 /**
  * Calendar days until a date, in Athens.
@@ -119,6 +127,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         activeRecommendations,
         recStatusGroups,
         timelineEntries,
+        protectionProfileRow,
+        attentionBundle,
     ] = await Promise.all([
         db.policy.findMany({
             // status ≠ deleted: a soft-deleted row (the API's DELETE path) is
@@ -197,8 +207,54 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             })
             .catch(() => [] as Array<{ status: string; _count: { _all: number } }>),
         getTimeline(dbUser.id, { limit: 3 }).catch(() => []),
+        // Layer 1 — the statements behind «Η εικόνα σας» and the resume state.
+        db.protectionProfile
+            .findUnique({
+                where: { userId: dbUser.id },
+                select: {
+                    answers: true,
+                    answeredSteps: true,
+                    unsureSteps: true,
+                    completedAt: true,
+                    skippedAt: true,
+                    summaryViewedAt: true,
+                    uploadChoice: true,
+                    riskConcerns: true,
+                    commitments: true,
+                    recentChanges: true,
+                    futureConsiderations: true,
+                },
+            })
+            .catch(() => null),
+        // The composed view behind «Η εικόνα σας» — needs, exposure and the
+        // documents, with a confidence (lib/protection/load-attention-areas.ts).
+        // Read-only; fails soft to no card rather than to a card with a claim.
+        loadAttentionAreas({ userId: dbUser.id, language: lang }).catch(() => null),
     ])
     const isFreeTier = entitlements.tier === "free"
+
+    // ── Layer 1: the first stage of onboarding ───────────────────────────
+    // Entered ONCE: a new customer with no policies, no completed profile and
+    // no skip is sent to it. Every screen there carries a visible skip, and a
+    // skip is remembered here — nobody is sent twice.
+    const legacyOnboardingCompleted =
+        ((profile?.preferences ?? {}) as Record<string, unknown>).onboardingCompleted === true
+    if (
+        shouldEnterProtectionOnboarding({
+            completedAt: protectionProfileRow?.completedAt ?? null,
+            skippedAt: protectionProfileRow?.skippedAt ?? null,
+            policyCount: policies.length,
+            legacyCompleted: legacyOnboardingCompleted,
+        })
+    ) {
+        redirect("/onboarding")
+    }
+    const protectionState = resolveProtectionOnboardingState(protectionProfileRow)
+    // Derived on read from the facts and the statements — never stored, never a score.
+    const protectionPriorities =
+        protectionProfileRow?.completedAt && profile
+            ? deriveProtectionPriorities(toLifeContext(profile as any, new Date()), protectionProfileRow)
+            : []
 
     // Plan picked at signup but never activated (carried through onboarding)
     let carriedPlan: "ph-plus" | "ph-pro" | null = null
@@ -376,6 +432,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     } as const
     const attentionItems: AttentionItem[] = activeRecommendations.slice(0, 3).map((rec) => ({
         id: rec.id,
+        // Analytics identity (§J): the rule that decided it, else the catalogue
+        // risk the engine assessed; the area from the same vocabulary the
+        // priorities card speaks (lib/protection/domains.ts).
+        ruleId: rec.ruleId ?? rec.riskId ?? "unknown",
+        area: (rec.riskId ? areaForRisk(rec.riskId) : undefined)?.id ?? areaForLob(normalizeBranch(rec.lineOfBusiness).id)?.id,
         title: rec.title[lang] || rec.title.en,
         reason: rec.personalReason ? rec.personalReason[lang] || rec.personalReason.en : null,
         // The reason is pre-composed prose; when the risk that wrote it leads
@@ -392,6 +453,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         .filter((group) => group.status === "actioned" || group.status === "dismissed")
         .reduce((sum, group) => sum + group._count._all, 0)
     const plan = buildProtectionPlan({
+        profileCompleted: Boolean(protectionProfileRow?.completedAt),
         policyCount: policies.length,
         hasCompletedAnalysis,
         openGapCount,
@@ -401,6 +463,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         handledRecommendationCount,
     })
     const setupStepCopy: Record<string, { title: string; description: string }> = {
+        profile: { title: home.planStepProfileTitle, description: home.planStepProfileBody },
         upload: { title: home.planStepUploadTitle, description: home.planStepUploadBody },
         analysis: { title: home.planStepAnalysisTitle, description: home.planStepAnalysisBody },
         gaps: { title: home.planStepGapsTitle, description: home.planStepGapsBody },
@@ -664,17 +727,21 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         attention: t.branches.statusAttention,
         not_held: t.branches.statusNotHeld,
         neutral: t.branches.statusNeutral,
+        unread: t.branches.statusUnread,
     } as const
     // LIFECYCLE status in, never the stored string — buildBranchOverview's own
     // contract ("callers pass effectivePolicyStatus"), which /branches honours
     // and this page did not: an expired policy fed the map as stored-'active'
     // and painted its branch green while the /branches tile showed amber.
+    // And `unread` in: a placeholder identity or an empty extraction is a
+    // document on file, not cover — «Άλλο: Καλυμμένο» over a one-line PDF.
     const coverageMapEntries = buildBranchOverview(
         policies.map((policy) => ({
             id: policy.id,
             lineOfBusiness: policy.lineOfBusiness,
             status: effectivePolicyStatus(policy),
             endDate: policy.endDate,
+            unread: isUnreadPolicy(policy),
         })),
         cachedScore?.expectedLines ?? []
     ).map((entry) => ({
@@ -705,6 +772,52 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         delta: entry.delta ?? null,
         explained: entry.cause !== null,
     }))
+
+    // Layer 1 on the home: the customer's own picture of what matters, or the
+    // way into saying it. Never a score — the hero stays the only verdict
+    // surface — and the upload ACTION stays the hero's; this card only links.
+    const protectionCard =
+        protectionState.status === "completed" ? (
+            attentionBundle ? (
+                <ProtectionPrioritiesCard
+                    areas={attentionBundle.areas}
+                    priorities={protectionPriorities}
+                    unsureCount={protectionState.unsureSteps.length}
+                    // Policies READ (the bundle drops unread documents) — the
+                    // hero's universe is every stored row and stays the hero's.
+                    policyCount={attentionBundle.policyCount}
+                    language={lang}
+                    mapLabels={t.onboarding.protectionProfile.summary}
+                    labels={{
+                        kicker: home.prioritiesKicker,
+                        lead: home.prioritiesLead,
+                        countLabel: home.prioritiesCountLabel,
+                        unsureLabel: home.prioritiesUnsureLabel,
+                        areaCountLabel: home.prioritiesAreaCountLabel,
+                        unknownCountLabel: home.prioritiesUnknownCountLabel,
+                        coveredCountLabel: home.prioritiesCoveredCountLabel,
+                        limitsUnread: home.prioritiesLimitsUnread,
+                        expiringSoon: home.prioritiesExpiringSoon,
+                        lapsedOnly: home.prioritiesLapsedOnly,
+                        noPolicies: home.prioritiesNoPolicies,
+                        uploadCta: home.prioritiesUploadCta,
+                        withPolicies: home.prioritiesWithPolicies,
+                        absenceCaveat: home.prioritiesAbsenceCaveat,
+                        alignmentCta: home.prioritiesAlignmentCta,
+                        disclaimer: home.prioritiesDisclaimer,
+                    }}
+                />
+            ) : null
+        ) : (
+            <ProtectionProfileResumeCard
+                variant={protectionState.status === "in_progress" ? "in_progress" : "start"}
+                labels={
+                    protectionState.status === "in_progress"
+                        ? { kicker: home.resumeInProgressKicker, body: home.resumeInProgressBody, cta: home.resumeInProgressCta }
+                        : { kicker: home.resumeStartKicker, body: home.resumeStartBody, cta: home.resumeStartCta }
+                }
+            />
+        )
 
     const planCard = (
         <ProtectionPlanCard
@@ -779,7 +892,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 findingsAtOpen: openReview.findingsAtOpen,
                             }}
                             label={getReviewPolicy(openReview.trigger)!.label}
-                            rationale={getReviewPolicy(openReview.trigger)!.rationale}
+                            reason={getReviewPolicy(openReview.trigger)!.reason}
                         />
                     </div>
                 )}
@@ -787,6 +900,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_340px]">
                     {/* ── Main column ─────────────────────────────────────── */}
                     <div className="grid min-w-0 gap-5 md:grid-cols-2">
+                        {protectionCard && <div className="min-w-0 md:col-span-2">{protectionCard}</div>}
                         <div className="min-w-0 md:col-span-2">
                             <ProtectionStatusHero
                                 hasPolicies={hasPolicies}

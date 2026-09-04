@@ -34,6 +34,7 @@ export async function buildUserDataExportPayload(userId: string) {
         collaborationThreads,
         referralsMade,
         exportRequests,
+        protectionProfile,
     ] = await Promise.all([
         db.user.findUnique({
             where: { id: userId },
@@ -113,6 +114,12 @@ export async function buildUserDataExportPayload(userId: string) {
                         isBuildingManager: true,
                         coverHeldElsewhere: true,
                         answeredFields: true,
+                        // Sept 2026: how far the household leans on this
+                        // income, and WHO wrote each fact and how precisely
+                        // (fact_provenance) — the record of the exchange is
+                        // itself personal data, like answeredFields above.
+                        incomeDependency: true,
+                        factProvenance: true,
                         createdAt: true,
                         updatedAt: true,
                     },
@@ -535,6 +542,32 @@ export async function buildUserDataExportPayload(userId: string) {
             orderBy: { requestedAt: "desc" },
             take: 200,
         }),
+        // Layer 1 of the needs model — the person's own statements from the
+        // first-stage onboarding: why they came, what would hurt most, how sure
+        // they feel, what changed and what is coming. Declared, not derived,
+        // and exactly what Art. 15 is exercised over.
+        db.protectionProfile.findUnique({
+            where: { userId },
+            select: {
+                intent: true,
+                riskConcerns: true,
+                commitments: true,
+                confidenceLevel: true,
+                uncertaintyReasons: true,
+                recentChanges: true,
+                futureConsiderations: true,
+                guidancePreference: true,
+                priorityAreas: true,
+                answers: true,
+                answeredSteps: true,
+                unsureSteps: true,
+                uploadChoice: true,
+                startedAt: true,
+                completedAt: true,
+                skippedAt: true,
+                summaryViewedAt: true,
+            },
+        })
     ])
 
     if (!user) {
@@ -629,6 +662,15 @@ export async function buildUserDataExportPayload(userId: string) {
             occurredAt: toIso(e.occurredAt),
             recordedAt: toIso(e.recordedAt),
         })),
+        protectionProfile: protectionProfile
+            ? {
+                  ...protectionProfile,
+                  startedAt: toIso(protectionProfile.startedAt),
+                  completedAt: protectionProfile.completedAt ? toIso(protectionProfile.completedAt) : null,
+                  skippedAt: protectionProfile.skippedAt ? toIso(protectionProfile.skippedAt) : null,
+                  summaryViewedAt: protectionProfile.summaryViewedAt ? toIso(protectionProfile.summaryViewedAt) : null,
+              }
+            : null,
         notificationSettings: notificationSettings
             ? { ...notificationSettings, updatedAt: toIso(notificationSettings.updatedAt) }
             : null,

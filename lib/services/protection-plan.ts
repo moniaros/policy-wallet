@@ -14,6 +14,7 @@
  */
 
 export type ProtectionPlanStepId =
+    | "profile"
     | "upload"
     | "analysis"
     | "gaps"
@@ -31,6 +32,8 @@ export interface ProtectionPlanStep {
 }
 
 export interface ProtectionPlanFacts {
+    /** The first-stage onboarding (the Personal Protection Profile) has a completedAt. */
+    profileCompleted: boolean
     policyCount: number
     /** Any PolicyAnalysisRun in a completed state. */
     hasCompletedAnalysis: boolean
@@ -51,6 +54,7 @@ export interface ProtectionPlan {
 }
 
 const SETUP_HREFS: Record<ProtectionPlanStepId, string> = {
+    profile: "/onboarding",
     upload: "/wallet/add",
     analysis: "/protection",
     gaps: "/protection",
@@ -60,6 +64,9 @@ const SETUP_HREFS: Record<ProtectionPlanStepId, string> = {
 
 export function buildProtectionPlan(facts: ProtectionPlanFacts): ProtectionPlan {
     const setupDone: Record<ProtectionPlanStepId, boolean> = {
+        // Step 0 — what matters, before what is held. Done means completedAt
+        // exists on the profile; a skip leaves it open, on purpose.
+        profile: facts.profileCompleted,
         upload: facts.policyCount > 0,
         analysis: facts.hasCompletedAnalysis,
         // Zero gaps when no analysis ever ran is not "no gaps" — it is "we have

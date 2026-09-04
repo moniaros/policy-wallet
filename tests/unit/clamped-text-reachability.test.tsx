@@ -215,6 +215,12 @@ const REGISTER: RegisterEntry[] = [
         note: "Fictional wallet mock on the marketing page — demo set-dressing, not user data.",
     },
     {
+        file: "components/onboarding/protection-profile/UploadScreen.tsx",
+        clamps: { truncate: 1 },
+        kind: "no-information-loss",
+        note: "The user's own just-picked filename in the picker row; the document renders its name in full on the policy page.",
+    },
+    {
         file: "components/account/Achievements.tsx",
         clamps: { truncate: 2 },
         kind: "debt",

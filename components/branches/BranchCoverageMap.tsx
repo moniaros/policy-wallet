@@ -22,6 +22,9 @@ const PILL_STYLES: Record<BranchTileState, string> = {
     // §2.2: not owning a product is not a finding — this used to be rose.
     not_held: "border border-border bg-card text-foreground/70",
     neutral: "bg-card text-muted-foreground",
+    // A document on file that was never read as a policy: something to look
+    // at, not a finding (never amber) and not cover (never the primary tint).
+    unread: "bg-status-info-tint text-status-info",
 }
 
 /**

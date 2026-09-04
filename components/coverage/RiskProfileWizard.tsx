@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useRef, useState, type Dispatch, type MutableRefObject, type SetStateAction } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { answeredFieldsFrom, wizardPayload } from "@/components/coverage/risk-profile-payload"
 import { ChipToggle } from "@/components/ui/form/ChipToggle"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { ACTIVITY_LABELS, HIGH_RISK_ACTIVITIES } from "@/lib/services/gap-engine/life-context"
@@ -119,44 +120,41 @@ const ACTIVITY_OPTIONS = HIGH_RISK_ACTIVITIES.map((value) => ({
 }))
 
 /**
- * Controls whose state is DEFINITE the moment they are rendered.
- *
- * A checkbox is either ticked or not — leaving it alone is a real answer ("no
- * pets"), and it writes `false`, the same value the column defaults to. So these
- * must be reported as answered or the engine can never tell a deliberate "no"
- * from silence, and the risk sits in `needs_review` however carefully the form
- * was filled in.
- *
- * Selects, text and number inputs are deliberately NOT here. They have an empty
- * state, and rendering one is not the same as answering it.
+ * The serialisation rules — which controls are DEFINITE the moment they render,
+ * what counts as answered, and what may travel — live in
+ * ./risk-profile-payload.ts so tests/unit/risk-profile-save-never-erases-health
+ * can hold them without rendering. Re-exported for the callers that import
+ * `answeredFieldsFrom` from here.
  */
-const DEFINITE_WIZARD_FIELDS = [
-    "ownsHome", "rentsOutProperty", "ownsBoat", "ownsBusiness", "hasLoans",
-    "hasPets", "travelsFrequently", "retirementPlanning", "isBuildingManager",
-    // Multi-selects: an empty list is the answer "none of these".
-    "activities", "chronicConditions", "familyMedicalHistory",
-]
+export { answeredFieldsFrom }
 
 /**
- * What the customer has actually answered.
+ * A control whose state the payload can tell apart from an untouched default.
  *
- * Reporting every RENDERED field as answered was wrong in exactly the way the
- * engine exists to avoid. Leaving the residence select on "Επιλέξτε…" marked
- * `residence` as known-with-no-value, and both property risks then resolved to
- * `not_applicable` — the engine stating that this person owns no home and rents
- * nowhere, on the strength of a question they had skipped. Skipped means
- * `needs_review`, which is the whole point of tracking knownness.
+ * Every save used to send every control, so a field the page had not
+ * pre-filled went to the server as its React default — `[]` for the health
+ * lists, `false` for the building-manager box — and overwrote the stored
+ * answer. The setter records the touch; `wizardPayload` sends a field only
+ * when it was touched or when the page pre-filled it from the stored row.
  */
-export function answeredFieldsFrom(values: Record<string, unknown>): string[] {
-    const answered = [...DEFINITE_WIZARD_FIELDS]
-    for (const [field, value] of Object.entries(values)) {
-        if (value === "" || value === null || value === undefined) continue
-        answered.push(field)
-    }
-    return [...new Set(answered)]
+function useField<T>(
+    touched: MutableRefObject<Set<string>>,
+    name: string,
+    initial: T
+): [T, Dispatch<SetStateAction<T>>] {
+    const [value, setValue] = useState<T>(initial)
+    const set = useCallback<Dispatch<SetStateAction<T>>>(
+        (next) => {
+            touched.current.add(name)
+            setValue(next)
+        },
+        [touched, name]
+    )
+    return [value, set]
 }
 
 export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileWizardProps) {
+    const touched = useRef(new Set<string>())
     const fieldLabel = (key: string) =>
         FIELD_LABELS[key]?.[language === "el" ? "el" : "en"] ?? key
     const router = useRouter()
@@ -166,26 +164,26 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
     const t = (el: string, en: string) => (lang === "el" ? el : en)
 
     // Form state
-    const [maritalStatus, setMaritalStatus] = useState(initialData?.maritalStatus || "single")
-    const [dependentsCount, setDependentsCount] = useState<number | "">(initialData?.dependentsCount ?? "")
-    const [employmentStatus, setEmploymentStatus] = useState(initialData?.employmentStatus || "employed")
-    const [ownsHome, setOwnsHome] = useState(initialData?.ownsHome ?? false)
-    const [mortgageAmount, setMortgageAmount] = useState<number | "">(
+    const [maritalStatus, setMaritalStatus] = useField(touched, "maritalStatus", initialData?.maritalStatus || "single")
+    const [dependentsCount, setDependentsCount] = useField<number | "">(touched, "dependentsCount", initialData?.dependentsCount ?? "")
+    const [employmentStatus, setEmploymentStatus] = useField(touched, "employmentStatus", initialData?.employmentStatus || "employed")
+    const [ownsHome, setOwnsHome] = useField(touched, "ownsHome", initialData?.ownsHome ?? false)
+    const [mortgageAmount, setMortgageAmount] = useField<number | "">(touched, "mortgageAmount", 
         initialData?.mortgageAmount ? Number(initialData.mortgageAmount) : ""
     )
-    const [hasPets, setHasPets] = useState(initialData?.hasPets ?? false)
-    const [vehiclesCount, setVehiclesCount] = useState<number | "">(initialData?.vehiclesCount ?? "")
-    const [annualIncome, setAnnualIncome] = useState<number | "">(
+    const [hasPets, setHasPets] = useField(touched, "hasPets", initialData?.hasPets ?? false)
+    const [vehiclesCount, setVehiclesCount] = useField<number | "">(touched, "vehiclesCount", initialData?.vehiclesCount ?? "")
+    const [annualIncome, setAnnualIncome] = useField<number | "">(touched, "annualIncome", 
         initialData?.annualIncome ? Number(initialData.annualIncome) : ""
     )
-    const [occupation, setOccupation] = useState(initialData?.occupation || "")
-    const [travelsFrequently, setTravelsFrequently] = useState(initialData?.travelsFrequently ?? false)
-    const [hasLoans, setHasLoans] = useState(initialData?.hasLoans ?? false)
-    const [loanAmount, setLoanAmount] = useState<number | "">(
+    const [occupation, setOccupation] = useField(touched, "occupation", initialData?.occupation || "")
+    const [travelsFrequently, setTravelsFrequently] = useField(touched, "travelsFrequently", initialData?.travelsFrequently ?? false)
+    const [hasLoans, setHasLoans] = useField(touched, "hasLoans", initialData?.hasLoans ?? false)
+    const [loanAmount, setLoanAmount] = useField<number | "">(touched, "loanAmount", 
         initialData?.loanAmount ? Number(initialData.loanAmount) : ""
     )
-    const [smokingStatus, setSmokingStatus] = useState(initialData?.smokingStatus || "")
-    const [lifeEvents, setLifeEvents] = useState<Array<{ type: string; date: string }>>(
+    const [smokingStatus, setSmokingStatus] = useField(touched, "smokingStatus", initialData?.smokingStatus || "")
+    const [lifeEvents, setLifeEvents] = useField<Array<{ type: string; date: string }>>(touched, "lifeEvents",
         initialData?.lifeEvents || []
     )
     const [showAddEvent, setShowAddEvent] = useState(false)
@@ -193,40 +191,40 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
     const [newEventDate, setNewEventDate] = useState("")
 
     // Health & Lifestyle state
-    const [gender, setGender] = useState(initialData?.gender || "")
-    const [heightCm, setHeightCm] = useState<number | "">(initialData?.heightCm ?? "")
-    const [weightKg, setWeightKg] = useState<number | "">(initialData?.weightKg ?? "")
-    const [chronicConditions, setChronicConditions] = useState<string[]>(
+    const [gender, setGender] = useField(touched, "gender", initialData?.gender || "")
+    const [heightCm, setHeightCm] = useField<number | "">(touched, "heightCm", initialData?.heightCm ?? "")
+    const [weightKg, setWeightKg] = useField<number | "">(touched, "weightKg", initialData?.weightKg ?? "")
+    const [chronicConditions, setChronicConditions] = useField<string[]>(touched, "chronicConditions", 
         initialData?.chronicConditions ?? []
     )
-    const [familyMedicalHistory, setFamilyMedicalHistory] = useState<string[]>(
+    const [familyMedicalHistory, setFamilyMedicalHistory] = useField<string[]>(touched, "familyMedicalHistory", 
         initialData?.familyMedicalHistory ?? []
     )
-    const [drivingRecord, setDrivingRecord] = useState(initialData?.drivingRecord || "")
-    const [activityLevel, setActivityLevel] = useState(initialData?.activityLevel || "")
+    const [drivingRecord, setDrivingRecord] = useField(touched, "drivingRecord", initialData?.drivingRecord || "")
+    const [activityLevel, setActivityLevel] = useField(touched, "activityLevel", initialData?.activityLevel || "")
 
     // Life Context factors.
     // NOTE the defaults: "" and false, never a guessed value. `maritalStatus`
     // and `employmentStatus` above default to "single"/"employed", so a reader
     // who never touched either select still had both written as declarations —
     // and "employed" alone was enough to make a whole score category apply.
-    const [childrenCount, setChildrenCount] = useState<number | "">(initialData?.childrenCount ?? "")
-    const [residenceType, setResidenceType] = useState(initialData?.residenceType || "")
-    const [propertiesOwned, setPropertiesOwned] = useState<number | "">(initialData?.propertiesOwned ?? "")
-    const [rentsOutProperty, setRentsOutProperty] = useState(initialData?.rentsOutProperty ?? false)
-    const [ownsBoat, setOwnsBoat] = useState(initialData?.ownsBoat ?? false)
-    const [ownsBusiness, setOwnsBusiness] = useState(initialData?.ownsBusiness ?? false)
-    const [businessEmployees, setBusinessEmployees] = useState<number | "">(initialData?.businessEmployees ?? "")
-    const [savingsAmount, setSavingsAmount] = useState<number | "">(
+    const [childrenCount, setChildrenCount] = useField<number | "">(touched, "childrenCount", initialData?.childrenCount ?? "")
+    const [residenceType, setResidenceType] = useField(touched, "residenceType", initialData?.residenceType || "")
+    const [propertiesOwned, setPropertiesOwned] = useField<number | "">(touched, "propertiesOwned", initialData?.propertiesOwned ?? "")
+    const [rentsOutProperty, setRentsOutProperty] = useField(touched, "rentsOutProperty", initialData?.rentsOutProperty ?? false)
+    const [ownsBoat, setOwnsBoat] = useField(touched, "ownsBoat", initialData?.ownsBoat ?? false)
+    const [ownsBusiness, setOwnsBusiness] = useField(touched, "ownsBusiness", initialData?.ownsBusiness ?? false)
+    const [businessEmployees, setBusinessEmployees] = useField<number | "">(touched, "businessEmployees", initialData?.businessEmployees ?? "")
+    const [savingsAmount, setSavingsAmount] = useField<number | "">(touched, "savingsAmount", 
         initialData?.savingsAmount ? Number(initialData.savingsAmount) : ""
     )
-    const [valuablesValue, setValuablesValue] = useState<number | "">(
+    const [valuablesValue, setValuablesValue] = useField<number | "">(touched, "valuablesValue", 
         initialData?.valuablesValue ? Number(initialData.valuablesValue) : ""
     )
-    const [activities, setActivities] = useState<string[]>(initialData?.activities ?? [])
-    const [cyberExposure, setCyberExposure] = useState(initialData?.cyberExposure || "")
-    const [retirementPlanning, setRetirementPlanning] = useState(initialData?.retirementPlanning ?? false)
-    const [isBuildingManager, setIsBuildingManager] = useState(initialData?.isBuildingManager ?? false)
+    const [activities, setActivities] = useField<string[]>(touched, "activities", initialData?.activities ?? [])
+    const [cyberExposure, setCyberExposure] = useField(touched, "cyberExposure", initialData?.cyberExposure || "")
+    const [retirementPlanning, setRetirementPlanning] = useField(touched, "retirementPlanning", initialData?.retirementPlanning ?? false)
+    const [isBuildingManager, setIsBuildingManager] = useField(touched, "isBuildingManager", initialData?.isBuildingManager ?? false)
 
     function toggleActivity(value: string) {
         setActivities((prev) =>
@@ -254,53 +252,27 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
             const response = await fetch("/api/v1/risk-profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    maritalStatus,
-                    dependentsCount: dependentsCount === "" ? 0 : Number(dependentsCount),
-                    employmentStatus,
-                    ownsHome,
-                    mortgageAmount: mortgageAmount === "" ? undefined : Number(mortgageAmount),
-                    hasPets,
-                    vehiclesCount: vehiclesCount === "" ? 0 : Number(vehiclesCount),
-                    annualIncome: annualIncome === "" ? undefined : Number(annualIncome),
-                    occupation: occupation || undefined,
-                    travelsFrequently,
-                    hasLoans,
-                    loanAmount: loanAmount === "" ? undefined : Number(loanAmount),
-                    smokingStatus: smokingStatus || undefined,
-                    lifeEvents: lifeEvents.length > 0 ? lifeEvents : undefined,
-                    gender: gender || undefined,
-                    heightCm: heightCm === "" ? undefined : Number(heightCm),
-                    weightKg: weightKg === "" ? undefined : Number(weightKg),
-                    chronicConditions,
-                    familyMedicalHistory,
-                    drivingRecord: drivingRecord || undefined,
-                    activityLevel: activityLevel || undefined,
-                    // Life Context factors
-                    childrenCount: childrenCount === "" ? 0 : Number(childrenCount),
-                    residenceType: residenceType || undefined,
-                    propertiesOwned: propertiesOwned === "" ? undefined : Number(propertiesOwned),
-                    rentsOutProperty,
-                    ownsBoat,
-                    ownsBusiness,
-                    businessEmployees: businessEmployees === "" ? 0 : Number(businessEmployees),
-                    savingsAmount: savingsAmount === "" ? undefined : Number(savingsAmount),
-                    valuablesValue: valuablesValue === "" ? undefined : Number(valuablesValue),
-                    activities,
-                    cyberExposure: cyberExposure || undefined,
-                    retirementPlanning,
-                    isBuildingManager,
-                    // Only what they actually answered. A skipped select stays
-                    // unknown rather than becoming a declaration of "none".
-                    answeredFields: answeredFieldsFrom({
-                        maritalStatus, dependentsCount, childrenCount, employmentStatus,
-                        occupation, annualIncome, savingsAmount, residenceType,
-                        propertiesOwned, mortgageAmount, loanAmount, vehiclesCount,
-                        businessEmployees, valuablesValue, cyberExposure,
-                        gender, heightCm, weightKg, drivingRecord, activityLevel,
-                        smokingStatus,
-                    }),
-                }),
+                // Only what the person touched, or what the page pre-filled
+                // from the stored row. A control left at its React default is
+                // ABSENT from the body — and absent is untouched on the
+                // server — so a save can no longer erase a stored answer the
+                // page forgot to pre-fill (risk-profile-payload.ts).
+                body: JSON.stringify(
+                    wizardPayload({
+                        values: {
+                            maritalStatus, dependentsCount, employmentStatus, ownsHome, mortgageAmount,
+                            hasPets, vehiclesCount, annualIncome, occupation, travelsFrequently,
+                            hasLoans, loanAmount, smokingStatus, lifeEvents,
+                            gender, heightCm, weightKg, chronicConditions, familyMedicalHistory,
+                            drivingRecord, activityLevel,
+                            childrenCount, residenceType, propertiesOwned, rentsOutProperty,
+                            ownsBoat, ownsBusiness, businessEmployees, savingsAmount, valuablesValue,
+                            activities, cyberExposure, retirementPlanning, isBuildingManager,
+                        },
+                        touched: touched.current,
+                        initialData: initialData as Record<string, unknown> | undefined,
+                    })
+                ),
             })
 
             if (!response.ok) {

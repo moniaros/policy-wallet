@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
+import { ActionLink, RecommendationSurface } from "./RecommendationAnalytics"
 import { describeSeverity } from "@/lib/gaps/severity-display"
 import { toneDotClass } from "@/components/gaps/severity-tone"
 import { ArrowRight, ShieldCheck, TriangleAlert } from "lucide-react"
@@ -9,6 +10,10 @@ import { CardHead } from "./CardHead"
 
 export interface AttentionItem {
     id: string
+    /** The rule or catalogue risk behind the finding — `recommendation_viewed` is keyed on it. */
+    ruleId: string
+    /** Attention area id (lib/protection/domains.ts) resolved by the server from the risk or the line. */
+    area?: string
     /** The risk, in one line. Localised by the server. */
     title: string
     /** Why it matters to THIS customer; null when no assessment backs it. */
@@ -94,10 +99,13 @@ export function AttentionList({
                         </div>
                     </div>
                 ) : (
+                    <RecommendationSurface items={items.map((item) => ({ ruleId: item.ruleId, area: item.area }))}>
                     <ul className="space-y-2">
                         {items.map((item) => (
                             <li key={item.id}>
-                                <Link
+                                <ActionLink
+                                    kind="review_finding"
+                                    area={item.area}
                                     href="/protection"
                                     className="pw-subcard flex items-start gap-3 p-3.5 transition-colors"
                                 >
@@ -130,10 +138,11 @@ export function AttentionList({
                                         </span>
                                     </span>
                                     <ArrowRight className="mt-1 h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden />
-                                </Link>
+                                </ActionLink>
                             </li>
                         ))}
                     </ul>
+                    </RecommendationSurface>
                 )}
                 {items.length > 0 && (
                     // The qualifier that stops a priority badge reading as a risk

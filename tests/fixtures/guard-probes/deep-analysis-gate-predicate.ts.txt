@@ -1,0 +1,12 @@
+// PROBE (green): the same gate through the one predicate — with the near-miss shapes that must stay silent.
+import { canRunDeepAnalysis } from "@/lib/monetization/feature-gates"
+export async function triggerAnalysis(policyId: string, userId: string) {
+    const entitlements = await resolveUserEntitlements(userId)
+    if (!canRunDeepAnalysis(entitlements.tier)) {
+        return orchestrator.extractBasicSummary(policyId, userId)
+    }
+    const label = entitlements.tier === "free" ? "Free Plan" : "Paid" // display name, not a gate — allow-listed by file elsewhere
+    // if (entitlements.tier !== "pro") — a comment is not code
+    const tierName = `${entitlements.tier}-pro`
+    return orchestrator.createAndExecuteRun(policyId, userId, label, tierName)
+}

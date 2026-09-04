@@ -76,6 +76,16 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     },
     full_ai_policy_analysis: {
         featureKey: "full_ai_policy_analysis",
+        // This row is what canRunDeepAnalysis reads — the ONE predicate the
+        // orchestrator, the onboarding trigger and every display share since
+        // Sept 2026. Two written decisions disagree about its value: H-009
+        // (docs/transformation/HALTS.md, closed 2026-08-25) says both paid
+        // tiers unlock deep analysis; the pricing-v2 pins in
+        // tests/unit/monetization-config.test.ts and
+        // ai-processing-consent-gate.test.ts say the top tier only, which is
+        // what production has always enforced. Enforcement is kept as it is
+        // (changing what paying subscribers receive is the owner's call); the
+        // displays now read this predicate, so a Starter is told the truth.
         requiredPlan: "pro",
         upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",
@@ -194,6 +204,24 @@ const TIER_RANK: Record<PlanTier, number> = { free: 0, plus: 1, pro: 2 }
 
 export function tierUnlocks(tier: PlanTier, gate: FeatureGate): boolean {
     return TIER_RANK[tier] >= TIER_RANK[gate.requiredPlan]
+}
+
+/**
+ * May this B2C tier run the DEEP analysis pipeline (clarity, gaps, translation)?
+ *
+ * The ONE predicate. The orchestrator's `createRun` gate, the onboarding's
+ * `triggerOnboardingAnalysis`, the policy service's post-upload trigger and
+ * every locked-state display read it; none compares `tier` to a literal.
+ * Until Sept 2026 three server gates and two displays each spelled the rule
+ * out on their own — the displays as `tier === "free"`, the gates as
+ * `tier !== "pro"` — so Starter (code `plus`) was told the analysis was
+ * unlocked by a page whose server refused to run it. Agents are metered by
+ * their own agent plan and never pass through here (`isAgentInitiator`).
+ * tests/unit/deep-analysis-gate-single-predicate.test.ts enumerates app/ and
+ * lib/ for a second spelling.
+ */
+export function canRunDeepAnalysis(tier: PlanTier): boolean {
+    return tierUnlocks(tier, FEATURE_GATES.full_ai_policy_analysis)
 }
 
 /** The plan the modal should recommend for a given gate + current tier. */

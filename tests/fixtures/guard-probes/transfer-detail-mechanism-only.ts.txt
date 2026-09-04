@@ -1,0 +1,10 @@
+// PROBE (green): a transfer mitigation stating the mechanism only — with the near-miss words that must stay silent.
+{
+    kind: "transfer",
+    label: { en: "Professional indemnity cover", el: "Ασφάλιση επαγγελματικής αστικής ευθύνης" },
+    detail: {
+        en: "Sized to your contract values, with defence costs included — defence is what accrues first and often exceeds the claim. Sized to rebuild value, not market value. Worth comparing against plain saving on charges and flexibility.",
+        el: "Προσαρμοσμένη στις αξίες των συμβάσεών σας, με κάλυψη εξόδων υπεράσπισης. Υπολογισμένη στην αξία ανακατασκευής, όχι στην εμπορική αξία. Αξίζει σύγκριση ως προς τις επιβαρύνσεις και την ευελιξία, με εκτίμηση της αξίας.",
+    },
+    line: "liability",
+}

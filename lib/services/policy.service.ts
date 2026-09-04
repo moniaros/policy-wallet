@@ -559,14 +559,27 @@ export class PolicyService extends BaseService {
             const isAgent = Boolean(initiator?.roles?.includes('agent'))
             if (!isAgent) {
                 const { resolveUserEntitlements } = await import('@/lib/subscription-entitlements')
+                const { canRunDeepAnalysis } = await import('@/lib/monetization/feature-gates')
                 const entitlements = await resolveUserEntitlements(userId)
-                if (entitlements.tier !== 'pro') {
+                if (!canRunDeepAnalysis(entitlements.tier)) {
                     // The result was previously awaited and thrown away, so for
                     // every free/Starter user — the majority — a failed or
                     // consent-blocked extraction left the policy stuck at
                     // 'analyzing' forever, with no notification and no way back.
                     const basic = await orchestrator.extractBasicSummary(policyId, userId)
                     if (basic.status === 'completed') return
+
+                    // The document was read and is not a policy. The
+                    // orchestrator already stamped the row `action_needed`
+                    // + EXTRACTION_EMPTY and kept the document; this path
+                    // only tells the owner, in their language. Never the
+                    // failed branch below — that one discards a placeholder
+                    // policy, and this upload is exactly the file the person
+                    // may need to look at again.
+                    if (basic.status === 'needs_review') {
+                        await this.notifyAnalysisFailed(userId, policyId, language, 'EXTRACTION_EMPTY')
+                        return
+                    }
 
                     if (basic.status === 'blocked') {
                         await this.handleBlockedAnalysis(policyId, userId, language, basic.reason || 'blocked')
@@ -625,7 +638,24 @@ export class PolicyService extends BaseService {
 
             if (run.status !== 'completed' && run.status !== 'completed_with_warnings') {
                 const reason = run?.failureMessage || run?.blockedReason || 'analysis_orchestration_failed'
-                throw new Error(`Analysis run did not complete: ${reason}`)
+                // Dispositioned HERE, with the run's own failure code, rather
+                // than thrown into the catch below: the catch only sees a
+                // message, and a code-only signal (EXTRACTION_EMPTY — the
+                // document was read and is not a policy) must reach the
+                // classifier or a placeholder row is discarded when it should
+                // be kept and explained.
+                logger('error', 'Background policy analysis run did not complete', {
+                    policyId,
+                    userId,
+                    runId: run.id,
+                    failureCode: run.failureCode ?? null,
+                    reason,
+                })
+                await this.handleFailedAnalysis(policyId, userId, language, {
+                    message: `Analysis run did not complete: ${reason}`,
+                    failureCode: run.failureCode,
+                })
+                return
             }
 
             if (run.status === 'completed_with_warnings') {
@@ -1120,6 +1150,12 @@ export class PolicyService extends BaseService {
                 ANALYSIS_NOT_PERMITTED: {
                     el: `Δεν έχετε δικαίωμα να εκτελέσετε ανάλυση ${subject.el}. Ζητήστε δικαίωμα επεξεργασίας από τον κάτοχο του ασφαλιστηρίου.`,
                     en: `You do not have permission to run the analysis ${subject.en}. Ask the policy owner for edit access.`,
+                },
+                // The document was read and is not a policy (lib/wallet/unread-policy.ts).
+                // Kept, and said plainly: it may be the wrong file.
+                EXTRACTION_EMPTY: {
+                    el: 'Στο έγγραφο που ανεβάσατε δεν βρήκαμε στοιχεία ασφαλιστηρίου — ούτε ασφαλιστική εταιρεία, ούτε αριθμό, ούτε περίοδο κάλυψης. Ελέγξτε αν είναι το σωστό αρχείο· μπορείτε να ανεβάσετε άλλο. Το έγγραφό σας είναι αποθηκευμένο.',
+                    en: 'The document you uploaded carries no policy details — no insurer, no policy number, no period of cover. Check it is the right file; you can upload another. Your document is saved.',
                 },
             }
 

@@ -1,8 +1,9 @@
 # STATUS
 
 **Production: `b395a106`** — merged 2026-09-04 (PR #290 carrying the whole stack #291 → #294 →
-#296: the Steady phone layer, B2B batches B and C, the audited customer intake); CI run
-33866823712 was in progress at the time of writing and deploy.yml follows on green. Previous:
+#296: the Steady phone layer, B2B batches B and C, the audited customer intake); CI green,
+deployed 2026-09-04 11:48Z (deploy run 33868900303) and verified: 200, the phone-layer
+stylesheet served by production, no new Sentry group in the window after. Previous:
 `a910cbe7` (hotfix #292, every upload committed a policy with zero documents) on `6cb43303`
 (Direction A, PR #288) + `addfb7e6` (PR #289, dashboard link-card borders and coverage-map tiles).
 The Grafí homepage (`76f62a43`, 2026-08-30) is LIVE and smoked: fixed-promise H1, 16-line ticker, sourced numbers with
@@ -20,6 +21,34 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **2026-09-04 — The Personal Risk Profile: onboarding as breadth, assessment as depth, evidence
+  as coverage — built on `feat/onboarding-protection-profile` (PR #293, base NEW-UI, awaiting the
+  owner).** Contract and diagnosis in `docs/planning/PERSONAL_RISK_PROFILE.md` (four code audits:
+  five vocabularies described one person, the assessment re-asked every onboarding fact and its
+  wizard erased Art. 9 data on every save, the engine's own «what we still need» list was never
+  shown, no rule ever met a need, most users never got a gap row). Built: `lib/protection/domains.ts`
+  (the one risk↔domain↔LOB table, guarded), `PolicyholderProfile.fact_provenance` +
+  `incomeDependency` (migration `20260904150000`, dev AND prod), `applyFactWrites` as the one
+  write path, the six-level evidence scale, `attention-areas.ts` (importance + exposure + coverage
+  → a conservative alignment: `gap` only on a rule finding, `appears_covered` only on a held line
+  the catalogue accepts by exact id or declared substitute, an engine finding with nothing held is
+  «δεν έχουμε δει», never "uncovered"; limits / expiring / lapsed caveats inline everywhere), one
+  server loader, the onboarding map on the composed areas with «Τι άλλαξε στην εικόνα σου» after
+  the upload, `/protection?lens=risk` as areas of attention + «Τι χρειάζεται ακόμη να
+  καταλάβουμε», `/protection/areas/[area]` asking one unknown-or-coarse factor at a time (health
+  behind a two-sided gate; prevention first; transfer «για συζήτηση», price arguments removed),
+  the dashboard card on the same areas, reviews closed by evidence at area level from analysed
+  policies only, eight new journey events + a server mirror. Three red teams (behavioural,
+  insurance/risk, product) → one fix wave; a browser walk found that a document with no policy
+  details became an active «covered» policy → `EXTRACTION_EMPTY`, `action_needed`, kept document.
+  **Open for the owner:** which plan clears deep analysis (H-009 says both paid tiers; the
+  pricing-v2 pins say top tier only; `plan-defaults.ts` says every tier) — production keeps the top
+  tier through the one predicate `canRunDeepAnalysis`, the locked CTA names the feature, not a plan.
+  Gates: full suite 572 files / 6644 tests, build green; harness `scratchpad/prp/prp-walk.mjs`
+  (five personas at 390 through onboarding → map → upload → dashboard → lens → detail, DB
+  inspection, cleanup). Not built (next): the needs-vs-limits adequacy rule (needs a benefit
+  vocabulary on `coverages[].name` and a basis on `limit`), a month-2 cadence keyed on
+  `factorsToResolve`, prevention by region/building age, a per-area change ledger.
 - **2026-09-04 — The B2B customer-intake and policy-upload audit is merged (PR #296 → the
   stack → NEW-UI `b395a106`).** Ten launch-gating defects fixed, each with an enumerating guard
   and a probe: `/customers/[id]` read Next 16's Promise `params` synchronously and showed an

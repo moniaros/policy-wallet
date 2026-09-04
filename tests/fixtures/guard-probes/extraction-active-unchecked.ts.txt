@@ -1,0 +1,21 @@
+// PROBE FIXTURE for tests/unit/empty-extraction-never-active.test.ts.
+// The exact defect shape: an extraction result is written straight to
+// `status: "active"` with no emptiness check, so a one-line PDF with no
+// policy details becomes an active policy with a placeholder identity.
+// The guard must flag this file. Committed per the "guards must enumerate,
+// not assume" rule in CLAUDE.md — a guard without a probe proven to turn it
+// red is not a guard.
+import { db } from "@/lib/db"
+import { getAIService } from "@/lib/services/ai"
+
+export async function probeUnchecked(policyId: string, document: unknown) {
+    const extraction = await getAIService().extractPolicyData(document as any, { policyId })
+    await db.policy.update({
+        where: { id: policyId },
+        data: {
+            insurerName: extraction.insurerName,
+            policyNumber: extraction.policyNumber,
+            status: "active",
+        },
+    })
+}

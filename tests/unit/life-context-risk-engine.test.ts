@@ -13,6 +13,7 @@ import {
     openFindings,
     scorableRisks,
     relevantLines,
+    namedLines,
 } from "@/lib/services/gap-engine/risk-assessment"
 import { calculateScoreFromAssessments } from "@/lib/services/gap-engine/protection-score"
 import { buildBranchOverview } from "@/lib/insurance/branch-page"
@@ -630,10 +631,10 @@ describe("catalog integrity", () => {
         expect(unreachable, `these risks can never surface: ${unreachable.join(", ")}`).toEqual([])
     })
 
-    it("every risk that names a covering line uses a known branch id", () => {
+    it("every risk that names a covering line — full or partial — uses a known branch id", () => {
         // A typo here would silently mean "nothing ever covers this".
         for (const risk of RISK_CATALOG) {
-            for (const lob of [risk.lineOfBusiness, ...(risk.alsoCoveredBy ?? [])]) {
+            for (const lob of namedLines(risk)) {
                 expect(
                     normalizeBranch(lob).id,
                     `${risk.id}: "${lob}" does not resolve to a real branch`

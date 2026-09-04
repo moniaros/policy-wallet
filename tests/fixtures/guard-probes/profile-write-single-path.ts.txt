@@ -1,0 +1,21 @@
+// PROBE FIXTURE for tests/unit/profile-writes-single-path.test.ts.
+// The compliant shape: read the row, decide through applyFactWrites, persist
+// what it decided (and only that). The guard must pass this.
+import { db } from "@/lib/db"
+import { applyFactWrites, existingFacts, factWritesFrom, profileFactData } from "@/lib/services/protection-profile/fact-writes"
+
+export async function probeSinglePath(userId: string, patch: Record<string, unknown>) {
+    const existing = await db.policyholderProfile.findUnique({ where: { userId } })
+    const facts = profileFactData(
+        applyFactWrites({
+            existing: existingFacts(existing as Record<string, unknown> | null),
+            writes: factWritesFrom(patch, { source: "questionnaire", precision: "exact" }),
+            now: new Date(),
+        })
+    )
+    await db.policyholderProfile.upsert({
+        where: { userId },
+        update: { ...facts },
+        create: { userId, ...facts },
+    })
+}

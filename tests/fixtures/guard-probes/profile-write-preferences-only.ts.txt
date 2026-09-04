@@ -1,0 +1,17 @@
+// PROBE FIXTURE for tests/unit/profile-writes-single-path.test.ts.
+// The shape of the onboarding flags and the notification ceiling: only
+// `preferences` is written, and the spread is INSIDE the preferences blob.
+// The guard must read both writes as fact-free — no applyFactWrites required.
+import { db } from "@/lib/db"
+
+export async function probePreferencesOnly(userId: string, preferences: Record<string, unknown>) {
+    await db.policyholderProfile.upsert({
+        where: { userId },
+        create: { userId, preferences: { ...preferences, onboardingCompleted: true } },
+        update: { preferences: { ...preferences, onboardingCompleted: true, showTour: true } },
+    })
+    await db.policyholderProfile.update({
+        where: { userId },
+        data: { preferences: { showTour: false } },
+    })
+}

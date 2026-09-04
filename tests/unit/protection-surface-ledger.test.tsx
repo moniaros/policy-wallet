@@ -54,6 +54,13 @@ import { GAP_SEVERITIES, SEVERITY_CAVEAT_KEY, describeSeverity, toGapSeverity } 
 import { gapSeverityRank } from "@/lib/wallet/gap-report"
 import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { ProtectionSurface, type ProtectionSurfaceProps } from "@/components/protection/ProtectionSurface"
+import { attentionSummary, buildAttentionAreas } from "@/lib/protection/attention-areas"
+import { buildCoverageModel } from "@/lib/protection/coverage-model"
+import { AREA_IDS } from "@/lib/protection/domains"
+import { toLifeContext } from "@/lib/services/gap-engine/life-context"
+import { assessRisks, factorsToResolve } from "@/lib/services/gap-engine/risk-assessment"
+import { deriveProtectionPriorities } from "@/lib/services/protection-profile/derive-priorities"
+import { areaListItems, unknownFactorItems } from "@/components/protection/area-detail-model"
 
 const t = getTranslations("el")
 
@@ -103,6 +110,28 @@ const GRAPH_WALLET = [
 ]
 
 const graph = assembleRiskGraph(PROFILE, GRAPH_WALLET)
+
+// The attention areas (PA-01/PA-02) over the SAME profile and wallet, through
+// the real assembly: facts → toLifeContext, exposure → assessRisks, protection
+// → buildCoverageModel, importance → deriveProtectionPriorities.
+const ATTENTION_CTX = toLifeContext(PROFILE as any)
+const ATTENTION_ASSESSMENTS = assessRisks(ATTENTION_CTX, [{ lineOfBusiness: "motor", status: "active" }])
+const ATTENTION_AREAS = buildAttentionAreas({
+    priorities: deriveProtectionPriorities(ATTENTION_CTX, null),
+    assessments: ATTENTION_ASSESSMENTS,
+    coverage: buildCoverageModel([{ id: "mot-1", lineOfBusiness: "motor", lifecycle: "active", detail: "summary_only", gaps: [] }]),
+    provenance: {},
+    ctx: ATTENTION_CTX,
+    needs: {},
+    language: "el",
+})
+const ATTENTION_UNKNOWN = unknownFactorItems(factorsToResolve(ATTENTION_ASSESSMENTS), ATTENTION_AREAS, "el")
+const ATTENTION = {
+    items: areaListItems(ATTENTION_AREAS, "el", t.protection.attention),
+    summary: attentionSummary(ATTENTION_AREAS),
+    unknownFactors: ATTENTION_UNKNOWN,
+    copy: t.protection.attention,
+}
 const watch = assembleWatch({
     profile: null,
     policies: WATCH_POLICIES,
@@ -326,6 +355,10 @@ function surfaceProps(overrides: Partial<ProtectionSurfaceProps> = {}): Protecti
                 refreshing: t.insights.refreshingAnalysis,
                 failed: t.insights.refreshFailed,
             },
+            fullProfile: {
+                title: t.protection.attention.detail.fullProfileTitle,
+                lead: t.protection.attention.detail.fullProfileLead,
+            },
         },
         branchLens: {
             policies: BRANCH_POLICIES,
@@ -364,9 +397,87 @@ const riskLensProps: Partial<ProtectionSurfaceProps> = {
     branchLens: null,
     riskLens: {
         intelligence: INTELLIGENCE,
+        attention: ATTENTION,
         quickStart: { questions: QUICK_START_QUESTIONS, onSubmit: async () => ({ insight: null }) },
     },
 }
+
+// ── The attention areas on the risk lens: PA-01…PA-02 ─────────────────
+
+describe("«ανά κίνδυνο» lens renders the attention areas (PA-01, PA-02) on rendered output", () => {
+    it("enumerates a real universe (ten areas, some activated, at least one factor to resolve)", () => {
+        expect(ATTENTION_AREAS.length).toBe(AREA_IDS.length)
+        expect(ATTENTION_AREAS.some((a) => a.activated)).toBe(true)
+        expect(ATTENTION_AREAS.some((a) => !a.activated)).toBe(true)
+        expect(ATTENTION_UNKNOWN.length).toBeGreaterThan(0)
+    })
+
+    it("PA-01: every area renders as a row linking to its detail, carrying its label and its alignment word", () => {
+        const { container } = renderSurface(riskLensProps)
+        for (const view of ATTENTION_AREAS) {
+            const row = container.querySelector(`a[href="/protection/areas/${view.area}"]`)
+            expect(row, `PA-01: no row for ${view.area}`).toBeTruthy()
+            expect(row!.textContent).toContain(view.label)
+            expect(row!.textContent).toContain(t.protection.attention.alignment[view.alignment])
+        }
+    })
+
+    it("PA-01: activated areas sit outside the dormant disclosure; dormant ones inside it, under «Δεν το εξετάσαμε ακόμη»", () => {
+        const { container } = renderSurface(riskLensProps)
+        const details = container.querySelector("section[aria-labelledby='attention-areas-heading'] details")
+        expect(details, "no dormant disclosure").toBeTruthy()
+        expect(details!.textContent).toContain(t.protection.attention.headings.dormant)
+        for (const view of ATTENTION_AREAS) {
+            const row = container.querySelector(`a[href="/protection/areas/${view.area}"]`)!
+            expect(Boolean(row.closest("details")), `${view.area} activated=${view.activated}`).toBe(!view.activated)
+        }
+    })
+
+    it("PA-01: the counts carry the registered attention.* keys and count the rows the card shows — the activated ones, folded dormant rows excluded", () => {
+        const { container } = renderSurface(riskLensProps)
+        const areaCount = container.querySelector('[data-count="attention.areaCount"]')
+        expect(areaCount).toBeTruthy()
+        const rendered = ATTENTION_AREAS.filter((a) => a.activated)
+        expect(Number((areaCount!.textContent || "").match(/\d+/)?.[0])).toBe(rendered.length)
+        expect(rendered.length).toBeLessThan(ATTENTION.summary.areaCount)
+        for (const key of ["attention.areaCount", "attention.unknownCount", "attention.coveredCount"]) {
+            expect(isRegisteredCountKey(key), `${key} is not registered`).toBe(true)
+        }
+        // One sentence, not figures: the three keys sit in one paragraph.
+        const sentence = container.querySelector("[data-attention-counts]")!
+        for (const el of Array.from(container.querySelectorAll('[data-count^="attention."]'))) expect(sentence.contains(el)).toBe(true)
+    })
+
+    it("I8: the watch renders LAST, inside the monitoring section, below the areas card — one verdict vocabulary above it", () => {
+        const { container } = renderSurface(riskLensProps)
+        const monitoring = container.querySelector('[data-surface="monitoring"]')!
+        expect(monitoring, "no monitoring section").toBeTruthy()
+        expect(monitoring.textContent).toContain(t.protection.attention.monitoring.title)
+        expect(monitoring.textContent).toContain(t.protection.attention.monitoring.lead)
+        // Every watch label still renders (R-06) — inside the framed section, never beside the areas.
+        for (const signal of watch) expect(monitoring.textContent).toContain(signal.label.el)
+        const areas = container.querySelector("section[aria-labelledby='attention-areas-heading']")!
+        expect(areas.compareDocumentPosition(monitoring) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+        // The verdict words of the watch appear nowhere in the areas card.
+        for (const signal of watch) expect(areas.textContent).not.toContain(signal.label.el)
+    })
+
+    it("PA-02: every factor the engine still needs renders as its noun, linking to the area that asks it", () => {
+        const { container } = renderSurface(riskLensProps)
+        for (const item of ATTENTION_UNKNOWN) {
+            const link = container.querySelector(`section[aria-labelledby='unknown-factors-heading'] a[data-factor="${item.factor}"]`)
+            expect(link, `PA-02: no row for ${item.factor}`).toBeTruthy()
+            expect(link!.textContent).toContain(item.noun)
+            expect(link!.getAttribute("href")).toBe(`/protection/areas/${item.area}`)
+        }
+    })
+
+    it("PA-08: the wizard carries the «Πλήρες προφίλ» heading below the lens", () => {
+        const { container } = renderSurface(riskLensProps)
+        const anchor = container.querySelector("#risk-profile-wizard")
+        expect(anchor!.textContent).toContain(t.protection.attention.detail.fullProfileTitle)
+    })
+})
 
 // ── The ανά κλάδο lens: B-01…B-06 ────────────────────────────────────
 
@@ -459,6 +570,10 @@ describe("«ανά κλάδο» lens preserves B-01…B-06 on rendered output", 
 
 // ── The ανά κίνδυνο lens: R-01…R-08 ──────────────────────────────────
 
+/** The graph panel's risk rows — `details` outside the attention areas card (PA-01 has its own disclosure). */
+const riskRows = (container: HTMLElement) =>
+    Array.from(container.querySelectorAll("details")).filter((d) => !d.closest("[aria-labelledby='attention-areas-heading']"))
+
 describe("«ανά κίνδυνο» lens preserves R-01…R-08 on rendered output", () => {
     it("enumerates a real universe (the graph and the watch produced content)", () => {
         expect(graph.views.length).toBeGreaterThanOrEqual(3)
@@ -485,7 +600,7 @@ describe("«ανά κίνδυνο» lens preserves R-01…R-08 on rendered outpu
             "Άγνωστο",
             "Χωρίς ασφαλιστήριο",
         ]
-        const rows = Array.from(container.querySelectorAll("details"))
+        const rows = riskRows(container)
         expect(rows.length).toBe(graph.views.length)
         for (const view of graph.views) {
             const row = rows.find((r) => r.textContent?.includes(view.name.el))
@@ -499,7 +614,7 @@ describe("«ανά κίνδυνο» lens preserves R-01…R-08 on rendered outpu
 
     it("R-03: an unowned line is «Χωρίς ασφαλιστήριο» on its row, never «Απροστάτευτο»", () => {
         const { container } = renderSurface(riskLensProps)
-        const rows = Array.from(container.querySelectorAll("details"))
+        const rows = riskRows(container)
         const unowned = graph.views.filter((v) => v.heldInLine === 0 && v.state === "unprotected")
         expect(unowned.length).toBeGreaterThan(0)
         for (const view of unowned) {
@@ -858,7 +973,11 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
         const locked = renderSurface(
             withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false, isDeepAnalysisLocked: true })
         )
-        expect(locked.container.textContent).toContain("Ξεκλείδωμα με Plus")
+        // Tier-agnostic since 57914f56: the predicate and the written decisions
+        // about which plan clears deep analysis disagree, so the sentence names
+        // the feature (tests/unit/locked-cta-names-the-real-tier.test.ts owns
+        // the tier-naming invariant).
+        expect(locked.container.textContent).toContain("Ξεκλείδωμα πλήρους ανάλυσης")
         expect(locked.container.textContent).not.toContain(
             "Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει."
         )

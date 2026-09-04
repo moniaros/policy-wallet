@@ -1,0 +1,30 @@
+// PROBE FIXTURE for tests/unit/empty-extraction-never-active.test.ts.
+// Everything in here is LEGITIMATE and the guard must flag NONE of it: the
+// extraction is asked whether it carries a policy through the one predicate
+// before anything becomes `active`, and `status: "active"` on a model that
+// is not Policy (a relationship) is not an extraction write at all.
+import { db } from "@/lib/db"
+import { getAIService } from "@/lib/services/ai"
+import { extractionEmptyProcessingError, isEmptyExtraction } from "@/lib/wallet/unread-policy"
+
+export async function probeChecked(policyId: string, document: unknown, stored: { insurerName: string; policyNumber: string }) {
+    const extraction = await getAIService().extractPolicyData(document as any, { policyId })
+    const insurerName = extraction.insurerName || stored.insurerName
+    const policyNumber = extraction.policyNumber || stored.policyNumber
+    if (isEmptyExtraction({ insurerName, policyNumber, extraction })) {
+        await db.policy.update({
+            where: { id: policyId },
+            data: { status: "action_needed", acordData: { processingError: extractionEmptyProcessingError() } },
+        })
+        return
+    }
+    await db.policy.update({
+        where: { id: policyId },
+        data: { insurerName, policyNumber, status: "active" },
+    })
+}
+
+export async function probeRelationship(relationshipId: string) {
+    // A relationship lifecycle state — correct, and nothing to do with extraction.
+    await db.customerRelationship.update({ where: { id: relationshipId }, data: { status: "active" } })
+}

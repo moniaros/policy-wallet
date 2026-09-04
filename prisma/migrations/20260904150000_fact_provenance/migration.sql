@@ -1,0 +1,47 @@
+-- Fact provenance on the policyholder profile — Layer 1 of the personal risk
+-- profile (docs/planning/PERSONAL_RISK_PROFILE.md §C, §G).
+--
+-- Two nullable, additive columns on policyholder_profiles:
+--
+--   income_dependency  TEXT   'primary' | 'shared' | 'minor' — how far the
+--                             household leans on this person's income. A plain
+--                             fact the importance table reads; NOT a
+--                             risk-catalogue factor (that vocabulary is the
+--                             engine's own and stays closed).
+--
+--   fact_provenance    JSONB  keyed by profile column name:
+--                             { source, precision, at } with
+--                             source    ∈ onboarding | quick_start | assessment
+--                                         | life_event | questionnaire | advisor
+--                                         | policy
+--                             precision ∈ coarse | exact
+--                             at        ISO-8601 instant of the write.
+--
+-- WHY: five surfaces wrote the same columns and each carried its own
+-- overwrite rule — the onboarding and the quick start refused to touch any
+-- answered column (so a floor of «one dependant» could never be refined by
+-- the same screen), while the wizard, the questionnaire and a life event
+-- overwrote unconditionally (so the wizard erased stored Art. 9 answers on
+-- every save, because its form always sent an empty list). Provenance lets
+-- ONE function decide: an exact answer replaces a coarse one, a coarse one
+-- never replaces an exact one, a field absent from a request is untouched,
+-- and `policy` never overwrites a declared fact
+-- (lib/services/protection-profile/fact-writes.ts).
+--
+-- answered_fields stays the derived union the engine reads. Rows written
+-- before this column keep exactly the knownness they had: a column that is
+-- answered but carries no provenance is treated as a declared, exact value —
+-- the conservative reading — so no backfill is needed and nothing coarse can
+-- overwrite what a person once typed.
+--
+-- Idempotent. Existing rows are unaffected (both columns NULL).
+--
+-- Verify (dev, then prod):
+--   SELECT column_name, data_type, is_nullable
+--     FROM information_schema.columns
+--    WHERE table_name = 'policyholder_profiles'
+--      AND column_name IN ('income_dependency', 'fact_provenance')
+--    ORDER BY column_name;
+--   -- expect: fact_provenance | jsonb | YES ; income_dependency | text | YES
+ALTER TABLE policyholder_profiles ADD COLUMN IF NOT EXISTS income_dependency TEXT;
+ALTER TABLE policyholder_profiles ADD COLUMN IF NOT EXISTS fact_provenance JSONB;

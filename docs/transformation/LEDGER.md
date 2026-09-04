@@ -604,8 +604,30 @@ Three facts a later phase must not lose:
 - **A-10…A-21 render on one mount too** — the findings surface is ONE component,
   `CoverageInsightsClient`, and /protection is now its only mount. That includes **A-20's
   monetization pieces** (the lite banner, its «Αναβάθμιση» button, the «Ξεκλείδωσε πλήρη ανάλυση»
-  next-step and the A-17 «Ξεκλείδωμα με Plus» CTA). The transitional two-mount state V2-P2-01b
+  next-step and the A-17 locked-analysis CTA — «Ξεκλείδωμα πλήρους ανάλυσης» since 57914f56, tier-agnostic until the owner settles which plan clears deep analysis). The transitional two-mount state V2-P2-01b
   recorded existed only while both routes lived; it collapsed with the route, exactly as recorded.
+
+## Περιοχή προσοχής — `/protection/areas/[area]` (personal risk profile, wave 2b — 2026-09-04)
+
+Source: `app/(protected)/protection/areas/[area]/page.tsx` → `components/protection/AreaDetail.tsx`,
+with the rows on `/protection?lens=risk` (`AttentionAreasCard`, `UnknownFactorsCard`) as the way in.
+Built from the one read seam (`lib/protection/load-attention-areas.ts`) and the engine's own
+assessment; nothing here is a score, and the five alignment words are the only verdicts
+(docs/planning/PERSONAL_RISK_PROFILE.md §C). Enumerated by the implementing item.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| PA-01 | Areas of attention list — activated first, importance word, alignment word, confidence phrase, dormant under «Δεν το εξετάσαμε ακόμη»; `attention.areaCount` / `unknownCount` / `coveredCount` | fact | **KEEP** | `/protection?lens=risk` | wave 2b |
+| PA-02 | «Τι χρειάζεται ακόμη να καταλάβουμε» — `factorsToResolve` as nouns, each linking to the area it unlocks | fact | **KEEP** | `/protection?lens=risk` | wave 2b |
+| PA-03 | Area header: label, importance, alignment, confidence, and the explanation triplet honouring `guidancePreference` density | fact | **KEEP** | `/protection/areas/[area]` | wave 2b |
+| PA-04 | The area's risks with the catalogue's `riskExplanation` / `whyItApplies` / `expectedImpact` / eligibility | fact | **KEEP** | `/protection/areas/[area]` | wave 2b |
+| PA-05 | «Βοηθήστε μας να καταλάβουμε» — one question at a time, pre-filled, never a known factor, health behind the Art. 9 opt-in; writes via `answerAssessmentFactor` → `applyFactWrites` (`assessment`, `exact`) | action | **KEEP** | `/protection/areas/[area]` | wave 2b |
+| PA-06 | «Τι λένε τα ασφαλιστήριά σας» — lines via policy-identity + `getPolicyStatusView`, limits read / unread with the upgrade path, rule findings through `describeSeverity` with its caveat, «δεν έχουμε δει» never «δεν έχετε» | fact | **KEEP** | `/protection/areas/[area]` | wave 2b |
+| PA-07 | «Τι μπορείτε να κάνετε» — catalogue mitigations by kind, reduce/avoid under «Πρόληψη» plus the analysed policies' `preventionActions`; transfer items worded to discuss or check | fact | **KEEP** | `/protection/areas/[area]` | wave 2b |
+| PA-08 | «Πλήρες προφίλ» — the wizard, gated on «there are still unknown factors», below the areas | action | **KEEP** | `/protection#risk-profile-wizard` | wave 2b |
+
+Guard: `tests/unit/attention-areas-list.test.tsx`, `tests/unit/area-detail-questions.test.tsx`,
+`tests/unit/assessment-actions.test.ts`; the surface ledger guard renders the lens with the areas.
 
 ## Κλάδος αναλυτικά — `/branches/[branch]` → `/protection/[branch]` (V2-P2-01; sole mount since V2-P2-03)
 

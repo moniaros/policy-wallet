@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ArrowRight, CircleHelp, Users } from "lucide-react"
+import { ActionLink } from "./RecommendationAnalytics"
 
 /**
  * Advisor status + help — the rail's brand-fill card and the quiet help row
@@ -60,13 +61,14 @@ export function AdvisorSupportRow({
                     <p className="min-w-0 text-sm font-semibold [overflow-wrap:anywhere]">{labels.agentLine}</p>
                 </div>
                 {labels.hint && <p className="mt-3 text-body-sm leading-snug opacity-90">{labels.hint}</p>}
-                <Link
+                <ActionLink
+                    kind="contact_advisor"
                     href="/agent"
                     className="pw-primary-button-inverse mt-4 inline-flex min-h-11 items-center gap-2 !px-4 !py-2 text-sm"
                 >
                     {labels.cta ?? labels.agentStatus}
                     <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
+                </ActionLink>
             </section>
 
             <Link href="/help" className="pw-card pw-pad flex min-h-11 items-center gap-3 transition-colors hover:border-primary/40">

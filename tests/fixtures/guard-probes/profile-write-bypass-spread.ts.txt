@@ -1,0 +1,14 @@
+// PROBE FIXTURE for tests/unit/profile-writes-single-path.test.ts.
+// A patch spread straight into the upsert. The comment below MENTIONS the
+// single path; the code never calls it. Mention is not use — the guard must
+// still flag this (the same prose-as-proof hole the authorization guard had).
+import { db } from "@/lib/db"
+
+export async function probeBypassSpread(userId: string, patch: Record<string, unknown>) {
+    // These writes go through applyFactWrites, honest.
+    await db.policyholderProfile.upsert({
+        where: { userId },
+        update: { ...patch },
+        create: { userId, ...patch },
+    })
+}

@@ -67,7 +67,10 @@ describe('recommendations are ordered by what is at stake, not by price', () => 
         const src = read('lib/services/gap-engine/recommendation-generator.ts')
         expect(src).not.toMatch(/estimatedCostEur \?\? 0\) - \(?a?\.?estimatedCostEur/)
         expect(src).not.toMatch(/Number\(b\.estimatedCostEur/)
-        expect((src.match(/lobProtectionWeight\(/g) || []).length).toBeGreaterThanOrEqual(4)
+        // ONE comparator, used by both read paths — it holds the weight; the sort
+        // sites hold nothing of their own, so neither can drift back to price.
+        expect((src.match(/\.sort\(recommendationOrder\(/g) || []).length).toBeGreaterThanOrEqual(2)
+        expect((src.match(/lobProtectionWeight\(/g) || []).length).toBeGreaterThanOrEqual(2)
     })
 })
 

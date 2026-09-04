@@ -328,6 +328,19 @@ User Question: ${question}`
 
 // ── Risk profile ────────────────────────────────────────────────────
 
+/**
+ * The customer's stated priorities reach the model as CONTEXT, never as
+ * evidence. They order and phrase what it says; they cannot create, remove
+ * or resize a gap, because a stated priority is a feeling about exposure and
+ * not a fact about it. Absent → nothing is rendered, so an unanswered
+ * onboarding does not read as "no priorities".
+ */
+export function statedPrioritiesBlock(stated: RiskProfileInput["statedPriorities"]): string {
+    if (!stated || stated.length === 0) return ""
+    const lines = stated.map((p) => `- ${p.domain}: ${p.importance}`).join("\n")
+    return `\n\nCustomer's stated priorities (self-reported during onboarding, NOT verified):\n${lines}\nUse these ONLY to order and phrase observations — lead with what the customer said matters. They never create, remove or resize a gap: a stated priority with no supporting profile fact is not evidence of exposure, and a low stated priority never hides a gap the facts support.`
+}
+
 export function buildRiskProfilePrompt(
     profile: RiskProfileInput,
     existingPolicies: PolicyMetadata[],
@@ -385,7 +398,7 @@ export function buildRiskProfilePrompt(
 - Activity level: ${profile.activityLevel || "Unknown"}
 - Chronic conditions: ${list(profile.chronicConditions, (c) => c.join(", "))}
 - Family medical history: ${list(profile.familyMedicalHistory, (c) => c.join(", "))}
-- Driving record: ${profile.drivingRecord || "Unknown"}
+- Driving record: ${profile.drivingRecord || "Unknown"}${statedPrioritiesBlock(profile.statedPriorities)}
 
 ## Current Insurance Portfolio
 ${policySummary}

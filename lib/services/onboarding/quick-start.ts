@@ -22,6 +22,7 @@
 import type { Bilingual } from "@/lib/services/gap-engine/risk-types"
 import { toLifeContext, type LifeContext } from "@/lib/services/gap-engine/life-context"
 import { assessRisks } from "@/lib/services/gap-engine/risk-assessment"
+import { factWritesFrom, type FactWrite } from "@/lib/services/protection-profile/fact-writes"
 
 export type QuickStartQuestionId = "residence" | "children" | "vehicles"
 
@@ -133,6 +134,28 @@ export function quickStartPatch(answers: QuickStartAnswers): Record<string, unkn
 }
 
 /**
+ * The same three answers as fact writes, with their precision.
+ *
+ * Every column here is a bound or an inference except the residence itself:
+ * «I own my home» → one property (a floor), «three or more» → 3, «two or
+ * more» → 2, the dependant count is the child count (someone may also support
+ * a parent), and «employed» is read off «children who depend on you». Marking
+ * them coarse is what lets the wizard's figure replace them and never the
+ * reverse — the non-overwrite rule this action used to hand-roll, now decided
+ * by applyFactWrites.
+ */
+export function quickStartFactWrites(answers: QuickStartAnswers): FactWrite[] {
+    const { answeredFields: _answered, ...columns } = quickStartPatch(answers)
+    const coarse = new Set<string>(["propertiesOwned", "dependentsCount", "employmentStatus"])
+    if (answers.children === "3") coarse.add("childrenCount")
+    if (answers.vehicles === "2") coarse.add("vehiclesCount")
+    return factWritesFrom(columns, {
+        source: "quick_start",
+        precision: Object.fromEntries([...coarse].map((c) => [c, "coarse" as const])),
+    })
+}
+
+/**
  * Has the opener already been answered?
  *
  * Its own completion condition, deliberately. Gating on the health index —
@@ -196,7 +219,16 @@ export function firstInsight(answers: QuickStartAnswers, now: Date = new Date())
     if (Object.keys(answers).length === 0) return null
 
     const patch = quickStartPatch(answers)
-    const ctx = toLifeContext(patch as any, now)
+    return insightFromContext(toLifeContext(patch as any, now))
+}
+
+/**
+ * The same one true thing, from a context that already exists — the first-stage
+ * onboarding writes its facts to the profile and asks for the insight on the
+ * map screen, where `firstInsight(answers)`'s three-answer shape no longer
+ * applies. Same engine, same exclusions, same honesty: applicable, not open.
+ */
+export function insightFromContext(ctx: LifeContext): FirstInsight | null {
     const assessments = assessRisks(ctx, [])
 
     // APPLICABLE, not open. `openFindings` means "applies and nothing covers

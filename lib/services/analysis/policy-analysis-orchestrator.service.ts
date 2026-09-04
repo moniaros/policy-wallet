@@ -62,6 +62,7 @@ import { getPromptOverrides, resolveOperatorGuidance } from "@/lib/services/ai/p
 import { pickCanonicalGapDefinition } from "@/lib/wallet/gap-report"
 import { detectDeterministicSavings } from "./deterministic-savings"
 import { resolveUserEntitlements, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
+import { canRunDeepAnalysis } from "@/lib/monetization/feature-gates"
 import {
     emitAnalysisRunTelemetry,
     emitAnalysisStepTelemetry,
@@ -69,6 +70,11 @@ import {
 import { documentMimeType } from "@/lib/security/file-upload"
 import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
 import { isPlaceholderInsurerName, isPlaceholderPolicyNumber } from "@/lib/wallet/policy-identity"
+import {
+    EXTRACTION_EMPTY_CODE,
+    extractionEmptyProcessingError,
+    isEmptyExtraction,
+} from "@/lib/wallet/unread-policy"
 import { closeSupersededRenewals } from "@/lib/services/renewal.service"
 import { assessRenewalMatch, type RenewalMatch } from "@/lib/wallet/renewal-match"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -351,11 +357,18 @@ export class PolicyAnalysisOrchestratorService {
      * (deep) pipeline. This is the single paid-AI operation free/Starter may
      * run and is not token-gated (the policy-count cap bounds it). Returns a
      * lightweight status; never creates a PolicyAnalysisRun.
+     *
+     * `needs_review`: the document was read and carries no policy — no usable
+     * identity, no period, no coverages (lib/wallet/unread-policy.ts). The
+     * row is stamped `action_needed` + EXTRACTION_EMPTY and KEPT with its
+     * document; it never becomes `active`, and the caller must not call it
+     * completed. Nothing is discarded: this is a readable file that is simply
+     * not a policy, and the person may replace it.
      */
     async extractBasicSummary(
         policyId: string,
         userId: string
-    ): Promise<{ status: "completed" | "blocked" | "failed"; reason?: string }> {
+    ): Promise<{ status: "completed" | "needs_review" | "blocked" | "failed"; reason?: string }> {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
 
         // GDPR Art. 9 consent gate — same as the deep pipeline: no document
@@ -383,6 +396,28 @@ export class PolicyAnalysisOrchestratorService {
                 lineOfBusinessHint: policy.lineOfBusiness,
             })
             const metadata = this.buildMetadata(policy, extraction)
+
+            // NOTHING WAS READ, SO NOTHING BECOMES ACTIVE. A one-line PDF with
+            // no policy details used to leave here as an `active` policy with
+            // a placeholder identity and the line «Άλλο» — the onboarding said
+            // «Το διαβάσαμε», the coverage map painted the line «Καλυμμένο».
+            // The identity is judged as it would be STORED (the placeholders
+            // buildMetadata keeps), the period and coverages on the document.
+            if (
+                isEmptyExtraction({
+                    insurerName: metadata.insurerName,
+                    policyNumber: metadata.policyNumber,
+                    extraction,
+                })
+            ) {
+                await this.markExtractionEmpty(policyId, policy.acordData)
+                logger("warn", "Extraction carried no policy — kept for review, not activated", {
+                    policyId,
+                    documentKind: extraction.documentKind ?? null,
+                    evidence: extraction.evidence ?? null,
+                })
+                return { status: "needs_review", reason: "extraction_empty" }
+            }
 
             // A renewal that names a different policy is refused above (the
             // period does not move) and reported here, so the wallet can say
@@ -435,6 +470,12 @@ export class PolicyAnalysisOrchestratorService {
                 })
             }
 
+            // Evidence closes a review: a held policy for the sphere an open
+            // review asked about IS the looking the review asked for. One
+            // closer for both completion paths; it never throws.
+            const { closeReviewsByPolicyEvidence } = await import("@/lib/services/risk-review/service")
+            await closeReviewsByPolicyEvidence({ policyId })
+
             return { status: "completed" }
         } catch (error) {
             logger("error", "extractBasicSummary failed", {
@@ -448,6 +489,31 @@ export class PolicyAnalysisOrchestratorService {
             })
             return { status: "failed", reason: "extraction_failed" }
         }
+    }
+
+    /**
+     * KEEP-AND-INFORM for a document that was read and is not a policy: the
+     * same shape as the token-gate write and `markAnalysisIncomplete` —
+     * `action_needed` plus a retryable, coded, timestamped processingError
+     * the wallet localises. The document row stays and is marked
+     * `completed`: it WAS processed; what it lacks is a policy. Nothing is
+     * deleted here — policy-discard is for technical failures.
+     */
+    private async markExtractionEmpty(policyId: string, storedAcordData: unknown): Promise<void> {
+        await db.policy.update({
+            where: { id: policyId },
+            data: {
+                status: "action_needed",
+                acordData: {
+                    ...(((storedAcordData as Record<string, unknown> | null) ?? {}) as Record<string, unknown>),
+                    processingError: extractionEmptyProcessingError(),
+                } as any,
+            },
+        })
+        await db.policyDocument.updateMany({
+            where: { policyId },
+            data: { processingStatus: "completed" },
+        })
     }
 
     async createRun(policyId: string, userId: string) {
@@ -503,7 +569,7 @@ export class PolicyAnalysisOrchestratorService {
         // Resolve tier for priority queue: pro=2, plus=1, free=0
         const userEntitlements = await resolveUserEntitlements(userId)
 
-        if (!isAgentInitiator && userEntitlements.tier !== "pro") {
+        if (!isAgentInitiator && !canRunDeepAnalysis(userEntitlements.tier)) {
             return db.policyAnalysisRun.create({
                 data: {
                     policyId,
@@ -1398,6 +1464,33 @@ export class PolicyAnalysisOrchestratorService {
         }
         const metadata = this.buildMetadata(policy, extractionStep.result)
 
+        // The deep path's equivalent of the basic-summary gate: a document
+        // that was read and carries no policy must not reach clarity, gaps or
+        // the `active` write — there is nothing to explain and nothing to
+        // detect gaps against, and every later step would spend tokens on it.
+        // Thrown OUTSIDE the step so no provider failover re-reads an empty
+        // file; hardFailure ends the run, failRun stamps the policy
+        // `action_needed` + EXTRACTION_EMPTY (retryable), and policy.service
+        // classifies the code as keep-and-inform, never discard.
+        if (
+            isEmptyExtraction({
+                insurerName: metadata.insurerName,
+                policyNumber: metadata.policyNumber,
+                extraction: extractionStep.result,
+            })
+        ) {
+            throw new OrchestrationError(
+                "The document was read but carries no policy identity, period of cover or coverages",
+                {
+                    code: EXTRACTION_EMPTY_CODE,
+                    retryable: true,
+                    hardFailure: true,
+                    failureClass: "document",
+                    userMessageKey: "analysis.errors.extractionEmpty",
+                }
+            )
+        }
+
         let clarityResult: AIPolicyClarityResponse = storedClarity
         if (shouldRunClarityGroup && shouldRun("plain_language_translation")) {
             try {
@@ -1929,6 +2022,19 @@ export class PolicyAnalysisOrchestratorService {
                 .catch((err) =>
                     logger("warn", "Post-analysis protection score refresh failed (non-blocking)", {
                         userId: run.userId,
+                        runId,
+                        error: err instanceof Error ? err.message : String(err),
+                    })
+                )
+
+            // Evidence closes a review — after the GapInstances above are
+            // persisted, through the same closer the basic-summary path calls.
+            // Non-blocking like the score refresh; the closer never throws.
+            import("@/lib/services/risk-review/service")
+                .then(({ closeReviewsByPolicyEvidence }) => closeReviewsByPolicyEvidence({ policyId: policy.id }))
+                .catch((err) =>
+                    logger("warn", "Post-analysis review close by evidence failed (non-blocking)", {
+                        policyId: policy.id,
                         runId,
                         error: err instanceof Error ? err.message : String(err),
                     })

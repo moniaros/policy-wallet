@@ -64,6 +64,27 @@ export const COUNT_KEYS: Record<string, string> = {
     "plan.stepsDone": "Setup steps completed.",
     "plan.stepsTotal": "Setup steps total (five).",
 
+    // needs.* — Layer 1 of the needs → coverage → gap model: what the customer
+    // SAID matters (deriveProtectionPriorities). Deliberately its own namespace,
+    // never a gap or recommendation count.
+    "needs.priorityCount":
+        "Derived protection priorities (deriveProtectionPriorities) whose importance is NOT `watch` — high, medium and " +
+        "needs_review — over the WHOLE derived set, the same number on every surface (priorityCount() in " +
+        "lib/protection/priority-count.ts). Never a count of rendered rows: the home card shows three rows and still " +
+        "reports the whole number, and the map's lead sentence carries no number at all.",
+    "needs.unsureCount": "Onboarding screens answered «δεν είμαι σίγουρος/η» — the honest lower-confidence signal.",
+
+    // attention.* — the composed needs → risk → coverage view (lib/protection/
+    // attention-areas.ts). Counts of AREAS in a state, never a score and never
+    // summable with each other into one number. Each is taken over the rows THE
+    // SURFACE RENDERS — the map's rows (activated + needs_review), the home
+    // card's shown rows (its top three), the lens' activated rows — so the
+    // number beside a list is always the list's own. Two surfaces may
+    // therefore legitimately differ; one surface may not contradict itself.
+    "attention.areaCount": "Attention areas THIS surface renders as rows — equals the rows on the page, never the ten-area universe.",
+    "attention.unknownCount": "Of the rows this surface renders, those whose alignment is «Δεν το ξεκαθαρίσαμε ακόμη» — a deciding fact is still unknown.",
+    "attention.coveredCount": "Of the rows this surface renders, those that «φαίνεται να καλύπτονται» — a held policy the catalogue accepts, limits read or not.",
+
     // household.* — the customer's household as the risk graph records it.
     "household.memberCount": "1 + dependants.",
     "household.dependantCount":

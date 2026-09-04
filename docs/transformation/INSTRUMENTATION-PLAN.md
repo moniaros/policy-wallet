@@ -153,6 +153,30 @@ No new keys; four standing decisions:
   first-number rule reads the count and the window becomes measured context. Standalone window
   copy remains in the collector's `unmeasurable` list, which is the honest place for it.
 
+### Additions ratified 2026-09-03 (first-stage onboarding — the needs layer)
+
+`needs.priorityCount` · `needs.unsureCount`
+
+Layer 1 of the needs → coverage → gap model. `needs.priorityCount` is the number of derived
+protection priorities whose importance is not `watch` — high, medium and needs_review — over the
+WHOLE derived set, the same number on every surface (`priorityCount()` in
+lib/protection/priority-count.ts); it is never a count of the rows a surface happens to render, and
+the onboarding map's lead sentence carries no number at all. `needs.unsureCount` is the number of
+onboarding screens answered «δεν είμαι σίγουρος/η». Neither is a score and neither may be summed
+with a coverage count: they describe what the customer said matters, not what any policy does.
+(Redefined 2026-09-04: the map's head said «5 σημεία», its lead «3 πράγματα» and the home «6» for
+the same idea.)
+
+### Additions ratified 2026-09-04 (the personal risk profile — attention areas)
+
+`attention.areaCount` · `attention.unknownCount` · `attention.coveredCount`
+
+The composed view of docs/planning/PERSONAL_RISK_PROFILE.md: how many attention areas a
+surface renders, how many are still «Δεν το ξεκαθαρίσαμε ακόμη» (a deciding fact unknown), and
+how many «φαίνεται να καλύπτονται» (a held policy the catalogue accepts — with or without its
+limits read). They count AREAS in a state. None is a score, none may be added to another, and
+`coveredCount` must never render as reassurance over an area the check did not cover.
+
 ## Action verbs
 
 `upload` · `analyse` · `viewPolicy` · `viewGap` · `renew` · `contactAdvisor` · `callClaims` ·

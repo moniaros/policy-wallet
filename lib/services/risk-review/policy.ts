@@ -79,6 +79,12 @@ export interface ReviewPolicy {
      * child being born is correct; the reverse is not.
      */
     weight: number
+    /**
+     * What the CUSTOMER is told the review opened for. The dashboard rendered
+     * `rationale` here for months — an engineer's note in English («this is a
+     * hard time, not a sales moment») under «Άνοιξε επειδή» on a Greek page.
+     */
+    reason: { el: string; en: string }
     /** Why this policy is what it is. Shown in the admin console. */
     rationale: string
 }
@@ -103,6 +109,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 14,
         cooldownDays: 7,
         weight: 70,
+        reason: {
+            el: "Δηλώσατε μια αλλαγή στη ζωή σας — συνήθως σημαίνει ότι κάτι στα ασφαλιστήριά σας δεν ταιριάζει πια.",
+            en: "You told us something changed in your life — that usually means something in your cover no longer fits.",
+        },
         rationale:
             "A declared life change is the strongest signal we get, and it usually means more than one fact is now out of date.",
     }),
@@ -118,6 +128,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 30,
         cooldownDays: 14,
         weight: 95,
+        reason: {
+            el: "Ένα παιδί αλλάζει περισσότερο από οτιδήποτε άλλο το τι χρειάζεται προστασία. Δεν υπάρχει βιασύνη — γι' αυτό το περιθώριο είναι μεγάλο.",
+            en: "A child changes what needs protecting more than anything else. No rush — that is why the window is generous.",
+        },
         rationale:
             "The single largest change to a household's protection need, and one where the customer has other things on their mind — so the window is generous.",
     }),
@@ -133,6 +147,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 30,
         cooldownDays: 14,
         weight: 85,
+        reason: {
+            el: "Δύο ζωές γίνονται μία: δικαιούχοι, κοινές υποχρεώσεις και διπλές καλύψεις αλλάζουν ταυτόχρονα.",
+            en: "Two lives become one: beneficiaries, joint commitments and duplicate cover all change at once.",
+        },
         rationale:
             "Two financial lives become one; beneficiaries, joint liabilities and duplicate cover all change at once.",
     }),
@@ -150,6 +168,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 45,
         cooldownDays: 21,
         weight: 85,
+        reason: {
+            el: "Δικαιούχοι και κοινά ασφαλιστήρια συχνά αναφέρουν ακόμη τον ή την πρώην σύντροφο. Με την ησυχία σας — δεν βιάζεται τίποτα.",
+            en: "Beneficiaries and joint policies often still name a former partner. In your own time — nothing is urgent.",
+        },
         rationale:
             "Beneficiaries and joint policies often still name a former partner. A long window and gentle framing: this is a hard time, not a sales moment.",
     }),
@@ -165,6 +187,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 21,
         cooldownDays: 14,
         weight: 80,
+        reason: {
+            el: "Ένα δάνειο που συνεχίζει και χωρίς το εισόδημα είναι η πιο συνηθισμένη ακάλυπτη έκθεση — και μόλις δημιουργήθηκε.",
+            en: "A debt that continues without the income is the most common uncovered exposure — and it was just created.",
+        },
         rationale:
             "A debt that outlives the borrower is the textbook uncovered exposure, and it is newly created at a known moment.",
     }),
@@ -180,6 +206,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 21,
         cooldownDays: 14,
         weight: 80,
+        reason: {
+            el: "Ένα νέο ακίνητο συχνά μένει για λίγο χωρίς κάλυψη — και η κάλυψη σεισμού είναι αυτό που οι περισσότεροι θεωρούν δεδομένο.",
+            en: "A new property often goes without cover for a while — and earthquake cover is the thing most people assume they have.",
+        },
         rationale:
             "A new property is usually uninsured for a window, and in Greece earthquake cover is the specific thing people assume they have.",
     }),
@@ -195,6 +225,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 30,
         cooldownDays: 14,
         weight: 75,
+        reason: {
+            el: "Μια δική σας επιχείρηση ανοίγει εκθέσεις — ευθύνη, εργοδότη, διακοπή εργασιών — που ένα προσωπικό χαρτοφυλάκιο δεν καλύπτει.",
+            en: "A business of your own opens exposures — liability, employer, interruption — that a personal portfolio never covers.",
+        },
         rationale:
             "Opens a whole class of exposure — liability, employer, interruption — that a personal portfolio never covers.",
     }),
@@ -212,6 +246,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 30,
         cooldownDays: 30,
         weight: 30,
+        reason: {
+            el: "Αλλάζει μία έκθεση, όχι όλη η εικόνα — το εύρημα μιλάει από μόνο του.",
+            en: "One exposure changes, not the whole picture — the finding speaks for itself.",
+        },
         rationale:
             "A real exposure change, but a narrow one. The finding speaks for itself; a whole review would be disproportionate.",
     }),
@@ -232,6 +270,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 0,
         cooldownDays: 0,
         weight: 20,
+        reason: {
+            el: "Μόλις προσθέσατε ένα ασφαλιστήριο — η ανάλυσή του είναι η απάντηση.",
+            en: "You just added a policy — its analysis is the answer.",
+        },
         rationale:
             "The customer just acted and the analysis is the answer. A review here would be asking them to check our homework.",
     }),
@@ -249,6 +291,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 21,
         cooldownDays: 30,
         weight: 60,
+        reason: {
+            el: "Η ανανέωση είναι η στιγμή που ήδη αποφασίζετε για την κάλυψή σας — η καλύτερη στιγμή για μια ματιά.",
+            en: "Renewal is the moment you are already deciding about your cover — the best moment to look.",
+        },
         rationale:
             "The industry's own checkpoint. The customer is already deciding about cover, so the cost of asking them to look is at its lowest.",
     }),
@@ -264,6 +310,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 30,
         cooldownDays: 0,
         weight: 100,
+        reason: {
+            el: "Μια απαίτηση δείχνει αν η κάλυψη ήταν επαρκής — η μόνη πραγματική ανατροφοδότηση.",
+            en: "A claim shows whether cover was adequate — the only real feedback there is.",
+        },
         rationale:
             "The moment insurance stops being theoretical. A claim reveals whether cover was adequate — the only real feedback the model ever gets. NOT WIRED: the product has no claims model.",
     }),
@@ -283,6 +333,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 14,
         cooldownDays: 30,
         weight: 55,
+        reason: {
+            el: "Η προστασία σας έπεσε στο χαμηλότερο επίπεδο — αξίζει μια ματιά, όχι ανησυχία.",
+            en: "Your protection fell into the lowest band — worth a look, not alarm.",
+        },
         rationale:
             "Reserved for a fall into the lowest band. Ordinary movement is already notified; a review for every dip would be a review nobody reads.",
     }),
@@ -300,6 +354,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 14,
         cooldownDays: 21,
         weight: 50,
+        reason: {
+            el: "Εντοπίστηκε ένα κρίσιμο σημείο — ένα από τα λίγα που αξίζουν δική τους ματιά.",
+            en: "A critical point was found — one of the few that earn a look of their own.",
+        },
         rationale:
             "Critical severity only. Gaps open routinely as the picture fills in; a review for each would arrive weekly and be ignored.",
     }),
@@ -318,6 +376,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 0,
         cooldownDays: 0,
         weight: 15,
+        reason: {
+            el: "Δεν καταφέραμε να διαβάσουμε καλά ένα έγγραφο — αυτό είναι δική μας δουλειά, όχι δική σας.",
+            en: "We could not read a document well — that is our job to fix, not yours.",
+        },
         rationale:
             "Our reading failed, not their circumstances. The work belongs to a human reviewing the extraction, not to the customer reviewing their life.",
     }),
@@ -335,6 +397,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 0,
         cooldownDays: 0,
         weight: 25,
+        reason: {
+            el: "Μόλις ενημερώσατε τα στοιχεία σας — δεν χρειάζεται να το κάνετε δύο φορές.",
+            en: "You just updated your details — no need to do it twice.",
+        },
         rationale:
             "The customer has just reviewed their own facts. Opening a review moments later would ask them to do it twice.",
     }),
@@ -350,6 +416,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 30,
         cooldownDays: 90,
         weight: 40,
+        reason: {
+            el: "Πέρασε καιρός από την τελευταία σας επίσκεψη — η εικόνα σας μπορεί να μην είναι πια επίκαιρη.",
+            en: "It has been a while since your last visit — your picture may no longer be current.",
+        },
         rationale:
             "A long absence means the picture is stale by default. A review is a better re-engagement than a marketing email because it has a point.",
     }),
@@ -365,6 +435,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 21,
         cooldownDays: 30,
         weight: 45,
+        reason: {
+            el: "Συνδεθήκατε με σύμβουλο — μια κοινή αφετηρία βοηθά τη συζήτηση να ξεκινήσει από την εικόνα σας, όχι από το μηδέν.",
+            en: "You connected with an advisor — a shared starting point lets the conversation begin from your picture, not from scratch.",
+        },
         rationale:
             "An advisor's first job is to understand the customer. A review gives that conversation a shared starting point instead of a blank page.",
     }),
@@ -382,6 +456,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 30,
         cooldownDays: 60,
         weight: 65,
+        reason: {
+            el: "Πέρασε ένας χρόνος — η ζωή αλλάζει και χωρίς να το δηλώσει κανείς. Μια ματιά τον χρόνο αρκεί.",
+            en: "A year has passed — life changes without anyone declaring it. One look a year is enough.",
+        },
         rationale:
             "The backstop. Lives change without anyone declaring it, and once a year is the cadence people accept without resentment.",
     }),
@@ -400,6 +478,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 21,
         cooldownDays: 60,
         weight: 35,
+        reason: {
+            el: "Ξέρουμε ακόμη λίγα για την κατάστασή σας — λίγες απαντήσεις ακόμη κάνουν την εικόνα σας πιο αξιόπιστη.",
+            en: "We still know little about your situation — a few more answers make your picture more reliable.",
+        },
         rationale:
             "Only for customers whose assessment coverage is too thin to score honestly. Quarterly prompts to a complete profile would train people to dismiss them.",
     }),
@@ -418,6 +500,10 @@ export const REVIEW_POLICIES: Record<ReviewTrigger, ReviewPolicy> = {
         dueInDays: 30,
         cooldownDays: 180,
         weight: 45,
+        reason: {
+            el: "Μια νέα δεκαετία αλλάζει τι έχει σημασία να προστατέψετε — και τι κοστίζει.",
+            en: "A new decade changes what matters to protect — and what it costs.",
+        },
         rationale:
             "Age gates two risks and refines four more, so an assessment silently goes stale every year. Only opened on a decade boundary — most birthdays change nothing material.",
     }),

@@ -10,6 +10,7 @@
 
 import type { PolicyholderProfile, Policy } from "@prisma/client"
 import { getBranchFamily, normalizeBranch } from "@/lib/insurance/taxonomy"
+import { coverageEngineStatus } from "@/lib/policy-status"
 
 export type GapSeverity = "critical" | "high" | "medium" | "low"
 
@@ -495,4 +496,27 @@ export function toProfileFields(
         drivingRecord: p.drivingRecord ?? null,
         activityLevel: p.activityLevel ?? null,
     }
+}
+
+/** A stored policy row as the liveness clock reads it — the columns `resolvePolicyLifecycle` consults. */
+export type PolicyRowForEngine = { lineOfBusiness: string } & Parameters<typeof coverageEngineStatus>[0]
+
+/**
+ * Convert stored Policy rows to the engine's PolicyFields — the sibling of
+ * `toProfileFields` for the other input.
+ *
+ * `status` here means "counts as coverage today": `active` for a policy in
+ * force (an expiring-soon one still protects you), the honest lifecycle word
+ * otherwise. It is derived from the REAL end date by lib/policy-status.ts and
+ * never read from the stored column, which is written once at ingestion and
+ * never recomputed — that is how a health policy that lapsed in May 2025 kept
+ * telling its owner they were insured. Every engine entry point and the
+ * protection loader (lib/protection/load-attention-areas.ts) map through this
+ * one function, so no caller can decide liveness its own way.
+ */
+export function toPolicyFields(policies: readonly PolicyRowForEngine[]): PolicyFields[] {
+    return policies.map((p) => ({
+        lineOfBusiness: p.lineOfBusiness,
+        status: coverageEngineStatus(p),
+    }))
 }

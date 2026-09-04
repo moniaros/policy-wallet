@@ -10,14 +10,18 @@ import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-ide
 import { getGapEngineSnapshot, type GapEngineSnapshot } from "@/lib/services/gap-engine"
 import { getRiskIntelligence } from "@/lib/services/risk-dna/service"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { canRunDeepAnalysis } from "@/lib/monetization/feature-gates"
 import { declarableLifeEvents, getLifeEvent, magnitudePrompt } from "@/lib/services/life-events/registry"
 import { getLifeEventHistory } from "@/lib/services/life-events/service"
 import { QUICK_START_QUESTIONS, quickStartComplete } from "@/lib/services/onboarding/quick-start"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { submitQuickStart } from "@/app/(protected)/protection/quick-start-actions"
+import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
+import { areaListItems, unknownFactorItems } from "@/components/protection/area-detail-model"
 import { ProtectionSurface } from "@/components/protection/ProtectionSurface"
 import type { ProtectionLens } from "@/components/protection/ProtectionLensTabs"
 import type { BranchTileState } from "@/lib/insurance/branch-page"
+import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
 
 /**
  * «Η προστασία μου» — the §4.2 consolidated protection surface.
@@ -44,7 +48,7 @@ export default async function ProtectionPage({
     const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
     const t = getTranslations(lang)
 
-    const [entitlements, profileRecord, policies, score, allGapInstances] = await Promise.all([
+    const [entitlements, profileRecord, policies, score, allGapInstances, attention] = await Promise.all([
         resolveUserEntitlements(dbUser.id),
         db.policyholderProfile.findUnique({ where: { userId: dbUser.id } }),
         db.policy.findMany({
@@ -89,7 +93,15 @@ export default async function ProtectionPage({
             },
             orderBy: { detectedAt: 'desc' },
         }),
+        // The attention areas (PERSONAL_RISK_PROFILE.md §C) — one read seam,
+        // four layers, no writes. Read on both lenses: the risk lens renders
+        // it, and the wizard's gate («are there still unknown factors») reads it.
+        loadAttentionAreas({ userId: dbUser.id, language: lang }),
     ])
+
+    // «There are still unknown factors»: some area's composition lists a fact
+    // the engine lacks. The gate of the «Πλήρες προφίλ» path below the areas.
+    const hasUnknownFactors = attention.areas.some((area) => area.unknownFactors.length > 0)
 
     // CRITICAL (source-surface rule, verbatim): coverage insights describe the
     // protection you have TODAY. A lapsed policy is not protection — its
@@ -154,6 +166,9 @@ export default async function ProtectionPage({
                       lineOfBusiness: policy.lineOfBusiness,
                       status: effectivePolicyStatus(policy),
                       endDate: policy.endDate,
+                      // A document never read as a policy is not cover —
+                      // the same predicate the home's coverage map applies.
+                      unread: isUnreadPolicy(policy),
                   })),
                   expectedLines: (score?.expectedLines as string[] | null) ?? [],
                   labels: {
@@ -162,6 +177,7 @@ export default async function ProtectionPage({
                           attention: t.branches.statusAttention,
                           not_held: t.branches.statusNotHeld,
                           neutral: t.branches.statusNeutral,
+                          unread: t.branches.statusUnread,
                       } as Record<BranchTileState, string>,
                       policyTypeLabels: t.policyTypes as Record<string, string>,
                       onePolicy: t.branches.onePolicy,
@@ -174,6 +190,12 @@ export default async function ProtectionPage({
         lens === "risk"
             ? {
                   intelligence: await getRiskIntelligence(dbUser.id),
+                  attention: {
+                      items: areaListItems(attention.areas, lang, t.protection.attention),
+                      summary: attention.summary,
+                      unknownFactors: unknownFactorItems(attention.factorsToResolve, attention.areas, lang),
+                      copy: t.protection.attention,
+                  },
                   // Gated on the opener's OWN questions, never the health index
                   // (source-surface rule: the index refuses to report below a
                   // third, so gating on it re-asked answered questions forever).
@@ -191,7 +213,7 @@ export default async function ProtectionPage({
               })),
               smartContent: engineResult.smartContent,
               profileIncomplete: engineResult.profileCompleteness < 80,
-              showWizard: engineResult.profileCompleteness < 80,
+              showWizard: hasUnknownFactors,
               wizardInitialData: profileRecord
                   ? {
                         maritalStatus: profileRecord.maritalStatus,
@@ -210,6 +232,27 @@ export default async function ProtectionPage({
                         lifeEvents: Array.isArray(profileRecord.lifeEvents)
                             ? (profileRecord.lifeEvents as Array<{ type: string; date: string }>)
                             : undefined,
+                        // Health & lifestyle, and the building-manager role.
+                        // Audit B (Sept 2026): these eight were never passed,
+                        // so the wizard rendered them empty and every save sent
+                        // the empty state back — erasing the stored Art. 9
+                        // answers. A stored null is passed as null on purpose:
+                        // it tells the wizard «nothing here to protect».
+                        // tests/unit/risk-profile-save-never-erases-health
+                        // derives the wizard's prop keys and fails if one is
+                        // omitted here again.
+                        gender: profileRecord.gender,
+                        heightCm: profileRecord.heightCm,
+                        weightKg: profileRecord.weightKg,
+                        chronicConditions: Array.isArray(profileRecord.chronicConditions)
+                            ? (profileRecord.chronicConditions as string[])
+                            : null,
+                        familyMedicalHistory: Array.isArray(profileRecord.familyMedicalHistory)
+                            ? (profileRecord.familyMedicalHistory as string[])
+                            : null,
+                        drivingRecord: profileRecord.drivingRecord,
+                        activityLevel: profileRecord.activityLevel,
+                        isBuildingManager: profileRecord.isBuildingManager,
                         childrenCount: profileRecord.childrenCount,
                         residenceType: profileRecord.residenceType,
                         propertiesOwned: profileRecord.propertiesOwned,
@@ -248,6 +291,10 @@ export default async function ProtectionPage({
                     refreshing: t.insights.refreshingAnalysis,
                     failed: t.insights.refreshFailed,
                 },
+                fullProfile: {
+                    title: t.protection.attention.detail.fullProfileTitle,
+                    lead: t.protection.attention.detail.fullProfileLead,
+                },
             }}
             branchLens={branchLens}
             riskLens={riskLens}
@@ -276,14 +323,12 @@ export default async function ProtectionPage({
                 })),
                 isPaid: entitlements.isPaid,
                 hasDeepAnalysis,
-                // Same gate as the source surface: deep gap analysis is
-                // pro-tier; below it the A-17 state offers the unlock CTA.
-                // H-009, answered 2026-08-25: deep analysis sits on BOTH paid
-                // tiers. Was `tier !== 'pro'`, which locked out paying Plus
-                // subscribers while the CTA told them Plus would unlock it —
-                // the copy was fixed first because it was false either way;
-                // this is the gate the owner decided.
-                isDeepAnalysisLocked: entitlements.tier === 'free',
+                // The ONE deep-analysis predicate (lib/monetization/feature-gates.ts).
+                // This display used to spell it as `tier === 'free'` while the
+                // orchestrator refused Starter — so a paying Starter was told
+                // the analysis was unlocked by a page whose server would not
+                // run it. Below the lock the A-17 state offers the unlock CTA.
+                isDeepAnalysisLocked: !canRunDeepAnalysis(entitlements.tier),
                 canUseAgentCollaboration: entitlements.limits.agentCollaboration,
                 policies: activePolicies.map((p) => ({
                     id: p.id,

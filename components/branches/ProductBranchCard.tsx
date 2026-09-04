@@ -55,6 +55,13 @@ const STATE_STYLES: Record<BranchTileState, { pill: string; dot: string }> = {
         pill: 'bg-muted text-foreground',
         dot: 'bg-muted-foreground/50',
     },
+    unread: {
+        // A document on file that was never read as a policy — something to
+        // look at, carried by the info tint: never the success green of
+        // cover, never the amber of a finding.
+        pill: 'bg-status-info-tint text-status-info',
+        dot: 'bg-status-info',
+    },
 }
 
 export function ProductBranchCard({

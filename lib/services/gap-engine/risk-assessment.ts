@@ -11,19 +11,21 @@
  *   1. Are the deciding facts known?   no  → `needs_review`  (and stop)
  *   2. Does the exposure exist?        no  → `not_applicable` (and stop)
  *   3. Is it already answered by cover? yes → `already_covered`
+ *      …answered in PART only (a named partial line)? → `needs_review` + note
  *   4. Can insurance actually answer it? no → `needs_review` with the reason
  *   5. Otherwise → `protection_gap` (essential) or `opportunity` (discretionary)
  *
  * Only step 5 produces something the customer is asked to act on.
  */
 
-import { getBranchFamily, normalizeBranch } from "@/lib/insurance/taxonomy"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import type { LifeContext, ContextFactorKey } from "./life-context"
 import { heldElsewhere } from "./life-context"
 import { RISK_CATALOG } from "./risk-catalog"
 import type {
     Bilingual,
     Mitigation,
+    PartialSubstitute,
     RiskAssessment,
     RiskConfidence,
     RiskDefinition,
@@ -48,45 +50,72 @@ export function comparePriority(a: RiskPriority, b: RiskPriority): number {
     return PRIORITY_ORDER[a] - PRIORITY_ORDER[b]
 }
 
-/**
- * Which of the customer's live lines answer this risk?
- *
- * Compared at branch-family level, so a motorbike policy answers the motor risk
- * and a renters policy answers the tenant-contents risk. Matching on the exact
- * id is how a correctly-insured motorbike owner used to be told, at critical
- * severity, that they were driving uninsured.
- */
+// ── Which lines answer a risk ────────────────────────────────────────
+//
+// EXACT branch ids, always. The engine used to expand every named line to its
+// taxonomy family, and the taxonomy aggregates for DISPLAY, not for cover:
+// `income_protection`, `disability` and `personal_accident` file under `life`,
+// so a self-employed person's income policy marked «Απώλεια του εισοδήματος
+// από το οποίο εξαρτάται το νοικοκυριό σας» — a death risk — as covered, and
+// `renters` files under `home`, so a tenant's contents policy answered the
+// landlord's building. Where a child line genuinely answers a risk the
+// catalogue names it (`motor_liability` names `motorbike` and `truck`), and a
+// line that answers only PART of a risk is a `partiallyCoveredBy` entry that
+// can reach `needs_review` with its note, never `already_covered`.
+
+/** The exact lines that FULLY answer a risk: its own plus `alsoCoveredBy`, lower-cased, deduped. */
+export function fullSubstitutes(risk: RiskDefinition): string[] {
+    return [...new Set([risk.lineOfBusiness, ...(risk.alsoCoveredBy ?? [])].map((lob) => lob.toLowerCase()))]
+}
+
+/** The lines that answer PART of a risk, with their notes. */
+export function partialSubstitutes(risk: RiskDefinition): PartialSubstitute[] {
+    return risk.partiallyCoveredBy ?? []
+}
+
+/** Every line a risk can name — full and partial — for the guards that check branch ids. */
+export function namedLines(risk: RiskDefinition): string[] {
+    return [...new Set([...fullSubstitutes(risk), ...partialSubstitutes(risk).map((p) => p.line.toLowerCase())])]
+}
+
+function liveLineIds(policies: HeldPolicy[]): string[] {
+    return policies.filter((p) => p.status === "active").map((p) => normalizeBranch(p.lineOfBusiness).id)
+}
+
+/** Which of the customer's live lines fully answer this risk — distinct exact ids. */
 function coveringLines(risk: RiskDefinition, policies: HeldPolicy[]): string[] {
-    const accepted = new Set<string>()
-    for (const lob of [risk.lineOfBusiness, ...(risk.alsoCoveredBy ?? [])]) {
-        for (const id of getBranchFamily(lob.toLowerCase())) accepted.add(id)
-    }
-
-    const matched = new Set<string>()
-    for (const policy of policies) {
-        if (policy.status !== "active") continue
-        const id = normalizeBranch(policy.lineOfBusiness).id
-        if (accepted.has(id)) matched.add(id)
-    }
-    return [...matched]
+    const accepted = new Set(fullSubstitutes(risk))
+    return [...new Set(liveLineIds(policies).filter((id) => accepted.has(id)))]
 }
 
-/** How many live policies answer this risk — POLICIES, not distinct lines. */
+/** Which of the customer's live lines answer PART of this risk, with the notes. */
+function partialCoveringLines(risk: RiskDefinition, policies: HeldPolicy[]): PartialSubstitute[] {
+    const live = new Set(liveLineIds(policies))
+    return partialSubstitutes(risk).filter((p) => live.has(p.line.toLowerCase()))
+}
+
+/** How many live policies fully answer this risk — POLICIES, not distinct lines. */
 function coveringPolicyCount(risk: RiskDefinition, policies: HeldPolicy[]): number {
-    const accepted = new Set<string>()
-    for (const lob of [risk.lineOfBusiness, ...(risk.alsoCoveredBy ?? [])]) {
-        for (const id of getBranchFamily(lob.toLowerCase())) accepted.add(id)
-    }
-    return policies.filter(
-        (p) => p.status === "active" && accepted.has(normalizeBranch(p.lineOfBusiness).id)
-    ).length
+    const accepted = new Set(fullSubstitutes(risk))
+    return liveLineIds(policies).filter((id) => accepted.has(id)).length
 }
 
-/** Lines the customer says they hold outside PolicyWallet that answer this risk. */
+/** Lines the customer says they hold outside PolicyWallet that fully answer this risk. */
 function externallyCovered(risk: RiskDefinition, ctx: LifeContext): string[] {
-    return [risk.lineOfBusiness, ...(risk.alsoCoveredBy ?? [])].filter((lob) =>
-        heldElsewhere(ctx, lob)
-    )
+    return fullSubstitutes(risk).filter((lob) => heldElsewhere(ctx, lob))
+}
+
+/** Partial lines the customer says they hold outside PolicyWallet. */
+function externallyPartial(risk: RiskDefinition, ctx: LifeContext): PartialSubstitute[] {
+    return partialSubstitutes(risk).filter((p) => heldElsewhere(ctx, p.line))
+}
+
+/** One note for the card when several partial lines are held. */
+function partialNote(entries: PartialSubstitute[]): Bilingual {
+    return {
+        en: entries.map((e) => e.note.en).join(" "),
+        el: entries.map((e) => e.note.el).join(" "),
+    }
 }
 
 /**
@@ -213,6 +242,7 @@ export function assessRisk(
             suggestedSolution: transferSummary(risk.mitigations(ctx)),
             eligibilityNote: null,
             coveredBy: [],
+            partialCover: null,
         }
     }
 
@@ -240,6 +270,7 @@ export function assessRisk(
             },
             eligibilityNote: null,
             coveredBy: [],
+            partialCover: null,
         }
     }
 
@@ -260,6 +291,8 @@ export function assessRisk(
     const caveat = risk.eligibility?.(ctx) ?? null
     const held = coveringLines(risk, policies)
     const external = externallyCovered(risk, ctx)
+    const partialHeld = partialCoveringLines(risk, policies)
+    const partialExternal = externallyPartial(risk, ctx)
 
     // ── 3. Is it already answered? ───────────────────────────────────
     // "Something in this family is insured" is not the same as "this exposure is
@@ -283,6 +316,7 @@ export function assessRisk(
             },
             eligibilityNote: caveat?.note ?? null,
             coveredBy: held,
+            partialCover: null,
         }
     }
 
@@ -309,6 +343,37 @@ export function assessRisk(
                   },
             eligibilityNote: caveat?.note ?? null,
             coveredBy: held.length > 0 ? held : external,
+            partialCover: null,
+        }
+    }
+
+    // ── 3b. Answered in PART only ────────────────────────────────────
+    // A personal-accident policy against a death risk, a hull policy against
+    // the boat's liability: something relevant is held, and it does not settle
+    // the question. Reporting `already_covered` would tell the person to stop
+    // looking; reporting a gap would ignore what they hold. So: review, with
+    // the note saying what the held line does and does not do.
+    if (partialHeld.length > 0 || partialExternal.length > 0) {
+        const viaExternal = partialHeld.length === 0
+        const entries = viaExternal ? partialExternal : partialHeld
+        const note = partialNote(entries)
+        return {
+            ...base,
+            applicability: "applicable",
+            status: "needs_review",
+            priority,
+            confidence: confidenceFor(risk, ctx, { viaExternal, blockedByEligibility: false }),
+            riskExplanation: risk.riskExplanation(ctx),
+            whyItApplies: risk.whyItApplies(ctx),
+            expectedImpact: risk.expectedImpact(ctx),
+            mitigations: risk.mitigations(ctx),
+            suggestedSolution: {
+                en: `What you hold answers part of this. ${note.en} Check whether the rest is covered, or add the policy that does.`,
+                el: `Ό,τι έχετε απαντά σε μέρος αυτού. ${note.el} Ελέγξτε αν καλύπτονται και τα υπόλοιπα, ή προσθέστε το ασφαλιστήριο που το κάνει.`,
+            },
+            eligibilityNote: caveat?.note ?? null,
+            coveredBy: entries.map((e) => e.line.toLowerCase()),
+            partialCover: note,
         }
     }
 
@@ -330,6 +395,7 @@ export function assessRisk(
             suggestedSolution: transferSummary(risk.mitigations(ctx)),
             eligibilityNote: caveat.note,
             coveredBy: [],
+            partialCover: null,
         }
     }
 
@@ -347,6 +413,7 @@ export function assessRisk(
         suggestedSolution: transferSummary(risk.mitigations(ctx)),
         eligibilityNote: caveat?.note ?? null,
         coveredBy: [],
+        partialCover: null,
     }
 }
 

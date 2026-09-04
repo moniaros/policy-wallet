@@ -19,6 +19,8 @@ vi.mock('@/lib/db', () => ({
             findMany: vi.fn(),
         },
         insuranceProduct: { findMany: vi.fn() },
+        // No completed protection profile: the stated-priority tie-break stays inert.
+        protectionProfile: { findUnique: vi.fn(async () => null) },
         $transaction: vi.fn(async (fn: (client: unknown) => Promise<void>) => fn(tx)),
     },
 }))

@@ -24,6 +24,8 @@ export interface ProtectionSurfaceProps {
         subtitle: string
         lens: { aria: string; byBranch: string; byRisk: string }
         refresh: { refresh: string; refreshing: string; failed: string }
+        /** «Πλήρες προφίλ» — the wizard's heading as the secondary path below the areas. */
+        fullProfile: { title: string; lead: string }
     }
     /** «Ανά κλάδο» lens data — required when lens === "branch". */
     branchLens: {
@@ -34,6 +36,7 @@ export interface ProtectionSurfaceProps {
     /** «Ανά κίνδυνο» lens data — required when lens === "risk". */
     riskLens: {
         intelligence: ProtectionRiskLensProps["intelligence"]
+        attention: ProtectionRiskLensProps["attention"]
         quickStart: ProtectionRiskLensProps["quickStart"]
     } | null
     /**
@@ -46,7 +49,11 @@ export interface ProtectionSurfaceProps {
         recommendations: RecommendationCardsProps["recommendations"]
         smartContent: RecommendationCardsProps["smartContent"]
         profileIncomplete: boolean
-        /** profileCompleteness < 80 — same gate as the source surface. */
+        /**
+         * «There are still unknown factors» — an area's composition still
+         * lists a fact the engine lacks (PERSONAL_RISK_PROFILE.md §K 2b).
+         * Was profileCompleteness < 80.
+         */
         showWizard: boolean
         wizardInitialData: RiskProfileWizardProps["initialData"]
         /** free tier with ≥1 recommendation — same gate as the source surface. */
@@ -148,14 +155,19 @@ export function ProtectionSurface({
                     <ProtectionRiskLens
                         language={language}
                         intelligence={riskLens.intelligence}
+                        attention={riskLens.attention}
                         quickStart={riskLens.quickStart}
                         wizardHref="#risk-profile-wizard"
                     />
                 )}
 
-                {/* A-07 — the long form; §7.5 says it is never the first thing. */}
+                {/* A-07 / PA-08 — the long form as the secondary «Πλήρες προφίλ»
+                    path: below the areas, gated on unknown factors, never the
+                    first thing (§7.5). */}
                 {engine?.showWizard && (
-                    <div id="risk-profile-wizard">
+                    <div id="risk-profile-wizard" className="scroll-mt-20">
+                        <p className="pw-kicker">{labels.fullProfile.title}</p>
+                        <p className="mt-1 mb-3 text-caption leading-relaxed text-muted-foreground">{labels.fullProfile.lead}</p>
                         <RiskProfileWizard initialData={engine.wizardInitialData} language={language} />
                     </div>
                 )}

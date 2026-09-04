@@ -82,6 +82,19 @@ describe('recordConversionEvent (server-side conv_* mirror)', () => {
         expect(row.relatedObjectType).toBeNull()
     })
 
+    it('registers risk_assessment_completed: analytics channel, readable title, the two counts as payload', async () => {
+        await recordConversionEvent('user-1', 'risk_assessment_completed', {
+            areas_completed: 4,
+            remaining_unknown: 2,
+        })
+
+        const row = rowFor()
+        expect(row.eventType).toBe('conv_risk_assessment_completed')
+        expect(row.channel).toBe('analytics')
+        expect(row.title).toBe('A risk assessment was completed')
+        expect(JSON.parse(row.message)).toEqual({ areas_completed: 4, remaining_unknown: 2 })
+    })
+
     it('never throws when the write fails — analytics must not break money paths', async () => {
         ;(db.notificationEvent.create as any).mockRejectedValue(new Error('db down'))
 

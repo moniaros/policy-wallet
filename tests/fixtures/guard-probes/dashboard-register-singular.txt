@@ -1,0 +1,18 @@
+# Probe for tests/unit/dashboard-register-formal.test.ts — one line per case.
+# A line tagged SINGULAR must be flagged by the scanner; a line tagged FORMAL must not.
+# The scanner matches whole words: «σας» inside «σάστισε» and «δες» inside «είδες» stay out.
+SINGULAR Μας δήλωσες 1 όχημα.
+SINGULAR Είπες ότι οδηγείς.
+SINGULAR Άλλοι βασίζονται σε σένα.
+SINGULAR Το ασφαλιστήριό σου έχει λήξει.
+SINGULAR Δες το εύρημα και τι μπορείς να κάνεις.
+SINGULAR Σκέψου ποιος θα δυσκολευόταν αν έλειπε το εισόδημά σου.
+SINGULAR Έχεις στεγαστικό δάνειο.
+FORMAL Μας δηλώσατε 1 όχημα.
+FORMAL Μας είπατε ότι οδηγείτε.
+FORMAL Άλλοι βασίζονται σε εσάς.
+FORMAL Το ασφαλιστήριό σας έχει λήξει.
+FORMAL Δείτε το εύρημα και τι μπορείτε να κάνετε.
+FORMAL Έχετε στεγαστικό δάνειο 100.000 €.
+FORMAL Όσα είδες χθες — σάστισε ο κόσμος — δεν αφορούν αυτή τη σελίδα.
+FORMAL Η κάλυψη προσώπου και οχήματος.
