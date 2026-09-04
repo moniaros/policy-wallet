@@ -1,4 +1,4 @@
-import { LEGAL_CONTENT_VERSION } from "@/lib/legal/legal-content"
+import { LEGAL_CONTENT_VERSION } from "@/lib/legal/version"
 
 export const CONSENT_COOKIE_NAME = "pw_cookie_consent"
 export const DEFAULT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365

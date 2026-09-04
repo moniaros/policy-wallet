@@ -44,7 +44,10 @@ type LegalContent = {
     subprocessors: LegalDocument
 }
 
-export const LEGAL_CONTENT_VERSION = "GR-GA-2026.03"
+// The version string lives in ./version so the consent cookie code can read
+// it without pulling this file's prose into the cookie banner's bundle.
+import { LEGAL_CONTENT_VERSION } from "./version"
+export { LEGAL_CONTENT_VERSION }
 export const LEGAL_LAST_UPDATED = "March 2, 2026"
 
 /**

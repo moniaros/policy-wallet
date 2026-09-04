@@ -11,9 +11,6 @@ const inter = Inter({
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Toaster } from "sonner";
-import NextTopLoader from 'nextjs-toploader';
-import { OfflineProvider } from "@/components/providers/OfflineProvider";
-import { MotionProvider } from "@/components/providers/MotionProvider";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { GoogleAnalyticsWebVitals } from "@/components/analytics/GoogleAnalyticsWebVitals";
 import { CookieConsentBanner } from "@/components/compliance/CookieConsentBanner";
@@ -113,19 +110,11 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-h-screen bg-background text-foreground">
-        <NextTopLoader
-          color="#29685B"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={3}
-          crawl={true}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-        />
+        {/* Only what the whole site shares lives here. The signed-in app's
+            providers (motion config, offline banner, route progress) mount in
+            the app layouts through components/providers/AppProviders — the
+            marketing routes must not pay for them. */}
         <LanguageProvider>
-          <MotionProvider>
-          <OfflineProvider>
             <ThemeProvider
               attribute="class"
               // Light-first (Direction A, 2026-09-03): the product's calm is a
@@ -138,8 +127,6 @@ export default function RootLayout({
               {children}
               <CookieConsentBanner />
             </ThemeProvider>
-          </OfflineProvider>
-          </MotionProvider>
         </LanguageProvider>
         <Toaster richColors position="top-right" />
         <Suspense fallback={null}>

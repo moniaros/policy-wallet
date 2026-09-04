@@ -186,7 +186,17 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
-1. Split marketing route group from app providers (kills ~220KB; the mobile-LCP fix).
+1. Marketing weight: the provider split is DONE (`perf/marketing-route-group`, AppProviders in
+   the app layouts) and measured — it removes one script and no bytes; the public routes load
+   ~2.1 MB raw JS either way (554 KB framework chunk, a 319 KB unattributed chunk, a 122 KB chunk
+   with framer-motion markers no home-page import explains). The «~220KB» estimate was wrong.
+   Source-map attribution (opt-in `PW_SOURCEMAPS=1` build): both full dictionaries (320 KB)
+   ride in through the CLIENT `RealScreens` mocks and `AiDisclaimer`; Sentry ≈225 KB (Replay
+   eager by owner decision); framer-motion 124 KB came through `UpgradeTriggerCard → UpgradeModal`
+   inside the mocks (now `next/dynamic`, opened on demand); legal prose 62 KB came through the
+   consent cookie's version import (now `lib/legal/version.ts`). Next: give `RealScreens` a
+   server-computed copy slice and `AiDisclaimer` its own string so the dictionaries leave the
+   public routes.
 2. Restyle the remaining legacy bands (WhyDifferent, ClearLimits, FAQ, final CTA — how-it-works and who-it-is-for done)
    onto Grafí and finish the G4 primitive remainder.
 3. When legal returns Terms §3 + IDD: de-noindex the partners pair and add its hreflang link.

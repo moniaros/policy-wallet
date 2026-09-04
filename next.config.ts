@@ -25,6 +25,10 @@ const devScriptSrc =
   process.env.NODE_ENV === "development" ? " https://va.vercel-scripts.com" : "";
 
 const nextConfig: NextConfig = {
+  // Opt-in browser source maps for a local bundle attribution
+  // (PW_SOURCEMAPS=1 npm run build, then a source-map explorer over
+  // .next/static/chunks). Never on by default: maps ship to the browser.
+  productionBrowserSourceMaps: process.env.PW_SOURCEMAPS === "1",
   allowedDevOrigins: ["*.picard.replit.dev", "*.replit.dev"],
   experimental: {
     serverActions: {

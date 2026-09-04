@@ -13,7 +13,12 @@ import { Crown } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { getUpgradeCopy, type FeatureKey } from "@/lib/monetization"
-import { UpgradeModal } from "./UpgradeModal"
+import dynamic from "next/dynamic"
+
+// Loaded when the customer opens it, not when the card renders: the modal
+// carries framer-motion and the upgrade copy, and this card is also drawn on
+// the marketing home inside the real-screen mocks.
+const UpgradeModal = dynamic(() => import("./UpgradeModal").then((m) => m.UpgradeModal), { ssr: false })
 import { UsageMeter } from "./UsageMeter"
 
 interface UpgradeTriggerCardProps {
@@ -87,7 +92,7 @@ export function UpgradeTriggerCard({
         setDismissed(true)
     }
 
-    const modal = (
+    const modal = modalOpen && (
         <UpgradeModal
             isOpen={modalOpen}
             onClose={() => setModalOpen(false)}
