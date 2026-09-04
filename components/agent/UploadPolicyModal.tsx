@@ -187,7 +187,10 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             lineOfBusiness: data.lineOfBusiness || 'motor',
             startDate: data.startDate || '',
             endDate: data.endDate || '',
-            premiumAmount: data.premiumAmount != null ? String(data.premiumAmount) : '',
+            // A zero premium is the extractor's "not read", not a figure: the
+            // harness saw «0» pre-filled from an empty scan, which the agent
+            // would submit as the premium. Empty makes the field ask for it.
+            premiumAmount: data.premiumAmount ? String(data.premiumAmount) : '',
         })
     }
 
