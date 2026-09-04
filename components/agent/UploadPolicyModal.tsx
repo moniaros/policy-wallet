@@ -11,6 +11,8 @@ import { useDialog } from '@/hooks/useDialog'
 import { CardHead } from '@/components/dashboard/home/CardHead'
 import { Checkbox, Radio } from '@/components/ui/form'
 import { UploadDropzone } from '@/components/ui/UploadDropzone'
+import { AiConsentModal } from '@/components/ui/AiConsentModal'
+import { cn } from '@/lib/utils'
 import type { CandidateAiConsent, CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
 import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
 import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
@@ -82,7 +84,6 @@ const SCAN_MAX_BYTES = 10 * 1024 * 1024
 
 export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName, presetCustomerConsent }: Props) {
     const { t } = useLanguage()
-    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
     const up = t.agentModals.uploadPolicy
     const ac = t.agentModals.addCustomer
     const router = useRouter()
@@ -118,6 +119,25 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     // audit row. Distinct from `attestedAiConsent`, which is the customer's
     // AI-consent attestation for the deep run on the confirm step.
     const [preScanAttested, setPreScanAttested] = useState(false)
+    // The AGENT's OWN AI-processing consent, captured IN the flow. The scan
+    // refuses with AI_CONSENT_REQUIRED when the advisor has never consented
+    // (every fresh advisor account). That was a dead end: the message sent
+    // them to «ρυθμίσεις απορρήτου», the only consent page redirected to
+    // /dashboard afterwards, and the upload was gone. Now the file stays in
+    // `scannedFile`, the shared consent modal opens over this one, and an
+    // accept re-runs the scan with the same file and the same attestation.
+    const [consentOpen, setConsentOpen] = useState(false)
+    // Render the standalone /consent/ai page as a soft link under the refusal
+    // message — after a dismiss, or a refusal that survived the accept — so
+    // there is still a way out that is not a page reload.
+    const [consentLink, setConsentLink] = useState(false)
+
+    // Two live dialogs would fight: both `useDialog` traps listen on
+    // `document`, so Tab would bounce between them and Escape would fire BOTH
+    // onCloses (stopPropagation does not stop a second listener on the same
+    // node) — closing this modal, and the file with it. Suspended while the
+    // consent modal is up; it re-arms, and re-takes focus, when that closes.
+    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen && !consentOpen)
 
     const [result, setResult] = useState<{ policyId?: string; customerId?: string; created?: boolean; analysis?: AnalysisOutcome } | null>(null)
     const [consentSent, setConsentSent] = useState(false)
@@ -132,6 +152,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setPolicy({ insurerName: '', policyNumber: '', lineOfBusiness: 'motor', startDate: '', endDate: '', premiumAmount: '' })
         setAttestedAiConsent(false)
         setPreScanAttested(false)
+        setConsentOpen(false); setConsentLink(false)
     }
 
     // Server codes this surface can name in the agent's language. Everything
@@ -194,7 +215,20 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         }
 
         setScannedFile(file)
-        setView('parsing'); setLoading(true); setError(null)
+        await runScan(file)
+    }
+
+    /**
+     * The billable scan, split from the pre-flight so the in-flow consent
+     * accept can re-run it with the SAME file and the SAME attestation —
+     * nothing is re-picked and nothing is re-ticked.
+     *
+     * `afterConsent` marks the automatic retry: a refusal that survives a
+     * consent the agent just recorded is shown as the message plus the
+     * standalone page, never as a second modal — asking twice gains nothing.
+     */
+    const runScan = async (file: File, afterConsent = false) => {
+        setView('parsing'); setLoading(true); setError(null); setConsentLink(false)
 
         const fd = new FormData()
         fd.append('file', file)
@@ -219,8 +253,14 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setLoading(false)
 
         if (!res.success) {
-            setError(scanErrorCopy(res.error) ?? uploadRejectionMessage(t, (res as any).errorCode, res.error || up.scanError, SCAN_MAX_BYTES))
             setView('upload')
+            if (res.error === 'AI_CONSENT_REQUIRED') {
+                // The advisor's own consent — ask for it here, over the kept
+                // file; the retry runs from the modal's onConsented.
+                if (!afterConsent) { setConsentOpen(true); return }
+                setConsentLink(true)
+            }
+            setError(scanErrorCopy(res.error) ?? uploadRejectionMessage(t, (res as any).errorCode, res.error || up.scanError, SCAN_MAX_BYTES))
             return
         }
 
@@ -390,8 +430,35 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         `pw-subcard px-3 transition-shadow ${checked ? 'ring-2 ring-primary' : ''}`
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        // The shared Modal (the consent dialog) sits at z-50 and portals to
+        // <body>; this root is a stacking context of its own, so it drops
+        // beneath that while the consent modal is up and the kept upload stays
+        // visible under the consent backdrop instead of hiding the dialog.
+        <div className={cn("fixed inset-0 flex items-center justify-center p-4", consentOpen ? "z-40" : "z-[100]")}>
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeAll} />
+
+            <AiConsentModal
+                isOpen={consentOpen}
+                onClose={() => {
+                    // Dismissed: the existing message plus the standalone
+                    // page. The picker remounts so the same file can be
+                    // chosen again once consent exists; `preScanAttested`
+                    // and the file itself are untouched.
+                    setConsentOpen(false)
+                    setError(t.apiErrors.aiConsentRequired)
+                    setConsentLink(true)
+                    setPickerKey((k) => k + 1)
+                }}
+                onConsented={() => {
+                    // Recorded server-side (the modal resolves only after
+                    // POST /api/v1/consents succeeds) — re-run the scan
+                    // with the file that was kept, attestation included.
+                    setConsentOpen(false)
+                    const file = scannedFile
+                    if (file) void runScan(file, true)
+                }}
+                source="agent_upload"
+            />
 
             <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="upload-policy-title" tabIndex={-1} className="pw-card pw-pad relative max-h-[90vh] w-full max-w-2xl overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
                 {/* ── UPLOAD ── */}
@@ -435,7 +502,20 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             <p className="mt-2 text-center text-caption text-muted-foreground">{up.uploadHint}</p>
                         </div>
 
-                        {error && <p role="alert" className="text-caption font-semibold text-status-danger">{error}</p>}
+                        {error && (
+                            <div className="space-y-3">
+                                <p role="alert" className="text-caption font-semibold text-status-danger">{error}</p>
+                                {/* The consent modal was dismissed (or the scan still
+                                    refused after it): the message alone pointed at a
+                                    settings page and stopped. A soft link — the
+                                    primary of this screen is the dropzone's CTA. */}
+                                {consentLink && (
+                                    <Link href="/consent/ai" className="pw-soft-button" data-testid="upload-policy-agent-consent-link">
+                                        {up.agentConsentLink}
+                                    </Link>
+                                )}
+                            </div>
+                        )}
 
                         <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
                             <button type="button" onClick={closeAll} className="pw-soft-button">

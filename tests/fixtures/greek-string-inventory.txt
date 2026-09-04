@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2920
+# bundle entries: 2921
 # inline entries: 4771 across 215 files
 # ternary entries: 284 across 43 files
 # call entries: 1217 across 87 files
@@ -307,6 +307,7 @@ bundle	agentModals.opportunityUpdate.updateBtn	"Ενημέρωση ευκαιρ�
 bundle	agentModals.opportunityUpdate.updateError	"Αποτυχία ενημέρωσης ευκαιρίας. Δοκιμάστε ξανά."
 bundle	agentModals.opportunityUpdate.updating	"Ενημέρωση..."
 bundle	agentModals.uploadPolicy.afmLabel	"ΑΦΜ"
+bundle	agentModals.uploadPolicy.agentConsentLink	"Δώστε συγκατάθεση για AI"
 bundle	agentModals.uploadPolicy.analysisBlockedQuota	"Το ασφαλιστήριο αποθηκεύτηκε, αλλά η ανάγνωσή του με AI δεν ξεκίνησε: χρειάζεται πλάνο συνεργάτη με διαθέσιμο όριο ανάλυσης. Το έγγραφο παραμένει στον φάκελο του πελάτη."
 bundle	agentModals.uploadPolicy.analysisConsentRequired	"Απαιτείται η συγκατάθεση του πελάτη πριν την ανάλυση με AI."
 bundle	agentModals.uploadPolicy.analysisLimitReached	"Φτάσατε το μηνιαίο όριο αναλύσεων AI του πλάνου σας."

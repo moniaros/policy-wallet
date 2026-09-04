@@ -2218,6 +2218,10 @@ export const en: TranslationKeys = {
             preScanAttestation: 'I confirm I hold the customer\'s mandate to process this policy on their behalf.',
             preScanAttestationHint: 'The document is sent to an AI provider to extract its details. Your confirmation is recorded with the scan.',
             requestConsentCta: 'Request consent',
+            // The advisor's OWN AI consent is missing: asked in the flow, over
+            // the kept file. On dismiss this link to the standalone page keeps
+            // a way out.
+            agentConsentLink: 'Grant AI consent',
             viewCustomer: 'View customer',
             done: 'Done',
             genericError: 'Something went wrong. Please try again.',
