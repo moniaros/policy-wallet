@@ -5,7 +5,7 @@ Same schema as `docs/transformation/QUEUE.md`. This goal does **not** write that
 | id | surface | phase | owner role | status | blocking dependencies |
 |---|---|---|---|---|---|
 | **GB-00** | — | 0 | Orchestrator | **BLOCKED — human decision** | Branch base. `main` is 1180 commits / 6 months stale, lacks `docs/transformation/`, and production runs `NEW-UI`. Recommendation: cut from `NEW-UI`. Nothing in Track A or C starts until this is answered. |
-| **GB-01** | — | 0 | Evidence | **open** | Locate or reconstruct `policy-wallet-public-surface-audit.md`. It is not in the repo; §3.3 and §2.3 both cite it. Defects re-verified independently (see STEP0), so this blocks only the free-tier 2→3 item. |
+| **GB-01** | — | 0 | Evidence | **retired** | Retired by PW-TRANSPARENCY-02 Amendment 01 (2026-09-05): `policy-wallet-public-surface-audit.md` is not in the repository and its §A/§C premises are stale at HEAD; `docs/transparency/STEP0-FINDINGS.md` §J supersedes it as the source of truth for the public surface. Do not reconstruct it. |
 | **GA-01** | marketing | A | Evidence | **open** | Free-tier **2→3 contradiction** — the one §B item not verified either way. Needs the audit's wording, or an independent comparison of every surface stating a free-tier allowance. |
 | **GA-02** | marketing | A | Product-Truth | blocked by GB-00 | Hook register `HOOKS.md` — ten rows, canonical copy, ≤72 Greek chars, claim-free phrasing. |
 | **GA-03** | marketing | A | Implementation | blocked by GA-02, GB-00 | `HookTicker` primitive. **Must extend or replace `components/landing/HeroSlides.tsx`, not sit beside it** — a second rotator is the parallel-primitive failure this repo already has a protocol against. |
