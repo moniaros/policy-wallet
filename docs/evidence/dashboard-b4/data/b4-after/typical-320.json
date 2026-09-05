@@ -3,17 +3,18 @@
   "label": "typical",
   "width": 320,
   "run": "b4-after",
-  "capturedAt": "2026-09-05T11:41:50.227Z",
-  "scrollHeight": 5008,
+  "capturedAt": "2026-09-05T12:05:49.489Z",
+  "scrollHeight": 5012,
   "sections": {
-    "count": 6,
+    "count": 7,
     "ids": [
       "#overview",
       "#renewals",
       "#attention",
       "#wallet",
       "#support",
-      "#activity"
+      "#activity",
+      "<div> Η ασφαλιστική σας εικόνα"
     ]
   },
   "duplicateFacts": {
@@ -23,12 +24,71 @@
   },
   "countsWithoutNavigation": [],
   "tapTargets": [],
+  "hitAreaOverlaps": [
+    {
+      "a": "a[portfolio.expiringCount] «1 λήγει μέσα σε 30 ημέρες»",
+      "b": "a «Αρχική»",
+      "areaPx": 1717
+    },
+    {
+      "a": "a[portfolio.expiringCount] «1 λήγει μέσα σε 30 ημέρες»",
+      "b": "a «Φάκελος»",
+      "areaPx": 1717
+    },
+    {
+      "a": "a[portfolio.expiringCount] «1 λήγει μέσα σε 30 ημέρες»",
+      "b": "a «Προστασία»",
+      "areaPx": 1717
+    },
+    {
+      "a": "a[portfolio.expiringCount] «1 λήγει μέσα σε 30 ημέρες»",
+      "b": "a «Σύμβουλος»",
+      "areaPx": 1717
+    },
+    {
+      "a": "a[portfolio.expiringCount] «1 λήγει μέσα σε 30 ημέρες»",
+      "b": "a «Ρυθμίσεις»",
+      "areaPx": 847
+    },
+    {
+      "a": "a[portfolio.failedCount] «1 δεν διαβάστηκε»",
+      "b": "a «Αρχική»",
+      "areaPx": 219
+    },
+    {
+      "a": "a[portfolio.failedCount] «1 δεν διαβάστηκε»",
+      "b": "a «Φάκελος»",
+      "areaPx": 219
+    },
+    {
+      "a": "a[portfolio.failedCount] «1 δεν διαβάστηκε»",
+      "b": "a «Προστασία»",
+      "areaPx": 219
+    },
+    {
+      "a": "a[portfolio.failedCount] «1 δεν διαβάστηκε»",
+      "b": "a «Σύμβουλος»",
+      "areaPx": 83
+    }
+  ],
+  "renderedCounts": {
+    "notification.unreadCount": "2",
+    "portfolio.policyCount": "3 ασφαλιστήρια",
+    "portfolio.expiringCount": "1 λήγει μέσα σε 30 ημέρες",
+    "portfolio.failedCount": "1 δεν διαβάστηκε",
+    "plan.stepsDone": "3",
+    "plan.stepsTotal": "6",
+    "portfolio.renewalsNext180Count": "2 ασφαλιστήρια με ανανέωση εντός 6 μηνών",
+    "policy.renewalCheckpointCount#cmtoc636b0009rw7ho50sh7d0": "2 σημεία για έλεγχο",
+    "policy.renewalCheckpointCount#cmtoc66em000frw7hu6npnzvp": "1 σημείο για έλεγχο"
+  },
+  "attentionItems": [],
   "ctas": [
     {
       "label": "Προσθέστε νέο ασφαλιστήριο",
       "href": "/wallet/add",
       "kind": "primary",
-      "where": "Η ασφαλιστική σας εικόνα"
+      "where": "?"
     },
     {
       "label": "Πείτε μας τι έχει σημασία. Τρία λεπτά, χωρίς όρους ασφάλισης",
@@ -110,13 +170,13 @@
     },
     {
       "label": "Υγεία: ανανέωση σε 18 ημέρεςΕθνική Ασφαλιστική · ΣΥΜΒ-2026-T",
-      "href": "/wallet/cmtobb8lj0009y61y7n7lg2ge#dates",
+      "href": "/wallet/cmtoc636b0009rw7ho50sh7d0#dates",
       "kind": "card",
       "where": "Χρονοδιάγραμμα ανανεώσεων"
     },
     {
       "label": "Κατοικία: ανανέωση σε 120 ημέρεςGenerali · ΣΥΜΒ-2026-T3 · 03",
-      "href": "/wallet/cmtobbbt6000fy61ykcz9hl3l#dates",
+      "href": "/wallet/cmtoc66em000frw7hu6npnzvp#dates",
       "kind": "card",
       "where": "Χρονοδιάγραμμα ανανεώσεων"
     },
@@ -226,11 +286,11 @@
   "primaryActions": 1,
   "order": {
     "viewportHeight": 720,
-    "hero": 455,
-    "renewals": 1522,
-    "lifeEvents": 2193,
-    "attention": 2505,
-    "renewalFact": 649
+    "hero": 245,
+    "renewals": 1526,
+    "lifeEvents": 2197,
+    "attention": 2509,
+    "renewalFact": 653
   },
   "renewalsInFirstViewport": true,
   "lifeEventsAboveAttention": true,

@@ -4,7 +4,7 @@
   "width": 430,
   "run": "b4-after",
   "fixture": "seeded",
-  "capturedAt": "2026-09-05T11:37:09.606Z",
+  "capturedAt": "2026-09-05T12:10:30.827Z",
   "scrollHeight": 3902,
   "sections": {
     "count": 5,
@@ -23,6 +23,60 @@
   },
   "countsWithoutNavigation": [],
   "tapTargets": [],
+  "hitAreaOverlaps": [
+    {
+      "a": "a «Κέντρο βοήθειας»",
+      "b": "button «ΕΛ»",
+      "areaPx": 212
+    },
+    {
+      "a": "a «Κέντρο βοήθειας»",
+      "b": "button «Αποσύνδεση»",
+      "areaPx": 1504
+    },
+    {
+      "a": "a «Με κενά κάλυψης1»",
+      "b": "a «Πίνακας ελέγχου»",
+      "areaPx": 1669
+    },
+    {
+      "a": "a «Με κενά κάλυψης1»",
+      "b": "a «Πελάτες»",
+      "areaPx": 1669
+    },
+    {
+      "a": "a «Με κενά κάλυψης1»",
+      "b": "a «Ευκαιρίες»",
+      "areaPx": 607
+    },
+    {
+      "a": "a «Εκκρεμείς προσκλήσεις0»",
+      "b": "a «Ευκαιρίες»",
+      "areaPx": 607
+    },
+    {
+      "a": "a «Εκκρεμείς προσκλήσεις0»",
+      "b": "a «Πληροφορίες»",
+      "areaPx": 1669
+    },
+    {
+      "a": "a «Εκκρεμείς προσκλήσεις0»",
+      "b": "button «Ενέργειες (3 Ειδοποιήσεις)»",
+      "areaPx": 1669
+    }
+  ],
+  "renderedCounts": {
+    "notification.unreadCount": "3",
+    "agent.totalClients": "1",
+    "agent.expiringClients": "0",
+    "agent.gapClients": "1",
+    "agent.pendingInvites": "0",
+    "agent.policiesThisMonth": "0",
+    "agent.followUps": "1",
+    "agent.pipelineEur": "0 €",
+    "agent.portfolioCompleteness": "16/100",
+    "client.openGapCount": "5 ανοιχτά ευρήματα"
+  },
   "ctas": [
     {
       "label": "Νέος πελάτης",

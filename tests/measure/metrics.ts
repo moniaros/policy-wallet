@@ -1462,3 +1462,57 @@ export async function countsWithoutNavigation(page: Page): Promise<CountWithoutN
         return out
     })
 }
+
+/**
+ * OVERLAPPING HIT AREAS — layout integrity (PW-TRANSPARENCY-02, verification V4b).
+ *
+ * Two interactive elements whose bounding boxes intersect, neither being an
+ * ancestor of the other, are two targets fighting for one touch. Negative
+ * margins used to hold a 44px target without growing the layout are the
+ * classic cause. Every visible `a[href], button, [role=button], [role=link],
+ * input, select, textarea` is paired with every other; a pair is reported once
+ * with the intersection area in px².
+ */
+export interface HitAreaOverlap {
+    a: string
+    b: string
+    areaPx: number
+}
+export async function overlappingHitAreas(page: Page): Promise<HitAreaOverlap[]> {
+    return page.evaluate(() => {
+        const sel = "a[href], button, [role='button'], [role='link'], input, select, textarea"
+        const els = Array.from(document.querySelectorAll<HTMLElement>(sel)).filter((el) => {
+            const cs = getComputedStyle(el)
+            if (cs.display === "none" || cs.visibility === "hidden" || cs.pointerEvents === "none") return false
+            const r = el.getBoundingClientRect()
+            return r.width > 0 && r.height > 0
+        })
+        const label = (el: HTMLElement) => `${el.tagName.toLowerCase()}${el.getAttribute("data-count") ? `[${el.getAttribute("data-count")}]` : ""} «${(el.textContent || el.getAttribute("aria-label") || "").replace(/\s+/g, " ").trim().slice(0, 40)}»`
+        const out: HitAreaOverlap[] = []
+        for (let i = 0; i < els.length; i++) {
+            const ra = els[i].getBoundingClientRect()
+            for (let j = i + 1; j < els.length; j++) {
+                if (els[i].contains(els[j]) || els[j].contains(els[i])) continue
+                const rb = els[j].getBoundingClientRect()
+                const w = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left)
+                const h = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top)
+                if (w > 0.5 && h > 0.5) out.push({ a: label(els[i]), b: label(els[j]), areaPx: Math.round(w * h) })
+            }
+        }
+        return out
+    })
+}
+
+/** Every rendered count, key → text (subject-scoped keys carry their subject). For evidence, not for a gate. */
+export async function renderedCounts(page: Page): Promise<Record<string, string>> {
+    return page.evaluate(() => {
+        const out: Record<string, string> = {}
+        document.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
+            const cs = getComputedStyle(el)
+            if (cs.display === "none" || cs.visibility === "hidden") return
+            const key = `${el.getAttribute("data-count")}${el.getAttribute("data-count-subject") ? "#" + el.getAttribute("data-count-subject") : ""}`
+            out[key] = (el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 80)
+        })
+        return out
+    })
+}

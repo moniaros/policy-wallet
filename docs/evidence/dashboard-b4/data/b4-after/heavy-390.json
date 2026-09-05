@@ -3,17 +3,18 @@
   "label": "heavy",
   "width": 390,
   "run": "b4-after",
-  "capturedAt": "2026-09-05T11:43:46.446Z",
-  "scrollHeight": 5341,
+  "capturedAt": "2026-09-05T12:07:44.478Z",
+  "scrollHeight": 5345,
   "sections": {
-    "count": 6,
+    "count": 7,
     "ids": [
       "#overview",
       "#renewals",
       "#attention",
       "#wallet",
       "#support",
-      "#activity"
+      "#activity",
+      "<div> Η ασφαλιστική σας εικόνα"
     ]
   },
   "duplicateFacts": {
@@ -23,12 +24,61 @@
   },
   "countsWithoutNavigation": [],
   "tapTargets": [],
+  "hitAreaOverlaps": [
+    {
+      "a": "a[portfolio.neverAnalysedCount] «1 δεν έχει αναλυθεί»",
+      "b": "a «Αρχική»",
+      "areaPx": 133
+    },
+    {
+      "a": "a[portfolio.neverAnalysedCount] «1 δεν έχει αναλυθεί»",
+      "b": "a «Φάκελος»",
+      "areaPx": 133
+    },
+    {
+      "a": "a[portfolio.neverAnalysedCount] «1 δεν έχει αναλυθεί»",
+      "b": "a «Προστασία»",
+      "areaPx": 133
+    },
+    {
+      "a": "a[portfolio.failedCount] «1 δεν διαβάστηκε»",
+      "b": "a «Αρχική»",
+      "areaPx": 1803
+    },
+    {
+      "a": "a[portfolio.failedCount] «1 δεν διαβάστηκε»",
+      "b": "a «Φάκελος»",
+      "areaPx": 1803
+    },
+    {
+      "a": "a[portfolio.failedCount] «1 δεν διαβάστηκε»",
+      "b": "a «Προστασία»",
+      "areaPx": 1214
+    }
+  ],
+  "renderedCounts": {
+    "notification.unreadCount": "2",
+    "portfolio.policyCount": "12 ασφαλιστήρια",
+    "portfolio.expiredCount": "1 έχει λήξει",
+    "portfolio.expiringCount": "2 λήγουν μέσα σε 30 ημέρες",
+    "portfolio.neverAnalysedCount": "1 δεν έχει αναλυθεί",
+    "portfolio.failedCount": "1 δεν διαβάστηκε",
+    "portfolio.premiumNoAmountCount": "1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο",
+    "plan.stepsDone": "3",
+    "plan.stepsTotal": "6",
+    "portfolio.renewalsNext180Count": "7 ασφαλιστήρια με ανανέωση εντός 6 μηνών",
+    "policy.renewalCheckpointCount#cmtoc7plv0019rw7hg77bernc": "2 σημεία για έλεγχο",
+    "policy.renewalCheckpointCount#cmtoc7ugf001jrw7hou751d14": "2 σημεία για έλεγχο",
+    "policy.renewalCheckpointCount#cmtoc812p001vrw7hwl28h9oz": "1 σημείο για έλεγχο",
+    "policy.renewalCheckpointCount#cmtoc82oj001zrw7hubs5duhr": "2 σημεία για έλεγχο"
+  },
+  "attentionItems": [],
   "ctas": [
     {
       "label": "Προσθέστε νέο ασφαλιστήριο",
       "href": "/wallet/add",
       "kind": "primary",
-      "where": "Η ασφαλιστική σας εικόνα"
+      "where": "?"
     },
     {
       "label": "Πείτε μας τι έχει σημασία. Τρία λεπτά, χωρίς όρους ασφάλισης",
@@ -128,25 +178,25 @@
     },
     {
       "label": "Υγεία: ανανέωση σε 12 ημέρεςΥΔΡΟΓΕΙΟΣ Ανώνυμος Ασφαλιστική κ",
-      "href": "/wallet/cmtobcv9e0019y61ywtg9fj9u#dates",
+      "href": "/wallet/cmtoc7plv0019rw7hg77bernc#dates",
       "kind": "card",
       "where": "Χρονοδιάγραμμα ανανεώσεων"
     },
     {
       "label": "Κατοικία: ανανέωση σε 30 ημέρεςGenerali · ΣΥΜΒ-2026-H5 · 05/",
-      "href": "/wallet/cmtobd05i001jy61yidq5p4y0#dates",
+      "href": "/wallet/cmtoc7ugf001jrw7hou751d14#dates",
       "kind": "card",
       "where": "Χρονοδιάγραμμα ανανεώσεων"
     },
     {
       "label": "Ταξιδιωτική: ανανέωση σε 45 ημέρεςEurop Assistance · ΣΥΜΒ-20",
-      "href": "/wallet/cmtobd6xb001vy61y70w30sfv#dates",
+      "href": "/wallet/cmtoc812p001vrw7hwl28h9oz#dates",
       "kind": "card",
       "where": "Χρονοδιάγραμμα ανανεώσεων"
     },
     {
       "label": "Κατοικίδιο: ανανέωση σε 90 ημέρεςInteramerican · ΣΥΜΒ-2026-H",
-      "href": "/wallet/cmtobd8ja001zy61ykup01jhi#dates",
+      "href": "/wallet/cmtoc82oj001zrw7hubs5duhr#dates",
       "kind": "card",
       "where": "Χρονοδιάγραμμα ανανεώσεων"
     },
@@ -256,11 +306,11 @@
   "primaryActions": 1,
   "order": {
     "viewportHeight": 844,
-    "hero": 455,
-    "renewals": 1631,
-    "lifeEvents": 2610,
-    "attention": 2870,
-    "renewalFact": 693
+    "hero": 245,
+    "renewals": 1635,
+    "lifeEvents": 2614,
+    "attention": 2874,
+    "renewalFact": 697
   },
   "renewalsInFirstViewport": true,
   "lifeEventsAboveAttention": true,

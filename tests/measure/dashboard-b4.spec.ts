@@ -4,7 +4,7 @@ import path from "path"
 import { dismissCookieBanner } from "../helpers/ui"
 import { applyPortfolioState, policiesFor, type PortfolioState } from "./dashboard-fixtures"
 import { callsToAction } from "./dashboard"
-import { WIDTHS, settle, scrollHeight, sectionCount, duplicateFacts, smallTapTargets, countsWithoutNavigation } from "./metrics"
+import { WIDTHS, settle, scrollHeight, sectionCount, duplicateFacts, smallTapTargets, countsWithoutNavigation, overlappingHitAreas, renderedCounts } from "./metrics"
 import { withDb } from "./surface-harness"
 
 /**
@@ -82,6 +82,11 @@ export async function captureB4(page: Page, surface: string, label: string, widt
         duplicateFacts: await duplicateFacts(page, []),
         countsWithoutNavigation: await countsWithoutNavigation(page),
         tapTargets: await smallTapTargets(page),
+        // V4b: layout integrity — interactive boxes must not intersect.
+        hitAreaOverlaps: await overlappingHitAreas(page),
+        // V2 evidence: what every count says, and what the attention list lists.
+        renderedCounts: await renderedCounts(page),
+        attentionItems: await page.evaluate(() => Array.from(document.querySelectorAll('section[aria-labelledby="attention-heading"] li')).map((li) => (li.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120))),
         ctas,
         primaryActions: ctas.filter((c) => c.kind === "primary").length,
         order,
@@ -96,7 +101,7 @@ export async function captureB4(page: Page, surface: string, label: string, widt
     console.log(
         `[b4 ${surface}] ${label}@${width}: ${data.scrollHeight}px, ${data.sections.count} sections, ` +
             `${data.duplicateFacts.duplicateFactCount} dup facts, ${data.countsWithoutNavigation.length} counts w/o nav, ` +
-            `${data.primaryActions} primary, ${data.tapTargets.length} sub-44, renewals-first-viewport=${data.renewalsInFirstViewport}, ` +
+            `${data.primaryActions} primary, ${data.tapTargets.length} sub-44, ${data.hitAreaOverlaps.length} overlaps, renewals-first-viewport=${data.renewalsInFirstViewport}, ` +
             `life-events-above-attention=${data.lifeEventsAboveAttention}`
     )
     return data

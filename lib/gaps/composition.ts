@@ -79,6 +79,8 @@ export type Composition =
     | { kind: "unauthored"; lineOfBusiness: string }
     | { kind: "catalogue_mismatch"; lineOfBusiness: string; runCatalogueVersion: string; currentCatalogueVersion: string }
     | { kind: "no_run"; lineOfBusiness: string }
+    /** V3: a COMPLETED run with no attempted-rules plan (analysed before B0). What was checked cannot be stated. */
+    | { kind: "pre_plan"; lineOfBusiness: string; runFinishedAt: string | null; runDateLabel: string | null }
 
 // ── Rule shape helpers ──────────────────────────────────────────────────────
 
@@ -206,6 +208,8 @@ export interface ComposeInput {
     firedSlugs: readonly string[]
     /** The run's attempted-rule plan (B0.2): slugs + catalogue version. Null when no run completed. */
     attempted: { slugs: readonly string[]; catalogueVersion: string } | null
+    /** The latest COMPLETED run, so a run that carries no plan becomes the `pre_plan` state rather than nothing. */
+    completedRun?: { finishedAt: Date | string | null; dateLabel?: string | null } | null
     /** The definitions to classify — normally the authored catalogue at the same version. */
     definitions?: readonly DefinitionForComposition[]
     now?: Date
@@ -218,7 +222,18 @@ export function currentCatalogueVersion(): string {
 
 export function composeFindings(input: ComposeInput): Composition {
     const lineOfBusiness = String(input.lineOfBusiness || "").trim()
-    if (!input.attempted) return { kind: "no_run", lineOfBusiness }
+    if (!input.attempted) {
+        if (input.completedRun) {
+            const at = input.completedRun.finishedAt ? new Date(input.completedRun.finishedAt) : null
+            return {
+                kind: "pre_plan",
+                lineOfBusiness,
+                runFinishedAt: at && !Number.isNaN(at.getTime()) ? at.toISOString() : null,
+                runDateLabel: input.completedRun.dateLabel ?? null,
+            }
+        }
+        return { kind: "no_run", lineOfBusiness }
+    }
     if (input.attempted.slugs.length === 0) return { kind: "unauthored", lineOfBusiness }
 
     const current = currentCatalogueVersion()

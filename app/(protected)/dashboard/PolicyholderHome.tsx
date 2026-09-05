@@ -885,31 +885,30 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </div>
                 )}
 
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+                    <h1 id="dashboard-title" className="text-h2 font-semibold tracking-tight text-foreground">
+                        {home.title}
+                    </h1>
+                    {/* The page's ONE upload offer. The desktop FAB and the
+                        portfolio card's link are gone; on an empty wallet the
+                        hero's invitation is the offer, so this stands down. */}
+                    {hasPolicies && (
+                        <Link
+                            href="/wallet/add"
+                            className="pw-primary-button pw-btn-sm inline-flex min-h-11 items-center gap-2"
+                        >
+                            <Upload className="h-4 w-4" aria-hidden="true" />
+                            {home.addNewPolicy}
+                        </Link>
+                    )}
+                </div>
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_340px]">
                     {/* ── Main column ─────────────────────────────────────── */}
                     <div className="grid min-w-0 gap-5">
                     {/* B4: six labelled regions — the collector, a screen reader and a
                         reader see the same six. Each region is labelled by the heading
                         of the card that leads it; no new visible text. */}
-                    <section id="overview" aria-labelledby="dashboard-title" className="grid min-w-0 gap-5 scroll-mt-20 md:grid-cols-2">
-                    {/* The page title row leads the overview region: one h1, one primary action. */}
-                    <div className="flex flex-wrap items-end justify-between gap-3 md:col-span-2">
-                        <h1 id="dashboard-title" className="text-h2 font-semibold tracking-tight text-foreground">
-                            {home.title}
-                        </h1>
-                        {/* The page's ONE upload offer. The desktop FAB and the
-                            portfolio card's link are gone; on an empty wallet the
-                            hero's invitation is the offer, so this stands down. */}
-                        {hasPolicies && (
-                            <Link
-                                href="/wallet/add"
-                                className="pw-primary-button pw-btn-sm inline-flex min-h-11 items-center gap-2"
-                            >
-                                <Upload className="h-4 w-4" aria-hidden="true" />
-                                {home.addNewPolicy}
-                            </Link>
-                        )}
-                    </div>
+                    <section id="overview" aria-labelledby="protection-status-heading" className="grid min-w-0 gap-5 scroll-mt-20 md:grid-cols-2">
                         {protectionCard && <div className="min-w-0 md:col-span-2">{protectionCard}</div>}
                         <div className="min-w-0 md:col-span-2">
                             <ProtectionStatusHero

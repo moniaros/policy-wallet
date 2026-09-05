@@ -3,7 +3,7 @@
   "label": "empty",
   "width": 390,
   "run": "b4-after",
-  "capturedAt": "2026-09-05T11:40:57.624Z",
+  "capturedAt": "2026-09-05T12:04:57.409Z",
   "scrollHeight": 844,
   "sections": {
     "count": 2,
@@ -19,6 +19,9 @@
   },
   "countsWithoutNavigation": [],
   "tapTargets": [],
+  "hitAreaOverlaps": [],
+  "renderedCounts": {},
+  "attentionItems": [],
   "ctas": [
     {
       "label": "Παράλειψη για τώρα",

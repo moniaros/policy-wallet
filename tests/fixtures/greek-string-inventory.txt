@@ -19,10 +19,10 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3572
+# bundle entries: 3574
 # inline entries: 4803 across 215 files
-# ternary entries: 278 across 42 files
-# call entries: 1146 across 86 files
+# ternary entries: 281 across 42 files
+# call entries: 1147 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -1025,6 +1025,8 @@ bundle	composition.covered	"{count} καλύπτονται"
 bundle	composition.indeterminate	"{count} δεν μπόρεσαν να ελεγχθούν"
 bundle	composition.notCovered	"{count} δεν καλύπτονται"
 bundle	composition.notRecorded	"{count} δεν καταγράφονται"
+bundle	composition.prePlan	"Ευρήματα από την ανάλυση της {date}. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δεν αποτελούν πλήρη αξιολόγηση."
+bundle	composition.prePlanNoDate	"Ευρήματα από παλαιότερη ανάλυση που προηγείται του σχεδίου ελέγχων: δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δεν αποτελούν πλήρη αξιολόγηση."
 bundle	composition.recorded	"{count} καταγράφονται"
 bundle	composition.recordingChecked	"Στοιχεία εγγράφου — ελέγξαμε αν καταγράφονται {checked}:"
 bundle	composition.recordingCheckedOne	"Στοιχεία εγγράφου — ελέγξαμε αν καταγράφεται 1:"
@@ -8598,6 +8600,8 @@ ternary	lib/services/renewal.service.ts	"λήγει σήμερα"
 ternary	lib/services/renewal.service.ts	"σήμερα"
 ternary	lib/services/renewal.service.ts	`λήγει σε ${days} ημέρες`
 ternary	lib/services/renewal.service.ts	`σε ${daysUntilExpiry} ημέρες`
+ternary	lib/services/reports/savings-report.ts	L("Ευρήματα από παλαιότερη ανάλυση που προηγείται του σχεδίου ελέγχων: δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε.", "Findings from an earlier analysis that predates the check plan: what was checked cannot be stated.")
+ternary	lib/services/reports/savings-report.ts	L(`Ευρήματα από την ανάλυση της ${prePlan.dateLabel}. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δεν αποτελούν πλήρη αξιολόγηση.`, `Findings from the analysis of ${prePlan.dateLabel}. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete assessment.`)
 ternary	lib/services/reports/savings-report.ts	` <div class="savings-total"> <div class="amount">${escapeHtml(formatCurrency(totalSavings, language, { currency: "EUR", decimals: 0 }))}</div> <div class="label">${L("Εκτιμώμενη ετήσια δυνατότητα εξοικονόμησης", "Estimated annual savings potential")}</div> <div class="caveat">${L( "Οι εκτιμήσεις προκύπτουν από ανάλυση AI του εγγράφου σας και είναι ενδεικτικές — τα πραγματικά ποσά εξαρτώνται από τις προσφορές των ασφαλιστών. Χαμηλότερο ασφάλιστρο μπορεί να σημαίνει μικρότερη κάλυψη: συγκρίνετε τις καλύψεις, όχι μόνο την τιμή. Αυθεντική πηγή παραμένει το ασφαλιστήριό σας.", "Estimates come from AI analysis of your document and are indicative — actual amounts depend on insurer quotes. A lower premium can mean less cover: compare the covers, not just the price. Your policy document remains the authoritative source." )}</div> </div> `
 ternary	lib/services/reports/savings-report.ts	` <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2> ${gaps.map((g) => ` <div class="gap-card"> <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))}</div> ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""} ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""} </div> `).join("")} `
 ternary	lib/services/reports/savings-report.ts	` <h2>${L("Στιγμιότυπο Κάλυψης", "Coverage Snapshot")}</h2> ${snapshot.covered?.length ? ` <h3>${L("Καλύπτονται", "Covered")}</h3> <ul class="coverage-list">${(snapshot.covered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} ${snapshot.notCovered?.length ? ` <h3>${L("Δεν καλύπτονται", "Not Covered")}</h3> <ul class="coverage-list">${(snapshot.notCovered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} ${snapshot.exclusions?.length ? ` <h3>${L("Εξαιρέσεις", "Exclusions")}</h3> <ul class="coverage-list">${(snapshot.exclusions as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} `
@@ -8606,6 +8610,7 @@ ternary	lib/services/reports/savings-report.ts	` <h3>${L("Εξαιρέσεις",
 ternary	lib/services/reports/savings-report.ts	` <h3>${L("Καλύπτονται", "Covered")}</h3> <ul class="coverage-list">${(snapshot.covered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
 ternary	lib/services/reports/savings-report.ts	`<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>`
 ternary	lib/services/reports/savings-report.ts	`<div class="estimate">${L("Ενδεικτική εκτίμηση", "Indicative estimate")}: ${escapeHtml(formatCurrency(Number(s.estimatedAnnualSavingsEur), language, { currency: "EUR", decimals: 0 }))}/${L("έτος", "year")}</div>`
+ternary	lib/services/reports/savings-report.ts	`<div class="section-caveat" data-composition-state="pre_plan">${escapeHtml(prePlan.dateLabel ? L(`Ευρήματα από την ανάλυση της ${prePlan.dateLabel}. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δεν αποτελούν πλήρη αξιολόγηση.`, `Findings from the analysis of ${prePlan.dateLabel}. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete assessment.`) : L("Ευρήματα από παλαιότερη ανάλυση που προηγείται του σχεδίου ελέγχων: δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε.", "Findings from an earlier analysis that predates the check plan: what was checked cannot be stated."))}</div>`
 ternary	lib/services/reports/savings-report.ts	`<div class="section-caveat">${escapeHtml(L("Ευρήματα που είναι ακόμη υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή την αναφορά· τα βλέπετε στο ασφαλιστήριο.", "Findings still under review are not included in this report; they are shown on the policy."))}</div>`
 ternary	lib/services/reports/savings-report.ts	`<h1>${reportTitle}</h1> <p class="subtitle">${L("Δημιουργήθηκε", "Generated")} ${formatDate(generatedAt)} ${L("από το", "by")} PolicyWallet</p>`
 ternary	lib/services/reports/savings-report.ts	`<h2>${L("Σύνοψη", "Summary")}</h2><p style="font-size:14px">${escapeHtml(loc(summary))}</p>`
@@ -9812,6 +9817,7 @@ call	lib/services/reports/savings-report.ts	"Εντοπισμένα Κενά Κ�
 call	lib/services/reports/savings-report.ts	"Εξαιρέσεις"
 call	lib/services/reports/savings-report.ts	"Ετοιμάστηκε από"
 call	lib/services/reports/savings-report.ts	"Ευκαιρίες Εξοικονόμησης"
+call	lib/services/reports/savings-report.ts	"Ευρήματα από παλαιότερη ανάλυση που προηγείται του σχεδίου ελέγχων: δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε."
 call	lib/services/reports/savings-report.ts	"Ευρήματα που είναι ακόμη υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή την αναφορά· τα βλέπετε στο ασφαλιστήριο."
 call	lib/services/reports/savings-report.ts	"Καλύπτονται"
 call	lib/services/reports/savings-report.ts	"Οι εκτιμήσεις προκύπτουν από ανάλυση AI του εγγράφου σας και είναι ενδεικτικές — τα πραγματικά ποσά εξαρτώνται από τις προσφορές των ασφαλιστών. Χαμηλότερο ασφάλιστρο μπορεί να σημαίνει μικρότερη κάλυψη: συγκρίνετε τις καλύψεις, όχι μόνο την τιμή. Αυθεντική πηγή παραμένει το ασφαλιστήριό σας."

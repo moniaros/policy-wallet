@@ -15,6 +15,9 @@ export interface CompositionCopy {
     notRecorded: string
     /** Rendered instead of the lines when the run's catalogue differs from the current one. */
     catalogueChanged: string
+    /** V3: «Ευρήματα από την ανάλυση της {date}. … δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε.» */
+    prePlan: string
+    prePlanNoDate: string
     reviewFraming: string
 }
 
@@ -40,6 +43,15 @@ export function CoverageComposition({ composition, copy, className = "" }: { com
         return (
             <p data-fact="composition.catalogueMismatch" className={`text-sm text-muted-foreground ${className}`}>
                 {copy.catalogueChanged}
+            </p>
+        )
+    }
+
+    // V3: findings from a run that predates the plan — dated, never a composition, never a zero.
+    if (composition.kind === "pre_plan") {
+        return (
+            <p data-fact="composition.prePlan" data-composition-state="pre_plan" className={`text-sm text-muted-foreground ${className}`}>
+                {composition.runDateLabel ? fill(copy.prePlan, { date: composition.runDateLabel }) : copy.prePlanNoDate}
             </p>
         )
     }

@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync } from "fs"
 import path from "path"
 import { dismissCookieBanner } from "../helpers/ui"
 import { callsToAction } from "./dashboard"
-import { WIDTHS, settle, scrollHeight, sectionCount, duplicateFacts, smallTapTargets, countsWithoutNavigation } from "./metrics"
+import { WIDTHS, settle, scrollHeight, sectionCount, duplicateFacts, smallTapTargets, countsWithoutNavigation, overlappingHitAreas, renderedCounts } from "./metrics"
 
 /**
  * PW-TRANSPARENCY-02 — Goal B4 «dashboards become routers», B2B book (/dashboard as the agent).
@@ -69,6 +69,8 @@ test(`b4 ${RUN}: agent book`, async ({ page }) => {
             duplicateFacts: await duplicateFacts(page, []),
             countsWithoutNavigation: await countsWithoutNavigation(page),
             tapTargets: await smallTapTargets(page),
+            hitAreaOverlaps: await overlappingHitAreas(page),
+            renderedCounts: await renderedCounts(page),
             ctas,
             primaryActions: ctas.filter((c) => c.kind === "primary").length,
         }
@@ -78,7 +80,7 @@ test(`b4 ${RUN}: agent book`, async ({ page }) => {
         console.log(
             `[b4 b2b-book] agent-book@${width} (${fixture}): ${data.scrollHeight}px, ${data.sections.count} sections, ` +
                 `${data.duplicateFacts.duplicateFactCount} dup facts, ${data.countsWithoutNavigation.length} counts w/o nav, ` +
-                `${data.primaryActions} primary, ${data.tapTargets.length} sub-44`
+                `${data.primaryActions} primary, ${data.tapTargets.length} sub-44, ${data.hitAreaOverlaps.length} overlaps`
         )
     }
 })
