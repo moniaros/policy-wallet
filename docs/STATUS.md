@@ -20,22 +20,24 @@ mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry 
 
 ## Current phase
 
-**PW-TRANSPARENCY-02 — Track A, B0, B1.5, B1.7 done on dev; PR #299 open; B1.6 halted** (2026-09-05, branch `feat/transparency-02`).
-B0: one writer of `gap_instances` with run provenance and supersede semantics (migration
-`20260905150000_gap_instance_run_provenance` applied on dev, **prod apply is part of the merge step**);
-every findings list names its run. B1.5: the unauthored-branch state («δεν το έχουμε αξιολογήσει»)
-on the policy page, the findings card, the dashboard tally (with its denominator) and the agent client
-card. B1.7: protection-score renders removed agent-side and the per-policy health number removed;
-the two score APIs wait on an external-consumer check (BL-02). B1.6 (Risk DNA numbers) is a halt
-(`docs/transparency/HALTS.md` H-T01). Still to do in this series: B1 taxonomy + severity de-emphasis,
-B2 two-line composition, B3, B4.
-Goal 0 report approved (`docs/transparency/STEP0-FINDINGS.md`); amendment 01 reduced Track A to three
-items, all done: Terms §8 names no metric (revision GR-GA-2026.09), the prose-derived «checks passed»
-number reaches no user surface (4 → 0), and a fabricated-count guard over the marketing surface with a
-verified count registry (`lib/marketing/public-counts.ts`). Terms §5 «ένα συμβόλαιο» is **BL-01**
-(`docs/transparency/BLOCKED.md`): blocked on a human reading the production free-tier plan row. Ledger:
-`docs/transparency/PROGRESS.md`. Next: B0 (one gap-row writer, run provenance, honest re-run semantics —
-schema, dev then prod), then B1.5 (unauthored-branch state), B1.7 (score sites), B2 (two-line composition).
+**PW-TRANSPARENCY-02 — Track A, B0, B1.5, B1.7 and B2 built; PR #299 merging; B1.6 halted** (2026-09-05,
+branch `feat/transparency-02`). **Prod migration `20260905150000_gap_instance_run_provenance` is APPLIED and
+verified on production** (2026-09-05 ~10:30Z, via Supabase MCP: six new `gap_instances` columns, `analysis_run_id`
+NOT NULL, FK to runs, two new indexes, the old unique index replaced by the partial «current row» one, the single prod
+row backfilled to its motor run, `_prisma_migrations` stamped with the file's sha256; rollback export
+`docs/archive/2026-09-05T1025Z_prod_gap_instances_before_…sql`). Applied BEFORE the merge on purpose: the old
+code reads gap rows without the new columns and keeps working, the new code cannot run without them; only analysis
+persistence fails in the window between apply and deploy (zero real users). B0: one writer of `gap_instances` with run
+provenance and supersede semantics; every findings list names its run and dates it. B1.5: the unauthored-branch state on
+the policy page, the findings card, the dashboard tally (with denominator) and the agent client card. B1.7: score
+renders removed agent-side and the per-policy health number removed; the two score APIs wait on BL-02. **B2: two lines,
+two denominators** — `lib/gaps/composition.ts` classifies the run's attempted rules by question (20 coverage / 9
+recording), reads declared inputs presentation-side, counts the unsubstantiated as indeterminate; rendered only on
+the B2C findings card and the B2B customer-policy view, never email/push/report; no undeclared-input rule exists.
+B1.6 (Risk DNA numbers) is a halt (`docs/transparency/HALTS.md` H-T01). Blocked: BL-01 (Terms §5), BL-02 (score APIs).
+Still to do in this series: B1 taxonomy + severity de-emphasis, B3 provenance skeleton, B4 dashboards, Goal G guards.
+Next 3: (1) merge #299 on CI green and smoke the prod policy page for the provenance line and the composition;
+(2) B1 status taxonomy; (3) B3. Ledger: `docs/transparency/PROGRESS.md`.
 
 **Grafí design-system build + marketing rebuild — ladder G0–G12 walked** (2026-08-30, 18 commits
 `a4aae9f2..`). Ledger: `docs/DS_PROGRESS.md`. G0–G3, G7, G11, G12 done; G4/G5/G6/G8/G9/G10
