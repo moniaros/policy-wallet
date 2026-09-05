@@ -1,5 +1,6 @@
 import { db } from "../db"
 import { emit } from "../notifications/dispatch"
+import { countGapHistory, countLiveGapRows } from "@/lib/gaps/gap-rows"
 
 /**
  * Achievement definitions for PolicyWallet gamification.
@@ -214,12 +215,12 @@ export async function checkAndAwardAchievements(userId: string): Promise<string[
             }),
             db.policy.count({ where: { ownerUserId: userId } }),
             db.policyAnalysisRun.count({ where: { userId, status: "completed" } }),
-            db.gapInstance.count({
+            countGapHistory({
                 // A resolved finding stays resolved for the achievement even after a
                 // later run superseded its row (the prior status is kept on the row).
                 where: { policy: { ownerUserId: userId }, OR: [{ status: "resolved" }, { priorStatus: "resolved" }] },
             }),
-            db.gapInstance.count({
+            countLiveGapRows({ scope: "classified",
                 where: {
                     policy: { ownerUserId: userId },
                     severity: "critical",

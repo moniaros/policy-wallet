@@ -22,6 +22,7 @@ import { ProtectionSurface } from "@/components/protection/ProtectionSurface"
 import type { ProtectionLens } from "@/components/protection/ProtectionLensTabs"
 import type { BranchTileState } from "@/lib/insurance/branch-page"
 import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 /**
  * «Η προστασία μου» — the §4.2 consolidated protection surface.
@@ -74,7 +75,7 @@ export default async function ProtectionPage({
         // Open findings — same query as the source surface (minus the unused
         // definition include); rows serialize into client props, so only the
         // fields the client reads travel (no acordData per gap).
-        db.gapInstance.findMany({
+        readLiveGapRows({ scope: "disclosed",
             where: {
                 policy: { ownerUserId: dbUser.id },
                 status: { in: ['detected', 'acknowledged', 'open'] },

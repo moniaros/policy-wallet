@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3574
+# bundle entries: 3575
 # inline entries: 4803 across 215 files
 # ternary entries: 281 across 42 files
 # call entries: 1147 across 86 files
@@ -549,6 +549,7 @@ bundle	analysis.report.mechanics.other	"Λοιπά σημεία"
 bundle	analysis.report.summaryFoundMany	"κενά κάλυψης"
 bundle	analysis.report.summaryFoundOne	"κενό κάλυψης"
 bundle	analysis.report.summaryFoundPrefix	"Εντοπίστηκαν"
+bundle	analysis.report.summaryUnderReview	"— εκ των οποίων {count} υπό αξιολόγηση, δεν έχουν ταξινομηθεί ακόμη"
 bundle	analysis.report.unlockCtaPrefix	"Ξεκλειδώστε και τα υπόλοιπα"
 bundle	analysis.report.unlockCtaSuffix	"κενά — €3"
 bundle	analysis.report.unlockError	"Η έναρξη πληρωμής απέτυχε. Δοκιμάστε ξανά."
@@ -4026,8 +4027,8 @@ inline	components/coverage/CoverageInsightsClient.tsx	'Λίγα σημεία π�
 inline	components/coverage/CoverageInsightsClient.tsx	'Σχεδόν έτοιμη'
 inline	components/coverage/CoverageInsightsClient.tsx	'Υπάρχουν σημαντικά σημεία που αξίζει να ελέγξετε.'
 inline	components/coverage/CoverageInsightsClient.tsx	'Χρειάζεται προσοχή'
-inline	components/coverage/CoverageInsightsClient.tsx	`Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`
-inline	components/coverage/CoverageInsightsClient.tsx	`Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`
+inline	components/coverage/CoverageInsightsClient.tsx	headlineEl
+inline	components/coverage/CoverageInsightsClient.tsx	headlineEl
 inline	components/coverage/InsightCard.tsx	'Γιατί έχει σημασία'
 inline	components/coverage/InsightCard.tsx	'Πλήρης ανάλυση διαθέσιμη σε Plus/Pro'
 inline	components/coverage/InsightCard.tsx	'Τι ελέγξαμε'

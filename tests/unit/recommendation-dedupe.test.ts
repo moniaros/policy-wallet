@@ -1,6 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@sentry/nextjs', () => ({ captureMessage: vi.fn() }))
+// R3: getActiveRecommendations drops recommendations derived from under-review
+// findings BEFORE deduplicating, and today every authored finding is under
+// review — which would empty these fixtures. The classifier has its own probe
+// (gap-rows-single-accessor.test.ts); here it is the identity so the
+// deduplication of stored rows stays under test.
+vi.mock('@/lib/gaps/gap-rows', async (importOriginal) => {
+    const original = await importOriginal<typeof import('@/lib/gaps/gap-rows')>()
+    return { ...original, classifiedRecommendations: <T,>(recs: readonly T[]) => [...recs] }
+})
 
 // syncRecommendations does all its writing inside one transaction, on the tx
 // client — so the mock has to be the tx client too.

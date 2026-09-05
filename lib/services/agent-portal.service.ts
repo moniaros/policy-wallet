@@ -11,6 +11,7 @@ import { db } from "@/lib/db"
 import { isAgentAttestedConsent } from "@/lib/ai-consent"
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility"
 import { isCoveredByEndDate } from "@/lib/policy-status"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const EXPIRING_WINDOW_DAYS = 30
@@ -189,7 +190,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
               })
             : Promise.resolve([]),
         clientIds.length
-            ? db.gapInstance.findMany({
+            ? readLiveGapRows({ scope: "classified",
                   where: {
                       status: { in: ["open", "detected", "acknowledged"] },
                       // Gaps only from policies the agent may see — a gap count

@@ -2,6 +2,7 @@ import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { requireApiUser } from "@/lib/api-auth"
 import { getPolicyAccess } from "@/lib/policy-access"
+import { readGapRow } from "@/lib/gaps/gap-rows"
 
 export async function PATCH(
     req: Request,
@@ -14,7 +15,7 @@ export async function PATCH(
     const { id } = await params
 
     try {
-        const gapCheck = await db.gapInstance.findUnique({
+        const gapCheck = await readGapRow({
             where: { id },
             select: { id: true, policyId: true, userId: true },
         })

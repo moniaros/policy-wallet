@@ -4,6 +4,7 @@ import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 import { notifyCounterparty } from "@/lib/notifications"
+import { readGapRow } from "@/lib/gaps/gap-rows"
 
 // withApiGuard only populates `body` when a body schema is declared; without
 // this the handler destructured `undefined` and every request 500'd
@@ -86,7 +87,7 @@ export const POST = withApiGuard(
         // an agent "validate" (and link a proposal to) another customer's gap.
         const gapInstanceId = (body as { gapInstanceId?: string }).gapInstanceId
         if (gapInstanceId) {
-            const gap = await prisma.gapInstance.findFirst({
+            const gap = await readGapRow({
                 where: {
                     id: gapInstanceId,
                     OR: [

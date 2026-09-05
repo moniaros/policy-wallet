@@ -29,9 +29,12 @@ const FILTERED = /\bstatus\s*:|\bsupersededAt\b|\bwhere\s*:\s*\{\s*id\s*:|\bid\s
 
 /** Files that read history on purpose, with the reason. */
 const HISTORY_READERS: ReadonlyMap<string, string> = new Map([
-    ["lib/services/compliance.service.ts", "Art. 15 export of derived data — a person's history is their data"],
-    ["app/(protected)/admin/actions.ts", "admin total row count beside the open count"],
-    ["lib/gaps/gap-instance-writer.ts", "the writer itself reads live rows by supersededAt"],
+    // R3: reads of gap rows live in ONE accessor. Its live paths filter through
+    // `liveWhere` (asserted below); its history doors — readGapHistory /
+    // countGapHistory — are the only unfiltered reads, used by the Art. 15
+    // export, the admin totals and the resolved-findings achievement.
+    ["lib/gaps/gap-rows.ts", "the accessor: live reads filter in liveWhere(); readGapHistory/countGapHistory are the named history doors"],
+    ["lib/gaps/gap-instance-writer.ts", "the writer: reads the live rows it is about to supersede"],
 ])
 
 const WINDOW_LINES = 14
@@ -112,7 +115,10 @@ describe("every gap-row reader excludes superseded rows (B0.1)", () => {
             const src = strip(readFileSync(path.join(ROOT, f), "utf8"))
             return READ_CALL.test(src) || RELATION_READ.test(src)
         })
-        expect(readers.length).toBeGreaterThan(15)
+        // Since R3 the direct readers are the accessor and the writer; the rest
+        // are relation includes on policy queries. The universe is still real.
+        expect(readers.length).toBeGreaterThan(3)
+        expect(readers).toContain("lib/gaps/gap-rows.ts")
     })
 
     it("is proven red on an unfiltered read and a bare include, green on a filtered one", () => {
@@ -132,6 +138,12 @@ describe("every gap-row reader excludes superseded rows (B0.1)", () => {
             }
         }
         expect(offenders, `gap rows read without excluding superseded history:\n${offenders.join("\n")}`).toEqual([])
+    })
+
+    it("the accessor's live path carries the B0 filter in code, not in each caller", () => {
+        const src = readFileSync("lib/gaps/gap-rows.ts", "utf8")
+        expect(src).toMatch(/function liveWhere[\s\S]*supersededAt: null/)
+        expect(src).toMatch(/status: \{ in: allowed \}/)
     })
 
     it("every named history reader still exists and still reads", () => {

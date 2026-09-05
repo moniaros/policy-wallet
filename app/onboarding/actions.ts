@@ -9,6 +9,7 @@ import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
 import { displayPersonName, firstNameLabel } from "@/lib/wallet/policy-identity"
 import { EXTRACTION_EMPTY_CODE } from "@/lib/wallet/unread-policy"
 import { PREFERENCE_CHANNELS } from "@/lib/notifications/preference-channels"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
     "policy_expiring",
@@ -314,7 +315,7 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
 
     // If already analyzed, return results directly
     if (policy.lastAnalyzedAt) {
-        const gaps = await db.gapInstance.findMany({
+        const gaps = await readLiveGapRows({ scope: "classified",
             where: { policyId, status: { in: ["open", "detected", "acknowledged"] } },
             select: { severity: true },
         })

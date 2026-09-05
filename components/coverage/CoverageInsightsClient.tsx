@@ -162,6 +162,15 @@ export function CoverageInsightsClient({
     // Emphasis follows provenance (B3), never severity: only a legal or a
     // contractual requirement may raise the headline.
     const hasSevereGap = visibleGaps.some((g) => mayCarryEmphasis(provenanceOf(gapSlug(g))))
+    // R3: a headline count never includes under-review findings unlabelled.
+    const classifiedCount = visibleGaps.filter((g) => provenanceOf(gapSlug(g)) !== 'under_review').length
+    const underReviewCount = visibleGaps.length - classifiedCount
+    const headlineEl = classifiedCount > 0
+        ? `Εντοπίστηκαν ${classifiedCount} σημεία προς έλεγχο στα ασφαλιστήριά σας${underReviewCount > 0 ? ` — και ${underReviewCount} υπό αξιολόγηση, που δεν έχουν ταξινομηθεί ακόμη` : ''}.`
+        : `${underReviewCount} σημεία υπό αξιολόγηση στα ασφαλιστήριά σας — δεν έχουν ταξινομηθεί ακόμη, οπότε δεν μετρούν ως ευρήματα.`
+    const headlineEn = classifiedCount > 0
+        ? `${classifiedCount} points to review across your policies${underReviewCount > 0 ? ` — and ${underReviewCount} under review, not yet classified` : ''}.`
+        : `${underReviewCount} points under review across your policies — not yet classified, so not counted as findings.`
 
     // Concept B — policy-gap verdict. The SINGLE source for the headline + the
     // top tile, gated on whether deep analysis actually ran so "0 gaps" never
@@ -200,8 +209,8 @@ export function CoverageInsightsClient({
                         en: 'There are important points worth reviewing.',
                     },
                     summary: {
-                        el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`,
-                        en: `${visibleGaps.length} points to review across your policies.`,
+                        el: headlineEl,
+                        en: headlineEn,
                     },
                     // Status tokens: the tint and its on-colour are declared as
                     // a pair in globals.css (@on … @min 4.5), so light/dark
@@ -217,8 +226,8 @@ export function CoverageInsightsClient({
                         en: 'A few minor points to improve.',
                     },
                     summary: {
-                        el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`,
-                        en: `${visibleGaps.length} points to review across your policies.`,
+                        el: headlineEl,
+                        en: headlineEn,
                     },
                     color: 'text-status-warning',
                     bg: 'bg-status-warning-tint',

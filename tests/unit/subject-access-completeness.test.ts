@@ -74,7 +74,9 @@ describe('the export includes what the product concluded about the person', () =
     ])('%s is queried and returned', (key, model) => {
         // `\.find` alone matched a renamed `findManyX` — the query has to be a
         // real one, and its result has to reach the payload.
-        expect(SERVICE).toMatch(new RegExp(`db\\.${model}\\.find(Many|Unique)\\(`))
+        // Gap rows are read through the ONE accessor since R3: the export uses its
+        // history door (readGapHistory), which is the unfiltered read it needs.
+        expect(SERVICE).toMatch(model === 'gapInstance' ? /readGapHistory\(/ : new RegExp(`db\\.${model}\\.find(Many|Unique)\\(`))
         expect(SERVICE).toMatch(new RegExp(`^\\s*${key}:`, 'm'))
     })
 
@@ -86,7 +88,7 @@ describe('the export includes what the product concluded about the person', () =
     })
 
     it('gaps carry the explanation the person was shown, not just a code', () => {
-        const block = SERVICE.slice(SERVICE.indexOf('db.gapInstance.findMany'))
+        const block = SERVICE.slice(SERVICE.indexOf('readGapHistory('))
         expect(block.slice(0, 400)).toMatch(/aiExplanation: true/)
         expect(block.slice(0, 400)).toMatch(/aiSuggestion: true/)
     })

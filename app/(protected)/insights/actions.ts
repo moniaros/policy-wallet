@@ -11,6 +11,7 @@ import {
     conversionRate as conversionRateOf,
     renewalRate as renewalRateOf,
 } from "@/lib/agent/pipeline-metrics"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 export interface InsightsData {
     portfolioHealth: {
@@ -233,7 +234,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     // 6. Recent gaps across customers — only on policies the agent may see
     // (their own uploads or owner-granted). Exposing gap titles + policy
     // numbers of un-granted policies is the leak #95 closed everywhere else.
-    const recentGaps = await db.gapInstance.findMany({
+    const recentGaps = await readLiveGapRows({ scope: "disclosed",
         where: {
             policy: { ownerUserId: { in: customerIds }, ...(await getAgentPolicyVisibilityWhere(agentId)) },
             status: { in: [...OPEN_GAP_STATUSES] }

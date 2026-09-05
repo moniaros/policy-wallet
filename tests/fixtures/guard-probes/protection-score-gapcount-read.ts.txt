@@ -1,0 +1,5 @@
+// PROBE — a module reading the stored score record for its gapCount.
+export async function chip(prisma: any, userId: string) {
+    const score = await prisma.protectionScore.findFirst({ where: { userId }, select: { gapCount: true } })
+    return score?.gapCount ?? 0
+}

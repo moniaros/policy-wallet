@@ -8,6 +8,7 @@ import { AREA_CHIP_KEY, MECHANIC_CHIP_KEY } from "./chips"
 interface GapReportSummaryBandProps {
     summary: {
         total: number
+        underReview: number
         byMechanic: Partial<Record<GapMechanic, number>>
         byArea: Partial<Record<GapCoverageArea, number>>
     }
@@ -15,6 +16,8 @@ interface GapReportSummaryBandProps {
         summaryFoundPrefix: string
         summaryFoundOne: string
         summaryFoundMany: string
+        /** «εκ των οποίων {count} υπό αξιολόγηση» — the count heading the disclosed section is labelled, not zeroed (R3). */
+        summaryUnderReview?: string
         mechanics: Record<string, string>
         areas: Record<string, string>
     }
@@ -42,6 +45,12 @@ export function GapReportSummaryBand({ summary, copy }: GapReportSummaryBandProp
                 <p className="text-sm font-bold text-black dark:text-white">
                     {copy.summaryFoundPrefix} {summary.total}{" "}
                     {summary.total === 1 ? copy.summaryFoundOne : copy.summaryFoundMany}
+                    {summary.underReview > 0 && copy.summaryUnderReview && (
+                        <span className="font-medium text-muted-foreground" data-count="gap.underReviewCount">
+                            {" "}
+                            {copy.summaryUnderReview.replace("{count}", String(summary.underReview))}
+                        </span>
+                    )}
                 </p>
             </div>
 

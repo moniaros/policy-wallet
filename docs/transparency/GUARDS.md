@@ -41,3 +41,5 @@ absence-is-not-reassurance, no-fabricated-public-count — all under `tests/unit
 Two guards written in this series that the spec did not name, kept for the same reason: `gap-instance-single-writer`
 (one writer of gap rows) and `gap-readers-exclude-superseded` (every reader filters to live rows), both with probe pairs;
 and `dashboard-counts-are-doors` (B4: every rendered count navigates), source-level with render checks.
+
+**R3 added `gap-rows-single-accessor`** (`tests/unit/gap-rows-single-accessor.test.ts`, probes `gap-rows-direct-read`, `protection-score-gapcount-read`, `gap-rows-clean`): no module outside `lib/gaps/gap-rows.ts` and the writer reads `gap_instances`, and no module outside three named exemptions (the score computation and the two API routes pending deletion, plus the Art. 15 export) reads `gapCount` off a `ProtectionScore` record. It backs the `under-review-containment` row above: the accessor is where the B3 rule is applied.

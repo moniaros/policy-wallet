@@ -16,7 +16,10 @@ test("R3: agent book leak sites at 390", async ({ page }) => {
     await settle(page)
     await dismissCookieBanner(page)
     expect(page.url()).not.toContain("/auth/")
-    const data = { run: RUN, capturedAt: new Date().toISOString(), counts: await renderedCounts(page) }
+    const kpis = await page.evaluate(() => Array.from(document.querySelectorAll('.pw-card')).map((c) => (c.textContent || '').replace(/\s+/g, ' ').trim()).filter((t) => /Σύνολο πελατών|κενά κάλυψης|λήγουν|προσκλήσεις|Πληρότητα/i.test(t) && t.length < 80))
+    const chips = await page.evaluate(() => Array.from(document.querySelectorAll('[data-count="client.openGapCount"], [data-count="client.unassessedPolicyCount"]')).map((e) => (e.textContent || '').replace(/\s+/g, ' ').trim()))
+    const text = await page.evaluate(() => (document.body.innerText || '').replace(/\s+/g, ' ').slice(0, 4000))
+    const data = { run: RUN, capturedAt: new Date().toISOString(), counts: await renderedCounts(page), kpis, chips, text }
     writeFileSync(path.join(OUT, "agent.json"), JSON.stringify(data, null, 2))
     await page.screenshot({ path: path.join(OUT, "agent-390.png"), fullPage: true })
     console.log("[r3 agent] " + JSON.stringify(data.counts))

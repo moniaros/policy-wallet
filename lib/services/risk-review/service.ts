@@ -10,6 +10,8 @@
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { getReviewPolicy, type ReviewTrigger } from "./policy"
+import { countLiveGapRows } from "@/lib/gaps/gap-rows"
+import { NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
 
 export interface OpenReviewArgs {
     userId: string
@@ -79,7 +81,7 @@ export async function openReview(args: OpenReviewArgs): Promise<OpenReviewOutcom
         const [score, version] = await Promise.all([
             db.protectionScore.findUnique({
                 where: { userId: args.userId },
-                select: { overallScore: true, gapCount: true },
+                select: { overallScore: true },
             }),
             db.riskProfileVersion.findFirst({
                 where: { userId: args.userId },
@@ -99,13 +101,16 @@ export async function openReview(args: OpenReviewArgs): Promise<OpenReviewOutcom
                     data: { status: "superseded", completedAt: now },
                 })
             }
+            // R3: the findings count at open comes from the gap-row accessor (classified
+            // live rows), never from the stored score record.
+            const findingsAtOpen = await countLiveGapRows({ client: tx, scope: "classified", where: { OR: [{ policy: { ownerUserId: args.userId, status: { notIn: [...NON_LIVE_POLICY_STATUSES] } } }, { userId: args.userId }] } })
             return tx.riskReview.create({
                 data: {
                     userId: args.userId,
                     trigger: args.trigger,
                     dueAt: new Date(now.getTime() + policy.dueInDays * 24 * 3600_000),
                     scoreAtOpen: score?.overallScore ?? null,
-                    findingsAtOpen: score?.gapCount ?? null,
+                    findingsAtOpen,
                     versionAtOpen: version?.version ?? null,
                     causedByEventId: args.causedByEventId ?? null,
                 },

@@ -27,6 +27,7 @@ import { logAdminAction, logAdminRead, verifyAdminRole } from "@/lib/admin/admin
 import { z } from "zod"
 import { createAdminClient, getSupabaseAuthUserByEmail } from "@/lib/supabase/admin"
 import { Prisma } from "@prisma/client"
+import { countGapHistory } from "@/lib/gaps/gap-rows"
 
 /**
  * DASHBOARD METRICS
@@ -70,8 +71,8 @@ export async function getDashboardMetrics() {
             }),
             db.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
             db.policy.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-            db.gapInstance.count(),
-            db.gapInstance.count({ where: { status: "open" } }),
+            countGapHistory(),
+            countGapHistory({ where: { status: "open" } }),
             db.dataExportRequest.count({ where: { status: { in: ["requested", "processing", "failed"] } } }),
             db.deletionRequest.count({ where: { status: { in: [...OPEN_DELETION_STATUSES] } } }),
             db.deletionRequest.count({ where: { status: "approved" } }),

@@ -341,7 +341,7 @@ describe('ignoreGap — dismissing a gap is a write, not a read', () => {
 
     beforeEach(() => {
         mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: AGENT })
-        ;(db.gapInstance.findUnique as any).mockResolvedValue(gapRow())
+        ;(db.gapInstance.findFirst as any).mockResolvedValue(gapRow())
     })
 
     it('rejects a view-only agent and does NOT dismiss the gap', async () => {
@@ -367,7 +367,7 @@ describe('ignoreGap — dismissing a gap is a write, not a read', () => {
     })
 
     it('returns not-found for a missing gap without touching access', async () => {
-        ;(db.gapInstance.findUnique as any).mockResolvedValue(null)
+        ;(db.gapInstance.findFirst as any).mockResolvedValue(null)
         const result = await ignoreGap('gap-x')
         expect(result).toEqual({ error: 'Gap not found' })
     })

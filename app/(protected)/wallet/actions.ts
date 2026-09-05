@@ -41,6 +41,7 @@ import { startOfAthensDay, startOfAthensMonth } from "@/lib/policy-status"
 import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
 import { ingestPolicyDocument } from "@/lib/ingestion/ingest-policy-document"
+import { readGapRow } from "@/lib/gaps/gap-rows"
 
 /**
  * The add-policy form WITH a document. The branch is the only thing the
@@ -1657,7 +1658,7 @@ export async function ignoreGap(gapId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    const gap = await db.gapInstance.findUnique({
+    const gap = await readGapRow({
         where: { id: gapId },
         include: { policy: true }
     })
@@ -1706,7 +1707,7 @@ export async function confirmGap(gapId: string) {
     const { isAgentRole } = await import("@/lib/auth/require-agent")
     if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
 
-    const gap = await db.gapInstance.findUnique({
+    const gap = await readGapRow({
         where: { id: gapId },
         include: { policy: true },
     })
@@ -1774,7 +1775,7 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     // The gap must actually belong to the authorized policy — the client
     // supplies gapId, and trusting it let a caller mint an Opportunity
     // cross-linked to another policy's gap.
-    const gap = await db.gapInstance.findFirst({
+    const gap = await readGapRow({
         where: { id: gapId, policyId },
         select: {
             id: true,

@@ -15,6 +15,7 @@ import type { Policy, GapInstance } from '@prisma/client'
 import type { GapSeverity, GapStatus } from '@/types'
 import { enrichExtractionPayload } from '@/lib/services/ai/extraction-enrichment'
 import { documentMimeType } from '@/lib/security/file-upload'
+import { readGapRow } from "@/lib/gaps/gap-rows"
 
 // Type Definitions
 export interface GapAnalysisResult {
@@ -169,7 +170,7 @@ export class GapAnalysisService extends BaseService {
         userId: string,
         language: 'en' | 'el' = 'en'
     ): Promise<void> {
-        const gap = await this.db.gapInstance.findUnique({
+        const gap = await readGapRow({ client: this.db,
             where: { id: gapInstanceId },
             include: { policy: true }
         })
@@ -248,7 +249,7 @@ export class GapAnalysisService extends BaseService {
         reason: string,
         language: 'en' | 'el' = 'en'
     ): Promise<void> {
-        const gap = await this.db.gapInstance.findUnique({
+        const gap = await readGapRow({ client: this.db,
             where: { id: gapInstanceId },
             include: { policy: true }
         })

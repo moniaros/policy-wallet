@@ -2204,6 +2204,7 @@ export const en: TranslationKeys = {
             summaryFoundPrefix: 'Found',
             summaryFoundOne: 'coverage gap',
             summaryFoundMany: 'coverage gaps',
+            summaryUnderReview: '— {count} of them under review, not yet classified',
             mechanics: {
                 exclusion: 'Exclusions',
                 limit: 'Limits',

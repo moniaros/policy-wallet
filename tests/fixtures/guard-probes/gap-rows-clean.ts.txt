@@ -1,0 +1,5 @@
+// PROBE — compliant: rows through the accessor, classified scope.
+import { countLiveGapRows } from "@/lib/gaps/gap-rows"
+export async function openGaps(userId: string) {
+    return countLiveGapRows({ scope: "classified", where: { policy: { ownerUserId: userId } } })
+}

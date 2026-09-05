@@ -43,7 +43,10 @@ function walk(dir: string, out: string[] = []): string[] {
 
 /** A module that reads gap rows or takes decided gaps for rendering, without classifying them. */
 export function readsGapsWithoutClassifying(src: string): boolean {
-    const reads = /\b(db|prisma|tx)\.gapInstance\.(findMany|count|groupBy|findFirst)\(|\bdecidedGaps\b/.test(src)
+    // A direct read of gap rows (forbidden since R3 — the accessor is the one
+    // reader), a disclosed read through the accessor, or decided gaps passed in:
+    // each must classify before it counts or sends.
+    const reads = /\b(db|prisma|tx)\.gapInstance\.(findMany|count|groupBy|findFirst)\(|readLiveGapRows\(\{ scope: "disclosed"|\bdecidedGaps\b/.test(src)
     return reads && !src.includes("excludeUnderReview(")
 }
 
@@ -98,10 +101,11 @@ describe("under review never reaches a summary, a notification, an email or a re
         expect(files.length).toBeGreaterThan(10)
         const offenders = files.filter((f) => readsGapsWithoutClassifying(readFileSync(f, "utf8")))
         expect(offenders, "outbound gap reads without excludeUnderReview()").toEqual([])
-        // The known classifiers really are there.
-        for (const f of ["lib/services/weekly-digest.service.ts", "lib/services/reports/savings-report.ts"]) {
-            expect(readFileSync(f, "utf8"), f).toContain("excludeUnderReview(")
-        }
+        // The known classifiers really are there: the digest reads through the
+        // accessor in classified scope (R3); the report receives disclosed rows
+        // and classifies them itself so it can say what it omitted.
+        expect(readFileSync("lib/services/weekly-digest.service.ts", "utf8")).toMatch(/readLiveGapRows\(\{ scope: "classified"/)
+        expect(readFileSync("lib/services/reports/savings-report.ts", "utf8")).toContain("excludeUnderReview(")
     })
 
     it("PROBE: the matcher fires on an unfiltered read and not on a filtered one", () => {
