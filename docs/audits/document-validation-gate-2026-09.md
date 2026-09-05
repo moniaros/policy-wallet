@@ -196,6 +196,35 @@ uploads should have created and none for the rejections; no Sentry noise from th
 Preview-deployment smoke was not run (preview deploys write to the PROD database); the
 production smoke after deploy is recorded in the deployment report.
 
+### Deployment and production smoke (2026-09-05)
+
+Order kept: prod migration `20260905120000_document_validation_stamp` applied through the
+Supabase MCP with its `_prisma_migrations` row and verified by `information_schema.columns`;
+the `authenticated` INSERT policy on `storage.objects` (`bucket_id='policies'`) exported to
+`docs/archive/2026-09-05-policies-bucket-insert-policy.sql` and dropped (dev, then prod;
+`select * from pg_policies where tablename='objects'` returns no rows on prod) — BEFORE the
+code merged, because the client no longer writes the bucket. PR #298 → NEW-UI `45013e3f`; CI
+green after one re-run of a flaky, unrelated `area-detail-questions` case; deploy run
+33930719296; `www.policywallet.gr` 200.
+
+Smoke on production as the owner, `/wallet/add`, branch «Αυτοκίνητο» (motor), files injected
+into the picker with a real `change` event:
+
+| Step | Page | Database (30-minute window) |
+| --- | --- | --- |
+| `menu.pdf` | `#add-policy-gate[data-gate-code="NOT_AN_INSURANCE_DOCUMENT"]`: «Αυτό δεν φαίνεται να είναι ασφαλιστικό έγγραφο… Δεν το αποθηκεύσαμε και δεν έγινε καμία ανάλυση.» + «Ανέβασε άλλο έγγραφο» | 0 `policies`, 0 `policy_documents`, 0 `token_usage`; one `DOCUMENT_REJECTED` row (`surface` wallet_add, `documentType` non_insurance, `tokensPrevented` 188640, no classifier call) |
+| `motor-schedule.pdf` | processing screen («Διαβάζουμε το έγγραφό σας…») | policy `cmtnmck13000385ohunkc6rbi` active/motor; document stamped `validated`, `docgate-1`, `insurance_policy`, branch motor, `consistent`, `document_kind` policy_schedule; run `cmtnmckcv000a85ohnsw62b3f` completed (24 s); four `token_usage` rows (policy_analysis 8,576 · policy_clarity 7,397 · gap_detection 8,392 · other 1,490); one `DOCUMENT_VALIDATED` row |
+
+Sentry: no group first seen after the deploy (the ten unresolved groups all predate it). The
+smoke policy («Example Insurance Company Ltd», `MT-2026-0001234`) remains in the owner's
+wallet — it is the owner's account and the delete path removes the storage object with the row,
+so it was left for the owner rather than removed by SQL.
+
+**Not exercised on production:** the agent scan/commit door, the onboarding door, the renewal
+attach and the documents route — all share `ingestPolicyDocument` / the gate and were walked on
+dev (Round 1) or by unit tests; the agent browser journey (`tests/document-gate-agent.spec.ts`)
+has still not been run.
+
 ## 8. Known limitations
 
 - Scans are judged by the cheap model on a 2-page excerpt: bounded spend, not zero; a scanned
