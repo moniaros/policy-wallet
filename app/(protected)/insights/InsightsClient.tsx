@@ -530,11 +530,11 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                             {data.recentGaps.map((gap) => {
                                 // Provenance as text (B3), never a severity word or colour (B1).
-                                const prov = provenanceOf((gap as { slug?: string | null }).slug)
+                                const prov = provenanceOf(gap.slug)
                                 return (
                                     <div key={gap.id} className="pw-subcard p-3">
                                         <span data-fact="gap.provenance" data-provenance={prov} className="inline-flex items-center whitespace-nowrap rounded-full border border-border bg-muted px-2 py-0.5 text-caption font-medium text-foreground">
-                                            {provenanceLabelWithCitation((gap as { slug?: string | null }).slug, lang, t.provenance)}
+                                            {provenanceLabelWithCitation(gap.slug, lang, t.provenance)}
                                         </span>
                                         <p className="mt-2 line-clamp-2 text-sm font-semibold text-foreground">
                                             {gap.title}

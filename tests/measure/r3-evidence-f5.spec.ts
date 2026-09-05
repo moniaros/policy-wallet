@@ -19,7 +19,11 @@ const provenanceFacts = () => ({
         fact: e.getAttribute("data-fact") || e.getAttribute("data-count"),
         text: (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 220),
     })),
-    lawMentions: Array.from(document.querySelectorAll("p, span, div, li")).filter((e) => e.children.length === 0 && /2496\/1997|4830\/2021|Νομοθετική απαίτηση|Legal requirement/.test(e.textContent || "")).map((e) => (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 220)),
+    lawMentions: (() => {
+        const re = /2496\/1997|4830\/2021|Νομοθετική απαίτηση|Legal requirement/
+        // the INNERMOST element whose text names a law — an icon child must not hide the line
+        return Array.from(document.querySelectorAll("p, span, div, li, td")).filter((e) => re.test(e.textContent || "") && !Array.from(e.children).some((c) => re.test(c.textContent || ""))).map((e) => (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 220))
+    })(),
 })
 import { withDb } from "./surface-harness"
 const SEED_POLICY_NUMBER = "63708952" // scripts/seed-agent-demo.mjs — the policy carrying the authored, citation-backed finding

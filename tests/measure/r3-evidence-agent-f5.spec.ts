@@ -19,7 +19,11 @@ const provenanceFacts = () => ({
         fact: e.getAttribute("data-fact") || e.getAttribute("data-count"),
         text: (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 220),
     })),
-    lawMentions: Array.from(document.querySelectorAll("p, span, div, li")).filter((e) => e.children.length === 0 && /2496\/1997|4830\/2021|Νομοθετική απαίτηση|Legal requirement/.test(e.textContent || "")).map((e) => (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 220)),
+    lawMentions: (() => {
+        const re = /2496\/1997|4830\/2021|Νομοθετική απαίτηση|Legal requirement/
+        // the INNERMOST element whose text names a law — an icon child must not hide the line
+        return Array.from(document.querySelectorAll("p, span, div, li, td")).filter((e) => re.test(e.textContent || "") && !Array.from(e.children).some((c) => re.test(c.textContent || ""))).map((e) => (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 220))
+    })(),
 })
 /** F5 — the agent side: the KPI/chip counts and the insights pill carrying the citation. Project: measure-agent. */
 test("F5: agent citation sites at 390", async ({ page }) => {

@@ -15,7 +15,8 @@ import { describe, expect, it } from "vitest"
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { render } from "@testing-library/react"
-import { GAP_PROVENANCE, provenanceCitation, provenanceOf, isClassified } from "@/lib/gaps/provenance"
+import { GAP_PROVENANCE, catalogueIndexOf, provenanceCitation, provenanceOf, isClassified } from "@/lib/gaps/provenance"
+import { summarizeGaps, normalizeGapSlug } from "@/lib/wallet/gap-report"
 import { provenanceLabelWithCitation } from "@/components/gaps/provenance-label"
 import { GapCard } from "@/components/wallet/gap-report/GapCard"
 import { AttentionList } from "@/components/dashboard/home/AttentionList"
@@ -65,6 +66,20 @@ describe("F5 — the map: classified means cited", () => {
         }
         const classified = entries.filter(([, e]) => isClassified(e.provenance)).map(([s]) => s)
         expect(classified.sort()).toEqual(["insured_value_above_declared", "insured_value_below_rebuild_cost", "missing_microchip_number"])
+    })
+
+    it("the kebab form the wallet's report items carry resolves to the same class, citation and catalogue position as the authored slug", () => {
+        // The findings page said «3 υπό αξιολόγηση» over a policy whose home tally said «1 Νομοθετική απαίτηση» (F5 evidence run 1).
+        for (const authored of ["insured_value_above_declared", "insured_value_below_rebuild_cost", "missing_microchip_number", "no_fire_cover"]) {
+            const kebab = normalizeGapSlug(authored)
+            expect(kebab).not.toBe(authored)
+            expect(provenanceOf(kebab), kebab).toBe(provenanceOf(authored))
+            expect(provenanceCitation(kebab), kebab).toEqual(provenanceCitation(authored))
+            expect(catalogueIndexOf(kebab), kebab).toBe(catalogueIndexOf(authored))
+        }
+        expect(provenanceOf("motor-theft")).toBe("under_review")
+        const items = ["insured-value-above-declared", "motor-theft", "motor-legal"].map((slug) => ({ id: slug, slug, duplicateIds: [], severity: null, content: { known: true } as any, aiExplanation: null, aiExplanationEl: null, aiSuggestion: null, aiSuggestionEl: null }) as any)
+        expect(summarizeGaps(items).underReview).toBe(2)
     })
 
     it("the label helper renders class + citation for a classified slug and the class alone otherwise", () => {

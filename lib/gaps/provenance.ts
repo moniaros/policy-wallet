@@ -118,9 +118,24 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
 export const PROVENANCE_CLASSES: readonly GapProvenance[] = ["legislative", "contractual", "market", "under_review"]
 export const PROVENANCE_RANK: Readonly<Record<GapProvenance, number>> = Object.freeze({ legislative: 0, contractual: 1, market: 2, under_review: 3 })
 
-export function provenanceEntry(slug: string | null | undefined): ProvenanceEntry | null {
+/**
+ * The map is keyed by the AUTHORED slug (snake_case). The wallet's report items
+ * carry `normalizeGapSlug`'s kebab form of the same slug (`insured-value-above-declared`),
+ * and until the close-out that form silently resolved to `under_review` on the
+ * findings page while the home tally, built from the definition slug, said
+ * «legislative» — two answers for one finding. One lookup accepts both forms.
+ */
+const has = (key: string) => Object.prototype.hasOwnProperty.call(GAP_PROVENANCE, key)
+export function canonicalGapSlug(slug: string | null | undefined): string | null {
     if (!slug) return null
-    return GAP_PROVENANCE[slug] ?? null
+    if (has(slug)) return slug
+    const snake = slug.trim().toLowerCase().replace(/-+/g, "_")
+    return has(snake) ? snake : null
+}
+
+export function provenanceEntry(slug: string | null | undefined): ProvenanceEntry | null {
+    const key = canonicalGapSlug(slug)
+    return key ? GAP_PROVENANCE[key] : null
 }
 
 /**
@@ -150,7 +165,7 @@ export function mayCarryEmphasis(p: GapProvenance): boolean {
 const CATALOGUE_INDEX: ReadonlyMap<string, number> = new Map(AUTHORED_GAP_DEFINITIONS.map((d, i) => [d.slug, i]))
 export function catalogueIndexOf(slug: string | null | undefined): number {
     if (!slug) return Number.POSITIVE_INFINITY
-    return CATALOGUE_INDEX.get(slug) ?? Number.POSITIVE_INFINITY
+    return CATALOGUE_INDEX.get(canonicalGapSlug(slug) ?? slug) ?? Number.POSITIVE_INFINITY
 }
 /** Provenance class first (B3), then catalogue order. Zero only for the same slug or two unknown slugs. */
 export function compareFindingSlugs(a: string | null | undefined, b: string | null | undefined): number {
