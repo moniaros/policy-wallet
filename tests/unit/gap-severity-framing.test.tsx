@@ -15,18 +15,20 @@ describe('dashboard gap severity is framed honestly', () => {
     const LABELS = {
         kicker: 'Coverage gaps',
         noGaps: 'No gaps',
-        severity: { critical: 'critical', high: 'high', medium: 'medium', low: 'low' },
+        provenance: { legislative: 'legal', contractual: 'contractual', market: 'market' },
+        underReviewOmitted: 'Findings under review are not counted here.',
+        underReviewLink: 'See them',
         note: 'Priorities are based on your profile — not a definitive risk assessment.', groupLabel: "Open findings by priority",
     }
 
     it('shows the not-a-risk-assessment note whenever severities are shown', () => {
-        render(<CoverageGapsWidget counts={{ critical: 3, high: 1, medium: 0, low: 0 }} labels={LABELS} />)
+        render(<CoverageGapsWidget counts={{ legislative: 3, contractual: 1, market: 0, underReview: 0 }} labels={LABELS} />)
         expect(screen.getByText(/not a definitive risk assessment/i)).toBeTruthy()
-        expect(screen.getByText(/3 critical/)).toBeTruthy()
+        expect(screen.getByText(/3 legal/)).toBeTruthy()
     })
 
     it('does not show the note when there are no gaps to qualify', () => {
-        render(<CoverageGapsWidget counts={{ critical: 0, high: 0, medium: 0, low: 0 }} labels={LABELS} />)
+        render(<CoverageGapsWidget counts={{ legislative: 0, contractual: 0, market: 0, underReview: 0 }} labels={LABELS} />)
         expect(screen.queryByText(/not a definitive risk assessment/i)).toBeNull()
     })
 

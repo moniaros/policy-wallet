@@ -53,6 +53,7 @@ import { deriveProtectionPriorities } from "@/lib/services/protection-profile/de
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { areaForLob, areaForRisk } from "@/lib/protection/domains"
 import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
+import { partitionByProvenance, provenanceOf } from "@/lib/gaps/provenance"
 
 /**
  * Calendar days until a date, in Athens.
@@ -152,7 +153,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 policy: { ownerUserId: dbUser.id },
                 status: { in: ["open", "detected", "acknowledged"] },
             },
-            select: { severity: true, policyId: true },
+            select: { severity: true, policyId: true, definition: { select: { slug: true } } },
         }),
         // Protection score: READ-ONLY cached score (never runs the engine on a
         // GET render). Freshness is the cron / upload pipeline's job.
@@ -754,14 +755,16 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         stateLabel: stateLabels[entry.state],
     }))
 
-    // Severity BUCKETS of the same live-gap universe as openGapCount — the four
-    // chips sum to gap.openCount by construction, and to what /coverage-insights
-    // states, because all three read `liveGaps`.
-    const gapSeverityCounts = {
-        critical: liveGaps.filter((gap) => gap.severity === "critical").length,
-        high: liveGaps.filter((gap) => gap.severity === "high").length,
-        medium: liveGaps.filter((gap) => gap.severity === "medium").length,
-        low: liveGaps.filter((gap) => gap.severity === "low").length,
+    // PROVENANCE classes of the same live-gap universe (B3). Severity is not an
+    // axis anywhere (B1). Findings still under review are never counted in a
+    // summary — the tile discloses that they exist, without a number.
+    const slugOfGap = (gap: { definition?: { slug?: string | null } | null }) => gap.definition?.slug ?? null
+    const gapGroups = partitionByProvenance(liveGaps, slugOfGap)
+    const gapProvenanceCounts = {
+        legislative: gapGroups.emphasised.filter((gap) => provenanceOf(slugOfGap(gap)) === "legislative").length,
+        contractual: gapGroups.emphasised.filter((gap) => provenanceOf(slugOfGap(gap)) === "contractual").length,
+        market: gapGroups.market.length,
+        underReview: gapGroups.underReview.length,
     }
 
     // The last few things that changed, and whether we recorded why. The
@@ -968,7 +971,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 tally={
                                     <CoverageGapsWidget
                                         variant="embedded"
-                                        counts={gapSeverityCounts}
+                                        counts={gapProvenanceCounts}
                                         // B1.5: a zero tally names its denominator — how many
                                         // policies were assessed and how many it left out.
                                         assessment={{
@@ -983,12 +986,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                             assessmentExcludedOne: home.assessmentExcludedOne,
                                             assessmentExcludedMany: home.assessmentExcludedMany,
                                             noGapsNothingAssessed: home.noGapsNothingAssessed,
-                                            severity: {
-                                                critical: home.severityCritical,
-                                                high: home.severityHigh,
-                                                medium: home.severityMedium,
-                                                low: home.severityLow,
+                                            provenance: {
+                                                legislative: t.provenance.legislative,
+                                                contractual: t.provenance.contractual,
+                                                market: t.provenance.market,
                                             },
+                                            underReviewOmitted: t.provenance.underReviewSummaryOmitted,
+                                            underReviewLink: t.provenance.underReviewLink,
                                             // `severityNote` and `recPriorityNote` are the
                                             // same sentence authored under two keys, and the
                                             // attention list below states it. Passing null

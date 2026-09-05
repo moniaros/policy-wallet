@@ -1,0 +1,5 @@
+// PROBE — a list ordered by severity.
+const RANK: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 }
+export function order(items: Array<{ severity: string }>) {
+    return [...items].sort((a, b) => RANK[a.severity] - RANK[b.severity])
+}

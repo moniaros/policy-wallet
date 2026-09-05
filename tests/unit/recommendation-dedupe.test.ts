@@ -117,8 +117,8 @@ describe('policyGapsToRecommendations', () => {
         expect(recs).toHaveLength(2)
         const ids = recs.map((r) => r.ruleId).sort()
         expect(ids).toEqual(['policy_gap:motor:own-damage', 'policy_gap:motor:theft'])
-        // The most urgent of a colliding set survives.
-        expect(recs.find((r) => r.ruleId === 'policy_gap:motor:own-damage')?.urgency).toBe('critical')
+        // The FIRST of a colliding set survives — severity decides nothing (B1).
+        expect(recs.find((r) => r.ruleId === 'policy_gap:motor:own-damage')?.urgency).toBe('medium')
     })
 
     it('titles the card in Greek from the content map, never the raw slug', () => {
@@ -139,12 +139,12 @@ describe('policyGapsToRecommendations', () => {
 })
 
 describe('dedupeRecommendationInputs', () => {
-    it('is order-independent — severity decides the winner', () => {
+    it('keeps the first of a colliding pair — severity does not decide the winner (B1)', () => {
         const low = rec({ ruleId: 'policy_gap:motor:theft', urgency: 'low' })
         const critical = rec({ ruleId: 'policy_gap:motor:theft', urgency: 'critical' })
 
         expect(dedupeRecommendationInputs([low, critical])).toHaveLength(1)
-        expect(dedupeRecommendationInputs([low, critical])[0].urgency).toBe('critical')
+        expect(dedupeRecommendationInputs([low, critical])[0].urgency).toBe('low')
         expect(dedupeRecommendationInputs([critical, low])[0].urgency).toBe('critical')
     })
 

@@ -118,11 +118,12 @@ describe('scoreOpportunitiesBatch', () => {
 
     it('applies the documented 40/20/20/20 weighting', async () => {
         const scores = await scoreOpportunitiesBatch(['oppA', 'oppB'])
-        // A: 100*.4 + 100*.2 + 100*.2 + 100*.2 = 100
-        expect(scores.get('oppA')?.score).toBe(100)
+        // A: gap-backed weight is FLAT at 40 (severity orders nothing — B1):
+        // 40*.4 + 100*.2 + 100*.2 + 100*.2 = 76
+        expect(scores.get('oppA')?.score).toBe(76)
         expect(scores.get('oppA')?.likelihood).toBe('high')
-        // B: severity low(20)*.4 + profile 0*.2 + engagement 0*.2 + recency 10*.2 = 10
-        expect(scores.get('oppB')?.score).toBe(10)
+        // B: 40*.4 + profile 0*.2 + engagement 0*.2 + recency 10*.2 = 18
+        expect(scores.get('oppB')?.score).toBe(18)
         expect(scores.get('oppB')?.likelihood).toBe('low')
     })
 

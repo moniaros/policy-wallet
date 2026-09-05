@@ -57,7 +57,7 @@ export const COUNT_KEYS: Record<string, string> = {
     // gap.* — open findings. The universe is ACTIVE COVERAGE (gapsOnActiveCoverage):
     // a lapsed policy's findings stay on that policy's own page.
     "gap.openCount": "Open gap instances (open/detected/acknowledged) on policies that provide coverage today.",
-    "gap.severityCount": "SUBJECT-SCOPED by severity (critical|high|medium|low): the severity tally chips. The four values sum to gap.openCount.",
+    "gap.provenanceCount": "SUBJECT-SCOPED by provenance class (legislative|contractual|market): the classified-findings tally (B3). under_review is never counted.",
 
     // recommendation.* — active recommendation instances (getActiveRecommendations).
     "recommendation.openCount": "Active recommendation instances, deduplicated by concept.",
@@ -178,6 +178,11 @@ export const FACT_KEYS: Record<string, string> = {
     "riskDimension.score": "One dimension's 0-100 reading.",
     "gap.findingsProvenance": "Which analysis run the listed findings come from, dated, and whether the latest attempt is that run (B0.3). One per findings list.",
     "composition.lines": "The B2 two-line composition block (coverage + recording), one per findings list.",
+    "gap.provenance": "A finding's provenance class as text (B3): legal, contractual, market practice or under review.",
+    "gap.provenanceGroup": "A provenance section of a findings list (B3), with data-provenance naming the class; under_review is the disclosed section.",
+    "gap.underReviewOmitted": "A summary stating that findings under review are not counted in it (B3).",
+    "record.status": "The record status (B1): under examination, needs details, awaiting confirmation, confirmed, inactive. Describes the record, never the person.",
+    "record.need": "What a needs-details record needs, named (B1).",
     "composition.coverage": "B2 line 1 as rendered.",
     "composition.recording": "B2 line 2 as rendered.",
     "composition.catalogueMismatch": "B2: the run's catalogue version differs from the current one, so no composition renders — this sentence does instead.",
@@ -207,7 +212,7 @@ export const FACT_KEYS: Record<string, string> = {
  * `data-count-subject` / `data-fact-subject` on the same element.
  */
 export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
-    "gap.severityCount",
+    "gap.provenanceCount",
     "riskGraph.stateCount",
     "branch.policyCount",
     "branch.recommendationCount",

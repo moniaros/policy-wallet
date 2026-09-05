@@ -55,6 +55,7 @@ import {
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 import type { Composition } from "@/lib/gaps/composition"
+import type { RecordStatusResult } from "@/lib/wallet/record-status"
 import { authoredCheckCount } from "@/lib/gaps/assessment-coverage"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
 import { resolveStoredSummary } from "@/lib/wallet/summary-language"
@@ -155,6 +156,8 @@ interface PolicyDetailsClientProps {
     findingsProvenance?: ProvenanceLine | null
     /** B2: the two-line composition over the completed run's attempted rules. */
     composition?: Composition | null
+    /** B1: the record status, resolved server-side from the lifecycle and the latest run. */
+    recordStatus?: RecordStatusResult | null
 }
 
 export function PolicyDetailsClient({
@@ -184,6 +187,7 @@ export function PolicyDetailsClient({
     overlapChecked = false,
     findingsProvenance = null,
     composition = null,
+    recordStatus = null,
     exclusionHint = null,
     glossaryHints = null,
 }: PolicyDetailsClientProps) {
@@ -840,6 +844,8 @@ export function PolicyDetailsClient({
                     endDate={getEndDate()}
                     statusLabel={statusLabel}
                     statusColor={statusColor}
+                    recordStatus={recordStatus}
+                    recordStatusCopy={t.recordStatus}
                     daysLeft={computedDaysLeft}
                     isAnalyzing={isAnalyzing}
                     attention={attention}

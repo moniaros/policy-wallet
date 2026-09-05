@@ -10,7 +10,7 @@ import { getTranslations } from "@/lib/i18n"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrency } from "@/lib/i18n/format"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
-import { describeSeverity, SEVERITY_CAVEAT_KEY } from "@/lib/gaps/severity-display"
+import { excludeUnderReview } from "@/lib/gaps/provenance"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 
 /** Resolve a dotted i18n key ("dashboard.home.recPriorityCritical") from the store. */
@@ -21,19 +21,8 @@ function resolveReportKey(language: "en" | "el", key: string): string {
     return typeof resolved === "string" ? resolved : key
 }
 
-/**
- * Gap severity label for the report badge — was the raw enum ("medium"), then
- * a local {el,en} map. Both bypassed lib/gaps/severity-display.ts, so this
- * print-ready document could drift from every screen and named a severity with
- * no caveat. The label is now the primitive's labelKey resolved from the i18n
- * store, and the gaps section renders the SEVERITY_CAVEAT_KEY sentence beside
- * the badges — a downloadable report cannot render <SeverityCaveat />, so it
- * carries the sentence itself (Gate 3b: thresholds and labels are not
- * underwriter-validated; pinned by gap-severity-display-single-source.test.ts).
- */
-function gapSeverityLabel(severity: string, language: "en" | "el"): string {
-    return resolveReportKey(language, describeSeverity(severity).labelKey)
-}
+// The report names no severity: provenance (B3) is the only class a finding
+// carries here, and findings still under review are omitted (see below).
 
 interface SavingsOpportunity {
     action: { en: string; el: string } | string
@@ -116,7 +105,11 @@ export function generateSavingsReportHtml(
     const prose = new Map<string, any>(
         ((resultJson.gapResults ?? []) as any[]).map((g) => [g.slug, g])
     )
-    const gaps: GapResult[] = decidedGaps.map((d) => ({
+    // Findings still under provenance review never reach a report (B3); the
+    // report says so without counting them.
+    const classifiedGaps = excludeUnderReview(decidedGaps, (d) => d.slug)
+    const underReviewOmitted = classifiedGaps.length < decidedGaps.length
+    const gaps: GapResult[] = classifiedGaps.map((d) => ({
         slug: d.slug,
         severity: d.severity,
         explanation: prose.get(d.slug)?.explanation,
@@ -269,12 +262,12 @@ ${savings.map((s) => `
 `).join("")}
 
 ${provenanceBlock}
+${underReviewOmitted ? `<div class="section-caveat">${escapeHtml(L("Ευρήματα που είναι ακόμη υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή την αναφορά· τα βλέπετε στο ασφαλιστήριο.", "Findings still under review are not included in this report; they are shown on the policy."))}</div>` : ""}
 ${gaps.length > 0 ? `
 <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2>
-<div class="section-caveat">${escapeHtml(resolveReportKey(language, SEVERITY_CAVEAT_KEY))}</div>
 ${gaps.map((g) => `
-<div class="gap-card ${g.severity || "medium"}">
-  <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(gapSeverityLabel(g.severity || "medium", language))}</span></div>
+<div class="gap-card">
+  <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))}</div>
   ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""}
   ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""}
 </div>

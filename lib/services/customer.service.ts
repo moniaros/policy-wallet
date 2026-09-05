@@ -447,7 +447,8 @@ export class CustomerService extends BaseService {
                 customerId: opp.relationship.policyholderUserId,
                 customerName: opp.relationship.customer?.name || 'Unknown',
                 message: `New risk gap detected: ${opp.gapInstance?.definition.title || 'Coverage Gap'}`,
-                priority: opp.gapInstance?.severity === 'critical' || opp.gapInstance?.severity === 'high' ? 1 : 2,
+                // Severity is not an ordering axis (PW-TRANSPARENCY-02 B1).
+                priority: 2,
                 dueDate: opp.nextActionAt ?? opp.createdAt,
             });
         });

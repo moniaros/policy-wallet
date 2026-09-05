@@ -51,7 +51,7 @@ import { COUNT_KEYS, SUBJECT_SCOPED_KEYS, isRegisteredCountKey } from "@/lib/ins
 import { QUICK_START_QUESTIONS } from "@/lib/services/onboarding/quick-start"
 import { getUpgradeCopy } from "@/lib/monetization"
 import { GAP_SEVERITIES, SEVERITY_CAVEAT_KEY, describeSeverity, toGapSeverity } from "@/lib/gaps/severity-display"
-import { gapSeverityRank } from "@/lib/wallet/gap-report"
+import { orderByProvenance } from "@/lib/gaps/provenance"
 import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { ProtectionSurface, type ProtectionSurfaceProps } from "@/components/protection/ProtectionSurface"
 import { attentionSummary, buildAttentionAreas } from "@/lib/protection/attention-areas"
@@ -829,15 +829,14 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
         expect(FINDING_POLICIES.some((p) => !FINDING_GAPS.some((g) => g.policyId === p.id))).toBe(true)
     })
 
-    it("A-10: every finding renders as a card — title, severity label resolved from describeSeverity's key, line of business", () => {
+    it("A-10: every finding renders as a card — title, provenance label, line of business; no severity word (B1)", () => {
         const { container } = renderSurface(pro)
         for (const gap of FINDING_GAPS) {
             const card = findingCard(container, gap.title)
             expect(card, `A-10: no card rendered for ${gap.id}`).toBeTruthy()
-            expect(
-                card!.textContent,
-                `A-10: ${gap.id} does not carry its severity label`
-            ).toContain(resolveCopyKey(describeSeverity(gap.severity).labelKey))
+            // B1/B3: the card carries its PROVENANCE label and never a severity word.
+            expect(card!.textContent, `A-10: ${gap.id} does not carry its provenance label`).toContain(resolveCopyKey("provenance.underReview"))
+            expect(card!.textContent, `A-10: ${gap.id} prints a severity word`).not.toContain(resolveCopyKey(describeSeverity(gap.severity).labelKey))
             // The line of business is NAMED, in the reader's language — the card
             // used to print the raw branch id in capitals («MOTOR» on a Greek
             // page), which this assertion had frozen as if it were the product.
@@ -845,32 +844,16 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
         }
     })
 
-    it("A-11: the severity tally renders subject-scoped chips that sum to gap.openCount, with the caveat on the page", () => {
+    it("A-11: no severity tally renders (B1); the headline count still states the whole live universe", () => {
         const { container } = renderSurface(pro)
         const open = container.querySelector('[data-count="gap.openCount"]')
         expect(open, "A-11: gap.openCount renders nowhere").toBeTruthy()
         const openCount = Number((open!.textContent || "").match(/\d+/)?.[0])
         expect(openCount).toBe(FINDING_GAPS.length)
 
-        let sum = 0
-        for (const severity of GAP_SEVERITIES) {
-            const expected = FINDING_GAPS.filter((g) => toGapSeverity(g.severity) === severity).length
-            const chip = container.querySelector(
-                `[data-count="gap.severityCount"][data-count-subject="${severity}"]`
-            )
-            if (expected === 0) {
-                expect(chip, `${severity} counts nothing and must not render a chip`).toBeNull()
-                continue
-            }
-            expect(chip, `A-11: no chip for ${severity}`).toBeTruthy()
-            const value = Number((chip!.textContent || "").match(/\d+/)?.[0])
-            expect(value, `A-11: ${severity} chip renders the wrong count`).toBe(expected)
-            sum += value
-        }
-        expect(sum, "A-11: chips must sum to gap.openCount").toBe(openCount)
-        // Severity is not a verdict until an underwriter says so (Gate 3b) —
-        // the caveat sentence, resolved from the registry key, accompanies it.
-        expect(container.textContent).toContain(resolveCopyKey(SEVERITY_CAVEAT_KEY))
+        // B1: no severity tally anywhere — the chips are gone, and with them the caveat they owed.
+        expect(container.querySelector('[data-count="gap.severityCount"]')).toBeNull()
+        expect(container.querySelectorAll('[data-count="gap.provenanceCount"]').length).toBe(0)
     })
 
     it("A-12: «Εξαιρέθηκαν» names every expired policy left out of the tally — and does not render when nothing was excluded", () => {
@@ -1019,9 +1002,8 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
         ).toBeTruthy()
 
         const FREE_LIMIT = 2 // the limit the lite copy itself states («τα 2 πιο σημαντικά»)
-        const bySeverity = [...FINDING_GAPS].sort(
-            (a, b) => gapSeverityRank(a.severity) - gapSeverityRank(b.severity)
-        )
+        // Provenance order (B3), never severity: with every authored check under review this is the caller's order.
+        const bySeverity = orderByProvenance(FINDING_GAPS, (g) => (g as { slug?: string | null }).slug ?? null)
         for (const gap of bySeverity.slice(0, FREE_LIMIT)) {
             expect(
                 findingCard(free.container, gap.title),

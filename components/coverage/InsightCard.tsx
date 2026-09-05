@@ -45,35 +45,14 @@ interface InsightCardProps {
  * badge beside it. The gap engine produces a profile-based priority; that is
  * what the badge says now.
  */
-const SEVERITY_CONFIG = {
-    low: {
-        label: { en: 'Low priority', el: 'Χαμηλή προτεραιότητα' },
-        color: 'text-black/75 dark:text-white/80',
-        bg: 'bg-black/5 dark:bg-white/10',
-        border: 'border-black/10 dark:border-white/15',
-        accent: 'bg-black/35'
-    },
-    medium: {
-        label: { en: 'Medium priority', el: 'Μεσαία προτεραιότητα' },
-        color: 'text-amber-700 dark:text-amber-300',
-        bg: 'bg-amber-50 dark:bg-amber-900/30',
-        border: 'border-amber-100 dark:border-amber-800',
-        accent: 'bg-amber-500'
-    },
-    high: {
-        label: { en: 'High priority', el: 'Υψηλή προτεραιότητα' },
-        color: 'text-orange-700 dark:text-orange-300',
-        bg: 'bg-orange-50 dark:bg-orange-900/30',
-        border: 'border-orange-100 dark:border-orange-800',
-        accent: 'bg-orange-500'
-    },
-    critical: {
-        label: { en: 'Critical priority', el: 'Κρίσιμη προτεραιότητα' },
-        color: 'text-red-700 dark:text-red-300',
-        bg: 'bg-red-50 dark:bg-red-900/30',
-        border: 'border-red-100 dark:border-red-800',
-        accent: 'bg-red-500'
-    }
+// One neutral shape for every finding. Severity carries no colour, no chip
+// and no emphasis anywhere (PW-TRANSPARENCY-02 B1); the provenance label the
+// caller passes as `microcopy` is the only class a card shows.
+const NEUTRAL_CONFIG = {
+    color: 'text-black/75 dark:text-white/80',
+    bg: 'bg-black/5 dark:bg-white/10',
+    border: 'border-black/10 dark:border-white/15',
+    accent: 'bg-black/35'
 }
 
 /** Section labels, in the same `{en, el}[language]` shape as SEVERITY_CONFIG above
@@ -86,7 +65,7 @@ const COPY = {
 
 export function InsightCard({ insight, onAction, language = 'el', collapsed = false }: InsightCardProps) {
     void collapsed
-    const config = SEVERITY_CONFIG[insight.severity] || SEVERITY_CONFIG.medium
+    const config = NEUTRAL_CONFIG
     // Held on an object: a bare `const Icon = getBranchIcon(...)` reads as
     // creating a component during render to react-hooks/static-components.
     // Same shape PolicyCard uses.
@@ -104,9 +83,6 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">
                             <span className="text-caption font-semibold text-muted-foreground">
                                 {normalizeBranch(insight.type).label[language === 'el' ? 'el' : 'en']}
-                            </span>
-                            <span className={`rounded-full px-2 py-0.5 text-caption font-semibold ${config.bg} ${config.color}`}>
-                                {config.label[language]}
                             </span>
                             {insight.isPlusFeature && (
                                 <span className="flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-primary dark:bg-primary/15 dark:text-mint">

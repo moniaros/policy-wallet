@@ -393,13 +393,9 @@ describe.each(SCENARIOS.map((s) => [s.label, s] as const))("%s", (_label, sc) =>
             expect(r.expectedImpact, `${r.ruleId} has no expected impact`).toBeTruthy()
             expect(r.suggestedSolution, `${r.ruleId} has no suggested solution`).toBeTruthy()
         }
-        const order: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 }
-        for (let i = 1; i < recs.length; i++) {
-            expect(
-                order[recs[i - 1].urgency],
-                `${recs[i - 1].ruleId} ranked above ${recs[i].ruleId}`
-            ).toBeLessThanOrEqual(order[recs[i].urgency])
-        }
+        // Urgency orders nothing (PW-TRANSPARENCY-02 B1): the list follows the
+        // protection weight, the stated priority and the rule id, so no
+        // urgency-monotonic assertion holds — or should.
     })
 
     it("keeps expected lines to risks that actually apply", () => {

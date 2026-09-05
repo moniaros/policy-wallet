@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { requireApiUser } from "@/lib/api-auth"
 import { getPolicyAccess } from "@/lib/policy-access"
 import { describeSeverityForDefinition } from "@/lib/gaps/severity-display"
+import { orderByProvenance, provenanceOf } from "@/lib/gaps/provenance"
 
 export async function GET(
     req: Request,
@@ -35,14 +36,19 @@ export async function GET(
             where: { policyId: id, supersededAt: null },
             include: { definition: true }
         })
+        const slugOf = (g: { definition: unknown }) => (g.definition as { slug?: string } | null)?.slug
+        const ordered = orderByProvenance(gaps, slugOf)
 
         const summary = {
             total: gaps.length,
-            by_severity: {
-                high: gaps.filter(g => g.severity === "high").length,
-                medium: gaps.filter(g => g.severity === "medium").length,
-                low: gaps.filter(g => g.severity === "low").length
+            // Provenance (B3) is the summary axis, not severity. Findings still
+            // under review are never counted in a summary.
+            by_provenance: {
+                legislative: gaps.filter(g => provenanceOf(slugOf(g)) === "legislative").length,
+                contractual: gaps.filter(g => provenanceOf(slugOf(g)) === "contractual").length,
+                market: gaps.filter(g => provenanceOf(slugOf(g)) === "market").length,
             },
+            under_review_omitted_from_counts: true,
             by_status: {
                 open: gaps.filter(g => g.status === "open").length,
                 acknowledged: gaps.filter(g => g.status === "acknowledged").length,
@@ -52,12 +58,13 @@ export async function GET(
 
         return NextResponse.json({
             data: {
-                gaps: gaps.map(gi => ({
+                gaps: ordered.map(gi => ({
                     id: gi.id,
                     gap_definition_id: gi.gapDefinitionId,
                     title: (gi.definition as any).title,
                     description: (gi.definition as any).description,
                     severity: gi.severity,
+                    provenance: provenanceOf(slugOf(gi)),
                     // Severity is a rule's output, not an underwriter's verdict.
                     // Anything consuming this API — including an integration we
                     // never see — is told so here rather than being left to

@@ -67,6 +67,7 @@ import { RenewalsTimelineCard } from "@/components/dashboard/home/RenewalsTimeli
 import { RiskIntelligenceView } from "@/components/risk-dna/RiskIntelligenceView"
 import { PolicyWallet } from "@/components/wallet/PolicyWallet"
 import type { Policy } from "@/components/wallet/types"
+import { partitionByProvenance } from "@/lib/gaps/provenance"
 
 const REPO_ROOT = path.resolve(__dirname, "../..")
 const SCAN_ROOTS = ["app", "components", "lib"]
@@ -460,33 +461,31 @@ describe("§2.8: one portfolio renders one set of numbers across surfaces", () =
         const live = gapsOnActiveCoverage(gaps, rows, NOW)
         expect(live.map((g) => g.id).sort()).toEqual(["g1", "g2", "g3", "g5"])
 
-        const severityCounts = {
-            critical: live.filter((g) => g.severity === "critical").length,
-            high: live.filter((g) => g.severity === "high").length,
-            medium: live.filter((g) => g.severity === "medium").length,
-            low: live.filter((g) => g.severity === "low").length,
-        }
+        // Provenance (B3): the tile counts CLASSIFIED findings only. With every
+        // authored check still under review, no chip renders and the tile states
+        // that findings under review are not counted — a fact, never a number.
+        const groups = partitionByProvenance(live, (g) => (g as { definition?: { slug?: string | null } | null }).definition?.slug ?? null)
+        const counts = { legislative: 0, contractual: 0, market: groups.market.length, underReview: groups.underReview.length }
         const widget = withProviders(
             <CoverageGapsWidget
-                counts={severityCounts}
+                counts={counts}
                 labels={{
                     kicker: "Κενά κάλυψης",
                     noGaps: "—",
-                    severity: { critical: "κρίσιμα", high: "υψηλά", medium: "μέτρια", low: "χαμηλά" },
+                    provenance: { legislative: "νομοθετικά", contractual: "συμβατικά", market: "πρακτική αγοράς" },
+                    underReviewOmitted: "Ευρήματα υπό αξιολόγηση δεν μετρούν εδώ.",
+                    underReviewLink: "Δείτε τα",
                     note: null,
                     groupLabel: "Ανοιχτά ευρήματα",
                 }}
             />
         )
         const rendered = scanRenderedCounts(widget.container)
-        // Four subject-scoped chips; their sum is gap.openCount — the number
-        // the /coverage-insights headline states from the same helper.
-        const sum = ["critical", "high", "medium", "low"]
-            .map((s) => [...(rendered.get(`gap.severityCount#${s}`) ?? [0])][0] ?? 0)
-            .reduce((a, b) => a + b, 0)
-        expect(sum).toBe(live.length)
-        // The expired policy's gap did NOT inflate the tally.
-        expect(sum).toBe(4)
+        expect([...rendered.keys()].filter((k) => k.startsWith("gap.provenanceCount"))).toEqual([])
+        expect(widget.container.querySelector('[data-fact="gap.underReviewOmitted"]')).not.toBeNull()
+        // The expired policy's gap did NOT enter the universe.
+        expect(counts.underReview).toBe(live.length)
+        expect(live.length).toBe(4)
     })
 
     it("the renewals header states the window's count, not the capped list length", () => {

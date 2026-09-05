@@ -1,0 +1,6 @@
+// PROBE — the same read, classified before it is counted.
+import { excludeUnderReview } from "@/lib/gaps/provenance"
+export async function newGapCount(db: any, userId: string) {
+    const rows = await db.gapInstance.findMany({ where: { policy: { ownerUserId: userId }, status: "open" }, select: { definition: { select: { slug: true } } } })
+    return excludeUnderReview(rows, (r: any) => r.definition.slug).length
+}

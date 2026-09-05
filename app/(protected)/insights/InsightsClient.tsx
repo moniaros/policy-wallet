@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo } from "react"
-import { SeverityCaveat } from "@/components/gaps/SeverityCaveat"
 import { motion } from "framer-motion"
 import {
     TrendingUp,
@@ -24,7 +23,8 @@ import { CardHead } from "@/components/dashboard/home/CardHead"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { StatGrid, StatTile } from "@/components/ui/StatTile"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { describeSeverity, type SeverityDescription } from "@/lib/gaps/severity-display"
+import { provenanceOf } from "@/lib/gaps/provenance"
+import { provenanceLabel } from "@/components/gaps/provenance-label"
 import { daysLeftLabel } from "@/lib/wallet/days-left-label"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 
@@ -83,16 +83,6 @@ const urgencyPill = (days: number) => {
     if (days <= 7) return "bg-status-danger-tint text-status-danger"
     if (days <= 30) return "bg-status-warning-tint text-status-warning"
     return "bg-muted text-foreground"
-}
-
-// Keyed by TONE, never by the severity words — the same decision
-// components/gaps/severity-tone.ts makes for a dot, made here for a pill.
-// Which tone a severity gets is describeSeverity()'s call, not this file's.
-const SEVERITY_PILL: Record<SeverityDescription["tone"], string> = {
-    urgent: "bg-status-danger-tint text-status-danger",
-    elevated: "bg-status-warning-tint text-status-warning",
-    moderate: "bg-status-info-tint text-status-info",
-    informational: "bg-muted text-foreground",
 }
 
 /** Resolves a dotted i18n key («dashboard.home.recPriorityHigh») in the dictionary. */
@@ -539,11 +529,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     ) : (
                         <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                             {data.recentGaps.map((gap) => {
-                                const sev = describeSeverity(gap.severity)
+                                // Provenance as text (B3), never a severity word or colour (B1).
+                                const prov = provenanceOf((gap as { slug?: string | null }).slug)
                                 return (
                                     <div key={gap.id} className="pw-subcard p-3">
-                                        <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-caption font-semibold ${SEVERITY_PILL[sev.tone]}`}>
-                                            {resolveKey(t, sev.labelKey) ?? sev.severity}
+                                        <span data-fact="gap.provenance" data-provenance={prov} className="inline-flex items-center whitespace-nowrap rounded-full border border-border bg-muted px-2 py-0.5 text-caption font-medium text-foreground">
+                                            {provenanceLabel(prov, t.provenance)}
                                         </span>
                                         <p className="mt-2 line-clamp-2 text-sm font-semibold text-foreground">
                                             {gap.title}
@@ -558,11 +549,11 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             })}
                         </div>
                     )}
-                    {/* Each tile prints a severity word ("Critical"/«Κρίσιμο») to an
-                        advisor. Gate 3b is open, so the grid carries the caveat once
-                        rather than repeating it on every tile. */}
-                    {data.recentGaps.length > 0 && (
-                        <SeverityCaveat lang={language === "el" ? "el" : "en"} />
+                    {/* Findings not yet classified are disclosed as such (B3). */}
+                    {data.recentGaps.some((gap) => provenanceOf((gap as { slug?: string | null }).slug) === "under_review") && (
+                        <p className="mt-3 text-caption text-muted-foreground" data-fact="gap.provenanceGroup" data-provenance="under_review">
+                            {t.provenance.underReviewDisclosure}
+                        </p>
                     )}
                 </FadeIn>
             </div>

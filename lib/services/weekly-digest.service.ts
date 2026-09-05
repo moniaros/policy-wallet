@@ -1,4 +1,5 @@
 import { calendarDaysUntil, startOfAthensDay, athensWeekday, NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
+import { excludeUnderReview } from "@/lib/gaps/provenance"
 import { db } from "../db"
 import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
@@ -128,7 +129,9 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             // Same universe as the renewals list above: a gap on a deleted or
             // cancelled policy is not a gap in this portfolio, and one digest
             // must not quote two different definitions of "your policies".
-            const newGaps = await db.gapInstance.count({
+            // Findings still under provenance review are never counted in an
+            // email (PW-TRANSPARENCY-02 B3): this counts the classified ones.
+            const newGapRows = await db.gapInstance.findMany({
                 where: {
                     policy: {
                         ownerUserId: user.id,
@@ -136,8 +139,11 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     },
                     status: { in: ["open", "detected"] },
                     detectedAt: { gte: oneWeekAgo },
+                    supersededAt: null,
                 },
+                select: { definition: { select: { slug: true } } },
             })
+            const newGaps = excludeUnderReview(newGapRows, (g) => g.definition.slug).length
 
             const unreadMessages = await db.notificationEvent.count({
                 where: {

@@ -242,7 +242,8 @@ function generateKeyInsight(
 ): { en: string; el: string } {
     // Family: a client whose gap is in income protection, disability or
     // personal accident is still a LIFE conversation for the agent.
-    if (severity === "critical" && branchFamilyId(lob) === "life" && (clientProfile.dependentsCount ?? 0) > 0) {
+    // Severity does not gate the family conversation (PW-TRANSPARENCY-02 B1).
+    if (branchFamilyId(lob) === "life" && (clientProfile.dependentsCount ?? 0) > 0) {
         return {
             en: `Client has ${clientProfile.dependentsCount} dependent(s) with no life cover — high emotional urgency.`,
             el: `Ο πελάτης έχει ${clientProfile.dependentsCount} εξαρτώμενο(α) μέλος(η) χωρίς ασφάλεια ζωής — υψηλή συναισθηματική επείγουσα ανάγκη.`,
@@ -262,8 +263,9 @@ function generateKeyInsight(
     }
 
     return {
-        en: `This ${severity}-priority ${lob} gap represents a conversion opportunity.`,
-        el: `Αυτό το κενό ${lob} ${severity === "critical" ? "κρίσιμης" : severity === "high" ? "υψηλής" : "μέσης"} προτεραιότητας αποτελεί ευκαιρία μετατροπής.`,
+        // No severity word in the playbook prose (PW-TRANSPARENCY-02 B1).
+        en: `This ${lob} gap represents a conversion opportunity.`,
+        el: `Αυτό το κενό ${lob} αποτελεί ευκαιρία μετατροπής.`,
     }
 }
 
@@ -335,10 +337,9 @@ export async function generatePlaybook(
     }
 
     // Build steps from templates
-    const templateKey =
-        severity === "critical" ? "critical" : severity === "high" ? "high" : severity === "medium" ? "medium" : "low"
-
-    const baseSteps = STEP_TEMPLATES[templateKey] || STEP_TEMPLATES.low
+    // One step template for every finding: severity decides neither the steps
+    // nor their emphasis (PW-TRANSPARENCY-02 B1).
+    const baseSteps = STEP_TEMPLATES.medium
 
     const steps: PlaybookStep[] = baseSteps.map((tmpl, i) => {
         const lobPoints =

@@ -29,14 +29,9 @@ export interface OpportunityScore {
     }
 }
 
-// ── Severity weights ─────────────────────────────────────────────────
-
-const SEVERITY_WEIGHTS: Record<string, number> = {
-    critical: 100,
-    high: 70,
-    medium: 40,
-    low: 20,
-}
+// Severity is not an input to ordering (PW-TRANSPARENCY-02 B1): a gap-backed
+// opportunity carries one flat weight, whatever the rule's unvalidated severity.
+const GAP_BACKED_WEIGHT = 40
 
 // ── Main scoring functions ───────────────────────────────────────────
 
@@ -100,9 +95,7 @@ export async function scoreOpportunitiesBatch(
     for (const opp of opps) {
         const customerId = opp.relationship.policyholderUserId
 
-        const gapSeverity = opp.gapInstance
-            ? SEVERITY_WEIGHTS[opp.gapInstance.severity] ?? 40
-            : 40
+        const gapSeverity = opp.gapInstance ? GAP_BACKED_WEIGHT : 40
 
         const profile = profileByCustomer.get(customerId)
         const profileCompleteness = profile ? computeProfileCompleteness(profile) : 0

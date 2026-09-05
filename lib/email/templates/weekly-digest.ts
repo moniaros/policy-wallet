@@ -2,7 +2,6 @@ import { getBaseEmailTemplate } from './base-template'
 import { counted, daysToExpiryPhrase, greeting } from './phrases'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
-import { describeSeverity, type SeverityDescription } from '@/lib/gaps/severity-display'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.gr'
 
@@ -118,32 +117,15 @@ export function getWeeklyDigestEmail(
 function buildRecommendationsSection(recs: TopRecommendation[] | undefined, isGreek: boolean): string {
     if (!recs || recs.length === 0) return ''
 
-    /**
-     * Tone → inline hex, keyed by describeSeverity()'s TONE — never by the
-     * severity words, the shape that multiplied across eleven surfaces (this
-     * is the email sibling of components/gaps/severity-tone.ts; email needs
-     * inline hex, not utility classes). The dot stays colour-only and
-     * unlabelled: no severity word reaches the reader, so no caveat is owed —
-     * same policy as PolicyBriefCard's aria-hidden dot. Junk urgency values
-     * normalise through the primitive (→ moderate), never to a fifth colour
-     * invented here. Pinned by gap-severity-display-single-source.test.ts.
-     */
-    const toneDotHex: Record<SeverityDescription['tone'], string> = {
-        urgent: '#DC2626',
-        elevated: '#EA580C',
-        moderate: '#D97706',
-        informational: '#6B7280',
-    }
-
+    // No urgency dot: severity carries no colour, order or emphasis anywhere
+    // (PW-TRANSPARENCY-02 B1). The rows are the recommendations, in the order given.
     const rows = recs.map(r => {
-        const color = toneDotHex[describeSeverity(r.urgency).tone]
         const costLabel = r.estimatedCostEur
             ? `~€${r.estimatedCostEur}/${isGreek ? 'έτος' : 'yr'}`
             : ''
         return `
             <tr style="border-bottom: 1px solid #E5E7EB;">
                 <td style="padding: 8px 0;">
-                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${color}; margin-right: 6px;"></span>
                     <span style="font-size: 14px; color: #374151;">${r.title}</span>
                 </td>
                 <td style="padding: 8px 0; font-size: 13px; color: #059669; text-align: right; font-weight: 600;">${costLabel}</td>

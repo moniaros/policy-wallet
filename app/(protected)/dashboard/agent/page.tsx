@@ -20,6 +20,7 @@ import { getAgentPolicyVisibilityWhere, getVisiblePolicyCountsByOwner } from "@/
 import { presentCustomerIdentity } from "@/lib/agent-consent"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary, CrossSellOpportunityItem, AgentTaskItem } from "@/components/agent/types"
 import { calendarDaysUntil, startOfAthensDay, endOfAthensDay } from "@/lib/policy-status"
+import { excludeUnderReview } from "@/lib/gaps/provenance"
 
 export default async function DashboardPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -312,6 +313,8 @@ export default async function DashboardPage() {
     // interpretable), then revenue-at-risk descending WITHIN a tier so the
     // high-urgency-high-commission renewals rise to the top. Items with no
     // revenue-at-risk (incomplete profiles) fall to the back of their tier.
+    // This urgency is DAYS TO EXPIRY (line 287) and profile completeness —
+    // never a finding's severity (PW-TRANSPARENCY-02 B1 exempts it by name).
     const urgencyOrder = { high: 0, medium: 1, low: 2 }
     actionQueue.sort((a, b) => {
         const tier = urgencyOrder[a.urgency] - urgencyOrder[b.urgency]
@@ -339,16 +342,17 @@ export default async function DashboardPage() {
         : { mrr: 0, renewalsDueThisMonth: 0, renewalsDueAmount: 0, commissionPipeline: 0, monthlyGrowthPercent: 0 }
 
     // ── Portfolio Health ───────────────────────────────────────────
-    const gapCounts = await prisma.gapInstance.groupBy({
-        by: ["policyId"],
-        // Same visibility rule as the policy query above and as gapsVisibilityWhere
-        // further down — this one filtered on createdByUserId alone, so gaps on a
-        // granted policy were missing from portfolio health while the same file's
-        // other gap query counted them.
-        where: { status: { in: [...OPEN_GAP_STATUSES] }, policy: policyVisibilityWhere },
-        _count: true,
+    // Same visibility rule as the policy query above and as gapsVisibilityWhere
+    // further down. Provenance (B3): findings still under review are never
+    // counted in a summary, so this counts the CLASSIFIED open findings per policy.
+    const gapRows = await prisma.gapInstance.findMany({
+        where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null, policy: policyVisibilityWhere },
+        select: { policyId: true, definition: { select: { slug: true } } },
     })
-    const gapCountByPolicy = new Map(gapCounts.map((g) => [g.policyId, g._count]))
+    const gapCountByPolicy = new Map<string, number>()
+    for (const row of excludeUnderReview(gapRows, (r) => r.definition?.slug ?? null)) {
+        if (row.policyId) gapCountByPolicy.set(row.policyId, (gapCountByPolicy.get(row.policyId) ?? 0) + 1)
+    }
     // Intersect with the CURRENT client set: a policy whose owner is no longer a
     // relationship (orphaned / uploaded for a non-client) must not push the
     // numerator past customersNow → the percentages below could exceed 100%.

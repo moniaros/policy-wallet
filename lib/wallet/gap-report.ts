@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/nextjs"
 import type { GapSeverity } from "@/lib/gap-detection"
+import { PROVENANCE_RANK, provenanceOf } from "@/lib/gaps/provenance"
 
 /**
  * Render-layer presentation of AI-detected coverage gaps.
@@ -81,22 +82,16 @@ export interface GapReportItem {
     aiSuggestionEl: string | null
 }
 
-/** critical → 0 … low → 3; unknown ranks last so it is never shown over a graded gap. */
-const GAP_SEVERITY_RANK: Record<GapSeverity, number> = { critical: 0, high: 1, medium: 2, low: 3 }
-
-export function gapSeverityRank(severity: string | null | undefined): number {
-    return GAP_SEVERITY_RANK[(severity ?? "") as GapSeverity] ?? 4
-}
-
 /**
- * The gaps a locked free-tier owner sees in full: the `count` MOST SEVERE, by
- * severity rank with a stable tiebreak on the caller's order. Returns their ids
- * so the display can keep its coverage-area grouping while the paywall only ever
- * hides the least-urgent gaps — the free preview always surfaces the worst ones.
+ * The gaps a locked free-tier owner sees in full: the first `count` by
+ * PROVENANCE (legal and contractual requirements first, then market practice,
+ * then findings still under review) with a stable tiebreak on the caller's
+ * order. Severity is not an input (PW-TRANSPARENCY-02 B1). Returns their ids so
+ * the display keeps its grouping while the paywall hides the rest.
  */
 export function selectFreePreviewGapIds(items: GapReportItem[], count: number): Set<string> {
     const ranked = items
-        .map((item, index) => ({ id: item.id, rank: gapSeverityRank(item.severity), index }))
+        .map((item, index) => ({ id: item.id, rank: PROVENANCE_RANK[provenanceOf(item.slug)], index }))
         .sort((a, b) => a.rank - b.rank || a.index - b.index)
     return new Set(ranked.slice(0, Math.max(0, count)).map((entry) => entry.id))
 }

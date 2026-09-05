@@ -20,8 +20,9 @@ mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry 
 
 ## Current phase
 
-**PW-TRANSPARENCY-02 — Track A, B0, B1.5, B1.7 and B2 built; PR #299 merging; B1.6 halted** (2026-09-05,
-branch `feat/transparency-02`). **Prod migration `20260905150000_gap_instance_run_provenance` is APPLIED and
+**PW-TRANSPARENCY-02 — Track A, B0, B1.5, B1.7 and B2 MERGED to NEW-UI (`85088850`, PR #299, 2026-09-05 10:46Z; deploy run pending at the time of writing); B1 core + B3 skeleton built on `feat/transparency-02-b1b3` (PR opening); B1.6 halted.** B1: the five-state record status (`lib/wallet/record-status.ts`, text-only label on the policy head and the agent findings card; `confirmed` unreachable until C1) and severity removed as an ordering / colour / chip / emphasis axis everywhere outside six reasoned exemptions (guard `severity-never-orders.test.ts`, 4 probes). B3: `lib/gaps/provenance.ts` ships all 29 checks `under_review` with `citation: null`; provenance is the ordering axis; under-review findings render only disclosed, count in no summary, reach no email / notification / report (guard `provenance-skeleton.test.ts`); candidates for the human track in `docs/transparency/PROVENANCE-CANDIDATES.md`. Suite 594 / 6909 green.
+
+Previous phase note (kept for the record): branch `feat/transparency-02`. **Prod migration `20260905150000_gap_instance_run_provenance` is APPLIED and
 verified on production** (2026-09-05 ~10:30Z, via Supabase MCP: six new `gap_instances` columns, `analysis_run_id`
 NOT NULL, FK to runs, two new indexes, the old unique index replaced by the partial «current row» one, the single prod
 row backfilled to its motor run, `_prisma_migrations` stamped with the file's sha256; rollback export

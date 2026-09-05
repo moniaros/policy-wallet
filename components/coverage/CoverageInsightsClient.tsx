@@ -1,9 +1,8 @@
 "use client"
 
 import { getTranslations } from "@/lib/i18n"
-import { gapSeverityRank } from "@/lib/wallet/gap-report"
-import { GAP_SEVERITIES, describeSeverity, toGapSeverity, type GapSeverity } from "@/lib/gaps/severity-display"
-import { toneDotClass } from "@/components/gaps/severity-tone"
+import { mayCarryEmphasis, orderByProvenance, provenanceOf } from "@/lib/gaps/provenance"
+import { provenanceLabel } from "@/components/gaps/provenance-label"
 import React, { useMemo, useState } from 'react'
 import {
     Shield,
@@ -23,6 +22,9 @@ import { AiDisclaimer } from '@/components/ui/AiDisclaimer'
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { CardHead } from '@/components/dashboard/home/CardHead'
+
+/** The authored slug a finding row carries, on either shape the loaders return. */
+const gapSlug = (g: { slug?: string | null; definition?: { slug?: string | null } | null }) => g.slug ?? g.definition?.slug ?? null
 
 type PlanTier = 'free' | 'plus' | 'pro'
 
@@ -157,7 +159,9 @@ export function CoverageInsightsClient({
     const visibleGaps = gaps.filter((g) => !hiddenInsights.has(g.id))
     const freeUnlockedLimit = 2
     const maxVisibleInsights = isFreeTier ? freeUnlockedLimit : 6
-    const hasSevereGap = visibleGaps.some((g) => g.severity === 'critical' || g.severity === 'high')
+    // Emphasis follows provenance (B3), never severity: only a legal or a
+    // contractual requirement may raise the headline.
+    const hasSevereGap = visibleGaps.some((g) => mayCarryEmphasis(provenanceOf(gapSlug(g))))
 
     // Concept B — policy-gap verdict. The SINGLE source for the headline + the
     // top tile, gated on whether deep analysis actually ran so "0 gaps" never
@@ -228,9 +232,7 @@ export function CoverageInsightsClient({
         // RECENT gaps and locked the rest — a critical gap detected last week
         // could sit behind the Plus gate while two trivial recent ones showed.
         // Stable sort keeps detectedAt order within a severity band.
-        const orderedGaps = [...visibleGaps].sort(
-            (a, b) => gapSeverityRank(a.severity) - gapSeverityRank(b.severity)
-        )
+        const orderedGaps = orderByProvenance(visibleGaps, (g) => gapSlug(g))
         return orderedGaps.slice(0, maxVisibleInsights).map((gap, index) => ({
             id: gap.id,
             type: (gap.policy?.lineOfBusiness || 'other').toLowerCase() as any,
@@ -245,7 +247,7 @@ export function CoverageInsightsClient({
                 { label: copy.addNote, type: 'secondary' },
                 { label: copy.ignore, type: 'secondary' }
             ],
-            microcopy: gap.severity === 'critical' ? copy.immediateReview : copy.noImmediateAction,
+            microcopy: provenanceLabel(provenanceOf(gapSlug(gap)), getTranslations(lang).provenance),
             isPlusFeature: isFreeTier && index >= freeUnlockedLimit,
         }))
     }, [visibleGaps, maxVisibleInsights, lang, isFreeTier, freeUnlockedLimit, copy])
@@ -260,16 +262,6 @@ export function CoverageInsightsClient({
     // caveat the primitive demands is the recPriorityNote already rendered
     // above the findings list, which is on-page whenever a chip is.
     const home = getTranslations(lang).dashboard.home
-    const severityLabels: Record<GapSeverity, string> = {
-        critical: home.severityCritical,
-        high: home.severityHigh,
-        medium: home.severityMedium,
-        low: home.severityLow,
-    }
-    const severityTally = GAP_SEVERITIES.map((severity) => ({
-        ...describeSeverity(severity),
-        count: visibleGaps.filter((gap) => toGapSeverity(gap.severity) === severity).length,
-    })).filter((entry) => entry.count > 0)
 
     const handleAction = async (type: string, id: string, label: string) => {
         if (label === copy.ignore) {
@@ -348,29 +340,6 @@ export function CoverageInsightsClient({
                     >
                         {summaryText}
                     </p>
-                    {hasDeepAnalysis && severityTally.length > 0 && (
-                        <div
-                            className="mt-3 flex flex-wrap gap-2"
-                            role="list"
-                            aria-label={home.severityGroupLabel}
-                        >
-                            {severityTally.map((entry) => (
-                                <span
-                                    key={entry.severity}
-                                    role="listitem"
-                                    // Subject-scoped: one gap.severityCount per
-                                    // severity — four chips are four subjects,
-                                    // never one key disagreeing with itself.
-                                    data-count="gap.severityCount"
-                                    data-count-subject={entry.severity}
-                                    className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-caption font-semibold text-foreground"
-                                >
-                                    <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(entry.tone)}`} aria-hidden />
-                                    {entry.count} {severityLabels[entry.severity]}
-                                </span>
-                            ))}
-                        </div>
-                    )}
 
                     {excludedExpired.length > 0 && (
                         <div className="mt-4 flex items-start gap-3 rounded-xl bg-status-warning-tint p-3.5">

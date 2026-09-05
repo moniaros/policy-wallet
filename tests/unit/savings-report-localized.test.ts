@@ -25,9 +25,9 @@ describe('savings/branded report is fully localised', () => {
         expect(bare, `hardcoded English meta-labels:\n${bare.join('\n')}`).toEqual([])
     })
 
-    it('the Type field resolves lineOfBusiness to a label, and severity is not raw', () => {
+    it('the Type field resolves lineOfBusiness to a label, and no severity word is printed (B1)', () => {
         expect(SRC).toContain('normalizeBranch(metadata.lineOfBusiness).label[language]')
-        expect(SRC).toContain('gapSeverityLabel(g.severity')
+        expect(SRC).not.toMatch(/gapSeverityLabel|badge-\$\{g\.severity/)
         // Premium goes through formatCurrency, not a hardcoded € literal.
         expect(SRC).not.toMatch(/€\$\{Number\(metadata\.premiumAmount\)/)
     })
