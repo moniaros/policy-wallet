@@ -23,6 +23,17 @@ import { CardHead } from "./CardHead"
  * which coined five keys the plan never agreed — and an unregistered key is
  * exactly how the vocabulary forks (INSTRUMENTATION-PLAN.md, Naming).
  */
+/** B4: the set each fact counts — where its door leads. */
+const FACT_HREF: Record<string, string> = {
+    total: "/wallet",
+    expired: "/wallet",
+    expiringSoon: "#renewals",
+    neverAnalysed: "/wallet",
+    analysisFailed: "/wallet",
+    unassessed: "/protection?lens=branch",
+    premiumNoAmount: "/wallet",
+}
+
 const KIND_COUNT_KEY: Record<string, string> = {
     total: "portfolio.policyCount",
     expired: "portfolio.expiredCount",
@@ -190,10 +201,11 @@ export function ProtectionStatusHero({
                     const lead = index === 0
                     const Glyph = lead ? null : KIND_ICON[fact.kind] ?? null
                     const cell = (
-                        <span
+                        <Link
                             key={fact.kind}
+                            href={FACT_HREF[fact.kind] ?? "/wallet"}
                             data-count={KIND_COUNT_KEY[fact.kind] ?? `portfolio.${fact.kind}`}
-                            className={lead ? LEAD_CELL : PILL_CELL}
+                            className={`${lead ? LEAD_CELL : `${PILL_CELL} -my-0.5 min-h-11`} hover:underline`}
                         >
                             {parts ? (
                                 <>
@@ -217,7 +229,7 @@ export function ProtectionStatusHero({
                             ) : (
                                 <span className="text-body font-semibold">{fact.label}</span>
                             )}
-                        </span>
+                        </Link>
                     )
                     if (lead) return cell
                     // The pill opens on the second fact and closes after the
@@ -231,10 +243,11 @@ export function ProtectionStatusHero({
                                     const restParts = splitFact(f.label, f.count)
                                     const RestGlyph = KIND_ICON[f.kind] ?? null
                                     return (
-                                        <span
+                                        <Link
                                             key={f.kind}
+                                            href={FACT_HREF[f.kind] ?? "/wallet"}
                                             data-count={KIND_COUNT_KEY[f.kind] ?? `portfolio.${f.kind}`}
-                                            className={PILL_CELL}
+                                            className={`${PILL_CELL} -my-0.5 min-h-11 hover:underline`}
                                         >
                                             {restParts ? (
                                                 <>
@@ -249,7 +262,7 @@ export function ProtectionStatusHero({
                                             ) : (
                                                 <span className="text-body font-semibold">{f.label}</span>
                                             )}
-                                        </span>
+                                        </Link>
                                     )
                                 })}
                                 {premium && (
@@ -285,7 +298,9 @@ export function ProtectionStatusHero({
                     {premium.excludedParts.map((part, i) => (
                         <span key={part.countKey}>
                             {i > 0 && <span aria-hidden> · </span>}
-                            <span data-count={part.countKey}>{part.label}</span>
+                            <Link href="/wallet" data-count={part.countKey} className="-my-2.5 inline-flex min-h-11 items-center hover:underline">
+                                {part.label}
+                            </Link>
                         </span>
                     ))}
                 </p>
@@ -293,13 +308,14 @@ export function ProtectionStatusHero({
 
             <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
                 {areasLine ? (
-                    <p
-                        className="flex items-start gap-2 text-sm text-foreground"
+                    <Link
+                        href="#attention"
+                        className="flex min-h-11 items-center gap-2 text-sm text-foreground hover:underline"
                         data-count="recommendation.openCount"
                     >
                         <TriangleAlert className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" aria-hidden="true" />
                         {areasLine}
-                    </p>
+                    </Link>
                 ) : (
                     <span />
                 )}

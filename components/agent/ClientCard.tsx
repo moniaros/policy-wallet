@@ -26,6 +26,8 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
         <button
             type="button"
             onClick={() => onClick(client.id)}
+            // B4: the row is the door to the client; its counts navigate with it.
+            data-href={`/customers/${client.id}`}
             className="pw-subcard flex min-h-11 w-full cursor-pointer items-center gap-3 p-3 text-left transition-colors"
         >
             {/* Avatar */}

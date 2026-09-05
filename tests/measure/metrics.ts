@@ -1470,22 +1470,40 @@ export async function countsWithoutNavigation(page: Page): Promise<CountWithoutN
  * ancestor of the other, are two targets fighting for one touch. Negative
  * margins used to hold a 44px target without growing the layout are the
  * classic cause. Every visible `a[href], button, [role=button], [role=link],
- * input, select, textarea` is paired with every other; a pair is reported once
- * with the intersection area in px².
+ * input, select, textarea` IN THE PAGE FLOW is paired with every other; a pair
+ * is reported once with the intersection area in px². Out of scope by
+ * definition, and reported by the app-shell audit instead: elements outside
+ * the viewport (an off-canvas drawer's contents) and elements in a fixed or
+ * sticky bar (a bottom navigation overlays whatever scrolls behind it — that
+ * is the bar's design, not two siblings fighting for one touch).
  */
 export interface HitAreaOverlap {
     a: string
     b: string
     areaPx: number
+    /** Boxes as [x, y, w, h] in page coordinates — the split between a layout defect and an app-shell overlap is read from these. */
+    boxA: [number, number, number, number]
+    boxB: [number, number, number, number]
 }
-export async function overlappingHitAreas(page: Page): Promise<HitAreaOverlap[]> {
-    return page.evaluate(() => {
+export async function overlappingHitAreas(page: Page, options: { includeShell?: boolean } = {}): Promise<HitAreaOverlap[]> {
+    return page.evaluate((includeShell: boolean) => {
         const sel = "a[href], button, [role='button'], [role='link'], input, select, textarea"
         const els = Array.from(document.querySelectorAll<HTMLElement>(sel)).filter((el) => {
             const cs = getComputedStyle(el)
             if (cs.display === "none" || cs.visibility === "hidden" || cs.pointerEvents === "none") return false
             const r = el.getBoundingClientRect()
-            return r.width > 0 && r.height > 0
+            if (!(r.width > 0 && r.height > 0)) return false
+            if (includeShell) return true
+            // Off-canvas (a closed drawer) or outside the viewport horizontally.
+            if (r.right <= 0 || r.left >= document.documentElement.clientWidth) return false
+            // Inside a fixed / sticky bar: overlays content by design.
+            let node: HTMLElement | null = el
+            while (node) {
+                const pos = getComputedStyle(node).position
+                if (pos === "fixed" || pos === "sticky") return false
+                node = node.parentElement
+            }
+            return true
         })
         const label = (el: HTMLElement) => `${el.tagName.toLowerCase()}${el.getAttribute("data-count") ? `[${el.getAttribute("data-count")}]` : ""} «${(el.textContent || el.getAttribute("aria-label") || "").replace(/\s+/g, " ").trim().slice(0, 40)}»`
         const out: HitAreaOverlap[] = []
@@ -1496,11 +1514,14 @@ export async function overlappingHitAreas(page: Page): Promise<HitAreaOverlap[]>
                 const rb = els[j].getBoundingClientRect()
                 const w = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left)
                 const h = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top)
-                if (w > 0.5 && h > 0.5) out.push({ a: label(els[i]), b: label(els[j]), areaPx: Math.round(w * h) })
+                if (w > 0.5 && h > 0.5) {
+                    const box = (r: DOMRect): [number, number, number, number] => [Math.round(r.left + window.scrollX), Math.round(r.top + window.scrollY), Math.round(r.width), Math.round(r.height)]
+                    out.push({ a: label(els[i]), b: label(els[j]), areaPx: Math.round(w * h), boxA: box(ra), boxB: box(rb) })
+                }
             }
         }
         return out
-    })
+    }, Boolean(options.includeShell))
 }
 
 /** Every rendered count, key → text (subject-scoped keys carry their subject). For evidence, not for a gate. */

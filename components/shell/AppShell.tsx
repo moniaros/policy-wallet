@@ -530,11 +530,17 @@ export function AppShell({
                                             strokeWidth={isActive ? 2.25 : 1.75}
                                         />
                                         {item.showsNotificationBadge && notificationCount > 0 && (
-                                            /* Same fact as the header bell badge —
-                                               same key, same «9+» saturation. */
-                                            <span data-count="notification.unreadCount" className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold leading-none text-primary-foreground">
-                                                {notificationCount > 9 ? '9+' : notificationCount}
-                                            </span>
+                                            !item.opensDrawer ? (
+                                                /* Same fact as the header bell badge — same key, same «9+» saturation. */
+                                                <span data-count="notification.unreadCount" className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold leading-none text-primary-foreground">
+                                                    {notificationCount > 9 ? '9+' : notificationCount}
+                                                </span>
+                                            ) : (
+                                                /* B4: a count is a door. This item is a drawer BUTTON, not a link, so it
+                                                   carries a presence dot; the count lives on the bell link and in this
+                                                   item's aria-label. */
+                                                <span aria-hidden="true" className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
+                                            )
                                         )}
                                     </Tag>
                                 )

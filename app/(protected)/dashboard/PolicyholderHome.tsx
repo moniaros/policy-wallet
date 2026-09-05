@@ -871,23 +871,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     and its honesty notes. What changed is what a reader meets
                     first: the facts row, the findings, the renewals — then the
                     map, the portfolio, and in the rail the people and the plan. */}
-                <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-                    <h1 className="text-h2 font-semibold tracking-tight text-foreground">
-                        {home.title}
-                    </h1>
-                    {/* The page's ONE upload offer. The desktop FAB and the
-                        portfolio card's link are gone; on an empty wallet the
-                        hero's invitation is the offer, so this stands down. */}
-                    {hasPolicies && (
-                        <Link
-                            href="/wallet/add"
-                            className="pw-primary-button pw-btn-sm inline-flex min-h-11 items-center gap-2"
-                        >
-                            <Upload className="h-4 w-4" aria-hidden="true" />
-                            {home.addNewPolicy}
-                        </Link>
-                    )}
-                </div>
 
                 {/* The review, when one is open. Above everything else on
                     purpose: a review responds to something that happened in the
@@ -908,9 +891,30 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </div>
                 )}
 
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+                    <h1 id="dashboard-title" className="text-h2 font-semibold tracking-tight text-foreground">
+                        {home.title}
+                    </h1>
+                    {/* The page's ONE upload offer. The desktop FAB and the
+                        portfolio card's link are gone; on an empty wallet the
+                        hero's invitation is the offer, so this stands down. */}
+                    {hasPolicies && (
+                        <Link
+                            href="/wallet/add"
+                            className="pw-primary-button pw-btn-sm inline-flex min-h-11 items-center gap-2"
+                        >
+                            <Upload className="h-4 w-4" aria-hidden="true" />
+                            {home.addNewPolicy}
+                        </Link>
+                    )}
+                </div>
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_340px]">
                     {/* ── Main column ─────────────────────────────────────── */}
-                    <div className="grid min-w-0 gap-5 md:grid-cols-2">
+                    <div className="grid min-w-0 gap-5">
+                    {/* B4: six labelled regions — the collector, a screen reader and a
+                        reader see the same six. Each region is labelled by the heading
+                        of the card that leads it; no new visible text. */}
+                    <section id="overview" aria-labelledby="protection-status-heading" className="grid min-w-0 gap-5 scroll-mt-20 md:grid-cols-2">
                         {protectionCard && <div className="min-w-0 md:col-span-2">{protectionCard}</div>}
                         <div className="min-w-0 md:col-span-2">
                             <ProtectionStatusHero
@@ -965,11 +969,49 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             </div>
                         )}
 
+                        <div className="min-w-0 md:col-span-2">{planCard}</div>
+                    </section>
+                    <section id="renewals" aria-labelledby="renewals-heading" className="grid min-w-0 gap-5 scroll-mt-20 md:grid-cols-2">
+                        {/* B4: renewals and the life-event prompt sit ABOVE the generated
+                            findings — the first viewport carries what is dated and what the
+                            person can tell us, before what the engine produced. */}
+                        <div className="min-w-0">
+                            <RenewalsTimelineCard
+                                items={renewalItems}
+                                // The TRUE count, not the rendered rows: items is capped
+                                // at four, and the header used to count the capped list —
+                                // eight upcoming renewals read as «6 ασφαλιστήρια».
+                                totalCount={upcomingRenewals.length}
+                                hasPolicies={policies.length > 0}
+                                showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
+                                labels={{
+                                    kicker: home.renewalTimeline,
+                                    policiesSuffixOne: home.policiesSuffixOne,
+                                    policiesSuffix: home.policiesSuffix,
+                                    trackExpirationsTitle: home.trackExpirationsTitle,
+                                    trackExpirationsBody: home.trackExpirationsBody,
+                                    noExpirationsTitle: home.noExpirationsTitle,
+                                    noExpirationsBody: home.noExpirationsBody,
+                                }}
+                            />
+                        </div>
+                        <div className="min-w-0">
+                            <LifeEventPromptCard
+                                chips={lifeEventChips}
+                                labels={{
+                                    kicker: home.lifeEventKicker,
+                                    body: home.lifeEventBody,
+                                    cta: home.lifeEventCta,
+                                }}
+                            />
+                        </div>
+
                         {/* What needs my attention, with the severity tally INSIDE it —
                             the reference's "score" slot, filled with counts. scroll-mt:
                             the plan card's «+N ακόμη» anchors here (href="#attention")
                             and the sticky top bar would otherwise cover the heading. */}
-                        <div id="attention" className="min-w-0 scroll-mt-20">
+                    </section>
+                    <section id="attention" aria-labelledby="attention-heading" className="min-w-0 scroll-mt-20">
                             <AttentionList
                                 items={attentionItems}
                                 totalCount={activeRecommendations.length}
@@ -1016,26 +1058,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     priorityNote: home.recPriorityNote,
                                 }}
                             />
-                        </div>
-
-                        <RenewalsTimelineCard
-                            items={renewalItems}
-                            // The TRUE count, not the rendered rows: items is capped
-                            // at four, and the header used to count the capped list —
-                            // eight upcoming renewals read as «6 ασφαλιστήρια».
-                            totalCount={upcomingRenewals.length}
-                            hasPolicies={policies.length > 0}
-                            showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
-                            labels={{
-                                kicker: home.renewalTimeline,
-                                policiesSuffixOne: home.policiesSuffixOne,
-                                policiesSuffix: home.policiesSuffix,
-                                trackExpirationsTitle: home.trackExpirationsTitle,
-                                trackExpirationsBody: home.trackExpirationsBody,
-                                noExpirationsTitle: home.noExpirationsTitle,
-                                noExpirationsBody: home.noExpirationsBody,
-                            }}
-                        />
+                    </section>
+                    <section id="wallet" aria-labelledby="portfolio-heading" className="grid min-w-0 gap-5 scroll-mt-20 md:grid-cols-2">
 
                         {/* What the wallet covers, by branch — and the way into
                             life-event reassessment, attached to the map it moves. */}
@@ -1043,14 +1067,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             <BranchCoverageMap
                                 entries={coverageMapEntries}
                                 labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
-                            />
-                            <LifeEventPromptCard
-                                chips={lifeEventChips}
-                                labels={{
-                                    kicker: home.lifeEventKicker,
-                                    body: home.lifeEventBody,
-                                    cta: home.lifeEventCta,
-                                }}
                             />
                         </div>
 
@@ -1084,10 +1100,12 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 />
                             </div>
                         )}
+                    </section>
                     </div>
 
                     {/* ── Rail: the people and the plan ───────────────────── */}
                     <aside className="grid min-w-0 gap-5">
+                        <section id="support" aria-labelledby="advisor-card-heading" className="grid min-w-0 gap-5">
                         <AdvisorSupportRow
                             agentConnected={Boolean(customerRelationship)}
                             agentName={agentName || null}
@@ -1103,8 +1121,9 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 helpOpen: home.helpOpen,
                             }}
                         />
+                        </section>
+                        <section id="activity" aria-label={home.recentChangesKicker} className="grid min-w-0 gap-5">
 
-                        {planCard}
 
                         {/* The standing watch. Non-entitled accounts see what
                             monitoring IS — future tense, no fabricated signals. */}
@@ -1135,6 +1154,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 explained: home.recentChangesExplained,
                             }}
                         />
+                        </section>
                     </aside>
                 </div>
             </div>
