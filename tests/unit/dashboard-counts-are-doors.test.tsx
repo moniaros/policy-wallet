@@ -89,7 +89,9 @@ describe("every rendered count is a door", () => {
         const tiles = src.match(/<StatTile\b/g) ?? []
         const doors = src.match(/href="\//g) ?? []
         const keys = [...src.matchAll(/countKey="([^"]+)"/g)].map((m) => m[1])
-        expect(tiles.length).toBeGreaterThanOrEqual(8)
+        // Seven since F2 (PW-TRANSPARENCY-02): the eighth tile was the averaged
+        // protection score, removed by decision D-F2 — a door to a score is still a score.
+        expect(tiles.length).toBeGreaterThanOrEqual(7)
         expect(doors.length).toBe(tiles.length)
         expect(keys.length).toBe(tiles.length)
         const registry = readFileSync("lib/instrumentation/count-keys.ts", "utf8")
