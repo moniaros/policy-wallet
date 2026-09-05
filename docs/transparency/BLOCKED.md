@@ -15,4 +15,4 @@ These are human-track items from the amendment that do not block a specific code
 - Deliverability of `info@`, `careers@`, `dpo@policywallet.gr`.
 - May policyholders correct values a rule reads? (scopes C1).
 - Risk DNA dimension scores: keep with denominators and text, or remove (B1.6 — options will be presented, not decided).
-- Whether `policywallet-transformation-multiagent.md` is committed to `docs/` or its references dropped; `policy-wallet-public-surface-audit.md` is retired.
+- ~~Whether `policywallet-transformation-multiagent.md` is committed to `docs/` or its references dropped~~ — **settled 2026-09-05:** it is committed at `docs/build/policywallet-transformation-multiagent.md` (referenced by `docs/build/perk-triggered-engagement-catalogue.md`). `policy-wallet-public-surface-audit.md` is **retired** as a source of truth per Amendment 01: not in the repository, superseded by `STEP0-FINDINGS.md` §J; the growth queue's GB-01 («locate or reconstruct») is marked retired.
