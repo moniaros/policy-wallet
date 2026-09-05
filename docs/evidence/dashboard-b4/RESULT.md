@@ -23,6 +23,8 @@ Sections use the shared collector's definition (`section[id]` plus top-level per
 
 `a → **b**` marks a change; ⚠ marks a change in the wrong direction. "Renewals in first viewport" is true when the renewals card or a renewal fact that is a door to it (`#renewals`) starts inside the viewport; the before-run captured only the card position, so the before value reflects the card alone.
 
+**Owner's reading (close-out F0, 2026-09-05):** scroll deltas of +2 / +20 / +14 px on three of nine captures against −4 to −6 on three others are noise; the seven metrics that encode the goal pass; B4 merges.
+
 ## Primary action per surface, after
 - `empty-320`: none
 - `empty-390`: none
