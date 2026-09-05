@@ -40,6 +40,7 @@ export const COUNT_KEYS: Record<string, string> = {
     "client.unassessedPolicyCount": "Agent client card: this client's policies in a branch with no authored check (B1.5).",
     "client.openGapCount": "Agent client card: the client's open gap rows (cached engine count) — replaced the protection-score badge (B1.7).",
     "client.linesHeldCount": "Agent client overview: coverage lines the client holds (crossSell.existingLines) — replaced the coverage percentage (B1.7).",
+    "gap.underReviewCount": "The findings-page summary band (R3): how many of the listed findings are still under provenance review — labelled, never zeroed.",
     "composition.coverageChecked": "B2 line 1 denominator N₁: coverage rules attempted for the branch at the run's catalogue version.",
     "composition.covered": "B2 A₁: coverage rules that did not fire with every declared input present and typed.",
     "composition.notCovered": "B2 B₁: coverage rules that fired (live gap rows).",

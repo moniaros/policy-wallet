@@ -54,6 +54,7 @@ import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { areaForLob, areaForRisk } from "@/lib/protection/domains"
 import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 import { partitionByProvenance, provenanceOf } from "@/lib/gaps/provenance"
+import { classifiedRecommendations, readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 /**
  * Calendar days until a date, in Athens.
@@ -148,7 +149,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             include: { agent: true },
         }),
         resolveUserEntitlements(dbUser.id),
-        db.gapInstance.findMany({
+        readLiveGapRows({ scope: "disclosed",
             where: {
                 policy: { ownerUserId: dbUser.id },
                 status: { in: ["open", "detected", "acknowledged"] },
@@ -200,11 +201,16 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             select: { id: true },
         }),
         getActiveRecommendations(dbUser.id).catch(() => []),
+        // R3: recommendations derived from under-review findings count nowhere.
         db.recommendationInstance
-            .groupBy({
-                by: ["status"],
+            .findMany({
                 where: { userId: dbUser.id },
-                _count: { _all: true },
+                select: { status: true, ruleId: true, gapInstance: { select: { definition: { select: { slug: true } } } } },
+            })
+            .then((rows) => {
+                const counts = new Map<string, number>()
+                for (const r of classifiedRecommendations(rows)) counts.set(r.status, (counts.get(r.status) ?? 0) + 1)
+                return [...counts].map(([status, n]) => ({ status, _count: { _all: n } }))
             })
             .catch(() => [] as Array<{ status: string; _count: { _all: number } }>),
         getTimeline(dbUser.id, { limit: 3 }).catch(() => []),

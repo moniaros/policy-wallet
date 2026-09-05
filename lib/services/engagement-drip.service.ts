@@ -2,6 +2,7 @@ import { db } from "../db"
 import { NON_LIVE_POLICY_STATUSES } from "../policy-status"
 import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWelcomeEmail, getDay3Email, getDay7Email } from "../email/templates/engagement-drip"
+import { countLiveGapRows } from "@/lib/gaps/gap-rows"
 
 type EngagementDripSummary = {
     welcomeEmailsSent: number
@@ -195,7 +196,7 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
         // Scoped to the SAME policies the tile counts, so the figure and its
         // stated basis share a universe — a gap on a deleted or cancelled
         // policy must not render against a live-policy count.
-        const gapCount = await db.gapInstance.count({
+        const gapCount = await countLiveGapRows({ scope: "classified",
             where: {
                 policyId: { in: policies.map((p) => p.id) },
                 status: { in: ["open", "detected", "acknowledged"] },

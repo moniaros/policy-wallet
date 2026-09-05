@@ -4,6 +4,7 @@ import { requireApiUser } from "@/lib/api-auth"
 import { getPolicyAccess } from "@/lib/policy-access"
 import { describeSeverityForDefinition } from "@/lib/gaps/severity-display"
 import { orderByProvenance, provenanceOf } from "@/lib/gaps/provenance"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 export async function GET(
     req: Request,
@@ -32,8 +33,8 @@ export async function GET(
             )
         }
 
-        const gaps = await db.gapInstance.findMany({
-            where: { policyId: id, supersededAt: null },
+        const gaps = await readLiveGapRows({ scope: "disclosed",
+            where: { policyId: id },
             include: { definition: true }
         })
         const slugOf = (g: { definition: unknown }) => (g.definition as { slug?: string } | null)?.slug

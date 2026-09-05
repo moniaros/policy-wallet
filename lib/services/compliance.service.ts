@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { toSubjectQualificationView } from "@/lib/medic/subject-view"
+import { readGapHistory } from "@/lib/gaps/gap-rows"
 
 function toIso(value: Date | null | undefined) {
     return value ? value.toISOString() : null
@@ -236,7 +237,7 @@ export async function buildUserDataExportPayload(userId: string) {
         // Derived personal data — assessments and profiling outputs the product
         // holds about this person. Art. 15 covers what is inferred, not only what
         // was submitted, and these are the conclusions the product acts on.
-        db.gapInstance.findMany({
+        readGapHistory({
             where: { policy: { ownerUserId: userId } },
             select: {
                 id: true,

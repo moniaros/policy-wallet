@@ -7,6 +7,7 @@ import { getPolicyAccess } from "@/lib/policy-access"
 import { generateSavingsReportHtml } from "@/lib/services/reports/savings-report"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { getTranslations } from "@/lib/i18n"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
 
@@ -74,7 +75,7 @@ export const GET = withApiGuard(
         // The gaps the rules decided. A GapInstance row cannot exist unless a rule
         // produced it, so its presence IS the detection — there is no isDetected flag
         // to filter on, and the report must not infer findings from the AI prose bag.
-        const decidedGaps = await db.gapInstance.findMany({
+        const decidedGaps = await readLiveGapRows({ scope: "disclosed",
             where: { policyId, status: "open", supersededAt: null },
             select: { severity: true, analysisRunId: true, analysisRun: { select: { finishedAt: true } }, definition: { select: { slug: true } } },
         })

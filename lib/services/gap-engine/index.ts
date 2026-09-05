@@ -65,6 +65,7 @@ import {
     type RiskGraphPolicyInput,
     type RiskGraphResult,
 } from "@/lib/services/risk-graph/service"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 // ── Public types ─────────────────────────────────────────────────────
 
@@ -390,7 +391,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
                 acordData: true,
             },
         }),
-        db.gapInstance.findMany({
+        readLiveGapRows({ scope: "classified",
             where: {
                 OR: [
                     { policy: { ownerUserId: userId } },
@@ -680,7 +681,7 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
         }),
         // Selected (not counted) so gaps belonging to lapsed policies can be
         // dropped — see the coverage-liveness note in runGapEngine.
-        db.gapInstance.findMany({
+        readLiveGapRows({ scope: "classified",
             where: {
                 OR: [
                     { policy: { ownerUserId: userId } },

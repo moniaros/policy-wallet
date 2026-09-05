@@ -13,6 +13,7 @@ import { db } from "@/lib/db"
 import { parseRisks, type VersionRow } from "./diff"
 import { buildTimeline, type TimelineSources } from "./build"
 import type { TimelineEntry } from "./types"
+import { classifiedRecommendations } from "@/lib/gaps/gap-rows"
 
 /** Nothing rather than an exception — see the module note. */
 async function soft<T>(promise: Promise<T>, fallback: T, label: string): Promise<T> {
@@ -93,10 +94,13 @@ export async function getTimeline(
                         title: true,
                         createdAt: true,
                         status: true,
+                        ruleId: true,
+                        gapInstance: { select: { definition: { select: { slug: true } } } },
                     },
                     orderBy: { createdAt: "desc" },
                     take: 100,
-                }),
+                    // R3: a feed never carries a recommendation derived from an under-review finding.
+                }).then((rows) => classifiedRecommendations(rows)),
                 [],
                 "recommendations"
             ),

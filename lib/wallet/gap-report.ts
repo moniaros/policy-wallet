@@ -1117,6 +1117,8 @@ export function groupGapsByCoverageArea(
 
 export function summarizeGaps(items: GapReportItem[]): {
     total: number
+    /** B3 / R3: how many of `total` are still under provenance review — the band names them. */
+    underReview: number
     byMechanic: Partial<Record<GapMechanic, number>>
     byArea: Partial<Record<GapCoverageArea, number>>
 } {
@@ -1126,7 +1128,8 @@ export function summarizeGaps(items: GapReportItem[]): {
         byMechanic[item.content.mechanic] = (byMechanic[item.content.mechanic] || 0) + 1
         byArea[item.content.coverageArea] = (byArea[item.content.coverageArea] || 0) + 1
     }
-    return { total: items.length, byMechanic, byArea }
+    const underReview = items.filter((item) => provenanceOf(item.slug) === "under_review").length
+    return { total: items.length, underReview, byMechanic, byArea }
 }
 
 export function firstSentence(text: string | null | undefined, maxLen = 140): string {

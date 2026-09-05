@@ -8,6 +8,7 @@ import {
     getChurnDay30Email,
     getChurnDay60Email,
 } from "../email/templates/churn-prevention"
+import { countLiveGapRows } from "@/lib/gaps/gap-rows"
 
 
 type ChurnPreventionSummary = {
@@ -160,7 +161,7 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 // Same universe as expiringPolicies above — this email quotes
                 // both figures, and a gap on a cancelled or deleted policy
                 // would make the two numbers describe different portfolios.
-                const openGaps = await db.gapInstance.count({
+                const openGaps = await countLiveGapRows({ scope: "classified",
                     where: {
                         policy: {
                             ownerUserId: user.id,

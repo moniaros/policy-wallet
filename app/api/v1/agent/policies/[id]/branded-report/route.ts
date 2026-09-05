@@ -11,6 +11,7 @@ import {
 } from "@/lib/services/reports/savings-report"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { getTranslations } from "@/lib/i18n"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
 
@@ -116,7 +117,7 @@ export const GET = withApiGuard(
 
         // Rule-decided gaps only — see the savings-report route for why the AI
         // prose in resultJson cannot stand in for a detection list.
-        const decidedGaps = await db.gapInstance.findMany({
+        const decidedGaps = await readLiveGapRows({ scope: "disclosed",
             where: { policyId, status: "open", supersededAt: null },
             select: { severity: true, analysisRunId: true, analysisRun: { select: { finishedAt: true } }, definition: { select: { slug: true } } },
         })

@@ -4,6 +4,7 @@ import { getAuthenticatedUser, getAuthenticatedUserOrNull } from "@/lib/auth-hel
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { runGapEngine } from "@/lib/services/gap-engine"
+import { readGapRow } from "@/lib/gaps/gap-rows"
 
 /**
  * Explicit refresh of the user's coverage picture — user-triggered.
@@ -40,7 +41,7 @@ export async function updateGapStatus(gapId: string, status: 'acknowledged' | 'd
     }
 
     // Verify the gap belongs to the user
-    const gap = await db.gapInstance.findUnique({
+    const gap = await readGapRow({
         where: { id: gapId },
         include: {
             policy: {

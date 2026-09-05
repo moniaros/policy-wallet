@@ -2235,6 +2235,7 @@ export const el = {
             summaryFoundPrefix: 'Εντοπίστηκαν',
             summaryFoundOne: 'κενό κάλυψης',
             summaryFoundMany: 'κενά κάλυψης',
+            summaryUnderReview: '— εκ των οποίων {count} υπό αξιολόγηση, δεν έχουν ταξινομηθεί ακόμη',
             mechanics: {
                 exclusion: 'Εξαιρέσεις',
                 limit: 'Όρια',

@@ -1,0 +1,4 @@
+// PROBE — a module reading gap rows directly, bypassing the accessor.
+export async function openGaps(db: any, userId: string) {
+    return db.gapInstance.findMany({ where: { policy: { ownerUserId: userId } } })
+}

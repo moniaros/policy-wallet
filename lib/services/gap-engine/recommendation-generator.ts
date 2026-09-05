@@ -10,6 +10,7 @@ import { db } from "@/lib/db"
 import { areaForLob } from "@/lib/protection/domains"
 import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { resolveGapConcept, resolveGapContent } from "@/lib/wallet/gap-report"
+import { classifiedRecommendations } from "@/lib/gaps/gap-rows"
 import type { ProfileGap, GapSeverity } from "./profile-gap-rules"
 import { lobProtectionWeight } from "./protection-score"
 import type { Mitigation, RiskAssessment, RiskConfidence, RiskStatus } from "./risk-types"
@@ -870,7 +871,9 @@ export async function getActiveRecommendations(
     stated: readonly string[] | null = null
 ): Promise<RecommendationOutput[]> {
     const statedIds = stated
-    const recs = await db.recommendationInstance.findMany({
+    // R3: a recommendation derived from an under-review finding is that finding
+    // under another name — it leaves the list here, at the read.
+    const recs = classifiedRecommendations(await db.recommendationInstance.findMany({
         where: {
             userId,
             status: "active",
@@ -887,10 +890,10 @@ export async function getActiveRecommendations(
                 },
             },
             // Evidence ladder passthrough — lets the card show advisor weight.
-            gapInstance: { select: { validationState: true } },
+            gapInstance: { select: { validationState: true, definition: { select: { slug: true } } } },
         },
         orderBy: [{ createdAt: "desc" }],
-    })
+    }))
 
     // Same order as prioritizeRecommendations — urgency, then how much the
     // missing cover matters, never what it costs to buy.

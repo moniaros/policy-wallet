@@ -21,6 +21,7 @@ import { presentCustomerIdentity } from "@/lib/agent-consent"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary, CrossSellOpportunityItem, AgentTaskItem } from "@/components/agent/types"
 import { calendarDaysUntil, startOfAthensDay, endOfAthensDay } from "@/lib/policy-status"
 import { excludeUnderReview } from "@/lib/gaps/provenance"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 export default async function DashboardPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -345,8 +346,8 @@ export default async function DashboardPage() {
     // Same visibility rule as the policy query above and as gapsVisibilityWhere
     // further down. Provenance (B3): findings still under review are never
     // counted in a summary, so this counts the CLASSIFIED open findings per policy.
-    const gapRows = await prisma.gapInstance.findMany({
-        where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null, policy: policyVisibilityWhere },
+    const gapRows = await readLiveGapRows({ scope: "classified",
+        where: { policy: policyVisibilityWhere },
         select: { policyId: true, definition: { select: { slug: true } } },
     })
     const gapCountByPolicy = new Map<string, number>()
@@ -403,8 +404,10 @@ export default async function DashboardPage() {
             where: {
                 userId: { in: scoreEligibleIds },
             },
-            select: { userId: true, overallScore: true, gapCount: true },
-        }).catch(() => [] as Array<{ userId: string; overallScore: number; gapCount: number }>)
+            // R3: gapCount is NOT read from the score record any more — the chip
+            // counts classified live findings through the gap-row accessor.
+            select: { userId: true, overallScore: true },
+        }).catch(() => [] as Array<{ userId: string; overallScore: number }>)
         : []
 
     const scoresByUserId = new Map(
@@ -473,7 +476,7 @@ export default async function DashboardPage() {
             nextActionLabel: nextAction?.description || null,
             activationStatus: rel.status === "active" ? "activated" : rel.status === "pending_activation" ? "invited" : "inactive",
             protectionScore: scoresByUserId.get(rel.policyholderUserId)?.overallScore ?? null,
-            gapCount: scoresByUserId.get(rel.policyholderUserId)?.gapCount ?? 0,
+            gapCount: clientGaps,
             // B1.5: a gap count of zero over unassessed policies is not a clean book.
             unassessedPolicyCount: clientPolicies.filter((p) => isUnauthoredBranch(p.lineOfBusiness)).length,
         }
@@ -522,7 +525,7 @@ export default async function DashboardPage() {
     const clientUserIds = relationships.map((r) => r.policyholderUserId)
     const gapsVisibilityWhere = await getAgentPolicyVisibilityWhere(agentId)
     const criticalHighGaps = clientUserIds.length > 0
-        ? await prisma.gapInstance.findMany({
+        ? await readLiveGapRows({ scope: "classified",
             where: {
                 status: { in: [...OPEN_GAP_STATUSES] },
                 severity: { in: ["critical", "high"] },

@@ -1,9 +1,9 @@
 import { calendarDaysUntil, startOfAthensDay, athensWeekday, NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
-import { excludeUnderReview } from "@/lib/gaps/provenance"
 import { db } from "../db"
 import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
 import { getActiveRecommendations } from "./gap-engine/recommendation-generator"
+import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 /**
  * ISO-week stamp (`2026-W32`) used as the digest's idempotency key, so a cron
@@ -131,7 +131,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             // must not quote two different definitions of "your policies".
             // Findings still under provenance review are never counted in an
             // email (PW-TRANSPARENCY-02 B3): this counts the classified ones.
-            const newGapRows = await db.gapInstance.findMany({
+            const newGapRows = await readLiveGapRows({ scope: "classified",
                 where: {
                     policy: {
                         ownerUserId: user.id,
@@ -139,11 +139,10 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     },
                     status: { in: ["open", "detected"] },
                     detectedAt: { gte: oneWeekAgo },
-                    supersededAt: null,
                 },
-                select: { definition: { select: { slug: true } } },
+                select: { id: true },
             })
-            const newGaps = excludeUnderReview(newGapRows, (g) => g.definition.slug).length
+            const newGaps = newGapRows.length
 
             const unreadMessages = await db.notificationEvent.count({
                 where: {
