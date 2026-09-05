@@ -71,11 +71,11 @@ export function CoverageGapsWidget({
                   : (labels.assessmentExcludedMany ?? null)?.replace("{excluded}", String(excludedPolicies)) ?? null
         return (
             <p className="text-sm text-muted-foreground" data-assessment-state="assessed">
-                <Link href="/wallet" data-count="portfolio.assessedCount" className="-my-2.5 inline-flex min-h-11 items-center hover:underline">{among}</Link>
+                <span data-count="portfolio.assessedCount">{among}</span>
                 {excluded && (
                     <>
                         {" "}
-                        <Link href="/protection?lens=branch" data-count="portfolio.unassessedCount" className="-my-2.5 inline-flex min-h-11 items-center hover:underline">{excluded}</Link>
+                        <span data-count="portfolio.unassessedCount">{excluded}</span>
                     </>
                 )}
             </p>
@@ -101,16 +101,15 @@ export function CoverageGapsWidget({
             <>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5" role="list" aria-label={labels.groupLabel}>
                     {present.map((key) => (
-                        <Link
+                        <span
                             key={key}
-                            href="/protection?lens=risk"
                             role="listitem"
                             data-count="gap.provenanceCount"
                             data-count-subject={key}
-                            className="inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-foreground/80 tabular-nums hover:underline"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80 tabular-nums"
                         >
                             {`${counts[key]} ${labels.provenance[key]}`}
-                        </Link>
+                        </span>
                     ))}
                 </div>
                 {underReviewLine && <div className="mt-2">{underReviewLine}</div>}

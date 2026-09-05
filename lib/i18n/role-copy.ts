@@ -146,8 +146,6 @@ type RoleCopy = {
         actionAllGood: string
     }
     agentKpis: {
-        /** B4: the sr-only heading that makes the eight tiles one section. */
-        heading: string
         totalClients: string
         expiringClients: string
         gapClients: string
@@ -369,7 +367,6 @@ const roleCopy: Record<Language, RoleCopy> = {
             actionAllGood: "Όλα καλά",
         },
         agentKpis: {
-            heading: "Δείκτες βιβλίου",
             totalClients: "Σύνολο πελατών",
             expiringClients: "Ασφαλιστήρια που λήγουν",
             gapClients: "Με κενά κάλυψης",
@@ -586,7 +583,6 @@ const roleCopy: Record<Language, RoleCopy> = {
             actionAllGood: "All good",
         },
         agentKpis: {
-            heading: "Book indicators",
             totalClients: "Total clients",
             expiringClients: "Expiring policies",
             gapClients: "With coverage gaps",

@@ -39,21 +39,15 @@ export function AgentKpiStrip({ stats, className = "" }: AgentKpiStripProps) {
     })
 
     return (
-        <section id="agent-kpis" aria-labelledby="agent-kpi-heading" className={className}>
-            <h2 id="agent-kpi-heading" className="sr-only">
-                {copy.heading}
-            </h2>
-            <StatGrid>
-            <StatTile href="/customers" countKey="agent.totalClients" icon={Users} accent="neutral" label={copy.totalClients} value={String(stats.totalClients)} />
-            <StatTile href="/customers?filter=expiring" countKey="agent.expiringClients" icon={CalendarClock} accent="warning" label={copy.expiringClients} value={String(stats.clientsWithExpiring)} />
-            <StatTile href="/customers?filter=gaps" countKey="agent.gapClients" icon={AlertTriangle} accent="critical" label={copy.gapClients} value={String(stats.clientsWithGaps)} />
-            <StatTile href="/customers?filter=invited" countKey="agent.pendingInvites" icon={Mail} accent="neutral" label={copy.pendingInvites} value={String(stats.pendingInvites)} />
-            <StatTile href="/customers" countKey="agent.policiesThisMonth" icon={FileUp} accent="positive" label={copy.policiesThisMonth} value={String(stats.policiesThisMonth)} />
-            <StatTile href="/tasks" countKey="agent.followUps" icon={ListChecks} accent="warning" label={copy.followUps} value={String(stats.recommendedFollowUps)} />
-            <StatTile href="/opportunities" countKey="agent.pipelineEur" icon={TrendingUp} accent="positive" label={copy.pipeline} value={money.format(stats.pipelineEstimateEur)} />
+        <StatGrid className={className}>
+            <StatTile icon={Users} accent="neutral" label={copy.totalClients} value={String(stats.totalClients)} />
+            <StatTile icon={CalendarClock} accent="warning" label={copy.expiringClients} value={String(stats.clientsWithExpiring)} />
+            <StatTile icon={AlertTriangle} accent="critical" label={copy.gapClients} value={String(stats.clientsWithGaps)} />
+            <StatTile icon={Mail} accent="neutral" label={copy.pendingInvites} value={String(stats.pendingInvites)} />
+            <StatTile icon={FileUp} accent="positive" label={copy.policiesThisMonth} value={String(stats.policiesThisMonth)} />
+            <StatTile icon={ListChecks} accent="warning" label={copy.followUps} value={String(stats.recommendedFollowUps)} />
+            <StatTile icon={TrendingUp} accent="positive" label={copy.pipeline} value={money.format(stats.pipelineEstimateEur)} />
             <StatTile
-                href="/customers"
-                countKey="agent.portfolioCompleteness"
                 icon={Gauge}
                 accent={
                     stats.portfolioCompleteness === null
@@ -68,7 +62,6 @@ export function AgentKpiStrip({ stats, className = "" }: AgentKpiStripProps) {
                 value={stats.portfolioCompleteness !== null ? `${stats.portfolioCompleteness}/100` : "—"}
                 hint={stats.portfolioCompleteness === null ? copy.noScores : undefined}
             />
-            </StatGrid>
-        </section>
+        </StatGrid>
     )
 }

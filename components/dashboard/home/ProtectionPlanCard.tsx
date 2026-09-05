@@ -87,13 +87,13 @@ export function ProtectionPlanCard({
                 title={labels.kicker}
                 id="protection-plan-heading"
                 meta={
-                    <Link href="#protection-plan-heading" className="-my-2.5 inline-flex min-h-11 items-center text-caption font-medium text-muted-foreground hover:underline">
+                    <span className="text-caption font-medium text-muted-foreground">
                         {beforeDone}
                         <span data-count="plan.stepsDone">{completed}</span>
                         {betweenNumbers}
                         <span data-count="plan.stepsTotal">{total}</span>
                         {afterTotal}
-                    </Link>
+                    </span>
                 }
             />
 

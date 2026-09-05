@@ -1,6 +1,5 @@
 import { ArrowRight, Compass } from "lucide-react"
 import { CardHead } from "./CardHead"
-import Link from "next/link"
 import { ActionLink } from "./RecommendationAnalytics"
 import { protectionDomainIcon } from "@/lib/services/protection-profile/domain-icons"
 import { IMPORTANCE_TONE, type ProtectionMapLabels } from "@/components/onboarding/protection-profile/ProtectionMapCard"
@@ -158,14 +157,14 @@ export function ProtectionPrioritiesCard({
             <dl className="mt-4 grid grid-cols-2 gap-3">
                 <div className="pw-subcard p-3">
                     <dt className="text-caption text-muted-foreground">{labels.countLabel}</dt>
-                    <dd className="text-h3 font-semibold text-foreground">
-                        <Link href="/protection?lens=risk" data-count="needs.priorityCount" className="inline-flex min-h-11 items-center hover:underline">{priorityCount(priorities)}</Link>
+                    <dd className="text-h3 font-semibold text-foreground" data-count="needs.priorityCount">
+                        {priorityCount(priorities)}
                     </dd>
                 </div>
                 <div className="pw-subcard p-3">
                     <dt className="text-caption text-muted-foreground">{labels.unsureLabel}</dt>
-                    <dd className="text-h3 font-semibold text-foreground">
-                        <Link href="/protection?lens=risk#risk-profile-wizard" data-count="needs.unsureCount" className="inline-flex min-h-11 items-center hover:underline">{unsureCount}</Link>
+                    <dd className="text-h3 font-semibold text-foreground" data-count="needs.unsureCount">
+                        {unsureCount}
                     </dd>
                 </div>
             </dl>
@@ -173,15 +172,15 @@ export function ProtectionPrioritiesCard({
             {/* Counts of WORDS over the rows shown above, never summable into one. */}
             <dl className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-caption text-muted-foreground">
                 <div className="flex items-baseline gap-1">
-                    <dd className="font-semibold text-foreground"><Link href="/protection?lens=risk" data-count="attention.areaCount" className="-my-2.5 inline-flex min-h-11 items-center px-1 hover:underline">{shown.areaCount}</Link></dd>
+                    <dd className="font-semibold text-foreground" data-count="attention.areaCount">{shown.areaCount}</dd>
                     <dt>{labels.areaCountLabel}</dt>
                 </div>
                 <div className="flex items-baseline gap-1">
-                    <dd className="font-semibold text-foreground"><Link href="/protection?lens=risk" data-count="attention.unknownCount" className="-my-2.5 inline-flex min-h-11 items-center px-1 hover:underline">{shown.unknownCount}</Link></dd>
+                    <dd className="font-semibold text-foreground" data-count="attention.unknownCount">{shown.unknownCount}</dd>
                     <dt>{labels.unknownCountLabel}</dt>
                 </div>
                 <div className="flex items-baseline gap-1">
-                    <dd className="font-semibold text-foreground"><Link href="/protection?lens=branch" data-count="attention.coveredCount" className="-my-2.5 inline-flex min-h-11 items-center px-1 hover:underline">{shown.coveredCount}</Link></dd>
+                    <dd className="font-semibold text-foreground" data-count="attention.coveredCount">{shown.coveredCount}</dd>
                     <dt>{labels.coveredCountLabel}</dt>
                 </div>
             </dl>

@@ -1,7 +1,6 @@
 "use client"
 
 import type { ElementType, ReactNode } from "react"
-import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
@@ -43,10 +42,6 @@ interface StatTileProps {
     /** Replaces the icon chip entirely (e.g. a progress ring). */
     visual?: ReactNode
     className?: string
-    /** B4: a tile that counts something is a door to the set it counts. */
-    href?: string
-    /** The count key its value carries (`data-count`), registered in lib/instrumentation/count-keys.ts. */
-    countKey?: string
 }
 
 export function StatTile({
@@ -57,12 +52,9 @@ export function StatTile({
     accent = "neutral",
     visual,
     className,
-    href,
-    countKey,
 }: StatTileProps) {
-    const classes = cn("pw-card flex items-center gap-3 pw-pad-tight", href && "transition-colors hover:border-primary/40", className)
-    const inner = (
-        <>
+    return (
+        <div className={cn("pw-card flex items-center gap-3 pw-pad-tight", className)}>
             {visual ?? (Icon && (
                 <span className={cn("pw-card-chip", CHIP[accent])} aria-hidden="true">
                     <Icon className="h-4 w-4" strokeWidth={1.75} />
@@ -70,21 +62,13 @@ export function StatTile({
             ))}
             <div className="min-w-0">
                 <p className="text-caption font-medium leading-tight text-muted-foreground">{label}</p>
-                <p className="mt-0.5 text-title font-semibold tabular-nums leading-none tracking-tight text-foreground" data-count={countKey}>
+                <p className="mt-0.5 text-title font-semibold tabular-nums leading-none tracking-tight text-foreground">
                     {value}
                 </p>
                 {hint && <p className="mt-1 text-caption text-muted-foreground">{hint}</p>}
             </div>
-        </>
+        </div>
     )
-    if (href) {
-        return (
-            <Link href={href} className={classes}>
-                {inner}
-            </Link>
-        )
-    }
-    return <div className={classes}>{inner}</div>
 }
 
 /**

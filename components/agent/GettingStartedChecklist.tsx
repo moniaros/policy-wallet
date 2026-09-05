@@ -133,7 +133,7 @@ export function AgentGettingStartedChecklist({
                     <button
                         type="button"
                         onClick={() => setCollapsed(!collapsed)}
-                        className="grid h-11 w-11 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         // The label alone changes wording but never announces
                         // STATE, so a screen reader could not report whether the
                         // checklist is open — matching ActionQueueCard, which
@@ -151,7 +151,7 @@ export function AgentGettingStartedChecklist({
                                 localStorage.setItem("pw-agent-checklist-dismissed", "true")
                             }
                         }}
-                        className="grid h-11 w-11 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         aria-label={t("Απόρριψη", "Dismiss")}
                     >
                         <X className="h-4 w-4" />
