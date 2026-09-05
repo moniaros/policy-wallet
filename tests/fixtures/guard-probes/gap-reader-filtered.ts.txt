@@ -1,0 +1,21 @@
+import { db } from "@/lib/db"
+import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
+
+export async function liveForPolicy(policyId: string, gapId: string) {
+    const rows = await db.gapInstance.findMany({
+        where: { policyId, status: { in: [...OPEN_GAP_STATUSES] } },
+    })
+    const current = await db.gapInstance.count({
+        where: { policyId, supersededAt: null },
+    })
+    const one = await db.gapInstance.findFirst({ where: { id: gapId, policyId } })
+    const policy = await db.policy.findUnique({
+        where: { id: policyId },
+        include: {
+            gapInstances: {
+                where: { status: "open" },
+            },
+        },
+    })
+    return { rows, current, one, policy }
+}

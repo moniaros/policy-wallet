@@ -1,50 +1,18 @@
 import type { Policy, GapDefinition } from '@prisma/client'
 import { db } from '@/lib/db'
-import { isPolicyCoverageActive, calendarDaysUntil } from '@/lib/policy-status'
+import { calendarDaysUntil } from '@/lib/policy-status'
 
 export type GapSeverity = 'critical' | 'high' | 'medium' | 'low'
 export type GapStatus = 'detected' | 'acknowledged' | 'resolved' | 'dismissed'
 
-export interface DetectedGap {
-    gapDefinitionId: string
-    policyId: string
-    severity: GapSeverity
-    title: string
-    description: string
-    detectedAt: Date
-}
-
-/**
- * Detect gaps for a single policy
- */
-export async function detectGapsForPolicy(policy: Policy): Promise<DetectedGap[]> {
-    const detectedGaps: DetectedGap[] = []
-
-    // Get active gap definitions for this line of business
-    const gapDefinitions = await (db.gapDefinition.findMany as any)({
-        where: {
-            lineOfBusiness: policy.lineOfBusiness,
-            isActive: true,
-        },
-    })
-
-    for (const gapDef of gapDefinitions) {
-        const isGapPresent = evaluateGapLogic(policy, gapDef)
-
-        if (isGapPresent) {
-            detectedGaps.push({
-                gapDefinitionId: gapDef.id,
-                policyId: policy.id,
-                severity: (gapDef.severity || 'medium') as GapSeverity,
-                title: gapDef.title || gapDef.name || 'Coverage Gap',
-                description: gapDef.description || '',
-                detectedAt: new Date(),
-            })
-        }
-    }
-
-    return detectedGaps
-}
+// The legacy writer that lived here — `DetectedGap`, `detectGapsForPolicy`,
+// `detectGapsForUser`, `createGapInstances` — was removed in Sept 2026
+// (PW-TRANSPARENCY-02 B0.1). It evaluated the same definitions but wrote
+// `gap_instances` rows with no run, no provenance, and RE-ACTIVATED dismissed
+// rows, from the protection refresh action and the process-policy job. Rows are
+// now written only by lib/gaps/gap-instance-writer.ts, from an analysis run.
+// Nothing below this line changed: `decideGapsForPolicy` still owns detection
+// and severity.
 
 /**
  * A gap the RULES found, with the evidence for why.
@@ -186,30 +154,6 @@ function ruleInputsFor(
     }
 
     return inputs
-}
-
-/**
- * Detect gaps for all user policies
- */
-export async function detectGapsForUser(userId: string): Promise<DetectedGap[]> {
-    const allPolicies = await db.policy.findMany({
-        where: {
-            ownerUserId: userId,
-        },
-    })
-
-    // Lapsed policies carry no current risk — detecting gaps "inside" a
-    // policy that no longer covers anything just manufactures false findings.
-    const policies = allPolicies.filter((policy) => isPolicyCoverageActive(policy))
-
-    const allGaps: DetectedGap[] = []
-
-    for (const policy of policies) {
-        const policyGaps = await detectGapsForPolicy(policy)
-        allGaps.push(...policyGaps)
-    }
-
-    return allGaps
 }
 
 /**
@@ -442,111 +386,6 @@ export function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
 }
 
 /**
- * Create gap instances for detected gaps.
- * Idempotent: re-activates dismissed/resolved gaps instead of creating duplicates.
- * Handles gaps across multiple policies (e.g. from detectGapsForUser).
- * The DB partial unique index on (policy_id, gap_definition_id) is the final guard
- * against concurrent-insert races; P2002 errors are caught and ignored.
- */
-export async function createGapInstances(detectedGaps: DetectedGap[]): Promise<void> {
-    if (detectedGaps.length === 0) return
-
-    // Group by policyId — gaps from different policies must be queried separately
-    // because the unique constraint is (policyId, gapDefinitionId), not gapDefinitionId alone.
-    const byPolicy = new Map<string, DetectedGap[]>()
-    for (const gap of detectedGaps) {
-        const list = byPolicy.get(gap.policyId) ?? []
-        list.push(gap)
-        byPolicy.set(gap.policyId, list)
-    }
-
-    for (const [policyId, policyGaps] of byPolicy) {
-        const definitionIds = policyGaps.map((g) => g.gapDefinitionId)
-
-        // Bulk query for this policy — key by (policyId, gapDefinitionId) composite
-        const existingInstances = await db.gapInstance.findMany({
-            where: { policyId, gapDefinitionId: { in: definitionIds } },
-            select: { id: true, gapDefinitionId: true, status: true },
-        })
-        // Map keyed by gapDefinitionId — safe because policyId is fixed in this iteration
-        const existingByDef = new Map(existingInstances.map((e) => [e.gapDefinitionId, e]))
-
-        for (const gap of policyGaps) {
-            const existing = existingByDef.get(gap.gapDefinitionId)
-
-            if (!existing) {
-                try {
-                    await db.gapInstance.create({
-                        data: {
-                            policyId: gap.policyId,
-                            gapDefinitionId: gap.gapDefinitionId,
-                            detectedAt: gap.detectedAt,
-                            status: 'detected',
-                            severity: gap.severity,
-                        },
-                    })
-                } catch (e: any) {
-                    // P2002 = unique constraint violation from a concurrent insert — harmless
-                    if (e.code !== 'P2002') throw e
-                }
-            } else if (existing.status === 'dismissed' || existing.status === 'resolved') {
-                // Gap was previously closed but has been re-detected — reactivate it
-                await db.gapInstance.update({
-                    where: { id: existing.id },
-                    data: { status: 'detected', detectedAt: gap.detectedAt, severity: gap.severity },
-                })
-            }
-            // else: gap is already active (detected/acknowledged) — skip (idempotent)
-        }
-    }
-}
-
-/**
- * Get severity color for UI
- */
-export function getSeverityColor(severity: GapSeverity): {
-    bg: string
-    text: string
-    border: string
-    dot: string
-} {
-    const colors = {
-        critical: {
-            bg: 'bg-red-50 dark:bg-red-900/20',
-            text: 'text-red-700 dark:text-red-400',
-            border: 'border-red-200 dark:border-red-800',
-            dot: 'bg-red-500',
-        },
-        high: {
-            bg: 'bg-orange-50 dark:bg-orange-900/20',
-            text: 'text-orange-700 dark:text-orange-400',
-            border: 'border-orange-200 dark:border-orange-800',
-            dot: 'bg-orange-500',
-        },
-        high_risk: { // Added for safety if it comes from different source
-            bg: 'bg-orange-50 dark:bg-orange-900/20',
-            text: 'text-orange-700 dark:text-orange-400',
-            border: 'border-orange-200 dark:border-orange-800',
-            dot: 'bg-orange-500',
-        },
-        medium: {
-            bg: 'bg-amber-50 dark:bg-amber-900/20',
-            text: 'text-amber-700 dark:text-amber-400',
-            border: 'border-amber-200 dark:border-amber-800',
-            dot: 'bg-amber-500',
-        },
-        low: {
-            bg: 'bg-blue-50 dark:bg-blue-900/20',
-            text: 'text-blue-700 dark:text-blue-400',
-            border: 'border-blue-200 dark:border-blue-800',
-            dot: 'bg-blue-500',
-        },
-    }
-
-    return (colors as any)[severity] || colors.medium
-}
-
-/**
  * A second, parallel gap engine used to live here — `detectGaps(policies)`, with
  * its own `SimpleGap` shape and rules for missing health cover, expiring
  * policies and "low coverage amount".
@@ -559,29 +398,8 @@ export function getSeverityColor(severity: GapSeverity): {
  * disagreed with the real engine's (different severities, no line-of-business
  * awareness, `=== 'home'` matching that skipped renters).
  *
- * The engine that runs is `detectGapsForPolicy` above, plus
+ * The engine that runs is `decideGapsForPolicy` above, plus
  * lib/services/gap-engine. A ninety-line duplicate with a passing test suite
  * reads as maintained; it was a prototype, and it is gone.
  */
 
-/**
- * Get severity label
- */
-export function getSeverityLabel(severity: GapSeverity, language: 'el' | 'en' = 'el'): string {
-    const labels: any = {
-        el: {
-            critical: 'Κρίσιμο',
-            high: 'Υψηλό',
-            medium: 'Μέτριο',
-            low: 'Χαμηλό',
-        },
-        en: {
-            critical: 'Critical',
-            high: 'High',
-            medium: 'Medium',
-            low: 'Low',
-        },
-    }
-
-    return labels[language]?.[severity] || severity
-}

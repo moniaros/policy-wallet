@@ -317,8 +317,10 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
         })
         created.push(policy.id)
 
+        // Captured because every gap row must name the run that produced it (B0.2).
+        let completedRun: { id: string } | null = null
         if (spec.analyzed) {
-            await db.policyAnalysisRun.create({
+            completedRun = await db.policyAnalysisRun.create({
                 data: {
                     policyId: policy.id,
                     userId: owner.id,
@@ -329,6 +331,7 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
                     startedAt: analyzedAt!,
                     finishedAt: analyzedAt!,
                 },
+                select: { id: true },
             })
             if (spec.failedRun) {
                 const failedAt = new Date(Date.now() - 2 * DAY)
@@ -352,6 +355,22 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
         // definition — the same value the rule engine writes. Nothing here
         // decides detection or severity (lib/gap-detection.ts owns both).
         if (spec.gaps && spec.gaps > 0) {
+            // A finding without a producing run is the defect class B0 removed;
+            // a fixture that wants gaps on a policy gets a completed run for them.
+            const gapRun =
+                completedRun ??
+                (await db.policyAnalysisRun.create({
+                    data: {
+                        policyId: policy.id,
+                        userId: owner.id,
+                        provider: "fixture",
+                        model: "fixture",
+                        status: "completed",
+                        startedAt: new Date(),
+                        finishedAt: new Date(),
+                    },
+                    select: { id: true },
+                }))
             const defs = await db.gapDefinition.findMany({
                 where: { isActive: true, lineOfBusiness: spec.lineOfBusiness },
                 take: spec.gaps,
@@ -369,6 +388,8 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
                     data: {
                         policyId: policy.id,
                         userId: owner.id,
+                        analysisRunId: gapRun.id,
+                        lineOfBusiness: spec.lineOfBusiness,
                         gapDefinitionId: def.id,
                         severity: def.severity,
                         status: "detected",

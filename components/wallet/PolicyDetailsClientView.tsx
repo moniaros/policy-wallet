@@ -54,6 +54,7 @@ import {
     policyAssetIdentity,
 } from "@/lib/wallet/policy-identity"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
+import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
 import { resolveStoredSummary } from "@/lib/wallet/summary-language"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
@@ -149,6 +150,8 @@ interface PolicyDetailsClientProps {
     overlapFinding?: { partnerLabel: string } | null
     /** True when this policy has a checkable insured subject (plate/address). */
     overlapChecked?: boolean
+    /** B0.3: which run the findings come from, resolved to a sentence server-side. */
+    findingsProvenance?: ProvenanceLine | null
 }
 
 export function PolicyDetailsClient({
@@ -176,6 +179,7 @@ export function PolicyDetailsClient({
     canReviewExtraction = false,
     overlapFinding = null,
     overlapChecked = false,
+    findingsProvenance = null,
     exclusionHint = null,
     glossaryHints = null,
 }: PolicyDetailsClientProps) {
@@ -1066,6 +1070,7 @@ export function PolicyDetailsClient({
                                 report={{ items: gapReportItems, reportUnlocked }}
                                 tier={tier}
                                 trialAnalysisAvailable={trialAnalysisAvailable}
+                                findingsProvenance={findingsProvenance}
                             />
 
                             {/* The "worth checking" half of the branch actions —

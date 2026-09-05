@@ -1,7 +1,6 @@
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
-import { detectGapsForPolicy, createGapInstances } from "@/lib/gap-detection"
-import { sendNotification } from "@/lib/notifications"
+import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 import { requireApiUser } from "@/lib/api-auth"
@@ -79,42 +78,41 @@ export async function POST(req: Request) {
                 return createApiResponse({ processed: false, reason: "analysis_already_running" })
             }
 
-            // 1. Process Gaps
-            const newGaps = await detectGapsForPolicy(policy)
-            await createGapInstances(newGaps)
+            // Rule findings are written ONLY by an analysis run, through
+            // lib/gaps/gap-instance-writer.ts (B0.1). This job used to run the
+            // legacy detector over the stored extraction and write rows with no
+            // run, no provenance and reactivate semantics, then notify on the
+            // result. "Process this policy" now means what the rest of the
+            // product means by it: create the run (idempotent — an in-flight run
+            // is returned, a gated one comes back `blocked`) and hand it to the
+            // durable queue; the run's own completion events carry the findings.
+            const { PolicyAnalysisOrchestratorService } = await import(
+                "@/lib/services/analysis/policy-analysis-orchestrator.service"
+            )
+            const orchestrator = new PolicyAnalysisOrchestratorService()
+            const run = await orchestrator.createRun(policyId, authResult.dbUser.id)
 
-            // 2. Notify the owner about the findings that warrant it.
-            //
-            // Three things were wrong with the message this sent. It was headed
-            // "Security Alert", which belongs on a breach notice, not on a finding
-            // about someone's cover. It called the set "critical gaps" while the
-            // filter also admits `high` ones — so a policy with two high-severity
-            // findings was reported as having two critical ones. And it was English
-            // only, in a Greek-default product, with a fixed plural that read
-            // "1 critical gaps".
-            const seriousGaps = newGaps.filter(g => g.severity === 'critical' || g.severity === 'high')
-            if (seriousGaps.length > 0) {
-                const n = seriousGaps.length
-                const findingsEl = `${n} ${n === 1 ? 'σημαντικό εύρημα' : 'σημαντικά ευρήματα'}`
-                const findingsEn = `${n} significant ${n === 1 ? 'finding' : 'findings'}`
-                await sendNotification({
-                    userId: authResult.dbUser.id,
-                    eventType: 'GAP_DETECTED',
-                    title: { el: 'Εντοπίστηκε πιθανό κενό κάλυψης', en: 'Possible coverage gap found' },
-                    message: {
-                        el: `Η ανάλυση εντόπισε ${findingsEl} στο ασφαλιστήριο ${policy.insurerName}.`,
-                        en: `The analysis found ${findingsEn} in your ${policy.insurerName} policy.`,
-                    },
-                    relatedObjectType: 'policy',
-                    relatedObjectId: policy.id,
-                    channels: ['email', 'push']
+            if (run.status === "blocked") {
+                return createApiResponse({
+                    processed: false,
+                    reason: run.blockedReason || run.failureCode || "blocked",
+                    run_id: run.id,
                 })
+            }
+
+            const language = (authResult.dbUser.preferredLanguage as "en" | "el") || "el"
+            const queued = await enqueueAnalysisRun(run.id, language)
+            if (!queued) {
+                // No durable queue configured (dev): execute inline, like the
+                // wallet action does, rather than leaving a `queued` row nobody
+                // will pick up.
+                await orchestrator.executeRun(run.id, language)
             }
 
             return createApiResponse({
                 processed: true,
-                gaps_found: newGaps.length,
-                critical_gaps: seriousGaps.length
+                run_id: run.id,
+                queued,
             })
 
         })

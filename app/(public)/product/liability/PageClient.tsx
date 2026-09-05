@@ -110,7 +110,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <p className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">{t("Έλεγχος αστικής ευθύνης", "Liability check")}</p>
-                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Ελέγχθηκαν 2 ασφαλιστήρια", "2 policies checked")}</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Παράδειγμα ελέγχου", "Example check")}</p>
                             </div>
                         </div>
                         <div className="space-y-5">

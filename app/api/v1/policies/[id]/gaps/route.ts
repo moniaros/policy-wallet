@@ -32,7 +32,7 @@ export async function GET(
         }
 
         const gaps = await db.gapInstance.findMany({
-            where: { policyId: id },
+            where: { policyId: id, supersededAt: null },
             include: { definition: true }
         })
 

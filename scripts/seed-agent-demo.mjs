@@ -157,10 +157,20 @@ async function main() {
 
   // Idempotent: clear prior demo gaps for this policy, then recreate.
   await db.gapInstance.deleteMany({ where: { policyId: policy.id, gapDefinitionId: { in: Object.values(defIds) } } });
+  // Every gap row records the run that produced it (B0.2). A demo row gets a
+  // completed demo run rather than a provenance hole.
+  const demoRun = await db.policyAnalysisRun.create({
+    data: {
+      policyId: policy.id, userId: customer.id, provider: "seed", model: "seed-agent-demo",
+      status: "completed", startedAt: new Date(), finishedAt: new Date(),
+    },
+    select: { id: true },
+  });
   for (const g of gaps) {
     await db.gapInstance.create({
       data: {
         policyId: policy.id, userId: customer.id, gapDefinitionId: defIds[g.slug],
+        analysisRunId: demoRun.id, lineOfBusiness: "motor",
         severity: g.severity, status: "open",
         aiExplanation: g.aiExplanation, aiExplanationEl: g.aiExplanationEl,
         aiSuggestion: g.aiSuggestion, aiSuggestionEl: g.aiSuggestionEl, detectedAt: new Date(),

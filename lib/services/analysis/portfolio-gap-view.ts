@@ -32,7 +32,6 @@ export interface LineOfBusinessSummary {
     policyCount: number
     totalPremium: number
     gapCount: number
-    avgSuccessPct: number | null
 }
 
 export interface PortfolioGapEntry {
@@ -74,7 +73,6 @@ export async function getPortfolioGapSummary(
                 orderBy: { finishedAt: "desc" },
                 take: 1,
                 select: {
-                    overallSuccessPct: true,
                     resultJson: true,
                 },
             },
@@ -92,17 +90,10 @@ export async function getPortfolioGapSummary(
             policyCount: 0,
             totalPremium: 0,
             gapCount: 0,
-            avgSuccessPct: null,
         }
         existing.policyCount += 1
         existing.totalPremium += p.premiumAmount ? Number(p.premiumAmount) : 0
         existing.gapCount += p.gapInstances.length
-
-        const runPct = p.analysisRuns[0]?.overallSuccessPct
-        if (runPct != null) {
-            const prevTotal = (existing.avgSuccessPct ?? 0) * (existing.policyCount - 1)
-            existing.avgSuccessPct = Math.round((prevTotal + runPct) / existing.policyCount)
-        }
 
         lobMap.set(lob, existing)
     }

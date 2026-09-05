@@ -569,7 +569,18 @@ model GapInstance {
   ruleId               String?                  @map("rule_id")
   ruleInputs           Json?                    @map("rule_inputs")
   engineVersion        String?                  @map("engine_version")
+  /// RUN PROVENANCE (B0, PW-TRANSPARENCY-02). Which analysis run produced this
+  /// row, for which branch, against which catalogue version. A later run never
+  /// deletes or reactivates a row: it SUPERSEDES the policy's live rows (prior
+  /// status kept) and writes its own. One writer: lib/gaps/gap-instance-writer.ts.
+  analysisRunId        String                   @map("analysis_run_id")
+  lineOfBusiness       String                   @map("line_of_business")
+  catalogueVersion     String?                  @map("catalogue_version")
+  supersededAt         DateTime?                @map("superseded_at")
+  supersededByRunId    String?                  @map("superseded_by_run_id")
+  priorStatus          String?                  @map("prior_status")
   definition           GapDefinition            @relation(fields: [gapDefinitionId], references: [id])
+  analysisRun          PolicyAnalysisRun        @relation(fields: [analysisRunId], references: [id], onDelete: Cascade)
   policy               Policy?                  @relation(fields: [policyId], references: [id], onDelete: Cascade)
   user                 User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   opportunities        Opportunity[]
@@ -582,6 +593,12 @@ model GapInstance {
   @@index([userId, status])
   // Agent gap views filter by a policy set + status (dashboard, insights, portal).
   @@index([policyId, status])
+  @@index([analysisRunId])
+  // The writer supersedes the policy's LIVE rows (supersededAt null); readers of
+  // current findings filter the same way. A partial unique index
+  // (gap_instances_policy_definition_current_unique, raw SQL in the B0 migration)
+  // keeps one current row per (policy, definition) while history accumulates.
+  @@index([policyId, supersededAt])
   @@map("gap_instances")
 }
 
@@ -1288,6 +1305,11 @@ model PolicyAnalysisRun {
   failureMessage          String?           @map("failure_message")
   remediationSummary      Json?             @map("remediation_summary")
   resultJson              Json?             @map("result_json")
+  /// Which rules this run attempted (B0.2): recorded at creation from the
+  /// declared branch (`phase: planned`) and again once evaluated (`phase:
+  /// evaluated`, final branch, decided slugs), with the catalogue version. It
+  /// survives a run that fails before evaluation.
+  attemptedRules          Json?             @map("attempted_rules")
   executionLeaseId        String?           @map("execution_lease_id")
   executionLeaseExpiresAt DateTime?         @map("execution_lease_expires_at")
   leaseHeartbeatAt        DateTime?         @map("lease_heartbeat_at")
@@ -1299,6 +1321,7 @@ model PolicyAnalysisRun {
   policy Policy               @relation(fields: [policyId], references: [id], onDelete: Cascade)
   user   User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   steps  PolicyAnalysisStep[]
+  gapInstances GapInstance[]
 
   @@index([policyId, createdAt])
   @@index([userId, createdAt])

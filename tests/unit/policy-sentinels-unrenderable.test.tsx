@@ -809,7 +809,6 @@ const NOTIFICATION_BOUNDARY_FILES = new Set([
     'app/(protected)/renewals/actions.ts',
     'app/(protected)/wallet/actions.ts',
     'app/api/v1/collaboration/proposals/[id]/route.ts',
-    'app/api/v1/jobs/process-policy/route.ts',
     'lib/services/compliance/obligation-scan.ts',
     'lib/services/policy-merge.service.ts',
     'lib/services/perk-reminder.service.ts',

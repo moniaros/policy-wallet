@@ -17,7 +17,6 @@ export interface AnalysisComparisonResult {
     compareRunId: string
     baseRunDate: string
     compareRunDate: string
-    overallScoreChange: number | null
     gapChanges: GapChange[]
     savingsChanges: SavingsChange[]
     coverageChanges: CoverageChange[]
@@ -61,7 +60,6 @@ export async function compareAnalysisRuns(
             where: { id: baseRunId, policyId },
             select: {
                 id: true,
-                overallSuccessPct: true,
                 resultJson: true,
                 finishedAt: true,
             },
@@ -70,7 +68,6 @@ export async function compareAnalysisRuns(
             where: { id: compareRunId, policyId },
             select: {
                 id: true,
-                overallSuccessPct: true,
                 resultJson: true,
                 finishedAt: true,
             },
@@ -88,10 +85,6 @@ export async function compareAnalysisRuns(
         compareRunId,
         baseRunDate: baseRun.finishedAt?.toISOString() ?? "",
         compareRunDate: compareRun.finishedAt?.toISOString() ?? "",
-        overallScoreChange:
-            baseRun.overallSuccessPct != null && compareRun.overallSuccessPct != null
-                ? compareRun.overallSuccessPct - baseRun.overallSuccessPct
-                : null,
         gapChanges: diffGaps(baseResult, compareResult),
         savingsChanges: diffSavings(
             baseResult.savingsOpportunities,

@@ -20,29 +20,15 @@
  * Run: npx tsx -r dotenv/config scripts/verify-gap-catalogue.ts
  * Exits non-zero on drift.
  */
-import { createHash } from "node:crypto"
 import { PrismaClient } from "@prisma/client"
 import { AUTHORED_GAP_DEFINITIONS } from "../lib/gaps/authored-catalogue"
+import { fingerprintGapDefinitions as fingerprint } from "../lib/gaps/catalogue-version"
 
 const db = new PrismaClient()
 
-/** Stable across environments: no ids, no timestamps, keys sorted. */
-function fingerprint(rows: Array<Record<string, unknown>>): string {
-    const canonical = rows
-        .map((r) =>
-            [r.slug, r.lineOfBusiness, r.severity, r.defaultSeverity, r.ruleId, stableJson(r.detectionLogic)].join("|")
-        )
-        .sort()
-        .join("\n")
-    return createHash("sha256").update(canonical).digest("hex").slice(0, 16)
-}
-
-function stableJson(value: unknown): string {
-    if (value === null || typeof value !== "object") return JSON.stringify(value ?? null)
-    if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`
-    const entries = Object.entries(value as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b))
-    return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${stableJson(v)}`).join(",")}}`
-}
+// The fingerprint lives in lib/gaps/catalogue-version.ts (B0): the same
+// function stamps every gap row and every run, so the verifier and the data
+// cannot disagree about what a "catalogue version" is.
 
 async function main() {
     const live = await db.gapDefinition.findMany({

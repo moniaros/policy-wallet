@@ -133,7 +133,7 @@ export async function GET(req: Request) {
             orderBy: { createdAt: "desc" },
             include: {
                 _count: {
-                    select: { gapInstances: { where: { resolvedAt: null } } }
+                    select: { gapInstances: { where: { resolvedAt: null, supersededAt: null } } }
                 }
             }
         })

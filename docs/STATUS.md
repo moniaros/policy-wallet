@@ -20,6 +20,15 @@ mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry 
 
 ## Current phase
 
+**PW-TRANSPARENCY-02 — Track A shipped, Goal B0 in build** (2026-09-05, branch `feat/transparency-02`).
+Goal 0 report approved (`docs/transparency/STEP0-FINDINGS.md`); amendment 01 reduced Track A to three
+items, all done: Terms §8 names no metric (revision GR-GA-2026.09), the prose-derived «checks passed»
+number reaches no user surface (4 → 0), and a fabricated-count guard over the marketing surface with a
+verified count registry (`lib/marketing/public-counts.ts`). Terms §5 «ένα συμβόλαιο» is **BL-01**
+(`docs/transparency/BLOCKED.md`): blocked on a human reading the production free-tier plan row. Ledger:
+`docs/transparency/PROGRESS.md`. Next: B0 (one gap-row writer, run provenance, honest re-run semantics —
+schema, dev then prod), then B1.5 (unauthored-branch state), B1.7 (score sites), B2 (two-line composition).
+
 **Grafí design-system build + marketing rebuild — ladder G0–G12 walked** (2026-08-30, 18 commits
 `a4aae9f2..`). Ledger: `docs/DS_PROGRESS.md`. G0–G3, G7, G11, G12 done; G4/G5/G6/G8/G9/G10
 partial with the remainder named per-goal in the ledger. Written system: `docs/design-system.md`;
@@ -341,6 +350,9 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
+00. PW-TRANSPARENCY-02: land B0 on dev and prod (migration `20260905150000_gap_instance_run_provenance`,
+    prod pre-check of orphan gap rows first), then B1.5 → B1.7 → B2; owner reads the production free-tier
+    plan row to unblock BL-01 (Terms §5).
 0. Document gate follow-ups: run `tests/document-gate-agent.spec.ts` (`agent-chromium`) once
    against dev — the agent door is covered by unit tests and the shared ingestion path but has
    not been walked in a browser; watch the admin «Document gate» card for a week (rejections by

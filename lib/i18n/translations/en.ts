@@ -2060,6 +2060,21 @@ export const en: TranslationKeys = {
     },
 
     // Policy Status
+    // Which run a policy's findings come from (B0.3). See el.ts.
+    gapProvenance: {
+        label: 'Where these findings come from',
+        current: 'Findings from the analysis of {date}.',
+        currentNoFindings: 'The analysis of {date} completed and the rules that ran found nothing.',
+        partial: 'The analysis of {date} completed with missing sections. The findings may be incomplete.',
+        unassessed: 'No checks have been authored for this type of policy yet. It has not been assessed.',
+        staleFailed: 'The latest analysis attempt ({latestDate}) failed. You are seeing the findings of the previous completed analysis ({date}) — they are not current.',
+        staleBlocked: 'The latest analysis attempt ({latestDate}) did not run. You are seeing the findings of the analysis of {date} — they are not current.',
+        inProgress: 'A new analysis is running. The findings are from the analysis of {date}.',
+        inProgressNoPrior: 'An analysis is running. There is no completed analysis for this policy yet.',
+        none: 'There is no completed analysis for this policy — nothing has been checked.',
+        noneAfterFailure: 'The latest analysis attempt ({latestDate}) failed and there is no previous completed analysis — nothing has been checked.',
+    },
+
     policyStatus: {
         active: 'Active',
         expiringSoon: 'Expiring Soon',

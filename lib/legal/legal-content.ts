@@ -58,7 +58,7 @@ export const LEGAL_LAST_UPDATED = "March 2, 2026"
 export const LEGAL_DOC_META: Partial<
     Record<LegalDocumentKind, { version: string; lastUpdatedIso: string }>
 > = {
-    terms: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-20" },
+    terms: { version: "GR-GA-2026.09", lastUpdatedIso: "2026-09-05" },
     privacy: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-20" },
     cookies: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
     subprocessors: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
@@ -153,7 +153,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "ai_disclaimer",
                     title: "8. Αναλύσεις τεχνητής νοημοσύνης — αποποίηση",
                     paragraphs: [
-                        "Οι αναλύσεις συμβολαίων, ο εντοπισμός κενών κάλυψης, οι βαθμολογίες προστασίας και οι σχετικές επισημάνσεις παράγονται από μοντέλα τεχνητής νοημοσύνης. Είναι αποκλειστικά πληροφοριακές, ενδέχεται να περιέχουν ανακρίβειες ή παραλείψεις και δεν αποτελούν ασφαλιστική, νομική ή χρηματοοικονομική συμβουλή.",
+                        "Οι αναλύσεις συμβολαίων, ο εντοπισμός κενών κάλυψης και οι σχετικές επισημάνσεις παράγονται από μοντέλα τεχνητής νοημοσύνης. Είναι αποκλειστικά πληροφοριακές, ενδέχεται να περιέχουν ανακρίβειες ή παραλείψεις και δεν αποτελούν ασφαλιστική, νομική ή χρηματοοικονομική συμβουλή.",
                         "Πριν από κάθε απόφαση με ασφαλιστικές ή οικονομικές συνέπειες — όπως αλλαγή, ακύρωση ή αγορά κάλυψης — επιβεβαιώστε τα στοιχεία με το πρωτότυπο ασφαλιστήριο, την ασφαλιστική σας εταιρεία ή αδειοδοτημένο διαμεσολαβητή. Την ίδια υπενθύμιση εμφανίζουμε και μέσα στην εφαρμογή: η τεχνητή νοημοσύνη μπορεί να κάνει λάθη.",
                     ],
                 },
@@ -638,7 +638,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "ai_disclaimer",
                     title: "8. AI analysis — disclaimer",
                     paragraphs: [
-                        "Policy analyses, coverage-gap detection, protection scores and related highlights are produced by artificial-intelligence models. They are informational only, may contain inaccuracies or omissions, and do not constitute insurance, legal or financial advice.",
+                        "Policy analyses, coverage-gap detection and related highlights are produced by artificial-intelligence models. They are informational only, may contain inaccuracies or omissions, and do not constitute insurance, legal or financial advice.",
                         "Before any decision with insurance or financial consequences — such as changing, cancelling or purchasing coverage — verify the details against your original policy document, your insurer, or a licensed intermediary. We show the same reminder inside the app: AI can make mistakes.",
                     ],
                 },

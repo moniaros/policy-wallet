@@ -17,6 +17,8 @@ import { toGreekUppercaseNoAccents } from "@/lib/i18n/text-format"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { GapReportList } from "@/components/wallet/gap-report/GapReportList"
 import type { GapReportItem } from "@/lib/wallet/gap-report"
+import { FindingsProvenanceLine } from "@/components/gaps/FindingsProvenanceLine"
+import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 
 interface Gap {
     id: string
@@ -70,11 +72,19 @@ interface AnalysisCardProps {
      * never sees this — confirmation MEANS "an advisor agrees".
      */
     canConfirmGaps?: boolean
+    /**
+     * B0.3: which run the findings below come from, and whether the latest
+     * attempt is that run — resolved to a sentence by the server page. Renders
+     * above the list, with or without findings, so a failed latest attempt is
+     * never mistaken for a clean one.
+     */
+    findingsProvenance?: ProvenanceLine | null
 }
 
 export function AnalysisCard({
     policyId,
     gaps,
+    findingsProvenance = null,
     canRequestOwnerConsent = false,
     policyStatus,
     processingError,
@@ -415,10 +425,12 @@ export function AnalysisCard({
                 const runningStep = latestSteps.find((step) => step.status === "running" || step.status === "retrying")
                 const completedSteps = latestSteps.filter((step) => step.status === "completed").length
 
-                const overallProgress =
-                    typeof run.overall_success_pct === "number"
-                        ? run.overall_success_pct
-                        : Math.round((completedSteps / 8) * 100)
+                // Progress is the count of completed steps. The run's stored
+                // success percentage used to be preferred here; it is a mean of
+                // per-step heuristics in which the gap step counts model PROSE
+                // entries, not checks — a fabricated number, and it renders
+                // nowhere (PW-TRANSPARENCY-02 A1.2, checks-passed-not-rendered).
+                const overallProgress = Math.round((completedSteps / 8) * 100)
 
                 if (status === "queued") {
                     setRunProgress(10)
@@ -798,6 +810,7 @@ export function AnalysisCard({
                         {t.wallet.policyDetailsPage.analysisFindingsStale}
                     </p>
                 )}
+                {findingsProvenance && <FindingsProvenanceLine line={findingsProvenance} className="mb-4" />}
                 {report && report.items.length > 0 ? (
                     <>
                         <GapReportList

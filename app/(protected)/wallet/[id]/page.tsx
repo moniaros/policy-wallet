@@ -12,6 +12,7 @@ import { isAgentRole } from "@/lib/auth/require-agent"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
+import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import { resolveGlossaryHint, resolvePolicyGlossaryHints } from "@/lib/glossary/hints"
 import {
@@ -74,13 +75,13 @@ export default async function PolicyDetailPage({
                     // blockedReason distinguishes a GATED run (paywall / missing
                     // consent) from a genuine failure — the coverage section must
                     // not tell a blocked run to "re-analyse / upload a clearer copy".
-                    select: { status: true, createdAt: true, blockedReason: true },
+                    select: { id: true, status: true, createdAt: true, finishedAt: true, blockedReason: true, attemptedRules: true },
                 },
                 gapInstances: {
                     // Match home / coverage-insights: 'open' alone under-counted,
                     // dropping rule-detected and acknowledged gaps from the report.
-                    where: { status: { in: [...OPEN_GAP_STATUSES] } },
-                    include: { definition: true }
+                    where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null },
+                    include: { definition: true, analysisRun: { select: { id: true, finishedAt: true } } }
                 }
             }
         }),
@@ -155,6 +156,28 @@ export default async function PolicyDetailPage({
     const statusColorOnDark = getStatusColorOnDark(status)
     const statusLabel = getStatusLabel(status, language)
     const daysLeft = lifecycle.daysUntilExpiry
+
+    // B0.3: which run these findings come from, and whether the latest attempt
+    // is that run. A failed re-run must not present the previous run's rows as
+    // current — the line says so, dated, on every surface that shows them.
+    const latestAttempt = policy.analysisRuns[0] ?? null
+    const lastCompletedRun =
+        latestAttempt && (latestAttempt.status === 'completed' || latestAttempt.status === 'completed_with_warnings')
+            ? latestAttempt
+            : await db.policyAnalysisRun.findFirst({
+                  where: { policyId, status: { in: ['completed', 'completed_with_warnings'] } },
+                  orderBy: { finishedAt: 'desc' },
+                  select: { id: true, status: true, finishedAt: true, createdAt: true, attemptedRules: true },
+              })
+    const findingsProvenance = findingsProvenanceLine(
+        describeFindingsProvenance(
+            policy.gapInstances.map((g) => ({ analysisRunId: g.analysisRunId, runFinishedAt: g.analysisRun?.finishedAt ?? null })),
+            latestAttempt ? { ...latestAttempt, attemptedRuleCount: attemptedRuleCountOf(latestAttempt.attemptedRules) } : null,
+            lastCompletedRun ? { ...lastCompletedRun, attemptedRuleCount: attemptedRuleCountOf(lastCompletedRun.attemptedRules) } : null,
+        ),
+        t.gapProvenance,
+        language,
+    )
 
     // Gap report items: dedupe DB-level slug twins and resolve Greek/English
     // titles + grouping dimensions server-side (unknown slugs are Sentry-
@@ -354,6 +377,8 @@ export default async function PolicyDetailPage({
             ...g,
             detectedAt: g.detectedAt.toISOString(),
             resolvedAt: g.resolvedAt?.toISOString() || null,
+            supersededAt: g.supersededAt?.toISOString() || null,
+            analysisRun: g.analysisRun ? { id: g.analysisRun.id, finishedAt: g.analysisRun.finishedAt?.toISOString() || null } : null,
             definition: {
                 ...g.definition,
                 createdAt: g.definition.createdAt.toISOString(),
@@ -365,6 +390,7 @@ export default async function PolicyDetailPage({
     return (
         <PolicyDetailsClient
             policy={serializedPolicy}
+            findingsProvenance={findingsProvenance}
             serializedShares={serializedShares}
             aiUsageStats={aiUsageStats}
             statusLabel={statusLabel}

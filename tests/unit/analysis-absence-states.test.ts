@@ -31,7 +31,9 @@ describe('the coverage-absence message says which happened', () => {
         expect(page).toMatch(/orderBy: \{ createdAt: 'desc' \}/)
         // blockedReason must travel with the run, else a gated run cannot be told
         // apart from a failure (the whole point of the blocked state).
-        expect(page).toMatch(/select: \{ status: true, createdAt: true, blockedReason: true \}/)
+        // B0.3 widened the select (id, finishedAt, attemptedRules) so the findings
+        // can be dated to their run; blockedReason must still be in it.
+        expect(page).toMatch(/select: \{ id: true, status: true, createdAt: true, finishedAt: true, blockedReason: true, attemptedRules: true \}/)
     })
 
     it('maps every AnalysisRunStatus to a state', () => {

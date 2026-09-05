@@ -1,0 +1,6 @@
+import { detectGapsForUser, createGapInstances } from "@/lib/gap-detection"
+
+export async function refresh(userId: string) {
+    const detected = await detectGapsForUser(userId)
+    await createGapInstances(detected)
+}

@@ -144,11 +144,12 @@ describe('a missing extraction is reported as a missing extraction', () => {
 })
 
 /**
- * "Security Alert" belongs on a breach notification, not on a finding about
- * someone's insurance — and the set it counted admits `high` severities while
- * calling them all critical.
+ * The process-policy job used to run the legacy detector over the stored
+ * extraction and mail "N significant findings" under a "Security Alert"
+ * heading. B0.1 (PW-TRANSPARENCY-02) removed the second writer: the job now
+ * starts an analysis run, and the run's own completion events carry findings.
  */
-describe('the gap notification is an insurance message, not a security one', () => {
+describe('the process-policy job starts a run instead of detecting and notifying itself', () => {
     const ROUTE = read('app/api/v1/jobs/process-policy/route.ts')
 
     it('drops the security framing everywhere it appeared', () => {
@@ -156,32 +157,10 @@ describe('the gap notification is an insurance message, not a security one', () 
         expect(read('lib/mail-templates.ts')).not.toMatch(/Security Alert/)
     })
 
-    it('does not call high-severity findings critical', () => {
-        // The filter deliberately admits `high` as well as `critical`, so the
-        // message must not name the whole set "critical". Asserted on the strings
-        // the reader sees rather than on the local's name — the first version of
-        // this test checked for `seriousGaps` and survived a rename straight back
-        // to `criticalGaps`.
-        // Anchored on the count, not a local's name — `findings` became the
-        // bilingual pair findingsEl/findingsEn when notification content went
-        // { el, en } (P1-05), and an anchor on the exact old name would have
-        // gone stale the same way `seriousGaps` nearly did.
-        const start = ROUTE.indexOf('const n = seriousGaps.length')
-        const end = ROUTE.indexOf('channels:', start)
-        expect(start).toBeGreaterThan(-1)
-        const readerFacing = ROUTE.slice(start, end)
-        expect(readerFacing).toMatch(/σημαντικά ευρήματα/)
-        expect(readerFacing).toMatch(/significant/)
-        expect(readerFacing).not.toMatch(/critical|κρίσιμ/i)
-    })
-
-    it('speaks BOTH product languages and agrees with its own count', () => {
-        // The route used to resolve preferredLanguage itself and compose one
-        // language. Since P1-05 notification content is bilingual by type and
-        // the dispatcher resolves the recipient's language — so the assertion
-        // is that both arms exist and each pluralises correctly.
-        expect(ROUTE).toMatch(/title: \{ el: 'Εντοπίστηκε πιθανό κενό κάλυψης', en: 'Possible coverage gap found' \}/)
-        expect(ROUTE).toMatch(/n === 1 \? 'σημαντικό εύρημα' : 'σημαντικά ευρήματα'/)
-        expect(ROUTE).toMatch(/n === 1 \? 'finding' : 'findings'/)
+    it('no longer runs the legacy detector or composes its own gap notification (B0.1)', () => {
+        expect(ROUTE).not.toMatch(/detectGapsForPolicy|createGapInstances/)
+        expect(ROUTE).not.toMatch(/sendNotification\(/)
+        expect(ROUTE).toMatch(/orchestrator\.createRun\(/)
+        expect(ROUTE).toMatch(/enqueueAnalysisRun\(/)
     })
 })

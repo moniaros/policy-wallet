@@ -164,6 +164,7 @@ export const FACT_KEYS: Record<string, string> = {
 
     // riskDimension.* — SUBJECT-SCOPED by dimension id.
     "riskDimension.score": "One dimension's 0-100 reading.",
+    "gap.findingsProvenance": "Which analysis run the listed findings come from, dated, and whether the latest attempt is that run (B0.3). One per findings list.",
 
     // review.*
     "review.scoreAtOpen": "Score recorded when the review opened (historical).",

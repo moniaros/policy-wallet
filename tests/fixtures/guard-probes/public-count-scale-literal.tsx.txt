@@ -1,0 +1,9 @@
+export function TrustBand() {
+    return (
+        <div>
+            <p>10.000+ συμβόλαια αναλύθηκαν</p>
+            <p>98% ακρίβεια εξαγωγής</p>
+            <p>500+ policyholders trust us</p>
+        </div>
+    )
+}

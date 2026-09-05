@@ -230,6 +230,16 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   `tests/unit/score-containment.test.ts`, `tests/unit/protection-score-honesty.test.tsx`.
   The `missing`-operator wording rule and `scoreSupport()` are the same idea
   applied to gaps and to the score.
+- **A measurement over a visible denominator is publishable; a judgment the engine cannot
+  substantiate is not — and the human who confirms the record, not the model that filled it,
+  is what makes it authoritative.** (PW-TRANSPARENCY-02.) Concretely: `gap_instances` has ONE
+  writer, `lib/gaps/gap-instance-writer.ts`, called from an analysis run; every row names its
+  run (`analysis_run_id`), branch and catalogue version, and a later run SUPERSEDES the
+  policy's live rows (prior status kept) rather than deleting or reactivating them. Every
+  reader of gap rows filters to live rows (`tests/unit/gap-readers-exclude-superseded.test.ts`),
+  and every surface that lists findings states which run they came from and whether the latest
+  attempt is that run (`lib/gaps/findings-provenance.ts`). A public count reads from
+  `lib/marketing/public-counts.ts` or a dated market source; a literal fails the build.
 - **Env precedence: exactly one `DATABASE_URL` and one `DIRECT_URL`, both dev.** dotenv
   keeps the LAST occurrence within a file, so a duplicate further down silently wins —
   that is how local tooling was pointed at production twice. `lib/db.ts` resolves

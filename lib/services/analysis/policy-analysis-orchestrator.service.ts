@@ -5,6 +5,7 @@ import { randomUUID } from "crypto"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { decideGapsForPolicy, GAP_ENGINE_VERSION } from "@/lib/gap-detection"
+import { planAttemptedRules, writeRuleDecidedGaps } from "@/lib/gaps/gap-instance-writer"
 import { env } from "@/lib/env"
 import { logger } from "@/lib/logger"
 import { canUserUseTokens, reserveTokens, releaseTokenReservation } from "@/lib/token-tracking"
@@ -537,6 +538,10 @@ export class PolicyAnalysisOrchestratorService {
 
     async createRun(policyId: string, userId: string) {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
+        // B0.2: the rules this run will attempt, recorded on EVERY run row —
+        // blocked and failed ones included — so the denominator is recoverable
+        // whatever the terminal state. Re-recorded as `evaluated` in persistence.
+        const attemptedRules = await planAttemptedRules(policy.lineOfBusiness)
 
         // ONE run in flight per policy. Every trigger (upload, retry, review,
         // admin requeue, a QStash redelivery of the caller) used to create its
@@ -573,6 +578,7 @@ export class PolicyAnalysisOrchestratorService {
                 data: {
                     policyId,
                     userId,
+                    attemptedRules: attemptedRules as any,
                     provider: primaryProvider,
                     model: primaryRunModel,
                     status: "blocked",
@@ -604,6 +610,7 @@ export class PolicyAnalysisOrchestratorService {
                 data: {
                     policyId,
                     userId,
+                    attemptedRules: attemptedRules as any,
                     provider: primaryProvider,
                     model: primaryRunModel,
                     status: "blocked",
@@ -622,6 +629,7 @@ export class PolicyAnalysisOrchestratorService {
                 data: {
                     policyId,
                     userId,
+                    attemptedRules: attemptedRules as any,
                     provider: primaryProvider,
                     model: primaryRunModel,
                     status: "blocked",
@@ -654,6 +662,7 @@ export class PolicyAnalysisOrchestratorService {
             data: {
                 policyId,
                 userId,
+                attemptedRules: attemptedRules as any,
                 provider: primaryProvider,
                 model: primaryRunModel,
                 status: "queued",
@@ -3218,6 +3227,9 @@ export class PolicyAnalysisOrchestratorService {
         // Reading `extraction.lineOfBusiness` again here would route around all three.
         const normalizedLob = metadata.lineOfBusiness
         const now = new Date()
+        // B0.2: the rules attempted for the FINAL branch, at the catalogue version
+        // the rules just read. Stamped on every row this run writes.
+        const attempted = await planAttemptedRules(normalizedLob)
 
         // Resolve gap definitions BEFORE the transaction. They are shared
         // reference data (unique by slug), so holding the interactive tx open
@@ -3360,13 +3372,37 @@ export class PolicyAnalysisOrchestratorService {
                 data: { processingStatus: "completed" },
             })
 
-            await tx.gapInstance.deleteMany({
-                where: { policyId: policy.id },
+            // B0.1: the ONE writer. Live rows are superseded, never deleted or
+            // reactivated; this run's findings are new rows attributed to it.
+            await writeRuleDecidedGaps(tx, {
+                policyId: policy.id,
+                runId,
+                lineOfBusiness: normalizedLob,
+                catalogueVersion: attempted.catalogueVersion,
+                now,
+                decided: gapRows.map((row) => ({
+                    gapDefinitionId: row.gapDefinitionId,
+                    severity: row.severity,
+                    ruleId: row.ruleId,
+                    ruleInputs: row.ruleInputs,
+                    aiExplanation: row.aiExplanation,
+                    aiExplanationEl: row.aiExplanationEl,
+                    aiSuggestion: row.aiSuggestion,
+                    aiSuggestionEl: row.aiSuggestionEl,
+                })),
             })
 
-            if (gapRows.length > 0) {
-                await tx.gapInstance.createMany({ data: gapRows })
-            }
+            await tx.policyAnalysisRun.update({
+                where: { id: runId },
+                data: {
+                    attemptedRules: {
+                        ...attempted,
+                        phase: "evaluated",
+                        decidedSlugs: ruleDecided.map((d) => d.slug),
+                        at: now.toISOString(),
+                    } as any,
+                },
+            })
         })
 
         // The slugs the RULES decided, returned so the run's stored resultJson can

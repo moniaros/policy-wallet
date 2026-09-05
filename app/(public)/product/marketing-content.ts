@@ -1,5 +1,5 @@
 import { Bell, Sparkles, Upload } from "lucide-react"
-import { productCategories } from "@/lib/product/catalog"
+import { PUBLIC_COUNTS } from "@/lib/marketing/public-counts"
 
 /**
  * Product-page marketing copy, shared between the client page (rendering)
@@ -38,8 +38,12 @@ export const PRODUCT_STEPS = [
 
 export const PRODUCT_STATS = [
     {
-        valueEl: `${productCategories.length} είδη`,
-        valueEn: `${productCategories.length} kinds`,
+        // Every number in a stat tile reads from lib/marketing/public-counts.ts,
+        // the one verified source for a public count. A numeric literal here
+        // fails tests/unit/no-fabricated-public-count.test.ts
+        // (PW-TRANSPARENCY-02 amendment 01, A1.3).
+        valueEl: `${PUBLIC_COUNTS.insuranceKinds.value} είδη`,
+        valueEn: `${PUBLIC_COUNTS.insuranceKinds.value} kinds`,
         labelEl: "ασφάλισης, σε ένα μέρος",
         labelEn: "of insurance, in one place",
     },
@@ -56,8 +60,8 @@ export const PRODUCT_STATS = [
         labelEn: "to read three policies",
     },
     {
-        valueEl: "0",
-        valueEn: "0",
+        valueEl: `${PUBLIC_COUNTS.insurerCommissions.value}`,
+        valueEn: `${PUBLIC_COUNTS.insurerCommissions.value}`,
         labelEl: "προμήθειες από ασφαλιστικές εταιρείες",
         labelEn: "commissions from insurance companies",
     },

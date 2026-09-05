@@ -5,6 +5,8 @@ import { z } from "zod"
 import { canUserUseFeature } from "@/lib/subscription-limits"
 import { getPolicyAccess } from "@/lib/policy-access"
 import { generateSavingsReportHtml } from "@/lib/services/reports/savings-report"
+import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { getTranslations } from "@/lib/i18n"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
 
@@ -73,16 +75,35 @@ export const GET = withApiGuard(
         // produced it, so its presence IS the detection — there is no isDetected flag
         // to filter on, and the report must not infer findings from the AI prose bag.
         const decidedGaps = await db.gapInstance.findMany({
-            where: { policyId, status: "open" },
-            select: { severity: true, definition: { select: { slug: true } } },
+            where: { policyId, status: "open", supersededAt: null },
+            select: { severity: true, analysisRunId: true, analysisRun: { select: { finishedAt: true } }, definition: { select: { slug: true } } },
         })
+
+        // B0.3: the report names the run its findings came from and states a
+        // failed latest attempt — the prose run and the rows' run can differ.
+        const language = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+        const latestAttempt = await db.policyAnalysisRun.findFirst({
+            where: { policyId },
+            orderBy: { createdAt: "desc" },
+            select: { id: true, status: true, finishedAt: true, createdAt: true, attemptedRules: true },
+        })
+        const provenance = findingsProvenanceLine(
+            describeFindingsProvenance(
+                decidedGaps.map((g) => ({ analysisRunId: g.analysisRunId, runFinishedAt: g.analysisRun?.finishedAt ?? null })),
+                latestAttempt ? { ...latestAttempt, attemptedRuleCount: attemptedRuleCountOf(latestAttempt.attemptedRules) } : null,
+                { id: "prose-run", status: "completed", finishedAt: run.finishedAt }
+            ),
+            getTranslations(language).gapProvenance,
+            language
+        )
 
         const html = generateSavingsReportHtml(
             run.resultJson as Record<string, any>,
             run.finishedAt?.toISOString() ?? new Date().toISOString(),
-            (authResult.dbUser.preferredLanguage as "en" | "el") || "en",
+            language,
             undefined,
-            decidedGaps.map((g) => ({ slug: g.definition.slug, severity: g.severity }))
+            decidedGaps.map((g) => ({ slug: g.definition.slug, severity: g.severity })),
+            provenance
         )
 
         return new Response(html, {

@@ -53,7 +53,7 @@ export async function GET(
                     }
                 },
                 gapInstances: {
-                    where: { resolvedAt: null },
+                    where: { resolvedAt: null, supersededAt: null },
                     include: { definition: true }
                 }
             }
