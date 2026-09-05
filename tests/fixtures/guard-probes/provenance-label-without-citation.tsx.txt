@@ -1,0 +1,7 @@
+// PROBE — must turn tests/unit/provenance-citations-render.test.tsx red:
+// a render site that shows the provenance class of a slug it holds, with no law line beside it.
+import { provenanceLabel } from "@/components/gaps/provenance-label"
+import { provenanceOf } from "@/lib/gaps/provenance"
+export function Probe({ slug, copy }: { slug: string; copy: any }) {
+    return <span data-provenance={provenanceOf(slug)}>{provenanceLabel(provenanceOf(slug), copy)}</span>
+}

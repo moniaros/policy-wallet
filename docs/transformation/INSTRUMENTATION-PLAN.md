@@ -91,7 +91,7 @@ New count keys (definitions in the registry):
 
 New fact keys: `portfolio.branchPremium` *(subject-scoped)* · `profile.healthIndex` ·
 `profile.healthComponent` *(subject-scoped)* · `profile.daysSinceAssessment` ·
-`riskDimension.score` *(subject-scoped)* · `review.scoreAtOpen`. The policy-detail surface's
+`riskDimension.provenance` *(subject-scoped; F2 — replaced `riskDimension.score`, which is retired with the number it marked)* · `riskDimension.disclosure` · `gap.citation` *(F5)* · `review.scoreAtOpen`. Retired by PW-TRANSPARENCY-02 F2: `riskDimension.score`, `agent.portfolioCompleteness`. The policy-detail surface's
 pre-plan spellings (`policy.insurerName`, `policy.policyNumber`, `policy.premiumAmount`,
 `policy.expiryDate`, `policy.status`, `policy.insuredSubject`, `policy.attention`) are registered
 as LEGACY — renaming them must regenerate the policy-detail baselines, so it is a deliberate

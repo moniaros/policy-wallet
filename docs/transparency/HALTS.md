@@ -42,6 +42,10 @@ Whether the dimensions themselves (the risk graph, the open-risk list) are a def
 
 **Recommendation: none — present, do not decide (amendment 01, B1.6).**
 
+### Closed 2026-09-06 — DECIDED by the owner (close-out block, F2): Option B, remove.
+
+**Decision as written:** «B1.6 DECIDED: remove the Risk DNA dimension scores. Remove them from every render site. Where they occupied a surface, render the disclosed-findings treatment already built in B3.» **Reasoning:** the table above shows the number reporting the good outcome in states the check did not cover (never analysed → green bars; unauthored branch → a green bar from an unassessed line) and the bad outcome for the wrong reason (all expired → red bars); Option A would have kept a figure whose denominator is a profile-derived exposure list nobody has confirmed. A judgment the engine cannot substantiate is not publishable (PW-TRANSPARENCY-02); the named open risks, the next action and the confidence limit survive, and the B3 under-review label stands where the number was. **Done:** `RiskDnaPanel` renders no number, bar, trend arrow, «improved by N» line or «would move your score by N points» line; the agent KPI strip's «Μέσος δείκτης προστασίας» (an average of protection scores, threshold-coloured) and the advisor book's household index («Εικόνα: N») went with it; `riskDimension.score` and `agent.portfolioCompleteness` left the instrumentation registry. Guard: `tests/unit/risk-dna-no-scores.test.tsx` (every .tsx under app/ and components/, probe committed). Decision of record: `DECISIONS.md` D-F2.
+
 ---
 
 ## H-T02 — deleting the two protection-score APIs (B1.7)
@@ -51,3 +55,7 @@ Whether the dimensions themselves (the risk graph, the open-risk list) are a def
 No in-repository consumer calls either route (the only mention outside `app/api/` is a comment in the agent dashboard). External consumers cannot be established from the codebase, and the repository carries a RevenueCat integration and a `PushDevice` model, which suggests a native client exists. The amendment's rule is to record and halt rather than break a consumer.
 
 **Human task:** confirm from the API gateway / Vercel logs whether either path receives requests from a client other than the web app in the last 30 days. If none, both routes and their inventory entries are deleted; if any, the consumer is named here and the route is kept until it migrates.
+
+### Closed 2026-09-06 — RESOLVED (close-out block, F4): deleted.
+
+**Evidence, in the order it was gathered.** (1) Codebase: no consumer of either path outside `app/api/` — the only mentions were a comment and audit prose. (2) Production database: `push_devices` holds **0** rows, i.e. no native client has ever registered with production; the routes accept only a session cookie (`auth.mode: user`), which a non-web client would have to hold. (3) Sentry (org `policywallet`, spans, last 30 days, server `tracesSampleRate` 0.1): `span.op:http.server transaction:*protection-score*` → **0** rows, while the same query over `transaction:*/api/v1/*` returned **13** sibling routes with sampled traffic (`POST /api/v1/consents` 420, `GET /api/v1/collaboration/threads` 340, …); the only `protection-score` transaction in the window is the internal cron `/api/v1/jobs/protection-score-refresh`. (4) Vercel runtime logs could NOT be read for the window: the runtime-log API returns `ExceedsBillingLimitError`, and the CLI's `--since 30d` returns HTTP 400 because Hobby retention is one hour. **Path taken:** delete both routes and their inventory entries (the block's "no caller" branch), on (1)–(3), with (4) stated as the gap in coverage; a deletion is a two-file revert if a caller ever surfaces. `DECISIONS.md` D-F4.

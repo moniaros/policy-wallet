@@ -3,23 +3,26 @@
 /**
  * Risk DNA — the signature.
  *
- * **Not a radar chart.** A nine-spoke radar is unreadable below about 400px, its
- * area is a visual composite the model explicitly refuses to compute, and it
- * gives a customer no way to act on any single spoke. Nine horizontal bars carry
- * the same nine numbers, read top to bottom on a phone, and each one opens.
+ * **Not a radar chart, and — since PW-TRANSPARENCY-02 F2 (B1.6) — not a
+ * scoreboard either.** Nine "dimensions of your life", each a lens that opens
+ * to the risks it concerns and what would be done about them. The 0–100
+ * reading, the threshold-coloured bar, the trend arrow, the "improved by N"
+ * sentence and the "what acting would do to the score" line are gone: a
+ * dimension number was a judgment the engine could not substantiate, and a
+ * threshold colour was a verdict nobody had confirmed (DECISIONS.md D-F2).
+ * Where the number sat, each dimension now carries the disclosed-findings
+ * treatment built in B3 — the under-review label, with the disclosure under
+ * the heading — until a human classifies the requirements behind it.
  *
- * Every row answers the five questions this platform asks of every feature:
- * what changed, why it matters, what happens next, how sure we are, and what
- * acting would actually do to the score.
- *
- * A dimension that does not apply shows no bar at all rather than an empty one.
- * A childless renter has no Family exposure, and rendering that as 0% would
- * report the safest possible position as the worst.
+ * A dimension that does not apply is listed separately rather than rendered
+ * as a row. A childless renter has no Family exposure, and rendering that as
+ * "nothing open here" would report the absence of an exposure as a result.
  */
 
 import { useState } from "react"
-import { ChevronDown, Dna, Minus, TrendingDown, TrendingUp } from "lucide-react"
+import { ChevronDown, Dna } from "lucide-react"
 import { CardHead } from "@/components/dashboard/home/CardHead"
+import { getTranslations } from "@/lib/i18n"
 import type { Bilingual } from "@/lib/services/gap-engine/risk-types"
 
 type Trend = "improving" | "worsening" | "steady" | "unknown"
@@ -29,16 +32,20 @@ export interface DimensionView {
     id: string
     label: Bilingual
     question: Bilingual
+    /** Computed, never rendered (F2). Null means the dimension does not apply. */
     score: number | null
     coarse: boolean
     confidence: "high" | "medium" | "low"
     confidenceLimit: Bilingual | null
+    /** Computed from the score history, never rendered (F2). */
     trend: Trend
     trendDelta: number | null
     urgency: Urgency
+    /** A sentence quoting a score delta — never rendered (F2). */
     whatChanged: Bilingual | null
     whyItMatters: Bilingual
     nextAction: Bilingual | null
+    /** A points estimate — never rendered (F2). */
     ifActioned: { points: number; statement: Bilingual } | null
     openCount: number
     applicableCount: number
@@ -59,25 +66,18 @@ interface RiskDnaPanelProps {
     language: "en" | "el"
 }
 
-/** Bar colour follows the SCORE, so the page is scannable without reading — on the status tokens. */
-function barTone(score: number | null): string {
-    if (score === null) return "bg-muted-foreground/30"
-    if (score >= 80) return "bg-status-success"
-    if (score >= 50) return "bg-status-warning"
-    return "bg-status-danger"
-}
-
 export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
     const lang = language
     const t = (el: string, en: string) => (lang === "el" ? el : en)
+    const provenance = getTranslations(lang).provenance
     const [openId, setOpenId] = useState<string | null>(null)
 
     // A dimension that does not apply is not a weakness — it is the absence of
-    // an exposure, and it is shown separately rather than scored.
-    const scored = dimensions.filter((d) => d.score !== null)
+    // an exposure, and it is listed separately rather than assessed.
+    const applicable = dimensions.filter((d) => d.score !== null)
     const notApplicable = dimensions.filter((d) => d.score === null)
 
-    if (scored.length === 0) return null
+    if (applicable.length === 0) return null
 
     const confidenceLabel = (c: DimensionView["confidence"]) =>
         c === "high"
@@ -96,17 +96,17 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                         "Nine dimensions of your life. They do not add up to one number — they are lenses, not a scoreboard.",
                     )}
                 </p>
+                {/* B3 disclosed-findings treatment (F2): what a dimension rests on has
+                    not been classified as legal, contractual or market practice, and
+                    the panel says so where the numbers used to be. */}
+                <p data-fact="riskDimension.disclosure" className="mt-1 text-caption leading-relaxed text-muted-foreground">
+                    {provenance.underReviewDisclosure}
+                </p>
             </div>
 
             <ul className="space-y-1">
-                {scored.map((dimension) => {
+                {applicable.map((dimension) => {
                     const isOpen = openId === dimension.id
-                    const TrendIcon =
-                        dimension.trend === "improving"
-                            ? TrendingUp
-                            : dimension.trend === "worsening"
-                              ? TrendingDown
-                              : Minus
 
                     return (
                         <li key={dimension.id}>
@@ -117,47 +117,19 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                 className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-1 py-2 text-left transition-colors hover:bg-muted/60"
                             >
                                 <span className="min-w-0 flex-1">
-                                    <span className="flex items-baseline justify-between gap-2">
+                                    <span className="flex items-center justify-between gap-2">
                                         <span className="truncate text-sm font-semibold text-foreground">
                                             {dimension.label[lang] || dimension.label.en}
                                         </span>
-                                        <span className="flex flex-shrink-0 items-center gap-1.5">
-                                            {dimension.trend !== "unknown" && (
-                                                <TrendIcon
-                                                    className={`h-3 w-3 ${
-                                                        dimension.trend === "improving"
-                                                            ? "text-status-success"
-                                                            : dimension.trend === "worsening"
-                                                              ? "text-status-danger"
-                                                              : "text-muted-foreground"
-                                                    }`}
-                                                    aria-hidden="true"
-                                                />
-                                            )}
-                                            <span
-                                                className="text-sm font-semibold tabular-nums text-foreground"
-                                                data-fact="riskDimension.score"
-                                                data-fact-subject={dimension.id}
-                                            >
-                                                {dimension.score}
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    {/* The bar. Given an explicit role so the number is
-                                        not the only way to read it. */}
-                                    <span
-                                        role="meter"
-                                        aria-valuenow={dimension.score ?? 0}
-                                        aria-valuemin={0}
-                                        aria-valuemax={100}
-                                        aria-label={dimension.label[lang] || dimension.label.en}
-                                        className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full bg-muted"
-                                    >
+                                        {/* Text, never a number, never a colour of its own (B3). */}
                                         <span
-                                            className={`block h-full rounded-full transition-all ${barTone(dimension.score)}`}
-                                            style={{ width: `${Math.max(2, dimension.score ?? 0)}%` }}
-                                        />
+                                            className="flex-shrink-0 rounded-full border border-border px-2 py-0.5 text-caption text-muted-foreground"
+                                            data-fact="riskDimension.provenance"
+                                            data-fact-subject={dimension.id}
+                                            data-provenance="under_review"
+                                        >
+                                            {provenance.underReview}
+                                        </span>
                                     </span>
                                 </span>
 
@@ -179,32 +151,11 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                         lang={lang}
                                     />
                                     <Block
-                                        title={t("Τι άλλαξε", "What changed")}
-                                        body={dimension.whatChanged}
-                                        lang={lang}
-                                        fallback={t(
-                                            "Δεν υπάρχει ακόμη ιστορικό για σύγκριση.",
-                                            "There is no history to compare against yet.",
-                                        )}
-                                    />
-                                    <Block
                                         title={t("Τι ακολουθεί", "What happens next")}
                                         body={dimension.nextAction}
                                         lang={lang}
                                         fallback={t("Τίποτα ανοιχτό εδώ.", "Nothing open here.")}
                                     />
-
-                                    {dimension.ifActioned && (
-                                        <div className="rounded-lg bg-status-success-tint p-2.5">
-                                            <p className="text-caption font-semibold text-status-success">
-                                                {t("Τι θα βελτίωνε", "What that would improve")}
-                                            </p>
-                                            <p className="mt-0.5 text-caption leading-relaxed text-foreground/80">
-                                                {dimension.ifActioned.statement[lang] ||
-                                                    dimension.ifActioned.statement.en}
-                                            </p>
-                                        </div>
-                                    )}
 
                                     {/* The risks themselves, inside the dimension
                                         they concern. This replaces a separate flat
@@ -274,8 +225,8 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
             {notApplicable.length > 0 && (
                 <p className="mt-4 border-t border-border pt-3 text-caption leading-relaxed text-muted-foreground">
                     {t(
-                        `Δεν σας αφορούν: ${notApplicable.map((d) => d.label.el).join(", ")}. Δεν βαθμολογούνται επειδή δεν υπάρχει έκθεση προς μέτρηση.`,
-                        `Not yours to worry about: ${notApplicable.map((d) => d.label.en).join(", ")}. Unscored because there is no exposure to measure.`,
+                        `Δεν σας αφορούν: ${notApplicable.map((d) => d.label.el).join(", ")}. Δεν εξετάζονται επειδή δεν υπάρχει έκθεση προς αξιολόγηση.`,
+                        `Not yours to worry about: ${notApplicable.map((d) => d.label.en).join(", ")}. Not assessed because there is no exposure to assess.`,
                     )}
                 </p>
             )}

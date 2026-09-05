@@ -827,25 +827,6 @@
       }
     },
     {
-      "route": "v1/customers/protection-scores/route.ts",
-      "methods": [
-        "GET"
-      ],
-      "policy": {
-        "auth": {
-          "mode": "user"
-        },
-        "rateLimit": {
-          "required": true,
-          "profile": "agent-read"
-        },
-        "validation": {
-          "required": false,
-          "profile": "optional"
-        }
-      }
-    },
-    {
       "route": "v1/feedback/route.ts",
       "methods": [
         "POST"
@@ -1835,25 +1816,6 @@
     },
     {
       "route": "v1/portfolio/gaps/route.ts",
-      "methods": [
-        "GET"
-      ],
-      "policy": {
-        "auth": {
-          "mode": "user"
-        },
-        "rateLimit": {
-          "required": true,
-          "profile": "portfolio-read"
-        },
-        "validation": {
-          "required": false,
-          "profile": "optional"
-        }
-      }
-    },
-    {
-      "route": "v1/protection-score/route.ts",
       "methods": [
         "GET"
       ],

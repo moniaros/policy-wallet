@@ -57,6 +57,8 @@ export interface InsightsData {
     }
     recentGaps: {
         id: string
+        /** The definition's slug — what the provenance class and its citation are looked up by (F5). */
+        slug: string | null
         title: string
         severity: string
         customerName: string
@@ -240,7 +242,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             status: { in: [...OPEN_GAP_STATUSES] }
         },
         include: {
-            definition: { select: { title: true } },
+            definition: { select: { title: true, slug: true } },
             policy: {
                 select: {
                     policyNumber: true,
@@ -304,6 +306,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             avgPoliciesPerCustomer,
         },
         recentGaps: recentGaps.map(g => ({
+            slug: g.definition?.slug ?? null,
             id: g.id,
             title: g.definition?.title || 'Coverage Gap',
             severity: g.severity,

@@ -9,6 +9,8 @@ interface TopRecommendation {
     title: string
     urgency: string
     estimatedCostEur: number | null
+    /** F5: the law/article behind a classified requirement; null when under review or not gap-derived. */
+    citation?: string | null
 }
 
 interface WeeklyDigestData {
@@ -127,6 +129,7 @@ function buildRecommendationsSection(recs: TopRecommendation[] | undefined, isGr
             <tr style="border-bottom: 1px solid #E5E7EB;">
                 <td style="padding: 8px 0;">
                     <span style="font-size: 14px; color: #374151;">${r.title}</span>
+                    ${r.citation ? `<br><span data-fact="gap.citation" style="font-size: 12px; color: #6B7280;">${r.citation}</span>` : ''}
                 </td>
                 <td style="padding: 8px 0; font-size: 13px; color: #059669; text-align: right; font-weight: 600;">${costLabel}</td>
             </tr>

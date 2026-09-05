@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client"
 import { db } from "@/lib/db"
 import { LIVE_GAP_STATUSES } from "@/lib/gaps/gap-instance-writer"
-import { isClassified, provenanceOf, type GapProvenance } from "@/lib/gaps/provenance"
+import { compareFindingSlugs, isClassified, provenanceCitation, provenanceOf, type GapProvenance, type ProvenanceCitation } from "@/lib/gaps/provenance"
 import { AUTHORED_GAP_DEFINITIONS } from "@/lib/gaps/authored-catalogue"
 import { resolveGapConcept } from "@/lib/wallet/gap-report"
 
@@ -96,6 +96,12 @@ export async function readLiveGapRows<const A extends ReadLiveGapRowsArgs>(args:
         ...(args.take !== undefined ? { take: args.take } : {}),
     } as any)) as unknown as Array<{ definition: { slug: string } }>
     const tagged = rows.map(tag) as unknown as LiveGapRow<A>[]
+    // F1: deterministic order — provenance class, catalogue order, then detection
+    // time and id — unless the caller asked for another axis (a recency list).
+    if (!args.orderBy) {
+        const time = (r: any) => (r.detectedAt instanceof Date ? r.detectedAt.getTime() : typeof r.detectedAt === "string" ? Date.parse(r.detectedAt) || 0 : 0)
+        tagged.sort((a: any, b: any) => compareFindingSlugs(a.definition?.slug, b.definition?.slug) || time(a) - time(b) || String(a.id ?? "").localeCompare(String(b.id ?? "")))
+    }
     return args.scope === "classified" ? tagged.filter((r) => isClassified(r.provenance)) : tagged
 }
 
@@ -178,6 +184,23 @@ export function recommendationIsClassified(rec: RecommendationLike): boolean {
     return siblings.length > 0 && siblings.every((d) => isClassified(provenanceOf(d.slug)))
 }
 /** Every reader of recommendation rows that counts, lists or feeds them goes through this. */
+/**
+ * F5: the citation behind the requirement a recommendation derives from — by
+ * the linked gap's slug, else by the rule-id concept when every authored
+ * sibling of that concept rests on the same citation. Null for a
+ * recommendation that is not gap-derived, or whose requirement is under review.
+ */
+export function recommendationCitation(rec: RecommendationLike): ProvenanceCitation | null {
+    const slug = rec.gapInstance?.definition?.slug
+    if (slug) return provenanceCitation(slug)
+    if (!rec.ruleId || !rec.ruleId.startsWith(POLICY_GAP_PREFIX)) return null
+    const parts = rec.ruleId.slice(POLICY_GAP_PREFIX.length).split(":")
+    const concept = resolveGapConcept(parts[parts.length - 1] || "")
+    const citations = AUTHORED_GAP_DEFINITIONS.filter((d) => resolveGapConcept(d.slug) === concept).map((d) => provenanceCitation(d.slug))
+    const first = citations[0]
+    return first && citations.every((c) => c !== null && c.el === first.el) ? first : null
+}
+
 export function classifiedRecommendations<T extends RecommendationLike>(recs: readonly T[]): T[] {
     return recs.filter(recommendationIsClassified)
 }

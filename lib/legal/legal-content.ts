@@ -58,7 +58,7 @@ export const LEGAL_LAST_UPDATED = "March 2, 2026"
 export const LEGAL_DOC_META: Partial<
     Record<LegalDocumentKind, { version: string; lastUpdatedIso: string }>
 > = {
-    terms: { version: "GR-GA-2026.09", lastUpdatedIso: "2026-09-05" },
+    terms: { version: "GR-GA-2026.09.2", lastUpdatedIso: "2026-09-06" },
     privacy: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-20" },
     cookies: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
     subprocessors: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
@@ -125,7 +125,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "subscriptions",
                     title: "5. Συνδρομές, χρεώσεις, ανανέωση και ακύρωση",
                     paragraphs: [
-                        "Η βασική χρήση είναι δωρεάν για ένα συμβόλαιο. Τα πληρωμένα πλάνα για ιδιώτες και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται στη σελίδα τιμολόγησης και επιβεβαιώνεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
+                        "Η βασική χρήση είναι δωρεάν για έως τρία (3) συμβόλαια. Στο δωρεάν πλάνο ο αριθμός των αναλύσεων εγγράφων δεν περιορίζεται, αλλά κάθε ανάλυση καταναλώνει από τη μηνιαία δυνατότητα επεξεργασίας του πλάνου (150.000 μονάδες επεξεργασίας ανά ημερολογιακό μήνα)· οι διαδραστικές ερωτήσεις προς τον βοηθό δεν περιλαμβάνονται στο δωρεάν πλάνο. Τα πληρωμένα πλάνα για ιδιώτες και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται στη σελίδα τιμολόγησης και επιβεβαιώνεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
                         "Οι συνδρομές ανανεώνονται αυτόματα στο τέλος κάθε περιόδου χρέωσης (μηνιαίας ή ετήσιας) μέχρι να τις ακυρώσετε.",
                         "Μπορείτε να ακυρώσετε οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας. Η ακύρωση ισχύει από το τέλος της τρέχουσας περιόδου χρέωσης — μέχρι τότε διατηρείτε πλήρη πρόσβαση στο πλάνο σας. Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.",
                         "Αν αλλάξουν οι τιμές των πλάνων, θα ενημερωθείτε εκ των προτέρων και η νέα τιμή θα ισχύσει από την επόμενη περίοδο χρέωσης.",
@@ -610,7 +610,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "subscriptions",
                     title: "5. Subscriptions, billing, renewal and cancellation",
                     paragraphs: [
-                        "Basic use is free for one policy. Paid plans for individuals and intermediary plans are billed through the payment provider Stripe, at the price shown on the pricing page and confirmed before you complete the purchase, including VAT where applicable.",
+                        "Basic use is free for up to three (3) policies. On the free plan the number of document analyses is not capped, but each analysis draws on the plan's monthly processing allowance (150,000 processing units per calendar month); interactive questions to the assistant are not included on the free plan. Paid plans for individuals and intermediary plans are billed through the payment provider Stripe, at the price shown on the pricing page and confirmed before you complete the purchase, including VAT where applicable.",
                         "Subscriptions renew automatically at the end of each billing period (monthly or annual) until you cancel.",
                         "You can cancel at any time from your account settings. Cancellation takes effect at the end of the current billing period — until then you keep full access to your plan. You will not be charged for subsequent periods after cancelling.",
                         "If plan prices change, you will be notified in advance and the new price will apply from your next billing period.",

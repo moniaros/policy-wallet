@@ -394,7 +394,7 @@ export default async function DashboardPage() {
     // PRIVACY: protection scores are derived from the customer's ENTIRE
     // portfolio. Serving them for relationship customers with no visible
     // policy would leak portfolio-derived data the customer never shared —
-    // same rule as /api/v1/customers/protection-scores and agent-portal.
+    // same rule as agent-portal (the customers/protection-scores API was deleted in F4).
     const scoreEligibleIds = relationships
         .map((r) => r.policyholderUserId)
         .filter((id) => (visiblePolicyCounts.get(id) ?? 0) > 0)

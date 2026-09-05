@@ -1,0 +1,54 @@
+{
+  "run": "after",
+  "capturedAt": "2026-09-05T21:53:57.565Z",
+  "home": {
+    "facts": [
+      {
+        "fact": "gap.provenanceCount",
+        "text": "1 Νομοθετική απαίτηση"
+      }
+    ],
+    "lawMentions": [],
+    "counts": {
+      "notification.unreadCount": "9+",
+      "portfolio.policyCount": "3 ασφαλιστήρια",
+      "portfolio.neverAnalysedCount": "1 δεν έχει αναλυθεί",
+      "recommendation.openCount": "+4 ακόμη στις προτάσεις σας",
+      "plan.stepsDone": "3",
+      "plan.stepsTotal": "6",
+      "portfolio.renewalsNext180Count": "1 ασφαλιστήριο με ανανέωση εντός 6 μηνών",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx": "1 σημείο για έλεγχο",
+      "gap.provenanceCount#legislative": "1 Νομοθετική απαίτηση",
+      "household.dependantCount": "3 άτομα εξαρτώνται από το εισόδημά σας, και αυτή τη στιγμή εργάζεστε."
+    }
+  },
+  "protection": {
+    "facts": [],
+    "lawMentions": [
+      "Νομοθετική απαίτηση · Ν. 2496/1997, άρθρο 17 (υπασφάλιση – υπερασφάλιση)"
+    ],
+    "headline": [
+      "Εντοπίστηκε 1 σημείο προς έλεγχο στα ασφαλιστήριά σας — και 3 υπό αξιολόγηση, που δεν έχουν ταξινομηθεί ακόμη.",
+      "Υπάρχουν σημαντικά σημεία που αξίζει να ελέγξετε.",
+      "Ασφαλιστήρια με σημεία ελέγχου",
+      "Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας."
+    ]
+  },
+  "policy": {
+    "href": "/wallet/cmtoaaw9b00036gkwkt5hw00e",
+    "facts": [
+      {
+        "fact": "gap.citation",
+        "text": "Νομοθετική απαίτηση · Ν. 2496/1997, άρθρο 17 (υπασφάλιση – υπερασφάλιση)"
+      }
+    ],
+    "lawMentions": [
+      "Νομοθετική απαίτηση · Ν. 2496/1997, άρθρο 17 (υπασφάλιση – υπερασφάλιση)"
+    ],
+    "counts": {
+      "notification.unreadCount": "9+",
+      "gap.underReviewCount": "— εκ των οποίων 2 υπό αξιολόγηση, δεν έχουν ταξινομηθεί ακόμη",
+      "household.dependantCount": "3 άτομα εξαρτώνται από το εισόδημά σας, και αυτή τη στιγμή εργάζεστε."
+    }
+  }
+}

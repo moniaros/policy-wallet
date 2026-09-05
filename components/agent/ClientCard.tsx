@@ -85,7 +85,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                 >
                     <AlertTriangle className="h-3 w-3" aria-hidden="true" />
                     {client.gapCount}
-                    <span className="sr-only"> {t.agentUi.openFindingsLabel}</span>
+                    <span className="sr-only"> {client.gapCount === 1 ? t.agentUi.openFindingLabelOne : t.agentUi.openFindingsLabel}</span>
                 </span>
             )}
 

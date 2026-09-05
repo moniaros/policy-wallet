@@ -26,6 +26,13 @@ export interface AttentionItem {
     urgencyLabel: string
     /** How soon — resolved from the timing verdict; null for `no_deadline`. */
     timingLabel: string | null
+    /**
+     * F5: the law and article behind a classified requirement, localised by the
+     * server; null (or absent) for a recommendation whose requirement is under
+     * review or that is not gap-derived. A classified requirement never renders
+     * without it.
+     */
+    citation?: string | null
 }
 
 
@@ -117,6 +124,11 @@ export function AttentionList({
                                                 className="mt-0.5 line-clamp-2 block text-xs leading-snug text-muted-foreground"
                                             >
                                                 {item.reason}
+                                            </span>
+                                        )}
+                                        {item.citation && (
+                                            <span data-fact="gap.citation" className="mt-0.5 block text-caption leading-snug text-muted-foreground [overflow-wrap:anywhere]">
+                                                {item.citation}
                                             </span>
                                         )}
                                         <span className="mt-2 flex flex-wrap items-center gap-1.5">

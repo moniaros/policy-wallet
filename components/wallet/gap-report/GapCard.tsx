@@ -4,6 +4,9 @@ import { useState } from "react"
 import { ChevronDown, ChevronUp, EyeOff, Lightbulb, MessageSquare } from "lucide-react"
 
 import { firstSentence, type GapReportItem } from "@/lib/wallet/gap-report"
+import { provenanceCitation } from "@/lib/gaps/provenance"
+import { provenanceLabelWithCitation } from "@/components/gaps/provenance-label"
+import { getTranslations } from "@/lib/i18n"
 import { MECHANIC_CHIP_KEY } from "./chips"
 
 interface GapCardProps {
@@ -49,6 +52,11 @@ export function GapCard({ item, lang, copy, onIgnore, onNotify, ignoring, notify
     // it — the honesty chip that separates a probable finding from a validated
     // recommendation (never "MEDIC" in customer-facing copy).
     const validationLabel = copy.validationChip[item.validationState ?? "probable"]
+    // F5: a classified requirement never renders without the law and article it
+    // rests on. An under-review finding carries no line here — its section
+    // heading already discloses the state.
+    const citation = provenanceCitation(item.slug)
+    const citationLine = citation ? provenanceLabelWithCitation(item.slug, lang, getTranslations(lang).provenance) : null
 
     return (
         <div className="rounded-xl border border-black/10 bg-white transition-all dark:border-white/15 dark:bg-white/5">
@@ -78,6 +86,11 @@ export function GapCard({ item, lang, copy, onIgnore, onNotify, ignoring, notify
                             </span>
                         )}
                     </div>
+                    {citationLine && (
+                        <p data-fact="gap.citation" data-provenance-citation={item.slug} className="mt-1 text-caption text-black/60 dark:text-white/60">
+                            {citationLine}
+                        </p>
+                    )}
                     {!expanded && explanation && (
                         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                             {firstSentence(explanation)}

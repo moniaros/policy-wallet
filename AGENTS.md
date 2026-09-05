@@ -155,6 +155,12 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   compress into the viewport instead of overflowing (the policy page's section nav
   rendered fourteen 34px slivers with every label clipped mid-word). The primitive
   declares that a strip's children never shrink and never wrap.
+- **A layout metric reports element boxes with every pair it flags.** The overlap metric
+  (`overlappingHitAreas`, tests/measure/metrics.ts) records `boxA`/`boxB` for every pair and
+  pairs PAGE-FLOW elements only; fixed/sticky bars and off-canvas drawers are shell items. This
+  exists because an unevidenced attribution reached a spec in Sept 2026: B2C dashboard overlaps
+  were written up as "hero pills" from a count alone, and with boxes they were the fixed bottom
+  nav and an off-canvas drawer. A count without the boxes is not a finding; do not write one up.
 - **`data-fact="<namespace>.<key>"` marks the element that renders a fact.**
   One fact, one element, one place on the page. The attribute is what makes
   duplicate-fact regressions measurable rather than argued about — see

@@ -1,16 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs"
 import { join } from "node:path"
-import {
-    GAP_PROVENANCE,
-    PROVENANCE_RANK,
-    excludeUnderReview,
-    mayCarryEmphasis,
-    orderByProvenance,
-    partitionByProvenance,
-    provenanceOf,
-    unmappedAuthoredSlugs,
-} from "@/lib/gaps/provenance"
+import { GAP_PROVENANCE, PROVENANCE_RANK, excludeUnderReview, mayCarryEmphasis, orderByProvenance, partitionByProvenance, provenanceOf, unmappedAuthoredSlugs, isClassified, provenanceEntry } from "@/lib/gaps/provenance"
 import { AUTHORED_GAP_DEFINITIONS } from "@/lib/gaps/authored-catalogue"
 import { el } from "@/lib/i18n/translations/el"
 import { en } from "@/lib/i18n/translations/en"
@@ -84,14 +75,20 @@ describe("the map", () => {
         expect(mayCarryEmphasis("under_review")).toBe(false)
     })
 
-    it("partitions and orders stably; excludeUnderReview removes every finding that is not classified", () => {
+    it("partitions and orders stably; excludeUnderReview keeps exactly the classified findings (F5: citation-backed ones)", () => {
         const items = AUTHORED_GAP_DEFINITIONS.map((d, i) => ({ slug: d.slug, i }))
+        const classified = items.filter((x) => isClassified(provenanceOf(x.slug)))
+        const underReview = items.filter((x) => !isClassified(provenanceOf(x.slug)))
+        // Nothing is 'market' in this pass (close-out F5), and a classified
+        // slug is only ever one with a citation.
+        for (const x of classified) expect(provenanceEntry(x.slug)?.citation, x.slug).toBeTruthy()
         const groups = partitionByProvenance(items, (x) => x.slug)
-        expect(groups.emphasised).toEqual([])
         expect(groups.market).toEqual([])
-        expect(groups.underReview.map((x) => x.i)).toEqual(items.map((x) => x.i))
-        expect(orderByProvenance(items, (x) => x.slug)).toEqual(items)
-        expect(excludeUnderReview(items, (x) => x.slug)).toEqual([])
+        expect(groups.emphasised.map((x) => x.slug)).toEqual(classified.map((x) => x.slug))
+        expect(groups.underReview.map((x) => x.i)).toEqual(underReview.map((x) => x.i))
+        // Class first, then the catalogue's declared order within each class (F1).
+        expect(orderByProvenance(items, (x) => x.slug)).toEqual([...classified, ...underReview])
+        expect(excludeUnderReview(items, (x) => x.slug)).toEqual(classified)
     })
 })
 

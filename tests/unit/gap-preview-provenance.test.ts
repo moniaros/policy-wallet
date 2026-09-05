@@ -8,7 +8,20 @@ vi.mock('@/lib/gaps/provenance', async (importOriginal) => {
     const original = await importOriginal<typeof import('@/lib/gaps/provenance')>()
     const classOf = (slug: string | null | undefined) =>
         slug === 'legal' ? 'legislative' : slug === 'contract' ? 'contractual' : slug === 'market' ? 'market' : 'under_review'
-    return { ...original, provenanceOf: classOf }
+    // F1: the comparator and the ordering helper bind the module-internal class
+    // lookup, which a mocked export cannot reach — rebuild them on classOf, with
+    // the ORIGINAL catalogue-index tiebreak, so what this file tests is that the
+    // free preview ranks by class, never by title, severity or row order.
+    const RANK: Record<string, number> = { legislative: 0, contractual: 1, market: 2, under_review: 3 }
+    const compare = (a: string | null | undefined, b: string | null | undefined) => {
+        const rank = RANK[classOf(a)] - RANK[classOf(b)]
+        if (rank !== 0) return rank
+        const ia = original.catalogueIndexOf(a), ib = original.catalogueIndexOf(b)
+        return ia === ib ? 0 : ia < ib ? -1 : 1
+    }
+    const order = <T,>(items: readonly T[], slugOf: (item: T) => string | null | undefined) =>
+        items.map((item, index) => ({ item, index, slug: slugOf(item) })).sort((a, b) => compare(a.slug, b.slug) || a.index - b.index).map((x) => x.item)
+    return { ...original, provenanceOf: classOf, compareFindingSlugs: compare, orderByProvenance: order }
 })
 
 const item = (id: string, slug = id, titleEl = id): GapReportItem => ({
