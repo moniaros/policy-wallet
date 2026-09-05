@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3575
+# bundle entries: 3576
 # inline entries: 4805 across 216 files
 # ternary entries: 282 across 42 files
 # call entries: 1143 across 86 files
@@ -480,6 +480,7 @@ bundle	agentUi.lastUpdated	"Τελευταία ενημέρωση"
 bundle	agentUi.licensedAgent	"Πιστοποιημένος σύμβουλος"
 bundle	agentUi.noClientsTitle	"Κανένας πελάτης ακόμη"
 bundle	agentUi.noRecentActivity	"Καμία πρόσφατη δραστηριότητα ακόμη."
+bundle	agentUi.openFindingLabelOne	"ανοιχτό εύρημα"
 bundle	agentUi.openFindingsLabel	"ανοιχτά ευρήματα"
 bundle	agentUi.policiesAbbr	"ασφ."
 bundle	agentUi.portfolioHealth	"Υγεία χαρτοφυλακίου"

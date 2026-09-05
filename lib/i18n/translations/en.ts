@@ -1499,6 +1499,7 @@ export const en: TranslationKeys = {
 
     agentUi: {
         openFindingsLabel: 'open findings',
+        openFindingLabelOne: 'open finding',
         unassessedPoliciesOne: '1 policy with no authored checks — not assessed',
         unassessedPoliciesMany: '{count} policies with no authored checks — not assessed',
         // Protection-score trend card (F-08) — the client's score over time.

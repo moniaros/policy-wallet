@@ -1512,6 +1512,7 @@ export const el = {
 
     agentUi: {
         openFindingsLabel: 'ανοιχτά ευρήματα',
+        openFindingLabelOne: 'ανοιχτό εύρημα',
         // B1.5: per-client count of policies no rule can assess yet.
         unassessedPoliciesOne: '1 ασφαλιστήριο χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκε',
         unassessedPoliciesMany: '{count} ασφαλιστήρια χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκαν',

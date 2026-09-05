@@ -165,12 +165,17 @@ export function CoverageInsightsClient({
     // R3: a headline count never includes under-review findings unlabelled.
     const classifiedCount = visibleGaps.filter((g) => provenanceOf(gapSlug(g)) !== 'under_review').length
     const underReviewCount = visibleGaps.length - classifiedCount
+    // F5 made a count of ONE possible on this line — number and noun agree in both languages.
+    const classifiedEl = classifiedCount === 1 ? 'Εντοπίστηκε 1 σημείο προς έλεγχο' : `Εντοπίστηκαν ${classifiedCount} σημεία προς έλεγχο`
+    const underReviewTailEl = underReviewCount === 1 ? ' — και 1 υπό αξιολόγηση, που δεν έχει ταξινομηθεί ακόμη' : ` — και ${underReviewCount} υπό αξιολόγηση, που δεν έχουν ταξινομηθεί ακόμη`
     const headlineEl = classifiedCount > 0
-        ? `Εντοπίστηκαν ${classifiedCount} σημεία προς έλεγχο στα ασφαλιστήριά σας${underReviewCount > 0 ? ` — και ${underReviewCount} υπό αξιολόγηση, που δεν έχουν ταξινομηθεί ακόμη` : ''}.`
-        : `${underReviewCount} σημεία υπό αξιολόγηση στα ασφαλιστήριά σας — δεν έχουν ταξινομηθεί ακόμη, οπότε δεν μετρούν ως ευρήματα.`
+        ? `${classifiedEl} στα ασφαλιστήριά σας${underReviewCount > 0 ? underReviewTailEl : ''}.`
+        : underReviewCount === 1
+            ? '1 σημείο υπό αξιολόγηση στα ασφαλιστήριά σας — δεν έχει ταξινομηθεί ακόμη, οπότε δεν μετρά ως εύρημα.'
+            : `${underReviewCount} σημεία υπό αξιολόγηση στα ασφαλιστήριά σας — δεν έχουν ταξινομηθεί ακόμη, οπότε δεν μετρούν ως ευρήματα.`
     const headlineEn = classifiedCount > 0
-        ? `${classifiedCount} points to review across your policies${underReviewCount > 0 ? ` — and ${underReviewCount} under review, not yet classified` : ''}.`
-        : `${underReviewCount} points under review across your policies — not yet classified, so not counted as findings.`
+        ? `${classifiedCount} ${classifiedCount === 1 ? 'point' : 'points'} to review across your policies${underReviewCount > 0 ? ` — and ${underReviewCount} under review, not yet classified` : ''}.`
+        : `${underReviewCount} ${underReviewCount === 1 ? 'point' : 'points'} under review across your policies — not yet classified, so not counted as ${underReviewCount === 1 ? 'a finding' : 'findings'}.`
 
     // Concept B — policy-gap verdict. The SINGLE source for the headline + the
     // top tile, gated on whether deep analysis actually ran so "0 gaps" never
