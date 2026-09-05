@@ -2107,8 +2107,6 @@ export const en: TranslationKeys = {
         recordingCheckedOne: 'Document details — we checked whether 1 is recorded:',
         recorded: '{count} recorded',
         notRecorded: '{count} not recorded',
-        prePlan: 'Findings from the analysis of {date}. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete assessment.',
-        prePlanNoDate: 'Findings from an earlier analysis that predates the check plan: what was checked cannot be stated — these findings are not a complete assessment.',
         catalogueChanged: 'The checks changed after this analysis, so the composition is not shown. A new analysis will refresh it.',
         reviewFraming: 'The lines above measure what the rules read — a prompt to review, not a judgment about your insurance.',
     },

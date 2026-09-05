@@ -1,2 +1,0 @@
-// PROBE — a stated price, no comparison.
-export const price = { el: "€4,99 τον μήνα, ακύρωση όποτε θέλετε", en: "€4.99 a month, cancel any time" }

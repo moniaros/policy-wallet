@@ -9,7 +9,7 @@ import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 import { getTranslations } from "@/lib/i18n"
-import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
+import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
 import { composeFindings } from "@/lib/gaps/composition"
 import { resolveRecordStatus } from "@/lib/wallet/record-status"
 import { formatDate, formatDateTime } from "@/lib/i18n/format"
@@ -109,13 +109,6 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         lineOfBusiness: policy.lineOfBusiness,
         acordData: policy.acordData,
         firedSlugs: policy.gapInstances.map((g) => g.definition.slug),
-        // V3: a completed run with no plan renders the dated pre-plan state, never nothing.
-        completedRun: lastCompletedRun
-            ? {
-                  finishedAt: lastCompletedRun.finishedAt ?? lastCompletedRun.createdAt ?? null,
-                  dateLabel: formatProvenanceDate(lastCompletedRun.finishedAt ?? lastCompletedRun.createdAt ?? null, language),
-              }
-            : null,
         attempted:
             attemptedPlan && Array.isArray(attemptedPlan.slugs) && typeof attemptedPlan.catalogueVersion === 'string'
                 ? { slugs: attemptedPlan.slugs.filter((s): s is string => typeof s === 'string'), catalogueVersion: attemptedPlan.catalogueVersion }
