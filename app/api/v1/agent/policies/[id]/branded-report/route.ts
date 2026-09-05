@@ -9,7 +9,7 @@ import {
     generateSavingsReportHtml,
     type AgentReportBranding,
 } from "@/lib/services/reports/savings-report"
-import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { getTranslations } from "@/lib/i18n"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
@@ -83,7 +83,7 @@ export const GET = withApiGuard(
                 status: { in: ["completed", "completed_with_warnings"] },
             },
             orderBy: { finishedAt: "desc" },
-            select: { resultJson: true, finishedAt: true },
+            select: { resultJson: true, finishedAt: true, attemptedRules: true },
         })
         if (!run?.resultJson) {
             return createApiError(
@@ -139,13 +139,18 @@ export const GET = withApiGuard(
             language
         )
 
+        // V3: a completed run that predates the catalogue plan cannot state what it checked.
+        const prePlan = Array.isArray((run.attemptedRules as { slugs?: unknown } | null)?.slugs)
+            ? null
+            : { dateLabel: formatProvenanceDate(run.finishedAt ?? null, language) }
         const html = generateSavingsReportHtml(
             run.resultJson as Record<string, any>,
             run.finishedAt?.toISOString() ?? new Date().toISOString(),
             language,
             branding,
             decidedGaps.map((g) => ({ slug: g.definition.slug, severity: g.severity })),
-            provenance
+            provenance,
+            prePlan
         )
 
         return new Response(html, {

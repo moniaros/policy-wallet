@@ -1,0 +1,16 @@
+{
+  "run": "r3-before",
+  "capturedAt": "2026-09-05T13:25:36.435Z",
+  "counts": {
+    "notification.unreadCount": "3",
+    "agent.totalClients": "1",
+    "agent.expiringClients": "0",
+    "agent.gapClients": "1",
+    "agent.pendingInvites": "0",
+    "agent.policiesThisMonth": "0",
+    "agent.followUps": "1",
+    "agent.pipelineEur": "0 €",
+    "agent.portfolioCompleteness": "16/100",
+    "client.openGapCount": "5 ανοιχτά ευρήματα"
+  }
+}

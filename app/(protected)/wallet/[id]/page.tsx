@@ -12,7 +12,7 @@ import { isAgentRole } from "@/lib/auth/require-agent"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
-import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { composeFindings } from "@/lib/gaps/composition"
 import { resolveRecordStatus } from "@/lib/wallet/record-status"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
@@ -188,6 +188,13 @@ export default async function PolicyDetailPage({
         lineOfBusiness: policy.lineOfBusiness,
         acordData: policy.acordData,
         firedSlugs: policy.gapInstances.map((g) => g.definition.slug),
+        // V3: a completed run with no plan renders the dated pre-plan state, never nothing.
+        completedRun: lastCompletedRun
+            ? {
+                  finishedAt: lastCompletedRun.finishedAt ?? lastCompletedRun.createdAt ?? null,
+                  dateLabel: formatProvenanceDate(lastCompletedRun.finishedAt ?? lastCompletedRun.createdAt ?? null, language),
+              }
+            : null,
         attempted:
             attemptedPlan && Array.isArray(attemptedPlan.slugs) && typeof attemptedPlan.catalogueVersion === 'string'
                 ? { slugs: attemptedPlan.slugs.filter((s): s is string => typeof s === 'string'), catalogueVersion: attemptedPlan.catalogueVersion }

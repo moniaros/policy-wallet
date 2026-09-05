@@ -1,0 +1,2 @@
+// PROBE — a comparative pricing claim on a public page.
+export const claim = { el: "Φθηνότερο από κάθε άλλη πλατφόρμα", en: "Cheaper than any other platform" }
