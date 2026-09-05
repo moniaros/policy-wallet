@@ -91,6 +91,17 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                 </div>
             )}
 
+            {/* B1.5: how many of this client's policies no rule can assess yet.
+                Text, not a tick's absence — a zero gap count over unassessed
+                policies must not read as a clean book. */}
+            {(client.unassessedPolicyCount ?? 0) > 0 && (
+                <span className="mr-1 max-w-[9rem] shrink-0 text-caption leading-snug text-muted-foreground" data-count="client.unassessedPolicyCount">
+                    {client.unassessedPolicyCount === 1
+                        ? t.agentUi.unassessedPoliciesOne
+                        : t.agentUi.unassessedPoliciesMany.replace("{count}", String(client.unassessedPolicyCount))}
+                </span>
+            )}
+
             {/* Arrow */}
             <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
         </button>

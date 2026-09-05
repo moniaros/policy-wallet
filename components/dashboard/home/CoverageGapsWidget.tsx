@@ -30,13 +30,27 @@ export interface GapSeverityCounts {
  */
 export function CoverageGapsWidget({
     counts,
+    assessment,
     labels,
     variant = "card",
 }: {
     counts: GapSeverityCounts
+    /**
+     * B1.5: the denominator behind a zero. A tally of zero over a portfolio in
+     * which nothing was assessed is not an all-clear; with these the zero says
+     * how many policies it speaks for and how many it left out.
+     */
+    assessment?: { assessedPolicies: number; excludedPolicies: number }
     labels: {
         kicker: string
         noGaps: string
+        /** «Δεν εντοπίστηκαν κενά στα {assessed} ασφαλιστήρια που αξιολογήθηκαν.» (one / many) */
+        noGapsAmongAssessedOne?: string
+        noGapsAmongAssessedMany?: string
+        /** «{excluded} ασφαλιστήρια δεν αξιολογήθηκαν…» (one / many) */
+        assessmentExcludedOne?: string
+        assessmentExcludedMany?: string
+        noGapsNothingAssessed?: string
         severity: Record<keyof GapSeverityCounts, string>
         /** Honest framing: these levels are a profile-based priority, not a risk grade. */
         /** Null when the page already states this caveat elsewhere. */
@@ -49,9 +63,42 @@ export function CoverageGapsWidget({
     const total = counts.critical + counts.high + counts.medium + counts.low
     const present = GAP_SEVERITIES.filter((key) => counts[key] > 0)
 
+    const zeroLine = (() => {
+        if (!assessment) return <p className="text-sm text-muted-foreground">{labels.noGaps}</p>
+        const { assessedPolicies, excludedPolicies } = assessment
+        if (assessedPolicies === 0) {
+            return (
+                <p className="text-sm text-muted-foreground" data-assessment-state="nothing_assessed">
+                    {labels.noGapsNothingAssessed ?? labels.noGaps}
+                </p>
+            )
+        }
+        const among =
+            assessedPolicies === 1
+                ? labels.noGapsAmongAssessedOne ?? labels.noGaps
+                : (labels.noGapsAmongAssessedMany ?? labels.noGaps).replace("{assessed}", String(assessedPolicies))
+        const excluded =
+            excludedPolicies === 0
+                ? null
+                : excludedPolicies === 1
+                  ? labels.assessmentExcludedOne ?? null
+                  : (labels.assessmentExcludedMany ?? null)?.replace("{excluded}", String(excludedPolicies)) ?? null
+        return (
+            <p className="text-sm text-muted-foreground" data-assessment-state="assessed">
+                <span data-count="portfolio.assessedCount">{among}</span>
+                {excluded && (
+                    <>
+                        {" "}
+                        <span data-count="portfolio.unassessedCount">{excluded}</span>
+                    </>
+                )}
+            </p>
+        )
+    })()
+
     const body =
         total === 0 ? (
-            <p className="text-sm text-muted-foreground">{labels.noGaps}</p>
+            zeroLine
         ) : (
             <>
                 {/* The bar is decoration for the numbers beneath it — proportion

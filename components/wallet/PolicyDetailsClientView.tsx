@@ -55,6 +55,7 @@ import {
 } from "@/lib/wallet/policy-identity"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { authoredCheckCount } from "@/lib/gaps/assessment-coverage"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
 import { resolveStoredSummary } from "@/lib/wallet/summary-language"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
@@ -397,7 +398,13 @@ export function PolicyDetailsClient({
     // clearer copy: all three wrong (it did not fail, retrying reproduces the
     // block, the document is fine). It gets its own state, pointing at the real
     // resolution — upgrade or consent — read from the run's blockedReason.
-    const absenceCopy = resolveCoverageAbsenceCopy(lastRun?.status, lastRun?.blockedReason, detailsCopy)
+    // B1.5: a branch with no authored checks is «not assessed», not «no findings».
+    const absenceCopy = resolveCoverageAbsenceCopy(
+        lastRun?.status,
+        lastRun?.blockedReason,
+        detailsCopy,
+        authoredCheckCount(policy.lineOfBusiness)
+    )
 
     // ── AI Policy Brief: seven one-liners, every count with its evidence
     //    boundary in the string. Coverage-status arithmetic is pure

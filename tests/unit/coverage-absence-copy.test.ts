@@ -30,6 +30,8 @@ const COPY: CoverageAbsenceCopy = {
     analysisDegradedHint: 'DEGRADED_HINT',
     analysisFoundNothingTitle: 'EMPTY_TITLE',
     analysisFoundNothingHint: 'EMPTY_HINT',
+    analysisUnassessedTitle: 'UNASSESSED_TITLE',
+    analysisUnassessedHint: 'UNASSESSED_HINT',
 }
 
 const FAILED_STRINGS = [COPY.analysisFailedTitle, COPY.analysisFailedHint]

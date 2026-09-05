@@ -550,6 +550,8 @@ export const en: TranslationKeys = {
             analysisFailedHint: 'You can try again. If it fails again the file may not be readable — upload a clearer copy, or ask your advisor.',
             analysisFoundNothingTitle: 'The analysis finished without detailed coverages',
             analysisFoundNothingHint: 'This document did not contain structured coverage detail we could read. Re-analysing the same file will most likely give the same result — upload the full policy document, or ask your advisor.',
+            analysisUnassessedTitle: 'No checks have been authored for this type of policy yet',
+            analysisUnassessedHint: 'It has not been assessed. We read the document, but no rule examines this branch yet — this is not a judgment about the cover.',
             analysisDegradedTitle: 'The analysis did not finish cleanly',
             analysisDegradedHint: 'Some steps of the analysis did not complete, which is why coverage detail is missing. Unlike a clean run that found nothing, this one is worth retrying — the cause is often temporary.',
             reanalyzeToSeeCoverage: 'Re-analyze to see detailed coverage',
@@ -1496,6 +1498,8 @@ export const en: TranslationKeys = {
     },
 
     agentUi: {
+        unassessedPoliciesOne: '1 policy with no authored checks — not assessed',
+        unassessedPoliciesMany: '{count} policies with no authored checks — not assessed',
         // Protection-score trend card (F-08) — the client's score over time.
         scoreTrend: {
             title: 'Protection over time',
@@ -2132,6 +2136,8 @@ export const en: TranslationKeys = {
     // Placeholders
 
     analysis: {
+        unassessedTitle: 'Not assessed',
+        unassessedHint: 'No checks have been authored for this type of policy yet, so nothing was checked. This is not a check result.',
         title: 'GAP ANALYSIS',
         runAnalysis: 'Understand this policy',
         freeTrialAvailable: 'Your first full analysis is free — try it on this policy.',
@@ -2340,6 +2346,13 @@ export const en: TranslationKeys = {
             factExpiringMany: '{count} expire within 30 days',
             factNeverAnalysedOne: '1 not analysed',
             factNeverAnalysedMany: '{count} not analysed',
+            factUnassessedOne: '1 with no authored checks for its branch — not assessed',
+            factUnassessedMany: '{count} with no authored checks for their branch — not assessed',
+            noGapsAmongAssessedOne: 'No gaps found in the 1 policy that was assessed.',
+            noGapsAmongAssessedMany: 'No gaps found in the {assessed} policies that were assessed.',
+            assessmentExcludedOne: '1 policy was not assessed (no analysis, or no authored checks for its branch).',
+            assessmentExcludedMany: '{excluded} policies were not assessed (no analysis, or no authored checks for their branch).',
+            noGapsNothingAssessed: 'No policy has been assessed yet — there is nothing to count.',
             factFailedOne: '1 could not be read',
             factFailedMany: '{count} could not be read',
             severityGroupLabel: 'Open findings by priority',

@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3521
+# bundle entries: 3534
 # inline entries: 4807 across 215 files
 # ternary entries: 280 across 43 files
 # call entries: 1145 across 86 files
@@ -494,6 +494,8 @@ bundle	agentUi.scoreTrend.caption	"Καταγράφεται κάθε φορά π
 bundle	agentUi.scoreTrend.chartLabel	"Εξέλιξη βαθμού προστασίας"
 bundle	agentUi.scoreTrend.title	"Προστασία στον χρόνο"
 bundle	agentUi.thankYou	"Ευχαριστούμε!"
+bundle	agentUi.unassessedPoliciesMany	"{count} ασφαλιστήρια χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκαν"
+bundle	agentUi.unassessedPoliciesOne	"1 ασφαλιστήριο χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκε"
 bundle	agentUi.upgrade	"Αναβάθμιση"
 bundle	agentUi.urgent	"επείγοντα"
 bundle	agentUi.verified	"Πιστοποιημένος"
@@ -588,6 +590,8 @@ bundle	analysis.steps.savings_detection	"Εντοπισμός ευκαιριών
 bundle	analysis.title	"ΑΝΑΛΥΣΗ ΑΣΦΑΛΙΣΤΙΚΩΝ ΚΕΝΩΝ"
 bundle	analysis.translationIncomplete	"Η μετάφραση δεν ολοκληρώθηκε"
 bundle	analysis.translationIncompleteHint	"Κάποιο κείμενο δεν μεταφράστηκε — τα αποτελέσματα ενδέχεται να εμφανίζονται στην πρωτότυπη γλώσσα."
+bundle	analysis.unassessedHint	"Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου, οπότε τίποτα δεν ελέγχθηκε. Δεν πρόκειται για αποτέλεσμα ελέγχου."
+bundle	analysis.unassessedTitle	"Δεν το έχουμε αξιολογήσει"
 bundle	analysis.unknownGap	"Άγνωστο ασφαλιστικό κενό"
 bundle	apiErrors.addCustomerFailed	"Η προσθήκη του πελάτη απέτυχε. Δοκιμάστε ξανά."
 bundle	apiErrors.addPolicyFailed	"Η προσθήκη του ασφαλιστηρίου απέτυχε. Δοκιμάστε ξανά."
@@ -1269,6 +1273,8 @@ bundle	dashboard.home.advisorOpen	"Άνοιγμα"
 bundle	dashboard.home.advisorTitle	"Ο σύμβουλός σας"
 bundle	dashboard.home.agentConnected	"Συνδεδεμένος: {name}"
 bundle	dashboard.home.agentStatus	"Κατάσταση συμβούλου"
+bundle	dashboard.home.assessmentExcludedMany	"{excluded} ασφαλιστήρια δεν αξιολογήθηκαν (χωρίς ανάλυση ή χωρίς ορισμένους ελέγχους για τον κλάδο τους)."
+bundle	dashboard.home.assessmentExcludedOne	"1 ασφαλιστήριο δεν αξιολογήθηκε (χωρίς ανάλυση ή χωρίς ορισμένους ελέγχους για τον κλάδο του)."
 bundle	dashboard.home.attentionEmptyBody	"Με βάση τα ασφαλιστήρια και τις απαντήσεις που έχουμε. Πείτε μας όταν αλλάξει κάτι και θα το ξανακοιτάξουμε."
 bundle	dashboard.home.attentionEmptyTitle	"Τίποτα δεν χρειάζεται την προσοχή σας αυτή τη στιγμή"
 bundle	dashboard.home.attentionKicker	"Χρειάζεται την προσοχή σας"
@@ -1286,6 +1292,8 @@ bundle	dashboard.home.factNeverAnalysedMany	"{count} δεν έχουν αναλ�
 bundle	dashboard.home.factNeverAnalysedOne	"1 δεν έχει αναλυθεί"
 bundle	dashboard.home.factTotalMany	"{count} ασφαλιστήρια"
 bundle	dashboard.home.factTotalOne	"1 ασφαλιστήριο"
+bundle	dashboard.home.factUnassessedMany	"{count} χωρίς ορισμένους ελέγχους για τον κλάδο τους — δεν αξιολογήθηκαν"
+bundle	dashboard.home.factUnassessedOne	"1 χωρίς ορισμένους ελέγχους για τον κλάδο του — δεν αξιολογήθηκε"
 bundle	dashboard.home.freePlanHint	"Το Plus έχει χώρο για έως 10 ασφαλιστήρια, το Pro απεριόριστα."
 bundle	dashboard.home.freePlanPolicies	"Ασφαλιστήρια στο δωρεάν πλάνο"
 bundle	dashboard.home.gapsKicker	"Κενά κάλυψης"
@@ -1313,6 +1321,9 @@ bundle	dashboard.home.noDocuments	"Δεν βρέθηκαν έγγραφα."
 bundle	dashboard.home.noExpirationsBody	"Θα σας ειδοποιήσουμε εγκαίρως πριν από κάθε ανανέωση."
 bundle	dashboard.home.noExpirationsTitle	"Καμία λήξη τους επόμενους 6 μήνες"
 bundle	dashboard.home.noGaps	"Δεν εντοπίζονται ανοιχτά κενά."
+bundle	dashboard.home.noGapsAmongAssessedMany	"Δεν εντοπίστηκαν κενά στα {assessed} ασφαλιστήρια που αξιολογήθηκαν."
+bundle	dashboard.home.noGapsAmongAssessedOne	"Δεν εντοπίστηκαν κενά στο 1 ασφαλιστήριο που αξιολογήθηκε."
+bundle	dashboard.home.noGapsNothingAssessed	"Κανένα ασφαλιστήριο δεν έχει αξιολογηθεί ακόμη — δεν υπάρχει τι να μετρηθεί."
 bundle	dashboard.home.overviewMeta	"Ό,τι περιέχει ο φάκελός σας σήμερα"
 bundle	dashboard.home.planKicker	"Το πλάνο προστασίας σας"
 bundle	dashboard.home.planMoreOpen	"+{count} ακόμη στις προτάσεις σας"
@@ -3163,6 +3174,8 @@ bundle	wallet.policyDetailsPage.analysisFoundNothingTitle	"Η ανάλυση ο�
 bundle	wallet.policyDetailsPage.analysisNeverRun	"Δεν έχει γίνει ακόμη ανάλυση αυτού του εγγράφου"
 bundle	wallet.policyDetailsPage.analysisNeverRunHint	"Τρέξτε ανάλυση AI για να εμφανιστούν αναλυτικές καλύψεις, εξαιρέσεις και όρια."
 bundle	wallet.policyDetailsPage.analysisNoFindingUnavailable	"Δεν μπορούμε να πούμε αν υπάρχουν κενά: η τελευταία ανάλυση δεν ολοκληρώθηκε. Δοκιμάστε ξανά για να ελεγχθεί το έγγραφο."
+bundle	wallet.policyDetailsPage.analysisUnassessedHint	"Δεν το έχουμε αξιολογήσει. Διαβάσαμε το έγγραφο, αλλά κανένας κανόνας δεν εξετάζει ακόμη αυτόν τον κλάδο — δεν πρόκειται για κρίση επί της κάλυψης."
+bundle	wallet.policyDetailsPage.analysisUnassessedTitle	"Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου"
 bundle	wallet.policyDetailsPage.analyzingDocument	"Ανάλυση του εγγράφου σας"
 bundle	wallet.policyDetailsPage.analyzingHint	"Τα στοιχεία του ασφαλιστηρίου θα εμφανιστούν αυτόματα μόλις ολοκληρωθεί η εξαγωγή AI."
 bundle	wallet.policyDetailsPage.askStarter	"Κάντε μια πρώτη ερώτηση στο AI"

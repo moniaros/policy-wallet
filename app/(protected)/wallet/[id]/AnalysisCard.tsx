@@ -862,6 +862,22 @@ export function AnalysisCard({
                                 {t.wallet.policyDetailsPage.analysisNoFindingUnavailable}
                             </p>
                         </div>
+                    ) : findingsProvenance?.state === "unassessed" ? (
+                    /* B1.5: NO CHECK IS AUTHORED FOR THIS BRANCH. Zero findings here
+                       is not a result — nothing was asked — so the card must not
+                       read «no gaps». It says nothing was assessed, in words
+                       distinct from the missing-data and failed states. */
+                    <div className="text-center py-8" data-assessment-state="unauthored">
+                        <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/10 flex items-center justify-center mx-auto mb-4">
+                            <HelpCircle className="w-8 h-8 text-black/45 dark:text-white/45" />
+                        </div>
+                        <p className="text-sm text-slate-700 dark:text-slate-300 font-semibold mb-2">
+                            {t.analysis.unassessedTitle}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {t.analysis.unassessedHint}
+                        </p>
+                    </div>
                     ) : (
                     <div className="text-center py-8">
                         <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-4">

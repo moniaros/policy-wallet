@@ -175,22 +175,22 @@ describe('score methodology disclosure (per-policy indicator)', () => {
  */
 describe('scoreSupport / portfolioFacts', () => {
     it('withholds support when nothing has been analysed', () => {
-        expect(scoreSupport({ total: 3, expired: 0, expiringSoon: 0, neverAnalysed: 3, analysisFailed: 0 }))
+        expect(scoreSupport({ total: 3, expired: 0, expiringSoon: 0, neverAnalysed: 3, analysisFailed: 0, unassessed: 0, assessed: 0 }))
             .toEqual({ supported: false, reason: 'nothing_analysed' })
     })
 
     it('withholds support when every policy has expired', () => {
-        expect(scoreSupport({ total: 4, expired: 4, expiringSoon: 0, neverAnalysed: 0, analysisFailed: 0 }))
+        expect(scoreSupport({ total: 4, expired: 4, expiringSoon: 0, neverAnalysed: 0, analysisFailed: 0, unassessed: 0, assessed: 0 }))
             .toEqual({ supported: false, reason: 'no_active_cover' })
     })
 
     it('still supports a wallet where only SOME policies are unanalysed', () => {
-        expect(scoreSupport({ total: 12, expired: 1, expiringSoon: 3, neverAnalysed: 2, analysisFailed: 1 }))
+        expect(scoreSupport({ total: 12, expired: 1, expiringSoon: 3, neverAnalysed: 2, analysisFailed: 1, unassessed: 0, assessed: 0 }))
             .toEqual({ supported: true })
     })
 
     it('leads with the total and omits zero-valued facts', () => {
-        const facts = portfolioFacts({ total: 12, expired: 0, expiringSoon: 3, neverAnalysed: 2, analysisFailed: 0 })
+        const facts = portfolioFacts({ total: 12, expired: 0, expiringSoon: 3, neverAnalysed: 2, analysisFailed: 0, unassessed: 0, assessed: 0 })
         expect(facts.map((f) => f.kind)).toEqual(['total', 'expiringSoon', 'neverAnalysed'])
         expect(facts[0].count).toBe(12)
     })

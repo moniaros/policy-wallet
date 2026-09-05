@@ -8,6 +8,7 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getPrimaryRole } from "@/lib/auth/role-routing"
 import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { computeClientRelationshipScore } from "@/lib/agent/health-score"
+import { isUnauthoredBranch } from "@/lib/gaps/assessment-coverage"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
 import { computeAgentBookRevenue, MAX_PLAUSIBLE_ANNUAL_PREMIUM } from "@/lib/agent/revenue"
@@ -469,6 +470,8 @@ export default async function DashboardPage() {
             activationStatus: rel.status === "active" ? "activated" : rel.status === "pending_activation" ? "invited" : "inactive",
             protectionScore: scoresByUserId.get(rel.policyholderUserId)?.overallScore ?? null,
             gapCount: scoresByUserId.get(rel.policyholderUserId)?.gapCount ?? 0,
+            // B1.5: a gap count of zero over unassessed policies is not a clean book.
+            unassessedPolicyCount: clientPolicies.filter((p) => isUnauthoredBranch(p.lineOfBusiness)).length,
         }
 
         clientsByUrgency[urgencyTier].push(clientCard)

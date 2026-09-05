@@ -262,13 +262,23 @@ export function normalizeRemindersSent(value: unknown): RenewalReminderMilestone
  *               retrying often helps because the cause is frequently transient.
  *  - empty    → a clean completed run that simply found no structured coverage;
  *               re-running the same file will most likely give the same nothing.
+ *  - unassessed → the run completed but NO CHECK IS AUTHORED for this branch
+ *               (B1.5): nothing was assessed, so neither «no findings» nor
+ *               «missing data» is true. Distinct from `empty` (data absent) and
+ *               from `degraded` (checks exist, steps failed).
  */
-export type CoverageAbsence = "never" | "failed" | "blocked" | "degraded" | "empty"
+export type CoverageAbsence = "never" | "failed" | "blocked" | "degraded" | "empty" | "unassessed"
 
-export function resolveCoverageAbsence(lastRunStatus: string | null | undefined): CoverageAbsence {
+export function resolveCoverageAbsence(
+    lastRunStatus: string | null | undefined,
+    /** Authored, evaluable checks for the policy's branch (lib/gaps/assessment-coverage.ts). */
+    authoredChecks?: number | null
+): CoverageAbsence {
     if (!lastRunStatus) return "never"
     if (lastRunStatus === "blocked") return "blocked"
     if (lastRunStatus === "failed") return "failed"
+    const completed = lastRunStatus === "completed" || lastRunStatus === "completed_with_warnings"
+    if (completed && authoredChecks === 0) return "unassessed"
     if (lastRunStatus === "completed_with_warnings") return "degraded"
     if (lastRunStatus === "completed") return "empty"
     return "never" // queued / running — nothing has produced a verdict yet
@@ -288,6 +298,8 @@ export interface CoverageAbsenceCopy {
     analysisDegradedHint: string
     analysisFoundNothingTitle: string
     analysisFoundNothingHint: string
+    analysisUnassessedTitle: string
+    analysisUnassessedHint: string
 }
 
 /**
@@ -299,9 +311,12 @@ export function resolveCoverageAbsenceCopy(
     lastRunStatus: string | null | undefined,
     blockedReason: string | null | undefined,
     copy: CoverageAbsenceCopy,
+    authoredChecks?: number | null,
 ): { absence: CoverageAbsence; title: string; hint: string } {
-    const absence = resolveCoverageAbsence(lastRunStatus)
+    const absence = resolveCoverageAbsence(lastRunStatus, authoredChecks)
     switch (absence) {
+        case "unassessed":
+            return { absence, title: copy.analysisUnassessedTitle, hint: copy.analysisUnassessedHint }
         case "never":
             return { absence, title: copy.analysisNeverRun, hint: copy.analysisNeverRunHint }
         case "failed":

@@ -550,6 +550,10 @@ export const el = {
             analysisFailedHint: 'Μπορείτε να δοκιμάσετε ξανά. Αν αποτύχει πάλι, το αρχείο μπορεί να μην είναι ευανάγνωστο — ανεβάστε καθαρότερο αντίγραφο ή ρωτήστε τον σύμβουλό σας.',
             analysisFoundNothingTitle: 'Η ανάλυση ολοκληρώθηκε χωρίς αναλυτικές καλύψεις',
             analysisFoundNothingHint: 'Το έγγραφο δεν περιείχε δομημένα στοιχεία κάλυψης που να μπορούμε να διαβάσουμε. Νέα ανάλυση του ίδιου αρχείου πιθανότατα θα δώσει το ίδιο αποτέλεσμα — ανεβάστε το πλήρες ασφαλιστήριο ή ρωτήστε τον σύμβουλό σας.',
+            // B1.5: no authored check for this branch — nothing was assessed. Not
+            // «no findings» (a result) and not «missing data» (a gap in the document).
+            analysisUnassessedTitle: 'Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου',
+            analysisUnassessedHint: 'Δεν το έχουμε αξιολογήσει. Διαβάσαμε το έγγραφο, αλλά κανένας κανόνας δεν εξετάζει ακόμη αυτόν τον κλάδο — δεν πρόκειται για κρίση επί της κάλυψης.',
             analysisDegradedTitle: 'Η ανάλυση δεν ολοκληρώθηκε κανονικά',
             analysisDegradedHint: 'Κάποια βήματα της ανάλυσης δεν ολοκληρώθηκαν, γι\u2019 αυτό λείπουν στοιχεία κάλυψης. Σε αντίθεση με μια καθαρή ανάλυση που δεν βρήκε τίποτα, εδώ αξίζει να δοκιμάσετε ξανά — η αιτία είναι συχνά προσωρινή.',
             reanalyzeToSeeCoverage: 'Επανάλυση για εμφάνιση λεπτομερούς κάλυψης',
@@ -1507,6 +1511,9 @@ export const el = {
     },
 
     agentUi: {
+        // B1.5: per-client count of policies no rule can assess yet.
+        unassessedPoliciesOne: '1 ασφαλιστήριο χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκε',
+        unassessedPoliciesMany: '{count} ασφαλιστήρια χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκαν',
         // Κάρτα εξέλιξης βαθμού προστασίας (F-08).
         scoreTrend: {
             title: 'Προστασία στον χρόνο',
@@ -2153,6 +2160,9 @@ export const el = {
     },
 
     analysis: {
+        // B1.5: the unauthored-branch empty state of the findings card.
+        unassessedTitle: 'Δεν το έχουμε αξιολογήσει',
+        unassessedHint: 'Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου, οπότε τίποτα δεν ελέγχθηκε. Δεν πρόκειται για αποτέλεσμα ελέγχου.',
         title: 'ΑΝΑΛΥΣΗ ΑΣΦΑΛΙΣΤΙΚΩΝ ΚΕΝΩΝ',
         runAnalysis: 'Κατανόηση ασφαλιστηρίου',
         freeTrialAvailable: 'Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.',
@@ -2374,6 +2384,15 @@ export const el = {
             factExpiringMany: '{count} λήγουν μέσα σε 30 ημέρες',
             factNeverAnalysedOne: '1 δεν έχει αναλυθεί',
             factNeverAnalysedMany: '{count} δεν έχουν αναλυθεί',
+            // B1.5: policies in a branch with no authored checks — excluded from
+            // every "assessed" figure, and said so.
+            factUnassessedOne: '1 χωρίς ορισμένους ελέγχους για τον κλάδο του — δεν αξιολογήθηκε',
+            factUnassessedMany: '{count} χωρίς ορισμένους ελέγχους για τον κλάδο τους — δεν αξιολογήθηκαν',
+            noGapsAmongAssessedOne: 'Δεν εντοπίστηκαν κενά στο 1 ασφαλιστήριο που αξιολογήθηκε.',
+            noGapsAmongAssessedMany: 'Δεν εντοπίστηκαν κενά στα {assessed} ασφαλιστήρια που αξιολογήθηκαν.',
+            assessmentExcludedOne: '1 ασφαλιστήριο δεν αξιολογήθηκε (χωρίς ανάλυση ή χωρίς ορισμένους ελέγχους για τον κλάδο του).',
+            assessmentExcludedMany: '{excluded} ασφαλιστήρια δεν αξιολογήθηκαν (χωρίς ανάλυση ή χωρίς ορισμένους ελέγχους για τον κλάδο τους).',
+            noGapsNothingAssessed: 'Κανένα ασφαλιστήριο δεν έχει αξιολογηθεί ακόμη — δεν υπάρχει τι να μετρηθεί.',
             factFailedOne: '1 δεν διαβάστηκε',
             factFailedMany: '{count} δεν διαβάστηκαν',
             severityGroupLabel: 'Ανοιχτά ευρήματα ανά προτεραιότητα',
