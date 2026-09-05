@@ -380,16 +380,17 @@ export function DashboardScreen({ locale }: { locale: ScreenLocale }) {
                 tally={
                     <CoverageGapsWidget
                         variant="embedded"
-                        counts={{ critical: 0, high: 1, medium: 1, low: 0 }}
+                        counts={{ legislative: 0, contractual: 0, market: 0, underReview: 2 }}
                         labels={{
                             kicker: home.gapsKicker,
                             noGaps: home.noGaps,
-                            severity: {
-                                critical: home.severityCritical,
-                                high: home.severityHigh,
-                                medium: home.severityMedium,
-                                low: home.severityLow,
+                            provenance: {
+                                legislative: t.provenance.legislative,
+                                contractual: t.provenance.contractual,
+                                market: t.provenance.market,
                             },
+                            underReviewOmitted: t.provenance.underReviewSummaryOmitted,
+                            underReviewLink: t.provenance.underReviewLink,
                             note: null,
                             groupLabel: home.severityGroupLabel,
                         }}

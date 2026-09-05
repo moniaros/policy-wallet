@@ -345,16 +345,14 @@ export const DECISION_RULES: Record<string, DecisionRule> = {
             ...(severity === "critical" ||
             (severity === "high" && ctx.thresholds.advisorTaskOnHighGaps)
                 ? [advisorTask(
-                      severity === "critical"
-                          ? "A critical coverage gap opened"
-                          : "A high-severity coverage gap opened",
+                      "A coverage gap opened that needs an advisor's review",
                       {
-                          title:
-                              severity === "critical"
-                                  ? "Critical coverage gap"
-                                  : "High-severity coverage gap",
+                          // No severity word and no severity-driven priority on the
+                          // task (PW-TRANSPARENCY-02 B1). The routing floor above is
+                          // workflow — who gets a task — not presentation, and stays.
+                          title: "Coverage gap — advisor review",
                           riskId: ctx.payload.primaryRiskId,
-                          priority: severity === "critical" ? "high" : "medium",
+                          priority: "medium",
                       }
                   )]
                 : []),

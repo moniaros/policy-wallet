@@ -57,10 +57,11 @@ describe('nothing grades the policyholder’s risk', () => {
         expect(offenders, `risk grades presented as verdicts:\n${offenders.join('\n')}`).toEqual([])
     })
 
-    it('InsightCard uses the same four priority tiers as the rest of the product', () => {
+    it('InsightCard prints no priority tier at all — severity is no chip\'s text (PW-TRANSPARENCY-02 B1)', () => {
         const src = readFileSync('components/coverage/InsightCard.tsx', 'utf-8')
         for (const el of ['Χαμηλή προτεραιότητα', 'Μεσαία προτεραιότητα', 'Υψηλή προτεραιότητα', 'Κρίσιμη προτεραιότητα']) {
-            expect(src, el).toContain(el)
+            expect(src, el).not.toContain(el)
         }
+        expect(src).not.toMatch(/SEVERITY_CONFIG\[/)
     })
 })

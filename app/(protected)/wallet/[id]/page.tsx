@@ -14,6 +14,7 @@ import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
 import { composeFindings } from "@/lib/gaps/composition"
+import { resolveRecordStatus } from "@/lib/wallet/record-status"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import { resolveGlossaryHint, resolvePolicyGlossaryHints } from "@/lib/glossary/hints"
 import {
@@ -191,6 +192,15 @@ export default async function PolicyDetailPage({
             attemptedPlan && Array.isArray(attemptedPlan.slugs) && typeof attemptedPlan.catalogueVersion === 'string'
                 ? { slugs: attemptedPlan.slugs.filter((s): s is string => typeof s === 'string'), catalogueVersion: attemptedPlan.catalogueVersion }
                 : null,
+    })
+
+    // B1: the record status — where the work on this record has got to. Never
+    // derived from the number of findings; `confirmed` waits for C1.
+    const recordStatus = resolveRecordStatus({
+        lifecycleStatus: status,
+        policyStatus: policy.status,
+        latestRun: latestAttempt ? { status: latestAttempt.status, blockedReason: latestAttempt.blockedReason ?? null } : null,
+        confirmedAt: null,
     })
 
     // Gap report items: dedupe DB-level slug twins and resolve Greek/English
@@ -406,6 +416,7 @@ export default async function PolicyDetailPage({
             policy={serializedPolicy}
             findingsProvenance={findingsProvenance}
             composition={composition}
+            recordStatus={recordStatus}
             serializedShares={serializedShares}
             aiUsageStats={aiUsageStats}
             statusLabel={statusLabel}

@@ -41,11 +41,11 @@ function renderList(items: AttentionItem[], totalCount = items.length) {
  * product's copy tests exist to keep out.
  */
 describe('what needs my attention — framing', () => {
-    it('renders the risk, the personal reason, and the priority', () => {
+    it('renders the risk and the personal reason — and no severity chip (B1)', () => {
         renderList([item()])
         expect(screen.getByText(/income stops/)).toBeTruthy()
         expect(screen.getByText(/two people depend/)).toBeTruthy()
-        expect(screen.getByText('High priority')).toBeTruthy()
+        expect(screen.queryByText('High priority'), 'B1: no severity chip on the attention list').toBeNull()
     })
 
     it('always shows the priority qualifier when findings render', () => {

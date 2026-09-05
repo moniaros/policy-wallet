@@ -1,0 +1,4 @@
+// PROBE — an outbound module counting gap rows without classifying them.
+export async function newGapCount(db: any, userId: string) {
+    return db.gapInstance.count({ where: { policy: { ownerUserId: userId }, status: "open" } })
+}

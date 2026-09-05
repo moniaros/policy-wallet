@@ -398,28 +398,14 @@ export function detectProfileGaps(
         }
     }
 
-    // Deduplicate by lineOfBusiness — keep highest severity
-    const severityOrder: Record<GapSeverity, number> = {
-        critical: 0,
-        high: 1,
-        medium: 2,
-        low: 3,
-    }
-
+    // Deduplicate by lineOfBusiness — the first rule in authored order wins.
+    // Severity decides neither the survivor nor the order (PW-TRANSPARENCY-02 B1).
     const byLob = new Map<string, ProfileGap>()
     for (const gap of detected) {
-        const existing = byLob.get(gap.lineOfBusiness)
-        if (
-            !existing ||
-            severityOrder[gap.severity] < severityOrder[existing.severity]
-        ) {
-            byLob.set(gap.lineOfBusiness, gap)
-        }
+        if (!byLob.has(gap.lineOfBusiness)) byLob.set(gap.lineOfBusiness, gap)
     }
 
-    return Array.from(byLob.values()).sort(
-        (a, b) => severityOrder[a.severity] - severityOrder[b.severity]
-    )
+    return Array.from(byLob.values())
 }
 
 /**

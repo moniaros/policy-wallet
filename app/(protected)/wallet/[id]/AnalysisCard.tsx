@@ -21,6 +21,8 @@ import { FindingsProvenanceLine } from "@/components/gaps/FindingsProvenanceLine
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 import { CoverageComposition } from "@/components/gaps/CoverageComposition"
 import type { Composition } from "@/lib/gaps/composition"
+import { RecordStatusLabel } from "@/components/records/RecordStatusLabel"
+import type { RecordStatusResult } from "@/lib/wallet/record-status"
 
 interface Gap {
     id: string
@@ -83,6 +85,8 @@ interface AnalysisCardProps {
     findingsProvenance?: ProvenanceLine | null
     /** B2: two lines, two denominators — rendered with the provenance, never without it. */
     composition?: Composition | null
+    /** B1: the record status, rendered here where this card is the findings surface (agent side). */
+    recordStatus?: RecordStatusResult | null
 }
 
 export function AnalysisCard({
@@ -90,6 +94,7 @@ export function AnalysisCard({
     gaps,
     findingsProvenance = null,
     composition = null,
+    recordStatus = null,
     canRequestOwnerConsent = false,
     policyStatus,
     processingError,
@@ -815,6 +820,7 @@ export function AnalysisCard({
                         {t.wallet.policyDetailsPage.analysisFindingsStale}
                     </p>
                 )}
+                {recordStatus && <RecordStatusLabel result={recordStatus} copy={t.recordStatus} className="mb-3" />}
                 {findingsProvenance && <FindingsProvenanceLine line={findingsProvenance} className="mb-4" />}
                 {composition && <CoverageComposition composition={composition} copy={t.composition} className="mb-4" />}
                 {report && report.items.length > 0 ? (

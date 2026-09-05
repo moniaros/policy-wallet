@@ -168,11 +168,13 @@ describe("portfolio roll-ups exclude unassessed policies and say how many", () =
                 assessmentExcludedOne: home.assessmentExcludedOne,
                 assessmentExcludedMany: home.assessmentExcludedMany,
                 noGapsNothingAssessed: home.noGapsNothingAssessed,
-                severity: { critical: "c", high: "h", medium: "m", low: "l" },
+                provenance: { legislative: "l", contractual: "c", market: "m" },
+                underReviewOmitted: "omitted",
+                underReviewLink: "link",
                 note: null,
                 groupLabel: "g",
             }
-            const zero = { critical: 0, high: 0, medium: 0, low: 0 }
+            const zero = { legislative: 0, contractual: 0, market: 0, underReview: 0 }
 
             const some = render(
                 <CoverageGapsWidget counts={zero} assessment={{ assessedPolicies: 2, excludedPolicies: 7 }} labels={labels} variant="embedded" />

@@ -4,6 +4,8 @@ import { AlertTriangle, CalendarClock, CheckCircle2, Download, FileText, Message
 
 import { formatPolicyDate } from "@/lib/wallet/policy-detail"
 import { extractedField } from "@/lib/wallet/unreadable-value"
+import { RecordStatusLabel, type RecordStatusCopy } from "@/components/records/RecordStatusLabel"
+import type { RecordStatusResult } from "@/lib/wallet/record-status"
 import type { Attention, PrimaryAction } from "@/lib/wallet/policy-attention"
 
 /**
@@ -71,6 +73,9 @@ export interface PolicyHeadProps {
      * apart again.
      */
     statusColor: { bg: string; text: string; border: string }
+    /** B1: where the work on this record has got to — text, one neutral shape, never a verdict. */
+    recordStatus?: RecordStatusResult | null
+    recordStatusCopy?: RecordStatusCopy
     daysLeft: number | null
     isAnalyzing: boolean
     attention: Attention
@@ -123,6 +128,8 @@ export function PolicyHead({
     endDate,
     statusLabel,
     statusColor,
+    recordStatus = null,
+    recordStatusCopy,
     daysLeft,
     isAnalyzing,
     attention,
@@ -208,6 +215,7 @@ export function PolicyHead({
                 >
                     {isAnalyzing ? copy.analyzing : statusLabel}
                 </span>
+                {recordStatus && recordStatusCopy && <RecordStatusLabel result={recordStatus} copy={recordStatusCopy} />}
                 <p className="text-sm font-medium text-foreground" data-fact="policy.expiryDate">
                     {endDate === null
                         ? copy.unknownDuration

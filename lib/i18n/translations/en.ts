@@ -2066,6 +2066,36 @@ export const en: TranslationKeys = {
 
     // Policy Status
     // Which run a policy's findings come from (B0.3). See el.ts.
+    recordStatus: {
+        underExamination: 'Under examination',
+        needsData: 'Needs details',
+        awaitingConfirmation: 'Awaiting confirmation',
+        confirmed: 'Confirmed',
+        inactive: 'Inactive',
+        needConsent: 'Your consent to AI processing is needed.',
+        needPlan: 'Analysis is not included in the current plan.',
+        needTokens: 'This month\u2019s analysis allowance is used up.',
+        needDocument: 'The policy document is needed — no details could be read.',
+        needPermission: 'There is no permission to analyse this policy.',
+        needFields: 'Details that could not be read: {fields}',
+        needTechnical: 'The analysis did not complete for a technical reason — it can be run again.',
+        describesRecord: 'The status describes the record, not your insurance.',
+    },
+
+    provenance: {
+        legislative: 'Legal requirement',
+        contractual: 'Contractual requirement',
+        market: 'Market practice',
+        underReview: 'Under review',
+        emphasisedHeading: 'Requirements set by law or contract',
+        marketHeading: 'Market practice — for your own review',
+        marketFraming: 'Common cover in the market, not mandatory. Worth discussing — it does not mean something is missing.',
+        underReviewHeading: 'Findings under review',
+        underReviewDisclosure: 'Not yet classified as legal, contractual or market practice. They count in no summary and are not sent anywhere.',
+        underReviewSummaryOmitted: 'Findings under review are not included in this summary — you see them on each policy.',
+        underReviewLink: 'See the findings under review',
+    },
+
     composition: {
         coverageChecked: 'We checked {checked} coverage points for this policy:',
         coverageCheckedOne: 'We checked 1 coverage point for this policy:',

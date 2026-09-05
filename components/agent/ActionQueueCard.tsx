@@ -30,6 +30,8 @@ const ONE_TAP_LABELS: Record<OneTapAction, { en: string; el: string }> = {
 }
 
 /** Urgency tints the row's GLYPH on the status tokens — a whole tinted row per item read as five alarms. */
+
+// Days-to-expiry urgency (the queue's own tiers) — never a finding's severity.
 function getUrgencyStyles(urgency: "low" | "medium" | "high") {
     if (urgency === "high") return "text-status-danger"
     if (urgency === "medium") return "text-status-warning"

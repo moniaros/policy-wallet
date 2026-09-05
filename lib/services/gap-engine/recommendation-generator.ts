@@ -411,10 +411,8 @@ export function dedupeRecommendationInputs(
             continue
         }
         const existing = byKey.get(key)
-        const isMoreUrgent =
-            existing != null &&
-            (SEVERITY_ORDER[rec.urgency] ?? 3) < (SEVERITY_ORDER[existing.urgency] ?? 3)
-        if (!existing || isMoreUrgent) {
+        // The first rule wins: severity does not decide which duplicate survives (B1).
+        if (!existing) {
             byKey.set(key, { ...rec, ruleId: key })
         }
     }
@@ -424,12 +422,6 @@ export function dedupeRecommendationInputs(
 
 // ── Prioritization ───────────────────────────────────────────────────
 
-const SEVERITY_ORDER: Record<GapSeverity, number> = {
-    critical: 0,
-    high: 1,
-    medium: 2,
-    low: 3,
-}
 
 /**
  * Sort recommendations by urgency, then by how much the missing cover matters.
@@ -471,14 +463,9 @@ export function statedPriorityRank(lineOfBusiness: string, stated: readonly stri
 
 type Orderable = { urgency: string; lineOfBusiness: string; ruleId?: string | null }
 
-/** The ONE comparator both read paths use — urgency, protection weight, stated priority, rule id. */
+/** The ONE comparator both read paths use — protection weight, stated priority, rule id. Urgency is not an input (PW-TRANSPARENCY-02 B1). */
 export function recommendationOrder(stated: readonly string[] | null | undefined = null) {
     return (a: Orderable, b: Orderable): number => {
-        const sevDiff =
-            (SEVERITY_ORDER[a.urgency as GapSeverity] ?? 3) -
-            (SEVERITY_ORDER[b.urgency as GapSeverity] ?? 3)
-        if (sevDiff !== 0) return sevDiff
-
         const weightDiff =
             lobProtectionWeight(b.lineOfBusiness) - lobProtectionWeight(a.lineOfBusiness)
         if (weightDiff !== 0) return weightDiff

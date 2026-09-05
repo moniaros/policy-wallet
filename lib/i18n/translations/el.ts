@@ -2093,6 +2093,40 @@ export const el = {
     // attempt. Facts about the record, never about the person.
     // B2 (PW-TRANSPARENCY-02): two lines, two denominators. Never a percentage,
     // never a verdict adjective; a prompt to review.
+    // B1 (PW-TRANSPARENCY-02): the record status — where the work on the
+    // record has got to, never how protected the person is.
+    recordStatus: {
+        underExamination: 'Υπό εξέταση',
+        needsData: 'Χρειάζεται στοιχεία',
+        awaitingConfirmation: 'Προς επιβεβαίωση',
+        confirmed: 'Επιβεβαιωμένο',
+        inactive: 'Ανενεργό',
+        needConsent: 'Χρειάζεται τη συγκατάθεσή σας για επεξεργασία με AI.',
+        needPlan: 'Η ανάλυση δεν περιλαμβάνεται στο τρέχον πλάνο.',
+        needTokens: 'Το όριο ανάλυσης του μήνα έχει εξαντληθεί.',
+        needDocument: 'Χρειάζεται το έγγραφο του ασφαλιστηρίου — δεν διαβάστηκαν στοιχεία.',
+        needPermission: 'Δεν υπάρχει δικαίωμα ανάλυσης για αυτό το ασφαλιστήριο.',
+        needFields: 'Στοιχεία που δεν διαβάστηκαν: {fields}',
+        needTechnical: 'Η ανάλυση δεν ολοκληρώθηκε για τεχνικό λόγο — μπορεί να επαναληφθεί.',
+        describesRecord: 'Η κατάσταση περιγράφει τον φάκελο, όχι την ασφάλισή σας.',
+    },
+
+    // B3: requirement provenance — why a check exists. Every authored check
+    // ships «υπό αξιολόγηση» until the human track classifies it.
+    provenance: {
+        legislative: 'Νομοθετική απαίτηση',
+        contractual: 'Συμβατική απαίτηση',
+        market: 'Πρακτική αγοράς',
+        underReview: 'Υπό αξιολόγηση',
+        emphasisedHeading: 'Απαιτήσεις από νόμο ή σύμβαση',
+        marketHeading: 'Πρακτική αγοράς — για δική σας εξέταση',
+        marketFraming: 'Συνηθισμένη κάλυψη στην αγορά, όχι υποχρεωτική. Αξίζει να τη συζητήσετε — δεν σημαίνει έλλειψη.',
+        underReviewHeading: 'Ευρήματα υπό αξιολόγηση',
+        underReviewDisclosure: 'Δεν έχουν ταξινομηθεί ακόμη ως νομοθετικές, συμβατικές ή πρακτική αγοράς. Δεν μετρούν σε καμία σύνοψη και δεν αποστέλλονται.',
+        underReviewSummaryOmitted: 'Τα ευρήματα υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή τη σύνοψη — τα βλέπετε σε κάθε ασφαλιστήριο.',
+        underReviewLink: 'Δείτε τα ευρήματα υπό αξιολόγηση',
+    },
+
     composition: {
         coverageChecked: 'Ελέγξαμε {checked} σημεία κάλυψης για αυτό το ασφαλιστήριο:',
         coverageCheckedOne: 'Ελέγξαμε 1 σημείο κάλυψης για αυτό το ασφαλιστήριο:',

@@ -1,0 +1,5 @@
+// PROBE — colour and emphasis driven by severity.
+export function Chip({ gap }: { gap: { severity: string; title: string } }) {
+    const emphasis = gap.severity === "critical" ? "font-bold" : "font-normal"
+    return <span className={`pill ${gap.severity === "high" ? "bg-red-100" : ""} ${emphasis}`}>{gap.title}</span>
+}

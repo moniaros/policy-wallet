@@ -49,12 +49,12 @@ describe('recommendations are ordered by what is at stake, not by price', () => 
         expect(lobProtectionWeight('liability')).toBeGreaterThan(lobProtectionWeight('pet'))
     })
 
-    it('severity still wins over everything', () => {
+    it('severity wins nothing (B1): the protection weight orders, whatever the urgency says', () => {
         const sorted = prioritizeRecommendations([
             rec('health', 'low', 800),
             rec('travel', 'critical', 80),
         ] as any)
-        expect(sorted[0].lineOfBusiness).toBe('travel')
+        expect(sorted[0].lineOfBusiness).toBe('health')
     })
 
     it('is stable when weight and severity tie', () => {

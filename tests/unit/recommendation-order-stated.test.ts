@@ -33,8 +33,9 @@ describe("recommendationOrder", () => {
         expect([home, motor].sort(recommendationOrder(["mobility"])).map((r) => r.ruleId)).toEqual(["b", "a"])
     })
 
-    it("never lifts a finding past a more urgent one", () => {
-        expect([motor, criticalHome].sort(recommendationOrder(["mobility"])).map((r) => r.ruleId)).toEqual(["d", "b"])
+    it("urgency lifts nothing (B1): a critical finding sorts exactly where its non-critical twin does", () => {
+        const twin = [motor, home].sort(recommendationOrder(["mobility"])).map((r) => (r.ruleId === "a" ? "d" : r.ruleId))
+        expect([motor, criticalHome].sort(recommendationOrder(["mobility"])).map((r) => r.ruleId)).toEqual(twin)
     })
 
     it("never lifts a finding past one the protection model weighs higher", () => {

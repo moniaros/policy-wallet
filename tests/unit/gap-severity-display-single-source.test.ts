@@ -107,7 +107,6 @@ const KNOWN_BYPASSES = new Set([
 const CAVEAT_REQUIRED = [
     "components/agent/ActionQueueCard.tsx",
     "components/tasks/TasksClient.tsx",
-    "app/(protected)/insights/InsightsClient.tsx",
     "components/coverage/InsightCard.tsx",
 ]
 
@@ -468,7 +467,7 @@ describe("no new hand-rolled severity presentation", () => {
  * source text — an assertion on the source could pass while the output lied.
  */
 describe("lib severity surfaces carry the truth fix in their rendered output", () => {
-    it("the savings/branded report labels severity through the primitive and prints the caveat sentence", () => {
+    it("the savings/branded report prints no severity word and omits findings still under provenance review (B1/B3)", () => {
         // A Pro customer downloads this; an agent hands the branded variant to a
         // client. It is exactly the "printable report with a red CRITICAL badge"
         // the primitive's own doc comment names as a loudest-surface miss.
@@ -481,18 +480,17 @@ describe("lib severity surfaces carry the truth fix in their rendered output", (
             ])
             // The badge says what the primitive says («Κρίσιμη προτεραιότητα» /
             // "Critical priority"), not a local map's word…
-            expect(html, `${lang}: severity label must come from the primitive's labelKey`).toContain(
+            // B1: no severity word reaches the report. B3: a finding whose
+            // provenance is still under review is omitted, and the report says so.
+            expect(html, `${lang}: no severity word may reach the report`).not.toContain(
                 resolve(describeSeverity("critical").labelKey)
             )
-            // …and the gaps section carries the sentence that says what the
-            // word is worth, while Gate 3b is open.
-            expect(html, `${lang}: the severity caveat sentence must appear beside the badges`).toContain(
-                resolve(SEVERITY_CAVEAT_KEY)
-            )
+            expect(html).not.toContain("earthquake cover")
+            expect(html).toContain(lang === "el" ? "υπό αξιολόγηση δεν περιλαμβάνονται" : "under review are not included")
         }
     })
 
-    it("the weekly digest keeps severity colour-only, with the colour keyed by the primitive's tone", () => {
+    it("the weekly digest carries neither a severity word nor a severity colour (B1)", () => {
         const { html } = getWeeklyDigestEmail("el", "Owner", {
             renewingSoon: [],
             newGaps: 0,
@@ -512,9 +510,10 @@ describe("lib severity surfaces carry the truth fix in their rendered output", (
         // The dot's colour is keyed by describeSeverity().tone: urgent renders
         // the red dot, junk normalises to moderate amber — and the old
         // hand-rolled grey fallback is gone from the dot markup.
-        expect(html).toContain("background: #DC2626")
-        expect(html).toContain("background: #D97706")
-        expect(html).not.toContain("background: #6B7280")
+        // The renewal countdown keeps its day-based colours; the URGENCY dot is gone.
+        expect(html).not.toMatch(/border-radius: 50%/)
+        expect(html).toContain("Recommendation A")
+        expect(html).toContain("Recommendation B")
     })
 })
 

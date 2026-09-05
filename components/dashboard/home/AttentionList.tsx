@@ -1,8 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
 import { ActionLink, RecommendationSurface } from "./RecommendationAnalytics"
-import { describeSeverity } from "@/lib/gaps/severity-display"
-import { toneDotClass } from "@/components/gaps/severity-tone"
 import { ArrowRight, ShieldCheck, TriangleAlert } from "lucide-react"
 
 import type { Language } from "@/lib/i18n"
@@ -109,10 +107,6 @@ export function AttentionList({
                                     href="/protection"
                                     className="pw-subcard flex items-start gap-3 p-3.5 transition-colors"
                                 >
-                                    <span
-                                        className={`mt-1.5 h-2 w-2 flex-shrink-0 rounded-full ${toneDotClass(describeSeverity(item.urgency).tone)}`}
-                                        aria-hidden
-                                    />
                                     <span className="min-w-0 flex-1">
                                         <span className="block text-sm font-semibold leading-snug text-foreground [overflow-wrap:anywhere]">
                                             {item.title}
@@ -126,10 +120,6 @@ export function AttentionList({
                                             </span>
                                         )}
                                         <span className="mt-2 flex flex-wrap items-center gap-1.5">
-                                            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-caption font-semibold text-foreground/80">
-                                                <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(describeSeverity(item.urgency).tone)}`} aria-hidden />
-                                                {item.urgencyLabel}
-                                            </span>
                                             {item.timingLabel && (
                                                 <span className="inline-flex items-center rounded-full bg-status-warning-tint px-2 py-0.5 text-caption font-semibold text-status-warning">
                                                     {item.timingLabel}

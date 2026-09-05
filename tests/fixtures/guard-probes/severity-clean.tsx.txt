@@ -1,0 +1,11 @@
+// PROBE — compliant: the severity word rendered as caveated text inside its own card, nothing else.
+import { describeSeverity } from "@/lib/gaps/severity-display"
+export function Card({ gap, t }: { gap: { severity: string; title: string }; t: (k: string) => string }) {
+    const described = describeSeverity(gap.severity)
+    return (
+        <article className="pw-card">
+            <h3>{gap.title}</h3>
+            <p className="text-caption text-muted-foreground">{t(described.labelKey)} · {t(described.caveatKey)}</p>
+        </article>
+    )
+}

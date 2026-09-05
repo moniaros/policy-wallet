@@ -19,10 +19,10 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3548
-# inline entries: 4807 across 215 files
-# ternary entries: 280 across 43 files
-# call entries: 1145 across 86 files
+# bundle entries: 3572
+# inline entries: 4803 across 215 files
+# ternary entries: 278 across 42 files
+# call entries: 1146 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -2347,6 +2347,30 @@ bundle	protection.lensByBranch	"Ανά κλάδο"
 bundle	protection.lensByRisk	"Ανά κίνδυνο"
 bundle	protection.subtitle	"Τι έχετε και τι παρακολουθούμε — ανά κλάδο και ανά κίνδυνο."
 bundle	protection.title	"Η προστασία μου"
+bundle	provenance.contractual	"Συμβατική απαίτηση"
+bundle	provenance.emphasisedHeading	"Απαιτήσεις από νόμο ή σύμβαση"
+bundle	provenance.legislative	"Νομοθετική απαίτηση"
+bundle	provenance.market	"Πρακτική αγοράς"
+bundle	provenance.marketFraming	"Συνηθισμένη κάλυψη στην αγορά, όχι υποχρεωτική. Αξίζει να τη συζητήσετε — δεν σημαίνει έλλειψη."
+bundle	provenance.marketHeading	"Πρακτική αγοράς — για δική σας εξέταση"
+bundle	provenance.underReview	"Υπό αξιολόγηση"
+bundle	provenance.underReviewDisclosure	"Δεν έχουν ταξινομηθεί ακόμη ως νομοθετικές, συμβατικές ή πρακτική αγοράς. Δεν μετρούν σε καμία σύνοψη και δεν αποστέλλονται."
+bundle	provenance.underReviewHeading	"Ευρήματα υπό αξιολόγηση"
+bundle	provenance.underReviewLink	"Δείτε τα ευρήματα υπό αξιολόγηση"
+bundle	provenance.underReviewSummaryOmitted	"Τα ευρήματα υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή τη σύνοψη — τα βλέπετε σε κάθε ασφαλιστήριο."
+bundle	recordStatus.awaitingConfirmation	"Προς επιβεβαίωση"
+bundle	recordStatus.confirmed	"Επιβεβαιωμένο"
+bundle	recordStatus.describesRecord	"Η κατάσταση περιγράφει τον φάκελο, όχι την ασφάλισή σας."
+bundle	recordStatus.inactive	"Ανενεργό"
+bundle	recordStatus.needConsent	"Χρειάζεται τη συγκατάθεσή σας για επεξεργασία με AI."
+bundle	recordStatus.needDocument	"Χρειάζεται το έγγραφο του ασφαλιστηρίου — δεν διαβάστηκαν στοιχεία."
+bundle	recordStatus.needFields	"Στοιχεία που δεν διαβάστηκαν: {fields}"
+bundle	recordStatus.needPermission	"Δεν υπάρχει δικαίωμα ανάλυσης για αυτό το ασφαλιστήριο."
+bundle	recordStatus.needPlan	"Η ανάλυση δεν περιλαμβάνεται στο τρέχον πλάνο."
+bundle	recordStatus.needTechnical	"Η ανάλυση δεν ολοκληρώθηκε για τεχνικό λόγο — μπορεί να επαναληφθεί."
+bundle	recordStatus.needTokens	"Το όριο ανάλυσης του μήνα έχει εξαντληθεί."
+bundle	recordStatus.needsData	"Χρειάζεται στοιχεία"
+bundle	recordStatus.underExamination	"Υπό εξέταση"
 bundle	referrals.added	"Προστέθηκε"
 bundle	referrals.copied	"✓ Αντιγράφηκε"
 bundle	referrals.copyLink	"Αντιγραφή"
@@ -4003,12 +4027,8 @@ inline	components/coverage/CoverageInsightsClient.tsx	'Χρειάζεται πρ
 inline	components/coverage/CoverageInsightsClient.tsx	`Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`
 inline	components/coverage/CoverageInsightsClient.tsx	`Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`
 inline	components/coverage/InsightCard.tsx	'Γιατί έχει σημασία'
-inline	components/coverage/InsightCard.tsx	'Κρίσιμη προτεραιότητα'
-inline	components/coverage/InsightCard.tsx	'Μεσαία προτεραιότητα'
 inline	components/coverage/InsightCard.tsx	'Πλήρης ανάλυση διαθέσιμη σε Plus/Pro'
 inline	components/coverage/InsightCard.tsx	'Τι ελέγξαμε'
-inline	components/coverage/InsightCard.tsx	'Υψηλή προτεραιότητα'
-inline	components/coverage/InsightCard.tsx	'Χαμηλή προτεραιότητα'
 inline	components/coverage/RiskProfileWizard.tsx	"Άσθμα"
 inline	components/coverage/RiskProfileWizard.tsx	"Ύψος δανείων"
 inline	components/coverage/RiskProfileWizard.tsx	"Ύψος"
@@ -7496,7 +7516,7 @@ inline	lib/services/gap-engine/agent-playbook.ts	"Συμπεριλάβετε σ�
 inline	lib/services/gap-engine/agent-playbook.ts	"Τα ιατρικά έξοδα στο εξωτερικό μπορεί να είναι καταστροφικά — μία νοσηλεία μπορεί να ξεπεράσει τα €10.000"
 inline	lib/services/gap-engine/agent-playbook.ts	"Τοποθετήστε το ως μέρος συνολικής βελτιστοποίησης χαρτοφυλακίου"
 inline	lib/services/gap-engine/agent-playbook.ts	"Υπογραμμίστε τι επιλέγουν συνήθως άτομα σε παρόμοια κατάσταση"
-inline	lib/services/gap-engine/agent-playbook.ts	`Αυτό το κενό ${lob} ${severity === "critical" ? "κρίσιμης" : severity === "high" ? "υψηλής" : "μέσης"} προτεραιότητας αποτελεί ευκαιρία μετατροπής.`
+inline	lib/services/gap-engine/agent-playbook.ts	`Αυτό το κενό ${lob} αποτελεί ευκαιρία μετατροπής.`
 inline	lib/services/gap-engine/agent-playbook.ts	`Ο πελάτης έχει ${clientProfile.dependentsCount} εξαρτώμενο(α) μέλος(η) χωρίς ασφάλεια ζωής — υψηλή συναισθηματική επείγουσα ανάγκη.`
 inline	lib/services/gap-engine/life-context.ts	"Άσθμα"
 inline	lib/services/gap-engine/life-context.ts	"Αγωνιστική ποδηλασία"
@@ -8521,9 +8541,6 @@ ternary	lib/services/compliance/obligation-scan.ts	`Το ασφαλιστήρι�
 ternary	lib/services/compliance/obligation-scan.ts	`Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει την εξής προϋπόθεση κάλυψης: ${lead.el}`
 ternary	lib/services/gap-analysis.service.ts	'Δεν έχετε δικαίωμα να απορρίψετε αυτό το κενό'
 ternary	lib/services/gap-analysis.service.ts	'Δεν έχετε δικαίωμα να επιλύσετε αυτό το κενό'
-ternary	lib/services/gap-engine/agent-playbook.ts	"κρίσιμης"
-ternary	lib/services/gap-engine/agent-playbook.ts	"μέσης"
-ternary	lib/services/gap-engine/agent-playbook.ts	"υψηλής"
 ternary	lib/services/gap-engine/portfolio-rules.ts	" — αύριο"
 ternary	lib/services/gap-engine/portfolio-rules.ts	" — σήμερα"
 ternary	lib/services/gap-engine/portfolio-rules.ts	"ενεργά ασφαλιστήρια"
@@ -8582,13 +8599,14 @@ ternary	lib/services/renewal.service.ts	"σήμερα"
 ternary	lib/services/renewal.service.ts	`λήγει σε ${days} ημέρες`
 ternary	lib/services/renewal.service.ts	`σε ${daysUntilExpiry} ημέρες`
 ternary	lib/services/reports/savings-report.ts	` <div class="savings-total"> <div class="amount">${escapeHtml(formatCurrency(totalSavings, language, { currency: "EUR", decimals: 0 }))}</div> <div class="label">${L("Εκτιμώμενη ετήσια δυνατότητα εξοικονόμησης", "Estimated annual savings potential")}</div> <div class="caveat">${L( "Οι εκτιμήσεις προκύπτουν από ανάλυση AI του εγγράφου σας και είναι ενδεικτικές — τα πραγματικά ποσά εξαρτώνται από τις προσφορές των ασφαλιστών. Χαμηλότερο ασφάλιστρο μπορεί να σημαίνει μικρότερη κάλυψη: συγκρίνετε τις καλύψεις, όχι μόνο την τιμή. Αυθεντική πηγή παραμένει το ασφαλιστήριό σας.", "Estimates come from AI analysis of your document and are indicative — actual amounts depend on insurer quotes. A lower premium can mean less cover: compare the covers, not just the price. Your policy document remains the authoritative source." )}</div> </div> `
-ternary	lib/services/reports/savings-report.ts	` <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2> <div class="section-caveat">${escapeHtml(resolveReportKey(language, SEVERITY_CAVEAT_KEY))}</div> ${gaps.map((g) => ` <div class="gap-card ${g.severity || "medium"}"> <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(gapSeverityLabel(g.severity || "medium", language))}</span></div> ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""} ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""} </div> `).join("")} `
+ternary	lib/services/reports/savings-report.ts	` <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2> ${gaps.map((g) => ` <div class="gap-card"> <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))}</div> ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""} ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""} </div> `).join("")} `
 ternary	lib/services/reports/savings-report.ts	` <h2>${L("Στιγμιότυπο Κάλυψης", "Coverage Snapshot")}</h2> ${snapshot.covered?.length ? ` <h3>${L("Καλύπτονται", "Covered")}</h3> <ul class="coverage-list">${(snapshot.covered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} ${snapshot.notCovered?.length ? ` <h3>${L("Δεν καλύπτονται", "Not Covered")}</h3> <ul class="coverage-list">${(snapshot.notCovered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} ${snapshot.exclusions?.length ? ` <h3>${L("Εξαιρέσεις", "Exclusions")}</h3> <ul class="coverage-list">${(snapshot.exclusions as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} `
 ternary	lib/services/reports/savings-report.ts	` <h3>${L("Δεν καλύπτονται", "Not Covered")}</h3> <ul class="coverage-list">${(snapshot.notCovered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
 ternary	lib/services/reports/savings-report.ts	` <h3>${L("Εξαιρέσεις", "Exclusions")}</h3> <ul class="coverage-list">${(snapshot.exclusions as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
 ternary	lib/services/reports/savings-report.ts	` <h3>${L("Καλύπτονται", "Covered")}</h3> <ul class="coverage-list">${(snapshot.covered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
 ternary	lib/services/reports/savings-report.ts	`<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>`
 ternary	lib/services/reports/savings-report.ts	`<div class="estimate">${L("Ενδεικτική εκτίμηση", "Indicative estimate")}: ${escapeHtml(formatCurrency(Number(s.estimatedAnnualSavingsEur), language, { currency: "EUR", decimals: 0 }))}/${L("έτος", "year")}</div>`
+ternary	lib/services/reports/savings-report.ts	`<div class="section-caveat">${escapeHtml(L("Ευρήματα που είναι ακόμη υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή την αναφορά· τα βλέπετε στο ασφαλιστήριο.", "Findings still under review are not included in this report; they are shown on the policy."))}</div>`
 ternary	lib/services/reports/savings-report.ts	`<h1>${reportTitle}</h1> <p class="subtitle">${L("Δημιουργήθηκε", "Generated")} ${formatDate(generatedAt)} ${L("από το", "by")} PolicyWallet</p>`
 ternary	lib/services/reports/savings-report.ts	`<h2>${L("Σύνοψη", "Summary")}</h2><p style="font-size:14px">${escapeHtml(loc(summary))}</p>`
 ternary	lib/services/reports/savings-report.ts	`<p style='font-size:14px;color:#888'>${L("Δεν εντοπίστηκαν ευκαιρίες εξοικονόμησης.", "No savings opportunities identified.")}</p>`
@@ -9794,6 +9812,7 @@ call	lib/services/reports/savings-report.ts	"Εντοπισμένα Κενά Κ�
 call	lib/services/reports/savings-report.ts	"Εξαιρέσεις"
 call	lib/services/reports/savings-report.ts	"Ετοιμάστηκε από"
 call	lib/services/reports/savings-report.ts	"Ευκαιρίες Εξοικονόμησης"
+call	lib/services/reports/savings-report.ts	"Ευρήματα που είναι ακόμη υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή την αναφορά· τα βλέπετε στο ασφαλιστήριο."
 call	lib/services/reports/savings-report.ts	"Καλύπτονται"
 call	lib/services/reports/savings-report.ts	"Οι εκτιμήσεις προκύπτουν από ανάλυση AI του εγγράφου σας και είναι ενδεικτικές — τα πραγματικά ποσά εξαρτώνται από τις προσφορές των ασφαλιστών. Χαμηλότερο ασφάλιστρο μπορεί να σημαίνει μικρότερη κάλυψη: συγκρίνετε τις καλύψεις, όχι μόνο την τιμή. Αυθεντική πηγή παραμένει το ασφαλιστήριό σας."
 call	lib/services/reports/savings-report.ts	"Περίοδος"
