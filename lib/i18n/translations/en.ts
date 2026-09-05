@@ -2066,6 +2066,21 @@ export const en: TranslationKeys = {
 
     // Policy Status
     // Which run a policy's findings come from (B0.3). See el.ts.
+    composition: {
+        coverageChecked: 'We checked {checked} coverage points for this policy:',
+        coverageCheckedOne: 'We checked 1 coverage point for this policy:',
+        covered: '{count} covered',
+        notCovered: '{count} not covered',
+        indeterminate: '{count} could not be checked',
+        allIndeterminate: 'none of the {count} could be checked — the fields the rules read were not found in the document.',
+        recordingChecked: 'Document details — we checked whether {checked} are recorded:',
+        recordingCheckedOne: 'Document details — we checked whether 1 is recorded:',
+        recorded: '{count} recorded',
+        notRecorded: '{count} not recorded',
+        catalogueChanged: 'The checks changed after this analysis, so the composition is not shown. A new analysis will refresh it.',
+        reviewFraming: 'The lines above measure what the rules read — a prompt to review, not a judgment about your insurance.',
+    },
+
     gapProvenance: {
         label: 'Where these findings come from',
         current: 'Findings from the analysis of {date}.',

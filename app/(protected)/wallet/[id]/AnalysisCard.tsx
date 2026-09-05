@@ -19,6 +19,8 @@ import { GapReportList } from "@/components/wallet/gap-report/GapReportList"
 import type { GapReportItem } from "@/lib/wallet/gap-report"
 import { FindingsProvenanceLine } from "@/components/gaps/FindingsProvenanceLine"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { CoverageComposition } from "@/components/gaps/CoverageComposition"
+import type { Composition } from "@/lib/gaps/composition"
 
 interface Gap {
     id: string
@@ -79,12 +81,15 @@ interface AnalysisCardProps {
      * never mistaken for a clean one.
      */
     findingsProvenance?: ProvenanceLine | null
+    /** B2: two lines, two denominators — rendered with the provenance, never without it. */
+    composition?: Composition | null
 }
 
 export function AnalysisCard({
     policyId,
     gaps,
     findingsProvenance = null,
+    composition = null,
     canRequestOwnerConsent = false,
     policyStatus,
     processingError,
@@ -811,6 +816,7 @@ export function AnalysisCard({
                     </p>
                 )}
                 {findingsProvenance && <FindingsProvenanceLine line={findingsProvenance} className="mb-4" />}
+                {composition && <CoverageComposition composition={composition} copy={t.composition} className="mb-4" />}
                 {report && report.items.length > 0 ? (
                     <>
                         <GapReportList

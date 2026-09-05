@@ -2091,6 +2091,23 @@ export const el = {
     // Which run a policy's findings come from (B0.3, PW-TRANSPARENCY-02). One
     // sentence per state; {date} is the findings' run, {latestDate} the latest
     // attempt. Facts about the record, never about the person.
+    // B2 (PW-TRANSPARENCY-02): two lines, two denominators. Never a percentage,
+    // never a verdict adjective; a prompt to review.
+    composition: {
+        coverageChecked: 'Ελέγξαμε {checked} σημεία κάλυψης για αυτό το ασφαλιστήριο:',
+        coverageCheckedOne: 'Ελέγξαμε 1 σημείο κάλυψης για αυτό το ασφαλιστήριο:',
+        covered: '{count} καλύπτονται',
+        notCovered: '{count} δεν καλύπτονται',
+        indeterminate: '{count} δεν μπόρεσαν να ελεγχθούν',
+        allIndeterminate: 'κανένα από τα {count} δεν μπόρεσε να ελεγχθεί — τα στοιχεία που διαβάζουν οι κανόνες δεν βρέθηκαν στο έγγραφο.',
+        recordingChecked: 'Στοιχεία εγγράφου — ελέγξαμε αν καταγράφονται {checked}:',
+        recordingCheckedOne: 'Στοιχεία εγγράφου — ελέγξαμε αν καταγράφεται 1:',
+        recorded: '{count} καταγράφονται',
+        notRecorded: '{count} δεν καταγράφονται',
+        catalogueChanged: 'Οι έλεγχοι άλλαξαν μετά από αυτή την ανάλυση, γι\u2019 αυτό η σύνθεση δεν εμφανίζεται. Μια νέα ανάλυση θα την ενημερώσει.',
+        reviewFraming: 'Τα παραπάνω είναι μέτρηση του τι διάβασαν οι κανόνες — αφορμή για έλεγχο, όχι κρίση για την ασφάλισή σας.',
+    },
+
     gapProvenance: {
         label: 'Προέλευση ευρημάτων',
         current: 'Ευρήματα από την ανάλυση της {date}.',

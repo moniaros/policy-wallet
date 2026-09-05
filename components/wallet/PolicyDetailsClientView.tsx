@@ -54,6 +54,7 @@ import {
 } from "@/lib/wallet/policy-identity"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
+import type { Composition } from "@/lib/gaps/composition"
 import { authoredCheckCount } from "@/lib/gaps/assessment-coverage"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
 import { resolveStoredSummary } from "@/lib/wallet/summary-language"
@@ -152,6 +153,8 @@ interface PolicyDetailsClientProps {
     overlapChecked?: boolean
     /** B0.3: which run the findings come from, resolved to a sentence server-side. */
     findingsProvenance?: ProvenanceLine | null
+    /** B2: the two-line composition over the completed run's attempted rules. */
+    composition?: Composition | null
 }
 
 export function PolicyDetailsClient({
@@ -180,6 +183,7 @@ export function PolicyDetailsClient({
     overlapFinding = null,
     overlapChecked = false,
     findingsProvenance = null,
+    composition = null,
     exclusionHint = null,
     glossaryHints = null,
 }: PolicyDetailsClientProps) {
@@ -1052,6 +1056,7 @@ export function PolicyDetailsClient({
                                 tier={tier}
                                 trialAnalysisAvailable={trialAnalysisAvailable}
                                 findingsProvenance={findingsProvenance}
+                                composition={composition}
                             />
 
                             {/* The "worth checking" half of the branch actions —

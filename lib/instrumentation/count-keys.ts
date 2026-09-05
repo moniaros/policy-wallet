@@ -40,6 +40,13 @@ export const COUNT_KEYS: Record<string, string> = {
     "client.unassessedPolicyCount": "Agent client card: this client's policies in a branch with no authored check (B1.5).",
     "client.openGapCount": "Agent client card: the client's open gap rows (cached engine count) — replaced the protection-score badge (B1.7).",
     "client.linesHeldCount": "Agent client overview: coverage lines the client holds (crossSell.existingLines) — replaced the coverage percentage (B1.7).",
+    "composition.coverageChecked": "B2 line 1 denominator N₁: coverage rules attempted for the branch at the run's catalogue version.",
+    "composition.covered": "B2 A₁: coverage rules that did not fire with every declared input present and typed.",
+    "composition.notCovered": "B2 B₁: coverage rules that fired (live gap rows).",
+    "composition.indeterminate": "B2 C₁: coverage rules that did not fire but could not be checked (input absent, wrong type, undeclared, past date). A₁+B₁+C₁ = N₁.",
+    "composition.recordingChecked": "B2 line 2 denominator N₂: recording rules (missing / all_missing) attempted.",
+    "composition.recorded": "B2 A₂: recording rules that did not fire.",
+    "composition.notRecorded": "B2 B₂: recording rules that fired. A₂+B₂ = N₂.",
     "portfolio.renewalsNext180Count": "Policies with a resolved end date within the next 180 days.",
     "portfolio.coverageActiveCount": "isPolicyCoverageActive: provides coverage today (includes expiring_soon, action_needed, unknown_duration; excludes expired/cancelled/analyzing). NOT activeCount — labels must distinguish.",
     "portfolio.policiesWithFindingsCount": "Policies carrying at least one open gap instance.",
@@ -170,6 +177,10 @@ export const FACT_KEYS: Record<string, string> = {
     // riskDimension.* — SUBJECT-SCOPED by dimension id.
     "riskDimension.score": "One dimension's 0-100 reading.",
     "gap.findingsProvenance": "Which analysis run the listed findings come from, dated, and whether the latest attempt is that run (B0.3). One per findings list.",
+    "composition.lines": "The B2 two-line composition block (coverage + recording), one per findings list.",
+    "composition.coverage": "B2 line 1 as rendered.",
+    "composition.recording": "B2 line 2 as rendered.",
+    "composition.catalogueMismatch": "B2: the run's catalogue version differs from the current one, so no composition renders — this sentence does instead.",
 
     // review.*
     "review.scoreAtOpen": "Score recorded when the review opened (historical).",

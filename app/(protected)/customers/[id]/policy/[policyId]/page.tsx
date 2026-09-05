@@ -10,6 +10,7 @@ import { CollaborationTimeline } from "@/components/collaboration/CollaborationT
 import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 import { getTranslations } from "@/lib/i18n"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { composeFindings } from "@/lib/gaps/composition"
 import { formatDate, formatDateTime } from "@/lib/i18n/format"
 import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
@@ -101,6 +102,17 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         t.gapProvenance,
         language,
     )
+    // B2: the same two lines the owner sees, over the same run and rows.
+    const attemptedPlan = (lastCompletedRun?.attemptedRules ?? null) as { slugs?: unknown; catalogueVersion?: unknown } | null
+    const composition = composeFindings({
+        lineOfBusiness: policy.lineOfBusiness,
+        acordData: policy.acordData,
+        firedSlugs: policy.gapInstances.map((g) => g.definition.slug),
+        attempted:
+            attemptedPlan && Array.isArray(attemptedPlan.slugs) && typeof attemptedPlan.catalogueVersion === 'string'
+                ? { slugs: attemptedPlan.slugs.filter((s): s is string => typeof s === 'string'), catalogueVersion: attemptedPlan.catalogueVersion }
+                : null,
+    })
     const locale = language === 'el' ? 'el-GR' : 'en-GB'
     const branch = getBranch(policy.lineOfBusiness) ?? normalizeBranch(policy.lineOfBusiness)
     const lobPhrase = { el: `Κάλυψη ${branch.genitiveEl}`, en: `${branch.label.en} Protection` }[language]
@@ -230,6 +242,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                         policyId={policyId}
                         gaps={policy.gapInstances as any}
                         findingsProvenance={findingsProvenance}
+                        composition={composition}
                         canRequestOwnerConsent
                         // Evidence ladder: only an advisor with write access may
                         // confirm an AI-probable gap (probable → confirmed).

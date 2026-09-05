@@ -13,6 +13,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { composeFindings } from "@/lib/gaps/composition"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import { resolveGlossaryHint, resolvePolicyGlossaryHints } from "@/lib/glossary/hints"
 import {
@@ -178,6 +179,19 @@ export default async function PolicyDetailPage({
         t.gapProvenance,
         language,
     )
+
+    // B2: two lines, two denominators, over the completed run's attempted-rule
+    // plan at its catalogue version. The live rows are the rules that fired.
+    const attemptedPlan = (lastCompletedRun?.attemptedRules ?? null) as { slugs?: unknown; catalogueVersion?: unknown } | null
+    const composition = composeFindings({
+        lineOfBusiness: policy.lineOfBusiness,
+        acordData: policy.acordData,
+        firedSlugs: policy.gapInstances.map((g) => g.definition.slug),
+        attempted:
+            attemptedPlan && Array.isArray(attemptedPlan.slugs) && typeof attemptedPlan.catalogueVersion === 'string'
+                ? { slugs: attemptedPlan.slugs.filter((s): s is string => typeof s === 'string'), catalogueVersion: attemptedPlan.catalogueVersion }
+                : null,
+    })
 
     // Gap report items: dedupe DB-level slug twins and resolve Greek/English
     // titles + grouping dimensions server-side (unknown slugs are Sentry-
@@ -391,6 +405,7 @@ export default async function PolicyDetailPage({
         <PolicyDetailsClient
             policy={serializedPolicy}
             findingsProvenance={findingsProvenance}
+            composition={composition}
             serializedShares={serializedShares}
             aiUsageStats={aiUsageStats}
             statusLabel={statusLabel}

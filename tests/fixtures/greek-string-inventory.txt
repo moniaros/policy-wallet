@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3536
+# bundle entries: 3548
 # inline entries: 4807 across 215 files
 # ternary entries: 280 across 43 files
 # call entries: 1145 across 86 files
@@ -1017,6 +1017,18 @@ bundle	compliance.cookieBanner.privacyLink	"Πολιτική απορρήτου"
 bundle	compliance.cookieBanner.savePreferences	"Αποθήκευση προτιμήσεων"
 bundle	compliance.cookieBanner.termsLink	"Όροι χρήσης"
 bundle	compliance.cookieBanner.title	"Ρυθμίσεις Cookies"
+bundle	composition.allIndeterminate	"κανένα από τα {count} δεν μπόρεσε να ελεγχθεί — τα στοιχεία που διαβάζουν οι κανόνες δεν βρέθηκαν στο έγγραφο."
+bundle	composition.catalogueChanged	"Οι έλεγχοι άλλαξαν μετά από αυτή την ανάλυση, γι’ αυτό η σύνθεση δεν εμφανίζεται. Μια νέα ανάλυση θα την ενημερώσει."
+bundle	composition.coverageChecked	"Ελέγξαμε {checked} σημεία κάλυψης για αυτό το ασφαλιστήριο:"
+bundle	composition.coverageCheckedOne	"Ελέγξαμε 1 σημείο κάλυψης για αυτό το ασφαλιστήριο:"
+bundle	composition.covered	"{count} καλύπτονται"
+bundle	composition.indeterminate	"{count} δεν μπόρεσαν να ελεγχθούν"
+bundle	composition.notCovered	"{count} δεν καλύπτονται"
+bundle	composition.notRecorded	"{count} δεν καταγράφονται"
+bundle	composition.recorded	"{count} καταγράφονται"
+bundle	composition.recordingChecked	"Στοιχεία εγγράφου — ελέγξαμε αν καταγράφονται {checked}:"
+bundle	composition.recordingCheckedOne	"Στοιχεία εγγράφου — ελέγξαμε αν καταγράφεται 1:"
+bundle	composition.reviewFraming	"Τα παραπάνω είναι μέτρηση του τι διάβασαν οι κανόνες — αφορμή για έλεγχο, όχι κρίση για την ασφάλισή σας."
 bundle	coverageDetails.active	"Ενεργό"
 bundle	coverageDetails.available	"Διαθέσιμη"
 bundle	coverageDetails.call	"Κλήση"

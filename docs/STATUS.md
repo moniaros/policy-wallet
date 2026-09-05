@@ -20,7 +20,15 @@ mirror, partners pair noindex, /_vercel scripts 200 (were 307). Zero new Sentry 
 
 ## Current phase
 
-**PW-TRANSPARENCY-02 — Track A shipped, Goal B0 in build** (2026-09-05, branch `feat/transparency-02`).
+**PW-TRANSPARENCY-02 — Track A, B0, B1.5, B1.7 done on dev; PR #299 open; B1.6 halted** (2026-09-05, branch `feat/transparency-02`).
+B0: one writer of `gap_instances` with run provenance and supersede semantics (migration
+`20260905150000_gap_instance_run_provenance` applied on dev, **prod apply is part of the merge step**);
+every findings list names its run. B1.5: the unauthored-branch state («δεν το έχουμε αξιολογήσει»)
+on the policy page, the findings card, the dashboard tally (with its denominator) and the agent client
+card. B1.7: protection-score renders removed agent-side and the per-policy health number removed;
+the two score APIs wait on an external-consumer check (BL-02). B1.6 (Risk DNA numbers) is a halt
+(`docs/transparency/HALTS.md` H-T01). Still to do in this series: B1 taxonomy + severity de-emphasis,
+B2 two-line composition, B3, B4.
 Goal 0 report approved (`docs/transparency/STEP0-FINDINGS.md`); amendment 01 reduced Track A to three
 items, all done: Terms §8 names no metric (revision GR-GA-2026.09), the prose-derived «checks passed»
 number reaches no user surface (4 → 0), and a fabricated-count guard over the marketing surface with a
@@ -350,9 +358,10 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
-00. PW-TRANSPARENCY-02: land B0 on dev and prod (migration `20260905150000_gap_instance_run_provenance`,
-    prod pre-check of orphan gap rows first), then B1.5 → B1.7 → B2; owner reads the production free-tier
-    plan row to unblock BL-01 (Terms §5).
+00. PW-TRANSPARENCY-02: when PR #299 is CI-green, apply the B0 migration on prod (Supabase MCP +
+    `_prisma_migrations` row, checksum `3710e0e2…3ffb`) and merge in the same step; then B1 taxonomy /
+    severity de-emphasis and B2. Owner: BL-01 (production free-tier plan row → Terms §5), BL-02
+    (external consumers of the two score APIs), H-T01 (Risk DNA numbers: option A or B).
 0. Document gate follow-ups: run `tests/document-gate-agent.spec.ts` (`agent-chromium`) once
    against dev — the agent door is covered by unit tests and the shared ingestion path but has
    not been walked in a browser; watch the admin «Document gate» card for a week (rejections by
