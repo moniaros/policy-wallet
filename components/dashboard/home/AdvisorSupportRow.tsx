@@ -64,7 +64,7 @@ export function AdvisorSupportRow({
                 <ActionLink
                     kind="contact_advisor"
                     href="/agent"
-                    className="pw-primary-button-inverse mt-4 inline-flex min-h-11 items-center gap-2 !px-4 !py-2 text-sm"
+                    className="pw-secondary-button-inverse mt-4 inline-flex min-h-11 items-center gap-2 !px-4 !py-2 text-sm"
                 >
                     {labels.cta ?? labels.agentStatus}
                     <ArrowRight className="h-4 w-4" aria-hidden />

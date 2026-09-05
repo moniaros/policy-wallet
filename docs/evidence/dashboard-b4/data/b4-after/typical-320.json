@@ -1,0 +1,253 @@
+{
+  "surface": "b2c-home",
+  "label": "typical",
+  "width": 320,
+  "run": "b4-after",
+  "capturedAt": "2026-09-05T14:15:04.003Z",
+  "scrollHeight": 5012,
+  "sections": {
+    "count": 7,
+    "ids": [
+      "#overview",
+      "#renewals",
+      "#attention",
+      "#wallet",
+      "#support",
+      "#activity",
+      "<div> Η ασφαλιστική σας εικόνα"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "countsWithoutNavigation": [],
+  "tapTargets": [],
+  "hitAreaOverlaps": [],
+  "renderedCounts": {
+    "notification.unreadCount": "2",
+    "portfolio.policyCount": "3 ασφαλιστήρια",
+    "portfolio.expiringCount": "1 λήγει μέσα σε 30 ημέρες",
+    "portfolio.failedCount": "1 δεν διαβάστηκε",
+    "plan.stepsDone": "3",
+    "plan.stepsTotal": "6",
+    "portfolio.renewalsNext180Count": "2 ασφαλιστήρια με ανανέωση εντός 6 μηνών",
+    "policy.renewalCheckpointCount#cmtogsaaz0009126odtgszlxl": "2 σημεία για έλεγχο",
+    "policy.renewalCheckpointCount#cmtogsdq5000f126o4hltqh55": "1 σημείο για έλεγχο"
+  },
+  "attentionItems": [],
+  "ctas": [
+    {
+      "label": "Προσθέστε νέο ασφαλιστήριο",
+      "href": "/wallet/add",
+      "kind": "primary",
+      "where": "?"
+    },
+    {
+      "label": "Πείτε μας τι έχει σημασία. Τρία λεπτά, χωρίς όρους ασφάλισης",
+      "href": "/onboarding",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "3 ασφαλιστήρια",
+      "href": "/wallet",
+      "kind": "card",
+      "where": "3 ασφαλιστήρια1 λήγει μέσα σε 30 ημέρες1"
+    },
+    {
+      "label": "1 λήγει μέσα σε 30 ημέρες",
+      "href": "#renewals",
+      "kind": "card",
+      "where": "3 ασφαλιστήρια1 λήγει μέσα σε 30 ημέρες1"
+    },
+    {
+      "label": "1 δεν διαβάστηκε",
+      "href": "/wallet",
+      "kind": "card",
+      "where": "3 ασφαλιστήρια1 λήγει μέσα σε 30 ημέρες1"
+    },
+    {
+      "label": "Έλεγχος της προστασίας μου",
+      "href": "/protection",
+      "kind": "card",
+      "where": "3 ασφαλιστήρια1 λήγει μέσα σε 30 ημέρες1"
+    },
+    {
+      "label": "3 από 6 ολοκληρωμένα",
+      "href": "#protection-plan-heading",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Πείτε μας τι έχει σημασίαΛίγες ερωτήσεις για τη ζωή σας — όχ",
+      "href": "/onboarding",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Ανεβάστε ένα ασφαλιστήριο",
+      "href": "/wallet/add",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Δείτε την ανάλυση AI",
+      "href": "/protection",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Ελέγξτε τα κενά κάλυψηςΔείτε αν κάτι σημαντικό μένει ακάλυπτ",
+      "href": "/protection",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Συνδεθείτε με σύμβουλο",
+      "href": "/agent",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Ενεργοποιήστε τις ειδοποιήσειςΛάβετε ειδοποιήσεις για ανανεώ",
+      "href": "/notifications",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "2 ασφαλιστήρια με ανανέωση εντός 6 μηνών",
+      "href": "#renewals",
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Υγεία: ανανέωση σε 18 ημέρεςΕθνική Ασφαλιστική · ΣΥΜΒ-2026-T",
+      "href": "/wallet/cmtogsaaz0009126odtgszlxl#dates",
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Κατοικία: ανανέωση σε 120 ημέρεςGenerali · ΣΥΜΒ-2026-T3 · 03",
+      "href": "/wallet/cmtogsdq5000f126o4hltqh55#dates",
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Ενεργοποίηση έξυπνων υπενθυμίσεων",
+      "href": null,
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Άλλαξε κάτι; Νέο σπίτι, παιδί, νέα δουλειά — οι αλλαγές της ",
+      "href": "/protection#life-events",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Δείτε τα ευρήματα υπό αξιολόγηση",
+      "href": "/protection",
+      "kind": "card",
+      "where": "Χρειάζεται την προσοχή σας"
+    },
+    {
+      "label": "Όλοι οι κλάδοι",
+      "href": "/protection?lens=branch",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΑυτοκίνητοΚαλυμμένο",
+      "href": "/protection/motor",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΚατοικίαΚαλυμμένο",
+      "href": "/protection/home",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΥγείαΧρειάζεται προσοχή",
+      "href": "/protection/health",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΖωήΔεν έχει αξιολογηθεί",
+      "href": "/protection/life",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "Σύνταξη & ΑποταμίευσηΔεν έχει αξιολογηθεί",
+      "href": "/protection/pension",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΤαξιδιωτικήΔεν έχει αξιολογηθεί",
+      "href": "/protection/travel",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΚατοικίδιοΔεν έχει αξιολογηθεί",
+      "href": "/protection/pet",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "CyberΔεν έχει αξιολογηθεί",
+      "href": "/protection/cyber",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΕπιχείρησηΔεν έχει αξιολογηθεί",
+      "href": "/protection/business",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "Άνοιγμα",
+      "href": "/agent",
+      "kind": "secondary",
+      "where": "SECTION"
+    },
+    {
+      "label": "Βοήθεια και υποστήριξηΆνοιγμα κέντρου βοήθειας",
+      "href": "/help",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Ενεργοποίηση παρακολούθησης προστασίας",
+      "href": null,
+      "kind": "card",
+      "where": "Διαρκής επίβλεψη της προστασίας σας"
+    },
+    {
+      "label": "Τι άλλαξε πρόσφαταΠροστέθηκε ασφαλιστήριο Κατοικία — General",
+      "href": "/account/history",
+      "kind": "card",
+      "where": "A"
+    }
+  ],
+  "primaryActions": 1,
+  "order": {
+    "viewportHeight": 720,
+    "hero": 245,
+    "renewals": 1526,
+    "lifeEvents": 2197,
+    "attention": 2509,
+    "renewalFact": 653
+  },
+  "renewalsInFirstViewport": true,
+  "lifeEventsAboveAttention": true,
+  "portfolioState": "typical",
+  "policyCount": 3
+}

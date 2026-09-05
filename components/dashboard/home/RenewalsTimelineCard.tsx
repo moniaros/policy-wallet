@@ -104,9 +104,9 @@ export function RenewalsTimelineCard({
                            count — inside the instrumented element it is measured
                            context (the collector extracts the FIRST number, the
                            count), outside it it reads as an anonymous numeral. */
-                        <span data-count="portfolio.renewalsNext180Count" className="text-caption font-medium text-muted-foreground">
+                        <Link href="#renewals" data-count="portfolio.renewalsNext180Count" className="-my-2.5 inline-flex min-h-11 items-center text-caption font-medium text-muted-foreground hover:underline">
                             {count} {count === 1 ? labels.policiesSuffixOne : labels.policiesSuffix}
-                        </span>
+                        </Link>
                     ) : undefined
                 }
             />
