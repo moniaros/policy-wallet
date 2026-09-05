@@ -1,0 +1,119 @@
+{
+  "surface": "b2b-book",
+  "label": "agent-book",
+  "width": 320,
+  "run": "b4-after",
+  "fixture": "seeded",
+  "capturedAt": "2026-09-05T11:36:10.952Z",
+  "scrollHeight": 4287,
+  "sections": {
+    "count": 5,
+    "ids": [
+      "#agent-kpis",
+      "<div> Καλό απόγευμα, Νίκος",
+      "<div> Ουρά ενεργειών",
+      "<div> Υγεία χαρτοφυλακίου",
+      "<div> Πελάτες"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "countsWithoutNavigation": [],
+  "tapTargets": [],
+  "ctas": [
+    {
+      "label": "Νέος πελάτης",
+      "href": null,
+      "kind": "primary",
+      "where": "?"
+    },
+    {
+      "label": "Σύνολο πελατών1",
+      "href": "/customers",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Ασφαλιστήρια που λήγουν0",
+      "href": "/customers?filter=expiring",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Με κενά κάλυψης1",
+      "href": "/customers?filter=gaps",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Εκκρεμείς προσκλήσεις0",
+      "href": "/customers?filter=invited",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Ασφαλιστήρια αυτόν τον μήνα0",
+      "href": "/customers",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Προτεινόμενα follow-ups1",
+      "href": "/tasks",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Εκτίμηση ευκαιριών0 €",
+      "href": "/opportunities",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Μέσος δείκτης προστασίας16/100",
+      "href": "/customers",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Αναβάθμιση",
+      "href": "/agent/pricing",
+      "kind": "card",
+      "where": "DIV"
+    },
+    {
+      "label": "Όλες οι εργασίες",
+      "href": "/tasks",
+      "kind": "card",
+      "where": "Καμία εκκρεμής εργασία"
+    },
+    {
+      "label": "EPE2E Policyholder1 ασφ.5 ανοιχτά ευρήματα",
+      "href": null,
+      "kind": "card",
+      "where": "Πελάτες"
+    },
+    {
+      "label": "Αναβάθμιση",
+      "href": "/agent/pricing",
+      "kind": "card",
+      "where": "DIV"
+    },
+    {
+      "label": "Πελάτης",
+      "href": null,
+      "kind": "card",
+      "where": "Γρήγορη προσθήκη"
+    },
+    {
+      "label": "Ασφαλιστήριο",
+      "href": null,
+      "kind": "card",
+      "where": "Γρήγορη προσθήκη"
+    }
+  ],
+  "primaryActions": 1
+}

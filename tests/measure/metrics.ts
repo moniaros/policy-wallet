@@ -1424,3 +1424,41 @@ export async function countConsistency(
 ): Promise<CountConsistencyMetricResult> {
     return page.evaluate(collectCountConsistency, opts)
 }
+
+/**
+ * COUNTS WITHOUT A NAVIGATION TARGET (PW-TRANSPARENCY-02, Goal B4).
+ *
+ * "Every rendered count navigates to the set it counts." A visible
+ * `[data-count]` element whose nearest ancestor-or-self is not a door — an
+ * `a[href]`, a `button[data-href]` or a `[role='link']` — is an offender.
+ * Reported with its key, subject, text and the heading of its section, so the
+ * fix is a link rather than an argument. Same shape and same visibility rules
+ * as `callsToAction` in ./dashboard, so the two numbers describe one page.
+ */
+export interface CountWithoutNavigation {
+    key: string
+    subject: string | null
+    text: string
+    where: string
+}
+export async function countsWithoutNavigation(page: Page): Promise<CountWithoutNavigation[]> {
+    return page.evaluate(() => {
+        const out: CountWithoutNavigation[] = []
+        document.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
+            const cs = getComputedStyle(el)
+            if (cs.display === "none" || cs.visibility === "hidden") return
+            const r = el.getBoundingClientRect()
+            if (r.width === 0 && r.height === 0) return
+            if (el.closest("a[href], button[data-href], [role='link']")) return
+            const section = el.closest("section, article, [class*='pw-card']")
+            const heading = section?.querySelector("h1,h2,h3,.pw-kicker")
+            out.push({
+                key: el.getAttribute("data-count") || "",
+                subject: el.getAttribute("data-count-subject"),
+                text: (el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 60),
+                where: (heading?.textContent || section?.tagName || "?").replace(/\s+/g, " ").trim().slice(0, 40),
+            })
+        })
+        return out
+    })
+}

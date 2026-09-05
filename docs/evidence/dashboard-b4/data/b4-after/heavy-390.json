@@ -1,0 +1,269 @@
+{
+  "surface": "b2c-home",
+  "label": "heavy",
+  "width": 390,
+  "run": "b4-after",
+  "capturedAt": "2026-09-05T11:43:46.446Z",
+  "scrollHeight": 5341,
+  "sections": {
+    "count": 6,
+    "ids": [
+      "#overview",
+      "#renewals",
+      "#attention",
+      "#wallet",
+      "#support",
+      "#activity"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "countsWithoutNavigation": [],
+  "tapTargets": [],
+  "ctas": [
+    {
+      "label": "Προσθέστε νέο ασφαλιστήριο",
+      "href": "/wallet/add",
+      "kind": "primary",
+      "where": "Η ασφαλιστική σας εικόνα"
+    },
+    {
+      "label": "Πείτε μας τι έχει σημασία. Τρία λεπτά, χωρίς όρους ασφάλισης",
+      "href": "/onboarding",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "12 ασφαλιστήρια",
+      "href": "/wallet",
+      "kind": "card",
+      "where": "12 ασφαλιστήρια1 έχει λήξει2 λήγουν μέσα"
+    },
+    {
+      "label": "1 έχει λήξει",
+      "href": "/wallet",
+      "kind": "card",
+      "where": "12 ασφαλιστήρια1 έχει λήξει2 λήγουν μέσα"
+    },
+    {
+      "label": "2 λήγουν μέσα σε 30 ημέρες",
+      "href": "#renewals",
+      "kind": "card",
+      "where": "12 ασφαλιστήρια1 έχει λήξει2 λήγουν μέσα"
+    },
+    {
+      "label": "1 δεν έχει αναλυθεί",
+      "href": "/wallet",
+      "kind": "card",
+      "where": "12 ασφαλιστήρια1 έχει λήξει2 λήγουν μέσα"
+    },
+    {
+      "label": "1 δεν διαβάστηκε",
+      "href": "/wallet",
+      "kind": "card",
+      "where": "12 ασφαλιστήρια1 έχει λήξει2 λήγουν μέσα"
+    },
+    {
+      "label": "1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετρά",
+      "href": "/wallet",
+      "kind": "card",
+      "where": "12 ασφαλιστήρια1 έχει λήξει2 λήγουν μέσα"
+    },
+    {
+      "label": "Έλεγχος της προστασίας μου",
+      "href": "/protection",
+      "kind": "card",
+      "where": "12 ασφαλιστήρια1 έχει λήξει2 λήγουν μέσα"
+    },
+    {
+      "label": "3 από 6 ολοκληρωμένα",
+      "href": "#protection-plan-heading",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Πείτε μας τι έχει σημασίαΛίγες ερωτήσεις για τη ζωή σας — όχ",
+      "href": "/onboarding",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Ανεβάστε ένα ασφαλιστήριο",
+      "href": "/wallet/add",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Δείτε την ανάλυση AI",
+      "href": "/protection",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Ελέγξτε τα κενά κάλυψηςΔείτε αν κάτι σημαντικό μένει ακάλυπτ",
+      "href": "/protection",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Συνδεθείτε με σύμβουλο",
+      "href": "/agent",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "Ενεργοποιήστε τις ειδοποιήσειςΛάβετε ειδοποιήσεις για ανανεώ",
+      "href": "/notifications",
+      "kind": "card",
+      "where": "Το πλάνο προστασίας σας"
+    },
+    {
+      "label": "7 ασφαλιστήρια με ανανέωση εντός 6 μηνών",
+      "href": "#renewals",
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Υγεία: ανανέωση σε 12 ημέρεςΥΔΡΟΓΕΙΟΣ Ανώνυμος Ασφαλιστική κ",
+      "href": "/wallet/cmtobcv9e0019y61ywtg9fj9u#dates",
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Κατοικία: ανανέωση σε 30 ημέρεςGenerali · ΣΥΜΒ-2026-H5 · 05/",
+      "href": "/wallet/cmtobd05i001jy61yidq5p4y0#dates",
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Ταξιδιωτική: ανανέωση σε 45 ημέρεςEurop Assistance · ΣΥΜΒ-20",
+      "href": "/wallet/cmtobd6xb001vy61y70w30sfv#dates",
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Κατοικίδιο: ανανέωση σε 90 ημέρεςInteramerican · ΣΥΜΒ-2026-H",
+      "href": "/wallet/cmtobd8ja001zy61ykup01jhi#dates",
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Ενεργοποίηση έξυπνων υπενθυμίσεων",
+      "href": null,
+      "kind": "card",
+      "where": "Χρονοδιάγραμμα ανανεώσεων"
+    },
+    {
+      "label": "Άλλαξε κάτι; Νέο σπίτι, παιδί, νέα δουλειά — οι αλλαγές της ",
+      "href": "/protection#life-events",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Δείτε τα ευρήματα υπό αξιολόγηση",
+      "href": "/protection",
+      "kind": "card",
+      "where": "Χρειάζεται την προσοχή σας"
+    },
+    {
+      "label": "Όλοι οι κλάδοι",
+      "href": "/protection?lens=branch",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΑυτοκίνητοΚαλυμμένο",
+      "href": "/protection/motor",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΚατοικίαΧρειάζεται προσοχή",
+      "href": "/protection/home",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΥγείαΧρειάζεται προσοχή",
+      "href": "/protection/health",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΖωήΚαλυμμένο",
+      "href": "/protection/life",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "Σύνταξη & ΑποταμίευσηΔεν έχει αξιολογηθεί",
+      "href": "/protection/pension",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΤαξιδιωτικήΚαλυμμένο",
+      "href": "/protection/travel",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΚατοικίδιοΚαλυμμένο",
+      "href": "/protection/pet",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "CyberΔεν έχει αξιολογηθεί",
+      "href": "/protection/cyber",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "ΕπιχείρησηΔεν έχει αξιολογηθεί",
+      "href": "/protection/business",
+      "kind": "card",
+      "where": "Χάρτης κάλυψης"
+    },
+    {
+      "label": "Άνοιγμα",
+      "href": "/agent",
+      "kind": "secondary",
+      "where": "SECTION"
+    },
+    {
+      "label": "Βοήθεια και υποστήριξηΆνοιγμα κέντρου βοήθειας",
+      "href": "/help",
+      "kind": "card",
+      "where": "A"
+    },
+    {
+      "label": "Ενεργοποίηση παρακολούθησης προστασίας",
+      "href": null,
+      "kind": "card",
+      "where": "Διαρκής επίβλεψη της προστασίας σας"
+    },
+    {
+      "label": "Τι άλλαξε πρόσφαταΠροστέθηκε ασφαλιστήριο Αυτοκίνητο — Hella",
+      "href": "/account/history",
+      "kind": "card",
+      "where": "A"
+    }
+  ],
+  "primaryActions": 1,
+  "order": {
+    "viewportHeight": 844,
+    "hero": 455,
+    "renewals": 1631,
+    "lifeEvents": 2610,
+    "attention": 2870,
+    "renewalFact": 693
+  },
+  "renewalsInFirstViewport": true,
+  "lifeEventsAboveAttention": true,
+  "portfolioState": "heavy",
+  "policyCount": 12
+}
