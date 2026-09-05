@@ -175,11 +175,29 @@ function handRollsSeverityMap(source: string): boolean {
  */
 const I18N_STORE = "lib/i18n/translations/"
 
-// `lib/gap-detection.ts` used to be exempt BY IDENTITY while it was frozen for
-// PW-MOBILE-TRANSFORM-02 and still carried two dead hand-rolled maps
-// (getSeverityColor / getSeverityLabel). PW-TRANSPARENCY-02 B0.1 (Sept 2026)
-// deleted them together with the legacy gap writer, so the freeze, its hash
-// pin and its D-022 test are gone: no file is exempt by identity any more.
+/**
+ * THE FREEZE PIN on `lib/gap-detection.ts` — restored by PW-TRANSPARENCY-02 R1.
+ *
+ * Standing constraint (DECISIONS.md D-V1, owner-ratified 2026-09-05):
+ * "detection and severity logic untouched; the legacy write path may be
+ * removed." The legacy path IS removed; from here on the whole file is frozen
+ * at the ratified HEAD. The pin is the enforcement: the D-022 test below fails
+ * on any byte change, and the fix is never to paste in the new hash — it is to
+ * take the change to the owner, have it ratified in DECISIONS.md, and re-pin
+ * with that entry's date. B0 removed this pin while editing the file it
+ * protected; that is the failure mode this comment exists to name.
+ *
+ * The exemption machinery stays with it (`isExemptWhileFrozen`): while the
+ * hash matches, the file is exempt by identity from the presentation scan, and
+ * the separate assertion that it carries no hand-rolled severity presentation
+ * runs alongside — both, not either.
+ */
+const FROZEN_GAP_DETECTION_SHA256 =
+    "ded6fedd1250b7fff74b3a3ab03cb98ecdf41fb6cc71f71a9fd562a261ba7609"
+
+function isExemptWhileFrozen(path: string, sha256: string): boolean {
+    return path === "lib/gap-detection.ts" && sha256 === FROZEN_GAP_DETECTION_SHA256
+}
 
 /**
  * The per-file decision, extracted so it can be probed with synthetic sources.
@@ -197,6 +215,8 @@ const I18N_STORE = "lib/i18n/translations/"
  */
 export function isSeverityOffender(path: string, source: string, sha256: string): boolean {
     if (path.includes("/admin/")) return false
+    // Exempt BY IDENTITY only while the frozen file still matches its pin (D-V1).
+    if (isExemptWhileFrozen(path, sha256)) return false
     // Only files that actually deal in gap/recommendation severity.
     if (!/gap|severity|urgency/i.test(source)) return false
 
@@ -401,6 +421,26 @@ describe("no new hand-rolled severity presentation", () => {
         expect(source).not.toMatch(/export function getSeverityColor/)
         expect(source).not.toMatch(/export function getSeverityLabel/)
         expect(handRollsSeverityPresentation(source)).toBe(false)
+    })
+
+    it("the frozen-file pin asserts its own precondition (D-022, re-established by R1 under D-V1)", () => {
+        const bytes = readFileSync("lib/gap-detection.ts")
+        const actual = createHash("sha256").update(bytes).digest("hex")
+        // The precondition itself: the file matches the OWNER-RATIFIED baseline.
+        // Any byte change fails here on purpose — including a whitespace or
+        // comment change. Take the change to the owner (DECISIONS.md), then
+        // re-pin with that entry's date. Never update the hash to make this pass.
+        expect(
+            actual,
+            "lib/gap-detection.ts no longer matches its ratified baseline (DECISIONS.md D-V1: " +
+                "detection and severity logic untouched). Do NOT update FROZEN_GAP_DETECTION_SHA256 " +
+                "to make this pass: have the change ratified, then re-pin."
+        ).toBe(FROZEN_GAP_DETECTION_SHA256)
+        // Probe: with any other hash the exemption is inert, so an edited file
+        // cannot ride on it; and the exemption never travels to another path.
+        expect(isExemptWhileFrozen("lib/gap-detection.ts", "0".repeat(64))).toBe(false)
+        expect(isExemptWhileFrozen("lib/services/reports/savings-report.ts", actual)).toBe(false)
+        expect(isExemptWhileFrozen("lib/gap-detection.ts", actual)).toBe(true)
     })
 
     it("every surface that names a severity says what the word is worth", () => {

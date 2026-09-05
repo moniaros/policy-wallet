@@ -172,7 +172,7 @@ export default defineConfig({
             name: 'measure',
             // Excludes *free* specs — those need the free-tier session and run
             // in `measure-free`.
-            testMatch: /tests\/measure\/(?!.*(free|dashboard|agent-book)).*\.spec\.ts/,
+            testMatch: /tests\/measure\/(?!.*(free|dashboard|agent-book|r3-evidence-agent)).*\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/user.json',
@@ -246,7 +246,7 @@ export default defineConfig({
             // the same one-definition metrics as measure-dash.
             name: 'measure-agent',
             fullyParallel: false,
-            testMatch: /tests\/measure\/agent-book.*\.spec\.ts/,
+            testMatch: /tests\/measure\/(agent-book|r3-evidence-agent).*\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/agent.json',
