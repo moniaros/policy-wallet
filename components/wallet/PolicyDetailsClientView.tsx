@@ -32,7 +32,6 @@ import { getBranchContent } from "@/lib/insurance/content"
 import { resolveBranchAction } from "@/lib/insurance/content/action-resolvers"
 import { getSelfTaskSpec } from "@/lib/insurance/content/self-tasks"
 import {
-    calculatePolicyHealthScore,
     deriveClaimDeadlines,
     derivePolicyMeta,
     extractPolicySections,
@@ -54,6 +53,9 @@ import {
     policyAssetIdentity,
 } from "@/lib/wallet/policy-identity"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
+import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
+import type { Composition } from "@/lib/gaps/composition"
+import { authoredCheckCount } from "@/lib/gaps/assessment-coverage"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
 import { resolveStoredSummary } from "@/lib/wallet/summary-language"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
@@ -149,6 +151,10 @@ interface PolicyDetailsClientProps {
     overlapFinding?: { partnerLabel: string } | null
     /** True when this policy has a checkable insured subject (plate/address). */
     overlapChecked?: boolean
+    /** B0.3: which run the findings come from, resolved to a sentence server-side. */
+    findingsProvenance?: ProvenanceLine | null
+    /** B2: the two-line composition over the completed run's attempted rules. */
+    composition?: Composition | null
 }
 
 export function PolicyDetailsClient({
@@ -176,6 +182,8 @@ export function PolicyDetailsClient({
     canReviewExtraction = false,
     overlapFinding = null,
     overlapChecked = false,
+    findingsProvenance = null,
+    composition = null,
     exclusionHint = null,
     glossaryHints = null,
 }: PolicyDetailsClientProps) {
@@ -343,22 +351,6 @@ export function PolicyDetailsClient({
     /** The newest run — its status decides whether any score may be shown. */
     const lastRun = policy.analysisRuns?.[0]
 
-    const health = calculatePolicyHealthScore({
-        // A score is a subtraction from 100, so "no findings because the run
-        // failed" and "no findings because the policy is sound" produce the
-        // same number. Only one of them is a fact. See A1 in
-        // docs/evidence/policy-detail-mobile/.
-        analysisComplete:
-            Boolean(policy.lastAnalyzedAt) &&
-            !policy.acordData?.processingError &&
-            lastRun?.status !== "failed",
-        gapCount: gapReportItems.length,
-        // Not the raw exclusion count — see calculatePolicyHealthScore. Only the
-        // clauses the analysis itself flagged as able to cost the holder.
-        criticalClauseCount: finePrint.filter((c) => c.riskLevel === "critical").length,
-        warningClauseCount: finePrint.filter((c) => c.riskLevel === "warning").length,
-        verified: Boolean(policy.verified),
-    })
 
     const hasCoverageDetails = (() => {
         const sectionKeys = coverageSectionKeys(getCoverageType())
@@ -393,7 +385,13 @@ export function PolicyDetailsClient({
     // clearer copy: all three wrong (it did not fail, retrying reproduces the
     // block, the document is fine). It gets its own state, pointing at the real
     // resolution — upgrade or consent — read from the run's blockedReason.
-    const absenceCopy = resolveCoverageAbsenceCopy(lastRun?.status, lastRun?.blockedReason, detailsCopy)
+    // B1.5: a branch with no authored checks is «not assessed», not «no findings».
+    const absenceCopy = resolveCoverageAbsenceCopy(
+        lastRun?.status,
+        lastRun?.blockedReason,
+        detailsCopy,
+        authoredCheckCount(policy.lineOfBusiness)
+    )
 
     // ── AI Policy Brief: seven one-liners, every count with its evidence
     //    boundary in the string. Coverage-status arithmetic is pure
@@ -898,13 +896,10 @@ export function PolicyDetailsClient({
                                     : null
                         }
                         summaryState={storedSummary.state}
-                        health={health}
                         isAnalyzing={isAnalyzing}
                         copy={{
                             summaryTitle: detailsCopy.summaryTitle,
                             summaryAiChip: detailsCopy.summaryAiChip,
-                            healthTitle: t.wallet.healthScore.title,
-                            healthScale: detailsCopy.healthScale,
                             summaryLanguageMismatch: detailsCopy.summaryLanguageMismatch,
                             summaryLanguageMismatchCta: detailsCopy.summaryLanguageMismatchCta,
                             summaryHasUnreadable: detailsCopy.summaryHasUnreadable,
@@ -918,12 +913,6 @@ export function PolicyDetailsClient({
                         // would launder a guess into a verification.
                         unverified={!canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged')}
                         unverifiedNote={t.wallet.review.ownerUnverifiedNote}
-                        methodology={{
-                            title: t.wallet.healthScore.methodologyTitle,
-                            body: t.wallet.healthScore.methodologyBody,
-                            limits: t.wallet.healthScore.methodologyLimits,
-                            notAdvice: t.dashboard.home.scoreMethodologyNotAdvice,
-                        }}
                     />
                 </div>
 
@@ -1066,6 +1055,8 @@ export function PolicyDetailsClient({
                                 report={{ items: gapReportItems, reportUnlocked }}
                                 tier={tier}
                                 trialAnalysisAvailable={trialAnalysisAvailable}
+                                findingsProvenance={findingsProvenance}
+                                composition={composition}
                             />
 
                             {/* The "worth checking" half of the branch actions —

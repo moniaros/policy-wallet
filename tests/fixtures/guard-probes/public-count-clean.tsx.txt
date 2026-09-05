@@ -1,0 +1,14 @@
+// 10.000+ συμβόλαια in a comment is documentation, not a claim.
+import { PUBLIC_COUNTS } from "@/lib/marketing/public-counts"
+
+export function Clean({ t }: { t: (el: string, en: string) => string }) {
+    /* "98% accuracy" quoted in a block comment is also fine */
+    return (
+        <div>
+            <p>{t(`Δωρεάν για ${PUBLIC_COUNTS.freePolicies.value} ασφαλιστήρια`, `Free for ${PUBLIC_COUNTS.freePolicies.value} policies`)}</p>
+            <p>{t("Έως 10 αρχεία με μία κίνηση", "Up to 10 files in one step")}</p>
+            <p>{t("Υπασφαλισμένο κατά 15%", "Underinsured by 15%")}</p>
+            <p>{t("Λίγα λεπτά για να διαβαστούν τρία συμβόλαια", "A few minutes to read three policies")}</p>
+        </div>
+    )
+}

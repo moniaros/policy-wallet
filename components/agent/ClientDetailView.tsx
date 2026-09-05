@@ -9,7 +9,6 @@ import { ClientOverviewTab } from "./tabs/ClientOverviewTab"
 import { ClientPoliciesTab } from "./tabs/ClientPoliciesTab"
 import { ClientActivityTab } from "./tabs/ClientActivityTab"
 import { ClientFinancialsTab } from "./tabs/ClientFinancialsTab"
-import { ProtectionScoreTrendCard } from "./ProtectionScoreTrendCard"
 import type { Customer, Policy, Opportunity, Interaction } from "./types"
 import type { ViewerRole } from "@/components/collaboration/types"
 import type { AgentTier } from "@/types/subscription-entitlements"
@@ -193,10 +192,6 @@ export function ClientDetailView({
                                 opportunities={opportunities}
                                 onCreateProposal={onCreateProposal}
                             />
-                            {/* Renders nothing until this client has score history —
-                                an empty chart says less than no chart. Self-fetching
-                                so a trend failure cannot take the profile down. */}
-                            <ProtectionScoreTrendCard customerId={customer.id} />
                         </div>
                     )}
                     {activeTab === "policies" && (

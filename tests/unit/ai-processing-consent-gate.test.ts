@@ -10,7 +10,9 @@ vi.mock('@/lib/db', () => ({
         // createRun returns an in-flight run instead of creating a second one;
         // none is in flight in these fixtures.
         policyAnalysisRun: { create: vi.fn(), update: vi.fn(), findFirst: vi.fn(async () => null) },
-        gapDefinition: { count: vi.fn() },
+        // B0.2: createRun plans the attempted rules from the active catalogue
+        // before any gate; an empty catalogue is a valid (empty) plan here.
+        gapDefinition: { count: vi.fn(), findMany: vi.fn(async () => []) },
         user: { findUnique: vi.fn(), updateMany: vi.fn() },
         accessGrant: { findFirst: vi.fn(), findMany: vi.fn(async () => []) },
         customerRelationship: { findFirst: vi.fn() },

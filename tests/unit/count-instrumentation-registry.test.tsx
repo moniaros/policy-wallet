@@ -314,6 +314,10 @@ describe("§2.8: one portfolio renders one set of numbers across surfaces", () =
             expiringSoon: 5,
             neverAnalysed: 2,
             analysisFailed: 0,
+            // B1.5: the fixture's branches are all authored, so nothing is
+            // unassessed and the 27 analysed rows are the assessed denominator.
+            unassessed: 0,
+            assessed: 27,
         })
     })
 

@@ -176,25 +176,11 @@ function handRollsSeverityMap(source: string): boolean {
  */
 const I18N_STORE = "lib/i18n/translations/"
 
-/**
- * `lib/gap-detection.ts` hand-rolls BOTH shapes (getSeverityColor at :507,
- * getSeverityLabel at :570) and cannot be edited: it is frozen for run
- * PW-MOBILE-TRANSFORM-02 (§12.4), its sha256 re-verified at every phase
- * boundary against the baseline in docs/transformation/PROGRESS.md.
- *
- * D-022: the exemption is conditional on that reason staying true. While the
- * hash matches, the file is exempt — both maps are dead exports and the pin
- * below keeps them uncallable. The FIRST edit ends the freeze, the hash stops
- * matching, and the file lands in `offenders` until getSeverityColor and
- * getSeverityLabel are migrated to describeSeverity() or deleted. Never
- * re-point this constant at a new hash to keep the exemption alive.
- */
-const FROZEN_GAP_DETECTION_SHA256 =
-    "69d2c946aaefc309a1c09f0a72b13baebddc173811e33f4de0b592ca1259b859"
-
-function isExemptWhileFrozen(path: string, sha256: string): boolean {
-    return path === "lib/gap-detection.ts" && sha256 === FROZEN_GAP_DETECTION_SHA256
-}
+// `lib/gap-detection.ts` used to be exempt BY IDENTITY while it was frozen for
+// PW-MOBILE-TRANSFORM-02 and still carried two dead hand-rolled maps
+// (getSeverityColor / getSeverityLabel). PW-TRANSPARENCY-02 B0.1 (Sept 2026)
+// deleted them together with the legacy gap writer, so the freeze, its hash
+// pin and its D-022 test are gone: no file is exempt by identity any more.
 
 /**
  * The per-file decision, extracted so it can be probed with synthetic sources.
@@ -238,7 +224,7 @@ export function isSeverityOffender(path: string, source: string, sha256: string)
         (!path.startsWith(I18N_STORE) && handRollsSeverityMap(source))
     if (!fires) return false
 
-    return !isExemptWhileFrozen(path, sha256)
+    return true
 }
 
 describe("no new hand-rolled severity presentation", () => {
@@ -411,67 +397,11 @@ describe("no new hand-rolled severity presentation", () => {
         }
     })
 
-    it("the frozen-file exemption asserts its own precondition (D-022)", () => {
-        const bytes = readFileSync("lib/gap-detection.ts")
-        const source = bytes.toString("utf-8")
-        const actual = createHash("sha256").update(bytes).digest("hex")
-
-        // 1. The exemption is not decorative: the file it exempts really does
-        //    hand-roll both forbidden shapes (as dead exports, pinned below).
-        expect(handRollsSeverityMap(source)).toBe(true)
-        expect(handRollsSeverityPresentation(source)).toBe(true)
-
-        // 2. The precondition itself: the file still matches the frozen
-        //    baseline recorded in docs/transformation/PROGRESS.md. When the
-        //    freeze ends, this fails ON PURPOSE — the fix is to migrate or
-        //    delete getSeverityColor/getSeverityLabel and remove this
-        //    exemption, never to paste in the new hash.
-        expect(
-            actual,
-            "lib/gap-detection.ts no longer matches its frozen baseline. The freeze is " +
-                "over (or violated): migrate getSeverityColor/getSeverityLabel to " +
-                "describeSeverity() or delete them, then remove FROZEN_GAP_DETECTION_SHA256, " +
-                "isExemptWhileFrozen and this test. Do NOT update the hash."
-        ).toBe(FROZEN_GAP_DETECTION_SHA256)
-
-        // 3. Probe: with any other hash the exemption is inert, so an edited
-        //    file cannot ride on it — it would land in `offenders` above.
-        expect(isExemptWhileFrozen("lib/gap-detection.ts", "0".repeat(64))).toBe(false)
-        // …and the exemption never travels to another path.
-        expect(isExemptWhileFrozen("lib/services/reports/savings-report.ts", actual)).toBe(false)
-    })
-
-    describe("the frozen file's dead severity exports stay dead", () => {
-        // getSeverityColor / getSeverityLabel in lib/gap-detection.ts are
-        // hand-rolled presentation maps with ZERO callers — a loaded trap, not
-        // a live defect. The file is frozen so they cannot be deleted; instead,
-        // nothing may reference them. Enumerated from the filesystem across the
-        // full universe, never a directory shortlist (D-005). Occurrence, not
-        // import syntax: a re-export, a require(), or
-        // `gapDetection.getSeverityLabel` all count — the invariant here IS the
-        // spelling, so a spelling scan is exact (cf. D-021, where it was not).
-        const referencers = walked
-            .filter((path) => path !== "lib/gap-detection.ts")
-            .filter((path) => /getSeverityColor|getSeverityLabel/.test(readFileSync(path, "utf-8")))
-            .sort()
-
-        it("nothing references getSeverityColor or getSeverityLabel", () => {
-            expect(
-                referencers,
-                "These reference a dead severity map inside the frozen lib/gap-detection.ts. " +
-                    "Use describeSeverity() from lib/gaps/severity-display.ts (and render its " +
-                    "caveatKey) instead:\n  " +
-                    `${referencers.join("\n  ")}`
-            ).toEqual([])
-        })
-
-        it("the pin still polices something: the frozen file still defines both", () => {
-            // Vacuity check — if the definitions vanished, this pin would pass
-            // forever while guarding nothing. That is the moment to delete it.
-            const source = readFileSync("lib/gap-detection.ts", "utf-8")
-            expect(source).toMatch(/export function getSeverityColor/)
-            expect(source).toMatch(/export function getSeverityLabel/)
-        })
+    it("lib/gap-detection.ts carries no hand-rolled severity presentation (the two dead maps are gone)", () => {
+        const source = readFileSync("lib/gap-detection.ts", "utf-8")
+        expect(source).not.toMatch(/export function getSeverityColor/)
+        expect(source).not.toMatch(/export function getSeverityLabel/)
+        expect(handRollsSeverityPresentation(source)).toBe(false)
     })
 
     it("every surface that names a severity says what the word is worth", () => {

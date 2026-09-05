@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { el } from '@/lib/i18n/translations/el'
 import {
-    calculatePolicyHealthScore,
     deriveClaimDeadlines,
     derivePolicyMeta,
     extractPolicySections,
@@ -204,77 +203,6 @@ describe('pickLang', () => {
  * contract — and because the count comes from AI extraction, a better analysis
  * lowered the score.
  */
-describe('calculatePolicyHealthScore', () => {
-    it('starts at 100 with no findings and no verification', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 0, verified: false })).toEqual({
-            score: 100,
-            level: 'good',
-            available: true,
-        })
-    })
-
-    /**
-     * A1. The score is a SUBTRACTION from 100, so "no findings because the run
-     * failed" and "no findings because the policy is sound" produce the same
-     * number — and production rendered «100 · Σε καλή κατάσταση» for a
-     * third-party-only motor policy whose analysis died on a provider spend cap.
-     * Zero findings from a failed run is not evidence of a healthy policy.
-     */
-    it('reports NO score when the backing analysis did not complete', () => {
-        const out = calculatePolicyHealthScore({ gapCount: 0, verified: false, analysisComplete: false })
-        expect(out.available).toBe(false)
-    })
-
-    it('still scores when the analysis completed', () => {
-        const out = calculatePolicyHealthScore({ gapCount: 2, verified: true, analysisComplete: true })
-        expect(out.available).toBe(true)
-        expect(out.score).toBeLessThan(100)
-    })
-
-    it('does not punish a policy for stating its exclusions', () => {
-        // Twelve exclusions, nothing flagged as risky: still a clean policy.
-        expect(
-            calculatePolicyHealthScore({
-                gapCount: 0,
-                criticalClauseCount: 0,
-                warningClauseCount: 0,
-                verified: false,
-            }).score
-        ).toBe(100)
-    })
-
-    it('caps the verified bonus at 100', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 0, verified: true }).score).toBe(100)
-    })
-
-    it('weighs open gaps heaviest, then critical clauses, then warnings', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 1, verified: false }).score).toBe(85)
-        expect(calculatePolicyHealthScore({ gapCount: 0, criticalClauseCount: 1, verified: false }).score).toBe(90)
-        expect(calculatePolicyHealthScore({ gapCount: 0, warningClauseCount: 1, verified: false }).score).toBe(96)
-    })
-
-    it('adds 5 when the extraction is confirmed', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 1, criticalClauseCount: 2, verified: false }).score).toBe(65)
-        expect(calculatePolicyHealthScore({ gapCount: 1, criticalClauseCount: 2, verified: true }).score).toBe(70)
-    })
-
-    it('clamps at zero', () => {
-        expect(
-            calculatePolicyHealthScore({ gapCount: 10, criticalClauseCount: 10, verified: false }).score
-        ).toBe(0)
-    })
-
-    it('maps levels at the 40 / 70 boundaries', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 4, verified: false })).toMatchObject({
-            score: 40,
-            level: 'attention',
-        })
-        expect(calculatePolicyHealthScore({ gapCount: 2, verified: false })).toMatchObject({
-            score: 70,
-            level: 'moderate',
-        })
-    })
-})
 
 /**
  * The call site must feed it the flagged clauses, not the raw exclusion list —
@@ -288,11 +216,6 @@ describe('the policy detail page scores on what it flagged, not on exclusions', 
 
     it('no longer passes the exclusion count', () => {
         expect(VIEW).not.toMatch(/exclusionCount: exclusions\.length/)
-    })
-
-    it('passes the critical and warning clause counts', () => {
-        expect(VIEW).toMatch(/criticalClauseCount: finePrint\.filter\(\(c\) => c\.riskLevel === "critical"\)\.length/)
-        expect(VIEW).toMatch(/warningClauseCount: finePrint\.filter\(\(c\) => c\.riskLevel === "warning"\)\.length/)
     })
 
     it('the exclusions card still says every policy has exclusions', () => {

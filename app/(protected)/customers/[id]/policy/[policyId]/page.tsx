@@ -9,6 +9,8 @@ import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 import { getTranslations } from "@/lib/i18n"
+import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { composeFindings } from "@/lib/gaps/composition"
 import { formatDate, formatDateTime } from "@/lib/i18n/format"
 import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
@@ -38,7 +40,14 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         include: {
             documents: true,
             gapInstances: {
-                include: { definition: true }
+                // Superseded rows are history, not the client's current findings (B0.1).
+                where: { supersededAt: null },
+                include: { definition: true, analysisRun: { select: { id: true, finishedAt: true } } }
+            },
+            analysisRuns: {
+                orderBy: { createdAt: 'desc' },
+                take: 1,
+                select: { id: true, status: true, finishedAt: true, createdAt: true, attemptedRules: true },
             }
         }
     })
@@ -72,6 +81,38 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     const language = ((dbUser.preferredLanguage as 'el' | 'en') || 'el')
     const t = getTranslations(language)
     const pd = t.agentPages.policyDetail
+
+    // B0.3: the run these findings come from, and whether the latest attempt is
+    // that run — the intermediary must never read a failed re-run as a clean one.
+    const latestAttempt = policy.analysisRuns[0] ?? null
+    const lastCompletedRun =
+        latestAttempt && (latestAttempt.status === 'completed' || latestAttempt.status === 'completed_with_warnings')
+            ? latestAttempt
+            : await db.policyAnalysisRun.findFirst({
+                  where: { policyId, status: { in: ['completed', 'completed_with_warnings'] } },
+                  orderBy: { finishedAt: 'desc' },
+                  select: { id: true, status: true, finishedAt: true, createdAt: true, attemptedRules: true },
+              })
+    const findingsProvenance = findingsProvenanceLine(
+        describeFindingsProvenance(
+            policy.gapInstances.map((g) => ({ analysisRunId: g.analysisRunId, runFinishedAt: g.analysisRun?.finishedAt ?? null })),
+            latestAttempt ? { ...latestAttempt, attemptedRuleCount: attemptedRuleCountOf(latestAttempt.attemptedRules) } : null,
+            lastCompletedRun ? { ...lastCompletedRun, attemptedRuleCount: attemptedRuleCountOf(lastCompletedRun.attemptedRules) } : null,
+        ),
+        t.gapProvenance,
+        language,
+    )
+    // B2: the same two lines the owner sees, over the same run and rows.
+    const attemptedPlan = (lastCompletedRun?.attemptedRules ?? null) as { slugs?: unknown; catalogueVersion?: unknown } | null
+    const composition = composeFindings({
+        lineOfBusiness: policy.lineOfBusiness,
+        acordData: policy.acordData,
+        firedSlugs: policy.gapInstances.map((g) => g.definition.slug),
+        attempted:
+            attemptedPlan && Array.isArray(attemptedPlan.slugs) && typeof attemptedPlan.catalogueVersion === 'string'
+                ? { slugs: attemptedPlan.slugs.filter((s): s is string => typeof s === 'string'), catalogueVersion: attemptedPlan.catalogueVersion }
+                : null,
+    })
     const locale = language === 'el' ? 'el-GR' : 'en-GB'
     const branch = getBranch(policy.lineOfBusiness) ?? normalizeBranch(policy.lineOfBusiness)
     const lobPhrase = { el: `Κάλυψη ${branch.genitiveEl}`, en: `${branch.label.en} Protection` }[language]
@@ -200,6 +241,8 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     <AnalysisCard
                         policyId={policyId}
                         gaps={policy.gapInstances as any}
+                        findingsProvenance={findingsProvenance}
+                        composition={composition}
                         canRequestOwnerConsent
                         // Evidence ladder: only an advisor with write access may
                         // confirm an AI-probable gap (probable → confirmed).

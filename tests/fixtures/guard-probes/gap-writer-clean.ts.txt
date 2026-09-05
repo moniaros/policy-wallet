@@ -1,0 +1,8 @@
+// createGapInstances is mentioned in this comment only, which does not count.
+import { db } from "@/lib/db"
+import { decideGapsForPolicy } from "@/lib/gap-detection"
+
+export async function read(policyId: string) {
+    const rows = await db.gapInstance.findMany({ where: { policyId, supersededAt: null } })
+    return { rows, decide: decideGapsForPolicy }
+}

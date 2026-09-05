@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowRight, BriefcaseBusiness, CheckCircle2, UserRound } from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
+import { PUBLIC_COUNTS } from "@/lib/marketing/public-counts"
 import { CHIP_GLYPH, STATE_LABELS } from "@/src/design-system/primitives"
 import { BrushUnderline, Eyebrow } from "@/src/design-system/layout"
 import { AppScreen, CoverageMapScreen, AdvisorScreen } from "@/components/landing/real-screens/RealScreens"
@@ -308,8 +309,8 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
             "Suggestions for what each client is missing, taken from their own policies",
         ),
         t(
-            "Στέλνετε 100 αρχεία μαζί και τα διαβάζουμε όλα σε λίγα λεπτά",
-            "Send 100 files at once and we read every one of them in minutes",
+            `Στέλνετε έως ${PUBLIC_COUNTS.batchUploadMaxFiles.value} αρχεία μαζί και τα διαβάζουμε όλα σε λίγα λεπτά`,
+            `Send up to ${PUBLIC_COUNTS.batchUploadMaxFiles.value} files at once and we read every one of them in minutes`,
         ),
     ]
 

@@ -118,8 +118,11 @@ describe('there is one gap engine', () => {
 
     it('the real entry points are still there', () => {
         const src = read('lib/gap-detection.ts')
-        expect(src).toMatch(/export async function detectGapsForPolicy/)
-        expect(src).toMatch(/export async function detectGapsForUser/)
+        // The legacy per-policy/per-user writers were removed in B0.1
+        // (PW-TRANSPARENCY-02); the decision point is the entry point now.
+        expect(src).toMatch(/export async function decideGapsForPolicy/)
+        expect(src).toMatch(/export function evaluateGapLogic/)
+        expect(src).not.toMatch(/export async function detectGapsForPolicy/)
     })
 })
 

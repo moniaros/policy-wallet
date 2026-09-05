@@ -739,9 +739,13 @@ export async function provisionMatrixFixtures(
 
         // One COMPLETED analysis run so the coverage/analysis sections render
         // the analysed state, not the never-analysed absence copy.
-        const run = await db.policyAnalysisRun.findFirst({ where: { policyId: policy.id }, select: { id: true } })
+        // Captured because every gap row must name the run that produced it (B0.2).
+        let run = await db.policyAnalysisRun.findFirst({
+            where: { policyId: policy.id, status: "completed" },
+            select: { id: true },
+        })
         if (!run) {
-            await db.policyAnalysisRun.create({
+            run = await db.policyAnalysisRun.create({
                 data: {
                     policyId: policy.id,
                     userId: owner.id,
@@ -752,6 +756,7 @@ export async function provisionMatrixFixtures(
                     startedAt: analyzedAt,
                     finishedAt: analyzedAt,
                 },
+                select: { id: true },
             })
             // B5: a FAILED run AFTER the completed one — the real shape, where
             // the page body renders the last good extraction while the newest
@@ -810,6 +815,8 @@ export async function provisionMatrixFixtures(
                     data: {
                         policyId: policy.id,
                         userId: owner.id,
+                        analysisRunId: run.id,
+                        lineOfBusiness: spec.lineOfBusiness,
                         gapDefinitionId: def.id,
                         severity: def.severity,
                         status: "detected",

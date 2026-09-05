@@ -392,6 +392,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         expiringSoon: [home.factExpiringOne, home.factExpiringMany],
         neverAnalysed: [home.factNeverAnalysedOne, home.factNeverAnalysedMany],
         analysisFailed: [home.factFailedOne, home.factFailedMany],
+        // B1.5: policies whose branch has no authored check — never counted as assessed.
+        unassessed: [home.factUnassessedOne, home.factUnassessedMany],
     }
     // Each fact keeps its KIND and its COUNT, so the hero can mark the element
     // that renders it with the kind's registered count key (the hero's
@@ -967,9 +969,20 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     <CoverageGapsWidget
                                         variant="embedded"
                                         counts={gapSeverityCounts}
+                                        // B1.5: a zero tally names its denominator — how many
+                                        // policies were assessed and how many it left out.
+                                        assessment={{
+                                            assessedPolicies: portfolioInput.assessed,
+                                            excludedPolicies: portfolioInput.total - portfolioInput.assessed,
+                                        }}
                                         labels={{
                                             kicker: home.gapsKicker,
                                             noGaps: home.noGaps,
+                                            noGapsAmongAssessedOne: home.noGapsAmongAssessedOne,
+                                            noGapsAmongAssessedMany: home.noGapsAmongAssessedMany,
+                                            assessmentExcludedOne: home.assessmentExcludedOne,
+                                            assessmentExcludedMany: home.assessmentExcludedMany,
+                                            noGapsNothingAssessed: home.noGapsNothingAssessed,
                                             severity: {
                                                 critical: home.severityCritical,
                                                 high: home.severityHigh,

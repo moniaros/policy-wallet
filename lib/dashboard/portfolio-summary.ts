@@ -29,6 +29,7 @@
  */
 
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
+import { partitionByAssessment } from "@/lib/gaps/assessment-coverage"
 
 export interface PortfolioFactsInput {
     /** Total policies in the wallet, whatever their state. */
@@ -41,6 +42,10 @@ export interface PortfolioFactsInput {
     neverAnalysed: number
     /** Analysed, but the latest run failed. */
     analysisFailed: number
+    /** In a branch with NO authored check — nothing can be assessed (B1.5). */
+    unassessed: number
+    /** Analysed AND in an authored branch — the only policies a roll-up may call assessed. */
+    assessed: number
 }
 
 /** The rows derivePortfolioCounts needs — a subset of a Policy row. */
@@ -51,6 +56,7 @@ export interface PortfolioCountPolicy {
     endDate?: Date | string | null
     acordData?: unknown
     lastAnalyzedAt?: Date | string | null
+    lineOfBusiness?: string | null
 }
 
 /**
@@ -81,7 +87,10 @@ export function derivePortfolioCounts(
         (policy) => String(policy.status || "").toLowerCase() !== "deleted"
     )
     const lifecycles = held.map((policy) => resolvePolicyLifecycle(policy, now).status)
+    const assessment = partitionByAssessment(held)
     return {
+        unassessed: assessment.unauthored.length,
+        assessed: assessment.assessed.length,
         total: held.length,
         expired: lifecycles.filter((status) => status === "expired").length,
         expiringSoon: lifecycles.filter((status) => status === "expiring_soon").length,
@@ -93,7 +102,7 @@ export function derivePortfolioCounts(
 }
 
 export interface PortfolioFact {
-    kind: "total" | "expired" | "expiringSoon" | "neverAnalysed" | "analysisFailed"
+    kind: "total" | "expired" | "expiringSoon" | "neverAnalysed" | "analysisFailed" | "unassessed"
     count: number
 }
 
@@ -112,6 +121,7 @@ export function portfolioFacts(input: PortfolioFactsInput): PortfolioFact[] {
     if (input.expiringSoon > 0) facts.push({ kind: "expiringSoon", count: input.expiringSoon })
     if (input.neverAnalysed > 0) facts.push({ kind: "neverAnalysed", count: input.neverAnalysed })
     if (input.analysisFailed > 0) facts.push({ kind: "analysisFailed", count: input.analysisFailed })
+    if (input.unassessed > 0) facts.push({ kind: "unassessed", count: input.unassessed })
     return facts
 }
 

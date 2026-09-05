@@ -550,6 +550,10 @@ export const el = {
             analysisFailedHint: 'Μπορείτε να δοκιμάσετε ξανά. Αν αποτύχει πάλι, το αρχείο μπορεί να μην είναι ευανάγνωστο — ανεβάστε καθαρότερο αντίγραφο ή ρωτήστε τον σύμβουλό σας.',
             analysisFoundNothingTitle: 'Η ανάλυση ολοκληρώθηκε χωρίς αναλυτικές καλύψεις',
             analysisFoundNothingHint: 'Το έγγραφο δεν περιείχε δομημένα στοιχεία κάλυψης που να μπορούμε να διαβάσουμε. Νέα ανάλυση του ίδιου αρχείου πιθανότατα θα δώσει το ίδιο αποτέλεσμα — ανεβάστε το πλήρες ασφαλιστήριο ή ρωτήστε τον σύμβουλό σας.',
+            // B1.5: no authored check for this branch — nothing was assessed. Not
+            // «no findings» (a result) and not «missing data» (a gap in the document).
+            analysisUnassessedTitle: 'Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου',
+            analysisUnassessedHint: 'Δεν το έχουμε αξιολογήσει. Διαβάσαμε το έγγραφο, αλλά κανένας κανόνας δεν εξετάζει ακόμη αυτόν τον κλάδο — δεν πρόκειται για κρίση επί της κάλυψης.',
             analysisDegradedTitle: 'Η ανάλυση δεν ολοκληρώθηκε κανονικά',
             analysisDegradedHint: 'Κάποια βήματα της ανάλυσης δεν ολοκληρώθηκαν, γι\u2019 αυτό λείπουν στοιχεία κάλυψης. Σε αντίθεση με μια καθαρή ανάλυση που δεν βρήκε τίποτα, εδώ αξίζει να δοκιμάσετε ξανά — η αιτία είναι συχνά προσωρινή.',
             reanalyzeToSeeCoverage: 'Επανάλυση για εμφάνιση λεπτομερούς κάλυψης',
@@ -1507,6 +1511,10 @@ export const el = {
     },
 
     agentUi: {
+        openFindingsLabel: 'ανοιχτά ευρήματα',
+        // B1.5: per-client count of policies no rule can assess yet.
+        unassessedPoliciesOne: '1 ασφαλιστήριο χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκε',
+        unassessedPoliciesMany: '{count} ασφαλιστήρια χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκαν',
         // Κάρτα εξέλιξης βαθμού προστασίας (F-08).
         scoreTrend: {
             title: 'Προστασία στον χρόνο',
@@ -2080,6 +2088,40 @@ export const el = {
     },
 
     // Policy Status
+    // Which run a policy's findings come from (B0.3, PW-TRANSPARENCY-02). One
+    // sentence per state; {date} is the findings' run, {latestDate} the latest
+    // attempt. Facts about the record, never about the person.
+    // B2 (PW-TRANSPARENCY-02): two lines, two denominators. Never a percentage,
+    // never a verdict adjective; a prompt to review.
+    composition: {
+        coverageChecked: 'Ελέγξαμε {checked} σημεία κάλυψης για αυτό το ασφαλιστήριο:',
+        coverageCheckedOne: 'Ελέγξαμε 1 σημείο κάλυψης για αυτό το ασφαλιστήριο:',
+        covered: '{count} καλύπτονται',
+        notCovered: '{count} δεν καλύπτονται',
+        indeterminate: '{count} δεν μπόρεσαν να ελεγχθούν',
+        allIndeterminate: 'κανένα από τα {count} δεν μπόρεσε να ελεγχθεί — τα στοιχεία που διαβάζουν οι κανόνες δεν βρέθηκαν στο έγγραφο.',
+        recordingChecked: 'Στοιχεία εγγράφου — ελέγξαμε αν καταγράφονται {checked}:',
+        recordingCheckedOne: 'Στοιχεία εγγράφου — ελέγξαμε αν καταγράφεται 1:',
+        recorded: '{count} καταγράφονται',
+        notRecorded: '{count} δεν καταγράφονται',
+        catalogueChanged: 'Οι έλεγχοι άλλαξαν μετά από αυτή την ανάλυση, γι\u2019 αυτό η σύνθεση δεν εμφανίζεται. Μια νέα ανάλυση θα την ενημερώσει.',
+        reviewFraming: 'Τα παραπάνω είναι μέτρηση του τι διάβασαν οι κανόνες — αφορμή για έλεγχο, όχι κρίση για την ασφάλισή σας.',
+    },
+
+    gapProvenance: {
+        label: 'Προέλευση ευρημάτων',
+        current: 'Ευρήματα από την ανάλυση της {date}.',
+        currentNoFindings: 'Η ανάλυση της {date} ολοκληρώθηκε και οι κανόνες που εκτελέστηκαν δεν εντόπισαν εύρημα.',
+        partial: 'Η ανάλυση της {date} ολοκληρώθηκε με ελλείψεις. Τα ευρήματα μπορεί να μην είναι πλήρη.',
+        unassessed: 'Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου. Δεν το έχουμε αξιολογήσει.',
+        staleFailed: 'Η τελευταία προσπάθεια ανάλυσης ({latestDate}) απέτυχε. Βλέπετε τα ευρήματα της προηγούμενης ολοκληρωμένης ανάλυσης ({date}) — δεν είναι τρέχοντα.',
+        staleBlocked: 'Η τελευταία προσπάθεια ανάλυσης ({latestDate}) δεν εκτελέστηκε. Βλέπετε τα ευρήματα της ανάλυσης της {date} — δεν είναι τρέχοντα.',
+        inProgress: 'Εκτελείται νέα ανάλυση. Τα ευρήματα είναι από την ανάλυση της {date}.',
+        inProgressNoPrior: 'Εκτελείται ανάλυση. Δεν υπάρχει ακόμη ολοκληρωμένη ανάλυση για αυτό το ασφαλιστήριο.',
+        none: 'Δεν υπάρχει ολοκληρωμένη ανάλυση για αυτό το ασφαλιστήριο — τίποτα δεν έχει ελεγχθεί.',
+        noneAfterFailure: 'Η τελευταία προσπάθεια ανάλυσης ({latestDate}) απέτυχε και δεν υπάρχει προηγούμενη ολοκληρωμένη ανάλυση — τίποτα δεν έχει ελεγχθεί.',
+    },
+
     policyStatus: {
         // Neuter — the subject is «το ασφαλιστήριο», like ΛΗΓΜΕΝΟ / ΕΛΛΙΠΕΣ below.
         active: 'ΕΝΕΡΓΟ',
@@ -2136,6 +2178,9 @@ export const el = {
     },
 
     analysis: {
+        // B1.5: the unauthored-branch empty state of the findings card.
+        unassessedTitle: 'Δεν το έχουμε αξιολογήσει',
+        unassessedHint: 'Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου, οπότε τίποτα δεν ελέγχθηκε. Δεν πρόκειται για αποτέλεσμα ελέγχου.',
         title: 'ΑΝΑΛΥΣΗ ΑΣΦΑΛΙΣΤΙΚΩΝ ΚΕΝΩΝ',
         runAnalysis: 'Κατανόηση ασφαλιστηρίου',
         freeTrialAvailable: 'Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.',
@@ -2357,6 +2402,15 @@ export const el = {
             factExpiringMany: '{count} λήγουν μέσα σε 30 ημέρες',
             factNeverAnalysedOne: '1 δεν έχει αναλυθεί',
             factNeverAnalysedMany: '{count} δεν έχουν αναλυθεί',
+            // B1.5: policies in a branch with no authored checks — excluded from
+            // every "assessed" figure, and said so.
+            factUnassessedOne: '1 χωρίς ορισμένους ελέγχους για τον κλάδο του — δεν αξιολογήθηκε',
+            factUnassessedMany: '{count} χωρίς ορισμένους ελέγχους για τον κλάδο τους — δεν αξιολογήθηκαν',
+            noGapsAmongAssessedOne: 'Δεν εντοπίστηκαν κενά στο 1 ασφαλιστήριο που αξιολογήθηκε.',
+            noGapsAmongAssessedMany: 'Δεν εντοπίστηκαν κενά στα {assessed} ασφαλιστήρια που αξιολογήθηκαν.',
+            assessmentExcludedOne: '1 ασφαλιστήριο δεν αξιολογήθηκε (χωρίς ανάλυση ή χωρίς ορισμένους ελέγχους για τον κλάδο του).',
+            assessmentExcludedMany: '{excluded} ασφαλιστήρια δεν αξιολογήθηκαν (χωρίς ανάλυση ή χωρίς ορισμένους ελέγχους για τον κλάδο τους).',
+            noGapsNothingAssessed: 'Κανένα ασφαλιστήριο δεν έχει αξιολογηθεί ακόμη — δεν υπάρχει τι να μετρηθεί.',
             factFailedOne: '1 δεν διαβάστηκε',
             factFailedMany: '{count} δεν διαβάστηκαν',
             severityGroupLabel: 'Ανοιχτά ευρήματα ανά προτεραιότητα',
@@ -3792,6 +3846,7 @@ export const el = {
         },
     },
     clientOverview: {
+        linesHeld: 'Γραμμές κάλυψης που κατέχει',
         healthScore: "Δείκτης σχέσης πελάτη",
         healthScoreHint: "Συνδυάζει κάλυψη, ενεργοποίηση λογαριασμού και πρόσφατη επικοινωνία. Δεν αποτελεί αξιολόγηση της επάρκειας ασφάλισης.",
         goodCoverage: "Ενεργή σχέση",

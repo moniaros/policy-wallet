@@ -1,0 +1,5 @@
+import { db } from "@/lib/db"
+
+export async function refresh(policyId: string) {
+    await db.gapInstance.createMany({ data: [{ policyId, gapDefinitionId: "d1", severity: "high" }] })
+}

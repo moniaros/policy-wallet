@@ -1,0 +1,13 @@
+import { db } from "@/lib/db"
+
+export async function everythingForPolicy(policyId: string) {
+    const rows = await db.gapInstance.findMany({
+        where: { policyId },
+        include: { definition: true },
+    })
+    const policy = await db.policy.findUnique({
+        where: { id: policyId },
+        include: { gapInstances: true },
+    })
+    return { rows, policy }
+}

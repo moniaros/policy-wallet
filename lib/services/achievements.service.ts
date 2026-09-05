@@ -215,7 +215,9 @@ export async function checkAndAwardAchievements(userId: string): Promise<string[
             db.policy.count({ where: { ownerUserId: userId } }),
             db.policyAnalysisRun.count({ where: { userId, status: "completed" } }),
             db.gapInstance.count({
-                where: { policy: { ownerUserId: userId }, status: "resolved" },
+                // A resolved finding stays resolved for the achievement even after a
+                // later run superseded its row (the prior status is kept on the row).
+                where: { policy: { ownerUserId: userId }, OR: [{ status: "resolved" }, { priorStatus: "resolved" }] },
             }),
             db.gapInstance.count({
                 where: {

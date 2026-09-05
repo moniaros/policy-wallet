@@ -550,6 +550,8 @@ export const en: TranslationKeys = {
             analysisFailedHint: 'You can try again. If it fails again the file may not be readable — upload a clearer copy, or ask your advisor.',
             analysisFoundNothingTitle: 'The analysis finished without detailed coverages',
             analysisFoundNothingHint: 'This document did not contain structured coverage detail we could read. Re-analysing the same file will most likely give the same result — upload the full policy document, or ask your advisor.',
+            analysisUnassessedTitle: 'No checks have been authored for this type of policy yet',
+            analysisUnassessedHint: 'It has not been assessed. We read the document, but no rule examines this branch yet — this is not a judgment about the cover.',
             analysisDegradedTitle: 'The analysis did not finish cleanly',
             analysisDegradedHint: 'Some steps of the analysis did not complete, which is why coverage detail is missing. Unlike a clean run that found nothing, this one is worth retrying — the cause is often temporary.',
             reanalyzeToSeeCoverage: 'Re-analyze to see detailed coverage',
@@ -1496,6 +1498,9 @@ export const en: TranslationKeys = {
     },
 
     agentUi: {
+        openFindingsLabel: 'open findings',
+        unassessedPoliciesOne: '1 policy with no authored checks — not assessed',
+        unassessedPoliciesMany: '{count} policies with no authored checks — not assessed',
         // Protection-score trend card (F-08) — the client's score over time.
         scoreTrend: {
             title: 'Protection over time',
@@ -2060,6 +2065,36 @@ export const en: TranslationKeys = {
     },
 
     // Policy Status
+    // Which run a policy's findings come from (B0.3). See el.ts.
+    composition: {
+        coverageChecked: 'We checked {checked} coverage points for this policy:',
+        coverageCheckedOne: 'We checked 1 coverage point for this policy:',
+        covered: '{count} covered',
+        notCovered: '{count} not covered',
+        indeterminate: '{count} could not be checked',
+        allIndeterminate: 'none of the {count} could be checked — the fields the rules read were not found in the document.',
+        recordingChecked: 'Document details — we checked whether {checked} are recorded:',
+        recordingCheckedOne: 'Document details — we checked whether 1 is recorded:',
+        recorded: '{count} recorded',
+        notRecorded: '{count} not recorded',
+        catalogueChanged: 'The checks changed after this analysis, so the composition is not shown. A new analysis will refresh it.',
+        reviewFraming: 'The lines above measure what the rules read — a prompt to review, not a judgment about your insurance.',
+    },
+
+    gapProvenance: {
+        label: 'Where these findings come from',
+        current: 'Findings from the analysis of {date}.',
+        currentNoFindings: 'The analysis of {date} completed and the rules that ran found nothing.',
+        partial: 'The analysis of {date} completed with missing sections. The findings may be incomplete.',
+        unassessed: 'No checks have been authored for this type of policy yet. It has not been assessed.',
+        staleFailed: 'The latest analysis attempt ({latestDate}) failed. You are seeing the findings of the previous completed analysis ({date}) — they are not current.',
+        staleBlocked: 'The latest analysis attempt ({latestDate}) did not run. You are seeing the findings of the analysis of {date} — they are not current.',
+        inProgress: 'A new analysis is running. The findings are from the analysis of {date}.',
+        inProgressNoPrior: 'An analysis is running. There is no completed analysis for this policy yet.',
+        none: 'There is no completed analysis for this policy — nothing has been checked.',
+        noneAfterFailure: 'The latest analysis attempt ({latestDate}) failed and there is no previous completed analysis — nothing has been checked.',
+    },
+
     policyStatus: {
         active: 'Active',
         expiringSoon: 'Expiring Soon',
@@ -2117,6 +2152,8 @@ export const en: TranslationKeys = {
     // Placeholders
 
     analysis: {
+        unassessedTitle: 'Not assessed',
+        unassessedHint: 'No checks have been authored for this type of policy yet, so nothing was checked. This is not a check result.',
         title: 'GAP ANALYSIS',
         runAnalysis: 'Understand this policy',
         freeTrialAvailable: 'Your first full analysis is free — try it on this policy.',
@@ -2325,6 +2362,13 @@ export const en: TranslationKeys = {
             factExpiringMany: '{count} expire within 30 days',
             factNeverAnalysedOne: '1 not analysed',
             factNeverAnalysedMany: '{count} not analysed',
+            factUnassessedOne: '1 with no authored checks for its branch — not assessed',
+            factUnassessedMany: '{count} with no authored checks for their branch — not assessed',
+            noGapsAmongAssessedOne: 'No gaps found in the 1 policy that was assessed.',
+            noGapsAmongAssessedMany: 'No gaps found in the {assessed} policies that were assessed.',
+            assessmentExcludedOne: '1 policy was not assessed (no analysis, or no authored checks for its branch).',
+            assessmentExcludedMany: '{excluded} policies were not assessed (no analysis, or no authored checks for their branch).',
+            noGapsNothingAssessed: 'No policy has been assessed yet — there is nothing to count.',
             factFailedOne: '1 could not be read',
             factFailedMany: '{count} could not be read',
             severityGroupLabel: 'Open findings by priority',
@@ -3755,6 +3799,7 @@ export const en: TranslationKeys = {
         },
     },
     clientOverview: {
+        linesHeld: 'Coverage lines held',
         healthScore: "Client relationship",
         healthScoreHint: "Combines cover, account activation and recent contact. It is not an assessment of insurance adequacy.",
         goodCoverage: "Actively managed",

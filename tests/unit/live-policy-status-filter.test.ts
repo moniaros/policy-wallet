@@ -300,13 +300,6 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "rows (visible, not held) and place cancelled/analysing ones as `other`. A status " +
             "filter here would drop the very rows that contract shows.",
     },
-    "lib/gap-detection.ts": {
-        count: 1,
-        reason:
-            "Fenced from run PW-MOBILE-TRANSFORM-01 (S12.4: do not touch gap-detection). The " +
-            "engine evaluates coverage per policy; changing its input universe changes " +
-            "detection semantics and needs its own task.",
-    },
     // ── Agent-visibility set semantics (S12.4-fenced surfaces) ──────────────
     "lib/agent-visibility.ts": {
         count: 1,

@@ -29,6 +29,7 @@ const KIND_COUNT_KEY: Record<string, string> = {
     expiringSoon: "portfolio.expiringCount",
     neverAnalysed: "portfolio.neverAnalysedCount",
     analysisFailed: "portfolio.failedCount",
+    unassessed: "portfolio.unassessedCount",
 }
 
 /**

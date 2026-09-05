@@ -3,23 +3,21 @@
 import { getAuthenticatedUser, getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
-import { detectGapsForUser, createGapInstances } from "@/lib/gap-detection"
 import { runGapEngine } from "@/lib/services/gap-engine"
 
 /**
- * Explicit re-analysis of the user's coverage. This is the WRITE path the
- * page render used to take on every visit (gap detection + engine sync +
- * score caching) — now user-triggered. The upload pipeline and cron remain
- * the automatic refresh paths.
+ * Explicit refresh of the user's coverage picture — user-triggered.
+ *
+ * This used to ALSO run the legacy gap detector over the stored extraction and
+ * write `gap_instances` rows with no run, no provenance, and reactivate
+ * semantics (Goal 0 F4). Rule findings are now written only by an analysis
+ * run, through lib/gaps/gap-instance-writer.ts (B0.1); what this action
+ * refreshes is the profile engine's recommendations.
  */
 export async function refreshCoverageAnalysis(): Promise<{ ok: boolean; error?: string }> {
     try {
         const { dbUser } = await getAuthenticatedUser()
 
-        const detectedGaps = await detectGapsForUser(dbUser.id)
-        if (detectedGaps.length > 0) {
-            await createGapInstances(detectedGaps)
-        }
         await runGapEngine(dbUser.id)
 
         // /coverage-insights was revalidated here too until V2-P2-03 removed

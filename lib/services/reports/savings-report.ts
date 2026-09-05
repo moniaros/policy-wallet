@@ -11,6 +11,7 @@ import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrency } from "@/lib/i18n/format"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { describeSeverity, SEVERITY_CAVEAT_KEY } from "@/lib/gaps/severity-display"
+import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 
 /** Resolve a dotted i18n key ("dashboard.home.recPriorityCritical") from the store. */
 function resolveReportKey(language: "en" | "el", key: string): string {
@@ -102,7 +103,9 @@ export function generateSavingsReportHtml(
     generatedAt: string,
     language: "en" | "el" = "en",
     branding?: AgentReportBranding,
-    decidedGaps: DecidedGapForReport[] = []
+    decidedGaps: DecidedGapForReport[] = [],
+    /** B0.3: which run the gaps come from, and whether the latest attempt is that run. */
+    provenance: ProvenanceLine | null = null
 ): string {
     const loc = (val: any) => localized(val, language)
     const metadata = resultJson.metadata ?? {}
@@ -167,6 +170,11 @@ export function generateSavingsReportHtml(
     // Static report labels: this is a client-facing (and agent-branded) document,
     // so every heading must follow `language`, not just the dates + disclaimer.
     const L = (el: string, en: string) => (language === "el" ? el : en)
+    // B0.3: a client-facing document names the run its findings came from and
+    // states a failed latest attempt, with or without findings to list.
+    const provenanceBlock = provenance
+        ? `<h2>${escapeHtml(resolveReportKey(language, "gapProvenance.label"))}</h2>\n<div class="section-caveat" data-provenance-state="${escapeHtml(provenance.state)}">${escapeHtml(provenance.text)}</div>`
+        : ""
     const preparedByLabel = L("Ετοιμάστηκε από", "Prepared by")
     const reportTitle = L("Έκθεση Εξοικονόμησης &amp; Κάλυψης", "Savings &amp; Coverage Report")
     const contactBits = [website, phone].filter(Boolean).map((b) => escapeHtml(b)).join(" · ")
@@ -260,6 +268,7 @@ ${savings.map((s) => `
 </div>
 `).join("")}
 
+${provenanceBlock}
 ${gaps.length > 0 ? `
 <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2>
 <div class="section-caveat">${escapeHtml(resolveReportKey(language, SEVERITY_CAVEAT_KEY))}</div>

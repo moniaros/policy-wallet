@@ -12,14 +12,15 @@ import { en } from '@/lib/i18n/translations/en'
  * inline literal in the ProtectionScoreCard carrying an `i18n-hardcoded-ignore`.
  * Hand-synced regulated copy agrees right up until legal review edits one of
  * the two. The card (and the portfolio protection score with it) was removed
- * from the product in Aug 2026 (PW-MOBILE-TRANSFORM-01, halt H-001); the
- * single-source key SURVIVES because the wallet's per-policy indicator still
- * renders it, and it remains the one place legal review has to edit.
+ * from the product in Aug 2026 (PW-MOBILE-TRANSFORM-01, halt H-001), and the
+ * wallet's per-policy indicator followed in Sept 2026 (PW-TRANSPARENCY-02
+ * B1.7). The single-source key survives as the one place legal review edits;
+ * the wallet must render neither a literal disclaimer nor a score to disclaim.
  */
 describe('the not-advice compliance copy has one source', () => {
-    it('the wallet reads the disclaimer from translations, not a literal', () => {
+    it('the wallet renders no literal disclaimer — and no score left to disclaim (B1.7)', () => {
         const wallet = readFileSync('components/wallet/PolicyDetailsClientView.tsx', 'utf-8')
-        expect(wallet).toMatch(/notAdvice: t\.dashboard\.home\.scoreMethodologyNotAdvice/)
+        expect(wallet).not.toMatch(/calculatePolicyHealthScore|scoreMethodologyNotAdvice/)
         expect(wallet).not.toMatch(/δεν αποτελεί εξατομικευμένη ασφαλιστική συμβουλή/)
         expect(wallet).not.toMatch(/not personalised insurance advice/)
     })

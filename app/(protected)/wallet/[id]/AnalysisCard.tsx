@@ -17,6 +17,10 @@ import { toGreekUppercaseNoAccents } from "@/lib/i18n/text-format"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { GapReportList } from "@/components/wallet/gap-report/GapReportList"
 import type { GapReportItem } from "@/lib/wallet/gap-report"
+import { FindingsProvenanceLine } from "@/components/gaps/FindingsProvenanceLine"
+import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
+import { CoverageComposition } from "@/components/gaps/CoverageComposition"
+import type { Composition } from "@/lib/gaps/composition"
 
 interface Gap {
     id: string
@@ -70,11 +74,22 @@ interface AnalysisCardProps {
      * never sees this — confirmation MEANS "an advisor agrees".
      */
     canConfirmGaps?: boolean
+    /**
+     * B0.3: which run the findings below come from, and whether the latest
+     * attempt is that run — resolved to a sentence by the server page. Renders
+     * above the list, with or without findings, so a failed latest attempt is
+     * never mistaken for a clean one.
+     */
+    findingsProvenance?: ProvenanceLine | null
+    /** B2: two lines, two denominators — rendered with the provenance, never without it. */
+    composition?: Composition | null
 }
 
 export function AnalysisCard({
     policyId,
     gaps,
+    findingsProvenance = null,
+    composition = null,
     canRequestOwnerConsent = false,
     policyStatus,
     processingError,
@@ -415,10 +430,12 @@ export function AnalysisCard({
                 const runningStep = latestSteps.find((step) => step.status === "running" || step.status === "retrying")
                 const completedSteps = latestSteps.filter((step) => step.status === "completed").length
 
-                const overallProgress =
-                    typeof run.overall_success_pct === "number"
-                        ? run.overall_success_pct
-                        : Math.round((completedSteps / 8) * 100)
+                // Progress is the count of completed steps. The run's stored
+                // success percentage used to be preferred here; it is a mean of
+                // per-step heuristics in which the gap step counts model PROSE
+                // entries, not checks — a fabricated number, and it renders
+                // nowhere (PW-TRANSPARENCY-02 A1.2, checks-passed-not-rendered).
+                const overallProgress = Math.round((completedSteps / 8) * 100)
 
                 if (status === "queued") {
                     setRunProgress(10)
@@ -798,6 +815,8 @@ export function AnalysisCard({
                         {t.wallet.policyDetailsPage.analysisFindingsStale}
                     </p>
                 )}
+                {findingsProvenance && <FindingsProvenanceLine line={findingsProvenance} className="mb-4" />}
+                {composition && <CoverageComposition composition={composition} copy={t.composition} className="mb-4" />}
                 {report && report.items.length > 0 ? (
                     <>
                         <GapReportList
@@ -849,6 +868,22 @@ export function AnalysisCard({
                                 {t.wallet.policyDetailsPage.analysisNoFindingUnavailable}
                             </p>
                         </div>
+                    ) : findingsProvenance?.state === "unassessed" ? (
+                    /* B1.5: NO CHECK IS AUTHORED FOR THIS BRANCH. Zero findings here
+                       is not a result — nothing was asked — so the card must not
+                       read «no gaps». It says nothing was assessed, in words
+                       distinct from the missing-data and failed states. */
+                    <div className="text-center py-8" data-assessment-state="unauthored">
+                        <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/10 flex items-center justify-center mx-auto mb-4">
+                            <HelpCircle className="w-8 h-8 text-black/45 dark:text-white/45" />
+                        </div>
+                        <p className="text-sm text-slate-700 dark:text-slate-300 font-semibold mb-2">
+                            {t.analysis.unassessedTitle}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {t.analysis.unassessedHint}
+                        </p>
+                    </div>
                     ) : (
                     <div className="text-center py-8">
                         <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-4">

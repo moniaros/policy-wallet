@@ -95,7 +95,7 @@ test.describe('MEDIC evidence ladder', () => {
 
             const policy = await db.policy.findFirstOrThrow({
                 where: { ownerUserId: phId, policyNumber: 'E2E-MOT-001' },
-                select: { id: true },
+                select: { id: true, lineOfBusiness: true },
             });
             policyId = policy.id;
 
@@ -130,9 +130,25 @@ test.describe('MEDIC evidence ladder', () => {
             }
 
             const def = await db.gapDefinition.findFirstOrThrow({ select: { id: true } });
+            // Every gap row records the run that produced it (B0.2); a fixture
+            // row gets a completed fixture run rather than a provenance hole.
+            const fixtureRun = await db.policyAnalysisRun.create({
+                data: {
+                    policyId,
+                    userId: phId,
+                    provider: 'fixture',
+                    model: 'e2e-medic-ladder',
+                    status: 'completed',
+                    startedAt: new Date(),
+                    finishedAt: new Date(),
+                },
+                select: { id: true },
+            });
             const gap = await db.gapInstance.create({
                 data: {
                     policyId,
+                    analysisRunId: fixtureRun.id,
+                    lineOfBusiness: policy.lineOfBusiness,
                     gapDefinitionId: def.id,
                     severity: 'high',
                     status: 'open',

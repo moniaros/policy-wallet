@@ -1,0 +1,5 @@
+// A comment may name overallSuccessPct without being a consumer.
+export function RunProgress({ completedSteps }: { completedSteps: number }) {
+    /* successPct in a block comment is also fine */
+    return <span>{Math.round((completedSteps / 8) * 100)}%</span>
+}
