@@ -121,9 +121,10 @@ describe('protection status hero — the headline is the facts', () => {
 
 /**
  * The regulated methodology disclosure OUTLIVES the portfolio score: the
- * wallet's per-policy indicator (a different metric — completeness of one
- * policy's extraction, not a protection grade) still renders it, and its
- * not-advice line is compliance wording under IDD / Law 4583/2018.
+ * wallet's per-policy indicator rendered it until PW-TRANSPARENCY-02 B1.7
+ * removed that number too (Sept 2026). The component stays for any future
+ * measurement that needs a method note; its not-advice line is compliance
+ * wording under IDD / Law 4583/2018.
  */
 describe('score methodology disclosure (per-policy indicator)', () => {
     it('states what the indicator does not measure, and that it is not advice', () => {
@@ -141,11 +142,12 @@ describe('score methodology disclosure (per-policy indicator)', () => {
         expect(screen.getByText(/Not personalised insurance advice/)).toBeTruthy()
     })
 
-    it('accompanies the per-policy indicator, the one 0-100 figure left', () => {
-        expect(
-            readFileSync('components/wallet/policy-detail/SummaryCard.tsx', 'utf-8'),
-            'SummaryCard renders a score with no methodology'
-        ).toMatch(/<ScoreMethodology/)
+    it('the per-policy indicator is gone: the summary card renders no score and no methodology link (B1.7)', () => {
+        const card = readFileSync('components/wallet/policy-detail/SummaryCard.tsx', 'utf-8')
+        expect(card).not.toMatch(/<ScoreMethodology/)
+        expect(card).not.toMatch(/health\.score|PolicyHealthScore/)
+        const view = readFileSync('components/wallet/PolicyDetailsClientView.tsx', 'utf-8')
+        expect(view).not.toMatch(/calculatePolicyHealthScore/)
     })
 
     it.each(['lib/i18n/translations/el.ts', 'lib/i18n/translations/en.ts'])(

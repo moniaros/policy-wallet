@@ -1498,6 +1498,7 @@ export const en: TranslationKeys = {
     },
 
     agentUi: {
+        openFindingsLabel: 'open findings',
         unassessedPoliciesOne: '1 policy with no authored checks — not assessed',
         unassessedPoliciesMany: '{count} policies with no authored checks — not assessed',
         // Protection-score trend card (F-08) — the client's score over time.
@@ -3783,6 +3784,7 @@ export const en: TranslationKeys = {
         },
     },
     clientOverview: {
+        linesHeld: 'Coverage lines held',
         healthScore: "Client relationship",
         healthScoreHint: "Combines cover, account activation and recent contact. It is not an assessment of insurance adequacy.",
         goodCoverage: "Actively managed",

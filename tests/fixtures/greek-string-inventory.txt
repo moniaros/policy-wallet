@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3534
+# bundle entries: 3536
 # inline entries: 4807 across 215 files
 # ternary entries: 280 across 43 files
 # call entries: 1145 across 86 files
@@ -480,6 +480,7 @@ bundle	agentUi.lastUpdated	"Τελευταία ενημέρωση"
 bundle	agentUi.licensedAgent	"Πιστοποιημένος σύμβουλος"
 bundle	agentUi.noClientsTitle	"Κανένας πελάτης ακόμη"
 bundle	agentUi.noRecentActivity	"Καμία πρόσφατη δραστηριότητα ακόμη."
+bundle	agentUi.openFindingsLabel	"ανοιχτά ευρήματα"
 bundle	agentUi.policiesAbbr	"ασφ."
 bundle	agentUi.portfolioHealth	"Υγεία χαρτοφυλακίου"
 bundle	agentUi.portfolioHealthEmpty	"Κανένας πελάτης ακόμη — προσκαλέστε τον πρώτο σας για να δείτε την υγεία χαρτοφυλακίου."
@@ -795,6 +796,7 @@ bundle	clientOverview.goodCoverage	"Ενεργή σχέση"
 bundle	clientOverview.healthScore	"Δείκτης σχέσης πελάτη"
 bundle	clientOverview.healthScoreHint	"Συνδυάζει κάλυψη, ενεργοποίηση λογαριασμού και πρόσφατη επικοινωνία. Δεν αποτελεί αξιολόγηση της επάρκειας ασφάλισης."
 bundle	clientOverview.identifiedGaps	"Εντοπισμένα κενά"
+bundle	clientOverview.linesHeld	"Γραμμές κάλυψης που κατέχει"
 bundle	clientOverview.needsImprovement	"Χρειάζεται παρακολούθηση"
 bundle	collaboration.documentRequests.cancel	"Ακύρωση"
 bundle	collaboration.documentRequests.documentType	"Τύπος εγγράφου"

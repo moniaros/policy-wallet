@@ -175,11 +175,15 @@ export function ClientOverviewTab({
                     <CardHead as="h3" icon={Users} title={t.clientOverview.coverageNeeds} />
                     <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
                         <div className="flex min-w-0 flex-col gap-1 sm:border-r sm:border-border sm:pr-4">
+                            {/* B1.7: the coverage percentage was a breadth grade over a
+                                fixed line list. The count it derived from is what a
+                                reader can check — the lines themselves are listed
+                                beside it. */}
                             <p className="text-caption leading-snug text-muted-foreground">
-                                {t.clientOverview.coverage}
+                                {t.clientOverview.linesHeld}
                             </p>
-                            <p className="text-title font-semibold leading-none tracking-tight tabular-nums text-foreground">
-                                {customer.crossSell.coverageScore}%
+                            <p className="text-title font-semibold leading-none tracking-tight tabular-nums text-foreground" data-count="client.linesHeldCount">
+                                {customer.crossSell.existingLines.length}
                             </p>
                         </div>
                         <div className="flex flex-1 flex-wrap gap-1.5">

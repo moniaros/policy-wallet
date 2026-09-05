@@ -3,8 +3,6 @@
 import { FileText, RefreshCw, Sparkles } from "lucide-react"
 
 import { CardHead } from "@/components/dashboard/home/CardHead"
-import { ScoreMethodology } from "@/components/coverage/ScoreMethodology"
-import type { PolicyHealthScore } from "@/lib/wallet/policy-detail"
 import { containsUnreadableMarker } from "@/lib/wallet/unreadable-value"
 
 interface SummaryCardProps {
@@ -18,14 +16,11 @@ interface SummaryCardProps {
     summary: string | null
     /** Why `summary` is null, when it is. */
     summaryState: "ok" | "absent" | "language_mismatch"
-    health: PolicyHealthScore
     isAnalyzing: boolean
     copy: {
         summaryTitle: string
         summaryAiChip: string
-        healthTitle: string
         /** Neutral scale note that replaced the verdict label, e.g. «στα 100». */
-        healthScale: string
         /** Shown INSTEAD of the summary when the stored one is wrong-language. */
         summaryLanguageMismatch: string
         summaryLanguageMismatchCta: string
@@ -55,18 +50,6 @@ interface SummaryCardProps {
      * defines them.
      */
     analysisHref?: string
-    /**
-     * Methodology disclosure for the health reading — a 0–100 figure must not
-     * ship bare, the same rule the portfolio protection score followed.
-     * Explains the rule, the limits (not adequacy, not a claim prediction), and
-     * that it is not personalised advice.
-     */
-    methodology?: {
-        title: string
-        body: string
-        limits: string
-        notAdvice: string
-    }
 }
 
 /** A pill that stays visible on a sunken sub-card: white, not grey. */
@@ -86,10 +69,8 @@ const PILL_ON_SUNKEN =
 export function SummaryCard({
     summary,
     summaryState,
-    health,
     isAnalyzing,
     copy,
-    methodology,
     documentHref = null,
     analysisHref = "#review",
     unverified = false,
@@ -115,33 +96,10 @@ export function SummaryCard({
                 }
             />
 
-            {/* NO SCORE WITHOUT A COMPLETED ANALYSIS, and no verdict label in
-                any state.
-
-                The donut used to render «100 · Σε καλή κατάσταση» for a
-                policy whose analysis had FAILED — the score is a subtraction
-                from 100, so "nothing looked" and "nothing wrong" produce the
-                same number — and «71 · Σε καλή κατάσταση» for a policy 110
-                days expired. The verdict word was the load-bearing part: a
-                bare number invites a question, a verdict answers one, and
-                this one is not ours to answer until an underwriter has
-                validated what feeds it. */}
-            {!isAnalyzing && health.available && (
-                <div className="pw-subcard mt-4 flex items-center gap-4 px-4 py-3">
-                    <p className="text-title font-semibold leading-none tracking-tight text-foreground tabular-nums">
-                        {health.score}
-                    </p>
-                    <div className="min-w-0">
-                        <p className="text-caption font-medium text-muted-foreground">{copy.healthTitle}</p>
-                        {/* The verdict label («Σε καλή κατάσταση») is gone.
-                            What replaces it is what the number actually is:
-                            a reading of this document, with its method one
-                            tap away. */}
-                        <p className="text-caption text-muted-foreground">{copy.healthScale}</p>
-                        {methodology && <ScoreMethodology className="mt-1" copy={methodology} />}
-                    </div>
-                </div>
-            )}
+            {/* B1.7 (PW-TRANSPARENCY-02): the per-policy health number is gone.
+                It was a subtraction from 100 over findings — the same shape as
+                the portfolio score removed under H-001 — and the findings list
+                below now carries its own provenance and denominator instead. */}
 
             {unverified && unverifiedNote && (
                 <p className="mt-4 text-caption leading-snug text-muted-foreground">{unverifiedNote}</p>

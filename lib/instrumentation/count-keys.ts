@@ -38,6 +38,8 @@ export const COUNT_KEYS: Record<string, string> = {
     "portfolio.unassessedCount": "Policies in a branch with NO authored check (lib/gaps/assessment-coverage.ts) — excluded from every assessed figure (B1.5).",
     "portfolio.assessedCount": "Policies analysed AND in an authored branch — the denominator behind a zero-findings line (B1.5).",
     "client.unassessedPolicyCount": "Agent client card: this client's policies in a branch with no authored check (B1.5).",
+    "client.openGapCount": "Agent client card: the client's open gap rows (cached engine count) — replaced the protection-score badge (B1.7).",
+    "client.linesHeldCount": "Agent client overview: coverage lines the client holds (crossSell.existingLines) — replaced the coverage percentage (B1.7).",
     "portfolio.renewalsNext180Count": "Policies with a resolved end date within the next 180 days.",
     "portfolio.coverageActiveCount": "isPolicyCoverageActive: provides coverage today (includes expiring_soon, action_needed, unknown_duration; excludes expired/cancelled/analyzing). NOT activeCount — labels must distinguish.",
     "portfolio.policiesWithFindingsCount": "Policies carrying at least one open gap instance.",

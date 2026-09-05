@@ -72,23 +72,19 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                 </div>
             </div>
 
-            {/* Protection score badge */}
-            {client.protectionScore != null && (
-                // The number in the text colour: painted red/amber/green by
-                // threshold it was a verdict the advisor had not made. The gap
-                // count beside it keeps the one tone that means «finding».
-                <div className="mr-1 flex shrink-0 flex-col items-center gap-0.5">
-                    <span className="text-sm font-semibold tabular-nums text-foreground">
-                        {client.protectionScore}
-                        <span className="text-caption font-medium text-muted-foreground">/100</span>
-                    </span>
-                    {(client.gapCount ?? 0) > 0 && (
-                        <span className="flex items-center gap-0.5 text-caption font-semibold tabular-nums text-status-danger">
-                            <AlertTriangle className="h-3 w-3" aria-hidden="true" />
-                            {client.gapCount}
-                        </span>
-                    )}
-                </div>
+            {/* B1.7 (PW-TRANSPARENCY-02): the protection score is gone from this
+                card. What stays is a COUNT of open findings — a number the advisor
+                can open and check, not a grade — with its subject named for
+                assistive tech, since «4» beside an icon has none. */}
+            {(client.gapCount ?? 0) > 0 && (
+                <span
+                    className="mr-1 flex shrink-0 items-center gap-0.5 text-caption font-semibold tabular-nums text-status-danger"
+                    data-count="client.openGapCount"
+                >
+                    <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                    {client.gapCount}
+                    <span className="sr-only"> {t.agentUi.openFindingsLabel}</span>
+                </span>
             )}
 
             {/* B1.5: how many of this client's policies no rule can assess yet.

@@ -51,7 +51,9 @@ function walk(dir: string, out: string[] = []): string[] {
 const FILES = [path.join(ROOT, "components"), path.join(ROOT, "app"), path.join(ROOT, "lib")]
     .filter((d) => { try { return statSync(d).isDirectory() } catch { return false } })
     .flatMap((d) => walk(d))
-    .filter((f) => !/\/(admin|agent)\//.test(f))
+    // B1.7 (PW-TRANSPARENCY-02) widened the universe to agent paths: the score is
+    // not a B2C-only invariant. Admin stays out (operators, not customers).
+    .filter((f) => !/\/admin\//.test(f))
 
 /**
  * EMPTY, deliberately, and asserted empty below. Two surfaces used to be
@@ -60,6 +62,18 @@ const FILES = [path.join(ROOT, "components"), path.join(ROOT, "app"), path.join(
  * a test fix — it is reversing halt H-001, which is the owner's call.
  */
 const SANCTIONED = new Set<string>([])
+
+/**
+ * Agent-side files that render the RELATIONSHIP health score — an engagement
+ * metric (contact recency, activation, opportunities), not a protection
+ * verdict — under the `healthScore` identifier this guard also matches. Named
+ * with the reason, and asserted below to still carry that identifier so the
+ * exemption cannot outlive its cause. Nothing here renders the protection score.
+ */
+const RELATIONSHIP_HEALTH_RENDERS = new Set<string>([
+    "components/agent/tabs/ClientOverviewTab.tsx",
+    "components/agent/CustomerList.tsx",
+])
 
 /** The identifiers that carry the portfolio score value through the code. */
 const IDS = "(?:overallScore|healthScore|protectionScore|previousScore|currentScore)"
@@ -127,10 +141,19 @@ describe("the protection score value renders nowhere", () => {
         expect(SANCTIONED.size).toBe(0)
     })
 
+    it("the relationship-health exemptions still render only the relationship metric", () => {
+        for (const rel of RELATIONSHIP_HEALTH_RENDERS) {
+            const src = readFileSync(path.join(ROOT, rel), "utf8")
+            expect(src, `${rel} no longer renders healthScore — drop the exemption`).toMatch(/healthScore/)
+            expect(src, `${rel} renders the protection score`).not.toMatch(/\{[^}\n]*\b(protectionScore|overallScore)\b[^}\n]*\}\s*</)
+        }
+    })
+
     it("no customer-facing file renders the score value — JSX or template literal", () => {
         const offenders = FILES.filter((f) => {
             const rel = path.relative(ROOT, f)
             if (SANCTIONED.has(rel)) return false
+            if (RELATIONSHIP_HEALTH_RENDERS.has(rel)) return false
             return rendersScoreValue(readFileSync(f, "utf8"))
         }).map((f) => path.relative(ROOT, f))
         expect(offenders).toEqual([])

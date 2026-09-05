@@ -1511,6 +1511,7 @@ export const el = {
     },
 
     agentUi: {
+        openFindingsLabel: 'ανοιχτά ευρήματα',
         // B1.5: per-client count of policies no rule can assess yet.
         unassessedPoliciesOne: '1 ασφαλιστήριο χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκε',
         unassessedPoliciesMany: '{count} ασφαλιστήρια χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκαν',
@@ -3828,6 +3829,7 @@ export const el = {
         },
     },
     clientOverview: {
+        linesHeld: 'Γραμμές κάλυψης που κατέχει',
         healthScore: "Δείκτης σχέσης πελάτη",
         healthScoreHint: "Συνδυάζει κάλυψη, ενεργοποίηση λογαριασμού και πρόσφατη επικοινωνία. Δεν αποτελεί αξιολόγηση της επάρκειας ασφάλισης.",
         goodCoverage: "Ενεργή σχέση",

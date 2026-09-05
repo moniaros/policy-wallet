@@ -32,7 +32,6 @@ import { getBranchContent } from "@/lib/insurance/content"
 import { resolveBranchAction } from "@/lib/insurance/content/action-resolvers"
 import { getSelfTaskSpec } from "@/lib/insurance/content/self-tasks"
 import {
-    calculatePolicyHealthScore,
     deriveClaimDeadlines,
     derivePolicyMeta,
     extractPolicySections,
@@ -348,22 +347,6 @@ export function PolicyDetailsClient({
     /** The newest run — its status decides whether any score may be shown. */
     const lastRun = policy.analysisRuns?.[0]
 
-    const health = calculatePolicyHealthScore({
-        // A score is a subtraction from 100, so "no findings because the run
-        // failed" and "no findings because the policy is sound" produce the
-        // same number. Only one of them is a fact. See A1 in
-        // docs/evidence/policy-detail-mobile/.
-        analysisComplete:
-            Boolean(policy.lastAnalyzedAt) &&
-            !policy.acordData?.processingError &&
-            lastRun?.status !== "failed",
-        gapCount: gapReportItems.length,
-        // Not the raw exclusion count — see calculatePolicyHealthScore. Only the
-        // clauses the analysis itself flagged as able to cost the holder.
-        criticalClauseCount: finePrint.filter((c) => c.riskLevel === "critical").length,
-        warningClauseCount: finePrint.filter((c) => c.riskLevel === "warning").length,
-        verified: Boolean(policy.verified),
-    })
 
     const hasCoverageDetails = (() => {
         const sectionKeys = coverageSectionKeys(getCoverageType())
@@ -909,13 +892,10 @@ export function PolicyDetailsClient({
                                     : null
                         }
                         summaryState={storedSummary.state}
-                        health={health}
                         isAnalyzing={isAnalyzing}
                         copy={{
                             summaryTitle: detailsCopy.summaryTitle,
                             summaryAiChip: detailsCopy.summaryAiChip,
-                            healthTitle: t.wallet.healthScore.title,
-                            healthScale: detailsCopy.healthScale,
                             summaryLanguageMismatch: detailsCopy.summaryLanguageMismatch,
                             summaryLanguageMismatchCta: detailsCopy.summaryLanguageMismatchCta,
                             summaryHasUnreadable: detailsCopy.summaryHasUnreadable,
@@ -929,12 +909,6 @@ export function PolicyDetailsClient({
                         // would launder a guess into a verification.
                         unverified={!canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged')}
                         unverifiedNote={t.wallet.review.ownerUnverifiedNote}
-                        methodology={{
-                            title: t.wallet.healthScore.methodologyTitle,
-                            body: t.wallet.healthScore.methodologyBody,
-                            limits: t.wallet.healthScore.methodologyLimits,
-                            notAdvice: t.dashboard.home.scoreMethodologyNotAdvice,
-                        }}
                     />
                 </div>
 

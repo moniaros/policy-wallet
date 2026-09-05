@@ -334,78 +334,8 @@ export function resolveCoverageAbsenceCopy(
     }
 }
 
-export type PolicyHealthLevel = "good" | "moderate" | "attention"
-
-export interface PolicyHealthScore {
-    score: number
-    level: PolicyHealthLevel
-    /**
-     * False when no completed analysis backs the number. Callers MUST NOT
-     * render a score, a level, or a verdict label in that case — see
-     * calculatePolicyHealthScore.
-     */
-    available: boolean
-}
-
-/**
- * Per-policy health signal shown in the detail-page donut.
- * (The portfolio-level ProtectionScore is a separate, user-scoped metric.)
- *
- * It used to deduct 10 points for every EXCLUSION found. Exclusions are not
- * defects — they are the boundary that defines the cover and makes the premium
- * calculable. Every policy has them; this page's own exclusions card says so in
- * as many words («Κάθε ασφαλιστήριο περιλαμβάνει εξαιρέσεις»), directly beneath
- * a donut that had just docked the policy ten points each for having them.
- *
- * The consequences ran the wrong way twice over. A carefully drafted wording
- * that enumerates twelve exclusions scored 0 — "needs attention" — while a vague
- * one listing two scored 80 and read "good": the product rewarded the worse
- * contract. And because the count comes from AI extraction, a BETTER analysis
- * lowered the score; re-running it to get more detail was punished.
- *
- * What actually reflects on a policy is whether something in it is unexpected or
- * leaves the holder exposed. The engine already decides that: open gaps, and
- * fine-print clauses the analysis rated `critical` or `warning`. Those are the
- * inputs now. Confirmed extraction still earns +5, because a verified reading is
- * genuinely worth more than an unverified one.
- */
-export function calculatePolicyHealthScore(input: {
-    gapCount: number
-    /** Fine-print clauses rated `critical` — things that can cost the holder. */
-    criticalClauseCount?: number
-    /** Fine-print clauses rated `warning`. */
-    warningClauseCount?: number
-    verified: boolean
-    /**
-     * Did the analysis that would have produced findings actually complete?
-     *
-     * THE SCORE IS A SUBTRACTION FROM 100. Zero findings therefore reads as a
-     * perfect policy — and zero findings is exactly what a FAILED run leaves
-     * behind. Production rendered «100 · Σε καλή κατάσταση» for a third-party-only
-     * motor policy whose latest run died on a provider spend cap, and «71 · Σε
-     * καλή κατάσταση» for a policy 110 days expired. Both are false statements
-     * of fact, not prominence problems: the number is not "high", it is
-     * unfounded, because nothing looked.
-     *
-     * `false` (or a never-deep-analysed policy) returns `available: false`, and
-     * the UI must render NO score rather than a low-confidence one — a hedge
-     * next to a big number is still a big number.
-     */
-    analysisComplete?: boolean
-}): PolicyHealthScore {
-    // No completed analysis ⇒ no score. Absence of findings is not evidence of
-    // a healthy policy; it is absence of a look.
-    if (input.analysisComplete === false) {
-        return { score: 0, level: "good", available: false }
-    }
-
-    let score = 100
-    score -= Math.max(0, input.gapCount) * 15
-    score -= Math.max(0, input.criticalClauseCount ?? 0) * 10
-    score -= Math.max(0, input.warningClauseCount ?? 0) * 4
-    if (input.verified) score = Math.min(score + 5, 100)
-    score = Math.max(0, Math.min(100, score))
-
-    const level: PolicyHealthLevel = score <= 40 ? "attention" : score <= 70 ? "moderate" : "good"
-    return { score, level, available: true }
-}
+// The per-policy health score (`calculatePolicyHealthScore`, a subtraction from
+// 100 over findings) was removed in Sept 2026 — PW-TRANSPARENCY-02 B1.7. A
+// number of that shape cannot tell "nothing looked" from "nothing wrong"; the
+// findings list carries its provenance (lib/gaps/findings-provenance.ts) and,
+// under B2, its denominator instead.
