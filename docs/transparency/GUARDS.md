@@ -18,6 +18,9 @@ matrix. Status: **present**, **partial** (with what is missing), **not yet appli
 | absence-is-not-reassurance | tests/unit/all-clear-honesty.test.ts; tests/unit/record-status.test.tsx; tests/unit/unauthored-branch-state.test.tsx; tests/unit/empty-state-honesty.test.ts | allclear-basis-free-email.html.txt; allclear-declared-unanalysed-email.html.txt; in-test: the {motor, health, home} × {clean, partial, failed, unanalysed, expired} matrix | every commit | present |
 | composition-denominator-present | tests/unit/coverage-composition.test.tsx | in-test: a component render asserts the denominator element on every line | every commit | present |
 | composition-sums-to-N | tests/unit/coverage-composition.test.tsx | in-test: systematic single-input ablation on every authored branch | every commit | present |
+| finding-order-deterministic (F1) | tests/unit/finding-order-deterministic.test.ts | in-test: an ordering that reads row order is fed the definitions reversed and must fail, and the accessor is exercised with a mocked reversed findMany | every commit | present |
+| dimension-score-absence (F2 / B1.6) | tests/unit/risk-dna-no-scores.test.tsx | risk-dna-score-render.tsx.txt | every commit | present |
+| classified-renders-citation (F5) | tests/unit/provenance-citations-render.test.tsx | provenance-label-without-citation.tsx.txt | every commit | present |
 | indeterminate-rendered-when-nonzero | tests/unit/coverage-composition.test.tsx | in-test: indeterminate 0 hides the segment, 1 and all-indeterminate render it | every commit | present |
 | provenance-map-completeness (build failure on unmapped category) | tests/unit/provenance-skeleton.test.ts | in-test: an invented authored slug is reported | every commit | present |
 | under-review-containment | tests/unit/provenance-skeleton.test.ts | under-review-unfiltered.ts.txt; under-review-filtered.ts.txt | every commit | present |

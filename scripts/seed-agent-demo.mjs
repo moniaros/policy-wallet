@@ -179,6 +179,31 @@ async function main() {
   }
   console.log(`✓ Seeded ${gaps.length} real motor gaps (theft=high, legal=medium).`);
 
+  // F5 (PW-TRANSPARENCY-02): one AUTHORED, citation-backed finding, so the demo
+  // wallet and book show what a classified requirement looks like. The
+  // catalogue decides the definition (npm run align:gap-catalogue); the seed
+  // only reuses it and never authors one — a missing row is reported, not minted.
+  const authored = await db.gapDefinition.findUnique({ where: { slug: "insured_value_above_declared" }, select: { id: true, ruleId: true } });
+  if (authored) {
+    await db.gapInstance.deleteMany({ where: { policyId: policy.id, gapDefinitionId: authored.id } });
+    await db.gapInstance.create({
+      data: {
+        policyId: policy.id, userId: customer.id, gapDefinitionId: authored.id,
+        analysisRunId: demoRun.id, lineOfBusiness: "motor", severity: "low", status: "open",
+        ruleId: authored.ruleId, engineVersion: "seed-agent-demo",
+        ruleInputs: { field: "vehicle.insuredValue", value: 18500, referenceField: "vehicle.estimatedMarketValue", referenceValue: 14200, driftPct: 30.3, thresholdPct: 20, direction: "above" },
+        aiExplanation: "The schedule insures the vehicle for €18,500 while the same document states an estimated market value of €14,200 — about 30% above it.",
+        aiExplanationEl: "Το ασφαλιστήριο ασφαλίζει το όχημα για 18.500 € ενώ το ίδιο έγγραφο δηλώνει εκτιμώμενη εμπορική αξία 14.200 € — περίπου 30% πάνω από αυτήν.",
+        aiSuggestion: "Ask the insurer to explain the basis of the insured value; under Law 2496/1997, Article 17 the insurer is not liable beyond the actual value.",
+        aiSuggestionEl: "Ζητήστε από την ασφαλιστική να εξηγήσει τη βάση του ασφαλισμένου ποσού· κατά το άρθρο 17 του Ν. 2496/1997 ο ασφαλιστής δεν ευθύνεται πέρα από την πραγματική αξία.",
+        detectedAt: new Date(),
+      },
+    });
+    console.log("✓ Seeded 1 authored, citation-backed finding (insured_value_above_declared).");
+  } else {
+    console.log("! insured_value_above_declared is not in gap_definitions — run `npm run align:gap-catalogue -- --apply`; the authored demo finding was skipped.");
+  }
+
   // Belt-and-suspenders: also create an active policy-scoped AccessGrant (page accepts relationship OR grant).
   const scope = `policy:${policy.id}`;
   const grant = await db.accessGrant.findFirst({ where: { granterUserId: customer.id, granteeUserId: agent.id, scope, status: "active" }, select: { id: true } });

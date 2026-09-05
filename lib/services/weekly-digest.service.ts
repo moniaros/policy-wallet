@@ -164,6 +164,8 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             const activeRecs = await getActiveRecommendations(user.id).catch(() => [])
             const topRecommendations = activeRecs.slice(0, 3).map(r => ({
                 title: r.title[lang] || r.title.en,
+                // F5: a classified requirement carries its law and article into the email too.
+                citation: r.citation ? r.citation[lang] : null,
                 urgency: r.urgency,
                 estimatedCostEur: r.estimatedCostEur,
             }))

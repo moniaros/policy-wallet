@@ -10,7 +10,8 @@ import { db } from "@/lib/db"
 import { areaForLob } from "@/lib/protection/domains"
 import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { resolveGapConcept, resolveGapContent } from "@/lib/wallet/gap-report"
-import { classifiedRecommendations } from "@/lib/gaps/gap-rows"
+import { classifiedRecommendations, recommendationCitation } from "@/lib/gaps/gap-rows"
+import type { ProvenanceCitation } from "@/lib/gaps/provenance"
 import type { ProfileGap, GapSeverity } from "./profile-gap-rules"
 import { lobProtectionWeight } from "./protection-score"
 import type { Mitigation, RiskAssessment, RiskConfidence, RiskStatus } from "./risk-types"
@@ -199,6 +200,12 @@ export interface RecommendationOutput extends RecommendationAssessment {
      * advisor weight, it does not remove information.
      */
     gapValidationState: 'probable' | 'confirmed' | 'validated' | null
+    /**
+     * F5: the law/article behind the requirement this recommendation derives
+     * from. Absent or null when it is not gap-derived or the requirement is
+     * still under review. A render site that shows the recommendation shows this.
+     */
+    citation?: ProvenanceCitation | null
 }
 
 // ── Greek market premium estimates ───────────────────────────────────
@@ -938,6 +945,7 @@ export async function getActiveRecommendations(
         status: r.status,
         createdAt: r.createdAt,
         gapValidationState: r.gapInstance?.validationState ?? null,
+        citation: recommendationCitation(r),
         // Null on rows written by the pre-assessment engine; the card renders
         // without a status chip rather than inventing one.
         riskId: r.riskId ?? null,

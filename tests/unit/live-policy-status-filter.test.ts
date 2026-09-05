@@ -332,12 +332,6 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
         count: 1,
         reason: "Agent dashboard gap count scoped by gapsVisibilityWhere. S12.4-fenced; see lib/agent-visibility.ts entry.",
     },
-    "app/api/v1/customers/protection-scores/route.ts": {
-        count: 1,
-        reason:
-            "Existence probe — 'does the agent have ANY visible policy for this customer' — " +
-            "used as a privacy gate, not a portfolio count. S12.4-fenced.",
-    },
     // ── History and record-keeping: non-live rows are still the record ──────
     "lib/services/achievements.service.ts": {
         count: 3,

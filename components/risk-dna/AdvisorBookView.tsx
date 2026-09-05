@@ -155,10 +155,7 @@ export function AdvisorBookView({
                                                     {t("Υποχώρησε", "Moved back")}
                                                 </span>
                                             )}
-                                            <span>
-                                                {t("Εικόνα", "Picture")}:{" "}
-                                                {household.healthIndex === null ? t("άγνωστη", "unknown") : household.healthIndex}
-                                            </span>
+                                            {/* F2: the household index (0-100) is computed, never rendered. */}
                                         </div>
 
                                         <p className="mt-1.5 text-caption leading-relaxed text-black/70 dark:text-white/70 [overflow-wrap:anywhere]">

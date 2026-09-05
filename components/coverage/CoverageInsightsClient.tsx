@@ -2,7 +2,7 @@
 
 import { getTranslations } from "@/lib/i18n"
 import { mayCarryEmphasis, orderByProvenance, provenanceOf } from "@/lib/gaps/provenance"
-import { provenanceLabel } from "@/components/gaps/provenance-label"
+import { provenanceLabelWithCitation } from "@/components/gaps/provenance-label"
 import React, { useMemo, useState } from 'react'
 import {
     Shield,
@@ -256,7 +256,8 @@ export function CoverageInsightsClient({
                 { label: copy.addNote, type: 'secondary' },
                 { label: copy.ignore, type: 'secondary' }
             ],
-            microcopy: provenanceLabel(provenanceOf(gapSlug(gap)), getTranslations(lang).provenance),
+            // F5: the class with its citation where one exists — never the class alone.
+            microcopy: provenanceLabelWithCitation(gapSlug(gap), lang, getTranslations(lang).provenance),
             isPlusFeature: isFreeTier && index >= freeUnlockedLimit,
         }))
     }, [visibleGaps, maxVisibleInsights, lang, isFreeTier, freeUnlockedLimit, copy])

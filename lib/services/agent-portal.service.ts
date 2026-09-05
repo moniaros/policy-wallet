@@ -49,7 +49,6 @@ export interface AgentPortalStats {
     /** Sum of estimatedPremium over the agent's open opportunities (EUR). */
     pipelineEstimateEur: number
     /** Average client protection score (0-100); null when no client is scored yet. */
-    portfolioCompleteness: number | null
 }
 
 export interface AgentPortalData {
@@ -299,9 +298,8 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
             policiesThisMonth,
             recommendedFollowUps,
             pipelineEstimateEur,
-            portfolioCompleteness: computePortfolioCompleteness(
-                [...scoreByClient.values()].filter((s) => Number.isFinite(s))
-            ),
+            // F2 (PW-TRANSPARENCY-02): the averaged protection score left the KPI
+            // strip; nothing renders it, so nothing is computed for it here.
         },
         intelligence,
     }

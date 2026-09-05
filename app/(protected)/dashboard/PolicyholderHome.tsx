@@ -452,6 +452,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         // with a registered quantity («2 άτομα εξαρτώνται…» ← dependants), the
         // shared map names the key so the count metric can compare it.
         reasonCountKey: reasonCountKey(rec),
+        // F5: the requirement's law and article travel with the recommendation.
+        citation: rec.citation ? rec.citation[lang] || rec.citation.en : null,
         urgency: rec.urgency,
         urgencyLabel: urgencyLabels[rec.urgency],
         timingLabel: rec.timing && rec.timing.level !== "no_deadline" ? timingLabels[rec.timing.level] ?? null : null,

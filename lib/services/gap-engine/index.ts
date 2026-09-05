@@ -9,7 +9,7 @@
  * 5. Caches protection score
  *
  * Used by:
- * - GET /api/v1/protection-score (on-demand)
+ * - (the on-demand GET /api/v1/protection-score API was deleted in PW-TRANSPARENCY-02 F4 — no consumer)
  * - GET /api/v1/recommendations (on-demand)
  * - POST /api/v1/jobs/protection-score-refresh (cron)
  * - Coverage insights page (server component)

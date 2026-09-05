@@ -1,0 +1,8 @@
+// PROBE — must turn tests/unit/risk-dna-no-scores.test.tsx red.
+export function Probe({ dimension }: { dimension: { score: number | null } }) {
+    return (
+        <span role="meter" aria-valuenow={dimension.score ?? 0} className={barTone(dimension.score)}>
+            <span data-fact="riskDimension.score">{dimension.score}</span>
+        </span>
+    )
+}

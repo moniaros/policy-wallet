@@ -24,7 +24,7 @@ import { EmptyState } from "@/components/ui/EmptyState"
 import { StatGrid, StatTile } from "@/components/ui/StatTile"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { provenanceOf } from "@/lib/gaps/provenance"
-import { provenanceLabel } from "@/components/gaps/provenance-label"
+import { provenanceLabelWithCitation } from "@/components/gaps/provenance-label"
 import { daysLeftLabel } from "@/lib/wallet/days-left-label"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 
@@ -534,7 +534,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                 return (
                                     <div key={gap.id} className="pw-subcard p-3">
                                         <span data-fact="gap.provenance" data-provenance={prov} className="inline-flex items-center whitespace-nowrap rounded-full border border-border bg-muted px-2 py-0.5 text-caption font-medium text-foreground">
-                                            {provenanceLabel(prov, t.provenance)}
+                                            {provenanceLabelWithCitation((gap as { slug?: string | null }).slug, lang, t.provenance)}
                                         </span>
                                         <p className="mt-2 line-clamp-2 text-sm font-semibold text-foreground">
                                             {gap.title}

@@ -24,8 +24,6 @@ const EXEMPT: Record<string, string> = {
 /** Files that may still read the score record's gapCount, each with the reason and the human item that retires it. */
 const SCORE_GAPCOUNT_EXEMPT: Record<string, string> = {
     "lib/services/gap-engine/index.ts": "computes and caches the score record itself (dormant; H-001 / HANDOFF H3 decide its fate)",
-    "app/api/v1/protection-score/route.ts": "pending deletion — BL-02 / H-T02 (external-consumer check)",
-    "app/api/v1/customers/protection-scores/route.ts": "pending deletion — BL-02 / H-T02",
     "lib/services/compliance.service.ts": "the Art. 15 export: a person receives every stored field of their score record, gapCount included — an export, not a render or a count",
 }
 

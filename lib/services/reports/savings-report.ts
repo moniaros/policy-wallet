@@ -10,7 +10,7 @@ import { getTranslations } from "@/lib/i18n"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrency } from "@/lib/i18n/format"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
-import { excludeUnderReview } from "@/lib/gaps/provenance"
+import { excludeUnderReview, provenanceCitation } from "@/lib/gaps/provenance"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 
 /** Resolve a dotted i18n key ("dashboard.home.recPriorityCritical") from the store. */
@@ -271,6 +271,7 @@ ${gaps.length > 0 ? `
 ${gaps.map((g) => `
 <div class="gap-card">
   <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))}</div>
+  ${(() => { const c = provenanceCitation(g.slug); return c ? `<div class="detail" data-fact="gap.citation">${escapeHtml(L("Νομοθετική απαίτηση", "Legal requirement"))} · ${escapeHtml(L(c.el, c.en))}</div>` : "" })()}
   ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""}
   ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""}
 </div>

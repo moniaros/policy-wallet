@@ -21,10 +21,17 @@ import { AUTHORED_GAP_DEFINITIONS } from "@/lib/gaps/authored-catalogue"
  */
 export type GapProvenance = "legislative" | "contractual" | "market" | "under_review"
 
+/** A citation names the specific law and article (or contract class) — bilingual, with a source URL where one exists. */
+export interface ProvenanceCitation {
+    el: string
+    en: string
+    url: string | null
+}
+
 export interface ProvenanceEntry {
     provenance: GapProvenance
-    /** The law, regulation or contract clause behind the requirement. Null until a human cites one. */
-    citation: string | null
+    /** The law, regulation or contract clause behind the requirement. Null until someone cites one. */
+    citation: ProvenanceCitation | null
     /** Who classified it, and when. Null until the human track does. */
     reviewedBy: string | null
     reviewedAt: string | null
@@ -32,7 +39,42 @@ export interface ProvenanceEntry {
 
 const UNDER_REVIEW: ProvenanceEntry = Object.freeze({ provenance: "under_review", citation: null, reviewedBy: null, reviewedAt: null })
 
-/** Keyed by authored slug. Every value is UNDER_REVIEW until the human track classifies it. */
+/**
+ * F5 (PW-TRANSPARENCY-02 close-out): citation-backed classification only.
+ * A slug is `legislative` here ONLY because the specific law and article can
+ * be named; nothing is `market` in this pass, and anything that cannot be
+ * cited precisely stays `under_review`. The full 29-row review, with the
+ * confidence and the pre-GA legal sign-off gate, is
+ * docs/transparency/PROVENANCE-REVIEW.md.
+ */
+const REVIEWED_BY = "agent, citation-backed — pre-GA legal sign-off pending (docs/transparency/PROVENANCE-REVIEW.md)"
+const REVIEWED_AT = "2026-09-06"
+
+/** Ν. 2496/1997 (ΦΕΚ Α΄ 87/16.5.1997), άρθρο 17 «Υπασφάλιση – Υπερασφάλιση». */
+const LAW_2496_1997_ART_17: ProvenanceEntry = Object.freeze({
+    provenance: "legislative",
+    citation: Object.freeze({
+        el: "Ν. 2496/1997, άρθρο 17 (υπασφάλιση – υπερασφάλιση)",
+        en: "Law 2496/1997, Article 17 (under-insurance and over-insurance)",
+        url: "https://www.lawspot.gr/nomothesia/n-2496-1997/arthro-17-nomos-2496-1997-ypasfalisi-yperasfalisi/",
+    }),
+    reviewedBy: REVIEWED_BY,
+    reviewedAt: REVIEWED_AT,
+})
+
+/** Ν. 4830/2021 (ΦΕΚ Α΄ 169/18.9.2021), άρθρο 9 παρ. 1 περ. β΄ — σήμανση και καταγραφή σκύλου/γάτας στο ΕΜΖΣ. */
+const LAW_4830_2021_ART_9: ProvenanceEntry = Object.freeze({
+    provenance: "legislative",
+    citation: Object.freeze({
+        el: "Ν. 4830/2021, άρθρο 9 παρ. 1 περ. β΄ (σήμανση και καταγραφή στο ΕΜΖΣ)",
+        en: "Law 4830/2021, Article 9(1)(b) (microchipping and registration in the national pet registry)",
+        url: "https://www.e-nomothesia.gr/kat-zoa-suntrophias-prostasia-zoon/nomos-4830-2021-phek-169a-18-9-2021.html",
+    }),
+    reviewedBy: REVIEWED_BY,
+    reviewedAt: REVIEWED_AT,
+})
+
+/** Keyed by authored slug. UNDER_REVIEW unless a specific law and article can be named (F5). */
 export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.freeze({
     // motor
     no_own_damage_cover: UNDER_REVIEW,
@@ -40,7 +82,7 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     no_roadside_assistance: UNDER_REVIEW,
     missing_accident_declaration_phone: UNDER_REVIEW,
     green_card_expiring: UNDER_REVIEW,
-    insured_value_above_declared: UNDER_REVIEW,
+    insured_value_above_declared: LAW_2496_1997_ART_17,
     // motorbike
     moto_no_own_damage_cover: UNDER_REVIEW,
     moto_no_roadside_assistance: UNDER_REVIEW,
@@ -51,7 +93,7 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     no_flood_cover: UNDER_REVIEW,
     no_fire_cover: UNDER_REVIEW,
     missing_enfia_components: UNDER_REVIEW,
-    insured_value_below_rebuild_cost: UNDER_REVIEW,
+    insured_value_below_rebuild_cost: LAW_2496_1997_ART_17,
     // health
     no_direct_billing: UNDER_REVIEW,
     no_annual_checkup: UNDER_REVIEW,
@@ -63,7 +105,7 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     group_no_direct_billing: UNDER_REVIEW,
     // pet
     no_direct_vet_payment: UNDER_REVIEW,
-    missing_microchip_number: UNDER_REVIEW,
+    missing_microchip_number: LAW_4830_2021_ART_9,
     missing_leishmaniasis: UNDER_REVIEW,
     // travel
     no_repatriation_cover: UNDER_REVIEW,
@@ -99,15 +141,40 @@ export function mayCarryEmphasis(p: GapProvenance): boolean {
     return p === "legislative" || p === "contractual"
 }
 
+/**
+ * F1 — the catalogue's declared order. A finding's position within its
+ * provenance class is the position of its rule in the authored catalogue,
+ * never the order the definitions table returned rows in. Unknown slugs sort
+ * after every authored one.
+ */
+const CATALOGUE_INDEX: ReadonlyMap<string, number> = new Map(AUTHORED_GAP_DEFINITIONS.map((d, i) => [d.slug, i]))
+export function catalogueIndexOf(slug: string | null | undefined): number {
+    if (!slug) return Number.POSITIVE_INFINITY
+    return CATALOGUE_INDEX.get(slug) ?? Number.POSITIVE_INFINITY
+}
+/** Provenance class first (B3), then catalogue order. Zero only for the same slug or two unknown slugs. */
+export function compareFindingSlugs(a: string | null | undefined, b: string | null | undefined): number {
+    const rank = PROVENANCE_RANK[provenanceOf(a)] - PROVENANCE_RANK[provenanceOf(b)]
+    if (rank !== 0) return rank
+    const ia = catalogueIndexOf(a), ib = catalogueIndexOf(b)
+    if (ia !== ib) return ia < ib ? -1 : 1
+    return 0
+}
+
+/** The citation behind a classified slug; null for an unknown or under-review one. Render it wherever the class renders. */
+export function provenanceCitation(slug: string | null | undefined): ProvenanceCitation | null {
+    return provenanceEntry(slug)?.citation ?? null
+}
+
 export function unmappedAuthoredSlugs(definitions: ReadonlyArray<{ slug: string }> = AUTHORED_GAP_DEFINITIONS): string[] {
     return definitions.map((d) => d.slug).filter((s) => !(s in GAP_PROVENANCE))
 }
 
-/** Stable: provenance rank first, the caller's order within a class. Severity is not an input. */
+/** Deterministic: provenance class, then the catalogue's declared order; the caller's order only between two unknown slugs. Severity is not an input. */
 export function orderByProvenance<T>(items: readonly T[], slugOf: (item: T) => string | null | undefined): T[] {
     return items
-        .map((item, index) => ({ item, index, rank: PROVENANCE_RANK[provenanceOf(slugOf(item))] }))
-        .sort((a, b) => a.rank - b.rank || a.index - b.index)
+        .map((item, index) => ({ item, index, slug: slugOf(item) }))
+        .sort((a, b) => compareFindingSlugs(a.slug, b.slug) || a.index - b.index)
         .map((x) => x.item)
 }
 

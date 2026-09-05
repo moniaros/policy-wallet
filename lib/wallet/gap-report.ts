@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/nextjs"
 import type { GapSeverity } from "@/lib/gap-detection"
-import { PROVENANCE_RANK, provenanceOf } from "@/lib/gaps/provenance"
+import { compareFindingSlugs, orderByProvenance, provenanceOf } from "@/lib/gaps/provenance"
 
 /**
  * Render-layer presentation of AI-detected coverage gaps.
@@ -90,9 +90,8 @@ export interface GapReportItem {
  * the display keeps its grouping while the paywall hides the rest.
  */
 export function selectFreePreviewGapIds(items: GapReportItem[], count: number): Set<string> {
-    const ranked = items
-        .map((item, index) => ({ id: item.id, rank: PROVENANCE_RANK[provenanceOf(item.slug)], index }))
-        .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    // F1: provenance class, then the catalogue's declared order — never row order.
+    const ranked = orderByProvenance(items, (item) => item.slug).map((item) => ({ id: item.id }))
     return new Set(ranked.slice(0, Math.max(0, count)).map((entry) => entry.id))
 }
 
@@ -1108,7 +1107,11 @@ export function groupGapsByCoverageArea(
     }
     return COVERAGE_AREA_ORDER.filter((area) => groups.has(area)).map((area) => ({
         area,
+        // F1: within an area, provenance class then catalogue order; the
+        // known-first / Greek-title rule only separates slugs the catalogue does not know.
         items: (groups.get(area) || []).sort((a, b) => {
+            const byCatalogue = compareFindingSlugs(a.slug, b.slug)
+            if (byCatalogue !== 0) return byCatalogue
             if (a.content.known !== b.content.known) return a.content.known ? -1 : 1
             return a.content.titleEl.localeCompare(b.content.titleEl, "el")
         }),

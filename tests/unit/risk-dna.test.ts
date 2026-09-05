@@ -530,7 +530,10 @@ describe("the new surfaces are mobile-first and accessible", () => {
         // implementation would forbid documenting the reasoning.
         const code = DNA.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")
         expect(code).not.toMatch(/<svg[^>]*viewBox|polygon|radar/i)
-        expect(code).toMatch(/role="meter"/)
+        // F2 (PW-TRANSPARENCY-02): no bars either — the row is the dimension's
+        // name and the B3 under-review label, text only.
+        expect(code).not.toMatch(/role="meter"/)
+        expect(code).toMatch(/data-fact="riskDimension\.provenance"/)
     })
 
     it("never lays out an ungated multi-column grid", () => {
@@ -554,17 +557,17 @@ describe("the new surfaces are mobile-first and accessible", () => {
         expect(BOOK).toMatch(/overflow-wrap:anywhere/)
     })
 
-    it("exposes the bar to assistive tech, not just the colour", () => {
-        const meter = DNA.slice(DNA.indexOf('role="meter"'), DNA.indexOf('role="meter"') + 400)
-        expect(meter).toMatch(/aria-valuenow/)
-        expect(meter).toMatch(/aria-valuemin/)
-        expect(meter).toMatch(/aria-valuemax/)
-        expect(meter).toMatch(/aria-label/)
+    it("renders no bar, no number and no threshold colour for a dimension (F2)", () => {
+        // What used to be a meter with aria-valuenow is gone with the number it
+        // exposed; the guard for the whole universe is risk-dna-no-scores.test.tsx.
+        expect(DNA).not.toMatch(/aria-valuenow|barTone\(|riskDimension\.score|ifActioned\.statement/)
+        expect(DNA).toMatch(/provenance\.underReview\b/)
+        expect(DNA).toMatch(/provenance\.underReviewDisclosure/)
     })
 
     it("says which dimensions do not apply rather than scoring them zero", () => {
         expect(DNA).toMatch(/notApplicable/)
-        expect(DNA).toMatch(/Unscored because there is no exposure/)
+        expect(DNA).toMatch(/Not assessed because there is no exposure/)
     })
 
     it("marks every decorative icon hidden", () => {
@@ -631,7 +634,7 @@ describe("the information architecture holds", () => {
     it("hides every panel that would render empty", () => {
         // A page of empty scaffolding is the worst possible first impression,
         // and it is what a new customer sees unless each panel self-hides.
-        expect(DNA).toMatch(/if \(scored\.length === 0\) return null/)
+        expect(DNA).toMatch(/if \(applicable\.length === 0\) return null/)
         expect(VIEW).toMatch(/household\.dependantCount > 0/)
         expect(VIEW).toMatch(/movingTrends\.length > 0 &&/)
         expect(VIEW).toMatch(/predictions\.length > 0 &&/)

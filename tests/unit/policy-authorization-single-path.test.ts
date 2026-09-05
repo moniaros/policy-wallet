@@ -213,8 +213,6 @@ const SINGLE_PATH_EXEMPT: Record<string, string> = {
     // living relationship for the upload arm; agent-visibility.test.ts pins it.
     "app/api/v1/agent/policies/[id]/branded-report/route.ts":
         "agent visibility set — isPolicyVisibleToAgent + getLiveCustomerUserIds",
-    "app/api/v1/customers/protection-scores/route.ts":
-        "agent visibility set — getAgentPolicyVisibilityWhere",
 
     // Deliberately NARROWER than getPolicyAccess: this opens a Stripe checkout
     // against the caller's own card to unlock their own report. An advisor with

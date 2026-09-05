@@ -4,7 +4,6 @@ import {
     AlertTriangle,
     CalendarClock,
     FileUp,
-    Gauge,
     ListChecks,
     Mail,
     TrendingUp,
@@ -51,24 +50,9 @@ export function AgentKpiStrip({ stats, className = "" }: AgentKpiStripProps) {
             <StatTile href="/customers" countKey="agent.policiesThisMonth" icon={FileUp} accent="positive" label={copy.policiesThisMonth} value={String(stats.policiesThisMonth)} />
             <StatTile href="/tasks" countKey="agent.followUps" icon={ListChecks} accent="warning" label={copy.followUps} value={String(stats.recommendedFollowUps)} />
             <StatTile href="/opportunities" countKey="agent.pipelineEur" icon={TrendingUp} accent="positive" label={copy.pipeline} value={money.format(stats.pipelineEstimateEur)} />
-            <StatTile
-                href="/customers"
-                countKey="agent.portfolioCompleteness"
-                icon={Gauge}
-                accent={
-                    stats.portfolioCompleteness === null
-                        ? "neutral"
-                        : stats.portfolioCompleteness >= 70
-                            ? "positive"
-                            : stats.portfolioCompleteness >= 40
-                                ? "warning"
-                                : "critical"
-                }
-                label={copy.completeness}
-                value={stats.portfolioCompleteness !== null ? `${stats.portfolioCompleteness}/100` : "—"}
-                hint={stats.portfolioCompleteness === null ? copy.noScores : undefined}
-            />
+            {/* F2 (PW-TRANSPARENCY-02): the «Μέσος δείκτης προστασίας» tile — the
+                average of the customers' protection scores, threshold-coloured —
+                is gone. A score is not a verdict until an underwriter says so. */}
             </StatGrid>
-        </section>
-    )
+        </section>    )
 }
