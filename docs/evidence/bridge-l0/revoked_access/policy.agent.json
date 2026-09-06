@@ -1,0 +1,16 @@
+{
+  "side": "agent",
+  "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+  "label": "policy",
+  "state": "revoked_access",
+  "status": 200,
+  "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+  "facts": {},
+  "counts": {
+    "notification.unreadCount": "3"
+  },
+  "text": "Μετάβαση στο περιεχόμενο ΝΠ PolicyWallet 3 PolicyWallet Πρακτορείο Πίνακας ελέγχου Το χαρτοφυλάκιό σας Πελάτες Ευκαιρίες Ανανεώσεις Προμήθειες Ερωτηματολόγια Κέντρο ενεργειών Πληροφορίες Ομάδα Ειδοποιήσεις 3 Προφίλ Συμβούλου Λογαριασμός Ρυθμίσεις Χρειάζεστε βοήθεια; Ανοίξτε το κέντρο βοήθειας ή στείλτε μήνυμα στον σύμβουλό σας. Κέντρο βοήθειας Προτιμήσεις ΕΛ EN Αποσύνδεση Η σελίδα δεν βρέθηκε Η σελίδα ή το ασφαλιστήριο που ψάχνετε δεν υπάρχει ή έχει μετακινηθεί. The page or policy you are looking for doesn’t exist or has been moved. Αρχική · Home",
+  "hscroll": false,
+  "lang": "el",
+  "screenshot": "/Users/yannismoniaros/Workspace/policywallet/policy-wallet/docs/evidence/bridge-l0/revoked_access/policy.agent.png"
+}

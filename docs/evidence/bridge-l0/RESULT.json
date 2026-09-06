@@ -1,0 +1,951 @@
+[
+  {
+    "state": "failed_run",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "facts": 12,
+      "counts": 5,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "facts": 5,
+      "counts": 4,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 5,
+    "factDivergences": [],
+    "countPairs": 3,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "gap.provenanceGroup",
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.underReviewCount"
+    ],
+    "countOnlyAgent": [],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "failed_run",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 14,
+      "counts": 11,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "healthy",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "facts": 11,
+      "counts": 5,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "facts": 4,
+      "counts": 4,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 4,
+    "factDivergences": [],
+    "countPairs": 3,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "gap.provenanceGroup",
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.underReviewCount"
+    ],
+    "countOnlyAgent": [],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "healthy",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 14,
+      "counts": 11,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "pre_plan",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "facts": 10,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "facts": 3,
+      "counts": 1,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 3,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "gap.provenanceGroup",
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.underReviewCount"
+    ],
+    "countOnlyAgent": [],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "pre_plan",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 14,
+      "counts": 11,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "stale_catalogue",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "facts": 12,
+      "counts": 5,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "facts": 5,
+      "counts": 4,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 5,
+    "factDivergences": [],
+    "countPairs": 3,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "gap.provenanceGroup",
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.underReviewCount"
+    ],
+    "countOnlyAgent": [],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "stale_catalogue",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 14,
+      "counts": 11,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "unauthored_branch",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpynvvu0003t3q9apdx1tb6",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpynvvu0003t3q9apdx1tb6",
+      "facts": 7,
+      "counts": 1,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpynvvu0003t3q9apdx1tb6",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpynvvu0003t3q9apdx1tb6",
+      "facts": 2,
+      "counts": 1,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 1,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status"
+    ],
+    "onlyAgent": [
+      "gap.findingsProvenance"
+    ],
+    "countOnlyCustomer": [],
+    "countOnlyAgent": [],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "unauthored_branch",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 20,
+      "counts": 13,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.daysRemaining#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.number#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.branchPremium#cyber",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "policy.renewalCheckpointCount#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "portfolio.unassessedCount",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ],
+    "rebuiltFromCaptures": true
+  },
+  {
+    "state": "expired",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpyrhti000bt3q9bcql0vqb",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpyrhti000bt3q9bcql0vqb",
+      "facts": 9,
+      "counts": 1,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpyrhti000bt3q9bcql0vqb",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpyrhti000bt3q9bcql0vqb",
+      "facts": 4,
+      "counts": 4,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 1,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.premiumAmount",
+      "policy.startDate",
+      "policy.status"
+    ],
+    "onlyAgent": [
+      "composition.coverage",
+      "composition.lines",
+      "gap.findingsProvenance"
+    ],
+    "countOnlyCustomer": [],
+    "countOnlyAgent": [
+      "composition.coverageChecked",
+      "composition.covered",
+      "composition.notCovered"
+    ]
+  },
+  {
+    "state": "expired",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 20,
+      "counts": 14,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.daysRemaining#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.number#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.branchPremium#cyber",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "policy.renewalCheckpointCount#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.expiredCount",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "portfolio.unassessedCount",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ]
+  },
+  {
+    "state": "revoked_access",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "facts": 11,
+      "counts": 5,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "facts": 0,
+      "counts": 1,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "composition.coverage",
+      "composition.lines",
+      "gap.findingsProvenance",
+      "gap.provenanceGroup",
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status",
+      "record.status"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "composition.coverageChecked",
+      "composition.covered",
+      "composition.notCovered",
+      "gap.underReviewCount"
+    ],
+    "countOnlyAgent": []
+  },
+  {
+    "state": "revoked_access",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 20,
+      "counts": 14,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.daysRemaining#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.number#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.branchPremium#cyber",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "policy.renewalCheckpointCount#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.expiredCount",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "portfolio.unassessedCount",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ]
+  },
+  {
+    "state": "empty_book",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "facts": 11,
+      "counts": 5,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "facts": 4,
+      "counts": 4,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 4,
+    "factDivergences": [],
+    "countPairs": 3,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "gap.provenanceGroup",
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.underReviewCount"
+    ],
+    "countOnlyAgent": []
+  },
+  {
+    "state": "empty_book",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 20,
+      "counts": 14,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.daysRemaining#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.number#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.branchPremium#cyber",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "policy.renewalCheckpointCount#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.expiredCount",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "portfolio.unassessedCount",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ]
+  },
+  {
+    "state": "single_client_book",
+    "label": "policy",
+    "customer": {
+      "url": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/wallet/cmtpy2h630001zlc9z430dp3c",
+      "facts": 11,
+      "counts": 5,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+      "facts": 4,
+      "counts": 4,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 4,
+    "factDivergences": [],
+    "countPairs": 3,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "gap.provenanceGroup",
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.underReviewCount"
+    ],
+    "countOnlyAgent": []
+  },
+  {
+    "state": "single_client_book",
+    "label": "home",
+    "customer": {
+      "url": "/dashboard",
+      "status": 200,
+      "finalUrl": "/dashboard",
+      "facts": 20,
+      "counts": 14,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "agent": {
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "status": 200,
+      "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+      "facts": 0,
+      "counts": 2,
+      "hscroll": false,
+      "lang": "el"
+    },
+    "factPairs": 0,
+    "factDivergences": [],
+    "countPairs": 0,
+    "countDivergences": [],
+    "onlyCustomer": [
+      "asset.identifier#cmtnjtdah002g1jokck72edxx",
+      "asset.identifier#cmtpy2h630001zlc9z430dp3c",
+      "gap.citation",
+      "gap.underReviewOmitted",
+      "policy.daysRemaining#cmtnjtdah002g1jokck72edxx",
+      "policy.daysRemaining#cmtpy2h630001zlc9z430dp3c",
+      "policy.daysRemaining#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.endDate#cmtnjtdah002g1jokck72edxx",
+      "policy.endDate#cmtpy2h630001zlc9z430dp3c",
+      "policy.endDate#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.insurer#cmtnjtdah002g1jokck72edxx",
+      "policy.insurer#cmtpy2h630001zlc9z430dp3c",
+      "policy.insurer#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.number#cmtpynvvu0003t3q9apdx1tb6",
+      "policy.premium#cmtnjtdah002g1jokck72edxx",
+      "policy.premium#cmtpy2h630001zlc9z430dp3c",
+      "policy.premium#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.branchPremium#cyber",
+      "portfolio.branchPremium#motor",
+      "portfolio.totalAnnualPremium"
+    ],
+    "onlyAgent": [],
+    "countOnlyCustomer": [
+      "gap.provenanceCount#legislative",
+      "household.dependantCount",
+      "plan.stepsDone",
+      "plan.stepsTotal",
+      "policy.renewalCheckpointCount#cmtnjtdah002g1jokck72edxx",
+      "policy.renewalCheckpointCount#cmtpy2h630001zlc9z430dp3c",
+      "policy.renewalCheckpointCount#cmtpynvvu0003t3q9apdx1tb6",
+      "portfolio.expiredCount",
+      "portfolio.neverAnalysedCount",
+      "portfolio.policyCount",
+      "portfolio.renewalsNext180Count",
+      "portfolio.unassessedCount",
+      "recommendation.openCount"
+    ],
+    "countOnlyAgent": [
+      "client.linesHeldCount"
+    ]
+  }
+]
