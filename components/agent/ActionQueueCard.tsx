@@ -18,6 +18,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatRelativeDate, formatCurrencyCompact } from "@/lib/agent/format"
 import type { ActionQueueItem, ActionQueueItemType, GapsSummary, OneTapAction } from "./types"
+import { resolveLocale } from "@/lib/i18n/format"
 
 const ACTION_ICONS: Record<ActionQueueItemType, React.ElementType> = {
     expiring_policy: Calendar,
@@ -70,7 +71,7 @@ function describeItem(
         const branch = normalizeBranch(item.lineOfBusiness)
         return t.agentDashboard.queueExpiring
             .replace("{lob}", branch.label[lang])
-            .replace("{date}", new Date(item.dueDate).toLocaleDateString(lang === "el" ? "el-GR" : "en-GB"))
+            .replace("{date}", new Date(item.dueDate).toLocaleDateString(resolveLocale(lang)))
     }
     if (item.type === "incomplete_profile") return t.agentDashboard.queueNoPolicies
     return item.description

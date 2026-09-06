@@ -15,10 +15,11 @@ import {
     policyRowIdentity,
 } from "@/lib/wallet/policy-identity"
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function WalletPage() {
     const { dbUser } = await getAuthenticatedUser()
-    const language = (dbUser.preferredLanguage as 'el' | 'en') || 'el'
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
     const roleCopy = getRoleCopy(language)
 
     const entitlements = await resolveUserEntitlements(dbUser.id)

@@ -4,10 +4,11 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getTranslations } from "@/lib/i18n"
 import { getNotificationData } from "./actions"
 import { NotificationsClient } from "@/components/notifications/NotificationsClient"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function NotificationsPage() {
     const { dbUser } = await getAuthenticatedUser()
-    const t = getTranslations((dbUser.preferredLanguage as 'en' | 'el') || 'en')
+    const t = getTranslations(resolveUserLanguage(dbUser.preferredLanguage))
 
     const data = await getNotificationData()
     if (!data) {
@@ -42,7 +43,7 @@ export default async function NotificationsPage() {
                     related_policy_name: e.related_policy_name,
                 })),
             }}
-            userLanguage={dbUser.preferredLanguage || 'en'}
+            userLanguage={resolveUserLanguage(dbUser.preferredLanguage)}
         />
     )
 }

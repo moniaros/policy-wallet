@@ -9,6 +9,7 @@ import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { FEATURE_GATES, getUpgradeCopy, type FeatureKey } from "@/lib/monetization"
 import { UpgradeSuccessTracker } from "@/components/monetization/UpgradeSuccessTracker"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * Post-checkout landing. Verifies the Stripe session server-side and
@@ -61,7 +62,7 @@ export default async function UpgradeSuccessPage({
 }) {
     const { session_id: sessionId, return: returnParam, feature } = await searchParams
     const { dbUser } = await getAuthenticatedUser()
-    const language = dbUser.preferredLanguage === "en" ? "en" : "el"
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
     const returnParamSafe = sanitizeReturnPath(returnParam)
 
     // Per-feature success copy (already authored per gate) when the upgrade was

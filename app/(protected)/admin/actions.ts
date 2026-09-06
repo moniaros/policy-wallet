@@ -28,6 +28,7 @@ import { z } from "zod"
 import { createAdminClient, getSupabaseAuthUserByEmail } from "@/lib/supabase/admin"
 import { Prisma } from "@prisma/client"
 import { countGapHistory } from "@/lib/gaps/gap-rows"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * DASHBOARD METRICS
@@ -865,7 +866,7 @@ async function sendDsrLifecycleEmail(
 ) {
     try {
         if (!recipient || !recipient.email || isAnonymizedEmail(recipient.email)) return
-        const language: "el" | "en" = recipient.preferredLanguage === "en" ? "en" : "el"
+        const language: "el" | "en" = resolveUserLanguage(recipient.preferredLanguage)
         const template = build(language)
         const { sendEmail } = await import("@/lib/email/email-service")
         await sendEmail({

@@ -27,6 +27,7 @@ import { provenanceOf } from "@/lib/gaps/provenance"
 import { provenanceLabelWithCitation } from "@/components/gaps/provenance-label"
 import { daysLeftLabel } from "@/lib/wallet/days-left-label"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
+import { resolveLocale } from "@/lib/i18n/format"
 
 interface InsightsClientProps {
     data: InsightsData
@@ -37,7 +38,7 @@ interface InsightsClientProps {
 /* ─── Helpers ─────────────────────────────────────── */
 
 const fmt = (n: number, lang: string) =>
-    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
+    new Intl.NumberFormat(resolveLocale(lang), {
         style: "currency",
         currency: "EUR",
         minimumFractionDigits: 0,
@@ -45,7 +46,7 @@ const fmt = (n: number, lang: string) =>
     }).format(n)
 
 const fmtCompact = (n: number, lang: string) =>
-    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
+    new Intl.NumberFormat(resolveLocale(lang), {
         style: "currency",
         currency: "EUR",
         notation: "compact",
@@ -54,7 +55,7 @@ const fmtCompact = (n: number, lang: string) =>
     }).format(n)
 
 const fmtNum = (n: number, lang: string) =>
-    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
+    new Intl.NumberFormat(resolveLocale(lang), {
         minimumFractionDigits: 0,
         maximumFractionDigits: 1,
     }).format(n)
@@ -166,8 +167,9 @@ function DonutChart({
 
 export function InsightsClient({ data }: InsightsClientProps) {
     const { language, t } = useLanguage()
-    const locale = language === "el" ? "el-GR" : "en-GB"
-    const lang = language || "en"
+    const locale = resolveLocale(language)
+    // One locale per request (Goal 1): the provider is seeded from the stored preference; no local fallback.
+    const lang = language
     const p = t.insights.practice
 
     /* KPI tiles — the shared fact cell; the accent tints the glyph only. */

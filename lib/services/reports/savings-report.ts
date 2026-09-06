@@ -8,7 +8,7 @@
 
 import { getTranslations } from "@/lib/i18n"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
-import { formatCurrency } from "@/lib/i18n/format"
+import { formatCurrency, resolveLocale } from "@/lib/i18n/format"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { excludeUnderReview, provenanceCitation } from "@/lib/gaps/provenance"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
@@ -131,7 +131,8 @@ export function generateSavingsReportHtml(
             // `language` — so a Greek branded report went out to the client with
             // Greek headings and English dates. Athens-pinned like every other
             // contractual-date render (raw zone shifts the day at Athens midnight).
-            return new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB", {
+            const dateLocale = resolveLocale(language)
+            return new Date(iso).toLocaleDateString(dateLocale, {
                 year: "numeric",
                 month: "long",
                 day: "numeric",

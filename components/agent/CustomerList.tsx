@@ -21,6 +21,7 @@ import { EmptyState, CustomerPreviewRow } from "@/components/ui/EmptyState"
 import { ConsentStatusBadge, type ConsentStatus } from "@/components/ui/ConsentStatusBadge"
 import { TableShell } from "@/components/ui/TableShell"
 import { RowCheckbox } from "@/components/ui/form"
+import { resolveLocale } from "@/lib/i18n/format"
 
 /**
  * The activation pill a customer row wears.
@@ -128,7 +129,7 @@ export function CustomerList({
         if (diffDays === 0) return roleCopy.customerList.today
         if (diffDays === 1) return roleCopy.customerList.yesterday
         if (diffDays < 7) return roleCopy.customerList.daysAgo(diffDays)
-        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-GB")
+        return date.toLocaleDateString(resolveLocale(language))
     }
 
     const ACTION_LABELS: Record<string, string> = {
@@ -170,7 +171,7 @@ export function CustomerList({
 
     const formatRenewal = (iso: string | null | undefined) => {
         if (!iso) return "—"
-        return new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")
+        return new Date(iso).toLocaleDateString(resolveLocale(language))
     }
 
     const renewalSoon = (iso: string | null | undefined) => {

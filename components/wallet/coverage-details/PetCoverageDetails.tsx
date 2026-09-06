@@ -1,6 +1,6 @@
 "use client"
 
-import { formatCurrency } from "@/lib/i18n/format"
+import { formatCurrency, resolveLocale } from "@/lib/i18n/format"
 import {
   CheckCircle2,
   XCircle,
@@ -201,7 +201,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
                 <span className="text-black/60 dark:text-white/65">{wp.type || "-"}</span>
                 <span className="text-black dark:text-white font-medium">
                   {wp.endDate
-                    ? `${copy.endsOn} ${formatPolicyDate(wp.endDate, language === "el" ? "el-GR" : "en-GB")}`
+                    ? `${copy.endsOn} ${formatPolicyDate(wp.endDate, resolveLocale(language))}`
                     : wp.durationDays
                       ? `${wp.durationDays} ${copy.daysRemaining}`
                       : "-"}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Trophy, Lock, Sparkles } from "lucide-react"
+import { resolveLocale } from "@/lib/i18n/format"
 
 interface AchievementItem {
     id: string
@@ -55,7 +56,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
     const formatDate = (dateStr: string | null) => {
         if (!dateStr) return ""
         return new Date(dateStr).toLocaleDateString(
-            language === "el" ? "el-GR" : "en-GB",
+            resolveLocale(language),
             { month: "short", day: "numeric", year: "numeric" }
         )
     }

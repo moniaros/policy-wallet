@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
-import { formatCurrency } from "@/lib/i18n/format"
+import { formatCurrency, resolveLocale } from "@/lib/i18n/format"
 
 import { formatPolicyDate } from "@/lib/wallet/policy-detail"
 interface HealthCoverageDetailsProps {
@@ -189,7 +189,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
                 <span className="text-black/60 dark:text-white/65">{wp.type || "-"}</span>
                 <span className="text-black dark:text-white font-medium">
                   {wp.endDate
-                    ? `${copy.endsOn} ${formatPolicyDate(wp.endDate, language === "el" ? "el-GR" : "en-GB")}`
+                    ? `${copy.endsOn} ${formatPolicyDate(wp.endDate, resolveLocale(language))}`
                     : wp.durationDays
                       ? `${wp.durationDays} ${copy.daysRemaining}`
                       : "-"}

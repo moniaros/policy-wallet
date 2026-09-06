@@ -5,6 +5,7 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { parseRoles } from "@/lib/api-auth"
 import { getAdvisorBook } from "@/lib/services/risk-dna/book"
 import { AdvisorBookView } from "@/components/risk-dna/AdvisorBookView"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function AdvisorBookPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -12,7 +13,7 @@ export default async function AdvisorBookPage() {
     // Advisor surface. A policyholder reaching it would see other households.
     if (!roles.includes("agent") && !roles.includes("admin")) redirect("/dashboard")
 
-    const language = (dbUser.preferredLanguage || "en") as "en" | "el"
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
     const book = await getAdvisorBook(dbUser.id)
 
     return (

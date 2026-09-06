@@ -15,6 +15,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { BranchEmptyState } from "@/components/branches/BranchEmptyState"
 import { calendarDaysUntil, effectivePolicyStatus, resolvePolicyLifecycle } from "@/lib/policy-status"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * Calendar days until a date, in Athens — not a duration in 24-hour blocks.
@@ -85,7 +86,7 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
     if (!branch) notFound()
 
     const { dbUser } = await getAuthenticatedUser()
-    const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
+    const lang: 'el' | 'en' = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(lang)
     const content = getBranchContent(branch.id)
     const BranchIcon = getBranchIcon(branch.id)

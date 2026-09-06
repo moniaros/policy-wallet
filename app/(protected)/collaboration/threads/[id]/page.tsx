@@ -12,6 +12,7 @@ import type { DocumentRequestData, ProposalData } from "@/components/collaborati
 import { getTranslations } from "@/lib/i18n"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 export default async function CollaborationThreadPage({
     params,
 }: {
@@ -21,7 +22,7 @@ export default async function CollaborationThreadPage({
     const { dbUser } = await getAuthenticatedUser()
 
     const thread = await collaborationService.getThreadDetail(dbUser.id, dbUser.roles, id)
-    const t = getTranslations(dbUser.preferredLanguage === "en" ? "en" : "el")
+    const t =getTranslations(resolveUserLanguage(dbUser.preferredLanguage))
     if (!thread) notFound()
 
     const viewerRole =

@@ -16,6 +16,7 @@ import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { mergePolicyRecords } from "@/lib/services/policy-merge.service"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { deleteFile } from "@/lib/storage"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * Recompute the OWNER's gaps + protection score after an admin changes their
@@ -154,7 +155,7 @@ export async function requeuePolicy(policyId: string): Promise<PolicyActionResul
             return { ok: false, error: "Owner has not granted AI-processing consent; cannot re-analyze." }
         }
 
-        const language = policy.owner?.preferredLanguage === "en" ? "en" : "el"
+        const language = resolveUserLanguage(policy.owner?.preferredLanguage)
         const queued = await enqueueAnalysisRun(run.id, language)
 
         await logAdminAction(

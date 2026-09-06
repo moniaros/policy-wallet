@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
-import { formatCurrency } from "@/lib/i18n/format"
+import { formatCurrency, resolveLocale } from "@/lib/i18n/format"
 import { calendarDaysUntil } from "@/lib/policy-status"
 import { motorSection } from "@/lib/wallet/coverage-sections"
 import { parsePolicyDate, formatPolicyDate } from "@/lib/wallet/policy-detail"
@@ -229,7 +229,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             <div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.greenCard ? <GlossaryHint hint={hints.greenCard} /> : motorCopy.greenCard}</span>
               <p className="text-xs text-muted-foreground">
-                {copy.expires}: {formatPolicyDate(motor.greenCardExpiry, language === "el" ? "el-GR" : "en-GB")}
+                {copy.expires}: {formatPolicyDate(motor.greenCardExpiry, resolveLocale(language))}
               </p>
             </div>
           </div>

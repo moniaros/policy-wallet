@@ -28,6 +28,7 @@ import {
     sumInsuredLabel,
     type PolicyReviewData,
 } from "@/lib/wallet/policy-review"
+import { resolveLocale } from "@/lib/i18n/format"
 
 type EditableField =
     | "insurerName"
@@ -77,7 +78,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
     const [skippedFields, setSkippedFields] = useState<Partial<Record<EditableField, boolean>>>({})
     const [confirmAttempted, setConfirmAttempted] = useState(false)
 
-    const locale = language === "el" ? "el-GR" : "en-GB"
+    const locale = resolveLocale(language)
     const pick = (obj: { en: string; el: string } | undefined) =>
         obj ? obj[language === "el" ? "el" : "en"] || obj.en : ""
 

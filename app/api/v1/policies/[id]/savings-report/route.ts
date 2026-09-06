@@ -8,6 +8,7 @@ import { generateSavingsReportHtml } from "@/lib/services/reports/savings-report
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { getTranslations } from "@/lib/i18n"
 import { readLiveGapRows } from "@/lib/gaps/gap-rows"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
 
@@ -82,7 +83,7 @@ export const GET = withApiGuard(
 
         // B0.3: the report names the run its findings came from and states a
         // failed latest attempt — the prose run and the rows' run can differ.
-        const language = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+        const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
         const latestAttempt = await db.policyAnalysisRun.findFirst({
             where: { policyId },
             orderBy: { createdAt: "desc" },

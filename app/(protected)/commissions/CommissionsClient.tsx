@@ -10,7 +10,7 @@ import type { CommissionSummary } from "./actions"
 import { TableShell } from "@/components/ui/TableShell"
 
 import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
-import { formatDate } from "@/lib/i18n/format"
+import { formatDate, resolveLocale } from "@/lib/i18n/format"
 const copy = {
     en: {
         title: "Commission Tracker",
@@ -73,7 +73,7 @@ export function CommissionsClient({ data }: Props) {
     )
 
     const fmt = (n: number) =>
-        new Intl.NumberFormat(language === "el" ? "el-GR" : "en-GB", {
+        new Intl.NumberFormat(resolveLocale(language), {
             style: "currency",
             currency: "EUR",
             minimumFractionDigits: 0,

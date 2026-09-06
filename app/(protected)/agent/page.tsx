@@ -8,10 +8,11 @@ import { redirect } from "next/navigation"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 import { isAgentVerified } from "@/lib/agent/verification"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function AgentPage() {
     const { dbUser } = await getAuthenticatedUser()
-    const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'el' | 'en') || 'el')
+    const roleCopy = getRoleCopy(resolveUserLanguage(dbUser.preferredLanguage))
 
     // Fetch policies for navigation context
     const policies = await db.policy.findMany({

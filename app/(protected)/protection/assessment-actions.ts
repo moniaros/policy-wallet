@@ -17,6 +17,7 @@ import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { applyFactWrites, existingFacts, profileFactData } from "@/lib/services/protection-profile/fact-writes"
 import { areaQuestions } from "@/components/protection/area-detail-model"
 import { factWritesForAnswer, valueSchemaFor } from "@/components/protection/assessment-answer"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * One answer to one assessment question, on the area detail
@@ -77,7 +78,7 @@ export type AnswerAssessmentResult =
 
 export async function answerAssessmentFactor(input: unknown): Promise<AnswerAssessmentResult> {
     const { dbUser } = await getAuthenticatedUser()
-    const language: "el" | "en" = dbUser.preferredLanguage === "en" ? "en" : "el"
+    const language: "el" | "en" = resolveUserLanguage(dbUser.preferredLanguage)
 
     const parsed = AnswerInput.safeParse(input)
     if (!parsed.success) return { ok: false, error: "INVALID_INPUT" }

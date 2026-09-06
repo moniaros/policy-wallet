@@ -11,6 +11,7 @@ import {
     CheckCheck,
     Clock,
 } from "lucide-react"
+import { resolveLocale } from "@/lib/i18n/format"
 
 interface Message {
     id: string
@@ -149,7 +150,7 @@ export function InlineMessagesTab({
         if (diffMins < 1) return t("Τώρα", "Now")
         if (diffMins < 60) return `${diffMins}m`
         if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h`
-        return d.toLocaleDateString(language === "el" ? "el-GR" : "en-GB", { month: "short", day: "numeric" })
+        return d.toLocaleDateString(resolveLocale(language), { month: "short", day: "numeric" })
     }
 
     return (

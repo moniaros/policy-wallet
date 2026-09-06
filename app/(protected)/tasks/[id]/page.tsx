@@ -7,6 +7,7 @@ import { db } from "@/lib/db"
 import { QuestionnaireForm } from "@/components/tasks/QuestionnaireForm"
 import { CheckCircle2 } from "lucide-react"
 import { getTranslations } from "@/lib/i18n"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 interface TemplateQuestionOption {
     label: string
@@ -36,7 +37,7 @@ export default async function TaskDetailPage({
 }) {
     const { id } = await params
     const { dbUser } = await getAuthenticatedUser()
-    const lang = (dbUser.preferredLanguage as 'en' | 'el') || 'el'
+    const lang = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(lang)
 
     const instance = await db.questionnaireInstance.findUnique({

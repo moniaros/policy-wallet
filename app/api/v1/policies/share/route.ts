@@ -8,6 +8,7 @@ import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
 import { withApiGuard } from '@/lib/api-guard'
 import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const sharePolicySchema = z.object({
     policyId: z.string().min(1),
@@ -87,7 +88,7 @@ export const POST = withApiGuard(
                             token: invite.token,
                             inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
                             policyNumber: policy.policyNumber,
-                            language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+                            language: resolveUserLanguage(authResult.dbUser.preferredLanguage),
                         })
                         emailDelivered = emailResult.success
                     } catch (emailError) {
@@ -137,7 +138,7 @@ export const POST = withApiGuard(
                     to: email,
                     inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
                     policyNumber: policy.policyNumber,
-                    language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+                    language: resolveUserLanguage(authResult.dbUser.preferredLanguage),
                 })
                 emailDelivered = emailResult.success
             } catch (emailError) {

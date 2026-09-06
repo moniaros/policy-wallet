@@ -27,6 +27,7 @@ import {
     type BatchFailure,
 } from "@/lib/wallet/batch-upload-errors"
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
+import { resolveLocale } from "@/lib/i18n/format"
 
 /** Fields a row must carry before it can be saved. Mirrors the extract route. */
 const REQUIRED_FIELDS = ["insurerName", "policyNumber", "startDate", "endDate"] as const
@@ -822,7 +823,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                                             </div>
                                                             <div className="col-span-2">
                                                                 <span className="text-muted-foreground">{copy.periodLabel}: </span>
-                                                                <span className="text-foreground">{formatPolicyDate(row.data.startDate, language === "el" ? "el-GR" : "en-GB")} → {formatPolicyDate(row.data.endDate, language === "el" ? "el-GR" : "en-GB")}</span>
+                                                                <span className="text-foreground">{formatPolicyDate(row.data.startDate, resolveLocale(language))} → {formatPolicyDate(row.data.endDate, resolveLocale(language))}</span>
                                                             </div>
                                                         </div>
                                                     </div>

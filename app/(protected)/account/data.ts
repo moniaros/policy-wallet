@@ -9,6 +9,7 @@ import { startOfAthensMonth } from "@/lib/policy-status"
 import { NOTIFICATION_PREFERENCE_GROUPS } from "@/lib/notifications/preference-registry"
 import { streamReachesOut } from "@/lib/notifications/preference-channels"
 import type { EntitlementLimits, PlanTier } from "@/types/subscription-entitlements"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * Per-section loaders.
@@ -37,7 +38,7 @@ export async function getProfileData(): Promise<ProfileData> {
         name: dbUser.name,
         email: dbUser.email ?? "",
         phone: dbUser.phoneNumber,
-        language: (dbUser.preferredLanguage as "el" | "en") || "el",
+        language: resolveUserLanguage(dbUser.preferredLanguage),
         roles: dbUser.roles,
         createdAt: dbUser.createdAt.toISOString(),
     }

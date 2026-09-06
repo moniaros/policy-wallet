@@ -2,7 +2,8 @@ import { el } from './translations/el'
 import { en } from './translations/en'
 import { fixMojibakeObject } from './fix-mojibake'
 
-export type Language = 'el' | 'en'
+import type { Language } from '@/lib/i18n/types'
+export type { Language } from '@/lib/i18n/types'
 
 const translations = {
     el,

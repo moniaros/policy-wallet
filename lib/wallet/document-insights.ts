@@ -3,6 +3,7 @@ import { policyRowIdentity } from "./policy-identity"
 import type { Policy } from "@/components/wallet/types"
 import { parseDocumentDate } from "@/lib/dates/document-date"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
+import { resolveLocale } from "@/lib/i18n/format"
 
 type Lang = "el" | "en"
 
@@ -44,7 +45,7 @@ export function getDocumentPolicySummary(
     language: Lang,
     policyTypeLabel: string
 ): DocumentPolicySummary {
-    const locale = language === "el" ? "el-GR" : "en-GB"
+    const locale = resolveLocale(language)
     const vehicle = (policy.acordData as any)?.vehicle
     const property = (policy.acordData as any)?.property
     const acordPolicy = (policy.acordData as any)?.policy

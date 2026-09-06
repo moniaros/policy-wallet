@@ -21,6 +21,9 @@ matrix. Status: **present**, **partial** (with what is missing), **not yet appli
 | finding-order-deterministic (F1) | tests/unit/finding-order-deterministic.test.ts | in-test: an ordering that reads row order is fed the definitions reversed and must fail, and the accessor is exercised with a mocked reversed findMany | every commit | present |
 | dimension-score-absence (F2 / B1.6) | tests/unit/risk-dna-no-scores.test.tsx | risk-dna-score-render.tsx.txt | every commit | present |
 | classified-renders-citation (F5) | tests/unit/provenance-citations-render.test.tsx | provenance-label-without-citation.tsx.txt | every commit | present |
+| one-locale-per-request (PW-CONTENT-01 G1) | tests/unit/one-locale-per-request.test.tsx | layout-unseeded-provider.tsx.txt | every commit | present |
+| no-component-locale-fallback (PW-CONTENT-01 G1) | tests/unit/no-component-locale-fallback.test.ts | component-locale-fallback.tsx.txt | every commit | present |
+| formatted-value-locale-matches-copy (PW-CONTENT-01 G1) | tests/unit/formatted-value-locale-matches-copy.test.tsx | hardcoded-locale-format.tsx.txt | every commit | present |
 | indeterminate-rendered-when-nonzero | tests/unit/coverage-composition.test.tsx | in-test: indeterminate 0 hides the segment, 1 and all-indeterminate render it | every commit | present |
 | provenance-map-completeness (build failure on unmapped category) | tests/unit/provenance-skeleton.test.ts | in-test: an invented authored slug is reported | every commit | present |
 | under-review-containment | tests/unit/provenance-skeleton.test.ts | under-review-unfiltered.ts.txt; under-review-filtered.ts.txt | every commit | present |

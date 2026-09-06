@@ -1,6 +1,8 @@
 import { getAuthenticatedUser, emailVerificationRequired } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
+import { LanguageProvider } from "@/contexts/LanguageContext"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function OnboardingLayout({
     children,
@@ -17,6 +19,7 @@ export default async function OnboardingLayout({
 
     return (
         // AiConsentModal (shared with the protected tree) reads `t`.
+        <LanguageProvider initialLanguage={resolveUserLanguage(dbUser.preferredLanguage)}>
         <TranslationsProvider>
             {/* A landmark, not a plain div: onboarding is the first screen a
                 new user meets, and it had no skip-link destination. */}
@@ -24,5 +27,6 @@ export default async function OnboardingLayout({
                 {children}
             </main>
         </TranslationsProvider>
+        </LanguageProvider>
     )
 }

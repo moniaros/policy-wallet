@@ -49,6 +49,7 @@ import {
 import { nextStep } from "@/lib/onboarding/protection-profile/steps"
 import { ProtectionProfileStepSchema, type ProtectionAnswers } from "@/lib/validations/protection-profile"
 import type { PlanTier } from "@/types/subscription-entitlements"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 type Json = Prisma.InputJsonValue
 
@@ -168,7 +169,7 @@ export interface ProtectionProfileCompletion {
 export async function completeProtectionProfile(): Promise<ProtectionProfileCompletion> {
     const { dbUser } = await getAuthenticatedUser()
     const userId = dbUser.id
-    const language = dbUser.preferredLanguage === "en" ? "en" : "el"
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
 
     const [profile, row] = await Promise.all([
         db.policyholderProfile.findUnique({ where: { userId } }),
@@ -305,7 +306,7 @@ function mapRefreshFrom(bundle: Awaited<ReturnType<typeof loadAttentionAreas>>):
 export async function recordUploadChoice(choice: "done" | "later"): Promise<ProtectionMapRefresh | null> {
     const { dbUser } = await getAuthenticatedUser()
     const userId = dbUser.id
-    const language = dbUser.preferredLanguage === "en" ? "en" : "el"
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
     await db.protectionProfile.upsert({
         where: { userId },
         create: { userId, uploadChoice: choice },
@@ -388,7 +389,7 @@ export async function getProtectionOnboardingState(): Promise<ProtectionOnboardi
         ...resolveProtectionOnboardingState(row),
         name: firstNameLabel(dbUser.name),
         hasAiConsent: Boolean(dbUser.aiProcessingConsentVersion),
-        language: dbUser.preferredLanguage === "en" ? "en" : "el",
+        language:resolveUserLanguage(dbUser.preferredLanguage),
         finished: objectOf(profile?.preferences).onboardingCompleted === true,
         tier: entitlements.tier,
     }

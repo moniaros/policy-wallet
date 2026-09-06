@@ -3,6 +3,7 @@ import { withApiGuard } from "@/lib/api-guard"
 import { db } from "@/lib/db"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { LEGAL_POLICY_VERSIONS, parseConsentCookie, type ConsentType } from "@/lib/compliance/consent"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export const GET = withApiGuard(
     {
@@ -28,7 +29,7 @@ export const GET = withApiGuard(
         let responseLanguage: "el" | "en" = cookieConsent?.locale || "el"
 
         if (authUser) {
-            responseLanguage = (authUser.dbUser.preferredLanguage as "el" | "en") || responseLanguage
+            responseLanguage = resolveUserLanguage(authUser.dbUser.preferredLanguage)
 
             const userConsentRows = await db.consentAudit.findMany({
                 where: { userId: authUser.dbUser.id },

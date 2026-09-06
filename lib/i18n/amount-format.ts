@@ -1,3 +1,4 @@
+import { resolveLocale } from "@/lib/i18n/format"
 /**
  * Display formatting for AI-extracted amount strings (coverage limits,
  * deductibles, perk usage limits). Extraction preserves the document's raw
@@ -25,7 +26,7 @@ export function formatExtractedAmount(
     if (/^\d+(\.\d{1,2})?$/.test(numericText)) {
         const value = Number(numericText)
         if (Number.isFinite(value)) {
-            const formatted = value.toLocaleString(lang === 'el' ? 'el-GR' : 'en-GB', {
+            const formatted = value.toLocaleString(resolveLocale(lang), {
                 maximumFractionDigits: 2,
             })
             return `${formatted} €`

@@ -5,6 +5,7 @@ import { Wallet } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CardHead } from '@/components/dashboard/home/CardHead'
 import { premiumExclusionParts } from '@/lib/wallet/premium-exclusion-note'
+import { resolveLocale } from "@/lib/i18n/format"
 
 interface StatusSummaryProps {
     activeCount: number
@@ -52,7 +53,7 @@ export function StatusSummary({
     // is extracted from each document, so a policy written in sterling is
     // representable and the detail page already renders it as such. Hardcoding
     // EUR here labelled whatever was summed as euros.
-    const premiumLabel = new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-GB', {
+    const premiumLabel = new Intl.NumberFormat(resolveLocale(language), {
         style: 'currency',
         currency: premiumCurrency || 'EUR',
         maximumFractionDigits: 0,

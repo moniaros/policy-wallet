@@ -7,6 +7,7 @@ import type { RecentNotification } from "@/lib/notifications/watcher"
 import { resolveStoredNotification } from "@/lib/notifications/stored-content"
 import { policyLabel, scrubRenderableText } from "@/lib/wallet/policy-identity"
 import { groupNotificationEventRows } from "@/lib/notifications/event-grouping"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export async function getNotificationData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -83,7 +84,7 @@ export async function getNotificationData() {
     const uiUser = {
         user_id: user.id,
         email: user.email!, // assumed as per types
-        preferred_language: (authResult.dbUser.preferredLanguage || "en") as "en" | "el",
+        preferred_language: resolveUserLanguage(authResult.dbUser.preferredLanguage),
         role: user.roles,
         created_at: user.createdAt.toISOString()
     }
@@ -223,7 +224,7 @@ export async function getRecentNotifications(limit = 10): Promise<{ items: Recen
         },
     })
 
-    const readerLang = authResult.dbUser.preferredLanguage === "en" ? "en" as const : "el" as const
+    const readerLang = resolveUserLanguage(authResult.dbUser.preferredLanguage)
     const items: RecentNotification[] = events.map((e) => {
         // Same render-boundary scrub as getNotificationData above: these
         // strings become live toasts, and a stale stored row must not put a

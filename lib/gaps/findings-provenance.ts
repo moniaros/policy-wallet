@@ -12,6 +12,7 @@
  * plus the two dates a reader needs. `tests/unit/findings-provenance.test.ts`
  * pins the matrix and the surfaces that must render it.
  */
+import { resolveLocale } from "@/lib/i18n/format"
 
 export type FindingsProvenanceState =
     /** No attempt has ever completed; nothing has been checked. */
@@ -186,7 +187,7 @@ export interface ProvenanceLine {
 
 export function formatProvenanceDate(date: Date | null, locale: "el" | "en"): string {
     if (!date) return locale === "el" ? "άγνωστη ημερομηνία" : "unknown date"
-    return new Intl.DateTimeFormat(locale === "el" ? "el-GR" : "en-GB", {
+    return new Intl.DateTimeFormat(resolveLocale(locale), {
         day: "numeric",
         month: "long",
         year: "numeric",

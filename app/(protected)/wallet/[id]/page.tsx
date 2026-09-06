@@ -31,6 +31,7 @@ import {
     type PortfolioPolicyFacts,
 } from "@/lib/services/gap-engine/portfolio-rules"
 import { displayPersonName, policyLabel } from '@/lib/wallet/policy-identity'
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function PolicyDetailPage({
     params
@@ -39,7 +40,7 @@ export default async function PolicyDetailPage({
 }) {
     const { id: policyId } = await params
     const { dbUser } = await getAuthenticatedUser()
-    const language = (dbUser.preferredLanguage as 'el' | 'en') || 'el'
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(language)
 
     const [policy, sharesResult, aiUsageStats, entitlements, renewalRows] = await Promise.all([

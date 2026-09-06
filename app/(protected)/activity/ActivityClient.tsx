@@ -19,6 +19,7 @@ import Link from "next/link"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { resolveLocale } from "@/lib/i18n/format"
 
 interface ActivityClientProps {
     events: ActivityEvent[]
@@ -47,7 +48,7 @@ const formatRelativeTime = (date: Date, t: any, lang: string) => {
     if (diffInDays === 1) return t.activity.yesterday
     if (diffInDays < 7) return t.activity.daysAgo.replace('{d}', diffInDays.toString())
     
-    return new Intl.DateTimeFormat(lang === "el" ? "el-GR" : "en-GB", {
+    return new Intl.DateTimeFormat(resolveLocale(lang), {
         month: "short", day: "numeric"
     }).format(d)
 }
@@ -174,7 +175,7 @@ export function ActivityClient({ events, isAgent = false }: ActivityClientProps)
                                                     </p>
                                                     <span className="flex shrink-0 items-center gap-1 text-caption text-muted-foreground">
                                                         <Clock className="h-3 w-3" aria-hidden="true" />
-                                                        {formatRelativeTime(event.timestamp, t, language || "en")}
+                                                        {formatRelativeTime(event.timestamp, t, language)}
                                                     </span>
                                                 </div>
                                                 <p className="mt-0.5 text-sm text-muted-foreground">

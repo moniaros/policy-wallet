@@ -265,7 +265,7 @@ export function AppShell({
                         onClick={() => handleNavigate(roleHomeHref)}
                         className="flex h-11 items-center rounded-lg px-2 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
-                        <PolicyWalletLogo size="sm" language={user.preferred_language || 'el'} />
+                        <PolicyWalletLogo size="sm" language={language} />
                     </Link>
 
                     {/* Notifications. This was an empty 40px spacer "kept balanced for
@@ -363,7 +363,7 @@ export function AppShell({
                             {/* h-11 wrapper for the same reason the top-header logo
                                 link has one: the md wordmark is 40px tall on its own. */}
                             <Link href={roleHomeHref} onClick={() => handleNavigate(roleHomeHref)} className="flex h-11 items-center rounded-lg hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                                <PolicyWalletLogo size="md" language={user.preferred_language || 'el'} />
+                                <PolicyWalletLogo size="md" language={language} />
                             </Link>
                             <button
                                 onClick={() => setSidebarOpen(false)}

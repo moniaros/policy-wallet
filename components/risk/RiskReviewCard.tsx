@@ -5,6 +5,7 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { completeRiskReview, dismissRiskReview } from "@/app/(protected)/dashboard/risk-review-actions"
+import { resolveLocale } from "@/lib/i18n/format"
 
 export interface RiskReviewCardProps {
     review: {
@@ -43,7 +44,7 @@ export function RiskReviewCard({ review, label, reason }: RiskReviewCardProps) {
 
     const title = language === "el" ? label.el : label.en
     const due = new Date(review.dueAt)
-    const dueLabel = due.toLocaleDateString(language === "el" ? "el-GR" : "en-GB", {
+    const dueLabel = due.toLocaleDateString(resolveLocale(language), {
         day: "numeric",
         month: "short",
         timeZone: "Europe/Athens",

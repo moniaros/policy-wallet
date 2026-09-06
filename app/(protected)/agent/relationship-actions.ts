@@ -17,6 +17,7 @@ import { logger } from "@/lib/logger"
 import { absoluteUrl } from "@/lib/seo/site"
 import { INVITE_EXPIRY_DAYS, daysFromNow } from "@/lib/constants/time"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 type TerminationResult = { success: true } | { success: false; error: string }
 
@@ -176,7 +177,7 @@ export async function inviteAdvisorByEmail(rawEmail: string): Promise<InviteAdvi
             to: email,
             token: invite.token,
             inviterName: dbUser.name || dbUser.email,
-            language: (dbUser.preferredLanguage as "el" | "en") || "en",
+            language: resolveUserLanguage(dbUser.preferredLanguage),
         })
         emailDelivered = result.success
     } catch (error) {

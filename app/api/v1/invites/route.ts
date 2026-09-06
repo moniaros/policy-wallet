@@ -6,6 +6,7 @@ import { requireApiUser } from "@/lib/api-auth"
 import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const InviteSchema = z.object({
     invitee_email: z.string().email(),
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
                 to: invitee_email,
                 token: invite.token,
                 inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
-                language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+                language: resolveUserLanguage(authResult.dbUser.preferredLanguage),
             })
             emailQueued = Boolean(emailResult.success)
         } catch (emailError) {

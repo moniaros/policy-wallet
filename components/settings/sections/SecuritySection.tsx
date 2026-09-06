@@ -12,6 +12,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { ChangePasswordModal } from "@/components/settings/ChangePasswordModal"
 import { signOutEverywhere, signOutOtherDevices } from "@/app/(protected)/account/security-actions"
 import type { SecurityData } from "@/app/(protected)/account/data"
+import { resolveLocale } from "@/lib/i18n/format"
 
 /**
  * What we can honestly say about this account's security.
@@ -41,7 +42,7 @@ export function SecuritySection({ data }: { data: SecurityData }) {
     const [busy, setBusy] = useState<null | "others">(null)
 
     const formatDateTime = (iso: string) =>
-        new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB", {
+        new Date(iso).toLocaleDateString(resolveLocale(language), {
             day: "numeric",
             month: "short",
             year: "numeric",

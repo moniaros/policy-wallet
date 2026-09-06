@@ -1,0 +1,5 @@
+// PROBE — must turn tests/unit/formatted-value-locale-matches-copy.test.tsx red:
+// a Greek-copy card that formats its date with a hardcoded English locale.
+export function Probe({ at }: { at: Date }) {
+    return <p>Ευρήματα από την ανάλυση της {at.toLocaleDateString("en-US")}</p>
+}

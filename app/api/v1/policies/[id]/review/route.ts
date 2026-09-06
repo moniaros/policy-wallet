@@ -7,6 +7,7 @@ import { after } from "next/server"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { msFromNow, COMPLETION_ESTIMATE_MS } from "@/lib/constants/time"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const policyReviewParamsSchema = z.object({
     id: z.string().min(1),
@@ -92,7 +93,7 @@ export const POST = withApiGuard(
                 )
             }
 
-            const reviewLanguage = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+            const reviewLanguage = resolveUserLanguage(authResult.dbUser.preferredLanguage)
             const queued = await enqueueAnalysisRun(run.id, reviewLanguage)
             if (!queued) {
                 after(async () => {
