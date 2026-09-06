@@ -1,0 +1,2 @@
+// PROBE — must turn tests/unit/authored-rule-inputs.test.ts red: a rule whose inputs cannot be declared statically.
+export const probe = { slug: 'probe_low_limit', lineOfBusiness: 'home', detectionLogic: { rules: [{ type: 'low_limit', threshold: 50000 }], operator: 'AND' } }

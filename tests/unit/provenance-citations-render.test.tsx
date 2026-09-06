@@ -52,7 +52,7 @@ export function rendersClassWithoutCitation(src: string): boolean {
 describe("F5 — the map: classified means cited", () => {
     it("every classified entry cites its instrument in both languages, with reviewer, date and source URL; market only on a named public source", () => {
         const entries = Object.entries(GAP_PROVENANCE)
-        expect(entries.length).toBe(29)
+        expect(entries.length).toBe(40) // 29 + Goal 5's renters and home-contents rules
         for (const [slug, e] of entries) {
             if (e.provenance === "under_review") {
                 expect(e.citation, slug).toBeNull()

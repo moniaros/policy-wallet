@@ -167,6 +167,18 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     no_repatriation_cover: UNDER_REVIEW,
     no_trip_cancellation_cover: UNDER_REVIEW,
     missing_emergency_assistance_phone: UNDER_REVIEW,
+    // renters + home contents (PW-CONTENT-01 Goal 5): authored for the denominator; classification is Goal 2's job
+    renters_scope_not_recorded: UNDER_REVIEW,
+    renters_contents_sum_not_recorded: UNDER_REVIEW,
+    renters_no_fire_cover: UNDER_REVIEW,
+    renters_no_earthquake_cover: UNDER_REVIEW,
+    renters_no_flood_cover: UNDER_REVIEW,
+    renters_theft_limit_not_recorded: UNDER_REVIEW,
+    renters_valuables_not_itemised: UNDER_REVIEW,
+    renters_no_technical_assistance_phone: UNDER_REVIEW,
+    home_scope_not_recorded: UNDER_REVIEW,
+    home_insured_value_not_recorded: UNDER_REVIEW,
+    home_valuables_not_itemised: UNDER_REVIEW,
     // life
     no_beneficiaries_recorded: UNDER_REVIEW,
 })

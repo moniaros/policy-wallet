@@ -123,6 +123,7 @@ ACCURACY RULES:
 - premiumAmount is the premium the customer PAYS for the policy term (Ολικά Ασφάλιστρα / Πληρωτέο Ποσό, including taxes and fees). It is NEVER the sum insured or a coverage limit (ασφαλιζόμενο κεφάλαιο, όριο κάλυψης). If the document shows an installment plan, report the total premium for the term and capture the plan in premiumFrequency.
 - lineOfBusiness MUST be exactly one of: ${WRITE_BRANCH_IDS.join(", ")}.
 - In acordData, populate ONLY the section matching the detected lineOfBusiness — never fill sections for coverage the policy does not have.
+- renters (a tenant's contents / liability policy) is a PROPERTY line: fill the property section (contentsVsStructure, insuredValue, theftCoverageLimit, fireCoverageIncluded, earthquakeCoverageIncluded, floodCoverageIncluded, technicalAssistancePhone) and insuredItems where valuables are listed — never vehicle or health.
 
 LANGUAGE:
 - Plain string fields: keep the document's original language (Greek stays Greek).

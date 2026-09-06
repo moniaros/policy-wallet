@@ -632,4 +632,170 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
         },
         isActive: true
     },
+    // ── PW-CONTENT-01 Goal 5 — renters (new write branch) and the home contents questions ──
+    {
+        slug: 'renters_scope_not_recorded',
+        name: 'Renters: cover scope not recorded',
+        title: 'Δεν καταγράφεται αν η κάλυψη αφορά περιεχόμενο, κτίριο ή και τα δύο',
+        description: 'Το ασφαλιστήριο ενοικιαστή δεν δηλώνει ρητά αν ασφαλίζει το περιεχόμενο, το κτίριο ή και τα δύο. Χωρίς αυτό δεν διαβάζεται τι ακριβώς προστατεύεται.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.contentsVsStructure', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_contents_sum_not_recorded',
+        name: 'Renters: contents sum insured not recorded',
+        title: 'Δεν καταγράφεται ασφαλισμένο κεφάλαιο περιεχομένου',
+        description: 'Δεν καταγράφεται το ποσό για το οποίο ασφαλίζεται το περιεχόμενο. Είναι το πρώτο νούμερο που χρειάζεται μια δήλωση ζημιάς.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.insuredValue', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_no_fire_cover',
+        name: 'Renters: fire cover not included',
+        title: 'Δεν περιλαμβάνεται κάλυψη πυρκαγιάς',
+        description: 'Το έγγραφο δηλώνει ότι το περιεχόμενο δεν καλύπτεται για πυρκαγιά.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.fireCoverageIncluded', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_no_earthquake_cover',
+        name: 'Renters: earthquake cover not included',
+        title: 'Δεν περιλαμβάνεται κάλυψη σεισμού',
+        description: 'Το έγγραφο δηλώνει ότι το περιεχόμενο δεν καλύπτεται για σεισμό.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.earthquakeCoverageIncluded', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_no_flood_cover',
+        name: 'Renters: flood cover not included',
+        title: 'Δεν περιλαμβάνεται κάλυψη πλημμύρας',
+        description: 'Το έγγραφο δηλώνει ότι το περιεχόμενο δεν καλύπτεται για πλημμύρα.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.floodCoverageIncluded', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_theft_limit_not_recorded',
+        name: 'Renters: theft limit not recorded',
+        title: 'Δεν καταγράφεται όριο κάλυψης κλοπής',
+        description: 'Δεν καταγράφεται όριο για την κάλυψη κλοπής περιεχομένου — δεν διαβάζεται μέχρι πού φτάνει η κάλυψη.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.theftCoverageLimit', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_valuables_not_itemised',
+        name: 'Renters: valuables not itemised',
+        title: 'Δεν καταγράφονται αντικείμενα αξίας ξεχωριστά',
+        description: 'Το έγγραφο δεν απαριθμεί αντικείμενα αξίας με δική τους περιγραφή και αξία. Όπου υπάρχει όριο ανά αντικείμενο, αυτό μετρά.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'insuredItems', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_no_technical_assistance_phone',
+        name: 'Renters: technical assistance number not recorded',
+        title: 'Δεν καταγράφεται τηλέφωνο τεχνικής βοήθειας',
+        description: 'Δεν καταγράφεται αριθμός τεχνικής βοήθειας για βλάβες και έκτακτα περιστατικά στην κατοικία.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.technicalAssistancePhone', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'home_scope_not_recorded',
+        name: 'Home: cover scope not recorded',
+        title: 'Δεν καταγράφεται αν η κάλυψη αφορά κτίριο, περιεχόμενο ή και τα δύο',
+        description: 'Το ασφαλιστήριο κατοικίας δεν δηλώνει ρητά αν ασφαλίζει το κτίριο, το περιεχόμενο ή και τα δύο.',
+        lineOfBusiness: 'home',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.contentsVsStructure', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'home_insured_value_not_recorded',
+        name: 'Home: sum insured not recorded',
+        title: 'Δεν καταγράφεται ασφαλισμένο κεφάλαιο',
+        description: 'Δεν καταγράφεται το ποσό για το οποίο ασφαλίζεται η κατοικία ή το περιεχόμενό της.',
+        lineOfBusiness: 'home',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.insuredValue', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'home_valuables_not_itemised',
+        name: 'Home: valuables not itemised',
+        title: 'Δεν καταγράφονται αντικείμενα αξίας ξεχωριστά',
+        description: 'Το έγγραφο δεν απαριθμεί αντικείμενα αξίας με δική τους περιγραφή και αξία.',
+        lineOfBusiness: 'home',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'insuredItems', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    }
 ]

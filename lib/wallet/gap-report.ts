@@ -785,6 +785,73 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "exclusion",
         coverageArea: "property",
     },
+    // ── PW-CONTENT-01 Goal 5 — renters + home contents rules ──
+    "renters-scope-not-recorded": {
+        titleEl: "Δεν καταγράφεται αν η κάλυψη αφορά περιεχόμενο, κτίριο ή και τα δύο",
+        titleEn: "Cover scope not recorded",
+        mechanic: "other",
+        coverageArea: "property",
+    },
+    "renters-contents-sum-not-recorded": {
+        titleEl: "Δεν καταγράφεται ασφαλισμένο κεφάλαιο περιεχομένου",
+        titleEn: "Contents sum insured not recorded",
+        mechanic: "other",
+        coverageArea: "property",
+    },
+    "renters-no-fire-cover": {
+        titleEl: "Δεν περιλαμβάνεται κάλυψη πυρκαγιάς",
+        titleEn: "Fire cover not included",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    "renters-no-earthquake-cover": {
+        titleEl: "Δεν περιλαμβάνεται κάλυψη σεισμού",
+        titleEn: "Earthquake cover not included",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    "renters-no-flood-cover": {
+        titleEl: "Δεν περιλαμβάνεται κάλυψη πλημμύρας",
+        titleEn: "Flood cover not included",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    "renters-theft-limit-not-recorded": {
+        titleEl: "Δεν καταγράφεται όριο κάλυψης κλοπής",
+        titleEn: "Theft limit not recorded",
+        mechanic: "other",
+        coverageArea: "property",
+    },
+    "renters-valuables-not-itemised": {
+        titleEl: "Δεν καταγράφονται αντικείμενα αξίας ξεχωριστά",
+        titleEn: "Valuables not itemised",
+        mechanic: "other",
+        coverageArea: "property",
+    },
+    "renters-no-technical-assistance-phone": {
+        titleEl: "Δεν καταγράφεται τηλέφωνο τεχνικής βοήθειας",
+        titleEn: "Technical assistance number not recorded",
+        mechanic: "other",
+        coverageArea: "property",
+    },
+    "home-scope-not-recorded": {
+        titleEl: "Δεν καταγράφεται αν η κάλυψη αφορά κτίριο, περιεχόμενο ή και τα δύο",
+        titleEn: "Cover scope not recorded",
+        mechanic: "other",
+        coverageArea: "property",
+    },
+    "home-insured-value-not-recorded": {
+        titleEl: "Δεν καταγράφεται ασφαλισμένο κεφάλαιο",
+        titleEn: "Sum insured not recorded",
+        mechanic: "other",
+        coverageArea: "property",
+    },
+    "home-valuables-not-itemised": {
+        titleEl: "Δεν καταγράφονται αντικείμενα αξίας ξεχωριστά",
+        titleEn: "Valuables not itemised",
+        mechanic: "other",
+        coverageArea: "property",
+    },
     "insured-value-below-rebuild-cost": {
         concept: "insured-value-below-rebuild-cost",
         titleEl: "Το ασφαλισμένο ποσό είναι κάτω από το κόστος ανακατασκευής",

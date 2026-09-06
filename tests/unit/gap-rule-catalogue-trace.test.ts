@@ -248,6 +248,26 @@ const TRACE: Record<string, Case[]> = {
             fires: true,
         },
     ],
+    // ── PW-CONTENT-01 Goal 5 — renters + home contents ──
+    renters_scope_not_recorded: recordedFieldCases("property.contentsVsStructure", "renters_scope_not_recorded", "recorded"),
+    renters_contents_sum_not_recorded: recordedFieldCases("property.insuredValue", "renters_contents_sum_not_recorded", 35000),
+    renters_no_fire_cover: booleanCoverCases("property.fireCoverageIncluded", "renters_no_fire_cover"),
+    renters_no_earthquake_cover: booleanCoverCases("property.earthquakeCoverageIncluded", "renters_no_earthquake_cover"),
+    renters_no_flood_cover: booleanCoverCases("property.floodCoverageIncluded", "renters_no_flood_cover"),
+    renters_theft_limit_not_recorded: recordedFieldCases("property.theftCoverageLimit", "renters_theft_limit_not_recorded", 35000),
+    renters_valuables_not_itemised: [
+        { name: "renters_valuables_not_itemised: no items listed", acord: { policy: {} }, fires: true },
+        { name: "renters_valuables_not_itemised: empty list is still nothing itemised", acord: { insuredItems: [] }, fires: true },
+        { name: "renters_valuables_not_itemised: one valuable itemised", acord: { insuredItems: [{ description: "Ρολόι", agreedValue: 2500 }] }, fires: false },
+    ],
+    renters_no_technical_assistance_phone: recordedFieldCases("property.technicalAssistancePhone", "renters_no_technical_assistance_phone", "recorded"),
+    home_scope_not_recorded: recordedFieldCases("property.contentsVsStructure", "home_scope_not_recorded", "recorded"),
+    home_insured_value_not_recorded: recordedFieldCases("property.insuredValue", "home_insured_value_not_recorded", 35000),
+    home_valuables_not_itemised: [
+        { name: "home_valuables_not_itemised: no items listed", acord: { policy: {} }, fires: true },
+        { name: "home_valuables_not_itemised: empty list is still nothing itemised", acord: { insuredItems: [] }, fires: true },
+        { name: "home_valuables_not_itemised: one valuable itemised", acord: { insuredItems: [{ description: "Ρολόι", agreedValue: 2500 }] }, fires: false },
+    ],
 }
 
 const bySlug = new Map(AUTHORED_GAP_DEFINITIONS.map((d) => [d.slug, d]))

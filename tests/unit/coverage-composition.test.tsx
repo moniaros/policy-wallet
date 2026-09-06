@@ -43,6 +43,10 @@ function setPath(target: Record<string, unknown>, path: string, value: unknown) 
     cursor[parts[parts.length - 1]] = value
 }
 
+function getPath(obj: Record<string, unknown>, path: string): unknown {
+    return path.split(".").reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), obj)
+}
+
 function fullFixture(branch: string): { acord: Record<string, unknown>; inputs: string[] } {
     const acord: Record<string, unknown> = {}
     const inputs: string[] = []
@@ -54,7 +58,8 @@ function fullFixture(branch: string): { acord: Record<string, unknown>; inputs: 
                 inputs.push(p)
                 if (rule.type === "date_within_days") setPath(acord, p, "2030-01-01")
                 else if (rule.operator === "value_drift") setPath(acord, p, 10000)
-                else if (rule.operator === "missing" || rule.operator === "all_missing") setPath(acord, p, p.endsWith("beneficiaries") ? [{ name: "x" }] : "recorded")
+                // a recording rule may share a path with a value rule (property.insuredValue): never overwrite a value already set
+                else if (rule.operator === "missing" || rule.operator === "all_missing") { if (getPath(acord, p) === undefined) setPath(acord, p, p.endsWith("beneficiaries") || p === "insuredItems" ? [{ name: "x", description: "x" }] : "recorded") }
                 else setPath(acord, p, true)
             }
             if (rule.referenceField) {
@@ -73,10 +78,10 @@ function planFor(branch: string) {
 const BRANCHES = [...new Set(AUTHORED_GAP_DEFINITIONS.map((d) => d.lineOfBusiness))]
 
 describe("rule questions and inputs", () => {
-    it("every authored rule is classifiable and declares its inputs; 20 coverage, 9 recording", () => {
+    it("every authored rule is classifiable and declares its inputs; 23 coverage, 17 recording (29 + Goal 5's 11)", () => {
         const questions = AUTHORED_GAP_DEFINITIONS.map((d) => classifyRuleQuestion(d.detectionLogic))
-        expect(questions.filter((q) => q === "coverage")).toHaveLength(20)
-        expect(questions.filter((q) => q === "recording")).toHaveLength(9)
+        expect(questions.filter((q) => q === "coverage")).toHaveLength(23)
+        expect(questions.filter((q) => q === "recording")).toHaveLength(17)
         expect(questions).not.toContain("unknown")
         for (const d of AUTHORED_GAP_DEFINITIONS) expect(declaredInputs(d.detectionLogic), d.slug).not.toBeNull()
     })
@@ -97,7 +102,7 @@ describe("the two lines sum, on every authored branch, under systematic ablation
             if (c.kind !== "composition") return
             expect(compositionSums(c)).toBe(true)
             expect(c.coverage.checked + c.recording.checked).toBe(planFor(branch).slugs.length)
-            expect(c.coverage.indeterminate).toBe(0)
+            expect(c.coverage.indeterminate, JSON.stringify(c.coverage.items.filter((i) => i.outcome === "indeterminate"))).toBe(0)
             expect(c.coverage.notCovered).toBe(0)
             expect(c.recording.notRecorded).toBe(0)
             expect(c.unclassified).toEqual([])

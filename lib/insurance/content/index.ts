@@ -29,6 +29,7 @@ import { boatContent } from './boat'
 import { boatHullContent } from './boat-hull'
 import { boatTplContent } from './boat-tpl'
 import { fineArtContent } from './fine-art'
+import { rentersContent } from './renters'
 import { roadsideContent } from './roadside'
 import { liabilityContent } from './liability'
 import { legalExpensesContent } from './legal-expenses'
@@ -58,6 +59,7 @@ export const RICH_BRANCH_CONTENT: Record<string, BranchContent> = {
     motorbike: motorbikeContent,
     roadside: roadsideContent,
     home: homeContent,
+    renters: rentersContent,
     health: healthContent,
     life: lifeContent,
     income_protection: incomeProtectionContent,

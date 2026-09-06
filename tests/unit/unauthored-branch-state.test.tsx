@@ -32,13 +32,16 @@ import { en } from "@/lib/i18n/translations/en"
  *   3. portfolio roll-ups never count an unassessed policy as assessed, and
  *      state how many they excluded.
  */
-const UNAUTHORED = ["renters", "truck", "roadside", "pension", "cyber", "liability", "legal_expenses", "boat", "fine_art", "gadget", "bicycle"]
-const AUTHORED: Record<string, number> = { motor: 6, home: 5, health: 4, motorbike: 4, pet: 3, travel: 3, group_health: 3, life: 1 }
+// PW-CONTENT-01 Goal 5 made `renters` an authored write branch (8 rules) and added
+// 3 home contents rules; the fixtures move to branches that stay unauthored and
+// the counts are read from the catalogue rather than pinned by hand.
+const UNAUTHORED = ["truck", "roadside", "pension", "cyber", "liability", "legal_expenses", "boat", "fine_art", "gadget", "bicycle"]
+const AUTHORED: Record<string, number> = Object.fromEntries([...new Set(AUTHORED_GAP_DEFINITIONS.map((d) => d.lineOfBusiness))].map((lob) => [lob, AUTHORED_GAP_DEFINITIONS.filter((d) => d.lineOfBusiness === lob).length]))
 
 const REASSURANCE = /Καλή κάλυψη|Εντάξει|Επαρκής|Προστατευμέν|Σε καλή κατάσταση|Κανένα εύρημα|Δεν εντοπίστηκαν|you are covered|good coverage|all clear|no gaps found|no findings/i
 
 describe("which branches have authored checks", () => {
-    it("the eight authored branches carry exactly the counted rules; every fixture branch carries none", () => {
+    it("the nine authored branches carry exactly the counted rules; every fixture branch carries none", () => {
         expect(authoredBranches()).toEqual(Object.keys(AUTHORED).sort())
         for (const [branch, n] of Object.entries(AUTHORED)) expect(authoredCheckCount(branch), branch).toBe(n)
         expect(UNAUTHORED.length).toBeGreaterThanOrEqual(6)
@@ -46,9 +49,10 @@ describe("which branches have authored checks", () => {
             expect(authoredCheckCount(branch), branch).toBe(0)
             expect(isUnauthoredBranch(branch), branch).toBe(true)
         }
-        // renters is the named case: it inherits nothing from home.
-        expect(authoredCheckCount("home")).toBe(5)
-        expect(authoredCheckCount("renters")).toBe(0)
+        // renters is its own line since Goal 5: it inherits nothing from home and carries its own eight.
+        expect(authoredCheckCount("home")).toBe(8)
+        expect(authoredCheckCount("renters")).toBe(8)
+        expect(authoredCheckCount("fine_art")).toBe(0)
     })
 
     it("the client-safe evaluable-rule check agrees with the engine's on every authored definition and on the prompt shapes", () => {
@@ -61,7 +65,7 @@ describe("which branches have authored checks", () => {
         expect(isEvaluableDetectionLogic({ rules: [{ notAType: 1 }] })).toBe(false)
         expect(isEvaluableDetectionLogic({ type: "always" })).toBe(true)
         // And the per-branch totals sum to the catalogue.
-        const total = Object.values({ motor: 6, home: 5, health: 4, motorbike: 4, pet: 3, travel: 3, group_health: 3, life: 1 }).reduce((a, b) => a + b, 0)
+        const total = Object.values(AUTHORED).reduce((a, b) => a + b, 0)
         expect(total).toBe(AUTHORED_GAP_DEFINITIONS.length)
     })
 
