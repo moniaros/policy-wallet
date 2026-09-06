@@ -57,6 +57,7 @@ import { validateDocumentForIngestion, documentKindFor } from "@/lib/ingestion/d
 import { ingestPolicyDocument } from "@/lib/ingestion/ingest-policy-document"
 import { toValidatedAIDocument } from "@/lib/ingestion/validated-document"
 import { FAMILY_DEFAULT_BRANCH, USER_RESOLVABLE_REVIEW_REASONS } from "@/lib/ingestion/types"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 const customerService = new CustomerService(db);
 
 /**
@@ -870,7 +871,7 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
             to: inviteeEmail,
             token: invite.token,
             inviterName: authResult.dbUser.name || authResult.dbUser.email,
-            language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+            language: resolveUserLanguage(authResult.dbUser.preferredLanguage),
         })
         emailDelivered = emailResult.success
     } catch (error) {
@@ -1023,7 +1024,7 @@ export async function addPolicyForCustomer(data: {
 
     const agentId = authResult.dbUser.id
     const agentUser = authResult.dbUser as { name?: string | null; email?: string | null }
-    const language = ((authResult.dbUser as any).preferredLanguage as 'en' | 'el') || 'en'
+    const language = resolveUserLanguage((authResult.dbUser as any).preferredLanguage)
 
     // Validate BEFORE any write — see addCustomerManually.
     const parsed = AddPolicyForCustomerInput.safeParse(data)
@@ -2035,7 +2036,7 @@ export async function requestAiConsent(policyId: string) {
         return { error: "CUSTOMER_NOT_CONTACTABLE" }
     }
 
-    const language = (owner.preferredLanguage as "en" | "el") || "el"
+    const language = resolveUserLanguage(owner.preferredLanguage)
     const t = getTranslations(language)
     const agentName = authResult.dbUser.name || authResult.dbUser.email || "PolicyWallet agent"
 

@@ -6,10 +6,11 @@ import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { Guide, GuideTable, LocalizedString } from "@/lib/guides/content"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
+import { resolveLocale } from "@/lib/i18n/format"
 
 function formatDate(iso: string, language: string): string {
     return new Date(`${iso}T00:00:00Z`).toLocaleDateString(
-        language === "el" ? "el-GR" : "en-GB",
+        resolveLocale(language),
         { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }
     )
 }

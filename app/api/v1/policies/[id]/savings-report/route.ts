@@ -6,8 +6,10 @@ import { canUserUseFeature } from "@/lib/subscription-limits"
 import { getPolicyAccess } from "@/lib/policy-access"
 import { generateSavingsReportHtml } from "@/lib/services/reports/savings-report"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
+import { describeCatalogueStaleness } from "@/lib/gaps/composition"
 import { getTranslations } from "@/lib/i18n"
 import { readLiveGapRows } from "@/lib/gaps/gap-rows"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
 
@@ -82,7 +84,7 @@ export const GET = withApiGuard(
 
         // B0.3: the report names the run its findings came from and states a
         // failed latest attempt — the prose run and the rows' run can differ.
-        const language = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+        const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
         const latestAttempt = await db.policyAnalysisRun.findFirst({
             where: { policyId },
             orderBy: { createdAt: "desc" },
@@ -102,6 +104,9 @@ export const GET = withApiGuard(
         const prePlan = Array.isArray((run.attemptedRules as { slugs?: unknown } | null)?.slugs)
             ? null
             : { dateLabel: formatProvenanceDate(run.finishedAt ?? null, language) }
+        // Goal 4: checks added after this run — the findings stand, dated; a new analysis would include them.
+        const staleness = describeCatalogueStaleness(run.attemptedRules, formatProvenanceDate(run.finishedAt ?? null, language))
+        const staleCatalogue = staleness ? { dateLabel: staleness.runDateLabel } : null
         const html = generateSavingsReportHtml(
             run.resultJson as Record<string, any>,
             run.finishedAt?.toISOString() ?? new Date().toISOString(),
@@ -109,7 +114,8 @@ export const GET = withApiGuard(
             undefined,
             decidedGaps.map((g) => ({ slug: g.definition.slug, severity: g.severity })),
             provenance,
-            prePlan
+            prePlan,
+            staleCatalogue
         )
 
         return new Response(html, {

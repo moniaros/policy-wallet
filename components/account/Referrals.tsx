@@ -3,6 +3,7 @@
 import { useState } from "react"
 import type { ReferralsProps } from "./types"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { resolveLocale } from "@/lib/i18n/format"
 
 export function Referrals({
     referralLink,
@@ -16,11 +17,11 @@ export function Referrals({
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
-        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })
+        return date.toLocaleDateString(resolveLocale(language), { day: "numeric", month: "short", year: "numeric" })
     }
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat(language === "el" ? "el-GR" : "en-GB", {
+        return new Intl.NumberFormat(resolveLocale(language), {
             style: "currency",
             currency: "EUR",
         }).format(price)

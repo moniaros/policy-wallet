@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { resolveStoredNotification } from "@/lib/notifications/stored-content"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * The bell dropdown's feed.
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
     // Presented, never raw: legacy rows can carry internal English
     // documentation, which the shared presenter substitutes with the event's
     // canonical bilingual copy in this reader's language.
-    const readerLang = authResult.dbUser.preferredLanguage === "en" ? "en" as const : "el" as const
+    const readerLang = resolveUserLanguage(authResult.dbUser.preferredLanguage)
     return NextResponse.json({
         notifications: notifications.map(n => {
             const presented = resolveStoredNotification(n.eventType, n.title, n.message, readerLang)

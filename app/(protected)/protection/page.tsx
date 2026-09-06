@@ -23,6 +23,7 @@ import type { ProtectionLens } from "@/components/protection/ProtectionLensTabs"
 import type { BranchTileState } from "@/lib/insurance/branch-page"
 import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
 import { readLiveGapRows } from "@/lib/gaps/gap-rows"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * «Η προστασία μου» — the §4.2 consolidated protection surface.
@@ -46,7 +47,7 @@ export default async function ProtectionPage({
     const lens: ProtectionLens = lensParam === "risk" ? "risk" : "branch"
 
     const { dbUser } = await getAuthenticatedUser()
-    const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
+    const lang: 'el' | 'en' = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(lang)
 
     const [entitlements, profileRecord, policies, score, allGapInstances, attention] = await Promise.all([

@@ -532,7 +532,6 @@ export function AdvisorScreen({ locale }: { locale: ScreenLocale }) {
         surname: letter,
         email: `${id}@example.com`,
         policyCount,
-        healthScore: relationshipHealth,
         urgencyTier: nextActionLabel ? "needs_attention" : "on_track",
         nextActionDue: nextActionLabel ? inDays(7).toISOString() : null,
         nextActionLabel,

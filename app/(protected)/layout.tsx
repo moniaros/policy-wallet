@@ -11,6 +11,7 @@ import { NotificationWatcher } from "@/components/notifications/NotificationWatc
 import { NeedsClaim } from "@/components/needs/NeedsClaim"
 import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
+import { LanguageProvider } from "@/contexts/LanguageContext"
 import { getClientPlanFacts } from "@/lib/pricing/plan-catalog"
 import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
@@ -22,6 +23,7 @@ import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Sett
 import { displayInsurerName, displayPersonName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import type { CommandSearchItem } from "@/components/shell/CommandSearch"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function ProtectedLayout({
     children,
@@ -72,8 +74,11 @@ export default async function ProtectedLayout({
         : getPrimaryRole(dbUser.roles)
 
     const navigation: NavigationSection[] = []
-    const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
-    const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'en' | 'el') || 'el')
+    // ONE resolved locale for the whole request: the shell's server half and
+    // every client component under it read this value (Goal 1).
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
+    const t = getTranslations(language)
+    const roleCopy = getRoleCopy(language)
 
     // The desktop top bar's search — the policyholder's own policies, the same
     // held-policy predicate the wallet and the dashboard apply. Three columns,
@@ -81,7 +86,7 @@ export default async function ProtectedLayout({
     // "my policies").
     let searchItems: CommandSearchItem[] | undefined
     if (currentRole === "policyholder") {
-        const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
+        const lang: 'el' | 'en' = language
         const rows = await db.policy.findMany({
             where: { ownerUserId: dbUser.id, status: { not: "deleted" } },
             select: { id: true, insurerName: true, policyNumber: true, lineOfBusiness: true },
@@ -199,6 +204,7 @@ export default async function ProtectedLayout({
         // Mounts the EL+EN dictionary for the whole protected tree. It wraps
         // AppShell rather than sitting inside it because the shell itself
         // (AppShell/MainNav/UserMenu) reads `t`.
+        <LanguageProvider initialLanguage={language}>
         <TranslationsProvider>
         <AppShell
             user={{
@@ -230,5 +236,6 @@ export default async function ProtectedLayout({
             <PlanFactsProvider facts={planFacts}>{children}</PlanFactsProvider>
         </AppShell>
         </TranslationsProvider>
+        </LanguageProvider>
     )
 }

@@ -20,7 +20,7 @@ function makeCustomers(n: number) {
         activationStatus: i % 2 ? 'activated' : 'invited',
         lastInteractionDate: new Date().toISOString(),
         openGapsCount: i % 3,
-        intelligence: { healthScore: i % 100, recommendedAction: 'check_in', nextRenewalDate: null, consentStatus: 'granted' },
+        intelligence: { recommendedAction: 'check_in', nextRenewalDate: null, consentStatus: 'granted' },
     })) as any
 }
 

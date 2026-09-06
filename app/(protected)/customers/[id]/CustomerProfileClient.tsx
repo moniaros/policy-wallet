@@ -29,7 +29,6 @@ interface Props {
     initialCustomer: Customer
     agentTier: AgentTier
     canBrandedReport: boolean
-    healthScore: number
     /**
      * Whether an AI analysis can run for this customer if the advisor uploads
      * now — derived by the page with deriveAiConsentState, the same verdict
@@ -63,7 +62,7 @@ const PROFILE_COPY = {
     removing: { el: "Αφαίρεση...", en: "Removing..." },
 } as const
 
-export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore, customerAiConsent }: Props) {
+export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, customerAiConsent }: Props) {
     const router = useRouter()
     const { language, t } = useLanguage()
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
@@ -342,7 +341,6 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 viewerRole="agent"
                 agentTier={agentTier}
                 canBrandedReport={canBrandedReport}
-                healthScore={healthScore}
                 policies={initialCustomer.policies || []}
                 opportunities={initialCustomer.opportunities || []}
                 interactions={initialCustomer.interactions || []}

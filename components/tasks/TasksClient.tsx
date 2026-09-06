@@ -188,7 +188,7 @@ export function TasksClient({ actionItems }: TasksClientProps) {
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                     <div className="flex items-center gap-2" role="group" aria-label={t.common.priority}>
                         <span className="text-caption font-medium text-muted-foreground">{t.common.priority}</span>
-                        <div className="pw-segmented">
+                        <div className="pw-segmented pw-scroll-strip">
                             {priorityFilters.map((p) => (
                                 <button
                                     key={p}
@@ -205,7 +205,7 @@ export function TasksClient({ actionItems }: TasksClientProps) {
 
                     <div className="flex items-center gap-2" role="group" aria-label={t.common.sort}>
                         <span className="text-caption font-medium text-muted-foreground">{t.common.sort}</span>
-                        <div className="pw-segmented">
+                        <div className="pw-segmented pw-scroll-strip">
                             {sortOptions.map(({ key, label }) => (
                                 <button
                                     key={key}

@@ -462,13 +462,13 @@ describe("greek string inventory (§6.1.8 copy freeze)", () => {
         expect(universe.perFile.get("lib/guides/content.ts") ?? 0).toBeGreaterThan(200)
     })
 
-    it("ternary arm reached both roots that carry entries — and pinned the health-score verdict vocabulary", () => {
-        // lib/agent/health-score.ts returns «Καλή»/«Μέτρια»/«Χρειάζεται
-        // προσοχή» — a verdict vocabulary on a score, the pattern §2.3
-        // prohibits. It is agent-side and out of scope to CHANGE (§12.4),
-        // so the freeze PINS it at exactly 3 entries: editing or extending
-        // that vocabulary now requires a deliberate inventory regen.
-        expect(universe.perFileTernary.get("lib/agent/health-score.ts") ?? 0).toBe(3)
+    it("ternary arm reached both roots that carry entries — and the health-score verdict vocabulary stays gone", () => {
+        // lib/agent/health-score.ts used to return «Καλή»/«Μέτρια»/«Χρειάζεται
+        // προσοχή» — a verdict vocabulary on a score. The freeze pinned it at
+        // exactly 3 entries while it was out of scope to change; PW-CONTENT-01
+        // Goal 3 (D-C3) removed the module and its render sites, so the pin
+        // now holds it at ZERO — a reintroduction is a deliberate regen.
+        expect(universe.perFileTernary.get("lib/agent/health-score.ts") ?? 0).toBe(0)
         expect(universe.perFileTernary.get("lib/email/templates/engagement-drip.ts") ?? 0).toBeGreaterThan(25)
         expect(universe.perFileTernary.get("app/api/v1/policies/[id]/documents/[docId]/route.ts") ?? 0).toBeGreaterThan(2)
     })

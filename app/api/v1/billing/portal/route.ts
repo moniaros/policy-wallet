@@ -2,6 +2,7 @@ import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { stripe } from "@/lib/stripe"
 import { getSiteOrigin } from "@/lib/seo/site"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export const POST = withApiGuard(
     {
@@ -14,7 +15,7 @@ export const POST = withApiGuard(
     },
     async ({ auth }) => {
         const dbUser = auth!.dbUser
-        const language = (dbUser.preferredLanguage as "el" | "en") || "el"
+        const language = resolveUserLanguage(dbUser.preferredLanguage)
 
         if (!dbUser.stripeCustomerId) {
             return createApiError("NOT_FOUND", "No billing profile found", 404, null, language)

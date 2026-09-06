@@ -18,6 +18,7 @@ import { useDialog } from "@/hooks/useDialog"
 import { TableShell } from "@/components/ui/TableShell"
 
 import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
+import { resolveLocale } from "@/lib/i18n/format"
 const copy = {
     en: {
         kicker: "QUESTIONNAIRES",
@@ -721,7 +722,7 @@ function SentList({ instances, t, language }: {
                                     )}
                                 </td>
                                 <td data-label={t.sentAt} className="px-4 py-3 text-caption text-muted-foreground">
-                                    {new Date(inst.sentAt).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
+                                    {new Date(inst.sentAt).toLocaleDateString(resolveLocale(language))}
                                 </td>
                                 <td className="px-4 py-3 text-right">
                                     {inst.status === "completed" && inst.responseCount > 0 && (

@@ -20,6 +20,7 @@ import {
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import type { PlanData } from "@/app/(protected)/account/data"
 import type { EntitlementLimits } from "@/types/subscription-entitlements"
+import { resolveLocale } from "@/lib/i18n/format"
 
 /**
  * Plan, usage and billing.
@@ -51,7 +52,7 @@ export function PlanSection({ data }: { data: PlanData }) {
     const [cancelOpen, setCancelOpen] = useState(false)
     const [busy, setBusy] = useState<null | "portal" | "annual" | "upgrade">(null)
 
-    const locale = language === "el" ? "el-GR" : "en-GB"
+    const locale = resolveLocale(language)
     const formatDate = (iso: string) =>
         new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" })
     const formatPrice = (eur: number) =>

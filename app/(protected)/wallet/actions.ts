@@ -42,6 +42,7 @@ import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
 import { ingestPolicyDocument } from "@/lib/ingestion/ingest-policy-document"
 import { readGapRow } from "@/lib/gaps/gap-rows"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * The add-policy form WITH a document. The branch is the only thing the
@@ -709,7 +710,7 @@ export async function retryPolicyAnalysis(policyId: string) {
     })
 
     const policyService = new PolicyService()
-    const language = (dbUser.preferredLanguage as 'en' | 'el') || 'en'
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
 
     after(async () => {
         try {
@@ -748,7 +749,7 @@ export async function updatePolicy(policyId: string, formData: FormData) {
         if (rawData.coverageSummary) data.coverageSummary = rawData.coverageSummary
 
         const policyService = new PolicyService()
-        const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
+        const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
 
         const updated = await policyService.update(policyId, authResult.dbUser.id, data, language)
 
@@ -804,7 +805,7 @@ export async function uploadPolicyDocument(formData: FormData) {
 
     try {
         const policyService = new PolicyService()
-        const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
+        const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
 
         // 1. Initiate upload (Creates 'analyzing' record)
         const result = await policyService.uploadAndParse(userId, file, language)
@@ -870,7 +871,7 @@ export async function addRenewalDocument(policyId: string, formData: FormData) {
 
     try {
         const policyService = new PolicyService()
-        const language = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+        const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
 
         const result = await policyService.attachRenewalDocument(policyId, userId, file, language)
 
@@ -986,7 +987,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
                 to: agentEmail,
                 token: invite.token,
                 inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
-                language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+                language: resolveUserLanguage(authResult.dbUser.preferredLanguage),
             })
             emailDelivered = emailResult.success
             if (!emailDelivered) {
@@ -1137,7 +1138,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
             to: agentEmail,
             inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
             policyNumber: sharedPolicy?.policyNumber,
-            language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+            language: resolveUserLanguage(authResult.dbUser.preferredLanguage),
         })
     } catch (error) {
         logger('warn', 'Failed to send shared policy access email', {
@@ -1606,7 +1607,7 @@ export async function runPolicyAnalysis(policyId: string) {
     })
     if (!access.canAnalyze) return { error: "Unauthorized" }
 
-    const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
+    const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
 
     // MANUAL re-analysis is a paid-plan feature for agent-role users
     // (upload-time auto-analysis is a different path); the shared gate also

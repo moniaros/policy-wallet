@@ -1,0 +1,6 @@
+// PROBE — must turn tests/unit/no-component-locale-fallback.test.ts red:
+// a client component that carries its own locale fallback.
+export function Probe({ language }: { language?: "el" | "en" }) {
+    const lang = language || "en"
+    return <span>{lang}</span>
+}

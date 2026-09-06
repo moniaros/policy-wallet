@@ -8,6 +8,7 @@ import { EditPolicyForm } from "@/components/wallet/EditPolicyForm"
 import { getTranslations } from "@/lib/i18n"
 import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 interface Props {
     params: Promise<{ id: string }>
@@ -40,7 +41,7 @@ export default async function EditPolicyPage({ params, searchParams }: Props) {
     // Only allow same-origin relative return targets (shared guard).
     const safeReturnTo = sanitizeReturnPath(returnTo) ?? undefined
 
-    const preferredLanguage = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+    const preferredLanguage = resolveUserLanguage(authResult.dbUser.preferredLanguage)
     const t = getTranslations(preferredLanguage)
     
     // Sanitize Decimal to number/string for client component

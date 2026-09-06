@@ -163,11 +163,14 @@ describe("the two lines sum, on every authored branch, under systematic ablation
         expect(compositionSums(c)).toBe(true)
     })
 
-    it("N₁ = 0 (unauthored branch) and no run produce no composition; a catalogue mismatch is named", () => {
+    it("N₁ = 0 (unauthored branch) and no run produce no composition; a newer catalogue is a dated flag on the composition, never a withheld one (Goal 4)", () => {
         expect(composeFindings({ lineOfBusiness: "renters", acordData: {}, firedSlugs: [], attempted: { slugs: [], catalogueVersion: VERSION } }).kind).toBe("unauthored")
         expect(composeFindings({ lineOfBusiness: "motor", acordData: {}, firedSlugs: [], attempted: null }).kind).toBe("no_run")
         const mismatch = composeFindings({ lineOfBusiness: "motor", acordData: {}, firedSlugs: [], attempted: { slugs: planFor("motor").slugs, catalogueVersion: "0000000000000000" } })
-        expect(mismatch).toMatchObject({ kind: "catalogue_mismatch", currentCatalogueVersion: VERSION })
+        if (mismatch.kind !== "composition") throw new Error("Goal 4: a stale catalogue must still compose")
+        expect(mismatch.stale).toMatchObject({ currentCatalogueVersion: VERSION, runCatalogueVersion: "0000000000000000" })
+        // the denominator is the RUN's plan, not the current catalogue
+        expect(mismatch.coverage.checked + mismatch.recording.checked).toBe(planFor("motor").slugs.length)
     })
 })
 
@@ -176,6 +179,7 @@ describe("the component", () => {
         kind: "composition",
         lineOfBusiness: "motor",
         catalogueVersion: VERSION,
+        stale: null,
         coverage: { checked: 4, covered: 2, notCovered: 1, indeterminate: 1, items: [] },
         recording: { checked: 2, recorded: 1, notRecorded: 1, items: [] },
         unclassified: [],
@@ -205,11 +209,13 @@ describe("the component", () => {
         all.unmount()
     })
 
-    it("renders nothing for unauthored / no-run, and the mismatch sentence without numbers", () => {
+    it("renders nothing for unauthored / no-run, and a stale catalogue renders the lines PLUS one dated sentence (Goal 4)", () => {
         expect(render(<CoverageComposition composition={{ kind: "unauthored", lineOfBusiness: "renters" }} copy={el.composition} />).container.textContent).toBe("")
-        const m = render(<CoverageComposition composition={{ kind: "catalogue_mismatch", lineOfBusiness: "motor", runCatalogueVersion: "a", currentCatalogueVersion: "b" }} copy={el.composition} />)
-        expect(m.container.querySelector('[data-fact="composition.catalogueMismatch"]')).not.toBeNull()
-        expect(m.container.textContent).not.toMatch(/\d/)
+        const m = render(<CoverageComposition composition={{ ...partial, stale: { runCatalogueVersion: "a", currentCatalogueVersion: "b", runDateLabel: "21 Αυγούστου 2026" } }} copy={el.composition} />)
+        expect(m.container.querySelector('[data-count="composition.coverageChecked"]')?.textContent).toContain("4")
+        const stale = m.container.querySelector('[data-composition-state="stale_catalogue"]')
+        expect(stale?.textContent).toContain("21 Αυγούστου 2026")
+        expect(stale?.textContent).toMatch(/Έχουν προστεθεί έλεγχοι/)
     })
 
     it("is mounted on the two in-product findings surfaces and nowhere outbound", () => {

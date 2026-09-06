@@ -11,6 +11,7 @@ import { PublicHeader } from "@/components/public/PublicHeader"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { SKIP_LINK_TARGET_ID } from "@/lib/nav/public-nav"
 import { JsonLd, breadcrumbEnJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld"
+import { resolveLocale } from "@/lib/i18n/format"
 
 type LegalDocumentPageProps = {
     language: LegalLanguage
@@ -19,7 +20,7 @@ type LegalDocumentPageProps = {
 
 /** Renders an ISO (yyyy-mm-dd) last-updated date in the reader's locale. */
 function formatLastUpdated(isoDate: string, language: LegalLanguage): string {
-    return new Intl.DateTimeFormat(language === "el" ? "el-GR" : "en-GB", {
+    return new Intl.DateTimeFormat(resolveLocale(language), {
         dateStyle: "long",
         timeZone: "UTC",
     }).format(new Date(`${isoDate}T00:00:00Z`))

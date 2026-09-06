@@ -1,0 +1,8 @@
+// PROBE — must turn tests/unit/denominator-matches-run-catalogue-version.test.tsx red:
+// a composition whose denominator is the CURRENT catalogue's rule count for the branch,
+// not the run's recorded plan.
+import { AUTHORED_GAP_DEFINITIONS } from "@/lib/gaps/authored-catalogue"
+export function composeWrong(lineOfBusiness: string, firedSlugs: string[]) {
+    const checked = AUTHORED_GAP_DEFINITIONS.filter((d) => d.lineOfBusiness === lineOfBusiness).length
+    return { checked, notCovered: firedSlugs.length, covered: checked - firedSlugs.length }
+}

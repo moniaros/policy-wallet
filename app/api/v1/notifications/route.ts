@@ -4,6 +4,7 @@ import { requireApiUser } from "@/lib/api-auth"
 import { resolveStoredNotification } from "@/lib/notifications/stored-content"
 import { groupNotificationEventRows, type DeliveryRowLike } from "@/lib/notifications/event-grouping"
 import { z } from "zod"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const notificationsQuerySchema = z.object({
     cursor: z.string().min(1).optional(),
@@ -69,7 +70,7 @@ export async function GET(req: Request) {
         // Presented, never raw: legacy rows can carry internal English
         // documentation, which the shared presenter substitutes with the
         // event's canonical bilingual copy in this reader's language.
-        const readerLang = authResult.dbUser.preferredLanguage === "en" ? "en" as const : "el" as const
+        const readerLang = resolveUserLanguage(authResult.dbUser.preferredLanguage)
         return createApiResponse({
             // One item per event, spoken for by its representative row (the
             // in-app arm when one exists). No `channel` field: delivery

@@ -4,6 +4,7 @@ import { getInsightsData } from './actions'
 import { InsightsClient } from './InsightsClient'
 import { getAuthenticatedUser } from '@/lib/auth-helpers'
 import { AiDisclaimer } from '@/components/ui/AiDisclaimer'
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function AgentInsightsPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -13,7 +14,7 @@ export default async function AgentInsightsPage() {
     if (!data) redirect('/dashboard')
     return (
         <>
-            <InsightsClient data={data} language={dbUser.preferredLanguage || 'en'} />
+            <InsightsClient data={data} language={resolveUserLanguage(dbUser.preferredLanguage)} />
             {/* Portfolio health scores and detected gaps above are AI-generated. */}
             <div className="mx-auto max-w-6xl px-4 pb-10">
                 <AiDisclaimer />

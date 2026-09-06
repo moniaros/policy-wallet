@@ -21,6 +21,7 @@ import { EmptyState, CustomerPreviewRow } from "@/components/ui/EmptyState"
 import { ConsentStatusBadge, type ConsentStatus } from "@/components/ui/ConsentStatusBadge"
 import { TableShell } from "@/components/ui/TableShell"
 import { RowCheckbox } from "@/components/ui/form"
+import { resolveLocale } from "@/lib/i18n/format"
 
 /**
  * The activation pill a customer row wears.
@@ -128,7 +129,7 @@ export function CustomerList({
         if (diffDays === 0) return roleCopy.customerList.today
         if (diffDays === 1) return roleCopy.customerList.yesterday
         if (diffDays < 7) return roleCopy.customerList.daysAgo(diffDays)
-        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-GB")
+        return date.toLocaleDateString(resolveLocale(language))
     }
 
     const ACTION_LABELS: Record<string, string> = {
@@ -160,17 +161,11 @@ export function CustomerList({
     const consentStatusOf = (raw: string | null | undefined): ConsentStatus =>
         raw === 'granted' || raw === 'attested' ? raw : 'none'
 
-    const healthTone = (score: number | null | undefined) => {
-        if (score === null || score === undefined) return "bg-muted text-muted-foreground"
-        if (score >= 70) return "bg-status-success-tint text-status-success"
-        if (score >= 40) return "bg-status-warning-tint text-status-warning"
-        return "bg-status-danger-tint text-status-danger"
-    }
     const pill = "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-caption font-semibold"
 
     const formatRenewal = (iso: string | null | undefined) => {
         if (!iso) return "—"
-        return new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")
+        return new Date(iso).toLocaleDateString(resolveLocale(language))
     }
 
     const renewalSoon = (iso: string | null | undefined) => {
@@ -337,7 +332,6 @@ export function CustomerList({
                                             {sortBy === "policyCount" && <ArrowDownUp className="h-3 w-3 shrink-0" aria-hidden="true" />}
                                         </button>
                                     </th>
-                                    <th className="px-4 py-3 text-center">{roleCopy.customerList.tableHealth}</th>
                                     <th className="px-4 py-3">{roleCopy.customerList.tableNextRenewal}</th>
                                     <th className="px-4 py-3 text-center">{roleCopy.customerList.tableGaps}</th>
                                     <th className="px-4 py-3">{roleCopy.customerList.tableConsent}</th>
@@ -407,11 +401,6 @@ export function CustomerList({
                                         </td>
                                         <td className="px-4 py-3 text-center">
                                             <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-muted text-caption font-semibold tabular-nums text-foreground">{customer.policyCount}</span>
-                                        </td>
-                                        <td className="px-4 py-3 text-center">
-                                            <span className={`${pill} tabular-nums ${healthTone(intel?.healthScore)}`}>
-                                                {intel?.healthScore !== null && intel?.healthScore !== undefined ? intel.healthScore : "—"}
-                                            </span>
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3 text-caption">
                                             <span className={renewalSoon(intel?.nextRenewalDate) ? "font-semibold text-status-warning" : "text-muted-foreground"}>
@@ -487,9 +476,6 @@ export function CustomerList({
                             </div>
                             {customer.intelligence && (
                                 <div className="mb-3 flex flex-wrap items-center gap-1.5">
-                                    <span className={`${pill} tabular-nums ${healthTone(customer.intelligence.healthScore)}`}>
-                                        {roleCopy.customerList.tableHealth}: {customer.intelligence.healthScore ?? "—"}
-                                    </span>
                                     <span className={`${pill} ${ACTION_TONES[customer.intelligence.recommendedAction]}`}>
                                         {ACTION_LABELS[customer.intelligence.recommendedAction]}
                                     </span>

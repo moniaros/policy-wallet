@@ -17,6 +17,7 @@ import {
     factWritesFrom,
     profileFactData,
 } from "@/lib/services/protection-profile/fact-writes"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export type ActionItem = {
     id: string
@@ -39,7 +40,7 @@ export async function getPendingActionItems(): Promise<ActionItem[]> {
 
     const userId = authResult.dbUser.id
     // Named `tr` (not `t`) because the generic-task loop below binds `t` to the task row.
-    const tr = getTranslations((authResult.dbUser.preferredLanguage as 'en' | 'el') || 'el')
+    const tr = getTranslations(resolveUserLanguage(authResult.dbUser.preferredLanguage))
 
     // 1. Fetch Pending Questionnaires
     const questionnaires = await db.questionnaireInstance.findMany({

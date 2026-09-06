@@ -1,0 +1,151 @@
+{
+  "run": "en",
+  "capturedAt": "2026-09-06T13:19:41.853Z",
+  "results": [
+    {
+      "width": 320,
+      "url": "/dashboard",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/customers",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/insights",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/tasks",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtoaaw9b00036gkwkt5hw00e",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": [
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
+      ]
+    },
+    {
+      "width": 390,
+      "url": "/dashboard",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/customers",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/insights",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/tasks",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtoaaw9b00036gkwkt5hw00e",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": [
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
+      ]
+    },
+    {
+      "width": 430,
+      "url": "/dashboard",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/customers",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/insights",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/tasks",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtoaaw9b00036gkwkt5hw00e",
+      "overflowPx": 0,
+      "offenders": [],
+      "lang": "en",
+      "locale": "en-GB",
+      "dated": [
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
+      ]
+    }
+  ],
+  "failures": []
+}

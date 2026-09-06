@@ -7,7 +7,6 @@ import { DashboardClient } from "../DashboardClient"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getPrimaryRole } from "@/lib/auth/role-routing"
 import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
-import { computeClientRelationshipScore } from "@/lib/agent/health-score"
 import { isUnauthoredBranch } from "@/lib/gaps/assessment-coverage"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
@@ -432,14 +431,6 @@ export default async function DashboardPage() {
         const clientPolicies = policiesByOwner.get(rel.policyholderUserId) ?? []
         const clientGaps = clientPolicies.reduce((sum, p) => sum + (gapCountByPolicy.get(p.id) ?? 0), 0)
 
-        const healthScore = computeClientRelationshipScore({
-            policyCount: clientPolicies.length,
-            openGapsCount: clientGaps,
-            lastInteractionDate: rel.lastInteractionAt?.toISOString() || null,
-            profileComplete: clientPolicies.length > 0,
-            activationStatus: rel.status,
-        })
-
         const urgencyTier = classifyUrgencyTier({
             activationStatus: rel.status === "active" ? "activated" : rel.status === "pending_activation" ? "invited" : "inactive",
             openGapsCount: clientGaps,
@@ -470,7 +461,6 @@ export default async function DashboardPage() {
             email: rel.customer.email,
             avatar: identity.image || undefined,
             policyCount: clientPolicies.length,
-            healthScore,
             urgencyTier,
             nextActionDue: nextAction?.dueDate || null,
             nextActionLabel: nextAction?.description || null,

@@ -12,9 +12,10 @@ import { getTranslations } from "@/lib/i18n"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { composeFindings } from "@/lib/gaps/composition"
 import { resolveRecordStatus } from "@/lib/wallet/record-status"
-import { formatDate, formatDateTime } from "@/lib/i18n/format"
+import { formatDate, formatDateTime, resolveLocale } from "@/lib/i18n/format"
 import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
     const { id: customerId, policyId } = await params
@@ -79,7 +80,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     // "Active" next to a negative days-left. One source for both now.
     const daysLeft = resolvePolicyLifecycle(policy).daysUntilExpiry ?? 0
 
-    const language = ((dbUser.preferredLanguage as 'el' | 'en') || 'el')
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(language)
     const pd = t.agentPages.policyDetail
 
@@ -130,7 +131,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
             : null,
         confirmedAt: null,
     })
-    const locale = language === 'el' ? 'el-GR' : 'en-GB'
+    const locale = resolveLocale(language)
     const branch = getBranch(policy.lineOfBusiness) ?? normalizeBranch(policy.lineOfBusiness)
     const lobPhrase = { el: `Κάλυψη ${branch.genitiveEl}`, en: `${branch.label.en} Protection` }[language]
     const isManagedByViewer = access.grantLevel === 'manage' || policy.createdByUserId === dbUser.id

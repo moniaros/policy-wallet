@@ -13,8 +13,9 @@ export interface CompositionCopy {
     recordingCheckedOne: string
     recorded: string
     notRecorded: string
-    /** Rendered instead of the lines when the run's catalogue differs from the current one. */
-    catalogueChanged: string
+    /** Goal 4: rendered WITH the lines when checks were added after the run — «Η ανάλυση έγινε στις {date}. Έχουν προστεθεί έλεγχοι από τότε…» */
+    staleCatalogue: string
+    staleCatalogueNoDate: string
     /** V3: «Ευρήματα από την ανάλυση της {date}. … δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε.» */
     prePlan: string
     prePlanNoDate: string
@@ -31,21 +32,15 @@ function fill(template: string, vars: Record<string, string | number>): string {
  * Every numeral sits beside its word; the denominator is the first thing on
  * each line, so a count never appears without it. `indeterminate` renders
  * whenever it is above zero, in the same weight as the other two segments.
- * When the run's catalogue version is not the current one the lines do not
- * render at all and the reader is told why (B2 acceptance 6). Nothing here is
- * a verdict adjective; the closing sentence frames the lines as a prompt to
- * review.
+ * When the run's catalogue version is not the current one the lines STILL
+ * render — against the run's own plan — and one dated sentence says checks were
+ * added since and offers re-analysis (PW-CONTENT-01 Goal 4; this replaced B2's
+ * withheld state, which deleted an honest dated measurement because something
+ * unrelated changed). Nothing here is a verdict adjective; the closing
+ * sentence frames the lines as a prompt to review.
  */
 export function CoverageComposition({ composition, copy, className = "" }: { composition: Composition; copy: CompositionCopy; className?: string }) {
     if (composition.kind === "no_run" || composition.kind === "unauthored") return null
-
-    if (composition.kind === "catalogue_mismatch") {
-        return (
-            <p data-fact="composition.catalogueMismatch" className={`text-sm text-muted-foreground ${className}`}>
-                {copy.catalogueChanged}
-            </p>
-        )
-    }
 
     // V3: findings from a run that predates the plan — dated, never a composition, never a zero.
     if (composition.kind === "pre_plan") {
@@ -95,6 +90,11 @@ export function CoverageComposition({ composition, copy, className = "" }: { com
                     <span data-count="composition.recorded">{fill(copy.recorded, { count: recording.recorded })}</span>
                     {" · "}
                     <span data-count="composition.notRecorded">{fill(copy.notRecorded, { count: recording.notRecorded })}</span>
+                </p>
+            )}
+            {composition.stale && (
+                <p data-fact="composition.stale" data-composition-state="stale_catalogue" className="text-caption text-muted-foreground">
+                    {composition.stale.runDateLabel ? fill(copy.staleCatalogue, { date: composition.stale.runDateLabel }) : copy.staleCatalogueNoDate}
                 </p>
             )}
             <p className="text-caption text-muted-foreground">{copy.reviewFraming}</p>

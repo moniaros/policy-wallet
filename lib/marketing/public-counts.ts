@@ -2,6 +2,9 @@ import { FREE_POLICY_LIMIT, PLUS_POLICY_LIMIT, PRO_POLICY_LIMIT } from "@/lib/mo
 import { BATCH_UPLOAD_MAX_FILES } from "@/lib/constants/time"
 import { DEFAULT_AGENT_ENTITLEMENT_LIMITS } from "@/lib/pricing/plan-defaults"
 import { productCategories } from "@/lib/product/catalog"
+import { AUTHORED_GAP_DEFINITIONS } from "@/lib/gaps/authored-catalogue"
+import { GAP_PROVENANCE, isClassified } from "@/lib/gaps/provenance"
+import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 
 /**
  * The ONE verified source for a count the public site may state about the
@@ -57,7 +60,53 @@ function enforced(value: number | null | undefined, what: string): number {
     return value
 }
 
+/** The authored rule catalogue, counted — what /methodology may state about coverage (PW-CONTENT-01 Goal 7). */
+export const CATALOGUE_FACTS = Object.freeze({
+    rules: AUTHORED_GAP_DEFINITIONS.length,
+    branchesWithChecks: [...new Set(AUTHORED_GAP_DEFINITIONS.map((d) => d.lineOfBusiness))].sort(),
+    writableBranches: [...WRITE_BRANCH_IDS],
+    branchesWithoutChecks: WRITE_BRANCH_IDS.filter((id) => !AUTHORED_GAP_DEFINITIONS.some((d) => d.lineOfBusiness === id)),
+    classifiedRequirements: Object.values(GAP_PROVENANCE).filter((e) => isClassified(e.provenance)).length,
+    underReviewRequirements: Object.values(GAP_PROVENANCE).filter((e) => e.provenance === "under_review").length,
+})
+
 export const PUBLIC_COUNTS = {
+    authoredRules: {
+        id: "authored-rules",
+        value: CATALOGUE_FACTS.rules,
+        basis: "derived_from_catalogue",
+        source: "lib/gaps/authored-catalogue.ts AUTHORED_GAP_DEFINITIONS.length",
+    },
+    branchesWithChecks: {
+        id: "branches-with-checks",
+        value: CATALOGUE_FACTS.branchesWithChecks.length,
+        basis: "derived_from_catalogue",
+        source: "lib/gaps/authored-catalogue.ts — distinct lineOfBusiness of AUTHORED_GAP_DEFINITIONS",
+    },
+    writableBranches: {
+        id: "writable-branches",
+        value: CATALOGUE_FACTS.writableBranches.length,
+        basis: "derived_from_catalogue",
+        source: "lib/insurance/taxonomy.ts WRITE_BRANCH_IDS.length",
+    },
+    branchesWithoutChecks: {
+        id: "branches-without-checks",
+        value: CATALOGUE_FACTS.branchesWithoutChecks.length,
+        basis: "derived_from_catalogue",
+        source: "lib/insurance/taxonomy.ts WRITE_BRANCH_IDS minus lib/gaps/authored-catalogue.ts branches",
+    },
+    classifiedRequirements: {
+        id: "classified-requirements",
+        value: CATALOGUE_FACTS.classifiedRequirements,
+        basis: "derived_from_catalogue",
+        source: "lib/gaps/provenance.ts GAP_PROVENANCE — entries not under_review",
+    },
+    underReviewRequirements: {
+        id: "under-review-requirements",
+        value: CATALOGUE_FACTS.underReviewRequirements,
+        basis: "derived_from_catalogue",
+        source: "lib/gaps/provenance.ts GAP_PROVENANCE — entries under_review",
+    },
     freePolicies: {
         id: "free-policies",
         value: FREE_POLICY_LIMIT,

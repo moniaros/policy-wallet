@@ -7,6 +7,7 @@ import { CardHead } from "@/components/dashboard/home/CardHead"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { AgentTaskItem } from "./types"
+import { resolveLocale } from "@/lib/i18n/format"
 
 interface PendingTasksCardProps {
     items: AgentTaskItem[]
@@ -56,7 +57,7 @@ export function PendingTasksCard({ items }: PendingTasksCardProps) {
                                     {task.dueDate && (
                                         <p className="text-caption text-muted-foreground">
                                             {new Date(task.dueDate).toLocaleDateString(
-                                                language === "el" ? "el-GR" : "en-GB",
+                                                resolveLocale(language),
                                                 { day: "numeric", month: "short" }
                                             )}
                                         </p>

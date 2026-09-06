@@ -7,6 +7,7 @@ import type { PartnerOfferView } from "@/lib/partner-offers/matching"
 import { LockedInsightPreview } from "@/components/monetization/LockedInsightPreview"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { Gift, Phone, ExternalLink, Ticket } from "lucide-react"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 type Lang = "el" | "en"
 type BenefitsCopy = ReturnType<typeof getTranslations>["benefits"]
@@ -93,7 +94,7 @@ function OfferCard({
 
 export default async function BenefitsPage() {
     const { dbUser } = await getAuthenticatedUser()
-    const lang: Lang = dbUser.preferredLanguage === "en" ? "en" : "el"
+    const lang: Lang = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(lang).benefits
     const { unlocked, locked } = await getOffersForUser(dbUser.id)
 

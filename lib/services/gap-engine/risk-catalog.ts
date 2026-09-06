@@ -32,6 +32,7 @@
 import type { LifeContext } from "./life-context"
 import { conditionLabels, outstandingDebt, totalDependents } from "./life-context"
 import type { Bilingual, PartialSubstitute, RiskDefinition, RiskPriority } from "./risk-types"
+import { resolveLocale } from "@/lib/i18n/format"
 
 // ── Formatting ───────────────────────────────────────────────────────
 
@@ -43,7 +44,7 @@ import type { Bilingual, PartialSubstitute, RiskDefinition, RiskPriority } from 
  */
 function eur(amount: number | null | undefined, lang: "el" | "en"): string {
     const n = Number(amount ?? 0)
-    return new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
+    return new Intl.NumberFormat(resolveLocale(lang), {
         style: "currency",
         currency: "EUR",
         maximumFractionDigits: 0,

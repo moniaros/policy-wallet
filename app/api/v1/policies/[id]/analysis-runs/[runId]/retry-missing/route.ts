@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const retryMissingParamsSchema = z.object({
     id: z.string().min(1),
@@ -83,7 +84,7 @@ export const POST = withApiGuard(
             const rerun = await orchestrator.retryMissing(
                 runId,
                 authResult.dbUser.id,
-                (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+                resolveUserLanguage(authResult.dbUser.preferredLanguage)
             )
 
             return createApiResponse({

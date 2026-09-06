@@ -12,7 +12,6 @@ import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 interface ClientOverviewTabProps {
     customer: Customer
-    healthScore: number
     policies: Policy[]
     opportunities: Opportunity[]
     onCreateProposal?: (gapId: string) => void
@@ -20,7 +19,6 @@ interface ClientOverviewTabProps {
 
 export function ClientOverviewTab({
     customer,
-    healthScore,
     policies,
     opportunities,
     onCreateProposal,
@@ -32,32 +30,12 @@ export function ClientOverviewTab({
 
     return (
         <div className="grid gap-4 lg:grid-cols-3">
-            {/*
-                Not a coverage verdict. This number is computeClientRelationshipScore,
-                40 of whose 100 points are the agent's own contact recency and the
-                client's account state — yet it was headed «Βαθμός υγείας κάλυψης» and
-                captioned «Κρίσιμα κενά» below 40, asserting critical gaps for a client
-                whose gap SEVERITIES were never consulted. It now describes the
-                relationship, which is what it measures — and as a fact cell, not a
-                ring: a gauge invites reading a ratio as a grade.
-            */}
-            <section className="pw-card pw-pad lg:col-span-1">
-                <CardHead as="h3" icon={Handshake} title={t.clientOverview.healthScore} />
-                <p className="mt-4 text-display font-semibold leading-none tracking-tight tabular-nums text-foreground">
-                    {healthScore}
-                    <span className="text-title text-muted-foreground">/100</span>
-                </p>
-                <p className="mt-3 text-sm text-muted-foreground">
-                    {healthScore >= 70
-                        ? t.clientOverview.goodCoverage
-                        : healthScore >= 40
-                            ? t.clientOverview.needsImprovement
-                            : t.clientOverview.criticalGaps}
-                </p>
-                <p className="mt-2 text-caption leading-snug text-muted-foreground">
-                    {t.clientOverview.healthScoreHint}
-                </p>
-            </section>
+            {/* Goal 3 (PW-CONTENT-01, D-C3): the «Δείκτης σχέσης πελάτη» 0–100 card is
+                gone. Its inputs were counts; the index was weighted (40/20/20/20),
+                thresholded (7/30/90/180 days) and banded into verdict adjectives with
+                colours — and it read «Καλή» for a customer whose every policy had
+                expired. A number out of a total renders only with its denominator
+                and counting basis; this one had neither. */}
 
             {/* Active Policies Summary */}
             <section className="pw-card pw-pad lg:col-span-2">

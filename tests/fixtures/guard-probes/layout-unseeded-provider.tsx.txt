@@ -1,0 +1,9 @@
+// PROBE — must turn tests/unit/one-locale-per-request.test.tsx red:
+// a layout that resolves the language on the server but mounts the dictionary
+// without seeding the client provider, so the client half starts at its own default.
+export default async function Layout({ children }) {
+    const { dbUser } = await getAuthenticatedUser()
+    const language = resolveUserLanguage(dbUser.preferredLanguage)
+    const t = getTranslations(language)
+    return <TranslationsProvider><AppShell t={t}>{children}</AppShell></TranslationsProvider>
+}

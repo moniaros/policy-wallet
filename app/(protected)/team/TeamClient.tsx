@@ -19,6 +19,7 @@ import {
     createAgencyAction, inviteMemberAction, removeMemberAction,
     updateRoleAction, transferCustomerAction
 } from "./actions"
+import { resolveLocale } from "@/lib/i18n/format"
 
 const copy = {
     en: {
@@ -151,7 +152,7 @@ export function TeamClient({ team, pipeline }: Props) {
     const t = copy[language === "el" ? "el" : "en"]
 
     const fmt = (n: number) =>
-        new Intl.NumberFormat(language === "el" ? "el-GR" : "en-GB", {
+        new Intl.NumberFormat(resolveLocale(language), {
             style: "currency",
             currency: "EUR",
             minimumFractionDigits: 0,

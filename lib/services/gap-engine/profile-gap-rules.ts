@@ -11,6 +11,7 @@
 import type { PolicyholderProfile, Policy } from "@prisma/client"
 import { getBranchFamily, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { coverageEngineStatus } from "@/lib/policy-status"
+import { resolveLocale } from "@/lib/i18n/format"
 
 export type GapSeverity = "critical" | "high" | "medium" | "low"
 
@@ -101,7 +102,7 @@ function hasActiveLine(policies: PolicyFields[], lob: string): boolean {
  */
 function formatCurrency(amount: number | null, lang: "el" | "en" = "el"): string {
     if (!amount) return lang === "el" ? "0 €" : "€0"
-    return new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
+    return new Intl.NumberFormat(resolveLocale(lang), {
         style: "currency",
         currency: "EUR",
         maximumFractionDigits: 0,

@@ -9,6 +9,7 @@ import { uploadFile, deleteFile } from "@/lib/storage"
 import { sanitizeDisplayName, validateUploadFile, REJECTION_MESSAGES } from "@/lib/security/file-upload"
 import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const AgentProfileSchema = z.object({
     agencyName: z.string().optional(),
@@ -158,7 +159,7 @@ export async function sendClientInvite(clientEmail: string) {
             to: normalizedEmail,
             token: invite.token,
             inviterName: displayPersonName(dbUser.name) || dbUser.email || "PolicyWallet advisor",
-            language: (dbUser.preferredLanguage as "el" | "en") || "en",
+            language: resolveUserLanguage(dbUser.preferredLanguage),
         })
 
         return { success: true, inviteId: invite.id, token: invite.token, emailQueued: emailResult.success }

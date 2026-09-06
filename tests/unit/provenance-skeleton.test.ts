@@ -83,11 +83,14 @@ describe("the map", () => {
         // slug is only ever one with a citation.
         for (const x of classified) expect(provenanceEntry(x.slug)?.citation, x.slug).toBeTruthy()
         const groups = partitionByProvenance(items, (x) => x.slug)
-        expect(groups.market).toEqual([])
-        expect(groups.emphasised.map((x) => x.slug)).toEqual(classified.map((x) => x.slug))
+        const emphasised = classified.filter((x) => mayCarryEmphasis(provenanceOf(x.slug)))
+        const market = classified.filter((x) => provenanceOf(x.slug) === "market")
+        // Goal 2 (PW-CONTENT-01): market is permitted on a NAMED public source — two rows so far.
+        expect(groups.market.map((x) => x.slug)).toEqual(market.map((x) => x.slug))
+        expect(groups.emphasised.map((x) => x.slug)).toEqual(emphasised.map((x) => x.slug))
         expect(groups.underReview.map((x) => x.i)).toEqual(underReview.map((x) => x.i))
-        // Class first, then the catalogue's declared order within each class (F1).
-        expect(orderByProvenance(items, (x) => x.slug)).toEqual([...classified, ...underReview])
+        // Class first (legislative, contractual, market, under review), then the catalogue's declared order within each class (F1).
+        expect(orderByProvenance(items, (x) => x.slug)).toEqual([...emphasised, ...market, ...underReview])
         expect(excludeUnderReview(items, (x) => x.slug)).toEqual(classified)
     })
 })

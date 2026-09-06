@@ -14,6 +14,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import type { AgentPortalStats } from "@/lib/services/agent-portal.service"
 import { StatTile, StatGrid } from "@/components/ui/StatTile"
+import { resolveLocale } from "@/lib/i18n/format"
 
 /**
  * The B2B portal KPI strip — eight book-of-business metrics rendered as
@@ -29,7 +30,7 @@ interface AgentKpiStripProps {
 export function AgentKpiStrip({ stats, className = "" }: AgentKpiStripProps) {
     const { language } = useLanguage()
     const copy = getRoleCopy(language).agentKpis
-    const locale = language === "el" ? "el-GR" : "en-GB"
+    const locale = resolveLocale(language)
 
     const money = new Intl.NumberFormat(locale, {
         style: "currency",

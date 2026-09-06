@@ -1,0 +1,51 @@
+{
+  "run": "../content-g2/after",
+  "capturedAt": "2026-09-06T12:37:09.879Z",
+  "dashboard": {
+    "counts": {
+      "notification.unreadCount": "3",
+      "agent.totalClients": "1",
+      "agent.expiringClients": "0",
+      "agent.gapClients": "1",
+      "agent.pendingInvites": "0",
+      "agent.policiesThisMonth": "0",
+      "agent.followUps": "0",
+      "agent.pipelineEur": "0 €",
+      "client.openGapCount": "1 ανοιχτό εύρημα"
+    },
+    "kpis": [
+      "Σύνολο πελατών1",
+      "Ασφαλιστήρια που λήγουν0",
+      "Με κενά κάλυψης1",
+      "Εκκρεμείς προσκλήσεις0",
+      "Ασφαλιστήρια αυτόν τον μήνα0",
+      "Προτεινόμενα follow-ups0",
+      "Εκτίμηση ευκαιριών0 €"
+    ],
+    "scoreWords": false
+  },
+  "insights": {
+    "facts": [
+      {
+        "fact": "gap.provenance",
+        "text": "Νομοθετική απαίτηση"
+      },
+      {
+        "fact": "gap.citation",
+        "text": "Νομοθετική απαίτηση · Ν. 2496/1997, άρθρο 17 (υπασφάλιση – υπερασφάλιση)"
+      },
+      {
+        "fact": "gap.provenance",
+        "text": "Υπό αξιολόγηση"
+      },
+      {
+        "fact": "gap.provenance",
+        "text": "Υπό αξιολόγηση"
+      }
+    ],
+    "lawMentions": [
+      "Νομοθετική απαίτηση",
+      "Νομοθετική απαίτηση · Ν. 2496/1997, άρθρο 17 (υπασφάλιση – υπερασφάλιση)"
+    ]
+  }
+}

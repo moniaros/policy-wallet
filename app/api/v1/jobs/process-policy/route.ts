@@ -6,6 +6,7 @@ import { logger } from "@/lib/logger"
 import { requireApiUser } from "@/lib/api-auth"
 import { withJobRun } from "@/lib/jobs/run-record"
 import { z } from "zod"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const processPolicySchema = z.object({
     policyId: z.string().min(1, "Policy ID is required"),
@@ -100,7 +101,7 @@ export async function POST(req: Request) {
                 })
             }
 
-            const language = (authResult.dbUser.preferredLanguage as "en" | "el") || "el"
+            const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
             const queued = await enqueueAnalysisRun(run.id, language)
             if (!queued) {
                 // No durable queue configured (dev): execute inline, like the

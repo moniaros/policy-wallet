@@ -13,6 +13,7 @@ import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 import { toPolicyFields } from "@/lib/services/gap-engine/profile-gap-rules"
 import { assessRisks } from "@/lib/services/gap-engine/risk-assessment"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * One area of attention — /protection/areas/[area] (docs/planning/
@@ -28,7 +29,7 @@ export default async function ProtectionAreaPage({ params }: { params: Promise<{
     if (!isAttentionAreaId(area)) notFound()
 
     const { dbUser } = await getAuthenticatedUser()
-    const lang: "el" | "en" = dbUser.preferredLanguage === "en" ? "en" : "el"
+    const lang: "el" | "en" = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(lang)
     const now = new Date()
 

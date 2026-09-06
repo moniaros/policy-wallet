@@ -19,7 +19,6 @@ function facts(overrides: Partial<RecommendedActionFacts> = {}): RecommendedActi
         nextRenewalDate: new Date(NOW.getTime() + 200 * DAY),
         gapCount: 0,
         criticalGapCount: 0,
-        healthScore: 80,
         lastInteractionAt: new Date(NOW.getTime() - 5 * DAY),
         now: NOW,
         ...overrides,

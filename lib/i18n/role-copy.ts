@@ -129,7 +129,6 @@ type RoleCopy = {
         invitedEmptyTitle: string
         invitedEmptySubtitle: string
         invitedEmptyCta: string
-        tableHealth: string
         tableNextRenewal: string
         tableGaps: string
         tableConsent: string
@@ -352,7 +351,6 @@ const roleCopy: Record<Language, RoleCopy> = {
             invitedEmptyTitle: "Καμία εκκρεμής πρόσκληση",
             invitedEmptySubtitle: "Οι προσκλήσεις ενεργοποιούν τους πελάτες σας — και το προφίλ σας γίνεται ο σύμβουλός τους στο app.",
             invitedEmptyCta: "Αποστολή πρόσκλησης",
-            tableHealth: "Σχέση",
             tableNextRenewal: "Επόμενη Ανανέωση",
             tableGaps: "Κενά",
             tableConsent: "Συναίνεση AI",
@@ -569,7 +567,6 @@ const roleCopy: Record<Language, RoleCopy> = {
             invitedEmptyTitle: "No pending invitations",
             invitedEmptySubtitle: "Invitations activate your clients — and you become their in-app advisor.",
             invitedEmptyCta: "Send an invitation",
-            tableHealth: "Relationship",
             tableNextRenewal: "Next Renewal",
             tableGaps: "Gaps",
             tableConsent: "AI Consent",

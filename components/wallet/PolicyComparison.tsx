@@ -4,7 +4,7 @@ import { useId, useState, useMemo } from "react"
 import { Info } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { parseDocumentDate } from "@/lib/dates/document-date"
-import { APP_TIME_ZONE } from "@/lib/i18n/format"
+import { APP_TIME_ZONE, resolveLocale } from "@/lib/i18n/format"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
 import { StatusPill } from "@/components/ui/StatusPill"
@@ -43,7 +43,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
     const router = useRouter()
     const { t, language } = useLanguage()
     const c = t.wallet.comparison
-    const locale = language === 'el' ? 'el-GR' : 'en-GB'
+    const locale = resolveLocale(language)
     const [selectedIds, setSelectedIds] = useState<string[]>(selectedPolicyIds)
 
     // Filter to only show comparable policies (same line of business)

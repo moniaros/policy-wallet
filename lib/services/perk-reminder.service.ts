@@ -13,6 +13,7 @@ import { db } from "@/lib/db"
 import { sendNotification } from "@/lib/notifications"
 import { logger } from "@/lib/logger"
 import type { AcordData } from "@/lib/schemas/acord-data"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 interface PerkToRemind {
     userId: string
@@ -120,7 +121,7 @@ export async function runPerkReminderScan(): Promise<{
                 where: { id: perk.userId },
                 select: { preferredLanguage: true },
             })
-            const lang = (user?.preferredLanguage === "en" ? "en" : "el") as "en" | "el"
+            const lang = resolveUserLanguage(user?.preferredLanguage)
 
             const localizedTitle = {
                 el: `💡 Μην ξεχάσετε: ${perk.perkName.el}`,

@@ -11,6 +11,7 @@ import { SettingRow } from "@/components/settings/SettingRow"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { cancelDeletionRequest, deleteAccount } from "@/app/(protected)/account/actions"
 import type { PrivacyData } from "@/app/(protected)/account/data"
+import { resolveLocale } from "@/lib/i18n/format"
 
 const CONSENT_ROWS = [
     { type: "ai_processing", key: "consentAi" },
@@ -42,7 +43,7 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
     const consentByType = new Map(data.consents.map((consent) => [consent.type, consent]))
 
     const formatDate = (iso: string) =>
-        new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB", {
+        new Date(iso).toLocaleDateString(resolveLocale(language), {
             day: "numeric",
             month: "long",
             year: "numeric",

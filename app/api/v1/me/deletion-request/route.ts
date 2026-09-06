@@ -2,6 +2,7 @@ import { z } from "zod"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { db } from "@/lib/db"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const deletionRequestSchema = z.object({
     legalBasis: z.string().trim().max(256).optional(),
@@ -20,7 +21,7 @@ export const POST = withApiGuard(
     },
     async ({ auth, body }) => {
         const userId = auth!.dbUser.id
-        const language = (auth!.dbUser.preferredLanguage as "el" | "en") || "el"
+        const language = resolveUserLanguage(auth!.dbUser.preferredLanguage)
         const payload = body!
 
         const existingOpenRequest = await db.deletionRequest.findFirst({

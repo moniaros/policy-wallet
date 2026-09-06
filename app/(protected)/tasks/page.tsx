@@ -4,6 +4,7 @@ import { getPendingActionItems } from "./actions"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { TasksClient } from "@/components/tasks/TasksClient"
 import { getTranslations } from "@/lib/i18n"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function TasksPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -16,7 +17,7 @@ export default async function TasksPage() {
         dueDate: item.dueDate?.toISOString()
     }))
 
-    const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
+    const t =getTranslations(resolveUserLanguage(dbUser.preferredLanguage))
 
     return (
         <div className="pw-page-shell">
@@ -29,7 +30,7 @@ export default async function TasksPage() {
                 </div>
                 <TasksClient
                     actionItems={serializedItems}
-                    userLanguage={dbUser.preferredLanguage || 'en'}
+                    userLanguage={resolveUserLanguage(dbUser.preferredLanguage)}
                 />
             </div>
         </div>

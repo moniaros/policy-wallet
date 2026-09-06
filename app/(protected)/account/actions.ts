@@ -11,6 +11,7 @@ import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { getSiteOrigin } from "@/lib/seo/site"
 import { NOTIFICATION_PREFERENCE_GROUPS } from "@/lib/notifications/preference-registry"
 import { preferenceRowsForStream } from "@/lib/notifications/preference-channels"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * Start a paid upgrade. ALWAYS goes through Stripe Checkout — the old
@@ -30,7 +31,7 @@ export async function upgradeSubscription(
 ) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: acctErr("el", "Μη εξουσιοδοτημένη πρόσβαση", "Unauthorized") }
-    const language: "el" | "en" = (authResult.dbUser.preferredLanguage as "el" | "en") || "el"
+    const language: "el" | "en" = resolveUserLanguage(authResult.dbUser.preferredLanguage)
 
     const plan = await db.plan.findUnique({ where: { id: planId } })
     if (!plan) return { error: acctErr(language, "Το πρόγραμμα δεν βρέθηκε", "Plan not found") }
@@ -91,7 +92,7 @@ export async function createBillingPortalSession() {
 export async function cancelSubscription() {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: acctErr("el", "Μη εξουσιοδοτημένη πρόσβαση", "Unauthorized") }
-    const language: "el" | "en" = (authResult.dbUser.preferredLanguage as "el" | "en") || "el"
+    const language: "el" | "en" = resolveUserLanguage(authResult.dbUser.preferredLanguage)
 
     const activeSubs = await db.subscription.findMany({
         where: { userId: authResult.dbUser.id, status: 'active' },

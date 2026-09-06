@@ -2,6 +2,7 @@ import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { db } from "@/lib/db"
 import { buildUserDataExportPayload } from "@/lib/services/compliance.service"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const DOWNLOAD_TTL_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -16,7 +17,7 @@ export const POST = withApiGuard(
     },
     async ({ auth }) => {
         const userId = auth!.dbUser.id
-        const language = (auth!.dbUser.preferredLanguage as "el" | "en") || "el"
+        const language = resolveUserLanguage(auth!.dbUser.preferredLanguage)
 
         const request = await db.dataExportRequest.create({
             data: {

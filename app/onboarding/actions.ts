@@ -10,6 +10,7 @@ import { displayPersonName, firstNameLabel } from "@/lib/wallet/policy-identity"
 import { EXTRACTION_EMPTY_CODE } from "@/lib/wallet/unread-policy"
 import { PREFERENCE_CHANNELS } from "@/lib/notifications/preference-channels"
 import { readLiveGapRows } from "@/lib/gaps/gap-rows"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
     "policy_expiring",
@@ -140,7 +141,7 @@ export async function uploadOnboardingPolicy(formData: FormData) {
     if (!canAdd.allowed) {
         return {
             success: false,
-            error: getUpgradeMessage("policy_limit_reached", (dbUser.preferredLanguage as "el" | "en") || "en"),
+            error: getUpgradeMessage("policy_limit_reached", resolveUserLanguage(dbUser.preferredLanguage)),
         }
     }
 
@@ -151,7 +152,7 @@ export async function uploadOnboardingPolicy(formData: FormData) {
     const policyService = new PolicyService(db)
 
     try {
-        const result = await policyService.uploadAndParse(userId, file, dbUser.preferredLanguage as "en" | "el", {
+        const result = await policyService.uploadAndParse(userId, file, resolveUserLanguage(dbUser.preferredLanguage), {
             surface: "onboarding",
             // The person resolved a «needs a confirmation» verdict on these
             // same bytes (UploadScreen re-submits with the flag).
@@ -170,7 +171,7 @@ export async function uploadOnboardingPolicy(formData: FormData) {
         // For onboarding speed, we might not want to wait for full analysis.
         // The service logic:
         /*
-        policyService.runBackgroundAnalysis(result.policyId, userId, dbUser.preferredLanguage as "en" | "el")
+        policyService.runBackgroundAnalysis(result.policyId, userId, resolveUserLanguage(dbUser.preferredLanguage))
             .catch(err => console.error("Background analysis error:", err))
         */
 
@@ -373,7 +374,7 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
         const result = await orchestrator.createAndExecuteRun(
             policyId,
             dbUser.id,
-            (dbUser.preferredLanguage as "en" | "el") || "en"
+            resolveUserLanguage(dbUser.preferredLanguage)
         )
 
         if (result) {

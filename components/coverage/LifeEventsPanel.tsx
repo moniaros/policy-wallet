@@ -24,6 +24,7 @@ import { toast } from "sonner"
 import { CalendarPlus, Check, Loader2 } from "lucide-react"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { EVENT_DOMAIN_LABELS } from "@/lib/services/life-events/registry"
+import { resolveLocale } from "@/lib/i18n/format"
 
 interface Bilingual {
     en: string
@@ -160,7 +161,7 @@ export function LifeEventsPanel({ options, recent, language }: LifeEventsPanelPr
                                     <span className="text-muted-foreground">
                                         {" · "}
                                         {new Date(event.occurredAt).toLocaleDateString(
-                                            lang === "el" ? "el-GR" : "en-GB",
+                                            resolveLocale(lang),
                                             { day: "numeric", month: "short", year: "numeric" }
                                         )}
                                     </span>

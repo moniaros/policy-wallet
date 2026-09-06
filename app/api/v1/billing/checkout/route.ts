@@ -4,6 +4,7 @@ import { createCheckoutSession } from "@/lib/billing"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { logger } from "@/lib/logger"
 import { withApiGuard } from "@/lib/api-guard"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const checkoutRequestSchema = z.object({
     planId: z.string().min(1, "Plan ID is required"),
@@ -29,7 +30,7 @@ export const POST = withApiGuard(
         },
     },
     async ({ auth, body }) => {
-        const language = (auth!.dbUser.preferredLanguage as "el" | "en") || "el"
+        const language = resolveUserLanguage(auth!.dbUser.preferredLanguage)
 
         try {
             const { planId, billingPeriod, returnTo, triggerSource, feature } = body!

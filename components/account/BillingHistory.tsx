@@ -3,7 +3,7 @@
 import React from 'react'
 import { FileText, Download, CheckCircle2, XCircle, Clock } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
-import { formatCurrency } from '@/lib/i18n/format'
+import { formatCurrency, resolveLocale } from "@/lib/i18n/format"
 
 export interface Invoice {
     id: string
@@ -58,7 +58,7 @@ export function BillingHistory({ invoices, language, className = '' }: BillingHi
                                 <div className="flex items-center gap-3 mb-1">
                                     <FileText className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                                     <span className="font-semibold text-slate-900 dark:text-white">
-                                        {invoice.date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB', {
+                                        {invoice.date.toLocaleDateString(resolveLocale(language), {
                                             year: 'numeric',
                                             month: 'long',
                                             day: 'numeric',

@@ -197,6 +197,7 @@ export const FACT_KEYS: Record<string, string> = {
     "composition.recording": "B2 line 2 as rendered.",
     "composition.catalogueMismatch": "B2: the run's catalogue version differs from the current one, so no composition renders — this sentence does instead.",
     "composition.prePlan": "B2 third state (V3): findings from a completed run that predates the catalogue plan — dated, says what was checked cannot be stated; never a composition, never a zero.",
+    "composition.stale": "Goal 4 (PW-CONTENT-01): the catalogue moved on after this run — one dated sentence beside the composition, offering re-analysis. Distinct from pre_plan and unauthored.",
 
     // review.*
     "review.scoreAtOpen": "Score recorded when the review opened (historical).",

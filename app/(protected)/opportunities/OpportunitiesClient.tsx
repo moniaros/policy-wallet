@@ -11,6 +11,7 @@ import { TableShell } from "@/components/ui/TableShell"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 
 import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
+import { resolveLocale } from "@/lib/i18n/format"
 interface Opportunity {
     id: string
     customerName: string
@@ -304,7 +305,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 )}
                                             </td>
                                             <td data-label={opp_t.colNextAction} className="px-6 py-5 text-sm text-muted-foreground">
-                                                {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB') : '—'}
+                                                {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(resolveLocale(language)) : '—'}
                                             </td>
                                             <td data-label={opp_t.colActions} className="px-6 py-5 text-right">
                                                 {/* Soft pills: the page's one primary is the book scan. */}

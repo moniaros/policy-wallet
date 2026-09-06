@@ -1338,7 +1338,7 @@ export const el = {
             noCoverage: 'Δεν υπάρχουν λεπτομέρειες κάλυψης',
         },
         // The per-policy donut on the detail page. NOT the portfolio-wide
-        // «Βαθμολογία προστασίας» and not the agent's «Δείκτης σχέσης» — three
+        // «Βαθμολογία προστασίας» and not the agent's former relationship index — three
         // different numbers, so this one has to be distinguishable at a glance.
         // «Υγεία κάλυψης» also collided with «υγεία», the health-insurance
         // branch, on a screen that may be showing a health policy.
@@ -1536,7 +1536,6 @@ export const el = {
         qualificationShareDesc: 'της αξίας του pipeline έχει πλήρη εικόνα αξιολόγησης',
         qualificationMissingEb: 'χωρίς αποφασίζοντα',
         qualificationUnconfirmedPain: 'με ανεπιβεβαίωτη ανάγκη',
-        healthScore: 'Δείκτης σχέσης',
         policiesAbbr: 'ασφ.',
         inviteClient: 'Πρόσκληση πελάτη',
         actionQueue: 'Ουρά ενεργειών',
@@ -2141,7 +2140,8 @@ export const el = {
         notRecorded: '{count} δεν καταγράφονται',
         prePlan: 'Ευρήματα από την ανάλυση της {date}. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δεν αποτελούν πλήρη αξιολόγηση.',
         prePlanNoDate: 'Ευρήματα από παλαιότερη ανάλυση που προηγείται του σχεδίου ελέγχων: δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δεν αποτελούν πλήρη αξιολόγηση.',
-        catalogueChanged: 'Οι έλεγχοι άλλαξαν μετά από αυτή την ανάλυση, γι\u2019 αυτό η σύνθεση δεν εμφανίζεται. Μια νέα ανάλυση θα την ενημερώσει.',
+        staleCatalogue: 'Η ανάλυση έγινε στις {date}. Έχουν προστεθεί έλεγχοι από τότε — μια νέα ανάλυση θα τους περιλάβει.',
+        staleCatalogueNoDate: 'Έχουν προστεθεί έλεγχοι μετά από αυτή την ανάλυση — μια νέα ανάλυση θα τους περιλάβει.',
         reviewFraming: 'Τα παραπάνω είναι μέτρηση του τι διάβασαν οι κανόνες — αφορμή για έλεγχο, όχι κρίση για την ασφάλισή σας.',
     },
 
@@ -3885,11 +3885,6 @@ export const el = {
     },
     clientOverview: {
         linesHeld: 'Γραμμές κάλυψης που κατέχει',
-        healthScore: "Δείκτης σχέσης πελάτη",
-        healthScoreHint: "Συνδυάζει κάλυψη, ενεργοποίηση λογαριασμού και πρόσφατη επικοινωνία. Δεν αποτελεί αξιολόγηση της επάρκειας ασφάλισης.",
-        goodCoverage: "Ενεργή σχέση",
-        needsImprovement: "Χρειάζεται παρακολούθηση",
-        criticalGaps: "Χωρίς πρόσφατη επαφή",
         activePolicies: "Ενεργά ασφαλιστήρια",
         expiringSoon: "Λήγει σύντομα",
         identifiedGaps: "Εντοπισμένα κενά",

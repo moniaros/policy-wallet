@@ -11,6 +11,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { updateEmail, updateProfile } from "@/app/(protected)/account/actions"
 import type { ProfileData } from "@/app/(protected)/account/data"
+import { resolveLocale } from "@/lib/i18n/format"
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -41,7 +42,7 @@ export function ProfileSection({ data }: { data: ProfileData }) {
           : copy.rolePolicyholder
 
     const memberSince = new Date(data.createdAt).toLocaleDateString(
-        language === "el" ? "el-GR" : "en-GB",
+        resolveLocale(language),
         { day: "numeric", month: "long", year: "numeric" }
     )
 

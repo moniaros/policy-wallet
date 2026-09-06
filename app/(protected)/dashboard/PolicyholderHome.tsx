@@ -55,6 +55,7 @@ import { areaForLob, areaForRisk } from "@/lib/protection/domains"
 import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 import { partitionByProvenance, provenanceOf } from "@/lib/gaps/provenance"
 import { classifiedRecommendations, readLiveGapRows } from "@/lib/gaps/gap-rows"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
  * Calendar days until a date, in Athens.
@@ -107,7 +108,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         }
     }
 
-    const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
+    const lang: 'el' | 'en' = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(lang)
     const home = t.dashboard.home
 

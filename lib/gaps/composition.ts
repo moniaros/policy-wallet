@@ -26,9 +26,10 @@ import { isEvaluableDetectionLogic } from "@/lib/gaps/assessment-coverage"
  *     unconditionally and is listed by slug, never silently `covered`.
  *
  * The denominator is the run's attempted-rule plan (B0.2), which names the
- * catalogue version it was evaluated against. A composition is never rendered
- * against a different catalogue version: `catalogue_mismatch` is returned and
- * the surface says so instead.
+ * catalogue version it was evaluated against. When the current catalogue is a
+ * different version, the lines still render against the
+ * run's own plan and the composition carries a dated `stale` flag (PW-CONTENT-01
+ * Goal 4) — never a denominator the run did not attempt, never a withheld line.
  */
 
 export type RuleQuestion = "coverage" | "recording" | "unknown"
@@ -64,11 +65,27 @@ export interface RecordingLine {
     items: RecordingItem[]
 }
 
+/**
+ * PW-CONTENT-01 Goal 4 — the catalogue moved on after this run. The
+ * composition is still computed against the run's OWN plan (never against a
+ * version the run did not attempt) and rendered; the surface adds one dated
+ * sentence naming the run date and offering re-analysis as the resolution.
+ * Distinct from the pre-plan state (B0/V3) and the unauthored-branch state
+ * (B1.5): three states, three sentences, none interchangeable.
+ */
+export interface CompositionStaleness {
+    runCatalogueVersion: string
+    currentCatalogueVersion: string
+    runDateLabel: string | null
+}
+
 export type Composition =
     | {
           kind: "composition"
           lineOfBusiness: string
           catalogueVersion: string
+          /** Null when the run's catalogue is the current one. */
+          stale: CompositionStaleness | null
           coverage: CoverageLine
           recording: RecordingLine
           /** Slugs whose question could not be classified — reported, never counted. */
@@ -77,7 +94,6 @@ export type Composition =
           undeclaredInputs: string[]
       }
     | { kind: "unauthored"; lineOfBusiness: string }
-    | { kind: "catalogue_mismatch"; lineOfBusiness: string; runCatalogueVersion: string; currentCatalogueVersion: string }
     | { kind: "no_run"; lineOfBusiness: string }
     /** V3: a COMPLETED run with no attempted-rules plan (analysed before B0). What was checked cannot be stated. */
     | { kind: "pre_plan"; lineOfBusiness: string; runFinishedAt: string | null; runDateLabel: string | null }
@@ -237,9 +253,13 @@ export function composeFindings(input: ComposeInput): Composition {
     if (input.attempted.slugs.length === 0) return { kind: "unauthored", lineOfBusiness }
 
     const current = currentCatalogueVersion()
-    if (input.attempted.catalogueVersion !== current) {
-        return { kind: "catalogue_mismatch", lineOfBusiness, runCatalogueVersion: input.attempted.catalogueVersion, currentCatalogueVersion: current }
-    }
+    // Goal 4: never withhold, never recompute against the current catalogue —
+    // the denominator below is the run's plan; the version difference is a
+    // dated sentence on the surface.
+    const stale: CompositionStaleness | null =
+        input.attempted.catalogueVersion !== current
+            ? { runCatalogueVersion: input.attempted.catalogueVersion, currentCatalogueVersion: current, runDateLabel: input.completedRun?.dateLabel ?? null }
+            : null
 
     const now = input.now ?? new Date()
     const bySlug = new Map<string, DefinitionForComposition>()
@@ -308,11 +328,25 @@ export function composeFindings(input: ComposeInput): Composition {
         kind: "composition",
         lineOfBusiness,
         catalogueVersion: input.attempted.catalogueVersion,
+        stale,
         coverage,
         recording,
         unclassified,
         undeclaredInputs,
     }
+}
+
+/**
+ * Goal 4, for surfaces that hold a run's `attemptedRules` but no composition
+ * (the two report routes): the same staleness the composition carries.
+ * Null for a pre-plan run (no plan to be stale), an unauthored branch, or a
+ * run on the current catalogue.
+ */
+export function describeCatalogueStaleness(attemptedRules: unknown, runDateLabel: string | null): CompositionStaleness | null {
+    const plan = attemptedRules as { slugs?: unknown; catalogueVersion?: unknown } | null | undefined
+    if (!plan || !Array.isArray(plan.slugs) || plan.slugs.length === 0 || typeof plan.catalogueVersion !== "string") return null
+    const current = currentCatalogueVersion()
+    return plan.catalogueVersion === current ? null : { runCatalogueVersion: plan.catalogueVersion, currentCatalogueVersion: current, runDateLabel }
 }
 
 /** The two invariants, as a predicate a guard can assert on any composition. */

@@ -2,7 +2,7 @@
 
 import { GlossaryHint } from "@/components/insurance/GlossaryHint"
 import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
-import { formatCurrency } from "@/lib/i18n/format"
+import { formatCurrency, resolveLocale } from "@/lib/i18n/format"
 import {
   TrendingUp,
   TrendingDown,
@@ -96,7 +96,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.maturityDate}</span>
           </div>
-          <span className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(life.maturityDate, language === "el" ? "el-GR" : "en-GB")}</span>
+          <span className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(life.maturityDate, resolveLocale(language))}</span>
         </div>
       )}
 
@@ -284,7 +284,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
             <div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.lastPremiumDate}</span>
               <p className="text-xs text-muted-foreground">
-                {lifeCopy.paidOn} {formatPolicyDate(life.lastPremiumDate, language === "el" ? "el-GR" : "en-GB")}
+                {lifeCopy.paidOn} {formatPolicyDate(life.lastPremiumDate, resolveLocale(language))}
               </p>
             </div>
           </div>
