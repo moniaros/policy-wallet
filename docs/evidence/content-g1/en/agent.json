@@ -1,14 +1,14 @@
 {
-  "run": "el",
-  "capturedAt": "2026-09-06T13:06:24.647Z",
+  "run": "en",
+  "capturedAt": "2026-09-06T13:19:41.853Z",
   "results": [
     {
       "width": 320,
       "url": "/dashboard",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -16,8 +16,8 @@
       "url": "/customers",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -25,8 +25,8 @@
       "url": "/insights",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -34,8 +34,8 @@
       "url": "/tasks",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -43,11 +43,11 @@
       "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtoaaw9b00036gkwkt5hw00e",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": [
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
       ]
     },
     {
@@ -55,8 +55,8 @@
       "url": "/dashboard",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -64,8 +64,8 @@
       "url": "/customers",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -73,8 +73,8 @@
       "url": "/insights",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -82,8 +82,8 @@
       "url": "/tasks",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -91,11 +91,11 @@
       "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtoaaw9b00036gkwkt5hw00e",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": [
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
       ]
     },
     {
@@ -103,8 +103,8 @@
       "url": "/dashboard",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -112,8 +112,8 @@
       "url": "/customers",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -121,8 +121,8 @@
       "url": "/insights",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -130,8 +130,8 @@
       "url": "/tasks",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -139,11 +139,11 @@
       "url": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtoaaw9b00036gkwkt5hw00e",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": [
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
       ]
     }
   ],

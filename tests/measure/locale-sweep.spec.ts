@@ -28,7 +28,11 @@ const stamp = () => ({ lang: document.documentElement.lang, locale: document.doc
 test("Goal 1: b2c locale sweep at 320/390/430", async ({ page }) => {
     test.setTimeout(10 * 60_000)
     mkdirSync(OUT, { recursive: true })
-    const pages: string[] = await withDb(async (db) => { const p = await db.policy.findFirst({ where: { policyNumber: "63708952" }, select: { id: true } }); return ["/dashboard", "/wallet", "/protection", "/notifications", "/tasks", ...(p ? [`/wallet/${p.id}`] : [])] })
+    // The harness's global setup re-provisions the seeded users (preferredLanguage: 'el'),
+    // so the stored preference is set HERE, after setup, and restored at the end.
+    const setPreference = (lang: string) => withDb((db) => db.user.updateMany({ where: { email: { in: ["e2e-ph@policywallet.test", "e2e-agent@policywallet.test"] } }, data: { preferredLanguage: lang } }))
+    await setPreference(RUN)
+    const pages: string[] = await withDb(async (db) => { const p = await db.policy.findFirst({ where: { policyNumber: "63708952" }, select: { id: true } }); return ["/dashboard", "/wallet", "/protection", "/notifications", "/tasks", ...(p ? [`/wallet/${p.id}`] : []), ...(RUN === "en" ? ["/en/methodology", "/en/changelog", "/en/status"] : ["/methodology", "/changelog", "/status"])] })
     const out: any = { run: RUN, capturedAt: new Date().toISOString(), results: [] }
     const failures: string[] = []
     for (const width of [320, 390, 430]) {
@@ -50,6 +54,7 @@ test("Goal 1: b2c locale sweep at 320/390/430", async ({ page }) => {
         }
     }
     out.failures = failures
+    await setPreference("el")
     writeFileSync(path.join(OUT, "b2c.json"), JSON.stringify(out, null, 2))
     expect(failures, failures.join("\n")).toEqual([])
 })

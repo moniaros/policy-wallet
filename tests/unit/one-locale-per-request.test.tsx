@@ -95,6 +95,18 @@ describe("Goal 1 — a seeded provider: the server wins, and follows the server"
         await act(async () => {})
         expect(getByTestId("lang").textContent).toBe("en")
     })
+    it("nested: an unseeded root provider around a seeded 'en' provider — the SEEDED value stamps <html lang> (the root yields)", async () => {
+        document.documentElement.setAttribute("lang", "el")
+        const { getByTestId, unmount } = render(<LanguageProvider><LanguageProvider initialLanguage="en"><Probe /></LanguageProvider></LanguageProvider>)
+        await act(async () => {})
+        expect(getByTestId("lang").textContent).toBe("en")
+        expect(document.documentElement.lang).toBe("en")
+        expect(document.documentElement.getAttribute("data-locale")).toBe("en-GB")
+        expect(document.documentElement.dataset.langOwner).toBe("seeded")
+        unmount()
+        expect(document.documentElement.dataset.langOwner).toBeUndefined()
+    })
+
     it("an unseeded provider defaults to Greek", async () => {
         const { getByTestId } = render(<LanguageProvider><Probe /></LanguageProvider>)
         await act(async () => {})

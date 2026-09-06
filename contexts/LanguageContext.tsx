@@ -129,16 +129,28 @@ export function LanguageProvider({
         // ownership flag is what also covers /auth/*?lang=en, which is pinned
         // by AuthLanguageProvider and has no /en prefix to match on.
         if (pinned) return
-        if (document.documentElement.dataset.langOwner === 'static') return
-        const path = window.location.pathname
-        if (path === '/en' || path.startsWith('/en/')) return
-
         const html = document.documentElement
+        // Ownership (Goal 1): the root layout mounts an UNSEEDED provider around
+        // everything, and the protected layout mounts a SEEDED one inside it.
+        // React runs the child's effect before the parent's, so without a claim
+        // the root's Greek default stamped <html lang> last and an English
+        // preference rendered English copy under lang="el". A seeded provider
+        // claims the stamp; an unseeded one yields to any owner (static or seeded).
+        if (seeded) {
+            html.dataset.langOwner = 'seeded'
+        } else {
+            if (html.dataset.langOwner === 'static' || html.dataset.langOwner === 'seeded') return
+            const path = window.location.pathname
+            if (path === '/en' || path.startsWith('/en/')) return
+        }
         html.setAttribute('lang', language === 'el' ? 'el' : 'en')
         // The same tag table the formatters use (lib/i18n/format.ts): the stamp
         // said en-US while every number and date said en-GB.
         html.setAttribute('data-locale', resolveLocale(language))
-    }, [language, pinned])
+        return () => {
+            if (seeded && html.dataset.langOwner === 'seeded') delete html.dataset.langOwner
+        }
+    }, [language, pinned, seeded])
 
     const router = useRouter()
     const setLanguage = (lang: Language) => {

@@ -1,14 +1,14 @@
 {
-  "run": "el",
-  "capturedAt": "2026-09-06T12:13:30.632Z",
+  "run": "en",
+  "capturedAt": "2026-09-06T13:12:40.192Z",
   "results": [
     {
       "width": 320,
       "url": "/dashboard",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -16,8 +16,8 @@
       "url": "/wallet",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -25,8 +25,8 @@
       "url": "/protection",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -34,8 +34,8 @@
       "url": "/notifications",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -43,8 +43,8 @@
       "url": "/tasks",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -52,38 +52,38 @@
       "url": "/wallet/cmtoaaw9b00036gkwkt5hw00e",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": [
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
       ]
     },
     {
       "width": 320,
-      "url": "/methodology",
+      "url": "/en/methodology",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
       "width": 320,
-      "url": "/changelog",
+      "url": "/en/changelog",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
       "width": 320,
-      "url": "/status",
+      "url": "/en/status",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -91,8 +91,8 @@
       "url": "/dashboard",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -100,8 +100,8 @@
       "url": "/wallet",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -109,8 +109,8 @@
       "url": "/protection",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -118,8 +118,8 @@
       "url": "/notifications",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -127,8 +127,8 @@
       "url": "/tasks",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -136,38 +136,38 @@
       "url": "/wallet/cmtoaaw9b00036gkwkt5hw00e",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": [
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
       ]
     },
     {
       "width": 390,
-      "url": "/methodology",
+      "url": "/en/methodology",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
       "width": 390,
-      "url": "/changelog",
+      "url": "/en/changelog",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
       "width": 390,
-      "url": "/status",
+      "url": "/en/status",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -175,8 +175,8 @@
       "url": "/dashboard",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -184,8 +184,8 @@
       "url": "/wallet",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -193,8 +193,8 @@
       "url": "/protection",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -202,8 +202,8 @@
       "url": "/notifications",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -211,8 +211,8 @@
       "url": "/tasks",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
@@ -220,38 +220,38 @@
       "url": "/wallet/cmtoaaw9b00036gkwkt5hw00e",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": [
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
-        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+        "Findings from the analysis of 6 September 2026.",
+        "Findings from the analysis of 6 September 2026. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete "
       ]
     },
     {
       "width": 430,
-      "url": "/methodology",
+      "url": "/en/methodology",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
       "width": 430,
-      "url": "/changelog",
+      "url": "/en/changelog",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     },
     {
       "width": 430,
-      "url": "/status",
+      "url": "/en/status",
       "overflowPx": 0,
       "offenders": [],
-      "lang": "el",
-      "locale": "el-GR",
+      "lang": "en",
+      "locale": "en-GB",
       "dated": []
     }
   ],

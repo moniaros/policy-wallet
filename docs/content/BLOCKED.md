@@ -1,0 +1,8 @@
+# PW-CONTENT-01 — blocked items
+
+Each entry names the exact human task that unblocks it.
+
+| Id | Item | Blocked on | Exact human task | Filed |
+|---|---|---|---|---|
+| BL-C1 | **Merging and deploying Goals 5–6 (PR `feat/content-01-rules`: renters as a write branch + 21 authored rules, 50 total).** The engine plans and evaluates rules from the database's active `gap_definitions`, while the composition fingerprints the repository catalogue. Deploying the new catalogue without aligning production's table would make every new production run render the stale-catalogue line, permanently, and no new rule would ever fire. | A **production write**: `npm run align:gap-catalogue -- --apply` against production upserts 21 rows into `gap_definitions` (no deletes; ids survive, so `gap_instances` survive). This series forbids production writes without explicit in-session approval. Dev is aligned and verified (50 active, fingerprint `d6f515a1d400f9d5`). | Say **go** for the production alignment. The sequence is then: export production `gap_definitions` to `docs/archive/<timestamp>_prod_gap_definitions_before_content_01.sql` and commit it → run the alignment against production → `npm run verify:gap-catalogue` against production prints `d6f515a1d400f9d5` → merge the rules PR → deploy. The alignment and the deploy must land in the same window. | 2026-09-06 |
+| BL-C2 | **B2C policyholder production smoke (Goal 8.2).** | The owner's policyholder session in the Chrome profile the extension drives; the agent does not sign in with credentials. | Sign in to www.policywallet.gr as the policyholder in that Chrome profile, then say so; the smoke runs the wallet page, /protection and /dashboard. | 2026-09-06 |
