@@ -34,6 +34,8 @@ export interface CustomerIntelligence {
     nextRenewalDate: string | null
     gapCount: number
     criticalGapCount: number
+    /** Findings no human has classified yet — a labelled figure beside the headline, never inside it (A-02). */
+    underReviewCount?: number
     consentStatus: ConsentStatus
     recommendedAction: RecommendedActionKey
 }
@@ -70,6 +72,8 @@ export interface RecommendedActionFacts {
     nextRenewalDate: Date | null
     gapCount: number
     criticalGapCount: number
+    /** Findings no human has classified yet — a labelled figure beside the headline, never inside it (A-02). */
+    underReviewCount?: number
     lastInteractionAt: Date | null
     now?: Date
 }
@@ -187,7 +191,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
               })
             : Promise.resolve([]),
         clientIds.length
-            ? readLiveGapRows({ scope: "classified",
+            ? readLiveGapRows({ scope: "disclosed",
                   where: {
                       status: { in: ["open", "detected", "acknowledged"] },
                       // Gaps only from policies the agent may see — a gap count
@@ -201,6 +205,9 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
                       userId: true,
                       severity: true,
                       policy: { select: { ownerUserId: true } },
+                      // The accessor tags provenance from the slug (B3); the tag splits the headline
+                      // (classified) from the labelled under-review figure (PW-BRIDGE-01 A-02).
+                      definition: { select: { slug: true } },
                   },
               })
             : Promise.resolve([]),
@@ -221,13 +228,19 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
         protectionScores.filter((s) => visibleOwners.has(s.userId)).map((s) => [s.userId, s.overallScore])
     )
 
-    const gapsByClient = new Map<string, { total: number; critical: number }>()
+    // `total` and `critical` are CLASSIFIED (the conversation number, D-B1); `underReview` is the
+    // separate labelled figure the customer's home already shows and the agent could not see (A-02).
+    const gapsByClient = new Map<string, { total: number; critical: number; underReview: number }>()
     for (const gap of openGaps) {
         const ownerId = gap.policy?.ownerUserId || gap.userId
         if (!ownerId) continue
-        const entry = gapsByClient.get(ownerId) || { total: 0, critical: 0 }
-        entry.total += 1
-        if (gap.severity === "critical" || gap.severity === "high") entry.critical += 1
+        const entry = gapsByClient.get(ownerId) || { total: 0, critical: 0, underReview: 0 }
+        if (gap.provenance === "under_review") {
+            entry.underReview += 1
+        } else {
+            entry.total += 1
+            if (gap.severity === "critical" || gap.severity === "high") entry.critical += 1
+        }
         gapsByClient.set(ownerId, entry)
     }
 
@@ -245,7 +258,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
             .sort((a, b) => a.getTime() - b.getTime())
         const nextRenewal = upcomingRenewals[0] ?? null
 
-        const gaps = gapsByClient.get(clientId) || { total: 0, critical: 0 }
+        const gaps = gapsByClient.get(clientId) || { total: 0, critical: 0, underReview: 0 }
         const consentStatus = deriveConsentStatus(rel.customer.aiProcessingConsentVersion)
         const activationStatus =
             rel.status === "pending_activation"
@@ -271,6 +284,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
             nextRenewalDate: nextRenewal ? nextRenewal.toISOString() : null,
             gapCount: gaps.total,
             criticalGapCount: gaps.critical,
+            underReviewCount: gaps.underReview,
             consentStatus,
             recommendedAction,
         }

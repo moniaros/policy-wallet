@@ -294,6 +294,7 @@ export interface ClientCardData {
     protectionScore?: number | null
     /** Number of detected coverage gaps */
     gapCount?: number
+    underReviewCount?: number
     /** B1.5: policies in a branch with no authored check — never counted as assessed, and said so. */
     unassessedPolicyCount?: number
 }

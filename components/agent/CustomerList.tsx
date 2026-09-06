@@ -416,6 +416,11 @@ export function CustomerList({
                                             ) : (
                                                 <span className="text-caption tabular-nums text-muted-foreground" data-count="client.openGapCount" data-count-subject={customer.id}>0</span>
                                             )}
+                                            {intel && (intel.underReviewCount ?? 0) > 0 && (
+                                                <span className="ml-1 whitespace-nowrap text-caption tabular-nums text-muted-foreground" data-count="client.underReviewCount" data-count-subject={customer.id}>
+                                                    +{intel.underReviewCount} {roleCopy.customerList.underReview}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-4 py-3">
                                             <ConsentStatusBadge

@@ -5,6 +5,8 @@ export interface RecordStatusCopy {
     needsData: string
     awaitingConfirmation: string
     confirmed: string
+    /** «Επιβεβαίωση συμβούλου» — the confirmed state with its actor declared (A-06). */
+    confirmedByAgent: string
     inactive: string
     needConsent: string
     needPlan: string
@@ -36,7 +38,8 @@ const NEED_KEY: Record<RecordNeed, keyof RecordStatusCopy> = {
     technical: "needTechnical",
 }
 
-export function recordStatusLabel(result: Pick<RecordStatusResult, "status">, copy: RecordStatusCopy): string {
+export function recordStatusLabel(result: Pick<RecordStatusResult, "status" | "confirmedBy">, copy: RecordStatusCopy): string {
+    if (result.status === "confirmed" && result.confirmedBy === "agent") return copy.confirmedByAgent
     return copy[LABEL_KEY[result.status]]
 }
 

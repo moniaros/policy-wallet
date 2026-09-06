@@ -467,6 +467,7 @@ export const el = {
         noNotifications: 'Δεν υπάρχουν ειδοποιήσεις',
         noNotificationsYetDesc: 'Θα σας ειδοποιήσουμε όταν υπάρχει κάτι νέο',
         shareWithAgent: 'Κοινοποίηση σε σύμβουλο',
+        sharedWithAdvisor: 'Κοινοποιημένο στον σύμβουλο',
         invitationCreated: 'Η πρόσκληση δημιουργήθηκε. Στείλτε το link στον σύμβουλό σας.',
         invitationEmailFailed: 'Το email δεν παραδόθηκε — αντιγράψτε τον σύνδεσμο και μοιραστείτε τον εσείς.',
         policyShared: 'Το ασφαλιστήριο κοινοποιήθηκε με επιτυχία',
@@ -1512,6 +1513,7 @@ export const el = {
 
     agentUi: {
         openFindingsLabel: 'ανοιχτά ευρήματα',
+        underReviewLabel: 'υπό αξιολόγηση',
         openFindingLabelOne: 'ανοιχτό εύρημα',
         // B1.5: per-client count of policies no rule can assess yet.
         unassessedPoliciesOne: '1 ασφαλιστήριο χωρίς ορισμένους ελέγχους — δεν αξιολογήθηκε',
@@ -2100,6 +2102,7 @@ export const el = {
         needsData: 'Χρειάζεται στοιχεία',
         awaitingConfirmation: 'Προς επιβεβαίωση',
         confirmed: 'Επιβεβαιωμένο',
+        confirmedByAgent: 'Επιβεβαίωση συμβούλου',
         inactive: 'Ανενεργό',
         needConsent: 'Χρειάζεται τη συγκατάθεσή σας για επεξεργασία με AI.',
         needPlan: 'Η ανάλυση δεν περιλαμβάνεται στο τρέχον πλάνο.',

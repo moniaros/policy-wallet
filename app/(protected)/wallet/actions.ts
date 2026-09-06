@@ -427,6 +427,9 @@ export async function confirmPolicyReview(policyId: string, edits: ConfirmReview
             ...(acord.extraction || {}),
             reviewState: 'confirmed',
             confirmedAt: new Date().toISOString(),
+            // Declared actor (PW-BRIDGE-01 A-06): the record status names who confirmed.
+            confirmedBy: 'agent',
+            confirmedByUserId: dbUser.id,
             flaggedAt: null,
         },
     }

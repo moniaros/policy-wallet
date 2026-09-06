@@ -470,6 +470,7 @@ export const en: TranslationKeys = {
         noNotifications: 'No notifications',
         noNotificationsYetDesc: "We'll notify you when there's something new",
         shareWithAgent: 'Share with Advisor',
+        sharedWithAdvisor: 'Shared with your advisor',
         invitationCreated: 'Invitation created. Send the link to your advisor.',
         invitationEmailFailed: 'Email not delivered — copy the link below and share it yourself.',
         policyShared: 'Policy shared successfully',
@@ -1499,6 +1500,7 @@ export const en: TranslationKeys = {
 
     agentUi: {
         openFindingsLabel: 'open findings',
+        underReviewLabel: 'under review',
         openFindingLabelOne: 'open finding',
         unassessedPoliciesOne: '1 policy with no authored checks — not assessed',
         unassessedPoliciesMany: '{count} policies with no authored checks — not assessed',
@@ -2071,6 +2073,7 @@ export const en: TranslationKeys = {
         needsData: 'Needs details',
         awaitingConfirmation: 'Awaiting confirmation',
         confirmed: 'Confirmed',
+        confirmedByAgent: 'Advisor-confirmed',
         inactive: 'Inactive',
         needConsent: 'Your consent to AI processing is needed.',
         needPlan: 'Analysis is not included in the current plan.',

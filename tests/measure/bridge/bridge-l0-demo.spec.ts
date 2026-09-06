@@ -90,7 +90,8 @@ function mergeResult(rows: Record<string, unknown>[]) {
 
 for (const state of BRIDGE_STATES) {
     test(`L0.3 — both sides captured in state ${state} (inventory, recorded not asserted)`, async ({ browser }) => {
-        test.setTimeout(6 * 60 * 1000)
+        // Five pairs per state now (policy, wallet, book, advisor, home) — ten captures at ~40 s each.
+        test.setTimeout(10 * 60 * 1000)
         const rows: Record<string, unknown>[] = []
         const seed = await seedTwoSided(state)
         const sessions = await openTwoSided(browser)

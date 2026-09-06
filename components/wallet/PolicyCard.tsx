@@ -168,6 +168,15 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                     {/* Row 2: LOB type (+ asset identifier) + expiry inline */}
                     <p className="text-caption text-muted-foreground">
                         {localizedLob}
+                        {(policy.sharedWithAgents?.length ?? 0) > 0 && (
+                            <>
+                                {' · '}
+                                {/* A-09: the customer sees which of their policies the advisor can see; the book never says why it has fewer. */}
+                                <span data-fact="policy.sharedWithAdvisor" data-fact-subject={policy.id} data-fact-value="shared">
+                                    {t.wallet.sharedWithAdvisor}
+                                </span>
+                            </>
+                        )}
                         {assetLabel && (
                             <>
                                 {' · '}

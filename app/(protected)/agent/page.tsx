@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import { buildSharedPolicyLedger } from "@/lib/wallet/shared-policy-ledger"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { AgentClient } from "./AgentClient"
@@ -93,25 +94,16 @@ export default async function AgentPage() {
                 status: "active",
                 scope: { startsWith: "policy:" },
             },
-            select: { id: true, scope: true, grantedAt: true },
+            // The level is what the customer must see to know what the advisor can do (PW-BRIDGE-01 A-10).
+            select: { id: true, scope: true, grantedAt: true, permissions: true },
         })
         : []
 
-    const sharedPolicies = shareGrants
-        .map((g) => {
-            const policyId = g.scope.slice("policy:".length)
-            const policy = policies.find((p) => p.id === policyId)
-            return {
-                grantId: g.id,
-                policyId,
-                policyNumber: policy?.policyNumber ?? policyId,
-                insurerName: policy?.insurerName ?? "",
-                lineOfBusiness: (policy?.lineOfBusiness as string) ?? "",
-                addedByAdvisor: policy ? policy.createdByUserId === agentUser!.id : false,
-                grantedAt: g.grantedAt.toISOString(),
-            }
-        })
-        .filter((sp) => Boolean(sp.policyId))
+    // ONE pure function builds the ledger (lib/wallet/shared-policy-ledger.ts): grants over deleted policies
+    // are dropped, one policy is listed once at its highest level, and the «N of M» numerator is the
+    // number of DISTINCT policies the advisor can see — it can never exceed the count beside it.
+    const ledger = buildSharedPolicyLedger(shareGrants, policies, agentUser?.id ?? "")
+    const sharedPolicies = ledger.items
 
     const user = {
         id: dbUser.id,

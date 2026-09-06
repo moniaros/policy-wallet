@@ -8,15 +8,15 @@ Populated from `PARITY.md` and `INTERACTIONS.md`. Order within Queue A follows �
 |---|---|---|---|
 | A-01 | `customers/[id]/page.tsx` selects the customer's `password` hash and never uses it — minimise | PARITY E3 | **Leak** (repair first) — **ACT done 2026-09-06**, eleven sites, guard green |
 | A-01b | Full-row `include: { customer: … }` loads (`customer.service.ts` profile; `findUnique({ where: { email } })` without select in the customer creator) still bring every user column including the hash | A-01 residue | Leak (minimisation) — narrow to selects; extend the guard to bare includes of the user relation |
-| A-02 | Finding count: B2C home reads `disclosed`, every agent surface reads `classified`; a third raw count computed in `customer.service` | PARITY B3 | Contradiction (count) — adjudicate the conversation number |
+| A-02 | Finding count: B2C home reads `disclosed`, every agent surface reads `classified`; a third raw count computed in `customer.service` | PARITY B3 | **Reclassified** Unjustified asymmetry (the headline was already classified on both sides; the agent lacked the under-review figure) — **ACT done 2026-09-06** |
 | A-03 | Unknown premium renders «0,00 €» on the B2B policy page; B2C counts it as unknown | PARITY A5 | Contradiction (value) — **ACT done 2026-09-06**, VERIFY by harness |
 | A-04 | End date: B2B page and both templates read the raw `endDate` column, the app the lifecycle | PARITY A4 (+ C-01, C-02) | Contradiction (date/count) — **ACT done 2026-09-06**, VERIFY by harness |
 | A-05 | Raw `policy.policyNumber` on the B2B policy page (a `PENDING-…` sentinel shows) | PARITY A2 | Contradiction (text) — **ACT done 2026-09-06**, VERIFY by harness |
-| A-06 | After an agent confirms, record status says ΠΡΟΣ ΕΠΙΒΕΒΑΙΩΣΗ while the «unverified» badge is gone — on both sides | PARITY B1 / I-08 | Contradiction (state) |
+| A-06 | After an agent confirms, record status says ΠΡΟΣ ΕΠΙΒΕΒΑΙΩΣΗ while the «unverified» badge is gone — on both sides | PARITY B1 / I-08 | Contradiction (state) — **ACT done 2026-09-06** (D-B4) |
 | A-07 | Insurer rendered twice on the B2B page (column and raw extracted value) | PARITY A1 | Contradiction or Cosmetic — capture decides |
 | A-08 | Agent dashboard KPIs (`agent.*`) and the B2B list's per-client counts carry no `data-count`; B2B identity/premium/date renders carry no `data-fact` — parity unmeasurable | PARITY D | Instrumentation — **ACT done 2026-09-06** (policy pair 4 → 8 pairs; the KPI strip was already instrumented — PARITY D corrected); wallet pair needs the policies tab; three degraded identity states added to the harness |
-| A-09 | A policy the customer never shared is invisible to the agent with no explanation on either side | PARITY C3 | Justified asymmetry — disclose both sides |
-| A-10 | `/agent` lists grants without the permission level | PARITY C2 | Justified asymmetry — disclose (feeds D-02) |
+| A-09 | A policy the customer never shared is invisible to the agent with no explanation on either side | PARITY C3 | Justified asymmetry — **customer half ACT done 2026-09-06**; agent half **HALT H-B2** |
+| A-10 | `/agent` lists grants without the permission level | PARITY C2 | Justified asymmetry — **ACT done 2026-09-06** (the permissions mirror's first half; D-02 remains for revoke-from-the-same-surface, which /agent already offers) |
 | A-11 | Agent dashboard still loads `protectionScore.overallScore` per customer | PARITY E1 | Void/cleanup |
 | A-12 | `data-fact` keys with score vocabulary (`timeline.scoreDelta`, `review.scoreAtOpen`, `riskDimension.*`) | PARITY E2 | Verify, then rename or remove |
 | A-13 | Asset identity (plate/address) absent on every B2B surface | PARITY A6 | Unjustified asymmetry (small extension) |

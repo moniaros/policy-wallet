@@ -1,0 +1,28 @@
+{
+  "side": "customer",
+  "url": "/agent",
+  "label": "advisor",
+  "state": "healthy",
+  "status": 200,
+  "finalUrl": "/agent",
+  "facts": {
+    "grant.level#cmtq9jc26000bxsi6vhctv575": "write",
+    "grant.level#cmtpy2t75000bzlc9xm5vpf25": "write",
+    "grant.level#cmtoab44n000d6gkwo9m1bgaz": "read",
+    "grant.level#cmtq1gy1200017it6ks4lbeym": "manage",
+    "grant.level#cmtpyo49a0009t3q9t5qjfp5y": "write",
+    "grant.level#cmtpyruit000lt3q9yuiq5f9o": "write",
+    "grant.level#cmtq2znm4000jv0277sbqzy2b": "write",
+    "grant.level#cmtq352sb000vv027i0irxsuy": "write",
+    "grant.level#cmtq2u9xw0007v027qmdafeyd": "write"
+  },
+  "counts": {
+    "notification.unreadCount": "9+",
+    "portfolio.sharedWithAdvisorCount": "9",
+    "portfolio.policyCount": "10"
+  },
+  "text": "Μετάβαση στο περιεχόμενο Χ PolicyWallet 9+ PolicyWallet Προστασία Αρχική Ο φάκελός μου Η προστασία μου Υποστήριξη Ο σύμβουλός μου Ειδοποιήσεις 9+ Γενικά Ρυθμίσεις Αποσύνδεση Χρειάζεστε βοήθεια; Ανοίξτε το κέντρο βοήθειας ή στείλτε μήνυμα στον σύμβουλό σας. Κέντρο βοήθειας Προτιμήσεις ΕΛ EN Ο σύμβουλός μου Επισκόπηση Μηνύματα Έγγραφα Προτάσεις Ν Νίκος Παπαδόπουλος Ασφαλιστικό Γραφείο Κλήση Email Κοινή πρόσβαση Ελέγχετε τι βλέπει ο σύμβουλός σας. Ανακαλέστε ανά πάσα στιγμή. Ο σύμβουλός σας βλέπει 9 από τα 10 ασφαλιστήριά σας. Interamerican · ΣΥΜΒ-2026-BR-CNF Κοινοποιήθηκε από εσάς · Μπορεί να διορθώσει τα στοιχεία του Ανάκληση Interamerican · ΣΥΜΒ-2026-BR-ACT Κοινοποιήθηκε από εσάς · Μπορεί να διορθώσει τα στοιχεία του Ανάκληση ΕΘΝΙΚΗ · 63708952 Κοινοποιήθηκε από εσάς · Βλέπει το ασφαλιστήριο και τα έγγραφά του Ανάκληση E2E Insurance Co. · E2E-MOT-001 Κοινοποιήθηκε από εσάς · Διαχειρίζεται το ασφαλιστήριο Ανάκληση Interamerican · ΣΥΜΒ-2026-BR-CYB Κοινοποιήθηκε από εσάς · Μπορεί να διορθώσει τα στοιχεία του Ανάκληση Interamerican · ΣΥΜΒ-2026-BR-XPD Κοινοποιήθηκε από εσάς · Μπορεί να διορθώσει τα στοιχεία του Ανάκληση Interamerican · ΣΥΜΒ-2026-BR-NP Κοινοποιήθηκε από εσάς · Μπορεί να διορθώσει τα στοιχεία του Ανάκληση Interamerican · ΣΥΜΒ-2026-BR-RNW Κοινοποιήθηκε από εσάς · Μπορεί να διορθώσει τα στοιχεία του Ανάκληση Κοινοποιήθηκε από εσάς · Μπορεί να διορθώσει τα στοιχεία του Ανάκληση Αποσύνδεση από τον σύμβουλο Η σύνδεση τερματίζεται και η πρόσβαση του συμβούλου στα ασφαλιστήριά σας ανακαλείται. Αποσύνδεση",
+  "hscroll": false,
+  "lang": "el",
+  "screenshot": "/Users/yannismoniaros/Workspace/policywallet/policy-wallet/docs/evidence/bridge-l0/healthy/advisor.customer.png"
+}

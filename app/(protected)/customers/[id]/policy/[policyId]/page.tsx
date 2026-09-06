@@ -11,7 +11,7 @@ import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 import { getTranslations } from "@/lib/i18n"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { composeFindings } from "@/lib/gaps/composition"
-import { resolveRecordStatus } from "@/lib/wallet/record-status"
+import { extractionConfirmation, resolveRecordStatus } from "@/lib/wallet/record-status"
 import { formatDate, formatDateTime, resolveLocale } from "@/lib/i18n/format"
 import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
@@ -140,7 +140,8 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         latestRun: latestAttempt
             ? { status: latestAttempt.status, blockedReason: (latestAttempt as { blockedReason?: string | null }).blockedReason ?? null }
             : null,
-        confirmedAt: null,
+        // The advisor's confirmation, from the extraction envelope — never invented, never ignored (A-06).
+        ...extractionConfirmation(policy.acordData),
     })
     const locale = resolveLocale(language)
     const branch = getBranch(policy.lineOfBusiness) ?? normalizeBranch(policy.lineOfBusiness)

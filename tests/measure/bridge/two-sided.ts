@@ -45,6 +45,8 @@ export type BridgeState =
     | "placeholder_identity"
     | "no_premium"
     | "renewed_end_date"
+    // A-06: the advisor confirmed the extracted values — the record status must say so on both sides.
+    | "agent_confirmed"
 
 export const BRIDGE_STATES: BridgeState[] = [
     "healthy",
@@ -59,6 +61,7 @@ export const BRIDGE_STATES: BridgeState[] = [
     "placeholder_identity",
     "no_premium",
     "renewed_end_date",
+    "agent_confirmed",
 ]
 
 export interface SeededPair {
@@ -101,6 +104,8 @@ function specFor(state: BridgeState): FixtureSpec {
             return { ...base, key: "bridge-no-premium", policyNumber: "ΣΥΜΒ-2026-BR-NP", premiumAmount: null }
         case "renewed_end_date":
             return { ...base, key: "bridge-renewed", policyNumber: "ΣΥΜΒ-2026-BR-RNW" }
+        case "agent_confirmed":
+            return { ...base, key: "bridge-agent-confirmed", policyNumber: "ΣΥΜΒ-2026-BR-CNF" }
         default:
             return { ...base, key: "bridge-motor-active", policyNumber: "ΣΥΜΒ-2026-BR-ACT" }
     }
@@ -125,6 +130,16 @@ export async function seedTwoSided(state: BridgeState): Promise<SeededPair> {
         if (!policyId) throw new Error(`two-sided harness: fixture ${spec.key} produced no policy id`)
         if (state === "unauthored_branch") {
             await db.policy.update({ where: { id: policyId }, data: { lineOfBusiness: "cyber" } })
+        }
+        if (state === "agent_confirmed") {
+            // Exactly what confirmPolicyReview writes into the envelope (wallet/actions.ts).
+            const row = await db.policy.findUnique({ where: { id: policyId }, select: { acordData: true } })
+            const acord = (row?.acordData && typeof row.acordData === "object" ? row.acordData : {}) as Record<string, unknown>
+            const extraction = (acord.extraction && typeof acord.extraction === "object" ? acord.extraction : {}) as Record<string, unknown>
+            await db.policy.update({
+                where: { id: policyId },
+                data: { acordData: { ...acord, extraction: { ...extraction, reviewState: "confirmed", confirmedAt: new Date().toISOString(), confirmedBy: "agent", confirmedByUserId: agent.id, flaggedAt: null } } },
+            })
         }
         if (state === "renewed_end_date") {
             // A renewal recorded in the document history: the lifecycle resolves the end date from it
@@ -387,6 +402,10 @@ export function pairUrls(seed: SeededPair): PagePair[] {
     return [
         { label: "policy", customer: `/wallet/${seed.policyId}`, agent: `/customers/${seed.customerUserId}/policy/${seed.policyId}` },
         { label: "wallet", customer: `/wallet`, agent: `/customers/${seed.customerUserId}`, agentPrepare: OPEN_POLICIES_TAB },
+        // The agent's book list — captured for its TEXT (the labelled under-review figure, A-02); counts are visibility-scoped and do not pair.
+        { label: "book", customer: `/dashboard`, agent: `/customers` },
+        // The customer's advisor page against the agent's profile of them — captured for the disclosure facts (A-09/A-10: grant levels, «N of M»).
+        { label: "advisor", customer: `/agent`, agent: `/customers/${seed.customerUserId}` },
         { label: "home", customer: `/dashboard`, agent: `/customers/${seed.customerUserId}` },
     ]
 }

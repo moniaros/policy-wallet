@@ -4,6 +4,7 @@
 const STATUS_LABELS: Record<string, { el: string; en: string }> = {
     active: { el: "Ενεργό", en: "Active" },
 }
+const rows = await readLiveGapRows({ scope: "classified", where: {} })
 const dto = policies.map((p) => ({
     id: p.id,
     status: effectivePolicyStatus(p),

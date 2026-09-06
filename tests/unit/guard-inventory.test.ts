@@ -36,7 +36,7 @@ describe("the guard inventory", () => {
     const table = rows()
 
     it("lists the twenty-two classes of the spec plus the close-out's three (F1 order, F2 dimension scores, F5 citations)", () => {
-        expect(table.length).toBe(34)
+        expect(table.length).toBe(35)
     })
 
     it("every listed guard, metric and probe exists on disk", () => {
