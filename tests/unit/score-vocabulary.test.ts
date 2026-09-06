@@ -26,9 +26,6 @@ describe('each score has one name, and none borrows a line of business', () => {
     // (PW-MOBILE-TRANSFORM-01, halt H-001) — the key is gone with the surface.
     const labels = () => [
         el.wallet.healthScore.title,
-        el.agentUi.healthScore,
-        el.clientOverview.healthScore,
-        getRoleCopy('el').customerList.tableHealth,
     ]
 
     it('no Greek label uses «υγεία»', () => {
@@ -40,20 +37,18 @@ describe('each score has one name, and none borrows a line of business', () => {
     it('no English label calls itself Health', () => {
         for (const label of [
             en.wallet.healthScore.title,
-            en.agentUi.healthScore,
-            en.clientOverview.healthScore,
-            getRoleCopy('en').customerList.tableHealth,
         ]) {
             expect(label, `"${label}" still says Health`).not.toMatch(/health/i)
         }
     })
 
-    it('the three metrics are named distinctly', () => {
+    it('one metric label remains, and it is distinct (the portfolio score and the relationship index are gone)', () => {
+        // Aug 2026 removed the portfolio protection score; PW-CONTENT-01 Goal 3
+        // (D-C3) removed the agent's relationship index. One label is left.
         const names = [
             el.wallet.healthScore.title,      // per-policy
-            el.agentUi.healthScore,           // agent relationship
         ]
-        expect(new Set(names).size).toBe(2)
+        expect(new Set(names).size).toBe(1)
     })
 
     it('the portfolio score label does not come back', () => {

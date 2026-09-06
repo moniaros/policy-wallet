@@ -31,7 +31,6 @@ export type RecommendedActionKey =
 
 export interface CustomerIntelligence {
     customerId: string
-    healthScore: number | null
     nextRenewalDate: string | null
     gapCount: number
     criticalGapCount: number
@@ -71,7 +70,6 @@ export interface RecommendedActionFacts {
     nextRenewalDate: Date | null
     gapCount: number
     criticalGapCount: number
-    healthScore: number | null
     lastInteractionAt: Date | null
     now?: Date
 }
@@ -264,14 +262,12 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
             nextRenewalDate: nextRenewal,
             gapCount: gaps.total,
             criticalGapCount: gaps.critical,
-            healthScore: scoreByClient.get(clientId) ?? null,
             lastInteractionAt: rel.lastInteractionAt,
             now,
         })
 
         intelligence[clientId] = {
             customerId: clientId,
-            healthScore: scoreByClient.get(clientId) ?? null,
             nextRenewalDate: nextRenewal ? nextRenewal.toISOString() : null,
             gapCount: gaps.total,
             criticalGapCount: gaps.critical,

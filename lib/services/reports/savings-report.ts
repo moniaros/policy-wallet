@@ -96,7 +96,9 @@ export function generateSavingsReportHtml(
     /** B0.3: which run the gaps come from, and whether the latest attempt is that run. */
     provenance: ProvenanceLine | null = null,
     /** V3: the run predates the catalogue plan — what was checked cannot be stated. Never a composition in a report. */
-    prePlan: { dateLabel: string | null } | null = null
+    prePlan: { dateLabel: string | null } | null = null,
+    /** Goal 4: the catalogue moved on after this run — the findings stand, dated, and a new analysis would include the added checks. */
+    staleCatalogue: { dateLabel: string | null } | null = null
 ): string {
     const loc = (val: any) => localized(val, language)
     const metadata = resultJson.metadata ?? {}
@@ -266,6 +268,7 @@ ${savings.map((s) => `
 
 ${provenanceBlock}
 ${prePlan ? `<div class="section-caveat" data-composition-state="pre_plan">${escapeHtml(prePlan.dateLabel ? L(`Ευρήματα από την ανάλυση της ${prePlan.dateLabel}. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δεν αποτελούν πλήρη αξιολόγηση.`, `Findings from the analysis of ${prePlan.dateLabel}. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete assessment.`) : L("Ευρήματα από παλαιότερη ανάλυση που προηγείται του σχεδίου ελέγχων: δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε.", "Findings from an earlier analysis that predates the check plan: what was checked cannot be stated."))}</div>` : ""}
+${staleCatalogue ? `<div class="section-caveat" data-composition-state="stale_catalogue">${escapeHtml(staleCatalogue.dateLabel ? L(`Η ανάλυση έγινε στις ${staleCatalogue.dateLabel}. Έχουν προστεθεί έλεγχοι από τότε — μια νέα ανάλυση θα τους περιλάβει.`, `This analysis ran on ${staleCatalogue.dateLabel}. Checks have been added since — a new analysis will include them.`) : L("Έχουν προστεθεί έλεγχοι μετά από αυτή την ανάλυση — μια νέα ανάλυση θα τους περιλάβει.", "Checks have been added since this analysis — a new analysis will include them."))}</div>` : ""}
 ${underReviewOmitted ? `<div class="section-caveat">${escapeHtml(L("Ευρήματα που είναι ακόμη υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή την αναφορά· τα βλέπετε στο ασφαλιστήριο.", "Findings still under review are not included in this report; they are shown on the policy."))}</div>` : ""}
 ${gaps.length > 0 ? `
 <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2>

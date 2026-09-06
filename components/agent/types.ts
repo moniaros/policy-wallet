@@ -286,7 +286,6 @@ export interface ClientCardData {
     email: string
     avatar?: string
     policyCount: number
-    healthScore: number
     urgencyTier: UrgencyTier
     nextActionDue?: string | null
     nextActionLabel?: string | null

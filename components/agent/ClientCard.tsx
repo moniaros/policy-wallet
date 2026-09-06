@@ -5,7 +5,6 @@ import { ChevronRight, Shield, Clock, UserPlus, AlertTriangle } from "lucide-rea
 import { EmptyState, CustomerPreviewRow } from "@/components/ui/EmptyState"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { getRelationshipScoreDotColor } from "@/lib/agent/health-score"
 import { formatRelativeDate, getUrgencyTierDisplay } from "@/lib/agent/format"
 import type { ClientCardData, UrgencyTier } from "./types"
 
@@ -20,7 +19,6 @@ function getInitials(name: string, surname: string): string {
 
 export function ClientCard({ client, onClick }: ClientCardProps) {
     const { language, t } = useLanguage()
-    const dotColor = getRelationshipScoreDotColor(client.healthScore)
 
     return (
         <button
@@ -43,16 +41,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                         {getInitials(client.name, client.surname)}
                     </div>
                 )}
-                {/* Health score dot */}
-                {/* Reads as a risk indicator sitting on the client's face. It is a
-                    book-management signal, so it says so — and it is not the
-                    protection score rendered two lines below. */}
-                <span
-                    role="img"
-                    aria-label={`${t.agentUi.healthScore}: ${client.healthScore}`}
-                    className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card ${dotColor}`}
-                    title={`${t.agentUi.healthScore}: ${client.healthScore}`}
-                />
+                {/* Goal 3 (D-C3): the relationship-index dot is gone — a threshold colour on a client's face was a verdict. */}
             </div>
 
             {/* Info */}

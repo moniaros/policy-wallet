@@ -1,0 +1,160 @@
+{
+  "run": "el",
+  "capturedAt": "2026-09-06T11:06:19.750Z",
+  "results": [
+    {
+      "width": 320,
+      "url": "/dashboard",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/wallet",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/protection",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/notifications",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/tasks",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 320,
+      "url": "/wallet/cmtoaaw9b00036gkwkt5hw00e",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": [
+        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
+        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+      ]
+    },
+    {
+      "width": 390,
+      "url": "/dashboard",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/wallet",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/protection",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/notifications",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/tasks",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 390,
+      "url": "/wallet/cmtoaaw9b00036gkwkt5hw00e",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": [
+        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
+        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+      ]
+    },
+    {
+      "width": 430,
+      "url": "/dashboard",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/wallet",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/protection",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/notifications",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/tasks",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": []
+    },
+    {
+      "width": 430,
+      "url": "/wallet/cmtoaaw9b00036gkwkt5hw00e",
+      "overflowPx": 0,
+      "lang": "el",
+      "locale": "el-GR",
+      "dated": [
+        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026.",
+        "Ευρήματα από την ανάλυση της 6 Σεπτεμβρίου 2026. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δ"
+      ]
+    }
+  ],
+  "failures": []
+}

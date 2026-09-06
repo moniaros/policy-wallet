@@ -32,7 +32,6 @@ interface ClientDetailViewProps {
     agentTier: AgentTier
     /** True when the viewing agent's plan includes branded reports (Pro+). */
     canBrandedReport?: boolean
-    healthScore: number
     policies: Policy[]
     opportunities: Opportunity[]
     interactions: Interaction[]
@@ -58,7 +57,6 @@ export function ClientDetailView({
     viewerRole,
     agentTier,
     canBrandedReport = false,
-    healthScore,
     policies,
     opportunities,
     interactions,
@@ -187,7 +185,6 @@ export function ClientDetailView({
                         <div className="space-y-4">
                             <ClientOverviewTab
                                 customer={customer}
-                                healthScore={healthScore}
                                 policies={policies}
                                 opportunities={opportunities}
                                 onCreateProposal={onCreateProposal}

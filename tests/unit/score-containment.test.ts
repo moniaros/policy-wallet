@@ -70,10 +70,9 @@ const SANCTIONED = new Set<string>([])
  * with the reason, and asserted below to still carry that identifier so the
  * exemption cannot outlive its cause. Nothing here renders the protection score.
  */
-const RELATIONSHIP_HEALTH_RENDERS = new Set<string>([
-    "components/agent/tabs/ClientOverviewTab.tsx",
-    "components/agent/CustomerList.tsx",
-])
+// PW-CONTENT-01 Goal 3 (D-C3): the relationship index renders nowhere any more.
+// The set stays EMPTY; the test below fails if it regrows.
+const RELATIONSHIP_HEALTH_RENDERS = new Set<string>([])
 
 /** The identifiers that carry the portfolio score value through the code. */
 const IDS = "(?:overallScore|healthScore|protectionScore|previousScore|currentScore)"
@@ -141,7 +140,8 @@ describe("the protection score value renders nowhere", () => {
         expect(SANCTIONED.size).toBe(0)
     })
 
-    it("the relationship-health exemptions still render only the relationship metric", () => {
+    it("the relationship index has no sanctioned render site left (Goal 3, D-C3)", () => {
+        expect(RELATIONSHIP_HEALTH_RENDERS.size).toBe(0)
         for (const rel of RELATIONSHIP_HEALTH_RENDERS) {
             const src = readFileSync(path.join(ROOT, rel), "utf8")
             expect(src, `${rel} no longer renders healthScore — drop the exemption`).toMatch(/healthScore/)

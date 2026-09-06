@@ -6,7 +6,6 @@ import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { notFound } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { canAgentUseFeature, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
-import { computeRelationshipScoreFromCustomer } from "@/lib/agent/health-score"
 import { db } from "@/lib/db"
 import { deriveAiConsentState, type CandidateAiConsent } from "@/lib/services/customer-resolution.service"
 
@@ -29,7 +28,6 @@ export default async function CustomerProfilePage({ params }: Props) {
     // Compute data for ClientDetailView
     const agentEntitlements = await resolveAgentEntitlements(dbUser.id)
     const canBrandedReport = await canAgentUseFeature(dbUser.id, "brandedReport")
-    const healthScore = computeRelationshipScoreFromCustomer(customer)
 
     // Whether an AI analysis can run if the advisor uploads for this customer
     // now — the SAME derivation the resolution path applies per candidate
@@ -52,7 +50,6 @@ export default async function CustomerProfilePage({ params }: Props) {
                 initialCustomer={customer}
                 agentTier={agentEntitlements.tier}
                 canBrandedReport={canBrandedReport}
-                healthScore={healthScore}
                 customerAiConsent={customerAiConsent}
             />
             {/* The health score, gaps and cross-sell shown here are AI-generated. */}

@@ -62,6 +62,62 @@ const LAW_2496_1997_ART_17: ProvenanceEntry = Object.freeze({
     reviewedAt: REVIEWED_AT,
 })
 
+/**
+ * PW-CONTENT-01 Goal 2 (2026-09-06) — three more instruments, and the first two
+ * `market` rows, each on a NAMED public source. Nothing below is inferred; the
+ * rows that could not be cited stay under review with their search record in
+ * docs/transparency/PROVENANCE-REVIEW.md.
+ */
+const REVIEWED_BY_G2 = "agent, citation-backed (PW-CONTENT-01 Goal 2) — pre-GA legal sign-off pending (docs/transparency/PROVENANCE-REVIEW.md)"
+
+/** Ν. 4223/2013 (ΕΝΦΙΑ), άρθρο 3 παρ. 7Ζ, όπως ισχύει με το άρθρο 10 παρ. 1 ν. 5162/2024 — μείωση ΕΝΦΙΑ για κατοικίες ασφαλισμένες σωρευτικά για σεισμό, πυρκαγιά και πλημμύρα. */
+const LAW_4223_2013_ART_3_7Z: ProvenanceEntry = Object.freeze({
+    provenance: "legislative",
+    citation: Object.freeze({
+        el: "Ν. 4223/2013, άρθρο 3 παρ. 7Ζ (μείωση ΕΝΦΙΑ για κατοικίες ασφαλισμένες για σεισμό, πυρκαγιά και πλημμύρα)",
+        en: "Law 4223/2013, Article 3(7Z) (ENFIA reduction for homes insured against earthquake, fire and flood)",
+        url: "https://www.e-nomothesia.gr/law-news/diplasiazetai-ekptose-enphia-sto-gia-katoikies-poy-asfalizontai.html",
+    }),
+    reviewedBy: REVIEWED_BY_G2,
+    reviewedAt: "2026-09-06",
+})
+
+/** Π.Δ. 237/1986 (κωδ. ν. 489/1976), άρθρο 9 παρ. 1 — δήλωση κάθε ατυχήματος στον ασφαλιστή εντός οκτώ εργάσιμων ημερών. */
+const PD_237_1986_ART_9: ProvenanceEntry = Object.freeze({
+    provenance: "legislative",
+    citation: Object.freeze({
+        el: "Π.Δ. 237/1986, άρθρο 9 παρ. 1 (δήλωση ατυχήματος στον ασφαλιστή εντός 8 εργάσιμων ημερών)",
+        en: "Presidential Decree 237/1986, Article 9(1) (an accident must be declared to the insurer within 8 working days)",
+        url: "https://www.karagiannislawfirm.gr/nomika/emporiko-dikaio/1389-asfalia-autokinitou-65704",
+    }),
+    reviewedBy: REVIEWED_BY_G2,
+    reviewedAt: "2026-09-06",
+})
+
+/** Market practice, named public source: Εθνική Ασφαλιστική «Ασφάλεια Υγείας» — θέση νοσηλείας as the programme's defining choice. */
+const MARKET_HOSPITAL_CLASS: ProvenanceEntry = Object.freeze({
+    provenance: "market",
+    citation: Object.freeze({
+        el: "Εθνική Ασφαλιστική, «Ασφάλεια Υγείας»: η θέση νοσηλείας (Lux, A ή Β) ως τυπικό στοιχείο νοσοκομειακού προγράμματος",
+        en: "Ethniki Asfalistiki, “Health Insurance”: the hospital room class (Lux, A or B) as a standard hospital-programme element",
+        url: "https://www.ethnikiasfalistiki.gr/health",
+    }),
+    reviewedBy: REVIEWED_BY_G2,
+    reviewedAt: "2026-09-06",
+})
+
+/** Market practice, named public source: Εθνική Ασφαλιστική «Ασφάλεια Υγείας» — direct settlement in contracted hospitals as standard. */
+const MARKET_DIRECT_BILLING: ProvenanceEntry = Object.freeze({
+    provenance: "market",
+    citation: Object.freeze({
+        el: "Εθνική Ασφαλιστική, «Ασφάλεια Υγείας»: απευθείας κάλυψη εξόδων σε συμβεβλημένα νοσοκομεία ως τυπικό στοιχείο",
+        en: "Ethniki Asfalistiki, “Health Insurance”: direct settlement of costs in contracted hospitals as a standard element",
+        url: "https://www.ethnikiasfalistiki.gr/health",
+    }),
+    reviewedBy: REVIEWED_BY_G2,
+    reviewedAt: "2026-09-06",
+})
+
 /** Ν. 4830/2021 (ΦΕΚ Α΄ 169/18.9.2021), άρθρο 9 παρ. 1 περ. β΄ — σήμανση και καταγραφή σκύλου/γάτας στο ΕΜΖΣ. */
 const LAW_4830_2021_ART_9: ProvenanceEntry = Object.freeze({
     provenance: "legislative",
@@ -80,24 +136,24 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     no_own_damage_cover: UNDER_REVIEW,
     no_glass_breakage_cover: UNDER_REVIEW,
     no_roadside_assistance: UNDER_REVIEW,
-    missing_accident_declaration_phone: UNDER_REVIEW,
+    missing_accident_declaration_phone: PD_237_1986_ART_9,
     green_card_expiring: UNDER_REVIEW,
     insured_value_above_declared: LAW_2496_1997_ART_17,
     // motorbike
     moto_no_own_damage_cover: UNDER_REVIEW,
     moto_no_roadside_assistance: UNDER_REVIEW,
-    moto_missing_accident_declaration_phone: UNDER_REVIEW,
+    moto_missing_accident_declaration_phone: PD_237_1986_ART_9,
     moto_green_card_expiring: UNDER_REVIEW,
     // home
     no_earthquake_cover: UNDER_REVIEW,
     no_flood_cover: UNDER_REVIEW,
     no_fire_cover: UNDER_REVIEW,
-    missing_enfia_components: UNDER_REVIEW,
+    missing_enfia_components: LAW_4223_2013_ART_3_7Z,
     insured_value_below_rebuild_cost: LAW_2496_1997_ART_17,
     // health
-    no_direct_billing: UNDER_REVIEW,
+    no_direct_billing: MARKET_DIRECT_BILLING,
     no_annual_checkup: UNDER_REVIEW,
-    missing_hospital_class: UNDER_REVIEW,
+    missing_hospital_class: MARKET_HOSPITAL_CLASS,
     missing_coordination_centre: UNDER_REVIEW,
     // group health
     group_missing_coordination_centre: UNDER_REVIEW,

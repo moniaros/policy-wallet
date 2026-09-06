@@ -23,7 +23,6 @@ function renderView() {
                 customer={CUSTOMER}
                 viewerRole="agent"
                 agentTier="agent_free"
-                healthScore={0}
                 policies={[]}
                 opportunities={[]}
                 interactions={[]}

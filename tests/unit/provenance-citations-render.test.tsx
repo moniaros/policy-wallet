@@ -50,27 +50,39 @@ export function rendersClassWithoutCitation(src: string): boolean {
 }
 
 describe("F5 — the map: classified means cited", () => {
-    it("every classified entry cites a law/article in both languages, with reviewer and date; nothing is market", () => {
+    it("every classified entry cites its instrument in both languages, with reviewer, date and source URL; market only on a named public source", () => {
         const entries = Object.entries(GAP_PROVENANCE)
         expect(entries.length).toBe(29)
         for (const [slug, e] of entries) {
-            expect(e.provenance, slug).not.toBe("market")
             if (e.provenance === "under_review") {
                 expect(e.citation, slug).toBeNull()
-            } else {
-                expect(e.citation?.el, slug).toMatch(/άρθρο/)
-                expect(e.citation?.en, slug).toMatch(/Article/)
-                expect(e.reviewedBy, slug).toBeTruthy()
-                expect(e.reviewedAt, slug).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+                continue
             }
+            expect(e.citation?.el, slug).toBeTruthy()
+            expect(e.citation?.en, slug).toBeTruthy()
+            expect(e.citation?.url, slug).toMatch(/^https:\/\//)
+            expect(e.reviewedBy, slug).toBeTruthy()
+            expect(e.reviewedAt, slug).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+            // legislative = a named law AND article; market = a named public source, never "common practice"
+            if (e.provenance === "legislative") { expect(e.citation?.el, slug).toMatch(/άρθρο/); expect(e.citation?.en, slug).toMatch(/Article/) }
+            if (e.provenance === "market") { expect(e.citation?.el, slug).toMatch(/Εθνική Ασφαλιστική|ΕΑΕΕ|Τράπεζα της Ελλάδος/); expect(e.citation?.el, slug).not.toMatch(/κοινή πρακτική/) }
+            expect(e.provenance, slug).not.toBe("contractual") // none could be tied to a named contract class in Goal 2
         }
         const classified = entries.filter(([, e]) => isClassified(e.provenance)).map(([s]) => s)
-        expect(classified.sort()).toEqual(["insured_value_above_declared", "insured_value_below_rebuild_cost", "missing_microchip_number"])
+        expect(classified.sort()).toEqual([
+            "insured_value_above_declared", "insured_value_below_rebuild_cost", "missing_accident_declaration_phone",
+            "missing_enfia_components", "missing_hospital_class", "missing_microchip_number",
+            "moto_missing_accident_declaration_phone", "no_direct_billing",
+        ])
+        expect(entries.filter(([, e]) => e.provenance === "market").map(([s]) => s).sort()).toEqual(["missing_hospital_class", "no_direct_billing"])
     })
 
     it("the kebab form the wallet's report items carry resolves to the same class, citation and catalogue position as the authored slug", () => {
         // The findings page said «3 υπό αξιολόγηση» over a policy whose home tally said «1 Νομοθετική απαίτηση» (F5 evidence run 1).
-        for (const authored of ["insured_value_above_declared", "insured_value_below_rebuild_cost", "missing_microchip_number", "no_fire_cover"]) {
+        // EVERY classified slug, plus one under review — never a fixed list that a new classification can outgrow.
+        const everyClassified = Object.entries(GAP_PROVENANCE).filter(([, e]) => isClassified(e.provenance)).map(([s]) => s)
+        expect(everyClassified.length).toBeGreaterThanOrEqual(8)
+        for (const authored of [...everyClassified, "no_fire_cover"]) {
             const kebab = normalizeGapSlug(authored)
             expect(kebab).not.toBe(authored)
             expect(provenanceOf(kebab), kebab).toBe(provenanceOf(authored))

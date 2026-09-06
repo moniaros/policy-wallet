@@ -1,0 +1,6 @@
+// PROBE — must turn tests/unit/relationship-index-removed.test.ts red:
+// a client card that renders a 0–100 relationship index with a threshold colour.
+import { getRelationshipScoreDotColor } from "@/lib/agent/health-score"
+export function Probe({ client }: { client: { healthScore: number } }) {
+    return <span className={getRelationshipScoreDotColor(client.healthScore)}>{client.healthScore}/100</span>
+}

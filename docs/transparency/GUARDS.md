@@ -13,7 +13,7 @@ matrix. Status: **present**, **partial** (with what is missing), **not yet appli
 | class | guards | probes | cadence | status |
 |---|---|---|---|---|
 | score-absence — in-product, outbound, report | tests/unit/score-containment.test.ts; tests/unit/protection-score-honesty.test.tsx; tests/unit/email-content-honesty.test.ts | score-render-jsx.tsx.txt; score-render-email.ts.txt; score-render-marketing.tsx.txt; score-internal-use.ts.txt | every commit | present |
-| orphaned score derivative | tests/unit/score-containment.test.ts; tests/unit/relationship-vs-protection-score.test.ts; tests/unit/score-vocabulary.test.ts | score-internal-use.ts.txt | every commit | present |
+| orphaned score derivative | tests/unit/score-containment.test.ts; tests/unit/relationship-index-removed.test.ts; tests/unit/score-vocabulary.test.ts | score-internal-use.ts.txt | every commit | present |
 | severity-does-not-order | tests/unit/severity-never-orders.test.ts; tests/unit/gap-severity-display-single-source.test.ts | severity-sort.ts.txt; severity-table.ts.txt; severity-class.tsx.txt; severity-clean.tsx.txt | every commit | present |
 | absence-is-not-reassurance | tests/unit/all-clear-honesty.test.ts; tests/unit/record-status.test.tsx; tests/unit/unauthored-branch-state.test.tsx; tests/unit/empty-state-honesty.test.ts | allclear-basis-free-email.html.txt; allclear-declared-unanalysed-email.html.txt; in-test: the {motor, health, home} × {clean, partial, failed, unanalysed, expired} matrix | every commit | present |
 | composition-denominator-present | tests/unit/coverage-composition.test.tsx | in-test: a component render asserts the denominator element on every line | every commit | present |
@@ -24,6 +24,9 @@ matrix. Status: **present**, **partial** (with what is missing), **not yet appli
 | one-locale-per-request (PW-CONTENT-01 G1) | tests/unit/one-locale-per-request.test.tsx | layout-unseeded-provider.tsx.txt | every commit | present |
 | no-component-locale-fallback (PW-CONTENT-01 G1) | tests/unit/no-component-locale-fallback.test.ts | component-locale-fallback.tsx.txt | every commit | present |
 | formatted-value-locale-matches-copy (PW-CONTENT-01 G1) | tests/unit/formatted-value-locale-matches-copy.test.tsx | hardcoded-locale-format.tsx.txt | every commit | present |
+| relationship-index-removed (PW-CONTENT-01 G3) | tests/unit/relationship-index-removed.test.ts | relationship-index-render.tsx.txt | every commit | present |
+| denominator-matches-run-catalogue-version (PW-CONTENT-01 G4) | tests/unit/denominator-matches-run-catalogue-version.test.tsx | composition-current-catalogue-denominator.ts.txt | every commit | present |
+| three-states-distinct (PW-CONTENT-01 G4) | tests/unit/three-states-distinct.test.tsx | in-test: the pre-plan, unauthored and stale sentences are asserted pairwise distinct in both languages and by state attribute | every commit | present |
 | indeterminate-rendered-when-nonzero | tests/unit/coverage-composition.test.tsx | in-test: indeterminate 0 hides the segment, 1 and all-indeterminate render it | every commit | present |
 | provenance-map-completeness (build failure on unmapped category) | tests/unit/provenance-skeleton.test.ts | in-test: an invented authored slug is reported | every commit | present |
 | under-review-containment | tests/unit/provenance-skeleton.test.ts | under-review-unfiltered.ts.txt; under-review-filtered.ts.txt | every commit | present |
