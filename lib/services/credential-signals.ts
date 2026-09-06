@@ -26,8 +26,9 @@ type RawQueryClient = {
 export async function passwordPresence(db: RawQueryClient, userIds: readonly string[]): Promise<Set<string>> {
     const ids = [...new Set(userIds)].filter((id) => typeof id === "string" && id.length > 0)
     if (ids.length === 0) return new Set()
+    // Column names are the MAPPED ones (prisma/schema.prisma: User.id → "user_id", User.password → "password").
     const rows = await db.$queryRaw<{ id: string }[]>`
-        SELECT id FROM users WHERE id IN (${Prisma.join(ids)}) AND password IS NOT NULL
+        SELECT "user_id" AS id FROM users WHERE "user_id" IN (${Prisma.join(ids)}) AND "password" IS NOT NULL
     `
     return new Set(rows.map((r) => r.id))
 }

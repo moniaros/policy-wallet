@@ -331,10 +331,17 @@ export async function captureSide(
     return capture
 }
 
-/** The page pairs L0 compares. The B2B policy page reuses the B2C AnalysisCard, so facts pair there. */
+/**
+ * The page pairs the loop compares.
+ *  - policy: the two policy pages share `AnalysisCard`; identity/date/premium facts pair once A-08 tags them.
+ *  - wallet: the customer's list against the agent's client policies — per-policy, subject-scoped keys.
+ *  - home: the customer's dashboard against the agent's customer profile. Portfolio-level by nature and
+ *    visibility-scoped on the agent side (D-B3): expected to pair NOTHING; kept so the number is measured, not assumed.
+ */
 export function pairUrls(seed: SeededPair): { label: string; customer: string; agent: string }[] {
     return [
         { label: "policy", customer: `/wallet/${seed.policyId}`, agent: `/customers/${seed.customerUserId}/policy/${seed.policyId}` },
+        { label: "wallet", customer: `/wallet`, agent: `/customers/${seed.customerUserId}` },
         { label: "home", customer: `/dashboard`, agent: `/customers/${seed.customerUserId}` },
     ]
 }

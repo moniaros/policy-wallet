@@ -12,7 +12,7 @@
 
 import { describe, expect, it } from "vitest"
 
-import { compareCounts, compareFacts, formatReport, normaliseValue, type SideCapture } from "../measure/bridge/facts"
+import { compareCounts, compareFacts, formatReport, KEY_EQUIVALENCE, normaliseValue, type SideCapture } from "../measure/bridge/facts"
 
 const POLICY = "pol_fixture_1"
 
@@ -91,6 +91,20 @@ describe("PW-BRIDGE-01 L0.3 — fact-divergence metric", () => {
         expect(report.divergences).toEqual([])
         expect(report.pairsCompared).toBe(4)
         expect([...report.onlyA, ...report.onlyB]).not.toContain("notification.unreadCount")
+    })
+
+    it("pairs the same fact under the customer key and the agent key, dropping the agent-side subject", () => {
+        // The default map is EMPTY by decision (portfolio-level counts are visibility-scoped on the agent side);
+        // the mechanism is exercised with an explicit map.
+        expect(KEY_EQUIVALENCE).toEqual([])
+        const equivalence = [["portfolio.policyCount", "client.policyCount"], ["portfolio.attentionCount", "client.openGapCount"]] as const
+        const home: SideCapture = { side: "customer", url: "/dashboard", facts: {}, counts: { "portfolio.policyCount": "3", "portfolio.attentionCount": "2" } }
+        const book: SideCapture = { side: "agent", url: "/customers", facts: {}, counts: { "client.policyCount#u1": "2", "client.openGapCount#u1": "2" } }
+        const report = compareCounts(home, book, equivalence)
+        expect(report.pairsCompared).toBe(2)
+        expect(compareCounts(home, book).pairsCompared, "no pairs without an explicit map").toBe(0)
+        expect(report.divergences.map((d) => d.key)).toEqual(["portfolio.policyCount"])
+        expect(report.divergences[0]).toMatchObject({ a: { value: "3" }, b: { value: "2" } })
     })
 
     it("names the denominator so an unmeasurable pair reads as a finding, not a pass", () => {

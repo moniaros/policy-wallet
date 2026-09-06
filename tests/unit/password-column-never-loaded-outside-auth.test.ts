@@ -68,6 +68,21 @@ describe("GUARD — users.password is never loaded outside auth (A-01)", () => {
         expect(offenders.every((o) => o.file.includes("password-select.probe"))).toBe(true)
     })
 
+    it("the presence query names the MAPPED columns of the User model (a rename fails here, not on the dashboard)", () => {
+        // The first live run of A-01 rendered the agent dashboard's error boundary: the helper selected
+        // `id` while User.id is @map("user_id"). The schema is the source; the SQL must follow it.
+        const schema = readFileSync(join(ROOT, "prisma", "schema.prisma"), "utf8")
+        const model = schema.slice(schema.indexOf("model User "), schema.indexOf("\n}", schema.indexOf("model User ")))
+        const col = (field: string) => {
+            const line = model.split("\n").find((l) => new RegExp(`^\\s+${field}\\s`).test(l)) || ""
+            const m = line.match(/@map\("([^"]+)"\)/)
+            return m ? m[1] : field
+        }
+        const sql = readFileSync(join(ROOT, "lib", "services", "credential-signals.ts"), "utf8")
+        expect(sql).toContain(`SELECT "${col("id")}" AS id FROM users WHERE "${col("id")}" IN`)
+        expect(sql).toContain(`AND "${col("password")}" IS NOT NULL`)
+    })
+
     it("the allowlist names a reason for every exemption and only for paths that exist", () => {
         for (const a of ALLOWLIST) {
             expect(a.reason.length).toBeGreaterThan(10)
