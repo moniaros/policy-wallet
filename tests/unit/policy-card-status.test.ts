@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { getPolicyStatusView, resolvePolicyStatusKey } from '@/lib/wallet/policy-status-view'
+import { mintPlaceholderIdentity } from '@/lib/wallet/policy-identity'
 import { getTranslations } from '@/lib/i18n'
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
@@ -141,5 +142,17 @@ describe('the Green Card status counts calendar days', () => {
         } finally {
             vi.useRealTimers()
         }
+    })
+})
+
+
+describe("PW-BRIDGE-01 A-20b — placeholder identity counts as missing identity", () => {
+    it("a raw row whose insurer and number are the extractor's placeholders resolves as the scrubbed wallet row does", () => {
+        const future = new Date(Date.now() + 200 * 86_400_000)
+        const minted = mintPlaceholderIdentity()
+        const raw = resolvePolicyStatusKey({ status: "active", policyNumber: minted.policyNumber, insurerName: minted.insurerName, endDate: future, acordData: null } as any)
+        const scrubbed = resolvePolicyStatusKey({ status: "active", policyNumber: null, insurerName: null, endDate: future, acordData: null } as any)
+        expect(scrubbed).toBe("action_needed")
+        expect(raw).toBe(scrubbed)
     })
 })

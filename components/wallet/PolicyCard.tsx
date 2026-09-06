@@ -153,14 +153,16 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                     {/* Row 1: insurer name + status badge */}
                     <div className="mb-0.5 flex items-center justify-between gap-2">
                         <div className="flex min-w-0 items-center gap-1.5">
-                            <span className="truncate text-body-sm font-semibold text-foreground">
+                            <span className="truncate text-body-sm font-semibold text-foreground" data-fact="policy.insurer" data-fact-subject={policy.id} data-fact-value={displayInsurer}>
                                 {displayInsurer}
                             </span>
                             {policy.verified && !isAnalyzing && (
                                 <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary dark:text-mint" />
                             )}
                         </div>
-                        <StatusPill tone={view.tone} label={view.label} icon={false} />
+                        <span data-fact="policy.rowStatus" data-fact-subject={policy.id} data-fact-value={view.label}>
+                            <StatusPill tone={view.tone} label={view.label} icon={false} />
+                        </span>
                     </div>
 
                     {/* Row 2: LOB type (+ asset identifier) + expiry inline */}
@@ -169,7 +171,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                         {assetLabel && (
                             <>
                                 {' · '}
-                                <span data-fact="asset.identifier" data-fact-subject={policy.id}>
+                                <span data-fact="asset.identifier" data-fact-subject={policy.id} data-fact-value={assetLabel ?? ""}>
                                     {assetLabel}
                                 </span>
                             </>

@@ -1,6 +1,6 @@
 # PW-BRIDGE-01 — the four queues, populated at L0 exit (2026-09-06)
 
-Populated from `PARITY.md` and `INTERACTIONS.md`. Order within Queue A follows §6 (leaks, then count/state contradictions, then text contradictions, then asymmetries). Every item runs the six-phase loop (§3); a class here is the L0 **proposal** and CLASSIFY may overturn it. Depth at L0 exit: **A 18 · B 23 · C 8 · D 6**.
+Populated from `PARITY.md` and `INTERACTIONS.md`. Order within Queue A follows §6 (leaks, then count/state contradictions, then text contradictions, then asymmetries). Every item runs the six-phase loop (§3); a class here is the L0 **proposal** and CLASSIFY may overturn it. Depth at L0 exit: **A 18 · B 23 · C 8 · D 6** (A-19, A-20, A-21 appended from A-08's captures).
 
 ## Queue A — Dashboard parity
 
@@ -9,12 +9,12 @@ Populated from `PARITY.md` and `INTERACTIONS.md`. Order within Queue A follows �
 | A-01 | `customers/[id]/page.tsx` selects the customer's `password` hash and never uses it — minimise | PARITY E3 | **Leak** (repair first) — **ACT done 2026-09-06**, eleven sites, guard green |
 | A-01b | Full-row `include: { customer: … }` loads (`customer.service.ts` profile; `findUnique({ where: { email } })` without select in the customer creator) still bring every user column including the hash | A-01 residue | Leak (minimisation) — narrow to selects; extend the guard to bare includes of the user relation |
 | A-02 | Finding count: B2C home reads `disclosed`, every agent surface reads `classified`; a third raw count computed in `customer.service` | PARITY B3 | Contradiction (count) — adjudicate the conversation number |
-| A-03 | Unknown premium renders «0,00 €» on the B2B policy page; B2C counts it as unknown | PARITY A5 | Contradiction (value) |
-| A-04 | End date: B2B page and both templates read the raw `endDate` column, the app the lifecycle | PARITY A4 (+ C-01, C-02) | Contradiction (date/count) |
-| A-05 | Raw `policy.policyNumber` on the B2B policy page (a `PENDING-…` sentinel shows) | PARITY A2 | Contradiction (text) |
+| A-03 | Unknown premium renders «0,00 €» on the B2B policy page; B2C counts it as unknown | PARITY A5 | Contradiction (value) — **ACT done 2026-09-06**, VERIFY by harness |
+| A-04 | End date: B2B page and both templates read the raw `endDate` column, the app the lifecycle | PARITY A4 (+ C-01, C-02) | Contradiction (date/count) — **ACT done 2026-09-06**, VERIFY by harness |
+| A-05 | Raw `policy.policyNumber` on the B2B policy page (a `PENDING-…` sentinel shows) | PARITY A2 | Contradiction (text) — **ACT done 2026-09-06**, VERIFY by harness |
 | A-06 | After an agent confirms, record status says ΠΡΟΣ ΕΠΙΒΕΒΑΙΩΣΗ while the «unverified» badge is gone — on both sides | PARITY B1 / I-08 | Contradiction (state) |
 | A-07 | Insurer rendered twice on the B2B page (column and raw extracted value) | PARITY A1 | Contradiction or Cosmetic — capture decides |
-| A-08 | Agent dashboard KPIs (`agent.*`) and the B2B list's per-client counts carry no `data-count`; B2B identity/premium/date renders carry no `data-fact` — parity unmeasurable | PARITY D | Instrumentation (prerequisite for A-02…A-07's VERIFY) |
+| A-08 | Agent dashboard KPIs (`agent.*`) and the B2B list's per-client counts carry no `data-count`; B2B identity/premium/date renders carry no `data-fact` — parity unmeasurable | PARITY D | Instrumentation — **ACT done 2026-09-06** (policy pair 4 → 8 pairs; the KPI strip was already instrumented — PARITY D corrected); wallet pair needs the policies tab; three degraded identity states added to the harness |
 | A-09 | A policy the customer never shared is invisible to the agent with no explanation on either side | PARITY C3 | Justified asymmetry — disclose both sides |
 | A-10 | `/agent` lists grants without the permission level | PARITY C2 | Justified asymmetry — disclose (feeds D-02) |
 | A-11 | Agent dashboard still loads `protectionScore.overallScore` per customer | PARITY E1 | Void/cleanup |
@@ -24,6 +24,10 @@ Populated from `PARITY.md` and `INTERACTIONS.md`. Order within Queue A follows �
 | A-16 | Unauthored-branch policy: the agent's page states the unauthored state, the customer's page renders no analysis facts at all (live capture) | PARITY B9 | Contradiction (state) |
 | A-17 | `gap.underReviewCount` renders on the customer's policy card and nowhere on the agent's | PARITY B10 | Adjudicate with A-02 |
 | A-18 | Expired policy: the agent's page renders composition and provenance, the customer's renders none (live capture) | PARITY B11 | Contradiction (state) |
+| A-19 | The B2B policy page calls `getStatusLabel(status)` without the account language (defaults to Greek) — the customer's head passes `language`; an English agent reads a Greek status word on one page and an English one on the next | found while tagging the page for A-08 | Contradiction (locale) — **ACT done 2026-09-06** |
+| A-20 | Agent client-policies rows render the STORED status label («Ενεργό» for a placeholder-identity policy the customer sees as «ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ»), and in a different case from the customer's pill; two status resolvers (`policy-status-view` vs `effectivePolicyStatus` + a local label map) | harness wallet pair, every state | Contradiction (state) — **ACT done 2026-09-06**, VERIFY by harness |
+| A-21 | One insurer renders as «Εθνική Ασφαλιστική» to the customer (`resolveInsurerDisplay`) and «ΕΘΝΙΚΗ» to the agent (raw column) | harness wallet pair | Contradiction (text) — **ACT done 2026-09-06**, VERIFY by harness |
+| A-20b | `resolvePolicyLifecycle` counted a placeholder identity as present, so raw rows and scrubbed rows resolved differently | A-20 VERIFY residue | Contradiction (state) — **ACT done 2026-09-06** |
 | A-15 | `gap-readers-exclude-superseded` accepts `status:` alone as a filter; nested includes escape the B3 scope | PARITY E5 | Guard hole |
 
 ## Queue B — Interactions (all 23 rows of the ledger; order = invisible effects on a person's own record first)

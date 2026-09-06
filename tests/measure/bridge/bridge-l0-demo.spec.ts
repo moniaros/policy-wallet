@@ -97,7 +97,7 @@ for (const state of BRIDGE_STATES) {
         try {
             for (const pair of pairUrls(seed)) {
                 const customer = await captureSide(sessions.customer, "customer", pair.customer, pair.label, state)
-                const agent = await captureSide(sessions.agent, "agent", pair.agent, pair.label, state)
+                const agent = await captureSide(sessions.agent, "agent", pair.agent, pair.label, state, pair.agentPrepare)
                 const facts = compareFacts(customer, agent)
                 const counts = compareCounts(customer, agent)
                 rows.push({

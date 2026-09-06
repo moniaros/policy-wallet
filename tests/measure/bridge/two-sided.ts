@@ -40,6 +40,11 @@ export type BridgeState =
     | "revoked_access"
     | "empty_book"
     | "single_client_book"
+    // Degraded IDENTITY states (A-08 follow-up): the raw renders on the agent page only
+    // diverge when the row is degraded — a placeholder number, no premium, a renewed end date.
+    | "placeholder_identity"
+    | "no_premium"
+    | "renewed_end_date"
 
 export const BRIDGE_STATES: BridgeState[] = [
     "healthy",
@@ -51,6 +56,9 @@ export const BRIDGE_STATES: BridgeState[] = [
     "revoked_access",
     "empty_book",
     "single_client_book",
+    "placeholder_identity",
+    "no_premium",
+    "renewed_end_date",
 ]
 
 export interface SeededPair {
@@ -86,6 +94,13 @@ function specFor(state: BridgeState): FixtureSpec {
             // health shapes, so the row is provisioned as motor with NO gap rows and its
             // branch is switched to `cyber` (no branch section, no rule) right after.
             return { ...base, key: "bridge-cyber-active", policyNumber: "ΣΥΜΒ-2026-BR-CYB", gapSlugs: [] }
+        case "placeholder_identity":
+            // The matrix's own defect fixture shape: sentinel number AND sentinel insurer.
+            return { ...base, key: "bridge-placeholder-identity", policyNumber: "PENDING-1700000000099", insurerName: "__PENDING_EXTRACTION__", gapSlugs: [], placeholderIdentity: true } as FixtureSpec
+        case "no_premium":
+            return { ...base, key: "bridge-no-premium", policyNumber: "ΣΥΜΒ-2026-BR-NP", premiumAmount: null }
+        case "renewed_end_date":
+            return { ...base, key: "bridge-renewed", policyNumber: "ΣΥΜΒ-2026-BR-RNW" }
         default:
             return { ...base, key: "bridge-motor-active", policyNumber: "ΣΥΜΒ-2026-BR-ACT" }
     }
@@ -110,6 +125,18 @@ export async function seedTwoSided(state: BridgeState): Promise<SeededPair> {
         if (!policyId) throw new Error(`two-sided harness: fixture ${spec.key} produced no policy id`)
         if (state === "unauthored_branch") {
             await db.policy.update({ where: { id: policyId }, data: { lineOfBusiness: "cyber" } })
+        }
+        if (state === "renewed_end_date") {
+            // A renewal recorded in the document history: the lifecycle resolves the end date from it
+            // (latest renewal end → envelope → column); a render that reads the raw column disagrees by a year.
+            const row = await db.policy.findUnique({ where: { id: policyId }, select: { endDate: true, acordData: true } })
+            const base = row?.endDate ? new Date(row.endDate) : new Date()
+            const renewedEnd = new Date(base.getTime() + 365 * 86_400_000)
+            const acord = (row?.acordData && typeof row.acordData === "object" ? row.acordData : {}) as Record<string, unknown>
+            await db.policy.update({
+                where: { id: policyId },
+                data: { acordData: { ...acord, renewalHistory: [{ endDate: renewedEnd.toISOString(), source: "bridge-fixture" }] } },
+            })
         }
 
         // Relationship — exactly the row sharePolicy creates (status active).
@@ -298,7 +325,8 @@ export async function captureSide(
     side: "customer" | "agent",
     url: string,
     label: string,
-    state: BridgeState
+    state: BridgeState,
+    prepare?: (page: Page) => Promise<void>
 ): Promise<BridgeCapture> {
     const base = process.env.BASE_URL || "http://localhost:3000"
     const dir = join(BRIDGE_EVIDENCE_DIR, state)
@@ -315,6 +343,10 @@ export async function captureSide(
     if (status === null) {
         const res = await page.request.get(`${base}${url}`, { maxRedirects: 0 }).catch(() => null)
         status = res?.status() ?? null
+    }
+    if (prepare) {
+        await prepare(page)
+        await page.waitForTimeout(800)
     }
     const finalUrl = page.url().replace(base, "")
     const [facts, counts, text, hscroll, lang] = await Promise.all([
@@ -338,10 +370,23 @@ export async function captureSide(
  *  - home: the customer's dashboard against the agent's customer profile. Portfolio-level by nature and
  *    visibility-scoped on the agent side (D-B3): expected to pair NOTHING; kept so the number is measured, not assumed.
  */
-export function pairUrls(seed: SeededPair): { label: string; customer: string; agent: string }[] {
+export interface PagePair {
+    label: string
+    customer: string
+    agent: string
+    /** Runs on the agent page after it is open — the profile's tabs are local state, not URLs. */
+    agentPrepare?: (page: Page) => Promise<void>
+}
+
+export const OPEN_POLICIES_TAB = async (page: Page) => {
+    const tab = page.getByRole("tab", { name: /Ασφαλιστήρια|Policies/ }).first()
+    if (await tab.count()) await tab.click()
+}
+
+export function pairUrls(seed: SeededPair): PagePair[] {
     return [
         { label: "policy", customer: `/wallet/${seed.policyId}`, agent: `/customers/${seed.customerUserId}/policy/${seed.policyId}` },
-        { label: "wallet", customer: `/wallet`, agent: `/customers/${seed.customerUserId}` },
+        { label: "wallet", customer: `/wallet`, agent: `/customers/${seed.customerUserId}`, agentPrepare: OPEN_POLICIES_TAB },
         { label: "home", customer: `/dashboard`, agent: `/customers/${seed.customerUserId}` },
     ]
 }

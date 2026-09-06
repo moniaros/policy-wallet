@@ -7,14 +7,14 @@
   "finalUrl": "/wallet/cmtpyrhti000bt3q9bcql0vqb",
   "facts": {
     "policy.insurerName": "Interamerican",
-    "policy.policyNumber": "Αριθμός ασφαλιστηρίουΣΥΜΒ-2026-BR-XPD",
-    "policy.insuredSubject": "ΌχημαΕΗΤ-4467",
+    "policy.policyNumber": "ΣΥΜΒ-2026-BR-XPD",
+    "policy.insuredSubject": "ΕΗΤ-4467",
     "policy.status": "Ληγμένο",
     "record.status": "Ανενεργό",
-    "policy.expiryDate": "Έληξε στις 19/5/2026",
+    "policy.expiryDate": "2026-05-19",
     "policy.attention": "Χρειάζεται προσοχήΤο ασφαλιστήριο έχει λήξει. Δεν έχετε κάλυψη από αυτό.",
-    "policy.startDate": "Έναρξη19/5/2025",
-    "policy.premiumAmount": "Ετήσιο ασφάλιστρο312,40 €"
+    "policy.startDate": "2025-05-19",
+    "policy.premiumAmount": "312.4 EUR"
   },
   "counts": {
     "notification.unreadCount": "9+"

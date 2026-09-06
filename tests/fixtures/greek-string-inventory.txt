@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3571
-# inline entries: 4849 across 219 files
+# inline entries: 4841 across 219 files
 # ternary entries: 282 across 41 files
 # call entries: 1144 across 86 files
 
@@ -3961,18 +3961,10 @@ inline	components/agent/DesktopDashboard.tsx	"Πελάτες"
 inline	components/agent/DesktopDashboard.tsx	"Πελάτης"
 inline	components/agent/DesktopDashboard.tsx	"Πρόσφατη δραστηριότητα"
 inline	components/agent/QuestionnaireSender.tsx	{ sendRequest: "Ερωτηματολόγιο", gatherInsights: "Συλλογή πληροφοριών", requestInfo: "Ζητήστε δομημένες πληροφορίες από", identifyGaps: "για τον εντοπισμό κενών κάλυψης.", selectTemplate: "Επιλέξτε πρότυπο ερωτηματολογίου", requestSent: "Το αίτημα στάλθηκε επιτυχώς!", followUpWhatsApp: "Παρακολούθηση μέσω WhatsApp", sendFailed: "Αποτυχία αποστολής. Δοκιμάστε ξανά.", cancel: "Ακύρωση", sendInsightsRequest: "Αποστολή ερωτηματολογίου", sending: "Αποστολή...", questions: "ερωτήσεις", whatsappMessage: 'Γεια σας {name}, σας έστειλα ένα ερωτηματολόγιο στο PolicyWallet για να δούμε αν υπάρχουν κενά στην κάλυψή σας. Θα το βρείτε στην ενότητα «Εκκρεμότητες». Ευχαριστώ!', }
-inline	components/agent/tabs/ClientPoliciesTab.tsx	"Άγνωστη διάρκεια"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Όλες οι καταστάσεις"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Όλοι οι τύποι"
-inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ακυρωμένο"
-inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ανάλυση…"
-inline	components/agent/tabs/ClientPoliciesTab.tsx	"Απαιτείται ενέργεια"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ασφαλιστήρια"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Διαχειριζόμενο από εσάς"
-inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ελλιπές"
-inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ενεργό"
-inline	components/agent/tabs/ClientPoliciesTab.tsx	"Λήγει σύντομα"
-inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ληγμένο"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Προμήθειες"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Προσθήκη"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"προμήθεια"

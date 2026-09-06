@@ -14,7 +14,8 @@ import { composeFindings } from "@/lib/gaps/composition"
 import { resolveRecordStatus } from "@/lib/wallet/record-status"
 import { formatDate, formatDateTime, resolveLocale } from "@/lib/i18n/format"
 import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
-import { displayInsurerName } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
+import { resolveInsurerDisplay } from '@/lib/wallet/insurer-registry'
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
@@ -72,16 +73,26 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
 
     const status = calculatePolicyStatus(policy)
     const statusColor = getStatusColor(status)
-    const statusLabel = getStatusLabel(status)
     // Was getDaysUntilExpiry(policy.endDate) — the raw column, which
     // resolvePolicyLifecycle treats as its LAST fallback behind a renewal
     // re-upload and the extracted envelope. The status badge beside this
     // number already used the resolved date, so a renewed policy could show
     // "Active" next to a negative days-left. One source for both now.
-    const daysLeft = resolvePolicyLifecycle(policy).daysUntilExpiry ?? 0
+    // ONE lifecycle call for status, end date and countdown (CLAUDE.md: never re-derive) — the end date
+    // rendered below is the lifecycle's, not the raw column (A-04).
+    const lifecycle = resolvePolicyLifecycle(policy)
+    const daysLeft = lifecycle.daysUntilExpiry ?? 0
 
     const language = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(language)
+    // The status label in the ACCOUNT's language — it was computed before the language was resolved and
+    // defaulted to Greek for every account (A-19).
+    const statusLabel = getStatusLabel(status, language)
+    // A placeholder number (PENDING-…) never renders (A-05): the identity module returns null and the page
+    // says the value could not be read — the same words the customer reads.
+    const shownPolicyNumber = displayPolicyNumber(policy.policyNumber)
+    const unreadable = t.wallet.policyDetailsPage.valueUnreadable
+    const hasPremium = typeof policy.premiumAmount === "number" && policy.premiumAmount > 0
     const pd = t.agentPages.policyDetail
 
     // B0.3: the run these findings come from, and whether the latest attempt is
@@ -167,7 +178,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                 <svg className="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span className="text-neutral-900 dark:text-neutral-100">{policy.policyNumber}</span>
+                <span className="text-neutral-900 dark:text-neutral-100">{shownPolicyNumber ?? unreadable}</span>
             </nav>
 
             {/* Agent Action Banner */}
@@ -210,7 +221,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
-                                        <span className={`px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} border ${statusColor.border}`}>
+                                        <span className={`px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} border ${statusColor.border}`} data-fact="policy.status" data-fact-value={statusLabel}>
                                             {statusLabel}
                                         </span>
                                         {isManagedByViewer && (
@@ -224,15 +235,17 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                             </span>
                                         )}
                                     </div>
-                                    <h1 className="text-4xl font-black text-foreground tracking-tight leading-tight">
-                                        {displayInsurerName(policy.insurerName)}
+                                    <h1 className="text-4xl font-black text-foreground tracking-tight leading-tight" data-fact="policy.insurerName" data-fact-value={displayInsurerName(resolveInsurerDisplay(policy.insurerName).displayName || policy.insurerName, branch.label[language])}>
+                                        {displayInsurerName(resolveInsurerDisplay(policy.insurerName).displayName || policy.insurerName, branch.label[language])}
                                     </h1>
                                     <p className="text-xl text-neutral-500 dark:text-neutral-400 font-medium mt-1 uppercase tracking-tighter">{lobPhrase}</p>
                                 </div>
                                 <div className="bg-neutral-50 dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-700 text-center md:min-w-[200px]">
                                     <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.annualPremium}</p>
-                                    <p className="text-3xl font-black text-foreground leading-none">
-                                        {Number(policy.premiumAmount || 0).toLocaleString(locale, { style: 'currency', currency: policy.premiumCurrency || 'EUR' })}
+                                    <p className="text-3xl font-black text-foreground leading-none" data-fact="policy.premiumAmount" data-fact-value={hasPremium ? `${policy.premiumAmount} ${policy.premiumCurrency || 'EUR'}` : ""}>
+                                        {hasPremium
+                                            ? Number(policy.premiumAmount).toLocaleString(locale, { style: 'currency', currency: policy.premiumCurrency || 'EUR' })
+                                            : unreadable}
                                     </p>
                                 </div>
                             </div>
@@ -341,7 +354,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 shadow-sm border border-neutral-200 dark:border-neutral-700 space-y-6">
                         <div>
                             <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-2">{pd.policyId}</p>
-                            <p className="font-mono text-sm text-neutral-900 dark:text-neutral-100 font-bold bg-neutral-50 dark:bg-neutral-900/50 p-3 rounded-xl">{policy.policyNumber}</p>
+                            <p className="font-mono text-sm text-neutral-900 dark:text-neutral-100 font-bold bg-neutral-50 dark:bg-neutral-900/50 p-3 rounded-xl" data-fact="policy.policyNumber" data-fact-value={shownPolicyNumber ?? ""}>{shownPolicyNumber ?? unreadable}</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -349,11 +362,11 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                 <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.starts}</p>
                                 {/* Contractual date — Athens-pinned like every B2C render;
                                     the server's UTC zone shifted the day at Athens midnight. */}
-                                <p className="text-neutral-900 dark:text-neutral-100 font-bold">{formatDate(policy.startDate, language)}</p>
+                                <p className="text-neutral-900 dark:text-neutral-100 font-bold" data-fact="policy.startDate" data-fact-value={policy.startDate ? new Date(policy.startDate).toISOString().slice(0, 10) : ""}>{formatDate(policy.startDate, language)}</p>
                             </div>
                             <div>
                                 <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.ends}</p>
-                                <p className="text-neutral-900 dark:text-neutral-100 font-bold">{formatDate(policy.endDate, language)}</p>
+                                <p className="text-neutral-900 dark:text-neutral-100 font-bold" data-fact="policy.expiryDate" data-fact-value={lifecycle.endDate ? new Date(lifecycle.endDate).toISOString().slice(0, 10) : ""}>{lifecycle.endDate ? formatDate(lifecycle.endDate, language) : unreadable}</p>
                             </div>
                         </div>
 

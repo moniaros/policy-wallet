@@ -8,6 +8,8 @@ import { normalizeEmail } from "@/lib/identity/normalize-email";
 import { Prisma } from "@prisma/client";
 import { AppError } from "@/lib/errors";
 import { policyRowIdentity } from "@/lib/wallet/policy-identity"
+import { resolvePolicyStatusKey } from "@/lib/wallet/policy-status-view"
+import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 
 export interface CustomerFilters {
     search?: string;
@@ -253,10 +255,15 @@ export class CustomerService extends BaseService {
             policies: relationship.customer.policiesOwned.map(p => ({
                 id: p.id,
                 number: p.policyNumber,
-                insurer: p.insurerName,
+                // The registry's display name — the same resolver the customer's wallet applies —
+                // so one insurer has one name on both sides (PW-BRIDGE-01 A-21). A placeholder
+                // resolves to "" and falls back to the raw sentinel, which the identity module then
+                // refuses to render.
+                insurer: resolveInsurerDisplay(p.insurerName).displayName || p.insurerName,
                 type: p.lineOfBusiness,
-                // Lifecycle truth — the stored column is never recomputed.
-                status: effectivePolicyStatus(p),
+                // The wallet's ONE status pipeline (lifecycle + identity/extraction rules), not the
+                // bare lifecycle: the customer saw «ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ» where the agent saw «Ενεργό» (A-20).
+                status: resolvePolicyStatusKey(p),
                 premium: p.premiumAmount,
                 startDate: p.startDate,
                 // ...and the date beside that status has to come from the same

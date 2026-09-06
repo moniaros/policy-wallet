@@ -6,10 +6,16 @@
   "status": 200,
   "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpyrhti000bt3q9bcql0vqb",
   "facts": {
+    "policy.status": "Ληγμένο",
+    "policy.insurerName": "Interamerican",
+    "policy.premiumAmount": "312.4 EUR",
     "record.status": "Ανενεργό",
     "gap.findingsProvenance": "Ευρήματα από την ανάλυση της 21 Μαΐου 2025.",
     "composition.lines": "Ελέγξαμε 2 σημεία κάλυψης για αυτό το ασφαλιστήριο: 0 καλύπτονται · 2 δεν καλύπτονταιΤα παραπάνω είναι μέτρηση του τι διάβασαν οι κανόνες — αφορμή για έλεγχο, ό",
-    "composition.coverage": "Ελέγξαμε 2 σημεία κάλυψης για αυτό το ασφαλιστήριο: 0 καλύπτονται · 2 δεν καλύπτονται"
+    "composition.coverage": "Ελέγξαμε 2 σημεία κάλυψης για αυτό το ασφαλιστήριο: 0 καλύπτονται · 2 δεν καλύπτονται",
+    "policy.policyNumber": "ΣΥΜΒ-2026-BR-XPD",
+    "policy.startDate": "2025-05-19",
+    "policy.expiryDate": "2026-05-19"
   },
   "counts": {
     "notification.unreadCount": "3",

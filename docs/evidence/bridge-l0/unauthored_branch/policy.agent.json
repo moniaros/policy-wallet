@@ -6,8 +6,14 @@
   "status": 200,
   "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpynvvu0003t3q9apdx1tb6",
   "facts": {
+    "policy.status": "Ενεργό",
+    "policy.insurerName": "Interamerican",
+    "policy.premiumAmount": "312.4 EUR",
     "record.status": "Προς επιβεβαίωση",
-    "gap.findingsProvenance": "Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου. Δεν το έχουμε αξιολογήσει."
+    "gap.findingsProvenance": "Δεν έχουν οριστεί ακόμη έλεγχοι για αυτόν τον τύπο ασφαλιστηρίου. Δεν το έχουμε αξιολογήσει.",
+    "policy.policyNumber": "ΣΥΜΒ-2026-BR-CYB",
+    "policy.startDate": "2026-02-18",
+    "policy.expiryDate": "2027-02-18"
   },
   "counts": {
     "notification.unreadCount": "3"
