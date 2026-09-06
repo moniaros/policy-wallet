@@ -1,7 +1,11 @@
 export const runtime = 'nodejs'
 
+import { cookies } from "next/headers"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getTranslations } from "@/lib/i18n"
+import { parseRoles } from "@/lib/api-auth"
+import { getPrimaryRole } from "@/lib/auth/role-routing"
+import { ACTIVE_ROLE_COOKIE } from "@/lib/auth/active-role"
 import { getNotificationData } from "./actions"
 import { NotificationsClient } from "@/components/notifications/NotificationsClient"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
@@ -9,6 +13,15 @@ import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 export default async function NotificationsPage() {
     const { dbUser } = await getAuthenticatedUser()
     const t = getTranslations(resolveUserLanguage(dbUser.preferredLanguage))
+
+    // The same active-role resolution the shell uses (role cookie, else the
+    // primary role): a policyholder reads this page under the menu's word for
+    // it, «Υπενθυμίσεις»; an agent or admin keeps «Ειδοποιήσεις».
+    const roles = parseRoles(dbUser.roles)
+    const availableRoles = roles.length > 0 ? roles : ["policyholder"]
+    const requestedRole = (await cookies()).get(ACTIVE_ROLE_COOKIE)?.value
+    const activeRole = requestedRole && (availableRoles as string[]).includes(requestedRole) ? requestedRole : getPrimaryRole(dbUser.roles)
+    const title = activeRole === "policyholder" ? t.nav.reminders : undefined
 
     const data = await getNotificationData()
     if (!data) {
@@ -44,6 +57,7 @@ export default async function NotificationsPage() {
                 })),
             }}
             userLanguage={resolveUserLanguage(dbUser.preferredLanguage)}
+            title={title}
         />
     )
 }

@@ -28,6 +28,15 @@ for (const [label, width, height] of [["phone", 390, 844], ["desktop", 1280, 900
         await openSurface(page, `${BASE}/dashboard`, width === 390 ? 390 : 430)
         await page.setViewportSize({ width, height })
         await page.waitForTimeout(1200)
+        // Who is wider than the viewport? Named boxes, or the finding is a rumour.
+        const overflowers = await page.evaluate(() => {
+            const limit = document.documentElement.clientWidth + 1
+            return [...document.querySelectorAll<HTMLElement>("body *")]
+                .map((el) => ({ el, r: el.getBoundingClientRect() }))
+                .filter(({ r }) => r.width > 0 && r.right > limit)
+                .slice(0, 12)
+                .map(({ el, r }) => `${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}.${String(el.className || "").slice(0, 60)} right=${Math.round(r.right)} w=${Math.round(r.width)}`)
+        })
         const [facts, counts, sections, hscroll, scrollHeight, h1, text] = await Promise.all([
             page.evaluate(extractAttributeMap as unknown as (a: string) => Record<string, string>, "data-fact"),
             page.evaluate(extractAttributeMap as unknown as (a: string) => Record<string, string>, "data-count"),
@@ -38,8 +47,8 @@ for (const [label, width, height] of [["phone", 390, 844], ["desktop", 1280, 900
             page.evaluate(() => (document.body.innerText || "").replace(/\s+/g, " ").trim().slice(0, 6000)),
         ])
         await page.screenshot({ path: join(DIR, `home-${label}.png`), fullPage: true })
-        writeFileSync(join(DIR, `home-${label}.json`), JSON.stringify({ phase: PHASE, width, h1, scrollHeight, viewportsOfContent: +(scrollHeight / height).toFixed(1), hscroll, sections, facts, counts, text }, null, 2))
-        console.log(`[${PHASE}/${label}] h1=«${h1}» height=${scrollHeight} (${(scrollHeight / height).toFixed(1)} viewports) sections=${sections.length} facts=${Object.keys(facts).length} counts=${Object.keys(counts).length} hscroll=${hscroll}`)
+        writeFileSync(join(DIR, `home-${label}.json`), JSON.stringify({ phase: PHASE, width, h1, scrollHeight, viewportsOfContent: +(scrollHeight / height).toFixed(1), hscroll, overflowers, sections, facts, counts, text }, null, 2))
+        console.log(`[${PHASE}/${label}] h1=«${h1}» height=${scrollHeight} (${(scrollHeight / height).toFixed(1)} viewports) sections=${sections.length} facts=${Object.keys(facts).length} counts=${Object.keys(counts).length} hscroll=${hscroll}${overflowers.length ? "\n  overflow: " + overflowers.join("\n  overflow: ") : ""}`)
         expect(hscroll, "the page must never scroll sideways").toBe(false)
     })
 }

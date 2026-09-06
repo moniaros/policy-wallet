@@ -53,8 +53,21 @@ export function AttentionList({
     items,
     totalCount,
     tally,
+    lead = null,
+    cta = null,
     labels,
 }: {
+    /**
+     * One sentence over the tally when classified findings exist — awareness
+     * before the numbers («εντοπίσαμε σημεία που αξίζει να εξετάσετε»), never
+     * a severity word and never a count of its own (the tally owns those).
+     */
+    lead?: string | null
+    /**
+     * The card's one action, rendered at the bottom («Δείτε τα κενά μου»).
+     * When present the head's «Όλες» stands down: one section, one door.
+     */
+    cta?: { label: string; href: string } | null
     items: AttentionItem[]
     /**
      * The full open-finding set behind the truncated `items`. «Όλες» renders
@@ -83,7 +96,7 @@ export function AttentionList({
                 title={labels.kicker}
                 id="attention-heading"
                 meta={
-                    totalCount > items.length ? (
+                    !cta && totalCount > items.length ? (
                         <Link href="/protection" className="pw-soft-button !px-3.5 !text-caption">
                             {labels.viewAll}
                             <ArrowRight className="h-3 w-3" aria-hidden />
@@ -91,7 +104,8 @@ export function AttentionList({
                     ) : undefined
                 }
             />
-            {tally && <div className="mt-4">{tally}</div>}
+            {lead && <p className="mt-4 text-sm leading-relaxed text-foreground">{lead}</p>}
+            {tally && <div className={lead ? "mt-3" : "mt-4"}>{tally}</div>}
             <div className="mt-4">
                 {items.length === 0 ? (
                     <div className="pw-subcard flex items-start gap-3 p-3.5">
@@ -150,6 +164,12 @@ export function AttentionList({
                     // The qualifier that stops a priority badge reading as a risk
                     // verdict — functional copy, so caption is its floor.
                     <p className="mt-3 text-caption leading-snug text-muted-foreground">{labels.priorityNote}</p>
+                )}
+                {cta && (
+                    <Link href={cta.href} data-action="review_gaps" className="pw-soft-button mt-4 !px-4">
+                        {cta.label}
+                        <ArrowRight className="h-4 w-4" aria-hidden />
+                    </Link>
                 )}
                 {/* NO SECOND DISCLAIMER. ProtectionStatusHero renders the same
                     paragraph immediately above this card, and the measurement

@@ -19,7 +19,7 @@ import { signOut } from "@/app/auth/actions"
 import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, FileText, Inbox, Coins, Zap, LogOut } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, FileText, Inbox, Coins, Zap, LogOut, UserRound } from 'lucide-react'
 import { displayInsurerName, displayPersonName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import type { CommandSearchItem } from "@/components/shell/CommandSearch"
@@ -117,28 +117,36 @@ export default async function ProtectedLayout({
         // inside Ρυθμίσεις (/account/history); the partner-benefits entry is
         // conditional INSIDE Ρυθμίσεις (SettingsNav), not a tab.
         //
-        // Direction A groups the same destinations the way the reference does:
-        // the product's three surfaces, then the people and messages that
-        // support them, then the account itself — sign-out included, so the
-        // one action that ends a session is not hidden inside a menu.
+        // Direction A groups the destinations the way the reference does: the
+        // product's surfaces, then the people and messages that support them,
+        // then the account itself — sign-out included, so the one action that
+        // ends a session is not hidden inside a menu.
+        //
+        // Story rebuild (2026-09-07): the labels say what a policyholder calls
+        // these things — «Τα συμβόλαιά μου», «Καλύψεις & κενά», «Συστάσεις»
+        // (its own page), «Υπενθυμίσεις» (the notifications feed, renamed for
+        // this role only — t.nav.notifications stays the agents' word), and
+        // «Προφίλ» beside «Ρυθμίσεις».
         navigation.push({
             title: t.nav.groupProtection,
             items: [
                 { label: t.nav.home, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 { label: t.nav.protection, href: "/protection", icon: <Shield className="w-5 h-5" /> },
+                { label: t.nav.recommendations, href: "/recommendations", icon: <Lightbulb className="w-5 h-5" /> },
             ]
         })
         navigation.push({
             title: t.nav.groupSupport,
             items: [
                 { label: t.nav.myAgent, href: "/agent", icon: <Users className="w-5 h-5" /> },
-                { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" />, badge: unreadNotificationCount || undefined },
+                { label: t.nav.reminders, href: "/notifications", icon: <Bell className="w-5 h-5" />, badge: unreadNotificationCount || undefined },
             ]
         })
         navigation.push({
             title: t.nav.groupGeneral,
             items: [
+                { label: t.nav.profile, href: "/account/profile", icon: <UserRound className="w-5 h-5" /> },
                 { label: t.userMenu.settings, href: "/account", icon: <Settings className="w-5 h-5" /> },
                 { label: t.userMenu.logout, href: "#logout", icon: <LogOut className="w-5 h-5" /> },
             ]

@@ -53,6 +53,27 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **2026-09-07 — The B2C home as a story (impeccable brief) — built on `feat/b2c-dashboard-story`
+  from `286f9f5d`, gates green locally (tsc, lint, i18n, utf8, api-auth audit, 615/615 unit files),
+  NOT merged.** Six labelled regions in one order: `#overview` (next-step banner = the page's ONE
+  primary, contextual: first open plan step → open recommendations → renewal ≤30 d → add the rest;
+  facts row «Συνοπτική εικόνα»; branch map; the person's picture; life-event prompt, now full width),
+  `#attention` (lead sentence + provenance tally with denominator + top findings + one door «Δείτε
+  τα κενά μου»), `#renewals`, `#plan` (current step dominant; quick actions; preventive card),
+  rail `#support` (advisor card in the shared anatomy, help, micro-tip) and `#activity` (recent
+  activity, monitor, portfolio). New `/recommendations` page (same read + component + count key as
+  /protection's block), nav renamed for the policyholder only (Τα ασφαλιστήριά μου · Καλύψεις &
+  κενά · Συστάσεις · Υπενθυμίσεις · Προφίλ · Ρυθμίσεις; phone bar Αρχική · Ασφαλιστήρια · Καλύψεις
+  · Συστάσεις · Ρυθμίσεις), active item = most specific href. Evidence
+  `docs/evidence/dashboard-story/{before,after}/`: 390 → 6066→6907 px (two modules the brief asked
+  for), 1280 → 3868→4046 px, hscroll false at both, 25 facts / 16 counts unchanged. Decisions: the
+  brief's «συμβόλαιο» stays «ασφαλιστήριο» (owner-ratified term, guarded); the hero's «Έλεγχος της
+  προστασίας μου» stood down (the attention card owns that door); the advisor card lost its solid
+  fill (one loud surface per page); renewals now follow the findings (the brief's LEVEL 2 order —
+  the b4 "renewals in the first viewport" evidence rule is superseded, a ≤30-day renewal reaches the
+  banner instead). Still owed before merge: the E2E shell/overflow specs' result and a preview
+  journey; see the report in the session.
+
 - **2026-09-04 — The Personal Risk Profile: onboarding as breadth, assessment as depth, evidence
   as coverage — built on `feat/onboarding-protection-profile` (PR #293, base NEW-UI, awaiting the
   owner).** Contract and diagnosis in `docs/planning/PERSONAL_RISK_PROFILE.md` (four code audits:
@@ -372,6 +393,7 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
+0. **Owner:** review `feat/b2c-dashboard-story` (the home as a story + `/recommendations` + nav renames) — one decision inside it: the brief said «Τα συμβόλαιά μου», the shipped copy says «Τα ασφαλιστήριά μου» because `policy-term-asfalistirio` guards the owner-ratified term; flip the guard if the colloquial word is wanted.
 1. **Owner:** say go on BL-C1 → align dev (`npm run align:gap-catalogue -- --apply`, verify `d6f515a1d400f9d5`) → export production `gap_definitions` to `docs/archive/` and commit → align production → verify → merge #309 → deploy, one window (`docs/content/PROD-ALIGNMENT.md`).
 2. **Owner:** approve PW-BRIDGE-01 L0 (`docs/bridge/HALTS.md` H-B1) and answer its two questions (the conversation number for findings; actor attribution on notifications) → the loop starts at Queue A-01 (the password-hash select) and A-08 (instrument the agent surfaces so parity is measurable). C1–C7 stay unstarted.
 3. **Owner:** legal sign-off of PROVENANCE-REVIEW.md (C-H2), the MX record (C-H6), and the extraction requests E1–E5 in `docs/content/DEFERRED-RULES.md` (C-H4) — each unblocks a named next step.

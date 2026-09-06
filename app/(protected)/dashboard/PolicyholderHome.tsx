@@ -1,6 +1,19 @@
+/**
+ * DESIGN CONTRACT — the policyholder home («Αρχική»), story rebuild 2026-09-07.
+ *
+ * MODE: Operate. Direction A «Ο πίνακας» inherited; nothing new in the visual
+ * world. STORY: six labelled regions in one order — my situation (#overview),
+ * is there a problem (#attention, #renewals), what I do next and how I improve
+ * (#plan), then the people and the record (#support, #activity). PRIMARY: one
+ * per page — the next-step banner's button; every other card is a door, and no
+ * two doors open the same page in different words. MATERIALS: pw-card, CardHead,
+ * pw-subcard, one soft-tint accent (the banner and the current plan step), amber
+ * only on a finding, no eyebrows, no score, no ring. HONESTY: counts carry their
+ * denominator, severity never renders, under-review is disclosed without a
+ * number, and absence of a finding is never worded as reassurance.
+ */
 export const runtime = 'nodejs'
 
-import Link from "next/link"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -18,7 +31,7 @@ import { buildProtectionPlan } from "@/lib/services/protection-plan"
 import { portfolioFacts, derivePortfolioCounts } from "@/lib/dashboard/portfolio-summary"
 import { gapsOnActiveCoverage } from "@/lib/gaps/gap-universe"
 import { declarableLifeEvents } from "@/lib/services/life-events/registry"
-import { Upload } from "lucide-react"
+import { Bell, Lightbulb, ShieldAlert, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayPersonName, displayPolicyNumber, policyAssetIdentifier } from "@/lib/wallet/policy-identity"
 import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
@@ -56,6 +69,10 @@ import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 import { partitionByProvenance, provenanceOf } from "@/lib/gaps/provenance"
 import { classifiedRecommendations, readLiveGapRows } from "@/lib/gaps/gap-rows"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
+import { greekVocative } from "@/lib/i18n/greek-vocative"
+import { NextStepBanner, type NextStepView } from "@/components/dashboard/home/NextStepBanner"
+import { QuickActions, type QuickAction } from "@/components/dashboard/home/QuickActions"
+import { PreventiveCard } from "@/components/dashboard/home/PreventiveCard"
 
 /**
  * Calendar days until a date, in Athens.
@@ -849,6 +866,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 // count-consistency scan cannot attribute.
                 progressTemplate: home.planProgress,
                 upToDate: home.planUpToDate,
+                currentStep: home.planCurrentStep,
             }}
         />
     )
@@ -864,17 +882,100 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
               }
             : null
 
+    // ── THE STORY'S DECISIONS ─────────────────────────────────────────────
+    // Situation → problem → next step → improvement. Each is decided ONCE here,
+    // so the page renders one answer per question instead of six cards each
+    // implying their own.
+
+    // Greeting: first name only, in the vocative when Greek («Γιάννη», never
+    // «Γιάννης»). No usable name → no greeting; the subtitle stands alone.
+    const firstName = (displayPersonName(dbUser.name) || "").trim().split(/\s+/)[0] || null
+    const pageLead = firstName
+        ? `${home.greeting.replace('{name}', lang === 'el' ? greekVocative(firstName) : firstName)} ${home.subtitle}`
+        : home.subtitle
+
+    // THE next step — exactly one, in this order: the first open setup step
+    // (the plan's own sequence, so banner and plan cannot disagree), then open
+    // recommendations, then a renewal inside 30 days, then the rest of the
+    // wallet. Null on an empty wallet, where the hero's invitation is the one
+    // primary and a second ask would be one too many.
+    const firstOpenSetup = planStepViews.find((step) => step.state === "open") ?? null
+    const howItWorks = { label: home.nextStepHow, href: "/help" }
+    const nextStep: NextStepView | null = !hasPolicies
+        ? null
+        : firstOpenSetup
+            ? {
+                  id: firstOpenSetup.id,
+                  title: home.nextStepTitle,
+                  body: firstOpenSetup.description ?? "",
+                  cta: firstOpenSetup.title,
+                  href: firstOpenSetup.href,
+                  how: howItWorks,
+              }
+            : activeRecommendations.length > 0
+                ? {
+                      id: "recommendations",
+                      title: home.nextStepTitle,
+                      body: home.nextStepRecommendationsBody,
+                      cta: home.nextStepRecommendationsCta,
+                      href: "/recommendations",
+                      how: null,
+                  }
+                : renewalItems.some((item) => item.days <= 30)
+                    ? {
+                          id: "renewal",
+                          title: home.nextStepTitle,
+                          body: home.nextStepRenewalBody,
+                          cta: home.nextStepRenewalCta,
+                          href: "#renewals",
+                          how: null,
+                      }
+                    : {
+                          id: "add_more",
+                          title: home.nextStepTitle,
+                          body: home.nextStepAddMoreBody,
+                          cta: home.nextStepAddMoreCta,
+                          href: "/wallet/add",
+                          how: howItWorks,
+                      }
+
+    // The attention card's lead sentence and its one door — only when there is
+    // something classified (or listed) to see. Under-review findings are
+    // disclosed by the tally without a number and never headline a card.
+    const classifiedGapCount =
+        gapProvenanceCounts.legislative + gapProvenanceCounts.contractual + gapProvenanceCounts.market
+    const attentionLead = classifiedGapCount > 0 ? home.alertLead : null
+    const attentionCta =
+        classifiedGapCount > 0 || attentionItems.length > 0 ? { label: home.alertCta, href: "/protection" } : null
+
+    // One destination, one door (§11 metric 7): the preventive card and the
+    // quick actions stand down wherever the banner or the attention card
+    // already offers the same page.
+    const offeredHrefs = new Set<string>()
+    if (nextStep) offeredHrefs.add(nextStep.href)
+    if (attentionCta) offeredHrefs.add(attentionCta.href)
+
+    // The preventive card: body from what is true, destination where the body
+    // points. With recommendations it invites the reader to them; without, it
+    // says what will happen and points at the protection surface.
+    const preventiveCandidate = !hasPolicies
+        ? null
+        : activeRecommendations.length > 0
+            ? { title: home.preventiveTitle, body: home.preventiveBodyWithRecs, cta: home.preventiveCta, href: "/recommendations" }
+            : { title: home.preventiveTitle, body: home.preventiveBodyNoRecs, cta: home.preventiveCtaNoRecs, href: "/protection" }
+    const preventive = preventiveCandidate && !offeredHrefs.has(preventiveCandidate.href) ? preventiveCandidate : null
+    if (preventive) offeredHrefs.add(preventive.href)
+
+    const quickActions: QuickAction[] = [
+        { id: "add", href: "/wallet/add", label: home.quickActionAdd, icon: Upload },
+        { id: "gaps", href: "/protection", label: home.quickActionGaps, icon: ShieldAlert },
+        { id: "recommendations", href: "/recommendations", label: home.quickActionRecommendations, icon: Lightbulb },
+        { id: "reminders", href: "/account/notifications", label: home.quickActionReminders, icon: Bell },
+    ].filter((action) => !offeredHrefs.has(action.href))
+
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-page-wide px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-                {/* DIRECTION A (2026-09-03): the reference's grid — a main column of
-                    two card tracks and a right rail — replaces six stacked
-                    sections. Nothing left the page: the six section groups became
-                    positions in one grid, and every card kept its data, its keys
-                    and its honesty notes. What changed is what a reader meets
-                    first: the facts row, the findings, the renewals — then the
-                    map, the portfolio, and in the rail the people and the plan. */}
-
                 {/* The review, when one is open. Above everything else on
                     purpose: a review responds to something that happened in the
                     customer's life, and nothing below does. */}
@@ -894,32 +995,28 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </div>
                 )}
 
-                <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+                {/* The page is a story, so it opens like one: what this is, in a
+                    sentence, addressed to the person. No button up here — the
+                    banner below carries the page's one primary. */}
+                <div className="mb-6 max-w-2xl">
                     <h1 id="dashboard-title" className="text-h2 font-semibold tracking-tight text-foreground">
                         {home.title}
                     </h1>
-                    {/* The page's ONE upload offer. The desktop FAB and the
-                        portfolio card's link are gone; on an empty wallet the
-                        hero's invitation is the offer, so this stands down. */}
-                    {hasPolicies && (
-                        <Link
-                            href="/wallet/add"
-                            className="pw-primary-button pw-btn-sm inline-flex min-h-11 items-center gap-2"
-                        >
-                            <Upload className="h-4 w-4" aria-hidden="true" />
-                            {home.addNewPolicy}
-                        </Link>
-                    )}
+                    <p className="mt-2 text-body leading-relaxed text-muted-foreground" data-page-lead>
+                        {pageLead}
+                    </p>
                 </div>
+
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_340px]">
-                    {/* ── Main column ─────────────────────────────────────── */}
-                    <div className="grid min-w-0 gap-5">
-                    {/* B4: six labelled regions — the collector, a screen reader and a
-                        reader see the same six. Each region is labelled by the heading
-                        of the card that leads it; no new visible text. */}
-                    <section id="overview" aria-labelledby="protection-status-heading" className="grid min-w-0 gap-5 scroll-mt-20 md:grid-cols-2">
-                        {protectionCard && <div className="min-w-0 md:col-span-2">{protectionCard}</div>}
-                        <div className="min-w-0 md:col-span-2">
+                    {/* ── Main column: the story ─────────────────────────── */}
+                    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5">
+                        {/* LEVEL 1 — MY SITUATION. The next step first (it is the
+                            answer to "what now?"), then the facts row, the branch
+                            map, the person's own picture, and the way to tell us
+                            something changed. */}
+                        <section id="overview" aria-labelledby="protection-status-heading" className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 scroll-mt-20">
+                            {nextStep && <NextStepBanner step={nextStep} />}
+
                             <ProtectionStatusHero
                                 hasPolicies={hasPolicies}
                                 facts={facts}
@@ -930,27 +1027,32 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 labels={{
                                     kicker: home.heroKicker,
                                     meta: home.overviewMeta,
-                                    cta: home.heroCta,
+                                    // No «Έλεγχος της προστασίας μου» here any more:
+                                    // the attention card owns the door to /protection.
                                     emptyTitle: home.heroEmptyTitle,
                                     emptyBody: home.heroEmptyBody,
                                     emptyCta: home.heroEmptyCta,
                                 }}
                             />
-                        </div>
 
-                        {/* Signup-selected plan continuity (never activated → offer checkout) */}
-                        {carriedPlan && (
-                            <div className="min-w-0 md:col-span-2">
-                                <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />
-                            </div>
-                        )}
+                            {/* What the wallet covers, by branch — the snapshot's
+                                second half. Two-up in a narrow column, three-up with
+                                room (container query inside the card). */}
+                            <BranchCoverageMap
+                                entries={coverageMapEntries}
+                                labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
+                            />
 
-                        {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
-                            The meter counts every stored policy — that is what checkPolicyLimit
-                            blocks on. Metering only the in-force ones would promise headroom the
-                            next upload does not actually have. */}
-                        {standaloneUpgrade === "policy_upload_limit" && (
-                            <div className="min-w-0 md:col-span-2">
+                            {protectionCard}
+
+                            {/* Signup-selected plan continuity (never activated → offer checkout) */}
+                            {carriedPlan && <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />}
+
+                            {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
+                                The meter counts every stored policy — that is what checkPolicyLimit
+                                blocks on. Metering only the in-force ones would promise headroom the
+                                next upload does not actually have. */}
+                            {standaloneUpgrade === "policy_upload_limit" && (
                                 <UpgradeTriggerCard
                                     featureKey="policy_upload_limit"
                                     triggerSource="home_usage_banner"
@@ -969,56 +1071,34 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                         limitCountKey: "entitlement.policyLimit",
                                     }}
                                 />
-                            </div>
-                        )}
+                            )}
 
-                        <div className="min-w-0 md:col-span-2">{planCard}</div>
-                    </section>
-                    <section id="renewals" aria-labelledby="renewals-heading" className="grid min-w-0 gap-5 scroll-mt-20 md:grid-cols-2">
-                        {/* B4: renewals and the life-event prompt sit ABOVE the generated
-                            findings — the first viewport carries what is dated and what the
-                            person can tell us, before what the engine produced. */}
-                        <div className="min-w-0">
-                            <RenewalsTimelineCard
-                                items={renewalItems}
-                                // The TRUE count, not the rendered rows: items is capped
-                                // at four, and the header used to count the capped list —
-                                // eight upcoming renewals read as «6 ασφαλιστήρια».
-                                totalCount={upcomingRenewals.length}
-                                hasPolicies={policies.length > 0}
-                                showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
-                                labels={{
-                                    kicker: home.renewalTimeline,
-                                    policiesSuffixOne: home.policiesSuffixOne,
-                                    policiesSuffix: home.policiesSuffix,
-                                    trackExpirationsTitle: home.trackExpirationsTitle,
-                                    trackExpirationsBody: home.trackExpirationsBody,
-                                    noExpirationsTitle: home.noExpirationsTitle,
-                                    noExpirationsBody: home.noExpirationsBody,
-                                }}
-                            />
-                        </div>
-                        <div className="min-w-0">
-                            <LifeEventPromptCard
-                                chips={lifeEventChips}
-                                labels={{
-                                    kicker: home.lifeEventKicker,
-                                    body: home.lifeEventBody,
-                                    cta: home.lifeEventCta,
-                                }}
-                            />
-                        </div>
+                            {/* What the person can tell us — part of their situation,
+                                before what the engine produced. Full width now: in the
+                                old two-up row it wrapped one word per line at 1280. */}
+                            {hasPolicies && (
+                                <LifeEventPromptCard
+                                    chips={lifeEventChips}
+                                    labels={{
+                                        kicker: home.lifeEventKicker,
+                                        body: home.lifeEventBody,
+                                        cta: home.lifeEventCta,
+                                    }}
+                                />
+                            )}
+                        </section>
 
-                        {/* What needs my attention, with the severity tally INSIDE it —
-                            the reference's "score" slot, filled with counts. scroll-mt:
-                            the plan card's «+N ακόμη» anchors here (href="#attention")
-                            and the sticky top bar would otherwise cover the heading. */}
-                    </section>
-                    <section id="attention" aria-labelledby="attention-heading" className="min-w-0 scroll-mt-20">
+                        {/* LEVEL 2 — IS THERE A PROBLEM? The findings, with the
+                            provenance tally INSIDE the card (counts with their
+                            denominator, never a score), one lead sentence and one
+                            door. scroll-mt: the plan card's «+N ακόμη» anchors here. */}
+                        <section id="attention" aria-labelledby="attention-heading" className="min-w-0 scroll-mt-20">
                             <AttentionList
                                 items={attentionItems}
                                 totalCount={activeRecommendations.length}
                                 language={lang}
+                                lead={attentionLead}
+                                cta={attentionCta}
                                 tally={
                                     <CoverageGapsWidget
                                         variant="embedded"
@@ -1061,21 +1141,123 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     priorityNote: home.recPriorityNote,
                                 }}
                             />
-                    </section>
-                    <section id="wallet" aria-labelledby="portfolio-heading" className="grid min-w-0 gap-5 scroll-mt-20 md:grid-cols-2">
+                        </section>
 
-                        {/* What the wallet covers, by branch — and the way into
-                            life-event reassessment, attached to the map it moves. */}
-                        <div className="grid min-w-0 gap-3 md:col-span-2">
-                            <BranchCoverageMap
-                                entries={coverageMapEntries}
-                                labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
+                        {/* Still LEVEL 2 — what is dated. Sorted by end date, so
+                            urgency is the order; a renewal inside 30 days also
+                            becomes the banner's next step when nothing else is open. */}
+                        <section id="renewals" aria-labelledby="renewals-heading" className="min-w-0 scroll-mt-20">
+                            <RenewalsTimelineCard
+                                items={renewalItems}
+                                // The TRUE count, not the rendered rows: items is capped
+                                // at four, and the header used to count the capped list —
+                                // eight upcoming renewals read as «6 ασφαλιστήρια».
+                                totalCount={upcomingRenewals.length}
+                                hasPolicies={policies.length > 0}
+                                showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
+                                labels={{
+                                    kicker: home.renewalTimeline,
+                                    policiesSuffixOne: home.policiesSuffixOne,
+                                    policiesSuffix: home.policiesSuffix,
+                                    trackExpirationsTitle: home.trackExpirationsTitle,
+                                    trackExpirationsBody: home.trackExpirationsBody,
+                                    noExpirationsTitle: home.noExpirationsTitle,
+                                    noExpirationsBody: home.noExpirationsBody,
+                                }}
                             />
-                        </div>
+                        </section>
 
-                        {/* Portfolio: per-branch premium + documents. The total sits in
-                            the overview row above; the upload offer is the page header's. */}
-                        <div className="min-w-0 md:col-span-2">
+                        {/* LEVEL 3 + 4 — WHAT SHOULD I DO, HOW CAN I IMPROVE. The plan
+                            with its current step dominant, the shortcuts, the card
+                            that connects insurance with a life. */}
+                        <section id="plan" aria-labelledby="protection-plan-heading" className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 scroll-mt-20">
+                            {/* The plan takes the full column: its current step is the
+                                dominant row and needs the width (in a half column the
+                                step title wrapped to three lines). The shortcuts and
+                                the preventive card share the row beneath. */}
+                            {planCard}
+                            <div className={`grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 ${preventive ? "md:grid-cols-2" : ""}`}>
+                                <QuickActions title={home.quickActionsTitle} actions={quickActions} />
+                                {preventive && <PreventiveCard {...preventive} />}
+                            </div>
+
+                            {/* Trigger G: multi-insurer portfolio insight for free tier */}
+                            {standaloneUpgrade === "multi_insurer_insights" && (
+                                <UpgradeTriggerCard
+                                    featureKey="multi_insurer_insights"
+                                    triggerSource="home_multi_insurer"
+                                    returnTo="/protection"
+                                    dismissible
+                                />
+                            )}
+                        </section>
+                    </div>
+
+                    {/* ── Rail: LEVEL 5 — the people and the record ──────── */}
+                    {/* Explicit minmax(0,1fr) tracks all the way down: an implicit
+                        `auto` track grows to the widest item's min-content, and the
+                        portfolio card's document row (a file name that cannot
+                        break) took the whole rail to 396px in a 340px column on
+                        the first capture — the page scrolled sideways by 24px. */}
+                    <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5">
+                        <section id="support" aria-labelledby="advisor-card-heading" className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5">
+                            <AdvisorSupportRow
+                                agentConnected={Boolean(customerRelationship)}
+                                agentName={agentName || null}
+                                labels={{
+                                    title: home.advisorTitle,
+                                    agentStatus: home.agentStatus,
+                                    agentLine: customerRelationship
+                                        ? home.agentConnected.replace('{name}', agentName)
+                                        : home.noAgent,
+                                    hint: customerRelationship ? home.advisorConnectedHint : home.advisorNoneHint,
+                                    cta: customerRelationship ? home.advisorOpen : home.advisorConnect,
+                                    helpTitle: home.helpTitle,
+                                    helpOpen: home.helpOpen,
+                                }}
+                            />
+                            {/* The micro-tip: one sentence of positioning, in the
+                                rail's margin, not a card. */}
+                            <p className="px-1 text-caption leading-relaxed text-muted-foreground" data-micro-tip>
+                                {home.microTip}
+                            </p>
+                        </section>
+
+                        <section id="activity" aria-label={home.recentChangesKicker} className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5">
+                            <RecentChangesWidget
+                                changes={recentChanges}
+                                labels={{
+                                    kicker: home.recentChangesKicker,
+                                    empty: home.recentChangesEmpty,
+                                    viewAll: home.recentChangesViewAll,
+                                    explained: home.recentChangesExplained,
+                                }}
+                            />
+
+                            {/* The standing watch. Non-entitled accounts see what
+                                monitoring IS — future tense, no fabricated signals. */}
+                            {monitorEntitled && monitorSignals ? (
+                                <ProtectionMonitorCard
+                                    signals={monitorSignals}
+                                    lastCheckedLabel={monitorLastCheckedLabel}
+                                    labels={{
+                                        kicker: home.monitorKicker,
+                                        notYetAssessed: home.monitorNotAssessed,
+                                        detailsLink: home.monitorDetailsLink,
+                                    }}
+                                />
+                            ) : !monitorEntitled ? (
+                                <UpgradeTriggerCard
+                                    featureKey="protection_monitoring"
+                                    triggerSource="home_protection_monitor"
+                                    returnTo="/dashboard"
+                                />
+                            ) : null}
+
+                            {/* Portfolio: per-branch premium + documents. The total sits in
+                                the overview row; the upload offer is the banner's or the
+                                quick actions'. Secondary by design — the dashboard
+                                summarises, the wallet explains. */}
                             <PortfolioSummaryCard
                                 totalLabel={null}
                                 showAddLink={false}
@@ -1090,73 +1272,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 }}
                                 excludedParts={premiumExcludedParts}
                             />
-                        </div>
-
-                        {/* Trigger G: multi-insurer portfolio insight for free tier */}
-                        {standaloneUpgrade === "multi_insurer_insights" && (
-                            <div className="min-w-0 md:col-span-2">
-                                <UpgradeTriggerCard
-                                    featureKey="multi_insurer_insights"
-                                    triggerSource="home_multi_insurer"
-                                    returnTo="/protection"
-                                    dismissible
-                                />
-                            </div>
-                        )}
-                    </section>
-                    </div>
-
-                    {/* ── Rail: the people and the plan ───────────────────── */}
-                    <aside className="grid min-w-0 gap-5">
-                        <section id="support" aria-labelledby="advisor-card-heading" className="grid min-w-0 gap-5">
-                        <AdvisorSupportRow
-                            agentConnected={Boolean(customerRelationship)}
-                            agentName={agentName || null}
-                            labels={{
-                                title: home.advisorTitle,
-                                agentStatus: home.agentStatus,
-                                agentLine: customerRelationship
-                                    ? home.agentConnected.replace('{name}', agentName)
-                                    : home.noAgent,
-                                hint: customerRelationship ? home.advisorConnectedHint : home.advisorNoneHint,
-                                cta: customerRelationship ? home.advisorOpen : home.advisorConnect,
-                                helpTitle: home.helpTitle,
-                                helpOpen: home.helpOpen,
-                            }}
-                        />
-                        </section>
-                        <section id="activity" aria-label={home.recentChangesKicker} className="grid min-w-0 gap-5">
-
-
-                        {/* The standing watch. Non-entitled accounts see what
-                            monitoring IS — future tense, no fabricated signals. */}
-                        {monitorEntitled && monitorSignals ? (
-                            <ProtectionMonitorCard
-                                signals={monitorSignals}
-                                lastCheckedLabel={monitorLastCheckedLabel}
-                                labels={{
-                                    kicker: home.monitorKicker,
-                                    notYetAssessed: home.monitorNotAssessed,
-                                    detailsLink: home.monitorDetailsLink,
-                                }}
-                            />
-                        ) : !monitorEntitled ? (
-                            <UpgradeTriggerCard
-                                featureKey="protection_monitoring"
-                                triggerSource="home_protection_monitor"
-                                returnTo="/dashboard"
-                            />
-                        ) : null}
-
-                        <RecentChangesWidget
-                            changes={recentChanges}
-                            labels={{
-                                kicker: home.recentChangesKicker,
-                                empty: home.recentChangesEmpty,
-                                viewAll: home.recentChangesViewAll,
-                                explained: home.recentChangesExplained,
-                            }}
-                        />
                         </section>
                     </aside>
                 </div>

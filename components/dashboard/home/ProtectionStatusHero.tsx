@@ -140,7 +140,13 @@ export function ProtectionStatusHero({
     language: Language
     labels: {
         kicker: string
-        cta: string
+        /**
+         * The footer's «Έλεγχος της προστασίας μου». Optional since the story
+         * home (2026-09-07): there the attention card owns the door to
+         * /protection, and two doors to one page in different words is the
+         * duplicate-action defect this page measured live.
+         */
+        cta?: string
         emptyTitle: string
         emptyBody: string
         emptyCta: string
@@ -306,28 +312,32 @@ export function ProtectionStatusHero({
                 </p>
             )}
 
-            <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-                {areasLine ? (
-                    <Link
-                        href="#attention"
-                        className="flex min-h-11 items-center gap-2 text-sm text-foreground hover:underline"
-                        data-count="recommendation.openCount"
-                    >
-                        <TriangleAlert className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" aria-hidden="true" />
-                        {areasLine}
-                    </Link>
-                ) : (
-                    <span />
-                )}
-                <Link
-                    href="/protection"
-                    data-action="reviewCoverage"
-                    className="inline-flex min-h-11 items-center gap-1.5 self-start text-sm font-semibold text-primary hover:underline dark:text-mint sm:self-auto"
-                >
-                    {labels.cta}
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-            </div>
+            {(areasLine || labels.cta) && (
+                <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    {areasLine ? (
+                        <Link
+                            href="#attention"
+                            className="flex min-h-11 items-center gap-2 text-sm text-foreground hover:underline"
+                            data-count="recommendation.openCount"
+                        >
+                            <TriangleAlert className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" aria-hidden="true" />
+                            {areasLine}
+                        </Link>
+                    ) : (
+                        <span />
+                    )}
+                    {labels.cta && (
+                        <Link
+                            href="/protection"
+                            data-action="reviewCoverage"
+                            className="inline-flex min-h-11 items-center gap-1.5 self-start text-sm font-semibold text-primary hover:underline dark:text-mint sm:self-auto"
+                        >
+                            {labels.cta}
+                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                        </Link>
+                    )}
+                </div>
+            )}
 
             {/* The disclaimer belongs to the AI-derived line, not to the counts:
                 stamping «12 ασφαλιστήρια» as AI output would be its own small
