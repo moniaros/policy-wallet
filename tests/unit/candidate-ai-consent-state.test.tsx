@@ -28,7 +28,7 @@ vi.mock("@/app/(protected)/agent/actions", () => ({
 
 const base = {
     aiProcessingConsentVersion: null,
-    password: null,
+    hasPassword: false,
     emailVerified: null,
     lastActiveAt: null,
 }
@@ -58,7 +58,7 @@ describe("deriveAiConsentState", () => {
     // letting an advisor attest here would run AI over a live user's policy
     // without genuine consent (GDPR).
     it("is blocked once the account has a password", () => {
-        expect(deriveAiConsentState({ ...base, password: "hash" })).toBe("blocked")
+        expect(deriveAiConsentState({ ...base, hasPassword: true })).toBe("blocked")
     })
 
     it("is blocked once the email is verified", () => {

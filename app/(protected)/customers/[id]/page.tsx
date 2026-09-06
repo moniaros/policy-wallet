@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { getCustomerProfile } from "../../agent/actions"
 import { CustomerProfileClient } from "./CustomerProfileClient"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
@@ -40,9 +41,11 @@ export default async function CustomerProfilePage({ params }: Props) {
     // classify.
     const consentSubject = await db.user.findUnique({
         where: { id: customer.id },
-        select: { aiProcessingConsentVersion: true, password: true, emailVerified: true, lastActiveAt: true },
+        select: { aiProcessingConsentVersion: true, emailVerified: true, lastActiveAt: true },
     })
-    const customerAiConsent: CandidateAiConsent = consentSubject ? deriveAiConsentState(consentSubject) : "blocked"
+    const customerAiConsent: CandidateAiConsent = consentSubject
+        ? deriveAiConsentState({ ...consentSubject, hasPassword: await hasPasswordCredential(db, customer.id) })
+        : "blocked"
 
     return (
         <>

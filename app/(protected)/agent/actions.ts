@@ -1,5 +1,6 @@
 "use server"
 
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { storedDocumentLabel } from "@/lib/wallet/document-label"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
@@ -1213,7 +1214,7 @@ export async function addPolicyForCustomer(data: {
         if (input.attestedAiConsent) {
             const owner = await db.user.findUnique({
                 where: { id: customerId },
-                select: { aiProcessingConsentVersion: true, password: true, emailVerified: true, lastActiveAt: true },
+                select: { aiProcessingConsentVersion: true, emailVerified: true, lastActiveAt: true },
             })
             // "Unactivated" MUST match the canonical activation check
             // (customer.service isActivatedAccount): password OR emailVerified
@@ -1223,7 +1224,8 @@ export async function addPolicyForCustomer(data: {
             // logged-in account and run AI over their policy without genuine
             // consent (GDPR). A user who has EVER been active is a live account
             // and must be asked directly.
-            const isUnactivated = owner && !owner.password && !owner.emailVerified && !owner.lastActiveAt
+            const ownerHasPassword = owner ? await hasPasswordCredential(db, customerId) : false
+            const isUnactivated = owner && !ownerHasPassword && !owner.emailVerified && !owner.lastActiveAt
             if (owner && !owner.aiProcessingConsentVersion && isUnactivated) {
                 const { AGENT_ATTESTED_CONSENT_PREFIX } = await import("@/lib/ai-consent")
                 await db.user.update({
@@ -1535,9 +1537,9 @@ async function backfillCustomerTaxId(customerId: string, rawTaxId?: string | nul
     if (!taxId) return
     const user = await db.user.findUnique({
         where: { id: customerId },
-        select: { taxId: true, password: true, emailVerified: true },
+        select: { taxId: true, emailVerified: true },
     })
-    if (user && !user.taxId && isPhantomCustomer(user)) {
+    if (user && !user.taxId && isPhantomCustomer({ hasPassword: await hasPasswordCredential(db, customerId), emailVerified: user.emailVerified })) {
         await db.user.update({ where: { id: customerId }, data: { taxId } })
     }
 }
@@ -2133,13 +2135,14 @@ export async function updateCustomerContact(data: { customerId: string; email: s
 
         const customer = await db.user.findUnique({
             where: { id: customerId },
-            select: { id: true, email: true, password: true, emailVerified: true, lastActiveAt: true },
+            select: { id: true, email: true, emailVerified: true, lastActiveAt: true },
         })
         if (!customer) return { success: false as const, error: "CUSTOMER_ACCESS_DENIED" }
         // Same "activated" rule as the consent attestation (addPolicyForCustomer
         // step 6): a password, a verified email OR any activity means a live
         // account, whose contact details only its owner may change.
-        if (!isPhantomCustomer(customer) || customer.lastActiveAt) {
+        const customerHasPassword = await hasPasswordCredential(db, customerId)
+        if (!isPhantomCustomer({ hasPassword: customerHasPassword, emailVerified: customer.emailVerified }) || customer.lastActiveAt) {
             return { success: false as const, error: "CUSTOMER_ACCOUNT_OWNED" }
         }
 

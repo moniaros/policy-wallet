@@ -1,3 +1,4 @@
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility";
 import { normalizeTaxId, isValidGreekAfm, maskTaxId } from "@/lib/identity/tax-id";
@@ -29,14 +30,15 @@ export type CandidateAiConsent = "granted" | "attestable" | "blocked";
 
 export function deriveAiConsentState(user: {
     aiProcessingConsentVersion: string | null;
-    password: string | null;
+    /** Credential PRESENCE from lib/services/credential-signals.ts — never the hash (A-01). */
+    hasPassword: boolean;
     emailVerified: Date | null;
     lastActiveAt: Date | null;
 }): CandidateAiConsent {
     if (user.aiProcessingConsentVersion) return "granted";
     // MUST match the canonical activation check in commitScannedPolicy: a user
     // who has EVER been active is a live account and must be asked directly.
-    const unactivated = !user.password && !user.emailVerified && !user.lastActiveAt;
+    const unactivated = !user.hasPassword && !user.emailVerified && !user.lastActiveAt;
     return unactivated ? "attestable" : "blocked";
 }
 
@@ -135,7 +137,6 @@ export class CustomerResolutionService extends BaseService {
                         // Whether an AI analysis can actually run for this
                         // customer — see deriveAiConsentState.
                         aiProcessingConsentVersion: true,
-                        password: true,
                         emailVerified: true,
                         lastActiveAt: true,
                         // Only agent-visible policies, mirroring getCustomers.
@@ -146,6 +147,8 @@ export class CustomerResolutionService extends BaseService {
             take: 25,
         });
 
+        // Credential PRESENCE for the consent verdict — never the hash (A-01).
+        const credentialPresence = await passwordPresence(this.db, rels.map((r) => r.customer.id));
         const candidates: CustomerCandidate[] = [];
         for (const rel of rels) {
             const c = rel.customer;
@@ -179,7 +182,7 @@ export class CustomerResolutionService extends BaseService {
                 status: rel.status,
                 matchReason,
                 score,
-                aiConsent: deriveAiConsentState(c),
+                aiConsent: deriveAiConsentState({ ...c, hasPassword: credentialPresence.has(c.id) }),
             });
         }
 

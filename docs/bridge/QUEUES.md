@@ -6,7 +6,8 @@ Populated from `PARITY.md` and `INTERACTIONS.md`. Order within Queue A follows �
 
 | # | Item | Source row | Proposed class |
 |---|---|---|---|
-| A-01 | `customers/[id]/page.tsx` selects the customer's `password` hash and never uses it — minimise | PARITY E3 | **Leak** (repair first) |
+| A-01 | `customers/[id]/page.tsx` selects the customer's `password` hash and never uses it — minimise | PARITY E3 | **Leak** (repair first) — **ACT done 2026-09-06**, eleven sites, guard green |
+| A-01b | Full-row `include: { customer: … }` loads (`customer.service.ts` profile; `findUnique({ where: { email } })` without select in the customer creator) still bring every user column including the hash | A-01 residue | Leak (minimisation) — narrow to selects; extend the guard to bare includes of the user relation |
 | A-02 | Finding count: B2C home reads `disclosed`, every agent surface reads `classified`; a third raw count computed in `customer.service` | PARITY B3 | Contradiction (count) — adjudicate the conversation number |
 | A-03 | Unknown premium renders «0,00 €» on the B2B policy page; B2C counts it as unknown | PARITY A5 | Contradiction (value) |
 | A-04 | End date: B2B page and both templates read the raw `endDate` column, the app the lifecycle | PARITY A4 (+ C-01, C-02) | Contradiction (date/count) |

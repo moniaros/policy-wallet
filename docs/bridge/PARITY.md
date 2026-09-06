@@ -50,7 +50,7 @@ Templates column: **D** = weekly digest (`lib/email/templates/weekly-digest.ts`,
 | `composition.*` (7 keys) | both (shared `CoverageComposition`) | the only family measurable on both sides at L0 |
 | `notification.unreadCount` | both shells (`AppShell`, `UserMenu`) | different recipients — not a pair |
 | `client.*` (openGapCount, linesHeldCount, unassessedPolicyCount) | B2B only (`ClientCard`, `ClientOverviewTab`) | the B2C counterparts are `portfolio.attentionCount` / `portfolio.unassessedCount` under different keys → the loop needs a **key-equivalence map** or shared keys |
-| `agent.*` (totalClients, expiringClients, gapClients, pendingInvites, policiesThisMonth, followUps, pipelineEur) | **registered in `count-keys.ts`, rendered with NO `data-count`** (`dashboard/agent/page.tsx` — production capture 2026-09-06 returned zero `data-fact`/`data-count` elements) | first Queue A item: instrument, or parity is unmeasurable |
+| `agent.*` (totalClients, expiringClients, gapClients, pendingInvites, policiesThisMonth, followUps, pipelineEur) | B2B dashboard KPI strip (`AgentKpiStrip` → `StatTile countKey`) — **instrumented** (corrected 2026-09-06: the production probe had queried `data-fact` only; the L0 harness confirms `data-count` on `/dashboard/agent`) | book-level counts with no B2C counterpart — depth, not fact |
 | `attention.*`, `needs.*`, `plan.*`, `recommendation.openCount`, `timeline.*`, `review.*`, `riskGraph.nodeCount`, `branch.policyCount`, `policy.renewalCheckpointCount`, `entitlement.*` | B2C only | depth, not fact — no B2B counterpart expected |
 
 ## E. Residue the matrix surfaced (not parity rows, but Queue A input)
@@ -76,4 +76,4 @@ Templates column: **D** = weekly digest (`lib/email/templates/weekly-digest.ts`,
 ## What L0 could not measure
 
 - Templates were inventoried from code; they are not rendered by the two-sided harness yet (Queue C builds the template capture on top of `captureSide`).
-- The B2B policy page carries **no `data-fact` of its own** outside the shared `AnalysisCard`; its identity, premium and date renders are raw JSX. Until Queue A instruments them, A1/A2/A4/A5 are code findings, not harness pairs.
+- The agent's **customer profile** (`/customers/<uid>`) and the **customer list rows** carry no `data-fact`/`data-count` (the home pair measured 0 pairs in every state); the B2B policy page carries **no `data-fact` of its own** outside the shared `AnalysisCard`; its identity, premium and date renders are raw JSX. Until Queue A instruments them, A1/A2/A4/A5 are code findings, not harness pairs.

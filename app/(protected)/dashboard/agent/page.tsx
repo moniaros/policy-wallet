@@ -1,5 +1,6 @@
 export const runtime = "nodejs"
 
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { redirect } from "next/navigation"
 import { formatDate } from "@/lib/i18n/format"
 import { getActivityFeed } from "../../activity/actions"
@@ -88,7 +89,6 @@ export default async function DashboardPage() {
                         name: true,
                         email: true,
                         image: true,
-                        password: true,
                         emailVerified: true,
                     },
                 },
@@ -156,12 +156,14 @@ export default async function DashboardPage() {
         relationships.map((r) => r.policyholderUserId)
     )
     const relByCustomerId = new Map(relationships.map((r) => [r.customer.id, r]))
+    // Credential PRESENCE for the identity rule — never the hash (A-01).
+    const credentialPresence = await passwordPresence(prisma, relationships.map((r) => r.customer.id))
     const presentName = (customerId: string | null | undefined, fallback = "Client") => {
         const rel = customerId ? relByCustomerId.get(customerId) : undefined
         if (!rel) return fallback
         return presentCustomerIdentity(
             rel,
-            rel.customer,
+            { ...rel.customer, hasPassword: credentialPresence.has(rel.customer.id) },
             visiblePolicyCounts.get(rel.policyholderUserId) ?? 0
         ).name
     }
@@ -448,7 +450,7 @@ export default async function DashboardPage() {
         // shows its email (which the agent typed), never its real name/avatar.
         const identity = presentCustomerIdentity(
             rel,
-            rel.customer,
+            { ...rel.customer, hasPassword: credentialPresence.has(rel.customer.id) },
             visiblePolicyCounts.get(rel.policyholderUserId) ?? 0
         )
         const nameParts = identity.name.split(" ")

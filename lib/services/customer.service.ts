@@ -1,3 +1,4 @@
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
 import { agentMaySeeCustomerIdentity, isPhantomCustomer } from "@/lib/agent-consent";
@@ -74,7 +75,6 @@ export class CustomerService extends BaseService {
                             createdAt: true,
                             // Consent signals — an unconsented real account must
                             // not leak its name/phone/image (see agent-consent).
-                            password: true,
                             emailVerified: true,
                             // Only what the agent may see: policies they
                             // uploaded, or ones the owner explicitly granted.
@@ -98,13 +98,15 @@ export class CustomerService extends BaseService {
             })
         ]);
 
+        // Credential PRESENCE for the identity rule — never the hash (A-01).
+        const credentialPresence = await passwordPresence(this.db, customers.map((rel) => rel.customer.id));
         return {
             data: customers.map(rel => {
                 // Identity (name/phone/image) only for consented / phantom /
                 // already-managed customers. Email stays — the agent typed it.
                 const showIdentity = agentMaySeeCustomerIdentity(
                     rel,
-                    rel.customer,
+                    { ...rel.customer, hasPassword: credentialPresence.has(rel.customer.id) },
                     rel.customer.policiesOwned.length
                 );
                 return {
@@ -207,7 +209,7 @@ export class CustomerService extends BaseService {
         // already-managed customers — a bare relationship is not consent.
         const showIdentity = agentMaySeeCustomerIdentity(
             relationship,
-            relationship.customer,
+            { ...relationship.customer, hasPassword: await hasPasswordCredential(this.db, relationship.customer.id) },
             relationship.customer.policiesOwned.length
         );
 
@@ -333,7 +335,7 @@ export class CustomerService extends BaseService {
             // only when the record has none. This runs BEFORE any relationship
             // exists, so for an activated account it would let anyone who
             // knows an email write a tax id onto a stranger's profile.
-            if (isPhantomCustomer(user)) {
+            if (isPhantomCustomer({ hasPassword: await hasPasswordCredential(this.db, user.id), emailVerified: user.emailVerified })) {
                 await this.db.user.update({
                     where: { id: user.id },
                     data: { taxId },

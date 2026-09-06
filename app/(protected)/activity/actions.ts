@@ -1,5 +1,6 @@
 'use server'
 
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
 import { opportunityStatusLabel } from '@/lib/opportunity/status-labels'
 import { db as prisma } from '@/lib/db'
@@ -30,7 +31,6 @@ const CUSTOMER_IDENTITY_SELECT = {
     id: true,
     name: true,
     email: true,
-    password: true,
     emailVerified: true,
 } as const
 
@@ -110,11 +110,13 @@ export async function getActivityFeed(limit = 50): Promise<ActivityEvent[]> {
         ]),
     ]
     const visibleCounts = await getVisiblePolicyCountsByOwner(agentId, customerOwnerIds)
+    // Credential PRESENCE for the identity rule — never the hash (A-01).
+    const credentialPresence = await passwordPresence(prisma, customerOwnerIds)
     const nameFor = (
         rel: { activationStatus?: string | null } | null | undefined,
-        customer: { id: string; name: string | null; email: string; password: string | null; emailVerified: Date | null },
+        customer: { id: string; name: string | null; email: string; emailVerified: Date | null },
         ownerUserId: string
-    ) => presentCustomerIdentity(rel, customer, visibleCounts.get(ownerUserId) ?? 0).name
+    ) => presentCustomerIdentity(rel, { ...customer, hasPassword: credentialPresence.has(customer.id) }, visibleCounts.get(ownerUserId) ?? 0).name
 
     // 1. Notification Events
     for (const n of notifications) {

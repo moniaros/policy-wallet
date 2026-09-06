@@ -44,6 +44,7 @@ matrix. Status: **present**, **partial** (with what is missing), **not yet appli
 | count consistency across render sites | tests/measure/dashboard.ts#countConsistency; tests/unit/count-instrumentation-registry.test.tsx | count-copy-agreement.ts.txt; count-key-unregistered.tsx.txt | every commit | present |
 | tap targets 44×44 | tests/unit/tap-target-floor.test.tsx; tests/measure/metrics.ts#smallTapTargets | clamp-enumeration-probe.tsx.txt | every commit | present |
 | contrast 1.4.3 and 1.4.11 | tests/unit/text-contrast.test.ts; tests/unit/contrast-tokens.test.ts; tests/unit/dark-mode-contrast.test.ts; tests/unit/solid-panel-contrast.test.ts; tests/unit/token-contrast-contract.test.ts; tests/measure/metrics.ts#contrastFailures; tests/measure/metrics.ts#nonTextContrastFailures | always-dark-themed-class.tsx.txt | every commit | present |
+| data minimisation — the credential column | tests/unit/password-column-never-loaded-outside-auth.test.ts | tests/fixtures/guard-probes/password-select.probe.ts.txt | every commit | present — PW-BRIDGE-01 A-01 (the probe is flagged as both select and raw read): users.password is read only by lib/services/credential-signals.ts as IS NOT NULL; eleven agent paths used to select the hash to test it for null |
 
 Every-commit set the spec names — score-absence, under-review-containment, placeholder-token-leakage,
 absence-is-not-reassurance, no-fabricated-public-count — all under `tests/unit`, all with probes.
