@@ -44,7 +44,7 @@ export function readsGapsWithoutClassifying(src: string): boolean {
 describe("the map", () => {
     it("covers every authored slug — and reports an invented one (probe)", () => {
         expect(unmappedAuthoredSlugs()).toEqual([])
-        expect(AUTHORED_GAP_DEFINITIONS.length).toBe(40) // 29 + the 11 renters/home-contents rules of PW-CONTENT-01 Goal 5
+        expect(AUTHORED_GAP_DEFINITIONS.length).toBe(50) // 29 + Goal 5's 11 + Goal 6's 10
         expect(unmappedAuthoredSlugs([...AUTHORED_GAP_DEFINITIONS, { slug: "probe_unmapped_slug" }])).toEqual(["probe_unmapped_slug"])
         // No stale entry either: the map names only authored slugs.
         const authored = new Set(AUTHORED_GAP_DEFINITIONS.map((d) => d.slug))

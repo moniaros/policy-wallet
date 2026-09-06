@@ -797,5 +797,156 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
             operator: 'AND'
         },
         isActive: true
+    },
+    // ── PW-CONTENT-01 Goal 6 — personal accident, roadside, pension, income protection, group life ──
+    {
+        slug: 'pa_sum_insured_not_recorded',
+        name: 'Personal accident: sum insured not recorded',
+        title: 'Δεν καταγράφεται ασφαλισμένο κεφάλαιο',
+        description: 'Το ασφαλιστήριο προσωπικού ατυχήματος δεν καταγράφει το κεφάλαιο που καταβάλλεται σε θάνατο ή μόνιμη αναπηρία από ατύχημα.',
+        lineOfBusiness: 'personal_accident',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'policy.sumInsured', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'pa_no_beneficiaries_recorded',
+        name: 'Personal accident: no beneficiary recorded',
+        title: 'Δεν καταγράφεται δικαιούχος',
+        description: 'Δεν καταγράφεται δικαιούχος για την παροχή θανάτου από ατύχημα — ούτε στο σχετικό πεδίο ούτε στην ενότητα ζωής.',
+        lineOfBusiness: 'personal_accident',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'beneficiaries', fields: ['beneficiaries', 'lifeAndInvestment.beneficiaries'], operator: 'all_missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'roadside_assistance_phone_not_recorded',
+        name: 'Roadside: assistance number not recorded',
+        title: 'Δεν καταγράφεται τηλέφωνο οδικής βοήθειας',
+        description: 'Ένα συμβόλαιο οδικής βοήθειας είναι πρώτα απ\u2019 όλα ένας αριθμός. Δεν καταγράφεται.',
+        lineOfBusiness: 'roadside',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'vehicle.roadsideAssistancePhone', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'roadside_vehicle_not_recorded',
+        name: 'Roadside: vehicle not recorded',
+        title: 'Δεν καταγράφεται αριθμός κυκλοφορίας οχήματος',
+        description: 'Δεν καταγράφεται ποιο όχημα καλύπτει το συμβόλαιο οδικής βοήθειας.',
+        lineOfBusiness: 'roadside',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'vehicle.plateNumber', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'pension_maturity_date_not_recorded',
+        name: 'Pension: maturity date not recorded',
+        title: 'Δεν καταγράφεται ημερομηνία λήξης / ωρίμανσης',
+        description: 'Δεν καταγράφεται πότε ωριμάζει το συνταξιοδοτικό πρόγραμμα — η ημερομηνία γύρω από την οποία οργανώνεται κάθε επιλογή.',
+        lineOfBusiness: 'pension',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'lifeAndInvestment.maturityDate', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'pension_no_beneficiaries_recorded',
+        name: 'Pension: no beneficiary recorded',
+        title: 'Δεν καταγράφεται δικαιούχος',
+        description: 'Δεν καταγράφεται δικαιούχος σε περίπτωση θανάτου πριν την ωρίμανση — ούτε στο σχετικό πεδίο ούτε στην ενότητα ζωής.',
+        lineOfBusiness: 'pension',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'beneficiaries', fields: ['beneficiaries', 'lifeAndInvestment.beneficiaries'], operator: 'all_missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'income_protection_benefit_not_recorded',
+        name: 'Income protection: benefit not recorded',
+        title: 'Δεν καταγράφεται ποσό παροχής',
+        description: 'Δεν καταγράφεται το ποσό που καταβάλλεται όσο διαρκεί η ανικανότητα για εργασία.',
+        lineOfBusiness: 'income_protection',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'policy.sumInsured', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'group_life_death_benefit_not_recorded',
+        name: 'Group life: death benefit not recorded',
+        title: 'Δεν καταγράφεται ασφαλισμένο κεφάλαιο ζωής',
+        description: 'Το ομαδικό ασφαλιστήριο ζωής δεν καταγράφει το κεφάλαιο θανάτου ανά ασφαλισμένο.',
+        lineOfBusiness: 'group_life',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'lifeAndInvestment.deathBenefit', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'group_life_no_beneficiaries_recorded',
+        name: 'Group life: no beneficiary recorded',
+        title: 'Δεν καταγράφεται δικαιούχος',
+        description: 'Δεν καταγράφεται δικαιούχος — ούτε στο σχετικό πεδίο ούτε στην ενότητα ζωής.',
+        lineOfBusiness: 'group_life',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'beneficiaries', fields: ['beneficiaries', 'lifeAndInvestment.beneficiaries'], operator: 'all_missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'pension_sum_insured_not_recorded',
+        name: 'Pension: guaranteed sum not recorded',
+        title: 'Δεν καταγράφεται εγγυημένο κεφάλαιο ή ποσοστό',
+        description: 'Δεν καταγράφεται τι μέρος του προγράμματος είναι εγγυημένο — το ποσοστό που ορίζει τι θα υπάρχει στη λήξη ό,τι κι αν κάνουν οι αγορές.',
+        lineOfBusiness: 'pension',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'lifeAndInvestment.guaranteedPercentage', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
     }
 ]

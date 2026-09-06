@@ -18,9 +18,9 @@ forms resolve). Reviewed by: agent, citation-backed · Reviewed: 2026-09-06 (F5 
 | legislative | **6** | `insured_value_above_declared`, `insured_value_below_rebuild_cost`, `missing_microchip_number`, `missing_enfia_components`, `missing_accident_declaration_phone`, `moto_missing_accident_declaration_phone` |
 | contractual | 0 | — (no named contract class could be tied to a rule that fires regardless of whether that contract exists; see #10–12) |
 | market | **2** | `missing_hospital_class`, `no_direct_billing` |
-| under_review | **32** | everything else — each with its search record below (21 from the original 29, plus the 11 renters / home-contents rules authored in PW-CONTENT-01 Goal 5, which enter under review by construction) |
+| under_review | **42** | everything else — each with its search record below (21 from the original 29, plus the 11 renters / home-contents rules of Goal 5 and the 10 life-family / roadside rules of Goal 6, which enter under review by construction) |
 
-Before Goal 2: 3 / 0 / 0 / 26. After Goal 2: 6 / 0 / 2 / 21. After Goal 5 (11 new rules, all under review): 6 / 0 / 2 / 32 of 40.
+Before Goal 2: 3 / 0 / 0 / 26. After Goal 2: 6 / 0 / 2 / 21. After Goal 5 (11 new rules, all under review): 6 / 0 / 2 / 32 of 40. After Goal 6 (10 more): 6 / 0 / 2 / 42 of 50.
 
 ## Citations used
 
@@ -32,7 +32,7 @@ Before Goal 2: 3 / 0 / 0 / 26. After Goal 2: 6 / 0 / 2 / 21. After Goal 5 (11 ne
 | C4 | Π.Δ. 237/1986 (κωδικοποίηση ν. 489/1976, υποχρεωτική ασφάλιση αυτοκινήτων) | άρθρο 9 παρ. 1 | The policyholder / insured must declare every accident of the insured motor vehicle to the insurer without culpable delay and at the latest within eight (8) working days. | https://www.karagiannislawfirm.gr/nomika/emporiko-dikaio/1389-asfalia-autokinitou-65704 · text of ν. 489/1976 at https://www.bankofgreece.gr/RelatedDocuments/law489gr.pdf |
 | M1 | Εθνική Ασφαλιστική, published product page «Ασφάλεια Υγείας» | — | Hospital programmes are defined by «Επιλογή Θέσης Νοσηλείας (Lux, A ή Β)» and offer «Απευθείας Κάλυψη Εξόδων» in contracted hospitals as standard features. | https://www.ethnikiasfalistiki.gr/health (read 2026-09-06) |
 
-## The 40 rows (29 original + 11 authored in Goal 5)
+## The 50 rows (29 original + 11 authored in Goal 5 + 10 in Goal 6)
 
 Confidence: **high** = article text read and it matches the rule's subject; **medium** = named public source, not general terms or statute; **candidate** = an instrument exists but does not impose the requirement, or the article was not pinned; **none** = nothing citable found. For every `under_review` row the *searched* column is the record for the underwriter track.
 
@@ -79,6 +79,17 @@ Confidence: **high** = article text read and it matches the rule's subject; **me
 | 38 | home_scope_not_recorded | home | under_review | — | none | New in Goal 5 (recording). As #30. |
 | 39 | home_insured_value_not_recorded | home | under_review | — | candidate | New in Goal 5 (recording). As #31. |
 | 40 | home_valuables_not_itemised | home | under_review | — | none | New in Goal 5 (recording). As #36. |
+
+| 41 | pa_sum_insured_not_recorded | personal_accident | under_review | — | none | New in Goal 6 (recording). No instrument requires the recording; it is what makes the document readable. |
+| 42 | pa_no_beneficiaries_recorded | personal_accident | under_review | — | candidate | New in Goal 6 (recording). Ν. 2496/1997 άρθρο 28 παρ. 4 defines the consequence of no designation (estate), not a duty — as #29. |
+| 43 | roadside_assistance_phone_not_recorded | roadside | under_review | — | none | New in Goal 6 (recording). No instrument requires the recording; it is what makes the document readable. |
+| 44 | roadside_vehicle_not_recorded | roadside | under_review | — | none | New in Goal 6 (recording). No instrument requires the recording; it is what makes the document readable. |
+| 45 | pension_maturity_date_not_recorded | pension | under_review | — | none | New in Goal 6 (recording). No instrument requires the recording; it is what makes the document readable. |
+| 46 | pension_no_beneficiaries_recorded | pension | under_review | — | candidate | New in Goal 6 (recording). Ν. 2496/1997 άρθρο 28 παρ. 4 defines the consequence of no designation (estate), not a duty — as #29. |
+| 47 | income_protection_benefit_not_recorded | income_protection | under_review | — | none | New in Goal 6 (recording). No instrument requires the recording; it is what makes the document readable. |
+| 48 | group_life_death_benefit_not_recorded | group_life | under_review | — | none | New in Goal 6 (recording). No instrument requires the recording; it is what makes the document readable. |
+| 49 | group_life_no_beneficiaries_recorded | group_life | under_review | — | candidate | New in Goal 6 (recording). Ν. 2496/1997 άρθρο 28 παρ. 4 defines the consequence of no designation (estate), not a duty — as #29. |
+| 50 | pension_sum_insured_not_recorded | pension | under_review | — | none | New in Goal 6 (recording). No instrument requires the recording; it is what makes the document readable. |
 
 ## What the legal and underwriting tracks must do before GA
 

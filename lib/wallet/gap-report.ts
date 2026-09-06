@@ -852,6 +852,67 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "other",
         coverageArea: "property",
     },
+    // ── PW-CONTENT-01 Goal 6 — life-family and roadside recording checks ──
+    "pa-sum-insured-not-recorded": {
+        titleEl: "Δεν καταγράφεται ασφαλισμένο κεφάλαιο",
+        titleEn: "Sum insured not recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "pa-no-beneficiaries-recorded": {
+        titleEl: "Δεν καταγράφεται δικαιούχος",
+        titleEn: "No beneficiary recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "roadside-assistance-phone-not-recorded": {
+        titleEl: "Δεν καταγράφεται τηλέφωνο οδικής βοήθειας",
+        titleEn: "Assistance number not recorded",
+        mechanic: "other",
+        coverageArea: "vehicle",
+    },
+    "roadside-vehicle-not-recorded": {
+        titleEl: "Δεν καταγράφεται αριθμός κυκλοφορίας οχήματος",
+        titleEn: "Vehicle not recorded",
+        mechanic: "other",
+        coverageArea: "vehicle",
+    },
+    "pension-maturity-date-not-recorded": {
+        titleEl: "Δεν καταγράφεται ημερομηνία λήξης / ωρίμανσης",
+        titleEn: "Maturity date not recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "pension-no-beneficiaries-recorded": {
+        titleEl: "Δεν καταγράφεται δικαιούχος",
+        titleEn: "No beneficiary recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "income-protection-benefit-not-recorded": {
+        titleEl: "Δεν καταγράφεται ποσό παροχής",
+        titleEn: "Benefit not recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "group-life-death-benefit-not-recorded": {
+        titleEl: "Δεν καταγράφεται ασφαλισμένο κεφάλαιο ζωής",
+        titleEn: "Death benefit not recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "group-life-no-beneficiaries-recorded": {
+        titleEl: "Δεν καταγράφεται δικαιούχος",
+        titleEn: "No beneficiary recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "pension-sum-insured-not-recorded": {
+        titleEl: "Δεν καταγράφεται εγγυημένο κεφάλαιο ή ποσοστό",
+        titleEn: "Guaranteed sum not recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
     "insured-value-below-rebuild-cost": {
         concept: "insured-value-below-rebuild-cost",
         titleEl: "Το ασφαλισμένο ποσό είναι κάτω από το κόστος ανακατασκευής",

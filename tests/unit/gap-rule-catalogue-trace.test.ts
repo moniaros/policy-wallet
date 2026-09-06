@@ -268,6 +268,32 @@ const TRACE: Record<string, Case[]> = {
         { name: "home_valuables_not_itemised: empty list is still nothing itemised", acord: { insuredItems: [] }, fires: true },
         { name: "home_valuables_not_itemised: one valuable itemised", acord: { insuredItems: [{ description: "Ρολόι", agreedValue: 2500 }] }, fires: false },
     ],
+    // ── PW-CONTENT-01 Goal 6 ──
+    pa_sum_insured_not_recorded: recordedFieldCases("policy.sumInsured", "pa_sum_insured_not_recorded", 50000),
+    pa_no_beneficiaries_recorded: [
+        { name: "pa_no_beneficiaries_recorded: nobody named anywhere", acord: { policy: {} }, fires: true },
+        { name: "pa_no_beneficiaries_recorded: named in the beneficiaries list", acord: { beneficiaries: [{ name: "Μ. Παπαδοπούλου" }] }, fires: false },
+        { name: "pa_no_beneficiaries_recorded: named inside the life section", acord: { lifeAndInvestment: { beneficiaries: ["Μ. Παπαδοπούλου"] } }, fires: false },
+        { name: "pa_no_beneficiaries_recorded: empty lists are nobody", acord: { beneficiaries: [], lifeAndInvestment: { beneficiaries: [] } }, fires: true },
+    ],
+    roadside_assistance_phone_not_recorded: recordedFieldCases("vehicle.roadsideAssistancePhone", "roadside_assistance_phone_not_recorded", "recorded"),
+    roadside_vehicle_not_recorded: recordedFieldCases("vehicle.plateNumber", "roadside_vehicle_not_recorded", "recorded"),
+    pension_maturity_date_not_recorded: recordedFieldCases("lifeAndInvestment.maturityDate", "pension_maturity_date_not_recorded", "2040-01-01"),
+    pension_no_beneficiaries_recorded: [
+        { name: "pension_no_beneficiaries_recorded: nobody named anywhere", acord: { policy: {} }, fires: true },
+        { name: "pension_no_beneficiaries_recorded: named in the beneficiaries list", acord: { beneficiaries: [{ name: "Μ. Παπαδοπούλου" }] }, fires: false },
+        { name: "pension_no_beneficiaries_recorded: named inside the life section", acord: { lifeAndInvestment: { beneficiaries: ["Μ. Παπαδοπούλου"] } }, fires: false },
+        { name: "pension_no_beneficiaries_recorded: empty lists are nobody", acord: { beneficiaries: [], lifeAndInvestment: { beneficiaries: [] } }, fires: true },
+    ],
+    income_protection_benefit_not_recorded: recordedFieldCases("policy.sumInsured", "income_protection_benefit_not_recorded", 50000),
+    group_life_death_benefit_not_recorded: recordedFieldCases("lifeAndInvestment.deathBenefit", "group_life_death_benefit_not_recorded", 50000),
+    group_life_no_beneficiaries_recorded: [
+        { name: "group_life_no_beneficiaries_recorded: nobody named anywhere", acord: { policy: {} }, fires: true },
+        { name: "group_life_no_beneficiaries_recorded: named in the beneficiaries list", acord: { beneficiaries: [{ name: "Μ. Παπαδοπούλου" }] }, fires: false },
+        { name: "group_life_no_beneficiaries_recorded: named inside the life section", acord: { lifeAndInvestment: { beneficiaries: ["Μ. Παπαδοπούλου"] } }, fires: false },
+        { name: "group_life_no_beneficiaries_recorded: empty lists are nobody", acord: { beneficiaries: [], lifeAndInvestment: { beneficiaries: [] } }, fires: true },
+    ],
+    pension_sum_insured_not_recorded: recordedFieldCases("lifeAndInvestment.guaranteedPercentage", "pension_sum_insured_not_recorded", 50000),
 }
 
 const bySlug = new Map(AUTHORED_GAP_DEFINITIONS.map((d) => [d.slug, d]))

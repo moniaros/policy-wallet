@@ -179,6 +179,17 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     home_scope_not_recorded: UNDER_REVIEW,
     home_insured_value_not_recorded: UNDER_REVIEW,
     home_valuables_not_itemised: UNDER_REVIEW,
+    // Goal 6 — personal accident, roadside, pension, income protection, group life (recording checks; under review by construction)
+    pa_sum_insured_not_recorded: UNDER_REVIEW,
+    pa_no_beneficiaries_recorded: UNDER_REVIEW,
+    roadside_assistance_phone_not_recorded: UNDER_REVIEW,
+    roadside_vehicle_not_recorded: UNDER_REVIEW,
+    pension_maturity_date_not_recorded: UNDER_REVIEW,
+    pension_no_beneficiaries_recorded: UNDER_REVIEW,
+    income_protection_benefit_not_recorded: UNDER_REVIEW,
+    group_life_death_benefit_not_recorded: UNDER_REVIEW,
+    group_life_no_beneficiaries_recorded: UNDER_REVIEW,
+    pension_sum_insured_not_recorded: UNDER_REVIEW,
     // life
     no_beneficiaries_recorded: UNDER_REVIEW,
 })
