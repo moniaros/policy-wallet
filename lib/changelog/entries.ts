@@ -21,6 +21,15 @@ export const CHANGELOG_START_DATE = "2026-09-03"
 export const CHANGELOG: ChangelogEntry[] = [
     {
         date: "2026-09-06",
+        prs: [308],
+        title: { el: "Μία γλώσσα ανά αίτημα, νέες παραπομπές, τέλος ο δείκτης σχέσης", en: "One language per request, new citations, an end to the relationship index" },
+        body: {
+            el: "Η γλώσσα κάθε σελίδας αποφασίζεται μία φορά, από την προτίμηση του λογαριασμού, και ισχύει για κείμενο, ημερομηνίες και ποσά μαζί. Οι έλεγχοι για τα στοιχεία ΕΝΦΙΑ, το τηλέφωνο δήλωσης ατυχήματος, τη θέση νοσηλείας και την απευθείας εξόφληση έχουν πλέον παραπομπή σε νόμο ή σε πρακτική της αγοράς. Ο «δείκτης σχέσης» του συμβούλου αφαιρέθηκε. Όταν έχουν προστεθεί έλεγχοι μετά από μια ανάλυση, η σύνθεση το λέει αντί να σιωπά. Προστέθηκαν οι σελίδες μεθοδολογίας, αλλαγών και κατάστασης.",
+            en: "The language of every page is decided once, from the account's preference, and applies to text, dates and amounts alike. The checks for the ENFIA components, the accident-declaration phone, the hospital class and direct billing now cite a law or a market practice. The adviser's “relationship index” was removed. When checks were added after an analysis, the composition says so instead of staying silent. The methodology, changelog and status pages were added.",
+        },
+    },
+    {
+        date: "2026-09-06",
         prs: [307],
         title: { el: "Παραπομπές στα ευρήματα, τέλος στους δείκτες κινδύνου", en: "Citations on findings, an end to the risk dimension numbers" },
         body: {
