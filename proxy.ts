@@ -275,6 +275,13 @@ export async function proxy(request: NextRequest) {
         // reachable anonymously or every visitor hits a login wall.
         "/compare",
         "/trust",
+        // PW-CONTENT-01 Goal 7: the public trust pages (Greek and their /en pairs).
+        "/methodology",
+        "/changelog",
+        "/status",
+        "/en/methodology",
+        "/en/changelog",
+        "/en/status",
         "/platform",
         "/company",
         "/contact",

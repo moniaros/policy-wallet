@@ -42,6 +42,9 @@ export type MarketingPageKey =
     | "terms"
     | "cookies"
     | "subprocessors"
+    | "methodology"
+    | "changelog"
+    | "status"
 
 type MarketingPageEntry = {
     path: string
@@ -482,6 +485,39 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             description:
                 "Which cookies PolicyWallet uses, for what purpose and for how long: session cookies, consent preferences and how you can manage them at any time.",
             breadcrumb: "Cookie Policy",
+        },
+    },
+    methodology: {
+        path: "/methodology",
+        title: "Μεθοδολογία — πώς αποφασίζεται ένα εύρημα",
+        description: "Πώς αποφασίζεται ένα εύρημα: κανόνες κρίνουν αν υπάρχει κενό κάλυψης, η τεχνητή νοημοσύνη διαβάζει και εξηγεί. Πόσοι κανόνες, σε ποιους κλάδους, με ποια βάση.",
+        breadcrumb: "Μεθοδολογία",
+        en: {
+            title: "Methodology — how a finding is decided",
+            description: "How a finding is decided: rules judge whether a coverage gap exists, the AI reads the document and explains. How many rules, on which lines, and on what basis.",
+            breadcrumb: "Methodology",
+        },
+    },
+    changelog: {
+        path: "/changelog",
+        title: "Τι άλλαξε — ημερολόγιο αλλαγών",
+        description: "Οι αλλαγές που μπήκαν στην υπηρεσία, με ημερομηνία και αριθμό αλλαγής, από τη σημερινή μορφή του προϊόντος και μετά. Καμία καταχώριση χωρίς πηγή.",
+        breadcrumb: "Τι άλλαξε",
+        en: {
+            title: "What changed — changelog",
+            description: "The changes that reached the service, each dated and numbered, from the current product onward. No entry without its source in the merge history.",
+            breadcrumb: "What changed",
+        },
+    },
+    status: {
+        path: "/status",
+        title: "Κατάσταση υπηρεσίας",
+        description: "Πού τρέχει η υπηρεσία, πού δημοσιεύουν οι πάροχοί της την κατάστασή τους και πού καταγράφονται τα περιστατικά. Χωρίς ποσοστά διαθεσιμότητας που δεν μετράμε.",
+        breadcrumb: "Κατάσταση",
+        en: {
+            title: "Service status",
+            description: "Where the service runs, where its providers publish their status and where incidents are recorded. Without an uptime percentage we do not actually measure.",
+            breadcrumb: "Status",
         },
     },
     trust: {

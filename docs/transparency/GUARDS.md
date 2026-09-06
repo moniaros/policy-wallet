@@ -27,6 +27,7 @@ matrix. Status: **present**, **partial** (with what is missing), **not yet appli
 | relationship-index-removed (PW-CONTENT-01 G3) | tests/unit/relationship-index-removed.test.ts | relationship-index-render.tsx.txt | every commit | present |
 | denominator-matches-run-catalogue-version (PW-CONTENT-01 G4) | tests/unit/denominator-matches-run-catalogue-version.test.tsx | composition-current-catalogue-denominator.ts.txt | every commit | present |
 | three-states-distinct (PW-CONTENT-01 G4) | tests/unit/three-states-distinct.test.tsx | in-test: the pre-plan, unauthored and stale sentences are asserted pairwise distinct in both languages and by state attribute | every commit | present |
+| methodology-numbers-from-catalogue (PW-CONTENT-01 G7) | tests/unit/trust-pages.test.tsx; tests/unit/no-fabricated-public-count.test.ts | in-test: an unregistered count in a rendered sentence is caught, and the content module is scanned for digit literals | every commit | present |
 | indeterminate-rendered-when-nonzero | tests/unit/coverage-composition.test.tsx | in-test: indeterminate 0 hides the segment, 1 and all-indeterminate render it | every commit | present |
 | provenance-map-completeness (build failure on unmapped category) | tests/unit/provenance-skeleton.test.ts | in-test: an invented authored slug is reported | every commit | present |
 | under-review-containment | tests/unit/provenance-skeleton.test.ts | under-review-unfiltered.ts.txt; under-review-filtered.ts.txt | every commit | present |
