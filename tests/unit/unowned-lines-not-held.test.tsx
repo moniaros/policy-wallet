@@ -360,7 +360,9 @@ describe("§2.2 — every ownership-state surface is known to this guard", () =>
                 "components/branches/BranchCoverageMap.tsx",
                 // Pass data/labels into the components asserted above; they
                 // render no ownership state of their own.
-                "app/(protected)/dashboard/PolicyholderHome.tsx",
+                // PolicyholderHome.tsx left this set on 2026-09-07 with the
+                // /protection page: both read the coverage status below and
+                // no longer name a tile state or the branch overview.
                 // /protection/page.tsx left this set on 2026-09-07: it reads
                 // the coverage status (lib/protection/coverage-status.ts, above)
                 // and no longer names a tile state or the branch overview.
