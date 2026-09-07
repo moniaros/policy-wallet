@@ -1,0 +1,50 @@
+[
+    {
+        "name": "active-but-never-analysed",
+        "why": "The old tile derivation called any active read policy «Καλυμμένο». A policy nobody has read cannot be covered by any honest reading.",
+        "branch": "motor",
+        "input": {
+            "policies": [
+                { "id": "probe-m1", "lineOfBusiness": "motor", "status": "active", "policyNumber": "PROBE-1", "insurerName": "Interamerican", "endDate": "2027-09-01T00:00:00.000Z", "acordData": { "vehicle": { "ownVehicleDamage": true } }, "lastAnalyzedAt": null }
+            ],
+            "gapRows": [],
+            "runs": [],
+            "expectedLines": ["motor"],
+            "coverHeldElsewhere": []
+        },
+        "expected": { "status": "not_checked", "reason": "never_analysed" },
+        "forbidden": ["appears_covered"]
+    },
+    {
+        "name": "under-review-only",
+        "why": "A fired rule the team has not classified must neither count as a finding nor let the branch read as covered.",
+        "branch": "motor",
+        "input": {
+            "policies": [
+                { "id": "probe-m2", "lineOfBusiness": "motor", "status": "active", "policyNumber": "PROBE-2", "insurerName": "Interamerican", "endDate": "2027-09-01T00:00:00.000Z", "acordData": { "coverages": [{ "name": "Αστική ευθύνη" }], "vehicle": { "ownVehicleDamage": true, "glassBreakage": false, "hasRoadsideAssistance": true, "insuredValue": 10000, "estimatedMarketValue": 10000, "greenCardExpiryDate": "2027-06-01", "accidentDeclarationPhone": "+30" } }, "lastAnalyzedAt": "2026-09-01T00:00:00.000Z" }
+            ],
+            "gapRows": [{ "policyId": "probe-m2", "slug": "no_glass_breakage_cover", "analysisRunId": "probe-run-2", "runFinishedAt": "2026-09-01T00:05:00.000Z" }],
+            "runs": [{ "id": "probe-run-2", "policyId": "probe-m2", "status": "completed", "createdAt": "2026-09-01T00:00:00.000Z", "finishedAt": "2026-09-01T00:05:00.000Z", "attemptedRules": { "slugs": ["no_glass_breakage_cover", "no_own_damage_cover", "no_roadside_assistance", "insured_value_above_declared", "green_card_expiring", "missing_accident_declaration_phone"], "catalogueVersion": "probe" } }],
+            "expectedLines": ["motor"],
+            "coverHeldElsewhere": []
+        },
+        "expected": { "status": null, "bucket": "under_review_only" },
+        "forbidden": ["appears_covered", "finding"]
+    },
+    {
+        "name": "expired-only-expected",
+        "why": "An expected line whose only policy has ended is not covered and not never-held — it is «Χωρίς ασφαλιστήριο» with the lapse disclosed.",
+        "branch": "health",
+        "input": {
+            "policies": [
+                { "id": "probe-h1", "lineOfBusiness": "health", "status": "active", "policyNumber": "PROBE-3", "insurerName": "Interamerican", "endDate": "2025-09-01T00:00:00.000Z", "acordData": {}, "lastAnalyzedAt": "2025-08-01T00:00:00.000Z" }
+            ],
+            "gapRows": [],
+            "runs": [],
+            "expectedLines": ["health"],
+            "coverHeldElsewhere": []
+        },
+        "expected": { "status": "no_policy" },
+        "forbidden": ["appears_covered", "not_checked"]
+    }
+]

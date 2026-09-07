@@ -371,6 +371,12 @@ describe("§2.2 — every ownership-state surface is known to this guard", () =>
                 "components/protection/ProtectionRiskLens.tsx",
                 // Definitions and plumbing — no rendering.
                 "lib/insurance/branch-page.ts",
+                // The coverage-status derivation («Καλύψεις & κενά», 2026-09-07):
+                // composes buildBranchOverview for its universe and projects its
+                // four statuses back onto BranchTileState for the dashboard map;
+                // its own §2.2 behaviour (not-held vs never-assessed, lapsed never
+                // covered) is asserted by tests/unit/coverage-status.test.ts.
+                "lib/protection/coverage-status.ts",
                 "lib/services/gap-engine/index.ts",
                 "lib/services/risk-dna/service.ts",
                 "lib/services/risk-graph/present.ts",
