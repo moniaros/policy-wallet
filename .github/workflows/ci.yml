@@ -171,6 +171,11 @@ jobs:
       - name: Build Next.js application
         run: npm run build
         env:
+          # `next build` type-checks in-process. The runner's default old-space
+          # (~2 GB) was already at the edge of this project's type graph and
+          # OOMed on PR #322 (`Ineffective mark-compacts near heap limit`);
+          # the type-check script carries the same ceiling in package.json.
+          NODE_OPTIONS: --max-old-space-size=4096
           # Provide dummy values for build-time env vars
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
