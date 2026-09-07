@@ -16,7 +16,7 @@ import type { BranchContent } from './types'
 export const roadsideContent: BranchContent = {
     branchId: 'roadside',
     tagline: {
-        el: 'Το συμβόλαιο που κρίνεται σε ένα τηλεφώνημα από την άκρη του δρόμου — δείτε τι ακριβώς υπόσχεται.',
+        el: 'Το ασφαλιστήριο που κρίνεται σε ένα τηλεφώνημα από την άκρη του δρόμου — δείτε τι ακριβώς υπόσχεται.',
         en: 'The contract judged by a single phone call from the roadside — see exactly what it promises.',
     },
     shortDescription: {
@@ -33,7 +33,7 @@ export const roadsideContent: BranchContent = {
             en: 'The towing radius decides whether you reach the garage you want or the nearest one; the difference only shows when you break down far from home.',
         },
         {
-            el: 'Η γεωγραφική εμβέλεια είναι το σημείο που εκπλήσσει περισσότερο: αρκετά συμβόλαια καλύπτουν την ηπειρωτική Ελλάδα αλλά όχι κάθε νησί ή διαδρομή στο εξωτερικό.',
+            el: 'Η γεωγραφική εμβέλεια είναι το σημείο που εκπλήσσει περισσότερο: αρκετά ασφαλιστήρια καλύπτουν την ηπειρωτική Ελλάδα αλλά όχι κάθε νησί ή διαδρομή στο εξωτερικό.',
             en: 'Geographic scope is what surprises people most: several contracts cover mainland Greece but not every island or route abroad.',
         },
         {
@@ -47,11 +47,11 @@ export const roadsideContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Το αυτοτελές συμβόλαιο οδικής βοήθειας δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε τις παροχές και τις εξαιρέσεις όπως τις γράφει το έγγραφο που ανεβάσατε.',
+            el: 'Το αυτοτελές ασφαλιστήριο οδικής βοήθειας δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε τις παροχές και τις εξαιρέσεις όπως τις γράφει το έγγραφο που ανεβάσατε.',
             en: 'A standalone roadside contract has no structured fields in our analysis: we read the benefits and exclusions as the document you uploaded words them.',
         },
         {
-            el: 'Εντοπίζουμε τις αναφορές σε ρυμούλκηση, ακτίνα, αριθμό κλήσεων, όχημα αντικατάστασης, γεωγραφική εμβέλεια και επαναπατρισμό — με τη διατύπωση του συμβολαίου, χωρίς να συμπληρώνουμε αριθμούς που δεν αναγράφονται.',
+            el: 'Εντοπίζουμε τις αναφορές σε ρυμούλκηση, ακτίνα, αριθμό κλήσεων, όχημα αντικατάστασης, γεωγραφική εμβέλεια και επαναπατρισμό — με τη διατύπωση του ασφαλιστηρίου, χωρίς να συμπληρώνουμε αριθμούς που δεν αναγράφονται.',
             en: 'We surface references to towing, radius, call-out allowance, replacement vehicle, geographic scope and repatriation — in the contract’s own wording, adding no figures it does not state.',
         },
         {
@@ -61,7 +61,7 @@ export const roadsideContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Αποθηκεύστε τον αριθμό του κέντρου βοήθειας στις επαφές σας σήμερα — τη στιγμή που θα τον χρειαστείτε, το συμβόλαιο είναι συνήθως στο σπίτι.',
+            el: 'Αποθηκεύστε τον αριθμό του κέντρου βοήθειας στις επαφές σας σήμερα — τη στιγμή που θα τον χρειαστείτε, το ασφαλιστήριο είναι συνήθως στο σπίτι.',
             en: 'Save the assistance centre’s number in your contacts today — the moment you need it, the contract is usually at home.',
         },
         {
@@ -82,7 +82,7 @@ export const roadsideContent: BranchContent = {
             id: 'roadside_call_limit_gap',
             title: { el: 'Περιορισμένος αριθμός κλήσεων', en: 'Limited number of call-outs' },
             description: {
-                el: 'Αν το συμβόλαιο ορίζει λίγες κλήσεις ανά έτος, μια δύσκολη χρονιά μπορεί να τις εξαντλήσει νωρίς — και οι επόμενες χρεώνονται κανονικά.',
+                el: 'Αν το ασφαλιστήριο ορίζει λίγες κλήσεις ανά έτος, μια δύσκολη χρονιά μπορεί να τις εξαντλήσει νωρίς — και οι επόμενες χρεώνονται κανονικά.',
                 en: 'If the contract allows few call-outs per year, a bad year can exhaust them early — and the rest are charged as normal.',
             },
         },
@@ -104,7 +104,7 @@ export const roadsideContent: BranchContent = {
         },
         {
             id: 'roadside_overlap_gap',
-            title: { el: 'Πιθανή επικάλυψη με το συμβόλαιο αυτοκινήτου', en: 'Possible overlap with the motor policy' },
+            title: { el: 'Πιθανή επικάλυψη με το ασφαλιστήριο αυτοκινήτου', en: 'Possible overlap with the motor policy' },
             description: {
                 el: 'Αν το ασφαλιστήριο του οχήματος περιλαμβάνει ήδη οδική βοήθεια, οι δύο καλύψεις ενδέχεται να επικαλύπτονται χωρίς επιπλέον όφελος.',
                 en: 'If the vehicle policy already includes assistance, the two covers may overlap with no added benefit.',
@@ -145,7 +145,7 @@ export const roadsideContent: BranchContent = {
         },
         {
             id: 'roadside_review_overlap',
-            label: { el: 'Δείτε αν επικαλύπτεται με το συμβόλαιο του αυτοκινήτου', en: 'See if it overlaps with your motor policy' },
+            label: { el: 'Δείτε αν επικαλύπτεται με το ασφαλιστήριο του αυτοκινήτου', en: 'See if it overlaps with your motor policy' },
             href: '/protection',
             ctaType: 'review',
         },
@@ -175,7 +175,7 @@ export const roadsideContent: BranchContent = {
             en: 'Secure your position first: warning triangle, hazard lights and, where possible, get off the carriageway before making any call.',
         },
         {
-            el: 'Καλέστε το κέντρο βοήθειας του συμβολαίου πριν από οποιοδήποτε ιδιωτικό γερανό — αυθαίρετη ρυμούλκηση συνήθως δεν αποζημιώνεται.',
+            el: 'Καλέστε το κέντρο βοήθειας του ασφαλιστηρίου πριν από οποιοδήποτε ιδιωτικό γερανό — αυθαίρετη ρυμούλκηση συνήθως δεν αποζημιώνεται.',
             en: 'Call the contract’s assistance centre before any private tow truck — an unauthorised tow is usually not reimbursed.',
         },
         {
@@ -192,11 +192,11 @@ export const roadsideContent: BranchContent = {
         en: 'Before renewal, check whether your vehicles or routes have changed — the value of assistance is decided by where you drive, not by the premium.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο οδικής βοήθειας', en: 'No roadside assistance contract added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο οδικής βοήθειας', en: 'No roadside assistance contract added yet' },
         description: {
-            el: 'Ανεβάστε το συμβόλαιο και δείτε πόσες κλήσεις δικαιούσαι, μέχρι πού φτάνει η ρυμούλκηση και πού ισχύει η κάλυψη.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε πόσες κλήσεις δικαιούσαι, μέχρι πού φτάνει η ρυμούλκηση και πού ισχύει η κάλυψη.',
             en: 'Upload the contract and see how many call-outs you get, how far towing reaches and where the cover applies.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

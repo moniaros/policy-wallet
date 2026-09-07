@@ -21,6 +21,8 @@ export interface ProtectionSummaryCopy {
     denominatorHeldOnly: string
     underReviewOnly: string
     underReviewOnlyOne: string
+    notRecorded: string
+    notRecordedOne: string
     heldElsewhere: string
     meaning: Record<CoverageStatusId, string>
     status: Record<CoverageStatusId, string>
@@ -49,6 +51,11 @@ export function ProtectionSummary({
         summary.underReviewOnly === 1
             ? copy.underReviewOnlyOne
             : copy.underReviewOnly.replace("{n}", String(summary.underReviewOnly))
+    // A recording-class finding («δεν καταγράφεται») changes no status, so «Μερική
+    // κάλυψη 0» can sit above a findings list that is not empty. Say so, once, as a
+    // door to the findings — never as a fifth status.
+    const notRecorded =
+        summary.notRecorded === 1 ? copy.notRecordedOne : copy.notRecorded.replace("{n}", String(summary.notRecorded))
 
     return (
         <section id="summary" aria-labelledby="protection-summary-heading" className="pw-card pw-pad scroll-mt-20">
@@ -77,8 +84,15 @@ export function ProtectionSummary({
                     </li>
                 ))}
             </ul>
-            {(summary.underReviewOnly > 0 || heldElsewhereLabels.length > 0) && (
+            {(summary.underReviewOnly > 0 || summary.notRecorded > 0 || heldElsewhereLabels.length > 0) && (
                 <div className="mt-4 space-y-1 text-caption leading-relaxed text-muted-foreground">
+                    {summary.notRecorded > 0 && (
+                        <p>
+                            <Link href="#gaps" data-count="branch.notRecordedCount" className="hover:underline">
+                                {notRecorded}
+                            </Link>
+                        </p>
+                    )}
                     {summary.underReviewOnly > 0 && (
                         <p>
                             <Link href="#categories" data-count="branch.underReviewOnlyCount" className="hover:underline">

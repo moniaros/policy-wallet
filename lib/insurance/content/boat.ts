@@ -13,7 +13,7 @@ import type { BranchContent } from './types'
 export const boatContent: BranchContent = {
     branchId: 'boat',
     tagline: {
-        el: 'Στη θάλασσα, τα όρια του συμβολαίου είναι κυριολεκτικά γεωγραφικά — δείτε πού και πότε ισχύει το δικό σας.',
+        el: 'Στη θάλασσα, τα όρια του ασφαλιστηρίου είναι κυριολεκτικά γεωγραφικά — δείτε πού και πότε ισχύει το δικό σας.',
         en: 'At sea, a policy’s limits are literally geographic — see where and when yours applies.',
     },
     shortDescription: {
@@ -26,7 +26,7 @@ export const boatContent: BranchContent = {
             en: 'Third-party liability insurance is compulsory for pleasure craft in Greek waters — without it, sailing is already a breach, regardless of any damage.',
         },
         {
-            el: 'Τα όρια πλόων είναι από τα λιγότερο προσεγμένα σημεία: αν βγείτε εκτός της περιοχής που ορίζει το συμβόλαιο, ενδέχεται να μην ισχύει τίποτα από όσα πληρώνετε.',
+            el: 'Τα όρια πλόων είναι από τα λιγότερο προσεγμένα σημεία: αν βγείτε εκτός της περιοχής που ορίζει το ασφαλιστήριο, ενδέχεται να μην ισχύει τίποτα από όσα πληρώνετε.',
             en: 'Navigation limits are among the least-noticed clauses: sail outside the area the policy names and none of what you pay for may apply.',
         },
         {
@@ -34,11 +34,11 @@ export const boatContent: BranchContent = {
             en: 'Wreck removal can cost more than the boat itself and is often ordered by the port authority — it is not the owner’s choice.',
         },
         {
-            el: 'Στον παροπλισμό, πολλά συμβόλαια μειώνουν ή αναστέλλουν καλύψεις· η κάλυψη «εν πλω» και η κάλυψη «εν όρμω» σπάνια ταυτίζονται.',
+            el: 'Στον παροπλισμό, πολλά ασφαλιστήρια μειώνουν ή αναστέλλουν καλύψεις· η κάλυψη «εν πλω» και η κάλυψη «εν όρμω» σπάνια ταυτίζονται.',
             en: 'During lay-up many policies reduce or suspend covers; “under way” and “at moorings” cover are rarely the same thing.',
         },
         {
-            el: 'Οι επιβαίνοντες δεν καλύπτονται αυτόματα από την αστική ευθύνη προς τρίτους — φίλοι και πλήρωμα συχνά χρειάζονται δική τους μνεία στο συμβόλαιο.',
+            el: 'Οι επιβαίνοντες δεν καλύπτονται αυτόματα από την αστική ευθύνη προς τρίτους — φίλοι και πλήρωμα συχνά χρειάζονται δική τους μνεία στο ασφαλιστήριο.',
             en: 'People on board are not automatically covered by third-party liability — friends and crew often need their own mention in the policy.',
         },
     ],
@@ -48,7 +48,7 @@ export const boatContent: BranchContent = {
             en: 'Marine policies have no structured fields in our analysis: we read the coverages and exclusions as stated in the document you uploaded.',
         },
         {
-            el: 'Εντοπίζουμε τις αναφορές σε κάλυψη σκάφους, αστική ευθύνη, ναυαγιαίρεση, όρια πλόων και περιόδους παροπλισμού — με τη διατύπωση του συμβολαίου, χωρίς δικές μας συμπληρώσετε.',
+            el: 'Εντοπίζουμε τις αναφορές σε κάλυψη σκάφους, αστική ευθύνη, ναυαγιαίρεση, όρια πλόων και περιόδους παροπλισμού — με τη διατύπωση του ασφαλιστηρίου, χωρίς δικές μας συμπληρώσετε.',
             en: 'We surface references to hull cover, liability, salvage, navigation limits and lay-up periods — in the policy’s own wording, with nothing added by us.',
         },
         {
@@ -58,7 +58,7 @@ export const boatContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Πριν από κάθε μεγάλο πλου, συγκρίνετε τη διαδρομή που σχεδιάζετε με την περιοχή πλόων του συμβολαίου — ένα νησί παραπέρα μπορεί να είναι εκτός ορίων.',
+            el: 'Πριν από κάθε μεγάλο πλου, συγκρίνετε τη διαδρομή που σχεδιάζετε με την περιοχή πλόων του ασφαλιστηρίου — ένα νησί παραπέρα μπορεί να είναι εκτός ορίων.',
             en: 'Before any long passage, compare your planned route with the policy’s navigation area — one island further out can be outside the limits.',
         },
         {
@@ -95,7 +95,7 @@ export const boatContent: BranchContent = {
             id: 'boat_passengers_gap',
             title: { el: 'Επιβαίνοντες χωρίς μνεία', en: 'Passengers not mentioned' },
             description: {
-                el: 'Αν το συμβόλαιο δεν αναφέρει επιβαίνοντες ή πλήρωμα, ένας τραυματισμός επί του σκάφους ίσως κριθεί εκτός κάλυψης.',
+                el: 'Αν το ασφαλιστήριο δεν αναφέρει επιβαίνοντες ή πλήρωμα, ένας τραυματισμός επί του σκάφους ίσως κριθεί εκτός κάλυψης.',
                 en: 'If the policy does not mention passengers or crew, an injury on board may be judged outside cover.',
             },
         },
@@ -114,7 +114,7 @@ export const boatContent: BranchContent = {
             label: { el: 'Δείτε μέχρι πού ισχύει η κάλυψη', en: 'See how far the cover extends' },
             href: null,
             ctaType: 'askAi',
-            question: { el: 'Ποια είναι τα όρια πλόων στο συμβόλαιό μου;', en: 'What are the navigation limits on my policy?' },
+            question: { el: 'Ποια είναι τα όρια πλόων στο ασφαλιστήριό μου;', en: 'What are the navigation limits on my policy?' },
         },
         {
             id: 'boat_check_liability',
@@ -185,6 +185,6 @@ export const boatContent: BranchContent = {
             el: 'Ανεβάστε το ναυτασφαλιστήριο και δείτε πού ισχύει, τι καλύπτει εν πλω και τι στον παροπλισμό.',
             en: 'Upload the marine policy and see where it applies, what it covers under way and what it covers in lay-up.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

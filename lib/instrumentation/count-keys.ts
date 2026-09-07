@@ -139,6 +139,7 @@ export const COUNT_KEYS: Record<string, string> = {
     "branch.underReviewOnlyCount": "Branches whose only coverage-class findings are still under review — disclosed beside the four, outside them.",
     "branch.relevantCount": "The denominator: every branch expected for the person or held in the wallet — the four status counts plus underReviewOnly.",
     "branch.openFindingCount": "SUBJECT-SCOPED by branch: classified coverage-class findings on this branch's in-force policies — the number the «Μερική κάλυψη» row quotes.",
+    "branch.notRecordedCount": "Live recording-class findings («δεν καταγράφεται») across the relevant branches — a value the document does not state, never a missing cover, so they change no branch status; the summary's sentence that explains a non-empty findings list beside «Μερική κάλυψη 0».",
     "gap.lockedCount": "Findings on «Καλύψεις & κενά» behind the plan's visible cap — the «+N ακόμη» beside the upgrade door, so a free reader never believes the visible ones are all.",
 
     // policy.* — SUBJECT-SCOPED by policy id.

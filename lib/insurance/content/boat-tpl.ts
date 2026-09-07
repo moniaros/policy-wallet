@@ -33,7 +33,7 @@ export const boatTplContent: BranchContent = {
             en: 'Marine pollution normally carries its own, lower limit. A fuel spill in a marina brings clean-up costs and fines that look nothing like property damage and do not draw on the same tower.',
         },
         {
-            el: 'Στα σκάφη αναψυχής οι επιβαίνοντες μετρούν ως δικαιούχοι της κάλυψης, όχι ως τρίτοι με την έννοια της οδικής κυκλοφορίας. Το ποιος ακριβώς περιλαμβάνεται αναγράφεται στο συμβόλαιο και διαφέρει ανά έκδοση.',
+            el: 'Στα σκάφη αναψυχής οι επιβαίνοντες μετρούν ως δικαιούχοι της κάλυψης, όχι ως τρίτοι με την έννοια της οδικής κυκλοφορίας. Το ποιος ακριβώς περιλαμβάνεται αναγράφεται στο ασφαλιστήριο και διαφέρει ανά έκδοση.',
             en: 'On recreational craft the people aboard count as beneficiaries of the cover rather than as third parties in the road-traffic sense. Exactly who is included is written in the policy and varies by edition.',
         },
         {
@@ -41,7 +41,7 @@ export const boatTplContent: BranchContent = {
             en: 'Activities towed behind the craft — water-skiing, jet-skis, inflatable toys — usually need an explicit mention and a limit of their own. Without it, an accident on the tow line can fall outside.',
         },
         {
-            el: 'Το ότι το σκάφος έχει κάλυψη ιδίων ζημιών δεν σημαίνει ότι έχει και την υποχρεωτική αστική ευθύνη. Πρόκειται για δύο διαφορετικές καλύψεις που συχνά εκδίδονται ως χωριστά συμβόλαια και λήγουν σε διαφορετικές ημερομηνίες.',
+            el: 'Το ότι το σκάφος έχει κάλυψη ιδίων ζημιών δεν σημαίνει ότι έχει και την υποχρεωτική αστική ευθύνη. Πρόκειται για δύο διαφορετικές καλύψεις που συχνά εκδίδονται ως χωριστά ασφαλιστήρια και λήγουν σε διαφορετικές ημερομηνίες.',
             en: 'A craft having hull cover does not mean it also has the compulsory liability. These are two different covers, often issued as separate contracts, expiring on different dates.',
         },
     ],
@@ -55,11 +55,11 @@ export const boatTplContent: BranchContent = {
             en: 'The separate limit for marine pollution and the insurer’s overall ceiling across all heads of cover, where it is stated.',
         },
         {
-            el: 'Τη νομοθετική βάση που επικαλείται το συμβόλαιο και τα στοιχεία του σκάφους — αριθμό λεμβολογίου, ιπποδύναμη, αριθμό μηχανών — όπως καταχωρούνται.',
+            el: 'Τη νομοθετική βάση που επικαλείται το ασφαλιστήριο και τα στοιχεία του σκάφους — αριθμό λεμβολογίου, ιπποδύναμη, αριθμό μηχανών — όπως καταχωρούνται.',
             en: 'The statutory basis the policy cites and the craft’s details — registry number, horsepower, number of engines — as recorded.',
         },
         {
-            el: 'Την ημερομηνία λήξης, ώστε να ξεχωρίζει από τη λήξη τυχόν χωριστού συμβολαίου ιδίων ζημιών.',
+            el: 'Την ημερομηνία λήξης, ώστε να ξεχωρίζει από τη λήξη τυχόν χωριστού ασφαλιστηρίου ιδίων ζημιών.',
             en: 'The expiry date, so it stands apart from the expiry of any separate own-damage contract.',
         },
     ],
@@ -163,7 +163,7 @@ export const boatTplContent: BranchContent = {
         { el: 'Ποιο είναι το όριο ανά πρόσωπο για σωματικές βλάβες;', en: 'What is the per-person limit for bodily injury?' },
         { el: 'Πόσο είναι το συνολικό όριο για όλη την περίοδο;', en: 'What is the aggregate limit for the whole period?' },
         { el: 'Καλύπτονται οι επιβαίνοντες ή μόνο οι τρίτοι;', en: 'Are people on board covered, or only third parties?' },
-        { el: 'Ποιο νόμο επικαλείται το συμβόλαιο για τα όρια;', en: 'Which law does the policy cite for the limits?' },
+        { el: 'Ποιο νόμο επικαλείται το ασφαλιστήριο για τα όρια;', en: 'Which law does the policy cite for the limits?' },
         { el: 'Ισχύει η κάλυψη αν κυβερνά άλλο πρόσωπο;', en: 'Does the cover apply if someone else is at the helm?' },
     ],
     claimsSteps: [

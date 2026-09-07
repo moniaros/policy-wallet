@@ -7,7 +7,7 @@ export const pensionContent: BranchContent = {
         en: 'See where your contributions go, what the plan costs and when it matures.',
     },
     shortDescription: {
-        el: 'Συνταξιοδοτικά, αποταμιευτικά και επενδυτικά προγράμματα: εισφορές, κόστη, όροι εξαγοράς, εγγυήσεις και ωρίμανση — με απλά λόγια, από το δικό σας συμβόλαιο.',
+        el: 'Συνταξιοδοτικά, αποταμιευτικά και επενδυτικά προγράμματα: εισφορές, κόστη, όροι εξαγοράς, εγγυήσεις και ωρίμανση — με απλά λόγια, από το δικό σας ασφαλιστήριο.',
         en: 'Pension, savings and investment plans: contributions, costs, surrender terms, guarantees and maturity — in plain language, from your own contract.',
     },
     whyItMatters: [
@@ -20,7 +20,7 @@ export const pensionContent: BranchContent = {
             en: 'Early surrender often carries a significant cost in the first years — know the terms before you need the money.',
         },
         {
-            el: 'Αν το πρόγραμμα έχει επενδυτικό σκέλος, η απόδοση δεν είναι εγγυημένη — δείτε τι ακριβώς προβλέπει το δικό σας συμβόλαιο.',
+            el: 'Αν το πρόγραμμα έχει επενδυτικό σκέλος, η απόδοση δεν είναι εγγυημένη — δείτε τι ακριβώς προβλέπει το δικό σας ασφαλιστήριο.',
             en: 'If the plan has an investment component, returns are not guaranteed — see exactly what your own contract provides.',
         },
     ],
@@ -30,7 +30,7 @@ export const pensionContent: BranchContent = {
             en: 'Based on the document you uploaded: plan purpose and duration, contribution amount and frequency, maturity date.',
         },
         {
-            el: 'Κόστη και όρους εξαγοράς, όπως εμφανίζονται στο συμβόλαιο — και αν φαίνεται να υπάρχει εγγυημένο σκέλος.',
+            el: 'Κόστη και όρους εξαγοράς, όπως εμφανίζονται στο ασφαλιστήριο — και αν φαίνεται να υπάρχει εγγυημένο σκέλος.',
             en: 'Costs and surrender terms as they appear in the contract — and whether a guaranteed component appears to exist.',
         },
         {
@@ -100,7 +100,7 @@ export const pensionContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Ποια κόστη διαχείρισης και επιβαρύνσεις αναφέρει το συμβόλαιό μου;',
+                el: 'Ποια κόστη διαχείρισης και επιβαρύνσεις αναφέρει το ασφαλιστήριό μου;',
                 en: 'Which management costs and charges does my contract state?',
             },
         },
@@ -151,9 +151,9 @@ export const pensionContent: BranchContent = {
     emptyState: {
         headline: { el: 'Δεν έχετε προσθέσει συνταξιοδοτικό ή αποταμιευτικό πρόγραμμα', en: 'No pension or savings plan added yet' },
         description: {
-            el: 'Ανεβάστε το συμβόλαιο του προγράμματός σας και δείτε εισφορές, κόστη, όρους εξαγοράς και πότε ωριμάζει.',
+            el: 'Ανεβάστε το ασφαλιστήριο του προγράμματός σας και δείτε εισφορές, κόστη, όρους εξαγοράς και πότε ωριμάζει.',
             en: 'Upload your plan contract and see contributions, costs, surrender terms and when it matures.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload contract' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload contract' },
     },
 }

@@ -103,7 +103,7 @@ export function buildGenericContent(branch: InsuranceBranch): BranchContent {
     return {
         branchId: branch.id,
         tagline: {
-            el: `Δείτε με απλά λόγια τι φαίνεται να καλύπτει το συμβόλαιο ${genitive(branch)} σας.`,
+            el: `Δείτε με απλά λόγια τι φαίνεται να καλύπτει το ασφαλιστήριο ${genitive(branch)} σας.`,
             en: `See in plain language what your ${label.en.toLowerCase()} policy appears to cover.`,
         },
         shortDescription: {
@@ -132,7 +132,7 @@ export function buildGenericContent(branch: InsuranceBranch): BranchContent {
         ],
         howToUseBetter: [
             {
-                el: 'Κρατήστε το συμβόλαιο ενημερωμένο μετά από κάθε σημαντική αλλαγή — οι καλύψεις δεν προσαρμόζονται μόνες τους.',
+                el: 'Κρατήστε το ασφαλιστήριο ενημερωμένο μετά από κάθε σημαντική αλλαγή — οι καλύψεις δεν προσαρμόζονται μόνες τους.',
                 en: 'Keep the policy current after every significant change — covers do not adjust themselves.',
             },
             {
@@ -157,7 +157,7 @@ export function buildGenericContent(branch: InsuranceBranch): BranchContent {
                 label: { el: 'Ρωτήστε τι καλύπτεται', en: 'Ask what is covered' },
                 href: null,
                 ctaType: 'askAi',
-                question: { el: 'Τι καλύπτει το συμβόλαιό μου;', en: 'What does my policy cover?' },
+                question: { el: 'Τι καλύπτει το ασφαλιστήριό μου;', en: 'What does my policy cover?' },
             },
             {
                 id: `${branch.id}_ask_agent`,
@@ -167,15 +167,15 @@ export function buildGenericContent(branch: InsuranceBranch): BranchContent {
             },
         ],
         suggestedQuestions: [
-            { el: 'Τι καλύπτει το συμβόλαιό μου;', en: 'What does my policy cover?' },
+            { el: 'Τι καλύπτει το ασφαλιστήριό μου;', en: 'What does my policy cover?' },
             { el: 'Τι ΔΕΝ καλύπτεται;', en: 'What is NOT covered?' },
             { el: 'Ποια είναι η απαλλαγή μου;', en: 'What is my deductible?' },
-            { el: 'Πότε λήγει το συμβόλαιο;', en: 'When does the policy expire?' },
+            { el: 'Πότε λήγει το ασφαλιστήριο;', en: 'When does the policy expire?' },
             { el: 'Πώς δηλώνω μια ζημιά;', en: 'How do I file a claim?' },
         ],
         claimsSteps: [
             {
-                el: 'Δηλώστε το συμβάν στον ασφαλιστή σας το συντομότερο — τα περισσότερα συμβόλαια ορίζουν προθεσμία λίγων ημερών.',
+                el: 'Δηλώστε το συμβάν στον ασφαλιστή σας το συντομότερο — τα περισσότερα ασφαλιστήρια ορίζουν προθεσμία λίγων ημερών.',
                 en: 'Report the event to your insurer promptly — most policies set a deadline of a few days.',
             },
             {
@@ -183,7 +183,7 @@ export function buildGenericContent(branch: InsuranceBranch): BranchContent {
                 en: 'Document what happened (photos, papers, receipts) before anything changes.',
             },
             {
-                el: 'Κρατήστε τον αριθμό συμβολαίου πρόχειρο — ζητείται σε κάθε επικοινωνία.',
+                el: 'Κρατήστε τον αριθμό ασφαλιστηρίου πρόχειρο — ζητείται σε κάθε επικοινωνία.',
                 en: 'Keep the policy number at hand — it is requested in every interaction.',
             },
         ],
@@ -193,14 +193,14 @@ export function buildGenericContent(branch: InsuranceBranch): BranchContent {
         },
         emptyState: {
             headline: {
-                el: `Δεν έχετε προσθέσει συμβόλαιο σε αυτόν τον κλάδο`,
+                el: `Δεν έχετε προσθέσει ασφαλιστήριο σε αυτόν τον κλάδο`,
                 en: `No ${label.en.toLowerCase()} policy added yet`,
             },
             description: {
                 el: `Ανεβάστε το ασφαλιστήριο ${genitive(branch)} σας και δείτε με απλά λόγια τι καλύπτει.`,
                 en: `Upload your ${label.en.toLowerCase()} policy and see in plain language what it covers.`,
             },
-            ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+            ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
         },
     }
 }

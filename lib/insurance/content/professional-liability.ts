@@ -13,7 +13,7 @@ import type { BranchContent } from './types'
 export const professionalLiabilityContent: BranchContent = {
     branchId: 'professional_liability',
     tagline: {
-        el: 'Απαντά το συμβόλαιο που ισχύει όταν έρχεται η απαίτηση — όχι εκείνο που ίσχυε όταν έγινε η δουλειά.',
+        el: 'Απαντά το ασφαλιστήριο που ισχύει όταν έρχεται η απαίτηση — όχι εκείνο που ίσχυε όταν έγινε η δουλειά.',
         en: 'The policy that answers is the one in force when the claim arrives — not the one in force when the work was done.',
     },
     shortDescription: {
@@ -22,7 +22,7 @@ export const professionalLiabilityContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Στη βάση «εγειρόμενων απαιτήσεων», μια εργασία του 2023 που παράγει απαίτηση το 2026 κρίνεται από το συμβόλαιο του 2026. Αν η κάλυψη έχει διακοπεί στο μεταξύ, δεν υπάρχει συμβόλαιο να απαντήσει.',
+            el: 'Στη βάση «εγειρόμενων απαιτήσεων», μια εργασία του 2023 που παράγει απαίτηση το 2026 κρίνεται από το ασφαλιστήριο του 2026. Αν η κάλυψη έχει διακοπεί στο μεταξύ, δεν υπάρχει ασφαλιστήριο να απαντήσει.',
             en: 'On a claims-made basis, work done in 2023 that produces a claim in 2026 is judged by the 2026 policy. If cover lapsed in between, there is no policy left to answer.',
         },
         {
@@ -34,7 +34,7 @@ export const professionalLiabilityContent: BranchContent = {
             en: 'Defence costs may sit inside the limit or on top of it. In the first case a long dispute eats into the amount left for the compensation itself.',
         },
         {
-            el: 'Η παύση της δραστηριότητας δεν τερματίζει την έκθεση. Χωρίς κάλυψη εκκαθάρισης μετά τη διακοπή, οι απαιτήσεις που θα έρθουν αργότερα βρίσκουν τον επαγγελματία χωρίς συμβόλαιο.',
+            el: 'Η παύση της δραστηριότητας δεν τερματίζει την έκθεση. Χωρίς κάλυψη εκκαθάρισης μετά τη διακοπή, οι απαιτήσεις που θα έρθουν αργότερα βρίσκουν τον επαγγελματία χωρίς ασφαλιστήριο.',
             en: 'Stopping practice does not end the exposure. Without run-off cover after ceasing, claims that arrive later find the professional with no policy.',
         },
         {
@@ -52,7 +52,7 @@ export const professionalLiabilityContent: BranchContent = {
             en: 'The retroactive date and any notification period after expiry, where stated.',
         },
         {
-            el: 'Αν τα έξοδα υπεράσπισης περιλαμβάνονται στο όριο ή προστίθενται σε αυτό, όπως το διατυπώνει το συμβόλαιο.',
+            el: 'Αν τα έξοδα υπεράσπισης περιλαμβάνονται στο όριο ή προστίθενται σε αυτό, όπως το διατυπώνει το ασφαλιστήριο.',
             en: 'Whether defence costs sit inside the limit or in addition to it, in the policy’s own words.',
         },
         {
@@ -66,7 +66,7 @@ export const professionalLiabilityContent: BranchContent = {
             en: 'Note the retroactive date beside the inception date and check it at every change of insurer — it is the detail most easily lost in a transfer.',
         },
         {
-            el: 'Δηλώστε περιστατικά που ενδέχεται να εξελιχθούν σε απαίτηση όσο το συμβόλαιο είναι σε ισχύ, ακόμη κι αν ο πελάτης δεν έχει ζητήσει τίποτα ακόμη.',
+            el: 'Δηλώστε περιστατικά που ενδέχεται να εξελιχθούν σε απαίτηση όσο το ασφαλιστήριο είναι σε ισχύ, ακόμη κι αν ο πελάτης δεν έχει ζητήσει τίποτα ακόμη.',
             en: 'Report circumstances that could develop into a claim while the policy is live, even if the client has asked for nothing yet.',
         },
         {
@@ -83,7 +83,7 @@ export const professionalLiabilityContent: BranchContent = {
             id: 'professional_liability_retroactive_gap',
             title: { el: 'Αναδρομική ημερομηνία που κόβει το παρελθόν', en: 'Retroactive date that cuts off the past' },
             description: {
-                el: 'Όταν η αναδρομική ημερομηνία συμπίπτει με την έναρξη του τρέχοντος συμβολαίου, εργασίες προηγούμενων ετών μένουν εκτός κάλυψης.',
+                el: 'Όταν η αναδρομική ημερομηνία συμπίπτει με την έναρξη του τρέχοντος ασφαλιστηρίου, εργασίες προηγούμενων ετών μένουν εκτός κάλυψης.',
                 en: 'Where the retroactive date coincides with the current policy’s inception, work from earlier years falls outside cover.',
             },
         },
@@ -99,7 +99,7 @@ export const professionalLiabilityContent: BranchContent = {
             id: 'professional_liability_runoff_gap',
             title: { el: 'Χωρίς κάλυψη μετά τη διακοπή δραστηριότητας', en: 'No cover after ceasing practice' },
             description: {
-                el: 'Απαιτήσεις που εμφανίζονται μετά τη διακοπή δεν βρίσκουν συμβόλαιο σε ισχύ, εκτός αν έχει συμφωνηθεί κάλυψη εκκαθάρισης.',
+                el: 'Απαιτήσεις που εμφανίζονται μετά τη διακοπή δεν βρίσκουν ασφαλιστήριο σε ισχύ, εκτός αν έχει συμφωνηθεί κάλυψη εκκαθάρισης.',
                 en: 'Claims that appear after practice stops find no policy in force, unless run-off cover has been arranged.',
             },
         },
@@ -119,7 +119,7 @@ export const professionalLiabilityContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Ποια είναι η αναδρομική ημερομηνία του συμβολαίου μου;',
+                el: 'Ποια είναι η αναδρομική ημερομηνία του ασφαλιστηρίου μου;',
                 en: 'What is the retroactive date on my policy?',
             },
         },
@@ -139,7 +139,7 @@ export const professionalLiabilityContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Ποιες επαγγελματικές δραστηριότητες καλύπτει το συμβόλαιο;',
+                el: 'Ποιες επαγγελματικές δραστηριότητες καλύπτει το ασφαλιστήριο;',
                 en: 'Which professional activities does the policy cover?',
             },
         },
@@ -157,7 +157,7 @@ export const professionalLiabilityContent: BranchContent = {
         },
     ],
     suggestedQuestions: [
-        { el: 'Καλύπτονται εργασίες που έγιναν πριν από την έναρξη του συμβολαίου;', en: 'Is work done before the policy started covered?' },
+        { el: 'Καλύπτονται εργασίες που έγιναν πριν από την έναρξη του ασφαλιστηρίου;', en: 'Is work done before the policy started covered?' },
         { el: 'Ποιο είναι το όριο ανά απαίτηση και ποιο συνολικά;', en: 'What is the limit per claim and what in aggregate?' },
         { el: 'Πότε πρέπει να δηλώσω ένα περιστατικό;', en: 'When do I have to report a circumstance?' },
         { el: 'Τι ισχύει αν σταματήσω τη δραστηριότητα;', en: 'What applies if I stop practising?' },

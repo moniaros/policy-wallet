@@ -42,11 +42,11 @@ export const transportsContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανεβάσατε: τα όρια ευθύνης και τη βάση υπολογισμού τους, όπως αναγράφονται στο συμβόλαιο.',
+            el: 'Από το έγγραφο που ανεβάσατε: τα όρια ευθύνης και τη βάση υπολογισμού τους, όπως αναγράφονται στο ασφαλιστήριο.',
             en: 'From the document you uploaded: the liability limits and the basis on which they are calculated, as stated in the policy.',
         },
         {
-            el: 'Το γεωγραφικό πεδίο και τη σύμβαση μεταφοράς που επικαλείται το συμβόλαιο, καθώς ορίζει τι οφείλεται και σε πόσο χρόνο.',
+            el: 'Το γεωγραφικό πεδίο και τη σύμβαση μεταφοράς που επικαλείται το ασφαλιστήριο, καθώς ορίζει τι οφείλεται και σε πόσο χρόνο.',
             en: 'The geographic scope and the carriage convention the policy invokes, since it sets what is owed and within what time.',
         },
         {
@@ -117,7 +117,7 @@ export const transportsContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Με ποια βάση υπολογίζεται η αποζημίωση στο συμβόλαιό μου;',
+                el: 'Με ποια βάση υπολογίζεται η αποζημίωση στο ασφαλιστήριό μου;',
                 en: 'On what basis is compensation calculated in my policy?',
             },
         },

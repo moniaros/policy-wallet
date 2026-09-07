@@ -148,6 +148,9 @@ describe("coverage status — the four statuses", () => {
         const motor = row(r, "motor")
         expect(motor.status).toBe("appears_covered")
         expect(motor.notRecordedCount).toBe(1)
+        // The summary carries the same total, so the page can say why a findings list is not
+        // empty while «Μερική κάλυψη» reads 0 (production, 2026-09-07).
+        expect(r.summary.notRecorded).toBe(1)
         expect(motor.findingCount).toBe(0)
     })
 

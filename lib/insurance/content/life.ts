@@ -3,11 +3,11 @@ import type { BranchContent } from './types'
 export const lifeContent: BranchContent = {
     branchId: 'life',
     tagline: {
-        el: 'Σιγουρέψου ότι το συμβόλαιο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σωστό κεφάλαιο και τους σωστούς δικαιούχους.',
+        el: 'Σιγουρέψου ότι το ασφαλιστήριο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σωστό κεφάλαιο και τους σωστούς δικαιούχους.',
         en: 'Make sure your life policy protects the people you intend — with the right amount and the right beneficiaries.',
     },
     shortDescription: {
-        el: 'Κεφάλαιο ζωής, δικαιούχοι, ανικανότητα, σοβαρές ασθένειες, διάρκεια: το PolicyWallet σας δείχνει τι προβλέπει το συμβόλαιό σας για την οικογένειά σας.',
+        el: 'Κεφάλαιο ζωής, δικαιούχοι, ανικανότητα, σοβαρές ασθένειες, διάρκεια: το PolicyWallet σας δείχνει τι προβλέπει το ασφαλιστήριό σας για την οικογένειά σας.',
         en: 'Life sum, beneficiaries, disability, critical illness, duration: PolicyWallet shows what your policy provides for your family.',
     },
     whyItMatters: [
@@ -44,7 +44,7 @@ export const lifeContent: BranchContent = {
             en: 'After every major life change (marriage, child, new loan), revisit beneficiaries and sum — two minutes that matter a lot.',
         },
         {
-            el: 'Ενημερώστε ένα κοντινό σας πρόσωπο ότι υπάρχει το συμβόλαιο και πού βρίσκεται — μια κάλυψη που δεν ξέρει κανείς, δύσκολα αξιοποιείται.',
+            el: 'Ενημερώστε ένα κοντινό σας πρόσωπο ότι υπάρχει το ασφαλιστήριο και πού βρίσκεται — μια κάλυψη που δεν ξέρει κανείς, δύσκολα αξιοποιείται.',
             en: 'Tell someone close that the policy exists and where it is — cover nobody knows about is hard to ever use.',
         },
         {
@@ -75,7 +75,7 @@ export const lifeContent: BranchContent = {
             id: 'life_income_gap',
             title: { el: 'Χωρίς προστασία εισοδήματος', en: 'No income protection' },
             description: {
-                el: 'Το συμβόλαιο ζωής πληρώνει σε άλλους μετά τον θάνατο· μια παρατεταμένη ανικανότητα για εργασία αφήνει εσάς χωρίς εισόδημα όσο ζείτε. Είναι δύο διαφορετικές ανάγκες και συχνά η δεύτερη μένει ακάλυπτη.',
+                el: 'Το ασφαλιστήριο ζωής πληρώνει σε άλλους μετά τον θάνατο· μια παρατεταμένη ανικανότητα για εργασία αφήνει εσάς χωρίς εισόδημα όσο ζείτε. Είναι δύο διαφορετικές ανάγκες και συχνά η δεύτερη μένει ακάλυπτη.',
                 en: 'Life cover pays others after death; a prolonged inability to work leaves you without income while you are alive. They are two different needs, and the second often goes uncovered.',
             },
             relatedRuleId: 'income_no_protection',
@@ -87,7 +87,7 @@ export const lifeContent: BranchContent = {
             label: { el: 'Ελέγξτε αν οι δικαιούχοι είναι ενημερωμένοι', en: 'Check the beneficiaries are up to date' },
             href: null,
             ctaType: 'askAi',
-            question: { el: 'Ποιοι είναι οι δικαιούχοι στο συμβόλαιό μου;', en: 'Who are the beneficiaries on my policy?' },
+            question: { el: 'Ποιοι είναι οι δικαιούχοι στο ασφαλιστήριό μου;', en: 'Who are the beneficiaries on my policy?' },
         },
         {
             id: 'life_check_sum',
@@ -123,14 +123,14 @@ export const lifeContent: BranchContent = {
     ],
     suggestedQuestions: [
         { el: 'Ποιοι είναι οι δικαιούχοι μου;', en: 'Who are my beneficiaries?' },
-        { el: 'Τι κεφάλαιο καλύπτει το συμβόλαιο;', en: 'What sum does the policy cover?' },
+        { el: 'Τι κεφάλαιο καλύπτει το ασφαλιστήριο;', en: 'What sum does the policy cover?' },
         { el: 'Καλύπτεται ανικανότητα ή σοβαρή ασθένεια;', en: 'Is disability or critical illness covered?' },
         { el: 'Πότε λήγει η κάλυψη;', en: 'When does the cover end?' },
         { el: 'Ποιες είναι οι κύριες εξαιρέσεις;', en: 'What are the main exclusions?' },
     ],
     claimsSteps: [
         {
-            el: 'Η οικογένεια ή ο δικαιούχος επικοινωνεί με τον ασφαλιστή ή τον σύμβουλο — τα στοιχεία επικοινωνίας είναι πάνω στο συμβόλαιο.',
+            el: 'Η οικογένεια ή ο δικαιούχος επικοινωνεί με τον ασφαλιστή ή τον σύμβουλο — τα στοιχεία επικοινωνίας είναι πάνω στο ασφαλιστήριο.',
             en: 'The family or beneficiary contacts the insurer or advisor — contact details are on the policy.',
         },
         {
@@ -138,20 +138,20 @@ export const lifeContent: BranchContent = {
             en: 'Usually required: death certificate, supporting certificates, beneficiary ID and the policy document.',
         },
         {
-            el: 'Για ανικανότητα ή σοβαρή ασθένεια, χρειάζονται ιατρικές γνωματεύσεις — δείτε στο συμβόλαιο ποιες προθεσμίες ισχύουν.',
+            el: 'Για ανικανότητα ή σοβαρή ασθένεια, χρειάζονται ιατρικές γνωματεύσεις — δείτε στο ασφαλιστήριο ποιες προθεσμίες ισχύουν.',
             en: 'For disability or critical illness, medical reports are needed — check the policy for the applicable deadlines.',
         },
     ],
     renewalNote: {
-        el: 'Τα συμβόλαια ζωής συχνά δεν «ανανεώνονται» ετησίως αλλά έχουν διάρκεια — ελέγξτε πότε λήγει η κάλυψη και τι προβλέπεται μετά.',
+        el: 'Τα ασφαλιστήρια ζωής συχνά δεν «ανανεώνονται» ετησίως αλλά έχουν διάρκεια — ελέγξτε πότε λήγει η κάλυψη και τι προβλέπεται μετά.',
         en: 'Life policies often do not renew yearly but run for a term — check when cover ends and what happens after.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο ζωής', en: 'No life policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο ζωής', en: 'No life policy added yet' },
         description: {
-            el: 'Ανεβάστε το συμβόλαιο ζωής σας και δείτε κεφάλαιο, δικαιούχους και συμπληρωματικές καλύψεις — όλα σε μία εικόνα.',
+            el: 'Ανεβάστε το ασφαλιστήριο ζωής σας και δείτε κεφάλαιο, δικαιούχους και συμπληρωματικές καλύψεις — όλα σε μία εικόνα.',
             en: 'Upload your life policy and see sum, beneficiaries and riders — all in one view.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

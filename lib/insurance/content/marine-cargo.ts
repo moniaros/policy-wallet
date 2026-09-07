@@ -15,7 +15,7 @@ import type { BranchContent } from './types'
 export const marineCargoContent: BranchContent = {
     branchId: 'marine_cargo',
     tagline: {
-        el: 'Ένα γράμμα στη ρήτρα — A, B ή C — αλλάζει περισσότερα από κάθε άλλο νούμερο στο συμβόλαιο.',
+        el: 'Ένα γράμμα στη ρήτρα — A, B ή C — αλλάζει περισσότερα από κάθε άλλο νούμερο στο ασφαλιστήριο.',
         en: 'One letter in the clause — A, B or C — changes more than any number in the schedule.',
     },
     shortDescription: {
@@ -28,7 +28,7 @@ export const marineCargoContent: BranchContent = {
             en: 'The (C) clauses cover a named list of major casualties — fire, explosion, stranding, sinking, overturning or derailment, collision. Theft, non-delivery, water damage and handling damage are not on it.',
         },
         {
-            el: 'Η ανεπαρκής ή ακατάλληλη συσκευασία εξαιρείται όταν έγινε από τον ασφαλισμένο ή το προσωπικό του. Πολλά συμβόλαια προσθέτουν και θετικό όρο επαγγελματικής συσκευασίας και ασφαλούς πρόσδεσης — η ίδια απαίτηση, γραμμένη δύο φορές.',
+            el: 'Η ανεπαρκής ή ακατάλληλη συσκευασία εξαιρείται όταν έγινε από τον ασφαλισμένο ή το προσωπικό του. Πολλά ασφαλιστήρια προσθέτουν και θετικό όρο επαγγελματικής συσκευασίας και ασφαλούς πρόσδεσης — η ίδια απαίτηση, γραμμένη δύο φορές.',
             en: 'Insufficient or unsuitable packing is excluded where the assured or their employees carried it out. Many policies add a positive condition of professional packing and secure lashing as well — the same requirement, written twice.',
         },
         {
@@ -64,7 +64,7 @@ export const marineCargoContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Ζητήστε να αναγράφεται ρητά το σετ ρητρών στο συμβόλαιο και κρατήστε το δίπλα στο δελτίο αποστολής — στη ζημιά, αυτά τα δύο διαβάζονται μαζί.',
+            el: 'Ζητήστε να αναγράφεται ρητά το σετ ρητρών στο ασφαλιστήριο και κρατήστε το δίπλα στο δελτίο αποστολής — στη ζημιά, αυτά τα δύο διαβάζονται μαζί.',
             en: 'Ask for the clause set to be written into the policy explicitly and keep it beside the consignment note — in a loss those two are read together.',
         },
         {
@@ -76,7 +76,7 @@ export const marineCargoContent: BranchContent = {
             en: 'Note a reservation on the consignment note at delivery if there is visible damage or a broken seal — accepting without comment narrows the rights available later.',
         },
         {
-            el: 'Για επαναλαμβανόμενες αποστολές, συγκρίνετε το κόστος ανά μεμονωμένη ασφάλιση με ένα ανοικτό συμβόλαιο· η κάλυψη ανά ταξίδι αφήνει κενά ακριβώς στις αποστολές που ξεχάστηκαν.',
+            el: 'Για επαναλαμβανόμενες αποστολές, συγκρίνετε το κόστος ανά μεμονωμένη ασφάλιση με ένα ανοικτό ασφαλιστήριο· η κάλυψη ανά ταξίδι αφήνει κενά ακριβώς στις αποστολές που ξεχάστηκαν.',
             en: 'For repeat shipments, compare the cost of insuring each one against an open cover; per-voyage insurance leaves gaps exactly on the shipments that were forgotten.',
         },
     ],
@@ -141,7 +141,7 @@ export const marineCargoContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Ποιες προϋποθέσεις συσκευασίας και πρόσδεσης θέτει το συμβόλαιο;',
+                el: 'Ποιες προϋποθέσεις συσκευασίας και πρόσδεσης θέτει το ασφαλιστήριο;',
                 en: 'What packing and securing conditions does the policy set?',
             },
         },
@@ -159,7 +159,7 @@ export const marineCargoContent: BranchContent = {
         },
     ],
     suggestedQuestions: [
-        { el: 'Ποιο σετ ρητρών ισχύει στο συμβόλαιό μου;', en: 'Which clause set applies to my policy?' },
+        { el: 'Ποιο σετ ρητρών ισχύει στο ασφαλιστήριό μου;', en: 'Which clause set applies to my policy?' },
         { el: 'Καλύπτεται η ζημιά κατά τη φορτοεκφόρτωση;', en: 'Is damage during loading and unloading covered?' },
         { el: 'Ποια είναι η βάση αποτίμησης της ζημιάς;', en: 'What is the basis of valuation for a loss?' },
         { el: 'Σε ποιες χώρες δεν ισχύει η κάλυψη;', en: 'In which countries does the cover not apply?' },
