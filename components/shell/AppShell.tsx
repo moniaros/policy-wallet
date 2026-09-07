@@ -10,14 +10,14 @@ import { CommandSearch, type CommandSearchItem, type CommandSearchLabels } from 
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp, Bell, User } from 'lucide-react'
+import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp, Bell, Menu, X } from 'lucide-react'
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
 import { setActiveRole } from '@/app/(protected)/role-actions'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
-import { displayPersonName } from '@/lib/wallet/policy-identity'
+
 import { track } from '@vercel/analytics'
 
 export interface NavigationItem {
@@ -240,15 +240,7 @@ export function AppShell({
     const bellLabel = notificationCount > 0
         ? `${t.nav.notifications} (${notificationCount})`
         : t.nav.notifications
-    // The phone header's drawer trigger shows the person: the same synthetic-
-    // name scrub and the same two-letter initials as the desktop account menu.
-    // No real name → a person glyph, not the initials of a placeholder: the
-    // «Χ» of «Χρήστης» on an ink disc at the top-left corner reads as a close
-    // button.
-    const headerName = displayPersonName(user.name)
-    const headerInitials = headerName
-        ? headerName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-        : null
+
 
     return (
         <>
@@ -268,22 +260,27 @@ export function AppShell({
                     what actually removes these controls from focus and the
                     accessibility tree while the modal claims they are unreachable. */}
                 <header inert={sidebarOpen || undefined} className="pw-mobile-header lg:hidden sticky top-0 z-40 w-full h-16 px-4 flex items-center justify-between">
-                    {/* The drawer trigger is the person, not a hamburger — the
-                        reference opens its menu from the avatar. Same initials as
-                        the desktop account menu, on an ink disc; the 44px hit area
-                        is the button, the disc is 36px inside it. */}
+                    {/* The drawer trigger is a hamburger when the drawer is closed
+                        and an X while it is open (goal series Goal 10, 2026-09-07).
+                        It used to be the avatar disc: a Greek first name starting
+                        with Χ — «Χρήστης», the placeholder, or any real Χ-name —
+                        rendered a single white Χ on an ink disc at the top-left,
+                        indistinguishable from a close button. The owner kept the
+                        header as it is otherwise; only the glyph changed. The
+                        header is inert while the drawer is open, so the close
+                        action is the drawer's own X; the glyph here swaps for
+                        state, not for a second tap target. */}
                     <button
                         onClick={() => setSidebarOpen(true)}
-                        aria-label={t.nav.primaryNavigation}
+                        aria-label={sidebarOpen ? roleCopy.shell.closeMenu : t.nav.openMenu}
                         aria-expanded={sidebarOpen}
                         aria-controls="app-sidebar"
-                        className="grid h-11 w-11 -ml-1 place-items-center rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                        {user.avatarUrl ? (
-                            <img src={user.avatarUrl} alt="" aria-hidden="true" className="h-9 w-9 rounded-full object-cover" />
+                        data-menu-state={sidebarOpen ? 'open' : 'closed'}
+                        className="grid h-11 w-11 -ml-1 place-items-center rounded-full text-foreground transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                        {sidebarOpen ? (
+                            <X className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
                         ) : (
-                            <span aria-hidden="true" className="grid h-9 w-9 place-items-center rounded-full bg-foreground text-sm font-semibold text-background">
-                                {headerInitials ?? <User className="h-4 w-4" strokeWidth={2} />}
-                            </span>
+                            <Menu className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
                         )}
                     </button>
 
@@ -396,12 +393,17 @@ export function AppShell({
                                 onClick={() => setSidebarOpen(false)}
                                 // 36x36 before: p-2 around a 20px icon. -mr-2 keeps the
                                 // icon optically where it was inside the px-6 gutter.
-                                className="lg:hidden grid h-11 w-11 -mr-2 place-items-center rounded-xl hover:bg-muted text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                // `invisible` while closed: the drawer is only translated
+                                // off-canvas, so without it this X stayed focusable, in the
+                                // accessibility tree, and painted through the close
+                                // transition. (The aside itself cannot be inert — on lg+
+                                // it is the persistent sidebar and sidebarOpen is false.)
+                                className={`lg:hidden grid h-11 w-11 -mr-2 place-items-center rounded-xl hover:bg-muted text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${sidebarOpen ? '' : 'invisible'}`}
                                 aria-label={roleCopy.shell.closeMenu}
+                                aria-hidden={sidebarOpen ? undefined : true}
+                                tabIndex={sidebarOpen ? undefined : -1}
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <X className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
                             </button>
                         </div>
 

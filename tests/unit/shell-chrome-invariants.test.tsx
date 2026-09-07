@@ -478,3 +478,45 @@ describe('probes — proof each checker goes red and the verdict tracks rendered
         expect(safeAreaViolations(good.container)).toEqual([])
     })
 })
+
+describe('the mobile menu trigger: ☰ while closed, X while open (goal series Goal 10, 2026-09-07)', () => {
+    // The trigger used to be the avatar disc; a first name starting with Χ
+    // («Χρήστης», the placeholder) rendered a white Χ on an ink disc at the
+    // top-left — a close button to anyone looking. And the drawer's real X
+    // stayed focusable off-canvas. Both are asserted here on rendered output.
+    const trigger = () => document.querySelector<HTMLButtonElement>('header button[aria-controls="app-sidebar"]')!
+    const drawerClose = () => document.querySelector<HTMLButtonElement>('#app-sidebar button[aria-label="Κλείσιμο μενού"]')!
+
+    it('closed: a hamburger glyph, labelled «Άνοιγμα μενού», no X glyph in the trigger, and the drawer X unreachable', () => {
+        renderShell('policyholder')
+        expect(trigger().querySelector('svg.lucide-menu'), 'no hamburger').toBeTruthy()
+        expect(trigger().querySelector('svg.lucide-x'), 'an X while closed').toBeNull()
+        expect(trigger().getAttribute('aria-expanded')).toBe('false')
+        expect(trigger().getAttribute('aria-label')).toBe('Άνοιγμα μενού')
+        expect(trigger().textContent?.trim()).toBe('')
+        expect(baseTokens(drawerClose())).toContain('invisible')
+        expect(drawerClose().getAttribute('aria-hidden')).toBe('true')
+        expect(drawerClose().getAttribute('tabindex')).toBe('-1')
+    })
+
+    it('open: the trigger swaps to X and reads «Κλείσιμο μενού»; the drawer X becomes visible and focusable', () => {
+        renderShell('policyholder')
+        openDrawer()
+        expect(trigger().querySelector('svg.lucide-x'), 'no X while open').toBeTruthy()
+        expect(trigger().querySelector('svg.lucide-menu')).toBeNull()
+        expect(trigger().getAttribute('aria-expanded')).toBe('true')
+        expect(trigger().getAttribute('aria-label')).toBe('Κλείσιμο μενού')
+        expect(baseTokens(drawerClose())).not.toContain('invisible')
+        expect(drawerClose().getAttribute('aria-hidden')).toBeNull()
+    })
+
+    it('the trigger keeps the 44px floor as an icon-only control (class tokens, not textContent)', () => {
+        renderShell('policyholder')
+        expect(meetsFloor(trigger())).toBe(true)
+    })
+
+    it('the agent shell gets the same trigger', () => {
+        renderShell('agent')
+        expect(trigger().querySelector('svg.lucide-menu')).toBeTruthy()
+    })
+})
