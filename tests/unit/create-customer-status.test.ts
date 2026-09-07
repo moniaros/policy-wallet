@@ -6,6 +6,12 @@
  * customer accepting (redeemInviteCode / invite signup) makes it 'active'.
  */
 import { describe, it, expect, vi } from 'vitest'
+// A-01: credential PRESENCE is a query now; these mocks carry no credential, so presence is false throughout.
+vi.mock("@/lib/services/credential-signals", () => ({
+    passwordPresence: async () => new Set<string>(),
+    hasPasswordCredential: async () => false,
+    withCredentialSignals: async (_db: unknown, rows: Array<Record<string, unknown>>) => rows.map((r) => ({ ...r, hasPassword: false })),
+}))
 import { CustomerService } from '@/lib/services/customer.service'
 
 const relCreate = () => vi.fn(async (args: any) => ({ id: 'rel-1', ...args.data }))

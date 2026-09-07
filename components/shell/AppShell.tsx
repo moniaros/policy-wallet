@@ -80,17 +80,40 @@ interface BottomNavItem extends BottomNavItemBase {
 }
 
 // Bottom navigation items based on role
+/**
+ * Does `href` own `pathname`? On a path boundary — «Ρυθμίσεις» (/account) must
+ * not light up on /account/profile now that «Προφίλ» is its own item, and
+ * /insights must not light up beside /insights/book. Hash items never match.
+ */
+function routeMatches(pathname: string, href: string): boolean {
+    if (!href || href.startsWith('#')) return false
+    if (pathname === href) return true
+    if (href === '/') return false
+    return pathname.startsWith(href.endsWith('/') ? href : `${href}/`)
+}
+
+/** Of every href that owns the path, the most specific one — the single active item. */
+function longestMatchingHref(pathname: string, hrefs: string[]): string | null {
+    let best: string | null = null
+    for (const href of hrefs) {
+        if (routeMatches(pathname, href) && (best === null || href.length > best.length)) best = href
+    }
+    return best
+}
+
 const getBottomNavItems = (role: UserRole['role'], t: any): BottomNavItem[] => {
     if (role === 'policyholder') {
-        // §4.2: the same five tabs as the sidebar — /protection absorbed
-        // /branches, /insights/risk-profile and /coverage-insights. The bell
-        // (→ /notifications, with the unread badge) lives in the mobile top
-        // header, so the badge no longer rides on a tab here.
+        // §4.2: five tabs, the story's first four surfaces plus the account.
+        // The bell (→ /notifications, with the unread badge) lives in the
+        // mobile top header, so the badge does not ride on a tab. The advisor
+        // (/agent) is one tap away in the drawer and on the home's support
+        // card; the phone bar is not the sidebar shrunk, it is the four things
+        // a policyholder opens most, in the order the home tells them.
         return [
             { href: '/dashboard', icon: LayoutDashboard, label: t.nav.home, id: 'home' },
             { href: '/wallet', icon: Wallet, label: t.nav.walletShort, id: 'wallet' },
             { href: '/protection', icon: Shield, label: t.nav.protectionShort, id: 'protection' },
-            { href: '/agent', icon: Users, label: t.nav.agentShort, id: 'agent' },
+            { href: '/recommendations', icon: Lightbulb, label: t.nav.recommendations, id: 'recommendations' },
             { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings' }
         ]
     } else if (role === 'agent') {
@@ -144,6 +167,10 @@ export function AppShell({
     const { t, language, setLanguage } = useLanguage()
     const roleCopy = getRoleCopy(language)
     const pathname = usePathname()
+    const activeSidebarHref = longestMatchingHref(
+        pathname,
+        navigation.flatMap((group) => group.items.map((item) => item.href))
+    )
     const router = useRouter()
     const [sidebarOpen, setSidebarOpen] = useState(false)
     // Focus trap + Escape + focus-return for the mobile drawer.
@@ -396,7 +423,7 @@ export function AppShell({
                                     ...group,
                                     items: group.items.map(item => ({
                                         ...item,
-                                        isActive: pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                                        isActive: item.href === activeSidebarHref
                                     }))
                                 }))}
                                 onNavigate={handleNavigate}
@@ -484,7 +511,7 @@ export function AppShell({
                         <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-foreground p-1.5 shadow-[0_12px_32px_rgba(15,23,42,0.28)]">
                             {bottomNavItems.map((item) => {
                                 const Icon = item.icon
-                                const isActive = !item.opensDrawer && (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)))
+                                const isActive = !item.opensDrawer && routeMatches(pathname, item.href)
                                 // A drawer trigger is a button, not a link: it
                                 // performs no navigation, so rendering it as an
                                 // anchor would announce a destination to screen

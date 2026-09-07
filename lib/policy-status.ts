@@ -1,5 +1,6 @@
 import type { Policy } from '@prisma/client'
 import { parseDocumentDate } from '@/lib/dates/document-date'
+import { isPlaceholderInsurerName, isPlaceholderPolicyNumber } from '@/lib/wallet/policy-identity'
 
 /**
  * Policy.status values that are NOT a live policy the owner actually holds:
@@ -190,7 +191,12 @@ export function resolvePolicyLifecycle(policy: {
     if (daysUntilExpiry === null) return { status: 'unknown_duration', endDate: null, daysUntilExpiry: null }
     if (daysUntilExpiry < 0) return { status: 'expired', endDate, daysUntilExpiry }
     if (daysUntilExpiry <= 30) return { status: 'expiring_soon', endDate, daysUntilExpiry }
-    if (!policy.policyNumber || !policy.insurerName) return { status: 'action_needed', endDate, daysUntilExpiry }
+    // A placeholder identity (the extractor's own sentinels) is MISSING identity. The wallet scrubbed
+    // them before resolving and the agent's service did not, so one policy was «action needed» to its
+    // owner and «active» to their agent (PW-BRIDGE-01 A-20b). The identity module owns the literals.
+    if (!policy.policyNumber || !policy.insurerName || isPlaceholderPolicyNumber(policy.policyNumber) || isPlaceholderInsurerName(policy.insurerName)) {
+        return { status: 'action_needed', endDate, daysUntilExpiry }
+    }
     return { status: 'active', endDate, daysUntilExpiry }
 }
 

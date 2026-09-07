@@ -1,0 +1,41 @@
+{
+  "side": "agent",
+  "url": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+  "label": "wallet",
+  "state": "no_premium",
+  "status": 200,
+  "finalUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal",
+  "facts": {
+    "policy.rowStatus#cmtnjws6k000681bj2a7fz6oh": "Ενεργό",
+    "policy.insurer#cmtnjws6k000681bj2a7fz6oh": "E2E Insurance Co.",
+    "asset.identifier#cmtnjws6k000681bj2a7fz6oh": "E2E-MOT-001",
+    "policy.rowStatus#cmtoaaw9b00036gkwkt5hw00e": "Ενεργό",
+    "policy.insurer#cmtoaaw9b00036gkwkt5hw00e": "ΕΘΝΙΚΗ",
+    "asset.identifier#cmtoaaw9b00036gkwkt5hw00e": "63708952",
+    "policy.rowStatus#cmtq34nuh000lv02706jn4fmt": "Ενεργό",
+    "policy.insurer#cmtq34nuh000lv02706jn4fmt": "Interamerican",
+    "asset.identifier#cmtq34nuh000lv02706jn4fmt": "ΑΒΕ-8171",
+    "policy.rowStatus#cmtpy2h630001zlc9z430dp3c": "Ενεργό",
+    "policy.insurer#cmtpy2h630001zlc9z430dp3c": "Interamerican",
+    "asset.identifier#cmtpy2h630001zlc9z430dp3c": "ΡΤΑ-4425",
+    "policy.rowStatus#cmtpynvvu0003t3q9apdx1tb6": "Ενεργό",
+    "policy.insurer#cmtpynvvu0003t3q9apdx1tb6": "Interamerican",
+    "asset.identifier#cmtpynvvu0003t3q9apdx1tb6": "ΣΥΜΒ-2026-BR-CYB",
+    "policy.rowStatus#cmtq2u2sd0001v027mk9bv3d4": "Ενεργό",
+    "policy.insurer#cmtq2u2sd0001v027mk9bv3d4": "",
+    "asset.identifier#cmtq2u2sd0001v027mk9bv3d4": "ΒΖΝ-4716",
+    "policy.rowStatus#cmtq2z9mp0009v027wrfv9lsv": "Ενεργό",
+    "policy.insurer#cmtq2z9mp0009v027wrfv9lsv": "Interamerican",
+    "asset.identifier#cmtq2z9mp0009v027wrfv9lsv": "ΜΟΚ-4448",
+    "policy.rowStatus#cmtpyrhti000bt3q9bcql0vqb": "Ληγμένο",
+    "policy.insurer#cmtpyrhti000bt3q9bcql0vqb": "Interamerican",
+    "asset.identifier#cmtpyrhti000bt3q9bcql0vqb": "ΕΗΤ-4467"
+  },
+  "counts": {
+    "notification.unreadCount": "3"
+  },
+  "text": "Μετάβαση στο περιεχόμενο ΝΠ PolicyWallet 3 PolicyWallet Πρακτορείο Πίνακας ελέγχου Το χαρτοφυλάκιό σας Πελάτες Ευκαιρίες Ανανεώσεις Προμήθειες Ερωτηματολόγια Κέντρο ενεργειών Πληροφορίες Ομάδα Ειδοποιήσεις 3 Προφίλ Συμβούλου Λογαριασμός Ρυθμίσεις Χρειάζεστε βοήθεια; Ανοίξτε το κέντρο βοήθειας ή στείλτε μήνυμα στον σύμβουλό σας. Κέντρο βοήθειας Προτιμήσεις ΕΛ EN Αποσύνδεση EP E2E Policyholder e2e-ph@policywallet.test Επισκόπηση Ασφαλιστήρια Δραστηριότητα Όλοι οι τύποι Αυτοκίνητο Cyber Όλες οι καταστάσεις Ενεργό Ληγμένο Προσθήκη Ασφαλιστήρια 8 Αυτοκίνητο Ενεργό E2E Insurance Co. · E2E-MOT-001 1 Αυγ 2027 Αυτοκίνητο Ενεργό ΕΘΝΙΚΗ · 63708952 8 Ιουλ 2027 Αυτοκίνητο Ενεργό Interamerican · ΑΒΕ-8171 18 Φεβ 2028 Αυτοκίνητο Ενεργό Interamerican · ΡΤΑ-4425 18 Φεβ 2027 Cyber Ενεργό Interamerican · ΣΥΜΒ-2026-BR-CYB 18 Φεβ 2027 Αυτοκίνητο Ενεργό · ΒΖΝ-4716 18 Φεβ 2027 Αυτοκίνητο Ενεργό Interamerican · ΜΟΚ-4448 18 Φεβ 2027 Αυτοκίνητο Ληγμένο Interamerican · ΕΗΤ-4467 19 Μαΐ 2026 Αιτήματα εγγράφων + Νέο Δεν υπάρχουν αιτήματα Προτάσεις + Νέα Δεν υπάρχουν προτάσεις Εισερχόμενα Όλοι οι τύποι Μήνυμα Αίτημα εγγράφου Πρόταση Όλες Ανοικτά Επιλυμένα Κλειστά Ξεκινήστε μια συζήτηση Στείλτε μηνύματα, ζητήστε έγγραφα και προτάσεις — όλα σε μία συνομιλία. Αφαίρεση πελάτη Ο πελάτης αφαιρείται από το χαρτοφυλάκιό σας και η πρόσβαση στα ασφαλιστήριά του ανακαλείται. Δεν διαγράφονται δεδομένα. Αφαίρεση πελάτη Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν επαγγελματική, νομική ή ασφαλιστική συμβουλή. Συζητήστε κάθε σημαντική απόφαση με τον ασφαλιστικό σας σύμβουλο.",
+  "hscroll": false,
+  "lang": "el",
+  "screenshot": "/Users/yannismoniaros/Workspace/policywallet/policy-wallet/docs/evidence/bridge-l0/no_premium/wallet.agent.png"
+}

@@ -163,12 +163,13 @@ export function PolicyHead({
             <h1
                 className="mt-1 text-title font-semibold leading-tight tracking-tight text-foreground sm:text-h3"
                 data-fact="policy.insurerName"
+                data-fact-value={displayInsurer}
             >
                 {displayInsurer}
             </h1>
 
             <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
-                <div data-fact="policy.policyNumber">
+                <div data-fact="policy.policyNumber" data-fact-value={displayPolicyNumber ?? ""}>
                     <dt className={label}>{copy.policyId}</dt>
                     {policyNumberField.readable ? (
                         <dd className="mt-0.5 text-sm font-semibold text-foreground tabular-nums">
@@ -193,7 +194,7 @@ export function PolicyHead({
                 </div>
 
                 {insuredSubject.value !== null && (
-                    <div data-fact="policy.insuredSubject">
+                    <div data-fact="policy.insuredSubject" data-fact-value={insuredSubject.value ?? ""}>
                         <dt className={label}>{insuredSubject.label}</dt>
                         {subjectField.readable ? (
                             <dd className="mt-0.5 text-sm font-semibold text-foreground">{subjectField.value}</dd>
@@ -212,11 +213,12 @@ export function PolicyHead({
                 <span
                     className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-caption font-semibold ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}
                     data-fact="policy.status"
+                    data-fact-value={isAnalyzing ? "analyzing" : statusLabel}
                 >
                     {isAnalyzing ? copy.analyzing : statusLabel}
                 </span>
                 {recordStatus && recordStatusCopy && <RecordStatusLabel result={recordStatus} copy={recordStatusCopy} />}
-                <p className="text-sm font-medium text-foreground" data-fact="policy.expiryDate">
+                <p className="text-sm font-medium text-foreground" data-fact="policy.expiryDate" data-fact-value={endDate ? new Date(endDate).toISOString().slice(0, 10) : ""}>
                     {endDate === null
                         ? copy.unknownDuration
                         : `${daysLeft !== null && daysLeft < 0 ? copy.expiredOn : copy.inForceUntil} ${formatPolicyDate(endDate, locale)}`}

@@ -6,9 +6,9 @@ import {
     presentCustomerIdentity,
 } from "@/lib/agent-consent"
 
-const phantom = { password: null, emailVerified: null }
-const realWithPassword = { password: "hash", emailVerified: null }
-const realVerified = { password: null, emailVerified: new Date("2026-01-01") }
+const phantom = { hasPassword: false, emailVerified: null }
+const realWithPassword = { hasPassword: true, emailVerified: null }
+const realVerified = { hasPassword: false, emailVerified: new Date("2026-01-01") }
 
 describe("isConsentedRelationship", () => {
     it("true only when activationStatus is 'activated' (the redeemInvite state)", () => {

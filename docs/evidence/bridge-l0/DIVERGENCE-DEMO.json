@@ -1,0 +1,54 @@
+{
+  "customerUrl": "/wallet/cmtpy2h630001zlc9z430dp3c",
+  "agentUrl": "/customers/cmrfhj4nz0000gl6rg5q61fal/policy/cmtpy2h630001zlc9z430dp3c",
+  "customerStatus": 200,
+  "agentStatus": 200,
+  "facts": {
+    "kind": "fact",
+    "pairsCompared": 4,
+    "onlyA": [
+      "gap.provenanceGroup",
+      "policy.attention",
+      "policy.expiryDate",
+      "policy.insuredSubject",
+      "policy.insurerName",
+      "policy.policyNumber",
+      "policy.status"
+    ],
+    "onlyB": [],
+    "divergences": [
+      {
+        "key": "gap.findingsProvenance",
+        "a": {
+          "side": "customer",
+          "value": "Ευρήματα από την ανάλυση της 20 Φεβρουαρίου 2026."
+        },
+        "b": {
+          "side": "agent",
+          "value": "Ευρήματα από την ανάλυση της 23 Φεβρουαρίου 2026."
+        }
+      }
+    ]
+  },
+  "counts": {
+    "kind": "count",
+    "pairsCompared": 4,
+    "onlyA": [
+      "gap.underReviewCount"
+    ],
+    "onlyB": [],
+    "divergences": [
+      {
+        "key": "notification.unreadCount",
+        "a": {
+          "side": "customer",
+          "value": "9+"
+        },
+        "b": {
+          "side": "agent",
+          "value": "3"
+        }
+      }
+    ]
+  }
+}

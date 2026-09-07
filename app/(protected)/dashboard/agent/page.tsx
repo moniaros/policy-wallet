@@ -1,5 +1,6 @@
 export const runtime = "nodejs"
 
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { redirect } from "next/navigation"
 import { formatDate } from "@/lib/i18n/format"
 import { getActivityFeed } from "../../activity/actions"
@@ -88,7 +89,6 @@ export default async function DashboardPage() {
                         name: true,
                         email: true,
                         image: true,
-                        password: true,
                         emailVerified: true,
                     },
                 },
@@ -156,12 +156,14 @@ export default async function DashboardPage() {
         relationships.map((r) => r.policyholderUserId)
     )
     const relByCustomerId = new Map(relationships.map((r) => [r.customer.id, r]))
+    // Credential PRESENCE for the identity rule — never the hash (A-01).
+    const credentialPresence = await passwordPresence(prisma, relationships.map((r) => r.customer.id))
     const presentName = (customerId: string | null | undefined, fallback = "Client") => {
         const rel = customerId ? relByCustomerId.get(customerId) : undefined
         if (!rel) return fallback
         return presentCustomerIdentity(
             rel,
-            rel.customer,
+            { ...rel.customer, hasPassword: credentialPresence.has(rel.customer.id) },
             visiblePolicyCounts.get(rel.policyholderUserId) ?? 0
         ).name
     }
@@ -345,13 +347,20 @@ export default async function DashboardPage() {
     // Same visibility rule as the policy query above and as gapsVisibilityWhere
     // further down. Provenance (B3): findings still under review are never
     // counted in a summary, so this counts the CLASSIFIED open findings per policy.
-    const gapRows = await readLiveGapRows({ scope: "classified",
+    // One DISCLOSED read: the classified rows are the headline count (B3, D-B1); the under-review
+    // rows are a separate labelled figure per client — the customer's home shows it, the agent's
+    // card now does too (PW-BRIDGE-01 A-02).
+    const gapRows = await readLiveGapRows({ scope: "disclosed",
         where: { policy: policyVisibilityWhere },
         select: { policyId: true, definition: { select: { slug: true } } },
     })
     const gapCountByPolicy = new Map<string, number>()
     for (const row of excludeUnderReview(gapRows, (r) => r.definition?.slug ?? null)) {
         if (row.policyId) gapCountByPolicy.set(row.policyId, (gapCountByPolicy.get(row.policyId) ?? 0) + 1)
+    }
+    const underReviewByPolicy = new Map<string, number>()
+    for (const row of gapRows) {
+        if (row.provenance === "under_review" && row.policyId) underReviewByPolicy.set(row.policyId, (underReviewByPolicy.get(row.policyId) ?? 0) + 1)
     }
     // Intersect with the CURRENT client set: a policy whose owner is no longer a
     // relationship (orphaned / uploaded for a non-client) must not push the
@@ -430,6 +439,7 @@ export default async function DashboardPage() {
     for (const rel of relationships) {
         const clientPolicies = policiesByOwner.get(rel.policyholderUserId) ?? []
         const clientGaps = clientPolicies.reduce((sum, p) => sum + (gapCountByPolicy.get(p.id) ?? 0), 0)
+        const clientUnderReview = clientPolicies.reduce((sum, p) => sum + (underReviewByPolicy.get(p.id) ?? 0), 0)
 
         const urgencyTier = classifyUrgencyTier({
             activationStatus: rel.status === "active" ? "activated" : rel.status === "pending_activation" ? "invited" : "inactive",
@@ -448,7 +458,7 @@ export default async function DashboardPage() {
         // shows its email (which the agent typed), never its real name/avatar.
         const identity = presentCustomerIdentity(
             rel,
-            rel.customer,
+            { ...rel.customer, hasPassword: credentialPresence.has(rel.customer.id) },
             visiblePolicyCounts.get(rel.policyholderUserId) ?? 0
         )
         const nameParts = identity.name.split(" ")
@@ -467,6 +477,7 @@ export default async function DashboardPage() {
             activationStatus: rel.status === "active" ? "activated" : rel.status === "pending_activation" ? "invited" : "inactive",
             protectionScore: scoresByUserId.get(rel.policyholderUserId)?.overallScore ?? null,
             gapCount: clientGaps,
+            underReviewCount: clientUnderReview,
             // B1.5: a gap count of zero over unassessed policies is not a clean book.
             unassessedPolicyCount: clientPolicies.filter((p) => isUnauthoredBranch(p.lineOfBusiness)).length,
         }

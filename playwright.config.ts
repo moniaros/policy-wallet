@@ -172,13 +172,26 @@ export default defineConfig({
             name: 'measure',
             // Excludes *free* specs — those need the free-tier session and run
             // in `measure-free`.
-            testMatch: /tests\/measure\/(?!.*(free|dashboard|agent-book|r3-evidence-agent)).*\.spec\.ts/,
+            testMatch: /tests\/measure\/(?!.*(free|dashboard|agent-book|r3-evidence-agent|bridge\/)).*\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/user.json',
                 launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
             dependencies: ['setup'],
+        },
+        {
+            // PW-BRIDGE-01: the two-sided harness. No default storage state — each
+            // spec opens BOTH sessions (policyholder + connected agent) itself from
+            // the files the two setups write, and captures both sides over one
+            // set of records. Needs both setups; never sets a device preset.
+            name: 'bridge',
+            testMatch: /tests\/measure\/bridge\/.*\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+            dependencies: ['setup', 'agent-setup'],
         },
         {
             // The money path — checkout return states, the free tier's feature

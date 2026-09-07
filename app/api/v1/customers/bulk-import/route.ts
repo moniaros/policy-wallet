@@ -1,3 +1,4 @@
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { requireApiUser } from '@/lib/api-auth'
 import { db } from '@/lib/db'
 import * as Sentry from '@sentry/nextjs'
@@ -122,12 +123,13 @@ export async function POST(req: Request) {
         // customer's to set.
         const existingUsers = await db.user.findMany({
             where: { email: { in: emails } },
-            select: { id: true, email: true, password: true, emailVerified: true, taxId: true },
+            select: { id: true, email: true, emailVerified: true, taxId: true },
         })
         const userIdByEmail = new Map(existingUsers.map((u) => [normalizeEmail(u.email), u.id]))
+        const credentialPresence = await passwordPresence(db, existingUsers.map((u) => u.id))
         const taxIdBackfillable = new Set(
             existingUsers
-                .filter((u) => !u.taxId && isPhantomCustomer({ password: u.password ?? null, emailVerified: u.emailVerified ?? null }))
+                .filter((u) => !u.taxId && isPhantomCustomer({ hasPassword: credentialPresence.has(u.id), emailVerified: u.emailVerified ?? null }))
                 .map((u) => u.id)
         )
 

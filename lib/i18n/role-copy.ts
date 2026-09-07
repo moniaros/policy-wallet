@@ -131,6 +131,8 @@ type RoleCopy = {
         invitedEmptyCta: string
         tableNextRenewal: string
         tableGaps: string
+        /** «υπό αξιολόγηση» — the labelled under-review figure beside the classified count (A-02). */
+        underReview: string
         tableConsent: string
         tableAction: string
         consentGranted: string
@@ -353,6 +355,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             invitedEmptyCta: "Αποστολή πρόσκλησης",
             tableNextRenewal: "Επόμενη Ανανέωση",
             tableGaps: "Κενά",
+            underReview: "υπό αξιολόγηση",
             tableConsent: "Συναίνεση AI",
             tableAction: "Προτεινόμενη Ενέργεια",
             consentGranted: "Ενεργή",
@@ -569,6 +572,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             invitedEmptyCta: "Send an invitation",
             tableNextRenewal: "Next Renewal",
             tableGaps: "Gaps",
+            underReview: "under review",
             tableConsent: "AI Consent",
             tableAction: "Recommended Action",
             consentGranted: "Granted",

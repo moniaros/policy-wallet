@@ -1,0 +1,17 @@
+// PROBE for tests/unit/justified-asymmetry-has-disclosure.test.ts — never compiled.
+// The undisclosed shape L0 found: the grant query without the level, a grant row
+// without it, no «N of M» summary, and a wallet card that never says the advisor
+// can see the policy. Every disclosure rule must be reported missing here.
+const shareGrants = await db.accessGrant.findMany({ select: { id: true, scope: true, grantedAt: true } })
+export function Ledger({ sharedPolicies }) {
+    return (
+        <ul>
+            {sharedPolicies.map((sp) => (
+                <li key={sp.grantId}>{sp.insurerName}</li>
+            ))}
+        </ul>
+    )
+}
+export function Card({ policy }) {
+    return <p>{policy.insurerName}</p>
+}

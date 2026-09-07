@@ -77,6 +77,16 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                     <span className="sr-only"> {client.gapCount === 1 ? t.agentUi.openFindingLabelOne : t.agentUi.openFindingsLabel}</span>
                 </span>
             )}
+            {(client.underReviewCount ?? 0) > 0 && (
+                <span
+                    className="mr-1 flex shrink-0 items-center gap-0.5 text-caption tabular-nums text-muted-foreground"
+                    data-count="client.underReviewCount"
+                    data-count-subject={client.id}
+                >
+                    +{client.underReviewCount}
+                    <span className="sr-only"> {t.agentUi.underReviewLabel}</span>
+                </span>
+            )}
 
             {/* B1.5: how many of this client's policies no rule can assess yet.
                 Text, not a tick's absence — a zero gap count over unassessed

@@ -14,7 +14,7 @@ import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { composeFindings } from "@/lib/gaps/composition"
-import { resolveRecordStatus } from "@/lib/wallet/record-status"
+import { extractionConfirmation, resolveRecordStatus } from "@/lib/wallet/record-status"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import { resolveGlossaryHint, resolvePolicyGlossaryHints } from "@/lib/glossary/hints"
 import {
@@ -208,7 +208,8 @@ export default async function PolicyDetailPage({
         lifecycleStatus: status,
         policyStatus: policy.status,
         latestRun: latestAttempt ? { status: latestAttempt.status, blockedReason: latestAttempt.blockedReason ?? null } : null,
-        confirmedAt: null,
+        // The advisor's confirmation, from the extraction envelope — never invented, never ignored (A-06).
+        ...extractionConfirmation(policy.acordData),
     })
 
     // Gap report items: dedupe DB-level slug twins and resolve Greek/English

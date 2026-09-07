@@ -55,6 +55,10 @@ describe('the type scale means what it says', () => {
         expect(meter).toMatch(/text-caption font-medium text-muted-foreground/)
 
         const planCard = readFileSync('components/dashboard/home/ProtectionPlanCard.tsx', 'utf-8')
-        expect(planCard).toMatch(/mt-0\.5 block text-caption text-black\/60/)
+        // Story rebuild (2026-09-07): the description renders only on the
+        // current step, at text-sm — larger than the caption floor, never
+        // below it. Step titles stay at text-xs (12px) or above.
+        expect(planCard).toMatch(/mt-0\.5 block text-sm leading-snug text-foreground\/75/)
+        expect(planCard).not.toMatch(/text-\[1[01]px\]|text-micro/)
     })
 })

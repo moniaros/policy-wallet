@@ -37,6 +37,8 @@ export interface SharedPolicyLedgerItem {
     lineOfBusiness: string
     addedByAdvisor: boolean
     grantedAt: string
+    /** The grant's level, normalised by lib/policy-access — what the advisor can do (A-10). */
+    permissions: string
 }
 
 interface AgentClientProps {
@@ -93,6 +95,13 @@ const PAGE_COPY = {
     addedByAdvisor: { el: "Προστέθηκε από τον σύμβουλο", en: "Added by your advisor" },
     sharedByYou: { el: "Κοινοποιήθηκε από εσάς", en: "Shared by you" },
     revoke: { el: "Ανάκληση", en: "Revoke" },
+    // A-10: what the level lets the advisor do, in the words the collaboration panel uses.
+    levelRead: { el: "Βλέπει το ασφαλιστήριο και τα έγγραφά του", en: "Sees the policy and its documents" },
+    levelWrite: { el: "Μπορεί να διορθώσει τα στοιχεία του", en: "Can correct its details" },
+    levelManage: { el: "Διαχειρίζεται το ασφαλιστήριο", en: "Manages this policy" },
+    levelNone: { el: "Χωρίς δικαιώματα", en: "No permissions" },
+    // A-09: the denominator the book never states — how many of the customer's policies the advisor sees.
+    sharedSummary: { el: "Ο σύμβουλός σας βλέπει {shared} από τα {total} ασφαλιστήριά σας.", en: "Your advisor sees {shared} of your {total} policies." },
     revoking: { el: "Ανάκληση…", en: "Revoking…" },
     proposalAccepted: { el: "Η πρόταση έγινε αποδεκτή", en: "Proposal accepted" },
     proposalDeclined: { el: "Η απάντησή σας στάλθηκε", en: "Your response was sent" },
@@ -566,6 +575,7 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                             agent={agent}
                             language={language}
                             sharedPolicies={sharedPolicies}
+                            totalPolicies={policies.length}
                             onRevoke={handleRevokeShare}
                             revokingGrantId={revokingGrantId}
                         />
@@ -641,12 +651,14 @@ function OverviewTab({
     agent,
     language,
     sharedPolicies,
+    totalPolicies,
     onRevoke,
     revokingGrantId,
 }: {
     agent: NonNullable<AgentClientProps['agent']>
     language: string
     sharedPolicies: SharedPolicyLedgerItem[]
+    totalPolicies: number
     onRevoke: (grantId: string) => void
     revokingGrantId: string | null
 }) {
@@ -712,6 +724,19 @@ function OverviewTab({
                 <CardHead icon={ShieldCheck} title={pick(PAGE_COPY.sharedAccessTitle, language)} id="shared-access-heading" />
                 <p className="mt-2 text-caption leading-snug text-muted-foreground">{pick(PAGE_COPY.sharedAccessSubtitle, language)}</p>
 
+                <p className="mt-3 text-sm text-foreground">
+                    {pick(PAGE_COPY.sharedSummary, language)
+                        .split(/(\{shared\}|\{total\})/)
+                        .map((part, i) =>
+                            part === "{shared}" ? (
+                                <span key={i} data-count="portfolio.sharedWithAdvisorCount" className="font-semibold tabular-nums">{sharedPolicies.length}</span>
+                            ) : part === "{total}" ? (
+                                <span key={i} data-count="portfolio.policyCount" className="font-semibold tabular-nums">{totalPolicies}</span>
+                            ) : (
+                                <span key={i}>{part}</span>
+                            )
+                        )}
+                </p>
                 {sharedPolicies.length === 0 ? (
                     <p className="mt-4 text-sm text-muted-foreground">{pick(PAGE_COPY.noShares, language)}</p>
                 ) : (
@@ -729,6 +754,10 @@ function OverviewTab({
                                         {sp.addedByAdvisor
                                             ? pick(PAGE_COPY.addedByAdvisor, language)
                                             : pick(PAGE_COPY.sharedByYou, language)}
+                                        {" · "}
+                                        <span data-fact="grant.level" data-fact-subject={sp.grantId} data-fact-value={sp.permissions}>
+                                            {pick(sp.permissions === "manage" ? PAGE_COPY.levelManage : sp.permissions === "write" || sp.permissions === "edit" ? PAGE_COPY.levelWrite : sp.permissions === "none" ? PAGE_COPY.levelNone : PAGE_COPY.levelRead, language)}
+                                        </span>
                                     </p>
                                 </div>
                                 <button

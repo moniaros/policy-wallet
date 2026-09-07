@@ -40,6 +40,9 @@ export const COUNT_KEYS: Record<string, string> = {
     "client.unassessedPolicyCount": "Agent client card: this client's policies in a branch with no authored check (B1.5).",
     "client.openGapCount": "Agent client card: the client's open gap rows (cached engine count) — replaced the protection-score badge (B1.7).",
     "client.linesHeldCount": "Agent client overview: coverage lines the client holds (crossSell.existingLines) — replaced the coverage percentage (B1.7).",
+    "portfolio.sharedWithAdvisorCount": "Customer /agent page: how many of the customer's policies the advisor can see — stated with its denominator portfolio.policyCount (PW-BRIDGE-01 A-09).",
+    "client.underReviewCount": "Agent customer list/card: the client's live findings no human has classified yet, labelled «υπό αξιολόγηση», never inside the headline count (PW-BRIDGE-01 A-02).",
+    "client.policyCount": "Agent customer list: the client's policies VISIBLE to this agent (grant or own upload) — visibility-scoped, never paired with the customer's portfolio count (PW-BRIDGE-01 D-B3).",
     "gap.underReviewCount": "The findings-page summary band (R3): how many of the listed findings are still under provenance review — labelled, never zeroed.",
     "composition.coverageChecked": "B2 line 1 denominator N₁: coverage rules attempted for the branch at the run's catalogue version.",
     "composition.covered": "B2 A₁: coverage rules that did not fire with every declared input present and typed.",
@@ -217,6 +220,10 @@ export const FACT_KEYS: Record<string, string> = {
     "policy.status": "Policy lifecycle status (PolicyHead).",
     "policy.insuredSubject": "The insured vehicle/property line (PolicyHead).",
     "policy.attention": "The head's attention banner (PolicyHead).",
+    "grant.level": "Customer /agent page: a grant's normalised level (read/write/manage), subject = grant id — what the advisor can do (A-10).",
+    "policy.sharedWithAdvisor": "Wallet card: this policy is visible to the advisor, subject = policy id (A-09).",
+    "policy.rowStatus": "A list row's lifecycle status label, subject = policy id (wallet card, agent client-policies row) — PW-BRIDGE-01 A-08.",
+    "client.nextRenewalDate": "Agent customer list: the client's next renewal date among visible policies, subject = customer id (A-08).",
 }
 
 /**
@@ -241,6 +248,12 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "timeline.kindCount",
     "timeline.groupSize",
     "timeline.scoreDelta",
+    "policy.rowStatus",
+    "client.policyCount",
+    "client.nextRenewalDate",
+    "client.underReviewCount",
+    "grant.level",
+    "policy.sharedWithAdvisor",
 ])
 
 export function isRegisteredCountKey(key: string): boolean {

@@ -8,6 +8,7 @@
  * can take to convert an opportunity into a sale.
  */
 
+import { hasPasswordCredential } from "@/lib/services/credential-signals"
 import { db } from "@/lib/db"
 import { toLifeContext, totalDependents } from "./life-context"
 import type { ConversionLikelihood } from "./opportunity-scoring"
@@ -301,7 +302,7 @@ export async function generatePlaybook(
     const [clientUser, clientProfile, matchedProduct, visiblePolicyCount] = await Promise.all([
         db.user.findUnique({
             where: { id: clientUserId },
-            select: { name: true, password: true, emailVerified: true },
+            select: { id: true, name: true, emailVerified: true },
         }),
         // The whole profile is genuinely needed: it feeds `toLifeContext`,
         // which reads across dependents, residence, income, mortgage AND the
@@ -330,7 +331,7 @@ export async function generatePlaybook(
 
     if (
         !isConsentedRelationship(relationship) &&
-        (!clientUser || !isPhantomCustomer(clientUser)) &&
+        (!clientUser || !isPhantomCustomer({ hasPassword: await hasPasswordCredential(db, clientUserId), emailVerified: clientUser.emailVerified })) &&
         visiblePolicyCount === 0
     ) {
         throw new Error("Unauthorized: no consent or visible policy for this client")

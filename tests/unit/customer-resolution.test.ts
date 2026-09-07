@@ -1,4 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+// A-01: credential PRESENCE is a query now; these mocks carry no credential, so presence is false throughout.
+vi.mock("@/lib/services/credential-signals", () => ({
+    passwordPresence: async () => new Set<string>(),
+    hasPasswordCredential: async () => false,
+    withCredentialSignals: async (_db: unknown, rows: Array<Record<string, unknown>>) => rows.map((r) => ({ ...r, hasPassword: false })),
+}))
 
 // Resolution is scoped to the agent's own customers; mock the DB + visibility.
 const relFindMany = vi.fn()

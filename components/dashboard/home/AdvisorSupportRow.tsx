@@ -1,16 +1,17 @@
 import Link from "next/link"
 import { ArrowRight, CircleHelp, Users } from "lucide-react"
 import { ActionLink } from "./RecommendationAnalytics"
+import { CardHead } from "./CardHead"
 
 /**
- * Advisor status + help — the rail's brand-fill card and the quiet help row
+ * Advisor status + help — the rail's people card and the quiet help row
  * beneath it. Returns a fragment; the parent column places both.
  *
- * Direction A: this is the reference's dark "upgrade" card, filled with the
- * one relationship the product actually has on record. The fill is the
- * brand green through `bg-primary` / `text-primary-foreground`, so it becomes
- * mint-on-dark by itself — never a hardcoded dark surface (see
- * tests/unit/always-dark-surfaces.test.ts for why that matters).
+ * Story rebuild (2026-09-07): this WAS the reference's brand-fill card. On the
+ * story home the one filled surface is the next-step banner, because the page
+ * has exactly one thing it wants done today and the fill is how it says so;
+ * a second fill in the rail competed with it for the eye. The card now wears
+ * the anatomy every other card wears (CardHead · line · soft action).
  */
 export function AdvisorSupportRow({
     agentConnected,
@@ -44,28 +45,19 @@ export function AdvisorSupportRow({
 
     return (
         <>
-            <section
-                className="rounded-2xl bg-primary p-5 text-primary-foreground"
-                aria-labelledby="advisor-card-heading"
-            >
-                <p id="advisor-card-heading" className="text-body-lg font-semibold leading-snug tracking-tight">
-                    {labels.title ?? labels.agentStatus}
-                </p>
+            <section className="pw-card pw-pad" aria-labelledby="advisor-card-heading">
+                <CardHead icon={Users} title={labels.title ?? labels.agentStatus} id="advisor-card-heading" />
                 <div className="mt-4 flex items-center gap-3">
                     <span
-                        className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl bg-primary-foreground/15 text-sm font-semibold"
+                        className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl bg-primary-soft text-sm font-semibold text-primary dark:bg-primary/15 dark:text-mint"
                         aria-hidden="true"
                     >
                         {agentConnected && initials ? initials : <Users className="h-5 w-5" />}
                     </span>
-                    <p className="min-w-0 text-sm font-semibold [overflow-wrap:anywhere]">{labels.agentLine}</p>
+                    <p className="min-w-0 text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{labels.agentLine}</p>
                 </div>
-                {labels.hint && <p className="mt-3 text-body-sm leading-snug opacity-90">{labels.hint}</p>}
-                <ActionLink
-                    kind="contact_advisor"
-                    href="/agent"
-                    className="pw-secondary-button-inverse mt-4 inline-flex min-h-11 items-center gap-2 !px-4 !py-2 text-sm"
-                >
+                {labels.hint && <p className="mt-3 text-body-sm leading-snug text-muted-foreground">{labels.hint}</p>}
+                <ActionLink kind="contact_advisor" href="/agent" className="pw-soft-button mt-4 !px-4">
                     {labels.cta ?? labels.agentStatus}
                     <ArrowRight className="h-4 w-4" aria-hidden />
                 </ActionLink>

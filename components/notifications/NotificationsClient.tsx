@@ -96,6 +96,8 @@ function ClampedMessage({
 // ασφαλιστηρίου» link renders only then, so every rendered destination
 // resolves (§11.2, the destination guard; ledger N-07).
 interface NotificationsClientProps {
+    /** Role-specific page title; defaults to t.notifications.pageTitle. */
+    title?: string
     initialData: {
         history: Array<{
             event_id: string
@@ -140,8 +142,12 @@ interface NotificationsClientProps {
  *   subjects, not one action offered 24 times) and semantics for screen
  *   readers.
  */
-export function NotificationsClient({ initialData, userLanguage = "en" }: NotificationsClientProps) {
+export function NotificationsClient({ initialData, userLanguage = "en", title }: NotificationsClientProps) {
     const { t, language } = useLanguage()
+    // The policyholder nav calls this page «Υπενθυμίσεις» (story rebuild,
+    // 2026-09-07) and the page title follows the menu; agents and admins keep
+    // «Ειδοποιήσεις». The server decides per role and passes the word down.
+    const pageTitle = title ?? t.notifications.pageTitle
     const locale = language || userLanguage || "en"
     const isGreek = locale === "el"
 
@@ -226,7 +232,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                 <header className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <h1 className="text-h3 font-semibold tracking-tight text-foreground">
-                            {t.notifications.pageTitle}
+                            {pageTitle}
                         </h1>
                         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                             {t.notifications.pageSubtitle}
@@ -258,7 +264,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                 </header>
 
                 {historyItems.length === 0 ? (
-                    <section id="history" aria-label={t.notifications.pageTitle} className="pw-card pw-pad-roomy text-center">
+                    <section id="history" aria-label={pageTitle} className="pw-card pw-pad-roomy text-center">
                         <BellRing aria-hidden="true" className="mx-auto h-5 w-5 text-muted-foreground" />
                         {/* An empty history says it is empty — never "all clear".
                             No notification having been sent is not evidence that
@@ -270,7 +276,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                     </section>
                 ) : (
                     <section id="history" aria-labelledby="history-heading" className="pw-card pw-pad">
-                        <CardHead icon={BellRing} title={t.notifications.pageTitle} id="history-heading" />
+                        <CardHead icon={BellRing} title={pageTitle} id="history-heading" />
                         <div className="mt-4 space-y-5">
                             {groups.map((group) => (
                                 <div key={group.key}>

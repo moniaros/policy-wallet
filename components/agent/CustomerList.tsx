@@ -400,21 +400,26 @@ export function CustomerList({
                                             )}
                                         </td>
                                         <td className="px-4 py-3 text-center">
-                                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-muted text-caption font-semibold tabular-nums text-foreground">{customer.policyCount}</span>
+                                            <span data-count="client.policyCount" data-count-subject={customer.id} className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-muted text-caption font-semibold tabular-nums text-foreground">{customer.policyCount}</span>
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3 text-caption">
-                                            <span className={renewalSoon(intel?.nextRenewalDate) ? "font-semibold text-status-warning" : "text-muted-foreground"}>
+                                            <span className={renewalSoon(intel?.nextRenewalDate) ? "font-semibold text-status-warning" : "text-muted-foreground"} data-fact="client.nextRenewalDate" data-fact-subject={customer.id} data-fact-value={intel?.nextRenewalDate ? new Date(intel?.nextRenewalDate).toISOString().slice(0, 10) : ""}>
                                                 {formatRenewal(intel?.nextRenewalDate)}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-center">
                                             {intel && intel.gapCount > 0 ? (
-                                                <span className={`${pill} gap-1 tabular-nums ${intel.criticalGapCount > 0 ? "bg-status-danger-tint text-status-danger" : "bg-status-warning-tint text-status-warning"}`}>
+                                                <span className={`${pill} gap-1 tabular-nums ${intel.criticalGapCount > 0 ? "bg-status-danger-tint text-status-danger" : "bg-status-warning-tint text-status-warning"}`} data-count="client.openGapCount" data-count-subject={customer.id}>
                                                     <Sparkles className="h-3 w-3" aria-hidden="true" />
                                                     {intel.gapCount}
                                                 </span>
                                             ) : (
-                                                <span className="text-caption tabular-nums text-muted-foreground">0</span>
+                                                <span className="text-caption tabular-nums text-muted-foreground" data-count="client.openGapCount" data-count-subject={customer.id}>0</span>
+                                            )}
+                                            {intel && (intel.underReviewCount ?? 0) > 0 && (
+                                                <span className="ml-1 whitespace-nowrap text-caption tabular-nums text-muted-foreground" data-count="client.underReviewCount" data-count-subject={customer.id}>
+                                                    +{intel.underReviewCount} {roleCopy.customerList.underReview}
+                                                </span>
                                             )}
                                         </td>
                                         <td className="px-4 py-3">
@@ -471,7 +476,7 @@ export function CustomerList({
                                 <RowCheckbox label={`${customer.name} ${customer.surname}`} checked={selectedIds.has(customer.id)} onChange={(e) => { e.stopPropagation(); toggleSelection(customer.id) }} />
                             </div>
                             <div className="mb-3 flex items-center justify-between text-caption text-muted-foreground">
-                                <span className="flex items-center gap-1"><FileText className="h-3 w-3" aria-hidden="true" />{customer.policyCount} {roleCopy.customerList.policies}</span>
+                                <span className="flex items-center gap-1" data-count="client.policyCount" data-count-subject={customer.id}><FileText className="h-3 w-3" aria-hidden="true" />{customer.policyCount} {roleCopy.customerList.policies}</span>
                                 <span>{formatLastContact(customer.lastInteractionDate)}</span>
                             </div>
                             {customer.intelligence && (

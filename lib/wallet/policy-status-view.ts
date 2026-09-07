@@ -106,6 +106,12 @@ export interface PolicyStatusView {
     daysUntilExpiry: number | null
 }
 
+/** The label the wallet renders for a status key, from the ONE table (`t.policyStatus`). Agent rows use it too (PW-BRIDGE-01 A-20). */
+export function policyStatusLabel(key: string, t: any): string {
+    const i18nKey = (STATUS_I18N_KEY as Record<string, string>)[key]
+    return (i18nKey && t?.policyStatus?.[i18nKey]) || key
+}
+
 export function getPolicyStatusView(
     policy: PolicyLike,
     t: any,

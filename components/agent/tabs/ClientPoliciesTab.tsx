@@ -6,6 +6,7 @@ import { Shield, Calendar, TrendingUp, Eye, EyeOff, Filter, Plus, FileText } fro
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { EmptyState, PolicyPreviewRow } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { policyStatusLabel } from "@/lib/wallet/policy-status-view"
 import { formatCurrencyCompact, formatCurrencyFull, formatDateShort } from "@/lib/agent/format"
 import type { Policy } from "../types"
 import type { ViewerRole } from "@/components/collaboration/types"
@@ -52,16 +53,6 @@ const STATUS_STYLES: Record<string, string> = {
     incomplete: "bg-muted text-muted-foreground",
 }
 
-const STATUS_LABELS: Record<string, { el: string; en: string }> = {
-    active: { el: "Ενεργό", en: "Active" },
-    expiring_soon: { el: "Λήγει σύντομα", en: "Expiring soon" },
-    expired: { el: "Ληγμένο", en: "Expired" },
-    unknown_duration: { el: "Άγνωστη διάρκεια", en: "Unknown duration" },
-    action_needed: { el: "Απαιτείται ενέργεια", en: "Action needed" },
-    cancelled: { el: "Ακυρωμένο", en: "Cancelled" },
-    analyzing: { el: "Ανάλυση…", en: "Analyzing…" },
-    incomplete: { el: "Ελλιπές", en: "Incomplete" },
-}
 
 export function ClientPoliciesTab({
     policies,
@@ -131,7 +122,7 @@ export function ClientPoliciesTab({
                         <option value="">{TAB_COPY.allStatuses[language]}</option>
                         {uniqueStatuses.map((status) => (
                             <option key={status} value={status}>
-                                {(STATUS_LABELS[status] || STATUS_LABELS.incomplete)[language]}
+                                {policyStatusLabel(status, t)}
                             </option>
                         ))}
                     </select>
@@ -223,8 +214,8 @@ export function ClientPoliciesTab({
                                                 lobLabel
                                             )}
                                         </p>
-                                        <span className={`rounded-full px-2 py-0.5 text-caption font-semibold ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`}>
-                                            {(STATUS_LABELS[policy.status] || STATUS_LABELS.incomplete)[language]}
+                                        <span className={`rounded-full px-2 py-0.5 text-caption font-semibold ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`} data-fact="policy.rowStatus" data-fact-subject={policy.policyId} data-fact-value={policyStatusLabel(policy.status, t)}>
+                                            {policyStatusLabel(policy.status, t)}
                                         </span>
                                         {policy.managedByAgent && (
                                             <span className="rounded-full bg-status-success-tint px-2 py-0.5 text-caption font-semibold text-status-success">
@@ -233,8 +224,8 @@ export function ClientPoliciesTab({
                                         )}
                                     </div>
                                     <p className="text-caption text-muted-foreground">
-                                        {displayInsurerName(policy.insurerName)}
-                                        {policy.assetLabel && ` · ${policy.assetLabel}`}
+                                        <span data-fact="policy.insurer" data-fact-subject={policy.policyId} data-fact-value={displayInsurerName(policy.insurerName, lobLabel)}>{displayInsurerName(policy.insurerName, lobLabel)}</span>
+                                        {policy.assetLabel && <span data-fact="asset.identifier" data-fact-subject={policy.policyId} data-fact-value={policy.assetLabel}>{` · ${policy.assetLabel}`}</span>}
                                     </p>
                                 </div>
 

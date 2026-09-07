@@ -158,7 +158,7 @@ export function KeyDatesCard({
             )}
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="pw-subcard px-4 py-3" data-fact="policy.startDate">
+                <div className="pw-subcard px-4 py-3" data-fact="policy.startDate" data-fact-value={startDate ? new Date(startDate).toISOString().slice(0, 10) : ""}>
                     <p className="mb-1 text-caption font-medium text-muted-foreground">{copy.startedOn}</p>
                     <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(startDate, locale)}</p>
                 </div>
@@ -195,7 +195,7 @@ export function KeyDatesCard({
                 {/* What you pay — a term of this period, relocated out of the
                     hero, where it was a large number competing with identity. */}
                 {typeof premiumAmount === "number" && premiumAmount > 0 && (
-                    <div className="pw-subcard px-4 py-3" data-fact="policy.premiumAmount">
+                    <div className="pw-subcard px-4 py-3" data-fact="policy.premiumAmount" data-fact-value={`${premiumAmount} ${premiumCurrency || "EUR"}`}>
                         <p className="mb-1 text-caption font-medium text-muted-foreground">
                             {premiumFrequency && premiumFrequency !== "annual" && copy.premiumFrequencies?.[premiumFrequency]
                                 ? `${copy.premiumLabel} · ${copy.premiumFrequencies[premiumFrequency]}`

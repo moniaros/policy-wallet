@@ -26,15 +26,21 @@ export function isConsentedRelationship(
     return rel?.activationStatus === "activated" || rel?.activationStatus === "active"
 }
 
-export function isPhantomCustomer(
-    customer: { password: string | null; emailVerified: Date | null }
-): boolean {
-    return customer.password == null && customer.emailVerified == null
+/**
+ * The credential signals the identity rule reads. `hasPassword` is PRESENCE,
+ * computed by `lib/services/credential-signals.ts` from `password IS NOT NULL`;
+ * the hash itself never reaches this module or anything that calls it
+ * (PW-BRIDGE-01 A-01 — eleven callers used to select the column to test it for null).
+ */
+export type CredentialSignals = { hasPassword: boolean; emailVerified: Date | null }
+
+export function isPhantomCustomer(customer: CredentialSignals): boolean {
+    return !customer.hasPassword && customer.emailVerified == null
 }
 
 export function agentMaySeeCustomerIdentity(
     rel: { activationStatus?: string | null } | null | undefined,
-    customer: { password: string | null; emailVerified: Date | null },
+    customer: CredentialSignals,
     visiblePolicyCount: number
 ): boolean {
     return (
@@ -60,7 +66,7 @@ export function presentCustomerIdentity(
         name: string | null
         email: string
         image?: string | null
-        password: string | null
+        hasPassword: boolean
         emailVerified: Date | null
     },
     visiblePolicyCount: number

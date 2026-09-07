@@ -1,3 +1,4 @@
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
 import { agentMaySeeCustomerIdentity, isPhantomCustomer } from "@/lib/agent-consent";
@@ -7,6 +8,8 @@ import { normalizeEmail } from "@/lib/identity/normalize-email";
 import { Prisma } from "@prisma/client";
 import { AppError } from "@/lib/errors";
 import { policyRowIdentity } from "@/lib/wallet/policy-identity"
+import { resolvePolicyStatusKey } from "@/lib/wallet/policy-status-view"
+import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 
 export interface CustomerFilters {
     search?: string;
@@ -74,7 +77,6 @@ export class CustomerService extends BaseService {
                             createdAt: true,
                             // Consent signals — an unconsented real account must
                             // not leak its name/phone/image (see agent-consent).
-                            password: true,
                             emailVerified: true,
                             // Only what the agent may see: policies they
                             // uploaded, or ones the owner explicitly granted.
@@ -98,13 +100,15 @@ export class CustomerService extends BaseService {
             })
         ]);
 
+        // Credential PRESENCE for the identity rule — never the hash (A-01).
+        const credentialPresence = await passwordPresence(this.db, customers.map((rel) => rel.customer.id));
         return {
             data: customers.map(rel => {
                 // Identity (name/phone/image) only for consented / phantom /
                 // already-managed customers. Email stays — the agent typed it.
                 const showIdentity = agentMaySeeCustomerIdentity(
                     rel,
-                    rel.customer,
+                    { ...rel.customer, hasPassword: credentialPresence.has(rel.customer.id) },
                     rel.customer.policiesOwned.length
                 );
                 return {
@@ -207,7 +211,7 @@ export class CustomerService extends BaseService {
         // already-managed customers — a bare relationship is not consent.
         const showIdentity = agentMaySeeCustomerIdentity(
             relationship,
-            relationship.customer,
+            { ...relationship.customer, hasPassword: await hasPasswordCredential(this.db, relationship.customer.id) },
             relationship.customer.policiesOwned.length
         );
 
@@ -251,10 +255,15 @@ export class CustomerService extends BaseService {
             policies: relationship.customer.policiesOwned.map(p => ({
                 id: p.id,
                 number: p.policyNumber,
-                insurer: p.insurerName,
+                // The registry's display name — the same resolver the customer's wallet applies —
+                // so one insurer has one name on both sides (PW-BRIDGE-01 A-21). A placeholder
+                // resolves to "" and falls back to the raw sentinel, which the identity module then
+                // refuses to render.
+                insurer: resolveInsurerDisplay(p.insurerName).displayName || p.insurerName,
                 type: p.lineOfBusiness,
-                // Lifecycle truth — the stored column is never recomputed.
-                status: effectivePolicyStatus(p),
+                // The wallet's ONE status pipeline (lifecycle + identity/extraction rules), not the
+                // bare lifecycle: the customer saw «ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ» where the agent saw «Ενεργό» (A-20).
+                status: resolvePolicyStatusKey(p),
                 premium: p.premiumAmount,
                 startDate: p.startDate,
                 // ...and the date beside that status has to come from the same
@@ -333,7 +342,7 @@ export class CustomerService extends BaseService {
             // only when the record has none. This runs BEFORE any relationship
             // exists, so for an activated account it would let anyone who
             // knows an email write a tax id onto a stranger's profile.
-            if (isPhantomCustomer(user)) {
+            if (isPhantomCustomer({ hasPassword: await hasPasswordCredential(this.db, user.id), emailVerified: user.emailVerified })) {
                 await this.db.user.update({
                     where: { id: user.id },
                     data: { taxId },

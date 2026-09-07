@@ -1,0 +1,16 @@
+// PROBE for tests/unit/customer-policy-page-parity.test.ts — never compiled.
+// A page fragment that commits all four raw renders the guard refuses:
+//   A-05 the raw policy number, A-04 the raw end-date column, A-03 premium-or-zero,
+//   A-19 a status label resolved before the account language.
+const status = calculatePolicyStatus(policy)
+const statusLabel = getStatusLabel(status)
+export function Probe() {
+    return (
+        <div>
+            <span>{policy.policyNumber}</span>
+            <p>{formatDate(policy.endDate, language)}</p>
+            <p>{Number(policy.premiumAmount || 0).toLocaleString(locale, { style: "currency", currency: "EUR" })}</p>
+            <span>{statusLabel}</span>
+        </div>
+    )
+}

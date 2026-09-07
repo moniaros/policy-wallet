@@ -1,0 +1,12 @@
+// PROBE for tests/unit/agent-rows-use-wallet-resolvers.test.ts — never compiled.
+// The three offences the guard refuses, in one fragment: a local status label map,
+// the DTO status from effectivePolicyStatus, the DTO insurer from the raw column.
+const STATUS_LABELS: Record<string, { el: string; en: string }> = {
+    active: { el: "Ενεργό", en: "Active" },
+}
+const rows = await readLiveGapRows({ scope: "classified", where: {} })
+const dto = policies.map((p) => ({
+    id: p.id,
+    status: effectivePolicyStatus(p),
+    insurer: p.insurerName,
+}))

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { readFileSync, readdirSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { render } from "@testing-library/react"
-import { RECORD_STATUSES, resolveRecordStatus, type RecordStatus } from "@/lib/wallet/record-status"
+import { RECORD_STATUSES, extractionConfirmation, resolveRecordStatus, type RecordStatus } from "@/lib/wallet/record-status"
 import { RecordStatusLabel, recordNeedLine, recordStatusLabel } from "@/components/records/RecordStatusLabel"
 import { el } from "@/lib/i18n/translations/el"
 import { en } from "@/lib/i18n/translations/en"
@@ -96,7 +96,16 @@ describe("the matrix", () => {
 })
 
 describe("confirmed is unreachable until C1", () => {
-    it("the resolver can return it, and no caller in the product lets it", () => {
+    it("the resolver returns it only from the extraction envelope's confirmation — the advisor's review — with the actor declared", () => {
+        expect(extractionConfirmation({ extraction: { reviewState: "confirmed", confirmedAt: "2026-09-06T10:00:00.000Z", confirmedBy: "agent" } })).toEqual({ confirmedAt: "2026-09-06T10:00:00.000Z", confirmedBy: "agent" })
+        expect(extractionConfirmation({ extraction: { reviewState: "confirmed", confirmedAt: "2026-09-06T10:00:00.000Z" } }).confirmedBy, "a row confirmed before the field existed was confirmed by the only writer: an advisor").toBe("agent")
+        expect(extractionConfirmation({ extraction: { reviewState: "flagged", confirmedAt: null } })).toEqual({ confirmedAt: null, confirmedBy: null })
+        expect(extractionConfirmation({ extraction: { reviewState: "unconfirmed" } })).toEqual({ confirmedAt: null, confirmedBy: null })
+        expect(extractionConfirmation(null)).toEqual({ confirmedAt: null, confirmedBy: null })
+        const confirmed = resolveRecordStatus({ lifecycleStatus: "active", latestRun: { status: "completed" }, confirmedAt: "2026-09-06", confirmedBy: "agent" })
+        expect(confirmed).toMatchObject({ status: "confirmed", confirmedBy: "agent" })
+        expect(recordStatusLabel(confirmed, el.recordStatus)).toBe("Επιβεβαίωση συμβούλου")
+        expect(recordStatusLabel(confirmed, en.recordStatus)).toBe("Advisor-confirmed")
         expect(resolveRecordStatus({ lifecycleStatus: "active", latestRun: { status: "completed" }, confirmedAt: "2026-09-05" }).status).toBe("confirmed")
         const callers = [...walk("app"), ...walk("components"), ...walk("lib")].filter((f) => readFileSync(f, "utf8").includes("resolveRecordStatus("))
         expect(callers.length).toBeGreaterThanOrEqual(2)
@@ -108,7 +117,7 @@ describe("confirmed is unreachable until C1", () => {
                 // The call's argument object, up to its closing brace at the call's own indentation.
                 const close = call.search(/\n\s{0,8}\}\)/)
                 const body = call.slice(0, close > 0 ? close : 800)
-                expect(body, `${f}: a caller must pass confirmedAt: null until C1 records confirmations`).toMatch(/confirmedAt:\s*null/)
+                expect(body, `${f}: a caller derives the confirmation from the extraction envelope (extractionConfirmation), never invents it and never ignores it`).toMatch(/extractionConfirmation\(policy\.acordData\)/)
             }
         }
     })

@@ -53,8 +53,15 @@ export function ProtectionPlanCard({
         /** «{done} από {total} ολοκληρωμένα» — interpolated HERE so each number carries data-count. */
         progressTemplate: string
         upToDate: string
+        /** Caption over the one open step the person should take next. */
+        currentStep: string
     }
 }) {
+    // The first open step is THE next action. The brief's rule: "the current
+    // step must be visually dominant; completed steps become visually quieter".
+    // One row carries the tint, the larger title and the description; the rest
+    // are a list.
+    const currentId = steps.find((step) => step.state === "open")?.id ?? null
     const progressPct = total > 0 ? Math.round((completed / total) * 100) : 0
     const progressText = labels.progressTemplate
         .replace("{done}", String(completed))
@@ -87,12 +94,15 @@ export function ProtectionPlanCard({
                 title={labels.kicker}
                 id="protection-plan-heading"
                 meta={
-                    <Link href="#protection-plan-heading" className="-my-2.5 inline-flex min-h-11 items-center text-caption font-medium text-muted-foreground hover:underline">
-                        {beforeDone}
+                    // gap-1 between the flex items: the template's spaces (« από »)
+                    // are anonymous flex items whose leading/trailing whitespace
+                    // collapses, so this read «3από6ολοκληρωμένα» on every capture.
+                    <Link href="#protection-plan-heading" className="-my-2.5 inline-flex min-h-11 items-center gap-1 text-caption font-medium text-muted-foreground hover:underline">
+                        {beforeDone.trim() && <span>{beforeDone.trim()}</span>}
                         <span data-count="plan.stepsDone">{completed}</span>
-                        {betweenNumbers}
+                        {betweenNumbers.trim() && <span>{betweenNumbers.trim()}</span>}
                         <span data-count="plan.stepsTotal">{total}</span>
-                        {afterTotal}
+                        {afterTotal.trim() && <span>{afterTotal.trim()}</span>}
                     </Link>
                 }
             />
@@ -112,38 +122,51 @@ export function ProtectionPlanCard({
                 {steps.map((step) => {
                     const Icon = step.kind === "setup" ? SETUP_ICONS[step.id] ?? Lightbulb : Lightbulb
                     const done = step.state === "done"
+                    const current = step.id === currentId
                     return (
                         <li key={step.id}>
                             <Link
                                 href={step.href}
-                                className={`pw-subcard flex min-h-11 items-center gap-3 px-3 py-2.5 transition-colors ${
-                                    done ? "opacity-80" : ""
-                                }`}
+                                aria-current={current ? "step" : undefined}
+                                data-plan-step={current ? "current" : done ? "done" : "open"}
+                                className={`pw-subcard flex min-h-11 items-center gap-3 transition-colors ${
+                                    current ? "!bg-primary-soft p-3.5 dark:!bg-primary/15" : "px-3 py-2.5"
+                                } ${done ? "opacity-60" : ""}`}
                             >
                                 <span
-                                    className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] ${
-                                        done
-                                            ? "bg-primary text-primary-foreground"
-                                            : "pw-card-chip"
+                                    className={`grid flex-shrink-0 place-items-center rounded-[10px] ${
+                                        current
+                                            ? "h-10 w-10 bg-primary text-primary-foreground"
+                                            : done
+                                                ? "h-9 w-9 bg-primary text-primary-foreground"
+                                                : "pw-card-chip"
                                     }`}
                                 >
                                     {done ? <Check className="h-4 w-4" aria-hidden /> : <Icon className="h-4 w-4" aria-hidden />}
                                 </span>
                                 <span className="min-w-0 flex-1">
+                                    {current && (
+                                        <span className="block text-caption font-medium text-primary dark:text-mint">{labels.currentStep}</span>
+                                    )}
                                     <span
-                                        className={`block text-xs font-semibold [overflow-wrap:anywhere] ${
-                                            done ? "text-muted-foreground line-through" : "text-foreground"
+                                        className={`block font-semibold [overflow-wrap:anywhere] ${
+                                            current ? "text-body text-foreground" : done ? "text-xs text-muted-foreground" : "text-xs text-foreground"
                                         }`}
                                     >
                                         {step.title}
                                     </span>
-                                    {!done && step.description && (
-                                        <span className="mt-0.5 block text-caption text-black/60 dark:text-white/55">
+                                    {current && step.description && (
+                                        <span className="mt-0.5 block text-sm leading-snug text-foreground/75">
                                             {step.description}
                                         </span>
                                     )}
                                 </span>
-                                {!done && <ArrowRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" aria-hidden />}
+                                {!done && (
+                                    <ArrowRight
+                                        className={`flex-shrink-0 ${current ? "h-4 w-4 text-primary dark:text-mint" : "h-3.5 w-3.5 text-muted-foreground"}`}
+                                        aria-hidden
+                                    />
+                                )}
                             </Link>
                         </li>
                     )

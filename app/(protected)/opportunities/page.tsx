@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { presentCustomerIdentity } from "@/lib/agent-consent"
@@ -20,7 +21,7 @@ export default async function OpportunitiesPage() {
                     // password/emailVerified: consent signals for the identity
                     // rule (lib/agent-consent) — never serialized to the client.
                     customer: {
-                        select: { name: true, email: true, password: true, emailVerified: true }
+                        select: { id: true, name: true, email: true, emailVerified: true }
                     }
                 }
             },
@@ -56,11 +57,13 @@ export default async function OpportunitiesPage() {
         // opportunity simply renders unscored.
     }
 
+    // Credential PRESENCE for the identity rule — never the hash (A-01).
+    const credentialPresence = await passwordPresence(db, opportunities.map((o) => o.relationship.customer.id))
     const formattedOpportunities = opportunities.map(opp => {
         const scored = scores.get(opp.id)
         const identity = presentCustomerIdentity(
             opp.relationship,
-            opp.relationship.customer,
+            { ...opp.relationship.customer, hasPassword: credentialPresence.has(opp.relationship.customer.id) },
             visibleCounts.get(opp.relationship.policyholderUserId) ?? 0
         )
         return {

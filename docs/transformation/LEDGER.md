@@ -25,6 +25,7 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 
 - [x] Ειδοποιήσεις `/notifications`
 - [x] Αρχική `/dashboard`
+- [x] Συστάσεις `/recommendations` (added 2026-09-07 — the recommendations block of `/protection` as its own page)
 - [x] Πορτοφόλι `/wallet`
 - [x] Ασφαλιστήριο `/wallet/[id]`
 - [x] Αναλύσεις `/coverage-insights`
@@ -36,6 +37,22 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] 7 overlays
 
 ---
+
+## Συστάσεις — `/recommendations`
+
+Source: `app/(protected)/recommendations/page.tsx` (+ `loading.tsx`, `error.tsx`), `components/coverage/RecommendationCards.tsx`
+
+Added by the B2C dashboard story rebuild (2026-09-07): the owner chose a dedicated
+page for the «Συστάσεις» menu item over a lens on `/protection`. It is the SAME
+read (`getGapEngineSnapshot`, read-only) rendered by the SAME component with the
+SAME count key as A-05 — two routes, one list. Nothing moved off `/protection`.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| RC-01 | See recommendations (`RecommendationCards`, `recommendation.openCount`) | fact | **KEEP** | `/recommendations`; identical to A-05 on `/protection` — a person who opens both sees one list | — |
+| RC-02 | Dismiss / act on a recommendation | action | **KEEP** | the card's own controls (`PATCH /api/v1/recommendations/[id]`), unchanged | — |
+| RC-03 | Honest empty states (no cover today / profile incomplete / nothing open) | fact | **KEEP** | the component's three empty states; the page adds a fourth for a failed snapshot («Δεν μπορέσαμε να φορτώσουμε…») instead of an empty list | — |
+| RC-04 | Way back to the whole protection surface | action | **KEEP** | one link to `/protection` under the list | — |
 
 ## Ειδοποιήσεις — `/notifications`
 
