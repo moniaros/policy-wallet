@@ -128,6 +128,17 @@ export const COUNT_KEYS: Record<string, string> = {
     // branch.* — SUBJECT-SCOPED by top-level branch id.
     "branch.policyCount": "Policies held in this branch family (status ≠ deleted).",
     "branch.recommendationCount": "Active recommendations filtered to this branch family — a SUBSET of recommendation.openCount, never the same key.",
+    // branch.* — PAGE-LEVEL: the coverage-status summary of «Καλύψεις & κενά»
+    // (lib/protection/coverage-status.ts). They count BRANCHES in a status over
+    // the branches that concern the person (relevantCount); the four statuses
+    // plus underReviewOnly sum to relevantCount, and none is a score.
+    "branch.coveredCount": "Branches that appear covered: an in-force read policy, a current run, every attempted coverage check judged, none fired. Always rendered with «Ελέγξαμε N από M σημεία».",
+    "branch.findingCount": "Branches with an in-force policy and at least one CLASSIFIED coverage-class finding («Μερική κάλυψη»). Under-review findings never count here.",
+    "branch.noPolicyCount": "Branches the person's profile expects, with no in-force read policy in the wallet and not declared held elsewhere («Χωρίς ασφαλιστήριο»).",
+    "branch.notCheckedCount": "Branches held but not judged: unauthored, never analysed, unread document, stale/failed/in-progress run, pre-plan run, no extraction.",
+    "branch.underReviewOnlyCount": "Branches whose only coverage-class findings are still under review — disclosed beside the four, outside them.",
+    "branch.relevantCount": "The denominator: every branch expected for the person or held in the wallet — the four status counts plus underReviewOnly.",
+    "gap.lockedCount": "Findings on «Καλύψεις & κενά» behind the plan's visible cap — the «+N ακόμη» beside the upgrade door, so a free reader never believes the visible ones are all.",
 
     // policy.* — SUBJECT-SCOPED by policy id.
     "policy.renewalCheckpointCount": "deriveRenewalChecklist length for this policy — points to check before renewing.",
@@ -189,6 +200,9 @@ export const FACT_KEYS: Record<string, string> = {
     "riskDimension.provenance": "F2 (B1.6): the B3 under-review label where a dimension's 0-100 reading used to sit — text, never a number or a colour.",
     "riskDimension.disclosure": "F2: the B3 disclosure under the Risk DNA heading — what the dimensions rest on is not yet classified.",
     "gap.findingsProvenance": "Which analysis run the listed findings come from, dated, and whether the latest attempt is that run (B0.3). One per findings list.",
+    // branch.* — SUBJECT-SCOPED by top-level branch id («Καλύψεις & κενά»).
+    "branch.coverageStatus": "The branch's coverage status word (appears_covered | finding | no_policy | not_checked), rendered once per category row as an icon + word chip.",
+    "branch.checkedPoints": "«Ελέγξαμε {covered} από {checked} σημεία» — the composition's coverage line aggregated over the branch's in-force policies; the sentence that must accompany «Φαίνεται να καλύπτεται».",
     "composition.lines": "The B2 two-line composition block (coverage + recording), one per findings list.",
     "gap.provenance": "A finding's provenance class as text (B3): legal, contractual, market practice or under review.",
     "gap.citation": "F5: the law and article a classified requirement rests on, rendered beside its class at every render site (card, insights, attention list, report, digest).",
@@ -235,6 +249,8 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "riskGraph.stateCount",
     "branch.policyCount",
     "branch.recommendationCount",
+    "branch.coverageStatus",
+    "branch.checkedPoints",
     "policy.renewalCheckpointCount",
     "asset.identifier",
     "policy.daysRemaining",
