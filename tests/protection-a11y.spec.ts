@@ -7,6 +7,10 @@ import { test, expect } from "@playwright/test"
 import AxeBuilder from "@axe-core/playwright"
 import { dismissCookieBanner } from "./helpers/ui"
 
+// The risk lens cold-compiles its intelligence panels on first navigation
+// (~40 s on a dev server); the budget below is for that, not for the page.
+test.describe.configure({ timeout: 240_000 })
+
 const CASES = [
     ["/protection", 390, 844],
     ["/protection", 1280, 900],
@@ -15,10 +19,9 @@ const CASES = [
 
 for (const [path, width, height] of CASES) {
     test(`${path} @ ${width}px has no serious accessibility violations`, async ({ page }) => {
-        test.setTimeout(120_000)
         await page.setViewportSize({ width, height })
-        await page.goto(path, { waitUntil: "domcontentloaded", timeout: 90_000 })
-        await page.waitForSelector("h1", { timeout: 60_000 })
+        await page.goto(path, { waitUntil: "domcontentloaded", timeout: 180_000 })
+        await page.waitForSelector("h1", { timeout: 120_000 })
         await dismissCookieBanner(page)
         const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze()
         const serious = results.violations.filter((v) => v.impact === "critical" || v.impact === "serious")
