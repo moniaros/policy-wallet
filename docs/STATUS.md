@@ -1,6 +1,6 @@
 # STATUS
 
-**Production: `3c287313`** — PW-CONTENT-01 Goals 1–4 and 7 (PR #308, deploy run 34038640338, 2026-09-06 14:20Z; smoke in `docs/evidence/content-g8/`). Previous: **`7b86805d`** — PW-TRANSPARENCY-02 close-out (PR #307, deploy run 33996579556, 2026-09-05 22:43Z; previous production `e55cf432` = B4 #304, `886ac01f` = R3 #303, `6ff5aebc` = #301, `b0044eaa` = #300, `85088850` = #299). Before the series: **`45013e3f`** — the Document Validation Gate (PR #298), merged and deployed
+**Production: `b7811030`** — the B2C story series, three squashes on 2026-09-07: the home as a story (#311 → `345d8321`, deploy run 34087702665, 05:44Z), «Καλύψεις & κενά» as a protection story (#314 → `1c9dde12`, deploy run 34089281527, 06:06Z), the mobile menu ☰/X (#313 → `b7811030`, deploy run 34091421340, 06:37Z); each smoked signed-in on production with the owner's session. Previous: **`3c287313`** — PW-CONTENT-01 Goals 1–4 and 7 (PR #308, deploy run 34038640338, 2026-09-06 14:20Z; smoke in `docs/evidence/content-g8/`). Before that: **`7b86805d`** — PW-TRANSPARENCY-02 close-out (PR #307, deploy run 33996579556, 2026-09-05 22:43Z; previous production `e55cf432` = B4 #304, `886ac01f` = R3 #303, `6ff5aebc` = #301, `b0044eaa` = #300, `85088850` = #299). Before the series: **`45013e3f`** — the Document Validation Gate (PR #298), merged and deployed
 2026-09-05 00:00Z (deploy run 33930719296) after CI green (one flaky, unrelated
 `area-detail-questions` case re-run); prod migration `20260905120000_document_validation_stamp`
 and the `policies` bucket INSERT-policy drop verified by query BEFORE the merge; production
@@ -51,11 +51,10 @@ Next 3: (1) merge #299 on CI green and smoke the prod policy page for the proven
 partial with the remainder named per-goal in the ledger. Written system: `docs/design-system.md`;
 seams and hostile review: `docs/handover.md`.
 
-## In progress (2026-09-03)
+## In progress (2026-09-07)
 
-- **2026-09-07 — «Καλύψεις & κενά» (/protection) as a protection story — built on
-  `feat/protection-story` (stacked on `feat/b2c-dashboard-story`), gates green locally (tsc, lint,
-  i18n, utf8, api-auth audit, 617/617 unit files), NOT merged.** One derivation,
+- **2026-09-07 — «Καλύψεις & κενά» (/protection) as a protection story — SHIPPED as PR #314 → NEW-UI `1c9dde12`, deploy run 34089281527 (2026-09-07 06:06Z), smoked
+  signed-in on production.** One derivation,
   `lib/protection/coverage-status.ts`, gives every branch that concerns the person one of four
   status words the checks can prove — «Φαίνεται να καλύπτεται» · «Μερική κάλυψη» · «Χωρίς
   ασφαλιστήριο» · «Δεν ελέγχθηκε ακόμη» — over a stated denominator, with under-review-only
@@ -75,15 +74,28 @@ seams and hostile review: `docs/handover.md`.
   /recommendations, PS-01…PS-10 added. Evidence `docs/evidence/protection-story/{before,after}/`:
   phone 12,628→5,451 px (15→6.5 viewports), tablet 9,449→4,576, desktop 8,931→4,429; risk lens
   14,596→7,745 / 11,717→6,723 / 11,356→6,595; no horizontal scroll at any width; h1 fixed; the
-  five-second questions answered from the first viewport. PRs: #312 (the story + the home map
-  projected onto the same derivation, base `feat/b2c-dashboard-story`), #313 (Goal 10, the mobile
-  menu trigger ☰/X, stacked on #312). E2E: viewport-overflow 25/25 incl. /protection both lenses;
+  five-second questions answered from the first viewport. PRs: #314 (the story + the home map projected onto the same derivation + the new
+  `tests/policyholder-console-clean.spec.ts`; it supersedes #312, which GitHub closed when its stacked
+  base branch was deleted at the #311 merge — a closed PR cannot be retargeted), #313 (Goal 10, the
+  mobile menu trigger ☰/X → `b7811030`, deploy run 34091421340). E2E: viewport-overflow 25/25 incl. /protection both lenses;
   axe (WCAG 2.1 AA tags) clean on both lenses at 390 and on the branch lens at 1280 — no critical
-  or serious violation. Owner: preview journey on #312/#313, then merge order #311 → #312 → #313.
+  or serious violation. Gate before the merges (a signed-in Vercel preview session is not mintable by the agent — preview
+  hosts carry no app session and write to the production database): a production build of the
+  stacked head under `next start` with the Playwright policyholder session — overflow 25 pages, axe
+  3/3, shell 3/3 (the clipped-actions case passes alone; it times out only under seven workers),
+  both story measures matching the committed after evidence, console-clean 8/8 — then the owner's
+  session on production after each deploy: /protection renders the story over «από 6 κατηγορίες»
+  (0 · 0 · 2 · 4), the primary lands on «Τι αξίζει να δείτε» with the one live finding dated
+  5 Sept 2026 and its Π.Δ. 237/1986 citation, both lenses, no horizontal scroll, console clean.
+  UX backlog (not gates): the branch rows' taglines still say «συμβόλαιο» (`getBranchContent` is
+  outside the term guard's file list); «Τι σημαίνει για εσάς» quotes the extraction's insurer name
+  verbatim («Example Insurance Company Ltd» on the owner's test policy); production shows
+  «Μερική κάλυψη 0» beside one live finding because that finding is a recording-class rule («δεν
+  καταγράφεται»), which never changes a branch's status by design — worth a sentence on the door.
 
-- **2026-09-07 — The B2C home as a story (impeccable brief) — built on `feat/b2c-dashboard-story`
-  from `286f9f5d`, gates green locally (tsc, lint, i18n, utf8, api-auth audit, 615/615 unit files),
-  NOT merged.** Six labelled regions in one order: `#overview` (next-step banner = the page's ONE
+- **2026-09-07 — The B2C home as a story (impeccable brief) — SHIPPED as PR #311 → NEW-UI `345d8321`, deploy run 34087702665 (2026-09-07 05:44Z), smoked signed-in
+  on production (six regions, one primary, 19 counted doors, no horizontal scroll; /recommendations 4
+  items; /notifications 24 items; console clean).** Six labelled regions in one order: `#overview` (next-step banner = the page's ONE
   primary, contextual: first open plan step → open recommendations → renewal ≤30 d → add the rest;
   facts row «Συνοπτική εικόνα»; branch map; the person's picture; life-event prompt, now full width),
   `#attention` (lead sentence + provenance tally with denominator + top findings + one door «Δείτε
@@ -421,7 +433,7 @@ seams and hostile review: `docs/handover.md`.
 
 ## Next 3 actions
 
-0. **Owner:** review `feat/b2c-dashboard-story` (the home as a story + `/recommendations` + nav renames) — one decision inside it: the brief said «Τα συμβόλαιά μου», the shipped copy says «Τα ασφαλιστήριά μου» because `policy-term-asfalistirio` guards the owner-ratified term; flip the guard if the colloquial word is wanted.
+0. **Done 2026-09-07:** #311, #314 and #313 merged and deployed (see Production). One decision stays open from the home brief: the brief said «Τα συμβόλαιά μου», the shipped copy says «Τα ασφαλιστήριά μου» because `policy-term-asfalistirio` guards the owner-ratified term; flip the guard if the colloquial word is wanted.
 1. **Owner:** say go on BL-C1 → align dev (`npm run align:gap-catalogue -- --apply`, verify `d6f515a1d400f9d5`) → export production `gap_definitions` to `docs/archive/` and commit → align production → verify → merge #309 → deploy, one window (`docs/content/PROD-ALIGNMENT.md`).
 2. **Owner:** approve PW-BRIDGE-01 L0 (`docs/bridge/HALTS.md` H-B1) and answer its two questions (the conversation number for findings; actor attribution on notifications) → the loop starts at Queue A-01 (the password-hash select) and A-08 (instrument the agent surfaces so parity is measurable). C1–C7 stay unstarted.
 3. **Owner:** legal sign-off of PROVENANCE-REVIEW.md (C-H2), the MX record (C-H6), and the extraction requests E1–E5 in `docs/content/DEFERRED-RULES.md` (C-H4) — each unblocks a named next step.
