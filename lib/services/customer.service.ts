@@ -170,8 +170,18 @@ export class CustomerService extends BaseService {
                 status: { not: 'terminated' }
             },
             include: {
+                // The profile renders identity, contact and the visible policies — never the
+                // customer's whole account row (taxId, billing, credential …) (A-01b).
                 customer: {
-                    include: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        contactEmailMissing: true,
+                        phoneNumber: true,
+                        image: true,
+                        // The identity rule's consent signal (with the presence check below).
+                        emailVerified: true,
                         policiesOwned: {
                             where: visibilityWhere,
                             orderBy: { startDate: 'desc' },
@@ -313,8 +323,12 @@ export class CustomerService extends BaseService {
         }
 
         // 1. Check if user exists
+        // The creator reads three fields (id, taxId, emailVerified) — never the
+        // account's whole row; the phantom it may create returns the same shape (A-01b).
+        const CREATOR_SELECT = { id: true, taxId: true, emailVerified: true } as const
         let user = await this.db.user.findUnique({
-            where: { email }
+            where: { email },
+            select: CREATOR_SELECT,
         });
 
         // Whether the agent's ΑΦΜ was dropped because the account is not theirs
@@ -338,7 +352,8 @@ export class CustomerService extends BaseService {
                     policyholderProfile: {
                         create: {}
                     }
-                }
+                },
+                select: CREATOR_SELECT,
             });
         } else if (taxId && !user.taxId) {
             // Backfill ΑΦΜ only onto a PHANTOM the agent side owns (no
@@ -444,7 +459,7 @@ export class CustomerService extends BaseService {
             },
             include: {
                 relationship: {
-                    include: { customer: true }
+                    select: { policyholderUserId: true, customer: { select: { name: true } } }
                 },
                 gapInstance: {
                     include: { definition: true }
@@ -473,7 +488,7 @@ export class CustomerService extends BaseService {
                 status: 'active',
                 lastInteractionAt: { lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
             },
-            include: { customer: true },
+            include: { customer: { select: { name: true } } },
             take: 5
         });
 

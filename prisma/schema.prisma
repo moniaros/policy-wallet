@@ -1,5 +1,8 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // `omit` (GA in Prisma 6) — lib/db.ts omits `User.password` from every read
+  // unless a query names it (PW-BRIDGE-01 A-01b).
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {

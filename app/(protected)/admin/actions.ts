@@ -707,7 +707,8 @@ export async function approveAgent(agentProfileId: string, notes?: string) {
     try {
         const agentProfile = await db.agentProfile.findUnique({
             where: { id: agentProfileId },
-            include: { user: true }
+            // The decision email and the audit line need the agent's id, email and name (A-01b).
+            include: { user: { select: { id: true, email: true, name: true } } }
         })
 
         if (!agentProfile) {
@@ -774,7 +775,8 @@ export async function rejectAgent(agentProfileId: string, reason: string) {
     try {
         const agentProfile = await db.agentProfile.findUnique({
             where: { id: agentProfileId },
-            include: { user: true }
+            // The decision email and the audit line need the agent's id, email and name (A-01b).
+            include: { user: { select: { id: true, email: true, name: true } } }
         })
 
         if (!agentProfile) {

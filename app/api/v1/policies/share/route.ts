@@ -51,7 +51,8 @@ export const POST = withApiGuard(
             // minted a placeholder User row + a silently ACTIVE grant for any
             // address a caller typed (account-enumeration and spam vector).
             const granteeUser = await db.user.findUnique({
-                where: { email: normalizeEmail(email) }
+                where: { email: normalizeEmail(email) },
+                select: { id: true },
             })
 
             if (!granteeUser) {
