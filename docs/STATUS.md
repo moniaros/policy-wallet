@@ -53,6 +53,20 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-07)
 
+- **2026-09-07 — Data protection & security review pack for external counsel — WRITTEN, not yet sent
+  (`docs/compliance/DATA_PROTECTION_REVIEW_PACK.md`).** One document describing how the platform
+  handles policyholder and Art. 9 data, written from the code rather than from intent, for a head
+  of legal at a Greek insurer to review. §1–§13 are the implemented posture (consent gate on both
+  provider paths, the document gate, single-path authorization, anonymize-in-place erasure and its
+  schema-derived guard, split retention, admin read minimisation + audit, the 99-route auth
+  inventory); §14 is an open-items register verified against the code on the day; §15 is seven
+  questions put to counsel. Also published as a shareable page (private Artifact) for the review
+  itself. **It ranks §14.1 — the AI providers are not regionally pinned and no zero-retention
+  setting is applied in code — as the top legal exposure**, re-verified today: all three clients
+  are still constructed with an API key alone (`lib/services/ai/{gemini,anthropic,openai}-ai.service.ts`),
+  so `docs/audits/AI_PROVIDER_DATA_FLOW.md` §3 stands unchanged. No code was touched; this is a
+  documentation deliverable.
+
 - **2026-09-07 — «Καλύψεις & κενά» (/protection) as a protection story — SHIPPED as PR #314 → NEW-UI `1c9dde12`, deploy run 34089281527 (2026-09-07 06:06Z), smoked
   signed-in on production.** One derivation,
   `lib/protection/coverage-status.ts`, gives every branch that concerns the person one of four
@@ -420,6 +434,7 @@ seams and hostile review: `docs/handover.md`.
 
 ## Blocked
 
+- **Cloudflare `Workers Builds: policy-wallet` is permanently red and is not a code task** (`docs/provenance/BLOCKED.md` BL-P1): a `policy-wallet` Worker exists in the Cloudflare account with a git integration onto this repo, while the repo has no Workers project at all (no `wrangler.*`, no `open-next.config.ts`, no `@opennextjs/cloudflare`). Red on merged #316 and on every commit of #317. Needs the owner to disconnect it in the Cloudflare dashboard; until then every PR carries a red check that trains reviewers to ignore red.
 - **BL-C1 — production catalogue alignment** (`docs/content/BLOCKED.md`): PR #309 (Goals 5–6, renters + 21 rules) merges only after `gap_definitions` is aligned on dev, then production (archive export first, fingerprint `d6f515a1d400f9d5` on both). Needs the owner's written go — a production write.
 - **BL-C2 — policyholder production smoke**: no policyholder session in the browser; the agent does not sign in with credentials.
 - **Legal sign-off of `docs/transparency/PROVENANCE-REVIEW.md`** (50 rows: 6 legislative, 2 market, 42 under review) — blocks GA (HANDOFF C-H2).
@@ -429,10 +444,11 @@ seams and hostile review: `docs/handover.md`.
 
 ## Top risks, ranked
 
-1. **Engine plans from the database, composition fingerprints the repo.** Any catalogue merge without the matching alignment makes every new production run render the stale-catalogue line and no new rule fires (why BL-C1 exists; CI checks the catalogue against DEV only — D-C8).
-2. **Every production finding is still «under review»** — no citation can render on production until a classified rule fires there; the public methodology says so, but the product's first impression is a list with no legal basis shown.
-3. **Marketing routes ship the app bundle** (mobile LCP 4.8s vs the 2.0s budget; `docs/perf-report.md`).
-4. **`/en/*` server HTML says `lang="el"`** until an inline script runs (root-layout limitation, documented in `app/layout.tsx`; Lighthouse SEO 100 because it reads the hydrated DOM).
+1. **AI providers are not regionally pinned and no zero-retention setting is applied in code.** Complete policy documents — Art. 9 health content included — go to the global Gemini AI Studio endpoint under whatever the account defaults are, while `/subprocessors` asserts the providers' terms forbid training on them; that assertion rests on the executed account contracts, which nothing in the repo verifies. Neither fix is a code change alone (Vertex AI + EU location, or zero-retention terms). `docs/compliance/DATA_PROTECTION_REVIEW_PACK.md` §8/§14.1.
+2. **Engine plans from the database, composition fingerprints the repo.** Any catalogue merge without the matching alignment makes every new production run render the stale-catalogue line and no new rule fires (why BL-C1 exists; CI checks the catalogue against DEV only — D-C8).
+3. **Every production finding is still «under review»** — no citation can render on production until a classified rule fires there; the public methodology says so, but the product's first impression is a list with no legal basis shown.
+4. **Marketing routes ship the app bundle** (mobile LCP 4.8s vs the 2.0s budget; `docs/perf-report.md`).
+5. **`/en/*` server HTML says `lang="el"`** until an inline script runs (root-layout limitation, documented in `app/layout.tsx`; Lighthouse SEO 100 because it reads the hydrated DOM).
 
 ## Next 3 actions
 
