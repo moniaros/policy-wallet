@@ -1,0 +1,7 @@
+// PROBE — the countdown from the one lifecycle call (must be GREEN).
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
+
+export function daysLeft(policy: { endDate: Date; acordData: unknown }, now: Date) {
+    const lifecycle = resolvePolicyLifecycle(policy, now)
+    return lifecycle.daysUntilExpiry
+}

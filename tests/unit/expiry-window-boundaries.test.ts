@@ -17,8 +17,10 @@ const read = (f: string) => strip(readFileSync(f, 'utf-8'))
  */
 describe('every policy-expiry window opens at the start of the Athens day', () => {
     const CASES: Array<[string, RegExp]> = [
-        ['lib/services/renewal.service.ts', /endDate: \{\s*gte: startOfToday,/],
-        ['lib/services/weekly-digest.service.ts', /endDate: \{ gte: startOfAthensDay\(now\), lte: thirtyDaysOut \}/],
+        // The two templates window on the RESOLVED end date through one helper
+        // (PW-BRIDGE-01 C-01/C-02); the Athens-day lower bound is the argument.
+        ['lib/services/renewal.service.ts', /expiryWindowWhere\(startOfToday, cutoff\)/],
+        ['lib/services/weekly-digest.service.ts', /expiryWindowWhere\(startOfAthensDay\(now\), thirtyDaysOut\)/],
         ['lib/services/churn-prevention.service.ts', /endDate: \{ gte: startOfAthensDay\(now\), lte: thirtyDaysOut \}/],
         ['lib/services/perk-reminder.service.ts', /endDate: \{ gte: startOfAthensDay\(new Date\(\)\) \}/],
         ['app/(protected)/renewals/actions.ts', /policyEndDate: \{ gte: startOfAthensDay\(now\), lte: weekFromNow \}/],
@@ -27,6 +29,19 @@ describe('every policy-expiry window opens at the start of the Athens day', () =
 
     it.each(CASES)('%s bounds on the Athens day', (file, pattern) => {
         expect(read(file)).toMatch(pattern)
+    })
+
+    it('the shared window helper bounds both arms identically and falls back to the raw column only while the resolved one is NULL', async () => {
+        const { expiryWindowWhere } = await import('@/lib/policy-status')
+        const from = new Date('2026-07-19T21:00:00.000Z')
+        const to = new Date('2026-08-19T05:00:00.000Z')
+        const where = expiryWindowWhere(from, to)
+        expect(where).toEqual({
+            OR: [
+                { coverageEndDate: { gte: from, lte: to } },
+                { coverageEndDate: null, endDate: { gte: from, lte: to } },
+            ],
+        })
     })
 
     it('leaves no policy-date window bounded by a bare instant', () => {

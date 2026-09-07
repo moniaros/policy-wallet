@@ -1,0 +1,8 @@
+// PROBE — a job that counts days from the raw `endDate` column (must be RED).
+import { calendarDaysUntil } from "@/lib/policy-status"
+
+export function daysLeft(policy: { endDate: Date }, p: { endDate: string }, now: Date) {
+    const a = calendarDaysUntil(policy.endDate, now)
+    const b = calendarDaysUntil(new Date(p.endDate), new Date())
+    return a + b
+}

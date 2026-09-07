@@ -3880,7 +3880,7 @@ inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας ακ�
 inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας ανανεώθηκε σε νέο ασφαλιστή."
 inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας ανανεώθηκε στον ίδιο ασφαλιστή."
 inline	app/(protected)/renewals/actions.ts	`Ενημέρωση ανανέωσης: ${renewal.policy.policyNumber}`
-inline	app/(protected)/renewals/actions.ts	`Το ασφαλιστήριο ${renewal.policy.policyNumber} λήγει στις ${formatDate(renewal.policy.endDate, "el")}. Ο ασφαλιστικός σας σύμβουλος θα ήθελε να συζητήσετε τις επιλογές ανανέωσης.`
+inline	app/(protected)/renewals/actions.ts	`Το ασφαλιστήριο ${renewal.policy.policyNumber} λήγει στις ${formatDate(renewal.policyEndDate, "el")}. Ο ασφαλιστικός σας σύμβουλος θα ήθελε να συζητήσετε τις επιλογές ανανέωσης.`
 inline	app/(protected)/renewals/actions.ts	`Υπενθύμιση ανανέωσης: ${renewal.policy.insurerName}`
 inline	app/(protected)/tasks/actions.ts	"Ο πελάτης συμπλήρωσε το ερωτηματολόγιο"
 inline	app/(protected)/tasks/actions.ts	`${customerName} απάντησε στο «${instance.template.name}».`

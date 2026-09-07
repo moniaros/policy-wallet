@@ -303,7 +303,6 @@ export async function sendBatchRenewalReminder(renewalIds: string[]): Promise<{
                         id: true,
                         policyNumber: true,
                         insurerName: true,
-                        endDate: true,
                         owner: { select: { id: true, preferredLanguage: true } },
                     },
                 },
@@ -317,13 +316,18 @@ export async function sendBatchRenewalReminder(renewalIds: string[]): Promise<{
         // in the runtime zone — UTC on Vercel — so a policy ending at Athens
         // midnight was reminded as the PREVIOUS day, disagreeing with both the
         // wallet and the automated reminder for the very same policy.
+        //
+        // The date is the CYCLE's own (`policyEndDate`, keyed on the resolved end
+        // since PW-BRIDGE-01 C-02) — the date the adviser sees on the row they
+        // clicked — never the raw `Policy.endDate` column, which names the old
+        // period for a renewed policy.
         const title = {
             el: `Υπενθύμιση ανανέωσης: ${renewal.policy.insurerName}`,
             en: `Renewal reminder: ${renewal.policy.insurerName}`,
         }
         const message = {
-            el: `Το ασφαλιστήριο ${renewal.policy.policyNumber} λήγει στις ${formatDate(renewal.policy.endDate, "el")}. Ο ασφαλιστικός σας σύμβουλος θα ήθελε να συζητήσετε τις επιλογές ανανέωσης.`,
-            en: `Your policy ${renewal.policy.policyNumber} expires on ${formatDate(renewal.policy.endDate, "en")}. Your insurance advisor would like to discuss renewal options.`,
+            el: `Το ασφαλιστήριο ${renewal.policy.policyNumber} λήγει στις ${formatDate(renewal.policyEndDate, "el")}. Ο ασφαλιστικός σας σύμβουλος θα ήθελε να συζητήσετε τις επιλογές ανανέωσης.`,
+            en: `Your policy ${renewal.policy.policyNumber} expires on ${formatDate(renewal.policyEndDate, "en")}. Your insurance advisor would like to discuss renewal options.`,
         }
 
         await sendNotification({

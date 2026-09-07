@@ -78,10 +78,19 @@ describe('the weekly digest surfaces every real policy expiring soon', () => {
         }
     })
 
-    it('still keeps the Athens expiry window', async () => {
+    it('still keeps the Athens expiry window — on the RESOLVED end date, the raw column only while it is NULL', async () => {
         await runWeeklyDigestJob()
-        const where = policyFindMany.mock.calls[0][0].where
-        expect(where.endDate?.gte).toBeInstanceOf(Date)
-        expect(where.endDate?.lte).toBeInstanceOf(Date)
+        const call = policyFindMany.mock.calls[0][0]
+        const where = call.where
+        // PW-BRIDGE-01 C-01: no bare raw-column window any more.
+        expect(where.endDate).toBeUndefined()
+        expect(where.OR).toHaveLength(2)
+        expect(where.OR[0].coverageEndDate.gte).toBeInstanceOf(Date)
+        expect(where.OR[0].coverageEndDate.lte).toBeInstanceOf(Date)
+        // Monday 2026-07-20 08:00 Athens → the Athens day began 2026-07-19T21:00Z.
+        expect(where.OR[0].coverageEndDate.gte.toISOString()).toBe('2026-07-19T21:00:00.000Z')
+        expect(where.OR[1]).toEqual({ coverageEndDate: null, endDate: where.OR[0].coverageEndDate })
+        // The lifecycle needs the envelope, so the select carries it.
+        expect(call.select).toMatchObject({ acordData: true, coverageEndDate: true, endDate: true, status: true })
     })
 })

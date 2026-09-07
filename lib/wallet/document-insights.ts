@@ -1,7 +1,6 @@
-import { calendarDaysUntil } from '@/lib/policy-status'
+import { resolvePolicyLifecycle } from '@/lib/policy-status'
 import { policyRowIdentity } from "./policy-identity"
 import type { Policy } from "@/components/wallet/types"
-import { parseDocumentDate } from "@/lib/dates/document-date"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { resolveLocale } from "@/lib/i18n/format"
 
@@ -85,14 +84,14 @@ export function getDocumentPolicySummary(
         maximumFractionDigits: 2,
     }).format(premiumAmount)
 
-    // The extracted envelope date wins; an envelope value that EXISTS but
-    // cannot be parsed means unknown — never fall back to the DB column,
-    // which may hold the historical upload-day placeholder (+365d).
-    const envelopeEndRaw = compactText(acordPolicy?.expirationDate)
-    const endDate = envelopeEndRaw
-        ? parseDocumentDate(envelopeEndRaw)
-        : parseDocumentDate(policy.endDate || null)
-    const daysUntilExpiry = endDate ? calendarDaysUntil(endDate, new Date()) : null
+    // ONE call resolves the real end date (latest renewal-history end →
+    // extracted envelope → column; an envelope value that exists but cannot be
+    // parsed means unknown, never the upload-day placeholder) and the Athens
+    // countdown. This block was a third clock that skipped renewal history
+    // (PW-BRIDGE-01 C-01b, closed here).
+    const lifecycle = resolvePolicyLifecycle(policy)
+    const endDate = lifecycle.endDate
+    const daysUntilExpiry = lifecycle.daysUntilExpiry
     const expiryDisplay = endDate ? endDate.toLocaleDateString(locale, { timeZone: "UTC" }) : null
 
     const status: DocumentStatus = (() => {

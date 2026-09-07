@@ -45,8 +45,9 @@ Populated from `PARITY.md` and `INTERACTIONS.md`. Order within Queue A follows �
 
 | # | Item | Source |
 |---|---|---|
-| C-01 | Weekly digest computes days from the raw `endDate` column (`calendarDaysUntil(r.endDate)`), the app from the lifecycle | PARITY A4, I-21 |
-| C-02 | `policy_expiring` (renewal.service) — same raw-column computation and milestones | PARITY A4 |
+| C-01 | Weekly digest computes days from the raw `endDate` column (`calendarDaysUntil(r.endDate)`), the app from the lifecycle | PARITY A4, I-21 — **ACT done 2026-09-07**: one `resolvePolicyLifecycle` call over an `expiryWindowWhere` (coverageEndDate, raw column only while NULL); guard `expiry-countdown-single-source` |
+| C-02 | `policy_expiring` (renewal.service) — same raw-column computation and milestones | PARITY A4 — **ACT done 2026-09-07**: the lifecycle decides the count and the milestone; the `PolicyRenewal` cycle is keyed on the resolved date, `closeSupersededRenewals` runs before the upsert and a sweep closes open cycles a later resolved date superseded; the /renewals batch reminder quotes the cycle's own date |
+| C-01b | Residue raw-column countdowns, allowlisted with exact counts in the guard: `gap-engine/portfolio-rules.ts` (3, the facts builders pass the column), `risk-graph/protection.ts` (1), `timeline/build.ts` (1, selects only the column), `components/wallet/PolicyComparison.tsx` (1, client DTO), `lib/agent/format.ts` (1, `classifyUrgencyTier` should read `expiresAt`); `risk-dna/monitoring.ts` is resolved upstream (NOT debt, listed so the universe is complete). Same class without a countdown: the raw windows at `churn-prevention.service.ts:158` («N policies expiring soon») and `perk-reminder.service.ts:49` | guard `expiry-countdown-single-source` RESIDUE; PARITY A4 |
 | C-03 | The report carries the stale-catalogue sentence but no pre-plan / unauthored counterpart; acceptance 4 requires the record-state sentence on an unconfirmed or pre-plan analysis | PARITY B7 |
 | C-04 | The report renders no composition lines while the app does — a subset is allowed only if it can never contradict | PARITY B2 |
 | C-05 | The report reads `scope: "disclosed"` — verify every under-review row is labelled as such in the artifact (B3 lets a labelled list through, never a count) | PARITY B3, I-17 |
