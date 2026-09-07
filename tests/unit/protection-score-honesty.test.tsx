@@ -81,6 +81,33 @@ describe('protection status hero — the headline is the facts', () => {
         expect(container.querySelector('[data-count="portfolio.neverAnalysedCount"]')?.textContent).toBe('2 not analysed')
     })
 
+    it("a fact's note is part of the same door, after the words, and the number still leads in the DOM", () => {
+        // «2 δεν αξιολογήθηκαν χωρίς ορισμένους ελέγχους κλάδου»: the honest verb is
+        // the fact, the reason is the cell's note (words over the number, DESIGN.md).
+        // order-* flips the VISUAL order from lg; the DOM keeps number → words → note,
+        // which is the sentence a screen reader hears and the text this test reads.
+        const { container } = renderHero({
+            facts: [
+                { kind: "total", count: 12, label: "12 policies" },
+                { kind: "unassessed", count: 2, label: "2 not assessed", note: "no authored checks for the branch" },
+            ],
+        })
+        const door = container.querySelector('[data-count="portfolio.unassessedCount"]')!
+        expect(door.textContent).toBe("2 not assessed no authored checks for the branch")
+        const spans = Array.from(door.querySelectorAll(":scope > span:not([aria-hidden])"))
+        expect(spans.map((el) => el.textContent)).toEqual(["2", "not assessed", "no authored checks for the branch"])
+        expect(spans[0].compareDocumentPosition(spans[1]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+        // Without a note the door's text is exactly the fact — no stray whitespace.
+        expect(container.querySelector('[data-count="portfolio.policyCount"]')?.textContent).toBe("12 policies")
+    })
+
+    it("holds its 44px targets by construction — no negative margin anywhere in the hero", () => {
+        // `-my-0.5` / `-my-2.5` held the height without growing the layout, and every
+        // pill overlapped its neighbour's hit area by 2px (overlappingHitAreas, 2–9 per capture).
+        const src = readFileSync("components/dashboard/home/ProtectionStatusHero.tsx", "utf8")
+        expect(src).not.toMatch(/-my-/)
+    })
+
     it('renders no score: no number, no ring, no disclosure, no methodology', () => {
         const { container } = renderHero()
         // No SVG progress arc of any kind.

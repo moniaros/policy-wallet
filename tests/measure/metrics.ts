@@ -1537,3 +1537,99 @@ export async function renderedCounts(page: Page): Promise<Record<string, string>
         return out
     })
 }
+
+// ── The facts row's geometry (PR D, 2026-09-07) ────────────────────────────
+//
+// The page-overflow probe cannot see a seven-column grid whose labels wrap
+// seven lines deep — nothing overflows. This reads the cells of the
+// «Συνοπτική εικόνα» row themselves: per cell the label's line count, the
+// metric's baseline, the hairline; per row the cell count and whether a
+// hairline sits at a row's start. tests/measure/dashboard-facts.spec.ts
+// asserts on it at five widths and two fixtures.
+export interface FactCellGeometry {
+    key: string
+    left: number
+    top: number
+    width: number
+    height: number
+    borderLeftPx: number
+    labelLines: number
+    noteLines: number
+    numberBottom: number
+    numberFontPx: number
+    labelFontPx: number
+}
+export interface FactRowGeometry {
+    layout: "grid" | "pill" | "none"
+    cells: FactCellGeometry[]
+    rows: number
+    cellsPerRow: number
+    hairlineAtRowStart: number
+    missingHairlines: number
+    baselineSpread: number
+    smallFonts: string[]
+    hscroll: boolean
+}
+
+export async function factRowGeometry(page: Page): Promise<FactRowGeometry> {
+    return page.evaluate(() => {
+        const h2 = document.getElementById("protection-status-heading")
+        const section = h2?.closest("section") ?? null
+        if (!h2 || !section) return { layout: "none", cells: [], rows: 0, cellsPerRow: 0, hairlineAtRowStart: 0, missingHairlines: 0, baselineSpread: 0, smallFonts: [], hscroll: false } as any
+        const layout = getComputedStyle(h2).display === "grid" ? "grid" : "pill"
+        const lines = (el: Element | null): number => {
+            if (!el) return 0
+            const range = document.createRange()
+            range.selectNodeContents(el)
+            const tops = new Set<number>()
+            for (const r of Array.from(range.getClientRects())) if (r.width > 0 && r.height > 0) tops.add(Math.round(r.top))
+            // rects on the same line share a top within a pixel
+            const sorted = [...tops].sort((a, b) => a - b)
+            let n = 0, last = -1e9
+            for (const t of sorted) { if (t - last > 1) n++; last = t }
+            return n
+        }
+        const cellEls = Array.from(h2.querySelectorAll<HTMLElement>('a[data-count], [data-fact="portfolio.totalAnnualPremium"]'))
+        const cells = cellEls.map((el) => {
+            const r = el.getBoundingClientRect()
+            const cs = getComputedStyle(el)
+            const transparent = /rgba\(\s*\d+,\s*\d+,\s*\d+,\s*0\s*\)|transparent/.test(cs.borderLeftColor)
+            const spans = Array.from(el.querySelectorAll<HTMLElement>(":scope > span:not([aria-hidden])"))
+            const [numberEl, labelEl, noteEl] = spans
+            const nr = numberEl?.getBoundingClientRect()
+            return {
+                key: el.getAttribute("data-count") ?? el.getAttribute("data-fact") ?? "?",
+                left: Math.round(r.left), top: Math.round(r.top + window.scrollY), width: Math.round(r.width), height: Math.round(r.height),
+                borderLeftPx: transparent ? 0 : parseFloat(cs.borderLeftWidth) || 0,
+                labelLines: lines(labelEl ?? null),
+                noteLines: lines(noteEl ?? null),
+                numberBottom: nr ? Math.round(nr.bottom + window.scrollY) : 0,
+                numberFontPx: numberEl ? parseFloat(getComputedStyle(numberEl).fontSize) : 0,
+                labelFontPx: labelEl ? parseFloat(getComputedStyle(labelEl).fontSize) : 0,
+            }
+        })
+        // rows: cells sharing a top (they stretch to the row, so tops coincide)
+        const rows: typeof cells[] = []
+        for (const c of [...cells].sort((a, b) => a.top - b.top || a.left - b.left)) {
+            const row = rows.find((r) => Math.abs(r[0].top - c.top) <= 1)
+            if (row) row.push(c); else rows.push([c])
+        }
+        const cellsPerRow = rows.reduce((m, r) => Math.max(m, r.length), 0)
+        const hairlineAtRowStart = layout === "grid" ? rows.filter((r) => r[0].borderLeftPx > 0).length : cells.filter((c) => c.borderLeftPx > 0).length
+        const missingHairlines = layout === "grid" ? rows.flatMap((r) => r.slice(1)).filter((c) => c.borderLeftPx < 1).length : 0
+        const baselineSpread = rows.reduce((m, r) => {
+            const bottoms = r.map((c) => c.numberBottom).filter((b) => b > 0)
+            return bottoms.length ? Math.max(m, Math.max(...bottoms) - Math.min(...bottoms)) : m
+        }, 0)
+        const smallFonts: string[] = []
+        for (const el of Array.from(section.querySelectorAll<HTMLElement>("*"))) {
+            if (el.classList.contains("sr-only")) continue
+            const own = Array.from(el.childNodes).some((n) => n.nodeType === 3 && (n.textContent || "").trim())
+            if (!own) continue
+            const px = parseFloat(getComputedStyle(el).fontSize)
+            if (px < 12) smallFonts.push(`${el.tagName.toLowerCase()} ${px}px «${(el.textContent || "").trim().slice(0, 30)}»`)
+        }
+        const hscroll = document.documentElement.scrollWidth > document.documentElement.clientWidth
+        return { layout, cells, rows: rows.length, cellsPerRow, hairlineAtRowStart, missingHairlines, baselineSpread, smallFonts, hscroll } as any
+    })
+}

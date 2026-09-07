@@ -1,0 +1,54 @@
+{
+  "fixture": "two-facts",
+  "width": 1280,
+  "capturedAt": "2026-09-07T14:55:25.344Z",
+  "heading": "1 ασφαλιστήριο312 € συνολικό ετήσιο ασφάλιστρο",
+  "counts": {
+    "notification.unreadCount": "4",
+    "portfolio.policyCount": "1 ασφαλιστήριο",
+    "portfolio.assessedCount": "Ελέγξαμε 1 ασφαλιστήριο και δεν εντοπίσαμε κενά.",
+    "plan.stepsDone": "4",
+    "plan.stepsTotal": "6"
+  },
+  "overlaps": [],
+  "smallTargets": [],
+  "overflowers": [],
+  "geometry": {
+    "layout": "grid",
+    "cells": [
+      {
+        "key": "portfolio.policyCount",
+        "left": 345,
+        "top": 432,
+        "width": 173,
+        "height": 60,
+        "borderLeftPx": 0,
+        "labelLines": 1,
+        "noteLines": 0,
+        "numberBottom": 492,
+        "numberFontPx": 20,
+        "labelFontPx": 12
+      },
+      {
+        "key": "portfolio.totalAnnualPremium",
+        "left": 518,
+        "top": 432,
+        "width": 173,
+        "height": 60,
+        "borderLeftPx": 1,
+        "labelLines": 2,
+        "noteLines": 0,
+        "numberBottom": 492,
+        "numberFontPx": 20,
+        "labelFontPx": 12
+      }
+    ],
+    "rows": 1,
+    "cellsPerRow": 2,
+    "hairlineAtRowStart": 0,
+    "missingHairlines": 0,
+    "baselineSpread": 0,
+    "smallFonts": [],
+    "hscroll": false
+  }
+}

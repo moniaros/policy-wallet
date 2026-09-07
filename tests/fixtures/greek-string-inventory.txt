@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3716
+# bundle entries: 3717
 # inline entries: 4833 across 218 files
 # ternary entries: 282 across 41 files
 # call entries: 1144 across 86 files
@@ -1308,8 +1308,9 @@ bundle	dashboard.home.factNeverAnalysedMany	"{count} δεν έχουν αναλ�
 bundle	dashboard.home.factNeverAnalysedOne	"1 δεν έχει αναλυθεί"
 bundle	dashboard.home.factTotalMany	"{count} ασφαλιστήρια"
 bundle	dashboard.home.factTotalOne	"1 ασφαλιστήριο"
-bundle	dashboard.home.factUnassessedMany	"{count} χωρίς ορισμένους ελέγχους για τον κλάδο τους — δεν αξιολογήθηκαν"
-bundle	dashboard.home.factUnassessedOne	"1 χωρίς ορισμένους ελέγχους για τον κλάδο του — δεν αξιολογήθηκε"
+bundle	dashboard.home.factUnassessedMany	"{count} δεν αξιολογήθηκαν"
+bundle	dashboard.home.factUnassessedOne	"1 δεν αξιολογήθηκε"
+bundle	dashboard.home.factUnassessedWhy	"χωρίς ορισμένους ελέγχους κλάδου"
 bundle	dashboard.home.freePlanHint	"Το Plus έχει χώρο για έως 10 ασφαλιστήρια, το Pro απεριόριστα."
 bundle	dashboard.home.freePlanPolicies	"Ασφαλιστήρια στο δωρεάν πλάνο"
 bundle	dashboard.home.gapsKicker	"Κενά κάλυψης"
