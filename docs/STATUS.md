@@ -434,6 +434,7 @@ seams and hostile review: `docs/handover.md`.
 
 ## Blocked
 
+- **Cloudflare `Workers Builds: policy-wallet` is permanently red and is not a code task** (`docs/provenance/BLOCKED.md` BL-P1): a `policy-wallet` Worker exists in the Cloudflare account with a git integration onto this repo, while the repo has no Workers project at all (no `wrangler.*`, no `open-next.config.ts`, no `@opennextjs/cloudflare`). Red on merged #316 and on every commit of #317. Needs the owner to disconnect it in the Cloudflare dashboard; until then every PR carries a red check that trains reviewers to ignore red.
 - **BL-C1 — production catalogue alignment** (`docs/content/BLOCKED.md`): PR #309 (Goals 5–6, renters + 21 rules) merges only after `gap_definitions` is aligned on dev, then production (archive export first, fingerprint `d6f515a1d400f9d5` on both). Needs the owner's written go — a production write.
 - **BL-C2 — policyholder production smoke**: no policyholder session in the browser; the agent does not sign in with credentials.
 - **Legal sign-off of `docs/transparency/PROVENANCE-REVIEW.md`** (50 rows: 6 legislative, 2 market, 42 under review) — blocks GA (HANDOFF C-H2).
