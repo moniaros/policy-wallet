@@ -58,7 +58,7 @@ const NOTE_LIFE_CHANGE: SelfTaskSpec = {
         el: 'Γάμος, παιδί, νέα δουλειά ή δάνειο ενδέχεται να αλλάζουν το τι χρειάζεται αυτό το ασφαλιστήριο. Αξίζει ένας έλεγχος όταν συμβεί κάτι τέτοιο.',
         en: 'Marriage, a child, a new job or a loan may change what this policy needs to do. It is worth a review when something like that happens.',
     },
-    actionLabel: { el: 'Άνοιξε το ασφαλιστήριο', en: 'Open the policy' },
+    actionLabel: { el: 'Ανοίξτε το ασφαλιστήριο', en: 'Open the policy' },
     target: 'policy',
 }
 
@@ -78,10 +78,10 @@ const KEEP_TRIP_DETAILS: SelfTaskSpec = {
     priority: 'medium',
     title: { el: 'Στοιχεία ταξιδιωτικής κάλυψης', en: 'Travel cover details' },
     description: {
-        el: 'Άνοιξε το ασφαλιστήριο πριν φύγετε και κρατήστε πρόχειρα τη γραμμή βοήθειας, τον αριθμό ασφαλιστηρίου και τα όρια — σε επείγον στο εξωτερικό δεν θα ψάχνετε PDF.',
+        el: 'Ανοίξτε το ασφαλιστήριο πριν φύγετε και κρατήστε πρόχειρα τη γραμμή βοήθειας, τον αριθμό ασφαλιστηρίου και τα όρια — σε επείγον στο εξωτερικό δεν θα ψάχνετε PDF.',
         en: 'Open the policy before you leave and keep the assistance line, the policy number and the limits at hand — in an emergency abroad you will not be searching PDFs.',
     },
-    actionLabel: { el: 'Άνοιξε το ασφαλιστήριο', en: 'Open the policy' },
+    actionLabel: { el: 'Ανοίξτε το ασφαλιστήριο', en: 'Open the policy' },
     target: 'policy',
 }
 
@@ -90,10 +90,10 @@ const KEEP_INCIDENT_STEPS: SelfTaskSpec = {
     priority: 'medium',
     title: { el: 'Βήματα σε cyber περιστατικό', en: 'Steps in a cyber incident' },
     description: {
-        el: 'Η σειρά μετράει: τράπεζα για μπλοκάρισμα, μετά Δίωξη Ηλεκτρονικού Εγκλήματος, μετά ασφαλιστής. Άνοιξε το ασφαλιστήριο για τις προθεσμίες και τα στοιχεία επικοινωνίας.',
+        el: 'Η σειρά μετράει: τράπεζα για μπλοκάρισμα, μετά Δίωξη Ηλεκτρονικού Εγκλήματος, μετά ασφαλιστής. Ανοίξτε το ασφαλιστήριο για τις προθεσμίες και τα στοιχεία επικοινωνίας.',
         en: 'The order matters: bank first to block, then the cybercrime unit, then the insurer. Open the policy for the deadlines and the contact details.',
     },
-    actionLabel: { el: 'Άνοιξε το ασφαλιστήριο', en: 'Open the policy' },
+    actionLabel: { el: 'Ανοίξτε το ασφαλιστήριο', en: 'Open the policy' },
     target: 'policy',
 }
 
@@ -102,10 +102,10 @@ const KEEP_ASSISTANCE_DETAILS: SelfTaskSpec = {
     priority: 'high',
     title: { el: 'Στοιχεία κέντρου οδικής βοήθειας', en: 'Roadside assistance centre details' },
     description: {
-        el: 'Άνοιξε το ασφαλιστήριο και κρατήστε πρόχειρο το τηλέφωνο του κέντρου βοήθειας μαζί με τον αριθμό ασφαλιστηρίου — τη στιγμή που θα μείνετε, το έγγραφο είναι συνήθως στο σπίτι.',
+        el: 'Ανοίξτε το ασφαλιστήριο και κρατήστε πρόχειρο το τηλέφωνο του κέντρου βοήθειας μαζί με τον αριθμό ασφαλιστηρίου — τη στιγμή που θα μείνετε, το έγγραφο είναι συνήθως στο σπίτι.',
         en: 'Open the contract and keep the assistance centre’s number and your contract number at hand — the moment you break down, the document is usually at home.',
     },
-    actionLabel: { el: 'Άνοιξε το ασφαλιστήριο', en: 'Open the policy' },
+    actionLabel: { el: 'Ανοίξτε το ασφαλιστήριο', en: 'Open the policy' },
     target: 'policy',
 }
 

@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import { scrubRenderableText } from '@/lib/wallet/policy-identity'
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getTranslations } from "@/lib/i18n"
@@ -46,6 +47,9 @@ import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
  * Read-only, like both sources: no engine run happens in render — the WRITE
  * path lives behind the explicit refresh action, the upload pipeline and cron.
  */
+/** The model's stored prose, with policy placeholders and fixture tokens redacted; null stays null. */
+const scrubProse = (text: string | null) => (text ? scrubRenderableText(text) : null)
+
 export default async function ProtectionPage({
     searchParams,
 }: {
@@ -302,7 +306,11 @@ export default async function ProtectionPage({
             // is the model's, marked as such at the point of use (the list's
             // inline AI disclaimer), and absent rather than English when the
             // model wrote none in Greek.
-            meaning: lang === 'el' ? g.aiSuggestionEl || null : g.definition.description || g.aiSuggestion || null,
+            // Through the prose scrub: the model's sentence can carry a stored
+            // placeholder («Unknown Insurer», «PENDING-…») verbatim, and nothing
+            // downstream reads the identity columns to catch it. Real extracted
+            // names pass untouched (owner decision 2026-09-07).
+            meaning: scrubProse(lang === 'el' ? g.aiSuggestionEl || null : g.definition.description || g.aiSuggestion || null),
             why: t.protection.why[g.provenance],
             provenanceLabel: provenanceLabelWithCitation(g.definition.slug, lang, t.provenance),
             area: areaForLob(lob)?.label[lang] ?? null,

@@ -149,6 +149,20 @@ describe('policy-identity — the primitive', () => {
         )
     })
 
+    it("the model's stored prose passes the scrub at every point it is composed for a page", () => {
+        // A stored aiSuggestionEl can carry «Unknown Insurer» or «PENDING-…» verbatim;
+        // no identity column is read downstream, so only a scrub at composition catches
+        // it (PW-BRIDGE-01 follow-up, owner decision 2026-09-07: placeholders only).
+        const points = [
+            ['app/(protected)/protection/page.tsx', /meaning:\s*scrubProse\(/],
+            ['app/(protected)/wallet/[id]/page.tsx', /aiSuggestionEl:\s*scrubProse\(gap\.aiSuggestionEl\)/],
+            ['components/wallet/PolicyDetailsClientView.tsx', /aiSuggestionEl:\s*gap\.aiSuggestionEl \? scrubRenderableText\(gap\.aiSuggestionEl\)/],
+        ] as const
+        for (const [file, pattern] of points) {
+            expect(readFileSync(file, 'utf8'), `${file} composes the model's prose without the scrub`).toMatch(pattern)
+        }
+    })
+
     it('redacts a placeholder out of an already-composed sentence and tidies after itself', () => {
         const el = redactPolicyPlaceholders(
             'Το ασφαλιστήριο συμβόλαιο PENDING-1786732800000 (__PENDING_EXTRACTION__) αναλύθηκε επιτυχώς.'

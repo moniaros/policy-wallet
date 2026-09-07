@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import { scrubRenderableText } from '@/lib/wallet/policy-identity'
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
@@ -32,6 +33,9 @@ import {
 } from "@/lib/services/gap-engine/portfolio-rules"
 import { displayPersonName, policyLabel } from '@/lib/wallet/policy-identity'
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
+
+/** The model's stored prose, with policy placeholders and fixture tokens redacted; null stays null. */
+const scrubProse = (text: string | null | undefined) => (text ? scrubRenderableText(text) : null)
 
 export default async function PolicyDetailPage({
     params
@@ -230,10 +234,11 @@ export default async function PolicyDetailPage({
             aiExplanationEl: gap.aiExplanationEl,
             aiExplanation: gap.aiExplanation,
         }),
-        aiExplanation: gap.aiExplanation || null,
-        aiExplanationEl: gap.aiExplanationEl || null,
-        aiSuggestion: gap.aiSuggestion || null,
-        aiSuggestionEl: gap.aiSuggestionEl || null,
+        // The model's prose through the placeholder scrub (real names stay).
+        aiExplanation: scrubProse(gap.aiExplanation),
+        aiExplanationEl: scrubProse(gap.aiExplanationEl),
+        aiSuggestion: scrubProse(gap.aiSuggestion),
+        aiSuggestionEl: scrubProse(gap.aiSuggestionEl),
     }))
     const reportConcepts = new Set(gapReportItems.map((item) => item.content.concept))
 
