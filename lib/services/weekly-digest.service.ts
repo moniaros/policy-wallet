@@ -1,4 +1,4 @@
-import { calendarDaysUntil, startOfAthensDay, athensWeekday, NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
+import { startOfAthensDay, athensWeekday, NON_LIVE_POLICY_STATUSES, resolvePolicyLifecycle, expiryWindowWhere } from "@/lib/policy-status"
 import { db } from "../db"
 import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
@@ -101,7 +101,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
         try {
             // Gather data
             const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-            const renewals = await db.policy.findMany({
+            const candidates = await db.policy.findMany({
                 where: {
                     ownerUserId: user.id,
                     // A renewal digest must include EVERY real policy expiring
@@ -117,13 +117,35 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     // From the start of TODAY in Athens. End dates are stored at
                     // midnight, so `gt: now` dropped a policy expiring today from
                     // the digest that lands in the owner's inbox — the one item
-                    // in it they could still act on.
-                    endDate: { gte: startOfAthensDay(now), lte: thirtyDaysOut },
+                    // in it they could still act on. The window is on the RESOLVED
+                    // date (renewal history → envelope → column), the raw column
+                    // only while coverageEndDate is NULL; coarse, so the lifecycle
+                    // re-filters below (PW-BRIDGE-01 C-01).
+                    ...expiryWindowWhere(startOfAthensDay(now), thirtyDaysOut),
                 },
-                select: { insurerName: true, lineOfBusiness: true, endDate: true },
+                select: {
+                    id: true,
+                    status: true,
+                    policyNumber: true,
+                    insurerName: true,
+                    lineOfBusiness: true,
+                    endDate: true,
+                    acordData: true,
+                    coverageEndDate: true,
+                },
                 orderBy: { endDate: "asc" },
-                take: 5,
+                take: 50, // coarse bound; the lifecycle filter and the slice pick the five
             })
+            // ONE call decides the end date and the countdown. A renewed policy's
+            // column still names the old period; the resolver reads the renewal
+            // history first, so it leaves this list rather than being mailed
+            // «λήγει σε N ημέρες» about a period that no longer applies.
+            const renewals = candidates
+                .map((r) => ({ r, lifecycle: resolvePolicyLifecycle(r, now) }))
+                .filter((x): x is { r: (typeof candidates)[number]; lifecycle: ReturnType<typeof resolvePolicyLifecycle> & { daysUntilExpiry: number } } =>
+                    x.lifecycle.daysUntilExpiry !== null && x.lifecycle.daysUntilExpiry >= 0 && x.lifecycle.daysUntilExpiry <= 30)
+                .sort((a, b) => a.lifecycle.daysUntilExpiry - b.lifecycle.daysUntilExpiry)
+                .slice(0, 5)
 
             const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
             // Same universe as the renewals list above: a gap on a deleted or
@@ -195,14 +217,14 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             const profileCompleteness = profile ? Math.round((filledProfileFields / 11) * 100) : 0
 
             const digestData = {
-                renewingSoon: renewals.map(r => ({
+                renewingSoon: renewals.map(({ r, lifecycle }) => ({
                     insurerName: r.insurerName,
                     lineOfBusiness: r.lineOfBusiness,
-                    // Athens calendar days, like every other expiry count. This
-                    // figure goes out in a renewal email — "expires in 0 days"
-                    // when the cover has actually lapsed is the wrong message to
-                    // send a policyholder.
-                    daysUntilExpiry: calendarDaysUntil(r.endDate, now),
+                    // Athens calendar days from the ONE lifecycle call — the same
+                    // number the wallet shows. "Expires in 0 days" when the cover
+                    // has lapsed, or a count for a period a renewal superseded, is
+                    // the wrong message to send a policyholder.
+                    daysUntilExpiry: lifecycle.daysUntilExpiry,
                 })),
                 newGaps,
                 unreadMessages,

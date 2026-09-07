@@ -275,6 +275,27 @@ export function coveredPolicyWhere(now: Date = new Date()) {
 }
 
 /**
+ * Prisma `where` fragment for "coverage ends between `from` and `to`", on the
+ * DENORMALIZED resolved date. The raw `endDate` column decides only while
+ * `coverageEndDate` is NULL (never backfilled, or genuinely unknown) — the
+ * same order the resolver itself falls back in, so a write path that forgets
+ * the column degrades to the old behaviour rather than to silence.
+ *
+ * Coarse admission ONLY. A renewed policy whose column still holds the old
+ * period is admitted by the raw arm and must be rejected in memory: callers
+ * re-filter with `resolvePolicyLifecycle(policy, now).daysUntilExpiry`, which
+ * is also the only place the count may come from (PW-BRIDGE-01 C-01 / C-02).
+ */
+export function expiryWindowWhere(from: Date, to: Date) {
+    return {
+        OR: [
+            { coverageEndDate: { gte: from, lte: to } },
+            { coverageEndDate: null, endDate: { gte: from, lte: to } },
+        ],
+    }
+}
+
+/**
  * Lifecycle-derived status for display/grouping. Preserves the transient
  * 'analyzing' state; everything else comes from the real end date.
  */

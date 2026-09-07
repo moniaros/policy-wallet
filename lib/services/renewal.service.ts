@@ -1,4 +1,4 @@
-import { calendarDaysUntil, startOfAthensDay, NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
+import { startOfAthensDay, NON_LIVE_POLICY_STATUSES, resolvePolicyLifecycle, expiryWindowWhere } from "@/lib/policy-status"
 import { formatDate } from "@/lib/i18n/format"
 import { db } from "../db"
 import { sendNotification } from "../notifications"
@@ -139,10 +139,11 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
         const expiringPolicies = await db.policy.findMany({
             where: {
                 status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
-                endDate: {
-                    gte: startOfToday,
-                    lte: cutoff,
-                },
+                // The RESOLVED end date decides (renewal history → envelope →
+                // column); the raw column only while coverageEndDate is NULL.
+                // Coarse admission: the lifecycle re-filters in the loop
+                // (PW-BRIDGE-01 C-02).
+                ...expiryWindowWhere(startOfToday, cutoff),
             },
             include: {
                 owner: {
@@ -166,18 +167,36 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
         // owns, leaking insurer/number/dates the visibility model hides.
         const grantedPolicyIdsCache = new Map<string, Set<string>>()
 
-        for (const policy of expiringPolicies) {
+        for (const row of expiringPolicies) {
             try {
-                // Athens calendar days, like every other expiry count. This value
-                // both selects the milestone below AND is persisted as the
-                // "N days before expiry" the policyholder reads in the reminder,
-                // so a UTC off-by-one could skip a milestone outright or send a
-                // renewal notice quoting the wrong number of days.
-                const daysUntilExpiry = calendarDaysUntil(policy.endDate, now)
+                // ONE call decides status, end date and countdown (CLAUDE.md;
+                // PW-BRIDGE-01 C-02). The window admitted this row on the resolved
+                // column — or on the raw one while unbackfilled — and a renewed
+                // policy's column still names the OLD period, so the lifecycle
+                // re-filters here. No trustworthy date → no cycle, no countdown,
+                // no reminder: never a fabricated number in an email. The count is
+                // Athens calendar days; it selects the milestone AND is persisted
+                // as the "N days before expiry" the policyholder reads.
+                const lifecycle = resolvePolicyLifecycle(row, now)
+                if (lifecycle.daysUntilExpiry === null || !lifecycle.endDate) continue
+
+                // A cycle keyed on an earlier date (the raw column before this fix,
+                // or a period a renewal document has since superseded) closes as
+                // completed instead of drifting to «overdue» — BEFORE any milestone
+                // decision, so a renewed policy the raw arm admitted repairs its own
+                // stale cycle even though it earns no reminder this run.
+                await closeSupersededRenewals(db, row.id, lifecycle.endDate, true)
+
+                const daysUntilExpiry = lifecycle.daysUntilExpiry
+                if (daysUntilExpiry < 0) continue
 
                 // Determine which milestone we're at (closest one at or above current days)
                 const currentMilestone = RENEWAL_MILESTONES.find(m => daysUntilExpiry <= m)
                 if (!currentMilestone) continue // More than 90 days away somehow
+
+                // The cycle's identity — and every date this iteration quotes in a
+                // reminder, a task due date or the renewal row — is the resolved one.
+                const policy = { ...row, endDate: lifecycle.endDate }
 
                 // 2. Upsert PolicyRenewal record
                 const existingRenewal = await db.policyRenewal.findUnique({
@@ -343,10 +362,32 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     },
                 })
             } catch (err) {
-                const msg = `Error processing policy ${policy.id}: ${err}`
+                const msg = `Error processing policy ${row.id}: ${err}`
                 summary.errors.push(msg)
-                logger("error", msg, { policyId: policy.id })
+                logger("error", msg, { policyId: row.id })
             }
+        }
+
+        // 6b. Cycles superseded by a later RESOLVED end date close as completed —
+        // whether or not the policy is inside the 90-day scan. A renewed policy
+        // whose column still names the old period never enters the loop above,
+        // so without this its raw-keyed row would sit pending until the old date
+        // passed and then be reported «overdue»: a false lapse email to the
+        // customer. coverageEndDate is resolveCoverageEndDate() on every write
+        // path (and the backfill); it is the resolved date this sweep compares.
+        const openCycles = await db.policyRenewal.findMany({
+            where: { status: { in: ["pending", "overdue"] } },
+            select: { policyId: true, policyEndDate: true, policy: { select: { coverageEndDate: true } } },
+        })
+        const supersededBy = new Map<string, Date>()
+        for (const cycle of openCycles) {
+            const resolved = cycle.policy?.coverageEndDate
+            if (!resolved || resolved.getTime() <= cycle.policyEndDate.getTime()) continue
+            const prev = supersededBy.get(cycle.policyId)
+            if (!prev || resolved.getTime() > prev.getTime()) supersededBy.set(cycle.policyId, resolved)
+        }
+        for (const [policyId, resolved] of supersededBy) {
+            await closeSupersededRenewals(db, policyId, resolved, true)
         }
 
         // 7. Mark overdue policies — those whose end date is before TODAY.

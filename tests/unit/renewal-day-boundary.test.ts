@@ -47,8 +47,11 @@ describe('the Athens day boundary, which a Prisma where-clause needs', () => {
  */
 describe('the renewal cron uses the day boundary', () => {
     it('scans a policy on its own expiry day', () => {
-        expect(SERVICE).toMatch(/endDate: \{\s*gte: startOfToday,/)
+        // The window is the shared helper over the RESOLVED end date (PW-BRIDGE-01
+        // C-02); its lower bound is still the start of the Athens day.
+        expect(SERVICE).toMatch(/expiryWindowWhere\(startOfToday, cutoff\)/)
         expect(SERVICE).not.toMatch(/endDate: \{\s*gte: now,/)
+        expect(SERVICE).not.toMatch(/expiryWindowWhere\(now,/)
     })
 
     it('does not call a policy overdue while it is still in force', () => {
