@@ -17,7 +17,7 @@ function policy(overrides: Partial<PortfolioPolicyFacts> = {}): PortfolioPolicyF
         insurerName: 'Interamerican',
         policyNumber: 'MOT-001',
         startDate: new Date(NOW.getTime() - 300 * DAY),
-        endDate: new Date(NOW.getTime() + 300 * DAY),
+        coverageEndDate: new Date(NOW.getTime() + 300 * DAY),
         acordData: null,
         ...overrides,
     }
@@ -32,7 +32,7 @@ function ruleIds(gaps: ReturnType<typeof evaluatePortfolioRules>): string[] {
 describe('motor_expiring_soon', () => {
     it('fires high severity within 30 days and cites the policy + date', () => {
         const gaps = evaluatePortfolioRules(
-            [policy({ endDate: new Date(NOW.getTime() + 20 * DAY) })],
+            [policy({ coverageEndDate: new Date(NOW.getTime() + 20 * DAY) })],
             ctx()
         )
         const gap = gaps.find((g) => g.ruleId === 'motor_expiring_soon')
@@ -45,17 +45,17 @@ describe('motor_expiring_soon', () => {
 
     it('escalates to critical within 7 days', () => {
         const gaps = evaluatePortfolioRules(
-            [policy({ endDate: new Date(NOW.getTime() + 5 * DAY) })],
+            [policy({ coverageEndDate: new Date(NOW.getTime() + 5 * DAY) })],
             ctx()
         )
         expect(gaps.find((g) => g.ruleId === 'motor_expiring_soon')!.severity).toBe('critical')
     })
 
     it('does not fire for far-off expiry, expired, or non-motor policies', () => {
-        const farOff = evaluatePortfolioRules([policy({ endDate: new Date(NOW.getTime() + 60 * DAY) })], ctx())
-        const expired = evaluatePortfolioRules([policy({ endDate: new Date(NOW.getTime() - DAY) })], ctx())
+        const farOff = evaluatePortfolioRules([policy({ coverageEndDate: new Date(NOW.getTime() + 60 * DAY) })], ctx())
+        const expired = evaluatePortfolioRules([policy({ coverageEndDate: new Date(NOW.getTime() - DAY) })], ctx())
         const home = evaluatePortfolioRules(
-            [policy({ lineOfBusiness: 'home', endDate: new Date(NOW.getTime() + 10 * DAY) })],
+            [policy({ lineOfBusiness: 'home', coverageEndDate: new Date(NOW.getTime() + 10 * DAY) })],
             ctx()
         )
         expect(ruleIds(farOff)).not.toContain('motor_expiring_soon')
@@ -66,8 +66,8 @@ describe('motor_expiring_soon', () => {
     it('picks the soonest-expiring motor policy', () => {
         const gaps = evaluatePortfolioRules(
             [
-                policy({ id: 'later', endDate: new Date(NOW.getTime() + 25 * DAY) }),
-                policy({ id: 'sooner', policyNumber: 'MOT-002', endDate: new Date(NOW.getTime() + 6 * DAY) }),
+                policy({ id: 'later', coverageEndDate: new Date(NOW.getTime() + 25 * DAY) }),
+                policy({ id: 'sooner', policyNumber: 'MOT-002', coverageEndDate: new Date(NOW.getTime() + 6 * DAY) }),
             ],
             ctx()
         )
@@ -197,8 +197,8 @@ describe('duplicate_coverage', () => {
     it('does not fire for non-overlapping periods or different LOBs', () => {
         const sequential = evaluatePortfolioRules(
             [
-                policy({ id: 'a', startDate: new Date('2025-01-01'), endDate: new Date('2026-01-01') }),
-                policy({ id: 'b', startDate: new Date('2026-06-01'), endDate: new Date('2027-06-01') }),
+                policy({ id: 'a', startDate: new Date('2025-01-01'), coverageEndDate: new Date('2026-01-01') }),
+                policy({ id: 'b', startDate: new Date('2026-06-01'), coverageEndDate: new Date('2027-06-01') }),
             ],
             ctx()
         )
@@ -277,7 +277,7 @@ describe('evidence hygiene', () => {
                 policy({
                     insurerName: '__PENDING_EXTRACTION__',
                     policyNumber: 'PENDING-123',
-                    endDate: new Date(NOW.getTime() + 10 * DAY),
+                    coverageEndDate: new Date(NOW.getTime() + 10 * DAY),
                 }),
             ],
             ctx(false)
@@ -373,14 +373,14 @@ describe('buildProfileGapEvidence', () => {
 })
 
 /**
- * Motor is the compulsory line. `endDate > now` dropped a policy expiring TODAY
+ * Motor is the compulsory line. `coverageEndDate > now` dropped a policy expiring TODAY
  * from three hours into the day it still covered — the one day the renewal still
  * matters — because end dates are stored at midnight UTC.
  */
 describe('motor_expiring_soon covers the last day', () => {
     const withEnd = (end: string) => ({
         ...policy({ id: 'm', policyNumber: 'MOT-1' }),
-        endDate: new Date(end),
+        coverageEndDate: new Date(end),
     })
     const at = (iso: string) => ({ hasAgent: true, now: new Date(iso) })
     const rule = (end: string, nowIso: string) =>

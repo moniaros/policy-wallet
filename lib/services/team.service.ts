@@ -147,7 +147,7 @@ export async function inviteTeamMember(
     }
 
     // Find user by email
-    const invitee = await db.user.findUnique({ where: { email: normalizeEmail(inviteeEmail) } })
+    const invitee = await db.user.findUnique({ where: { email: normalizeEmail(inviteeEmail) }, select: { id: true, roles: true } })
     if (!invitee) {
         throw new Error("No user found with that email. They must register first.")
     }

@@ -112,7 +112,7 @@ function formatCurrencyValue(amount: unknown, lang: 'el' | 'en', currency: strin
     return formatCurrency(numericAmount, lang, { currency: currency || "EUR" })
 }
 
-export default async function PolicyholderHomePage({ preloadedDbUser }: { preloadedDbUser?: User } = {}) {
+export default async function PolicyholderHomePage({ preloadedDbUser }: { preloadedDbUser?: Omit<User, "password"> } = {}) {
     const dbUser = preloadedDbUser ?? (await getAuthenticatedUser()).dbUser
 
     if (!preloadedDbUser) {
@@ -164,7 +164,9 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 policyholderUserId: dbUser.id,
                 status: "active",
             },
-            include: { agent: true },
+            // Only the two fields the greeting renders — a bare include carried the
+            // adviser's whole account row (A-01b).
+            include: { agent: { select: { name: true, email: true } } },
         }),
         resolveUserEntitlements(dbUser.id),
         readLiveGapRows({ scope: "disclosed",

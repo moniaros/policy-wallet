@@ -21,9 +21,16 @@ import path from "node:path"
  *      `endDate` variable (document-insights' shape) is invisible to (b);
  *  (b) an enumerated scan of app/, components/ and lib/ for a countdown taken
  *      off a `.endDate` property. Every remaining site is allowlisted with an
- *      exact count and the reason it is still there (queue row C-01b), so the
- *      debt is visible and a new site — or a repaired one left in the list —
- *      fails.
+ *      exact count and the reason it is still there, so a new site — or a
+ *      repaired one left in the list — fails. C-01b (2026-09-07) emptied the
+ *      debt: the portfolio rules, the risk graph, the timeline, the comparison
+ *      card and the agent urgency tier now receive the RESOLVED date under a
+ *      name that says so (`coverageEndDate` / `expiresAt`);
+ *  (c) an enumerated scan for an expiry WINDOW queried on the raw column
+ *      (`endDate: { gte | lte | gt | lt … }` in a Prisma where). The churn email
+ *      and the perk reminder admitted policies that way; the only place allowed
+ *      to spell that fragment is `expiryWindowWhere` in lib/policy-status.ts,
+ *      whose callers re-check through the lifecycle.
  */
 
 const ROOT = process.cwd()
@@ -97,12 +104,25 @@ export function singleSourceOffences(src: string, rule: SingleSourceRule = SINGL
  */
 export const RESIDUE: ReadonlyMap<string, { count: number; reason: string }> = new Map([
     ["lib/services/risk-dna/monitoring.ts", { count: 1, reason: "NOT debt: policies[].endDate is resolvePolicyLifecycle(p).endDate (risk-dna/service.ts builds the input from the lifecycle)." }],
-    ["lib/services/gap-engine/portfolio-rules.ts", { count: 3, reason: "DEBT C-01b: PortfolioPolicyFacts.endDate is the raw column at the three gap-engine/index.ts builders; fix at the builders with the engine fixtures." }],
-    ["lib/services/risk-graph/protection.ts", { count: 1, reason: "DEBT C-01b: risk-graph/service.ts passes the raw column; fix there." }],
-    ["lib/services/timeline/build.ts", { count: 1, reason: "DEBT C-01b: timeline/service.ts selects only the raw column; select coverageEndDate and compare." }],
-    ["components/wallet/PolicyComparison.tsx", { count: 1, reason: "DEBT C-01b: client DTO string; the view model already carries the resolved date (policy-status-view.ts)." }],
-    ["lib/agent/format.ts", { count: 1, reason: "DEBT C-01b: classifyUrgencyTier should read expiresAt (customer.service.ts exposes the lifecycle date)." }],
 ])
+
+/**
+ * (c) An expiry window on the raw column inside a Prisma `where`. The helper
+ * `expiryWindowWhere` (lib/policy-status.ts) is the ONE place that may spell it,
+ * because it puts the resolved column first and the raw column only while the
+ * resolved one is NULL — and its docblock binds callers to re-check in memory.
+ */
+export const RAW_WINDOW = /\bendDate\s*:\s*\{\s*(?:gte|gt|lte|lt)\b/g
+export const RAW_WINDOW_OWNER = "lib/policy-status.ts"
+
+export function rawWindowHits(src: string): number[] {
+    const code = stripComments(src)
+    const lines: number[] = []
+    let m: RegExpExecArray | null
+    RAW_WINDOW.lastIndex = 0
+    while ((m = RAW_WINDOW.exec(code))) lines.push(code.slice(0, m.index).split("\n").length)
+    return lines
+}
 
 function walk(dir: string, out: string[] = []): string[] {
     for (const entry of readdirSync(dir)) {
@@ -129,6 +149,15 @@ describe("expiry countdowns come from the one lifecycle call (PW-BRIDGE-01 C-01 
         expect(singleSourceOffences(raw)).not.toEqual([])
         const clean = readFileSync(path.join(PROBES, "expiry-countdown-lifecycle-clean.ts.txt"), "utf8")
         expect(rawCountdownHits(clean)).toEqual([])
+        expect(rawWindowHits(clean)).toEqual([])
+    })
+
+    it("is proven red on an expiry window queried on the raw column", () => {
+        const probe = readFileSync(path.join(PROBES, "expiry-window-raw-column.ts.txt"), "utf8")
+        expect(rawWindowHits(probe)).toHaveLength(2)
+        // The helper is the one place the raw column may take part in a window — and only
+        // behind the NULL-column arm, never as the first arm.
+        expect(read(RAW_WINDOW_OWNER)).toMatch(/\{ coverageEndDate: null, endDate: bounds \}/)
     })
 
     it.each(SINGLE_SOURCE_FILES.map((r) => [r.file, r] as const))("%s takes status, end date and countdown from the one call", (file, rule) => {
@@ -152,5 +181,15 @@ describe("expiry countdowns come from the one lifecycle call (PW-BRIDGE-01 C-01 
             for (const line of rawCountdownHits(readFileSync(file, "utf8"))) offenders.push(`${rel}:${line}`)
         }
         expect(offenders, "a countdown off the raw column — resolve the lifecycle first, or record the site in RESIDUE with its reason").toEqual([])
+    })
+
+    it("no file but the helper queries an expiry window on the raw endDate column", () => {
+        const offenders: string[] = []
+        for (const file of FILES) {
+            const rel = path.relative(ROOT, file)
+            if (rel === RAW_WINDOW_OWNER) continue
+            for (const line of rawWindowHits(readFileSync(file, "utf8"))) offenders.push(`${rel}:${line}`)
+        }
+        expect(offenders, "an expiry window on the raw column — spread expiryWindowWhere(from, to?) and re-check the rows with resolvePolicyLifecycle").toEqual([])
     })
 })

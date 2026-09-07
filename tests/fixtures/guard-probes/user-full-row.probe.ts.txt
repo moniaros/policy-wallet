@@ -1,0 +1,22 @@
+// PROBE (never compiled): loads that carry users.password without naming it.
+// Kept red so rules (c) and (d) of password-column-never-loaded-outside-auth
+// are proven to bite. The commented-out load below must NOT count.
+export async function probe(db: any, id: string) {
+    // const ghost = await db.user.findUnique({ where: { id } })
+    const full = await db.user.findUnique({ where: { id } })
+    const withRelation = await db.user.findMany({ where: { roles: { contains: "agent" } }, include: { policiesOwned: true } })
+    const narrow = await db.user.findFirst({ where: { id }, select: { id: true, email: true } })
+    const rel = await db.customerRelationship.findFirst({
+        where: { policyholderUserId: id },
+        include: { customer: true },
+    })
+    const portal = await db.customerRelationship.findFirst({
+        where: { policyholderUserId: id },
+        include: { agent: { include: { agentProfile: true } } },
+    })
+    const fine = await db.customerRelationship.findFirst({
+        where: { policyholderUserId: id },
+        include: { agent: { select: { id: true, name: true } } },
+    })
+    return { full, withRelation, narrow, rel, portal, fine }
+}

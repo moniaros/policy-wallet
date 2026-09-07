@@ -58,7 +58,8 @@ export interface ProtectingPolicy {
     territories?: string[] | null
     /** Sum insured, when readable. Null means unevaluable, never zero. */
     sumInsured?: number | null
-    endDate?: Date | null
+    /** The RESOLVED coverage end from `resolvePolicyLifecycle` — never the raw column (C-01b). */
+    coverageEndDate?: Date | null
 }
 
 /**
@@ -341,7 +342,7 @@ function assessPeriod(matched: ProtectingPolicy[], now: Date): DimensionAssessme
     // invalid Date rather than answering, which took the whole graph with it.
     const readable = (d: Date | null | undefined): d is Date =>
         d instanceof Date && !Number.isNaN(d.getTime())
-    const live = matched.filter((p) => !readable(p.endDate) || calendarDaysUntil(p.endDate, now) >= 0)
+    const live = matched.filter((p) => !readable(p.coverageEndDate) || calendarDaysUntil(p.coverageEndDate, now) >= 0)
     return {
         dimension: "period",
         verdict: live.length > 0 ? "satisfied" : "failed",

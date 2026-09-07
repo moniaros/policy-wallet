@@ -10,7 +10,7 @@
 import { db } from "@/lib/db"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { assessRisks } from "@/lib/services/gap-engine/risk-assessment"
-import { coverageEngineStatus } from "@/lib/policy-status"
+import { coverageEngineStatus, resolvePolicyLifecycle } from "@/lib/policy-status"
 import { projectRiskGraph, graphSummary } from "./projection"
 import { bindRisksToGraph, protectionSummary, type ProtectingPolicy } from "./protection"
 import { presentRiskGraph, type GraphRiskView } from "./present"
@@ -213,7 +213,7 @@ export function assembleRiskGraph(
             // lapsed policy kept reporting itself as cover.
             status: coverageEngineStatus(p as any),
             insurerName: p.insurerName,
-            endDate: p.endDate ?? null,
+            coverageEndDate: resolvePolicyLifecycle(p).endDate ?? p.endDate ?? null,
             ...facts,
         }
     })

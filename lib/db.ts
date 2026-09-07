@@ -181,15 +181,18 @@ if (connection.warning) {
  */
 const effectiveDbUrl = capFallbackPool(dbUrl, connection.source, Boolean(process.env.VERCEL))
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+function createPrismaClient() {
+  return new PrismaClient({
     datasourceUrl: effectiveDbUrl,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+    // The credential hash never leaves the database unless a query names it.
+    // Nothing reads the value (Supabase holds the credential; the one presence
+    // check in lib/services/credential-signals.ts is raw SQL `IS NOT NULL`), yet
+    // every full-row `db.user.find*` and every bare `include: { customer: true }`
+    // carried it into server components and services. Omitting it at the client
+    // makes that impossible by construction (PW-BRIDGE-01 A-01b); the guard in
+    // tests/unit/password-column-never-loaded-outside-auth.test.ts pins this line.
+    omit: { user: { password: true } },
     // Prisma's default interactive-transaction timeout is 5000ms — too tight for
     // the analysis-finalize tx (policy update + gap deleteMany + a per-gap
     // resolve/create loop, ~3 + N×2-3 serial round trips) on the Supavisor
@@ -198,6 +201,20 @@ export const db =
     // (maxWait = time allowed to acquire a pooled connection before the tx body).
     transactionOptions: { maxWait: 5000, timeout: 15000 },
   })
+}
+
+/**
+ * The application's client TYPE. The `omit` above narrows every User result, so
+ * a service or helper types its database on this — never on the bare
+ * `PrismaClient`, which still believes `password` is present.
+ */
+export type DbClient = ReturnType<typeof createPrismaClient>
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: DbClient | undefined
+}
+
+export const db: DbClient = globalForPrisma.prisma ?? createPrismaClient()
 
 // Cache the client on the global in ALL environments. On serverless this reuses
 // one client across warm invocations of the same instance (the recommended

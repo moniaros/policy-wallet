@@ -1,5 +1,5 @@
 import { db } from "../db"
-import { startOfAthensDay , NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
+import { startOfAthensDay, NON_LIVE_POLICY_STATUSES, expiryWindowWhere, resolvePolicyLifecycle } from "@/lib/policy-status"
 import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { calculateEngagementScore } from "./engagement-scoring"
 import {
@@ -151,13 +151,23 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 // 'incomplete' are all in-force, so requiring exactly 'active'
                 // UNDER-counted the very "expiring soon" figure this email quotes.
                 // Same real-policy filter the renewal cron and weekly digest use.
-                const expiringPolicies = await db.policy.count({
+                // Admitted coarsely on the resolved column, COUNTED from the one
+                // lifecycle call — the column disagrees with it by a year on a
+                // renewed policy, and this number is quoted in an outbound email
+                // (PW-BRIDGE-01 C-01b).
+                const expiringCandidates = await db.policy.findMany({
                     where: {
                         ownerUserId: user.id,
                         status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
-                        endDate: { gte: startOfAthensDay(now), lte: thirtyDaysOut },
+                        ...expiryWindowWhere(startOfAthensDay(now), thirtyDaysOut),
                     },
+                    select: { status: true, endDate: true, acordData: true },
+                    take: 100,
                 })
+                const expiringPolicies = expiringCandidates.filter((p) => {
+                    const days = resolvePolicyLifecycle(p, now).daysUntilExpiry
+                    return days !== null && days >= 0 && days <= 30
+                }).length
                 // Same universe as expiringPolicies above — this email quotes
                 // both figures, and a gap on a cancelled or deleted policy
                 // would make the two numbers describe different portfolios.

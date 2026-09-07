@@ -35,8 +35,15 @@ export default async function AgentPage() {
             status: 'active'
         },
         include: {
+            // The portal card reads five account fields and the profile — never the
+            // adviser's whole row (A-01b).
             agent: {
-                include: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    phoneNumber: true,
+                    image: true,
                     agentProfile: {
                         select: {
                             agencyName: true,

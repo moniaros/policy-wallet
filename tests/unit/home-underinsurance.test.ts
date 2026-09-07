@@ -12,7 +12,7 @@ const home = (property: Record<string, unknown>) => ({
     insurerName: 'ΕΘΝΙΚΗ',
     policyNumber: 'H-1',
     startDate: new Date('2026-01-01'),
-    endDate: new Date('2027-01-01'),
+    coverageEndDate: new Date('2027-01-01'),
     acordData: { property: { earthquakeCoverageIncluded: true, ...property } },
 })
 const gapsFor = (p: any) =>
@@ -148,7 +148,7 @@ describe('the neighbouring portfolio rules see child branches too', () => {
             insurerName: 'ΕΘΝΙΚΗ',
             policyNumber: 'M-1',
             startDate: new Date('2026-01-01'),
-            endDate: new Date('2027-01-01'),
+            coverageEndDate: new Date('2027-01-01'),
             acordData: { vehicle: { hasRoadsideAssistance: false } },
         }
         expect(gaps(bike).some((g) => g.ruleId === 'motor_no_roadside')).toBe(true)

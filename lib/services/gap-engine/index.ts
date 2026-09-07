@@ -59,7 +59,7 @@ import {
     type SmartCardContent,
 } from "./portfolio-rules"
 import type { AIRiskProfileAnalysisResponse } from "@/lib/services/ai/ai-service.interface"
-import { coverageEngineStatus, isPolicyCoverageActive } from "@/lib/policy-status"
+import { coverageEngineStatus, isPolicyCoverageActive, resolvePolicyLifecycle } from "@/lib/policy-status"
 import {
     assembleRiskGraph,
     type RiskGraphPolicyInput,
@@ -493,7 +493,8 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
             insurerName: p.insurerName,
             policyNumber: p.policyNumber,
             startDate: p.startDate,
-            endDate: p.endDate,
+            // The one lifecycle call decides the date the rules count from (C-01b).
+            coverageEndDate: resolvePolicyLifecycle(p).endDate ?? p.endDate,
             acordData: p.acordData,
         })),
         { hasAgent }
@@ -746,7 +747,8 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
             insurerName: p.insurerName,
             policyNumber: p.policyNumber,
             startDate: p.startDate,
-            endDate: p.endDate,
+            // The one lifecycle call decides the date the rules count from (C-01b).
+            coverageEndDate: resolvePolicyLifecycle(p).endDate ?? p.endDate,
             acordData: p.acordData,
         })),
         { hasAgent }

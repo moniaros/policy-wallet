@@ -7722,7 +7722,7 @@ inline	lib/services/gap-engine/portfolio-rules.ts	`Η ανάλυση του ασ
 inline	lib/services/gap-engine/portfolio-rules.ts	`Τα ${policyRef(first)} και ${policyRef(second)} καλύπτουν το ίδιο αντικείμενο με επικαλυπτόμενες περιόδους, σύμφωνα με τα έγγραφα που ανεβάσατε.`
 inline	lib/services/gap-engine/portfolio-rules.ts	`Το ασφαλιστήριο υγείας ${ref} έχει ετήσιο όριο ${limitFmtEl}, σύμφωνα με το έγγραφο που ανεβάσατε.`
 inline	lib/services/gap-engine/portfolio-rules.ts	`Το ασφαλιστήριό σας ${ref} αναφέρει ασφαλισμένο κεφάλαιο ${insuredFmtEl} έναντι κόστους ανακατασκευής ${rebuildFmtEl} — υπολείπεται περίπου ${shortfallPct}%. Με αυτά τα νούμερα, ζημιά 10.000 € θα αποζημιωνόταν περίπου με ${new Intl.NumberFormat("el-GR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(10000 * (insured / rebuild))}.`
-inline	lib/services/gap-engine/portfolio-rules.ts	`Το ασφαλιστήριό σας ${ref} λήγει στις ${formatDate(expiring.endDate!, "el")}${ daysLeft <= 0 ? " — σήμερα" : daysLeft === 1 ? " — αύριο" : ` — σε ${daysLeft} ημέρες` }.`
+inline	lib/services/gap-engine/portfolio-rules.ts	`Το ασφαλιστήριό σας ${ref} λήγει στις ${formatDate(expiring.coverageEndDate!, "el")}${ daysLeft <= 0 ? " — σήμερα" : daysLeft === 1 ? " — αύριο" : ` — σε ${daysLeft} ημέρες` }.`
 inline	lib/services/gap-engine/portfolio-rules.ts	branch.genitiveEl
 inline	lib/services/gap-engine/portfolio-rules.ts	fact ? `${scanEl}, ενώ ${fact.el}.` : `${scanEl}.`
 inline	lib/services/gap-engine/portfolio-rules.ts	lob

@@ -795,8 +795,10 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     }
 
     // 1. Ensure User exists (Placeholder if new)
-    let customer = await db.user.findUnique({
-        where: { email: inviteeEmail }
+    // Only the id is used from here on; a placeholder row is created with the same shape (A-01b).
+    let customer: { id: string } | null = await db.user.findUnique({
+        where: { email: inviteeEmail },
+        select: { id: true },
     })
 
     if (!customer) {

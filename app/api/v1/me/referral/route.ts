@@ -10,7 +10,8 @@ export async function GET() {
     try {
         const user = await db.user.findUnique({
             where: { id: authResult.dbUser.id },
-            include: {
+            // Only the referrals are read (A-01b).
+            select: {
                 referralsMade: {
                     include: { referred: { select: { email: true } } }
                 }

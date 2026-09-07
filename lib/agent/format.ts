@@ -95,7 +95,8 @@ export function classifyUrgencyTier(customer: {
     openGapsCount: number
     lastInteractionDate: string | null
     policyCount: number
-    policies?: Array<{ endDate: string; status: string }>
+    /** `expiresAt` is the RESOLVED coverage end the customer service exposes — never the raw column (C-01b). */
+    policies?: Array<{ expiresAt: string | null; status: string }>
 }): UrgencyTier {
     // Inactive: not activated or no interaction in 90+ days
     if (customer.activationStatus === "inactive") return "inactive"
@@ -111,7 +112,8 @@ export function classifyUrgencyTier(customer: {
     if (customer.policyCount === 0) return "needs_attention"
 
     if (customer.policies?.some((p) => {
-        const daysToExpiry = calendarDaysUntil(new Date(p.endDate), new Date())
+        if (!p.expiresAt) return false
+        const daysToExpiry = calendarDaysUntil(new Date(p.expiresAt), new Date())
         return daysToExpiry <= 30 && daysToExpiry >= 0
     })) {
         return "needs_attention"

@@ -96,7 +96,7 @@ export async function createPolicy(formData: FormData) {
     // But earlier we used db.user.create without specifying ID, so it generated a UUID.
     // And we didn't force Supabase ID. 
     // Let's rely on email for robust linking.
-    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) }, select: { id: true } })
     if (!dbUser) throw new Error("User record not found")
 
     const userId = dbUser.id
@@ -322,7 +322,7 @@ export async function getPolicyReviewData(policyId: string) {
     if (!user?.id || !user.email) return { error: "Unauthorized" }
 
     // Use email-based lookup to match the local DB user ID (same as createPolicy)
-    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) }, select: { id: true } })
     if (!dbUser) return { error: "User not found" }
 
     const policy = await db.policy.findFirst({
@@ -682,7 +682,7 @@ export async function retryPolicyAnalysis(policyId: string) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user?.id || !user.email) return { error: "Unauthorized" }
 
-    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) }, select: { id: true, roles: true, preferredLanguage: true } })
     if (!dbUser) return { error: "User not found" }
 
     const policy = await db.policy.findFirst({
@@ -960,7 +960,9 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
 
     // 1. Find the agent
     const agent = await db.user.findUnique({
-        where: { email: normalizeEmail(agentEmail) }
+        where: { email: normalizeEmail(agentEmail) },
+        // id for the grant and the relationship, name/email for the notice (A-01b).
+        select: { id: true, name: true, email: true },
     })
 
     if (!agent) {

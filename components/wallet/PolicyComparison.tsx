@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
 import { StatusPill } from "@/components/ui/StatusPill"
 import { useDialog } from "@/hooks/useDialog"
-import { calendarDaysUntil } from "@/lib/policy-status"
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { branchFamilyId, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { motorSection, homeSection, lifeSection } from "@/lib/wallet/coverage-sections"
 import { classifyMotorCoverageTier } from "@/lib/wallet/motor-coverage-tier"
@@ -434,17 +434,19 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
 
                                     {/* Expires Soonest */}
                                     {(() => {
-                                        const sorted = [...selectedPolicies]
-                                            .filter(p => p.endDate)
-                                            .sort((a, b) => new Date(a.endDate!).getTime() - new Date(b.endDate!).getTime())
-                                        const soonest = sorted[0]
+                                        // The ONE lifecycle call decides which policy ends
+                                        // soonest and in how many Athens days — the raw
+                                        // `endDate` string is the column, which disagrees
+                                        // with the wallet by a year on a renewed policy
+                                        // (PW-BRIDGE-01 C-01b). A policy whose end cannot
+                                        // be trusted (null countdown) is not "soonest".
+                                        const sorted = selectedPolicies
+                                            .map((p) => ({ p, lifecycle: resolvePolicyLifecycle(p) }))
+                                            .filter((x): x is { p: typeof x.p; lifecycle: typeof x.lifecycle & { daysUntilExpiry: number } } => x.lifecycle.daysUntilExpiry !== null)
+                                            .sort((a, b) => a.lifecycle.daysUntilExpiry - b.lifecycle.daysUntilExpiry)
+                                        const soonest = sorted[0]?.p
                                         if (!soonest) return null
-                                        // Athens calendar days, like every other expiry
-                                        // count in the product. The raw UTC division here
-                                        // could put a policy expiring TODAY at "σε 0
-                                        // ημέρες" — or below zero once the clock passed
-                                        // midnight UTC on its last day of cover.
-                                        const daysUntil = calendarDaysUntil(new Date(soonest.endDate!), new Date())
+                                        const daysUntil = sorted[0].lifecycle.daysUntilExpiry
                                         const whenLabel =
                                             daysUntil <= 0
                                                 ? c.expiresToday
