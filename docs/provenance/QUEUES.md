@@ -1,0 +1,52 @@
+# PW-PROVENANCE-01 — the queue, populated at series open (2026-09-07)
+
+Populated from `docs/planning/DATA_INVENTORY_AND_PROVENANCE.md` (D1–D3, W0–W5) and
+`docs/compliance/DATA_PROTECTION_REVIEW_PACK.md` §14. Order is **W4 → W0 → W1 → W2 → W5 → W3**,
+then the register items — value per unit of risk, with the self-contained work first and the work
+that depends on everything else last. Every item runs the gate in `LOOP.md` §5; any item touching a
+stored shape runs the blast-radius protocol in §4 first.
+
+Depth at open: **W 11 · R 3 · halted 5**.
+
+Status is folded into the class cell as a bolded verb + date, per house convention.
+
+## Queue W — the waves
+
+| # | Item | Source | Class / state |
+|---|---|---|---|
+| W4-01 | Machine-readable column tags on `prisma/schema.prisma` — purpose, lawful basis, Art. 9 flag, retention class, export scope, erasure treatment — and a generator that emits the Art. 30 record from the schema | Plan W4 · §14.2 | Register close (ROPA) — **queued**. Self-contained, touches no runtime path, closes a High item. Guard: fail CI on an untagged column, the `erasure-covers-personal-data.test.ts` pattern |
+| W4-02 | DPIA **input pack** generated from the same tags — per-column purpose/basis map, the Art. 9 inventory, the transfer table | Plan W4 · §14.2 | Register close (partial) — **queued**. The assessment itself is `H-P2`; this produces only its inputs |
+| W0-01 | **The `acordData` read-site guard.** Derive the field universe from `AcordDataSchema`; enumerate every `acordData` access path in `app/`, `lib/`, `components/`; fail on any path absent from the schema. Probe fixture proven red first | D1/D2 · user requirement | **BLOCKING PREREQUISITE — queued.** Nothing else in this queue may touch `AcordData` until this is green. Today `tsc` catches nothing: 198 files, ~120 non-test, all `(x as any)?.field` |
+| W0-02 | Carry the probe's **per-page** text through the gate verdict into `ValidatedAIDocument` (today `PdfProbeResult.text` is a single joined string and is discarded; `toValidatedAIDocument(verdict, bytes, mime)` rebuilds from raw bytes) | Plan W0 · D1 | Keystone — **queued**. Needs per-page retention because W1-02 needs page numbers |
+| W0-03 | Text-first extraction contract: text-native PDFs send extracted text, scans still send the image (`imageOnly` already detects them). Own page cap and time budget, separate from the classifier's 12 pages / 8 s | Plan W0 · §7 | Keystone — **queued**. Shrinks the transmitted payload from every page to a bounded extract |
+| W1-01 | Extend `CITATION_FIELDS` from the nine identity/date/premium fields to **the fields the rules read** (coverage booleans, limits, sums insured); enable `EXTRACTION_CITATIONS` staged, Gemini-first | Plan W1 · D2 | Provenance — **queued**. Changes the extraction contract on the money path; stage it |
+| W1-02 | **Verify** each citation against the locally-extracted text — a snippet absent from the document is a hallucination detected deterministically, at zero model cost. Same move as `summaryLanguage` (detected, never assumed) | Plan W1 · D2 | Provenance — **queued**. Depends on W0-02 |
+| W2-01 | Split document evidence into three states a rule can see: `policy_verified` (cited and snippet found) · `policy_asserted` (uncited or unverified) · `policy_silent` (field absent) | Plan W2 | Honesty — **queued**. `lowestEvidence()` already exists for the composition |
+| W2-02 | Evidence floor on `GapDefinition`: a rule firing a **gap** on explicit `false` requires `policy_verified`; on `policy_asserted` it degrades to **review**; on `policy_silent` it uses the `missing` wording («δεν έχει καταγραφεί», never «δεν καλύπτεται»). Guard enumerating the catalogue from disk | Plan W2 | Honesty — **queued**. Carries the visible product consequence: some live findings demote gap → review. See `D-P1` when taken |
+| W5-01 | `vehicle.namedDrivers` → count plus the flags cover actually turns on (named-driver restriction, age band). **Additive**: add the new fields, dual-read, deprecate the names in a comment | Plan W5 · D3 · §10.2 | Minimisation — **queued**. Third-party names and licence numbers no rule reads |
+| W5-02 | `lifeAndInvestment.beneficiaries` → count and relationship class. The only rule reading it, `no_beneficiaries_recorded`, uses `all_missing` — a count satisfies it exactly | Plan W5 · D3 | Minimisation — **queued** |
+| W3-01 | Needs-against-cover comparison: cover from a cited document fact (W1), need from a Layer 1 profile fact with its own evidence level. First pair `deathBenefit` vs income × `incomeDependency` × dependants. Publishable only when **both** sides carry evidence; the finding states the weaker | Plan W3 | Real-data proposals — **queued last**. Depends on W1 and W2 |
+
+## Queue R — register items outside the data model
+
+| # | Item | Source | Class / state |
+|---|---|---|---|
+| R-01 | Two-factor authentication / passkeys. `PasskeyCredential` and `WebAuthnChallenge` tables exist and `@simplewebauthn` is installed, but **no API routes implement them** and the settings UI deliberately offers nothing (its comment: an empty device list is worse than absence) | §14.4 | Feature — **queued**. Add routes + UI; keep the settings comment's honesty rule |
+| R-02 | PITR re-erasure job. After any production restore, completed `deletion_requests` with `completed_at` after the restore point must be re-executed (idempotent). Today a manual runbook step. Joins the 16 existing crons via `withJobRun` | §14.6 | Automation — **queued** |
+| R-03 | `docs/operations/RUNBOOK_PERSONAL_DATA_BREACH.md` + a drill with evidence, following the existing `RUNBOOK_*.md` and `docs/operations/evidence/` conventions. Art. 33/34, HDPA (ΑΠΔΠΧ), 72 hours | §14.7 | Runbook — **queued**. The commitment is published; no procedure exists |
+
+## Halted at open — recorded once, never retried
+
+Pre-recorded in `HALTS.md`. Listed here so the loop does not re-derive them:
+
+| Id | Item | Why the loop may not decide it |
+|---|---|---|
+| H-P1 | §14.1 core — AI providers not regionally pinned, no zero-retention setting | Needs a GCP project and Vertex AI (different SDK and auth model), or account-level ZDR terms. Not a code change |
+| H-P2 | §14.2 the DPIA itself | A legal assessment. W4-02 generates its inputs; writing it is counsel's |
+| H-P3 | §14.3 agent-attested consent | A legal opinion on Art. 9(2)(a). `lib/ai-consent.ts` flags it pending counsel in its own header |
+| H-P4 | §14.5 single-operator DSR | A staffing change — approver ≠ executor needs a second admin operator |
+| H-P5 | §14.8 counsel items | Terms §3 qualification, the IDD / ν. 4583/2018 opinion, Art. 9 wording |
+
+**Rejected by construction, not queued:** lowering `maxDuration: 336`; any change that renames or
+removes an `AcordData` field; disabling a test to reach green; writing production `plans` rows;
+following `docs/operations/DEPLOYMENT_GUIDE.md`.
