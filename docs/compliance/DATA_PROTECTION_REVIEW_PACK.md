@@ -3,7 +3,7 @@
 **Prepared for:** external legal review
 **Controller:** Insurance Martech IKE (ΓΕΜΗ 188863359000, ΑΦΜ 302659440, ΔΟΥ Χίου), Kalamoti, 82102, Chios, Greece
 **Privacy contact:** dpo@policywallet.gr
-**Document version:** 1.0 — 2026-09-07
+**Document version:** 1.1 — 2026-09-07
 **Codebase state described:** commit `873eba6`, production build `21160711`
 
 ---
@@ -188,11 +188,23 @@ document.**
 
 **Three points a reviewer should hold on to:**
 
-1. **It is the whole document, not extracted text.** There is no server-side PDF
-   parser in this codebase. The file is read from storage, base64-encoded, and
-   handed to the model as a document part — the model does the reading. The
-   provider therefore receives **every page**, including anything on it we never
-   extract or display: ΑΜΚΑ, ΑΦΜ, addresses, beneficiaries, medical annexes.
+1. **It is the whole document, not extracted text.** The file is read from
+   storage, base64-encoded, and handed to the model as a document part — the
+   model does the reading. The provider therefore receives **every page**,
+   including anything on it we never extract or display: ΑΜΚΑ, ΑΦΜ, addresses,
+   beneficiaries, medical annexes.
+
+   **This is a choice, not a technical necessity, and that changed in September
+   2026.** A local PDF reader now exists and already runs on *every* upload:
+   `lib/ingestion/pdf-probe.ts` (the `unpdf` build of pdf.js) extracts the page
+   count and the text of the first 12 pages in roughly 100 ms, **before anything
+   is transmitted and with no bytes leaving our boundary**, so that the document
+   gate can classify the upload. That text is then **discarded**, and the
+   complete file is transmitted regardless. Any assessment of proportionality
+   should start from the fact that the less-intrusive means is already built,
+   already runs, and is currently thrown away — not from the assumption that it
+   would have to be created. (Scanned, image-only documents are the exception:
+   they yield no text locally and would still require the image, or OCR.)
 2. **The file name is not sent.** All twelve provider call sites pass a constant
    from `providerDocumentFileName()`; the `AIDocument` type has no filename field.
 3. **Failover carrying the document is separately gated.** Sending the *document*
@@ -611,8 +623,12 @@ should be reconciled.
    your explicit, revocable consent" — adequately preserve the consumer promise
    while permitting a consented partner deployment?
 7. **Whole-document transmission (§7).** We transmit complete PDFs, including
-   pages we never extract. Is page-level redaction before transmission something
-   you would require, or is consent plus Art. 28 terms sufficient?
+   pages we never extract, even though a local text extraction already runs on
+   every upload and is discarded. Given that the less-intrusive means already
+   exists in the codebase, does transmitting the whole document remain
+   defensible on consent plus Art. 28 terms, or does data minimisation
+   (Art. 5(1)(c)) require us to send the extracted text — and the image only for
+   scans — instead?
 
 ---
 
@@ -623,6 +639,7 @@ should be reconciled.
 | AI consent gate | `lib/ai-consent.ts`, `lib/services/analysis/policy-analysis-orchestrator.service.ts`, `app/api/policies/extract/route.ts` |
 | AI clients | `lib/services/ai/{gemini,anthropic,openai}-ai.service.ts`, `ai-service.factory.ts` |
 | Document gate | `lib/ingestion/ingest-policy-document.ts`, `lib/ingestion/document-gate.ts` |
+| Local PDF read | `lib/ingestion/pdf-probe.ts` (`unpdf` — the only PDF reader in the codebase) |
 | Erasure | `lib/services/gdpr-erasure.service.ts` |
 | Retention sweep | `app/api/v1/jobs/privacy-retention/route.ts` |
 | Authorization | `lib/policy-access.ts`, `lib/agent-visibility.ts` |
