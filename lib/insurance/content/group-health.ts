@@ -21,7 +21,7 @@ export const groupHealthContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Τους όρους τους διαπραγματεύτηκε ο εργοδότης, όχι εσείς. Το πρόγραμμα ενδέχεται να αναδιαμορφωθεί ή να διακοπεί σε κάθε ανανέωση του εταιρικού συμβολαίου, χωρίς να ερωτηθείς.',
+            el: 'Τους όρους τους διαπραγματεύτηκε ο εργοδότης, όχι εσείς. Το πρόγραμμα ενδέχεται να αναδιαμορφωθεί ή να διακοπεί σε κάθε ανανέωση του εταιρικού ασφαλιστηρίου, χωρίς να ερωτηθείς.',
             en: 'The terms were negotiated by the employer, not by you. The plan can be reshaped or discontinued at every renewal of the corporate contract, without your being asked.',
         },
         {
@@ -61,7 +61,7 @@ export const groupHealthContent: BranchContent = {
             en: 'Ask HR for the full terms booklet, not just the card. The card shows the network; the terms show the limits and the exclusions.',
         },
         {
-            el: 'Πριν αλλάξετε εργασία, ρωτήστε γραπτώς μέχρι ποια ημερομηνία ισχύει η κάλυψη και αν προβλέπεται μετατροπή σε ατομικό συμβόλαιο.',
+            el: 'Πριν αλλάξετε εργασία, ρωτήστε γραπτώς μέχρι ποια ημερομηνία ισχύει η κάλυψη και αν προβλέπεται μετατροπή σε ατομικό ασφαλιστήριο.',
             en: 'Before changing jobs, ask in writing until which date the cover runs and whether conversion to an individual policy is provided.',
         },
         {
@@ -165,7 +165,7 @@ export const groupHealthContent: BranchContent = {
             en: 'Before a planned hospitalisation, contact the plan’s coordination centre — that is usually where the file opens and where direct billing is decided.',
         },
         {
-            el: 'Κρατήστε τον αριθμό ομαδικού συμβολαίου και τον κωδικό μέλους μαζί: το ομαδικό ταυτοποιείται από τον συνδυασμό των δύο, όχι από το όνομά σας.',
+            el: 'Κρατήστε τον αριθμό ομαδικού ασφαλιστηρίου και τον κωδικό μέλους μαζί: το ομαδικό ταυτοποιείται από τον συνδυασμό των δύο, όχι από το όνομά σας.',
             en: 'Keep the group policy number and your member code together: a group plan is identified by the pair, not by your name.',
         },
         {

@@ -76,6 +76,17 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
             .map((d) => `components/${d.name}`)
         const files = dirs.flatMap(collect)
         expect(files.length).toBeGreaterThan(50) // the scan must actually see the tree
+        // Branch education (lib/insurance/content) was carved out as "editorial prose"
+        // to avoid a 75-file scan — until 2026-09-07, when the production smoke of
+        // «Καλύψεις & κενά» read «Καταλάβετε τι πραγματικά καλύπτει το συμβόλαιο του
+        // αυτοκινήτου σας» on a category row two lines under «Χωρίς ασφαλιστήριο».
+        // A tagline, an empty-state headline and a CTA label are product copy wherever
+        // they are authored. All 231 uses were the policy sense; swept, and in the
+        // universe from now on. (.ts here, not .tsx: these are content modules.)
+        const contentDir = "lib/insurance/content"
+        const contentFiles = rd(contentDir).filter((n) => n.endsWith(".ts")).map((n) => `${contentDir}/${n}`)
+        expect(contentFiles.length).toBeGreaterThan(30) // the scan must actually see the modules
+        files.push(...contentFiles)
         for (const file of files) {
             const src = readFileSync(file, 'utf-8')
             expect.soft(src, file).not.toMatch(/συμβόλαι|συμβολαί/i)

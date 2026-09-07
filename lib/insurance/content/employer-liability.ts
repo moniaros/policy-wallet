@@ -29,15 +29,15 @@ export const employerLiabilityContent: BranchContent = {
             en: 'The limits work on three levels: per employee, per event and in aggregate for the period. An accident involving more than one person tests the middle level first.',
         },
         {
-            el: 'Η τήρηση της νομοθεσίας για την ασφάλεια και την υγεία στην εργασία συχνά αποτελεί όρο του συμβολαίου. Εκπαίδευση, μέσα ατομικής προστασίας και γραπτή εκτίμηση κινδύνου είναι ταυτόχρονα πρόληψη και προϋπόθεση.',
+            el: 'Η τήρηση της νομοθεσίας για την ασφάλεια και την υγεία στην εργασία συχνά αποτελεί όρο του ασφαλιστηρίου. Εκπαίδευση, μέσα ατομικής προστασίας και γραπτή εκτίμηση κινδύνου είναι ταυτόχρονα πρόληψη και προϋπόθεση.',
             en: 'Compliance with health-and-safety law is often a term of the contract. Training, protective equipment and a written risk assessment are prevention and precondition at the same time.',
         },
         {
-            el: 'Οι καλυπτόμενες ειδικότητες και ο αριθμός εργαζομένων δηλώνονται στην ανάληψη. Νέες δραστηριότητες με διαφορετικό προφίλ κινδύνου δεν εντάσσονται αυτόματα επειδή υπάρχει συμβόλαιο.',
+            el: 'Οι καλυπτόμενες ειδικότητες και ο αριθμός εργαζομένων δηλώνονται στην ανάληψη. Νέες δραστηριότητες με διαφορετικό προφίλ κινδύνου δεν εντάσσονται αυτόματα επειδή υπάρχει ασφαλιστήριο.',
             en: 'The occupations covered and the headcount are declared at inception. New activities with a different risk profile are not enrolled automatically because a policy exists.',
         },
         {
-            el: 'Η επαγγελματική ασθένεια εμφανίζεται χρόνια μετά την έκθεση. Το ποια χρονιά «ανήκει» η απαίτηση εξαρτάται από τη βάση ενεργοποίησης του συμβολαίου και όχι από το πότε δηλώθηκε.',
+            el: 'Η επαγγελματική ασθένεια εμφανίζεται χρόνια μετά την έκθεση. Το ποια χρονιά «ανήκει» η απαίτηση εξαρτάται από τη βάση ενεργοποίησης του ασφαλιστηρίου και όχι από το πότε δηλώθηκε.',
             en: 'An occupational disease surfaces years after exposure. Which year a claim “belongs” to depends on the policy’s trigger basis rather than on when it was reported.',
         },
     ],
@@ -61,7 +61,7 @@ export const employerLiabilityContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Κρατήστε τη γραπτή εκτίμηση επαγγελματικού κινδύνου ενημερωμένη και αρχειοθετημένη μαζί με το συμβόλαιο — ζητούνται μαζί μετά από ατύχημα.',
+            el: 'Κρατήστε τη γραπτή εκτίμηση επαγγελματικού κινδύνου ενημερωμένη και αρχειοθετημένη μαζί με το ασφαλιστήριο — ζητούνται μαζί μετά από ατύχημα.',
             en: 'Keep the written occupational risk assessment current and filed with the policy — they are asked for together after an accident.',
         },
         {
@@ -98,7 +98,7 @@ export const employerLiabilityContent: BranchContent = {
             id: 'employer_liability_contractor_gap',
             title: { el: 'Υπεργολάβοι και προσωπικό τρίτων εκτός κάλυψης', en: 'Subcontractors and agency staff outside cover' },
             description: {
-                el: 'Πρόσωπα που εργάζονται στον χώρο χωρίς να είναι εργαζόμενοι της επιχείρησης ενδέχεται να μην καλύπτονται από το συμβόλαιο.',
+                el: 'Πρόσωπα που εργάζονται στον χώρο χωρίς να είναι εργαζόμενοι της επιχείρησης ενδέχεται να μην καλύπτονται από το ασφαλιστήριο.',
                 en: 'People working on site who are not employees of the business may not be covered by the policy.',
             },
         },
@@ -128,7 +128,7 @@ export const employerLiabilityContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Ποιες δραστηριότητες και ειδικότητες έχουν δηλωθεί στο συμβόλαιο;',
+                el: 'Ποιες δραστηριότητες και ειδικότητες έχουν δηλωθεί στο ασφαλιστήριο;',
                 en: 'Which activities and occupations are declared in the policy?',
             },
         },
@@ -138,7 +138,7 @@ export const employerLiabilityContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Ποιες υποχρεώσεις ασφάλειας θέτει το συμβόλαιο ως προϋπόθεση;',
+                el: 'Ποιες υποχρεώσεις ασφάλειας θέτει το ασφαλιστήριο ως προϋπόθεση;',
                 en: 'Which safety obligations does the policy set as a condition?',
             },
         },
@@ -176,7 +176,7 @@ export const employerLiabilityContent: BranchContent = {
             en: 'Prepare the compliance file — risk assessment, training, protective equipment — alongside the notice to the insurer.',
         },
         {
-            el: 'Μην συμφωνήσετε αποζημίωση με τον εργαζόμενο χωρίς τη συναίνεση του ασφαλιστή· ο συμβιβασμός εκτός συμβολαίου μπορεί να μην αναγνωριστεί.',
+            el: 'Μην συμφωνήσετε αποζημίωση με τον εργαζόμενο χωρίς τη συναίνεση του ασφαλιστή· ο συμβιβασμός εκτός ασφαλιστηρίου μπορεί να μην αναγνωριστεί.',
             en: 'Do not agree compensation with the employee without the insurer’s consent; a settlement made outside the contract may not be recognised.',
         },
     ],

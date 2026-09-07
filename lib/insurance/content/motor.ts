@@ -3,11 +3,11 @@ import type { BranchContent } from './types'
 export const motorContent: BranchContent = {
     branchId: 'motor',
     tagline: {
-        el: 'Καταλάβετε τι πραγματικά καλύπτει το συμβόλαιο του αυτοκινήτου σας — πριν το χρειαστείτε.',
+        el: 'Καταλάβετε τι πραγματικά καλύπτει το ασφαλιστήριο του αυτοκινήτου σας — πριν το χρειαστείτε.',
         en: 'Understand what your motor policy actually covers — before you need it.',
     },
     shortDescription: {
-        el: 'Αστική ευθύνη, μικτή, κλοπή, φυσικά φαινόμενα, κρύσταλλα, οδική βοήθεια: το PolicyWallet διαβάζει το συμβόλαιό σας και σας δείχνει τι ισχύει, με απλά λόγια.',
+        el: 'Αστική ευθύνη, μικτή, κλοπή, φυσικά φαινόμενα, κρύσταλλα, οδική βοήθεια: το PolicyWallet διαβάζει το ασφαλιστήριό σας και σας δείχνει τι ισχύει, με απλά λόγια.',
         en: 'Liability, comprehensive, theft, natural events, glass, roadside assistance: PolicyWallet reads your policy and shows you what applies, in plain language.',
     },
     whyItMatters: [
@@ -44,7 +44,7 @@ export const motorContent: BranchContent = {
             en: 'Before a trip abroad, check whether you need a Green Card and request it from your insurer in time.',
         },
         {
-            el: 'Αν το συμβόλαιο φαίνεται να περιλαμβάνει οδική βοήθεια, αποθηκεύστε το τηλέφωνο βοήθειας στο κινητό σας — θα το χρειαστείτε στον δρόμο, όχι στο σπίτι.',
+            el: 'Αν το ασφαλιστήριο φαίνεται να περιλαμβάνει οδική βοήθεια, αποθηκεύστε το τηλέφωνο βοήθειας στο κινητό σας — θα το χρειαστείτε στον δρόμο, όχι στο σπίτι.',
             en: 'If the policy appears to include roadside assistance, save the assistance number on your phone — you will need it on the road, not at home.',
         },
         {
@@ -57,7 +57,7 @@ export const motorContent: BranchContent = {
             id: 'motor_theft_gap',
             title: { el: 'Χωρίς κάλυψη κλοπής', en: 'No theft coverage' },
             description: {
-                el: 'Πολλά βασικά συμβόλαια δεν καλύπτουν ολική ή μερική κλοπή. Αν το όχημα έχει αξία, ίσως αξίζει να το ελέγξεις.',
+                el: 'Πολλά βασικά ασφαλιστήρια δεν καλύπτουν ολική ή μερική κλοπή. Αν το όχημα έχει αξία, ίσως αξίζει να το ελέγξεις.',
                 en: 'Many basic policies do not cover total or partial theft. If the vehicle holds value, it may be worth checking.',
             },
             relatedRuleId: 'motor-theft',
@@ -82,7 +82,7 @@ export const motorContent: BranchContent = {
         },
         {
             id: 'motor_expiry_gap',
-            title: { el: 'Συμβόλαιο κοντά στη λήξη', en: 'Policy close to expiry' },
+            title: { el: 'Ασφαλιστήριο κοντά στη λήξη', en: 'Policy close to expiry' },
             description: {
                 el: 'Ανασφάλιστο όχημα σημαίνει πρόστιμα και προσωπική ευθύνη για ζημιές. Η ανανέωση αξίζει να κλείνει πριν τη λήξη.',
                 en: 'An uninsured vehicle means fines and personal liability for damage. Renewal is worth completing before expiry.',
@@ -110,7 +110,7 @@ export const motorContent: BranchContent = {
             label: { el: 'Προετοιμαστείτε για ταξίδι με το αυτοκίνητο', en: 'Prepare for a road trip' },
             href: null,
             ctaType: 'askAi',
-            question: { el: 'Ισχύει το συμβόλαιό μου για οδήγηση στο εξωτερικό;', en: 'Does my policy apply for driving abroad?' },
+            question: { el: 'Ισχύει το ασφαλιστήριό μου για οδήγηση στο εξωτερικό;', en: 'Does my policy apply for driving abroad?' },
         },
         {
             id: 'motor_renewal_compare',
@@ -164,7 +164,7 @@ export const motorContent: BranchContent = {
             en: 'Fill in the amicable accident statement only if you agree on what happened — it speeds things up. If you are unsure who is at fault, do not sign an admission of fault; record only the facts and let the insurers assess.',
         },
         {
-            el: 'Κρατήστε το συμβόλαιο και τον αριθμό του πρόχειρα — θα σας ζητηθούν σε κάθε επικοινωνία.',
+            el: 'Κρατήστε το ασφαλιστήριο και τον αριθμό του πρόχειρα — θα σας ζητηθούν σε κάθε επικοινωνία.',
             en: 'Keep your policy and its number at hand — you will be asked for them in every interaction.',
         },
     ],
@@ -173,11 +173,11 @@ export const motorContent: BranchContent = {
         en: 'We will remind you before expiry. Before renewing, a quick check is worth it: same coverages, same deductibles, correct vehicle value.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο αυτοκινήτου', en: 'No motor policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο αυτοκινήτου', en: 'No motor policy added yet' },
         description: {
             el: 'Ανεβάστε το ασφαλιστήριο του οχήματός σας και δείτε με απλά λόγια τι καλύπτει — και τι ίσως λείπει.',
             en: 'Upload your vehicle policy and see in plain language what it covers — and what may be missing.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

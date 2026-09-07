@@ -36,7 +36,7 @@ export const liabilityContent: BranchContent = {
             en: 'As a tenant, damage starting inside the rented flat (water, fire) reaches the landlord and the neighbours. The building’s policy protects the landlord — it is your own liability that answers to him.',
         },
         {
-            el: 'Πολύ συχνά η κάλυψη ζει «μέσα» σε ένα συμβόλαιο κατοικίας ως δευτερεύουσα παροχή. Γι’ αυτό αρκετοί την έχουν χωρίς να το θυμούνται — και μερικοί καταλήγουν να πληρώνουν δύο φορές για το ίδιο πράγμα.',
+            el: 'Πολύ συχνά η κάλυψη ζει «μέσα» σε ένα ασφαλιστήριο κατοικίας ως δευτερεύουσα παροχή. Γι’ αυτό αρκετοί την έχουν χωρίς να το θυμούνται — και μερικοί καταλήγουν να πληρώνουν δύο φορές για το ίδιο πράγμα.',
             en: 'Very often the cover lives inside a home policy as a secondary benefit. That is why many people hold it without remembering — and some end up paying twice for the same thing.',
         },
     ],
@@ -56,7 +56,7 @@ export const liabilityContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Πριν ψάξεις για χωριστή αστική ευθύνη, κοίτα πρώτα το συμβόλαιο της κατοικίας σας — αρκετά συχνά η κάλυψη είναι ήδη εκεί, χωμένη ανάμεσα στις παροχές.',
+            el: 'Πριν ψάξεις για χωριστή αστική ευθύνη, κοίτα πρώτα το ασφαλιστήριο της κατοικίας σας — αρκετά συχνά η κάλυψη είναι ήδη εκεί, χωμένη ανάμεσα στις παροχές.',
             en: 'Before looking for standalone liability cover, check your home policy first — quite often the cover is already there, tucked in among the benefits.',
         },
         {
@@ -77,7 +77,7 @@ export const liabilityContent: BranchContent = {
             id: 'liability_duplicate_cover_gap',
             title: { el: 'Πιθανή διπλή κάλυψη με την κατοικία', en: 'Possible duplicate cover with the home policy' },
             description: {
-                el: 'Αν η αστική ευθύνη περιγράφεται και στο συμβόλαιο κατοικίας σας, ίσως πληρώνετε δύο φορές για παρόμοια προστασία. Αξίζει μια αντιπαραβολή των δύο κειμένων.',
+                el: 'Αν η αστική ευθύνη περιγράφεται και στο ασφαλιστήριο κατοικίας σας, ίσως πληρώνετε δύο φορές για παρόμοια προστασία. Αξίζει μια αντιπαραβολή των δύο κειμένων.',
                 en: 'If liability is also described in your home policy, you may be paying twice for similar protection. A side-by-side read of the two texts is worth it.',
             },
         },
@@ -93,7 +93,7 @@ export const liabilityContent: BranchContent = {
             id: 'liability_tenant_gap',
             title: { el: 'Ευθύνη ενοικιαστή προς τον ιδιοκτήτη', en: 'Tenant liability towards the landlord' },
             description: {
-                el: 'Πολλά συμβόλαια ενοικιαζόμενης κατοικίας καλύπτουν το περιεχόμενο αλλά όχι τη ζημιά που θα προκληθεί στο ίδιο το μίσθιο.',
+                el: 'Πολλά ασφαλιστήρια ενοικιαζόμενης κατοικίας καλύπτουν το περιεχόμενο αλλά όχι τη ζημιά που θα προκληθεί στο ίδιο το μίσθιο.',
                 en: 'Many policies for rented homes cover the contents but not damage caused to the rented property itself.',
             },
         },
@@ -114,7 +114,7 @@ export const liabilityContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Περιλαμβάνει το συμβόλαιό μου αστική ευθύνη προς τρίτους;',
+                el: 'Περιλαμβάνει το ασφαλιστήριό μου αστική ευθύνη προς τρίτους;',
                 en: 'Does my policy include third-party liability?',
             },
         },
@@ -140,7 +140,7 @@ export const liabilityContent: BranchContent = {
         },
         {
             id: 'liability_review_overlap',
-            label: { el: 'Αντιπαράβαλε με το συμβόλαιο κατοικίας για επικαλύψεις', en: 'Cross-check the home policy for overlaps' },
+            label: { el: 'Αντιπαράβαλε με το ασφαλιστήριο κατοικίας για επικαλύψεις', en: 'Cross-check the home policy for overlaps' },
             href: '/protection',
             ctaType: 'review',
         },
@@ -152,7 +152,7 @@ export const liabilityContent: BranchContent = {
         },
     ],
     suggestedQuestions: [
-        { el: 'Περιλαμβάνει το συμβόλαιό μου αστική ευθύνη προς τρίτους;', en: 'Does my policy include third-party liability?' },
+        { el: 'Περιλαμβάνει το ασφαλιστήριό μου αστική ευθύνη προς τρίτους;', en: 'Does my policy include third-party liability?' },
         { el: 'Καλύπτεται ζημιά που θα προκαλέσει το κατοικίδιό μου;', en: 'Is damage caused by my pet covered?' },
         { el: 'Καλύπτονται πράξεις των παιδιών μου;', en: 'Are my children’s acts covered?' },
         { el: 'Ως ενοικιαστής, καλύπτομαι για ζημιά στο μίσθιο;', en: 'As a tenant, am I covered for damage to the rented property?' },
@@ -181,11 +181,11 @@ export const liabilityContent: BranchContent = {
         en: 'Before renewal, it is worth reviewing what changed in your life: a new pet, a new tenancy or a new activity changes how exposed you are towards others.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο αστικής ευθύνης', en: 'No liability policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο αστικής ευθύνης', en: 'No liability policy added yet' },
         description: {
-            el: 'Ανεβάστε το έγγραφο — ή και το συμβόλαιο κατοικίας σας, όπου συχνά κρύβεται η ίδια κάλυψη — και δείτε τι φαίνεται να ισχύει για ζημιές σε τρίτους.',
+            el: 'Ανεβάστε το έγγραφο — ή και το ασφαλιστήριο κατοικίας σας, όπου συχνά κρύβεται η ίδια κάλυψη — και δείτε τι φαίνεται να ισχύει για ζημιές σε τρίτους.',
             en: 'Upload the document — or your home policy, where the same cover often hides — and see what appears to apply for damage to others.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

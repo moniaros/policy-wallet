@@ -15,12 +15,12 @@ export const legalExpensesContent: BranchContent = {
         en: 'It is not a lawyer on retainer — it is cover for the costs of specific kinds of disputes, on its own terms.',
     },
     shortDescription: {
-        el: 'Δικαστικά έξοδα, αμοιβές δικηγόρου και πραγματογνωμοσύνες σε διαφορές τροχαίου, εργασιακές, καταναλωτικές και συμβατικές: το PolicyWallet σας δείχνει τι πραγματικά περιγράφει το κείμενο του συμβολαίου σας.',
+        el: 'Δικαστικά έξοδα, αμοιβές δικηγόρου και πραγματογνωμοσύνες σε διαφορές τροχαίου, εργασιακές, καταναλωτικές και συμβατικές: το PolicyWallet σας δείχνει τι πραγματικά περιγράφει το κείμενο του ασφαλιστηρίου σας.',
         en: 'Court costs, lawyer fees and expert reports in traffic, employment, consumer and contractual disputes: PolicyWallet shows what the wording of your contract actually describes.',
     },
     whyItMatters: [
         {
-            el: 'Πρώτα τι ΔΕΝ είναι: δεν είναι νομικός σύμβουλος με πάγιο, διαθέσιμος για κάθε ερώτημα. Είναι κάλυψη εξόδων — αμοιβές, δικαστικά τέλη, πραγματογνώμονες — για διαφορές που πληρούν τους όρους του συμβολαίου.',
+            el: 'Πρώτα τι ΔΕΝ είναι: δεν είναι νομικός σύμβουλος με πάγιο, διαθέσιμος για κάθε ερώτημα. Είναι κάλυψη εξόδων — αμοιβές, δικαστικά τέλη, πραγματογνώμονες — για διαφορές που πληρούν τους όρους του ασφαλιστηρίου.',
             en: 'First, what it is NOT: it is not a legal adviser on a monthly fee, available for every question. It is cost cover — fees, court dues, experts — for disputes that meet the contract’s terms.',
         },
         {
@@ -28,15 +28,15 @@ export const legalExpensesContent: BranchContent = {
             en: 'Almost every plan sets a waiting period. A dispute born before inception, or within the first months of cover, usually stays out — even if you learned of it later.',
         },
         {
-            el: 'Πριν αναλάβει τα έξοδα, ο ασφαλιστής εξετάζει αν η υπόθεση έχει εύλογες πιθανότητες επιτυχίας. Αν κρίνει πως δεν έχει, ενδέχεται να αρνηθεί την ανάληψη — και το συμβόλαιο συνήθως προβλέπει διαδικασία για να αμφισβητήσεις αυτή την κρίση.',
+            el: 'Πριν αναλάβει τα έξοδα, ο ασφαλιστής εξετάζει αν η υπόθεση έχει εύλογες πιθανότητες επιτυχίας. Αν κρίνει πως δεν έχει, ενδέχεται να αρνηθεί την ανάληψη — και το ασφαλιστήριο συνήθως προβλέπει διαδικασία για να αμφισβητήσεις αυτή την κρίση.',
             en: 'Before taking on the costs, the insurer assesses whether the case has reasonable prospects of success. If it decides there are none, it may decline — and the contract usually provides a route to challenge that assessment.',
         },
         {
-            el: 'Η ελεύθερη επιλογή δικηγόρου αναγνωρίζεται όταν η υπόθεση φτάσει σε δικαστική ή διοικητική διαδικασία. Ο ασφαλιστής όμως αποζημιώνει μέχρι το όριο του συμβολαίου — ό,τι περισσεύει από την αμοιβή μένει σε εσάς.',
+            el: 'Η ελεύθερη επιλογή δικηγόρου αναγνωρίζεται όταν η υπόθεση φτάσει σε δικαστική ή διοικητική διαδικασία. Ο ασφαλιστής όμως αποζημιώνει μέχρι το όριο του ασφαλιστηρίου — ό,τι περισσεύει από την αμοιβή μένει σε εσάς.',
             en: 'Free choice of lawyer is recognised once the case reaches court or an administrative procedure. The insurer, though, reimburses only up to the contract’s limit — whatever the fee exceeds it stays with you.',
         },
         {
-            el: 'Στην ελληνική αγορά η νομική προστασία πωλείται πολύ συχνά ως πρόσθετη κάλυψη μέσα στο συμβόλαιο του αυτοκινήτου, με πεδίο μόνο τα τροχαία. Αν περιμένετε να καλύψει εργασιακή ή καταναλωτική διαφορά, αξίζει να το επιβεβαιώσεις στο κείμενο.',
+            el: 'Στην ελληνική αγορά η νομική προστασία πωλείται πολύ συχνά ως πρόσθετη κάλυψη μέσα στο ασφαλιστήριο του αυτοκινήτου, με πεδίο μόνο τα τροχαία. Αν περιμένετε να καλύψει εργασιακή ή καταναλωτική διαφορά, αξίζει να το επιβεβαιώσεις στο κείμενο.',
             en: 'In the Greek market legal expenses is very often sold as an add-on inside the motor policy, scoped to traffic matters only. If you expect it to cover an employment or consumer dispute, it is worth confirming in the wording.',
         },
     ],
@@ -68,7 +68,7 @@ export const legalExpensesContent: BranchContent = {
             en: 'Keep a record of the correspondence from day one of the dispute: the date the case arose decides whether it falls inside or outside the waiting period.',
         },
         {
-            el: 'Αν ο ασφαλιστής κρίνει ότι η υπόθεση δεν έχει εύλογες πιθανότητες, ζητήστε την κρίση εγγράφως και δείτε τι προβλέπει το συμβόλαιο για δεύτερη γνώμη ή διαιτησία.',
+            el: 'Αν ο ασφαλιστής κρίνει ότι η υπόθεση δεν έχει εύλογες πιθανότητες, ζητήστε την κρίση εγγράφως και δείτε τι προβλέπει το ασφαλιστήριο για δεύτερη γνώμη ή διαιτησία.',
             en: 'If the insurer judges the case lacks reasonable prospects, ask for that assessment in writing and see what the contract provides for a second opinion or arbitration.',
         },
     ],
@@ -77,7 +77,7 @@ export const legalExpensesContent: BranchContent = {
             id: 'legal_scope_traffic_only_gap',
             title: { el: 'Κάλυψη μόνο για τροχαία', en: 'Traffic-only scope' },
             description: {
-                el: 'Αν η νομική προστασία προήλθε από το συμβόλαιο του αυτοκινήτου, το πεδίο της ενδέχεται να σταματά στα τροχαία και να μην αγγίζει εργασιακές ή καταναλωτικές διαφορές.',
+                el: 'Αν η νομική προστασία προήλθε από το ασφαλιστήριο του αυτοκινήτου, το πεδίο της ενδέχεται να σταματά στα τροχαία και να μην αγγίζει εργασιακές ή καταναλωτικές διαφορές.',
                 en: 'If the legal cover came with your motor policy, its scope may stop at traffic matters and never reach employment or consumer disputes.',
             },
             relatedRuleId: 'no_legal_expenses',
@@ -86,7 +86,7 @@ export const legalExpensesContent: BranchContent = {
             id: 'legal_waiting_period_gap',
             title: { el: 'Χρόνος αναμονής που δεν έχει συμπληρωθεί', en: 'Waiting period not yet served' },
             description: {
-                el: 'Οι πρώτοι μήνες ισχύος συνήθως δεν καλύπτουν νέες διαφορές. Αν το συμβόλαιο είναι πρόσφατο, ίσως αξίζει να δείτε πότε ενεργοποιείται πραγματικά.',
+                el: 'Οι πρώτοι μήνες ισχύος συνήθως δεν καλύπτουν νέες διαφορές. Αν το ασφαλιστήριο είναι πρόσφατο, ίσως αξίζει να δείτε πότε ενεργοποιείται πραγματικά.',
                 en: 'The first months of cover usually do not admit new disputes. If the contract is recent, it may be worth seeing when it truly switches on.',
             },
         },
@@ -182,11 +182,11 @@ export const legalExpensesContent: BranchContent = {
         en: 'At renewal it is worth checking whether the scope changed: legal-expenses wordings are rewritten more often than other covers.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο νομικής προστασίας', en: 'No legal expenses policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο νομικής προστασίας', en: 'No legal expenses policy added yet' },
         description: {
-            el: 'Ανεβάστε το έγγραφο — ή το συμβόλαιο του αυτοκινήτου, όπου συνήθως προσαρτάται η κάλυψη — και δείτε ποιες διαφορές φαίνεται να αφορά.',
+            el: 'Ανεβάστε το έγγραφο — ή το ασφαλιστήριο του αυτοκινήτου, όπου συνήθως προσαρτάται η κάλυψη — και δείτε ποιες διαφορές φαίνεται να αφορά.',
             en: 'Upload the document — or your motor policy, where the cover is usually attached — and see which disputes it appears to address.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

@@ -7,12 +7,12 @@ export const healthContent: BranchContent = {
         en: 'Know what you pay and what your insurer pays — before you are in hospital.',
     },
     shortDescription: {
-        el: 'Νοσοκομειακή περίθαλψη, πρωτοβάθμια φροντίδα, απαλλαγές, συμμετοχές, αναμονές και εξαιρέσεις — εξηγημένα με απλά λόγια, από το δικό σας συμβόλαιο.',
+        el: 'Νοσοκομειακή περίθαλψη, πρωτοβάθμια φροντίδα, απαλλαγές, συμμετοχές, αναμονές και εξαιρέσεις — εξηγημένα με απλά λόγια, από το δικό σας ασφαλιστήριο.',
         en: 'Hospital care, primary care, deductibles, co-payments, waiting periods and exclusions — explained in plain language, from your own policy.',
     },
     whyItMatters: [
         {
-            el: 'Η απαλλαγή και η συμμετοχή καθορίζουν τι θα πληρώσετε εσείς σε μια νοσηλεία — δύο συμβόλαια με ίδιο ασφάλιστρο μπορεί να διαφέρουν χιλιάδες ευρώ στην πράξη.',
+            el: 'Η απαλλαγή και η συμμετοχή καθορίζουν τι θα πληρώσετε εσείς σε μια νοσηλεία — δύο ασφαλιστήρια με ίδιο ασφάλιστρο μπορεί να διαφέρουν χιλιάδες ευρώ στην πράξη.',
             en: 'The deductible and co-payment decide what you pay in a hospitalisation — two policies with the same premium can differ by thousands of euros in practice.',
         },
         {
@@ -131,7 +131,7 @@ export const healthContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Σε έκτακτη νοσηλεία, ενημερώστε το συντονιστικό κέντρο του ασφαλιστή το συντομότερο — συνήθως υπάρχει 24ωρη γραμμή στο συμβόλαιο.',
+            el: 'Σε έκτακτη νοσηλεία, ενημερώστε το συντονιστικό κέντρο του ασφαλιστή το συντομότερο — συνήθως υπάρχει 24ωρη γραμμή στο ασφαλιστήριο.',
             en: 'In an emergency admission, notify the insurer’s coordination centre promptly — there is usually a 24h line on the policy.',
         },
         {
@@ -148,11 +148,11 @@ export const healthContent: BranchContent = {
         en: 'At renewal, watch for changes to deductible, co-payment and limits — and ask whether the waiting periods you have already served carry over.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο υγείας', en: 'No health policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο υγείας', en: 'No health policy added yet' },
         description: {
             el: 'Ανεβάστε το πρόγραμμα υγείας σας (ή το ομαδικό της δουλειάς) και δείτε τι πληρώνετε εσείς, τι αναμονές ισχύουν και ποιες παροχές έχετε.',
             en: 'Upload your health plan (or your work group plan) and see what you pay, which waits apply and what benefits you have.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

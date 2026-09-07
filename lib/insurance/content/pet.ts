@@ -3,7 +3,7 @@ import type { BranchContent } from './types'
 export const petContent: BranchContent = {
     branchId: 'pet',
     tagline: {
-        el: 'Κτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το συμβόλαιο του κατοικιδίου σας — και με ποιες αναμονές.',
+        el: 'Κτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το ασφαλιστήριο του κατοικιδίου σας — και με ποιες αναμονές.',
         en: 'Vet, accident, illness: see what your pet policy covers — and with what waiting periods.',
     },
     shortDescription: {
@@ -57,7 +57,7 @@ export const petContent: BranchContent = {
             id: 'pet_leishmania_gap',
             title: { el: 'Χωρίς κάλυψη λεϊσμανίασης', en: 'No leishmaniasis coverage' },
             description: {
-                el: 'Συχνή και χρόνια πάθηση στην Ελλάδα — αρκετά συμβόλαια την εξαιρούν ή τη καλύπτουν με όρους.',
+                el: 'Συχνή και χρόνια πάθηση στην Ελλάδα — αρκετά ασφαλιστήρια την εξαιρούν ή τη καλύπτουν με όρους.',
                 en: 'Common and chronic in Greece — several policies exclude it or cover it conditionally.',
             },
             relatedRuleId: 'missing_leishmaniasis',
@@ -74,7 +74,7 @@ export const petContent: BranchContent = {
             id: 'pet_liability_gap',
             title: { el: 'Χωρίς αστική ευθύνη', en: 'No liability cover' },
             description: {
-                el: 'Αν το κατοικίδιο προκαλέσει ζημιά ή τραυματισμό, η ευθύνη είναι δική σας — δείτε αν το συμβόλαιο την καλύπτει.',
+                el: 'Αν το κατοικίδιο προκαλέσει ζημιά ή τραυματισμό, η ευθύνη είναι δική σας — δείτε αν το ασφαλιστήριο την καλύπτει.',
                 en: 'If your pet causes damage or injury, the responsibility is yours — see if the policy covers it.',
             },
         },
@@ -141,7 +141,7 @@ export const petContent: BranchContent = {
             en: 'Ask for an itemised receipt and a report with diagnosis — the two core documents of any claim.',
         },
         {
-            el: 'Δηλώστε το περιστατικό στον ασφαλιστή εντός της προθεσμίας του συμβολαίου, μαζί με το ιστορικό εμβολίων αν ζητηθεί.',
+            el: 'Δηλώστε το περιστατικό στον ασφαλιστή εντός της προθεσμίας του ασφαλιστηρίου, μαζί με το ιστορικό εμβολίων αν ζητηθεί.',
             en: 'Report to the insurer within the policy deadline, with the vaccination record if requested.',
         },
     ],
@@ -152,9 +152,9 @@ export const petContent: BranchContent = {
     emptyState: {
         headline: { el: 'Δεν έχετε προσθέσει ασφάλιση κατοικιδίου', en: 'No pet policy added yet' },
         description: {
-            el: 'Ανεβάστε το συμβόλαιο του κατοικιδίου σας και δείτε κτηνιατρικά όρια, αναμονές και τι ισχύει για λεϊσμανίαση.',
+            el: 'Ανεβάστε το ασφαλιστήριο του κατοικιδίου σας και δείτε κτηνιατρικά όρια, αναμονές και τι ισχύει για λεϊσμανίαση.',
             en: 'Upload your pet policy and see vet limits, waiting periods and what applies for leishmaniasis.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

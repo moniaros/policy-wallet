@@ -3,7 +3,7 @@ import type { BranchContent } from './types'
 export const homeContent: BranchContent = {
     branchId: 'home',
     tagline: {
-        el: 'Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι πραγματικά προστατεύει το συμβόλαιό σας.',
+        el: 'Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι πραγματικά προστατεύει το ασφαλιστήριό σας.',
         en: 'Your home is likely your biggest asset — see what your policy really protects.',
     },
     shortDescription: {
@@ -12,7 +12,7 @@ export const homeContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Η κάλυψη σεισμού συνήθως ΔΕΝ είναι αυτόματη στα ελληνικά συμβόλαια κατοικίας — είναι προαιρετική προσθήκη με δική της απαλλαγή.',
+            el: 'Η κάλυψη σεισμού συνήθως ΔΕΝ είναι αυτόματη στα ελληνικά ασφαλιστήρια κατοικίας — είναι προαιρετική προσθήκη με δική της απαλλαγή.',
             en: 'Earthquake cover is usually NOT automatic in Greek home policies — it is an optional add-on with its own deductible.',
         },
         {
@@ -20,7 +20,7 @@ export const homeContent: BranchContent = {
             en: 'If the building is insured below its real value (underinsurance), compensation can be reduced proportionally.',
         },
         {
-            el: 'Το περιεχόμενο (έπιπλα, συσκευές, προσωπικά είδη) ασφαλίζεται χωριστά από το κτίριο — πολλά συμβόλαια καλύπτουν μόνο το ένα από τα δύο.',
+            el: 'Το περιεχόμενο (έπιπλα, συσκευές, προσωπικά είδη) ασφαλίζεται χωριστά από το κτίριο — πολλά ασφαλιστήρια καλύπτουν μόνο το ένα από τα δύο.',
             en: 'Contents (furniture, appliances, personal items) are insured separately from the building — many policies cover only one of the two.',
         },
         {
@@ -74,7 +74,7 @@ export const homeContent: BranchContent = {
             id: 'home_flood_gap',
             title: { el: 'Ασαφής κάλυψη πλημμύρας', en: 'Unclear flood coverage' },
             description: {
-                el: 'Η πλημμύρα και τα καιρικά φαινόμενα συχνά έχουν χωριστούς όρους και απαλλαγές — ίσως χρειάζεται έλεγχος στο συμβόλαιο.',
+                el: 'Η πλημμύρα και τα καιρικά φαινόμενα συχνά έχουν χωριστούς όρους και απαλλαγές — ίσως χρειάζεται έλεγχος στο ασφαλιστήριο.',
                 en: 'Flood and weather events often carry separate terms and deductibles — the policy may need a check.',
             },
         },
@@ -154,7 +154,7 @@ export const homeContent: BranchContent = {
             en: 'Photograph or film the damage close-up and from a distance, before moving anything.',
         },
         {
-            el: 'Δηλώστε τη ζημιά στον ασφαλιστή σας το συντομότερο — τα περισσότερα συμβόλαια ορίζουν προθεσμία λίγων ημερών.',
+            el: 'Δηλώστε τη ζημιά στον ασφαλιστή σας το συντομότερο — τα περισσότερα ασφαλιστήρια ορίζουν προθεσμία λίγων ημερών.',
             en: 'Report the damage to your insurer promptly — most policies set a deadline of a few days.',
         },
         {
@@ -167,11 +167,11 @@ export const homeContent: BranchContent = {
         en: 'Before renewal, check the insured value against today’s rebuilding cost — especially after renovations.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο κατοικίας', en: 'No home policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο κατοικίας', en: 'No home policy added yet' },
         description: {
             el: 'Ανεβάστε το ασφαλιστήριο της κατοικίας σας και δείτε αν καλύπτεστε για σεισμό, πλημμύρα και περιεχόμενο.',
             en: 'Upload your home policy and see whether you are covered for earthquake, flood and contents.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

@@ -31,7 +31,7 @@ export const groupPensionContent: BranchContent = {
             en: 'The vesting period is the crux. Leave before completing the years the rules set and you may take only part of the employer’s share — or none of it.',
         },
         {
-            el: 'Το τι μεταφέρεται στην αποχώρηση διαφέρει ανά πρόγραμμα: άλλα προβλέπουν εξαγορά σε μετρητά, άλλα μεταφορά σε ατομικό συμβόλαιο, άλλα διατήρηση του κεφαλαίου μέχρι τη συνταξιοδότηση.',
+            el: 'Το τι μεταφέρεται στην αποχώρηση διαφέρει ανά πρόγραμμα: άλλα προβλέπουν εξαγορά σε μετρητά, άλλα μεταφορά σε ατομικό ασφαλιστήριο, άλλα διατήρηση του κεφαλαίου μέχρι τη συνταξιοδότηση.',
             en: 'What transfers on leaving differs by scheme: some allow a cash surrender, some a transfer into an individual contract, some keep the capital until retirement.',
         },
         {

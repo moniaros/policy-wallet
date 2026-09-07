@@ -145,6 +145,13 @@ export interface CoverageStatusSummary {
     underReviewOnly: number
     /** The denominator: the four counts plus the under-review-only branches — everything held or expected. */
     relevantCount: number
+    /**
+     * Live recording-class rows («δεν καταγράφεται») across the relevant branches. A recording
+     * rule asks whether a value was written down, never whether cover exists, so these rows change
+     * no branch status — which is why «Μερική κάλυψη 0» can sit beside a findings list that is not
+     * empty. The summary says so in a sentence rather than leaving the two numbers to disagree.
+     */
+    notRecorded: number
     heldElsewhere: number
     neutral: number
     /** False when no score row exists; the denominator sentence changes. */
@@ -391,6 +398,7 @@ export function deriveCoverageStatus(input: CoverageStatusInput): CoverageStatus
             notChecked,
             underReviewOnly,
             relevantCount: appearsCovered + finding + noPolicy + notChecked + underReviewOnly,
+            notRecorded: relevantRows(rows).reduce((n, r) => n + r.notRecordedCount, 0),
             heldElsewhere: bucket("held_elsewhere"),
             neutral: bucket("neutral"),
             hasExpectedLines: input.expectedLines !== null,

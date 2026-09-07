@@ -180,7 +180,10 @@ limits read). They count AREAS in a state. None is a score, none may be added to
 ### Additions ratified 2026-09-07 («Καλύψεις & κενά» — the coverage status)
 
 Counts (page-level): `branch.coveredCount` · `branch.findingCount` · `branch.noPolicyCount` ·
-`branch.notCheckedCount` · `branch.underReviewOnlyCount` · `branch.relevantCount` · `gap.lockedCount`.
+`branch.notCheckedCount` · `branch.underReviewOnlyCount` · `branch.relevantCount` · `gap.lockedCount` ·
+`branch.notRecordedCount` (added 2026-09-07 after the production smoke: the live recording-class findings across the
+relevant branches, rendered as one sentence under the four doors — a recording rule changes no status, so the
+sentence is what reconciles «Μερική κάλυψη 0» with a findings list that is not empty).
 Facts (subject-scoped by branch): `branch.coverageStatus` · `branch.checkedPoints`. Count (subject-scoped
 by branch): `branch.openFindingCount` — the classified coverage-class findings a «Μερική κάλυψη» row quotes.
 

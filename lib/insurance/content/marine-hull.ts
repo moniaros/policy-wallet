@@ -28,15 +28,15 @@ export const marineHullContent: BranchContent = {
             en: 'Maintenance requirements usually have a rhythm: annual servicing to the maker’s instructions, assembly and disassembly by an authorised workshop. This is a calendar of obligations, not a single signature at inception.',
         },
         {
-            el: 'Πολλά συμβόλαια εξαιρούν ρητά τη ζημιά όσο το σκάφος βρίσκεται υπό επισκευή ή μετακινείται — ακριβώς οι στιγμές που ο κίνδυνος είναι υψηλότερος.',
+            el: 'Πολλά ασφαλιστήρια εξαιρούν ρητά τη ζημιά όσο το σκάφος βρίσκεται υπό επισκευή ή μετακινείται — ακριβώς οι στιγμές που ο κίνδυνος είναι υψηλότερος.',
             en: 'Many policies expressly exclude damage while the unit is under repair or being moved — precisely the moments when risk is highest.',
         },
         {
-            el: 'Η απαλλαγή αφορά συνήθως το σύνολο των απαιτήσεων ανά ατύχημα και δεν εφαρμόζεται στην ολική ή τεκμαρτή ολική απώλεια. Δύο διαφορετικοί κόσμοι μέσα στο ίδιο συμβόλαιο.',
+            el: 'Η απαλλαγή αφορά συνήθως το σύνολο των απαιτήσεων ανά ατύχημα και δεν εφαρμόζεται στην ολική ή τεκμαρτή ολική απώλεια. Δύο διαφορετικοί κόσμοι μέσα στο ίδιο ασφαλιστήριο.',
             en: 'The deductible normally applies to all claims arising from one accident and does not apply to a total or constructive total loss. Two different worlds inside one contract.',
         },
         {
-            el: 'Το εφαρμοστέο δίκαιο μπορεί να είναι αγγλικό ενώ η δικαιοδοσία ελληνική. Η διάκριση καθορίζει με ποιους κανόνες ερμηνεύεται το συμβόλαιο και πού κρίνεται η διαφορά.',
+            el: 'Το εφαρμοστέο δίκαιο μπορεί να είναι αγγλικό ενώ η δικαιοδοσία ελληνική. Η διάκριση καθορίζει με ποιους κανόνες ερμηνεύεται το ασφαλιστήριο και πού κρίνεται η διαφορά.',
             en: 'The governing law can be English while the jurisdiction is Greek. That distinction decides by which rules the contract is read and where a dispute is heard.',
         },
     ],
@@ -97,7 +97,7 @@ export const marineHullContent: BranchContent = {
             id: 'marine_hull_under_repair_gap',
             title: { el: 'Περίοδοι επισκευής εκτός κάλυψης', en: 'Repair periods outside cover' },
             description: {
-                el: 'Αν το συμβόλαιο εξαιρεί τη ζημιά όσο η μονάδα επισκευάζεται ή μετακινείται, το κενό εμφανίζεται σε προγραμματισμένες εργασίες, όχι σε έκτακτα.',
+                el: 'Αν το ασφαλιστήριο εξαιρεί τη ζημιά όσο η μονάδα επισκευάζεται ή μετακινείται, το κενό εμφανίζεται σε προγραμματισμένες εργασίες, όχι σε έκτακτα.',
                 en: 'If the policy excludes damage while the unit is under repair or being moved, the gap shows up in planned works rather than in emergencies.',
             },
         },
@@ -158,7 +158,7 @@ export const marineHullContent: BranchContent = {
         { el: 'Ποιοι απαράβατοι όροι πρέπει να τηρούνται;', en: 'Which warranties have to be kept?' },
         { el: 'Τι ισχύει όσο η μονάδα βρίσκεται υπό επισκευή;', en: 'What applies while the unit is under repair?' },
         { el: 'Ποια απαλλαγή εφαρμόζεται σε ολική απώλεια;', en: 'Which deductible applies to a total loss?' },
-        { el: 'Ποιο δίκαιο διέπει το συμβόλαιο και πού δικάζεται;', en: 'Which law governs the policy and where is it heard?' },
+        { el: 'Ποιο δίκαιο διέπει το ασφαλιστήριο και πού δικάζεται;', en: 'Which law governs the policy and where is it heard?' },
         { el: 'Καλύπτεται η ευθύνη προς τρίτους και μέχρι ποιο ποσό;', en: 'Is third-party liability covered, and up to what amount?' },
     ],
     claimsSteps: [

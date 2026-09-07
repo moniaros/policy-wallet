@@ -16,7 +16,7 @@ import type { BranchContent } from './types'
 export const incomeProtectionContent: BranchContent = {
     branchId: 'income_protection',
     tagline: {
-        el: 'Αν σταματήσει ο μισθός επειδή δεν μπορείτε να δουλέψεις, αυτό το συμβόλαιο είναι που συνεχίζει να πληρώνει.',
+        el: 'Αν σταματήσει ο μισθός επειδή δεν μπορείτε να δουλέψεις, αυτό το ασφαλιστήριο είναι που συνεχίζει να πληρώνει.',
         en: 'If the salary stops because you cannot work, this is the policy that keeps paying.',
     },
     shortDescription: {
@@ -25,7 +25,7 @@ export const incomeProtectionContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Δύο συμβόλαια με το ίδιο μηνιαίο ποσό μπορεί να διαφέρουν δραματικά: το ένα πληρώνει για δύο χρόνια, το άλλο μέχρι τη συνταξιοδότηση.',
+            el: 'Δύο ασφαλιστήρια με το ίδιο μηνιαίο ποσό μπορεί να διαφέρουν δραματικά: το ένα πληρώνει για δύο χρόνια, το άλλο μέχρι τη συνταξιοδότηση.',
             en: 'Two policies with the same monthly amount can differ dramatically: one pays for two years, the other until retirement.',
         },
         {
@@ -47,11 +47,11 @@ export const incomeProtectionContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Το συμβόλαιο προστασίας εισοδήματος δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε το ελεύθερο κείμενο των καλύψεων και των εξαιρέσεων του εγγράφου που ανεβάσατε και το παρουσιάζουμε με απλά λόγια.',
+            el: 'Το ασφαλιστήριο προστασίας εισοδήματος δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε το ελεύθερο κείμενο των καλύψεων και των εξαιρέσεων του εγγράφου που ανεβάσατε και το παρουσιάζουμε με απλά λόγια.',
             en: 'Income protection has no structured fields in our analysis: we read the free-text coverages and exclusions of the document you uploaded and present them in plain language.',
         },
         {
-            el: 'Εντοπίζουμε τις αναφορές σε περίοδο αναμονής, διάρκεια καταβολής και ορισμό ανικανότητας όπως ακριβώς διατυπώνονται — χωρίς να συμπληρώνουμε ό,τι δεν γράφει το συμβόλαιο.',
+            el: 'Εντοπίζουμε τις αναφορές σε περίοδο αναμονής, διάρκεια καταβολής και ορισμό ανικανότητας όπως ακριβώς διατυπώνονται — χωρίς να συμπληρώνουμε ό,τι δεν γράφει το ασφαλιστήριο.',
             en: 'We surface the references to waiting period, payment duration and incapacity definition exactly as worded — without filling in what the policy does not say.',
         },
         {
@@ -61,7 +61,7 @@ export const incomeProtectionContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Υπολογίστε πόσους μήνες αντέχουν οι αποταμιεύσεις σας και σύγκρινέ τους με την περίοδο αναμονής — εκεί φαίνεται αν το συμβόλαιο ταιριάζει στη ζωή σας.',
+            el: 'Υπολογίστε πόσους μήνες αντέχουν οι αποταμιεύσεις σας και σύγκρινέ τους με την περίοδο αναμονής — εκεί φαίνεται αν το ασφαλιστήριο ταιριάζει στη ζωή σας.',
             en: 'Work out how many months your savings would last and compare that to the deferred period — that is where you see whether the policy fits your life.',
         },
         {
@@ -91,7 +91,7 @@ export const incomeProtectionContent: BranchContent = {
             id: 'income_protection_definition_gap',
             title: { el: 'Αυστηρός ορισμός ανικανότητας', en: 'Strict incapacity definition' },
             description: {
-                el: 'Ένας ορισμός «οποιουδήποτε επαγγέλματος» ενεργοποιείται πολύ δυσκολότερα από έναν «δικού σας επαγγέλματος». Αξίζει να δείτε ποιος από τους δύο γράφεται στο συμβόλαιο.',
+                el: 'Ένας ορισμός «οποιουδήποτε επαγγέλματος» ενεργοποιείται πολύ δυσκολότερα από έναν «δικού σας επαγγέλματος». Αξίζει να δείτε ποιος από τους δύο γράφεται στο ασφαλιστήριο.',
                 en: 'An “any occupation” definition triggers far less easily than an “own occupation” one. It is worth seeing which of the two the policy states.',
             },
         },
@@ -162,7 +162,7 @@ export const incomeProtectionContent: BranchContent = {
     suggestedQuestions: [
         { el: 'Πόση είναι η περίοδος αναμονής;', en: 'How long is the waiting period?' },
         { el: 'Για πόσο καιρό πληρώνεται η παροχή;', en: 'For how long is the benefit paid?' },
-        { el: 'Τι μηνιαίο ποσό προβλέπει το συμβόλαιο;', en: 'What monthly amount does the policy provide?' },
+        { el: 'Τι μηνιαίο ποσό προβλέπει το ασφαλιστήριο;', en: 'What monthly amount does the policy provide?' },
         { el: 'Ο ορισμός ανικανότητας αφορά το επάγγελμά μου;', en: 'Does the incapacity definition refer to my own occupation?' },
         { el: 'Αναπροσαρμόζεται η παροχή με τον πληθωρισμό;', en: 'Is the benefit adjusted for inflation?' },
     ],
@@ -185,15 +185,15 @@ export const incomeProtectionContent: BranchContent = {
         },
     ],
     renewalNote: {
-        el: 'Κάθε φορά που αλλάζει το εισόδημα ή το επάγγελμά σας, το ποσό και ο ορισμός της παροχής αξίζουν επανεξέταση — αλλιώς το συμβόλαιο προστατεύει μια ζωή που δεν ζείτε πια.',
+        el: 'Κάθε φορά που αλλάζει το εισόδημα ή το επάγγελμά σας, το ποσό και ο ορισμός της παροχής αξίζουν επανεξέταση — αλλιώς το ασφαλιστήριο προστατεύει μια ζωή που δεν ζείτε πια.',
         en: 'Whenever your income or occupation changes, the benefit amount and definition deserve a second look — otherwise the policy protects a life you no longer live.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο προστασίας εισοδήματος', en: 'No income protection policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο προστασίας εισοδήματος', en: 'No income protection policy added yet' },
         description: {
-            el: 'Ανεβάστε το συμβόλαιο και δείτε πότε ξεκινά η παροχή, πόσο κρατά και υπό ποιες προϋποθέσεις ενεργοποιείται.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε πότε ξεκινά η παροχή, πόσο κρατά και υπό ποιες προϋποθέσεις ενεργοποιείται.',
             en: 'Upload the policy and see when the benefit starts, how long it lasts and on what conditions it triggers.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

@@ -24,7 +24,7 @@ export const fidelityContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Η κάλυψη λειτουργεί με βάση την ανακάλυψη. Τυπικά η πράξη πρέπει να αποκαλυφθεί εντός λίγων μηνών από τον θάνατο, την απόλυση ή την αποχώρηση του υπαλλήλου, και εντός σύντομης προθεσμίας από τη λήξη του συμβολαίου — με την πιο σύντομη από τις δύο να υπερισχύει.',
+            el: 'Η κάλυψη λειτουργεί με βάση την ανακάλυψη. Τυπικά η πράξη πρέπει να αποκαλυφθεί εντός λίγων μηνών από τον θάνατο, την απόλυση ή την αποχώρηση του υπαλλήλου, και εντός σύντομης προθεσμίας από τη λήξη του ασφαλιστηρίου — με την πιο σύντομη από τις δύο να υπερισχύει.',
             en: 'The cover works on discovery. Typically the act must come to light within a few months of the employee’s death, dismissal or departure, and within a short window after the policy expires — with the shorter of the two prevailing.',
         },
         {
@@ -50,7 +50,7 @@ export const fidelityContent: BranchContent = {
             en: 'From the document you uploaded: the per-employee limit and the overall ceiling, together with the deductible per loss occurrence.',
         },
         {
-            el: 'Τις προθεσμίες ανακάλυψης και τη σχέση τους με την αποχώρηση του υπαλλήλου και με τη λήξη του συμβολαίου.',
+            el: 'Τις προθεσμίες ανακάλυψης και τη σχέση τους με την αποχώρηση του υπαλλήλου και με τη λήξη του ασφαλιστηρίου.',
             en: 'The discovery deadlines and how they relate to an employee’s departure and to the policy’s expiry.',
         },
         {
@@ -64,7 +64,7 @@ export const fidelityContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Επικαιροποιήστε την κατάσταση καλυπτόμενων θέσεων σε κάθε πρόσληψη ή αλλαγή τμήματος· μια θέση που δεν περιλαμβάνεται δεν αποκτά κάλυψη επειδή υπάρχει το συμβόλαιο.',
+            el: 'Επικαιροποιήστε την κατάσταση καλυπτόμενων θέσεων σε κάθε πρόσληψη ή αλλαγή τμήματος· μια θέση που δεν περιλαμβάνεται δεν αποκτά κάλυψη επειδή υπάρχει το ασφαλιστήριο.',
             en: 'Refresh the schedule of covered positions at every hire or transfer; a role that is not listed does not gain cover simply because a policy exists.',
         },
         {
@@ -159,7 +159,7 @@ export const fidelityContent: BranchContent = {
         },
     ],
     suggestedQuestions: [
-        { el: 'Ποιες πράξεις καλύπτονται από το συμβόλαιο;', en: 'Which acts does the policy cover?' },
+        { el: 'Ποιες πράξεις καλύπτονται από το ασφαλιστήριο;', en: 'Which acts does the policy cover?' },
         { el: 'Μέχρι πότε μπορεί να δηλωθεί πράξη υπαλλήλου που έχει φύγει;', en: 'Until when can an act by a departed employee be reported?' },
         { el: 'Απαιτείται εσωτερικός έλεγχος για να ισχύει η κάλυψη;', en: 'Is internal audit required for the cover to apply?' },
         { el: 'Καλύπτονται οι νέοι υπάλληλοι αυτόματα;', en: 'Are new employees covered automatically?' },
@@ -184,7 +184,7 @@ export const fidelityContent: BranchContent = {
         },
     ],
     renewalNote: {
-        el: 'Η ανανέωση είναι η στιγμή να ξαναδεί κανείς ποιες θέσεις διαχειρίζονται χρήμα σήμερα — η κατάσταση προσωπικού αλλάζει πιο γρήγορα από το συμβόλαιο.',
+        el: 'Η ανανέωση είναι η στιγμή να ξαναδεί κανείς ποιες θέσεις διαχειρίζονται χρήμα σήμερα — η κατάσταση προσωπικού αλλάζει πιο γρήγορα από το ασφαλιστήριο.',
         en: 'Renewal is the moment to revisit which roles handle money today — a staff list changes faster than a policy does.',
     },
     emptyState: {

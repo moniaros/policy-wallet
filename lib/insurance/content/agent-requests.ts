@@ -48,9 +48,9 @@ export interface AgentRequestSpec {
 export const DEFAULT_AGENT_REQUEST: AgentRequestSpec = {
     category: 'general',
     priority: 'medium',
-    subject: { el: 'Ερώτηση για συμβόλαιο', en: 'Question about a policy' },
+    subject: { el: 'Ερώτηση για ασφαλιστήριο', en: 'Question about a policy' },
     message: {
-        el: 'Ο πελάτης ζητήστε να μιλήσετε για αυτό το συμβόλαιο μέσα από το PolicyWallet.',
+        el: 'Ο πελάτης ζητήστε να μιλήσετε για αυτό το ασφαλιστήριο μέσα από το PolicyWallet.',
         en: 'The customer asked to talk about this policy from inside PolicyWallet.',
     },
 }
@@ -62,7 +62,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'medium',
         subject: { el: 'Ερώτηση για μικτή ασφάλιση', en: 'Question about comprehensive cover' },
         message: {
-            el: 'Ο πελάτης θέλει να δει τι θα άλλαζε αν πρόσθετε μικτή κάλυψη σε αυτό το συμβόλαιο — καλύψεις, απαλλαγή και κόστος.',
+            el: 'Ο πελάτης θέλει να δει τι θα άλλαζε αν πρόσθετε μικτή κάλυψη σε αυτό το ασφαλιστήριο — καλύψεις, απαλλαγή και κόστος.',
             en: 'The customer would like to see what would change if comprehensive cover were added to this policy — covers, deductible and cost.',
         },
     },
@@ -135,7 +135,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'medium',
         subject: { el: 'Ερώτηση για κάλυψη ανικανότητας και εισοδήματος', en: 'Question about disability and income cover' },
         message: {
-            el: 'Ο πελάτης θέλει να συζητήσει τι θα άλλαζε αν προστίθετο κάλυψη ανικανότητας ή προστασίας εισοδήματος δίπλα στο συμβόλαιο ζωής.',
+            el: 'Ο πελάτης θέλει να συζητήσει τι θα άλλαζε αν προστίθετο κάλυψη ανικανότητας ή προστασίας εισοδήματος δίπλα στο ασφαλιστήριο ζωής.',
             en: 'The customer would like to discuss what would change if disability or income-protection cover were added alongside the life policy.',
         },
     },
@@ -162,7 +162,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'medium',
         subject: { el: 'Αίτημα για πίνακα ποσοστών ανικανότητας', en: 'Request for the disability percentage table' },
         message: {
-            el: 'Ο πελάτης ζητήστε τον πίνακα ποσοστών ανικανότητας που εφαρμόζεται στο συμβόλαιο προσωπικού ατυχήματος.',
+            el: 'Ο πελάτης ζητήστε τον πίνακα ποσοστών ανικανότητας που εφαρμόζεται στο ασφαλιστήριο προσωπικού ατυχήματος.',
             en: 'The customer requested the disability percentage table that applies to this personal accident policy.',
         },
     },
@@ -218,7 +218,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'medium',
         subject: { el: 'Ερώτηση για τα όρια ευθύνης', en: 'Question about the liability limits' },
         message: {
-            el: 'Ο πελάτης ρωτά αν τα όρια αστικής ευθύνης του συμβολαίου είναι επαρκή για την περίπτωσή του.',
+            el: 'Ο πελάτης ρωτά αν τα όρια αστικής ευθύνης του ασφαλιστηρίου είναι επαρκή για την περίπτωσή του.',
             en: 'The customer is asking whether the policy liability limits are adequate for their situation.',
         },
     },

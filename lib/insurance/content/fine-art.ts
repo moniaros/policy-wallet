@@ -32,7 +32,7 @@ export const fineArtContent: BranchContent = {
             en: 'The security terms here are not suggestions: an alarm connected to a monitoring centre and protected openings can be conditions of cover. If the system is not working, the cover may not apply.',
         },
         {
-            el: 'Η κάλυψη είναι συνήθως δεμένη στον χώρο που περιγράφεται στο συμβόλαιο. Ένα έργο που πηγαίνει σε έκθεση, σε συντηρητή ή σε δεύτερη κατοικία ενδέχεται να βγαίνει εκτός κάλυψης ενώ μετακινείται.',
+            el: 'Η κάλυψη είναι συνήθως δεμένη στον χώρο που περιγράφεται στο ασφαλιστήριο. Ένα έργο που πηγαίνει σε έκθεση, σε συντηρητή ή σε δεύτερη κατοικία ενδέχεται να βγαίνει εκτός κάλυψης ενώ μετακινείται.',
             en: 'Cover is normally tied to the premises the policy describes. A piece going to an exhibition, to a restorer or to a second home can fall outside cover while it travels.',
         },
         {
@@ -54,7 +54,7 @@ export const fineArtContent: BranchContent = {
             en: 'Which covers have been taken and which are listed as optional, so it is visible what has been activated and what has not.',
         },
         {
-            el: 'Τις ειδικές συμφωνίες και προϋποθέσεις ασφαλείας για τον χώρο φύλαξης, όπως είναι διατυπωμένες στο συμβόλαιο.',
+            el: 'Τις ειδικές συμφωνίες και προϋποθέσεις ασφαλείας για τον χώρο φύλαξης, όπως είναι διατυπωμένες στο ασφαλιστήριο.',
             en: 'The special agreements and security conditions for the place of keeping, as worded in the policy.',
         },
         {
@@ -64,7 +64,7 @@ export const fineArtContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Φωτογραφίστε κάθε αντικείμενο με λεπτομέρειες υπογραφής και φθορών, και κρατήστε τιμολόγια, πιστοποιητικά γνησιότητας και εκθέσεις εκτίμησης στο ίδιο σημείο με το συμβόλαιο.',
+            el: 'Φωτογραφίστε κάθε αντικείμενο με λεπτομέρειες υπογραφής και φθορών, και κρατήστε τιμολόγια, πιστοποιητικά γνησιότητας και εκθέσεις εκτίμησης στο ίδιο σημείο με το ασφαλιστήριο.',
             en: 'Photograph each piece including the signature and any wear, and keep invoices, certificates of authenticity and valuation reports in the same place as the policy.',
         },
         {
@@ -131,7 +131,7 @@ export const fineArtContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Ποιες προϋποθέσεις ασφαλείας ζητά το συμβόλαιο για τον χώρο φύλαξης;',
+                el: 'Ποιες προϋποθέσεις ασφαλείας ζητά το ασφαλιστήριο για τον χώρο φύλαξης;',
                 en: 'What security conditions does the policy require for the place of keeping?',
             },
         },
@@ -160,7 +160,7 @@ export const fineArtContent: BranchContent = {
     ],
     suggestedQuestions: [
         { el: 'Ποια είναι η συνολική ασφαλισμένη αξία της συλλογής;', en: 'What is the total insured value of the collection?' },
-        { el: 'Καλύπτεται ο σεισμός στο συμβόλαιό μου;', en: 'Is earthquake covered on my policy?' },
+        { el: 'Καλύπτεται ο σεισμός στο ασφαλιστήριό μου;', en: 'Is earthquake covered on my policy?' },
         { el: 'Τι απαλλαγή ισχύει ανά ζημιά;', en: 'What deductible applies per loss?' },
         { el: 'Καλύπτεται έργο που δανείζεται σε έκθεση;', en: 'Is a piece covered when lent to an exhibition?' },
         { el: 'Τι συμβαίνει αν χαθεί ένα κομμάτι από ζεύγος ή σειρά;', en: 'What happens if one piece of a pair or set is lost?' },
@@ -184,7 +184,7 @@ export const fineArtContent: BranchContent = {
         },
     ],
     renewalNote: {
-        el: 'Η ανανέωση είναι η φυσική στιγμή για να μπουν στην κατάσταση τα νέα αποκτήματα και να βγουν όσα πουλήθηκαν — αλλιώς το συμβόλαιο περιγράφει μια συλλογή που δεν υπάρχει πια.',
+        el: 'Η ανανέωση είναι η φυσική στιγμή για να μπουν στην κατάσταση τα νέα αποκτήματα και να βγουν όσα πουλήθηκαν — αλλιώς το ασφαλιστήριο περιγράφει μια συλλογή που δεν υπάρχει πια.',
         en: 'Renewal is the natural moment to add new acquisitions to the schedule and remove what has been sold — otherwise the policy describes a collection that no longer exists.',
     },
     emptyState: {

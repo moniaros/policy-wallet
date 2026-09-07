@@ -7,7 +7,7 @@ export const businessContent: BranchContent = {
         en: 'Premises, equipment, stock, liability: see whether your business covers match what the business actually does.',
     },
     shortDescription: {
-        el: 'Επαγγελματική στέγη, εξοπλισμός, διακοπή εργασιών, αστική και εργοδοτική ευθύνη — τι φαίνεται να καλύπτει το συμβόλαιο της επιχείρησής σας.',
+        el: 'Επαγγελματική στέγη, εξοπλισμός, διακοπή εργασιών, αστική και εργοδοτική ευθύνη — τι φαίνεται να καλύπτει το ασφαλιστήριο της επιχείρησής σας.',
         en: 'Business premises, equipment, business interruption, general and employer liability — what your business policy appears to cover.',
     },
     whyItMatters: [
@@ -38,7 +38,7 @@ export const businessContent: BranchContent = {
             en: 'Fire, theft, natural events and business-interruption covers — and each one’s limits.',
         },
         {
-            el: 'Αστική ευθύνη (γενική, επαγγελματική, εργοδοτική) όπως εμφανίζεται στο συμβόλαιο.',
+            el: 'Αστική ευθύνη (γενική, επαγγελματική, εργοδοτική) όπως εμφανίζεται στο ασφαλιστήριο.',
             en: 'Liability (general, professional, employer) as it appears in the policy.',
         },
     ],
@@ -52,7 +52,7 @@ export const businessContent: BranchContent = {
             en: 'Keep an inventory of equipment and stock with photos and invoices — a claim file is built before the loss.',
         },
         {
-            el: 'Μία φορά τον χρόνο, διαβάστε τις εξαιρέσεις μαζί με τον σύμβουλό σας — οι δραστηριότητες αλλάζουν πιο γρήγορα από τα συμβόλαια.',
+            el: 'Μία φορά τον χρόνο, διαβάστε τις εξαιρέσεις μαζί με τον σύμβουλό σας — οι δραστηριότητες αλλάζουν πιο γρήγορα από τα ασφαλιστήρια.',
             en: 'Once a year, go through the exclusions with your advisor — activities change faster than policies.',
         },
     ],
@@ -157,11 +157,11 @@ export const businessContent: BranchContent = {
         en: 'Before renewal, re-measure: equipment value, stock level, headcount, new activities. Whatever changed should be reflected.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο επιχείρησης', en: 'No business policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο επιχείρησης', en: 'No business policy added yet' },
         description: {
             el: 'Ανεβάστε το ασφαλιστήριο της επιχείρησής σας και δείτε αν στέγη, εξοπλισμός, εμπορεύματα και ευθύνη καλύπτονται όπως νομίζεις.',
             en: 'Upload your business policy and see whether premises, equipment, stock and liability are covered the way you assume.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

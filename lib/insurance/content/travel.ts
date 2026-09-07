@@ -7,7 +7,7 @@ export const travelContent: BranchContent = {
         en: 'Before you go, know what your travel policy covers — destination, medical, luggage, cancellation.',
     },
     shortDescription: {
-        el: 'Ιατρικά έξοδα στο εξωτερικό, ακύρωση ταξιδιού, αποσκευές, καθυστερήσεις και επαναπατρισμός — τι φαίνεται να ισχύει στο δικό σας συμβόλαιο.',
+        el: 'Ιατρικά έξοδα στο εξωτερικό, ακύρωση ταξιδιού, αποσκευές, καθυστερήσεις και επαναπατρισμός — τι φαίνεται να ισχύει στο δικό σας ασφαλιστήριο.',
         en: 'Medical expenses abroad, trip cancellation, luggage, delays and repatriation — what appears to apply in your own policy.',
     },
     whyItMatters: [
@@ -16,7 +16,7 @@ export const travelContent: BranchContent = {
             en: 'Medical costs outside Greece (especially outside the EU) can reach tens of thousands of euros — the EHIC does not cover everything.',
         },
         {
-            el: 'Τα γεωγραφικά όρια μετράνε: ένα συμβόλαιο «Ευρώπης» μπορεί να μην ισχύει σε ΗΠΑ ή Ασία.',
+            el: 'Τα γεωγραφικά όρια μετράνε: ένα ασφαλιστήριο «Ευρώπης» μπορεί να μην ισχύει σε ΗΠΑ ή Ασία.',
             en: 'Geographic limits matter: a "Europe" policy may not apply in the US or Asia.',
         },
         {
@@ -57,7 +57,7 @@ export const travelContent: BranchContent = {
             id: 'travel_destination_gap',
             title: { el: 'Προορισμός εκτός γεωγραφικών ορίων', en: 'Destination outside geographic limits' },
             description: {
-                el: 'Αν ο προορισμός δεν ανήκει στη ζώνη ισχύος του συμβολαίου, η κάλυψη ενδέχεται να μην ισχύει καθόλου.',
+                el: 'Αν ο προορισμός δεν ανήκει στη ζώνη ισχύος του ασφαλιστηρίου, η κάλυψη ενδέχεται να μην ισχύει καθόλου.',
                 en: 'If the destination is outside the policy’s zone, cover may not apply at all.',
             },
         },
@@ -85,7 +85,7 @@ export const travelContent: BranchContent = {
             label: { el: 'Ελέγξτε αν ο προορισμός σας καλύπτεται', en: 'Check your destination is covered' },
             href: null,
             ctaType: 'askAi',
-            question: { el: 'Σε ποιες χώρες ισχύει το συμβόλαιό μου;', en: 'In which countries does my policy apply?' },
+            question: { el: 'Σε ποιες χώρες ισχύει το ασφαλιστήριό μου;', en: 'In which countries does my policy apply?' },
         },
         {
             id: 'travel_check_luggage',
@@ -99,7 +99,7 @@ export const travelContent: BranchContent = {
             label: { el: 'Προετοιμαστείτε πριν το ταξίδι', en: 'Prepare before the trip' },
             href: null,
             ctaType: 'askAi',
-            question: { el: 'Τι πρέπει να έχω μαζί μου από το συμβόλαιο στο ταξίδι;', en: 'What from my policy should I carry on the trip?' },
+            question: { el: 'Τι πρέπει να έχω μαζί μου από το ασφαλιστήριο στο ταξίδι;', en: 'What from my policy should I carry on the trip?' },
         },
         {
             id: 'travel_check_activities',
@@ -135,7 +135,7 @@ export const travelContent: BranchContent = {
         { el: 'Καλύπτονται ιατρικά έξοδα στο εξωτερικό;', en: 'Are medical expenses abroad covered?' },
         { el: 'Τι ισχύει για απώλεια αποσκευών;', en: 'What applies for lost luggage?' },
         { el: 'Καλύπτεται ακύρωση ταξιδιού;', en: 'Is trip cancellation covered?' },
-        { el: 'Ισχύει το συμβόλαιο για χειμερινά σπορ;', en: 'Does the policy apply for winter sports?' },
+        { el: 'Ισχύει το ασφαλιστήριο για χειμερινά σπορ;', en: 'Does the policy apply for winter sports?' },
         { el: 'Ποιος είναι ο αριθμός επείγουσας βοήθειας;', en: 'What is the emergency assistance number?' },
     ],
     claimsSteps: [
@@ -162,6 +162,6 @@ export const travelContent: BranchContent = {
             el: 'Ανεβάστε την ταξιδιωτική σας κάλυψη και δείτε όρια ιατρικών, αποσκευές και τη γραμμή βοήθειας — πριν φύγετε.',
             en: 'Upload your travel cover and see medical limits, luggage terms and the assistance line — before you leave.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

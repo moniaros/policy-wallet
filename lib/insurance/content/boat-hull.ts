@@ -42,7 +42,7 @@ export const boatHullContent: BranchContent = {
             en: 'Where the craft is berthed is usually a condition of cover, not a detail. An organised marina, a fenced yard or a boat park may be required in terms, while a permanent swinging mooring can be excluded outright.',
         },
         {
-            el: 'Πολλά συμβόλαια προβλέπουν ότι σε περίπτωση ολικής απώλειας το σύνολο των ετήσιων ασφαλίστρων καθίσταται άμεσα απαιτητό — η αποζημίωση και η οφειλή συναντιούνται στο ίδιο σημείο.',
+            el: 'Πολλά ασφαλιστήρια προβλέπουν ότι σε περίπτωση ολικής απώλειας το σύνολο των ετήσιων ασφαλίστρων καθίσταται άμεσα απαιτητό — η αποζημίωση και η οφειλή συναντιούνται στο ίδιο σημείο.',
             en: 'Many policies provide that on a total loss the whole annual premium falls due at once — the payout and the debt meet at the same point.',
         },
     ],
@@ -60,13 +60,13 @@ export const boatHullContent: BranchContent = {
             en: 'The warranties and conditions of cover — servicing, skipper licence, place of berthing, validity of the craft’s papers — as they are worded, with nothing added by us.',
         },
         {
-            el: 'Τις ρήτρες και επεκτάσεις που κατονομάζονται στο συμβόλαιο, ώστε να φαίνεται ποιες καλύψεις προστίθενται και ποιες αφαιρούνται από το βασικό κείμενο.',
+            el: 'Τις ρήτρες και επεκτάσεις που κατονομάζονται στο ασφαλιστήριο, ώστε να φαίνεται ποιες καλύψεις προστίθενται και ποιες αφαιρούνται από το βασικό κείμενο.',
             en: 'The named clauses and extensions the policy cites, so it is visible which covers they add to the base wording and which they take away.',
         },
     ],
     howToUseBetter: [
         {
-            el: 'Κρατήστε τα δελτία service μηχανής μαζί με το συμβόλαιο. Στη μηχανική βλάβη το πρώτο ερώτημα είναι σχεδόν πάντα πότε έγινε η τελευταία συντήρηση και με ποιες προδιαγραφές.',
+            el: 'Κρατήστε τα δελτία service μηχανής μαζί με το ασφαλιστήριο. Στη μηχανική βλάβη το πρώτο ερώτημα είναι σχεδόν πάντα πότε έγινε η τελευταία συντήρηση και με ποιες προδιαγραφές.',
             en: 'Keep the engine service records with the policy. In a machinery claim the first question is nearly always when the last service happened and to what specification.',
         },
         {
@@ -164,7 +164,7 @@ export const boatHullContent: BranchContent = {
         { el: 'Ποια απαλλαγή θα εφαρμοστεί σε ζημιά της μηχανής;', en: 'Which deductible applies to engine damage?' },
         { el: 'Ποια είναι η ασφαλισμένη αξία του σκάφους και των μηχανών;', en: 'What is the insured value of the hull and machinery?' },
         { el: 'Καλύπτεται το βοηθητικό σκάφος και η εξωλέμβια;', en: 'Are the tender and the outboard covered?' },
-        { el: 'Τι ζητά το συμβόλαιο για τη συντήρηση της μηχανής;', en: 'What does the policy require for engine servicing?' },
+        { el: 'Τι ζητά το ασφαλιστήριο για τη συντήρηση της μηχανής;', en: 'What does the policy require for engine servicing?' },
         { el: 'Πού επιτρέπεται να ελλιμενίζεται το σκάφος;', en: 'Where is the boat allowed to be berthed?' },
     ],
     claimsSteps: [
@@ -186,7 +186,7 @@ export const boatHullContent: BranchContent = {
         },
     ],
     renewalNote: {
-        el: 'Στην ανανέωση αξίζει έλεγχος σε τρία σημεία: αξία σκάφους, κατάσταση εξοπλισμού και αν τηρήθηκαν τα service που ζητά το συμβόλαιο.',
+        el: 'Στην ανανέωση αξίζει έλεγχος σε τρία σημεία: αξία σκάφους, κατάσταση εξοπλισμού και αν τηρήθηκαν τα service που ζητά το ασφαλιστήριο.',
         en: 'At renewal three things are worth checking: the boat’s value, the equipment schedule, and whether the servicing the policy asks for was actually done.',
     },
     emptyState: {

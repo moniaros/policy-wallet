@@ -60,7 +60,7 @@ export const marineCrewContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Συγχρονίστε την περίοδο του συμβολαίου με τις ημερομηνίες ναυτολόγησης. Τα κενά εμφανίζονται στις αλλαγές πληρώματος και στις παρατάσεις ταξιδιού.',
+            el: 'Συγχρονίστε την περίοδο του ασφαλιστηρίου με τις ημερομηνίες ναυτολόγησης. Τα κενά εμφανίζονται στις αλλαγές πληρώματος και στις παρατάσεις ταξιδιού.',
             en: 'Align the policy period with the sign-on dates. Gaps show up at crew changes and voyage extensions.',
         },
         {

@@ -3,7 +3,7 @@ import type { BranchContent } from './types'
 export const cyberContent: BranchContent = {
     branchId: 'cyber',
     tagline: {
-        el: 'Οι online συναλλαγές σας έχουν κινδύνους — δείτε τι από αυτά καλύπτει το συμβόλαιό σας.',
+        el: 'Οι online συναλλαγές σας έχουν κινδύνους — δείτε τι από αυτά καλύπτει το ασφαλιστήριό σας.',
         en: 'Your online life carries risks — see which of them your policy covers.',
     },
     shortDescription: {
@@ -20,7 +20,7 @@ export const cyberContent: BranchContent = {
             en: 'Cyber cover limits are usually per incident and per year — worth knowing before you need them.',
         },
         {
-            el: 'Οι υποχρεώσεις σας (ενημερωμένο λογισμικό, μη κοινοποίηση κωδικών) είναι προϋπόθεση κάλυψης σε πολλά συμβόλαια.',
+            el: 'Οι υποχρεώσεις σας (ενημερωμένο λογισμικό, μη κοινοποίηση κωδικών) είναι προϋπόθεση κάλυψης σε πολλά ασφαλιστήρια.',
             en: 'Your obligations (updated software, not sharing credentials) are a coverage condition in many policies.',
         },
     ],
@@ -48,7 +48,7 @@ export const cyberContent: BranchContent = {
             en: 'Keep screenshots and emails of any suspicious transaction — they are the core evidence of the file.',
         },
         {
-            el: 'Αν το συμβόλαιο προσφέρει τεχνική υποστήριξη, χρησιμοποίησέ την και προληπτικά — όχι μόνο μετά από συμβάν.',
+            el: 'Αν το ασφαλιστήριο προσφέρει τεχνική υποστήριξη, χρησιμοποίησέ την και προληπτικά — όχι μόνο μετά από συμβάν.',
             en: 'If the policy offers technical support, use it preventively too — not only after an incident.',
         },
     ],
@@ -140,7 +140,7 @@ export const cyberContent: BranchContent = {
             en: 'File a report with the cybercrime unit — the case number is almost always required by the insurer.',
         },
         {
-            el: 'Συγκεντρώστε αποδεικτικά (screenshots, emails, κινήσεις λογαριασμού) και δηλώστε το περιστατικό στον ασφαλιστή σας εντός της προθεσμίας του συμβολαίου.',
+            el: 'Συγκεντρώστε αποδεικτικά (screenshots, emails, κινήσεις λογαριασμού) και δηλώστε το περιστατικό στον ασφαλιστή σας εντός της προθεσμίας του ασφαλιστηρίου.',
             en: 'Gather evidence (screenshots, emails, statements) and report to your insurer within the policy deadline.',
         },
     ],
@@ -151,9 +151,9 @@ export const cyberContent: BranchContent = {
     emptyState: {
         headline: { el: 'Δεν έχετε προσθέσει cyber κάλυψη', en: 'No cyber cover added yet' },
         description: {
-            el: 'Ανεβάστε το συμβόλαιό σας (ή το πρόγραμμα της τράπεζάς σας) και δείτε τι ισχύει για online απάτη και κλοπή ταυτότητας.',
+            el: 'Ανεβάστε το ασφαλιστήριό σας (ή το πρόγραμμα της τράπεζάς σας) και δείτε τι ισχύει για online απάτη και κλοπή ταυτότητας.',
             en: 'Upload your policy (or your bank’s programme) and see what applies for online fraud and identity theft.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

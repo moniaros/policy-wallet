@@ -1721,6 +1721,8 @@ export const en: TranslationKeys = {
             denominatorHeldOnly: 'of the {n} categories in which you hold a policy — we do not yet know which others concern you',
             underReviewOnly: '{n} categories have findings awaiting classification — they do not count above.',
             underReviewOnlyOne: '1 category has findings awaiting classification — it does not count above.',
+            notRecorded: '{n} details are not recorded in your documents — they change no category\'s status; you will find them under the findings.',
+            notRecordedOne: '1 detail is not recorded in your documents — it changes no category\'s status; you will find it under the findings.',
             heldElsewhere: 'You told us you hold these outside PolicyWallet: {list}.',
             meaning: {
                 appears_covered: 'You hold a policy in force and no check showed something missing.',

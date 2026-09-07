@@ -867,6 +867,29 @@ describe("PS-01: the summary — four counted doors over a visible denominator, 
         expect(firstNumber(container.querySelector('#summary a[data-count="branch.findingCount"]'))).toBe(0)
     })
 
+    it("a recording-class finding changes no status — the summary says so in one sentence that is a door to the findings", () => {
+        // Production, 2026-09-07: «Μερική κάλυψη 0» sat above a findings list holding
+        // «Δεν καταγράφεται τηλέφωνο αναγγελίας ατυχήματος». Both were right — a recording
+        // rule asks whether a value was written down, not whether cover exists — and the
+        // page owed the reader the sentence that reconciles them.
+        const recordingOnly = deriveCoverageStatus({
+            policies: [COVERAGE_POLICIES[0]],
+            gapRows: [{ policyId: COVERAGE_POLICIES[0].id, slug: "missing_accident_declaration_phone", analysisRunId: "run-mot-1", runFinishedAt: inDays(-5) }],
+            runs: [COVERAGE_RUNS[0]],
+            expectedLines: ["motor"],
+            coverHeldElsewhere: [],
+            now: NOW,
+        })
+        expect(recordingOnly.summary).toMatchObject({ finding: 0, notRecorded: 1 })
+        const { container } = renderSurface({ summary: { summary: recordingOnly.summary, heldElsewhereLabels: [], copy: { ...t.protection.summary, status: t.protection.status } } })
+        const sentence = container.querySelector('#summary a[data-count="branch.notRecordedCount"]')
+        expect(sentence, "the sentence is a door").not.toBeNull()
+        expect(sentence!.getAttribute("href")).toBe("#gaps")
+        expect(firstNumber(sentence)).toBe(1)
+        expect(textOf(sentence)).toBe(t.protection.summary.notRecordedOne)
+        expect(firstNumber(container.querySelector('#summary a[data-count="branch.findingCount"]'))).toBe(0)
+    })
+
     it("no verdict word renders anywhere on the page", () => {
         const { container } = renderSurface()
         for (const forbidden of ["Καλύπτεται καλά", "Δεν καλύπτεστε", "Επαρκής", "Σχεδόν έτοιμη", "Πιθανό κενό", "Απροστάτευτο"]) {

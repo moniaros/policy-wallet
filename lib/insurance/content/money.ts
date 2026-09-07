@@ -36,7 +36,7 @@ export const moneyContent: BranchContent = {
             en: 'A transit has a geographic boundary and conditions on who carries it out — permanent staff, within a stated age range, with a clean record. Professional cash carriers are often expressly excluded.',
         },
         {
-            el: 'Ορισμένα συμβόλαια θέτουν ως προϋπόθεση την ύπαρξη ασφαλιστηρίου περιουσίας σε ισχύ για την ίδια διεύθυνση. Η λήξη του ενός συμβολαίου μπορεί έτσι να επηρεάσει το άλλο.',
+            el: 'Ορισμένα ασφαλιστήρια θέτουν ως προϋπόθεση την ύπαρξη ασφαλιστηρίου περιουσίας σε ισχύ για την ίδια διεύθυνση. Η λήξη του ενός ασφαλιστηρίου μπορεί έτσι να επηρεάσει το άλλο.',
             en: 'Some policies make an in-force property policy for the same address a condition. The lapse of one contract can therefore affect the other.',
         },
     ],
@@ -50,7 +50,7 @@ export const moneyContent: BranchContent = {
             en: 'The deductibles per loss occurrence, which can differ between the contents and material damage to the safe itself.',
         },
         {
-            el: 'Τις ειδικές εξαιρέσεις και προϋποθέσεις κάλυψης, με τη διατύπωση του συμβολαίου, ώστε να φαίνεται ποια μέτρα θεωρούνται δεδομένα.',
+            el: 'Τις ειδικές εξαιρέσεις και προϋποθέσεις κάλυψης, με τη διατύπωση του ασφαλιστηρίου, ώστε να φαίνεται ποια μέτρα θεωρούνται δεδομένα.',
             en: 'The special exclusions and conditions of cover, in the policy’s own wording, so that which measures are being assumed is visible.',
         },
         {
@@ -72,7 +72,7 @@ export const moneyContent: BranchContent = {
             en: 'Keep the cheque register current the same day. Filling it in after a theft does not carry the same weight.',
         },
         {
-            el: 'Περιορίστε το μέγιστο υπόλοιπο ανά ταμείο κοντά στο επιμέρους όριο του συμβολαίου· τα μετρητά που ξεπερνούν το όριο μένουν εκτεθειμένα ακόμη κι όταν η κάλυψη ισχύει.',
+            el: 'Περιορίστε το μέγιστο υπόλοιπο ανά ταμείο κοντά στο επιμέρους όριο του ασφαλιστηρίου· τα μετρητά που ξεπερνούν το όριο μένουν εκτεθειμένα ακόμη κι όταν η κάλυψη ισχύει.',
             en: 'Cap the maximum balance per till near the policy’s sub-limit; cash above the sub-limit stays exposed even where the cover responds.',
         },
     ],
@@ -97,7 +97,7 @@ export const moneyContent: BranchContent = {
             id: 'money_transit_scope_gap',
             title: { el: 'Χρηματαποστολή εκτός γεωγραφικών ορίων', en: 'Transit outside the geographic scope' },
             description: {
-                el: 'Αν η μεταφορά βγαίνει από την περιοχή που ορίζει το συμβόλαιο ή γίνεται από εξαιρούμενο πρόσωπο, η κάλυψη ενδέχεται να μην ισχύει.',
+                el: 'Αν η μεταφορά βγαίνει από την περιοχή που ορίζει το ασφαλιστήριο ή γίνεται από εξαιρούμενο πρόσωπο, η κάλυψη ενδέχεται να μην ισχύει.',
                 en: 'If the movement leaves the area the policy names, or is carried out by an excluded party, the cover may not apply.',
             },
         },
@@ -127,7 +127,7 @@ export const moneyContent: BranchContent = {
             href: null,
             ctaType: 'askAi',
             question: {
-                el: 'Ποια μέτρα ασφαλείας απαιτεί το συμβόλαιο για να ισχύει η κάλυψη;',
+                el: 'Ποια μέτρα ασφαλείας απαιτεί το ασφαλιστήριο για να ισχύει η κάλυψη;',
                 en: 'Which security measures does the policy require for the cover to apply?',
             },
         },

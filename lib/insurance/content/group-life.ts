@@ -69,7 +69,7 @@ export const groupLifeContent: BranchContent = {
             en: 'Keep a copy of the certificate outside corporate systems — after you leave, access to the internal network goes and the document goes with it.',
         },
         {
-            el: 'Πριν από μια αποχώρηση, ρωτήστε αν προβλέπεται δικαίωμα συνέχισης σε ατομικό συμβόλαιο και μέσα σε ποια προθεσμία ασκείται.',
+            el: 'Πριν από μια αποχώρηση, ρωτήστε αν προβλέπεται δικαίωμα συνέχισης σε ατομικό ασφαλιστήριο και μέσα σε ποια προθεσμία ασκείται.',
             en: 'Before leaving, ask whether a right to continue as an individual policy exists and within what deadline it must be exercised.',
         },
     ],
@@ -157,7 +157,7 @@ export const groupLifeContent: BranchContent = {
         { el: 'Ποιοι αναφέρονται ως δικαιούχοι;', en: 'Who is named as beneficiary?' },
         { el: 'Τι γίνεται με την κάλυψη αν αλλάξω εργοδότη;', en: 'What happens to the cover if I change employer?' },
         { el: 'Περιλαμβάνεται κάλυψη ατυχήματος ή μόνιμης ανικανότητας;', en: 'Is accident or permanent-disability cover included?' },
-        { el: 'Μπορεί το πρόγραμμα να μετατραπεί σε ατομικό συμβόλαιο;', en: 'Can the scheme be converted into an individual policy?' },
+        { el: 'Μπορεί το πρόγραμμα να μετατραπεί σε ατομικό ασφαλιστήριο;', en: 'Can the scheme be converted into an individual policy?' },
     ],
     claimsSteps: [
         {
@@ -165,7 +165,7 @@ export const groupLifeContent: BranchContent = {
             en: 'The process usually starts at the company: the employer confirms the member’s status before the insurer opens a file.',
         },
         {
-            el: 'Χρειάζονται τα πιστοποιητικά της αστικής κατάστασης — ληξιαρχική πράξη, πιστοποιητικό εγγυτέρων συγγενών — μαζί με τα στοιχεία του ομαδικού συμβολαίου.',
+            el: 'Χρειάζονται τα πιστοποιητικά της αστικής κατάστασης — ληξιαρχική πράξη, πιστοποιητικό εγγυτέρων συγγενών — μαζί με τα στοιχεία του ομαδικού ασφαλιστηρίου.',
             en: 'Civil-status documents are needed — death certificate, certificate of next of kin — together with the group policy details.',
         },
         {

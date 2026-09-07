@@ -32,7 +32,7 @@ export const personalAccidentContent: BranchContent = {
             en: 'Cover triggers on a sudden, external and violent event. Anything arising from illness or gradual wear falls outside, even where the outcome looks identical.',
         },
         {
-            el: 'Ορισμένα συμβόλαια ισχύουν μόνο κατά τις ώρες εργασίας ή τη διαδρομή προς αυτήν — ένα ατύχημα το Σαββατοκύριακο ενδέχεται να μην τα ενεργοποιεί καθόλου.',
+            el: 'Ορισμένα ασφαλιστήρια ισχύουν μόνο κατά τις ώρες εργασίας ή τη διαδρομή προς αυτήν — ένα ατύχημα το Σαββατοκύριακο ενδέχεται να μην τα ενεργοποιεί καθόλου.',
             en: 'Some policies apply only during working hours or the commute — a weekend accident may not engage them at all.',
         },
         {
@@ -50,7 +50,7 @@ export const personalAccidentContent: BranchContent = {
             en: 'Personal accident has no structured fields in our analysis: we read the coverages and exclusions as written in the document you uploaded.',
         },
         {
-            el: 'Εντοπίζουμε τις αναφορές σε εφάπαξ κεφάλαια, ποσοστά μόνιμης ανικανότητας, ημερήσια αποζημίωση και έξοδα νοσηλείας — όπως τα διατυπώνει το συμβόλαιο, χωρίς δικές μας εκτιμήσεις.',
+            el: 'Εντοπίζουμε τις αναφορές σε εφάπαξ κεφάλαια, ποσοστά μόνιμης ανικανότητας, ημερήσια αποζημίωση και έξοδα νοσηλείας — όπως τα διατυπώνει το ασφαλιστήριο, χωρίς δικές μας εκτιμήσεις.',
             en: 'We surface references to lump-sum capital, permanent-disability percentages, daily indemnity and medical expenses — as the policy words them, with no estimates of our own.',
         },
         {
@@ -60,11 +60,11 @@ export const personalAccidentContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Ζητήστε τον πίνακα ποσοστών μόνιμης ανικανότητας και διάβασέ τον μία φορά με ηρεμία — εκεί βρίσκεται η πραγματική αξία του συμβολαίου, όχι στο κεφάλαιο της πρώτης σελίδας.',
+            el: 'Ζητήστε τον πίνακα ποσοστών μόνιμης ανικανότητας και διάβασέ τον μία φορά με ηρεμία — εκεί βρίσκεται η πραγματική αξία του ασφαλιστηρίου, όχι στο κεφάλαιο της πρώτης σελίδας.',
             en: 'Ask for the permanent-disability percentage table and read it once, calmly — the policy’s real value lives there, not in the headline capital on page one.',
         },
         {
-            el: 'Αν έχετε παρόμοια κάλυψη μέσω εργοδότη ή ομαδικού συμβολαίου, δείτε πώς συνδυάζονται· τα εφάπαξ συνήθως αθροίζονται, οι δαπάνες συνήθως όχι.',
+            el: 'Αν έχετε παρόμοια κάλυψη μέσω εργοδότη ή ομαδικού ασφαλιστηρίου, δείτε πώς συνδυάζονται· τα εφάπαξ συνήθως αθροίζονται, οι δαπάνες συνήθως όχι.',
             en: 'If you have similar cover through an employer or group scheme, see how they combine; lump sums usually add up, expense reimbursements usually do not.',
         },
         {
@@ -81,7 +81,7 @@ export const personalAccidentContent: BranchContent = {
             id: 'personal_accident_illness_gap',
             title: { el: 'Η ασθένεια μένει εκτός', en: 'Illness stays outside' },
             description: {
-                el: 'Το προσωπικό ατύχημα δεν καλύπτει παθήσεις. Αν χρειάζεστε προστασία και για ασθένεια, αυτή έρχεται από άλλο συμβόλαιο.',
+                el: 'Το προσωπικό ατύχημα δεν καλύπτει παθήσεις. Αν χρειάζεστε προστασία και για ασθένεια, αυτή έρχεται από άλλο ασφαλιστήριο.',
                 en: 'Personal accident does not cover illness. If you need protection for illness too, that comes from a different policy.',
             },
         },
@@ -89,7 +89,7 @@ export const personalAccidentContent: BranchContent = {
             id: 'personal_accident_scope_gap',
             title: { el: 'Κάλυψη μόνο σε ώρες εργασίας', en: 'Work-hours-only cover' },
             description: {
-                el: 'Αν το συμβόλαιο ισχύει μόνο επαγγελματικά, ο ελεύθερος χρόνος — όπου συμβαίνουν πολλά ατυχήματα — ενδέχεται να μένει ακάλυπτος.',
+                el: 'Αν το ασφαλιστήριο ισχύει μόνο επαγγελματικά, ο ελεύθερος χρόνος — όπου συμβαίνουν πολλά ατυχήματα — ενδέχεται να μένει ακάλυπτος.',
                 en: 'If the policy applies occupationally only, leisure time — where many accidents happen — may go uncovered.',
             },
         },
@@ -97,7 +97,7 @@ export const personalAccidentContent: BranchContent = {
             id: 'personal_accident_scale_gap',
             title: { el: 'Άγνωστος πίνακας ποσοστών', en: 'Unknown percentage scale' },
             description: {
-                el: 'Χωρίς τον πίνακα μόνιμης ανικανότητας, το κεφάλαιο του συμβολαίου δεν λέει σχεδόν τίποτα για το τι θα καταβληθεί στην πράξη.',
+                el: 'Χωρίς τον πίνακα μόνιμης ανικανότητας, το κεφάλαιο του ασφαλιστηρίου δεν λέει σχεδόν τίποτα για το τι θα καταβληθεί στην πράξη.',
                 en: 'Without the permanent-disability table, the policy’s headline capital says almost nothing about what would actually be paid.',
             },
         },
@@ -159,7 +159,7 @@ export const personalAccidentContent: BranchContent = {
         },
     ],
     suggestedQuestions: [
-        { el: 'Τι θεωρείται ατύχημα στο συμβόλαιό μου;', en: 'What counts as an accident in my policy?' },
+        { el: 'Τι θεωρείται ατύχημα στο ασφαλιστήριό μου;', en: 'What counts as an accident in my policy?' },
         { el: 'Πόσο αποδίδει η μόνιμη μερική ανικανότητα;', en: 'What does partial permanent disability pay?' },
         { el: 'Καλύπτονται τα έξοδα νοσηλείας μετά από ατύχημα;', en: 'Are medical expenses after an accident covered?' },
         { el: 'Ισχύει η κάλυψη και εκτός εργασίας;', en: 'Does the cover apply outside work as well?' },
@@ -175,7 +175,7 @@ export const personalAccidentContent: BranchContent = {
             en: 'Record where, when and how it happened, with witnesses if any; “sudden and external” has to be evident from the evidence.',
         },
         {
-            el: 'Δηλώστε το συμβάν εντός της προθεσμίας που ορίζει το συμβόλαιο — στα ατυχήματα οι προθεσμίες είναι συχνά σύντομες.',
+            el: 'Δηλώστε το συμβάν εντός της προθεσμίας που ορίζει το ασφαλιστήριο — στα ατυχήματα οι προθεσμίες είναι συχνά σύντομες.',
             en: 'Report the event within the deadline the policy sets — for accidents the deadlines are often short.',
         },
         {
@@ -188,11 +188,11 @@ export const personalAccidentContent: BranchContent = {
         en: 'If your occupation, sports or commuting habits have changed, renewal is the moment to declare them — the scope of cover depends on them.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο προσωπικού ατυχήματος', en: 'No personal accident policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο προσωπικού ατυχήματος', en: 'No personal accident policy added yet' },
         description: {
-            el: 'Ανεβάστε το συμβόλαιο και δείτε τι μετρά ως ατύχημα, τι αποδίδει η κάθε περίπτωση και πού σταματά η κάλυψη.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε τι μετρά ως ατύχημα, τι αποδίδει η κάθε περίπτωση και πού σταματά η κάλυψη.',
             en: 'Upload the policy and see what counts as an accident, what each case pays and where the cover stops.',
         },
-        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }
