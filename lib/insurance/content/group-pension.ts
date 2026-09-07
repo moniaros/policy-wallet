@@ -67,7 +67,7 @@ export const groupPensionContent: BranchContent = {
             en: 'Before leaving, ask in writing how much is vested at that moment. A few months’ difference can change the share you take with you.',
         },
         {
-            el: 'Αν το πρόγραμμα προβλέπει προαιρετική δική σας εισφορά με αντιστοίχιση από τον εργοδότη, δείτε αν την αξιοποιείς — είναι μέρος του πακέτου αποδοχών σας.',
+            el: 'Αν το πρόγραμμα προβλέπει προαιρετική δική σας εισφορά με αντιστοίχιση από τον εργοδότη, δείτε αν την αξιοποιείτε — είναι μέρος του πακέτου αποδοχών σας.',
             en: 'If the scheme offers an optional employee contribution matched by the employer, check whether you are using it — it is part of your remuneration package.',
         },
         {

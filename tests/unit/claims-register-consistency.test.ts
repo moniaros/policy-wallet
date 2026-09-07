@@ -22,7 +22,10 @@ const SINGULAR = word(
     "Ασφάλισε|Κάλεσε|Φωτογράφισε|Κράτα|Κατάγραψε|Δήλωσε|Στείλε|Ζήτησε|Περίμενε|Πήγαινε|" +
     "Ενημέρωσε|Ετοίμασε|Συγκέντρωσε|Σημείωσε|Αναγγείλε|Περιόρισε|Ειδοποίησε|Κατάθεσε|" +
     "Επικοινώνησε|Συμπλήρωσε|Δες|Συζήτησε|άσε|μην ξεκινήσεις|μην υπογράψεις|" +
-    "μη συμφωνήσεις|μην αναγνωρίσεις"
+    "μη συμφωνήσεις|μην αναγνωρίσεις|" +
+    // The drifts the production smoke of «Καλύψεις & κενά» found on 2026-09-07 in
+    // taglines, prose and action labels — leaves this guard never read.
+    "Σιγουρέψου|Άνοιξε|ξαναδές|νομίζεις|αξιοποιείς|Μάθε|Κατάλαβε|Ξεκίνα|Ρώτα|Έλεγξε"
 )
 
 // Second-person PLURAL / formal.
@@ -34,6 +37,13 @@ const PLURAL = word(
 )
 
 
+/** Every Greek leaf in a content module — taglines, headlines, prose, action labels, steps. */
+export function greekLeavesOf(src: string): string[] {
+    return [...src.matchAll(/el:\s*'([^']*)'/g)].map((x) => x[1])
+}
+export function singularLeaves(src: string): string[] {
+    return greekLeavesOf(src).filter((leaf) => SINGULAR.test(leaf))
+}
 function stepsOf(src: string): string[][] {
     const lists: string[][] = []
     for (const m of src.matchAll(/claimsSteps:\s*\[([\s\S]*?)\n\s*\]/g)) {
@@ -94,6 +104,24 @@ describe('claim guidance keeps one voice within a list', () => {
             }
         }
         expect(offenders, `singular (informal) claim step(s):\n${offenders.join('\n')}`).toEqual([])
+    })
+
+    it('every Greek leaf in the branch content speaks the formal voice — taglines and action labels render as product copy', () => {
+        // life.ts opened its tagline with «Σιγουρέψου» and closed the same sentence with
+        // «θέλετε»; self-tasks labelled four actions «Άνοιξε το ασφαλιστήριο». The claims
+        // lists were guarded; the leaves around them were not (2026-09-07).
+        const offenders: string[] = []
+        for (const file of CONTENT) {
+            for (const leaf of singularLeaves(readFileSync(file, 'utf-8'))) {
+                offenders.push(`${file.split('/').pop()}: «${leaf.match(SINGULAR)![0]}» in "${leaf.slice(0, 60)}…"`)
+            }
+        }
+        expect(offenders, `singular (informal) leaf(s) in the branch content:\n${offenders.join('\n')}`).toEqual([])
+    })
+
+    it('is proven red on the probe (a singular tagline and a singular action label)', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/content-register-singular.ts.txt', 'utf-8')
+        expect(singularLeaves(probe).length).toBe(2)
     })
 
     it('motor keeps every operative point it gained', () => {

@@ -1,0 +1,7 @@
+// PROBE for tests/unit/claims-register-consistency.test.ts — never compiled.
+// A content module whose tagline and action label use the singular imperative.
+export const probe = {
+    tagline: { el: 'Σιγουρέψου ότι το ασφαλιστήριο προστατεύει όσους θέλετε.', en: 'Make sure the policy protects the people you intend.' },
+    selfTasks: [{ actionLabel: { el: 'Άνοιξε το ασφαλιστήριο', en: 'Open the policy' } }],
+    formal: { el: 'Ανοίξτε το ασφαλιστήριο και δείτε τι καλύπτει.', en: 'Open the policy and see what it covers.' },
+}

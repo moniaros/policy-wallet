@@ -3,7 +3,7 @@ import type { BranchContent } from './types'
 export const lifeContent: BranchContent = {
     branchId: 'life',
     tagline: {
-        el: 'Σιγουρέψου ότι το ασφαλιστήριο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σωστό κεφάλαιο και τους σωστούς δικαιούχους.',
+        el: 'Σιγουρευτείτε ότι το ασφαλιστήριο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σωστό κεφάλαιο και τους σωστούς δικαιούχους.',
         en: 'Make sure your life policy protects the people you intend — with the right amount and the right beneficiaries.',
     },
     shortDescription: {
@@ -40,7 +40,7 @@ export const lifeContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Μετά από κάθε σημαντική αλλαγή ζωής (γάμος, παιδί, νέο δάνειο), ξαναδές δικαιούχους και κεφάλαιο — δύο λεπτά που μετράνε πολύ.',
+            el: 'Μετά από κάθε σημαντική αλλαγή ζωής (γάμος, παιδί, νέο δάνειο), ξαναδείτε δικαιούχους και κεφάλαιο — δύο λεπτά που μετράνε πολύ.',
             en: 'After every major life change (marriage, child, new loan), revisit beneficiaries and sum — two minutes that matter a lot.',
         },
         {

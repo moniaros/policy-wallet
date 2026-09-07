@@ -46,12 +46,7 @@ import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
-import {
-    displayPolicyNumber as safePolicyNumber,
-    isPlaceholderInsurerName,
-    isPlaceholderPolicyNumber,
-    policyAssetIdentity,
-} from "@/lib/wallet/policy-identity"
+import { displayPolicyNumber as safePolicyNumber, isPlaceholderInsurerName, isPlaceholderPolicyNumber, policyAssetIdentity, scrubRenderableText } from '@/lib/wallet/policy-identity'
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 import type { Composition } from "@/lib/gaps/composition"
@@ -488,10 +483,11 @@ export function PolicyDetailsClient({
 
     const gapsForAnalysis = (policy.gapInstances || []).map((gap: any) => ({
         id: gap.id,
-        aiExplanation: gap.aiExplanation || null,
-        aiExplanationEl: gap.aiExplanationEl || null,
-        aiSuggestion: gap.aiSuggestion || null,
-        aiSuggestionEl: gap.aiSuggestionEl || null,
+        // The model's prose through the placeholder scrub (real names stay).
+        aiExplanation: gap.aiExplanation ? scrubRenderableText(gap.aiExplanation) : null,
+        aiExplanationEl: gap.aiExplanationEl ? scrubRenderableText(gap.aiExplanationEl) : null,
+        aiSuggestion: gap.aiSuggestion ? scrubRenderableText(gap.aiSuggestion) : null,
+        aiSuggestionEl: gap.aiSuggestionEl ? scrubRenderableText(gap.aiSuggestionEl) : null,
         definition: {
             title: gap.definition?.title || t.analysis.unknownGap,
             severity: gap.definition?.severity || "medium",

@@ -159,7 +159,7 @@ export const businessContent: BranchContent = {
     emptyState: {
         headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο επιχείρησης', en: 'No business policy added yet' },
         description: {
-            el: 'Ανεβάστε το ασφαλιστήριο της επιχείρησής σας και δείτε αν στέγη, εξοπλισμός, εμπορεύματα και ευθύνη καλύπτονται όπως νομίζεις.',
+            el: 'Ανεβάστε το ασφαλιστήριο της επιχείρησής σας και δείτε αν στέγη, εξοπλισμός, εμπορεύματα και ευθύνη καλύπτονται όπως νομίζετε.',
             en: 'Upload your business policy and see whether premises, equipment, stock and liability are covered the way you assume.',
         },
         ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
