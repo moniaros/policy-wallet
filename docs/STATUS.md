@@ -1,6 +1,6 @@
 # STATUS
 
-**Production: `b7811030`** — the B2C story series, three squashes on 2026-09-07: the home as a story (#311 → `345d8321`, deploy run 34087702665, 05:44Z), «Καλύψεις & κενά» as a protection story (#314 → `1c9dde12`, deploy run 34089281527, 06:06Z), the mobile menu ☰/X (#313 → `b7811030`, deploy run 34091421340, 06:37Z); each smoked signed-in on production with the owner's session. Previous: **`3c287313`** — PW-CONTENT-01 Goals 1–4 and 7 (PR #308, deploy run 34038640338, 2026-09-06 14:20Z; smoke in `docs/evidence/content-g8/`). Before that: **`7b86805d`** — PW-TRANSPARENCY-02 close-out (PR #307, deploy run 33996579556, 2026-09-05 22:43Z; previous production `e55cf432` = B4 #304, `886ac01f` = R3 #303, `6ff5aebc` = #301, `b0044eaa` = #300, `85088850` = #299). Before the series: **`45013e3f`** — the Document Validation Gate (PR #298), merged and deployed
+**Production: `21160711`** — the story series' follow-ups (#315, deploy run 34098730747, 2026-09-07 08:10Z: branch content on the ratified term, the summary's recording-finding sentence), over the B2C story series, three squashes on 2026-09-07: the home as a story (#311 → `345d8321`, deploy run 34087702665, 05:44Z), «Καλύψεις & κενά» as a protection story (#314 → `1c9dde12`, deploy run 34089281527, 06:06Z), the mobile menu ☰/X (#313 → `b7811030`, deploy run 34091421340, 06:37Z); each smoked signed-in on production with the owner's session. Previous: **`3c287313`** — PW-CONTENT-01 Goals 1–4 and 7 (PR #308, deploy run 34038640338, 2026-09-06 14:20Z; smoke in `docs/evidence/content-g8/`). Before that: **`7b86805d`** — PW-TRANSPARENCY-02 close-out (PR #307, deploy run 33996579556, 2026-09-05 22:43Z; previous production `e55cf432` = B4 #304, `886ac01f` = R3 #303, `6ff5aebc` = #301, `b0044eaa` = #300, `85088850` = #299). Before the series: **`45013e3f`** — the Document Validation Gate (PR #298), merged and deployed
 2026-09-05 00:00Z (deploy run 33930719296) after CI green (one flaky, unrelated
 `area-detail-questions` case re-run); prod migration `20260905120000_document_validation_stamp`
 and the `policies` bucket INSERT-policy drop verified by query BEFORE the merge; production
@@ -87,11 +87,14 @@ seams and hostile review: `docs/handover.md`.
   session on production after each deploy: /protection renders the story over «από 6 κατηγορίες»
   (0 · 0 · 2 · 4), the primary lands on «Τι αξίζει να δείτε» with the one live finding dated
   5 Sept 2026 and its Π.Δ. 237/1986 citation, both lenses, no horizontal scroll, console clean.
-  UX backlog (not gates): the branch rows' taglines still say «συμβόλαιο» (`getBranchContent` is
-  outside the term guard's file list); «Τι σημαίνει για εσάς» quotes the extraction's insurer name
-  verbatim («Example Insurance Company Ltd» on the owner's test policy); production shows
-  «Μερική κάλυψη 0» beside one live finding because that finding is a recording-class rule («δεν
-  καταγράφεται»), which never changes a branch's status by design — worth a sentence on the door.
+  Follow-ups shipped the same day as **PR #315 → `21160711`** (deploy run 34098730747, 08:10Z): the 231
+  «συμβόλαιο» uses across the 33 branch-content modules swept to «ασφαλιστήριο» and
+  `lib/insurance/content` added to the term guard's universe (the «editorial prose» carve-out no
+  longer covers branch education, whose taglines render on the category rows); `summary.notRecorded`
+  + one sentence under the four doors (`branch.notRecordedCount`, a door to `#gaps`) that says a
+  recording-class finding changes no status — the reconciliation of «Μερική κάλυψη 0» with a
+  non-empty findings list. Still on the UX backlog (not a gate): «Τι σημαίνει για εσάς» quotes the
+  extraction's insurer name verbatim («Example Insurance Company Ltd» on the owner's test policy).
 
 - **2026-09-07 — The B2C home as a story (impeccable brief) — SHIPPED as PR #311 → NEW-UI `345d8321`, deploy run 34087702665 (2026-09-07 05:44Z), smoked signed-in
   on production (six regions, one primary, 19 counted doors, no horizontal scroll; /recommendations 4
