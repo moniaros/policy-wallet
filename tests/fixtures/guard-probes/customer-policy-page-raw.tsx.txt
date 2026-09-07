@@ -1,9 +1,11 @@
 // PROBE for tests/unit/customer-policy-page-parity.test.ts — never compiled.
 // A page fragment that commits all four raw renders the guard refuses:
 //   A-05 the raw policy number, A-04 the raw end-date column, A-03 premium-or-zero,
-//   A-19 a status label resolved before the account language.
+//   A-19 a status label resolved before the account language,
+//   A-07 a second, raw-envelope render of the insurer.
 const status = calculatePolicyStatus(policy)
 const statusLabel = getStatusLabel(status)
+const hasPremium = typeof policy.premiumAmount === "number" && policy.premiumAmount > 0
 export function Probe() {
     return (
         <div>
@@ -11,6 +13,7 @@ export function Probe() {
             <p>{formatDate(policy.endDate, language)}</p>
             <p>{Number(policy.premiumAmount || 0).toLocaleString(locale, { style: "currency", currency: "EUR" })}</p>
             <span>{statusLabel}</span>
+            <p>{displayInsurerName(policy.acordData.policy?.insurer || policy.insurerName)}</p>
         </div>
     )
 }

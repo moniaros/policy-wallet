@@ -1,0 +1,28 @@
+{
+  "side": "agent",
+  "url": "/customers",
+  "label": "book",
+  "state": "resolved_finding",
+  "status": 200,
+  "finalUrl": "/customers",
+  "facts": {
+    "client.nextRenewalDate#cmrfhj4nz0000gl6rg5q61fal": "2027-02-18"
+  },
+  "counts": {
+    "notification.unreadCount": "4",
+    "agent.totalClients": "1",
+    "agent.expiringClients": "0",
+    "agent.gapClients": "1",
+    "agent.pendingInvites": "0",
+    "agent.policiesThisMonth": "0",
+    "agent.followUps": "0",
+    "agent.pipelineEur": "0 €",
+    "client.policyCount#cmrfhj4nz0000gl6rg5q61fal": "10",
+    "client.openGapCount#cmrfhj4nz0000gl6rg5q61fal": "1",
+    "client.underReviewCount#cmrfhj4nz0000gl6rg5q61fal": "+13 υπό αξιολόγηση"
+  },
+  "text": "Μετάβαση στο περιεχόμενο PolicyWallet 4 PolicyWallet Πρακτορείο Πίνακας ελέγχου Το χαρτοφυλάκιό σας Πελάτες Ευκαιρίες Ανανεώσεις Προμήθειες Ερωτηματολόγια Κέντρο ενεργειών Πληροφορίες Ομάδα Ειδοποιήσεις 4 Προφίλ Συμβούλου Λογαριασμός Ρυθμίσεις Χρειάζεστε βοήθεια; Ανοίξτε το κέντρο βοήθειας ή στείλτε μήνυμα στον σύμβουλό σας. Κέντρο βοήθειας Προτιμήσεις ΕΛ EN Αποσύνδεση Κατάλογος πελατών Διαχειριστείτε τις σχέσεις και τα χαρτοφυλάκια των πελατών σας. Εισαγωγή Προσθήκη πελάτη Μεταφόρτωση ασφαλιστηρίου Δείκτες βιβλίου Σύνολο πελατών 1 Ασφαλιστήρια που λήγουν 0 Με κενά κάλυψης 1 Εκκρεμείς προσκλήσεις 0 Ασφαλιστήρια αυτόν τον μήνα 0 Προτεινόμενα follow-ups 0 Εκτίμηση ευκαιριών 0 € Όλοι 1 Ενεργοί 1 Προσκεκλημένοι 0 Χωρίς πρόσκληση 0 Ανενεργοί 0 E2E Policyholder Ενεργοί E2E Policyholder 10 ασφαλιστήρια Χθες Όλα καλά Προφίλ",
+  "hscroll": false,
+  "lang": "el",
+  "screenshot": "/Users/yannismoniaros/Workspace/policywallet/policy-wallet/docs/evidence/bridge-l0/resolved_finding/book.agent.png"
+}

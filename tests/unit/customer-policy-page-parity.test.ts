@@ -8,6 +8,7 @@
  *   A-04  policy.expiryDate     customer «2028-02-18»  agent «2027-02-18»
  *   A-03  policy.premiumAmount  customer omits it       agent «0,00 €»
  *   A-19  the status label was computed before the account language was resolved
+ *   A-07  the insurer rendered twice (registry head + raw envelope), the premium too
  *
  * The harness is the slow guard; this is the fast one: it reads the page source
  * and refuses the four raw renders. Probe: tests/fixtures/guard-probes/
@@ -26,6 +27,8 @@ export const RAW_RENDER_RULES: { id: string; rule: string; pattern: RegExp }[] =
     { id: "A-04", rule: "the end date is the lifecycle's, never the raw column", pattern: /formatDate\(\s*policy\.endDate/ },
     { id: "A-03", rule: "an unknown premium is said, never zeroed", pattern: /premiumAmount\s*\|\|\s*0/ },
     { id: "A-19", rule: "the status label is resolved in the account's language", pattern: /getStatusLabel\(\s*status\s*\)/ },
+    { id: "A-07", rule: "the insurer and the premium render once, from the registry-resolved head — never a second raw-envelope render", pattern: /acordData\.policy\?\.(insurer|premium)/ },
+    { id: "A-05b", rule: "the premium is read as a number the way the customer's view reads it — a Prisma Decimal never passes a typeof-number test", pattern: /typeof\s+policy\.premiumAmount\s*===\s*["']number["']/ },
 ]
 
 export function rawRenderOffences(source: string): string[] {
@@ -49,6 +52,6 @@ describe("GUARD — the agent's customer-policy page follows the customer page's
 
     it("the probe fixture turns the guard red on all four rules", () => {
         const probe = readFileSync(join(ROOT, "tests", "fixtures", "guard-probes", "customer-policy-page-raw.tsx.txt"), "utf8")
-        expect(rawRenderOffences(probe).sort()).toEqual(["A-03", "A-04", "A-05", "A-19"])
+        expect(rawRenderOffences(probe).sort()).toEqual(["A-03", "A-04", "A-05", "A-05b", "A-07", "A-19"])
     })
 })

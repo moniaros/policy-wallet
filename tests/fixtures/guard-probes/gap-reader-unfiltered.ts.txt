@@ -9,5 +9,26 @@ export async function everythingForPolicy(policyId: string) {
         where: { id: policyId },
         include: { gapInstances: true },
     })
-    return { rows, policy }
+    // A-15 hole 1: a single status is not the live set.
+    const openOnly = await db.policy.findUnique({
+        where: { id: policyId },
+        include: { gapInstances: { where: { status: "open" } } },
+    })
+    // A-15 hole 2: the status: token belongs to a SIBLING relation.
+    const sibling = await db.policy.findUnique({
+        where: { id: policyId },
+        include: {
+            gapInstances: { include: { definition: true } },
+            analysisRuns: { where: { status: { in: ["completed"] } } },
+        },
+    })
+    // A-15 hole 3: supersededAt alone lists resolved and dismissed rows as current.
+    const notSuperseded = await db.policy.findUnique({
+        where: { id: policyId },
+        include: { gapInstances: { where: { supersededAt: null } } },
+    })
+    // A-15 hole 4: a call split across lines still reads.
+    const split = await db.gapInstance
+        .count({ where: { policyId } })
+    return { rows, policy, openOnly, sibling, notSuperseded, split }
 }

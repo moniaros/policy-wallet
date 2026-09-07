@@ -12,7 +12,6 @@ export interface RiskReviewCardProps {
         id: string
         trigger: string
         dueAt: string
-        scoreAtOpen: number | null
         findingsAtOpen: number | null
     }
     /** The trigger's own words, resolved server-side from the review policy. */
@@ -98,14 +97,10 @@ export function RiskReviewCard({ review, label, reason }: RiskReviewCardProps) {
                         </dd>
                     </div>
                 )}
-                {review.scoreAtOpen != null && (
-                    <div className="flex gap-1.5">
-                        <dt className="text-muted-foreground">{copy.scoreThen}</dt>
-                        <dd className="font-semibold text-black dark:text-white" data-fact="review.scoreAtOpen">
-                            {review.scoreAtOpen}%
-                        </dd>
-                    </div>
-                )}
+                {/* The score-at-open no longer renders: a score is not a verdict until an
+                    underwriter says so, and «N%» here was the portfolio score by another
+                    name (PW-BRIDGE-01 A-12). The column stays stored; findingsAtOpen is the
+                    count that remains. */}
             </dl>
 
             <p className="text-caption text-muted-foreground mt-3">{copy.whatToCheck}</p>

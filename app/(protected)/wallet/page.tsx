@@ -45,7 +45,7 @@ export default async function WalletPage() {
             _count: {
                 // Open gaps use the same status set as home / coverage-insights.
                 // (Gaps are written 'open'/'detected'; 'active' matched nothing.)
-                select: { gapInstances: { where: { status: { in: ['open', 'detected', 'acknowledged'] } } } }
+                select: { gapInstances: { where: { status: { in: ['open', 'detected', 'acknowledged'] }, supersededAt: null } } }
             }
         },
         orderBy: {
@@ -76,7 +76,7 @@ export default async function WalletPage() {
                     include: {
                         documents: true,
                         _count: {
-                            select: { gapInstances: { where: { status: { in: ['open', 'detected', 'acknowledged'] } } } }
+                            select: { gapInstances: { where: { status: { in: ['open', 'detected', 'acknowledged'] }, supersededAt: null } } }
                         }
                     },
                     orderBy: { endDate: 'asc' }

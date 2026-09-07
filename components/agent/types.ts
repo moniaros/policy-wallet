@@ -290,8 +290,6 @@ export interface ClientCardData {
     nextActionDue?: string | null
     nextActionLabel?: string | null
     activationStatus: ActivationStatus
-    /** Unified protection score (0-100) from gap engine. Null if not computed yet. */
-    protectionScore?: number | null
     /** Number of detected coverage gaps */
     gapCount?: number
     underReviewCount?: number

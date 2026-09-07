@@ -1,0 +1,11 @@
+// PROBE for tests/unit/score-containment.test.ts — never compiled (PW-BRIDGE-01 A-12).
+// A review card that renders the score recorded at review-open, and a timeline badge
+// that renders the score's movement. Both are the portfolio score by another name.
+export function Probe({ review, entry }: any) {
+    return (
+        <dl>
+            <dd data-fact="review.scoreAtOpen">{review.scoreAtOpen}%</dd>
+            <span data-fact="timeline.scoreDelta">{entry.scoreDelta > 0 ? "+" : ""}{entry.scoreDelta}</span>
+        </dl>
+    )
+}

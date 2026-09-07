@@ -1046,6 +1046,21 @@ export function PolicyDetailsClient({
                         summary={detailsCopy.sectionReviewSummary}
                         icon={<ClipboardList className="h-5 w-5" />}
                         forceOpen={openSection === "review"}
+                        // A closed section is UNMOUNTED, so when the head points elsewhere
+                        // (an expired policy → dates; an unconfirmed extraction → documents)
+                        // the customer saw no findings, no composition and no provenance
+                        // line over the very rows the advisor was reading (PW-BRIDGE-01
+                        // A-16 / A-18, PARITY B9 / B11: «should not differ»). Open it when
+                        // the analysis has something to declare that no other section states;
+                        // the head's one action is untouched and every fact still renders once.
+                        defaultOpen={
+                            openSection !== "review" &&
+                            (gapReportItems.length > 0 ||
+                                findingsProvenance?.state === "unassessed" ||
+                                composition?.kind === "unauthored" ||
+                                composition?.kind === "pre_plan" ||
+                                (composition?.kind === "composition" && Boolean(composition.stale)))
+                        }
                     >
                         <div className="space-y-6">
                             <AnalysisCard

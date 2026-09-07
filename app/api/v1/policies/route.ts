@@ -1,3 +1,4 @@
+import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
@@ -133,7 +134,8 @@ export async function GET(req: Request) {
             orderBy: { createdAt: "desc" },
             include: {
                 _count: {
-                    select: { gapInstances: { where: { resolvedAt: null, supersededAt: null } } }
+                    // The LIVE set: `resolvedAt: null` still counted dismissed rows (A-15).
+                    select: { gapInstances: { where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null } } }
                 }
             }
         })

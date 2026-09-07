@@ -183,13 +183,10 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
 
     const clientIds = relationships.map((rel) => rel.customer.id)
 
-    const [protectionScores, openGaps, visiblePolicyOwners] = await Promise.all([
-        clientIds.length
-            ? db.protectionScore.findMany({
-                  where: { userId: { in: clientIds } },
-                  select: { userId: true, overallScore: true },
-              })
-            : Promise.resolve([]),
+    // The per-client protection score used to be fetched here alongside the gaps
+    // and filtered to visible owners; nothing renders it since B1.7 — removed with
+    // its owner-set query (PW-BRIDGE-01 A-11).
+    const [openGaps] = await Promise.all([
         clientIds.length
             ? readLiveGapRows({ scope: "disclosed",
                   where: {
@@ -211,22 +208,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
                   },
               })
             : Promise.resolve([]),
-        // Clients the agent has ≥1 visible policy for — same rule as the gaps
-        // query, so the protection score (computed over the WHOLE portfolio) is
-        // only surfaced for customers whose policies the agent may actually see.
-        clientIds.length
-            ? db.policy.findMany({
-                  where: { ownerUserId: { in: clientIds }, ...visibilityWhere },
-                  select: { ownerUserId: true },
-                  distinct: ["ownerUserId"],
-              })
-            : Promise.resolve([]),
     ])
-
-    const visibleOwners = new Set(visiblePolicyOwners.map((p) => p.ownerUserId))
-    const scoreByClient = new Map(
-        protectionScores.filter((s) => visibleOwners.has(s.userId)).map((s) => [s.userId, s.overallScore])
-    )
 
     // `total` and `critical` are CLASSIFIED (the conversation number, D-B1); `underReview` is the
     // separate labelled figure the customer's home already shows and the agent could not see (A-02).

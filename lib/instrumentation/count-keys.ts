@@ -166,7 +166,7 @@ export const COUNT_KEYS: Record<string, string> = {
     // vocabulary; delete the RESERVED tag when a surface first uses one.
     "portfolio.analysedCount": "RESERVED — plan key; no surface renders it yet.",
     "portfolio.unreadCount": "RESERVED — plan key. NOTE: §2.8's dashboard «2 unread» was portfolio.neverAnalysedCount (policies the engine never read), not this.",
-    "document.count": "RESERVED — plan key; no surface renders a document count yet.",
+    "document.count": "Documents attached to this policy, as listed on the page — once per policy page on BOTH lenses (the customer's documents section and the agent's documents card read the same access-scoped rows in the same order; PW-BRIDGE-01 A-14).",
     "gap.riskCategoryCount": "RESERVED — plan key. NOTE: §2.8's «9 κατηγορίες» line is recommendation.openCount (heroAreasMany counts recommendations, worded as categories).",
 }
 
@@ -198,7 +198,9 @@ export const FACT_KEYS: Record<string, string> = {
     // wallet table's secondary line — one identity, one key, all three.
     "asset.identifier": "The asset identifier (plate/address/pet name) via policyAssetIdentifier — never a raw acordData read.",
 
-    // riskDimension.* — SUBJECT-SCOPED by dimension id.
+    // riskDimension.* — SUBJECT-SCOPED by dimension id. The NAME is F2 residue
+    // (the dimension once carried a 0-100 reading); the VALUE is text — the B3
+    // under-review word and the disclosure sentence — never a number (A-12, verified).
     "riskDimension.provenance": "F2 (B1.6): the B3 under-review label where a dimension's 0-100 reading used to sit — text, never a number or a colour.",
     "riskDimension.disclosure": "F2: the B3 disclosure under the Risk DNA heading — what the dimensions rest on is not yet classified.",
     "gap.findingsProvenance": "Which analysis run the listed findings come from, dated, and whether the latest attempt is that run (B0.3). One per findings list.",
@@ -218,11 +220,9 @@ export const FACT_KEYS: Record<string, string> = {
     "composition.prePlan": "B2 third state (V3): findings from a completed run that predates the catalogue plan — dated, says what was checked cannot be stated; never a composition, never a zero.",
     "composition.stale": "Goal 4 (PW-CONTENT-01): the catalogue moved on after this run — one dated sentence beside the composition, offering re-analysis. Distinct from pre_plan and unauthored.",
 
-    // review.*
-    "review.scoreAtOpen": "Score recorded when the review opened (historical).",
-
-    // timeline.* — SUBJECT-SCOPED by entry id.
-    "timeline.scoreDelta": "The score movement a score_change entry states; only rendered when both sides were comparable (comparableScores).",
+    // timeline.* — SUBJECT-SCOPED by entry id. (timeline.scoreDelta and review.scoreAtOpen
+    // left the vocabulary with PW-BRIDGE-01 A-12: a score movement and a score-at-open are the
+    // portfolio score by another name; the columns stay stored, nothing renders them.)
 
     // LEGACY — the policy-detail surface was instrumented before the plan's
     // names settled (docs/evidence/policy-detail-mobile baselines reference
@@ -266,7 +266,6 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "riskDimension.provenance",
     "timeline.kindCount",
     "timeline.groupSize",
-    "timeline.scoreDelta",
     "policy.rowStatus",
     "client.policyCount",
     "client.nextRenewalDate",

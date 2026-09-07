@@ -75,7 +75,9 @@ const SANCTIONED = new Set<string>([])
 const RELATIONSHIP_HEALTH_RENDERS = new Set<string>([])
 
 /** The identifiers that carry the portfolio score value through the code. */
-const IDS = "(?:overallScore|healthScore|protectionScore|previousScore|currentScore)"
+// A-12 (PW-BRIDGE-01): a score recorded at review-open and a score DELTA are the same
+// figure by another name; both rendered as numbers until 2026-09-07.
+const IDS = "(?:overallScore|healthScore|protectionScore|previousScore|currentScore|scoreAtOpen|scoreDelta)"
 
 /**
  * JSX interpolation of the score value. The negative lookahead `(?!\s*[.:])`
@@ -200,5 +202,35 @@ describe("the matcher itself is proven against committed probes", () => {
 
     it("passes the internal-use probe — hashing and key paths are not renders", () => {
         expect(rendersScoreValue(probe("score-internal-use.ts.txt"))).toBe(false)
+    })
+
+    it("flags the review-card and timeline-badge probe (A-12: a score at open and a score delta are the score by another name)", () => {
+        expect(rendersScoreValue(probe("score-at-open-render.tsx.txt"))).toBe(true)
+    })
+})
+
+/**
+ * PW-BRIDGE-01 A-11: the agent dashboard and the portal service fetched the
+ * per-customer protection score on every load and put it on the wire, and
+ * nothing had rendered it since B1.7. A fetch that feeds nothing is one privacy
+ * surface and one round-trip too many — the agent-side loaders do not read the
+ * score table at all.
+ */
+describe("no agent-side loader fetches the per-customer protection score (PW-BRIDGE-01 A-11)", () => {
+    const AGENT_LOADERS = [
+        "app/(protected)/dashboard/agent/page.tsx",
+        "lib/services/agent-portal.service.ts",
+        "lib/services/customer.service.ts",
+    ]
+    const SCORE_READ = /\bprotectionScore\s*\.\s*(findMany|findUnique|findFirst|count|aggregate)\s*\(/
+
+    it.each(AGENT_LOADERS)("%s does not read the score table", (file) => {
+        const src = readFileSync(path.join(ROOT, file), "utf8")
+        expect(SCORE_READ.test(src), `${file} fetches protectionScore rows — nothing renders them since B1.7`).toBe(false)
+    })
+
+    it("is proven red on the probe", () => {
+        const src = readFileSync(path.join(ROOT, "tests/fixtures/guard-probes", "agent-score-read.ts.txt"), "utf8")
+        expect(SCORE_READ.test(src)).toBe(true)
     })
 })
