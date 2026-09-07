@@ -138,6 +138,7 @@ export const COUNT_KEYS: Record<string, string> = {
     "branch.notCheckedCount": "Branches held but not judged: unauthored, never analysed, unread document, stale/failed/in-progress run, pre-plan run, no extraction.",
     "branch.underReviewOnlyCount": "Branches whose only coverage-class findings are still under review — disclosed beside the four, outside them.",
     "branch.relevantCount": "The denominator: every branch expected for the person or held in the wallet — the four status counts plus underReviewOnly.",
+    "branch.openFindingCount": "SUBJECT-SCOPED by branch: classified coverage-class findings on this branch's in-force policies — the number the «Μερική κάλυψη» row quotes.",
     "gap.lockedCount": "Findings on «Καλύψεις & κενά» behind the plan's visible cap — the «+N ακόμη» beside the upgrade door, so a free reader never believes the visible ones are all.",
 
     // policy.* — SUBJECT-SCOPED by policy id.
@@ -251,6 +252,7 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "branch.recommendationCount",
     "branch.coverageStatus",
     "branch.checkedPoints",
+    "branch.openFindingCount",
     "policy.renewalCheckpointCount",
     "asset.identifier",
     "policy.daysRemaining",

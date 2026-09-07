@@ -83,9 +83,9 @@ export function ProtectionRiskLens({
             {/* The monitor, below a heading that says what it is. */}
             <section aria-labelledby="protection-monitoring-heading" data-surface="monitoring" className="space-y-4">
                 <div>
-                    <p id="protection-monitoring-heading" className="pw-kicker">
+                    <h2 id="protection-monitoring-heading" className="text-body-lg font-semibold leading-snug tracking-tight text-foreground">
                         {attention.copy.monitoring.title}
-                    </p>
+                    </h2>
                     <p className="mt-1 text-caption leading-relaxed text-muted-foreground">{attention.copy.monitoring.lead}</p>
                 </div>
                 <RiskIntelligenceView

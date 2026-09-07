@@ -30,14 +30,17 @@ import { DEFAULT_PLAN_FACTS } from "@/lib/pricing/plan-defaults"
  * one is not a lie, but it sells an upgrade the customer does not need.
  */
 const PAGE = "app/(protected)/protection/page.tsx"
-const CLIENT = "components/coverage/CoverageInsightsClient.tsx"
+// The locked CTA's copy moved into the bundle with the «Καλύψεις & κενά» story
+// (2026-09-07): `protection.gaps.notAnalysedLocked` in both languages.
+const BUNDLES = ["lib/i18n/translations/el.ts", "lib/i18n/translations/en.ts"]
 
 /** Cheapest first — the order a customer would be asked to pay in. */
 const PAID_TIERS = ["plus", "pro"] as const
 
 describe("the deep-analysis lock names the tier its gate requires", () => {
     const page = readFileSync(PAGE, "utf-8")
-    const client = readFileSync(CLIENT, "utf-8")
+    // Both languages' CTA lines, joined — the checks below read them as one.
+    const client = BUNDLES.map((f) => readFileSync(f, "utf-8").match(/notAnalysedLocked:[^\n]*/)?.[0] ?? "").join("\n")
 
     /**
      * Tiers that clear the gate, derived from the ONE predicate every surface
@@ -74,8 +77,8 @@ describe("the deep-analysis lock names the tier its gate requires", () => {
      * never a dearer one than the cheapest that does.
      */
     it("the CTA names either no plan or the cheapest one that actually unlocks it", () => {
-        const cta = client.match(/notAnalyzedLockedCta:[^\n]*/)?.[0] ?? ""
-        expect(cta, "notAnalyzedLockedCta not found").toContain("Unlock")
+        const cta = client
+        expect(cta, "notAnalysedLocked not found").toContain("Unlock")
 
         const cheapest = PAID_TIERS.find((t) => unlocking!.includes(t))!
         const namesOf = (t: (typeof PAID_TIERS)[number]) =>
@@ -97,7 +100,7 @@ describe("the deep-analysis lock names the tier its gate requires", () => {
     })
 
     it("both languages name the same plan, or none", () => {
-        const cta = client.match(/notAnalyzedLockedCta:[^\n]*/)?.[0] ?? ""
+        const cta = client
         const mentions = (cta.match(/\b(plus|pro|family)\b/gi) ?? []).map((m) => m.toLowerCase())
         expect(new Set(mentions).size, `el and en name different plans: ${mentions.join(", ")}`).toBeLessThanOrEqual(1)
     })

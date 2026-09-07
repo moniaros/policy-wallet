@@ -361,13 +361,14 @@ describe("§2.2 — every ownership-state surface is known to this guard", () =>
                 // Pass data/labels into the components asserted above; they
                 // render no ownership state of their own.
                 "app/(protected)/dashboard/PolicyholderHome.tsx",
-                "app/(protected)/protection/page.tsx",
+                // /protection/page.tsx left this set on 2026-09-07: it reads
+                // the coverage status (lib/protection/coverage-status.ts, above)
+                // and no longer names a tile state or the branch overview.
                 // /protection lenses (V2-P2-01): render THROUGH ProductBranchCard
                 // and RiskGraphPanel (both asserted above); their own §2.2
                 // behaviour — not-held vs never-assessed registers, no finding
                 // vocabulary — is asserted on rendered output by
                 // protection-surface-ledger.test.tsx (B-05, R-03).
-                "components/protection/ProtectionBranchLens.tsx",
                 "components/protection/ProtectionRiskLens.tsx",
                 // Definitions and plumbing — no rendering.
                 "lib/insurance/branch-page.ts",
