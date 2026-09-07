@@ -23,9 +23,27 @@ import path from "node:path"
 const ROOT = process.cwd()
 
 const READ_CALL = /\bgapInstance\s*\.\s*(findMany|findFirst|count|groupBy|aggregate)\s*\(/
+// The PLURAL relation only. The singular `gapInstance:` include on an opportunity,
+// a recommendation or a task fetches the ONE row that parent's own foreign key
+// names — a by-reference read, where the parent's liveness is the filter — not a
+// list of a policy's current findings (checked 2026-09-07: eight such sites, all FKs).
 const RELATION_READ = /\bgapInstances\s*:\s*\{/
 const BARE_INCLUDE = /\bgapInstances\s*:\s*true\b/
-const FILTERED = /\bstatus\s*:|\bsupersededAt\b|\bwhere\s*:\s*\{\s*id\s*:|\bid\s*:\s*(gapId|gapInstanceId|id|params\.id|input\.gapId)\b|\bid\s*:\s*\{\s*in\b/
+/** A call whose receiver ends one line and whose method opens the next (`db.gapInstance\n  .count(`). */
+const SPLIT_RECEIVER = /\bgapInstance\s*$/
+const SPLIT_METHOD = /^\s*\.\s*(findMany|findFirst|count|groupBy|aggregate)\s*\(/
+/**
+ * A LIVE set, not a status: `status: 'open'` alone under-counts (detected and
+ * acknowledged rows are live too), `supersededAt: null` alone lists resolved
+ * and dismissed rows as current, and a bare `status:` token could belong to a
+ * sibling relation inside the same include (PW-BRIDGE-01 A-15 found all three
+ * live). A read is live when it names the live set AND excludes superseded
+ * rows, or looks a row up by id.
+ */
+const LIVE_SET = /\bstatus\s*:\s*\{\s*in\s*:\s*(?:\[\s*\.\.\.(?:OPEN_GAP_STATUSES|LIVE_GAP_STATUSES)\s*\]|\[\s*['"]open['"]\s*,\s*['"]detected['"]\s*,\s*['"]acknowledged['"]\s*\]|allowed)\s*\}/
+const NOT_SUPERSEDED = /\bsupersededAt\s*:\s*null\b/
+const BY_ID = /\bwhere\s*:\s*\{\s*id\s*:|\bid\s*:\s*(gapId|gapInstanceId|id|params\.id|input\.gapId)\b|\bid\s*:\s*\{\s*in\b/
+const isLive = (window: string) => (LIVE_SET.test(window) && NOT_SUPERSEDED.test(window)) || BY_ID.test(window)
 
 /** Files that read history on purpose, with the reason. */
 const HISTORY_READERS: ReadonlyMap<string, string> = new Map([
@@ -37,22 +55,29 @@ const HISTORY_READERS: ReadonlyMap<string, string> = new Map([
     ["lib/gaps/gap-instance-writer.ts", "the writer: reads the live rows it is about to supersede"],
 ])
 
-const WINDOW_LINES = 14
+const WINDOW_LINES = 80
 
 /**
- * The lines of ONE call: from the call line until the first line that closes
- * at the call's own indentation (or the window cap). Without the stop, a
- * by-id lookup in the NEXT statement excused an unfiltered read in this one.
+ * The text of ONE call or ONE relation object: from the first opening bracket
+ * on the start line to its matching close (brace-matched, string-blind), capped
+ * at WINDOW_LINES. A fixed 14-line window let a nested include whose `where`
+ * sat further down escape, and let a sibling relation's `status:` inside the
+ * same block excuse the read (PW-BRIDGE-01 A-15).
  */
 function callWindow(lines: string[], start: number): string {
-    const indent = lines[start].search(/\S/)
-    const out = [lines[start]]
-    for (let j = start + 1; j < Math.min(lines.length, start + WINDOW_LINES); j++) {
-        out.push(lines[j])
-        const ind = lines[j].search(/\S/)
-        if (ind !== -1 && ind <= indent && /^\s*[}\]]/.test(lines[j])) break
+    const text = lines.slice(start, Math.min(lines.length, start + WINDOW_LINES)).join("\n")
+    const open = text.search(/[({]/)
+    if (open < 0) return lines[start]
+    let depth = 0
+    for (let i = open; i < text.length; i++) {
+        const ch = text[i]
+        if (ch === "(" || ch === "{" || ch === "[") depth++
+        else if (ch === ")" || ch === "}" || ch === "]") {
+            depth--
+            if (depth === 0) return text.slice(0, i + 1)
+        }
     }
-    return out.join("\n")
+    return text
 }
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -84,9 +109,10 @@ export function findUnfilteredReaders(source: string): ReaderViolation[] {
             out.push({ line: i + 1, kind: "bare_include", text: line.trim().slice(0, 100) })
             return
         }
-        if (!READ_CALL.test(line) && !RELATION_READ.test(line)) return
-        const window = callWindow(lines, i)
-        if (!FILTERED.test(window)) {
+        const splitCall = SPLIT_RECEIVER.test(line) && SPLIT_METHOD.test(lines[i + 1] ?? "")
+        if (!READ_CALL.test(line) && !RELATION_READ.test(line) && !splitCall) return
+        const window = callWindow(lines, splitCall ? i + 1 : i)
+        if (!isLive(window)) {
             out.push({ line: i + 1, kind: "unfiltered_read", text: line.trim().slice(0, 100) })
         }
     })
@@ -122,9 +148,15 @@ describe("every gap-row reader excludes superseded rows (B0.1)", () => {
     })
 
     it("is proven red on an unfiltered read and a bare include, green on a filtered one", () => {
+        // Six red shapes, in file order: the unfiltered call, the bare include, a single
+        // status, a sibling relation's status:, supersededAt alone, a call split across lines.
         expect(findUnfilteredReaders(probe("gap-reader-unfiltered.ts.txt")).map((v) => v.kind)).toEqual([
             "unfiltered_read",
             "bare_include",
+            "unfiltered_read",
+            "unfiltered_read",
+            "unfiltered_read",
+            "unfiltered_read",
         ])
         expect(findUnfilteredReaders(probe("gap-reader-filtered.ts.txt"))).toEqual([])
     })

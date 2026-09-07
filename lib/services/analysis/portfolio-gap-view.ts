@@ -6,6 +6,7 @@
  * Available to Plus+ tier users.
  */
 
+import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { db } from "@/lib/db"
 import type { LocalizedText } from "../ai/ai-service.interface"
 
@@ -61,7 +62,8 @@ export async function getPortfolioGapSummary(
         where: { ownerUserId: userId },
         include: {
             gapInstances: {
-                where: { status: "open" },
+                // The LIVE set, not 'open' alone; superseded rows are history (A-15).
+                where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null },
                 include: {
                     definition: {
                         select: { slug: true },

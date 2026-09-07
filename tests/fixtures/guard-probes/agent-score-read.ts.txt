@@ -1,0 +1,5 @@
+// PROBE for tests/unit/score-containment.test.ts — never compiled (PW-BRIDGE-01 A-11).
+// An agent-side loader that fetches the per-customer protection score. Nothing renders it.
+export async function loadClients(db: any, ids: string[]) {
+    return db.protectionScore.findMany({ where: { userId: { in: ids } }, select: { userId: true, overallScore: true } })
+}

@@ -289,16 +289,9 @@ export function LifeTimeline({ entries, language }: LifeTimelineProps) {
 
                     <p className="mt-0.5 text-sm font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
                         {entry.title[lang] || entry.title.en}
-                        {entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta !== 0 && (
-                            <span
-                                className={`ml-1.5 font-bold ${accent}`}
-                                data-fact="timeline.scoreDelta"
-                                data-fact-subject={entry.id}
-                            >
-                                {entry.delta > 0 ? "+" : ""}
-                                {entry.delta}
-                            </span>
-                        )}
+                        {/* The signed delta badge no longer renders beside a score_change
+                            entry: it was the portfolio score's movement as a number
+                            (PW-BRIDGE-01 A-12). The sentence carries the change in words. */}
                     </p>
 
                     {entry.detail && (

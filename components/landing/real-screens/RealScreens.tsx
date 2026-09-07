@@ -536,7 +536,6 @@ export function AdvisorScreen({ locale }: { locale: ScreenLocale }) {
         nextActionDue: nextActionLabel ? inDays(7).toISOString() : null,
         nextActionLabel,
         activationStatus: "activated",
-        protectionScore: null,
         gapCount,
     })
     const clients = [

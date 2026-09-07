@@ -1,3 +1,4 @@
+import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
@@ -53,7 +54,8 @@ export async function GET(
                     }
                 },
                 gapInstances: {
-                    where: { resolvedAt: null, supersededAt: null },
+                    // The LIVE set: `resolvedAt: null` still listed dismissed rows (A-15).
+                    where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null },
                     include: { definition: true }
                 }
             }

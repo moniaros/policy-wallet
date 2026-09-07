@@ -202,7 +202,7 @@ const POLICY_EVIDENCE_SELECT = {
     endDate: true,
     acordData: true,
     gapInstances: {
-        where: { status: { in: [...OPEN_GAP_STATUSES] } },
+        where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null },
         select: {
             id: true,
             ruleId: true,

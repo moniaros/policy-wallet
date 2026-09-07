@@ -309,7 +309,7 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "be excluded is a separate decision for an agent-scoped task. S12.4-fenced.",
     },
     "lib/services/agent-portal.service.ts": {
-        count: 2,
+        count: 1,
         reason: "Agent visibility set (spreads visibilityWhere). S12.4-fenced; see lib/agent-visibility.ts entry.",
     },
     "lib/services/cross-sell.service.ts": {

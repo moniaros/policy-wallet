@@ -1,3 +1,4 @@
+import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
@@ -176,7 +177,10 @@ export class CustomerService extends BaseService {
                             orderBy: { startDate: 'desc' },
                             include: {
                                 gapInstances: {
-                                    where: { status: 'open' }
+                                    // The LIVE set (open + detected + acknowledged, not
+                                    // superseded): 'open' alone under-counted the profile's
+                                    // findings and applied no supersession scope (A-15).
+                                    where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null },
                                 },
                                 // One completed run is enough to know a branded
                                 // report can be generated for this policy.

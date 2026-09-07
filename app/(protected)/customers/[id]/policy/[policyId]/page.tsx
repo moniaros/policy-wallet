@@ -13,9 +13,12 @@ import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLin
 import { composeFindings } from "@/lib/gaps/composition"
 import { extractionConfirmation, resolveRecordStatus } from "@/lib/wallet/record-status"
 import { formatDate, formatDateTime, resolveLocale } from "@/lib/i18n/format"
-import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
-import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
+import { branchFamilyId, getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
+import { displayInsurerName, displayPolicyNumber, policyAssetIdentity } from '@/lib/wallet/policy-identity'
+import { deriveInsuredNames } from '@/lib/wallet/insured-people'
+import { provenanceOf } from '@/lib/gaps/provenance'
 import { resolveInsurerDisplay } from '@/lib/wallet/insurer-registry'
+import { OPEN_GAP_STATUSES } from '@/lib/wallet/gap-status'
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
@@ -41,10 +44,18 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
             ownerUserId: customerId
         },
         include: {
-            documents: true,
+            // Same order and the same six display fields as the customer's page
+            // (wallet/[id]): a bare include re-loaded storage locators this page
+            // never renders (PW-BRIDGE-01 A-14).
+            documents: {
+                orderBy: { uploadedAt: 'desc' },
+                select: { id: true, fileName: true, fileSize: true, uploadedAt: true, documentKind: true, mimeType: true },
+            },
             gapInstances: {
-                // Superseded rows are history, not the client's current findings (B0.1).
-                where: { supersededAt: null },
+                // The LIVE set the customer's page reads: `supersededAt: null` alone
+                // listed resolved and dismissed findings as current on the advisor's
+                // side and fed them into the composition (PW-BRIDGE-01 A-15).
+                where: { status: { in: [...OPEN_GAP_STATUSES] }, supersededAt: null },
                 include: { definition: true, analysisRun: { select: { id: true, finishedAt: true } } }
             },
             analysisRuns: {
@@ -92,7 +103,38 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     // says the value could not be read — the same words the customer reads.
     const shownPolicyNumber = displayPolicyNumber(policy.policyNumber)
     const unreadable = t.wallet.policyDetailsPage.valueUnreadable
-    const hasPremium = typeof policy.premiumAmount === "number" && policy.premiumAmount > 0
+    // The premium as the customer's view computes it (getPremiumAmount): the
+    // extracted amount first, the column second — and the column is a Prisma
+    // Decimal, so a `typeof … === "number"` test was false for every real policy
+    // and rendered «Δεν διαβάστηκε» beside the customer's «312,40 €» (harness,
+    // expired state, 2026-09-07).
+    const extractedPremium = Number((policy.acordData as any)?.policy?.premium?.amount)
+    const premiumNumber =
+        Number.isFinite(extractedPremium) && extractedPremium > 0
+            ? extractedPremium
+            : policy.premiumAmount == null
+              ? null
+              : Number(policy.premiumAmount.toString())
+    const hasPremium = premiumNumber !== null && Number.isFinite(premiumNumber) && premiumNumber > 0
+    // The coverage type as the customer's view derives it (getCoverageType):
+    // the envelope's line of business first, the column second.
+    const coverageType: string = (policy.acordData as any)?.policy?.lineOfBusiness || policy.lineOfBusiness
+
+    // "What is insured?" — the same primitive and the same words as the customer's
+    // head (PolicyDetailsClientView → PolicyHead): the plate through the ONE
+    // line→field map for motor, the first insured person otherwise. The value
+    // keeps an extractor mask so the unreadable pipeline can say so (A-13).
+    const insuredSubject =
+        branchFamilyId(coverageType) === "motor"
+            ? { label: t.wallet.policyDetailsPage.headInsuredVehicle, field: policyAssetIdentity({ lineOfBusiness: coverageType, acordData: policy.acordData }) }
+            : { label: t.wallet.policyDetailsPage.headInsuredPerson, field: { value: deriveInsuredNames(policy.acordData)[0] ?? null, readable: true } }
+
+    // The under-review figure the customer's report band states («— εκ των οποίων N
+    // υπό αξιολόγηση»), on the advisor's side too, over the same live rows (A-17).
+    // The customer's report LIST is not mounted here: the advisor's confirm action
+    // lives in the analysis card's own list, and swapping lists would remove it.
+    const underReviewCount = policy.gapInstances.filter((g) => provenanceOf(g.definition?.slug) === "under_review").length
+    const classifiedCount = policy.gapInstances.length - underReviewCount
     const pd = t.agentPages.policyDetail
 
     // B0.3: the run these findings come from, and whether the latest attempt is
@@ -243,9 +285,9 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                 </div>
                                 <div className="bg-neutral-50 dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-700 text-center md:min-w-[200px]">
                                     <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.annualPremium}</p>
-                                    <p className="text-3xl font-black text-foreground leading-none" data-fact="policy.premiumAmount" data-fact-value={hasPremium ? `${policy.premiumAmount} ${policy.premiumCurrency || 'EUR'}` : ""}>
+                                    <p className="text-3xl font-black text-foreground leading-none" data-fact="policy.premiumAmount" data-fact-value={hasPremium ? `${premiumNumber} ${policy.premiumCurrency || 'EUR'}` : ""}>
                                         {hasPremium
-                                            ? Number(policy.premiumAmount).toLocaleString(locale, { style: 'currency', currency: policy.premiumCurrency || 'EUR' })
+                                            ? Number(premiumNumber).toLocaleString(locale, { style: 'currency', currency: policy.premiumCurrency || 'EUR' })
                                             : unreadable}
                                     </p>
                                 </div>
@@ -270,6 +312,23 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     </div>
 
                     {/* Gap Analysis */}
+                    <section id="gap-analysis" aria-label={t.analysis.report.summaryFoundPrefix}>
+                    {policy.gapInstances.length > 0 && (
+                        <p className="mb-3 text-sm font-bold text-foreground">
+                            {/* One sentence, one door; the under-review figure is the keyed part
+                                (the customer's band keys the same span). The classified total
+                                carries no key on either side — a key coined here would be one-sided. */}
+                            <a href="#gap-analysis" className="hover:underline">
+                                {t.analysis.report.summaryFoundPrefix} {classifiedCount} {classifiedCount === 1 ? t.analysis.report.summaryFoundOne : t.analysis.report.summaryFoundMany}
+                                {underReviewCount > 0 && (
+                                    <span className="font-medium text-muted-foreground" data-count="gap.underReviewCount">
+                                        {" "}
+                                        {t.analysis.report.summaryUnderReview.replace("{count}", String(underReviewCount))}
+                                    </span>
+                                )}
+                            </a>
+                        </p>
+                    )}
                     <AnalysisCard
                         policyId={policyId}
                         gaps={policy.gapInstances as any}
@@ -281,6 +340,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                         // confirm an AI-probable gap (probable → confirmed).
                         canConfirmGaps={isAgentRole(dbUser.roles) && access.canWrite}
                     />
+                    </section>
 
                     <CollaborationTimeline
                         policyId={policyId}
@@ -316,18 +376,12 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.contractInsurer}</p>
-                                            <p className="text-xs font-bold text-foreground">{displayInsurerName((policy as any).acordData.policy?.insurer || policy.insurerName)}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.premiumFound}</p>
-                                            <p className="text-xs font-bold text-primary dark:text-mint">
-                                                {(policy as any).acordData.policy?.premium?.amount} {(policy as any).acordData.policy?.premium?.currency}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    {/* The insurer and the premium render ONCE on this page — the
+                                        registry-resolved head and the premium tile above. A second,
+                                        raw-envelope render here said «ΕΘΝΙΚΗ» eight rems under
+                                        «Εθνική Ασφαλιστική» and printed a bare number beside «Δεν
+                                        διαβάστηκε από το έγγραφο» (PW-BRIDGE-01 A-07). The
+                                        extracted-vs-stored comparison belongs on the review screen. */}
                                 </div>
 
                                 <div className="space-y-3">
@@ -358,6 +412,15 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <p className="font-mono text-sm text-neutral-900 dark:text-neutral-100 font-bold bg-neutral-50 dark:bg-neutral-900/50 p-3 rounded-xl" data-fact="policy.policyNumber" data-fact-value={shownPolicyNumber ?? ""}>{shownPolicyNumber ?? unreadable}</p>
                         </div>
 
+                        {insuredSubject.field.value !== null && (
+                            <div>
+                                <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-2">{insuredSubject.label}</p>
+                                <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100" data-fact="policy.insuredSubject" data-fact-value={insuredSubject.field.value ?? ""}>
+                                    {insuredSubject.field.readable ? insuredSubject.field.value : unreadable}
+                                </p>
+                            </div>
+                        )}
+
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.starts}</p>
@@ -380,9 +443,13 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     </div>
 
                     {/* Documents Sidebar */}
-                    <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                    <div id="documents" className="bg-white dark:bg-neutral-800 rounded-3xl p-6 shadow-sm border border-neutral-200 dark:border-neutral-700 scroll-mt-20">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-sm font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{pd.documents}</h3>
+                            {/* The same count the customer's documents heading carries (A-14). */}
+                            <a href="#documents" data-count="document.count" className="-my-2.5 inline-flex min-h-11 items-center text-sm font-bold tabular-nums text-neutral-500 dark:text-neutral-400 hover:underline">
+                                {policy.documents.length}
+                            </a>
                         </div>
 
                         {policy.documents.length === 0 ? (

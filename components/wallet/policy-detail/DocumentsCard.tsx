@@ -78,6 +78,11 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
             <h3 className="mb-4 flex items-center gap-2 text-body font-semibold text-foreground">
                 <FileText className="h-4 w-4 text-primary dark:text-mint" />
                 {copy.documentsArea}
+                {/* The document count, once per policy page on both lenses (PW-BRIDGE-01 A-14);
+                    a door to the list it heads, like every count. */}
+                <a href="#documents" data-count="document.count" className="ml-auto -my-2.5 inline-flex min-h-11 items-center text-caption font-medium tabular-nums text-muted-foreground hover:underline">
+                    {documents.length}
+                </a>
             </h3>
 
             {documents.length === 0 ? (

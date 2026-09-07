@@ -102,7 +102,9 @@ describe('document presentation', () => {
         // the id-based API route, which re-checks access and signs a short-lived
         // URL; a storage locator must never appear in the markup.
         const { container } = renderCard(docs)
-        const links = Array.from(container.querySelectorAll('a[href]'))
+        // In-page anchors (the heading's document-count door, «#documents») open
+        // nothing; the rule is about the links that open a DOCUMENT.
+        const links = Array.from(container.querySelectorAll('a[href]')).filter((a) => !a.getAttribute('href')!.startsWith('#'))
         expect(links.length).toBeGreaterThan(0)
         for (const link of links) {
             expect(link.getAttribute('href')).toMatch(

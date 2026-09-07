@@ -1022,7 +1022,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 id: openReview.id,
                                 trigger: openReview.trigger,
                                 dueAt: openReview.dueAt.toISOString(),
-                                scoreAtOpen: openReview.scoreAtOpen,
                                 findingsAtOpen: openReview.findingsAtOpen,
                             }}
                             label={getReviewPolicy(openReview.trigger)!.label}

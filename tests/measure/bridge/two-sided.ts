@@ -47,6 +47,9 @@ export type BridgeState =
     | "renewed_end_date"
     // A-06: the advisor confirmed the extracted values — the record status must say so on both sides.
     | "agent_confirmed"
+    // A-15 / A-17: one finding RESOLVED after the analysis. A reader that filters on
+    // supersededAt alone still lists it as current; the live set must not, on either side.
+    | "resolved_finding"
 
 export const BRIDGE_STATES: BridgeState[] = [
     "healthy",
@@ -62,6 +65,7 @@ export const BRIDGE_STATES: BridgeState[] = [
     "no_premium",
     "renewed_end_date",
     "agent_confirmed",
+    "resolved_finding",
 ]
 
 export interface SeededPair {
@@ -106,6 +110,8 @@ function specFor(state: BridgeState): FixtureSpec {
             return { ...base, key: "bridge-renewed", policyNumber: "ΣΥΜΒ-2026-BR-RNW" }
         case "agent_confirmed":
             return { ...base, key: "bridge-agent-confirmed", policyNumber: "ΣΥΜΒ-2026-BR-CNF" }
+        case "resolved_finding":
+            return { ...base, key: "bridge-resolved-finding", policyNumber: "ΣΥΜΒ-2026-BR-RSV" }
         default:
             return { ...base, key: "bridge-motor-active", policyNumber: "ΣΥΜΒ-2026-BR-ACT" }
     }
@@ -140,6 +146,12 @@ export async function seedTwoSided(state: BridgeState): Promise<SeededPair> {
                 where: { id: policyId },
                 data: { acordData: { ...acord, extraction: { ...extraction, reviewState: "confirmed", confirmedAt: new Date().toISOString(), confirmedBy: "agent", confirmedByUserId: agent.id, flaggedAt: null } } },
             })
+        }
+        if (state === "resolved_finding") {
+            // The customer resolved one of the two findings after the run: a live-set reader
+            // shows one finding on both sides; a supersededAt-only reader shows two (A-15).
+            const first = await db.gapInstance.findFirst({ where: { policyId }, orderBy: { detectedAt: "asc" }, select: { id: true } })
+            if (first) await db.gapInstance.update({ where: { id: first.id }, data: { status: "resolved", resolvedAt: new Date() } })
         }
         if (state === "renewed_end_date") {
             // A renewal recorded in the document history: the lifecycle resolves the end date from it

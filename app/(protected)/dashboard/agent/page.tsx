@@ -398,29 +398,9 @@ export default async function DashboardPage() {
         qualification: qualificationHealth,
     }
 
-    // ── Protection Scores (batch fetch from cache) ──────────────
-    // PRIVACY: protection scores are derived from the customer's ENTIRE
-    // portfolio. Serving them for relationship customers with no visible
-    // policy would leak portfolio-derived data the customer never shared —
-    // same rule as agent-portal (the customers/protection-scores API was deleted in F4).
-    const scoreEligibleIds = relationships
-        .map((r) => r.policyholderUserId)
-        .filter((id) => (visiblePolicyCounts.get(id) ?? 0) > 0)
-
-    const protectionScores = scoreEligibleIds.length > 0
-        ? await prisma.protectionScore.findMany({
-            where: {
-                userId: { in: scoreEligibleIds },
-            },
-            // R3: gapCount is NOT read from the score record any more — the chip
-            // counts classified live findings through the gap-row accessor.
-            select: { userId: true, overallScore: true },
-        }).catch(() => [] as Array<{ userId: string; overallScore: number }>)
-        : []
-
-    const scoresByUserId = new Map(
-        protectionScores.map((s) => [s.userId, s])
-    )
+    // The per-customer protection score used to be fetched here and put on the
+    // wire; nothing has rendered it since B1.7 (PW-TRANSPARENCY-02). One DB
+    // round-trip per dashboard load, feeding nothing — removed (PW-BRIDGE-01 A-11).
 
     // ── Clients by Urgency ────────────────────────────────────────
     const clientsByUrgency: AgentDashboardData["clientsByUrgency"] = {
@@ -475,7 +455,6 @@ export default async function DashboardPage() {
             nextActionDue: nextAction?.dueDate || null,
             nextActionLabel: nextAction?.description || null,
             activationStatus: rel.status === "active" ? "activated" : rel.status === "pending_activation" ? "invited" : "inactive",
-            protectionScore: scoresByUserId.get(rel.policyholderUserId)?.overallScore ?? null,
             gapCount: clientGaps,
             underReviewCount: clientUnderReview,
             // B1.5: a gap count of zero over unassessed policies is not a clean book.
