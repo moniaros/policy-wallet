@@ -54,6 +54,9 @@ const inside = (box: [number, number, number, number], area: { top: number; bott
 for (const fixture of FIXTURES) {
     test.describe(fixture, () => {
         test.beforeAll(async () => {
+            // Rebuilding a 13-policy wallet with runs and gap rows over the remote pooler
+            // takes minutes; a hook keeps the 30s default unless it sets its own budget.
+            test.setTimeout(600_000)
             await withDb(async (db) => applyPortfolioState(db, DASH_EMAIL, fixture))
         })
 
@@ -70,15 +73,26 @@ for (const fixture of FIXTURES) {
                 const overlaps = (await overlappingHitAreas(page)).filter((o) => inside(o.boxA, overview) && inside(o.boxB, overview))
                 const smallTargets = (await smallTapTargets(page)).filter((t) => /overview|protection-status/.test(t.chain))
                 const heading = await page.evaluate(() => (document.getElementById("protection-status-heading")?.textContent || "").replace(/\s+/g, " ").trim())
+                // A layout metric reports the boxes it flags: the elements whose right edge
+                // passes the viewport, so a sideways scroll names its cause (CLAUDE.md).
+                const overflowers = await page.evaluate(() => {
+                    const limit = document.documentElement.clientWidth + 1
+                    return [...document.querySelectorAll<HTMLElement>("body *")]
+                        .map((el) => ({ el, r: el.getBoundingClientRect() }))
+                        .filter(({ r }) => r.width > 0 && r.right > limit)
+                        .slice(0, 12)
+                        .map(({ el, r }) => `${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}.${String(el.className || "").slice(0, 70)} right=${Math.round(r.right)} w=${Math.round(r.width)}`)
+                })
 
-                const card = page.locator('section[aria-labelledby="protection-status-heading"]')
+                // The card, not the #overview region (both are labelled by the same heading).
+                const card = page.locator('section.pw-card[aria-labelledby="protection-status-heading"]')
                 await card.screenshot({ path: path.join(OUT, `${fixture}-${width}.png`) })
                 await page.evaluate(() => document.documentElement.classList.add("dark"))
                 await card.screenshot({ path: path.join(OUT, `${fixture}-${width}-dark.png`) })
                 await page.evaluate(() => document.documentElement.classList.remove("dark"))
 
-                writeFileSync(path.join(OUT, `${fixture}-${width}.json`), JSON.stringify({ fixture, width, capturedAt: new Date().toISOString(), heading, counts, overlaps, smallTargets, geometry }, null, 2))
-                console.log(`[${RUN}/${fixture}/${width}] layout=${geometry.layout} cells=${geometry.cells.length} rows=${geometry.rows} perRow=${geometry.cellsPerRow} rowStartHair=${geometry.hairlineAtRowStart} missingHair=${geometry.missingHairlines} baseline=${geometry.baselineSpread} maxLabelLines=${Math.max(0, ...geometry.cells.map((c) => c.labelLines))} overlaps=${overlaps.length} small=${smallTargets.length} fonts<12=${geometry.smallFonts.length} hscroll=${geometry.hscroll}`)
+                writeFileSync(path.join(OUT, `${fixture}-${width}.json`), JSON.stringify({ fixture, width, capturedAt: new Date().toISOString(), heading, counts, overlaps, smallTargets, overflowers, geometry }, null, 2))
+                console.log(`[${RUN}/${fixture}/${width}] layout=${geometry.layout} cells=${geometry.cells.length} rows=${geometry.rows} perRow=${geometry.cellsPerRow} rowStartHair=${geometry.hairlineAtRowStart} missingHair=${geometry.missingHairlines} baseline=${geometry.baselineSpread} maxLabelLines=${Math.max(0, ...geometry.cells.map((c) => c.labelLines))} overlaps=${overlaps.length} small=${smallTargets.length} fonts<12=${geometry.smallFonts.length} hscroll=${geometry.hscroll}${overflowers.length ? "\n  overflow: " + overflowers.join("\n  overflow: ") : ""}`)
 
                 // ── every width, both fixtures ──
                 expect(geometry.hscroll, "the page must never scroll sideways").toBe(false)
@@ -114,7 +128,9 @@ for (const fixture of FIXTURES) {
                     expect(geometry.cells.every((c) => c.borderLeftPx === 0), "no hairline below lg").toBe(true)
                 } else {
                     expect(geometry.layout).toBe("grid")
-                    expect(geometry.cellsPerRow, "columns follow the card's width").toBe(COLUMNS[width])
+                    // A row holds at most as many cells as there are items: two items sit in
+                    // two of three tracks at 1280, and that is the design (empty tracks stay empty).
+                    expect(geometry.cellsPerRow, "columns follow the card's width").toBe(Math.min(COLUMNS[width], geometry.cells.length))
                     expect(geometry.rows).toBe(fixture === "seven-facts" ? Math.ceil(7 / COLUMNS[width]) : 1)
                     expect(geometry.hairlineAtRowStart, "no hairline at a row's start").toBe(0)
                     expect(geometry.missingHairlines, "a hairline between every two cells of a row").toBe(0)

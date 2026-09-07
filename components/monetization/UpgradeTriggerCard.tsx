@@ -169,7 +169,7 @@ export function UpgradeTriggerCard({
                         // to work out which of four equally-loud controls was the
                         // thing to do. The offer still renders, and still reads
                         // as a button.
-                        className="pw-soft-button"
+                        className="pw-soft-button max-w-full whitespace-normal text-center"
                     >
                         <Crown className="h-4 w-4" aria-hidden="true" />
                         {copy.primaryCta}

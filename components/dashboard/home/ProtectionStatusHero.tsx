@@ -125,6 +125,17 @@ const cellEdge = (i: number) =>
 /** The ONE render of the premium footprint on the page — a fact, not a count (it is a sum). */
 const PREMIUM_FACT_KEY = "portfolio.totalAnnualPremium"
 
+/**
+ * The premium caption is a sentence tail like every other caption («ασφαλιστήρια»,
+ * «έχει λήξει»), so its first letter is lowered here, in code. The CSS
+ * `first-letter:lowercase` it used to carry stops applying from lg, where the label
+ * is a flex container (::first-letter targets block containers) — the round-one
+ * crops showed «Συνολικό» beside «ασφαλιστήρια».
+ */
+function lowerFirst(label: string): string {
+    return label ? label.charAt(0).toLocaleLowerCase("el") + label.slice(1) : label
+}
+
 function splitFact(label: string, count: number): { lead: string; rest: string } | null {
     const prefix = `${count} `
     return label.startsWith(prefix) ? { lead: String(count), rest: label.slice(prefix.length) } : null
@@ -318,7 +329,7 @@ export function ProtectionStatusHero({
                                                 <Euro className="h-3.5 w-3.5" strokeWidth={2} />
                                             </span>
                                             <span className={NUMBER}>{inner.premium.value}</span>{" "}
-                                            <span className={`${LABEL} first-letter:lowercase`}>{inner.premium.label}</span>
+                                            <span className={LABEL}>{lowerFirst(inner.premium.label)}</span>
                                         </span>
                                     )
                                 )}
