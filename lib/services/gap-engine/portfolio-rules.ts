@@ -47,7 +47,12 @@ export interface PortfolioPolicyFacts {
     insurerName: string | null
     policyNumber: string | null
     startDate: Date | null
-    endDate: Date | null
+    /**
+     * The RESOLVED coverage end (renewal history → extracted envelope → column),
+     * from `resolvePolicyLifecycle` at the builder — never the raw column, which
+     * disagrees with it by a year on a renewed policy (PW-BRIDGE-01 C-01b).
+     */
+    coverageEndDate: Date | null
     acordData?: any
 }
 
@@ -112,20 +117,20 @@ function expiringMotorRule(
             (p) =>
                 isActive(p) &&
                 branchFamilyId(p.lineOfBusiness) === "motor" &&
-                p.endDate &&
+                p.coverageEndDate &&
                 // Athens calendar days, and >= 0 so the LAST day of cover still
-                // counts. End dates are stored at midnight UTC, so `endDate >
+                // counts. End dates are stored at midnight UTC, so `coverageEndDate >
                 // now` dropped a policy expiring TODAY from three hours into the
                 // day it still covered — on the compulsory line, on the one day
                 // the renewal still matters.
-                calendarDaysUntil(p.endDate, now) >= 0 &&
-                calendarDaysUntil(p.endDate, now) <= 30
+                calendarDaysUntil(p.coverageEndDate, now) >= 0 &&
+                calendarDaysUntil(p.coverageEndDate, now) <= 30
         )
-        .sort((a, b) => a.endDate!.getTime() - b.endDate!.getTime())[0]
+        .sort((a, b) => a.coverageEndDate!.getTime() - b.coverageEndDate!.getTime())[0]
 
     if (!expiring) return null
 
-    const daysLeft = calendarDaysUntil(expiring.endDate!, now)
+    const daysLeft = calendarDaysUntil(expiring.coverageEndDate!, now)
     const ref = policyRef(expiring)
 
     return {
@@ -141,10 +146,10 @@ function expiringMotorRule(
             el: "Η κυκλοφορία χωρίς ενεργή ασφάλιση είναι παράνομη στην Ελλάδα και ακόμα και μία ημέρα κενού σας αφήνει προσωπικά υπεύθυνους για οποιοδήποτε ατύχημα.",
         },
         evidence: {
-            en: `Your policy ${ref} expires on ${formatDate(expiring.endDate!, "en")}${
+            en: `Your policy ${ref} expires on ${formatDate(expiring.coverageEndDate!, "en")}${
                 daysLeft <= 0 ? " — today" : daysLeft === 1 ? " — tomorrow" : ` — in ${daysLeft} days`
             }.`,
-            el: `Το ασφαλιστήριό σας ${ref} λήγει στις ${formatDate(expiring.endDate!, "el")}${
+            el: `Το ασφαλιστήριό σας ${ref} λήγει στις ${formatDate(expiring.coverageEndDate!, "el")}${
                 daysLeft <= 0 ? " — σήμερα" : daysLeft === 1 ? " — αύριο" : ` — σε ${daysLeft} ημέρες`
             }.`,
         },
@@ -249,8 +254,8 @@ export function findSameSubjectOverlap(
             isActive(q) &&
             branchFamilyId(q.lineOfBusiness) === family &&
             insuredSubject(q) === subject &&
-            (!policy.startDate || !q.endDate || policy.startDate <= q.endDate) &&
-            (!q.startDate || !policy.endDate || q.startDate <= policy.endDate)
+            (!policy.startDate || !q.coverageEndDate || policy.startDate <= q.coverageEndDate) &&
+            (!q.startDate || !policy.coverageEndDate || q.startDate <= policy.coverageEndDate)
     )
     return partner ? { partner } : null
 }
@@ -299,8 +304,8 @@ function duplicateCoverageRules(
             group.some(
                 (q) =>
                     q.id !== p.id &&
-                    (!p.startDate || !q.endDate || p.startDate <= q.endDate) &&
-                    (!q.startDate || !p.endDate || q.startDate <= p.endDate)
+                    (!p.startDate || !q.coverageEndDate || p.startDate <= q.coverageEndDate) &&
+                    (!q.startDate || !p.coverageEndDate || q.startDate <= p.coverageEndDate)
             )
         )
         if (overlapping.length < 2) continue

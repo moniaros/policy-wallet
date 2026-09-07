@@ -12,6 +12,7 @@
 import { db } from "@/lib/db"
 import { parseRisks, type VersionRow } from "./diff"
 import { buildTimeline, type TimelineSources } from "./build"
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import type { TimelineEntry } from "./types"
 import { classifiedRecommendations } from "@/lib/gaps/gap-rows"
 
@@ -58,6 +59,7 @@ export async function getTimeline(
                         createdAt: true,
                         startDate: true,
                         endDate: true,
+                        acordData: true,
                         status: true,
                     },
                     orderBy: { createdAt: "desc" },
@@ -188,7 +190,18 @@ export async function getTimeline(
 
     const sources: TimelineSources = {
         lifeEvents,
-        policies,
+        // The date a cover ended is the RESOLVED one (renewal history → envelope →
+        // column), from the one lifecycle call — the raw column put a renewed
+        // policy's end on the timeline a year early (PW-BRIDGE-01 C-01b).
+        policies: policies.map((p) => ({
+            id: p.id,
+            lineOfBusiness: p.lineOfBusiness,
+            insurerName: p.insurerName,
+            createdAt: p.createdAt,
+            startDate: p.startDate,
+            status: p.status,
+            coverageEndDate: resolvePolicyLifecycle(p).endDate ?? p.endDate,
+        })),
         renewals,
         recommendations: recommendations.map((r) => ({
             id: r.id,
