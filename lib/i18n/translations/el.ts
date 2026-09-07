@@ -2583,8 +2583,12 @@ export const el = {
             factNeverAnalysedMany: '{count} δεν έχουν αναλυθεί',
             // B1.5: policies in a branch with no authored checks — excluded from
             // every "assessed" figure, and said so.
-            factUnassessedOne: '1 χωρίς ορισμένους ελέγχους για τον κλάδο του — δεν αξιολογήθηκε',
-            factUnassessedMany: '{count} χωρίς ορισμένους ελέγχους για τον κλάδο τους — δεν αξιολογήθηκαν',
+            // The honest verb is the fact; the reason is the cell's note beneath it
+            // (words over the number, DESIGN.md) — a 64-character tail wrapped seven
+            // lines deep in a 110px column (2026-09-07).
+            factUnassessedOne: '1 δεν αξιολογήθηκε',
+            factUnassessedMany: '{count} δεν αξιολογήθηκαν',
+            factUnassessedWhy: 'χωρίς ορισμένους ελέγχους κλάδου',
             noGapsAmongAssessedOne: 'Ελέγξαμε 1 ασφαλιστήριο και δεν εντοπίσαμε κενά.',
             noGapsAmongAssessedMany: 'Ελέγξαμε {assessed} ασφαλιστήρια και δεν εντοπίσαμε κενά.',
             assessmentExcludedOne: '1 ασφαλιστήριο δεν ελέγχθηκε ακόμη (χωρίς ανάλυση ή χωρίς διαθέσιμους ελέγχους για τον κλάδο του).',

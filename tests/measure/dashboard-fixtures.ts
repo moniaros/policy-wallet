@@ -18,7 +18,7 @@
  * Local-dev database only; refuses the production project by ref.
  */
 
-export type PortfolioState = "empty" | "single" | "typical" | "heavy" | "all-expired"
+export type PortfolioState = "empty" | "single" | "typical" | "heavy" | "all-expired" | "seven-facts" | "two-facts"
 
 export const PORTFOLIO_STATES: PortfolioState[] = ["empty", "single", "typical", "heavy", "all-expired"]
 
@@ -94,6 +94,29 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
                 },
             ]
 
+        // The facts row at its widest and its narrowest (tests/measure/dashboard-facts.spec.ts):
+        // `seven-facts` is the heavy wallet plus one analysed policy in a branch with no authored
+        // check, so every fact the row can state is present — total, expired, expiring, never
+        // analysed, failed, unassessed — and the premium with its exclusion note; `two-facts` is
+        // one healthy policy, so the row is the total and the premium and nothing else. Neither
+        // is in PORTFOLIO_STATES: the baseline specs iterate that list.
+        case "seven-facts":
+            return [
+                ...policiesFor("heavy"),
+                {
+                    policyNumber: "ΣΥΜΒ-2026-H13",
+                    lineOfBusiness: "cyber",
+                    insurerName: "Interamerican",
+                    endInDays: 164,
+                    premiumAmount: 312,
+                    analyzed: true,
+                    reproduces: "an UNASSESSED fact — cyber has no authored check in the catalogue",
+                },
+            ]
+        case "two-facts":
+            return [
+                { policyNumber: "ΣΥΜΒ-2026-TF1", lineOfBusiness: "motor", insurerName: "Interamerican", endInDays: 200, premiumAmount: 312.4, analyzed: true, reproduces: "the row at its narrowest: the total and the premium" },
+            ]
         case "heavy":
             return [
                 {

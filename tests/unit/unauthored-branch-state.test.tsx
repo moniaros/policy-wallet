@@ -199,6 +199,8 @@ describe("portfolio roll-ups exclude unassessed policies and say how many", () =
         const home = readFileSync("app/(protected)/dashboard/PolicyholderHome.tsx", "utf8")
         expect(home).toMatch(/assessedPolicies: portfolioInput\.assessed/)
         expect(home).toMatch(/unassessed: \[home\.factUnassessedOne, home\.factUnassessedMany\]/)
+        // The reason travels as the cell's note, never folded back into the count's words.
+        expect(home).toMatch(/note = kind === 'unassessed' \? home\.factUnassessedWhy : undefined/)
         const hero = readFileSync("components/dashboard/home/ProtectionStatusHero.tsx", "utf8")
         expect(hero).toMatch(/unassessed: "portfolio\.unassessedCount"/)
     })

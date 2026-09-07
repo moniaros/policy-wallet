@@ -442,7 +442,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     // labelled subset together as a contradiction.
     const facts = portfolioFacts(portfolioInput).map(({ kind, count }) => {
         const [one, many] = factLabel[kind]
-        return { kind, count, label: count === 1 ? one : many.replace('{count}', String(count)) }
+        // The unassessed fact carries its reason as the cell's note (visible from lg,
+        // read by screen readers everywhere), not inside the count's own words.
+        const note = kind === 'unassessed' ? home.factUnassessedWhy : undefined
+        return { kind, count, label: count === 1 ? one : many.replace('{count}', String(count)), note }
     })
 
     // The monitor still needs the newest assessment version (for its risks

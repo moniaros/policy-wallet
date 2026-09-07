@@ -258,7 +258,7 @@ The severity **tone** of a finding becomes a colour in exactly one file (`compon
 **Character:** One typeface, worked hard. Hierarchy comes from a twelve-step size ladder and four weights (400/500/600/700) rather than from contrast between families. Headings tighten as they grow — leading runs 1.05 at display and opens to 1.65 for long-form body — so large type reads as composed rather than airy. Inside the app the whole hierarchy lives between 12px and 32px: a page title, a card title one step above body, a number one step above that, and captions doing all the labelling.
 
 ### Hierarchy
-- **Display** (600, 3.5rem/56px, 1.05): hero only. One per page, never below the fold.
+- **Display** (600, 3.5rem/56px, 1.05): hero only. One per page, never below the fold. In the app the one display number is the phone lead of the overview row (the home and the wallet); everything else stays inside 12–32px.
 - **Headline** (600, 2.75rem/44px, 1.12): marketing page titles and major section heads.
 - **Page title** (600, 1.5rem/24px, tracking −0.025em): the h1 of an app page; the dashboard's welcome runs one step larger (2rem), phones one step smaller (1.25rem).
 - **Title** (600, 1.25rem/20px, 1.35): sub-headings and empty-state titles.
@@ -291,9 +291,9 @@ The app shell is a fixed 256px sidebar (288px from 1280px) with a 64px sticky to
 
 The dashboard is one grid: a main column of two card tracks (cards span both when they are the page's headline) and a 320px rail (340px from 1280px), 20px between everything. Below 1024px the rail follows the main column; below 768px the two tracks become one.
 
-Density is a three-step scale applied to cards and rows: tight (`p-3 sm:p-4`), default (`p-4 sm:p-6`), roomy (`p-6 sm:p-8`). Inside a card the rhythm is fixed: head, 16–20px, then rows at 8px spacing or fact cells at 16–20px. A fact-cell row draws hairlines between cells only from 1024px; below that the row wraps two-up and a divider at a wrapped row's start would be a line with nothing to its left.
+Density is a three-step scale applied to cards and rows: tight (`p-3 sm:p-4`), default (`p-4 sm:p-6`), roomy (`p-6 sm:p-8`). Inside a card the rhythm is fixed: head, 16–20px, then rows at 8px spacing or fact cells at 16–20px. A fact-cell row draws hairlines between cells only from 1024px; below that the row wraps two-up and a divider at a wrapped row's start would be a line with nothing to its left. The column count of a fact-cell grid follows the CARD's width, never the viewport — beside the rail at 1024px the overview card is 314px inside, narrower than on a phone — so from 1024px a container query steps the columns (2 at any width, 3 from 28rem, 4 from 36rem), and a hairline never opens a row.
 
-Responsive behaviour has **one breakpoint boundary: 1024px (`lg`)**, exported as a constant so JS and CSS agree, plus one convenience at 1280px (`xl`) where the wallet's dense table and the wider rail earn their room. Presentation switches in CSS — render both arrangements and toggle with `lg:hidden` / `hidden lg:block` — never by measuring the viewport in JavaScript. Grids start at one or two columns and step up; a bare `grid-cols-3` is a build failure.
+Responsive behaviour has **one breakpoint boundary: 1024px (`lg`)**, exported as a constant so JS and CSS agree, plus one convenience at 1280px (`xl`) where the wallet's dense table and the wider rail earn their room. Presentation switches in CSS — and inside the one `lg` boundary a card may step its own grid with `@container` queries (the sanctioned second axis: QuickActions, the branch map, the facts row) — render both arrangements and toggle with `lg:hidden` / `hidden lg:block` — never by measuring the viewport in JavaScript. Grids start at one or two columns and step up; a bare `grid-cols-3` is a build failure.
 
 Touch targets are enforced by an unlayered base rule below 768px: inputs, selects and buttons clear 44px and inputs take 16px type so iOS does not zoom. Above that, WCAG 2.2's 24px minimum applies, satisfied either by size or by spacing. Every shell control, soft pill and icon action in the app is 44px by construction.
 

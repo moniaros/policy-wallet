@@ -105,7 +105,7 @@ Verified directly: **6 `section[id]` landmarks** — `overview`, `attention`, `p
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
-| D-01 | See portfolio state as a factual composition (counts of total / expired / expiring / never-analysed / failed) | fact | **KEEP** | this is the honest replacement for the old verdict; it is the model for H-001 option C | — |
+| D-01 | See portfolio state as a factual composition (counts of total / expired / expiring / never-analysed / failed) | fact | **KEEP** | this is the honest replacement for the old verdict; it is the model for H-001 option C | — 2026-09-07: re-laid as a fact-cell grid whose columns follow the CARD's width (2/3/4 from 1024 via container queries; ink pill below); acceptance = three consecutive clean rounds of tests/measure/dashboard-facts.spec.ts in docs/evidence/dashboard-facts/ |
 | D-02 | See the protection score behind a disclosure | fact | **REMOVE** | deleted — H-001 answered C. Replaced by D-01's factual composition, which already ships on this surface | P1-01 |
 | D-03 | Read why no score can be shown, when it cannot | fact | **KEEP** | `scoreUnsupportedNothingAnalysed` / `scoreUnsupportedNoCover` — the §2.3 pattern done right | — |
 | D-04 | Read the score methodology, its limits, and the not-advice statement | fact | **REMOVE** | goes with D-02 — it exists to qualify a number that will no longer render | P1-01 |
