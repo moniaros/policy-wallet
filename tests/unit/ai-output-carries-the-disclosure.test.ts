@@ -119,7 +119,10 @@ function coverage(file: string): { covered: boolean; bare: string[] } {
  */
 const MUST_CARRY_THEIR_OWN = [
     "components/wallet/PolicyDetailsClientView.tsx",
-    "components/coverage/CoverageInsightsClient.tsx",
+    // «Καλύψεις & κενά» (2026-09-07): the gap list renders the model's
+    // description of a rule-decided gap («Τι σημαίνει για εσάς») and carries
+    // the inline disclaimer beside it.
+    "components/protection/GapList.tsx",
     "components/wallet/PolicyComparison.tsx",
     "components/wallet/EditPolicyForm.tsx",
     "app/(protected)/collaboration/threads/[id]/page.tsx",

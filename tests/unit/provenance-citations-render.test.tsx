@@ -125,7 +125,9 @@ describe("F5 — every render site of a class renders the citation (enumerated f
     it("the known sites are among the enumerated ones and carry the citation (a floor, not the guard)", () => {
         for (const f of [
             "components/wallet/gap-report/GapCard.tsx",
-            "components/coverage/CoverageInsightsClient.tsx",
+            // «Καλύψεις & κενά» (2026-09-07): the page composes the label with
+            // its citation and the gap list renders it as a field on every item.
+            "app/(protected)/protection/page.tsx",
             "app/(protected)/insights/InsightsClient.tsx",
             "lib/services/reports/savings-report.ts",
             "components/dashboard/home/AttentionList.tsx",

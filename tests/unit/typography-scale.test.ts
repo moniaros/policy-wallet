@@ -26,7 +26,8 @@ describe('the type scale means what it says', () => {
     it('sets the risk-priority qualifier at a functional size on every surface', () => {
         const surfaces = [
             'components/dashboard/home/CoverageGapsWidget.tsx',
-            'components/coverage/CoverageInsightsClient.tsx',
+            // CoverageInsightsClient retired 2026-09-07; /protection's gap list
+            // renders provenance, never a priority, so no qualifier lives there.
             'components/coverage/RecommendationCards.tsx',
             'app/(protected)/opportunities/OpportunitiesClient.tsx',
         ]

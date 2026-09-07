@@ -34,8 +34,7 @@ import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Bell, Lightbulb, ShieldAlert, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayPersonName, displayPolicyNumber, policyAssetIdentifier } from "@/lib/wallet/policy-identity"
-import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
-import { resolvePolicyLifecycle, effectivePolicyStatus } from "@/lib/policy-status"
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
 import { premiumExclusionParts } from "@/lib/wallet/premium-exclusion-note"
 import { deriveRenewalChecklist } from "@/lib/wallet/renewal-outlook"
@@ -46,7 +45,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { FREE_POLICY_LIMIT } from "@/lib/monetization/feature-gates"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { CarriedPlanCard } from "@/components/monetization/CarriedPlanCard"
-import { buildBranchOverview } from "@/lib/insurance/branch-page"
+import { deriveCoverageStatus, toTileState } from "@/lib/protection/coverage-status"
 import { BranchCoverageMap } from "@/components/branches/BranchCoverageMap"
 import { ProtectionStatusHero } from "@/components/dashboard/home/ProtectionStatusHero"
 import { AttentionList, type AttentionItem } from "@/components/dashboard/home/AttentionList"
@@ -149,6 +148,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         timelineEntries,
         protectionProfileRow,
         attentionBundle,
+        analysisRuns,
     ] = await Promise.all([
         db.policy.findMany({
             // status ≠ deleted: a soft-deleted row (the API's DELETE path) is
@@ -172,7 +172,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 policy: { ownerUserId: dbUser.id },
                 status: { in: ["open", "detected", "acknowledged"] },
             },
-            select: { severity: true, policyId: true, definition: { select: { slug: true } } },
+            select: { severity: true, policyId: true, analysisRunId: true, analysisRun: { select: { finishedAt: true } }, definition: { select: { slug: true } } },
         }),
         // Protection score: READ-ONLY cached score (never runs the engine on a
         // GET render). Freshness is the cron / upload pipeline's job.
@@ -255,6 +255,18 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         // documents, with a confidence (lib/protection/load-attention-areas.ts).
         // Read-only; fails soft to no card rather than to a card with a claim.
         loadAttentionAreas({ userId: dbUser.id, language: lang }).catch(() => null),
+        // The wallet's recent analysis runs, for the coverage status behind the
+        // branch map — ONE query, reduced per policy in memory (the same
+        // derivation «Καλύψεις & κενά» renders, so the two surfaces cannot
+        // disagree about one branch).
+        db.policyAnalysisRun
+            .findMany({
+                where: { userId: dbUser.id },
+                orderBy: { createdAt: "desc" },
+                take: 200,
+                select: { id: true, policyId: true, status: true, createdAt: true, finishedAt: true, attemptedRules: true },
+            })
+            .catch(() => [] as Array<{ id: string; policyId: string; status: string; createdAt: Date; finishedAt: Date | null; attemptedRules: unknown }>),
     ])
     const isFreeTier = entitlements.tier === "free"
 
@@ -764,22 +776,46 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     // and painted its branch green while the /branches tile showed amber.
     // And `unread` in: a placeholder identity or an empty extraction is a
     // document on file, not cover — «Άλλο: Καλυμμένο» over a one-line PDF.
-    const coverageMapEntries = buildBranchOverview(
-        policies.map((policy) => ({
+    // Since the «Καλύψεις & κενά» rebuild (2026-09-07) the map reads the SAME
+    // coverage status that page renders, projected onto the tile words through
+    // toTileState(): an active policy nobody has analysed is «Δεν έχει
+    // αξιολογηθεί» here too, never «Καλυμμένο» — one derivation, two surfaces.
+    const coverageStatus = deriveCoverageStatus({
+        policies: policies.map((policy) => ({
             id: policy.id,
             lineOfBusiness: policy.lineOfBusiness,
-            status: effectivePolicyStatus(policy),
+            status: policy.status,
+            policyNumber: policy.policyNumber,
+            insurerName: policy.insurerName,
             endDate: policy.endDate,
-            unread: isUnreadPolicy(policy),
+            acordData: policy.acordData,
+            lastAnalyzedAt: policy.lastAnalyzedAt,
         })),
-        cachedScore?.expectedLines ?? []
-    ).map((entry) => ({
-        id: entry.branch.id,
-        icon: getBranchIcon(entry.branch.id),
-        label: policyTypeLabels[entry.branch.id] || entry.branch.label[lang],
-        state: entry.state,
-        stateLabel: stateLabels[entry.state],
-    }))
+        gapRows: openGaps
+            .filter((gap) => Boolean(gap.policyId))
+            .map((gap) => ({
+                policyId: gap.policyId as string,
+                slug: gap.definition.slug,
+                analysisRunId: gap.analysisRunId,
+                runFinishedAt: gap.analysisRun?.finishedAt ?? null,
+            })),
+        runs: analysisRuns,
+        expectedLines: cachedScore ? ((cachedScore.expectedLines as string[] | null) ?? []) : null,
+        coverHeldElsewhere: Array.isArray(profile?.coverHeldElsewhere)
+            ? (profile.coverHeldElsewhere as unknown[]).filter((x): x is string => typeof x === "string")
+            : [],
+        now,
+    })
+    const coverageMapEntries = coverageStatus.rows.map((row) => {
+        const state = toTileState(row)
+        return {
+            id: row.branch.id,
+            icon: getBranchIcon(row.branch.id),
+            label: policyTypeLabels[row.branch.id] || row.branch.label[lang],
+            state,
+            stateLabel: stateLabels[state],
+        }
+    })
 
     // PROVENANCE classes of the same live-gap universe (B3). Severity is not an
     // axis anywhere (B1). Findings still under review are never counted in a

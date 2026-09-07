@@ -269,7 +269,7 @@ and `/coverage` (the legacy redirect, a KEEP row) now points at `/protection`.
 | A-02 | See the score's colour verdict (`scoreColor`) | fact | **REMOVE** | goes with A-01, so the WCAG 1.4.1 finding resolves by deletion rather than by adding a text equivalent | P1-01 |
 | A-03 | Read the freshness stamp ("computed from data as of…") | fact | **REMOVE** | it stamps the score; nothing left to stamp | P1-01 |
 | A-04 | Read methodology / limits / not-advice | fact | **REMOVE** | goes with A-01 | P1-01 |
-| A-05 | See recommendations (`RecommendationCards`) | fact | **KEEP** | `/protection` (V2-P2-03); titles must not be AI prose from an unauthored slug | — |
+| A-05 | See recommendations (`RecommendationCards`) | fact | **KEEP** | `/recommendations` (RC-01, 2026-09-07 — the story rebuild moved the list to its own page; `/protection` keeps a counted door under `recommendation.openCount`); titles must not be AI prose from an unauthored slug | — |
 | A-06 | Declare life events (`LifeEventsPanel`) | action | **KEEP** | `/protection#life-events`; duplicates the dashboard's `LifeEventPromptCard` — one must link to the other (§7.5 renders once) | Phase 5 |
 | A-07 | Complete the risk-profile wizard | action | **KEEP** | `/protection#risk-profile-wizard`; the long form; §7.5 says it is not the first thing on the surface | Phase 2 |
 | A-08 | Refresh the analysis | action | **KEEP** | `/protection` (action moved to `protection/actions.ts`, auth-intact); consent-gated path | — |
@@ -288,10 +288,10 @@ route. Without these rows the rule in §12 would have reported no violation.
 | A-10 | The reviewed-findings list: per-gap card with title, severity, line of business | fact | **KEEP** | «Η προστασία μου» | V2-P2-01b ✓ |
 | A-11 | Severity tally that sums to `gap.openCount` on live cover | fact | **NEW — corrected 2026-08-25** | «Η προστασία μου» — single mount since V2-P2-03 removed `/coverage-insights` | V2-P2-01b ✓ |
 | A-12 | «Εξαιρέθηκαν» — names the EXPIRED policies left out of the tally | fact | **KEEP — honesty feature** | same. This is the surface telling the reader what it did not count; losing it silently would be the §2.1 shape | V2-P2-01b |
-| A-13 | «Ελέγχθηκε και είναι εντάξει» — policies checked with no findings | fact | **KEEP** | same. The counterpart to A-12: checked-and-clear stated as such, distinct from never-looked | V2-P2-01b |
+| A-13 | «Ελέγχθηκε και είναι εντάξει» — policies checked with no findings | fact | **RETIRED 2026-09-07** | the list counted never-analysed policies as fine whenever any policy had been analysed; the gap list's all-clear now states both denominators (`portfolio.assessedCount` / `unassessedCount`) and each category row says what was checked («Ελέγξαμε N από M σημεία») | — |
 | A-14 | Counts: policies with findings, total policies, total coverage | fact | **KEEP** | same, through registered `data-count` keys | V2-P2-01b |
 | A-15 | Per-finding actions: review the policy, add a note, dismiss | action | **KEEP** | same — real agency, and dismissal is a write path | V2-P2-01b |
-| A-16 | «Επόμενα βήματα» | fact | **KEEP** | same | V2-P2-01b |
+| A-16 | «Επόμενα βήματα» | fact | **RETIRED 2026-09-07** | two doors to nowhere useful (the wallet, the account); the page's one next step is now the banner under the h1 (PS-07) | — |
 | A-17 | Never-analysed state, with a refresh hint and a locked CTA | fact | **KEEP** | same. Absence-is-not-reassurance depends on this state existing separately from A-13 | V2-P2-01b |
 | A-18 | Empty-wallet state with an add-first CTA | fact | **KEEP** | same | V2-P2-01b |
 | A-19 | All-good state | fact | **KEEP, CHECK** | same — must not read as reassurance when nothing was analysed (that is A-17's job) | V2-P2-01b |
@@ -594,22 +594,47 @@ Capability count unchanged at **109**. A tombstone comment stands where they wer
 
 ---
 
-## Η προστασία μου — `/protection` (V2-P2-01 built · V2-P2-03 removed the absorbed sources)
+## Καλύψεις & κενά — `/protection` (V2-P2-01 built · V2-P2-03 removed the absorbed sources · story rebuild 2026-09-07)
 
 Source: `app/(protected)/protection/page.tsx` → `components/protection/ProtectionSurface.tsx`
-(`ProtectionBranchLens` / `ProtectionRiskLens` + the surviving /coverage-insights components).
-Written by the implementing item because `ledger-covers-every-surface` enumerates routes from the
-filesystem; the run coordinator owns the final wording.
+(`ProtectionNextStep` · `ProtectionSummary` · `GapList` · `ProtectionLensTabs` → `CategoryList` /
+`ProtectionRiskLens` · `LifeSection` · `ImproveSection`). The page's h1 is the menu's word for it,
+«Καλύψεις & κενά» (it read «Η προστασία μου» until the rebuild — two names for one destination).
 
-**No capabilities of its own.** The route absorbs, per §4.2: **B-01…B-06** render on the *ανά
-κλάδο* lens, **R-01…R-08** on the *ανά κίνδυνο* lens, **A-05…A-09** as the lens-independent engine
-content, and — since V2-P2-01b — **A-10…A-21**, the findings surface itself
-(`CoverageInsightsClient`, mounted `embedded` between the recommendations and the lens switcher,
-with the A-11 severity tally rendered through `describeSeverity()` under `gap.severityCount`,
-summing to `gap.openCount` over the shared `gapsOnActiveCoverage` universe). The lens switcher (`?lens=`) is navigation, not capability. Guard:
-`tests/unit/protection-surface-ledger.test.tsx` renders the surface and fails when any KEEP row
-stops rendering; expected content is enumerated from the taxonomy, the graph/watch assemblers and
-the §6.7 key registry, never from a hand-written list.
+**Story rebuild (2026-09-07, goal series).** One derivation, `lib/protection/coverage-status.ts`,
+gives every branch that concerns the person one of four status words the checks can prove —
+«Φαίνεται να καλύπτεται» · «Μερική κάλυψη» · «Χωρίς ασφαλιστήριο» · «Δεν ελέγχθηκε ακόμη» — and the
+page tells its story in that order: the one next step, the picture, the findings explained, the
+lens the owner kept, what the person can tell us, how to improve. New rows:
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| PS-01 | See the picture at a glance: four counted doors over a stated denominator (`branch.coveredCount` · `findingCount` · `noPolicyCount` · `notCheckedCount` over `branch.relevantCount`), under-review-only branches disclosed in a sentence (`branch.underReviewOnlyCount`), cover held elsewhere named | fact | **KEEP** | `#summary`; each count links to the list filtered by `?status=` | — |
+| PS-02 | Read each category's status as icon + word (`branch.coverageStatus`, subject-scoped) with the sentence that backs it («Ελέγξαμε N από M σημεία» as `branch.checkedPoints`; the classified finding count as `branch.openFindingCount`; the lapse, the unread document, the missing checks) | fact | **KEEP** | `#categories` rows | — |
+| PS-03 | Filter the categories by family — Όλα / Περιουσία / Υγεία / Οικογένεια / Μετακίνηση / Άλλα — from the one line→area vocabulary | action | **KEEP** | `?family=` links in `#categories` | — |
+| PS-04 | Narrow the categories to one status from the summary, with a way back | action | **KEEP** | `?status=` + the clear chip | — |
+| PS-05 | Read a finding explained: title (authored content map), «Τι σημαίνει για εσάς» (the model's description of the rule-decided gap, disclaimed at the point of use), «Γιατί έχει σημασία» (the provenance class in plain words beside its label and citation), the area it concerns, one review door and a dismiss action; the list dated to its run | fact | **KEEP** | `#gaps` | — |
+| PS-06 | Know the plan's cap: the free plan sees two findings and a counted door to the rest (`gap.lockedCount`) | fact | **KEEP** | `#gaps` | — |
+| PS-07 | Take the one next step: exactly one primary outside the life section, decided from facts (add first / analyse / unlock / see gaps / answer N questions / see recommendations / add more) | action | **KEEP** | the banner under the h1 | — |
+| PS-08 | Know when the last check ran, and re-run it | fact / action | **KEEP** | `#improve` meta line (the refresh control left the header) | — |
+| PS-09 | See the categories that neither concern the person nor hold anything, listed without a status word | fact | **KEEP** | `#categories` «Άλλες κατηγορίες» | — |
+| PS-10 | Switch lens — kept by the owner's decision (2026-09-07); one lens per request | action | **KEEP** | `?lens=` | — |
+
+**Absorbed rows, re-homed:** **B-01…B-06** render as the category rows (B-05's words are now the
+four statuses; «Πιθανό κενό» still renders nowhere; B-06's predicate is unchanged), **R-01…R-08**
+on the risk lens as before, **A-06** (`#life-events`) and **A-07** (`#risk-profile-wizard`) inside
+`#life`, **A-08** in the foot's meta line, **A-09** on its one mount in the foot, **A-12/A-17/A-18/
+A-19/A-20** as the gap list's states, **A-10/A-15** as PS-05. **A-05 moved to `/recommendations`
+(RC-01)**: this page keeps a counted door (`recommendation.openCount`). **A-11** stays retired (no
+severity tally). **A-13** (the checked-and-clear list of policies) and **A-16** («Επόμενα βήματα»
+with the wallet and settings buttons) are **RETIRED**: the first listed never-analysed policies as
+fine whenever any policy had been analysed, the second offered two doors to nowhere useful; the
+all-clear sentence now states both denominators (`portfolio.assessedCount` / `unassessedCount`) and
+the category rows say per branch what was checked. Three findings recorded at the retirement of
+`CoverageInsightsClient`: a fabricated «what we checked» list on every card, a «Σημείωση» button
+that routed to /upgrade, and generic fallback titles because the gap row has no title column.
+Guard: `tests/unit/protection-surface-ledger.test.tsx` renders the surface over the real
+derivation and fails when any KEEP row stops rendering.
 
 Three facts a later phase must not lose:
 

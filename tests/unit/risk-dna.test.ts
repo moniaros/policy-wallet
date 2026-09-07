@@ -594,8 +594,10 @@ describe("the information architecture holds", () => {
     // V2-P2-03 collapsed /coverage-insights and /insights/risk-profile into
     // /protection: the findings surface and the branch lens are the surviving
     // "what do my policies say" side; the risk lens is "what are my risks".
-    const FINDINGS = readFileSync("components/coverage/CoverageInsightsClient.tsx", "utf-8")
-    const BRANCH_LENS = readFileSync("components/protection/ProtectionBranchLens.tsx", "utf-8")
+    // «Καλύψεις & κενά» story (2026-09-07): the findings surface is GapList and
+    // the branch lens is CategoryList — still the "what do my policies say" side.
+    const FINDINGS = readFileSync("components/protection/GapList.tsx", "utf-8")
+    const BRANCH_LENS = readFileSync("components/protection/CategoryList.tsx", "utf-8")
     const RISK_LENS = readFileSync("components/protection/ProtectionRiskLens.tsx", "utf-8")
 
     it("renders the assessment once — only the risk lens mounts the risk panels", () => {

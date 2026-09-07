@@ -1,21 +1,38 @@
 import type { ComponentProps } from "react"
 
-import { CoverageInsightsClient } from "@/components/coverage/CoverageInsightsClient"
-import { RecommendationCards } from "@/components/coverage/RecommendationCards"
-import { LifeEventsPanel, type LifeEventOption, type RecordedEvent } from "@/components/coverage/LifeEventsPanel"
-import { RiskProfileWizard } from "@/components/coverage/RiskProfileWizard"
-import { RefreshAnalysisButton } from "@/components/coverage/RefreshAnalysisButton"
-import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { ProtectionLensTabs, type ProtectionLens } from "./ProtectionLensTabs"
-import { ProtectionBranchLens, type BranchLensLabels } from "./ProtectionBranchLens"
 import { ProtectionRiskLens } from "./ProtectionRiskLens"
-import type { BranchPolicyFacts } from "@/lib/insurance/branch-page"
+import { ProtectionNextStep } from "./ProtectionNextStep"
+import { ProtectionSummary, type ProtectionSummaryCopy } from "./ProtectionSummary"
+import { GapList, type GapListProps } from "./GapList"
+import { CategoryList, type CategoryListCopy } from "./CategoryList"
+import { LifeSection } from "./LifeSection"
+import { ImproveSection, type ImproveSectionCopy } from "./ImproveSection"
+import type { BranchCoverageStatus, CoverageStatusId, CoverageStatusSummary } from "@/lib/protection/coverage-status"
+import type { FamilyFilterId } from "@/lib/protection/coverage-families"
+import type { ProtectionNextStep as Step } from "@/lib/protection/next-step"
 
-type CoverageInsightsClientProps = ComponentProps<typeof CoverageInsightsClient>
-type RecommendationCardsProps = ComponentProps<typeof RecommendationCards>
-type RiskProfileWizardProps = ComponentProps<typeof RiskProfileWizard>
 type ProtectionRiskLensProps = ComponentProps<typeof ProtectionRiskLens>
+type LifeSectionProps = ComponentProps<typeof LifeSection>
 
+/**
+ * DESIGN CONTRACT — «Καλύψεις & κενά» (/protection), story rebuild 2026-09-07.
+ *
+ * MODE: Operate. Direction A inherited. STORY, top to bottom and the same on
+ * a phone: the one next step → the picture at a glance (#summary) → what is
+ * worth a look (#gaps) → the lens switch the owner kept: categories by family
+ * (#categories) or the risks (the risk lens) → what the person can tell us
+ * (#life) → how to improve (#improve). PRIMARY: exactly one `.pw-primary-button`
+ * outside the life section — the next-step banner's; the life section's forms
+ * (the wizard's save, the life-event record) keep their own submit, a
+ * section's primary inside a form the reader opened. Every other control is a
+ * door. MATERIALS:
+ * pw-card, CardHead, pw-subcard, the one soft-tint accent on the banner,
+ * amber only on a found gap, info blue for «not checked», no eyebrows, no
+ * score. HONESTY: four status words the derivation can prove, each count over
+ * a visible denominator, under review disclosed without a number, every
+ * findings list dated to its run.
+ */
 export interface ProtectionSurfaceProps {
     language: "en" | "el"
     lens: ProtectionLens
@@ -24,133 +41,73 @@ export interface ProtectionSurfaceProps {
         subtitle: string
         lens: { aria: string; byBranch: string; byRisk: string }
         refresh: { refresh: string; refreshing: string; failed: string }
-        /** «Πλήρες προφίλ» — the wizard's heading as the secondary path below the areas. */
         fullProfile: { title: string; lead: string }
     }
-    /** «Ανά κλάδο» lens data — required when lens === "branch". */
-    branchLens: {
-        policies: BranchPolicyFacts[]
-        expectedLines: string[]
-        labels: BranchLensLabels
-    } | null
-    /** «Ανά κίνδυνο» lens data — required when lens === "risk". */
+    nextStep: { step: Step; title: string; body: string; cta: string }
+    /** The engine snapshot failed: say so beside the header instead of dropping content silently. */
+    engineUnavailable: boolean
+    engineUnavailableText: string
+    summary: { summary: CoverageStatusSummary; heldElsewhereLabels: string[]; copy: ProtectionSummaryCopy }
+    gaps: GapListProps
+    categories: { rows: BranchCoverageStatus[]; family: FamilyFilterId; status: CoverageStatusId | null; copy: CategoryListCopy }
     riskLens: {
         intelligence: ProtectionRiskLensProps["intelligence"]
         attention: ProtectionRiskLensProps["attention"]
         quickStart: ProtectionRiskLensProps["quickStart"]
     } | null
-    /**
-     * The gap-engine snapshot's surviving surface (ledger A-05…A-09). Null when
-     * the snapshot failed — the lenses still render; the engine-derived
-     * sections are absent rather than pretending (same guard as the source
-     * surface: no snapshot, no recommendations, no wizard, no upgrade pitch).
-     */
-    engine: {
-        recommendations: RecommendationCardsProps["recommendations"]
-        smartContent: RecommendationCardsProps["smartContent"]
-        profileIncomplete: boolean
-        /**
-         * «There are still unknown factors» — an area's composition still
-         * lists a fact the engine lacks (PERSONAL_RISK_PROFILE.md §K 2b).
-         * Was profileCompleteness < 80.
-         */
-        showWizard: boolean
-        wizardInitialData: RiskProfileWizardProps["initialData"]
-        /** free tier with ≥1 recommendation — same gate as the source surface. */
-        showUpgradeTrigger: boolean
-    } | null
-    tier: "free" | "plus" | "pro"
-    hasPolicies: boolean
-    lifeEvents: { options: LifeEventOption[]; recent: RecordedEvent[] }
-    /**
-     * A-10…A-21 — the carried findings surface: the reviewed-findings list,
-     * severity tally, the «Εξαιρέθηκαν» / «Τι ελέγξαμε και είναι εντάξει»
-     * honesty notices, next steps, and the four states (never-analysed, empty
-     * wallet, all-good, free-tier lite). The same component mounted on
-     * /coverage-insights until V2-P2-03 removed that route — this surface is
-     * its only mount now. `tier`, `userLanguage` and `hasPolicies` are
-     * injected from this surface's own props — one fact, one source.
-     */
-    findings: Omit<CoverageInsightsClientProps, "embedded" | "tier" | "userLanguage" | "hasPolicies">
+    life: { lifeEvents: LifeSectionProps["lifeEvents"]; wizard: LifeSectionProps["wizard"]; copy: { title: string; lead: string } }
+    improve: { recommendationCount: number | null; showUpgradeTrigger: boolean; lastCheckedLabel: string; copy: ImproveSectionCopy }
 }
 
-/**
- * «Η προστασία μου» — the §4.2 consolidated surface at /protection.
- *
- * One route absorbing three: /branches (ανά κλάδο lens, B-01…B-06),
- * /insights/risk-profile (ανά κίνδυνο lens, R-01…R-08) and /coverage-insights'
- * surviving content (A-05…A-21 — the engine sections and, since V2-P2-01b,
- * the findings surface itself). Ordering follows the source surface's
- * rationale: what to DO leads (recommendations), the lens answers "what do I
- * have / what am I exposed to", and the profile-improving actions (wizard,
- * life events) follow. The protection score is gone from the product (H-001)
- * and is not reintroduced here in any form.
- *
- * Composed from data props so the whole tree renders in jsdom — the ledger
- * guard (tests/unit/protection-surface-ledger.test.tsx) renders THIS component
- * and asserts every KEEP capability on rendered output.
- */
 export function ProtectionSurface({
     language,
     lens,
     labels,
-    branchLens,
+    nextStep,
+    engineUnavailable,
+    engineUnavailableText,
+    summary,
+    gaps,
+    categories,
     riskLens,
-    engine,
-    tier,
-    hasPolicies,
-    lifeEvents,
-    findings,
+    life,
+    improve,
 }: ProtectionSurfaceProps) {
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-4xl space-y-4 px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
-                {/* Header — what the screen IS, plus the one explicit action (A-08). */}
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="min-w-0">
-                        <h1 className="text-h3 font-semibold tracking-tight text-foreground">{labels.title}</h1>
-                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                            {labels.subtitle}
-                        </p>
-                    </div>
-                    <RefreshAnalysisButton labels={labels.refresh} />
+                {/* The page opens like a story: what this is, in a sentence. No
+                    control up here — the banner below carries the one primary,
+                    and the refresh action moved to the foot where it belongs. */}
+                <div className="min-w-0 max-w-2xl">
+                    <h1 className="text-h2 font-semibold tracking-tight text-foreground">{labels.title}</h1>
+                    <p className="mt-2 text-body leading-relaxed text-muted-foreground">{labels.subtitle}</p>
                 </div>
 
-                {/* A-05 — what to DO leads. */}
-                {engine && (
-                    <RecommendationCards
-                        recommendations={engine.recommendations}
-                        countKey="recommendation.openCount"
-                        language={language}
-                        profileIncomplete={engine.profileIncomplete}
-                        smartContent={engine.smartContent}
-                        tier={tier}
-                        hasPolicies={hasPolicies}
-                    />
-                )}
-
-                {/* A-10…A-21 — the reviewed findings, carried whole and in the
-                    source surface's own order (right after what-to-DO). */}
-                <CoverageInsightsClient
-                    embedded
-                    tier={tier}
-                    userLanguage={language}
-                    hasPolicies={hasPolicies}
-                    {...findings}
+                <ProtectionNextStep
+                    step={nextStep.step}
+                    copy={{ title: nextStep.title, body: nextStep.body, cta: nextStep.cta, refresh: labels.refresh }}
                 />
 
-                {/* The lens switcher, then exactly ONE lens per request. */}
-                <ProtectionLensTabs active={lens} labels={labels.lens} />
-
-                {lens === "branch" && branchLens && (
-                    <ProtectionBranchLens
-                        policies={branchLens.policies}
-                        expectedLines={branchLens.expectedLines}
-                        language={language}
-                        labels={branchLens.labels}
-                    />
+                {engineUnavailable && (
+                    <p role="status" className="pw-subcard px-3.5 py-3 text-sm leading-relaxed text-muted-foreground" data-engine="unavailable">
+                        {engineUnavailableText}
+                    </p>
                 )}
 
+                {/* LEVEL 1 — the picture. */}
+                <ProtectionSummary summary={summary.summary} heldElsewhereLabels={summary.heldElsewhereLabels} copy={summary.copy} />
+
+                {/* LEVEL 2 — is there a problem, and what it means. */}
+                <GapList {...gaps} />
+
+                {/* The lens switch (kept): ONE lens per request, so only one
+                    lens's counts are ever in the DOM. */}
+                <ProtectionLensTabs active={lens} labels={labels.lens} />
+
+                {lens === "branch" && (
+                    <CategoryList rows={categories.rows} family={categories.family} status={categories.status} language={language} copy={categories.copy} />
+                )}
                 {lens === "risk" && riskLens && (
                     <ProtectionRiskLens
                         language={language}
@@ -161,35 +118,17 @@ export function ProtectionSurface({
                     />
                 )}
 
-                {/* A-07 / PA-08 — the long form as the secondary «Πλήρες προφίλ»
-                    path: below the areas, gated on unknown factors, never the
-                    first thing (§7.5). */}
-                {engine?.showWizard && (
-                    <div id="risk-profile-wizard" className="scroll-mt-20">
-                        <p className="pw-kicker">{labels.fullProfile.title}</p>
-                        <p className="mt-1 mb-3 text-caption leading-relaxed text-muted-foreground">{labels.fullProfile.lead}</p>
-                        <RiskProfileWizard initialData={engine.wizardInitialData} language={language} />
-                    </div>
-                )}
+                {/* LEVEL 4 — what the person can tell us. */}
+                <LifeSection lifeEvents={life.lifeEvents} wizard={life.wizard} language={language} copy={{ ...life.copy, fullProfile: labels.fullProfile }} />
 
-                {/* A-09 — below the value, never above it (source-surface rule). */}
-                {engine?.showUpgradeTrigger && (
-                    <UpgradeTriggerCard
-                        featureKey="advanced_gap_detection"
-                        triggerSource="protection_page"
-                        returnTo="/protection"
-                        dismissible
-                    />
-                )}
-
-                {/* A-06 — the id anchors the dashboard's LifeEventPromptCard. */}
-                <div id="life-events" className="scroll-mt-20">
-                    <LifeEventsPanel
-                        options={lifeEvents.options}
-                        recent={lifeEvents.recent}
-                        language={language}
-                    />
-                </div>
+                {/* LEVEL 5 — how to improve, and the administrative tail. */}
+                <ImproveSection
+                    recommendationCount={improve.recommendationCount}
+                    showUpgradeTrigger={improve.showUpgradeTrigger}
+                    lastCheckedLabel={improve.lastCheckedLabel}
+                    language={language}
+                    copy={improve.copy}
+                />
             </div>
         </div>
     )

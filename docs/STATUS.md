@@ -53,6 +53,34 @@ seams and hostile review: `docs/handover.md`.
 
 ## In progress (2026-09-03)
 
+- **2026-09-07 — «Καλύψεις & κενά» (/protection) as a protection story — built on
+  `feat/protection-story` (stacked on `feat/b2c-dashboard-story`), gates green locally (tsc, lint,
+  i18n, utf8, api-auth audit, 617/617 unit files), NOT merged.** One derivation,
+  `lib/protection/coverage-status.ts`, gives every branch that concerns the person one of four
+  status words the checks can prove — «Φαίνεται να καλύπτεται» · «Μερική κάλυψη» · «Χωρίς
+  ασφαλιστήριο» · «Δεν ελέγχθηκε ακόμη» — over a stated denominator, with under-review-only
+  branches and cover held elsewhere disclosed in sentences; `toTileState()` projects it onto the
+  dashboard map's tile words (home migration = commit c, pending). The page: h1 «Καλύψεις & κενά»
+  (was «Η προστασία μου»), ONE primary decided from facts (`lib/protection/next-step.ts`), the
+  summary's four counted doors, the findings explained (title from the content map, «Τι σημαίνει
+  για εσάς» = the model's description disclaimed at point of use, «Γιατί έχει σημασία» = the
+  provenance class in plain words beside its citation, one review door, dismiss; under review in a
+  closed group; the free cap as «+N ακόμη»), the lens switch kept (owner decision) with the branch
+  lens as category rows + a family filter (Όλα/Περιουσία/Υγεία/Οικογένεια/Μετακίνηση/Άλλα from the
+  one line→area vocabulary), «Με βάση τη ζωή σας» (life events + the wizard folded), the foot (a
+  counted door to /recommendations, last check + refresh, disclaimer). Retired:
+  `CoverageInsightsClient` (verdict words «Επαρκής/Εκκρεμεί/…», a fabricated «what we checked»
+  list, a «Σημείωση» button routing to /upgrade, generic fallback titles because gap rows have no
+  title column) and `ProtectionBranchLens`; A-13 and A-16 retired in the ledger, A-05 re-homed to
+  /recommendations, PS-01…PS-10 added. Evidence `docs/evidence/protection-story/{before,after}/`:
+  phone 12,628→5,451 px (15→6.5 viewports), tablet 9,449→4,576, desktop 8,931→4,429; risk lens
+  14,596→7,745 / 11,717→6,723 / 11,356→6,595; no horizontal scroll at any width; h1 fixed; the
+  five-second questions answered from the first viewport. PRs: #312 (the story + the home map
+  projected onto the same derivation, base `feat/b2c-dashboard-story`), #313 (Goal 10, the mobile
+  menu trigger ☰/X, stacked on #312). E2E: viewport-overflow 25/25 incl. /protection both lenses;
+  axe (WCAG 2.1 AA tags) clean on both lenses at 390 and on the branch lens at 1280 — no critical
+  or serious violation. Owner: preview journey on #312/#313, then merge order #311 → #312 → #313.
+
 - **2026-09-07 — The B2C home as a story (impeccable brief) — built on `feat/b2c-dashboard-story`
   from `286f9f5d`, gates green locally (tsc, lint, i18n, utf8, api-auth audit, 615/615 unit files),
   NOT merged.** Six labelled regions in one order: `#overview` (next-step banner = the page's ONE

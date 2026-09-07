@@ -177,6 +177,24 @@ how many «φαίνεται να καλύπτονται» (a held policy the cat
 limits read). They count AREAS in a state. None is a score, none may be added to another, and
 `coveredCount` must never render as reassurance over an area the check did not cover.
 
+### Additions ratified 2026-09-07 («Καλύψεις & κενά» — the coverage status)
+
+Counts (page-level): `branch.coveredCount` · `branch.findingCount` · `branch.noPolicyCount` ·
+`branch.notCheckedCount` · `branch.underReviewOnlyCount` · `branch.relevantCount` · `gap.lockedCount`.
+Facts (subject-scoped by branch): `branch.coverageStatus` · `branch.checkedPoints`. Count (subject-scoped
+by branch): `branch.openFindingCount` — the classified coverage-class findings a «Μερική κάλυψη» row quotes.
+
+One derivation, `lib/protection/coverage-status.ts`, composed from the branch overview, the
+composition's two lines, the findings provenance and the authored catalogue. The four status
+counts plus `underReviewOnlyCount` sum to `relevantCount` (every branch the person's profile
+expects or the wallet holds); branches held elsewhere or neither expected nor held are disclosed
+in sentences, never counted. `coveredCount` counts branches that APPEAR covered — an in-force read
+policy, a current run, every attempted coverage check judged, none fired — and every render of
+that word carries `branch.checkedPoints` («Ελέγξαμε {covered} από {checked} σημεία»). Under-review
+findings never enter `findingCount`; recording-class findings («δεν καταγράφεται») never change a
+status. Severity is not read. The dashboard's branch map projects the same status onto its tile
+words (`toTileState`), so the two surfaces cannot disagree about one branch.
+
 ## Action verbs
 
 `upload` · `analyse` · `viewPolicy` · `viewGap` · `renew` · `contactAdvisor` · `callClaims` ·

@@ -360,17 +360,26 @@ describe("§2.2 — every ownership-state surface is known to this guard", () =>
                 "components/branches/BranchCoverageMap.tsx",
                 // Pass data/labels into the components asserted above; they
                 // render no ownership state of their own.
-                "app/(protected)/dashboard/PolicyholderHome.tsx",
-                "app/(protected)/protection/page.tsx",
+                // PolicyholderHome.tsx left this set on 2026-09-07 with the
+                // /protection page: both read the coverage status below and
+                // no longer name a tile state or the branch overview.
+                // /protection/page.tsx left this set on 2026-09-07: it reads
+                // the coverage status (lib/protection/coverage-status.ts, above)
+                // and no longer names a tile state or the branch overview.
                 // /protection lenses (V2-P2-01): render THROUGH ProductBranchCard
                 // and RiskGraphPanel (both asserted above); their own §2.2
                 // behaviour — not-held vs never-assessed registers, no finding
                 // vocabulary — is asserted on rendered output by
                 // protection-surface-ledger.test.tsx (B-05, R-03).
-                "components/protection/ProtectionBranchLens.tsx",
                 "components/protection/ProtectionRiskLens.tsx",
                 // Definitions and plumbing — no rendering.
                 "lib/insurance/branch-page.ts",
+                // The coverage-status derivation («Καλύψεις & κενά», 2026-09-07):
+                // composes buildBranchOverview for its universe and projects its
+                // four statuses back onto BranchTileState for the dashboard map;
+                // its own §2.2 behaviour (not-held vs never-assessed, lapsed never
+                // covered) is asserted by tests/unit/coverage-status.test.ts.
+                "lib/protection/coverage-status.ts",
                 "lib/services/gap-engine/index.ts",
                 "lib/services/risk-dna/service.ts",
                 "lib/services/risk-graph/present.ts",
