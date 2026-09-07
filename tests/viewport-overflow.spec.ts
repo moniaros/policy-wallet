@@ -9,7 +9,7 @@ import { test, expect } from '@playwright/test'
  */
 
 const WIDTHS = [375, 390, 768, 1024, 1440]
-const PAGES = ['/wallet', '/dashboard', '/account']
+const PAGES = ['/wallet', '/dashboard', '/account', '/protection', '/protection?lens=risk']
 
 for (const width of WIDTHS) {
     for (const path of PAGES) {

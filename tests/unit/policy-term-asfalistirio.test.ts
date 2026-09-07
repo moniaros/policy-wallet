@@ -15,7 +15,9 @@ const EN = readFileSync('lib/i18n/translations/en.ts', 'utf-8')
 // (Long-form editorial content — guides, glossary bodies, branch education, SEO,
 // marketing narrative — deliberately keeps «συμβόλαιο» as a prose synonym.)
 const UI_FILES = [
-    'components/coverage/CoverageInsightsClient.tsx',
+    // CoverageInsightsClient retired 2026-09-07 («Καλύψεις & κενά» story); its
+    // successors on /protection carry no inline Greek and are scanned by the
+    // directory walk below.
     'app/onboarding/ProtectionProfileFlow.tsx',
     'components/onboarding/protection-profile/QuestionScreen.tsx',
     'components/onboarding/protection-profile/SummaryScreen.tsx',

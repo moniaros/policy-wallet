@@ -4,7 +4,10 @@ import { el } from '@/lib/i18n/translations/el'
 import { en } from '@/lib/i18n/translations/en'
 
 const recCards = readFileSync('components/coverage/RecommendationCards.tsx', 'utf-8')
-const insights = readFileSync('components/coverage/CoverageInsightsClient.tsx', 'utf-8')
+// CoverageInsightsClient was retired with the «Καλύψεις & κενά» story rebuild
+// (2026-09-07): /protection no longer renders a priority tier anywhere — its
+// gap list explains provenance, never priority — so the note is owed only
+// where a priority still renders: the recommendations list and the home.
 const home = readFileSync('app/(protected)/dashboard/PolicyholderHome.tsx', 'utf-8')
 
 /**
@@ -27,7 +30,7 @@ describe('every surface showing a priority explains what it is', () => {
 
     it('appears on all three surfaces', () => {
         expect(recCards, 'recommendations list').toMatch(/home\.recPriorityNote/)
-        expect(insights, 'review/insights section').toMatch(/recPriorityNote/)
+
         expect(home, 'dashboard gaps widget').toMatch(/severityNote/)
     })
 })

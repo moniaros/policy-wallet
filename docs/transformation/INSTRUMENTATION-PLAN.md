@@ -181,7 +181,8 @@ limits read). They count AREAS in a state. None is a score, none may be added to
 
 Counts (page-level): `branch.coveredCount` · `branch.findingCount` · `branch.noPolicyCount` ·
 `branch.notCheckedCount` · `branch.underReviewOnlyCount` · `branch.relevantCount` · `gap.lockedCount`.
-Facts (subject-scoped by branch): `branch.coverageStatus` · `branch.checkedPoints`.
+Facts (subject-scoped by branch): `branch.coverageStatus` · `branch.checkedPoints`. Count (subject-scoped
+by branch): `branch.openFindingCount` — the classified coverage-class findings a «Μερική κάλυψη» row quotes.
 
 One derivation, `lib/protection/coverage-status.ts`, composed from the branch overview, the
 composition's two lines, the findings provenance and the authored catalogue. The four status

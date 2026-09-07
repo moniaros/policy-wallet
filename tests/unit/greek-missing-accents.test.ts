@@ -24,7 +24,12 @@ const EXEMPT = new Set([
 
 const FILES = [
     'lib/i18n/translations/el.ts',
-    'components/coverage/CoverageInsightsClient.tsx',
+    'components/protection/ProtectionSummary.tsx',
+    'components/protection/CategoryList.tsx',
+    'components/protection/GapList.tsx',
+    'components/protection/ProtectionNextStep.tsx',
+    'components/protection/ImproveSection.tsx',
+    'components/protection/LifeSection.tsx',
     'app/onboarding/ProtectionProfileFlow.tsx',
     'components/onboarding/protection-profile/QuestionScreen.tsx',
     'components/onboarding/protection-profile/SummaryScreen.tsx',

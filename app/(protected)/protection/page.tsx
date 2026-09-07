@@ -6,7 +6,7 @@ import { getTranslations } from "@/lib/i18n"
 import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status"
 import { gapsOnActiveCoverage } from "@/lib/gaps/gap-universe"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
-import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
+import { displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { getGapEngineSnapshot, type GapEngineSnapshot } from "@/lib/services/gap-engine"
 import { getRiskIntelligence } from "@/lib/services/risk-dna/service"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
@@ -20,8 +20,16 @@ import { loadAttentionAreas } from "@/lib/protection/load-attention-areas"
 import { areaListItems, unknownFactorItems } from "@/components/protection/area-detail-model"
 import { ProtectionSurface } from "@/components/protection/ProtectionSurface"
 import type { ProtectionLens } from "@/components/protection/ProtectionLensTabs"
-import type { BranchTileState } from "@/lib/insurance/branch-page"
-import { isUnreadPolicy } from "@/lib/wallet/unread-policy"
+import { deriveCoverageStatus, type CoverageStatusId } from "@/lib/protection/coverage-status"
+import { parseFamilyFilter, parseStatusFilter } from "@/lib/protection/coverage-families"
+import { chooseProtectionNextStep } from "@/lib/protection/next-step"
+import { partitionByAssessment } from "@/lib/gaps/assessment-coverage"
+import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
+import { orderByProvenance } from "@/lib/gaps/provenance"
+import { provenanceLabelWithCitation } from "@/components/gaps/provenance-label"
+import { resolveGapContent } from "@/lib/wallet/gap-report"
+import { areaForLob } from "@/lib/protection/domains"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
@@ -41,22 +49,23 @@ import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 export default async function ProtectionPage({
     searchParams,
 }: {
-    searchParams: Promise<{ lens?: string }>
+    searchParams: Promise<{ lens?: string; status?: string; family?: string }>
 }) {
-    const { lens: lensParam } = await searchParams
+    const { lens: lensParam, status: statusParam, family: familyParam } = await searchParams
     const lens: ProtectionLens = lensParam === "risk" ? "risk" : "branch"
+    // The two filters of the category list — allow-listed, never validated
+    // against a reader (an unknown value is simply «Όλα»).
+    const statusFilter: CoverageStatusId | null = parseStatusFilter(statusParam)
+    const familyFilter = parseFamilyFilter(familyParam)
 
     const { dbUser } = await getAuthenticatedUser()
     const lang: 'el' | 'en' = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(lang)
 
-    const [entitlements, profileRecord, policies, score, allGapInstances, attention] = await Promise.all([
+    const [entitlements, profileRecord, policies, score, allGapInstances, attention, runs] = await Promise.all([
         resolveUserEntitlements(dbUser.id),
         db.policyholderProfile.findUnique({ where: { userId: dbUser.id } }),
         db.policy.findMany({
-            // status ≠ deleted: a soft-deleted row neither renders nor counts —
-            // the same held-policy predicate as the wallet and both source
-            // surfaces, so branch tile counts sum to portfolio.policyCount.
             where: { ownerUserId: dbUser.id, status: { not: 'deleted' } },
             select: {
                 id: true,
@@ -64,18 +73,12 @@ export default async function ProtectionPage({
                 status: true,
                 endDate: true,
                 acordData: true,
-                // The findings surface's extra needs (A-10…A-21):
                 policyNumber: true,
                 insurerName: true,
-                // Set only by the deep pipeline — the A-13/A-17 discriminator.
                 lastAnalyzedAt: true,
             },
         }),
-        // Read-only: expectedLines for tile states, never a rendered score.
         db.protectionScore.findUnique({ where: { userId: dbUser.id } }),
-        // Open findings — same query as the source surface (minus the unused
-        // definition include); rows serialize into client props, so only the
-        // fields the client reads travel (no acordData per gap).
         readLiveGapRows({ scope: "disclosed",
             where: {
                 policy: { ownerUserId: dbUser.id },
@@ -92,13 +95,27 @@ export default async function ProtectionPage({
                         endDate: true,
                     },
                 },
+                // The run each finding came from, so the list can be dated and
+                // the coverage status can tell a current run from a stale one.
+                analysisRun: { select: { finishedAt: true } },
+                // The rule's authored description (English) backs the English
+                // «what it means»; the Greek one is the model's description of
+                // the rule-decided gap (aiSuggestionEl), as on the policy page.
+                definition: { select: { description: true } },
             },
             orderBy: { detectedAt: 'desc' },
         }),
-        // The attention areas (PERSONAL_RISK_PROFILE.md §C) — one read seam,
-        // four layers, no writes. Read on both lenses: the risk lens renders
-        // it, and the wizard's gate («are there still unknown factors») reads it.
         loadAttentionAreas({ userId: dbUser.id, language: lang }),
+        // The wallet's recent analysis runs, reduced in memory to the latest
+        // attempt and the last completed run per policy — the findings
+        // provenance and the composition both read them. One query, not one
+        // per policy.
+        db.policyAnalysisRun.findMany({
+            where: { userId: dbUser.id },
+            orderBy: { createdAt: 'desc' },
+            take: 200,
+            select: { id: true, policyId: true, status: true, createdAt: true, finishedAt: true, attemptedRules: true },
+        }),
     ])
 
     // «There are still unknown factors»: some area's composition lists a fact
@@ -158,36 +175,6 @@ export default async function ProtectionPage({
     }))
 
     // ── The active lens's data (one lens per request) ──────────────────
-    const branchLens =
-        lens === "branch"
-            ? {
-                  // The REAL lifecycle, never the stale stored string — an
-                  // expired policy renders attention, never covered.
-                  policies: policies.map((policy) => ({
-                      id: policy.id,
-                      lineOfBusiness: policy.lineOfBusiness,
-                      status: effectivePolicyStatus(policy),
-                      endDate: policy.endDate,
-                      // A document never read as a policy is not cover —
-                      // the same predicate the home's coverage map applies.
-                      unread: isUnreadPolicy(policy),
-                  })),
-                  expectedLines: (score?.expectedLines as string[] | null) ?? [],
-                  labels: {
-                      stateLabels: {
-                          covered: t.branches.statusCovered,
-                          attention: t.branches.statusAttention,
-                          not_held: t.branches.statusNotHeld,
-                          neutral: t.branches.statusNeutral,
-                          unread: t.branches.statusUnread,
-                      } as Record<BranchTileState, string>,
-                      policyTypeLabels: t.policyTypes as Record<string, string>,
-                      onePolicy: t.branches.onePolicy,
-                      policyCountN: t.branches.policyCountN,
-                  },
-              }
-            : null
-
     const riskLens =
         lens === "risk"
             ? {
@@ -276,6 +263,104 @@ export default async function ProtectionPage({
           }
         : null
 
+    // ── The story's facts — decided once, rendered once ────────────────────
+    const coverage = deriveCoverageStatus({
+        policies,
+        gapRows: allGapInstances
+            .filter((g) => Boolean(g.policyId))
+            .map((g) => ({
+                policyId: g.policyId as string,
+                slug: g.definition.slug,
+                analysisRunId: g.analysisRunId,
+                runFinishedAt: g.analysisRun?.finishedAt ?? null,
+            })),
+        runs,
+        // null when no score row exists: then nothing may be «Χωρίς ασφαλιστήριο».
+        expectedLines: score ? ((score.expectedLines as string[] | null) ?? []) : null,
+        coverHeldElsewhere: Array.isArray(profileRecord?.coverHeldElsewhere)
+            ? (profileRecord.coverHeldElsewhere as unknown[]).filter((x): x is string => typeof x === 'string')
+            : [],
+    })
+    const policyTypeLabels = t.policyTypes as Record<string, string>
+    const branchTitle = (id: string, fallback: { el: string; en: string }) => policyTypeLabels[id] || fallback[lang]
+
+    // The findings on active coverage, explained: the rule's authored words for
+    // «what it means», the provenance class in plain language for «why», the
+    // area of life it concerns. Under review is listed apart, never counted.
+    const gapViews = orderByProvenance(gapInstances, (g) => g.definition.slug).map((g) => {
+        const lob = g.policy?.lineOfBusiness ?? null
+        const branch = normalizeBranch(lob)
+        // The card's title comes from the authored content map, bilingual and
+        // deduplicated by concept; a slug the map has not learned gets a
+        // generic heading and a Sentry tag, never the model's prose.
+        const content = resolveGapContent(g.definition.slug, { lineOfBusiness: lob })
+        return {
+            id: g.id,
+            policyId: g.policyId ?? g.policy?.id ?? null,
+            title: lang === 'el' ? content.titleEl : content.titleEn,
+            // Rules decide a gap; the model only describes one. The description
+            // is the model's, marked as such at the point of use (the list's
+            // inline AI disclaimer), and absent rather than English when the
+            // model wrote none in Greek.
+            meaning: lang === 'el' ? g.aiSuggestionEl || null : g.definition.description || g.aiSuggestion || null,
+            why: t.protection.why[g.provenance],
+            provenanceLabel: provenanceLabelWithCitation(g.definition.slug, lang, t.provenance),
+            area: areaForLob(lob)?.label[lang] ?? null,
+            branch: branchTitle(branch.id, branch.label),
+            underReview: g.provenance === 'under_review',
+        }
+    })
+    const gapItems = gapViews.filter((v) => !v.underReview)
+    const underReviewItems = gapViews.filter((v) => v.underReview)
+    const gapState = !hasPolicies ? 'no_policies' : !hasDeepAnalysis ? 'not_analysed' : gapViews.length === 0 ? 'clear' : 'findings'
+    const activeAssessment = partitionByAssessment(activePolicies)
+
+    // One dated line for the list: the wallet's latest attempt and its last
+    // completed run, so the reader knows which check the findings come from.
+    const latestAttempt = runs[0] ?? null
+    const lastCompleted =
+        [...runs]
+            .filter((r) => r.status === 'completed' || r.status === 'completed_with_warnings')
+            .sort((a, b) => (b.finishedAt ?? b.createdAt).getTime() - (a.finishedAt ?? a.createdAt).getTime())[0] ?? null
+    const provenanceLine =
+        runs.length === 0
+            ? null
+            : findingsProvenanceLine(
+                  describeFindingsProvenance(
+                      gapInstances.map((g) => ({ analysisRunId: g.analysisRunId, runFinishedAt: g.analysisRun?.finishedAt ?? null })),
+                      latestAttempt ? { ...latestAttempt, attemptedRuleCount: attemptedRuleCountOf(latestAttempt.attemptedRules) } : null,
+                      lastCompleted ? { ...lastCompleted, attemptedRuleCount: attemptedRuleCountOf(lastCompleted.attemptedRules) } : null
+                  ),
+                  t.gapProvenance,
+                  lang
+              )
+
+    // THE next step — one, from facts (lib/protection/next-step.ts).
+    const nextStep = chooseProtectionNextStep({
+        inForcePolicyCount: activePolicies.length,
+        analysedPolicyCount: activePolicies.filter((p) => p.lastAnalyzedAt != null).length,
+        deepAnalysisAllowed: canRunDeepAnalysis(entitlements.tier),
+        summary: coverage.summary,
+        classifiedFindingCount: gapItems.length,
+        unknownFactorCount: attention.factorsToResolve.length,
+        recommendationCount: engineResult?.recommendations.length ?? 0,
+    })
+    const stepCopy = t.protection.nextStep[nextStep.id]
+    const stepCta =
+        nextStep.id === 'answer' && nextStep.count === 1
+            ? t.protection.nextStep.answer.ctaOne
+            : stepCopy.cta.replace('{n}', String(nextStep.count ?? ''))
+
+    const heldElsewhereLabels = coverage.rows.filter((r) => r.bucket === 'held_elsewhere').map((r) => branchTitle(r.branch.id, r.branch.label))
+    const lastCheckedLabel = coverage.summary.lastCheckedAt
+        ? t.protection.improve.lastChecked.replace('{date}', formatProvenanceDate(coverage.summary.lastCheckedAt, lang))
+        : t.protection.improve.neverChecked
+    const refreshLabels = {
+        refresh: t.insights.refreshAnalysis,
+        refreshing: t.insights.refreshingAnalysis,
+        failed: t.insights.refreshFailed,
+    }
+
     return (
         <ProtectionSurface
             language={lang}
@@ -288,61 +373,53 @@ export default async function ProtectionPage({
                     byBranch: t.protection.lensByBranch,
                     byRisk: t.protection.lensByRisk,
                 },
-                refresh: {
-                    refresh: t.insights.refreshAnalysis,
-                    refreshing: t.insights.refreshingAnalysis,
-                    failed: t.insights.refreshFailed,
-                },
+                refresh: refreshLabels,
                 fullProfile: {
                     title: t.protection.attention.detail.fullProfileTitle,
                     lead: t.protection.attention.detail.fullProfileLead,
                 },
             }}
-            branchLens={branchLens}
-            riskLens={riskLens}
-            engine={engine}
-            tier={entitlements.tier}
-            hasPolicies={hasPolicies}
-            lifeEvents={{ options: lifeEventOptions, recent: recentLifeEvents }}
-            findings={{
-                gaps: gapInstances,
-                stats: {
-                    critical: gapInstances.filter((g) => g.severity === 'critical').length,
-                    high: gapInstances.filter((g) => g.severity === 'high').length,
-                    medium: gapInstances.filter((g) => g.severity === 'medium').length,
-                    low: gapInstances.filter((g) => g.severity === 'low').length,
-                    totalGaps: gapInstances.length,
-                    totalPolicies: activePolicies.length,
-                    totalCoverage: 0,
-                },
-                // A-12 — the honesty notice naming what the tally does NOT count.
-                excludedExpired: expiredPolicies.map((policy) => ({
-                    id: policy.id,
-                    label:
-                        resolveInsurerDisplay(policy.insurerName).displayName ||
-                        displayPolicyNumber(policy.policyNumber) ||
-                        '',
-                })),
-                isPaid: entitlements.isPaid,
-                hasDeepAnalysis,
-                // The ONE deep-analysis predicate (lib/monetization/feature-gates.ts).
-                // This display used to spell it as `tier === 'free'` while the
-                // orchestrator refused Starter — so a paying Starter was told
-                // the analysis was unlocked by a page whose server would not
-                // run it. Below the lock the A-17 state offers the unlock CTA.
+            nextStep={{ step: nextStep, title: t.protection.nextStep.title, body: stepCopy.body, cta: stepCta }}
+            engineUnavailable={engineResult === null}
+            engineUnavailableText={t.protection.gaps.engineUnavailable}
+            summary={{ summary: coverage.summary, heldElsewhereLabels, copy: { ...t.protection.summary, status: t.protection.status } }}
+            gaps={{
+                items: gapItems,
+                underReview: underReviewItems,
+                visibleLimit: entitlements.tier === 'free' ? 2 : null,
+                provenanceLine,
+                state: gapState,
                 isDeepAnalysisLocked: !canRunDeepAnalysis(entitlements.tier),
-                canUseAgentCollaboration: entitlements.limits.agentCollaboration,
-                policies: activePolicies.map((p) => ({
-                    id: p.id,
-                    insurerName: displayInsurerName(p.insurerName, p.lineOfBusiness || 'Policy'),
-                    lineOfBusiness: {
-                        code: (p.acordData as any)?.policy?.lineOfBusiness?.code || p.lineOfBusiness || 'other',
-                        name:
-                            (p.acordData as any)?.policy?.lineOfBusiness?.Description ||
-                            p.lineOfBusiness ||
-                            (lang === 'el' ? 'Άλλο Συμβόλαιο' : 'Other Policy'),
-                    },
-                })),
+                assessedCount: activeAssessment.assessed.length,
+                excludedCount: activeAssessment.excludedCount,
+                excludedExpired: expiredPolicies.map(
+                    (policy) => resolveInsurerDisplay(policy.insurerName).displayName || displayPolicyNumber(policy.policyNumber) || ''
+                ),
+                copy: { ...t.protection.gaps, underReviewDisclosure: t.provenance.underReviewDisclosure },
+            }}
+            categories={{
+                rows: coverage.rows,
+                family: familyFilter,
+                status: statusFilter,
+                copy: {
+                    ...t.protection.categories,
+                    status: t.protection.status,
+                    caveats: t.protection.statusCaveats,
+                    filters: t.protection.filters,
+                    policyTypeLabels,
+                },
+            }}
+            riskLens={riskLens}
+            life={{
+                lifeEvents: { options: lifeEventOptions, recent: recentLifeEvents },
+                wizard: { show: Boolean(engine?.showWizard), initialData: engine?.wizardInitialData },
+                copy: t.protection.life,
+            }}
+            improve={{
+                recommendationCount: engineResult ? engineResult.recommendations.length : null,
+                showUpgradeTrigger: Boolean(engine?.showUpgradeTrigger),
+                lastCheckedLabel,
+                copy: { ...t.protection.improve, refresh: refreshLabels },
             }}
         />
     )
