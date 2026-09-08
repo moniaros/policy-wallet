@@ -632,4 +632,321 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
         },
         isActive: true
     },
+    // ── PW-CONTENT-01 Goal 5 — renters (new write branch) and the home contents questions ──
+    {
+        slug: 'renters_scope_not_recorded',
+        name: 'Renters: cover scope not recorded',
+        title: 'Δεν καταγράφεται αν η κάλυψη αφορά περιεχόμενο, κτίριο ή και τα δύο',
+        description: 'Το ασφαλιστήριο ενοικιαστή δεν δηλώνει ρητά αν ασφαλίζει το περιεχόμενο, το κτίριο ή και τα δύο. Χωρίς αυτό δεν διαβάζεται τι ακριβώς προστατεύεται.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.contentsVsStructure', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_contents_sum_not_recorded',
+        name: 'Renters: contents sum insured not recorded',
+        title: 'Δεν καταγράφεται ασφαλισμένο κεφάλαιο περιεχομένου',
+        description: 'Δεν καταγράφεται το ποσό για το οποίο ασφαλίζεται το περιεχόμενο. Είναι το πρώτο νούμερο που χρειάζεται μια δήλωση ζημιάς.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.insuredValue', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_no_fire_cover',
+        name: 'Renters: fire cover not included',
+        title: 'Δεν περιλαμβάνεται κάλυψη πυρκαγιάς',
+        description: 'Το έγγραφο δηλώνει ότι το περιεχόμενο δεν καλύπτεται για πυρκαγιά.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.fireCoverageIncluded', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_no_earthquake_cover',
+        name: 'Renters: earthquake cover not included',
+        title: 'Δεν περιλαμβάνεται κάλυψη σεισμού',
+        description: 'Το έγγραφο δηλώνει ότι το περιεχόμενο δεν καλύπτεται για σεισμό.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.earthquakeCoverageIncluded', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_no_flood_cover',
+        name: 'Renters: flood cover not included',
+        title: 'Δεν περιλαμβάνεται κάλυψη πλημμύρας',
+        description: 'Το έγγραφο δηλώνει ότι το περιεχόμενο δεν καλύπτεται για πλημμύρα.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.floodCoverageIncluded', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_theft_limit_not_recorded',
+        name: 'Renters: theft limit not recorded',
+        title: 'Δεν καταγράφεται όριο κάλυψης κλοπής',
+        description: 'Δεν καταγράφεται όριο για την κάλυψη κλοπής περιεχομένου — δεν διαβάζεται μέχρι πού φτάνει η κάλυψη.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.theftCoverageLimit', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_valuables_not_itemised',
+        name: 'Renters: valuables not itemised',
+        title: 'Δεν καταγράφονται αντικείμενα αξίας ξεχωριστά',
+        description: 'Το έγγραφο δεν απαριθμεί αντικείμενα αξίας με δική τους περιγραφή και αξία. Όπου υπάρχει όριο ανά αντικείμενο, αυτό μετρά.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'insuredItems', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'renters_no_technical_assistance_phone',
+        name: 'Renters: technical assistance number not recorded',
+        title: 'Δεν καταγράφεται τηλέφωνο τεχνικής βοήθειας',
+        description: 'Δεν καταγράφεται αριθμός τεχνικής βοήθειας για βλάβες και έκτακτα περιστατικά στην κατοικία.',
+        lineOfBusiness: 'renters',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.technicalAssistancePhone', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'home_scope_not_recorded',
+        name: 'Home: cover scope not recorded',
+        title: 'Δεν καταγράφεται αν η κάλυψη αφορά κτίριο, περιεχόμενο ή και τα δύο',
+        description: 'Το ασφαλιστήριο κατοικίας δεν δηλώνει ρητά αν ασφαλίζει το κτίριο, το περιεχόμενο ή και τα δύο.',
+        lineOfBusiness: 'home',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.contentsVsStructure', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'home_insured_value_not_recorded',
+        name: 'Home: sum insured not recorded',
+        title: 'Δεν καταγράφεται ασφαλισμένο κεφάλαιο',
+        description: 'Δεν καταγράφεται το ποσό για το οποίο ασφαλίζεται η κατοικία ή το περιεχόμενό της.',
+        lineOfBusiness: 'home',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'property.insuredValue', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'home_valuables_not_itemised',
+        name: 'Home: valuables not itemised',
+        title: 'Δεν καταγράφονται αντικείμενα αξίας ξεχωριστά',
+        description: 'Το έγγραφο δεν απαριθμεί αντικείμενα αξίας με δική τους περιγραφή και αξία.',
+        lineOfBusiness: 'home',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'insuredItems', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    // ── PW-CONTENT-01 Goal 6 — personal accident, roadside, pension, income protection, group life ──
+    {
+        slug: 'pa_sum_insured_not_recorded',
+        name: 'Personal accident: sum insured not recorded',
+        title: 'Δεν καταγράφεται ασφαλισμένο κεφάλαιο',
+        description: 'Το ασφαλιστήριο προσωπικού ατυχήματος δεν καταγράφει το κεφάλαιο που καταβάλλεται σε θάνατο ή μόνιμη αναπηρία από ατύχημα.',
+        lineOfBusiness: 'personal_accident',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'policy.sumInsured', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'pa_no_beneficiaries_recorded',
+        name: 'Personal accident: no beneficiary recorded',
+        title: 'Δεν καταγράφεται δικαιούχος',
+        description: 'Δεν καταγράφεται δικαιούχος για την παροχή θανάτου από ατύχημα — ούτε στο σχετικό πεδίο ούτε στην ενότητα ζωής.',
+        lineOfBusiness: 'personal_accident',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'beneficiaries', fields: ['beneficiaries', 'lifeAndInvestment.beneficiaries'], operator: 'all_missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'roadside_assistance_phone_not_recorded',
+        name: 'Roadside: assistance number not recorded',
+        title: 'Δεν καταγράφεται τηλέφωνο οδικής βοήθειας',
+        description: 'Ένα ασφαλιστήριο οδικής βοήθειας είναι πρώτα απ\u2019 όλα ένας αριθμός. Δεν καταγράφεται.',
+        lineOfBusiness: 'roadside',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'vehicle.roadsideAssistancePhone', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'roadside_vehicle_not_recorded',
+        name: 'Roadside: vehicle not recorded',
+        title: 'Δεν καταγράφεται αριθμός κυκλοφορίας οχήματος',
+        description: 'Δεν καταγράφεται ποιο όχημα καλύπτει το ασφαλιστήριο οδικής βοήθειας.',
+        lineOfBusiness: 'roadside',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'vehicle.plateNumber', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'pension_maturity_date_not_recorded',
+        name: 'Pension: maturity date not recorded',
+        title: 'Δεν καταγράφεται ημερομηνία λήξης / ωρίμανσης',
+        description: 'Δεν καταγράφεται πότε ωριμάζει το συνταξιοδοτικό πρόγραμμα — η ημερομηνία γύρω από την οποία οργανώνεται κάθε επιλογή.',
+        lineOfBusiness: 'pension',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'lifeAndInvestment.maturityDate', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'pension_no_beneficiaries_recorded',
+        name: 'Pension: no beneficiary recorded',
+        title: 'Δεν καταγράφεται δικαιούχος',
+        description: 'Δεν καταγράφεται δικαιούχος σε περίπτωση θανάτου πριν την ωρίμανση — ούτε στο σχετικό πεδίο ούτε στην ενότητα ζωής.',
+        lineOfBusiness: 'pension',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'beneficiaries', fields: ['beneficiaries', 'lifeAndInvestment.beneficiaries'], operator: 'all_missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'income_protection_benefit_not_recorded',
+        name: 'Income protection: benefit not recorded',
+        title: 'Δεν καταγράφεται ποσό παροχής',
+        description: 'Δεν καταγράφεται το ποσό που καταβάλλεται όσο διαρκεί η ανικανότητα για εργασία.',
+        lineOfBusiness: 'income_protection',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'policy.sumInsured', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'group_life_death_benefit_not_recorded',
+        name: 'Group life: death benefit not recorded',
+        title: 'Δεν καταγράφεται ασφαλισμένο κεφάλαιο ζωής',
+        description: 'Το ομαδικό ασφαλιστήριο ζωής δεν καταγράφει το κεφάλαιο θανάτου ανά ασφαλισμένο.',
+        lineOfBusiness: 'group_life',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'lifeAndInvestment.deathBenefit', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'group_life_no_beneficiaries_recorded',
+        name: 'Group life: no beneficiary recorded',
+        title: 'Δεν καταγράφεται δικαιούχος',
+        description: 'Δεν καταγράφεται δικαιούχος — ούτε στο σχετικό πεδίο ούτε στην ενότητα ζωής.',
+        lineOfBusiness: 'group_life',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'beneficiaries', fields: ['beneficiaries', 'lifeAndInvestment.beneficiaries'], operator: 'all_missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'pension_sum_insured_not_recorded',
+        name: 'Pension: guaranteed sum not recorded',
+        title: 'Δεν καταγράφεται εγγυημένο κεφάλαιο ή ποσοστό',
+        description: 'Δεν καταγράφεται τι μέρος του προγράμματος είναι εγγυημένο — το ποσοστό που ορίζει τι θα υπάρχει στη λήξη ό,τι κι αν κάνουν οι αγορές.',
+        lineOfBusiness: 'pension',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'lifeAndInvestment.guaranteedPercentage', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    }
 ]

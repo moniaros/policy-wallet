@@ -84,7 +84,7 @@ export type BranchFamily = (typeof BRANCH_FAMILIES)[number]
  */
 const FAMILY_MEMBERS: ReadonlyArray<readonly [BranchFamily, readonly WriteBranchId[]]> = [
     ["motor", ["motor", "motorbike", "roadside"]],
-    ["home", ["home", "fine_art"]],
+    ["home", ["home", "renters", "fine_art"]],
     ["health", ["health", "group_health"]],
     ["life", ["life", "group_life", "pension", "group_pension", "income_protection", "personal_accident"]],
     ["marine", ["boat", "boat_hull", "boat_tpl", "marine_hull", "marine_cargo", "marine_crew", "transports"]],

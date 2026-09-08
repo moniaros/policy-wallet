@@ -9,6 +9,7 @@ import {
 } from '@/lib/insurance/content'
 import { INSURANCE_BRANCHES, getBranch } from '@/lib/insurance/taxonomy'
 import { PROFILE_GAP_RULES } from '@/lib/services/gap-engine/profile-gap-rules'
+import { AUTHORED_GAP_DEFINITIONS } from '@/lib/gaps/authored-catalogue'
 
 /**
  * Rule ids the editorial commonGaps may reference: live profile rules
@@ -37,6 +38,9 @@ const KNOWN_RULE_IDS = new Set([
     ...PROFILE_GAP_RULES.map((rule) => rule.id),
     ...PORTFOLIO_RULE_IDS,
     ...SEEDED_GAP_SLUGS,
+    // The authored catalogue IS the live rule set (lib/gaps/authored-catalogue.ts);
+    // a bundle may point at one of its slugs (PW-CONTENT-01 Goal 5: renters).
+    ...AUTHORED_GAP_DEFINITIONS.map((d) => d.slug),
 ])
 
 /**

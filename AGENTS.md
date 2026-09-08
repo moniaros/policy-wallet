@@ -208,11 +208,20 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   check compares CONTENT of the active set, never row counts: production once
   carried 41 definitions the AI minted for itself at runtime (`rule_id` `ai_*`,
   `detectionLogic` `{ source: "ai_clarity_pipeline" }`, one per analysis run
-  between 2026-07-13 and 2026-08-09) which dev never had. **Verified 2026-08-23:
-  both databases are now 29 active / 0 inactive on the same fingerprint
-  `2df9d0fd4b581caa` — the minted rows are gone.** Keep the content-not-counts
+  between 2026-07-13 and 2026-08-09) which dev never had. Verified 2026-08-23:
+  both databases 29 active / 0 inactive on fingerprint `2df9d0fd4b581caa`, the
+  minted rows gone. **Verified 2026-09-08 (PW-CONTENT-01 Goals 5–6): both are
+  now 50 active / 0 inactive on `15fa2758cebeaecc`** — production archived to
+  `docs/archive/` first, and only the 21 new rows written, the other 29 having
+  been proven byte-identical to the repository. Keep the content-not-counts
   rule anyway; the pipeline can mint again. This is the third table to drift
   after migrations and plan rows.
+  **A fingerprint written in a document is a claim, not a measurement.** The
+  alignment runbook carried `d6f515a1d400f9d5` for two days as the expected
+  value of the 50-rule set; it matched nothing on either side. Print it with
+  the repo's own function before trusting it — `npm run verify:gap-catalogue`
+  against a database it can reach, or `scripts/fingerprint-gap-rows.ts` over
+  rows handed across as JSON when it cannot.
 
   Minting is not the only way this surfaces. The clarity pipeline still emits
   slug VARIANTS that never become rows (`no-glass-coverage` for the authored
