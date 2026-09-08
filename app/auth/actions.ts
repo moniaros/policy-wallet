@@ -1,6 +1,8 @@
 "use server"
 
 import { z } from "zod"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { emit } from "@/lib/notifications/dispatch"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { after } from "next/server"
@@ -237,17 +239,36 @@ async function applyInviteRedemption(token: string, userId: string) {
             },
             update: { status: "active", activationStatus: "activated" },
         })
+        // Same moment as sharePolicy's, reached by a different door: a
+        // relationship becoming active is when another person gains sight of
+        // this customer's policies. `sharePolicy` has always announced it;
+        // redemption did not, so an advisor could appear on someone's account
+        // in silence (PW-BRIDGE-01 I-02). Both sides, each naming the other.
+        await announceRelationshipActivated({
+            customerUserId: invite.inviterUserId,
+            advisorUserId: userId,
+            dedupeSuffix: invite.id,
+        })
         return
     }
 
     if (invite.inviteType === "signup") {
-        await (db.customerRelationship.updateMany as any)({
+        const activated = await (db.customerRelationship.updateMany as any)({
             where: {
                 agentUserId: invite.inviterUserId,
                 policyholderUserId: userId,
             },
             data: { status: "active", activationStatus: "activated" },
         })
+        // Only when a relationship actually flipped — a re-run of a consumed
+        // invite must not re-announce a connection that was already live.
+        if ((activated as { count?: number })?.count) {
+            await announceRelationshipActivated({
+                customerUserId: userId,
+                advisorUserId: invite.inviterUserId,
+                dedupeSuffix: invite.id,
+            })
+        }
         return
     }
 
@@ -285,7 +306,90 @@ async function applyInviteRedemption(token: string, userId: string) {
                     status: "active",
                 },
             })
+
+            // A share COMPLETES here. `sharePolicy` announces it when the
+            // advisor already has an account; when they do not, it sends an
+            // invite and the grant is minted at redemption — where nothing was
+            // said to either side (PW-BRIDGE-01 I-02). Best-effort: the grant
+            // has committed and is the part that matters.
+            try {
+                const [granter, grantee] = await Promise.all([
+                    db.user.findUnique({ where: { id: invite.inviterUserId }, select: { name: true } }),
+                    db.user.findUnique({ where: { id: userId }, select: { name: true } }),
+                ])
+                const granterName = displayPersonName(granter?.name)
+                const granteeName = displayPersonName(grantee?.name)
+                await emit({
+                    event: "policy_shared",
+                    userId,
+                    title: { el: "Ένα ασφαλιστήριο κοινοποιήθηκε μαζί σας", en: "A policy was shared with you" },
+                    message: {
+                        el: `${granterName || "Ένας πελάτης"} σας έδωσε πρόσβαση σε ένα ασφαλιστήριο.`,
+                        en: `${granterName || "A client"} gave you access to a policy.`,
+                    },
+                    dedupeKey: `policy_shared:${invite.id}`,
+                })
+                await emit({
+                    event: "policy_shared",
+                    userId: invite.inviterUserId,
+                    title: { el: "Η κοινοποίηση ενεργοποιήθηκε", en: "Your share is now active" },
+                    message: {
+                        el: `${granteeName || "Ο σύμβουλός σας"} αποδέχτηκε και βλέπει πλέον το ασφαλιστήριο. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`,
+                        en: `${granteeName || "Your advisor"} accepted and can now see the policy. You can revoke this at any time.`,
+                    },
+                    dedupeKey: `policy_share_active:${invite.id}`,
+                })
+            } catch (error) {
+                console.error("Share-redeemed notification failed", error)
+            }
         }
+    }
+}
+
+/**
+ * Both sides of «a relationship is now active», each naming the other.
+ *
+ * The copy is `sharePolicy`'s, deliberately: the same fact should not read
+ * differently because it arrived through an invite (PW-BRIDGE-01 I-02).
+ * Best-effort — the relationship has already committed.
+ */
+async function announceRelationshipActivated(params: {
+    customerUserId: string
+    advisorUserId: string
+    dedupeSuffix: string
+}) {
+    const { customerUserId, advisorUserId, dedupeSuffix } = params
+    try {
+        const [customer, advisor] = await Promise.all([
+            db.user.findUnique({ where: { id: customerUserId }, select: { name: true, email: true } }),
+            db.user.findUnique({ where: { id: advisorUserId }, select: { name: true, email: true } }),
+        ])
+        const advisorName = displayPersonName(advisor?.name) || advisor?.email
+        const customerName = displayPersonName(customer?.name)
+        await emit({
+            event: "advisor_assigned",
+            userId: customerUserId,
+            title: { el: "Συνδεθήκατε με σύμβουλο", en: "You are connected to an advisor" },
+            message: {
+                el: `${advisorName || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`,
+                en: `${advisorName || "Your advisor"} can now work with you. You can revoke this at any time.`,
+            },
+            dedupeKey: `advisor_assigned:invite:${dedupeSuffix}`,
+        })
+        await emit({
+            event: "advisor_assigned",
+            userId: advisorUserId,
+            title: { el: "Νέος πελάτης συνδέθηκε", en: "A new client connected" },
+            message: {
+                el: `${customerName || "Ένας πελάτης"} συνδέθηκε μαζί σας.`,
+                en: `${customerName || "A client"} is now connected to you.`,
+            },
+            relatedObjectType: "customer",
+            relatedObjectId: customerUserId,
+            dedupeKey: `advisor_assigned_agent:invite:${dedupeSuffix}`,
+        })
+    } catch (error) {
+        console.error("Relationship-activated notification failed", error)
     }
 }
 

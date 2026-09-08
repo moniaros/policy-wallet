@@ -2029,8 +2029,9 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
             en: 'New Opportunity Detected',
         },
         message: {
-            el: `${authResult.dbUser.name || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`,
-            en: `${authResult.dbUser.name || 'Customer'} requested details on a coverage gap.`,
+            // Through the identity module — a raw `.name` renders fixture tokens.
+            el: `${displayPersonName(authResult.dbUser.name) || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`,
+            en: `${displayPersonName(authResult.dbUser.name) || 'Customer'} requested details on a coverage gap.`,
         },
         relatedObjectType: 'opportunity',
         relatedObjectId: opportunity.id,

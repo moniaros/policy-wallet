@@ -356,3 +356,85 @@ describe("tiers 3 and 4: one truth per fact, and a specified half-failure state"
         expect(/\bdb\.\w+\.(?:find|create|update|delete)/.test(tx!), "no outer-client query inside the transaction").toBe(false)
     })
 })
+
+/**
+ * Tiers 2 and 5: the actor is NAMED, and a passive interaction is a decision
+ * rather than an oversight.
+ *
+ * `notification_events` has no actor column, and the ledger sanctions the
+ * alternative: attribution in the copy. That only works if the name comes from
+ * `displayPersonName` — a raw `.name` renders fixture and placeholder tokens
+ * verbatim, which is the whole reason that module exists.
+ */
+const ATTRIBUTED: Array<{ id: string; file: string; fn: string; why: string }> = [
+    { id: "I-10", file: "app/(protected)/agent/actions.ts", fn: "addPolicyForCustomer", why: "tells the customer another party can now see their policy" },
+    { id: "I-11", file: "app/(protected)/agent/actions.ts", fn: "requestAiConsent", why: "asks the customer to let a model read their document" },
+    { id: "I-12", file: "app/(protected)/wallet/actions.ts", fn: "notifyAgentAboutGap", why: "turns the customer's question into an advisor's opportunity" },
+    { id: "I-14", file: "app/(protected)/tasks/actions.ts", fn: "submitQuestionnaireResponse", why: "an advisor with a book needs to know WHICH client answered" },
+]
+
+const PASSIVE_BY_DECISION: Record<string, string> = {
+    "I-15": "Justified-passive WITH disclosure: the Task row carries `creatorUserId` and renders the creator's name in /tasks, so the actor is declared where the work appears. A notification per assigned task would be noise on the one surface a person already opens to see them.",
+    "I-23": "Justified-passive WITH disclosure: an analysis completing is announced to the policy's OWNER (`policy_analyzed`); the advisor sees the run, dated, whenever they open the policy — the findings-provenance line states which run they came from. The advisor is not the subject of the analysis, and a per-run alert across a book is noise.",
+    "I-21": "The actor is the system: the weekly digest has no person to attribute. Its honesty problem is its CONTENT (counts and dates), which is C-01/C-02's territory, not attribution.",
+}
+
+describe("tiers 2 and 5: the actor is named, and passive is a decision", () => {
+    it("accounts for every id the ledger puts on the tier-2 and tier-5 rows", () => {
+        const ids = [...new Set([...tierIdsFromLedger(2), ...tierIdsFromLedger(5)])].sort()
+        expect(ids.length, "tier 2/5 rows not found in the ledger").toBeGreaterThan(4)
+        const accounted = [
+            ...new Set([
+                ...ATTRIBUTED.map((a) => a.id),
+                ...Object.keys(PASSIVE_BY_DECISION),
+                "I-02", // checked below: redemption announces what it activates
+                "I-03", // tier 4 above: one transaction, and both emits name the other party
+                "I-07", // tier 1 above: the customer is told, naming the new advisor
+                "I-16", // checked below: both directions name the actor
+            ]),
+        ].sort()
+        expect(
+            accounted,
+            "an id on tier 2 or 5 is neither attributed, checked, nor recorded as a passive decision with its reason"
+        ).toEqual(ids)
+    })
+
+    it.each(ATTRIBUTED.map((a) => [`${a.id} ${a.fn}`, a] as const))(
+        "%s names the actor through the identity module",
+        (_name, entry) => {
+            const body = functionBody(readFileSync(path.join(ROOT, entry.file), "utf8"), entry.fn)
+            expect(body, `${entry.fn} not found in ${entry.file}`).not.toBeNull()
+            expect(
+                /displayPersonName\(/.test(body!),
+                `${entry.id}: this notification ${entry.why}, so it must name the actor — and through displayPersonName, since a raw .name renders fixture tokens`
+            ).toBe(true)
+        }
+    )
+
+    it("I-16: both directions of a document request name the person, not the role", () => {
+        const req = readFileSync(path.join(ROOT, "app/api/v1/collaboration/document-requests/route.ts"), "utf8")
+        const up = readFileSync(path.join(ROOT, "app/api/v1/collaboration/document-requests/[id]/route.ts"), "utf8")
+        expect(req).toMatch(/displayPersonName\(/)
+        expect(up).toMatch(/displayPersonName\(/)
+    })
+
+    it("I-02: redeeming an invite announces what it activates", () => {
+        const src = readFileSync(path.join(ROOT, "app/auth/actions.ts"), "utf8")
+        const body = functionBody(src, "applyInviteRedemption")
+        expect(body, "applyInviteRedemption not found").not.toBeNull()
+        // Both relationship branches announce it...
+        expect(
+            (body!.match(/announceRelationshipActivated\(/g) ?? []).length,
+            "both relationship branches (client_agent connect, and the agent→client signup invite) must announce the activation"
+        ).toBe(2)
+        // ...and the share branch, where the GRANT is minted, tells both sides.
+        expect(
+            emitCallFor(body!, "policy_shared"),
+            "a share COMPLETES at redemption when the advisor had no account; sharePolicy announces the same fact when they do"
+        ).not.toBeNull()
+        const announce = functionBody(src, "announceRelationshipActivated")
+        expect(announce, "announceRelationshipActivated not found").not.toBeNull()
+        expect(emitCallFor(announce!, "advisor_assigned"), "it must emit advisor_assigned").not.toBeNull()
+        expect(/displayPersonName\(/.test(announce!), "each side is named").toBe(true)
+    })
+})

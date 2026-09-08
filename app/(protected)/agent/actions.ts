@@ -1,6 +1,7 @@
 "use server"
 
 import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { storedDocumentLabel } from "@/lib/wallet/document-label"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
@@ -1256,7 +1257,9 @@ export async function addPolicyForCustomer(data: {
         // agent can now see. The agent's access is limited to THIS policy (the
         // auto-minted, owner-revocable grant above); it never extends to
         // policies the customer uploaded themselves.
-        const agentLabel = agentUser?.name || agentUser?.email || 'Your agent'
+        // Through the identity module: a raw `.name` renders fixture and placeholder
+        // tokens verbatim, and this sentence tells someone who can now see their policy.
+        const agentLabel = displayPersonName(agentUser?.name) || agentUser?.email || 'Your agent'
         const addedBranch = normalizeBranch(input.policy.lineOfBusiness)
         await emit({
             event: 'policy_added',
@@ -2042,7 +2045,7 @@ export async function requestAiConsent(policyId: string) {
 
     const language = resolveUserLanguage(owner.preferredLanguage)
     const t = getTranslations(language)
-    const agentName = authResult.dbUser.name || authResult.dbUser.email || "PolicyWallet agent"
+    const agentName = displayPersonName(authResult.dbUser.name) || authResult.dbUser.email || "PolicyWallet agent"
 
     const hasAccount = Boolean(owner.emailVerified || owner.lastActiveAt)
     if (hasAccount) {

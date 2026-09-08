@@ -1,6 +1,7 @@
 "use server"
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { getTranslations } from "@/lib/i18n"
@@ -212,7 +213,8 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
 
     // Break the silent handoff: tell the agent who sent it that it was answered
     // (they had no way to know their questionnaire came back).
-    const customerName = authResult.dbUser.name || authResult.dbUser.email || 'A client'
+    // Through the identity module: a raw `.name` puts a fixture token in front of an advisor.
+    const customerName = displayPersonName(authResult.dbUser.name) || authResult.dbUser.email || 'A client'
     await notifyCounterparty({
         userId: instance.sentByUserId,
         eventType: "questionnaire_completed",
