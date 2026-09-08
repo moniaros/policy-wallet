@@ -1,6 +1,10 @@
 # PW-CONTENT-01 — production catalogue alignment (prepared, NOT executed)
 
-**Status: EXECUTED then PARKED, 2026-09-08.** The 50 rules are IN production's table but only **29 are active**; the other 21 sit `is_active = false` waiting for a deploy that GitHub Actions will not run (see «Parked» below). Dev is on the full 50-rule set, fingerprint **`15fa2758cebeaecc`**, which is what CI's catalogue check verifies against.
+**Status: COMPLETE, 2026-09-08 18:21Z.** Production and dev are both on the 50-rule set: 50 rows, **50 active**, 0 inactive, 14 branches, active-set digest `8045aa4e46935b149e2864f9a20c502a` on both, and dev verifies against the repository at `15fa2758cebeaecc`. `/methodology` renders «50 κανόνες σε 14 κλάδους», which the database now supports.
+
+The sequence ran in two halves because Actions was down between them: the rules were written, parked, deployed, then re-activated. What follows is that history, kept because the parking manoeuvre is the reusable part.
+
+**Superseded status line —** EXECUTED then PARKED, 2026-09-08. The 50 rules are IN production's table but only **29 are active**; the other 21 sit `is_active = false` waiting for a deploy that GitHub Actions will not run (see «Parked» below). Dev is on the full 50-rule set, fingerprint **`15fa2758cebeaecc`**, which is what CI's catalogue check verifies against.
 
 ## Parked — and why (2026-09-08 16:56Z)
 
@@ -17,7 +21,7 @@ WHERE created_at::date = '2026-09-08' AND is_active = true;
 
 **Verified back to the exact prior state:** the active 29 hash to `c66ba5a69febc06973dffcfe56d97879` over `gap_definition_id||slug||severity||rule_id||detection_logic::text` — the identical value measured BEFORE any write. Their `version` and `updated_at` were never touched (27 rows still 2026-08-20, 2 still 2026-08-21), because the alignment only ever wrote the 21 new rows.
 
-**To finish, once Actions can run again** (owner: Billing & plans), in this order:
+**Finished 2026-09-08 18:21Z.** The owner cleared the Actions block (the repository was made public, so Actions is free again). `deploy.yml` was dispatched manually on NEW-UI — the code commit itself could not trigger CI, because the two commits after it were docs-only and `paths-ignore` skips them — and shipped `eacc60ad`. The 21 rows were then re-activated and verified. Steps as they were planned:
 
 1. re-run CI on NEW-UI and let `deploy.yml` ship `43615847` (or later);
 2. then, and only then, re-activate the parked rules — no re-insert is needed, the rows are already there:
