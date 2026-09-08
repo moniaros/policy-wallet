@@ -210,10 +210,13 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   `detectionLogic` `{ source: "ai_clarity_pipeline" }`, one per analysis run
   between 2026-07-13 and 2026-08-09) which dev never had. Verified 2026-08-23:
   both databases 29 active / 0 inactive on fingerprint `2df9d0fd4b581caa`, the
-  minted rows gone. **Verified 2026-09-08 (PW-CONTENT-01 Goals 5–6): both are
-  now 50 active / 0 inactive on `15fa2758cebeaecc`** — production archived to
-  `docs/archive/` first, and only the 21 new rows written, the other 29 having
-  been proven byte-identical to the repository. Keep the content-not-counts
+  minted rows gone. **2026-09-08 (PW-CONTENT-01 Goals 5–6): DEV is on the 50-rule
+  set `15fa2758cebeaecc`; PRODUCTION holds all 50 rows but only 29 are ACTIVE** —
+  the 21 new ones were written, then parked `is_active = false` when the deploy
+  could not run, so the database keeps matching the code that is actually live
+  (`docs/content/PROD-ALIGNMENT.md`). A catalogue ahead of its deployed code is
+  the failure this table's rule exists to prevent, and parking is how you undo it
+  without deleting anything. Keep the content-not-counts
   rule anyway; the pipeline can mint again. This is the third table to drift
   after migrations and plan rows.
   **A fingerprint written in a document is a claim, not a measurement.** The
