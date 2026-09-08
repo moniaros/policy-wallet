@@ -1518,7 +1518,10 @@ export async function updateGapDefinition(
 
 // ── Extraction flag triage ───────────────────────────────────────────
 // Users flag incorrect AI extractions from the upload review screen;
-// flags are stored as notificationEvents (eventType 'extraction_flagged').
+// flags are stored as notificationEvents (eventType 'extraction_flag_raised' —
+// the TRIAGE half, addressed to whoever raised the flag; the customer-facing
+// 'extraction_flagged' goes to the policy's owner, and reading that one here
+// would list the customer as the flagger. PW-BRIDGE-01 I-09).
 // This queue lets admins triage them: see the reason, the policy's current
 // review state (a re-analysis or user confirm self-heals the flag), and
 // mark the report handled.
@@ -1548,7 +1551,7 @@ export async function getExtractionFlagQueue(options?: { limit?: number }) {
     const safeLimit = Math.min(Math.max(options?.limit ?? 100, 1), 200)
 
     const events = await db.notificationEvent.findMany({
-        where: { eventType: "extraction_flagged" },
+        where: { eventType: "extraction_flag_raised" },
         include: { user: { select: { name: true, email: true } } },
         orderBy: { createdAt: "desc" },
         take: safeLimit,
@@ -1619,7 +1622,7 @@ export async function resolveExtractionFlag(eventId: string) {
     const admin = await verifyAdminRole()
 
     const result = await db.notificationEvent.updateMany({
-        where: { id: eventId, eventType: "extraction_flagged", status: { not: "read" } },
+        where: { id: eventId, eventType: "extraction_flag_raised", status: { not: "read" } },
         data: { status: "read", readAt: new Date() },
     })
     if (result.count === 0) {

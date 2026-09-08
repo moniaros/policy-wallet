@@ -570,7 +570,29 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         audit: "notification_event",
         status: "live",
         emittedBy: "app/(protected)/wallet/actions.ts",
-        note: "This is the AI-confidence trigger. It fires on the reading we could not stand behind, which is the only confidence change a customer can act on.",
+        note: "This is the AI-confidence trigger. It fires on the reading we could not stand behind, which is the only confidence change a customer can act on. Until 2026-09-08 the one call site emitted it to the FLAGGING AGENT (`userId: dbUser.id`) while this declaration said `owner` and the copy spoke to the owner — the record was marked flagged and its owner heard nothing (PW-BRIDGE-01 I-09). The agent's triage need is a different event, below.",
+    },
+
+    extraction_flag_raised: {
+        businessEvent: "An advisor flagged a reading as untrustworthy",
+        copy: {
+            title: { el: "Επισημάνθηκε ανάγνωση για έλεγχο", en: "A reading was flagged for review" },
+            message: { el: "Καταγράφηκε επισήμανση για μια αυτόματη ανάγνωση που χρειάζεται έλεγχο.", en: "A flag was recorded on an automatic reading that needs review." },
+        },
+        triggerCondition: "flagPolicyExtraction() commits",
+        category: "risk",
+        priority: "normal",
+        channels: IN_APP_ONLY,
+        recipients: ["advisor"],
+        transactional: true,
+        requiredAction: null,
+        escalation: null,
+        retry: NO_RETRY,
+        expiresAfterHours: 90 * DAY,
+        audit: "activity_log",
+        status: "live",
+        emittedBy: "app/(protected)/wallet/actions.ts",
+        note: "The triage half of a flag, kept separate from `extraction_flagged` so the two audiences stop sharing one row. The admin triage queue reads THIS event, where the recipient is the person who raised the flag — reading the customer-facing event instead would have listed the customer as the flagger.",
     },
 
     ai_consent_request: {
