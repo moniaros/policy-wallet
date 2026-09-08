@@ -26,19 +26,19 @@ export const rentersContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Η ασφάλιση του ιδιοκτήτη καλύπτει τους τοίχους, όχι ό,τι έχετε μέσα. Μετά από πυρκαγιά ή διάρρηξη, τα έπιπλα και οι συσκευές αντικαθίστανται μόνο αν υπάρχει δικό σας συμβόλαιο περιεχομένου.',
+            el: 'Η ασφάλιση του ιδιοκτήτη καλύπτει τους τοίχους, όχι ό,τι έχετε μέσα. Μετά από πυρκαγιά ή διάρρηξη, τα έπιπλα και οι συσκευές αντικαθίστανται μόνο αν υπάρχει δικό σας ασφαλιστήριο περιεχομένου.',
             en: 'The landlord\'s policy covers the walls, not what you own inside them. After a fire or a burglary, furniture and appliances are replaced only if you hold your own contents policy.',
         },
         {
-            el: 'Μια διαρροή από το δικό σας διαμέρισμα στο από κάτω, ή ζημιά που προκαλέσατε στο ακίνητο, είναι δική σας ευθύνη. Πολλά συμβόλαια ενοικιαστή περιλαμβάνουν κάλυψη αστικής ευθύνης ακριβώς γι\' αυτό — αλλά όχι όλα.',
+            el: 'Μια διαρροή από το δικό σας διαμέρισμα στο από κάτω, ή ζημιά που προκαλέσατε στο ακίνητο, είναι δική σας ευθύνη. Πολλά ασφαλιστήρια ενοικιαστή περιλαμβάνουν κάλυψη αστικής ευθύνης ακριβώς γι\' αυτό — αλλά όχι όλα.',
             en: 'A leak from your flat into the one below, or damage you cause to the property, is your liability. Many tenant policies include liability cover for exactly this — but not all of them.',
         },
         {
-            el: 'Τα συμβόλαια περιεχομένου έχουν συνήθως όριο ανά αντικείμενο αξίας. Ένα ρολόι ή ένας υπολογιστής πάνω από το όριο αποζημιώνεται μόνο αν έχει δηλωθεί ξεχωριστά.',
+            el: 'Τα ασφαλιστήρια περιεχομένου έχουν συνήθως όριο ανά αντικείμενο αξίας. Ένα ρολόι ή ένας υπολογιστής πάνω από το όριο αποζημιώνεται μόνο αν έχει δηλωθεί ξεχωριστά.',
             en: 'Contents policies usually carry a limit per valuable item. A watch or a computer above that limit is paid only if it was declared separately.',
         },
         {
-            el: 'Σεισμός και πλημμύρα δεν ξεχωρίζουν κτίριο από περιεχόμενο. Όταν το συμβόλαιο περιεχομένου τα εξαιρεί, ο ενοικιαστής μένει με τη ζημιά — και συνήθως χωρίς σπίτι για λίγο.',
+            el: 'Σεισμός και πλημμύρα δεν ξεχωρίζουν κτίριο από περιεχόμενο. Όταν το ασφαλιστήριο περιεχομένου τα εξαιρεί, ο ενοικιαστής μένει με τη ζημιά — και συνήθως χωρίς σπίτι για λίγο.',
             en: 'Earthquake and flood do not distinguish building from contents. When a contents policy excludes them, the tenant is left with the loss — and usually without a home for a while.',
         },
     ],
@@ -49,10 +49,10 @@ export const rentersContent: BranchContent = {
         { el: 'Αν υπάρχουν αντικείμενα αξίας δηλωμένα ξεχωριστά, και αν καταγράφεται τηλέφωνο τεχνικής βοήθειας.', en: 'Whether valuables are itemised, and whether a technical-assistance number is recorded.' },
     ],
     howToUseBetter: [
-        { el: 'Ανεβάστε ολόκληρο το συμβόλαιο, όχι μόνο την πρώτη σελίδα: το όριο ανά αντικείμενο και οι εξαιρέσεις βρίσκονται στους γενικούς όρους.', en: 'Upload the whole policy, not just the schedule: the per-item limit and the exclusions live in the general terms.' },
+        { el: 'Ανεβάστε ολόκληρο το ασφαλιστήριο, όχι μόνο την πρώτη σελίδα: το όριο ανά αντικείμενο και οι εξαιρέσεις βρίσκονται στους γενικούς όρους.', en: 'Upload the whole policy, not just the schedule: the per-item limit and the exclusions live in the general terms.' },
         { el: 'Κρατήστε αποδείξεις ή φωτογραφίες για ό,τι αξίζει πάνω από μερικές εκατοντάδες ευρώ — είναι αυτό που θα ζητηθεί σε ζημιά.', en: 'Keep receipts or photos for anything worth more than a few hundred euros — that is what a claim will ask for.' },
         { el: 'Ρωτήστε τον σύμβουλό σας αν η αστική ευθύνη προς τον ιδιοκτήτη περιλαμβάνεται· δεν μπορούμε να το διαβάσουμε ακόμη από το έγγραφο.', en: 'Ask your adviser whether liability towards the landlord is included; we cannot yet read it from the document.' },
-        { el: 'Σημειώστε το τηλέφωνο τεχνικής βοήθειας στο κινητό σας τώρα — μια διαρροή δεν περιμένει να βρείτε το συμβόλαιο.', en: 'Save the technical-assistance number in your phone now — a leak will not wait for you to find the policy.' },
+        { el: 'Σημειώστε το τηλέφωνο τεχνικής βοήθειας στο κινητό σας τώρα — μια διαρροή δεν περιμένει να βρείτε το ασφαλιστήριο.', en: 'Save the technical-assistance number in your phone now — a leak will not wait for you to find the policy.' },
     ],
     commonGaps: [
         {
@@ -95,10 +95,10 @@ export const rentersContent: BranchContent = {
     recommendedActions: [
         {
             id: 'renters_check_scope',
-            label: { el: 'Δείτε τι ακριβώς ασφαλίζει το συμβόλαιό σας', en: 'See what exactly your policy insures' },
+            label: { el: 'Δείτε τι ακριβώς ασφαλίζει το ασφαλιστήριό σας', en: 'See what exactly your policy insures' },
             href: null,
             ctaType: 'askAi',
-            question: { el: 'Ασφαλίζει το συμβόλαιό μου το περιεχόμενο, το κτίριο ή και τα δύο, και με ποιο κεφάλαιο;', en: 'Does my policy insure the contents, the building or both, and for what sum?' },
+            question: { el: 'Ασφαλίζει το ασφαλιστήριό μου το περιεχόμενο, το κτίριο ή και τα δύο, και με ποιο κεφάλαιο;', en: 'Does my policy insure the contents, the building or both, and for what sum?' },
         },
         {
             id: 'renters_ask_liability',
@@ -127,7 +127,7 @@ export const rentersContent: BranchContent = {
     ],
     claimsSteps: [
         { el: 'Φωτογραφίστε τη ζημιά πριν μετακινήσετε οτιδήποτε.', en: 'Photograph the damage before moving anything.' },
-        { el: 'Ειδοποιήστε την ασφαλιστική εντός της προθεσμίας που ορίζει το συμβόλαιο και τον ιδιοκτήτη, αν αφορά το ακίνητο.', en: 'Notify the insurer within the policy\'s deadline, and the landlord if the property is affected.' },
+        { el: 'Ειδοποιήστε την ασφαλιστική εντός της προθεσμίας που ορίζει το ασφαλιστήριο και τον ιδιοκτήτη, αν αφορά το ακίνητο.', en: 'Notify the insurer within the policy\'s deadline, and the landlord if the property is affected.' },
         { el: 'Συγκεντρώστε αποδείξεις ή φωτογραφίες των αντικειμένων που χάθηκαν.', en: 'Gather receipts or photos of the items lost.' },
         { el: 'Μην πετάξετε τα κατεστραμμένα αντικείμενα πριν τα δει ο πραγματογνώμονας, εκτός αν είναι επικίνδυνα.', en: 'Do not discard damaged items before the assessor has seen them, unless they are a hazard.' },
     ],
@@ -136,8 +136,8 @@ export const rentersContent: BranchContent = {
         en: 'At renewal, update the contents sum if you acquired something valuable, and declare separately anything above the per-item limit.',
     },
     emptyState: {
-        headline: { el: 'Κανένα συμβόλαιο ενοικιαστή ακόμη', en: 'No tenant policy yet' },
-        description: { el: 'Ανεβάστε το συμβόλαιο περιεχομένου σας για να δείτε τι δηλώνει και τι όχι.', en: 'Upload your contents policy to see what it states and what it does not.' },
-        ctaLabel: { el: 'Ανέβασμα συμβολαίου', en: 'Upload a policy' },
+        headline: { el: 'Κανένα ασφαλιστήριο ενοικιαστή ακόμη', en: 'No tenant policy yet' },
+        description: { el: 'Ανεβάστε το ασφαλιστήριο περιεχομένου σας για να δείτε τι δηλώνει και τι όχι.', en: 'Upload your contents policy to see what it states and what it does not.' },
+        ctaLabel: { el: 'Ανέβασμα ασφαλιστηρίου', en: 'Upload a policy' },
     },
 }
