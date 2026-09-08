@@ -603,9 +603,33 @@ export async function flagPolicyExtraction(policyId: string, reason?: string) {
     // minute must not roll back the flag itself. (It also cannot be inside —
     // `emit` performs its own writes, and this used to be a bare create in the
     // transaction array, which is what kept it on one channel.)
+    // TWO audiences, two events — they used to share one row, addressed to the
+    // agent, while the registry declared `owner` and the copy spoke to the owner
+    // (PW-BRIDGE-01 I-09). The owner's record is now marked «flagged» and the
+    // «unverified» badge stays up; they are the only person who can resolve it,
+    // and they were the one person not told.
+    const flaggerName = displayPersonName(dbUser.name)
     await emit({
         event: "extraction_flagged",
-        userId: dbUser.id, // triage signal for the reviewing agent, not the owner
+        userId: policy.ownerUserId,
+        title: {
+            el: "Η αυτόματη ανάγνωση χρειάζεται έλεγχο",
+            en: "The automatic read needs review",
+        },
+        message: {
+            el: `${flaggerName || "Ο σύμβουλός σας"} επισήμανε ότι η αυτόματη ανάγνωση του ασφαλιστηρίου ${policy.policyNumber} χρειάζεται έλεγχο${trimmedReason ? `: ${trimmedReason}` : "."}`,
+            en: `${flaggerName || "Your advisor"} flagged the automatic read of policy ${policy.policyNumber} as needing review${trimmedReason ? `: ${trimmedReason}` : "."}`,
+        },
+        relatedObjectType: "policy",
+        relatedObjectId: policyId,
+    })
+
+    // ...and the triage row, addressed to the person who raised it. This is what
+    // the admin flag queue reads, so its «who flagged this» column keeps meaning
+    // the flagger rather than the customer.
+    await emit({
+        event: "extraction_flag_raised",
+        userId: dbUser.id,
         title: {
             el: "Επισημάνθηκε εξαγωγή AI",
             en: "AI extraction flagged",
@@ -1088,22 +1112,16 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
     // Optional: Verify role
     // if (!agent.roles.includes('agent')) return { error: "This user is not an agent." }
 
-    // 2. Create Access Grant
-    // We treat policy sharing as a scoped grant
-    await db.accessGrant.create({
-        data: {
-            granterUserId: authResult.dbUser.id,
-            granteeUserId: agent.id,
-            scope: `policy:${policyId}`,
-            permissions: permissions,
-            status: "active"
-        }
-    })
-
-    // 3. Ensure a Relationship exists (so they show up in Agent's Customer list)
-    // We use upsert to avoid error if exists
-    // Note: status might need to be 'active' if they accepted, but here we force 'active' or 'pending'?
-    // Let's check if relationship exists first.
+    // 2 + 3. The GRANT and the RELATIONSHIP in ONE transaction.
+    //
+    // They were two separate awaits, and the half-state between them is not
+    // harmless: `computePolicyAccess` derives read/write/delete from an
+    // AccessGrant's level ALONE and never re-checks the relationship (see
+    // CLAUDE.md), so a grant that committed while the relationship create failed
+    // leaves an advisor holding real access that no relationship explains — and
+    // that no termination path would find, because every one of them works from
+    // the relationship. Half of a share is not a smaller share; it is an
+    // unexplained one (PW-BRIDGE-01 I-03).
     const existingRel = await db.customerRelationship.findUnique({
         where: {
             agentUserId_policyholderUserId: {
@@ -1113,17 +1131,30 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         }
     })
 
-    let relationshipId = existingRel?.id || null
-    if (!existingRel) {
-        const createdRel = await db.customerRelationship.create({
+    const createdRel = await db.$transaction(async (tx) => {
+        await tx.accessGrant.create({
+            data: {
+                granterUserId: authResult.dbUser.id,
+                granteeUserId: agent.id,
+                scope: `policy:${policyId}`,
+                permissions: permissions,
+                status: "active"
+            }
+        })
+        if (existingRel) return null
+        // Auto-activated: the customer initiated the share, which is the consent.
+        return tx.customerRelationship.create({
             data: {
                 agentUserId: agent.id,
                 policyholderUserId: authResult.dbUser.id,
-                status: "active", // Auto-activate since customer initiated sharing
+                status: "active",
                 activationStatus: "active"
             }
         })
-        relationshipId = createdRel.id
+    })
+
+    let relationshipId = existingRel?.id || createdRel?.id || null
+    if (createdRel) {
 
         const { publishAdvisorLinked } = await import("@/lib/events/publishers")
         await publishAdvisorLinked({

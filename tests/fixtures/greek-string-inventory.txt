@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3717
-# inline entries: 4895 across 221 files
+# inline entries: 4899 across 221 files
 # ternary entries: 288 across 42 files
 # call entries: 1144 across 86 files
 
@@ -3909,6 +3909,7 @@ inline	app/(protected)/wallet/actions.ts	"Ένα κοινοποιημένο ασ
 inline	app/(protected)/wallet/actions.ts	"Ένα κοινοποιημένο ασφαλιστήριο ενημερώθηκε"
 inline	app/(protected)/wallet/actions.ts	"Επισημάνθηκε εξαγωγή AI"
 inline	app/(protected)/wallet/actions.ts	"Ζητήθηκε προσφορά ανανέωσης"
+inline	app/(protected)/wallet/actions.ts	"Η αυτόματη ανάγνωση χρειάζεται έλεγχο"
 inline	app/(protected)/wallet/actions.ts	"Η πρόσβαση σε ένα ασφαλιστήριο ανακλήθηκε"
 inline	app/(protected)/wallet/actions.ts	"Νέος πελάτης συνδέθηκε"
 inline	app/(protected)/wallet/actions.ts	"Πελάτης ζήτησε προσφορά ανανέωσης"
@@ -3924,6 +3925,7 @@ inline	app/(protected)/wallet/actions.ts	`${displayPersonName(agent.name) || age
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(dbUser.name) || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`
+inline	app/(protected)/wallet/actions.ts	`${flaggerName || "Ο σύμβουλός σας"} επισήμανε ότι η αυτόματη ανάγνωση του ασφαλιστηρίου ${policy.policyNumber} χρειάζεται έλεγχο${trimmedReason ? `: ${trimmedReason}` : "."}`
 inline	app/(protected)/wallet/actions.ts	`${granterName || "Ο πελάτης"} ανακάλεσε την πρόσβασή σας${label ? ` στο ασφαλιστήριο ${label}` : ""}.`
 inline	app/(protected)/wallet/actions.ts	`${sharer || 'Ένας πελάτης'} κοινοποίησε το ασφαλιστήριό του ${branch ? branch.label.el : 'ασφάλισης'} (${policy?.insurerName}) μαζί σας με δικαιώματα ${permissions}.`
 inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policy.policyNumber}: ${trimmedReason || "επισημάνθηκε ως λανθασμένο"}`
@@ -7166,6 +7168,7 @@ inline	lib/notifications/registry.ts	"Εντοπίσαμε κενό κάλυψη
 inline	lib/notifications/registry.ts	"Εντοπίστηκε διπλό ασφαλιστήριο"
 inline	lib/notifications/registry.ts	"Επαναλαμβανόμενες αποτυχίες ανάλυσης"
 inline	lib/notifications/registry.ts	"Επαναλαμβανόμενες αποτυχίες πληρωμής"
+inline	lib/notifications/registry.ts	"Επισημάνθηκε ανάγνωση για έλεγχο"
 inline	lib/notifications/registry.ts	"Ευχαριστούμε — η αξιολόγησή σας καταγράφηκε."
 inline	lib/notifications/registry.ts	"Ευχαριστούμε — η γνώμη σας καταγράφηκε."
 inline	lib/notifications/registry.ts	"Ζητήθηκε προσφορά ανανέωσης"
@@ -7204,6 +7207,7 @@ inline	lib/notifications/registry.ts	"Η σύνδεση συμβούλου κα�
 inline	lib/notifications/registry.ts	"Η σύνοψη της ημέρας από τις συνεργασίες σας."
 inline	lib/notifications/registry.ts	"Καθημερινή σύνοψη"
 inline	lib/notifications/registry.ts	"Καλώς ήρθατε στο PolicyWallet"
+inline	lib/notifications/registry.ts	"Καταγράφηκε επισήμανση για μια αυτόματη ανάγνωση που χρειάζεται έλεγχο."
 inline	lib/notifications/registry.ts	"Καταγράψαμε την αλλαγή σας"
 inline	lib/notifications/registry.ts	"Λάβαμε την αξιολόγησή σας"
 inline	lib/notifications/registry.ts	"Λάβαμε την αξιολόγηση του άρθρου"

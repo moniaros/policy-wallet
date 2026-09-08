@@ -66,6 +66,7 @@ export const EVENT_VARIABLES: Record<string, readonly string[]> = {
     advisor_relationship_ended: ["counterpartyName"],
     collaboration_message: ["counterpartyName"],
     extraction_flagged: ["policyNumber", "flagReason"],
+    extraction_flag_raised: ["policyNumber", "flagReason"],
 }
 
 /** Every variable this event's templates may reference. */

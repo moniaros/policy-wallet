@@ -192,11 +192,33 @@ export function emitsEvent(body: string, event: string): boolean {
     return new RegExp(`(?:event|eventType):\\s*["']${event}["']`).test(body)
 }
 
-/** Tier-1 interaction ids, read from the queue ledger rather than assumed. */
-export function tierOneIdsFromLedger(doc = readFileSync(path.join(ROOT, QUEUES), "utf8")): string[] {
-    const row = doc.split("\n").find((l) => /^\|\s*1\s*—/.test(l))
+/** Every `emit({ … })` / `emitToMany(x, { … })` call in a body, as source text. */
+export function emitCalls(body: string): string[] {
+    const out: string[] = []
+    const re = /\b(?:emit|emitToMany|orchestrate|sendNotification|notifyCounterparty)\s*\(/g
+    let m: RegExpExecArray | null
+    while ((m = re.exec(body))) {
+        const call = bodyAfter(body, m.index + m[0].length - 1)
+        if (call) out.push(call)
+    }
+    return out
+}
+
+/** The emit call in `body` that sends `event`, or null. */
+export function emitCallFor(body: string, event: string): string | null {
+    return emitCalls(body).find((c) => new RegExp(`(?:event|eventType):\\s*["']${event}["']`).test(c)) ?? null
+}
+
+/** Interaction ids on one tier row of Queue B, read from the ledger rather than assumed. */
+export function tierIdsFromLedger(tier: number, doc = readFileSync(path.join(ROOT, QUEUES), "utf8")): string[] {
+    const row = doc.split("\n").find((l) => new RegExp(`^\\|\\s*${tier}\\s*—`).test(l))
     if (!row) return []
     return [...new Set([...row.matchAll(/\bI-\d{2}\b/g)].map((m) => m[0]))].sort()
+}
+
+/** Tier-1 interaction ids. */
+export function tierOneIdsFromLedger(doc = readFileSync(path.join(ROOT, QUEUES), "utf8")): string[] {
+    return tierIdsFromLedger(1, doc)
 }
 
 describe("an effect on someone's record is told to them (PW-BRIDGE-01 Queue B, tier 1)", () => {
@@ -253,5 +275,84 @@ describe("an effect on someone's record is told to them (PW-BRIDGE-01 Queue B, t
         const told = functionBody(probe, "revokeShareTold")
         expect(told).not.toBeNull()
         expect(emitsEvent(told!, "policy_share_revoked")).toBe(true)
+    })
+})
+
+/**
+ * Tiers 3 and 4 of the same queue: one truth per fact, and a SPECIFIED state
+ * when half an interaction fails.
+ *
+ * Each id on those ledger rows is either checked here or listed as closed
+ * elsewhere with the reason — the union has to equal the ledger, so an id
+ * cannot quietly go unaddressed.
+ */
+const TIER_3_4_CLOSED_ELSEWHERE: Record<string, string> = {
+    "I-08": "Queue A row A-06 (ACT done 2026-09-06): record status and the «unverified» badge now tell the same story, and the customer-facing half is I-08 in tier 1, checked above.",
+    "I-13": "Already the reference shape (tier 6): the questionnaire task carries `creatorUserId` and renders the creator's name; its emit follows the task create, which is the same after-the-write ordering every interaction here uses.",
+}
+
+describe("tiers 3 and 4: one truth per fact, and a specified half-failure state", () => {
+    const flagFile = "app/(protected)/wallet/actions.ts"
+    const adminFile = "app/(protected)/admin/actions.ts"
+
+    it("addresses every id the ledger puts on the tier-3 and tier-4 rows", () => {
+        const ids = [...new Set([...tierIdsFromLedger(3), ...tierIdsFromLedger(4)])].sort()
+        expect(ids.length, "tier 3/4 rows not found in the ledger").toBeGreaterThan(2)
+        const checked = ["I-03", "I-09"]
+        const accounted = [...new Set([...checked, ...Object.keys(TIER_3_4_CLOSED_ELSEWHERE)])].sort()
+        expect(
+            accounted,
+            "an id on tier 3 or 4 is neither checked here nor recorded as closed elsewhere with a reason"
+        ).toEqual(ids)
+    })
+
+    it("I-09: the flag tells the OWNER, and the triage row goes to whoever raised it", () => {
+        const body = functionBody(readFileSync(path.join(ROOT, flagFile), "utf8"), "flagPolicyExtraction")
+        expect(body, "flagPolicyExtraction not found").not.toBeNull()
+
+        const customerFacing = emitCallFor(body!, "extraction_flagged")
+        expect(customerFacing, "extraction_flagged is not emitted here").not.toBeNull()
+        expect(
+            /userId:\s*policy\.ownerUserId/.test(customerFacing!),
+            "extraction_flagged must reach the policy's OWNER — the registry declares `owner`, the copy speaks to them, and they are the only person who can resolve a flagged reading"
+        ).toBe(true)
+
+        const triage = emitCallFor(body!, "extraction_flag_raised")
+        expect(triage, "the triage event is not emitted here").not.toBeNull()
+        expect(
+            /userId:\s*dbUser\.id/.test(triage!),
+            "the triage row belongs to the person who raised the flag — the admin queue reads it as «who flagged this»"
+        ).toBe(true)
+    })
+
+    it("I-09: the admin flag queue reads the triage event, never the customer-facing one", () => {
+        const src = readFileSync(path.join(ROOT, adminFile), "utf8")
+        expect(src).toMatch(/eventType:\s*"extraction_flag_raised"/)
+        expect(
+            /eventType:\s*"extraction_flagged"/.test(src),
+            "reading the customer-facing event here would list the CUSTOMER as the flagger"
+        ).toBe(false)
+    })
+
+    it("I-03: a share creates the grant and the relationship in ONE transaction", () => {
+        const body = functionBody(readFileSync(path.join(ROOT, flagFile), "utf8"), "sharePolicy")
+        expect(body, "sharePolicy not found").not.toBeNull()
+        // Brace-matched, not regex-bounded: a non-greedy `[\s\S]*?\}\)` stops at
+        // the first nested `})`, which is inside the grant create.
+        const at = body!.indexOf("$transaction(")
+        expect(at, "sharePolicy must wrap the grant and the relationship in one $transaction").toBeGreaterThan(-1)
+        const tx = bodyAfter(body!, at)
+        expect(tx, "could not read the transaction body").not.toBeNull()
+        expect(
+            /tx\.accessGrant\.create/.test(tx!),
+            "the grant must be created inside the transaction"
+        ).toBe(true)
+        expect(
+            /tx\.customerRelationship\.create/.test(tx!),
+            "the relationship must be created inside the same transaction — computePolicyAccess derives access from the grant alone, so a grant without a relationship is access nothing explains and no termination path can find"
+        ).toBe(true)
+        // ...and nothing else: a query on the OUTER client inside a transaction
+        // is the 15-second deadlock this repo already documented in CLAUDE.md.
+        expect(/\bdb\.\w+\.(?:find|create|update|delete)/.test(tx!), "no outer-client query inside the transaction").toBe(false)
     })
 })
