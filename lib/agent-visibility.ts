@@ -55,6 +55,26 @@ export async function getGrantedPolicyIds(agentUserId: string): Promise<string[]
 }
 
 /**
+ * The people who currently hold an active, policy-scoped grant over ONE policy —
+ * the inverse of `getGrantedPolicyIds`.
+ *
+ * For telling them when the record under that grant changes. The owner is never
+ * included even if a grant somehow names them: they are the actor in the paths
+ * that call this, and telling someone what they just did is noise
+ * (PW-BRIDGE-01 I-22).
+ */
+export async function getPolicyGranteeUserIds(policyId: string, exceptUserId?: string): Promise<string[]> {
+    const grants = await db.accessGrant.findMany({
+        where: {
+            status: "active",
+            scope: `${POLICY_SCOPE_PREFIX}${policyId}`,
+        },
+        select: { granteeUserId: true },
+    })
+    return [...new Set(grants.map((g) => g.granteeUserId))].filter((id) => id && id !== exceptUserId)
+}
+
+/**
  * Prisma `where` fragment restricting policies to the ones an agent may see.
  * Compose it into any policy query an agent-facing surface runs.
  */

@@ -20,8 +20,8 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3717
-# inline entries: 4872 across 219 files
-# ternary entries: 282 across 41 files
+# inline entries: 4895 across 221 files
+# ternary entries: 288 across 42 files
 # call entries: 1144 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -3833,6 +3833,9 @@ inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτε�
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "200 AI αναλύσεις/μήνα", "Πλήρες pipeline + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 πράκτορες)", "Cross-sell ευφυΐα", "Προτεραιότητα στην ανάλυση", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & πράκτορες", "Απεριόριστες AI αναλύσεις", "Απεριόριστη μαζική εισαγωγή", "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)", "Αποκλειστική υποστήριξη", "Όλα τα Pro χαρακτηριστικά", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	{ title: "Πλάνα Πρακτόρων", subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.", free: "Δωρεάν", month: "/μήνα", currentPlan: "Τρέχον πλάνο", upgrade: "Αναβάθμιση", getStarted: "Ξεκινήστε", contact: "Επικοινωνία", popular: "Δημοφιλέστερο", backToDashboard: "Πίσω στο Dashboard", vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.", vatIncluded: "με ΦΠΑ", recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.", }
+inline	app/(protected)/agent/relationship-actions.ts	"Η συνεργασία τερματίστηκε"
+inline	app/(protected)/agent/relationship-actions.ts	`${actorName || "Ο πελάτης"} τερμάτισε τη συνεργασία. Δεν έχετε πλέον πρόσβαση στα ασφαλιστήριά του.`
+inline	app/(protected)/agent/relationship-actions.ts	`${actorName || "Ο σύμβουλός σας"} τερμάτισε τη συνεργασία. Δεν έχει πλέον πρόσβαση στα ασφαλιστήριά σας.`
 inline	app/(protected)/agent/settings/AgentSettingsClient.tsx	"Αστική ευθύνη"
 inline	app/(protected)/agent/settings/AgentSettingsClient.tsx	"Αυτοκίνητο"
 inline	app/(protected)/agent/settings/AgentSettingsClient.tsx	"Ζωή"
@@ -3902,18 +3905,26 @@ inline	app/(protected)/upgrade/success/page.tsx	"Το πλάνο πράκτορ�
 inline	app/(protected)/upgrade/success/page.tsx	"Το πλάνο σας είναι ενεργό. Ξεκλειδώσατε πλήρη ανάλυση, περισσότερα ασφαλιστήρια και απεριόριστες ερωτήσεις AI."
 inline	app/(protected)/wallet/actions.ts	"Ένα ασφαλιστήριο διαγράφηκε"
 inline	app/(protected)/wallet/actions.ts	"Ένα ασφαλιστήριό σας ενημερώθηκε"
+inline	app/(protected)/wallet/actions.ts	"Ένα κοινοποιημένο ασφαλιστήριο διαγράφηκε"
+inline	app/(protected)/wallet/actions.ts	"Ένα κοινοποιημένο ασφαλιστήριο ενημερώθηκε"
 inline	app/(protected)/wallet/actions.ts	"Επισημάνθηκε εξαγωγή AI"
 inline	app/(protected)/wallet/actions.ts	"Ζητήθηκε προσφορά ανανέωσης"
+inline	app/(protected)/wallet/actions.ts	"Η πρόσβαση σε ένα ασφαλιστήριο ανακλήθηκε"
 inline	app/(protected)/wallet/actions.ts	"Νέος πελάτης συνδέθηκε"
 inline	app/(protected)/wallet/actions.ts	"Πελάτης ζήτησε προσφορά ανανέωσης"
 inline	app/(protected)/wallet/actions.ts	"Συνδεθήκατε με σύμβουλο"
+inline	app/(protected)/wallet/actions.ts	"Τα στοιχεία του ασφαλιστηρίου σας επιβεβαιώθηκαν"
 inline	app/(protected)/wallet/actions.ts	'Νέα ευκαιρία εντοπίστηκε'
 inline	app/(protected)/wallet/actions.ts	'Νέο ασφαλιστήριο κοινοποιήθηκε μαζί σας'
+inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο πελάτης"} άλλαξε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : " ενός ασφαλιστηρίου"} που βλέπετε.`
+inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο πελάτης"} διέγραψε το ασφαλιστήριο ${policyLabel(policy)}. Δεν εμφανίζεται πλέον στον κατάλογό σας.`
+inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο σύμβουλός σας"} έλεγξε και επιβεβαίωσε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : ""}. Μπορείτε να τα δείτε και να τα διορθώσετε.`
 inline	app/(protected)/wallet/actions.ts	`${authResult.dbUser.name || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(agent.name) || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(dbUser.name) || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`
+inline	app/(protected)/wallet/actions.ts	`${granterName || "Ο πελάτης"} ανακάλεσε την πρόσβασή σας${label ? ` στο ασφαλιστήριο ${label}` : ""}.`
 inline	app/(protected)/wallet/actions.ts	`${sharer || 'Ένας πελάτης'} κοινοποίησε το ασφαλιστήριό του ${branch ? branch.label.el : 'ασφάλισης'} (${policy?.insurerName}) μαζί σας με δικαιώματα ${permissions}.`
 inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policy.policyNumber}: ${trimmedReason || "επισημάνθηκε ως λανθασμένο"}`
 inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policyRef}: ζητήθηκε προσφορά ανανέωσης`
@@ -4029,6 +4040,8 @@ inline	app/(public)/trust/TrustSections.tsx	"Τα αρχεία σας κρυπτ
 inline	app/(public)/trust/TrustSections.tsx	"Τη διαγραφή τη ζητάτε με ένα κλικ· την εκτελεί άνθρωπος και ολοκληρώνεται το αργότερο εντός ενός μήνα. Ό,τι μας υποχρεώνει ο νόμος να κρατήσουμε — για παράδειγμα τιμολόγια για πέντε χρόνια — παραμένει σε ανωνυμοποιημένη μορφή."
 inline	app/(public)/trust/TrustSections.tsx	"Τι κάνει η τεχνητή νοημοσύνη — και τι δεν αποφασίζει"
 inline	app/(public)/trust/TrustSections.tsx	"Χρησιμοποιούνται τα έγγραφά μου για εκπαίδευση μοντέλων AI;"
+inline	app/api/v1/agent/policies/[id]/branded-report/route.ts	"Δημιουργήθηκε αναφορά για ασφαλιστήριό σας"
+inline	app/api/v1/agent/policies/[id]/branded-report/route.ts	`${agentName || "Ο σύμβουλός σας"} δημιούργησε μια αναφορά με βάση τα ευρήματα αυτού του ασφαλιστηρίου.`
 inline	app/api/v1/collaboration/document-requests/[id]/route.ts	"Ο πελάτης ανέβασε το έγγραφο που ζητήσατε"
 inline	app/api/v1/collaboration/document-requests/[id]/route.ts	`Παραλήφθηκε: ${documentRequest.documentType}.`
 inline	app/api/v1/collaboration/document-requests/route.ts	"Ο σύμβουλός σας ζήτησε ένα έγγραφο"
@@ -7144,7 +7157,9 @@ inline	lib/notifications/registry.ts	"Αποκτήσατε πρόσβαση σε
 inline	lib/notifications/registry.ts	"Απορρίψατε μια πρόταση"
 inline	lib/notifications/registry.ts	"Αποτέλεσμα ανανέωσης"
 inline	lib/notifications/registry.ts	"Δείτε τις απαντήσεις για να συνεχίσετε την αξιολόγηση."
+inline	lib/notifications/registry.ts	"Δεν έχετε πλέον πρόσβαση σε ένα ασφαλιστήριο πελάτη σας."
 inline	lib/notifications/registry.ts	"Δεν μπορέσαμε να διαβάσουμε το ασφαλιστήριο. Δοκιμάστε ξανά ή ανεβάστε ένα καθαρότερο αρχείο."
+inline	lib/notifications/registry.ts	"Δημιουργήθηκε αναφορά για ασφαλιστήριό σας"
 inline	lib/notifications/registry.ts	"Δύο εγγραφές του ίδιου ασφαλιστηρίου έγιναν μία."
 inline	lib/notifications/registry.ts	"Ενέργεια διαχειριστή στον λογαριασμό"
 inline	lib/notifications/registry.ts	"Εντοπίσαμε κενό κάλυψης"
@@ -7171,6 +7186,7 @@ inline	lib/notifications/registry.ts	"Η ημερομηνία λήξης πέρ�
 inline	lib/notifications/registry.ts	"Η κατάσταση της δήλωσης ζημιάς σας άλλαξε."
 inline	lib/notifications/registry.ts	"Η πληρωμή σας απέτυχε"
 inline	lib/notifications/registry.ts	"Η πληρωμή της συνδρομής σας δεν ολοκληρώθηκε. Ενημερώστε τον τρόπο πληρωμής σας."
+inline	lib/notifications/registry.ts	"Η πρόσβαση σε ένα ασφαλιστήριο ανακλήθηκε"
 inline	lib/notifications/registry.ts	"Η πρόσκληση έγινε δεκτή"
 inline	lib/notifications/registry.ts	"Η πρόσκληση στην ομάδα σας έγινε δεκτή."
 inline	lib/notifications/registry.ts	"Η πρόταση έγινε δεκτή"
@@ -7182,7 +7198,9 @@ inline	lib/notifications/registry.ts	"Η συγχώνευση απορρίφθη
 inline	lib/notifications/registry.ts	"Η συνδρομή σας έληξε"
 inline	lib/notifications/registry.ts	"Η συνδρομή σας ολοκληρώθηκε. Μπορείτε να την ανανεώσετε όποτε θελήσετε."
 inline	lib/notifications/registry.ts	"Η συνεργασία μεταφέρθηκε σε άλλον σύμβουλο."
+inline	lib/notifications/registry.ts	"Η συνεργασία τερματίστηκε"
 inline	lib/notifications/registry.ts	"Η σύνδεση συμβούλου και πελάτη ενεργοποιήθηκε."
+inline	lib/notifications/registry.ts	"Η σύνδεση συμβούλου και πελάτη τερματίστηκε και η πρόσβαση σταμάτησε."
 inline	lib/notifications/registry.ts	"Η σύνοψη της ημέρας από τις συνεργασίες σας."
 inline	lib/notifications/registry.ts	"Καθημερινή σύνοψη"
 inline	lib/notifications/registry.ts	"Καλώς ήρθατε στο PolicyWallet"
@@ -7210,6 +7228,8 @@ inline	lib/notifications/registry.ts	"Ο πελάτης σας ανέβασε τ
 inline	lib/notifications/registry.ts	"Ο πελάτης σας απέρριψε την πρόταση."
 inline	lib/notifications/registry.ts	"Ο πελάτης σας αποδέχθηκε την πρόταση."
 inline	lib/notifications/registry.ts	"Ο πελάτης σας ολοκλήρωσε ένα ερωτηματολόγιο"
+inline	lib/notifications/registry.ts	"Ο σύμβουλός σας έλεγξε και επιβεβαίωσε τα στοιχεία που διαβάστηκαν από το έγγραφο."
+inline	lib/notifications/registry.ts	"Ο σύμβουλός σας δημιούργησε μια αναφορά με βάση τα ευρήματα αυτού του ασφαλιστηρίου."
 inline	lib/notifications/registry.ts	"Ο σύμβουλός σας ζήτησε ένα έγγραφο"
 inline	lib/notifications/registry.ts	"Ο σύμβουλός σας ζητά τη συγκατάθεσή σας για ανάλυση των εγγράφων σας."
 inline	lib/notifications/registry.ts	"Ο σύμβουλός σας σάς έστειλε μια πρόταση για αξιολόγηση."
@@ -7235,6 +7255,7 @@ inline	lib/notifications/registry.ts	"Συνδεθήκατε με σύμβουλ
 inline	lib/notifications/registry.ts	"Συνεχίστε από εκεί που μείνατε"
 inline	lib/notifications/registry.ts	"Τα ασφαλιστήρια συγχωνεύτηκαν"
 inline	lib/notifications/registry.ts	"Τα στοιχεία ενός ασφαλιστηρίου σας άλλαξαν. Ρίξτε μια ματιά."
+inline	lib/notifications/registry.ts	"Τα στοιχεία του ασφαλιστηρίου σας επιβεβαιώθηκαν"
 inline	lib/notifications/registry.ts	"Το email σας άλλαξε"
 inline	lib/notifications/registry.ts	"Το email του λογαριασμού σας άλλαξε. Αν δεν το κάνατε εσείς, επικοινωνήστε μαζί μας αμέσως."
 inline	lib/notifications/registry.ts	"Το ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς."
@@ -8395,9 +8416,11 @@ inline	lib/services/risk-review/policy.ts	"Συνδεθήκατε με σύμβ�
 inline	lib/services/risk-review/policy.ts	"Τριμηνιαίος έλεγχος"
 inline	lib/services/risk-review/policy.ts	"Χαμηλή βεβαιότητα ανάγνωσης"
 inline	lib/services/risk-review/service.ts	`${policy.label.el}: αξίζει ένας γρήγορος έλεγχος της εικόνας σας.`
+inline	lib/services/team.service.ts	"Αλλαγή συμβούλου"
 inline	lib/services/team.service.ts	"Η πρόσκληση έγινε δεκτή"
 inline	lib/services/team.service.ts	"Μεταφορά πελάτη"
 inline	lib/services/team.service.ts	"Πελάτης μεταφέρθηκε σε εσάς"
+inline	lib/services/team.service.ts	`Η συνεργασία σας μεταφέρθηκε ${newAgentName ? `στον σύμβουλο ${newAgentName}` : "σε νέο σύμβουλο"}. Ο νέος σύμβουλος βλέπει τα ασφαλιστήρια που ήταν κοινοποιημένα, και ο προηγούμενος όχι πια.`
 inline	lib/services/team.service.ts	`Ο πελάτης ${relationship.customer?.name || "ένας πελάτης"} μεταφέρθηκε σε άλλον σύμβουλο`
 inline	lib/services/team.service.ts	`Ο πελάτης ${relationship.customer?.name || "ένας πελάτης"} μεταφέρθηκε σε εσάς`
 inline	lib/services/team.service.ts	`Ο χρήστης ${user?.name || "ένας χρήστης"} εντάχθηκε στην ομάδα ${membership.tenant.name}`
@@ -8617,7 +8640,11 @@ ternary	app/(protected)/activity/actions.ts	'Επιτυχής Ευκαιρία!'
 ternary	app/(protected)/activity/actions.ts	`Ενημέρωση Ευκαιρίας: ${opportunityStatusLabel(opp.status).el}`
 ternary	app/(protected)/admin/notifications/actions.ts	`${def.copy.message.el} — δοκιμαστική αποστολή για το συμβάν ${eventType} από την κονσόλα διαχείρισης.`
 ternary	app/(protected)/admin/notifications/actions.ts	`Δοκιμαστική αποστολή για το συμβάν ${eventType} από την κονσόλα διαχείρισης.`
+ternary	app/(protected)/wallet/actions.ts	" ενός ασφαλιστηρίου"
 ternary	app/(protected)/wallet/actions.ts	'ασφάλισης'
+ternary	app/(protected)/wallet/actions.ts	` στο ασφαλιστήριο ${label}`
+ternary	app/(protected)/wallet/actions.ts	` του ασφαλιστηρίου ${label}`
+ternary	app/(protected)/wallet/actions.ts	` του ασφαλιστηρίου ${label}`
 ternary	app/(protected)/wallet/actions.ts	`Φτάσατε το μηνιαίο όριο αναλύσεων (${manualGate.used}/${manualGate.limit}). Αναβαθμίστε το πλάνο σας.`
 ternary	app/api/v1/feedback/route.ts	"Βρήκατε το άρθρο χρήσιμο"
 ternary	app/api/v1/feedback/route.ts	"Δεν βρήκατε το άρθρο χρήσιμο"
@@ -8866,6 +8893,8 @@ ternary	lib/services/risk-dna/monitoring.ts	[ { text: { en: lapsing.length === 1
 ternary	lib/services/risk-dna/monitoring.ts	` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`
 ternary	lib/services/risk-graph/protection.ts	"ασφαλιστήρια"
 ternary	lib/services/risk-graph/protection.ts	"ασφαλιστήριο"
+ternary	lib/services/team.service.ts	"σε νέο σύμβουλο"
+ternary	lib/services/team.service.ts	`στον σύμβουλο ${newAgentName}`
 ternary	lib/services/timeline/build.ts	{ entryId: causeEventId, explanation: { en: "Recalculated because you told us about this change.", el: "Επανυπολογίστηκε επειδή μας δηλώσατε αυτή τη μεταβολή.", }, }
 ternary	lib/services/timeline/diff.ts	"κίνδυνοι άνοιξαν"
 ternary	lib/services/timeline/diff.ts	"κίνδυνοι έκλεισαν"
