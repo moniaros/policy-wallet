@@ -18,6 +18,8 @@ import { absoluteUrl } from "@/lib/seo/site"
 import { INVITE_EXPIRY_DAYS, daysFromNow } from "@/lib/constants/time"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
+import { emit } from "@/lib/notifications/dispatch"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 
 type TerminationResult = { success: true } | { success: false; error: string }
 
@@ -77,6 +79,48 @@ async function terminateRelationship(
         relationshipId: relationship.id,
         actorSide,
     })
+
+    // Tell the OTHER party. Ending a relationship revokes the grants between
+    // the two people in the same transaction above, so one side simply stops
+    // seeing the other — the advisor disappears from the customer's /agent, or
+    // the customer disappears from the agent's book — and until now neither
+    // event left any trace on the side it happened TO (PW-BRIDGE-01 I-05, I-06).
+    // `advisor_assigned` is transactional because gaining sight of someone's
+    // policies is a thing they are entitled to know; losing it is the same fact
+    // in reverse. Best-effort: the relationship has already ended, and a failed
+    // notification must not report the termination as failed.
+    const affectedUserId = actorSide === "agent" ? policyholderUserId : agentUserId
+    try {
+        const actor = await db.user.findUnique({
+            where: { id: actorUserId },
+            select: { name: true },
+        })
+        const actorName = displayPersonName(actor?.name)
+        await emit({
+            event: "advisor_relationship_ended",
+            userId: affectedUserId,
+            title: {
+                el: "Η συνεργασία τερματίστηκε",
+                en: "The connection has ended",
+            },
+            message:
+                actorSide === "agent"
+                    ? {
+                          el: `${actorName || "Ο σύμβουλός σας"} τερμάτισε τη συνεργασία. Δεν έχει πλέον πρόσβαση στα ασφαλιστήριά σας.`,
+                          en: `${actorName || "Your advisor"} ended the connection and no longer has access to your policies.`,
+                      }
+                    : {
+                          el: `${actorName || "Ο πελάτης"} τερμάτισε τη συνεργασία. Δεν έχετε πλέον πρόσβαση στα ασφαλιστήριά του.`,
+                          en: `${actorName || "The client"} ended the connection. You no longer have access to their policies.`,
+                      },
+            dedupeKey: `relationship_ended:${relationship.id}`,
+        })
+    } catch (e: any) {
+        logger("error", "Relationship-ended notification failed", {
+            relationshipId: relationship.id,
+            error: e?.message,
+        })
+    }
 
     return { success: true }
 }

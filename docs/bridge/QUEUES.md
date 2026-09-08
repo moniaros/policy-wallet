@@ -34,7 +34,7 @@ Populated from `PARITY.md` and `INTERACTIONS.md`. Order within Queue A follows �
 
 | Tier | Rows | What the loop must establish |
 |---|---|---|
-| 1 — invisible effect on someone's record | I-08 (agent confirm), I-04 (revoke), I-05 (disconnect), I-06 (terminate), I-22 (owner edits/deletes a shared policy), I-17 (branded report), I-07 (old agent on transfer) | a dated, attributed trace on the affected party's side; revocation verified by capture on every agent surface |
+| 1 — invisible effect on someone's record | I-08 (agent confirm), I-04 (revoke), I-05 (disconnect), I-06 (terminate), I-22 (owner edits/deletes a shared policy), I-17 (branded report), I-07 (old agent on transfer) | a dated, attributed trace on the affected party's side; revocation verified by capture on every agent surface — **ACT done 2026-09-08**: all seven now leave a dated, attributed notification on the affected party's side (4 new registry events + `customer_transferred` reaching the customer + `policy_updated`/`policy_removed` reaching grant-holding advisors); guard `effects-on-a-record-are-told` reads its universe from THIS row, so an eighth entry fails until wired |
 | 2 — actor not declared | I-03, I-07, I-10, I-11, I-12, I-14, I-16, I-21 | `notifications` has no actor column: decide schema (halt: migration) or copy-level attribution |
 | 3 — misleading | I-08 (status vs badge), I-09 (registry says owner, code says agent) | one truth per fact; registry corrected or code corrected |
 | 4 — half-failure unspecified | I-03 (grant/relationship/emit not one transaction), I-09, I-13 | a specified state per interaction |

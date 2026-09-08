@@ -1,9 +1,9 @@
 "use server"
 
 import { storedDocumentLabel } from "@/lib/wallet/document-label"
-import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { displayPersonName, policyLabel } from "@/lib/wallet/policy-identity"
 import { db } from "@/lib/db"
-import { emit } from "@/lib/notifications/dispatch"
+import { emit, emitToMany } from "@/lib/notifications/dispatch"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { INSURANCE_BRANCHES, normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -490,6 +490,39 @@ export async function confirmPolicyReview(policyId: string, edits: ConfirmReview
         logger('error', 'Gap recompute after review confirm failed', { policyId, error: e?.message })
     }
 
+    // The owner's record was just OVERWRITTEN by someone else: insurer, number,
+    // dates, premium and sum insured take the agent's values, and the
+    // «unverified» badge goes away because a person vouched for them. The
+    // person whose record it is heard nothing about it (PW-BRIDGE-01 I-08).
+    // Skipped when the owner confirmed their own policy — this action is
+    // agent-only today, but the guard is cheap and the rule is the same one
+    // updatePolicy follows. Best-effort: the write has committed.
+    if (policy.ownerUserId !== dbUser.id) {
+        try {
+            const actorName = displayPersonName(dbUser.name)
+            const label = policyLabel({
+                insurerName: (columnData as { insurerName?: string }).insurerName ?? policy.insurerName,
+                policyNumber: input.policyNumber || policy.policyNumber,
+            })
+            await emit({
+                event: "policy_details_confirmed",
+                userId: policy.ownerUserId,
+                title: {
+                    el: "Τα στοιχεία του ασφαλιστηρίου σας επιβεβαιώθηκαν",
+                    en: "Your policy's details were confirmed",
+                },
+                message: {
+                    el: `${actorName || "Ο σύμβουλός σας"} έλεγξε και επιβεβαίωσε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : ""}. Μπορείτε να τα δείτε και να τα διορθώσετε.`,
+                    en: `${actorName || "Your advisor"} reviewed and confirmed the details${label ? ` on policy ${label}` : ""}. You can see them and correct them.`,
+                },
+                relatedObjectType: "policy",
+                relatedObjectId: policyId,
+            })
+        } catch (e: any) {
+            logger('error', 'Review-confirmed notification failed', { policyId, error: e?.message })
+        }
+    }
+
     revalidatePath("/wallet")
     revalidatePath(`/wallet/${policyId}`)
     revalidatePath(`/customers/${policy.ownerUserId}/policy/${policyId}`)
@@ -761,6 +794,37 @@ export async function updatePolicy(policyId: string, formData: FormData) {
         // someone else is something the owner should hear about rather than
         // discover. Skipped when the owner is the one who just made the edit —
         // telling someone what they did ten seconds ago is noise.
+        // ...and tell the ADVISORS who hold a grant over it. Their book changed
+        // under them: the cover, dates or premium they are working from are no
+        // longer the ones on screen, and `policy_updated` reached only the owner
+        // (PW-BRIDGE-01 I-22). The actor is excluded either way.
+        try {
+            const { getPolicyGranteeUserIds } = await import("@/lib/agent-visibility")
+            const grantees = await getPolicyGranteeUserIds(policyId, authResult.dbUser.id)
+            if (grantees.length > 0) {
+                const actorName = displayPersonName(authResult.dbUser.name)
+                const label = policyLabel({
+                    insurerName: (data as { insurerName?: string }).insurerName ?? null,
+                    policyNumber: (data as { policyNumber?: string }).policyNumber ?? null,
+                })
+                await emitToMany(grantees, {
+                    event: "policy_updated",
+                    title: {
+                        el: "Ένα κοινοποιημένο ασφαλιστήριο ενημερώθηκε",
+                        en: "A shared policy was updated",
+                    },
+                    message: {
+                        el: `${actorName || "Ο πελάτης"} άλλαξε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : " ενός ασφαλιστηρίου"} που βλέπετε.`,
+                        en: `${actorName || "The client"} changed the details${label ? ` on policy ${label}` : " on a policy"} you can see.`,
+                    },
+                    relatedObjectType: "policy",
+                    relatedObjectId: policyId,
+                })
+            }
+        } catch (e: any) {
+            logger('error', 'Policy-updated notification to grantees failed', { policyId, error: e?.message })
+        }
+
         const ownerUserId = (updated as { ownerUserId?: string } | null)?.ownerUserId
         if (ownerUserId && ownerUserId !== authResult.dbUser.id) {
             await emit({
@@ -1200,13 +1264,45 @@ export async function revokeShare(grantId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    await db.accessGrant.update({
+    const grant = await db.accessGrant.update({
         where: { id: grantId, granterUserId: authResult.dbUser.id },
-        data: { status: 'revoked', revokedAt: new Date() }
+        data: { status: 'revoked', revokedAt: new Date() },
+        select: { granteeUserId: true, scope: true },
     })
 
+    // The grantee loses sight of the policy this instant. Until now nothing
+    // said so: it simply stopped appearing in their book, which is
+    // indistinguishable from a bug (PW-BRIDGE-01 I-04). Best-effort — the
+    // revocation has already committed and is the part that matters.
+    try {
+        const policyId = grant.scope?.startsWith("policy:") ? grant.scope.slice("policy:".length) : null
+        const policy = policyId
+            ? await db.policy.findUnique({ where: { id: policyId }, select: { policyNumber: true, insurerName: true } })
+            : null
+        const granterName = displayPersonName(authResult.dbUser.name)
+        const label = policy ? policyLabel(policy) : null
+        await emit({
+            event: "policy_share_revoked",
+            userId: grant.granteeUserId,
+            title: {
+                el: "Η πρόσβαση σε ένα ασφαλιστήριο ανακλήθηκε",
+                en: "Access to a policy was withdrawn",
+            },
+            message: {
+                el: `${granterName || "Ο πελάτης"} ανακάλεσε την πρόσβασή σας${label ? ` στο ασφαλιστήριο ${label}` : ""}.`,
+                en: `${granterName || "The client"} withdrew your access${label ? ` to policy ${label}` : ""}.`,
+            },
+            ...(policyId ? { relatedObjectType: "policy" as const, relatedObjectId: policyId } : {}),
+            dedupeKey: `policy_share_revoked:${grantId}`,
+        })
+    } catch (e: any) {
+        logger('error', 'Share-revoked notification failed', { grantId, error: e?.message })
+    }
+
     revalidatePath("/wallet")
-    revalidatePath("/wallet")
+    // The agent's own list is cached separately; without this their book can
+    // still show a policy they can no longer open until their next render.
+    revalidatePath("/customers")
     return { success: true }
 }
 
@@ -1236,6 +1332,17 @@ export async function deletePolicy(policyId: string) {
         id: authResult.dbUser.id,
         roles: authResult.dbUser.roles,
     })
+
+    // Who can currently see this policy, read BEFORE anything is deleted — the
+    // grants go with the row, so after the delete there is nobody left to tell.
+    const granteesBeforeDelete = await (async () => {
+        try {
+            const { getPolicyGranteeUserIds } = await import("@/lib/agent-visibility")
+            return await getPolicyGranteeUserIds(policyId, authResult.dbUser.id)
+        } catch {
+            return [] as string[]
+        }
+    })()
 
     // Case 1: Owner or managing agent (active "manage" grant) - Full Delete.
     // The owner controls this capability: revoking the manage grant removes it.
@@ -1283,6 +1390,30 @@ export async function deletePolicy(policyId: string) {
             insurerName: policy.insurerName,
             policyNumber: policy.policyNumber,
         })
+
+        // Tell the ADVISORS who could see it, too. Deleting a policy removes it
+        // from their book with no explanation otherwise, which is the same
+        // silence a revoked share used to leave (PW-BRIDGE-01 I-22). Collected
+        // before the row is gone; the actor is excluded.
+        try {
+            if (granteesBeforeDelete.length > 0) {
+                const actorName = displayPersonName(authResult.dbUser.name)
+                await emitToMany(granteesBeforeDelete, {
+                    event: "policy_removed",
+                    title: {
+                        el: "Ένα κοινοποιημένο ασφαλιστήριο διαγράφηκε",
+                        en: "A shared policy was removed",
+                    },
+                    message: {
+                        el: `${actorName || "Ο πελάτης"} διέγραψε το ασφαλιστήριο ${policyLabel(policy)}. Δεν εμφανίζεται πλέον στον κατάλογό σας.`,
+                        en: `${actorName || "The client"} deleted policy ${policyLabel(policy)}. It no longer appears in your book.`,
+                    },
+                    dedupeKey: `policy_removed:${policyId}`,
+                })
+            }
+        } catch (e: any) {
+            logger('error', 'Policy-removed notification to grantees failed', { policyId, error: e?.message })
+        }
 
         // Tell the owner their policy is gone — HIGH, and emailed, because it
         // is destructive and may not have been them: a managing agent with a

@@ -13,6 +13,9 @@ import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLin
 import { describeCatalogueStaleness } from "@/lib/gaps/composition"
 import { getTranslations } from "@/lib/i18n"
 import { readLiveGapRows } from "@/lib/gaps/gap-rows"
+import { emit } from "@/lib/notifications/dispatch"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { logger } from "@/lib/logger"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
@@ -159,6 +162,40 @@ export const GET = withApiGuard(
             prePlan,
             staleCatalogue
         )
+
+        // A document about this person's cover now exists in someone else's
+        // hands — including findings that are still under review — and until now
+        // their side held no record that it was ever produced (PW-BRIDGE-01
+        // I-17). A read path changes nothing, so this is a trace to look back
+        // on rather than an alert: in-app only, and deduped per policy per day
+        // so regenerating the same report does not become a stream. Best-effort
+        // — the report is already rendered and must still be returned.
+        if (policy.ownerUserId && policy.ownerUserId !== agentId) {
+            try {
+                const day = new Date().toISOString().slice(0, 10)
+                const agentName = displayPersonName(authResult.dbUser.name)
+                await emit({
+                    event: "branded_report_generated",
+                    userId: policy.ownerUserId,
+                    title: {
+                        el: "Δημιουργήθηκε αναφορά για ασφαλιστήριό σας",
+                        en: "A report about your policy was produced",
+                    },
+                    message: {
+                        el: `${agentName || "Ο σύμβουλός σας"} δημιούργησε μια αναφορά με βάση τα ευρήματα αυτού του ασφαλιστηρίου.`,
+                        en: `${agentName || "Your advisor"} produced a report based on this policy's findings.`,
+                    },
+                    relatedObjectType: "policy",
+                    relatedObjectId: policyId,
+                    dedupeKey: `branded_report_generated:${policyId}:${day}`,
+                })
+            } catch (e) {
+                logger("error", "Branded-report notification failed", {
+                    policyId,
+                    error: e instanceof Error ? e.message : String(e),
+                })
+            }
+        }
 
         return new Response(html, {
             headers: {

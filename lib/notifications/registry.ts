@@ -320,7 +320,9 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         category: "policy",
         priority: "normal",
         channels: EMAIL_LED,
-        recipients: ["owner"],
+        // The owner, and the advisors holding a live grant over the policy: the
+        // record they are working from just changed under them (PW-BRIDGE-01 I-22).
+        recipients: ["owner", "advisor"],
         transactional: true,
         requiredAction: "review_change",
         escalation: null,
@@ -341,7 +343,9 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         category: "policy",
         priority: "high",
         channels: EMAIL_LED,
-        recipients: ["owner"],
+        // ...and the advisors who could see it: it leaves their book too, and an
+        // unexplained disappearance is indistinguishable from a bug (I-22).
+        recipients: ["owner", "advisor"],
         transactional: true,
         requiredAction: null,
         escalation: null,
@@ -372,6 +376,28 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         audit: "activity_log",
         status: "live",
         emittedBy: "lib/services/policy.service.ts",
+    },
+
+    policy_share_revoked: {
+        businessEvent: "A policy share was withdrawn",
+        copy: {
+            title: { el: "Η πρόσβαση σε ένα ασφαλιστήριο ανακλήθηκε", en: "Access to a policy was withdrawn" },
+            message: { el: "Δεν έχετε πλέον πρόσβαση σε ένα ασφαλιστήριο πελάτη σας.", en: "You no longer have access to a client's policy." },
+        },
+        triggerCondition: "revokeShare() sets an AccessGrant to revoked",
+        category: "policy",
+        priority: "normal",
+        channels: EMAIL_LED,
+        recipients: ["counterparty"],
+        transactional: true,
+        requiredAction: null,
+        escalation: null,
+        retry: STANDARD_RETRY,
+        expiresAfterHours: 30 * DAY,
+        audit: "activity_log",
+        status: "live",
+        emittedBy: "app/(protected)/wallet/actions.ts",
+        note: "The mirror of policy_shared, and declared for the same reason: the moment someone stops being able to see a policy is as much a fact about the arrangement as the moment they started. Without it the policy simply vanished from the advisor's book (PW-BRIDGE-01 I-04).",
     },
 
     policy_merged: {
@@ -1078,6 +1104,72 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         audit: "activity_log",
         status: "live",
         emittedBy: "lib/services/team.service.ts",
+    },
+
+    advisor_relationship_ended: {
+        businessEvent: "An advisor and a customer were disconnected",
+        copy: {
+            title: { el: "Η συνεργασία τερματίστηκε", en: "The connection has ended" },
+            message: { el: "Η σύνδεση συμβούλου και πελάτη τερματίστηκε και η πρόσβαση σταμάτησε.", en: "The advisor and client connection ended, and access has stopped." },
+        },
+        triggerCondition: "CustomerRelationship becomes terminated, from either side",
+        category: "advisory",
+        priority: "high",
+        channels: EMAIL_LED,
+        recipients: ["owner", "advisor"],
+        transactional: true,
+        requiredAction: null,
+        escalation: null,
+        retry: STANDARD_RETRY,
+        expiresAfterHours: 30 * DAY,
+        audit: "activity_log",
+        status: "live",
+        emittedBy: "app/(protected)/agent/relationship-actions.ts",
+        note: "The exact inverse of advisor_assigned, and transactional for the same reason: if the moment another person GAINS sight of your policies is one you are entitled to know about, so is the moment it ends — whichever side ended it. Emitted to the party who did NOT act; telling someone what they just did is noise (PW-BRIDGE-01 I-05, I-06).",
+    },
+
+    policy_details_confirmed: {
+        businessEvent: "An advisor confirmed the extracted values on a policy",
+        copy: {
+            title: { el: "Τα στοιχεία του ασφαλιστηρίου σας επιβεβαιώθηκαν", en: "Your policy's details were confirmed" },
+            message: { el: "Ο σύμβουλός σας έλεγξε και επιβεβαίωσε τα στοιχεία που διαβάστηκαν από το έγγραφο.", en: "Your advisor reviewed and confirmed the details read from the document." },
+        },
+        triggerCondition: "confirmPolicyReview() commits, with an agent as the actor",
+        category: "policy",
+        priority: "normal",
+        channels: EMAIL_LED,
+        recipients: ["owner"],
+        transactional: true,
+        requiredAction: "review_change",
+        escalation: null,
+        retry: STANDARD_RETRY,
+        expiresAfterHours: 30 * DAY,
+        audit: "activity_log",
+        status: "live",
+        emittedBy: "app/(protected)/wallet/actions.ts",
+        note: "Confirming a review OVERWRITES the owner's insurerName, policyNumber, dates, premium and sum insured, and removes the «unverified» badge — the record becomes authoritative because a person said so. The person whose record it is was told nothing (PW-BRIDGE-01 I-08). Same class as policy_updated, which is why it carries the same review action.",
+    },
+
+    branded_report_generated: {
+        businessEvent: "An advisor generated a branded report about a customer's policy",
+        copy: {
+            title: { el: "Δημιουργήθηκε αναφορά για ασφαλιστήριό σας", en: "A report about your policy was produced" },
+            message: { el: "Ο σύμβουλός σας δημιούργησε μια αναφορά με βάση τα ευρήματα αυτού του ασφαλιστηρίου.", en: "Your advisor produced a report based on this policy's findings." },
+        },
+        triggerCondition: "The branded-report route renders a report for a policy the agent can see",
+        category: "advisory",
+        priority: "normal",
+        channels: IN_APP_ONLY,
+        recipients: ["owner"],
+        transactional: false,
+        requiredAction: null,
+        escalation: null,
+        retry: NO_RETRY,
+        expiresAfterHours: 30 * DAY,
+        audit: "activity_log",
+        status: "live",
+        emittedBy: "app/api/v1/agent/policies/[id]/branded-report/route.ts",
+        note: "A read path, so it changes nothing — but a document about someone's cover now exists in someone else's hands, including findings still under review, and the person it describes had no record of it (PW-BRIDGE-01 I-17). In-app only and deduped per policy per day: this is a trace to look back on, not an alert.",
     },
 
     proposal_received: {

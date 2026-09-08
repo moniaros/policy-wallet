@@ -1,0 +1,35 @@
+// PROBE (never compiled): an action that changes someone else's record and
+// tells them nothing — the shape of every PW-BRIDGE-01 tier-1 interaction
+// before Queue B. Kept red so the detector is proven to bite.
+
+export async function revokeShare(grantId: string) {
+    // Access ends here, and the grantee is never told.
+    await db.accessGrant.update({
+        where: { id: grantId },
+        data: { status: "revoked", revokedAt: new Date() },
+    })
+    revalidatePath("/wallet")
+    return { success: true }
+}
+
+export async function confirmPolicyReview(policyId: string) {
+    // The owner's columns are overwritten by an agent; no emit anywhere.
+    await db.policy.update({ where: { id: policyId }, data: { insurerName: "X" } })
+    return { success: true }
+}
+
+// The counter-example: the same action, told. The detector must NOT flag this.
+export async function revokeShareTold(grantId: string) {
+    const grant = await db.accessGrant.update({
+        where: { id: grantId },
+        data: { status: "revoked" },
+        select: { granteeUserId: true },
+    })
+    await emit({
+        event: "policy_share_revoked",
+        userId: grant.granteeUserId,
+        title: { el: "…", en: "…" },
+        message: { el: "…", en: "…" },
+    })
+    return { success: true }
+}
