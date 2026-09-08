@@ -1,4 +1,5 @@
 import { withApiGuard } from "@/lib/api-guard"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { notifyCounterparty } from "@/lib/notifications"
@@ -90,6 +91,9 @@ export const PATCH = withApiGuard(
         // Break the silent handoff: when the customer uploads the requested
         // document, tell the agent who asked for it (they may have moved on).
         if (body.uploadedDocumentUrl && isClient) {
+            // Named, not «ο πελάτης»: an advisor with a book needs to know WHICH
+            // client answered (PW-BRIDGE-01 I-16, tier 2).
+            const uploaderName = displayPersonName(auth!.dbUser.name)
             await notifyCounterparty({
                 userId: documentRequest.relationship.agentUserId,
                 eventType: "document_uploaded",
@@ -98,8 +102,8 @@ export const PATCH = withApiGuard(
                     en: "Your client uploaded the requested document",
                 },
                 message: {
-                    el: `Παραλήφθηκε: ${documentRequest.documentType}.`,
-                    en: `Received: ${documentRequest.documentType}.`,
+                    el: `${uploaderName || "Ο πελάτης"} ανέβασε: ${documentRequest.documentType}.`,
+                    en: `${uploaderName || "Your client"} uploaded: ${documentRequest.documentType}.`,
                 },
                 relatedObjectType: "thread",
                 relatedObjectId: documentRequest.threadId,

@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
@@ -100,7 +101,10 @@ export const POST = withApiGuard(
             return { thread, documentRequest }
         })
 
-        // Break the silent handoff: tell the customer their advisor needs a document.
+        // Break the silent handoff: tell the customer their advisor needs a
+        // document — and NAME them. «Ο σύμβουλός σας» is a role, not an actor,
+        // and a person asked for this (PW-BRIDGE-01 I-16, tier 2).
+        const requesterName = displayPersonName(auth!.dbUser.name)
         await notifyCounterparty({
             userId: relationship.policyholderUserId,
             eventType: "document_requested",
@@ -109,8 +113,8 @@ export const POST = withApiGuard(
                 en: "Your advisor requested a document",
             },
             message: {
-                el: `Απαιτείται: ${documentType}. Ανεβάστε το για να συνεχίσει η ομάδα σας.`,
-                en: `Requested: ${documentType}. Upload it so your advisor can proceed.`,
+                el: `${requesterName || "Ο σύμβουλός σας"} ζήτησε: ${documentType}. Ανεβάστε το για να συνεχίσει η ομάδα σας.`,
+                en: `${requesterName || "Your advisor"} requested: ${documentType}. Upload it so they can proceed.`,
             },
             relatedObjectType: "thread",
             relatedObjectId: result.thread.id,

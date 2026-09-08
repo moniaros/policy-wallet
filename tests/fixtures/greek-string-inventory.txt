@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3717
-# inline entries: 4899 across 221 files
+# inline entries: 4907 across 222 files
 # ternary entries: 288 across 42 files
 # call entries: 1144 across 86 files
 
@@ -3920,10 +3920,10 @@ inline	app/(protected)/wallet/actions.ts	'Νέο ασφαλιστήριο κοι
 inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο πελάτης"} άλλαξε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : " ενός ασφαλιστηρίου"} που βλέπετε.`
 inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο πελάτης"} διέγραψε το ασφαλιστήριο ${policyLabel(policy)}. Δεν εμφανίζεται πλέον στον κατάλογό σας.`
 inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο σύμβουλός σας"} έλεγξε και επιβεβαίωσε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : ""}. Μπορείτε να τα δείτε και να τα διορθώσετε.`
-inline	app/(protected)/wallet/actions.ts	`${authResult.dbUser.name || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(agent.name) || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`
+inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(dbUser.name) || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`
 inline	app/(protected)/wallet/actions.ts	`${flaggerName || "Ο σύμβουλός σας"} επισήμανε ότι η αυτόματη ανάγνωση του ασφαλιστηρίου ${policy.policyNumber} χρειάζεται έλεγχο${trimmedReason ? `: ${trimmedReason}` : "."}`
 inline	app/(protected)/wallet/actions.ts	`${granterName || "Ο πελάτης"} ανακάλεσε την πρόσβασή σας${label ? ` στο ασφαλιστήριο ${label}` : ""}.`
@@ -4045,9 +4045,9 @@ inline	app/(public)/trust/TrustSections.tsx	"Χρησιμοποιούνται τ
 inline	app/api/v1/agent/policies/[id]/branded-report/route.ts	"Δημιουργήθηκε αναφορά για ασφαλιστήριό σας"
 inline	app/api/v1/agent/policies/[id]/branded-report/route.ts	`${agentName || "Ο σύμβουλός σας"} δημιούργησε μια αναφορά με βάση τα ευρήματα αυτού του ασφαλιστηρίου.`
 inline	app/api/v1/collaboration/document-requests/[id]/route.ts	"Ο πελάτης ανέβασε το έγγραφο που ζητήσατε"
-inline	app/api/v1/collaboration/document-requests/[id]/route.ts	`Παραλήφθηκε: ${documentRequest.documentType}.`
+inline	app/api/v1/collaboration/document-requests/[id]/route.ts	`${uploaderName || "Ο πελάτης"} ανέβασε: ${documentRequest.documentType}.`
 inline	app/api/v1/collaboration/document-requests/route.ts	"Ο σύμβουλός σας ζήτησε ένα έγγραφο"
-inline	app/api/v1/collaboration/document-requests/route.ts	`Απαιτείται: ${documentType}. Ανεβάστε το για να συνεχίσει η ομάδα σας.`
+inline	app/api/v1/collaboration/document-requests/route.ts	`${requesterName || "Ο σύμβουλός σας"} ζήτησε: ${documentType}. Ανεβάστε το για να συνεχίσει η ομάδα σας.`
 inline	app/api/v1/collaboration/proposals/[id]/route.ts	"Ελήφθη αντιπρόταση"
 inline	app/api/v1/collaboration/proposals/[id]/route.ts	"Η πρόταση έγινε αποδεκτή"
 inline	app/api/v1/collaboration/proposals/[id]/route.ts	"Η πρόταση απορρίφθηκε"
@@ -4065,6 +4065,14 @@ inline	app/api/v1/recommendations/[id]/route.ts	"Η πρόταση απορρί�
 inline	app/api/v1/recommendations/[id]/route.ts	"Η πρόταση δρομολογήθηκε."
 inline	app/api/v1/recommendations/[id]/route.ts	"Προχωρήσατε μια πρόταση"
 inline	app/api/v1/recommendations/[id]/route.ts	parsed.data.reason
+inline	app/auth/actions.ts	"Ένα ασφαλιστήριο κοινοποιήθηκε μαζί σας"
+inline	app/auth/actions.ts	"Η κοινοποίηση ενεργοποιήθηκε"
+inline	app/auth/actions.ts	"Νέος πελάτης συνδέθηκε"
+inline	app/auth/actions.ts	"Συνδεθήκατε με σύμβουλο"
+inline	app/auth/actions.ts	`${advisorName || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
+inline	app/auth/actions.ts	`${customerName || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
+inline	app/auth/actions.ts	`${granteeName || "Ο σύμβουλός σας"} αποδέχτηκε και βλέπει πλέον το ασφαλιστήριο. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
+inline	app/auth/actions.ts	`${granterName || "Ένας πελάτης"} σας έδωσε πρόσβαση σε ένα ασφαλιστήριο.`
 inline	app/auth/forgot-password/page.tsx	"Δώστε ένα έγκυρο email"
 inline	app/auth/reset-password/page.tsx	"Αποθήκευση νέου κωδικού"
 inline	app/auth/reset-password/page.tsx	"Αποθήκευση..."
