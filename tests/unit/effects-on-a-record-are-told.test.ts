@@ -438,3 +438,70 @@ describe("tiers 2 and 5: the actor is named, and passive is a decision", () => {
         expect(/displayPersonName\(/.test(announce!), "each side is named").toBe(true)
     })
 })
+
+/**
+ * Queue C: the report is the THIRD surface, and it may not contradict the other
+ * two by omission.
+ *
+ * A report that lists findings while saying nothing about what was checked, or
+ * about whether a person has confirmed the record, implies a completeness the
+ * app never claims — and an advisor hands it to a customer.
+ */
+const REPORT_ROUTES = [
+    "app/api/v1/agent/policies/[id]/branded-report/route.ts",
+    "app/api/v1/policies/[id]/savings-report/route.ts",
+]
+
+describe("Queue C: the report says what the app says", () => {
+    const generator = "lib/services/reports/savings-report.ts"
+
+    it("C-04: the report renders the composition's two lines, from the app's own copy keys", () => {
+        const src = readFileSync(path.join(ROOT, generator), "utf8")
+        expect(src, "the coverage line").toMatch(/data-fact="composition\.coverage"/)
+        expect(src, "the recording line").toMatch(/data-fact="composition\.recording"/)
+        // Same translation bundle as components/gaps/CoverageComposition — a
+        // second wording is a second truth.
+        expect(src).toMatch(/composition\.\$\{k\}|`composition\.\$/)
+        expect(src, "the denominators must come from the composition, not be recomputed").toMatch(
+            /coverage\.checked|recording\.checked/
+        )
+    })
+
+    it("C-03: the report states the record's state unless a person has confirmed it", () => {
+        const src = readFileSync(path.join(ROOT, generator), "utf8")
+        expect(src).toMatch(/data-fact="record\.status"/)
+        expect(src, "the app's own labels").toMatch(/recordStatus\.awaitingConfirmation/)
+        expect(
+            src,
+            "and the framing that the status describes the RECORD, not the person's insurance"
+        ).toMatch(/recordStatus\.describesRecord/)
+    })
+
+    it("C-05: findings still under review are labelled, never counted", () => {
+        const src = readFileSync(path.join(ROOT, generator), "utf8")
+        expect(src, "they are excluded from the listed findings").toMatch(/excludeUnderReview\(/)
+        expect(src, "and the report says so").toMatch(/underReviewOmitted/)
+    })
+
+    it.each(REPORT_ROUTES)("%s builds its report from the one shared context", (route) => {
+        const src = readFileSync(path.join(ROOT, route), "utf8")
+        expect(
+            src,
+            "both reports read buildReportContext — building the inputs inline, twice, is how the report drifted from the app in the first place"
+        ).toMatch(/buildReportContext\(/)
+        expect(src, "and pass the composition and the record status through").toMatch(/ctx\.composition/)
+        expect(src).toMatch(/ctx\.recordStatus/)
+    })
+
+    it("C-08: the registry's recipients and the code agree on extraction_flagged", () => {
+        const def = NOTIFICATION_EVENTS["extraction_flagged"]
+        expect(def.recipients).toContain("owner")
+        const src = readFileSync(path.join(ROOT, "app/(protected)/wallet/actions.ts"), "utf8")
+        const body = functionBody(src, "flagPolicyExtraction")
+        const call = emitCallFor(body!, "extraction_flagged")
+        expect(
+            /userId:\s*policy\.ownerUserId/.test(call!),
+            "the registry is documentation the loop must keep true (PARITY E4)"
+        ).toBe(true)
+    })
+})

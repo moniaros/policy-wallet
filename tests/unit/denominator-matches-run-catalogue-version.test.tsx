@@ -62,8 +62,16 @@ describe("Goal 4 — denominator = the run's plan, whatever the current catalogu
         const html = generateSavingsReportHtml({ metadata: {}, gapResults: [] }, new Date().toISOString(), "el", undefined, [], null, null, stale ? { dateLabel: stale.runDateLabel } : null)
         expect(html).toMatch(/data-composition-state="stale_catalogue"/)
         expect(html).toContain(DATE)
+        // Both reports build their inputs in ONE place now (PW-BRIDGE-01 C-03/C-04),
+        // so the staleness is asserted where it is computed, and the routes are
+        // asserted to use it. Re-pointed, never deleted.
+        expect(readFileSync("lib/services/reports/report-context.ts", "utf8")).toMatch(
+            /describeCatalogueStaleness\(run\.attemptedRules/
+        )
         for (const route of ["app/api/v1/agent/policies/[id]/branded-report/route.ts", "app/api/v1/policies/[id]/savings-report/route.ts"]) {
-            expect(readFileSync(route, "utf8"), route).toMatch(/describeCatalogueStaleness\(run\.attemptedRules/)
+            const src = readFileSync(route, "utf8")
+            expect(src, route).toMatch(/buildReportContext\(/)
+            expect(src, route).toMatch(/ctx\.staleCatalogue/)
         }
         for (const page of ["app/(protected)/wallet/[id]/page.tsx", "app/(protected)/customers/[id]/policy/[policyId]/page.tsx"]) {
             const src = readFileSync(page, "utf8")

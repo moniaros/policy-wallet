@@ -5,6 +5,7 @@ import { z } from "zod"
 import { canUserUseFeature } from "@/lib/subscription-limits"
 import { getPolicyAccess } from "@/lib/policy-access"
 import { generateSavingsReportHtml } from "@/lib/services/reports/savings-report"
+import { buildReportContext } from "@/lib/services/reports/report-context"
 import { attemptedRuleCountOf, describeFindingsProvenance, findingsProvenanceLine, formatProvenanceDate } from "@/lib/gaps/findings-provenance"
 import { describeCatalogueStaleness } from "@/lib/gaps/composition"
 import { getTranslations } from "@/lib/i18n"
@@ -57,16 +58,11 @@ export const GET = withApiGuard(
         }
 
         // Get latest completed analysis
-        const run = await db.policyAnalysisRun.findFirst({
-            where: {
-                policyId,
-                status: { in: ["completed", "completed_with_warnings"] },
-            },
-            orderBy: { finishedAt: "desc" },
-            select: { resultJson: true, finishedAt: true, attemptedRules: true },
-        })
-
-        if (!run?.resultJson) {
+        // One context, shared with the agent's branded report, so the two
+        // documents cannot drift from each other or from the app (C-03/C-04).
+        const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
+        const ctx = await buildReportContext({ policyId, language })
+        if (!ctx) {
             return createApiError(
                 "NOT_FOUND",
                 "No completed analysis found for this policy. Run an analysis first.",
@@ -74,48 +70,17 @@ export const GET = withApiGuard(
             )
         }
 
-        // The gaps the rules decided. A GapInstance row cannot exist unless a rule
-        // produced it, so its presence IS the detection — there is no isDetected flag
-        // to filter on, and the report must not infer findings from the AI prose bag.
-        const decidedGaps = await readLiveGapRows({ scope: "disclosed",
-            where: { policyId, status: "open", supersededAt: null },
-            select: { severity: true, analysisRunId: true, analysisRun: { select: { finishedAt: true } }, definition: { select: { slug: true } } },
-        })
-
-        // B0.3: the report names the run its findings came from and states a
-        // failed latest attempt — the prose run and the rows' run can differ.
-        const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
-        const latestAttempt = await db.policyAnalysisRun.findFirst({
-            where: { policyId },
-            orderBy: { createdAt: "desc" },
-            select: { id: true, status: true, finishedAt: true, createdAt: true, attemptedRules: true },
-        })
-        const provenance = findingsProvenanceLine(
-            describeFindingsProvenance(
-                decidedGaps.map((g) => ({ analysisRunId: g.analysisRunId, runFinishedAt: g.analysisRun?.finishedAt ?? null })),
-                latestAttempt ? { ...latestAttempt, attemptedRuleCount: attemptedRuleCountOf(latestAttempt.attemptedRules) } : null,
-                { id: "prose-run", status: "completed", finishedAt: run.finishedAt }
-            ),
-            getTranslations(language).gapProvenance,
-            language
-        )
-
-        // V3: a completed run that predates the catalogue plan cannot state what it checked.
-        const prePlan = Array.isArray((run.attemptedRules as { slugs?: unknown } | null)?.slugs)
-            ? null
-            : { dateLabel: formatProvenanceDate(run.finishedAt ?? null, language) }
-        // Goal 4: checks added after this run — the findings stand, dated; a new analysis would include them.
-        const staleness = describeCatalogueStaleness(run.attemptedRules, formatProvenanceDate(run.finishedAt ?? null, language))
-        const staleCatalogue = staleness ? { dateLabel: staleness.runDateLabel } : null
         const html = generateSavingsReportHtml(
-            run.resultJson as Record<string, any>,
-            run.finishedAt?.toISOString() ?? new Date().toISOString(),
+            ctx.resultJson as Record<string, any>,
+            ctx.finishedAt?.toISOString() ?? new Date().toISOString(),
             language,
             undefined,
-            decidedGaps.map((g) => ({ slug: g.definition.slug, severity: g.severity })),
-            provenance,
-            prePlan,
-            staleCatalogue
+            ctx.gaps,
+            ctx.provenance,
+            ctx.prePlan,
+            ctx.staleCatalogue,
+            ctx.composition,
+            ctx.recordStatus
         )
 
         return new Response(html, {
