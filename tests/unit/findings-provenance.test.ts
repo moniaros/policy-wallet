@@ -160,7 +160,13 @@ describe("the four named surfaces render the provenance line", () => {
 
     it("the B2B report carries it, from both routes", () => {
         expect(read("lib/services/reports/savings-report.ts")).toMatch(/findings-provenance/)
-        expect(read("app/api/v1/agent/policies/[id]/branded-report/route.ts")).toMatch(/describeFindingsProvenance\(/)
-        expect(read("app/api/v1/policies/[id]/savings-report/route.ts")).toMatch(/describeFindingsProvenance\(/)
+        // The provenance line is built once, in the context both reports read
+        // (PW-BRIDGE-01 C-03/C-04) — asserted where it is built, and at both
+        // routes that carry it through.
+        expect(read("lib/services/reports/report-context.ts")).toMatch(/describeFindingsProvenance\(/)
+        for (const route of ["app/api/v1/agent/policies/[id]/branded-report/route.ts", "app/api/v1/policies/[id]/savings-report/route.ts"]) {
+            expect(read(route), route).toMatch(/buildReportContext\(/)
+            expect(read(route), route).toMatch(/ctx\.provenance/)
+        }
     })
 })

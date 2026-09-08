@@ -11,6 +11,8 @@ import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrency, resolveLocale } from "@/lib/i18n/format"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { excludeUnderReview, provenanceCitation } from "@/lib/gaps/provenance"
+import type { Composition } from "@/lib/gaps/composition"
+import type { RecordStatusResult } from "@/lib/wallet/record-status"
 import type { ProvenanceLine } from "@/lib/gaps/findings-provenance"
 
 /** Resolve a dotted i18n key ("dashboard.home.recPriorityCritical") from the store. */
@@ -98,7 +100,23 @@ export function generateSavingsReportHtml(
     /** V3: the run predates the catalogue plan — what was checked cannot be stated. Never a composition in a report. */
     prePlan: { dateLabel: string | null } | null = null,
     /** Goal 4: the catalogue moved on after this run — the findings stand, dated, and a new analysis would include the added checks. */
-    staleCatalogue: { dateLabel: string | null } | null = null
+    staleCatalogue: { dateLabel: string | null } | null = null,
+    /**
+     * B2: what the rules actually checked, two lines with their denominators —
+     * the SAME measurement the policy page renders (PW-BRIDGE-01 C-04). A report
+     * that lists findings without it implies a completeness the app never claims.
+     * When a real composition is passed it also carries its own stale sentence,
+     * so the standalone `staleCatalogue` caveat is suppressed to avoid saying it
+     * twice.
+     */
+    composition: Composition | null = null,
+    /**
+     * B1: where the work on this record has got to (PW-BRIDGE-01 C-03). A report
+     * whose underlying record is «Προς επιβεβαίωση» must say so — an advisor
+     * hands this to a customer, and the values in it may still be the machine's
+     * reading of the document rather than anything a person has checked.
+     */
+    recordStatus: RecordStatusResult | null = null
 ): string {
     const loc = (val: any) => localized(val, language)
     const metadata = resultJson.metadata ?? {}
@@ -173,6 +191,73 @@ export function generateSavingsReportHtml(
     const provenanceBlock = provenance
         ? `<h2>${escapeHtml(resolveReportKey(language, "gapProvenance.label"))}</h2>\n<div class="section-caveat" data-provenance-state="${escapeHtml(provenance.state)}">${escapeHtml(provenance.text)}</div>`
         : ""
+    // ── The two lines the app renders, in the report (C-04) ──────────────
+    //
+    // Same translation keys as components/gaps/CoverageComposition, so the
+    // wording cannot drift between the screen and the document. `pre_plan`,
+    // `unauthored` and `no_run` are already covered by the caveats below; only a
+    // real composition adds anything here.
+    const compositionBlock = (() => {
+        if (composition?.kind !== "composition") return ""
+        const key = (k: string) => resolveReportKey(language, `composition.${k}`)
+        const fill = (t: string, vars: Record<string, string | number>) =>
+            Object.entries(vars).reduce((acc, [k, v]) => acc.split(`{${k}}`).join(String(v)), t)
+        const { coverage, recording } = composition
+        const lines: string[] = []
+        if (coverage.checked > 0) {
+            const lead = coverage.checked === 1 ? key("coverageCheckedOne") : fill(key("coverageChecked"), { checked: coverage.checked })
+            const detail =
+                coverage.indeterminate === coverage.checked
+                    ? fill(key("allIndeterminate"), { count: coverage.indeterminate })
+                    : [
+                          fill(key("covered"), { count: coverage.covered }),
+                          fill(key("notCovered"), { count: coverage.notCovered }),
+                          ...(coverage.indeterminate > 0 ? [fill(key("indeterminate"), { count: coverage.indeterminate })] : []),
+                      ].join(" · ")
+            lines.push(`<p data-fact="composition.coverage"><strong>${escapeHtml(lead)}</strong> ${escapeHtml(detail)}</p>`)
+        }
+        if (recording.checked > 0) {
+            const lead = recording.checked === 1 ? key("recordingCheckedOne") : fill(key("recordingChecked"), { checked: recording.checked })
+            const detail = [
+                fill(key("recorded"), { count: recording.recorded }),
+                fill(key("notRecorded"), { count: recording.notRecorded }),
+            ].join(" · ")
+            lines.push(`<p data-fact="composition.recording"><strong>${escapeHtml(lead)}</strong> ${escapeHtml(detail)}</p>`)
+        }
+        if (lines.length === 0) return ""
+        if (composition.stale) {
+            const stale = composition.stale.runDateLabel
+                ? fill(key("staleCatalogue"), { date: composition.stale.runDateLabel })
+                : key("staleCatalogueNoDate")
+            lines.push(`<p class="section-caveat" data-fact="composition.stale" data-composition-state="stale_catalogue">${escapeHtml(stale)}</p>`)
+        }
+        lines.push(`<p class="section-caveat">${escapeHtml(key("reviewFraming"))}</p>`)
+        return `<div data-fact="composition.lines" data-catalogue-version="${escapeHtml(composition.catalogueVersion)}">${lines.join("\n")}</div>`
+    })()
+
+    // ── Where the record itself has got to (C-03) ────────────────────────
+    //
+    // An advisor hands this document to a customer. If the values in it are
+    // still the machine's reading, unconfirmed by any person, the document has
+    // to say so — the app already does, on both sides.
+    const recordStateBlock = (() => {
+        if (!recordStatus || recordStatus.status === "confirmed") {
+            if (recordStatus?.status === "confirmed" && recordStatus.confirmedBy === "agent") {
+                return `<div class="section-caveat" data-fact="record.status">${escapeHtml(resolveReportKey(language, "recordStatus.confirmedByAgent"))}</div>`
+            }
+            return ""
+        }
+        const labelKey: Record<string, string> = {
+            under_examination: "recordStatus.underExamination",
+            needs_data: "recordStatus.needsData",
+            awaiting_confirmation: "recordStatus.awaitingConfirmation",
+            inactive: "recordStatus.inactive",
+        }
+        const label = resolveReportKey(language, labelKey[recordStatus.status] ?? "recordStatus.underExamination")
+        const framing = resolveReportKey(language, "recordStatus.describesRecord")
+        return `<div class="section-caveat" data-fact="record.status" data-record-status="${escapeHtml(recordStatus.status)}">${escapeHtml(label)} — ${escapeHtml(framing)}</div>`
+    })()
+
     const preparedByLabel = L("Ετοιμάστηκε από", "Prepared by")
     const reportTitle = L("Έκθεση Εξοικονόμησης &amp; Κάλυψης", "Savings &amp; Coverage Report")
     const contactBits = [website, phone].filter(Boolean).map((b) => escapeHtml(b)).join(" · ")
@@ -267,8 +352,10 @@ ${savings.map((s) => `
 `).join("")}
 
 ${provenanceBlock}
+${recordStateBlock}
+${compositionBlock}
 ${prePlan ? `<div class="section-caveat" data-composition-state="pre_plan">${escapeHtml(prePlan.dateLabel ? L(`Ευρήματα από την ανάλυση της ${prePlan.dateLabel}. Η ανάλυση αυτή προηγείται του σχεδίου ελέγχων, οπότε δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε — τα ευρήματα δεν αποτελούν πλήρη αξιολόγηση.`, `Findings from the analysis of ${prePlan.dateLabel}. That analysis predates the check plan, so what was checked cannot be stated — these findings are not a complete assessment.`) : L("Ευρήματα από παλαιότερη ανάλυση που προηγείται του σχεδίου ελέγχων: δεν μπορεί να δηλωθεί τι ακριβώς ελέγχθηκε.", "Findings from an earlier analysis that predates the check plan: what was checked cannot be stated."))}</div>` : ""}
-${staleCatalogue ? `<div class="section-caveat" data-composition-state="stale_catalogue">${escapeHtml(staleCatalogue.dateLabel ? L(`Η ανάλυση έγινε στις ${staleCatalogue.dateLabel}. Έχουν προστεθεί έλεγχοι από τότε — μια νέα ανάλυση θα τους περιλάβει.`, `This analysis ran on ${staleCatalogue.dateLabel}. Checks have been added since — a new analysis will include them.`) : L("Έχουν προστεθεί έλεγχοι μετά από αυτή την ανάλυση — μια νέα ανάλυση θα τους περιλάβει.", "Checks have been added since this analysis — a new analysis will include them."))}</div>` : ""}
+${staleCatalogue && composition?.kind !== "composition" ? `<div class="section-caveat" data-composition-state="stale_catalogue">${escapeHtml(staleCatalogue.dateLabel ? L(`Η ανάλυση έγινε στις ${staleCatalogue.dateLabel}. Έχουν προστεθεί έλεγχοι από τότε — μια νέα ανάλυση θα τους περιλάβει.`, `This analysis ran on ${staleCatalogue.dateLabel}. Checks have been added since — a new analysis will include them.`) : L("Έχουν προστεθεί έλεγχοι μετά από αυτή την ανάλυση — μια νέα ανάλυση θα τους περιλάβει.", "Checks have been added since this analysis — a new analysis will include them."))}</div>` : ""}
 ${underReviewOmitted ? `<div class="section-caveat">${escapeHtml(L("Ευρήματα που είναι ακόμη υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή την αναφορά· τα βλέπετε στο ασφαλιστήριο.", "Findings still under review are not included in this report; they are shown on the policy."))}</div>` : ""}
 ${gaps.length > 0 ? `
 <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2>
