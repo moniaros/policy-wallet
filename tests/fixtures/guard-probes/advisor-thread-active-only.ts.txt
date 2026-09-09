@@ -1,0 +1,24 @@
+// PROBE for tests/unit/advisor-requests-reach-a-visible-advisor.test.ts.
+//
+// The recipient defect: an arbitrary relationship, gated on `status: "active"`,
+// with no check that this advisor can see THIS policy. Not compiled — the guard
+// reads it as text.
+
+export async function requestSomethingFromAdvisor(policyId: string) {
+    const relationship = await db.customerRelationship.findFirst({
+        where: { policyholderUserId: dbUser.id, status: "active" },
+        select: { id: true, agentUserId: true },
+    })
+    if (!relationship) return { error: "NO_AGENT" }
+
+    await collaborationService.ensureAutomationThread(dbUser.id, {
+        relationshipId: relationship.id,
+        policyId,
+        category: RENEWAL_QUOTE_REQUEST.category,
+        priority: RENEWAL_QUOTE_REQUEST.priority,
+        subject: RENEWAL_QUOTE_REQUEST.subject.el,
+        initialMessage: RENEWAL_QUOTE_REQUEST.message.el,
+    })
+
+    return { success: true }
+}

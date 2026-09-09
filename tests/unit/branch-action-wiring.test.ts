@@ -28,13 +28,17 @@ vi.mock('@/lib/subscription-entitlements', () => ({
 
 const policyFindUnique = vi.fn()
 const accessGrantFindFirst = vi.fn(async () => null)
-const relationshipFindFirst = vi.fn()
+const relationshipFindMany = vi.fn()
+const accessGrantFindMany = vi.fn(async (): Promise<{ granteeUserId: string }[]> => [])
 const userTaskCreate = vi.fn(async (args: any) => ({ id: 'task-1', ...args.data }))
 vi.mock('@/lib/db', () => ({
     db: {
         policy: { findUnique: (...a: any[]) => policyFindUnique(...(a as [])) },
-        accessGrant: { findFirst: (...a: any[]) => accessGrantFindFirst(...(a as [])) },
-        customerRelationship: { findFirst: (...a: any[]) => relationshipFindFirst(...(a as [])) },
+        accessGrant: {
+            findFirst: (...a: any[]) => accessGrantFindFirst(...(a as [])),
+            findMany: (...a: any[]) => accessGrantFindMany(...(a as [])),
+        },
+        customerRelationship: { findMany: (...a: any[]) => relationshipFindMany(...(a as [])) },
         userTask: { create: (...a: any[]) => (userTaskCreate as any)(...a) },
     },
 }))
@@ -81,15 +85,25 @@ const signIn = (roles = 'policyholder', id = OWNER) => {
 const withCollaboration = (agentCollaboration: boolean) => {
     resolveUserEntitlements.mockResolvedValue({ limits: { agentCollaboration } })
 }
-const withAgent = (has: boolean) => {
-    relationshipFindFirst.mockResolvedValue(has ? { id: 'rel-1', agentUserId: 'agent-1' } : null)
+/**
+ * An advisor the request may reach = a LIVING relationship whose agent can
+ * already see this policy. `pending_activation` is the default status and is
+ * deliberately the one used here: the old `findFirst({ status: 'active' })`
+ * returned nothing for it, so a customer whose advisor had not yet been
+ * accepted got NO_AGENT while their wallet already showed the shared policy.
+ */
+const withAgent = (has: boolean, status = 'pending_activation') => {
+    relationshipFindMany.mockResolvedValue(
+        has ? [{ id: 'rel-1', agentUserId: 'agent-1', status }] : []
+    )
+    accessGrantFindMany.mockResolvedValue(has ? [{ granteeUserId: 'agent-1' }] : [])
 }
 
 beforeEach(() => {
     vi.clearAllMocks()
     openThreads.clear()
     threadSeq = 0
-    policyFindUnique.mockResolvedValue({ id: 'pol-1', ownerUserId: OWNER })
+    policyFindUnique.mockResolvedValue({ id: 'pol-1', ownerUserId: OWNER, createdByUserId: OWNER })
     accessGrantFindFirst.mockResolvedValue(null)
     userTaskCreate.mockImplementation(async (args: any) => ({ id: 'task-1', ...args.data }))
     signIn()
@@ -194,6 +208,60 @@ describe('startBranchActionThread — dedupe stops advisor spam', () => {
 
         await startBranchActionThread('pol-1', 'motor_request_green_card')
         expect(openThreads.size).toBe(2)
+    })
+})
+
+/**
+ * WHO the request reaches (PW-BRIDGE-01 D-03/D-04).
+ *
+ * All three customer-to-advisor sends used to pick their recipient with
+ * `customerRelationship.findFirst({ status: "active" })`. These cases pin the
+ * two things that replaced it: the recipient must be able to SEE the policy,
+ * and `pending_activation` is not a disqualification.
+ */
+describe('startBranchActionThread — the recipient can see the policy', () => {
+    it('asks for LIVING relationships, oldest first — never status active only', async () => {
+        await startBranchActionThread('pol-1', 'motor_ask_agent_mikti')
+        const [args] = relationshipFindMany.mock.calls[0] as [any]
+        expect(args.where.policyholderUserId).toBe(OWNER)
+        expect(args.where.status).toEqual({ notIn: ['inactive', 'terminated'] })
+        expect(args.orderBy).toEqual({ createdAt: 'asc' })
+    })
+
+    it('reaches an advisor whose relationship the customer has not accepted yet', async () => {
+        withAgent(true, 'pending_activation')
+        const res = await startBranchActionThread('pol-1', 'motor_ask_agent_mikti')
+        expect(res).toMatchObject({ success: true })
+        expect(ensureAutomationThread).toHaveBeenCalledOnce()
+    })
+
+    it('does NOT reach an advisor who cannot see this policy', async () => {
+        // Living relationship, but no grant on this policy and someone else
+        // uploaded it: telling them would disclose that the policy exists.
+        relationshipFindMany.mockResolvedValue([{ id: 'rel-1', agentUserId: 'agent-1', status: 'active' }])
+        accessGrantFindMany.mockResolvedValue([])
+        const res = await startBranchActionThread('pol-1', 'motor_ask_agent_mikti')
+        expect(res).toEqual({ error: 'NO_AGENT' })
+        expect(ensureAutomationThread).not.toHaveBeenCalled()
+    })
+
+    it('qualifies the advisor who uploaded the policy, with no grant row at all', async () => {
+        relationshipFindMany.mockResolvedValue([{ id: 'rel-1', agentUserId: 'agent-1', status: 'pending_activation' }])
+        accessGrantFindMany.mockResolvedValue([])
+        policyFindUnique.mockResolvedValue({ id: 'pol-1', ownerUserId: OWNER, createdByUserId: 'agent-1' })
+        const res = await startBranchActionThread('pol-1', 'motor_ask_agent_mikti')
+        expect(res).toMatchObject({ success: true })
+    })
+
+    it('with two advisors it takes the oldest relationship, deterministically', async () => {
+        relationshipFindMany.mockResolvedValue([
+            { id: 'rel-old', agentUserId: 'agent-1', status: 'active' },
+            { id: 'rel-new', agentUserId: 'agent-2', status: 'active' },
+        ])
+        accessGrantFindMany.mockResolvedValue([{ granteeUserId: 'agent-1' }, { granteeUserId: 'agent-2' }])
+        await startBranchActionThread('pol-1', 'motor_ask_agent_mikti')
+        const [, input] = ensureAutomationThread.mock.calls[0] as [string, any]
+        expect(input.relationshipId).toBe('rel-old')
     })
 })
 

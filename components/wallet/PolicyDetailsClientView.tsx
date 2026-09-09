@@ -220,7 +220,23 @@ export function PolicyDetailsClient({
             if (result.error) {
                 toast.error(detailsCopy.quoteRequestFailed)
             } else {
-                toast.success(result.agentNotified ? detailsCopy.quoteRequestedAgent : detailsCopy.quoteRequested)
+                // `advisorsReached` is a COUNT of advisors who can see this
+                // policy, not "an agent exists" — the two differ whenever a
+                // policy was never shared, and the copy for that case says so.
+                toast.success(
+                    (result.advisorsReached ?? 0) > 0
+                        ? detailsCopy.quoteRequestedAgent
+                        : detailsCopy.quoteRequested,
+                    {
+                        // The request is now a thread both sides can open.
+                        action: result.threadId
+                            ? {
+                                  label: t.analysis.actions.openThread,
+                                  onClick: () => detailRouter.push(`/collaboration/threads/${result.threadId}`),
+                              }
+                            : undefined,
+                    }
+                )
             }
         } catch {
             toast.error(detailsCopy.quoteRequestFailed)

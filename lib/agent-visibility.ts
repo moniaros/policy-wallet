@@ -74,6 +74,70 @@ export async function getPolicyGranteeUserIds(policyId: string, exceptUserId?: s
     return [...new Set(grants.map((g) => g.granteeUserId))].filter((id) => id && id !== exceptUserId)
 }
 
+/** An advisor who may receive a request about one specific policy. */
+export interface PolicyAdvisor {
+    agentUserId: string
+    relationshipId: string
+    relationshipStatus: string
+}
+
+/**
+ * Who may be TOLD about this policy — the send-side inverse of the read rule.
+ *
+ * A customer-initiated request ("quote my renewal", "explain this finding")
+ * has to reach a person, and the three actions that send one each picked their
+ * recipient with `customerRelationship.findFirst({ status: "active" })`. That
+ * is wrong twice over. It is not policy-scoped, so a customer with two
+ * advisors sent the request to whichever row Postgres returned first, which
+ * need not be the advisor on the policy in hand. And gating on `active`
+ * contradicts every read path in this module: `pending_activation` is the
+ * normal state before a customer accepts, so an advisor who could already SEE
+ * the policy received nothing while the customer was told the request was on
+ * its way.
+ *
+ * The rule here is the read rule, used in the other direction: an advisor
+ * qualifies only if they can already see the policy — a live grant on it, or
+ * they uploaded it — AND the relationship is living. Anything looser would
+ * announce the EXISTENCE of a policy the customer never shared, which is the
+ * disclosure question halted as H-B2; a send-side leak must not decide it by
+ * accident.
+ *
+ * Ordered by relationship age so a caller that needs exactly one advisor (an
+ * Opportunity has a single owner) picks the same one every time.
+ */
+export async function resolvePolicyAdvisors(policy: {
+    id: string
+    ownerUserId: string
+    createdByUserId: string
+}): Promise<PolicyAdvisor[]> {
+    const relationships = await db.customerRelationship.findMany({
+        where: {
+            policyholderUserId: policy.ownerUserId,
+            status: { notIn: [...ENDED_RELATIONSHIP_STATUSES] },
+        },
+        select: { id: true, agentUserId: true, status: true },
+        orderBy: { createdAt: "asc" },
+    })
+    if (relationships.length === 0) return []
+
+    const grantees = new Set(await getPolicyGranteeUserIds(policy.id, policy.ownerUserId))
+
+    return relationships
+        .filter(
+            (relationship) =>
+                grantees.has(relationship.agentUserId) ||
+                // The upload arm. `createdByUserId` equals the owner on a
+                // self-upload, and no relationship has the owner as its agent,
+                // so that case falls out on its own.
+                relationship.agentUserId === policy.createdByUserId
+        )
+        .map((relationship) => ({
+            agentUserId: relationship.agentUserId,
+            relationshipId: relationship.id,
+            relationshipStatus: relationship.status,
+        }))
+}
+
 /**
  * Prisma `where` fragment restricting policies to the ones an agent may see.
  * Compose it into any policy query an agent-facing surface runs.
