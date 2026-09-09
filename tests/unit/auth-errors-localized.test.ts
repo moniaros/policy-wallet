@@ -24,6 +24,7 @@ const LOCALIZED_MESSAGES = [
     // 'Invalid Greek mobile number' is gone with the field: signup is
     // email-identity-only since the auth rebuild (docs/auth-audit.md §7).
     'Registration failed. Please try again.',
+    'New registrations are paused. If your insurance advisor invited you, use the link in their invitation.',
     'User already exists',
     'An unexpected error occurred during registration.',
     'Too many verification email requests. Please try again later.',

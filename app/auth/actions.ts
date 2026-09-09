@@ -24,6 +24,7 @@ import { isAgentRole } from "@/lib/auth/require-agent"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { VALID_PLAN_IDS } from "@/lib/pricing/public-pricing-content"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
+import { signupAllowedFor } from "@/lib/auth/registration-gate"
 
 const RegisterSchema = z.object({
     name: z.preprocess((v) => (typeof v === "string" && v.trim().length === 0 ? undefined : v), z.string().min(1).optional()),
@@ -447,6 +448,14 @@ export async function registerUser(formData: FormData) {
     // agent intake paths use, so a phantom row and the signup that activates
     // it can never disagree on the key.
     const authEmail = normalizeEmail(email)
+
+    // Door 1 of 4. Checked BEFORE supabase.auth.signUp, so a paused signup
+    // leaves no auth user behind to reconcile later. Someone an agent invited
+    // still gets through — see lib/auth/registration-gate.ts.
+    if (!(await signupAllowedFor(authEmail))) {
+        return { success: false, error: authErr(language, "Οι νέες εγγραφές είναι προσωρινά κλειστές. Αν σας προσκάλεσε ο ασφαλιστικός σας σύμβουλος, χρησιμοποιήστε τον σύνδεσμο της πρόσκλησης.", "New registrations are paused. If your insurance advisor invited you, use the link in their invitation.") }
+    }
+
     const displayName = name?.trim()?.length
         ? name.trim()
         : role === "agent"

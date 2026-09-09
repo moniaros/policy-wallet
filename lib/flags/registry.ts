@@ -151,6 +151,21 @@ export const FEATURE_FLAGS: Record<string, FlagDefinition> = {
         readAt: "lib/auth-helpers.ts emailVerificationRequired",
         safetyCritical: true,
     },
+    "auth.allow_registrations": {
+        key: "auth.allow_registrations",
+        kind: "boolean",
+        label: "Allow new registrations",
+        description:
+            "Accept new self-serve accounts. Off shows a closed notice on signup and refuses every account-creation path; people an agent has already invited, and everyone who already has an account, are unaffected.",
+        category: "auth",
+        envVar: "ALLOW_REGISTRATIONS",
+        // Absent, unset, or an unparseable value means OPEN — the behaviour
+        // this product has always had. A registration gate that closed itself
+        // on a typo would be a self-inflicted outage.
+        defaultValue: true,
+        readAt: "lib/auth/registration-gate.ts registrationsOpen",
+        safetyCritical: true,
+    },
     "extraction.citations": {
         key: "extraction.citations",
         kind: "boolean",

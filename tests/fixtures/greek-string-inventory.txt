@@ -22,7 +22,7 @@
 # bundle entries: 3721
 # inline entries: 4916 across 222 files
 # ternary entries: 293 across 42 files
-# call entries: 1144 across 86 files
+# call entries: 1148 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -9400,9 +9400,11 @@ call	app/auth/handover/page.tsx	"Συνέχεια στο Πορτοφόλι"
 call	app/auth/handover/page.tsx	"Συνέχεια στον browser"
 call	app/auth/handover/page.tsx	"Συνέχεια στον browser"
 call	app/auth/signup/SignupForm.tsx	"Έχετε ήδη λογαριασμό;"
+call	app/auth/signup/SignupForm.tsx	"Αν σας προσκάλεσε ο ασφαλιστικός σας σύμβουλος, χρησιμοποιήστε τον σύνδεσμο της πρόσκλησης — αυτός εξακολουθεί να λειτουργεί."
 call	app/auth/signup/SignupForm.tsx	"Ανεβάζετε τα ασφαλιστήριά σας και σας λέω τι καλύπτουν, τι δεν καλύπτουν και πότε λήγουν."
 call	app/auth/signup/SignupForm.tsx	"Δείτε τι λείπει από τους πελάτες σας."
 call	app/auth/signup/SignupForm.tsx	"Δείτε τι πραγματικά σας καλύπτει."
+call	app/auth/signup/SignupForm.tsx	"Δεν δεχόμαστε νέους λογαριασμούς αυτή τη στιγμή. Αν έχετε ήδη λογαριασμό, μπορείτε να συνδεθείτε κανονικά."
 call	app/auth/signup/SignupForm.tsx	"Δημιουργία λογαριασμού"
 call	app/auth/signup/SignupForm.tsx	"Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε."
 call	app/auth/signup/SignupForm.tsx	"Δωρεάν δοκιμή με έναν πελάτη. Χωρίς κάρτα."
@@ -9411,7 +9413,9 @@ call	app/auth/signup/SignupForm.tsx	"Κάτι πήγε στραβά. Δοκιμ�
 call	app/auth/signup/SignupForm.tsx	"Κωδικός πρόσβασης"
 call	app/auth/signup/SignupForm.tsx	"Ο λογαριασμός δημιουργήθηκε"
 call	app/auth/signup/SignupForm.tsx	"Ο πελάτης σας μοιράζεται όσα θέλει. Εσείς βλέπετε κενά, λήξεις και τι αξίζει να ρωτήσετε."
+call	app/auth/signup/SignupForm.tsx	"Οι νέες εγγραφές είναι προσωρινά κλειστές."
 call	app/auth/signup/SignupForm.tsx	"Ονοματεπώνυμο"
+call	app/auth/signup/SignupForm.tsx	"Σύνδεση"
 call	app/auth/signup/SignupForm.tsx	"Σύνδεση"
 call	app/auth/signup/SignupForm.tsx	"ή"
 call	app/auth/signup/SignupForm.tsx	"π.χ. Μαρία Παπαδοπούλου"
