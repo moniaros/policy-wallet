@@ -166,6 +166,23 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             })
             const newGaps = newGapRows.length
 
+            // C-06: a count needs what it is out of. «3 new findings» alone
+            // reads as a verdict on the week; «3 of your 11 open findings» is a
+            // measurement. Same universe, same scope — the only difference is
+            // the period, so the two numbers can never describe different
+            // portfolios.
+            const openGapRows = await readLiveGapRows({ scope: "classified",
+                where: {
+                    policy: {
+                        ownerUserId: user.id,
+                        status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
+                    },
+                    status: { in: ["open", "detected"] },
+                },
+                select: { id: true },
+            })
+            const openGaps = openGapRows.length
+
             const unreadMessages = await db.notificationEvent.count({
                 where: {
                     userId: user.id,
@@ -227,6 +244,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     daysUntilExpiry: lifecycle.daysUntilExpiry,
                 })),
                 newGaps,
+                openGaps,
                 unreadMessages,
                 topRecommendations,
                 profileCompleteness,
@@ -249,8 +267,8 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     en: getWeeklyDigestEmail("en", user.name || undefined, digestData).subject,
                 },
                 message: {
-                    el: `Η εβδομαδιαία σύνοψή σας: ${renewals.length} ανανεώσεις, ${newGaps} νέα ευρήματα.`,
-                    en: `Your weekly summary: ${renewals.length} renewals, ${newGaps} new findings.`,
+                    el: `Η εβδομαδιαία σύνοψή σας: ${renewals.length} ανανεώσεις, ${newGaps} νέα ευρήματα από ${openGaps} ανοιχτά.`,
+                    en: `Your weekly summary: ${renewals.length} renewals, ${newGaps} new findings of ${openGaps} open.`,
                 },
                 // One digest per user per ISO week, however often the cron runs.
                 dedupeKey: `weekly_digest:${isoWeekKey(now)}`,

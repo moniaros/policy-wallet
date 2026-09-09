@@ -21,7 +21,7 @@
 #
 # bundle entries: 3717
 # inline entries: 4907 across 222 files
-# ternary entries: 288 across 42 files
+# ternary entries: 291 across 42 files
 # call entries: 1144 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -8506,7 +8506,7 @@ inline	lib/services/translation/greek-to-bilingual.ts	asGreekText(p.reason.el)
 inline	lib/services/translation/greek-to-bilingual.ts	asGreekText(s.action.el)
 inline	lib/services/translation/greek-to-bilingual.ts	asGreekText(s.rationale.el)
 inline	lib/services/translation/greek-to-bilingual.ts	text
-inline	lib/services/weekly-digest.service.ts	`Η εβδομαδιαία σύνοψή σας: ${renewals.length} ανανεώσεις, ${newGaps} νέα ευρήματα.`
+inline	lib/services/weekly-digest.service.ts	`Η εβδομαδιαία σύνοψή σας: ${renewals.length} ανανεώσεις, ${newGaps} νέα ευρήματα από ${openGaps} ανοιχτά.`
 inline	lib/services/weekly-digest.service.ts	getWeeklyDigestEmail("el", user.name || undefined, digestData).subject
 inline	lib/subscription-copy.ts	'/έτος'
 inline	lib/subscription-copy.ts	'/έτος'
@@ -8763,10 +8763,13 @@ ternary	lib/email/templates/weekly-digest.ts	'Εβδομαδιαία σύνοψ�
 ternary	lib/email/templates/weekly-digest.ts	'Ενημέρωση προφίλ →'
 ternary	lib/email/templates/weekly-digest.ts	'Η εβδομαδιαία σας σύνοψη PolicyWallet'
 ternary	lib/email/templates/weekly-digest.ts	'Λαμβάνετε αυτό το email κάθε Δευτέρα.'
+ternary	lib/email/templates/weekly-digest.ts	'Τα ευρήματα υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή τη σύνοψη — τα βλέπετε σε κάθε ασφαλιστήριο.'
 ternary	lib/email/templates/weekly-digest.ts	'έτος'
 ternary	lib/email/templates/weekly-digest.ts	'💡 Προτάσεις Κάλυψης'
 ternary	lib/email/templates/weekly-digest.ts	'📝 Ολοκληρώστε το Προφίλ σας'
 ternary	lib/email/templates/weekly-digest.ts	` <h3 style="margin-bottom: 8px; font-size: 16px; color: #111827;"> ${isGreek ? 'Ανανεώσεις εντός 30 ημερών' : 'Renewals within 30 days'} </h3> <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;"> ${data.renewingSoon.map(r => ` <tr style="border-bottom: 1px solid #E5E7EB;"> <td style="padding: 8px 0; font-size: 14px; color: #374151;">${displayInsurerName(r.insurerName, normalizeBranch(r.lineOfBusiness).label[language])}</td> <td style="padding: 8px 0; font-size: 14px; color: #6B7280;">${normalizeBranch(r.lineOfBusiness).label[language]}</td> <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: ${r.daysUntilExpiry <= 7 ? '#DC2626' : r.daysUntilExpiry <= 14 ? '#D97706' : '#059669'}; text-align: right;"> ${daysToExpiryPhrase(r.daysUntilExpiry, isGreek)} </td> </tr> `).join('')} </table> `
+ternary	lib/email/templates/weekly-digest.ts	`${base} — από ${data.openGaps} ανοιχτά συνολικά`
+ternary	lib/email/templates/weekly-digest.ts	`<p style="margin: 8px 0 0; font-size: 12px; color: #92400E;">${isGreek ? 'Τα ευρήματα υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή τη σύνοψη — τα βλέπετε σε κάθε ασφαλιστήριο.' : 'Findings still under review are not included in this summary — you can see them on each policy.'}</p>`
 ternary	lib/email/templates/weekly-digest.ts	`~€${r.estimatedCostEur}/${isGreek ? 'έτος' : 'yr'}`
 ternary	lib/email/templates/weekly-digest.ts	`Το προφίλ κινδύνου σας είναι ${completeness}% ολοκληρωμένο. Συμπληρώστε τα πεδία που λείπουν για ακριβέστερες προτάσεις κάλυψης.`
 ternary	lib/email/templates/weekly-digest.ts	counted(data.newGaps, 'νέο κενό κάλυψης εντοπίστηκε', 'νέα κενά κάλυψης εντοπίστηκαν')
