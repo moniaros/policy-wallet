@@ -300,6 +300,10 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
             accessScope: 'portfolio',
             permissions: ['view', 'upload', 'suggest', 'message'],
             policyCount: profile.policies.length,
+            // null unless the CUSTOMER disclosed it (H-B2). Passed through as
+            // null rather than 0 so the surface can tell "they chose to say
+            // nothing" from "there is nothing beyond what you see".
+            unsharedPolicyCount: profile.relationship.unsharedPolicyCount,
             openGapsCount: profile.policies.reduce((ts, p) => ts + p.gaps, 0),
             lastInteractionDate: profile.relationship.lastInteraction ? new Date(profile.relationship.lastInteraction).toISOString() : new Date(profile.relationship.joinedAt).toISOString(),
             createdAt: new Date(profile.relationship.joinedAt).toISOString(),

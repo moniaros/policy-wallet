@@ -156,6 +156,8 @@ export default async function AgentPage() {
             agent={agent}
             relationshipId={customerRelationship?.id || null}
             sharedPolicies={sharedPolicies}
+            // H-B2: the customer's own decision, off unless they turned it on.
+            unsharedCountDisclosed={customerRelationship?.unsharedCountDisclosed ?? false}
         />
     )
 }

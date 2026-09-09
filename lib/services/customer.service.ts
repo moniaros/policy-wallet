@@ -250,6 +250,24 @@ export class CustomerService extends BaseService {
             // audit log is best-effort; never let it break a read
         }
 
+        // Halt H-B2 — resolved by giving the DECISION to the customer.
+        //
+        // The platform never tells an advisor that a customer holds policies
+        // beyond the ones they shared: that is new information about someone's
+        // record, produced by us, which they did not choose to produce. When
+        // the customer has switched the disclosure on for THIS relationship,
+        // what crosses is a count and nothing else — no identity, no branch, no
+        // dates. The count query does not even run otherwise, so an advisor
+        // whose customer has not opted in cannot learn the number from a
+        // timing difference either.
+        const unsharedPolicyCount = relationship.unsharedCountDisclosed
+            ? Math.max(
+                  0,
+                  (await this.db.policy.count({ where: { ownerUserId: customerId } })) -
+                      relationship.customer.policiesOwned.length
+              )
+            : null
+
         return {
             customer: {
                 id: relationship.customer.id,
@@ -265,6 +283,8 @@ export class CustomerService extends BaseService {
                 activationStatus: relationship.activationStatus,
                 joinedAt: relationship.createdAt,
                 lastInteraction: relationship.lastInteractionAt,
+                /** null = the customer has not disclosed it. Never 0-as-unknown. */
+                unsharedPolicyCount,
             },
             policies: relationship.customer.policiesOwned.map(p => ({
                 id: p.id,
