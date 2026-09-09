@@ -7,6 +7,7 @@ import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
 import { consumeOAuthIntent, type OAuthIntent } from "@/lib/auth/oauth-intent"
 import { LEGAL_POLICY_VERSIONS } from "@/lib/compliance/consent"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
+import { registrationsOpen, hasOpenInvite } from "@/lib/auth/registration-gate"
 
 /**
  * The one exchange endpoint — magic links AND social login land here.
@@ -69,8 +70,23 @@ export async function GET(request: Request) {
 
     try {
         if (!dbUser) {
-            // ── First OAuth arrival: the row is born here ──
+            // Set BEFORE the gate below, so that if the gate's own query
+            // throws, the catch at the bottom sees a new account and fails
+            // closed instead of falling through with no row.
             isNewAccount = true
+
+            // Door 2 of 4, and the widest one: this is the ONLY place a User
+            // row is born for OAuth AND for magic-link. No row yet means this
+            // is a brand-new account, so a paused signup stops here — unless
+            // the address was invited. Supabase has already minted an
+            // auth.users row by now (the code exchange above), so sign the
+            // session out rather than leave a half-account holding a cookie.
+            if (!(await registrationsOpen()) && !(await hasOpenInvite(email))) {
+                await supabase.auth.signOut()
+                return NextResponse.redirect(`${origin}/auth/signup`)
+            }
+
+            // ── First OAuth arrival: the row is born here ──
             const role = intent?.role ?? (user.user_metadata?.role === "agent" ? "agent" : "policyholder")
             const locale: "el" | "en" = intent?.locale === "en" ? "en" : "el"
             const displayName =

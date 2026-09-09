@@ -1,0 +1,24 @@
+// Probe for tests/unit/account-creation-behind-gate.test.ts.
+//
+// Copy to app/api/probe-signup/route.ts (as .ts) and run that test: it MUST
+// fail, naming this file as able to create an account without importing the registration gate. Delete the copy afterwards.
+//
+// This is the fifth door — a new "public signup" endpoint that looks harmless
+// because it validates its input and rate-limits itself, and mints accounts
+// while the product is advertising that registrations are paused.
+
+import { db } from "@/lib/db"
+import { createClient } from "@/lib/supabase/server"
+
+export async function POST(request: Request) {
+    const { email, password } = await request.json()
+
+    const supabase = await createClient()
+    await supabase.auth.signUp({ email, password })
+
+    const user = await db.user.create({
+        data: { email, name: email.split("@")[0], roles: "policyholder" },
+    })
+
+    return Response.json({ id: user.id })
+}
