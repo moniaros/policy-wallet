@@ -19,8 +19,11 @@ import { join } from "node:path"
  * reason someone decided to write down. A fifth door added next month is
  * covered by a test written today.
  *
- * Probe: tests/fixtures/guard-probes/account-creation-ungated.ts.txt — copy it
- * into app/ as a .ts file and this test must go red.
+ * Two probes, both committed, both proven red:
+ *   account-creation-ungated.ts.txt   — creates without importing the gate
+ *   account-creation-gate-too-late.ts.txt — imports AND calls it, but after
+ *   the account already exists, which an import-only check grades green.
+ * Copy either into app/ as a .ts file and this test must go red.
  */
 
 const ROOTS = ["app", "lib"]
@@ -47,6 +50,9 @@ const GATE_MODULE = "@/lib/auth/registration-gate"
  * statement.
  */
 const GATE_IMPORT = /\bimport\s[^;]*from\s*["']@\/lib\/auth\/registration-gate["']/
+
+/** An actual consultation, not just an import that nobody calls. */
+const GATE_CALL = /\b(signupAllowedFor|registrationsOpen|hasOpenInvite)\s*\(/
 
 /** Source with line and block comments removed, so no rule can match prose. */
 function code(source: string): string {
@@ -102,10 +108,25 @@ describe("account creation is behind the registration gate", () => {
             expect(EXEMPT[file].length, `${file} needs a real reason`).toBeGreaterThan(40)
             return
         }
+        const source = code(readFileSync(file, "utf8"))
+
         expect(
-            GATE_IMPORT.test(code(readFileSync(file, "utf8"))),
+            GATE_IMPORT.test(source),
             `${file} can create an account without asking ${GATE_MODULE}. ` +
                 `Import registrationsOpen/signupAllowedFor, or add it to EXEMPT with a reason.`
         ).toBe(true)
+
+        // An import is not a check. The consultation has to come FIRST — a gate
+        // asked after supabase.auth.signUp has already run is not a gate, it is
+        // a log line, and it leaves an auth user with no row behind it.
+        const askedAt = source.search(GATE_CALL)
+        const createsAt = Math.min(
+            ...CREATION_PATTERNS.map((p) => source.search(p)).filter((i) => i >= 0)
+        )
+        expect(askedAt, `${file} imports the gate but never calls it`).toBeGreaterThanOrEqual(0)
+        expect(
+            askedAt,
+            `${file} calls the gate AFTER it has already created an account`
+        ).toBeLessThan(createsAt)
     })
 })
