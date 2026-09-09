@@ -145,15 +145,26 @@ function SignUpForm({ fixedRole, registrationsOpen }: SignUpProps) {
     })
     const passwordValue = useWatch({ control, name: "password" }) || ""
 
+    const showingForm = registrationsOpen || Boolean(token)
+
     useEffect(() => {
-        trackLandingEvent("page_view_signup", { role, source, locale: language })
-    }, [language, role, source])
+        // A closed page is not a signup page view. Counting it as one would
+        // inflate the top of the funnel with people who never saw a form, and
+        // make the conversion rate below it read as a collapse rather than as
+        // the switch being off. Recorded as its own event instead, because how
+        // many people arrive while signup is paused is worth knowing.
+        trackLandingEvent(showingForm ? "page_view_signup" : "page_view_signup_closed", {
+            role,
+            source,
+            locale: language,
+        })
+    }, [language, role, source, showingForm])
 
     // An invited customer arrives with ?token=..., and the invite exemption in
     // lib/auth/registration-gate.ts means their signup genuinely will succeed —
     // so they keep the form. Everyone else gets the notice. This is presentation
     // only: registerUser is what actually decides, and it re-checks the address.
-    if (!registrationsOpen && !token) {
+    if (!showingForm) {
         return <RegistrationsClosed locale={locale} />
     }
 
