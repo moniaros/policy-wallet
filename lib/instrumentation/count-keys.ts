@@ -235,6 +235,7 @@ export const FACT_KEYS: Record<string, string> = {
     "policy.expiryDate": "LEGACY spelling of policy.endDate (PolicyHead).",
     "policy.status": "Policy lifecycle status (PolicyHead).",
     "policy.insuredSubject": "The insured vehicle/property line (PolicyHead).",
+    "documentRequest.origin": "Who asked for a document and when — «Ζητήθηκε από {name} · Ζητήθηκε {date}» plus the due date when one is set. One line per request card, rendered on BOTH sides of the same work item (PW-BRIDGE-01 D-01): the status word alone cannot say who is waiting on whom, or since when.",
     "policy.attention": "The head's attention banner (PolicyHead).",
     "grant.level": "Customer /agent page: a grant's normalised level (read/write/manage), subject = grant id — what the advisor can do (A-10).",
     "policy.sharedWithAdvisor": "Wallet card: this policy is visible to the advisor, subject = policy id (A-09).",

@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3717
+# bundle entries: 3720
 # inline entries: 4907 across 222 files
 # ternary entries: 291 across 42 files
 # call entries: 1144 across 86 files
@@ -805,6 +805,9 @@ bundle	collaboration.documentRequests.instructions	"Οδηγίες (προαιρ
 bundle	collaboration.documentRequests.instructionsPlaceholder	"π.χ. Χρειάζομαι την τελευταία σελίδα..."
 bundle	collaboration.documentRequests.pending	"Αναμονή"
 bundle	collaboration.documentRequests.requestDocument	"Αίτημα εγγράφου"
+bundle	collaboration.documentRequests.requestedBy	"Ζητήθηκε από {name}"
+bundle	collaboration.documentRequests.requestedByYou	"Το ζητήσατε εσείς"
+bundle	collaboration.documentRequests.requestedOn	"Ζητήθηκε {date}"
 bundle	collaboration.documentRequests.sendRequest	"Αποστολή αιτήματος"
 bundle	collaboration.documentRequests.sendRequestTo	"Αποστολή αιτήματος σε {name}"
 bundle	collaboration.documentRequests.sending	"Αποστολή..."

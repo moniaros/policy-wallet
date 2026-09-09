@@ -339,6 +339,36 @@ export function DocumentRequestCard({ request, viewerRole, agentName, onRespond 
                             ? t.collaboration.documentRequests.uploaded
                             : t.collaboration.documentRequests.expired}
                 </p>
+                {/*
+                  D-01 asks for a DATED work item with its REQUESTER, and this
+                  card is the surface where the request lives as a list — on both
+                  sides. It carried neither: the status word alone cannot say who
+                  is waiting on whom, or since when. `agentName` was already
+                  passed in and ignored.
+                */}
+                <p className="text-xs text-neutral-500 dark:text-neutral-400" data-fact="documentRequest.origin">
+                    <span>
+                        {viewerRole === "policyholder" && agentName
+                            ? t.collaboration.documentRequests.requestedBy.replace("{name}", agentName)
+                            : t.collaboration.documentRequests.requestedByYou}
+                    </span>
+                    {" · "}
+                    <span>
+                        {t.collaboration.documentRequests.requestedOn.replace(
+                            "{date}",
+                            formatDateShort(request.createdAt, language)
+                        )}
+                    </span>
+                    {request.dueDate && (
+                        <>
+                            {" · "}
+                            <span className="text-amber-700 dark:text-amber-400">
+                                {t.collaboration.documentRequests.due}:{" "}
+                                {formatDateShort(request.dueDate, language)}
+                            </span>
+                        </>
+                    )}
+                </p>
             </div>
             {request.status === "pending" && viewerRole === "policyholder" && onRespond && (
                 <BrandActionButton
