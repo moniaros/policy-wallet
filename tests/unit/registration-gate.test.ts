@@ -97,7 +97,10 @@ describe("signupAllowedFor", () => {
         await signupAllowedFor("  Invited@Example.COM ")
 
         const where = dbMock.invite.findFirst.mock.calls[0][0].where
-        expect(where.inviteeEmail).toBe("invited@example.com")
+        // Case-insensitive, because Invite.inviteeEmail is not stored
+        // normalised everywhere — the policy-share route writes the raw
+        // address. An exact match would refuse the person it exempts.
+        expect(where.inviteeEmail).toEqual({ equals: "invited@example.com", mode: "insensitive" })
         // Consumed or expired is not an exemption — otherwise a spent invite
         // would be a permanent standing key to a closed product.
         expect(where.consumedAt).toBeNull()

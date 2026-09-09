@@ -50,7 +50,14 @@ export async function hasOpenInvite(email: string): Promise<boolean> {
 
     const invite = await db.invite.findFirst({
         where: {
-            inviteeEmail: address,
+            // Case-insensitive on purpose. `Invite.inviteeEmail` is NOT stored
+            // normalised everywhere: app/(protected)/agent/relationship-actions.ts
+            // normalises before writing, but app/api/v1/policies/share/route.ts
+            // looks the user up with normalizeEmail and then writes the RAW
+            // address. So rows with "Foo@Example.com" exist, and an exact match
+            // would refuse the very person the exemption is for. Normalising on
+            // write would only fix invites created from now on.
+            inviteeEmail: { equals: address, mode: "insensitive" },
             consumedAt: null,
             expiresAt: { gt: new Date() },
         },
