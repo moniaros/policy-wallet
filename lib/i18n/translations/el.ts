@@ -3919,6 +3919,9 @@ export const el = {
             due: "Προθεσμία",
             uploading: "Μεταφόρτωση...",
             upload: "Ανέβασμα",
+            requestedBy: "Ζητήθηκε από {name}",
+            requestedByYou: "Το ζητήσατε εσείς",
+            requestedOn: "Ζητήθηκε {date}",
         },
         proposals: {
             createProposal: "Δημιουργία πρότασης",

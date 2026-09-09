@@ -3862,6 +3862,9 @@ export const en: TranslationKeys = {
             due: "Due",
             uploading: "Uploading...",
             upload: "Upload",
+            requestedBy: "Requested by {name}",
+            requestedByYou: "You requested it",
+            requestedOn: "Requested {date}",
         },
         proposals: {
             createProposal: "Create Proposal",
