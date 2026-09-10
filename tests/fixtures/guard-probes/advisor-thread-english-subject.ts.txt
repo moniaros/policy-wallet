@@ -1,0 +1,22 @@
+// PROBE for tests/unit/advisor-requests-reach-a-visible-advisor.test.ts.
+//
+// The shape this guard exists to stop: a thread subject typed at the call site,
+// in English, which then renders as a heading in a Greek customer's timeline.
+// Not compiled — the guard reads it as text.
+
+export async function askAdvisorAboutSomething(policyId: string) {
+    const advisors = await resolvePolicyAdvisors(policy)
+    const advisor = advisors[0]
+    if (!advisor) return { error: "NO_AGENT" }
+
+    await collaborationService.ensureAutomationThread(userId, {
+        relationshipId: advisor.relationshipId,
+        policyId,
+        category: "coverage_gap",
+        priority: "high",
+        subject: "Coverage gap clarification requested",
+        initialMessage: "Policyholder requested help on this coverage gap.",
+    })
+
+    return { success: true }
+}

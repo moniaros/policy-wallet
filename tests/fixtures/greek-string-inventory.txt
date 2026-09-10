@@ -19,9 +19,9 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3720
-# inline entries: 4912 across 222 files
-# ternary entries: 291 across 42 files
+# bundle entries: 3721
+# inline entries: 4921 across 222 files
+# ternary entries: 293 across 42 files
 # call entries: 1144 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -505,6 +505,7 @@ bundle	agentUi.website	"Ιστοσελίδα"
 bundle	analysis.actions.agentNotified	"Ο σύμβουλος ενημερώθηκε"
 bundle	analysis.actions.hidden	"Η ειδοποίηση αποκρύφθηκε"
 bundle	analysis.actions.hide	"Απόκρυψη"
+bundle	analysis.actions.openThread	"Άνοιγμα συζήτησης"
 bundle	analysis.actions.sending	"Αποστολή..."
 bundle	analysis.actions.unknownSection	"Ελλιπής ενότητα"
 bundle	analysis.actions.viewAgentPlans	"Δείτε τα πλάνα συνεργατών"
@@ -3518,9 +3519,9 @@ bundle	wallet.policyDetailsPage.premiumFrequency.one_off	"Εφάπαξ"
 bundle	wallet.policyDetailsPage.premiumFrequency.quarterly	"Τριμηνιαία"
 bundle	wallet.policyDetailsPage.premiumFrequency.semiannual	"Εξάμηνη"
 bundle	wallet.policyDetailsPage.premiumLabel	"Ασφάλιστρα"
-bundle	wallet.policyDetailsPage.quoteRequestFailed	"Το αίτημα δεν στάλθηκε. Δοκίμασε ξανά."
-bundle	wallet.policyDetailsPage.quoteRequested	"Το αίτημα καταγράφηκε — θα σας ενημερώσουμε για τα επόμενα βήματα."
-bundle	wallet.policyDetailsPage.quoteRequestedAgent	"Το αίτημα στάλθηκε στον σύμβουλό σας."
+bundle	wallet.policyDetailsPage.quoteRequestFailed	"Το αίτημα δεν στάλθηκε. Δοκιμάστε ξανά."
+bundle	wallet.policyDetailsPage.quoteRequested	"Το αίτημα καταγράφηκε, αλλά κανένας σύμβουλος δεν έχει πρόσβαση σε αυτό το ασφαλιστήριο. Κοινοποιήστε το για να λάβετε προσφορά."
+bundle	wallet.policyDetailsPage.quoteRequestedAgent	"Το αίτημα στάλθηκε στον σύμβουλό σας και άνοιξε συζήτηση."
 bundle	wallet.policyDetailsPage.reanalyzeToSeeCoverage	"Επανάλυση για εμφάνιση λεπτομερούς κάλυψης"
 bundle	wallet.policyDetailsPage.reanalyzeToSeeCoverageHint	"Τα ειδικά στοιχεία κάλυψης εμφανίζονται μετά από νέα ανάλυση AI"
 bundle	wallet.policyDetailsPage.renewalDateLabel	"Ημερομηνία ανανέωσης"
@@ -3560,7 +3561,7 @@ bundle	wallet.policyDetailsPage.renewalUploadNote	"Ανεβάστε το νέο 
 bundle	wallet.policyDetailsPage.renewalUploadTitle	"Ανανέωσα — ανέβασμα ανανεωτηρίου"
 bundle	wallet.policyDetailsPage.renewalUploaded	"Το ανανεωτήριο ανέβηκε — η ανάλυση εκτελείται ξανά."
 bundle	wallet.policyDetailsPage.renewalUploading	"Ανέβασμα ανανεωτηρίου…"
-bundle	wallet.policyDetailsPage.requestQuote	"Ζήτησε προσφορά ανανέωσης"
+bundle	wallet.policyDetailsPage.requestQuote	"Ζητήστε προσφορά ανανέωσης"
 bundle	wallet.policyDetailsPage.requestingQuote	"Αποστολή αιτήματος…"
 bundle	wallet.policyDetailsPage.reviewRenewal	"Έλεγχος λήξης και ανανέωσης"
 bundle	wallet.policyDetailsPage.riskLevels.critical	"Κρίσιμο"
@@ -3926,16 +3927,17 @@ inline	app/(protected)/wallet/actions.ts	'Νέο ασφαλιστήριο κοι
 inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο πελάτης"} άλλαξε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : " ενός ασφαλιστηρίου"} που βλέπετε.`
 inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο πελάτης"} διέγραψε το ασφαλιστήριο ${policyLabel(policy)}. Δεν εμφανίζεται πλέον στον κατάλογό σας.`
 inline	app/(protected)/wallet/actions.ts	`${actorName || "Ο σύμβουλός σας"} έλεγξε και επιβεβαίωσε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : ""}. Μπορείτε να τα δείτε και να τα διορθώσετε.`
+inline	app/(protected)/wallet/actions.ts	`${askerName} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(agent.name) || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`
-inline	app/(protected)/wallet/actions.ts	`${displayPersonName(dbUser.name) || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`
 inline	app/(protected)/wallet/actions.ts	`${flaggerName || "Ο σύμβουλός σας"} επισήμανε ότι η αυτόματη ανάγνωση του ασφαλιστηρίου ${policy.policyNumber} χρειάζεται έλεγχο${trimmedReason ? `: ${trimmedReason}` : "."}`
 inline	app/(protected)/wallet/actions.ts	`${granterName || "Ο πελάτης"} ανακάλεσε την πρόσβασή σας${label ? ` στο ασφαλιστήριο ${label}` : ""}.`
 inline	app/(protected)/wallet/actions.ts	`${sharer || 'Ένας πελάτης'} κοινοποίησε το ασφαλιστήριό του ${branch ? branch.label.el : 'ασφάλισης'} (${policy?.insurerName}) μαζί σας με δικαιώματα ${permissions}.`
 inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policy.policyNumber}: ${trimmedReason || "επισημάνθηκε ως λανθασμένο"}`
-inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policyRef}: ζητήθηκε προσφορά ανανέωσης`
+inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policyRef}: το αίτημα καταγράφηκε, αλλά κανένας σύμβουλος δεν έχει πρόσβαση σε αυτό το ασφαλιστήριο.`
+inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policyRef}: το αίτημα στάλθηκε στον σύμβουλό σας.`
 inline	app/(protected)/wallet/actions.ts	`Το ασφαλιστήριο ${policy.policyNumber} (${policy.insurerName}) διαγράφηκε από το wallet σας.`
 inline	app/(public)/company/CompanyPageClient.tsx	"Δεν είμαστε ασφαλιστική εταιρεία και δεν πουλάμε ασφαλιστικά προϊόντα — είμαστε το ουδέτερο εργαλείο του ασφαλισμένου."
 inline	app/(public)/company/CompanyPageClient.tsx	"Διαβάζουμε συμβόλαια από κάθε ασφαλιστική εταιρεία: αυτοκίνητο, κατοικία, υγεία, ομαδικά, κυβερνοασφάλεια και κατοικίδια."
@@ -5387,9 +5389,11 @@ inline	lib/insurance/content/agent-requests.ts	'Έλεγχος καλύψεων 
 inline	lib/insurance/content/agent-requests.ts	'Αίτημα για πίνακα ποσοστών ανικανότητας'
 inline	lib/insurance/content/agent-requests.ts	'Αίτημα για πράσινη κάρτα'
 inline	lib/insurance/content/agent-requests.ts	'Αίτημα για πράσινη κάρτα'
+inline	lib/insurance/content/agent-requests.ts	'Αίτημα προσφοράς ανανέωσης'
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για αναγγελία υπόθεσης'
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για ασφαλιστήριο'
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για εναλλακτικά συνταξιοδοτικά'
+inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για εύρημα της ανάλυσης'
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για κάλυψη ανικανότητας και εισοδήματος'
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για κάλυψη εξοπλισμού'
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για κάλυψη λεϊσμανίασης'
@@ -5405,11 +5409,14 @@ inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για την ε�
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για την κάλυψη μετά την αποχώρηση'
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για την περίοδο παροπλισμού'
 inline	lib/insurance/content/agent-requests.ts	'Ερώτηση για το ομαδικό συνταξιοδοτικό'
-inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητήστε έλεγχο του αν οι καλύψεις της επιχείρησης ταιριάζουν με την πραγματική δραστηριότητα.'
-inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητήστε να μιλήσετε για αυτό το ασφαλιστήριο μέσα από το PolicyWallet.'
-inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητήστε πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτή τη μοτοσικλέτα.'
-inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητήστε πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτό το όχημα.'
-inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητήστε τον πίνακα ποσοστών ανικανότητας που εφαρμόζεται στο ασφαλιστήριο προσωπικού ατυχήματος.'
+inline	lib/insurance/content/agent-requests.ts	'Κοινοποιήθηκε ασφαλιστήριο'
+inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητά έλεγχο του αν οι καλύψεις της επιχείρησης ταιριάζουν με την πραγματική δραστηριότητα.'
+inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητά να μιλήσετε για αυτό το ασφαλιστήριο μέσα από το PolicyWallet.'
+inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητά περισσότερες λεπτομέρειες για ένα εύρημα της ανάλυσης του ασφαλιστηρίου του.'
+inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητά πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτή τη μοτοσικλέτα.'
+inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητά πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτό το όχημα.'
+inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητά προσφορά για την ανανέωση αυτού του ασφαλιστηρίου.'
+inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ζητά τον πίνακα ποσοστών ανικανότητας που εφαρμόζεται στο ασφαλιστήριο προσωπικού ατυχήματος.'
 inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης θέλει να δει τι θα άλλαζε αν πρόσθετε μικτή κάλυψη σε αυτό το ασφαλιστήριο — καλύψεις, απαλλαγή και κόστος.'
 inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης θέλει να συζητήσει συμπληρωματική κάλυψη υγείας πάνω από το υπάρχον πρόγραμμα.'
 inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης θέλει να συζητήσει τι θα άλλαζε αν προστίθετο κάλυψη ανικανότητας ή προστασίας εισοδήματος δίπλα στο ασφαλιστήριο ζωής.'
@@ -5427,6 +5434,9 @@ inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ρωτά τι 
 inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ρωτά τι ισχύει για πλημμύρα και φυσικά φαινόμενα στην κατοικία — αν περιλαμβάνονται και με ποια όρια.'
 inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ρωτά τι ισχύει στην περίοδο παροπλισμού του σκάφους και αν αλλάζει το ασφάλιστρο.'
 inline	lib/insurance/content/agent-requests.ts	'Ο πελάτης ρωτά τι μένει ακάλυπτο από το ομαδικό πρόγραμμα υγείας του εργοδότη του.'
+inline	lib/insurance/content/agent-requests.ts	'Στάλθηκε ένα ερωτηματολόγιο. Χρησιμοποιήστε αυτή τη συζήτηση για διευκρινίσεις.'
+inline	lib/insurance/content/agent-requests.ts	'Στάλθηκε ερωτηματολόγιο'
+inline	lib/insurance/content/agent-requests.ts	'Το ασφαλιστήριο κοινοποιήθηκε. Χρησιμοποιήστε αυτή τη συζήτηση για ερωτήσεις και διευκρινίσεις.'
 inline	lib/insurance/content/boat-hull.ts	'Όταν η απαλλαγή ιδίων ζημιών είναι υψηλή, οι μικρές και μεσαίες ζημιές μένουν στην πράξη ακάλυπτες, ακόμη κι όταν το είδος τους καλύπτεται κανονικά.'
 inline	lib/insurance/content/boat-hull.ts	'Αν αλλάξετε σημείο ελλιμενισμού ή περάσετε σε χειμερινό παροπλισμό, ενημερώστε γραπτώς — ο τόπος φύλαξης είναι από τους λίγους όρους που αλλάζουν χωρίς να το σκεφτούμε.'
 inline	lib/insurance/content/boat-hull.ts	'Αν οι αξίες δεν έχουν δηλωθεί αναλυτικά, η αποζημίωση για εξοπλισμό ή βοηθητικό σκάφος ενδέχεται να περιοριστεί σε ό,τι μπορεί να αποδειχθεί.'
@@ -8665,6 +8675,8 @@ ternary	app/(protected)/wallet/actions.ts	'ασφάλισης'
 ternary	app/(protected)/wallet/actions.ts	` στο ασφαλιστήριο ${label}`
 ternary	app/(protected)/wallet/actions.ts	` του ασφαλιστηρίου ${label}`
 ternary	app/(protected)/wallet/actions.ts	` του ασφαλιστηρίου ${label}`
+ternary	app/(protected)/wallet/actions.ts	`Εύρημα: ${gap.definition.title}.`
+ternary	app/(protected)/wallet/actions.ts	`Λήξη: ${formatDate(lifecycle.endDate, "el")}.`
 ternary	app/(protected)/wallet/actions.ts	`Φτάσατε το μηνιαίο όριο αναλύσεων (${manualGate.used}/${manualGate.limit}). Αναβαθμίστε το πλάνο σας.`
 ternary	app/api/v1/feedback/route.ts	"Βρήκατε το άρθρο χρήσιμο"
 ternary	app/api/v1/feedback/route.ts	"Δεν βρήκατε το άρθρο χρήσιμο"

@@ -5,6 +5,7 @@ import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { storedDocumentLabel } from "@/lib/wallet/document-label"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { QUESTIONNAIRE_SENT_THREAD } from "@/lib/insurance/content/agent-requests"
 import { emit } from "@/lib/notifications/dispatch"
 import { notifyCounterparty } from "@/lib/notifications"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -1745,11 +1746,13 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
 
     await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
         relationshipId,
-        category: "questionnaire",
-        priority: "medium",
+        category: QUESTIONNAIRE_SENT_THREAD.category,
+        priority: QUESTIONNAIRE_SENT_THREAD.priority,
         linkedQuestionnaireInstanceId: instance.id,
-        subject: "Questionnaire requested",
-        initialMessage: "A questionnaire has been sent. Use this thread for follow-up and clarifications.",
+        // Greek, from the content module: the customer reads this subject as a
+        // heading in their own timeline (PW-BRIDGE-01 D-03).
+        subject: QUESTIONNAIRE_SENT_THREAD.subject.el,
+        initialMessage: QUESTIONNAIRE_SENT_THREAD.message.el,
     })
 
     // Update last interaction

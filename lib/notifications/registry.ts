@@ -815,7 +815,11 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         category: "advisory",
         priority: "high",
         channels: EMAIL_LED,
-        recipients: ["advisor"],
+        // BOTH parties: the owner gets their own confirmation copy, whose text
+        // differs by whether any advisor could actually be reached. Declaring
+        // only the advisor here was the I-09 drift — a registry that describes
+        // fewer recipients than the caller emits to.
+        recipients: ["owner", "advisor"],
         transactional: true,
         requiredAction: "provide_quote",
         escalation: { afterUnreadHours: 2 * DAY, notify: "admin", event: "admin_unanswered_quote" },
