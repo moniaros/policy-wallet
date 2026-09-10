@@ -43,6 +43,7 @@ export const COUNT_KEYS: Record<string, string> = {
     "portfolio.sharedWithAdvisorCount": "Customer /agent page: how many of the customer's policies the advisor can see — stated with its denominator portfolio.policyCount (PW-BRIDGE-01 A-09).",
     "client.underReviewCount": "Agent customer list/card: the client's live findings no human has classified yet, labelled «υπό αξιολόγηση», never inside the headline count (PW-BRIDGE-01 A-02).",
     "client.policyCount": "Agent customer list: the client's policies VISIBLE to this agent (grant or own upload) — visibility-scoped, never paired with the customer's portfolio count (PW-BRIDGE-01 D-B3).",
+    "client.unsharedPolicyCount": "Agent policy tab: how many policies the client holds BEYOND what this agent can see — rendered only because the CLIENT switched the disclosure on (halt H-B2); null means they have not, which is not zero, and the count query does not run then.",
     "gap.underReviewCount": "The findings-page summary band (R3): how many of the listed findings are still under provenance review — labelled, never zeroed.",
     "composition.coverageChecked": "B2 line 1 denominator N₁: coverage rules attempted for the branch at the run's catalogue version.",
     "composition.covered": "B2 A₁: coverage rules that did not fire with every declared input present and typed.",
@@ -271,6 +272,7 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "client.policyCount",
     "client.nextRenewalDate",
     "client.underReviewCount",
+    "client.unsharedPolicyCount",
     "grant.level",
     "policy.sharedWithAdvisor",
 ])

@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3721
-# inline entries: 4916 across 222 files
+# inline entries: 4921 across 222 files
 # ternary entries: 293 across 42 files
 # call entries: 1148 across 86 files
 
@@ -3784,12 +3784,14 @@ inline	app/(protected)/agent/AgentClient.tsx	"Ελέγχετε τι βλέπει
 inline	app/(protected)/agent/AgentClient.tsx	"Ενότητες"
 inline	app/(protected)/agent/AgentClient.tsx	"Επισκόπηση"
 inline	app/(protected)/agent/AgentClient.tsx	"Εσείς ελέγχετε την πρόσβαση — μπορείτε να την ανακαλέσετε ανά πάσα στιγμή"
+inline	app/(protected)/agent/AgentClient.tsx	"Η αλλαγή δεν αποθηκεύτηκε. Δοκιμάστε ξανά."
 inline	app/(protected)/agent/AgentClient.tsx	"Η απάντησή σας στάλθηκε"
 inline	app/(protected)/agent/AgentClient.tsx	"Η αποσύνδεση απέτυχε. Δοκιμάστε ξανά."
 inline	app/(protected)/agent/AgentClient.tsx	"Η πρόσκληση στάλθηκε σε διαφορετική διεύθυνση email."
 inline	app/(protected)/agent/AgentClient.tsx	"Η πρόσκληση στάλθηκε"
 inline	app/(protected)/agent/AgentClient.tsx	"Η πρόταση έγινε αποδεκτή"
 inline	app/(protected)/agent/AgentClient.tsx	"Η σύνδεση τερματίζεται και η πρόσβαση του συμβούλου στα ασφαλιστήριά σας ανακαλείται."
+inline	app/(protected)/agent/AgentClient.tsx	"Θα βλέπει μόνο πόσα είναι — ποτέ ποια, από ποια εταιρεία ή με τι καλύψεις. Μπορείτε να το απενεργοποιήσετε όποτε θέλετε."
 inline	app/(protected)/agent/AgentClient.tsx	"Κάτι πήγε στραβά. Δοκιμάστε ξανά."
 inline	app/(protected)/agent/AgentClient.tsx	"Κάτι πήγε στραβά. Δοκιμάστε ξανά."
 inline	app/(protected)/agent/AgentClient.tsx	"Κλήση"
@@ -3802,6 +3804,7 @@ inline	app/(protected)/agent/AgentClient.tsx	"Μηνύματα"
 inline	app/(protected)/agent/AgentClient.tsx	"Μοιραστείτε μόνο ό,τι επιλέγετε και αποκτήστε επαγγελματική ματιά στα κενά κάλυψής σας."
 inline	app/(protected)/agent/AgentClient.tsx	"Μπορεί να διορθώσει τα στοιχεία του"
 inline	app/(protected)/agent/AgentClient.tsx	"Να αποσυνδεθείτε από τον σύμβουλό σας; Η πρόσβασή του στα ασφαλιστήριά σας θα ανακληθεί."
+inline	app/(protected)/agent/AgentClient.tsx	"Να γνωρίζει ο σύμβουλός σας ότι έχετε κι άλλα ασφαλιστήρια"
 inline	app/(protected)/agent/AgentClient.tsx	"Ο κωδικός έχει ήδη χρησιμοποιηθεί."
 inline	app/(protected)/agent/AgentClient.tsx	"Ο κωδικός έχει λήξει. Ζητήστε νέο από τον σύμβουλό σας."
 inline	app/(protected)/agent/AgentClient.tsx	"Ο σύμβουλός μου"
@@ -4144,6 +4147,8 @@ inline	components/agent/tabs/ClientPoliciesTab.tsx	"Όλες οι καταστά
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Όλοι οι τύποι"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ασφαλιστήρια"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Διαχειριζόμενο από εσάς"
+inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ο πελάτης σάς ενημερώνει ότι έχει και 1 ασφαλιστήριο που δεν σας έχει κοινοποιήσει."
+inline	components/agent/tabs/ClientPoliciesTab.tsx	"Ο πελάτης σάς ενημερώνει ότι έχει και {count} ασφαλιστήρια που δεν σας έχει κοινοποιήσει."
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Προμήθειες"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"Προσθήκη"
 inline	components/agent/tabs/ClientPoliciesTab.tsx	"προμήθεια"
