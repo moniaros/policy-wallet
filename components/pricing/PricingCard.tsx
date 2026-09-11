@@ -9,6 +9,22 @@ import type {
 } from "@/lib/pricing/public-pricing-content"
 
 const WAIT_LABEL: LocalizedText = { el: "Παρακαλώ περιμένετε...", en: "Please wait..." }
+
+/**
+ * Said plainly, in the visitor's language, with no apology and no jargon: we
+ * are not taking the payment right now. It never names Stripe, keys or modes —
+ * that is our problem, not the reader's.
+ */
+const CHECKOUT_UNAVAILABLE: Record<string, LocalizedText> = {
+    sandbox_in_production: {
+        el: "Οι online αγορές είναι προσωρινά κλειστές. Επικοινωνήστε μαζί μας για να ενεργοποιήσουμε αυτό το πλάνο.",
+        en: "Online purchases are paused right now. Contact us and we will set this plan up for you.",
+    },
+    unconfigured: {
+        el: "Οι online αγορές είναι προσωρινά κλειστές. Επικοινωνήστε μαζί μας για να ενεργοποιήσουμε αυτό το πλάνο.",
+        en: "Online purchases are paused right now. Contact us and we will set this plan up for you.",
+    },
+}
 const NOT_INCLUDED_LABEL: LocalizedText = { el: "Δεν περιλαμβάνεται: ", en: "Not included: " }
 
 export interface PricingCardProps {
@@ -100,15 +116,28 @@ export function PricingCard({
                 ))}
             </ul>
 
-            <button
-                onClick={() => onSelectPlan(plan)}
-                disabled={isLoading}
-                className={`w-full cursor-pointer ${
-                    plan.isHighlighted ? "pw-primary-button" : "pw-secondary-button"
-                } pw-btn-lg ${isLoading ? "cursor-not-allowed opacity-60" : ""}`}
-            >
-                {isLoading ? WAIT_LABEL[language] : actionLabel[language]}
-            </button>
+            {plan.checkoutUnavailableReason ? (
+                /* This deployment cannot complete a purchase of this plan, so
+                   it does not offer one. The price above still stands — it is
+                   true — and a button that opened a sandbox checkout would be
+                   the false half (lib/pricing/stripe-mode.ts). */
+                <p
+                    data-checkout-unavailable={plan.checkoutUnavailableReason}
+                    className="rounded-xl border border-border bg-muted/40 px-4 py-3 text-caption leading-snug text-muted-foreground"
+                >
+                    {CHECKOUT_UNAVAILABLE[plan.checkoutUnavailableReason][language]}
+                </p>
+            ) : (
+                <button
+                    onClick={() => onSelectPlan(plan)}
+                    disabled={isLoading}
+                    className={`w-full cursor-pointer ${
+                        plan.isHighlighted ? "pw-primary-button" : "pw-secondary-button"
+                    } pw-btn-lg ${isLoading ? "cursor-not-allowed opacity-60" : ""}`}
+                >
+                    {isLoading ? WAIT_LABEL[language] : actionLabel[language]}
+                </button>
+            )}
         </div>
     )
 }

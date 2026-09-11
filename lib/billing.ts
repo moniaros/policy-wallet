@@ -1,4 +1,5 @@
 import type Stripe from "stripe"
+import { publicCheckoutAvailability } from "@/lib/pricing/stripe-mode"
 import { db, isUniqueConstraintViolation } from "./db"
 import { stripe } from "./stripe"
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
@@ -50,6 +51,16 @@ export async function createCheckoutSession(
     // billing — they own their Stripe price). `=== false` so legacy rows /
     // mocks without the column pass through.
     if (plan.isActive === false) throw new Error("Plan is not purchasable")
+
+    // A production deployment configured against a SANDBOX cannot take money,
+    // and must not pretend to: this session would render a real-looking Stripe
+    // page, accept a card and return the visitor to a success screen having
+    // charged nothing. The public pricing card already withdraws the button;
+    // this is the same rule at the door, because /account and any future
+    // upgrade surface reach checkout without passing that card.
+    // Off production, sandbox checkout is exactly what test mode is for.
+    const checkout = publicCheckoutAvailability()
+    if (!checkout.available) throw new Error("CHECKOUT_UNAVAILABLE")
 
     const monthlyPrice = Number(plan.price)
     const isAnnual = billingPeriod === "annual"

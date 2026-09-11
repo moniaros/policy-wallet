@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3721
-# inline entries: 4921 across 222 files
+# inline entries: 4923 across 222 files
 # ternary entries: 293 across 42 files
 # call entries: 1148 across 86 files
 
@@ -4299,6 +4299,8 @@ inline	components/pricing/FeatureComparison.tsx	"Ναι"
 inline	components/pricing/FeatureComparison.tsx	"Σύγκριση πλάνων"
 inline	components/pricing/FeatureComparison.tsx	"Τι περιλαμβάνει κάθε πλάνο του PolicyWallet."
 inline	components/pricing/PricingCard.tsx	"Δεν περιλαμβάνεται: "
+inline	components/pricing/PricingCard.tsx	"Οι online αγορές είναι προσωρινά κλειστές. Επικοινωνήστε μαζί μας για να ενεργοποιήσουμε αυτό το πλάνο."
+inline	components/pricing/PricingCard.tsx	"Οι online αγορές είναι προσωρινά κλειστές. Επικοινωνήστε μαζί μας για να ενεργοποιήσουμε αυτό το πλάνο."
 inline	components/pricing/PricingCard.tsx	"Παρακαλώ περιμένετε..."
 inline	components/providers/OfflineProvider.tsx	"Είστε εκτός σύνδεσης. Εμφανίζονται αποθηκευμένα δεδομένα."
 inline	components/providers/OfflineProvider.tsx	"Επανασυνδεθήκατε στο διαδίκτυο"
