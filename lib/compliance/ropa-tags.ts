@@ -238,3 +238,44 @@ export function modelsRequiringTags(schema: string): string[] {
         .filter((m) => m.name === "User" || holdsSubjectData(m.body))
         .map((m) => m.name)
 }
+
+// ── Columns, for the DPIA input pack (W4-02) ──────────────────────────────────
+//
+// The tag is per MODEL (D-P6); the pack still needs a per-column map, so the
+// columns are read from the model body and each inherits its store's tag. A
+// relation field is not a column — it is another table's row.
+
+export interface ModelColumn {
+    name: string
+    /** Prisma type as written, with `[]` / `?` suffixes: `String?`, `Json`, `Decimal[]`. */
+    type: string
+    id: boolean
+    unique: boolean
+}
+
+const SCALAR_TYPES = new Set(["String", "Int", "BigInt", "Boolean", "DateTime", "Decimal", "Float", "Json", "Bytes"])
+
+/** Enum names declared in the schema — a column may be typed by one. */
+export function enumNames(schema: string): string[] {
+    return [...schema.matchAll(/^enum\s+(\w+)\s*\{/gm)].map((m) => m[1])
+}
+
+/** The scalar and enum columns of one model body, relations excluded. */
+export function modelColumns(body: string, enums: readonly string[] = []): ModelColumn[] {
+    const out: ModelColumn[] = []
+    for (const line of body.split("\n")) {
+        const m = line.match(/^\s{2}(\w+)\s+(\w+)(\[\]|\?)?\s*(.*)$/)
+        if (!m) continue
+        const [, name, base, suffix = "", attrs] = m
+        if (!SCALAR_TYPES.has(base) && !enums.includes(base)) continue
+        if (/@relation\b/.test(attrs)) continue
+        out.push({ name, type: `${base}${suffix}`, id: /@id\b/.test(attrs), unique: /@unique\b/.test(attrs) })
+    }
+    return out
+}
+
+/** The columns that tie a row to a person: User relation keys plus the plain subject columns. */
+export function subjectKeyFields(body: string): string[] {
+    const plain = SUBJECT_FIELDS.filter((f) => new RegExp(`^\\s{2}${f}\\s`, "m").test(body))
+    return [...new Set([...userRelationFields(body), ...plain])]
+}

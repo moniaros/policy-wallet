@@ -3,15 +3,18 @@
 > **Generated from `prisma/schema.prisma` — do not edit by hand.**
 > Regenerate with `npx tsx scripts/generate-ropa.ts`. A model that holds personal
 > data and carries no `@ropa` tag fails `tests/unit/ropa-tags-complete.test.ts`,
-> so this record cannot silently fall behind the database.
+> and a committed record that no longer matches the schema fails
+> `tests/unit/generated-compliance-docs-current.test.ts`, so this record cannot
+> silently fall behind the database.
 
 **Controller:** Insurance Martech IKE (ΓΕΜΗ 188863359000, ΑΦΜ 302659440, ΔΟΥ Χίου),
 Kalamoti, 82102, Chios, Greece · **Privacy contact:** dpo@policywallet.gr
 
 **Covers 57 of 57 models holding personal data.**
-Recipients, transfers and security measures are in
-[DATA_PROTECTION_REVIEW_PACK.md](DATA_PROTECTION_REVIEW_PACK.md) §8, §9 and §13 —
-they are properties of the deployment, not of a table, so they are not generated here.
+Recipients and transfers are generated alongside this record in
+[DPIA-INPUTS.md](DPIA-INPUTS.md) §3; security measures are in
+[DATA_PROTECTION_REVIEW_PACK.md](DATA_PROTECTION_REVIEW_PACK.md) §13 — they are
+properties of the deployment, not of a table, so they are not generated here.
 
 ## 1. Processing activities, by purpose
 
@@ -133,7 +136,8 @@ No model carries `unclear` for purpose or basis.
 It is not a DPIA. It supplies a DPIA's inputs — the per-store purpose and basis
 map, the Art. 9 inventory, and the open questions above — and nothing more. The
 assessment under Art. 35 is a legal judgement and is recorded as a halt in
-`docs/provenance/HALTS.md` (H-P2).
+`docs/provenance/HALTS.md` (H-P2). The fuller input pack — every column, the
+Art. 9 routes and the transfer table — is [DPIA-INPUTS.md](DPIA-INPUTS.md).
 
 It also does not evidence that the stated bases are correct. It evidences that
 someone recorded one for every store, that the record matches the schema today,
