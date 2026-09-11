@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client"
 import { db } from "@/lib/db"
 import { LIVE_GAP_STATUSES } from "@/lib/gaps/gap-instance-writer"
 import { compareFindingSlugs, isClassified, provenanceCitation, provenanceOf, type GapProvenance, type ProvenanceCitation } from "@/lib/gaps/provenance"
+import { evidenceVerdictFor, isPublishableVerdict, type EvidenceVerdict } from "@/lib/gaps/evidence-floor"
 import { AUTHORED_GAP_DEFINITIONS } from "@/lib/gaps/authored-catalogue"
 import { resolveGapConcept } from "@/lib/wallet/gap-report"
 
@@ -19,6 +20,11 @@ import { resolveGapConcept } from "@/lib/wallet/gap-report"
  *        no human has classified is counted in no summary and reaches no
  *        email, notification or report. A `disclosed` read returns every live
  *        row for a findings list that labels each row's class.
+ *   W2  — evidence: every row also comes back tagged with an `evidence`
+ *        verdict (lib/gaps/evidence-floor.ts) from what its run recorded the
+ *        document was evidence of; a `classified` read keeps only `gap` rows —
+ *        a finding the document did not confirm gets the same treatment as
+ *        one nobody classified: disclosed and labelled, counted nowhere.
  *
  * V2 found six leaks that were each a path where gap rows travelled under
  * another name (a recommendation, a stored score count, a KPI). Routing the
@@ -59,6 +65,8 @@ type HistoryShapeOf<A> = A extends { select: infer S extends Prisma.GapInstanceS
       : Record<string, never>
 export type LiveGapRow<A = ReadLiveGapRowsArgs> = Prisma.GapInstanceGetPayload<ShapeOf<A>> & {
     provenance: GapProvenance
+    /** W2-02: `gap` meets the definition's evidence floor; `review` / `not_recorded` are disclosed only. */
+    evidence: EvidenceVerdict
     definition: { slug: string }
 }
 
@@ -67,12 +75,16 @@ function liveWhere(where: Prisma.GapInstanceWhereInput | undefined, statuses: re
     return { AND: [where ?? {}, { supersededAt: null, status: { in: allowed } }] }
 }
 
-/** The definition slug must travel with every row: it is what provenance is decided from. */
+/**
+ * The definition slug must travel with every row: it is what provenance is
+ * decided from. So must `ruleInputs` (W2-02): the evidence verdict is decided
+ * from what the run recorded there.
+ */
 function withSlug(args: Pick<ReadLiveGapRowsArgs, "select" | "include">): Pick<Prisma.GapInstanceFindManyArgs, "select" | "include"> {
     if (args.select) {
         const def = args.select.definition
         const defSelect = def && typeof def === "object" && "select" in def && def.select ? def.select : {}
-        return { select: { ...args.select, definition: { select: { slug: true, ...defSelect } } } }
+        return { select: { ...args.select, ruleInputs: true, definition: { select: { slug: true, ...defSelect } } } }
     }
     if (args.include) {
         const def = args.include.definition
@@ -83,8 +95,11 @@ function withSlug(args: Pick<ReadLiveGapRowsArgs, "select" | "include">): Pick<P
     return { include: { definition: { select: { slug: true } } } }
 }
 
-function tag<T extends { definition?: { slug?: string | null } | null }>(row: T): T & { provenance: GapProvenance } {
-    return { ...row, provenance: provenanceOf(row.definition?.slug ?? null) }
+function tag<T extends { definition?: { slug?: string | null } | null; ruleInputs?: unknown }>(
+    row: T
+): T & { provenance: GapProvenance; evidence: EvidenceVerdict } {
+    const slug = row.definition?.slug ?? null
+    return { ...row, provenance: provenanceOf(slug), evidence: evidenceVerdictFor(slug, row.ruleInputs) }
 }
 
 export async function readLiveGapRows<const A extends ReadLiveGapRowsArgs>(args: A): Promise<LiveGapRow<A>[]> {
@@ -102,7 +117,9 @@ export async function readLiveGapRows<const A extends ReadLiveGapRowsArgs>(args:
         const time = (r: any) => (r.detectedAt instanceof Date ? r.detectedAt.getTime() : typeof r.detectedAt === "string" ? Date.parse(r.detectedAt) || 0 : 0)
         tagged.sort((a: any, b: any) => compareFindingSlugs(a.definition?.slug, b.definition?.slug) || time(a) - time(b) || String(a.id ?? "").localeCompare(String(b.id ?? "")))
     }
-    return args.scope === "classified" ? tagged.filter((r) => isClassified(r.provenance)) : tagged
+    return args.scope === "classified"
+        ? tagged.filter((r) => isClassified(r.provenance) && isPublishableVerdict(r.evidence))
+        : tagged
 }
 
 /** A count over live rows under a scope. Provenance is static, so it is decided in memory, never in SQL. */
