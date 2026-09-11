@@ -1,10 +1,9 @@
 #!/bin/bash
-# Anonymous production smoke for PW-PROVENANCE-01 W2-02 (the evidence floor: a finding below it is disclosed, never published).
-# The item changes SIGNED-IN surfaces: /protection gains a disclosed group for findings the document did not
-# confirm, classified reads (counts, digest, report, notifications) stop publishing them, and every live finding
-# written before W2-01 demotes to that group until its policy is re-analysed. An anonymous smoke proves only that
-# the deploy carrying the item is live and the public product unchanged; the signed-in outcome is stated in
-# RESULT.md with what could and could not be seen. Re-runnable; writes nothing.
+# Anonymous production smoke for PW-PROVENANCE-01 W2-02 (the evidence floor; a finding below it is disclosed, never published).
+# The item changes what a SIGNED-IN wallet shows: every live finding below its rule's floor moves to the disclosed
+# «Ευρήματα χωρίς επιβεβαίωση από το έγγραφο» group and leaves every count. An anonymous smoke proves only that the
+# deploy carrying the item is live and the public product unchanged — the demotion itself needs the owner's session.
+# Re-runnable; writes nothing.
 #
 #   bash docs/evidence/provenance-w2-02/prod-smoke.sh
 H=https://www.policywallet.gr
