@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client"
+import { documentEvidenceForLogic } from "@/lib/gaps/document-evidence"
 import { db } from "@/lib/db"
 import { GAP_ENGINE_VERSION, hasEvaluableRule } from "@/lib/gap-detection"
 import { fingerprintGapDefinitions } from "@/lib/gaps/catalogue-version"
@@ -123,9 +124,16 @@ export interface WriteRuleDecidedGapsParams {
     catalogueVersion: string
     decided: DecidedGapRowInput[]
     now?: Date
+    /**
+     * The extracted document the rules were evaluated against (W2-01). When
+     * given, every row's `ruleInputs` gains `_evidence` — what the document
+     * was evidence OF for each field the rule read, plus the weakest — from
+     * `lib/gaps/document-evidence.ts`. Absent: rows are written as before.
+     */
+    acordData?: unknown
 }
 
-type WriterClient = Pick<Prisma.TransactionClient, "gapInstance">
+type WriterClient = Pick<Prisma.TransactionClient, "gapInstance" | "gapDefinition">
 
 /**
  * Supersede the policy's live rows and write this run's findings.
@@ -138,6 +146,17 @@ export async function writeRuleDecidedGaps(
     params: WriteRuleDecidedGapsParams
 ): Promise<{ superseded: number; written: number }> {
     const now = params.now ?? new Date()
+
+    // W2-01: the logic each decided definition read, so the evidence is
+    // computed against the same fields the rule looked at. One query, by id.
+    const logicById = new Map<string, unknown>()
+    if (params.acordData !== undefined && params.decided.length > 0) {
+        const defs = await tx.gapDefinition.findMany({
+            where: { id: { in: [...new Set(params.decided.map((d) => d.gapDefinitionId))] } },
+            select: { id: true, detectionLogic: true },
+        })
+        for (const def of defs) logicById.set(def.id, def.detectionLogic)
+    }
 
     const live = await tx.gapInstance.findMany({
         where: { policyId: params.policyId, supersededAt: null },
@@ -181,7 +200,7 @@ export async function writeRuleDecidedGaps(
             aiSuggestionEl: d.aiSuggestionEl,
             detectedAt: now,
             ruleId: d.ruleId,
-            ruleInputs: d.ruleInputs as Prisma.InputJsonValue,
+            ruleInputs: withDocumentEvidence(d.ruleInputs, logicById.get(d.gapDefinitionId), params.acordData) as Prisma.InputJsonValue,
             engineVersion: GAP_ENGINE_VERSION,
             analysisRunId: params.runId,
             lineOfBusiness: params.lineOfBusiness,
@@ -192,4 +211,16 @@ export async function writeRuleDecidedGaps(
         await tx.gapInstance.createMany({ data: rows })
     }
     return { superseded, written: rows.length }
+}
+
+/**
+ * The inputs the rule read, plus — additively, under one reserved key — what
+ * the document was evidence of for each (W2-01). Rows written before this key
+ * exist; nothing reads `ruleInputs` by key (enumerated 2026-09-12).
+ */
+function withDocumentEvidence(ruleInputs: unknown, detectionLogic: unknown, acordData: unknown): unknown {
+    if (acordData === undefined || detectionLogic === undefined) return ruleInputs
+    const { evidence, lowest } = documentEvidenceForLogic(detectionLogic, acordData)
+    const base = ruleInputs && typeof ruleInputs === "object" && !Array.isArray(ruleInputs) ? (ruleInputs as Record<string, unknown>) : {}
+    return { ...base, _evidence: { ...evidence, lowest } }
 }

@@ -3390,6 +3390,8 @@ export class PolicyAnalysisOrchestratorService {
                 lineOfBusiness: normalizedLob,
                 catalogueVersion: attempted.catalogueVersion,
                 now,
+                // W2-01: what the document was evidence of, per field each rule read.
+                acordData: mergedAcord,
                 decided: gapRows.map((row) => ({
                     gapDefinitionId: row.gapDefinitionId,
                     severity: row.severity,
