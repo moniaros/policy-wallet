@@ -355,12 +355,15 @@ export default async function DashboardPage() {
         select: { policyId: true, definition: { select: { slug: true } } },
     })
     const gapCountByPolicy = new Map<string, number>()
+    // W2-02: the headline counts only findings the document confirmed (`gap`);
+    // a finding below its evidence floor joins the under-review figure — the
+    // same disclosed, never-summarised treatment, for a different reason.
     for (const row of excludeUnderReview(gapRows, (r) => r.definition?.slug ?? null)) {
-        if (row.policyId) gapCountByPolicy.set(row.policyId, (gapCountByPolicy.get(row.policyId) ?? 0) + 1)
+        if (row.policyId && row.evidence === "gap") gapCountByPolicy.set(row.policyId, (gapCountByPolicy.get(row.policyId) ?? 0) + 1)
     }
     const underReviewByPolicy = new Map<string, number>()
     for (const row of gapRows) {
-        if (row.provenance === "under_review" && row.policyId) underReviewByPolicy.set(row.policyId, (underReviewByPolicy.get(row.policyId) ?? 0) + 1)
+        if ((row.provenance === "under_review" || row.evidence !== "gap") && row.policyId) underReviewByPolicy.set(row.policyId, (underReviewByPolicy.get(row.policyId) ?? 0) + 1)
     }
     // Intersect with the CURRENT client set: a policy whose owner is no longer a
     // relationship (orphaned / uploaded for a non-client) must not push the
