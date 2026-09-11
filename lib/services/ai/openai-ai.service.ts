@@ -5,7 +5,7 @@
  */
 
 import { providerDocumentFileName } from "@/lib/wallet/document-label"
-import { extractionContentParts } from "./extraction-input"
+import { extractionContentParts, type DocumentWithLocalText } from "./extraction-input"
 import { createOpenAI } from "@ai-sdk/openai"
 import { generateObject, generateText } from "ai"
 import { z } from "zod"
@@ -212,7 +212,7 @@ export class OpenAIAIService implements IAIService {
         )
 
         const extracted = result.object
-        const enriched = enrichExtractionPayload(extracted, undefined, 'openai')
+        const enriched = enrichExtractionPayload(extracted, undefined, 'openai', (document as DocumentWithLocalText).localText)
         const parsedUsage = parseUsage(result.usage, modelName)
 
         if (options?.userId && result.usage) {

@@ -6,7 +6,7 @@
  */
 
 import { providerDocumentFileName } from "@/lib/wallet/document-label"
-import { extractionContentParts } from './extraction-input'
+import { extractionContentParts, type DocumentWithLocalText } from './extraction-input'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { generateObject, generateText } from 'ai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
@@ -266,7 +266,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
       )
 
       const extracted = validateJsonModeObject(ExtractionSchema, result.object, 'gemini extraction')
-      const enriched = enrichExtractionPayload(extracted, undefined, 'gemini')
+      const enriched = enrichExtractionPayload(extracted, undefined, 'gemini', (document as DocumentWithLocalText).localText)
       const parsedUsage = parseUsage(result.usage, modelName)
 
       if (options?.userId) {

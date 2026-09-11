@@ -1,6 +1,7 @@
 import type { PremiumFrequency } from './ai-service.interface'
 import { assessExtractionEvidence, type DocumentKind, type EvidenceVerdict } from './document-kind'
-import { sanitizeExtractionSources } from './extraction-citations'
+import { sanitizeExtractionSources, verifyExtractionSources } from './extraction-citations'
+import type { LocalDocumentText } from '@/lib/ingestion/types'
 import { parseDocumentDate, toIsoDateString } from '@/lib/dates/document-date'
 import { normalizeTaxId } from '@/lib/identity/tax-id'
 import { detectSummaryLanguage } from '@/lib/wallet/summary-language'
@@ -143,7 +144,9 @@ function getMissingCriticalFields(payload: RawExtractionPayload): string[] {
 export function enrichExtractionPayload(
     payload: RawExtractionPayload,
     existingAcordData?: any,
-    provider: string = 'gemini'
+    provider: string = 'gemini',
+    /** The probe's per-page read of the same document (W0-02); citations are verified against it (W1-02). */
+    localText?: LocalDocumentText | null
 ): EnrichedExtraction {
     const fieldConfidence = extractConfidenceMap(payload)
     const missingCriticalFields = getMissingCriticalFields(payload)
@@ -175,7 +178,9 @@ export function enrichExtractionPayload(
     const customerPhone = asText(payload.customerPhone)
     const customerTaxId = normalizeTaxId(asText(payload.customerTaxId))
 
-    const extractionSources = sanitizeExtractionSources(payload.extractionSources)
+    // Sanitised, then VERIFIED against the document's own text (W1-02): a
+    // snippet the pages do not contain is marked, not stored as evidence.
+    const extractionSources = verifyExtractionSources(sanitizeExtractionSources(payload.extractionSources), localText)
 
     const acordData = {
         ...baseAcord,
