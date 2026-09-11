@@ -146,6 +146,23 @@ describe('OpenAIAIService message payload shape', () => {
     }
   })
 
+  it('with EXTRACTION_TEXT_FIRST=1 and local text, extraction sends page-marked TEXT and no file part', async () => {
+    vi.stubEnv('EXTRACTION_TEXT_FIRST', '1')
+    try {
+      const generateObjectMock = vi.mocked(generateObject)
+      generateObjectMock.mockResolvedValueOnce({ object: { insurerName: 'Insurer', policyNumber: 'PN-1', lineOfBusiness: 'motor', startDate: '2026-01-01', endDate: '2027-01-01', premiumAmount: 200, coverageSummary: 'Summary' }, usage: { inputTokens: 10, outputTokens: 5 } } as any)
+      const pageText = 'Policy schedule. Insured: Maria Papadopoulou. Cover: motor third party, roadside assistance, glass. Premium EUR 420. '.repeat(8)
+      const withText = asValidatedForTests({ ...doc, localText: { pages: [pageText], sampledPages: 1, pageCount: 1 } } as any)
+      const service = new OpenAIAIService('test-api-key')
+      await service.extractPolicyData(withText)
+      const extraction = (generateObjectMock.mock.calls[0][0] as any).messages[0].content
+      expect(extraction.find((p: any) => p.type === 'file')).toBeUndefined()
+      expect(extraction.map((p: any) => p.text ?? '').join('\n')).toContain('--- Page 1 ---')
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+
   it('uses ai@6-compatible file parts for Q&A generateText calls', async () => {
     const generateTextMock = vi.mocked(generateText)
     generateTextMock.mockResolvedValue({

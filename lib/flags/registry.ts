@@ -180,6 +180,20 @@ export const FEATURE_FLAGS: Record<string, FlagDefinition> = {
         envOnlyReason:
             "Read synchronously while building the extraction prompt and response schema (prompts.ts, extraction-schema.ts, mock-ai.service.ts). Reading it from the database would make prompt construction async — a change to the extraction contract on the money path, which does not belong in an admin-console change.",
     },
+    "extraction.text_first": {
+        key: "extraction.text_first",
+        kind: "boolean",
+        label: "Text-first extraction",
+        description:
+            "Send a text-native PDF to the extraction model as locally extracted, page-marked text instead of the whole file; scans and photos still send the image.",
+        category: "extraction",
+        envVar: "EXTRACTION_TEXT_FIRST",
+        defaultValue: false,
+        readAt: "lib/services/ai/extraction-input.ts extractionTextFirstEnabled",
+        envOnly: true,
+        envOnlyReason:
+            "Read synchronously while the provider assembles the extraction request (extraction-input.ts). Same rollout dialect as extraction.citations: env-only, Gemini-first.",
+    },
 }
 
 export const FLAG_KEYS = Object.keys(FEATURE_FLAGS)

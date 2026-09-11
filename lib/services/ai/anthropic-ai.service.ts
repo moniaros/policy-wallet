@@ -7,6 +7,7 @@
  */
 
 import { providerDocumentFileName } from "@/lib/wallet/document-label"
+import { extractionContentParts } from "./extraction-input"
 import { createAnthropic } from "@ai-sdk/anthropic"
 import { generateObject, generateText } from "ai"
 import { z } from "zod"
@@ -197,6 +198,18 @@ export class AnthropicAIService implements IAIService {
         // NEVER pass temperature/top_p in this service: Claude Sonnet 5 (the
         // extraction/gap/clarity default) rejects non-default sampling params
         // with a 400; omitting them is safe on every Claude model.
+        // Text or file — decided in ONE place (extraction-input.ts, W0-03).
+        const { input, parts } = extractionContentParts(
+            buildExtractionPrompt(options?.operatorGuidance, options?.lineOfBusinessHint),
+            document
+        )
+        logger("info", "Anthropic extraction input", {
+            kind: input.kind,
+            ...(input.kind === "text"
+                ? { pagesSent: input.pagesSent, pageCount: input.pageCount, truncated: input.truncated }
+                : { reason: input.reason }),
+        })
+
         const result = await withTimeoutAndRetry(
             (signal) =>
                 generateObject({
@@ -207,20 +220,7 @@ export class AnthropicAIService implements IAIService {
                     maxRetries: 0,
                     model: this.aiProvider!(modelName as string),
                     schema: ExtractionSchema,
-                    messages: [
-                        {
-                            role: "user",
-                            content: [
-                                { type: "text", text: buildExtractionPrompt(options?.operatorGuidance, options?.lineOfBusinessHint) },
-                                {
-                                    type: "file",
-                                    data: document.data,
-                                    mediaType: document.mimeType,
-                                    filename: providerDocumentFileName(document.mimeType),
-                                } as any,
-                            ],
-                        },
-                    ],
+                    messages: [{ role: "user", content: parts as any }],
                 }),
             "Anthropic extraction generateObject"
         )
