@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { RULE_READ_FIELDS } from '@/lib/gaps/rule-read-fields'
+
 /**
  * Extraction source citations — Wave 9 of the branch product system.
  *
@@ -14,8 +16,8 @@ import { z } from 'zod'
  * the pre-citation behavior.
  */
 
-/** Fields eligible for citations — mirrors the confidence field set. */
-export const CITATION_FIELDS = [
+/** The identity, date and premium fields — mirrors the confidence field set. */
+export const IDENTITY_CITATION_FIELDS = [
     'insurerName',
     'policyNumber',
     'lineOfBusiness',
@@ -26,6 +28,22 @@ export const CITATION_FIELDS = [
     'premiumFrequency',
     'renewalDate',
 ] as const
+
+/**
+ * Fields eligible for citations: the identity set, then EVERY `acordData` path
+ * an active authored rule reads (PW-PROVENANCE-01 W1-01), keyed as the model
+ * returns them — `acordData.<path>`. Until W1-01 not one field a rule fired on
+ * carried a citation, so every finding quoted a figure nobody could follow to
+ * a page. `tests/unit/citation-fields-cover-rule-reads.test.ts` fails when a
+ * rule reads a field this list does not name.
+ */
+export const CITATION_FIELDS: readonly string[] = [
+    ...IDENTITY_CITATION_FIELDS,
+    ...RULE_READ_FIELDS.map((path) => `acordData.${path}`),
+]
+
+/** The `acordData.<path>` citation key for a rule-read path. */
+export const citationKeyForAcordPath = (path: string): string => `acordData.${path}`
 
 const MAX_SNIPPET_LENGTH = 240
 
@@ -63,8 +81,10 @@ export const ExtractionSourcesSchema = z
 /** Prompt section appended when the flag is on. */
 export const CITATIONS_PROMPT_SECTION = `
 CITATIONS:
-For each of these fields, when you find its value in the document, also return an entry in "extractionSources":
-${CITATION_FIELDS.join(', ')}
+For each of these fields, when you find its value in the document, also return an entry in "extractionSources", keyed exactly as listed:
+${IDENTITY_CITATION_FIELDS.join(', ')}
+and, for the acordData fields the coverage checks read, keyed "acordData.<path>":
+${RULE_READ_FIELDS.map((path) => `acordData.${path}`).join(', ')}
 Each entry: { "page": <1-based page number>, "snippet": "<short VERBATIM quote from the document, max 30 words, original language>" }
 Never invent a snippet — omit the entry if you cannot quote the document.`
 

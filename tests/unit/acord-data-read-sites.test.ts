@@ -86,7 +86,10 @@ export function blankCommentsAndStrings(source: string): string {
                         else if (source[i] === "}") depth--
                         i++
                     }
-                    out += source.slice(start, i)
+                    // The interpolation is code — but it may hold a NESTED
+                    // template literal (`${xs.map((x) => \`acordData.${x}\`)}`),
+                    // whose literal text must be blanked like any other.
+                    out += blankCommentsAndStrings(source.slice(start, i))
                     continue
                 }
                 out += source[i] === "\n" ? "\n" : " "
@@ -495,6 +498,11 @@ describe("probe — the guard turns red on the shapes it exists to catch", () =>
     it("a block comment does not shift the reported line", () => {
         const r = scanSource(`/* two\nlines */\nconst v = policy.acordData.vehicle.nope`, "probe.ts")
         expect(r.violations.map((v) => v.line)).toEqual([3])
+    })
+
+    it("a template literal nested inside an interpolation is not a read", () => {
+        const r = scanSource("const keys = `fields: ${paths.map((p) => `acordData.${p}`).join(', ')}`", "probe.ts")
+        expect(r.sites).toEqual([])
     })
 
     it("a string literal mentioning a path is not a read", () => {
