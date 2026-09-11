@@ -1,11 +1,12 @@
 #!/bin/bash
-# Anonymous production smoke for PW-PROVENANCE-01 W2-02 (the evidence floor; a finding below it is disclosed, never published).
-# The item changes what a SIGNED-IN wallet shows: every live finding below its rule's floor moves to the disclosed
-# «Ευρήματα χωρίς επιβεβαίωση από το έγγραφο» group and leaves every count. An anonymous smoke proves only that the
-# deploy carrying the item is live and the public product unchanged — the demotion itself needs the owner's session.
+# Anonymous production smoke for PW-PROVENANCE-01 W5-01 (named drivers counted and characterised, never named).
+# The item narrows the extraction contract: neither driver array accepts a name or a licence number, the prompt
+# asks for none, a legacy row's names are stripped on parse, and the motor card renders relationship and band.
+# No route, page or stored row changes (0 rows on either database carry the array). An anonymous smoke proves the
+# deploy carrying the item is live and the public product unchanged; the card's new rendering is signed-in only.
 # Re-runnable; writes nothing.
 #
-#   bash docs/evidence/provenance-w2-02/prod-smoke.sh
+#   bash docs/evidence/provenance-w5-01/prod-smoke.sh
 H=https://www.policywallet.gr
 pages="/ /pricing /product/motor /product/health /trust /methodology /status /auth/signin"
 for p in $pages; do

@@ -24,7 +24,8 @@ describe('the coverage panel reads what extraction actually wrote', () => {
                 accidentDeclarationPhone: '210 999 8888',
                 roadsideAssistancePhone: '210 111 2222',
                 greenCardExpiryDate: '2027-03-01',
-                namedDrivers: [{ name: 'Μαρία Παπαδοπούλου' }],
+                // W5-01: a named driver is characterised, never named.
+                namedDrivers: [{ relationshipToPolicyholder: 'σύζυγος', ageBand: '25-30' }],
             },
         }
         render(<MotorCoverageDetails acordData={acord} language="el" />)
@@ -36,8 +37,10 @@ describe('the coverage panel reads what extraction actually wrote', () => {
         // The number you are meant to ring from the roadside.
         expect(screen.getByText('210 999 8888')).toBeTruthy()
         expect(screen.getByText('210 111 2222')).toBeTruthy()
-        // Who else is actually covered to drive it.
-        expect(screen.getByText('Μαρία Παπαδοπούλου')).toBeTruthy()
+        // Who else is actually covered to drive it — by relationship and band,
+        // never by name (W5-01: no rule reads a name, so none is stored).
+        expect(screen.getByText('σύζυγος')).toBeTruthy()
+        expect(screen.getByText('25-30')).toBeTruthy()
     })
 
     it('shows the home sum insured and the peril grid from a canonical extraction', () => {
