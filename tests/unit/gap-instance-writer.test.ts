@@ -22,13 +22,14 @@ import { AUTHORED_GAP_DEFINITIONS } from "@/lib/gaps/authored-catalogue"
  *   - the attempted-rule plan is recorded from the catalogue before any
  *     evaluation, so it survives a run that later fails.
  */
-function txDouble(live: Array<{ id: string; status: string }>) {
+function txDouble(live: Array<{ id: string; status: string }>, definitions: Array<{ id: string; detectionLogic: unknown }> = []) {
     return {
         gapInstance: {
             findMany: vi.fn().mockResolvedValue(live),
             updateMany: vi.fn().mockImplementation(async ({ where }: any) => ({ count: where.id.in.length })),
             createMany: vi.fn().mockResolvedValue({ count: 1 }),
         },
+        gapDefinition: { findMany: vi.fn().mockResolvedValue(definitions) },
     }
 }
 
