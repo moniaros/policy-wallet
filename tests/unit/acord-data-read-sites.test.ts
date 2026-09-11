@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 
-import { AcordDataSchema } from "@/lib/schemas/acord-data"
+import { StoredAcordDataSchema } from "@/lib/schemas/acord-envelope"
 
 import { globSync } from "../helpers/glob"
 
@@ -16,21 +16,23 @@ import { globSync } from "../helpers/glob"
  * of this series may change the stored shape (§4), the readers have to be
  * enumerable and checkable.
  *
- * The universe is DERIVED, twice: the paths from `AcordDataSchema` itself (Zod,
- * walked), and the read sites from the source tree (every `.ts`/`.tsx` under
- * app/, lib/, components/, comments and string literals stripped). A read of a
- * path the schema does not declare is a violation unless it is under a
- * documented ENVELOPE root — a key written beside the schema by a named writer,
- * which this file also verifies still writes it — or listed in EXEMPT with a
- * reason.
+ * The universe is DERIVED, twice: the paths from the STORED schema (Zod,
+ * walked — `lib/schemas/acord-envelope.ts`, W0-04: the extraction schema plus
+ * the envelope the pipeline writes beside it), and the read sites from the
+ * source tree (every `.ts`/`.tsx` under app/, lib/, components/, comments and
+ * string literals stripped). A read of a path the schema does not declare is a
+ * violation unless it is listed in EXEMPT with a reason. A read beneath
+ * `extraction`, `analysis`, `processingError`, `renewalHistory`, `renewalReview`,
+ * `policyholder` or `insured` is checked like any other.
  *
  * What it follows: direct chains on the identifier `acordData` (through `as`
  * casts and `?.`), one-hop aliases declared from it in the same file
  * (`const d = policy.acordData as AcordData` → `d.vehicle…`), and destructuring
  * (`const { vehicle } = acordData`). What it does NOT follow, stated so a green
  * here is read correctly: a value passed into a function under another
- * parameter name, and a typed alias assigned from a helper's return. A typed
- * alias is what `tsc` already checks; the untyped ones are what this exists for.
+ * parameter name, a typed alias assigned from a helper's return, and an alias
+ * whose name is declared more than once in the file. A typed alias is what
+ * `tsc` already checks; the untyped ones are what this exists for.
  */
 
 // ── A stripper that keeps every newline, so a reported line is the real line ──
@@ -156,44 +158,7 @@ export function schemaPaths(schema: ZodLike): Set<string> {
     return out
 }
 
-const UNIVERSE = schemaPaths(AcordDataSchema)
-
-/**
- * Keys written onto the stored JSON BESIDE the schema — by name, with the file
- * that writes them. Paths under these roots are not validated (they have no
- * schema; W0-02 may give them one). A root whose writer no longer writes it
- * fails below, so this list cannot outlive the code it describes.
- */
-export const ENVELOPE: Record<string, { writer: string; note: string }> = {
-    extraction: {
-        writer: "lib/services/ai/extraction-enrichment.ts",
-        note: "provider, confidence, per-field sources, reviewState, summaryLanguage — enrichExtractionPayload",
-    },
-    analysis: {
-        writer: "lib/services/analysis/policy-analysis-orchestrator.service.ts",
-        note: "pipeline bookkeeping the orchestrator merges in on success and failure",
-    },
-    processingError: {
-        writer: "lib/services/analysis/policy-analysis-orchestrator.service.ts",
-        note: "the failure record a failed run leaves on the row",
-    },
-    renewalHistory: {
-        writer: "lib/services/policy.service.ts",
-        note: "the merged renewal history a renewal append writes",
-    },
-    renewalReview: {
-        writer: "lib/services/analysis/policy-analysis-orchestrator.service.ts",
-        note: "the renewal comparison the orchestrator attaches",
-    },
-    policyholder: {
-        writer: "lib/services/ai/extraction-enrichment.ts",
-        note: "the customer's own contact details as the enrichment records them (name, email, phone, taxId) — 7 of 8 production rows carry it (2026-09-11)",
-    },
-    insured: {
-        writer: "lib/services/ai/extraction-enrichment.ts",
-        note: "the insured party as the enrichment records it — same shape and count as policyholder; W5 minimisation territory",
-    },
-}
+const UNIVERSE = schemaPaths(StoredAcordDataSchema)
 
 /**
  * Reads the guard cannot classify, each with a reason. A row here is a debt,
@@ -236,6 +201,11 @@ function parseChain(src: string, i: number): { segments: string[]; end: number }
     const segments: string[] = []
     for (;;) {
         while (i < src.length && (src[i] === " " || src[i] === "\t")) i++
+        // A chain may continue on the next line — `(x as T)\n    ?.extraction` —
+        // so newlines are crossed only when a `.` or `?.` follows them.
+        let j = i
+        while (j < src.length && /\s/.test(src[j])) j++
+        if (j > i && (src[j] === "." || (src[j] === "?" && src[j + 1] === "."))) i = j
         if (src.startsWith("as ", i) || src.startsWith("as\n", i)) {
             i = skipCast(src, i + 3)
             continue
@@ -278,8 +248,6 @@ const isLeaf = (p: string) => ![...UNIVERSE].some((u) => u.startsWith(`${p}.`) |
 export function validateChain(base: string, segments: string[]): string | null {
     let cur = base
     for (const seg of segments) {
-        const root = cur.split(/[.[]/)[0]
-        if (root && ENVELOPE[root]) return null // unvalidated beneath an envelope root
         if (seg.endsWith("(") || seg === "length") return null // a method or length: the chain leaves the data
         if (seg === "[?]") return null // a computed key — a documented hole, not a pass
         if (seg === "[]") {
@@ -298,8 +266,7 @@ export function validateChain(base: string, segments: string[]): string | null {
             cur = `${cur}.*`
             continue
         }
-        if (cur === "" && ENVELOPE[seg]) return null
-        if (cur === "") return `\`${seg}\` is not a key of AcordDataSchema`
+        if (cur === "") return `\`${seg}\` is not a key of the stored acordData schema`
         if (isLeaf(cur)) return `\`${cur}\` is a leaf; \`.${seg}\` reads into a primitive`
         return `\`${next}\` is not in AcordDataSchema`
     }
@@ -348,13 +315,17 @@ export function scanSource(source: string, file: string): { sites: ReadSite[]; v
     for (const m of src.matchAll(alias)) {
         const name = m[1]
         if (m[2].includes("(") && !/^\(\s*[\w$?!.]*$/.test(m[2])) continue
+        // A name declared more than once in the file (another method's
+        // `const clarity = await …`) is ambiguous: following it would bind
+        // reads of an unrelated value to the data. Not followed, stated.
+        const declarations = src.match(new RegExp(`\\b(?:const|let|var)\\s+${name.replace(/\$/g, "\\$")}\\b`, "g")) ?? []
+        if (declarations.length > 1) continue
         const { segments, end } = parseChain(src, m.index! + m[0].length)
         if (segments.some((s) => s.endsWith("(") || s === "[?]")) continue // a call result or a computed key
         const rest = src.slice(end).match(/^[^\n;]*/)?.[0] ?? ""
         if (!/^\s*(\)|as\b[^;\n]*|\?\?[^;\n]*|\|\|[^;\n]*)*\s*$/.test(rest)) continue // the value is a larger expression
         const base = validateChain("", segments) === null ? segments.join(".").replace(/\.\[\]/g, "[]") : ""
         if (segments.length > 0 && base === "") continue // the declaration itself is already a violation above
-        if (segments.length > 0 && ENVELOPE[segments[0]]) continue
         for (const s of chainsOn(src, name, base, file, true)) check(s, base)
     }
 
@@ -405,23 +376,20 @@ export function scanRepo(): { files: number; sites: ReadSite[]; violations: Viol
 describe("every acordData read reaches a path the schema declares", () => {
     const repo = scanRepo()
 
-    it("derives a real universe from AcordDataSchema", () => {
-        expect(UNIVERSE.size).toBeGreaterThan(150)
+    it("derives a real universe from the stored schema — extraction fields and the envelope", () => {
+        expect(UNIVERSE.size).toBeGreaterThan(200)
         expect(UNIVERSE.has("vehicle.insuredValue")).toBe(true)
         expect(UNIVERSE.has("coverages[].limit")).toBe(true)
         expect(UNIVERSE.has("health.annualLimit")).toBe(true)
+        expect(UNIVERSE.has("extraction.sources.*.page")).toBe(true)
+        expect(UNIVERSE.has("analysis.pipeline.status")).toBe(true)
+        expect(UNIVERSE.has("renewalHistory[].documents[].id")).toBe(true)
+        expect(UNIVERSE.has("policyholder.taxId")).toBe(true)
     })
 
     it("finds a meaningful number of read sites", () => {
         expect(repo.files).toBeGreaterThan(500)
         expect(repo.sites.length).toBeGreaterThan(300)
-    })
-
-    it("every envelope root is still written by the file that claims it", () => {
-        for (const [key, { writer }] of Object.entries(ENVELOPE)) {
-            const src = blankCommentsAndStrings(readFileSync(writer, "utf-8"))
-            expect(new RegExp(`(?<![\\w$])${key}\\s*:`).test(src), `${writer} no longer writes \`${key}:\``).toBe(true)
-        }
     })
 
     it("no read reaches a path outside the schema, the envelope or a written exemption", () => {
@@ -445,6 +413,11 @@ describe("every acordData read reaches a path the schema declares", () => {
 })
 
 describe("probe — the guard turns red on the shapes it exists to catch", () => {
+    it("a read beneath an envelope root that the stored schema does not declare", () => {
+        const r = scanSource(`const x = (policy.acordData as any)?.extraction?.confidence?.overal`, "probe.ts")
+        expect(r.violations.map((v) => v.chain)).toEqual(["extraction.confidence.overal"])
+    })
+
     it("a direct read of a key the schema does not declare", () => {
         const r = scanSource(`const v = policy.acordData.vehicle.nope`, "probe.ts")
         expect(r.violations.map((v) => v.chain)).toEqual(["vehicle.nope"])
@@ -481,11 +454,13 @@ describe("probe — the guard turns red on the shapes it exists to catch", () =>
         expect(r.violations[0].reason).toMatch(/leaf/)
     })
 
-    it("legitimate shapes pass: array methods, envelope roots, optional chains, casts with braces", () => {
+    it("legitimate shapes pass: array methods, envelope paths, optional chains, casts with braces", () => {
         const r = scanSource(
             [
                 `acordData?.coverages?.map((c) => c.limit)`,
                 `const n = (policy.acordData as any)?.extraction?.reviewState`,
+                `const pg = (policy.acordData as any)?.extraction?.sources?.renewalDate?.page`,
+                `const st = acordData.analysis?.pipeline?.status`,
                 `(policy.acordData as { processingError?: unknown } | null)?.processingError`,
                 `const h = acordData.health?.annualLimit`,
                 `const first = acordData.coverages[0].limit`,
@@ -496,12 +471,25 @@ describe("probe — the guard turns red on the shapes it exists to catch", () =>
             "probe.ts"
         )
         expect(r.violations).toEqual([])
-        expect(r.sites.length).toBe(8)
+        expect(r.sites.length).toBe(10)
+    })
+
+    it("an alias name declared twice in a file is not followed — the second may be another value", () => {
+        const r = scanSource(
+            `const clarity = (policy.acordData as any)?.analysis?.clarity\nfunction other() { const clarity = await runClarity(); return clarity.coverageGaps.length }`,
+            "probe.ts"
+        )
+        expect(r.violations).toEqual([])
     })
 
     it("an alias assigned from a helper's return is not followed — that value is typed", () => {
         const r = scanSource(`const home = homeSection(acordData)\nreturn home.notAField`, "probe.ts")
         expect(r.violations).toEqual([])
+    })
+
+    it("a chain that continues on the next line after a cast is followed", () => {
+        const r = scanSource(`const tag = (acordData as { extraction?: { x?: unknown } } | null)\n    ?.extraction?.nope`, "probe.ts")
+        expect(r.violations.map((v) => v.chain)).toEqual(["extraction.nope"])
     })
 
     it("a block comment does not shift the reported line", () => {

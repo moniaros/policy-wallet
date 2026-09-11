@@ -3010,10 +3010,14 @@ export class PolicyAnalysisOrchestratorService {
                 exclusions: [],
             },
             savingsOpportunities: clarity.savingsOpportunities || [],
-            coverageGaps: clarity.coverageGaps || [],
+            // Never stored: the compact clarity written at 3096 omits the gap
+            // list and the model's acordData (the rules decide gaps; the
+            // extraction owns acordData). Reading them was always undefined —
+            // stated here rather than read past the stored schema (W0-04).
+            coverageGaps: [],
             checklistScores: clarity.checklistScores || [],
             priorityActions: clarity.priorityActions || [],
-            acordData: clarity.acordData,
+            acordData: undefined,
         }
     }
 
