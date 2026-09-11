@@ -55,8 +55,8 @@ vi.mock('@/lib/services/ai/guard', () => ({
 // The document gate runs on the scan's bytes BEFORE the provider is reached
 // (lib/ingestion/document-gate.ts); its own suite covers the verdicts. Here
 // it passes the four `%PDF` bytes so this file keeps proving the CONSENT gate.
-vi.mock('@/lib/ingestion/document-gate', () => ({
-    validateDocumentForIngestion: vi.fn(async () => ({
+vi.mock('@/lib/ingestion/document-gate', () => {
+    const verdict = () => ({
         status: 'validated',
         documentType: 'insurance_policy',
         insuranceConfidence: 0.9,
@@ -69,10 +69,15 @@ vi.mock('@/lib/ingestion/document-gate', () => ({
         documentHash: 'h'.repeat(64),
         engineVersion: 'docgate-1',
         latencyMs: 1,
-    })),
+    })
+    return {
+        validateDocumentForIngestion: vi.fn(async () => verdict()),
+        // W0-02: the same verdict beside a null local text — the four `%PDF` bytes have no pages.
+        validateDocumentWithLocalText: vi.fn(async () => ({ verdict: verdict(), localText: null })),
     documentKindFor: () => 'policy_schedule',
     GATE_ACTIVITY: { validated: 'DOCUMENT_VALIDATED', requires_review: 'DOCUMENT_REVIEW_REQUIRED', rejected: 'DOCUMENT_REJECTED' },
-}))
+    }
+})
 // The provider the scan reaches. One mock object so the call count is the
 // proof that the document did — or did not — leave the building.
 const scanProvider = {

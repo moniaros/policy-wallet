@@ -69,7 +69,7 @@ import {
     emitAnalysisStepTelemetry,
 } from "./step-telemetry"
 import { documentMimeType } from "@/lib/security/file-upload"
-import { validateDocumentForIngestion } from "@/lib/ingestion/document-gate"
+import { validateDocumentForIngestion, readLocalText } from "@/lib/ingestion/document-gate"
 import { toValidatedAIDocument, type ValidatedAIDocument } from "@/lib/ingestion/validated-document"
 import { USER_RESOLVABLE_REVIEW_REASONS, type DocumentValidationResult } from "@/lib/ingestion/types"
 import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
@@ -2707,10 +2707,14 @@ export class PolicyAnalysisOrchestratorService {
         // the extraction step spends anything.
         const verdict = await this.ensureDocumentValidated(document, buffer, mimeType, docHash)
 
+        // The probe's per-page text, read again here because on the stamped
+        // path the gate did not run in this request (W0-02). In memory only.
+        const localText = await readLocalText(buffer, mimeType)
+
         return {
             documentId: document.id,
             documentHash: docHash,
-            document: toValidatedAIDocument(verdict, buffer, mimeType),
+            document: toValidatedAIDocument(verdict, buffer, mimeType, localText),
         }
     }
 

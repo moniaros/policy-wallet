@@ -20,6 +20,21 @@ export async function textPdf(lines: string[], pages = 1): Promise<Uint8Array> {
     return doc.save()
 }
 
+/** A text PDF whose pages differ: `pages[i]` are the lines of page `i + 1`. For per-page assertions (W0-02). */
+export async function pagedTextPdf(pages: string[][]): Promise<Uint8Array> {
+    const doc = await PDFDocument.create()
+    const font = await doc.embedFont(StandardFonts.Helvetica)
+    for (const lines of pages) {
+        const page = doc.addPage([595, 842])
+        let y = 800
+        for (const line of lines) {
+            page.drawText(line, { x: 40, y, size: 10, font })
+            y -= 14
+        }
+    }
+    return doc.save()
+}
+
 /** A one-pixel PNG — enough for pdf-lib to embed, so the page has an image and no text. */
 export const ONE_PIXEL_PNG = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",

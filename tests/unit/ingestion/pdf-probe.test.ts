@@ -11,7 +11,7 @@ import {
 } from "@/lib/ingestion/pdf-probe"
 import { normalizeDocumentText } from "@/lib/ingestion/normalize-text"
 
-import { textPdf, imageOnlyPdf } from "../../helpers/pdf-fixtures"
+import { textPdf, imageOnlyPdf, pagedTextPdf } from "../../helpers/pdf-fixtures"
 
 /** Well-formed and empty: a catalogue whose page tree has zero kids. */
 const ZERO_PAGE_PDF = Buffer.from(
@@ -42,6 +42,28 @@ describe("probePdf — the cheap local read", () => {
         expect(result.text).toContain("policy number: mt-2026-0001234")
         expect(result.text).toContain("total premium: eur 412.50")
         expect(result.textChars).toBeGreaterThan(IMAGE_ONLY_TEXT_THRESHOLD)
+    })
+
+    it("keeps each sampled page's RAW text beside the folded text — pages[i] is page i + 1, case and accents intact", async () => {
+        const bytes = await pagedTextPdf([
+            ["Insurance Policy Schedule", "Policy number MT-2026-0001"],
+            ["Insured: Maria Papadopoulou", "Vehicle IZT-1234"],
+            ["Premium EUR 420.00", "Period 01/01/2026 - 31/12/2026"],
+        ])
+        const result = await probePdf(bytes)
+        expect(result.ok).toBe(true)
+        if (!result.ok) return
+        expect(result.pages).toHaveLength(3)
+        expect(result.sampledPages).toBe(3)
+        // Raw: the capital letters survive here and are folded in `text`.
+        expect(result.pages[0]).toContain("Insurance Policy Schedule")
+        expect(result.text).toContain("insurance policy schedule")
+        expect(result.text).not.toContain("Insurance Policy Schedule")
+        // No page is joined into another: the second page's line is on page 2 only.
+        expect(result.pages[1]).toContain("Insured: Maria Papadopoulou")
+        expect(result.pages[0]).not.toContain("Maria")
+        // `text` is unchanged by the addition: still the folded join of the same parts.
+        expect(result.text).toBe(normalizeDocumentText(result.pages.join("\n")))
     })
 
     it("flags a blank page and an image-only page as image-only rather than failing", async () => {

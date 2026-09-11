@@ -16,12 +16,21 @@
  */
 
 import type { AIDocument } from "@/lib/services/ai/ai-service.interface"
-import type { DocumentValidationResult } from "./types"
+import type { DocumentValidationResult, LocalDocumentText } from "./types"
 
 declare const VALIDATED: unique symbol
 
-/** An AIDocument the document gate has passed. Structurally an AIDocument; nominally more. */
-export type ValidatedAIDocument = AIDocument & { readonly [VALIDATED]: true }
+/**
+ * An AIDocument the document gate has passed. Structurally an AIDocument;
+ * nominally more. `localText` is the probe's per-page read of the same bytes
+ * (W0-02): present for a text PDF, absent for a scan or a photo. Providers
+ * build their request from `data` and `mimeType` by name — a provider that
+ * spread the whole object would ship it, and the source guard forbids that.
+ */
+export type ValidatedAIDocument = AIDocument & {
+    readonly [VALIDATED]: true
+    readonly localText?: LocalDocumentText
+}
 
 export class DocumentNotValidatedError extends Error {
     readonly code = "DOCUMENT_NOT_VALIDATED" as const
@@ -45,12 +54,14 @@ export class DocumentNotValidatedError extends Error {
 export function toValidatedAIDocument(
     verdict: Pick<DocumentValidationResult, "status" | "code">,
     bytes: Buffer | Uint8Array,
-    mimeType: string
+    mimeType: string,
+    localText: LocalDocumentText | null = null
 ): ValidatedAIDocument {
     if (verdict.status !== "validated") throw new DocumentNotValidatedError(verdict)
-    const document: AIDocument = {
+    const document: AIDocument & { localText?: LocalDocumentText } = {
         data: Buffer.from(bytes).toString("base64"),
         mimeType,
+        ...(localText ? { localText } : {}),
     }
     return document as ValidatedAIDocument
 }
