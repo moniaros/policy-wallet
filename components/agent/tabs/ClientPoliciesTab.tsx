@@ -21,6 +21,12 @@ interface ClientPoliciesTabProps {
     commissionRates?: Record<string, number>
     /** True when the viewing agent's plan includes branded reports (Pro+). */
     canBrandedReport?: boolean
+    /**
+     * Policies this client holds beyond the ones below — rendered ONLY because
+     * the client chose to disclose the number (halt H-B2). `null`/undefined is
+     * "they have not said", which is the default and is not zero.
+     */
+    unsharedPolicyCount?: number | null
     onUploadPolicy?: () => void
 }
 
@@ -37,6 +43,16 @@ const TAB_COPY = {
     commissionUnit: { el: "προμήθεια", en: "commission" },
     managedByYou: { el: "Διαχειριζόμενο από εσάς", en: "Managed by you" },
     policies: { el: "Ασφαλιστήρια", en: "Policies" },
+    // The client's own disclosure, in their words, not ours: it says a number
+    // exists and nothing about what those policies are.
+    unsharedOne: {
+        el: "Ο πελάτης σάς ενημερώνει ότι έχει και 1 ασφαλιστήριο που δεν σας έχει κοινοποιήσει.",
+        en: "The client has told you they also hold 1 policy they have not shared with you.",
+    },
+    unsharedMany: {
+        el: "Ο πελάτης σάς ενημερώνει ότι έχει και {count} ασφαλιστήρια που δεν σας έχει κοινοποιήσει.",
+        en: "The client has told you they also hold {count} policies they have not shared with you.",
+    },
 } as const
 
 // Status pills on the status TOKENS, the state as a word.
@@ -61,6 +77,7 @@ export function ClientPoliciesTab({
     commissionRates,
     canBrandedReport = false,
     onUploadPolicy,
+    unsharedPolicyCount = null,
 }: ClientPoliciesTabProps) {
     const { language, t } = useLanguage()
     const [showCommission, setShowCommission] = useState(false)
@@ -161,6 +178,30 @@ export function ClientPoliciesTab({
                     title={TAB_COPY.policies[language]}
                     meta={<span className="tabular-nums">{filteredPolicies.length}</span>}
                 />
+                {typeof unsharedPolicyCount === "number" && unsharedPolicyCount > 0 && (
+                    /* H-B2. The platform never volunteers that a client holds
+                       more than what is listed here; this line exists only
+                       because the client turned the disclosure on, and it
+                       carries a COUNT — no insurer, no branch, no dates. */
+                    <p className="mt-2 text-caption leading-snug text-muted-foreground">
+                        {(unsharedPolicyCount === 1 ? TAB_COPY.unsharedOne[language] : TAB_COPY.unsharedMany[language])
+                            .split("{count}")
+                            .map((part, i, parts) => (
+                                <React.Fragment key={i}>
+                                    {part}
+                                    {i < parts.length - 1 && (
+                                        <span
+                                            data-count="client.unsharedPolicyCount"
+                                            data-count-subject={customerId}
+                                            className="font-semibold tabular-nums"
+                                        >
+                                            {unsharedPolicyCount}
+                                        </span>
+                                    )}
+                                </React.Fragment>
+                            ))}
+                    </p>
+                )}
                 {filteredPolicies.length === 0 ? (
                     /* "No policies at all" is handled above. This is the other empty
                        state: both filters offer only values present in the data, but

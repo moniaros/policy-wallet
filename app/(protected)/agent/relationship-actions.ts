@@ -18,6 +18,8 @@ import { absoluteUrl } from "@/lib/seo/site"
 import { INVITE_EXPIRY_DAYS, daysFromNow } from "@/lib/constants/time"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
+import { emit } from "@/lib/notifications/dispatch"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 
 type TerminationResult = { success: true } | { success: false; error: string }
 
@@ -78,6 +80,48 @@ async function terminateRelationship(
         actorSide,
     })
 
+    // Tell the OTHER party. Ending a relationship revokes the grants between
+    // the two people in the same transaction above, so one side simply stops
+    // seeing the other — the advisor disappears from the customer's /agent, or
+    // the customer disappears from the agent's book — and until now neither
+    // event left any trace on the side it happened TO (PW-BRIDGE-01 I-05, I-06).
+    // `advisor_assigned` is transactional because gaining sight of someone's
+    // policies is a thing they are entitled to know; losing it is the same fact
+    // in reverse. Best-effort: the relationship has already ended, and a failed
+    // notification must not report the termination as failed.
+    const affectedUserId = actorSide === "agent" ? policyholderUserId : agentUserId
+    try {
+        const actor = await db.user.findUnique({
+            where: { id: actorUserId },
+            select: { name: true },
+        })
+        const actorName = displayPersonName(actor?.name)
+        await emit({
+            event: "advisor_relationship_ended",
+            userId: affectedUserId,
+            title: {
+                el: "Η συνεργασία τερματίστηκε",
+                en: "The connection has ended",
+            },
+            message:
+                actorSide === "agent"
+                    ? {
+                          el: `${actorName || "Ο σύμβουλός σας"} τερμάτισε τη συνεργασία. Δεν έχει πλέον πρόσβαση στα ασφαλιστήριά σας.`,
+                          en: `${actorName || "Your advisor"} ended the connection and no longer has access to your policies.`,
+                      }
+                    : {
+                          el: `${actorName || "Ο πελάτης"} τερμάτισε τη συνεργασία. Δεν έχετε πλέον πρόσβαση στα ασφαλιστήριά του.`,
+                          en: `${actorName || "The client"} ended the connection. You no longer have access to their policies.`,
+                      },
+            dedupeKey: `relationship_ended:${relationship.id}`,
+        })
+    } catch (e: any) {
+        logger("error", "Relationship-ended notification failed", {
+            relationshipId: relationship.id,
+            error: e?.message,
+        })
+    }
+
     return { success: true }
 }
 
@@ -104,6 +148,47 @@ export async function disconnectFromAgent(relationshipId: string): Promise<Termi
         revalidatePath("/agent")
     }
     return result
+}
+
+/**
+ * The customer decides whether this advisor may know that unshared policies
+ * EXIST — a count, never an identity (halt H-B2).
+ *
+ * The halt asked whether the agent side should say «this client also holds
+ * policies you cannot see». The platform saying it on its own is new
+ * information about someone's record that they never shared, so it does not.
+ * The customer saying it is a disclosure like any other share, so they can —
+ * from the same page that lists what the advisor already sees, off by default,
+ * and reversible in one tap.
+ *
+ * `relationshipId` names the relationship, never the acting user: the subject
+ * is derived from the session and must BE the policyholder. An advisor calling
+ * this for their own relationship is refused — the whole point is that the
+ * disclosure is not theirs to make.
+ */
+export async function setUnsharedCountDisclosure(
+    relationshipId: string,
+    disclosed: boolean
+): Promise<{ success: true; disclosed: boolean } | { success: false; error: "UNAUTHORIZED" | "NOT_FOUND" }> {
+    const auth = await getAuthenticatedUserOrNull()
+    if (!auth) return { success: false, error: "UNAUTHORIZED" }
+
+    const relationship = await db.customerRelationship.findUnique({
+        where: { id: relationshipId },
+        select: { id: true, policyholderUserId: true },
+    })
+    if (!relationship) return { success: false, error: "NOT_FOUND" }
+    if (relationship.policyholderUserId !== auth.dbUser.id) return { success: false, error: "UNAUTHORIZED" }
+
+    await db.customerRelationship.update({
+        where: { id: relationshipId },
+        data: { unsharedCountDisclosed: disclosed },
+    })
+
+    revalidatePath("/agent")
+    // The advisor's own view of this customer changes with it.
+    revalidatePath(`/customers/${auth.dbUser.id}`)
+    return { success: true, disclosed }
 }
 
 const AdvisorEmailSchema = z.string().trim().toLowerCase().email()

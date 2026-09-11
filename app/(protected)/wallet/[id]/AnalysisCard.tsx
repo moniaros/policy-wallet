@@ -579,7 +579,18 @@ export function AnalysisCard({
         if (res.error) {
             toast.error(mapWalletErrorToMessage(res.error, t, "analysis"))
         } else {
-            toast.success(actionCopy.agentNotified)
+            // The question opened a thread the customer can also read. Without
+            // this the only trace on their side was a toast that vanished, and
+            // the durable artifact was an Opportunity they will never see
+            // (PW-BRIDGE-01 D-03).
+            toast.success(actionCopy.agentNotified, {
+                action: res.threadId
+                    ? {
+                          label: actionCopy.openThread,
+                          onClick: () => router.push(`/collaboration/threads/${res.threadId}`),
+                      }
+                    : undefined,
+            })
         }
     }
 

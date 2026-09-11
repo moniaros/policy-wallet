@@ -1,0 +1,2 @@
+// PROBE — must turn tests/unit/authored-rule-inputs.test.ts red: a renters rule reading a vehicle field the extractor never fills for that branch.
+export const probe = { slug: 'probe_renters_plate', lineOfBusiness: 'renters', detectionLogic: { rules: [{ type: 'acord_field_check', field: 'vehicle.plateNumber', operator: 'missing' }], operator: 'AND' } }

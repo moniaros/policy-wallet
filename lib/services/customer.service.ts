@@ -170,8 +170,18 @@ export class CustomerService extends BaseService {
                 status: { not: 'terminated' }
             },
             include: {
+                // The profile renders identity, contact and the visible policies — never the
+                // customer's whole account row (taxId, billing, credential …) (A-01b).
                 customer: {
-                    include: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        contactEmailMissing: true,
+                        phoneNumber: true,
+                        image: true,
+                        // The identity rule's consent signal (with the presence check below).
+                        emailVerified: true,
                         policiesOwned: {
                             where: visibilityWhere,
                             orderBy: { startDate: 'desc' },
@@ -240,6 +250,24 @@ export class CustomerService extends BaseService {
             // audit log is best-effort; never let it break a read
         }
 
+        // Halt H-B2 — resolved by giving the DECISION to the customer.
+        //
+        // The platform never tells an advisor that a customer holds policies
+        // beyond the ones they shared: that is new information about someone's
+        // record, produced by us, which they did not choose to produce. When
+        // the customer has switched the disclosure on for THIS relationship,
+        // what crosses is a count and nothing else — no identity, no branch, no
+        // dates. The count query does not even run otherwise, so an advisor
+        // whose customer has not opted in cannot learn the number from a
+        // timing difference either.
+        const unsharedPolicyCount = relationship.unsharedCountDisclosed
+            ? Math.max(
+                  0,
+                  (await this.db.policy.count({ where: { ownerUserId: customerId } })) -
+                      relationship.customer.policiesOwned.length
+              )
+            : null
+
         return {
             customer: {
                 id: relationship.customer.id,
@@ -255,6 +283,8 @@ export class CustomerService extends BaseService {
                 activationStatus: relationship.activationStatus,
                 joinedAt: relationship.createdAt,
                 lastInteraction: relationship.lastInteractionAt,
+                /** null = the customer has not disclosed it. Never 0-as-unknown. */
+                unsharedPolicyCount,
             },
             policies: relationship.customer.policiesOwned.map(p => ({
                 id: p.id,
@@ -313,8 +343,12 @@ export class CustomerService extends BaseService {
         }
 
         // 1. Check if user exists
+        // The creator reads three fields (id, taxId, emailVerified) — never the
+        // account's whole row; the phantom it may create returns the same shape (A-01b).
+        const CREATOR_SELECT = { id: true, taxId: true, emailVerified: true } as const
         let user = await this.db.user.findUnique({
-            where: { email }
+            where: { email },
+            select: CREATOR_SELECT,
         });
 
         // Whether the agent's ΑΦΜ was dropped because the account is not theirs
@@ -338,7 +372,8 @@ export class CustomerService extends BaseService {
                     policyholderProfile: {
                         create: {}
                     }
-                }
+                },
+                select: CREATOR_SELECT,
             });
         } else if (taxId && !user.taxId) {
             // Backfill ΑΦΜ only onto a PHANTOM the agent side owns (no
@@ -444,7 +479,7 @@ export class CustomerService extends BaseService {
             },
             include: {
                 relationship: {
-                    include: { customer: true }
+                    select: { policyholderUserId: true, customer: { select: { name: true } } }
                 },
                 gapInstance: {
                     include: { definition: true }
@@ -473,7 +508,7 @@ export class CustomerService extends BaseService {
                 status: 'active',
                 lastInteractionAt: { lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
             },
-            include: { customer: true },
+            include: { customer: { select: { name: true } } },
             take: 5
         });
 

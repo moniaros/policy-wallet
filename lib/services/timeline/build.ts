@@ -44,7 +44,8 @@ export interface PolicyRow {
     insurerName: string | null
     createdAt: Date
     startDate: Date | null
-    endDate: Date | null
+    /** The RESOLVED coverage end from `resolvePolicyLifecycle` at the service — never the raw column (C-01b). */
+    coverageEndDate: Date | null
     status: string | null
 }
 
@@ -226,11 +227,11 @@ export function buildTimeline(sources: TimelineSources, now: Date = new Date()):
         // put a policy's last day on the timeline as already over for the three
         // hours after the customer's own calendar had rolled past it — the
         // repo's own guard caught this, correctly.
-        if (policy.endDate && readableDate(policy.endDate) && calendarDaysUntil(policy.endDate, now) < 0) {
+        if (policy.coverageEndDate && readableDate(policy.coverageEndDate) && calendarDaysUntil(policy.coverageEndDate, now) < 0) {
             entries.push({
                 id: `coverage_change:${policy.id}:ended`,
                 kind: "coverage_change",
-                at: policy.endDate,
+                at: policy.coverageEndDate,
                 title: {
                     en: `${branch.en} cover ended`,
                     el: `Έληξε η κάλυψη ${branch.el}`,

@@ -1,5 +1,7 @@
 import { db } from "@/lib/db"
 import { sendNotification } from "@/lib/notifications"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { logger } from "@/lib/logger"
 import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
 
@@ -147,7 +149,7 @@ export async function inviteTeamMember(
     }
 
     // Find user by email
-    const invitee = await db.user.findUnique({ where: { email: normalizeEmail(inviteeEmail) } })
+    const invitee = await db.user.findUnique({ where: { email: normalizeEmail(inviteeEmail) }, select: { id: true, roles: true } })
     if (!invitee) {
         throw new Error("No user found with that email. They must register first.")
     }
@@ -412,6 +414,35 @@ export async function transferCustomer(
             en: `${relationship.customer?.name || "A customer"} has been transferred to another agent`,
         },
     })
+
+    // Notify the CUSTOMER. Both agents were told; the person whose policies
+    // just became visible to a different human was not — although the registry
+    // has always listed `owner` among this event's recipients, and
+    // `advisor_assigned` is transactional precisely because "another person
+    // gains sight of your policies" is a fact you are entitled to know
+    // (PW-BRIDGE-01 I-07). Best-effort, after the transfer has committed.
+    try {
+        const newAgent = await db.user.findUnique({
+            where: { id: newAgentUserId },
+            select: { name: true },
+        })
+        const newAgentName = displayPersonName(newAgent?.name)
+        await sendNotification({
+            userId: relationship.policyholderUserId,
+            eventType: "customer_transferred",
+            title: { el: "Αλλαγή συμβούλου", en: "Your advisor has changed" },
+            message: {
+                el: `Η συνεργασία σας μεταφέρθηκε ${newAgentName ? `στον σύμβουλο ${newAgentName}` : "σε νέο σύμβουλο"}. Ο νέος σύμβουλος βλέπει τα ασφαλιστήρια που ήταν κοινοποιημένα, και ο προηγούμενος όχι πια.`,
+                en: `Your relationship was moved to ${newAgentName || "a new advisor"}. They can see the policies that were shared, and your previous advisor no longer can.`,
+            },
+            dedupeKey: `customer_transferred:${relationshipId}:${newAgentUserId}`,
+        })
+    } catch (e) {
+        logger("error", "Customer-transferred notification to the customer failed", {
+            relationshipId,
+            error: e instanceof Error ? e.message : String(e),
+        })
+    }
 
     return { success: true }
 }

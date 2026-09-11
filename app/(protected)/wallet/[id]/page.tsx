@@ -318,7 +318,8 @@ export default async function PolicyDetailPage({
         insurerName: policy.insurerName,
         policyNumber: policy.policyNumber,
         startDate: policy.startDate,
-        endDate: policy.endDate,
+        // The rules count from the RESOLVED end (C-01b) — the same call the head renders.
+        coverageEndDate: resolvePolicyLifecycle(policy).endDate ?? policy.endDate,
         acordData: policy.acordData,
     }
     const overlapSubject = isOwner ? insuredSubject(policyFacts) : null
@@ -338,7 +339,10 @@ export default async function PolicyDetailPage({
                     acordData: true,
                 },
             })
-            const overlap = findSameSubjectOverlap(policyFacts, siblings as PortfolioPolicyFacts[])
+            const overlap = findSameSubjectOverlap(
+                policyFacts,
+                siblings.map((s): PortfolioPolicyFacts => ({ ...s, coverageEndDate: resolvePolicyLifecycle(s).endDate ?? s.endDate }))
+            )
             if (overlap) {
                 overlapFinding = { partnerLabel: overlapPartnerLabel(overlap.partner) }
             }

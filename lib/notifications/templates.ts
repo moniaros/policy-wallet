@@ -49,6 +49,9 @@ export const EVENT_VARIABLES: Record<string, readonly string[]> = {
     policy_updated: ["policyNumber", "insurerName"],
     policy_removed: ["policyNumber", "insurerName"],
     policy_shared: ["policyNumber", "insurerName", "counterpartyName"],
+    policy_share_revoked: ["policyNumber", "insurerName", "counterpartyName"],
+    policy_details_confirmed: ["policyNumber", "insurerName", "counterpartyName"],
+    branded_report_generated: ["policyNumber", "insurerName", "counterpartyName"],
     policy_expiring: ["policyNumber", "insurerName", "expiryDate", "daysUntilExpiry"],
     renewal_overdue: ["policyNumber", "insurerName", "expiryDate"],
     renewal_milestone: ["policyNumber", "insurerName", "customerName", "daysUntilExpiry"],
@@ -60,8 +63,10 @@ export const EVENT_VARIABLES: Record<string, readonly string[]> = {
     subscription_expired: [],
     subscription_upgraded: [],
     advisor_assigned: ["counterpartyName"],
+    advisor_relationship_ended: ["counterpartyName"],
     collaboration_message: ["counterpartyName"],
     extraction_flagged: ["policyNumber", "flagReason"],
+    extraction_flag_raised: ["policyNumber", "flagReason"],
 }
 
 /** Every variable this event's templates may reference. */

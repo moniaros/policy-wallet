@@ -25,13 +25,17 @@
  * acceptable and the `idempotencyKey` is what closes the gap.
  */
 
-import { db } from "@/lib/db"
+import { db, type DbClient } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { getEventDefinition } from "./catalog"
 import type { Prisma } from "@prisma/client"
 
-/** Anything that can run a Prisma write — the client or a transaction client. */
-type Writer = Pick<Prisma.TransactionClient, "businessEvent">
+/**
+ * Anything that can run a Prisma write — the application client or the
+ * transaction client `db.$transaction` hands out (both carry the client-level
+ * `omit`, so they are typed on `DbClient`, not the bare `Prisma.TransactionClient`).
+ */
+type Writer = Pick<DbClient, "businessEvent">
 
 export interface ActorRef {
     /**

@@ -21,8 +21,8 @@ describe('every policy-expiry window opens at the start of the Athens day', () =
         // (PW-BRIDGE-01 C-01/C-02); the Athens-day lower bound is the argument.
         ['lib/services/renewal.service.ts', /expiryWindowWhere\(startOfToday, cutoff\)/],
         ['lib/services/weekly-digest.service.ts', /expiryWindowWhere\(startOfAthensDay\(now\), thirtyDaysOut\)/],
-        ['lib/services/churn-prevention.service.ts', /endDate: \{ gte: startOfAthensDay\(now\), lte: thirtyDaysOut \}/],
-        ['lib/services/perk-reminder.service.ts', /endDate: \{ gte: startOfAthensDay\(new Date\(\)\) \}/],
+        ['lib/services/churn-prevention.service.ts', /expiryWindowWhere\(startOfAthensDay\(now\), thirtyDaysOut\)/],
+        ['lib/services/perk-reminder.service.ts', /expiryWindowWhere\(startOfAthensDay\(new Date\(\)\)\)/],
         ['app/(protected)/renewals/actions.ts', /policyEndDate: \{ gte: startOfAthensDay\(now\), lte: weekFromNow \}/],
         ['app/(protected)/renewals/actions.ts', /policyEndDate: \{ gte: startOfAthensDay\(now\), lte: monthFromNow \}/],
     ]

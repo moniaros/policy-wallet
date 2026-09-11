@@ -13,8 +13,15 @@ export async function GET() {
     try {
         const user = await db.user.findUnique({
             where: { id: authResult.dbUser.id },
-            include: {
-                policyholderProfile: true,
+            // Exactly the fields the response body carries (A-01b).
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                preferredLanguage: true,
+                roles: true,
+                createdAt: true,
+                policyholderProfile: { select: { preferences: true } },
             }
         })
 

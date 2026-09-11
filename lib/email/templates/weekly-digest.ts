@@ -16,6 +16,8 @@ interface TopRecommendation {
 interface WeeklyDigestData {
     renewingSoon: { insurerName: string; lineOfBusiness: string; daysUntilExpiry: number }[]
     newGaps: number
+    /** C-06: what `newGaps` is OUT OF — every open classified finding on the wallet. */
+    openGaps?: number
     unreadMessages: number
     /** Top 3 active recommendations for behavioral nudge */
     topRecommendations?: TopRecommendation[]
@@ -68,9 +70,20 @@ export function getWeeklyDigestEmail(
     // Alerts section
     const alertItems: string[] = []
     if (data.newGaps > 0) {
-        alertItems.push(isGreek
+        // C-06: the count carries its denominator. «3 νέα κενά» alone reads as a
+        // verdict on the week; «3 από 11 ανοιχτά» is a measurement of it. The two
+        // numbers come from one query differing only in period, so they can never
+        // describe different portfolios.
+        const base = isGreek
             ? counted(data.newGaps, 'νέο κενό κάλυψης εντοπίστηκε', 'νέα κενά κάλυψης εντοπίστηκαν')
-            : counted(data.newGaps, 'new coverage gap detected', 'new coverage gaps detected'))
+            : counted(data.newGaps, 'new coverage gap detected', 'new coverage gaps detected')
+        const withDenominator =
+            typeof data.openGaps === 'number' && data.openGaps >= data.newGaps
+                ? isGreek
+                    ? `${base} — από ${data.openGaps} ανοιχτά συνολικά`
+                    : `${base} — of ${data.openGaps} open in total`
+                : base
+        alertItems.push(withDenominator)
     }
     if (data.unreadMessages > 0) {
         alertItems.push(isGreek
@@ -78,10 +91,20 @@ export function getWeeklyDigestEmail(
             : counted(data.unreadMessages, 'unread message', 'unread messages'))
     }
 
+    // B3: findings still under review reach no email, so the counts above are the
+    // CLASSIFIED ones. Saying which is the difference between a count and a claim
+    // — the app's own summary discloses exactly this.
+    const underReviewNote = data.newGaps > 0
+        ? `<p style="margin: 8px 0 0; font-size: 12px; color: #92400E;">${isGreek
+            ? 'Τα ευρήματα υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή τη σύνοψη — τα βλέπετε σε κάθε ασφαλιστήριο.'
+            : 'Findings still under review are not included in this summary — you can see them on each policy.'}</p>`
+        : ''
+
     const alertsHtml = alertItems.length > 0
         ? `
             <div style="background: #FEF3C7; border-radius: 8px; padding: 12px; margin-bottom: 24px;">
                 ${alertItems.map(a => `<p style="margin: 4px 0; font-size: 14px; color: #92400E;">${a}</p>`).join('')}
+                ${underReviewNote}
             </div>
         `
         : ''

@@ -76,7 +76,7 @@ function policy(over: Partial<ProtectingPolicy> = {}): ProtectingPolicy {
         insurerName: "Test Insurer",
         perils: null,
         sumInsured: null,
-        endDate: new Date("2027-01-01"),
+        coverageEndDate: new Date("2027-01-01"),
         ...over,
     }
 }
@@ -965,7 +965,7 @@ describe("no risk anywhere in the space applies without anchoring", () => {
         // shape that produces `unknown`.
         [policy()],
         [policy({ id: "m", lineOfBusiness: "motor", perils: ["liability"], sumInsured: 1000000 })],
-        [policy({ id: "e", status: "expired", perils: ["fire"], endDate: new Date("2020-01-01") })],
+        [policy({ id: "e", status: "expired", perils: ["fire"], coverageEndDate: new Date("2020-01-01") })],
     ]
 
     it("holds across every axis value and wallet shape", () => {

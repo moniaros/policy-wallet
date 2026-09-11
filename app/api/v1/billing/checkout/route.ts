@@ -55,9 +55,30 @@ export const POST = withApiGuard(
                 language
             )
         } catch (error: any) {
+            const message = error instanceof Error ? error.message : String(error)
+
+            // Not a failure: this deployment cannot take money at all
+            // (lib/pricing/stripe-mode.ts), so every caller would fail the same
+            // way. A 503 with its own code lets the surfaces that never pass
+            // the pricing card — UpgradeModal, CarriedPlanCard, /account — say
+            // «purchases are paused» instead of «something went wrong», and
+            // keeps a configuration state out of the 500-error signal.
+            if (message === "CHECKOUT_UNAVAILABLE") {
+                logger("warn", "Checkout refused: this deployment cannot charge", {
+                    userId: auth!.dbUser.id,
+                })
+                return createApiError(
+                    "CHECKOUT_UNAVAILABLE",
+                    "Online purchases are paused",
+                    503,
+                    null,
+                    language
+                )
+            }
+
             logger("error", "Checkout session creation failed", {
                 userId: auth!.dbUser.id,
-                error: error instanceof Error ? error.message : String(error),
+                error: message,
             })
             // Never echo internal error text (Stripe/DB details) to the client.
             return createApiError(

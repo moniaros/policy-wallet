@@ -28,6 +28,13 @@ const SINGULAR = word(
     "Σιγουρέψου|Άνοιξε|ξαναδές|νομίζεις|αξιοποιείς|Μάθε|Κατάλαβε|Ξεκίνα|Ρώτα|Έλεγξε"
 )
 
+// «Ζήτησε» above is a HOMOGRAPH: second-person singular imperative AND
+// third-person past ("the customer requested"). The pattern stays as it is and
+// the CONTENT moves instead — advisor-facing copy that means "the customer
+// requested" is written «ο πελάτης ζητά», which is unambiguous. Weakening the
+// alternation to admit the past tense would blind the guard to the imperative,
+// which is the form it exists to catch.
+
 // Second-person PLURAL / formal.
 const PLURAL = word(
     "Ασφαλίστε|Καλέστε|Φωτογραφίστε|Κρατήστε|Καταγράψτε|Δηλώστε|Στείλτε|Ζητήστε|Περιμένετε|" +

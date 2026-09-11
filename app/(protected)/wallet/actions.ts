@@ -1,9 +1,9 @@
 "use server"
 
 import { storedDocumentLabel } from "@/lib/wallet/document-label"
-import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { displayPersonName, policyLabel } from "@/lib/wallet/policy-identity"
 import { db } from "@/lib/db"
-import { emit } from "@/lib/notifications/dispatch"
+import { emit, emitToMany } from "@/lib/notifications/dispatch"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { INSURANCE_BRANCHES, normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -25,7 +25,14 @@ import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { AppError } from "@/lib/errors/app-error"
 import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
-import { resolveCoverageEndDate } from "@/lib/policy-status"
+import { resolveCoverageEndDate, resolvePolicyLifecycle } from "@/lib/policy-status"
+import { resolvePolicyAdvisors } from "@/lib/agent-visibility"
+import { formatDate } from "@/lib/i18n/format"
+import {
+    GAP_CLARIFICATION_REQUEST,
+    POLICY_SHARED_THREAD,
+    RENEWAL_QUOTE_REQUEST,
+} from "@/lib/insurance/content/agent-requests"
 import { PolicyService } from "@/lib/services/policy.service"
 import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
@@ -96,7 +103,7 @@ export async function createPolicy(formData: FormData) {
     // But earlier we used db.user.create without specifying ID, so it generated a UUID.
     // And we didn't force Supabase ID. 
     // Let's rely on email for robust linking.
-    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) }, select: { id: true } })
     if (!dbUser) throw new Error("User record not found")
 
     const userId = dbUser.id
@@ -322,7 +329,7 @@ export async function getPolicyReviewData(policyId: string) {
     if (!user?.id || !user.email) return { error: "Unauthorized" }
 
     // Use email-based lookup to match the local DB user ID (same as createPolicy)
-    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) }, select: { id: true } })
     if (!dbUser) return { error: "User not found" }
 
     const policy = await db.policy.findFirst({
@@ -490,6 +497,39 @@ export async function confirmPolicyReview(policyId: string, edits: ConfirmReview
         logger('error', 'Gap recompute after review confirm failed', { policyId, error: e?.message })
     }
 
+    // The owner's record was just OVERWRITTEN by someone else: insurer, number,
+    // dates, premium and sum insured take the agent's values, and the
+    // «unverified» badge goes away because a person vouched for them. The
+    // person whose record it is heard nothing about it (PW-BRIDGE-01 I-08).
+    // Skipped when the owner confirmed their own policy — this action is
+    // agent-only today, but the guard is cheap and the rule is the same one
+    // updatePolicy follows. Best-effort: the write has committed.
+    if (policy.ownerUserId !== dbUser.id) {
+        try {
+            const actorName = displayPersonName(dbUser.name)
+            const label = policyLabel({
+                insurerName: (columnData as { insurerName?: string }).insurerName ?? policy.insurerName,
+                policyNumber: input.policyNumber || policy.policyNumber,
+            })
+            await emit({
+                event: "policy_details_confirmed",
+                userId: policy.ownerUserId,
+                title: {
+                    el: "Τα στοιχεία του ασφαλιστηρίου σας επιβεβαιώθηκαν",
+                    en: "Your policy's details were confirmed",
+                },
+                message: {
+                    el: `${actorName || "Ο σύμβουλός σας"} έλεγξε και επιβεβαίωσε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : ""}. Μπορείτε να τα δείτε και να τα διορθώσετε.`,
+                    en: `${actorName || "Your advisor"} reviewed and confirmed the details${label ? ` on policy ${label}` : ""}. You can see them and correct them.`,
+                },
+                relatedObjectType: "policy",
+                relatedObjectId: policyId,
+            })
+        } catch (e: any) {
+            logger('error', 'Review-confirmed notification failed', { policyId, error: e?.message })
+        }
+    }
+
     revalidatePath("/wallet")
     revalidatePath(`/wallet/${policyId}`)
     revalidatePath(`/customers/${policy.ownerUserId}/policy/${policyId}`)
@@ -570,9 +610,33 @@ export async function flagPolicyExtraction(policyId: string, reason?: string) {
     // minute must not roll back the flag itself. (It also cannot be inside —
     // `emit` performs its own writes, and this used to be a bare create in the
     // transaction array, which is what kept it on one channel.)
+    // TWO audiences, two events — they used to share one row, addressed to the
+    // agent, while the registry declared `owner` and the copy spoke to the owner
+    // (PW-BRIDGE-01 I-09). The owner's record is now marked «flagged» and the
+    // «unverified» badge stays up; they are the only person who can resolve it,
+    // and they were the one person not told.
+    const flaggerName = displayPersonName(dbUser.name)
     await emit({
         event: "extraction_flagged",
-        userId: dbUser.id, // triage signal for the reviewing agent, not the owner
+        userId: policy.ownerUserId,
+        title: {
+            el: "Η αυτόματη ανάγνωση χρειάζεται έλεγχο",
+            en: "The automatic read needs review",
+        },
+        message: {
+            el: `${flaggerName || "Ο σύμβουλός σας"} επισήμανε ότι η αυτόματη ανάγνωση του ασφαλιστηρίου ${policy.policyNumber} χρειάζεται έλεγχο${trimmedReason ? `: ${trimmedReason}` : "."}`,
+            en: `${flaggerName || "Your advisor"} flagged the automatic read of policy ${policy.policyNumber} as needing review${trimmedReason ? `: ${trimmedReason}` : "."}`,
+        },
+        relatedObjectType: "policy",
+        relatedObjectId: policyId,
+    })
+
+    // ...and the triage row, addressed to the person who raised it. This is what
+    // the admin flag queue reads, so its «who flagged this» column keeps meaning
+    // the flagger rather than the customer.
+    await emit({
+        event: "extraction_flag_raised",
+        userId: dbUser.id,
         title: {
             el: "Επισημάνθηκε εξαγωγή AI",
             en: "AI extraction flagged",
@@ -592,10 +656,25 @@ export async function flagPolicyExtraction(policyId: string, reason?: string) {
 }
 
 /**
- * Owner asks for a renewal quote on a policy: records the request
- * (notification + activity trail) and notifies the connected agent when a
- * relationship exists. No quote is generated — this hands the request to
- * a human, it does not promise terms.
+ * Owner asks for a renewal quote on a policy.
+ *
+ * This used to be a notification and nothing else: an activity row, a bell for
+ * the customer, and a bell for whichever relationship `findFirst` happened to
+ * return. Nobody owned the request afterwards and no surface listed it, yet the
+ * customer was told «θα σας ενημερώσουμε για τα επόμενα βήματα» whether or not
+ * a person had been reached. It is now the same artifact as every other
+ * customer-to-advisor ask (`startBranchActionThread`): a dated collaboration
+ * thread in the `renewal` category, visible to both parties, reusing the open
+ * one so a second tap does not open a second thread (PW-BRIDGE-01 D-04).
+ *
+ * Recipients come from `resolvePolicyAdvisors`, so the request reaches the
+ * advisors who can already SEE this policy rather than an arbitrary one. When
+ * none can, it is still recorded and the caller is told plainly that it reached
+ * nobody — telling an advisor about a policy the customer never shared is the
+ * disclosure question halted as H-B2, not something a send path may decide.
+ *
+ * No quote is generated: this hands the request to a human, it does not promise
+ * terms.
  */
 export async function requestRenewalQuote(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
@@ -607,37 +686,73 @@ export async function requestRenewalQuote(policyId: string) {
     })
     if (!policy) return { error: "Not found" }
 
-    const relationship = await db.customerRelationship.findFirst({
-        where: { policyholderUserId: dbUser.id, status: "active" },
-        select: { agentUserId: true },
-    })
+    const advisors = await resolvePolicyAdvisors(policy)
+    const policyRef = policyLabel(policy, policyId)
 
-    const policyRef = policy.policyNumber || policy.insurerName || policyId
+    // The date the advisor reads is the resolved one, never the raw column: a
+    // renewal re-upload moves the envelope a year past `endDate`, and this
+    // message quotes the date.
+    const lifecycle = resolvePolicyLifecycle(policy)
+    const askerName = displayPersonName(dbUser.name) || dbUser.email || "Ο πελάτης"
 
-    try {
-        const writes: any[] = [
-            (db as any).activityLog.create({
-                data: {
-                    adminUserId: dbUser.id,
-                    adminEmail: dbUser.email || "unknown",
-                    actionType: "RENEWAL_QUOTE_REQUESTED",
-                    description: `Requested renewal quote for policy ${policyRef}`,
-                    metadata: {
-                        policyId,
-                        lineOfBusiness: policy.lineOfBusiness,
-                        endDate: policy.endDate?.toISOString() ?? null,
-                        agentNotified: Boolean(relationship),
-                    },
-                },
-            }),
-        ]
-        await db.$transaction(writes)
-    } catch (e: any) {
-        logger('error', 'Renewal quote request failed', { policyId, error: e.message })
-        return { error: "Request failed" }
+    // Greek, not the clicker's UI language — an advisor reads this, and a
+    // Greek-market broker should not be handed English because the customer
+    // happens to have the EN toggle on.
+    const advisorMessage = [
+        `${askerName}: ${RENEWAL_QUOTE_REQUEST.message.el}`,
+        `Ασφαλιστήριο: ${policyRef}.`,
+        lifecycle.endDate ? `Λήξη: ${formatDate(lifecycle.endDate, "el")}.` : null,
+    ]
+        .filter(Boolean)
+        .join(" ")
+
+    // The thread is the work item, so it opens BEFORE anything is announced: a
+    // request nobody can answer must not produce a bell saying it was sent.
+    const reached: { agentUserId: string; threadId: string }[] = []
+    for (const advisor of advisors) {
+        try {
+            const thread = await collaborationService.ensureAutomationThread(dbUser.id, {
+                relationshipId: advisor.relationshipId,
+                policyId,
+                subject: RENEWAL_QUOTE_REQUEST.subject.el,
+                category: RENEWAL_QUOTE_REQUEST.category,
+                priority: RENEWAL_QUOTE_REQUEST.priority,
+                initialMessage: advisorMessage,
+            })
+            if (thread) reached.push({ agentUserId: advisor.agentUserId, threadId: thread.id })
+        } catch (error: any) {
+            logger("error", "Renewal quote thread failed", {
+                policyId,
+                relationshipId: advisor.relationshipId,
+                error: error?.message,
+            })
+        }
     }
 
-    // Both notifications AFTER the commit. The advisor's copy used to sit inside
+    try {
+        await (db as any).activityLog.create({
+            data: {
+                adminUserId: dbUser.id,
+                adminEmail: dbUser.email || "unknown",
+                actionType: "RENEWAL_QUOTE_REQUESTED",
+                description: `Requested renewal quote for policy ${policyRef}`,
+                metadata: {
+                    policyId,
+                    lineOfBusiness: policy.lineOfBusiness,
+                    endDate: lifecycle.endDate?.toISOString() ?? null,
+                    advisorsReached: reached.length,
+                    threadIds: reached.map((entry) => entry.threadId),
+                },
+            },
+        })
+    } catch (e: any) {
+        // The thread already exists and the advisor can already see it, so a
+        // failed audit row is logged rather than reported to the customer as a
+        // failed request — which it is not.
+        logger("error", "Renewal quote activity log failed", { policyId, error: e.message })
+    }
+
+    // Both notifications AFTER the writes. The advisor's copy used to sit inside
     // the transaction array, which meant a quote request could only ever reach
     // the advisor through the bell — never email, never push — on an event whose
     // whole value is that a human sees it quickly.
@@ -648,33 +763,42 @@ export async function requestRenewalQuote(policyId: string) {
             el: "Ζητήθηκε προσφορά ανανέωσης",
             en: "Renewal quote requested",
         },
-        message: {
-            el: `Ασφαλιστήριο ${policyRef}: ζητήθηκε προσφορά ανανέωσης`,
-            en: `Policy ${policyRef}: renewal quote requested`,
-        },
+        message:
+            reached.length > 0
+                ? {
+                      el: `Ασφαλιστήριο ${policyRef}: το αίτημα στάλθηκε στον σύμβουλό σας.`,
+                      en: `Policy ${policyRef}: the request was sent to your advisor.`,
+                  }
+                : {
+                      el: `Ασφαλιστήριο ${policyRef}: το αίτημα καταγράφηκε, αλλά κανένας σύμβουλος δεν έχει πρόσβαση σε αυτό το ασφαλιστήριο.`,
+                      en: `Policy ${policyRef}: the request was recorded, but no advisor has access to this policy.`,
+                  },
         relatedObjectType: "policy",
         relatedObjectId: policyId,
     })
 
-    if (relationship) {
-        await emit({
-            event: "renewal_quote_requested",
-            userId: relationship.agentUserId,
-            title: {
-                el: "Πελάτης ζήτησε προσφορά ανανέωσης",
-                en: "Client requested a renewal quote",
-            },
-            message: {
-                el: `${displayPersonName(dbUser.name) || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`,
-                en: `${displayPersonName(dbUser.name) || dbUser.email || "A client"} requested a renewal quote for policy ${policyRef}`,
-            },
-            relatedObjectType: "policy",
-            relatedObjectId: policyId,
-        })
+    if (reached.length > 0) {
+        await emitToMany(
+            reached.map((entry) => entry.agentUserId),
+            {
+                event: "renewal_quote_requested",
+                title: {
+                    el: "Πελάτης ζήτησε προσφορά ανανέωσης",
+                    en: "Client requested a renewal quote",
+                },
+                message: {
+                    el: `${askerName} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`,
+                    en: `${askerName} requested a renewal quote for policy ${policyRef}`,
+                },
+                relatedObjectType: "policy",
+                relatedObjectId: policyId,
+            }
+        )
     }
 
     revalidatePath(`/wallet/${policyId}`)
-    return { success: true, agentNotified: Boolean(relationship) }
+    for (const entry of reached) revalidatePath(`/collaboration/threads/${entry.threadId}`)
+    return { success: true, advisorsReached: reached.length, threadId: reached[0]?.threadId ?? null }
 }
 
 export async function retryPolicyAnalysis(policyId: string) {
@@ -682,7 +806,7 @@ export async function retryPolicyAnalysis(policyId: string) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user?.id || !user.email) return { error: "Unauthorized" }
 
-    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) } })
+    const dbUser = await db.user.findUnique({ where: { email: normalizeEmail(user.email) }, select: { id: true, roles: true, preferredLanguage: true } })
     if (!dbUser) return { error: "User not found" }
 
     const policy = await db.policy.findFirst({
@@ -761,6 +885,37 @@ export async function updatePolicy(policyId: string, formData: FormData) {
         // someone else is something the owner should hear about rather than
         // discover. Skipped when the owner is the one who just made the edit —
         // telling someone what they did ten seconds ago is noise.
+        // ...and tell the ADVISORS who hold a grant over it. Their book changed
+        // under them: the cover, dates or premium they are working from are no
+        // longer the ones on screen, and `policy_updated` reached only the owner
+        // (PW-BRIDGE-01 I-22). The actor is excluded either way.
+        try {
+            const { getPolicyGranteeUserIds } = await import("@/lib/agent-visibility")
+            const grantees = await getPolicyGranteeUserIds(policyId, authResult.dbUser.id)
+            if (grantees.length > 0) {
+                const actorName = displayPersonName(authResult.dbUser.name)
+                const label = policyLabel({
+                    insurerName: (data as { insurerName?: string }).insurerName ?? null,
+                    policyNumber: (data as { policyNumber?: string }).policyNumber ?? null,
+                })
+                await emitToMany(grantees, {
+                    event: "policy_updated",
+                    title: {
+                        el: "Ένα κοινοποιημένο ασφαλιστήριο ενημερώθηκε",
+                        en: "A shared policy was updated",
+                    },
+                    message: {
+                        el: `${actorName || "Ο πελάτης"} άλλαξε τα στοιχεία${label ? ` του ασφαλιστηρίου ${label}` : " ενός ασφαλιστηρίου"} που βλέπετε.`,
+                        en: `${actorName || "The client"} changed the details${label ? ` on policy ${label}` : " on a policy"} you can see.`,
+                    },
+                    relatedObjectType: "policy",
+                    relatedObjectId: policyId,
+                })
+            }
+        } catch (e: any) {
+            logger('error', 'Policy-updated notification to grantees failed', { policyId, error: e?.message })
+        }
+
         const ownerUserId = (updated as { ownerUserId?: string } | null)?.ownerUserId
         if (ownerUserId && ownerUserId !== authResult.dbUser.id) {
             await emit({
@@ -960,7 +1115,9 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
 
     // 1. Find the agent
     const agent = await db.user.findUnique({
-        where: { email: normalizeEmail(agentEmail) }
+        where: { email: normalizeEmail(agentEmail) },
+        // id for the grant and the relationship, name/email for the notice (A-01b).
+        select: { id: true, name: true, email: true },
     })
 
     if (!agent) {
@@ -1022,22 +1179,16 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
     // Optional: Verify role
     // if (!agent.roles.includes('agent')) return { error: "This user is not an agent." }
 
-    // 2. Create Access Grant
-    // We treat policy sharing as a scoped grant
-    await db.accessGrant.create({
-        data: {
-            granterUserId: authResult.dbUser.id,
-            granteeUserId: agent.id,
-            scope: `policy:${policyId}`,
-            permissions: permissions,
-            status: "active"
-        }
-    })
-
-    // 3. Ensure a Relationship exists (so they show up in Agent's Customer list)
-    // We use upsert to avoid error if exists
-    // Note: status might need to be 'active' if they accepted, but here we force 'active' or 'pending'?
-    // Let's check if relationship exists first.
+    // 2 + 3. The GRANT and the RELATIONSHIP in ONE transaction.
+    //
+    // They were two separate awaits, and the half-state between them is not
+    // harmless: `computePolicyAccess` derives read/write/delete from an
+    // AccessGrant's level ALONE and never re-checks the relationship (see
+    // CLAUDE.md), so a grant that committed while the relationship create failed
+    // leaves an advisor holding real access that no relationship explains — and
+    // that no termination path would find, because every one of them works from
+    // the relationship. Half of a share is not a smaller share; it is an
+    // unexplained one (PW-BRIDGE-01 I-03).
     const existingRel = await db.customerRelationship.findUnique({
         where: {
             agentUserId_policyholderUserId: {
@@ -1047,17 +1198,30 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         }
     })
 
-    let relationshipId = existingRel?.id || null
-    if (!existingRel) {
-        const createdRel = await db.customerRelationship.create({
+    const createdRel = await db.$transaction(async (tx) => {
+        await tx.accessGrant.create({
+            data: {
+                granterUserId: authResult.dbUser.id,
+                granteeUserId: agent.id,
+                scope: `policy:${policyId}`,
+                permissions: permissions,
+                status: "active"
+            }
+        })
+        if (existingRel) return null
+        // Auto-activated: the customer initiated the share, which is the consent.
+        return tx.customerRelationship.create({
             data: {
                 agentUserId: agent.id,
                 policyholderUserId: authResult.dbUser.id,
-                status: "active", // Auto-activate since customer initiated sharing
+                status: "active",
                 activationStatus: "active"
             }
         })
-        relationshipId = createdRel.id
+    })
+
+    let relationshipId = existingRel?.id || createdRel?.id || null
+    if (createdRel) {
 
         const { publishAdvisorLinked } = await import("@/lib/events/publishers")
         await publishAdvisorLinked({
@@ -1099,10 +1263,12 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
             relationshipId,
             policyId,
-            category: "general",
-            priority: "medium",
-            subject: "Policy shared",
-            initialMessage: `${authResult.dbUser.name || "Policyholder"} shared this policy and started collaboration.`,
+            category: POLICY_SHARED_THREAD.category,
+            priority: POLICY_SHARED_THREAD.priority,
+            // Greek, from the content module: this subject is the heading BOTH
+            // parties read in the policy's timeline (PW-BRIDGE-01 D-03).
+            subject: POLICY_SHARED_THREAD.subject.el,
+            initialMessage: `${displayPersonName(authResult.dbUser.name) || "Ο πελάτης"}: ${POLICY_SHARED_THREAD.message.el}`,
         })
     }
 
@@ -1198,13 +1364,45 @@ export async function revokeShare(grantId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    await db.accessGrant.update({
+    const grant = await db.accessGrant.update({
         where: { id: grantId, granterUserId: authResult.dbUser.id },
-        data: { status: 'revoked', revokedAt: new Date() }
+        data: { status: 'revoked', revokedAt: new Date() },
+        select: { granteeUserId: true, scope: true },
     })
 
+    // The grantee loses sight of the policy this instant. Until now nothing
+    // said so: it simply stopped appearing in their book, which is
+    // indistinguishable from a bug (PW-BRIDGE-01 I-04). Best-effort — the
+    // revocation has already committed and is the part that matters.
+    try {
+        const policyId = grant.scope?.startsWith("policy:") ? grant.scope.slice("policy:".length) : null
+        const policy = policyId
+            ? await db.policy.findUnique({ where: { id: policyId }, select: { policyNumber: true, insurerName: true } })
+            : null
+        const granterName = displayPersonName(authResult.dbUser.name)
+        const label = policy ? policyLabel(policy) : null
+        await emit({
+            event: "policy_share_revoked",
+            userId: grant.granteeUserId,
+            title: {
+                el: "Η πρόσβαση σε ένα ασφαλιστήριο ανακλήθηκε",
+                en: "Access to a policy was withdrawn",
+            },
+            message: {
+                el: `${granterName || "Ο πελάτης"} ανακάλεσε την πρόσβασή σας${label ? ` στο ασφαλιστήριο ${label}` : ""}.`,
+                en: `${granterName || "The client"} withdrew your access${label ? ` to policy ${label}` : ""}.`,
+            },
+            ...(policyId ? { relatedObjectType: "policy" as const, relatedObjectId: policyId } : {}),
+            dedupeKey: `policy_share_revoked:${grantId}`,
+        })
+    } catch (e: any) {
+        logger('error', 'Share-revoked notification failed', { grantId, error: e?.message })
+    }
+
     revalidatePath("/wallet")
-    revalidatePath("/wallet")
+    // The agent's own list is cached separately; without this their book can
+    // still show a policy they can no longer open until their next render.
+    revalidatePath("/customers")
     return { success: true }
 }
 
@@ -1234,6 +1432,17 @@ export async function deletePolicy(policyId: string) {
         id: authResult.dbUser.id,
         roles: authResult.dbUser.roles,
     })
+
+    // Who can currently see this policy, read BEFORE anything is deleted — the
+    // grants go with the row, so after the delete there is nobody left to tell.
+    const granteesBeforeDelete = await (async () => {
+        try {
+            const { getPolicyGranteeUserIds } = await import("@/lib/agent-visibility")
+            return await getPolicyGranteeUserIds(policyId, authResult.dbUser.id)
+        } catch {
+            return [] as string[]
+        }
+    })()
 
     // Case 1: Owner or managing agent (active "manage" grant) - Full Delete.
     // The owner controls this capability: revoking the manage grant removes it.
@@ -1281,6 +1490,30 @@ export async function deletePolicy(policyId: string) {
             insurerName: policy.insurerName,
             policyNumber: policy.policyNumber,
         })
+
+        // Tell the ADVISORS who could see it, too. Deleting a policy removes it
+        // from their book with no explanation otherwise, which is the same
+        // silence a revoked share used to leave (PW-BRIDGE-01 I-22). Collected
+        // before the row is gone; the actor is excluded.
+        try {
+            if (granteesBeforeDelete.length > 0) {
+                const actorName = displayPersonName(authResult.dbUser.name)
+                await emitToMany(granteesBeforeDelete, {
+                    event: "policy_removed",
+                    title: {
+                        el: "Ένα κοινοποιημένο ασφαλιστήριο διαγράφηκε",
+                        en: "A shared policy was removed",
+                    },
+                    message: {
+                        el: `${actorName || "Ο πελάτης"} διέγραψε το ασφαλιστήριο ${policyLabel(policy)}. Δεν εμφανίζεται πλέον στον κατάλογό σας.`,
+                        en: `${actorName || "The client"} deleted policy ${policyLabel(policy)}. It no longer appears in your book.`,
+                    },
+                    dedupeKey: `policy_removed:${policyId}`,
+                })
+            }
+        } catch (e: any) {
+            logger('error', 'Policy-removed notification to grantees failed', { policyId, error: e?.message })
+        }
 
         // Tell the owner their policy is gone — HIGH, and emailed, because it
         // is destructive and may not have been them: a managing agent with a
@@ -1793,28 +2026,54 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
         return { error: "Gap not found for this policy." }
     }
 
-    // Find active relationship
-    const relationship = await db.customerRelationship.findFirst({
-        where: {
-            policyholderUserId: authResult.dbUser.id,
-            status: 'active'
-        }
-    })
+    // The advisors who can already SEE this policy — not whichever relationship
+    // `findFirst` returned, which need not be the advisor on this policy, and
+    // not gated on `status: "active"`, which shut out an advisor the customer
+    // had yet to accept while the wallet already showed them the policy. An
+    // Opportunity has one owner, so the oldest relationship takes it.
+    const advisor = (await resolvePolicyAdvisors(policy))[0]
 
-    if (!relationship) {
+    if (!advisor) {
         return { error: "No active agent found to notify." }
     }
 
-    // Check if opportunity already exists
+    // The thread comes FIRST. It is the artifact the CUSTOMER can see — their
+    // own timeline on this policy — while the Opportunity is a pipeline row
+    // they never see. Minting the opportunity first meant any thread failure
+    // left the customer's question as a sales record with no channel back to
+    // them (PW-BRIDGE-01 D-03).
+    const thread = await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
+        relationshipId: advisor.relationshipId,
+        policyId,
+        category: GAP_CLARIFICATION_REQUEST.category,
+        priority: GAP_CLARIFICATION_REQUEST.priority,
+        linkedGapInstanceId: gapId,
+        // Greek, and from the content module: this subject is the HEADING the
+        // customer reads in their own timeline, and it was a hardcoded English
+        // literal written by the server.
+        subject: GAP_CLARIFICATION_REQUEST.subject.el,
+        initialMessage: [
+            `${displayPersonName(authResult.dbUser.name) || "Ο πελάτης"}: ${GAP_CLARIFICATION_REQUEST.message.el}`,
+            gap.definition?.title ? `Εύρημα: ${gap.definition.title}.` : null,
+        ]
+            .filter(Boolean)
+            .join(" "),
+    })
+    if (!thread) {
+        return { error: "Request failed" }
+    }
+
+    // Dedupe AFTER the thread, so a repeat click still self-heals a thread an
+    // earlier attempt failed to open, and still hands the client its id.
     const existing = await db.opportunity.findFirst({
         where: {
             gapInstanceId: gapId,
-            relationshipId: relationship.id
+            relationshipId: advisor.relationshipId
         }
     })
 
     if (existing) {
-        return { success: true, message: "Agent already notified." }
+        return { success: true, message: "Agent already notified.", threadId: thread.id }
     }
 
     // Create Opportunity — seeded with the MEDIC pain evidence the platform
@@ -1833,10 +2092,10 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     })
     const opportunity = await db.opportunity.create({
         data: {
-            relationshipId: relationship.id,
+            relationshipId: advisor.relationshipId,
             policyId: policyId,
             gapInstanceId: gapId,
-            ownerAgentUserId: relationship.agentUserId,
+            ownerAgentUserId: advisor.agentUserId,
             status: 'open',
             notes: 'Customer requested more details on this gap.',
             medic: medicSeed.medic as any,
@@ -1845,35 +2104,34 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
         }
     })
 
-    await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
-        relationshipId: relationship.id,
-        policyId,
-        category: "coverage_gap",
-        priority: "high",
-        linkedGapInstanceId: gapId,
-        linkedOpportunityId: opportunity.id,
-        subject: "Coverage gap clarification requested",
-        initialMessage: `${authResult.dbUser.name || "Policyholder"} requested help on this coverage gap.`,
+    // The thread already exists; this only records which pipeline row grew out
+    // of it, so the agent's inbox and their opportunity are the same object.
+    await db.collaborationThread.update({
+        where: { id: thread.id },
+        data: { linkedOpportunityId: opportunity.id },
     })
 
     // Notify Agent
     await emit({
         event: 'opportunity_created',
-        userId: relationship.agentUserId,
+        userId: advisor.agentUserId,
         title: {
             el: 'Νέα ευκαιρία εντοπίστηκε',
             en: 'New Opportunity Detected',
         },
         message: {
-            el: `${authResult.dbUser.name || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`,
-            en: `${authResult.dbUser.name || 'Customer'} requested details on a coverage gap.`,
+            // Through the identity module — a raw `.name` renders fixture tokens.
+            el: `${displayPersonName(authResult.dbUser.name) || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`,
+            en: `${displayPersonName(authResult.dbUser.name) || 'Customer'} requested details on a coverage gap.`,
         },
         relatedObjectType: 'opportunity',
         relatedObjectId: opportunity.id,
     })
 
     revalidatePath("/wallet")
-    return { success: true, message: "Agent notified." }
+    revalidatePath(`/wallet/${policyId}`)
+    revalidatePath(`/collaboration/threads/${thread.id}`)
+    return { success: true, message: "Agent notified.", threadId: thread.id }
 }
 
 /**

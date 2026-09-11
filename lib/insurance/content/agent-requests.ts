@@ -50,7 +50,7 @@ export const DEFAULT_AGENT_REQUEST: AgentRequestSpec = {
     priority: 'medium',
     subject: { el: 'Ερώτηση για ασφαλιστήριο', en: 'Question about a policy' },
     message: {
-        el: 'Ο πελάτης ζητήστε να μιλήσετε για αυτό το ασφαλιστήριο μέσα από το PolicyWallet.',
+        el: 'Ο πελάτης ζητά να μιλήσετε για αυτό το ασφαλιστήριο μέσα από το PolicyWallet.',
         en: 'The customer asked to talk about this policy from inside PolicyWallet.',
     },
 }
@@ -71,7 +71,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'high',
         subject: { el: 'Αίτημα για πράσινη κάρτα', en: 'Green card request' },
         message: {
-            el: 'Ο πελάτης ζητήστε πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτό το όχημα.',
+            el: 'Ο πελάτης ζητά πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτό το όχημα.',
             en: 'The customer requested a green card (international insurance certificate) for this vehicle.',
         },
     },
@@ -91,7 +91,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'high',
         subject: { el: 'Αίτημα για πράσινη κάρτα', en: 'Green card request' },
         message: {
-            el: 'Ο πελάτης ζητήστε πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτή τη μοτοσικλέτα.',
+            el: 'Ο πελάτης ζητά πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτή τη μοτοσικλέτα.',
             en: 'The customer requested a green card (international insurance certificate) for this motorbike.',
         },
     },
@@ -162,7 +162,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'medium',
         subject: { el: 'Αίτημα για πίνακα ποσοστών ανικανότητας', en: 'Request for the disability percentage table' },
         message: {
-            el: 'Ο πελάτης ζητήστε τον πίνακα ποσοστών ανικανότητας που εφαρμόζεται στο ασφαλιστήριο προσωπικού ατυχήματος.',
+            el: 'Ο πελάτης ζητά τον πίνακα ποσοστών ανικανότητας που εφαρμόζεται στο ασφαλιστήριο προσωπικού ατυχήματος.',
             en: 'The customer requested the disability percentage table that applies to this personal accident policy.',
         },
     },
@@ -209,7 +209,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'high',
         subject: { el: 'Έλεγχος καλύψεων ως προς τη δραστηριότητα', en: 'Covers review against business activity' },
         message: {
-            el: 'Ο πελάτης ζητήστε έλεγχο του αν οι καλύψεις της επιχείρησης ταιριάζουν με την πραγματική δραστηριότητα.',
+            el: 'Ο πελάτης ζητά έλεγχο του αν οι καλύψεις της επιχείρησης ταιριάζουν με την πραγματική δραστηριότητα.',
             en: 'The customer asked for a review of whether the business covers match the actual activity.',
         },
     },
@@ -265,4 +265,64 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
 /** Never returns undefined — see DEFAULT_AGENT_REQUEST above. */
 export function getAgentRequest(actionId: string): AgentRequestSpec {
     return AGENT_REQUESTS[actionId] ?? DEFAULT_AGENT_REQUEST
+}
+
+/**
+ * Requests that do NOT come from a branch action.
+ *
+ * `AGENT_REQUESTS` above is keyed by `BranchAction.id`, so these two live
+ * beside it rather than in it: they are raised from a policy's own controls —
+ * the renewal button and the «tell my advisor» control on a finding — and have
+ * no action id to look up. They are here for the reason the whole module
+ * exists: the subject line is the heading the customer reads in their own
+ * timeline, and a server-authored English literal was rendering as that
+ * heading on a Greek-default product (PW-BRIDGE-01 D-03, D-04).
+ *
+ * Both are `high` priority: one is bounded by an expiry date, the other is a
+ * customer who has read a finding and is waiting for an answer.
+ */
+export const RENEWAL_QUOTE_REQUEST: AgentRequestSpec = {
+    category: 'renewal',
+    priority: 'high',
+    subject: { el: 'Αίτημα προσφοράς ανανέωσης', en: 'Renewal quote request' },
+    message: {
+        el: 'Ο πελάτης ζητά προσφορά για την ανανέωση αυτού του ασφαλιστηρίου.',
+        en: 'The customer requested a quote for renewing this policy.',
+    },
+}
+
+/**
+ * Not a request at all: the follow-up thread that rides on a share and on a
+ * sent questionnaire. They live here because they have the same failure —
+ * `subject` is the heading a customer reads in their own timeline, and both
+ * were English literals typed into the call site.
+ */
+export const POLICY_SHARED_THREAD: AgentRequestSpec = {
+    category: 'general',
+    priority: 'medium',
+    subject: { el: 'Κοινοποιήθηκε ασφαλιστήριο', en: 'Policy shared' },
+    message: {
+        el: 'Το ασφαλιστήριο κοινοποιήθηκε. Χρησιμοποιήστε αυτή τη συζήτηση για ερωτήσεις και διευκρινίσεις.',
+        en: 'The policy was shared. Use this thread for questions and clarifications.',
+    },
+}
+
+export const QUESTIONNAIRE_SENT_THREAD: AgentRequestSpec = {
+    category: 'questionnaire',
+    priority: 'medium',
+    subject: { el: 'Στάλθηκε ερωτηματολόγιο', en: 'Questionnaire requested' },
+    message: {
+        el: 'Στάλθηκε ένα ερωτηματολόγιο. Χρησιμοποιήστε αυτή τη συζήτηση για διευκρινίσεις.',
+        en: 'A questionnaire has been sent. Use this thread for follow-up and clarifications.',
+    },
+}
+
+export const GAP_CLARIFICATION_REQUEST: AgentRequestSpec = {
+    category: 'coverage_gap',
+    priority: 'high',
+    subject: { el: 'Ερώτηση για εύρημα της ανάλυσης', en: 'Question about an analysis finding' },
+    message: {
+        el: 'Ο πελάτης ζητά περισσότερες λεπτομέρειες για ένα εύρημα της ανάλυσης του ασφαλιστηρίου του.',
+        en: 'The customer asked for more detail on a finding from their policy analysis.',
+    },
 }

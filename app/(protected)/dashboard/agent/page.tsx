@@ -427,7 +427,7 @@ export default async function DashboardPage() {
             lastInteractionDate: rel.lastInteractionAt?.toISOString() || null,
             policyCount: clientPolicies.length,
             policies: clientPolicies.map((p) => ({
-                endDate: resolvedEndByPolicy.get(p.id)?.toISOString() || "",
+                expiresAt: resolvedEndByPolicy.get(p.id)?.toISOString() ?? null,
                 status: p.status || "active",
             })),
         })

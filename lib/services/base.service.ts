@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client"
-import { db } from "@/lib/db"
+import { db, type DbClient } from "@/lib/db"
 import { logger } from "@/lib/logger"
 
 export abstract class BaseService {
-    protected readonly db: PrismaClient
+    protected readonly db: DbClient
 
-    constructor(database: PrismaClient = db) {
+    constructor(database: DbClient = db) {
         this.db = database
     }
 
@@ -14,7 +13,7 @@ export abstract class BaseService {
      * Use this wrapper to ensure atomicity for complex operations.
      */
     protected async withTransaction<T>(
-        fn: (tx: Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<T>
+        fn: (tx: Omit<DbClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<T>
     ): Promise<T> {
         return this.db.$transaction(async (tx) => {
             return await fn(tx)

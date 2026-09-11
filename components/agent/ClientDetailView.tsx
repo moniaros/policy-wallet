@@ -199,6 +199,7 @@ export function ClientDetailView({
                             canBrandedReport={canBrandedReport}
                             customerId={customer.id}
                             onUploadPolicy={onUploadPolicy}
+                            unsharedPolicyCount={customer.unsharedPolicyCount}
                         />
                     )}
                     {activeTab === "activity" && (

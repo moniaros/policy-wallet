@@ -12,7 +12,8 @@ export async function GET() {
     try {
         const user = await db.user.findUnique({
             where: { id: authResult.dbUser.id },
-            include: {
+            // Only the subscription is read (A-01b).
+            select: {
                 subscriptions: {
                     where: { status: "active" },
                     take: 1,

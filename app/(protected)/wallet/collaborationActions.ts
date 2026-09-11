@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache"
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { resolvePolicyAdvisors } from "@/lib/agent-visibility"
 import { getAgentRequest } from "@/lib/insurance/content/agent-requests"
 import { collaborationService } from "@/lib/services/collaboration.service"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
@@ -59,9 +60,15 @@ export async function startBranchActionThread(policyId: string, actionId: string
         return { error: "UPGRADE_REQUIRED" }
     }
 
-    const relationship = await db.customerRelationship.findFirst({
-        where: { policyholderUserId: authResult.dbUser.id, status: "active" },
-    })
+    // The advisors who can already SEE this policy, in the owner's book. The
+    // old lookup was `findFirst({ policyholderUserId: caller, status: "active" })`,
+    // which picked an arbitrary advisor for a customer with more than one, shut
+    // out an advisor whose relationship the customer had not yet accepted, and
+    // — on the grant-holder branch above — resolved the CALLER's own agent
+    // rather than the policy owner's (PW-BRIDGE-01 D-03/D-04).
+    const advisors = await resolvePolicyAdvisors(policy)
+    const relationship =
+        advisors.find((candidate) => candidate.agentUserId === authResult.dbUser.id) ?? advisors[0]
     if (!relationship) return { error: "NO_AGENT" }
 
     const spec = getAgentRequest(actionId)
@@ -79,7 +86,7 @@ export async function startBranchActionThread(policyId: string, actionId: string
     let thread
     try {
         thread = await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
-            relationshipId: relationship.id,
+            relationshipId: relationship.relationshipId,
             policyId,
             subject: spec.subject.el,
             category: spec.category,

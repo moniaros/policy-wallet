@@ -1,0 +1,15 @@
+// PROBE (never compiled): an expiry window queried on the raw column — the
+// shape churn-prevention and perk-reminder had before C-01b. Kept red so the
+// guard's third rule is proven to bite.
+export async function expiringSoon(db: any, now: Date, cutoff: Date) {
+    const count = await db.policy.count({
+        where: { endDate: { gte: now, lte: cutoff } },
+    })
+    const inForce = await db.policy.findMany({
+        where: {
+            status: "active",
+            endDate: { gte: now },
+        },
+    })
+    return { count, inForce }
+}

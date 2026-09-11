@@ -105,7 +105,8 @@ describe('CustomerService.createCustomer', () => {
 
         await svc.createCustomer('agent-1', { email: '  Maria.P@Example.GR ', name: 'Maria' } as any)
 
-        expect(findUnique).toHaveBeenCalledWith({ where: { email: 'maria.p@example.gr' } })
+        // A-01b: the creator names the three fields it reads — never the whole account row.
+        expect(findUnique).toHaveBeenCalledWith({ where: { email: 'maria.p@example.gr' }, select: { id: true, taxId: true, emailVerified: true } })
         expect(create.mock.calls[0]![0].data.email).toBe('maria.p@example.gr')
     })
 })
@@ -115,7 +116,8 @@ describe('createAgentInvite', () => {
         const res = await createAgentInvite('  Nikos@X.GR ', 'portfolio')
 
         expect(res).toMatchObject({ success: true })
-        expect(userFindUnique).toHaveBeenCalledWith({ where: { email: 'nikos@x.gr' } })
+        // A-01b: the invite flow needs only the id.
+        expect(userFindUnique).toHaveBeenCalledWith({ where: { email: 'nikos@x.gr' }, select: { id: true } })
         expect(userCreate.mock.calls[0]![0].data.email).toBe('nikos@x.gr')
         expect(inviteCreate.mock.calls[0]![0].data.inviteeEmail).toBe('nikos@x.gr')
     })

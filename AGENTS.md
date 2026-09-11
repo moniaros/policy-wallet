@@ -208,11 +208,25 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   check compares CONTENT of the active set, never row counts: production once
   carried 41 definitions the AI minted for itself at runtime (`rule_id` `ai_*`,
   `detectionLogic` `{ source: "ai_clarity_pipeline" }`, one per analysis run
-  between 2026-07-13 and 2026-08-09) which dev never had. **Verified 2026-08-23:
-  both databases are now 29 active / 0 inactive on the same fingerprint
-  `2df9d0fd4b581caa` — the minted rows are gone.** Keep the content-not-counts
+  between 2026-07-13 and 2026-08-09) which dev never had. Verified 2026-08-23:
+  both databases 29 active / 0 inactive on fingerprint `2df9d0fd4b581caa`, the
+  minted rows gone. **Verified 2026-09-08 (PW-CONTENT-01 Goals 5–6): both are now
+  50 active / 0 inactive on `15fa2758cebeaecc`**, 14 branches. It shipped in two
+  halves because GitHub Actions went down mid-window: the 21 new rows were
+  written, then PARKED `is_active = false` so the database kept matching the code
+  that was actually live, then re-activated the moment the deploy landed
+  (`docs/content/PROD-ALIGNMENT.md`). **A catalogue ahead of its deployed code is
+  the failure this table's rule exists to prevent — parking is how you undo it
+  without deleting anything, and a content md5 taken BEFORE the write is what
+  proves the undo was exact.** Keep the content-not-counts
   rule anyway; the pipeline can mint again. This is the third table to drift
   after migrations and plan rows.
+  **A fingerprint written in a document is a claim, not a measurement.** The
+  alignment runbook carried `d6f515a1d400f9d5` for two days as the expected
+  value of the 50-rule set; it matched nothing on either side. Print it with
+  the repo's own function before trusting it — `npm run verify:gap-catalogue`
+  against a database it can reach, or `scripts/fingerprint-gap-rows.ts` over
+  rows handed across as JSON when it cannot.
 
   Minting is not the only way this surfaces. The clarity pipeline still emits
   slug VARIANTS that never become rows (`no-glass-coverage` for the authored
@@ -343,9 +357,23 @@ Therefore:
   - After any prod plan-row write, verify the live page renders coherently. ISR caches
     for 30 minutes, so a bad state persists after the data is fixed.
 
-Standing task (not yet done): make the public pricing surface refuse to render any plan
-whose stripe_price_id does not resolve in LIVE mode. Until that exists, this coupling is
-guarded only by discipline.
+Standing task — DONE 2026-09-11, and its wording was wrong. It asked for a refusal keyed
+on `stripe_price_id` resolving in LIVE mode; that field charges nothing. `lib/billing.ts`
+builds checkout line items from inline `price_data` off the plan ROW, and
+`Plan.stripePriceId` is only ever written back FROM Stripe by the webhook — so a plan with
+an empty one charges fine and a plan with a good one may charge nothing.
+
+What actually makes an advertised price unchargeable is the MODE, and production was
+serving that defect: `/pricing` offered the paid tiers with a working buy button while
+`STRIPE_SECRET_KEY` was a test key, so a visitor could reach a sandbox checkout, type a
+card and land on a success screen having paid nothing. `publicCheckoutAvailability()`
+([lib/pricing/stripe-mode.ts](lib/pricing/stripe-mode.ts)) is now the one answer to «can
+this deployment take money». A blocked paid plan keeps its PRICE — the price is true — and
+loses its BUTTON; free and contact plans are untouched because neither promises a payment.
+The same rule guards `createCheckoutSession`, because /account reaches checkout without
+passing the pricing card. It is deliberately NOT «test mode is bad»: sandbox checkout is
+correct in dev and preview and false only on a production deployment. Guard:
+`tests/unit/pricing-refuses-unchargeable-plans.test.tsx` with a probe.
 
 ## Guards must enumerate, not assume
 

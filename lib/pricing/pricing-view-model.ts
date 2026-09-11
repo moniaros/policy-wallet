@@ -14,6 +14,7 @@
  */
 
 import type { CatalogPlan } from "@/lib/pricing/plan-catalog"
+import { publicCheckoutAvailability, type CheckoutAvailability } from "@/lib/pricing/stripe-mode"
 import {
     publicPricingContent,
     type LocalizedText,
@@ -43,6 +44,22 @@ function computedSavings(cat: CatalogPlan): LocalizedText | null {
     return { el: `Εξοικονομείτε ~€${saved}`, en: `Save ~€${saved}` }
 }
 
+/**
+ * A plan is offered for sale only if this deployment can complete the sale.
+ *
+ * Free and «contact us» plans are unaffected: neither takes a payment, so
+ * neither can promise one it cannot keep. For a paid plan the price still
+ * renders — the price is true — and only the offer to buy is withdrawn.
+ */
+function withCheckoutAvailability(
+    plan: PublicPricingPlan,
+    checkout: CheckoutAvailability
+): PublicPricingPlan {
+    const takesPayment = Boolean(plan.checkoutPlanId) && !plan.isContactPlan
+    if (!takesPayment || checkout.available || !checkout.reason) return plan
+    return { ...plan, checkoutUnavailableReason: checkout.reason }
+}
+
 function buildPlan(plan: PublicPricingPlan, cat: CatalogPlan | undefined): PublicPricingPlan | null {
     if (!cat) return plan // no catalog row — render the template as-is (fallback)
     if (!cat.isPublic) return null
@@ -63,8 +80,18 @@ function buildPlan(plan: PublicPricingPlan, cat: CatalogPlan | undefined): Publi
     return { ...plan, pricing: { monthly, ...(annual ? { annual } : {}) } }
 }
 
+/**
+ * `checkout` DEFAULTS to the real answer for this deployment rather than being
+ * a required parameter, and that is the safe direction here: the correct value
+ * is a property of the deployment, not of the call site, so every page that
+ * forgets to pass it still gets the gate. (The opposite choice in
+ * `isPolicyVisibleToAgent` is right for the opposite reason — there the correct
+ * value differs per call site, so a default would silently permit a leak.)
+ * The parameter exists so tests can state a mode instead of setting env.
+ */
 export function buildPublicPricingContent(
-    catalog: CatalogPlan[]
+    catalog: CatalogPlan[],
+    checkout: CheckoutAvailability = publicCheckoutAvailability()
 ): Record<PricingAudience, PublicPricingAudienceContent> {
     const byId = new Map(catalog.map((p) => [p.id, p]))
     const build = (audience: PricingAudience): PublicPricingAudienceContent => {
@@ -72,7 +99,8 @@ export function buildPublicPricingContent(
         const plans = template.plans
             .map((plan) => {
                 const planId = plan.checkoutPlanId ?? PLAN_ID_BY_TEMPLATE_KEY[plan.key]
-                return buildPlan(plan, planId ? byId.get(planId) : undefined)
+                const built = buildPlan(plan, planId ? byId.get(planId) : undefined)
+                return built ? withCheckoutAvailability(built, checkout) : null
             })
             .filter((plan): plan is PublicPricingPlan => plan != null)
         return { ...template, plans }

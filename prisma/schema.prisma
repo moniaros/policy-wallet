@@ -1,5 +1,8 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // `omit` (GA in Prisma 6) — lib/db.ts omits `User.password` from every read
+  // unless a query names it (PW-BRIDGE-01 A-01b).
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -620,6 +623,11 @@ model CustomerRelationship {
   activationStatus       String                  @default("no_policies") @map("activation_status")
   createdAt              DateTime                @default(now()) @map("created_at")
   lastInteractionAt      DateTime?               @map("last_interaction_at")
+  /// The customer's own decision to let this advisor see THAT policies exist
+  /// outside what they shared — a count, never an identity. Default false: the
+  /// platform discloses nothing on its own (halt H-B2). Only the policyholder
+  /// may set it, and only for their own relationship.
+  unsharedCountDisclosed Boolean                 @default(false) @map("unshared_count_disclosed")
   agent                  User                    @relation("Agent", fields: [agentUserId], references: [id])
   customer               User                    @relation("Customer", fields: [policyholderUserId], references: [id])
   opportunities          Opportunity[]

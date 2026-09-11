@@ -1,0 +1,19 @@
+// PROBE for tests/unit/unshared-policy-count-is-the-customers-disclosure.test.ts.
+//
+// A second surface reading the customer's disclosure flag. Harmless-looking and
+// exactly the shape the halt's decision rules out: the flag decides what an
+// advisor is told about someone else's record, so every reader of it is a
+// disclosure path that must be reviewed. Not compiled — the guard reads it as
+// text, and would list this file as an unsanctioned reader.
+
+export async function agentBookSummary(agentUserId: string) {
+    const relationships = await db.customerRelationship.findMany({
+        where: { agentUserId },
+        select: { policyholderUserId: true, unsharedCountDisclosed: true },
+    })
+
+    return relationships.map((relationship) => ({
+        customerId: relationship.policyholderUserId,
+        holdsMore: relationship.unsharedCountDisclosed,
+    }))
+}

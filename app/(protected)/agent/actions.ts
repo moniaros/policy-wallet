@@ -1,9 +1,11 @@
 "use server"
 
 import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { storedDocumentLabel } from "@/lib/wallet/document-label"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { QUESTIONNAIRE_SENT_THREAD } from "@/lib/insurance/content/agent-requests"
 import { emit } from "@/lib/notifications/dispatch"
 import { notifyCounterparty } from "@/lib/notifications"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -299,6 +301,10 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
             accessScope: 'portfolio',
             permissions: ['view', 'upload', 'suggest', 'message'],
             policyCount: profile.policies.length,
+            // null unless the CUSTOMER disclosed it (H-B2). Passed through as
+            // null rather than 0 so the surface can tell "they chose to say
+            // nothing" from "there is nothing beyond what you see".
+            unsharedPolicyCount: profile.relationship.unsharedPolicyCount,
             openGapsCount: profile.policies.reduce((ts, p) => ts + p.gaps, 0),
             lastInteractionDate: profile.relationship.lastInteraction ? new Date(profile.relationship.lastInteraction).toISOString() : new Date(profile.relationship.joinedAt).toISOString(),
             createdAt: new Date(profile.relationship.joinedAt).toISOString(),
@@ -795,8 +801,10 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     }
 
     // 1. Ensure User exists (Placeholder if new)
-    let customer = await db.user.findUnique({
-        where: { email: inviteeEmail }
+    // Only the id is used from here on; a placeholder row is created with the same shape (A-01b).
+    let customer: { id: string } | null = await db.user.findUnique({
+        where: { email: inviteeEmail },
+        select: { id: true },
     })
 
     if (!customer) {
@@ -1254,7 +1262,9 @@ export async function addPolicyForCustomer(data: {
         // agent can now see. The agent's access is limited to THIS policy (the
         // auto-minted, owner-revocable grant above); it never extends to
         // policies the customer uploaded themselves.
-        const agentLabel = agentUser?.name || agentUser?.email || 'Your agent'
+        // Through the identity module: a raw `.name` renders fixture and placeholder
+        // tokens verbatim, and this sentence tells someone who can now see their policy.
+        const agentLabel = displayPersonName(agentUser?.name) || agentUser?.email || 'Your agent'
         const addedBranch = normalizeBranch(input.policy.lineOfBusiness)
         await emit({
             event: 'policy_added',
@@ -1736,11 +1746,13 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
 
     await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
         relationshipId,
-        category: "questionnaire",
-        priority: "medium",
+        category: QUESTIONNAIRE_SENT_THREAD.category,
+        priority: QUESTIONNAIRE_SENT_THREAD.priority,
         linkedQuestionnaireInstanceId: instance.id,
-        subject: "Questionnaire requested",
-        initialMessage: "A questionnaire has been sent. Use this thread for follow-up and clarifications.",
+        // Greek, from the content module: the customer reads this subject as a
+        // heading in their own timeline (PW-BRIDGE-01 D-03).
+        subject: QUESTIONNAIRE_SENT_THREAD.subject.el,
+        initialMessage: QUESTIONNAIRE_SENT_THREAD.message.el,
     })
 
     // Update last interaction
@@ -2040,7 +2052,7 @@ export async function requestAiConsent(policyId: string) {
 
     const language = resolveUserLanguage(owner.preferredLanguage)
     const t = getTranslations(language)
-    const agentName = authResult.dbUser.name || authResult.dbUser.email || "PolicyWallet agent"
+    const agentName = displayPersonName(authResult.dbUser.name) || authResult.dbUser.email || "PolicyWallet agent"
 
     const hasAccount = Boolean(owner.emailVerified || owner.lastActiveAt)
     if (hasAccount) {

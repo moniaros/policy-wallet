@@ -86,7 +86,7 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'renters', segment: 'b2c', parentId: 'home',
         label: { el: 'Ενοικιαστή', en: 'Renters' }, genitiveEl: 'ενοικιαστή',
         aliases: ['tenant'],
-        scoreCategory: 'property', writeEnabled: false, contentTier: 'basic',
+        scoreCategory: 'property', writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'health', segment: 'b2c',
@@ -382,6 +382,9 @@ export const WRITE_BRANCH_IDS = [
     'motor',
     'motorbike',
     'home',
+    // PW-CONTENT-01 Goal 5: a tenant's policy is its own line — it was catalogue-only,
+    // so every renters document was stored as `home` and no renters rule could exist.
+    'renters',
     'health',
     'life',
     'income_protection',

@@ -41,6 +41,12 @@ yarn-error.log*
 # not match .env* — so without this line, following the documented procedure
 # leaves prod secrets one `git add -A` away from history.
 .prod-db-env
+# Same trap, one step further out. `.env*` anchors at the START of the name, so
+# any file merely ENDING in .env is tracked: `vercel env pull production.env`
+# writes 55 production variables into the repo root and `git status` offers it
+# as a new file. This repo is PUBLIC. Hit for real on 2026-09-10 while trying to
+# read one flag's value; the file was deleted before it was staged.
+*.env
 
 # vercel
 .vercel

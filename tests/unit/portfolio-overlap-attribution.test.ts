@@ -23,7 +23,7 @@ function motor(overrides: Partial<PortfolioPolicyFacts> = {}): PortfolioPolicyFa
         insurerName: "Interamerican",
         policyNumber: "POL-1",
         startDate: new Date("2026-01-01"),
-        endDate: new Date("2026-12-31"),
+        coverageEndDate: new Date("2026-12-31"),
         acordData: { vehicle: { plateNumber: "ABC 1234" } },
         ...overrides,
     }
@@ -45,8 +45,8 @@ describe("findSameSubjectOverlap", () => {
     })
 
     it("does not fire when the periods cannot overlap", () => {
-        const overlap = findSameSubjectOverlap(motor({ endDate: new Date("2026-06-30") }), [
-            motor({ id: "p2", startDate: new Date("2026-07-01"), endDate: new Date("2027-06-30") }),
+        const overlap = findSameSubjectOverlap(motor({ coverageEndDate: new Date("2026-06-30") }), [
+            motor({ id: "p2", startDate: new Date("2026-07-01"), coverageEndDate: new Date("2027-06-30") }),
         ])
         expect(overlap).toBeNull()
     })

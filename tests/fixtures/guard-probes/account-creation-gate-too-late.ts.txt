@@ -1,0 +1,29 @@
+// Second probe for tests/unit/account-creation-behind-gate.test.ts — the
+// subtle one. This file DOES import the gate and DOES call it, so an
+// import-only check grades it green. It just asks after the account already
+// exists, which makes the answer a log line rather than a gate, and leaves a
+// Supabase auth user with no row behind it.
+//
+// Copy to app/api/probe-late/route.ts (as .ts) and run that test: it MUST fail
+// with "calls the gate AFTER it has already created an account". Delete the
+// copy afterwards.
+
+import { db } from "@/lib/db"
+import { createClient } from "@/lib/supabase/server"
+import { signupAllowedFor } from "@/lib/auth/registration-gate"
+
+export async function POST(request: Request) {
+    const { email, password } = await request.json()
+
+    const supabase = await createClient()
+    await supabase.auth.signUp({ email, password })
+
+    if (!(await signupAllowedFor(email))) {
+        return Response.json({ error: "closed" }, { status: 403 })
+    }
+
+    const user = await db.user.create({
+        data: { email, name: email.split("@")[0], roles: "policyholder" },
+    })
+    return Response.json({ id: user.id })
+}

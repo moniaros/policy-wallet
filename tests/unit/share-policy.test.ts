@@ -8,8 +8,8 @@ vi.mock('@/lib/auth-helpers', () => ({
     getAuthenticatedUser: vi.fn(),
 }))
 
-vi.mock('@/lib/db', () => ({
-    db: {
+vi.mock('@/lib/db', () => {
+    const db: Record<string, any> = {
         policy: { findUnique: vi.fn() },
         user: { findUnique: vi.fn() },
         accessGrant: { create: vi.fn(), update: vi.fn() },
@@ -17,8 +17,15 @@ vi.mock('@/lib/db', () => ({
         customerRelationship: { findUnique: vi.fn(), create: vi.fn() },
         notificationEvent: { create: vi.fn() },
         activityLog: { create: vi.fn() },
-    },
-}))
+    }
+    // The grant and the relationship commit together (PW-BRIDGE-01 I-03), so the
+    // mock has to offer the interactive form. It hands the callback THIS client,
+    // which is what makes the assertions below still see the same spies.
+    db.$transaction = vi.fn(async (arg: unknown) =>
+        typeof arg === 'function' ? await (arg as (tx: unknown) => unknown)(db) : arg
+    )
+    return { db }
+})
 
 vi.mock('@/lib/supabase/server', () => ({
     createClient: vi.fn(() => ({ auth: { getUser: vi.fn() } })),

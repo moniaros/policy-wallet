@@ -108,7 +108,8 @@ export default async function WalletPage() {
             scope: { startsWith: 'policy:' }
         },
         include: {
-            grantee: true
+            // The share badge names the grantee and links their id — nothing else (A-01b).
+            grantee: { select: { id: true, name: true } }
         }
     })
 

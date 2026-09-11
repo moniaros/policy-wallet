@@ -8,7 +8,7 @@
  * Run as a daily cron job via /api/v1/jobs/perk-reminders
  */
 
-import { startOfAthensDay } from "@/lib/policy-status"
+import { startOfAthensDay, expiryWindowWhere, resolvePolicyLifecycle } from "@/lib/policy-status"
 import { db } from "@/lib/db"
 import { sendNotification } from "@/lib/notifications"
 import { logger } from "@/lib/logger"
@@ -45,14 +45,18 @@ export async function runPerkReminderScan(): Promise<{
         const activePolicies = await db.policy.findMany({
             where: {
                 status: { in: ["active", "pending_review"] },
-                // A policy in force until tonight still has its perks.
-                endDate: { gte: startOfAthensDay(new Date()) },
+                // A policy in force until tonight still has its perks. Admitted on
+                // the resolved column (raw column only while it is NULL) and
+                // re-checked below through the one lifecycle call (C-01b).
+                ...expiryWindowWhere(startOfAthensDay(new Date())),
                 acordData: { not: undefined },
             },
             select: {
                 id: true,
                 policyNumber: true,
                 insurerName: true,
+                status: true,
+                endDate: true,
                 acordData: true,
                 ownerUserId: true,
             },
@@ -64,6 +68,10 @@ export async function runPerkReminderScan(): Promise<{
 
         for (const policy of activePolicies) {
             if (!policy.acordData || !policy.ownerUserId) continue
+            // Cover that the lifecycle says has ENDED has no perks to remind about,
+            // whatever the coarse window admitted (a renewed period is resolved here).
+            const daysLeft = resolvePolicyLifecycle(policy).daysUntilExpiry
+            if (daysLeft !== null && daysLeft < 0) continue
 
             const acordData = policy.acordData as unknown as AcordData
             const perks = acordData.perksAndBenefits

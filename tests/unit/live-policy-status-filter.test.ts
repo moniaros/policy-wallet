@@ -251,6 +251,17 @@ const BARE_ACTIVE_EXEMPTIONS: Record<string, { count: number; reason: string }> 
 }
 
 const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: string }> = {
+    // ── Must match a denominator the customer already sees ──────────────────
+    "lib/services/customer.service.ts": {
+        count: 1,
+        reason:
+            "The H-B2 disclosure count. It is subtracted from the policies this agent can " +
+            "see, and the result has to agree with «ο σύμβουλός σας βλέπει N από τα M " +
+            "ασφαλιστήριά σας» on the customer's own advisor page — whose M is every owned " +
+            "row, unfiltered. Filtering here alone would make the two sides disagree about " +
+            "the same person's portfolio, which is the exact class PW-BRIDGE-01 exists to " +
+            "close. It runs only when the customer switched the disclosure on.",
+    },
     // ── Must reach EVERY row, by design ─────────────────────────────────────
     "lib/services/gdpr-erasure.service.ts": {
         count: 2,

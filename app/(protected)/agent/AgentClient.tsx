@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { Switch } from "@/components/ui/form/Switch"
 import type { Policy } from "@/components/wallet/types"
 import { Mail, Phone, Globe, ShieldCheck, ShieldOff, Building2, MessageSquare, FileText, Send, Inbox, Handshake } from "lucide-react"
 import { EmptyState as SharedEmptyState } from "@/components/ui/EmptyState"
 import { redeemInviteCode } from "@/app/onboarding/actions"
 import { revokeShare } from "@/app/(protected)/wallet/actions"
-import { disconnectFromAgent, inviteAdvisorByEmail } from "@/app/(protected)/agent/relationship-actions"
+import { disconnectFromAgent, inviteAdvisorByEmail, setUnsharedCountDisclosure } from "@/app/(protected)/agent/relationship-actions"
 import { toast } from "sonner"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -60,6 +61,12 @@ interface AgentClientProps {
     }
     relationshipId: string | null
     sharedPolicies?: SharedPolicyLedgerItem[]
+    /**
+     * Whether this customer has chosen to let the advisor know that policies
+     * exist beyond the shared ones — a count, never an identity (halt H-B2).
+     * The platform discloses nothing on its own; this switch is the disclosure.
+     */
+    unsharedCountDisclosed?: boolean
 }
 
 type Tab = "overview" | "messages" | "documents" | "proposals"
@@ -101,6 +108,15 @@ const PAGE_COPY = {
     levelManage: { el: "Διαχειρίζεται το ασφαλιστήριο", en: "Manages this policy" },
     levelNone: { el: "Χωρίς δικαιώματα", en: "No permissions" },
     // A-09: the denominator the book never states — how many of the customer's policies the advisor sees.
+    discloseUnsharedLabel: {
+        el: "Να γνωρίζει ο σύμβουλός σας ότι έχετε κι άλλα ασφαλιστήρια",
+        en: "Let your advisor know you hold other policies",
+    },
+    discloseUnsharedHelp: {
+        el: "Θα βλέπει μόνο πόσα είναι — ποτέ ποια, από ποια εταιρεία ή με τι καλύψεις. Μπορείτε να το απενεργοποιήσετε όποτε θέλετε.",
+        en: "They will see only how many — never which, from which insurer, or with what cover. You can switch it off at any time.",
+    },
+    disclosureFailed: { el: "Η αλλαγή δεν αποθηκεύτηκε. Δοκιμάστε ξανά.", en: "The change was not saved. Please try again." },
     sharedSummary: { el: "Ο σύμβουλός σας βλέπει {shared} από τα {total} ασφαλιστήριά σας.", en: "Your advisor sees {shared} of your {total} policies." },
     revoking: { el: "Ανάκληση…", en: "Revoking…" },
     proposalAccepted: { el: "Η πρόταση έγινε αποδεκτή", en: "Proposal accepted" },
@@ -333,7 +349,14 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
     )
 }
 
-export function AgentClient({ policies, user, agent, relationshipId, sharedPolicies = [] }: AgentClientProps) {
+export function AgentClient({
+    policies,
+    user,
+    agent,
+    relationshipId,
+    sharedPolicies = [],
+    unsharedCountDisclosed = false,
+}: AgentClientProps) {
     const { language } = useLanguage()
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<Tab>("overview")
@@ -483,6 +506,24 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
     const [revokingGrantId, setRevokingGrantId] = useState<string | null>(null)
     const [isDisconnecting, setIsDisconnecting] = useState(false)
     const [disconnectConfirmOpen, setDisconnectConfirmOpen] = useState(false)
+    // Optimistic, because the switch must feel like a switch. The server is the
+    // authority; a refused write snaps it back and says so.
+    const [disclosesUnshared, setDisclosesUnshared] = useState(unsharedCountDisclosed)
+    const [savingDisclosure, setSavingDisclosure] = useState(false)
+
+    const handleDisclosureToggle = async (next: boolean) => {
+        if (!relationshipId || savingDisclosure) return
+        setDisclosesUnshared(next)
+        setSavingDisclosure(true)
+        const result = await setUnsharedCountDisclosure(relationshipId, next)
+        setSavingDisclosure(false)
+        if (result.success) {
+            router.refresh()
+        } else {
+            setDisclosesUnshared(!next)
+            toast.error(pick(PAGE_COPY.disclosureFailed, language))
+        }
+    }
 
     // Was a native confirm(); now the shared branded dialog.
     const handleDisconnect = async () => {
@@ -578,6 +619,10 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                             totalPolicies={policies.length}
                             onRevoke={handleRevokeShare}
                             revokingGrantId={revokingGrantId}
+                            relationshipId={relationshipId}
+                            disclosesUnshared={disclosesUnshared}
+                            savingDisclosure={savingDisclosure}
+                            onDisclosureToggle={handleDisclosureToggle}
                         />
                         {relationshipId && (
                             <div className="pw-card pw-pad mt-4 flex flex-col items-start justify-between gap-4 border-status-danger-edge sm:flex-row sm:items-center">
@@ -654,6 +699,10 @@ function OverviewTab({
     totalPolicies,
     onRevoke,
     revokingGrantId,
+    relationshipId,
+    disclosesUnshared,
+    savingDisclosure,
+    onDisclosureToggle,
 }: {
     agent: NonNullable<AgentClientProps['agent']>
     language: string
@@ -661,6 +710,10 @@ function OverviewTab({
     totalPolicies: number
     onRevoke: (grantId: string) => void
     revokingGrantId: string | null
+    relationshipId: string | null
+    disclosesUnshared: boolean
+    savingDisclosure: boolean
+    onDisclosureToggle: (next: boolean) => void
 }) {
     return (
         <div className="space-y-6">
@@ -737,6 +790,25 @@ function OverviewTab({
                             )
                         )}
                 </p>
+                {/* H-B2 — the disclosure the PLATFORM will not make on its own.
+                    An advisor cannot infer that unshared policies exist, and we
+                    do not tell them: that would be new information about this
+                    person's record which they never shared. This switch hands
+                    the decision to the person whose record it is. It discloses a
+                    COUNT and nothing else, it is off by default, and it is off
+                    again the moment they say so. */}
+                {relationshipId && (
+                    <div className="mt-4 border-t border-border pt-1">
+                        <Switch
+                            checked={disclosesUnshared}
+                            onCheckedChange={onDisclosureToggle}
+                            pending={savingDisclosure}
+                            label={pick(PAGE_COPY.discloseUnsharedLabel, language)}
+                            description={pick(PAGE_COPY.discloseUnsharedHelp, language)}
+                        />
+                    </div>
+                )}
+
                 {sharedPolicies.length === 0 ? (
                     <p className="mt-4 text-sm text-muted-foreground">{pick(PAGE_COPY.noShares, language)}</p>
                 ) : (

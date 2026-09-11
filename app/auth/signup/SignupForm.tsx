@@ -66,7 +66,53 @@ function buildSchema(role: "policyholder" | "agent") {
 
 type SignupFormValues = z.infer<ReturnType<typeof buildSchema>>
 
-function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
+interface SignUpProps {
+    fixedRole: "policyholder" | "agent"
+    /** Resolved server-side from the ALLOW_REGISTRATIONS flag; see lib/auth/registration-gate.ts. */
+    registrationsOpen: boolean
+}
+
+/**
+ * What the signup URL shows while new registrations are paused.
+ *
+ * The last sentence is load-bearing, not politeness: an agent's invited
+ * customer IS still allowed through, and some of them arrive here without the
+ * token in the URL because they typed the address rather than following the
+ * link. Without that line the product would be refusing people it has in fact
+ * exempted, and they would have no way to find out.
+ */
+function RegistrationsClosed({ locale }: { locale: "el" | "en" }) {
+    const t = (el: string, en: string) => (locale === "el" ? el : en)
+    return (
+        <AuthShell>
+            <h1 className="text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary">
+                {t("Οι νέες εγγραφές είναι προσωρινά κλειστές.", "New registrations are paused.")}
+            </h1>
+            <p className="mt-g-4 text-g-body text-fg-secondary">
+                {t(
+                    "Δεν δεχόμαστε νέους λογαριασμούς αυτή τη στιγμή. Αν έχετε ήδη λογαριασμό, μπορείτε να συνδεθείτε κανονικά.",
+                    "We are not accepting new accounts right now. If you already have an account, you can still log in as usual.",
+                )}
+            </p>
+            <p className="mt-g-3 text-g-body text-fg-secondary">
+                {t(
+                    "Αν σας προσκάλεσε ο ασφαλιστικός σας σύμβουλος, χρησιμοποιήστε τον σύνδεσμο της πρόσκλησης — αυτός εξακολουθεί να λειτουργεί.",
+                    "If your insurance advisor invited you, use the link in their invitation — that still works.",
+                )}
+            </p>
+            <div className="mt-g-6 border-t border-border-subtle pt-g-5">
+                <Link
+                    href={authHref("/auth/signin", locale)}
+                    className="inline-flex min-h-12 w-full items-center justify-center rounded-g-pill bg-action-primary-bg px-g-6 py-g-3 text-base font-semibold text-fg-on-brand transition-colors duration-200 hover:bg-action-primary-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus"
+                >
+                    {t("Σύνδεση", "Log in")}
+                </Link>
+            </div>
+        </AuthShell>
+    )
+}
+
+function SignUpForm({ fixedRole, registrationsOpen }: SignUpProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { language } = useLanguage()
@@ -99,9 +145,28 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     })
     const passwordValue = useWatch({ control, name: "password" }) || ""
 
+    const showingForm = registrationsOpen || Boolean(token)
+
     useEffect(() => {
-        trackLandingEvent("page_view_signup", { role, source, locale: language })
-    }, [language, role, source])
+        // A closed page is not a signup page view. Counting it as one would
+        // inflate the top of the funnel with people who never saw a form, and
+        // make the conversion rate below it read as a collapse rather than as
+        // the switch being off. Recorded as its own event instead, because how
+        // many people arrive while signup is paused is worth knowing.
+        trackLandingEvent(showingForm ? "page_view_signup" : "page_view_signup_closed", {
+            role,
+            source,
+            locale: language,
+        })
+    }, [language, role, source, showingForm])
+
+    // An invited customer arrives with ?token=..., and the invite exemption in
+    // lib/auth/registration-gate.ts means their signup genuinely will succeed —
+    // so they keep the form. Everyone else gets the notice. This is presentation
+    // only: registerUser is what actually decides, and it re-checks the address.
+    if (!showingForm) {
+        return <RegistrationsClosed locale={locale} />
+    }
 
     // Copy per role (§2.5): the promise for the person; the workbench for the
     // professional. One H1 per page; the H1 is the promise, the button is the act.
@@ -265,7 +330,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     )
 }
 
-export function SignUpFormPage({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
+export function SignUpFormPage({ fixedRole, registrationsOpen }: SignUpProps) {
     return (
         <Suspense
             fallback={
@@ -274,7 +339,7 @@ export function SignUpFormPage({ fixedRole }: { fixedRole: "policyholder" | "age
                 </div>
             }
         >
-            <SignUpForm fixedRole={fixedRole} />
+            <SignUpForm fixedRole={fixedRole} registrationsOpen={registrationsOpen} />
         </Suspense>
     )
 }

@@ -191,8 +191,16 @@ describe("coverage status — «Δεν ελέγχθηκε ακόμη» and its r
     })
 
     it("an unauthored branch with an in-force analysed policy", () => {
+        // `cyber` has no authored rule. (Pension had none either until Goal 6
+        // authored three recording checks for it — see the next case: a branch
+        // that gains rules moves to a MORE precise reason, never to an all-clear.)
+        const r = derive({ policies: [policy({ id: "c1", lineOfBusiness: "cyber", acordData: {} })], runs: [completedRun("c1", [])] })
+        expect(row(r, "cyber")).toMatchObject({ status: "not_checked", reason: "unauthored" })
+    })
+
+    it("pension is authored but only for recording — «not checked», not covered", () => {
         const r = derive({ policies: [policy({ id: "p1", lineOfBusiness: "pension", acordData: {} })], runs: [completedRun("p1", [])] })
-        expect(row(r, "pension")).toMatchObject({ status: "not_checked", reason: "unauthored" })
+        expect(row(r, "pension")).toMatchObject({ status: "not_checked", reason: "no_coverage_checks" })
     })
 
     it("life has no coverage-class check — zero findings there is vacuous", () => {

@@ -99,6 +99,15 @@ export interface Customer {
     accessScope: AccessScope
     permissions: Permission[]
     policyCount: number
+    /**
+     * How many policies this customer holds BEYOND the ones this advisor can
+     * see — and only because the customer chose to say so (halt H-B2).
+     *
+     * `null` means they have not disclosed it, which is the default and is NOT
+     * the same as zero. Render nothing for null; a zero here is a customer who
+     * opted in and has shared everything.
+     */
+    unsharedPolicyCount?: number | null
     openGapsCount: number
     lastInteractionDate: string
     createdAt: string
