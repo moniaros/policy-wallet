@@ -58,7 +58,17 @@ export const ExtractionEnvelopeSchema = z.strictObject({
         .optional(),
     /** Per-field document citations — `extraction-citations.ts`, flag-gated; page is 1-based. */
     sources: z
-        .record(z.string(), z.strictObject({ page: z.number().optional(), snippet: z.string().optional() }))
+        .record(
+            z.string(),
+            z.strictObject({
+                page: z.number().optional(),
+                snippet: z.string().optional(),
+                /** W1-02: found in the locally-read text (true), refuted by it (false), or absent = unverifiable. */
+                verified: z.boolean().optional(),
+                /** W1-02: the page the snippet was found on when it differs from the cited one. */
+                verifiedPage: z.number().optional(),
+            })
+        )
         .optional(),
     missingCriticalFields: z.array(z.string()).optional(),
     requiresReview: z.boolean().optional(),

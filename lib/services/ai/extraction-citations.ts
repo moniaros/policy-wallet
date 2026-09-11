@@ -1,6 +1,8 @@
 import { z } from 'zod'
 
 import { RULE_READ_FIELDS } from '@/lib/gaps/rule-read-fields'
+import { normalizeDocumentText } from '@/lib/ingestion/normalize-text'
+import type { LocalDocumentText } from '@/lib/ingestion/types'
 
 /**
  * Extraction source citations — Wave 9 of the branch product system.
@@ -52,6 +54,16 @@ export interface ExtractionSource {
     page?: number
     /** Short verbatim quote from the document supporting the value. */
     snippet?: string
+    /**
+     * Whether the snippet was FOUND in the locally-read text of the document
+     * (PW-PROVENANCE-01 W1-02). `true`: found on the cited page, or on
+     * `verifiedPage`. `false`: not found, and the document was read far enough
+     * to say so. Absent: unverifiable — no local text (a scan, a photo), no
+     * snippet, or the cited page lies beyond the pages the probe read.
+     */
+    verified?: boolean
+    /** Set when the snippet was found on a page other than the one cited. */
+    verifiedPage?: number
 }
 
 export type ExtractionSources = Record<string, ExtractionSource>
@@ -118,4 +130,54 @@ export function sanitizeExtractionSources(raw: unknown): ExtractionSources | nul
     }
 
     return Object.keys(result).length > 0 ? result : null
+}
+
+/** Letters and digits only — the second, looser comparison when punctuation differs. */
+function lettersOnly(text: string): string {
+    return text.replace(/[^\p{L}\p{N}]+/gu, '')
+}
+
+function pageContains(page: string, snippet: string): boolean {
+    return page.includes(snippet) || lettersOnly(page).includes(lettersOnly(snippet))
+}
+
+/**
+ * Check every citation against the document's own text — the same move as
+ * `summaryLanguage`: detected from what arrived, never assumed from what was
+ * asked. A snippet the model returns that is nowhere in the pages we read
+ * locally is a hallucination found deterministically, at zero model cost.
+ *
+ * Honest about its reach: `verified` is set to `false` only when the document
+ * was read far enough to say so — the cited page lies inside the pages read,
+ * or every page of the document was read. Otherwise the entry is left as it
+ * came, unverifiable rather than falsely refuted.
+ */
+export function verifyExtractionSources(
+    sources: ExtractionSources | null,
+    localText: LocalDocumentText | null | undefined
+): ExtractionSources | null {
+    if (!sources || !localText || localText.pages.length === 0) return sources
+    const pages = localText.pages.map((p) => normalizeDocumentText(p))
+    const fullyRead = localText.sampledPages >= localText.pageCount
+    const out: ExtractionSources = {}
+    for (const [field, source] of Object.entries(sources)) {
+        const snippet = source.snippet ? normalizeDocumentText(source.snippet) : ''
+        if (!snippet) {
+            out[field] = source
+            continue
+        }
+        const cited = source.page !== undefined && source.page >= 1 && source.page <= pages.length ? source.page : null
+        if (cited !== null && pageContains(pages[cited - 1], snippet)) {
+            out[field] = { ...source, verified: true }
+            continue
+        }
+        const found = pages.findIndex((p) => pageContains(p, snippet))
+        if (found >= 0) {
+            out[field] = { ...source, verified: true, verifiedPage: found + 1 }
+            continue
+        }
+        const readFarEnough = cited !== null || fullyRead
+        out[field] = readFarEnough ? { ...source, verified: false } : source
+    }
+    return out
 }

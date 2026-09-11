@@ -215,6 +215,12 @@ export function extractionAssembledByHand(source: string): string[] {
     // String contents are blanked, so `type: "file"` is invisible here; the file
     // part's SHAPE is not — a hand-built part names the document's fields.
     if (/mediaType\s*:\s*document\.mimeType\b|data\s*:\s*document\.data\b/.test(body)) problems.push("assembles a file part by hand")
+    // W1-02: the enrichment verifies citations against the document's own
+    // text, which only the provider holds — a call without it stores
+    // citations nobody checked.
+    const enrichCall = body.match(/enrichExtractionPayload\s*\(([^;]*?)\)\s*\n/)
+    if (!enrichCall) problems.push("does not call enrichExtractionPayload(")
+    else if (!/localText/.test(enrichCall[1])) problems.push("enriches without the document's localText")
     return problems
 }
 
@@ -241,11 +247,13 @@ describe("source guard — every provider decides text-or-file through extractio
 
     it("the matcher is proven against probes", () => {
         const byHand = `class P { async extractPolicyData(document: AIDocument) { const parts = [{ type: "file", data: document.data, mediaType: document.mimeType }]; return call(parts) } }`
-        expect(extractionAssembledByHand(byHand)).toEqual(["does not call extractionContentParts(", "assembles a file part by hand"])
-        const throughHelper = `class P { async extractPolicyData(document: AIDocument) { const { parts } = extractionContentParts(prompt, document); return call(parts) } }`
+        expect(extractionAssembledByHand(byHand)).toEqual(["does not call extractionContentParts(", "assembles a file part by hand", "does not call enrichExtractionPayload("])
+        const throughHelper = `class P { async extractPolicyData(document: AIDocument) { const { parts } = extractionContentParts(prompt, document); const r = await call(parts); const e = enrichExtractionPayload(r, undefined, "x", document.localText)\n return e } }`
         expect(extractionAssembledByHand(throughHelper)).toEqual([])
+        const unverified = `class P { async extractPolicyData(document: AIDocument) { const { parts } = extractionContentParts(prompt, document); const r = await call(parts); const e = enrichExtractionPayload(r, undefined, "x")\n return e } }`
+        expect(extractionAssembledByHand(unverified)).toEqual(["enriches without the document's localText"])
         // A file part in ANOTHER method (gap analysis still attaches the file) is not the extraction's.
-        const elsewhere = `class P { async extractPolicyData(document: AIDocument) { const { parts } = extractionContentParts(p, document); return call(parts) }\n async analyzeGaps(document: AIDocument) { return call([{ type: "file", data: document.data, mediaType: document.mimeType }]) } }`
+        const elsewhere = `class P { async extractPolicyData(document: AIDocument) { const { parts } = extractionContentParts(p, document); const r = await call(parts); const e = enrichExtractionPayload(r, undefined, "x", document.localText)\n return e }\n async analyzeGaps(document: AIDocument) { return call([{ type: "file", data: document.data, mediaType: document.mimeType }]) } }`
         expect(extractionAssembledByHand(elsewhere)).toEqual([])
     })
 })
