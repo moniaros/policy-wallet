@@ -21,7 +21,7 @@
 #
 # bundle entries: 3721
 # inline entries: 4923 across 222 files
-# ternary entries: 293 across 42 files
+# ternary entries: 294 across 43 files
 # call entries: 1148 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -8690,6 +8690,7 @@ ternary	lib/agent/format.ts	"Ανενεργοί"
 ternary	lib/agent/format.ts	"Μόλις τώρα"
 ternary	lib/agent/format.ts	"Σε καλή πορεία"
 ternary	lib/agent/format.ts	"Χρειάζεται προσοχή"
+ternary	lib/compliance/ropa-report.ts	`Processed only on explicit consent — Art. 9(2)(a). The guard refuses any tag that names Art. 9 columns under another basis. ${table( art9.map((t) => [code(t.model), t.art9.map(code).join(", "), BASIS_LABEL[t.basis] ?? t.basis]), ["Store", "Columns", "Lawful basis"] )} **This table is not the whole Art. 9 surface.** It covers the structured columns a person answers directly. The wider exposure is whatever a health policy PDF contains — medical annexes, exclusions naming conditions, ΑΜΚΑ — which is unbounded by design, because the document is not parsed into columns. See DATA_PROTECTION_REVIEW_PACK.md §3.2b and §7.`
 ternary	lib/email/admin-emails.ts	"Ενεργοποίηση προσκεκλημένου λογαριασμού"
 ternary	lib/email/admin-emails.ts	"Νέος λογαριασμός"
 ternary	lib/email/admin-emails.ts	([["Γλώσσα", params.language]] as Array<[string, string]>)
