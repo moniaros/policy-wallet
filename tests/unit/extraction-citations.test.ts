@@ -49,11 +49,15 @@ describe('extraction citations — sanitizeExtractionSources', () => {
         expect(sanitizeExtractionSources({ policyNumber: {} })).toBeNull()
     })
 
-    it('citation fields mirror the confidence field set', () => {
-        expect([...CITATION_FIELDS]).toEqual([
+    it('citation fields start with the confidence field set, then every acordData path a rule reads', () => {
+        expect([...CITATION_FIELDS].slice(0, 9)).toEqual([
             'insurerName', 'policyNumber', 'lineOfBusiness', 'startDate', 'endDate',
             'premiumAmount', 'issueDate', 'premiumFrequency', 'renewalDate',
         ])
+        const rest = [...CITATION_FIELDS].slice(9)
+        expect(rest.length).toBeGreaterThan(20)
+        expect(rest.every((f) => f.startsWith('acordData.'))).toBe(true)
+        expect(rest).toContain('acordData.vehicle.hasRoadsideAssistance')
     })
 })
 
