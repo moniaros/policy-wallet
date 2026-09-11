@@ -285,7 +285,9 @@ describe("a draft is bound to the factor it was typed for — never to a positio
         expect(container.textContent).toContain(COPY.saving)
         resolve(ok("savings", 1))
         await waitFor(() => expect(inView(container)).toBe("savings"))
-        expect(euros().disabled).toBe(false)
+        // The saving flag clears in the commit AFTER the question switches; assert
+        // the state, not the instant — under CI load this line flaked 4 times in a day.
+        await waitFor(() => expect(euros().disabled).toBe(false))
     })
 
     it("the flow never reads a question by position: no index state, the factor is the identity", () => {
@@ -316,9 +318,13 @@ describe("the done line tells the truth about what was said", () => {
         fireEvent.click(screen.getByText(COPY.continue))
         await waitFor(() => expect(container.querySelector("[data-factor]")!.getAttribute("data-factor")).toBe("age"))
         fireEvent.click(screen.getByText(COPY.skip))
-        await waitFor(() => expect(container.textContent).toContain(COPY.done))
-        expect(container.textContent).not.toContain(COPY.doneUnanswered)
-        expect(refresh).toHaveBeenCalled()
+        // Same shape: the done line and the refresh land after the skip settles,
+        // and the «unanswered» line may still be on screen for one commit.
+        await waitFor(() => {
+            expect(container.textContent).toContain(COPY.done)
+            expect(container.textContent).not.toContain(COPY.doneUnanswered)
+            expect(refresh).toHaveBeenCalled()
+        })
     })
 })
 
