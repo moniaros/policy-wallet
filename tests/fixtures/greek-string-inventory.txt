@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3721
+# bundle entries: 3723
 # inline entries: 4923 across 222 files
 # ternary entries: 294 across 43 files
 # call entries: 1148 across 86 files
@@ -2414,6 +2414,8 @@ bundle	protection.gaps.notAnalysedLocked	"Ξεκλείδωμα πλήρους α
 bundle	protection.gaps.review	"Προβολή ασφαλιστηρίου"
 bundle	protection.gaps.title	"Τι αξίζει να δείτε"
 bundle	protection.gaps.underReviewTitle	"Ευρήματα υπό εξέταση"
+bundle	protection.gaps.unverifiedDisclosure	"Ο έλεγχος βασίστηκε σε τιμή που δεν επιβεβαιώθηκε στο κείμενο του ασφαλιστηρίου. Δεν μετρούν σε καμία σύνοψη και δεν αποστέλλονται."
+bundle	protection.gaps.unverifiedTitle	"Ευρήματα χωρίς επιβεβαίωση από το έγγραφο"
 bundle	protection.gaps.why	"Γιατί έχει σημασία"
 bundle	protection.improve.lastChecked	"Τελευταίος έλεγχος: {date}"
 bundle	protection.improve.neverChecked	"Δεν έχει γίνει ακόμη έλεγχος."

@@ -1798,6 +1798,8 @@ export const en: TranslationKeys = {
             more: '+{n} more — with an upgrade',
             moreOne: '+1 more — with an upgrade',
             underReviewTitle: 'Findings under review',
+            unverifiedTitle: 'Findings not confirmed by the document',
+            unverifiedDisclosure: 'The check relied on a value that was not confirmed in the policy\'s text. They count in no summary and are not sent anywhere.',
             allClear: 'We checked {assessed} policies and found nothing missing — based on what the checks read.',
             allClearOne: 'We checked 1 policy and found nothing missing — based on what the checks read.',
             allClearExcluded: '{n} not checked yet.',
