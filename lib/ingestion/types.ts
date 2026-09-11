@@ -176,6 +176,23 @@ export const GATE_ACTIVITY = {
     rejected: "DOCUMENT_REJECTED",
 } as const
 
+/**
+ * The text the probe read locally, carried BESIDE the verdict — never on it.
+ * `DocumentValidationResult` is stamped onto the document row and written to
+ * the activity log («No text, no filename», schema.prisma on validationJson),
+ * so page text must not be a field of it. This object lives in memory for one
+ * request and reaches the provider only if a step chooses to send it (W0-03);
+ * `tests/unit/document-gate-before-model.test.ts` fails on a provider that
+ * spreads the document into a request. PW-PROVENANCE-01 W0-02.
+ */
+export interface LocalDocumentText {
+    /** `pages[i]` is page `i + 1`, raw text, whitespace-collapsed. */
+    readonly pages: readonly string[]
+    /** How many pages were read (≤ the probe's sample); `pageCount` is the whole document. */
+    readonly sampledPages: number
+    readonly pageCount: number
+}
+
 export interface DocumentValidationResult {
     status: ValidationStatus
     /** Set when status is `rejected` or `requires_review`; one of the shared failure vocabulary. */

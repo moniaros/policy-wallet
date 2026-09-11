@@ -56,7 +56,7 @@ import {
 } from "@/lib/validations/agent-intake";
 
 import type { Prisma } from "@prisma/client"
-import { validateDocumentForIngestion, documentKindFor } from "@/lib/ingestion/document-gate"
+import { validateDocumentForIngestion, validateDocumentWithLocalText, documentKindFor } from "@/lib/ingestion/document-gate"
 import { ingestPolicyDocument } from "@/lib/ingestion/ingest-policy-document"
 import { toValidatedAIDocument } from "@/lib/ingestion/validated-document"
 import { FAMILY_DEFAULT_BRANCH, USER_RESOLVABLE_REVIEW_REASONS } from "@/lib/ingestion/types"
@@ -1398,7 +1398,7 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     // the agent picks it on the form the scan pre-fills — so the branch check
     // happens at commit (addPolicyForCustomer), where the selection exists.
     const scanBytes = Buffer.from(await file.arrayBuffer())
-    const gateVerdict = await validateDocumentForIngestion({
+    const { verdict: gateVerdict, localText: scanLocalText } = await validateDocumentWithLocalText({
         bytes: scanBytes,
         canonicalMime: scanValidation.value.canonicalMime,
         declaredBranch: null,
@@ -1484,7 +1484,7 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
         // phone's HEIC photo arrives with an empty browser-supplied type. No
         // file name at all — AIDocument has no such field.
         const result = await aiService.extractPolicyData(
-            toValidatedAIDocument(gateVerdict, scanBytes, scanValidation.value.canonicalMime),
+            toValidatedAIDocument(gateVerdict, scanBytes, scanValidation.value.canonicalMime, scanLocalText),
             // Attribute the token cost to the agent — the scan used to run
             // entirely off the books.
             { userId: authResult.dbUser.id },

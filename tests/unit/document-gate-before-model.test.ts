@@ -142,3 +142,44 @@ describe("source guard — a document reaches the extraction model only through 
         expect(ungatedExtractionArguments(forged)).toEqual(["document"])
     })
 })
+
+
+/**
+ * W0-02: a ValidatedAIDocument now carries `localText` — the probe's per-page
+ * read — beside `data` and `mimeType`. A provider builds its request from the
+ * two named fields; one that SPREAD the document into a part, or serialised it
+ * whole, would ship the local text to the provider by accident. Enumerated
+ * from the filesystem: every non-test source under lib/services/ai and
+ * lib/services/analysis.
+ */
+const DOCUMENT_SPREAD = /\.\.\.\s*(?:document|doc|validatedDocument|aiDocument)\b|JSON\.stringify\(\s*(?:document|doc|validatedDocument|aiDocument)\b/g
+
+export function documentSpreads(source: string): string[] {
+    return [...blankNonCode(source).matchAll(DOCUMENT_SPREAD)].map((m) => m[0])
+}
+
+describe("source guard — no provider spreads or serialises the validated document whole", () => {
+    const rel = (file: string) => relative(REPO_ROOT, file)
+    const roots = ["lib/services/ai", "lib/services/analysis"]
+    const files = roots.flatMap((r) => listSources(join(REPO_ROOT, r)))
+
+    it("enumerates a real universe", () => {
+        expect(files.length).toBeGreaterThan(10)
+        expect(files.map(rel)).toContain("lib/services/ai/gemini-ai.service.ts")
+    })
+
+    it("every provider reads `document.data` and `document.mimeType` by name — never `...document`", () => {
+        const offenders = files
+            .map((file) => ({ file: rel(file), hits: documentSpreads(readFileSync(file, "utf8")) }))
+            .filter((x) => x.hits.length > 0)
+        expect(offenders, offenders.map((o) => `${o.file}: ${o.hits.join(", ")}`).join("\n")).toEqual([])
+    })
+
+    it("the matcher is proven against a probe", () => {
+        expect(documentSpreads(`const part = { type: "file", ...document }`)).toEqual(["...document"])
+        expect(documentSpreads(`body: JSON.stringify(document)`)).toEqual(["JSON.stringify(document"])
+        expect(documentSpreads(`const part = { data: document.data, mediaType: document.mimeType }`)).toEqual([])
+        // A comment naming the spread is not a spread.
+        expect(documentSpreads(`// never ...document here\nconst x = document.data`)).toEqual([])
+    })
+})

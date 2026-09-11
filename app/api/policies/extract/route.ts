@@ -9,7 +9,7 @@ import {
     POLICY_EXTRACT_RATE_WINDOW_MS,
 } from "@/lib/constants/time"
 import { validateUploadFile, sanitizeDisplayName } from "@/lib/security/file-upload"
-import { validateDocumentForIngestion, documentKindFor } from "@/lib/ingestion/document-gate"
+import { validateDocumentWithLocalText, documentKindFor } from "@/lib/ingestion/document-gate"
 import { toValidatedAIDocument } from "@/lib/ingestion/validated-document"
 import { FAMILY_DEFAULT_BRANCH, USER_RESOLVABLE_REVIEW_REASONS } from "@/lib/ingestion/types"
 import { withApiGuard } from "@/lib/api-guard"
@@ -183,7 +183,7 @@ export const POST = withApiGuard(
             // sees the file. A menu, a bank statement or a booklet ends here at
             // no cost; only a plausible policy goes on to the extraction.
             const bytes = Buffer.from(await file.arrayBuffer())
-            const verdict = await validateDocumentForIngestion({
+            const { verdict, localText } = await validateDocumentWithLocalText({
                 bytes,
                 canonicalMime: validation.value.canonicalMime,
                 declaredBranch: null,
@@ -291,7 +291,7 @@ export const POST = withApiGuard(
             // content established, not the client's claim (this used to send
             // `file.type`).
             const result = await aiService.extractPolicyData(
-                toValidatedAIDocument(verdict, bytes, validation.value.canonicalMime),
+                toValidatedAIDocument(verdict, bytes, validation.value.canonicalMime, localText),
                 { userId: authResult.dbUser.id, modelOverride: extractionOverride?.model, operatorGuidance },
             )
 

@@ -58,8 +58,16 @@ export type PdfProbeResult =
           pageCount: number
           /** How many pages were actually read (≤ PROBE_SAMPLE_PAGES). */
           sampledPages: number
-          /** Normalised text of the sampled pages (normalize-text.ts). */
+          /** Normalised text of the sampled pages (normalize-text.ts) — the classifier's input. */
           text: string
+          /**
+           * The RAW text of each sampled page, whitespace-collapsed, case and
+           * accents kept: `pages[i]` is page `i + 1`. This is what extraction
+           * and citation verification need (PW-PROVENANCE-01 W0-02 / W1) —
+           * `text` is folded for the lexicon and would degrade both. Retained
+           * in memory only; nothing persists it (see LocalDocumentText).
+           */
+          pages: string[]
           textChars: number
           /** No usable text layer in the sampled pages — a scan or a blank. */
           imageOnly: boolean
@@ -154,6 +162,7 @@ export async function probePdf(bytes: Uint8Array, opts: PdfProbeOptions = {}): P
             pageCount,
             sampledPages,
             text,
+            pages: parts.map((p) => p.replace(/\s+/g, " ").trim()),
             textChars,
             imageOnly: textChars < IMAGE_ONLY_TEXT_THRESHOLD,
         }

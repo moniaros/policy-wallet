@@ -35,7 +35,7 @@ import { logger } from "@/lib/logger"
 import { hashDocumentBuffer } from "@/lib/services/analysis/extraction-cache"
 import { estimatePolicyAnalysisTokenBudget } from "@/lib/services/analysis/token-budget-estimator"
 import type { BatchFailureCode } from "@/lib/wallet/batch-upload-errors"
-import { probePdf, type PdfProbeFailure } from "./pdf-probe"
+import { probePdf, type PdfProbeFailure, type PdfProbeResult } from "./pdf-probe"
 import {
     classifyLexically,
     ACCEPT_CONFIDENCE,
@@ -63,8 +63,7 @@ import {
     type GateEvidence,
     type GateMode,
     type GateSurface,
-    type ReviewReason,
-} from "./types"
+    type ReviewReason, LocalDocumentText } from "./types"
 
 /** Rejected uploads per actor per hour before the gate stops parsing for them. */
 export const REJECTION_BUDGET_PER_HOUR = 20
@@ -213,10 +212,49 @@ function decideBranch(params: {
     return { consistency: "unknown", verdict: "review" }
 }
 
+/**
+ * The verdict plus the text the probe read, for callers that go on to build
+ * the extraction input. The text is NOT part of the verdict (see
+ * LocalDocumentText) and is null for a photo, a scan, or any verdict other
+ * than `validated` — a refused document's text is not carried anywhere.
+ */
+export async function validateDocumentWithLocalText(
+    input: GateInput,
+    deps: GateDependencies = {}
+): Promise<{ verdict: DocumentValidationResult; localText: LocalDocumentText | null }> {
+    const sink: LocalTextSink = { localText: null }
+    const verdict = await runGate(input, deps, sink)
+    return { verdict, localText: verdict.status === "validated" ? sink.localText : null }
+}
+
 export async function validateDocumentForIngestion(
     input: GateInput,
     deps: GateDependencies = {}
 ): Promise<DocumentValidationResult> {
+    return runGate(input, deps, { localText: null })
+}
+
+/** The probe's pages as a LocalDocumentText, or null when there is nothing local to read. */
+export function localTextFrom(probe: PdfProbeResult): LocalDocumentText | null {
+    if (!probe.ok || probe.imageOnly) return null
+    return { pages: probe.pages, sampledPages: probe.sampledPages, pageCount: probe.pageCount }
+}
+
+/**
+ * Read the local text of bytes already validated — the orchestrator's lazy
+ * arm, where the verdict comes from the stamp and the probe never ran in this
+ * request. ~100 ms for a PDF; null for anything else.
+ */
+export async function readLocalText(bytes: Buffer | Uint8Array, canonicalMime: string): Promise<LocalDocumentText | null> {
+    if (canonicalMime !== "application/pdf") return null
+    return localTextFrom(await probePdf(bytes))
+}
+
+interface LocalTextSink {
+    localText: LocalDocumentText | null
+}
+
+async function runGate(input: GateInput, deps: GateDependencies, sink: LocalTextSink): Promise<DocumentValidationResult> {
     const now = deps.now ?? (() => Date.now())
     const startedAt = now()
     const classifyModel = deps.classifyWithModel ?? defaultModelClassifier
@@ -281,6 +319,7 @@ export async function validateDocumentForIngestion(
         evidence.textChars = probe.textChars
         evidence.imageOnly = probe.imageOnly
         text = probe.text
+        sink.localText = localTextFrom(probe)
     } else {
         // A photo of a document: nothing to read locally.
         evidence.pageCount = 1

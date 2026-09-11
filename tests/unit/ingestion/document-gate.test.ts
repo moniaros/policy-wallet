@@ -22,7 +22,14 @@ vi.mock("@/lib/db", () => ({
 }))
 vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
 
-import { validateDocumentForIngestion, GATE_ACTIVITY, REJECTION_BUDGET_PER_HOUR, type GateInput } from "@/lib/ingestion/document-gate"
+import {
+    validateDocumentForIngestion,
+    validateDocumentWithLocalText,
+    readLocalText,
+    GATE_ACTIVITY,
+    REJECTION_BUDGET_PER_HOUR,
+    type GateInput,
+} from "@/lib/ingestion/document-gate"
 import type { ModelClassifier, ModelClassificationOutcome } from "@/lib/ingestion/model-classifier"
 import { MAX_DOCUMENT_PAGES } from "@/lib/ingestion/pdf-probe"
 import {
@@ -326,5 +333,67 @@ describe("document gate — scans and photos go to the model as a document excer
         const held = await validateDocumentForIngestion(baseInput(bytes), { classifyWithModel: modelSays({ insuranceConfidence: 0.7, signals: ["a"] }) })
         expect(held).toMatchObject({ status: "requires_review", code: "DOCUMENT_REVIEW_REQUIRED" })
         expect(held.reviewReasons).toContain("scan_unclassified")
+    })
+})
+
+
+describe("document gate — the local text travels BESIDE the verdict, never on it (W0-02)", () => {
+    const SENTENCE = "Insured: Maria Papadopoulou"
+
+    it("a validated text PDF hands its pages out, raw, page-indexed", async () => {
+        const bytes = await textPdf([...ENGLISH_MOTOR_LINES, SENTENCE], 2)
+        const { verdict, localText } = await validateDocumentWithLocalText(baseInput(bytes))
+        expect(verdict.status).toBe("validated")
+        expect(localText).not.toBeNull()
+        expect(localText!.pages).toHaveLength(2)
+        expect(localText!.pageCount).toBe(2)
+        expect(localText!.pages.join(" ")).toContain(SENTENCE)
+    })
+
+    it("the verdict — the thing that is stamped and logged — carries no page text and no new field", async () => {
+        const bytes = await textPdf([...ENGLISH_MOTOR_LINES, SENTENCE], 2)
+        const { verdict } = await validateDocumentWithLocalText(baseInput(bytes))
+        const stamped = JSON.stringify(verdict)
+        expect(stamped).not.toContain(SENTENCE)
+        expect(stamped).not.toContain("Papadopoulou")
+        expect(stamped).not.toContain("localText")
+        expect(stamped).not.toContain("pages")
+        expect(JSON.stringify(lastActivity().metadata)).not.toContain("Papadopoulou")
+        // The stored shape is unchanged: the same keys the stamp always had.
+        expect(Object.keys(verdict).sort()).toEqual(
+            [
+                "status", "documentType", "insuranceConfidence", "detectedBranch", "branchConfidence",
+                "declaredBranch", "branchConsistency", "reviewReasons", "evidence", "documentHash",
+                "engineVersion", "latencyMs",
+            ].sort()
+        )
+    })
+
+    it("a scan and a photo carry nothing local; a refused document's text is not carried either", async () => {
+        const scan = await validateDocumentWithLocalText(baseInput(await imageOnlyPdf(1)), { classifyWithModel: modelSays({}) })
+        expect(scan.verdict.status).toBe("validated")
+        expect(scan.localText).toBeNull()
+        const photo = await validateDocumentWithLocalText(
+            baseInput(new Uint8Array(ONE_PIXEL_PNG), { canonicalMime: "image/png" }),
+            { classifyWithModel: modelSays({}) }
+        )
+        expect(photo.localText).toBeNull()
+        const refused = await validateDocumentWithLocalText(baseInput(await textPdf(RESTAURANT_MENU_LINES)))
+        expect(refused.verdict.status).toBe("rejected")
+        expect(refused.localText).toBeNull()
+    })
+
+    it("readLocalText re-reads validated bytes for the lazy arm, and is null for a non-PDF", async () => {
+        const bytes = await textPdf([...ENGLISH_MOTOR_LINES, SENTENCE], 1)
+        const local = await readLocalText(bytes, "application/pdf")
+        expect(local?.pages[0]).toContain(SENTENCE)
+        expect(await readLocalText(new Uint8Array(ONE_PIXEL_PNG), "image/png")).toBeNull()
+    })
+
+    it("the old entry point is unchanged: same verdict, no text anywhere near it", async () => {
+        const bytes = await textPdf([...ENGLISH_MOTOR_LINES, SENTENCE], 2)
+        const verdict = await validateDocumentForIngestion(baseInput(bytes))
+        expect(verdict.status).toBe("validated")
+        expect(JSON.stringify(verdict)).not.toContain("Papadopoulou")
     })
 })
