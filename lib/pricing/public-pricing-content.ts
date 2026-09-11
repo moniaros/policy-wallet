@@ -1,3 +1,5 @@
+import type { CheckoutBlockReason } from "@/lib/pricing/stripe-mode"
+
 export type PricingAudience = "policyholder" | "agent"
 export type BillingPeriod = "monthly" | "annual"
 
@@ -32,6 +34,14 @@ export interface PublicPricingPlan {
         }
     }
     features: PublicPricingFeature[]
+    /**
+     * Set when this deployment cannot complete a purchase of this plan, so the
+     * card states that instead of offering a buy button (the rule and its
+     * reasoning live in `lib/pricing/stripe-mode.ts`). `undefined` — the normal
+     * case — means the plan is buyable. The PRICE still renders either way: the
+     * price is true; it is the offer to sell that would not be.
+     */
+    checkoutUnavailableReason?: CheckoutBlockReason
 }
 
 export interface PublicPricingComparisonRow {

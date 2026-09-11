@@ -9,6 +9,15 @@ import { buildSyntheticCatalog, type CatalogPlan } from '@/lib/pricing/plan-cata
 import { buildPublicPricingContent, formatEur } from '@/lib/pricing/pricing-view-model'
 import { publicPricingContent } from '@/lib/pricing/public-pricing-content'
 
+/**
+ * These cases are about PRICE and COPY, so they state a deployment that can
+ * charge. The refusal-to-sell rule has its own file
+ * (`pricing-refuses-unchargeable-plans.test.ts`); leaving it to ambient env
+ * here would make every copy assertion depend on whether STRIPE_SECRET_KEY
+ * happened to be set in the runner.
+ */
+const CAN_CHARGE = { available: true, reason: null } as const
+
 function synthetic(): CatalogPlan[] {
     return buildSyntheticCatalog()
 }
@@ -23,7 +32,7 @@ describe('formatEur', () => {
 
 describe('buildPublicPricingContent', () => {
     it('over the default catalog it reproduces the template EXACTLY (zero copy drift)', () => {
-        const built = buildPublicPricingContent(synthetic())
+        const built = buildPublicPricingContent(synthetic(), CAN_CHARGE)
         expect(built).toEqual(publicPricingContent)
     })
 
@@ -31,7 +40,7 @@ describe('buildPublicPricingContent', () => {
         const catalog = synthetic().map((p) =>
             p.id === 'ph-pro' ? { ...p, monthlyEur: 8.99, effectiveAnnualEur: 89 } : p
         )
-        const built = buildPublicPricingContent(catalog)
+        const built = buildPublicPricingContent(catalog, CAN_CHARGE)
         const pro = built.policyholder.plans.find((p) => p.checkoutPlanId === 'ph-pro')!
         expect(pro.pricing.monthly.amount).toBe('€8.99')
         expect(pro.pricing.annual?.amount).toBe('€89')
@@ -41,7 +50,7 @@ describe('buildPublicPricingContent', () => {
         const catalog = synthetic().map((p) =>
             p.id === 'ph-pro' ? { ...p, monthlyEur: 8.99, effectiveAnnualEur: 89 } : p
         )
-        const built = buildPublicPricingContent(catalog)
+        const built = buildPublicPricingContent(catalog, CAN_CHARGE)
         const pro = built.policyholder.plans.find((p) => p.checkoutPlanId === 'ph-pro')!
         // 8.99×12 − 89 = 18.88 → ~€19
         expect(pro.pricing.annual?.savings.en).toBe('Save ~€19')
@@ -49,7 +58,7 @@ describe('buildPublicPricingContent', () => {
     })
 
     it('unchanged prices keep the template savings prose verbatim', () => {
-        const built = buildPublicPricingContent(synthetic())
+        const built = buildPublicPricingContent(synthetic(), CAN_CHARGE)
         const pro = built.policyholder.plans.find((p) => p.checkoutPlanId === 'ph-pro')!
         expect(pro.pricing.annual?.savings).toEqual(
             publicPricingContent.policyholder.plans.find((p) => p.checkoutPlanId === 'ph-pro')!
@@ -61,7 +70,7 @@ describe('buildPublicPricingContent', () => {
         const catalog = synthetic().map((p) =>
             p.id === 'ph-plus' ? { ...p, isPublic: false } : p
         )
-        const built = buildPublicPricingContent(catalog)
+        const built = buildPublicPricingContent(catalog, CAN_CHARGE)
         expect(built.policyholder.plans.map((p) => p.key)).toEqual(['free', 'pro'])
         // other audience untouched
         expect(built.agent.plans).toHaveLength(publicPricingContent.agent.plans.length)
@@ -69,7 +78,7 @@ describe('buildPublicPricingContent', () => {
 
     it('a plan missing from the catalog renders its template card unchanged', () => {
         const catalog = synthetic().filter((p) => p.id !== 'agent-agency')
-        const built = buildPublicPricingContent(catalog)
+        const built = buildPublicPricingContent(catalog, CAN_CHARGE)
         const agency = built.agent.plans.find((p) => p.key === 'agent-agency')!
         expect(agency.pricing.monthly.amount).toBe('€199')
     })

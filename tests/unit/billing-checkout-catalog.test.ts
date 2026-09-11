@@ -38,6 +38,13 @@ function plan(overrides: Record<string, unknown> = {}) {
 }
 
 beforeEach(() => {
+    // These cases exercise checkout itself, so they state a deployment that can
+    // take money. Without it `publicCheckoutAvailability()` reads an absent
+    // STRIPE_SECRET_KEY as `unconfigured` and createCheckoutSession refuses —
+    // correctly (lib/pricing/stripe-mode.ts), but for a reason unrelated to
+    // what these assert.
+    process.env.STRIPE_SECRET_KEY = "sk_test_fixture"
+
     planFindUnique.mockReset()
     userFindUnique.mockReset()
     sessionCreate.mockReset()

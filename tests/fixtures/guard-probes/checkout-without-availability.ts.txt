@@ -1,0 +1,32 @@
+// PROBE for tests/unit/pricing-refuses-unchargeable-plans.test.tsx.
+//
+// A second checkout path that creates a Stripe session without first asking
+// whether this deployment can take money. On a production deployment holding a
+// test key this opens a sandbox session: the visitor sees a real-looking
+// payment page, can type a card, and returns to a success screen having been
+// charged nothing. Not compiled — the guard reads it as text.
+
+export async function startUpgradeCheckout(userId: string, planId: string) {
+    const plan = await db.plan.findUnique({ where: { id: planId } })
+    if (!plan) throw new Error("Plan not found")
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+            {
+                price_data: {
+                    currency: "eur",
+                    product_data: { name: plan.displayName },
+                    unit_amount: Math.round(Number(plan.price) * 100),
+                    recurring: { interval: "month" },
+                },
+                quantity: 1,
+            },
+        ],
+        mode: "subscription",
+        success_url: "https://www.policywallet.gr/upgrade/success",
+        cancel_url: "https://www.policywallet.gr/account",
+    })
+
+    return { url: session.url, id: session.id }
+}
