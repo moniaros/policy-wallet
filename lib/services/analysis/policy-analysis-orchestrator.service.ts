@@ -70,6 +70,7 @@ import {
 } from "./step-telemetry"
 import { documentMimeType } from "@/lib/security/file-upload"
 import { validateDocumentForIngestion, readLocalText } from "@/lib/ingestion/document-gate"
+import { EXTRACTION_PROBE } from "@/lib/services/ai/extraction-input"
 import { toValidatedAIDocument, type ValidatedAIDocument } from "@/lib/ingestion/validated-document"
 import { USER_RESOLVABLE_REVIEW_REASONS, type DocumentValidationResult } from "@/lib/ingestion/types"
 import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
@@ -2709,7 +2710,8 @@ export class PolicyAnalysisOrchestratorService {
 
         // The probe's per-page text, read again here because on the stamped
         // path the gate did not run in this request (W0-02). In memory only.
-        const localText = await readLocalText(buffer, mimeType)
+        // The extraction's own page cap and budget, not the classifier's (W0-03).
+        const localText = await readLocalText(buffer, mimeType, EXTRACTION_PROBE)
 
         return {
             documentId: document.id,

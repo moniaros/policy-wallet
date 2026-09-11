@@ -6,6 +6,7 @@
  */
 
 import { providerDocumentFileName } from "@/lib/wallet/document-label"
+import { extractionContentParts } from './extraction-input'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { generateObject, generateText } from 'ai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
@@ -233,6 +234,17 @@ export class GeminiAIService implements IAIService {
 extractionConfidence.fields MUST include a 0-100 score for every extracted field among: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate.
 ${schemaPromptBlock(ExtractionSchema)}`
 
+      // Text or file — decided in ONE place (extraction-input.ts, W0-03): a
+      // text-native PDF goes as page-marked text when the flag is on, the
+      // file otherwise. Never assembled here.
+      const { input, parts } = extractionContentParts(`${prompt}\n${extractionGuidance}`, document)
+      logger('info', 'Gemini extraction input', {
+        kind: input.kind,
+        ...(input.kind === 'text'
+          ? { pagesSent: input.pagesSent, pageCount: input.pageCount, truncated: input.truncated }
+          : { reason: input.reason })
+      })
+
       const result = await withTimeoutAndRetry(
         (signal) => generateObject({
           // Propagate the wrapper's timeout abort so a timed-out call stops
@@ -245,15 +257,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
           messages: [
             {
               role: 'user',
-              content: [
-                { type: 'text', text: `${prompt}\n${extractionGuidance}` },
-                {
-                  type: 'file',
-                  data: document.data,
-                  mediaType: document.mimeType,
-                  filename: providerDocumentFileName(document.mimeType)
-                } as any
-              ]
+              content: parts as any
             }
           ],
           temperature: 0.1

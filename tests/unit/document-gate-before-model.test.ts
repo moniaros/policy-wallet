@@ -183,3 +183,69 @@ describe("source guard — no provider spreads or serialises the validated docum
         expect(documentSpreads(`// never ...document here\nconst x = document.data`)).toEqual([])
     })
 })
+
+/**
+ * W0-03: what the extraction sends — text or file — is decided in ONE place,
+ * `extractionContentParts` (lib/services/ai/extraction-input.ts). A provider
+ * that assembled a file part for extraction by hand would keep sending the
+ * whole file with the flag on, silently. Enumerated from the filesystem:
+ * every `*-ai.service.ts` under lib/services/ai except the mock.
+ */
+export function extractPolicyDataBody(source: string): string | null {
+    const code = blankNonCode(source)
+    const start = code.search(/async\s+extractPolicyData\s*\(/)
+    if (start < 0) return null
+    const open = code.indexOf("{", code.indexOf(")", start))
+    let depth = 0
+    for (let i = open; i < code.length; i++) {
+        if (code[i] === "{") depth++
+        else if (code[i] === "}") {
+            depth--
+            if (depth === 0) return code.slice(open, i + 1)
+        }
+    }
+    return null
+}
+
+export function extractionAssembledByHand(source: string): string[] {
+    const body = extractPolicyDataBody(source)
+    if (!body) return ["no extractPolicyData method found"]
+    const problems: string[] = []
+    if (!/\bextractionContentParts\s*\(/.test(body)) problems.push("does not call extractionContentParts(")
+    // String contents are blanked, so `type: "file"` is invisible here; the file
+    // part's SHAPE is not — a hand-built part names the document's fields.
+    if (/mediaType\s*:\s*document\.mimeType\b|data\s*:\s*document\.data\b/.test(body)) problems.push("assembles a file part by hand")
+    return problems
+}
+
+describe("source guard — every provider decides text-or-file through extractionContentParts", () => {
+    const providers = listSources(join(REPO_ROOT, "lib/services/ai")).filter(
+        (f) => /-ai\.service\.ts$/.test(f) && !/mock-ai\.service\.ts$/.test(f)
+    )
+    const rel = (file: string) => relative(REPO_ROOT, file)
+
+    it("enumerates the live providers", () => {
+        expect(providers.map(rel).sort()).toEqual([
+            "lib/services/ai/anthropic-ai.service.ts",
+            "lib/services/ai/gemini-ai.service.ts",
+            "lib/services/ai/openai-ai.service.ts",
+        ])
+    })
+
+    it("no provider assembles the extraction request by hand", () => {
+        const offenders = providers
+            .map((file) => ({ file: rel(file), problems: extractionAssembledByHand(readFileSync(file, "utf8")) }))
+            .filter((x) => x.problems.length > 0)
+        expect(offenders, offenders.map((o) => `${o.file}: ${o.problems.join("; ")}`).join("\n")).toEqual([])
+    })
+
+    it("the matcher is proven against probes", () => {
+        const byHand = `class P { async extractPolicyData(document: AIDocument) { const parts = [{ type: "file", data: document.data, mediaType: document.mimeType }]; return call(parts) } }`
+        expect(extractionAssembledByHand(byHand)).toEqual(["does not call extractionContentParts(", "assembles a file part by hand"])
+        const throughHelper = `class P { async extractPolicyData(document: AIDocument) { const { parts } = extractionContentParts(prompt, document); return call(parts) } }`
+        expect(extractionAssembledByHand(throughHelper)).toEqual([])
+        // A file part in ANOTHER method (gap analysis still attaches the file) is not the extraction's.
+        const elsewhere = `class P { async extractPolicyData(document: AIDocument) { const { parts } = extractionContentParts(p, document); return call(parts) }\n async analyzeGaps(document: AIDocument) { return call([{ type: "file", data: document.data, mediaType: document.mimeType }]) } }`
+        expect(extractionAssembledByHand(elsewhere)).toEqual([])
+    })
+})
