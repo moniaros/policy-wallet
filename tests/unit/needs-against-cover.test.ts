@@ -142,6 +142,10 @@ describe("guard — a comparison is published only when both sides carry evidenc
     }
 
     it("over every (profile level × document state): published ⇔ need ≥ user_reported and cover confirmed; otherwise the weaker side is named", () => {
+        // The floors are pinned here, not read back — the matrix below must be red
+        // when someone lowers one, not re-derive its expectation from the change.
+        expect(PUBLISHABLE_NEED_FLOOR).toBe("user_reported")
+        expect(PUBLISHABLE_COVER_FLOOR).toBe("policy_verified")
         let published = 0
         let questions = 0
         for (const level of EVIDENCE_LEVELS) {
