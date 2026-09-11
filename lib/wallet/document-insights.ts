@@ -47,7 +47,6 @@ export function getDocumentPolicySummary(
     const locale = resolveLocale(language)
     const vehicle = (policy.acordData as any)?.vehicle
     const property = (policy.acordData as any)?.property
-    const acordPolicy = (policy.acordData as any)?.policy
     const extraction = (policy.acordData as any)?.extraction
 
     // Last resort is the insurer, which does not exist yet on a policy whose
@@ -69,14 +68,10 @@ export function getDocumentPolicySummary(
         policyRowIdentity(policy as any).value ||
         (language === "el" ? "Ασφαλιστήριο" : "Policy")
 
-    const coverageTypeRaw =
-        compactText(acordPolicy?.coverageType) ||
-        compactText(acordPolicy?.planType) ||
-        compactText((policy.acordData as any)?.coverageType) ||
-        compactText(policyTypeLabel)
+    const coverageTypeRaw = compactText(policyTypeLabel)
 
     const premiumAmount = toNumber((policy.acordData as any)?.policy?.premium?.amount) ?? toNumber(policy.premiumAmount) ?? 0
-    const premiumCurrency = compactText((policy.acordData as any)?.policy?.premium?.currency) || policy.premiumCurrency || "EUR"
+    const premiumCurrency = compactText((policy.acordData as any)?.policy?.currency) || policy.premiumCurrency || "EUR"
     const premiumDisplay = new Intl.NumberFormat(locale, {
         style: "currency",
         currency: premiumCurrency,

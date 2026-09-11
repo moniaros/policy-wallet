@@ -279,7 +279,6 @@ export function buildPolicyReviewData(policy: PolicyRowForReview): PolicyReviewD
         sumInsured: deriveSumInsured(policy.lineOfBusiness, acord),
         coverageSummary:
             policy.coverageSummary ||
-            acord?.coverageSummary ||
             extraction?.coverageSummary ||
             null,
         coverages: asArray<ReviewCoverage>(acord?.coverages).filter((c) => c && typeof c.name === 'string'),

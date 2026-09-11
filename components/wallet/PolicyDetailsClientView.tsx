@@ -260,7 +260,7 @@ export function PolicyDetailsClient({
         if (extractedPremium) return Number(extractedPremium)
         return Number(policy.premiumAmount?.toString() || 0)
     }
-    const getPremiumCurrency = () => policy.acordData?.policy?.premium?.currency || policy.premiumCurrency || "EUR"
+    const getPremiumCurrency = () => policy.acordData?.policy?.currency || policy.premiumCurrency || "EUR"
 
     // Newest-first past policy periods recorded by re-uploads; the latest
     // renewal's end date supersedes the originally extracted expiration.

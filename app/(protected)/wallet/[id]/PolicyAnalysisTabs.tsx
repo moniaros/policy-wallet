@@ -6,6 +6,7 @@ import { useTabs } from '@/hooks/useTabs'
 import { localizeCoverageName, toGreekUppercaseNoAccents } from '@/lib/i18n/text-format'
 import { formatDateTime } from '@/lib/i18n/format'
 import type { GapReportItem } from '@/lib/wallet/gap-report'
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 interface PolicyAnalysisTabsProps {
     acordData: any
@@ -145,13 +146,13 @@ export function PolicyAnalysisTabs({
                                     <div className="p-3 bg-black/5 dark:bg-black rounded-xl border border-black/10 dark:border-white/15">
                                         <p className="text-kicker font-black text-muted-foreground uppercase tracking-widest mb-1">{heading(t.wallet.contractInsurer)}</p>
                                         <p className="text-xs font-bold text-black dark:text-white truncate">
-                                            {String((acordData as any).policy?.insurer || '')}
+                                            {displayInsurerName((acordData as any).policy?.insurerName ?? null)}
                                         </p>
                                     </div>
                                     <div className="p-3 bg-primary/10 dark:bg-primary/15 rounded-xl border border-primary/30">
                                         <p className="text-kicker font-black text-muted-foreground uppercase tracking-widest mb-1">{heading(t.wallet.premiumFound)}</p>
                                         <p className="text-xs font-bold text-primary dark:text-mint">
-                                            {String((acordData as any).policy?.premium?.amount || '')} {String((acordData as any).policy?.premium?.currency || '')}
+                                            {String((acordData as any).policy?.premium?.amount || '')} {String((acordData as any).policy?.currency || '')}
                                         </p>
                                     </div>
                                 </div>
