@@ -45,6 +45,9 @@ export interface GapListCopy {
     moreOne: string
     underReviewTitle: string
     underReviewDisclosure: string
+    /** W2-02: findings whose value the document did not confirm — disclosed, never counted. Optional for callers that render no such group. */
+    unverifiedTitle?: string
+    unverifiedDisclosure?: string
     allClear: string
     allClearOne: string
     allClearExcluded: string
@@ -60,6 +63,8 @@ export interface GapListCopy {
 export interface GapListProps {
     items: GapItemView[]
     underReview: GapItemView[]
+    /** W2-02: below the definition's evidence floor — the document did not confirm the value the rule fired on. */
+    unverified?: GapItemView[]
     /** How many classified items the plan lets a reader see; null = all. */
     visibleLimit: number | null
     provenanceLine: ProvenanceLine | null
@@ -71,7 +76,7 @@ export interface GapListProps {
     copy: GapListCopy
 }
 
-export function GapList({ items, underReview, visibleLimit, provenanceLine, state, isDeepAnalysisLocked, assessedCount, excludedCount, excludedExpired, copy }: GapListProps) {
+export function GapList({ items, underReview, unverified = [], visibleLimit, provenanceLine, state, isDeepAnalysisLocked, assessedCount, excludedCount, excludedExpired, copy }: GapListProps) {
     const [hidden, setHidden] = useState<Set<string>>(new Set())
     const live = items.filter((i) => !hidden.has(i.id))
     const visible = visibleLimit === null ? live : live.slice(0, visibleLimit)
@@ -217,6 +222,28 @@ export function GapList({ items, underReview, visibleLimit, provenanceLine, stat
                         <p className="text-caption leading-relaxed text-muted-foreground">{copy.underReviewDisclosure}</p>
                         <ul className="mt-2 divide-y divide-border" data-list="under_review">
                             {underReview.map((item) => (
+                                <li key={item.id} className="py-2 text-sm text-foreground" data-gap-id={item.id}>
+                                    <span className="font-medium">{item.title}</span>
+                                    <span className="text-muted-foreground"> · {item.branch}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </details>
+            )}
+
+            {unverified.length > 0 && copy.unverifiedTitle && copy.unverifiedDisclosure && (
+                // W2-02: the same disclosed treatment as under-review provenance, for a
+                // different reason — the document did not confirm what the rule read.
+                <details className="group/unverified mt-4 rounded-xl bg-muted/60" data-provenance-group="unverified">
+                    <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3.5 py-2.5 [&::-webkit-details-marker]:hidden">
+                        <span className="text-sm font-semibold text-foreground">{copy.unverifiedTitle}</span>
+                        <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open/unverified:rotate-180" aria-hidden="true" />
+                    </summary>
+                    <div className="px-3.5 pb-3.5">
+                        <p className="text-caption leading-relaxed text-muted-foreground">{copy.unverifiedDisclosure}</p>
+                        <ul className="mt-2 divide-y divide-border" data-list="unverified">
+                            {unverified.map((item) => (
                                 <li key={item.id} className="py-2 text-sm text-foreground" data-gap-id={item.id}>
                                     <span className="font-medium">{item.title}</span>
                                     <span className="text-muted-foreground"> · {item.branch}</span>

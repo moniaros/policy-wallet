@@ -316,10 +316,16 @@ export default async function ProtectionPage({
             area: areaForLob(lob)?.label[lang] ?? null,
             branch: branchTitle(branch.id, branch.label),
             underReview: g.provenance === 'under_review',
+            // W2-02: the rule fired on a value the document did not confirm
+            // (asserted by the model, its citation refuted or unchecked, or a
+            // row written before evidence was recorded). Disclosed, labelled,
+            // counted nowhere — the treatment under-review provenance gets.
+            unverified: g.provenance !== 'under_review' && g.evidence !== 'gap',
         }
     })
-    const gapItems = gapViews.filter((v) => !v.underReview)
+    const gapItems = gapViews.filter((v) => !v.underReview && !v.unverified)
     const underReviewItems = gapViews.filter((v) => v.underReview)
+    const unverifiedItems = gapViews.filter((v) => v.unverified)
     const gapState = !hasPolicies ? 'no_policies' : !hasDeepAnalysis ? 'not_analysed' : gapViews.length === 0 ? 'clear' : 'findings'
     const activeAssessment = partitionByAssessment(activePolicies)
 
@@ -394,6 +400,7 @@ export default async function ProtectionPage({
             gaps={{
                 items: gapItems,
                 underReview: underReviewItems,
+                unverified: unverifiedItems,
                 visibleLimit: entitlements.tier === 'free' ? 2 : null,
                 provenanceLine,
                 state: gapState,

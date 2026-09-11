@@ -25,6 +25,7 @@
  * See docs/audits/phase7-rule-catalogue-and-gate3b-2026-08.md.
  */
 import type { Prisma } from "@prisma/client"
+import type { DocumentEvidence } from "./document-evidence"
 
 export interface AuthoredGapDefinition {
     slug: string
@@ -37,6 +38,14 @@ export interface AuthoredGapDefinition {
     ruleId: string
     detectionLogic: Prisma.InputJsonValue
     isActive: boolean
+    /**
+     * The document evidence this definition needs before its finding is a GAP
+     * (W2-02, lib/gaps/evidence-floor.ts). Omitted: derived from the logic —
+     * a `missing` rule fires on silence and needs `policy_silent`; every other
+     * rule asks the document and needs `policy_verified`. Declare it only to
+     * override the derivation, and say why in a comment beside it.
+     */
+    evidenceFloor?: DocumentEvidence
 }
 
 export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
