@@ -2,6 +2,7 @@ import { zodSchema } from 'ai'
 import { z } from 'zod'
 
 import { logger } from '@/lib/logger'
+import { DEPRECATED_PREFIX } from '@/lib/schemas/acord-data'
 
 /**
  * JSON-mode workaround for Gemini's structured-output constraint budget.
@@ -19,9 +20,38 @@ import { logger } from '@/lib/logger'
  * reads defensively) and the failure is logged for observability.
  */
 
+/**
+ * Drop every property whose description starts with `DEPRECATED` from a wire
+ * JSON schema, recursively. The stored Zod schema keeps such a field (LOOP.md
+ * §4: a stored shape is never narrowed), but the model must not be asked for
+ * it — that is how a third party's name stops being collected (W5-01).
+ */
+export function stripDeprecated<T>(node: T): T {
+    if (Array.isArray(node)) return node.map(stripDeprecated) as T
+    if (!node || typeof node !== 'object') return node
+    const out: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
+        if (key === 'properties' && value && typeof value === 'object') {
+            const kept: Record<string, unknown> = {}
+            for (const [prop, sub] of Object.entries(value as Record<string, unknown>)) {
+                const description = (sub as { description?: unknown } | null)?.description
+                if (typeof description === 'string' && description.startsWith(DEPRECATED_PREFIX)) continue
+                kept[prop] = stripDeprecated(sub)
+            }
+            out[key] = kept
+            continue
+        }
+        out[key] = stripDeprecated(value)
+    }
+    if (Array.isArray(out.required) && out.properties && typeof out.properties === 'object') {
+        out.required = (out.required as unknown[]).filter((r) => typeof r === 'string' && r in (out.properties as object))
+    }
+    return out as T
+}
+
 /** Prompt block carrying the JSON schema (descriptions included — they guide the model). */
 export function schemaPromptBlock(schema: z.ZodTypeAny): string {
-    const wire = (zodSchema(schema) as { jsonSchema: unknown }).jsonSchema
+    const wire = stripDeprecated((zodSchema(schema) as { jsonSchema: unknown }).jsonSchema)
     return `Output a single JSON object EXACTLY matching this JSON Schema. Omit fields you cannot find (do not output null for missing optional fields). Never invent values.
 JSON SCHEMA:
 ${JSON.stringify(wire)}`

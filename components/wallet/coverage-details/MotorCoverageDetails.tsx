@@ -205,14 +205,18 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.namedDrivers}</span>
           </div>
+          {/* W5-01: drivers are counted and characterised, never named — the
+              schema no longer carries a name or a licence number, so this
+              renders what cover turns on: who they are to the policyholder
+              and their band. A legacy row's names are stripped on parse. */}
           <div className="ml-10.5 space-y-1.5">
             {motor.namedDrivers.map((driver, i) => (
               <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-black dark:text-white font-medium">{driver.name || "-"}</span>
-                {driver.licenseNumber && (
-                  <span className="text-xs text-muted-foreground font-mono">
-                    {motorCopy.license}: {driver.licenseNumber}
-                  </span>
+                <span className="text-black dark:text-white font-medium">
+                  {driver.relationshipToPolicyholder || driver.ageBand || "-"}
+                </span>
+                {driver.relationshipToPolicyholder && driver.ageBand && (
+                  <span className="text-xs text-muted-foreground">{driver.ageBand}</span>
                 )}
               </div>
             ))}

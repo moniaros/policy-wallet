@@ -1,6 +1,14 @@
 import { z } from "zod";
 
 /**
+ * A field described this way stays in the stored shape (LOOP.md §4: additive only)
+ * but is dropped from the JSON-mode prompt block, so the model is never asked for it.
+ * `lib/services/ai/json-mode-schema.ts` keys on the prefix.
+ */
+export const DEPRECATED_PREFIX = "DEPRECATED"
+const DEPRECATED_NAME = `${DEPRECATED_PREFIX} — never extracted, never asked for: a third party's name or identifier is not held (PW-PROVENANCE-01 W5-01). Leave absent.`
+
+/**
  * ACORD Data Schema v3
  *
  * Unified Zod schema for structured insurance policy data extracted by AI.
@@ -101,10 +109,25 @@ export const AcordDataSchema = z.object({
         deductible: z.number().optional(),
         hasRoadsideAssistance: z.boolean().optional(),
         roadsideAssistancePhone: z.string().optional(),
+        /**
+         * Additional drivers are COUNTED and characterised, never named
+         * (PW-PROVENANCE-01 W5-01 — the `insuredPersons` principle). Names and
+         * licence numbers are third-party personal data no rule reads. The two
+         * keys stay in place, DEPRECATED, because LOOP.md §4 forbids narrowing a
+         * stored shape; `schemaPromptBlock` drops a DEPRECATED field from what
+         * the model is asked for, so nothing new is collected. Removing the keys
+         * themselves is the owner's call. What cover actually turns on is
+         * below: the count, and whether cover is restricted to them.
+         */
         namedDrivers: z.array(z.object({
-            name: z.string(),
-            licenseNumber: z.string().optional(),
-        })).optional(),
+            name: z.string().optional().describe(DEPRECATED_NAME),
+            licenseNumber: z.string().optional().describe(DEPRECATED_NAME),
+            ageBand: z.string().optional().describe("e.g. under-25, 25-30, over-30 — never a date of birth"),
+            yearsLicensed: z.number().optional(),
+            relationshipToPolicyholder: z.string().optional().describe("spouse, child, employee, other — never a name"),
+        })).optional().describe("One entry per ADDITIONAL named driver. NO names, NO licence numbers — the count and the bands only."),
+        namedDriverCount: z.number().optional().describe("How many additional drivers the schedule names"),
+        namedDriverRestriction: z.boolean().optional().describe("true when cover applies only to the named drivers"),
         greenCardExpiryDate: z.string().optional().describe("ISO date — Greek green card expiry"),
         coverageTier: z.string().optional().describe("e.g. third-party, third-party-fire-theft, comprehensive"),
         accidentDeclarationPhone: z.string().optional(),
@@ -530,9 +553,13 @@ export const AcordDataSchema = z.object({
     motor: z.object({
         coverageTier: z.string().optional(),
         greenCardExpiry: z.string().optional(),
+        // W5-01: same minimisation as the canonical section — the name keys stay, deprecated, never asked for.
         namedDrivers: z.array(z.object({
-            name: z.string().optional(),
-            licenseNumber: z.string().optional(),
+            name: z.string().optional().describe(DEPRECATED_NAME),
+            licenseNumber: z.string().optional().describe(DEPRECATED_NAME),
+            ageBand: z.string().optional(),
+            yearsLicensed: z.number().optional(),
+            relationshipToPolicyholder: z.string().optional(),
         })).optional(),
         accidentDeclarationPhone: z.string().optional(),
         roadsideAssistancePhone: z.string().optional(),
