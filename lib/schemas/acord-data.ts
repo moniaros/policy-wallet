@@ -7,6 +7,7 @@ import { z } from "zod";
  */
 export const DEPRECATED_PREFIX = "DEPRECATED"
 const DEPRECATED_NAME = `${DEPRECATED_PREFIX} — never extracted, never asked for: a third party's name or identifier is not held (PW-PROVENANCE-01 W5-01). Leave absent.`
+const DEPRECATED_BENEFICIARY_NAMES = `${DEPRECATED_PREFIX} — never extracted, never asked for: a beneficiary's name is not held here, the count and relationship class are (PW-PROVENANCE-01 W5-02). Leave absent.`
 
 /**
  * ACORD Data Schema v3
@@ -196,7 +197,18 @@ export const AcordDataSchema = z.object({
         deathBenefit: z.number().optional(),
         cashValue: z.number().optional(),
         maturityDate: z.string().optional(),
-        beneficiaries: z.array(z.string()).optional(),
+        /**
+         * W5-02 (plan D3): a beneficiary's NAME was collected here for no rule —
+         * `no_beneficiaries_recorded` asks only whether anything was recorded.
+         * The key stays (LOOP.md §4: never narrow), DEPRECATED so the prompt
+         * block never asks for it; what a rule or a needs comparison can use is
+         * the count and the relationship class below. The designations
+         * themselves live in the top-level `beneficiaries[]`, which the life
+         * card renders «as written» — a product promise, and the owner's call.
+         */
+        beneficiaries: z.array(z.string()).optional().describe(DEPRECATED_BENEFICIARY_NAMES),
+        beneficiaryCount: z.number().optional().describe("How many beneficiaries the schedule designates — the count only, never a name. Omit when the document designates none."),
+        beneficiaryRelationships: z.array(z.string()).optional().describe("Relationship of each designated beneficiary to the policyholder: spouse, child, parent, estate, other — never a name"),
         // Greek-market enrichment
         currentFundValue: z.number().optional(),
         ytdGrowth: z.number().optional().describe("Year-to-date growth percentage"),
