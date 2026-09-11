@@ -39,6 +39,7 @@ const SECTION_PANEL: Record<string, { path: string; readVar: string }> = {
  */
 const INTENTIONALLY_NOT_IN_PANEL: Record<string, string> = {
     'vehicle.year': 'vehicle identity — shown in the policy header, not a coverage figure',
+    'vehicle.namedDriverCount': 'a head count of additional drivers, not a coverage amount — the panel lists the drivers themselves (W5-01)',
     'property.squareMeters': 'property spec — header/identity, not a coverage amount',
     'property.yearBuilt': 'property spec — header/identity, not a coverage amount',
     'pet.age': "the animal's age — identity, not a coverage amount",

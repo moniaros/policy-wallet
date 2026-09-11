@@ -101,10 +101,20 @@ export const AcordDataSchema = z.object({
         deductible: z.number().optional(),
         hasRoadsideAssistance: z.boolean().optional(),
         roadsideAssistancePhone: z.string().optional(),
+        /**
+         * Additional drivers are COUNTED and characterised, never named
+         * (PW-PROVENANCE-01 W5-01 — the `insuredPersons` principle). Names and
+         * licence numbers are third-party personal data no rule reads; a legacy
+         * item that carries them is stripped on parse. What cover actually
+         * turns on is below: the count, and whether cover is restricted to them.
+         */
         namedDrivers: z.array(z.object({
-            name: z.string(),
-            licenseNumber: z.string().optional(),
-        })).optional(),
+            ageBand: z.string().optional().describe("e.g. under-25, 25-30, over-30 — never a date of birth"),
+            yearsLicensed: z.number().optional(),
+            relationshipToPolicyholder: z.string().optional().describe("spouse, child, employee, other — never a name"),
+        })).optional().describe("One entry per ADDITIONAL named driver. NO names, NO licence numbers — the count and the bands only."),
+        namedDriverCount: z.number().optional().describe("How many additional drivers the schedule names"),
+        namedDriverRestriction: z.boolean().optional().describe("true when cover applies only to the named drivers"),
         greenCardExpiryDate: z.string().optional().describe("ISO date — Greek green card expiry"),
         coverageTier: z.string().optional().describe("e.g. third-party, third-party-fire-theft, comprehensive"),
         accidentDeclarationPhone: z.string().optional(),
@@ -530,9 +540,11 @@ export const AcordDataSchema = z.object({
     motor: z.object({
         coverageTier: z.string().optional(),
         greenCardExpiry: z.string().optional(),
+        // W5-01: same minimisation as the canonical section — a legacy name is stripped on parse.
         namedDrivers: z.array(z.object({
-            name: z.string().optional(),
-            licenseNumber: z.string().optional(),
+            ageBand: z.string().optional(),
+            yearsLicensed: z.number().optional(),
+            relationshipToPolicyholder: z.string().optional(),
         })).optional(),
         accidentDeclarationPhone: z.string().optional(),
         roadsideAssistancePhone: z.string().optional(),
