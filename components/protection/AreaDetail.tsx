@@ -297,6 +297,22 @@ export function AreaDetail({ model, copy, flowCopy, onAnswer }: AreaDetailProps)
                         </div>
                     ) : null}
 
+                    {/* W3-01 — need against cover. Published («shortfall» / «adequate»)
+                        only when both sides carry evidence; otherwise it reads as the
+                        question it is, naming what is missing or which side is weaker. */}
+                    {model.needsCheck ? (
+                        <div className="mt-4 border-t border-border pt-3" data-needs-check={model.needsCheck.verdict} data-published={model.needsCheck.published ? "true" : "false"}>
+                            <h3 className={sectionTitle}>{copy.detail.needs.title}</h3>
+                            <p className="mt-2 text-sm font-semibold leading-relaxed text-foreground [overflow-wrap:anywhere]">{model.needsCheck.headline}</p>
+                            {model.needsCheck.lines.map((line, i) => (
+                                <p key={i} className="mt-1 text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">{line}</p>
+                            ))}
+                            {model.needsCheck.assumption ? (
+                                <p className="mt-1 text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">{model.needsCheck.assumption}</p>
+                            ) : null}
+                        </div>
+                    ) : null}
+
                     {/* «Δεν έχουμε δει» only when nothing at all has been seen — not
                         over a lapsed line, not over a line from another area. The
                         first-policy ask stays while nothing of this area's own is in

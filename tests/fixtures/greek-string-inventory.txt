@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3723
+# bundle entries: 3742
 # inline entries: 4923 across 222 files
 # ternary entries: 294 across 43 files
 # call entries: 1148 across 86 files
@@ -2300,6 +2300,25 @@ bundle	protection.attention.detail.fullProfileTitle	"Πλήρες προφίλ"
 bundle	protection.attention.detail.kicker	"Περιοχή προσοχής"
 bundle	protection.attention.detail.limitsRead	"τα όρια διαβάστηκαν"
 bundle	protection.attention.detail.limitsUnread	"μόνο περίληψη — τα όρια δεν έχουν διαβαστεί ακόμη"
+bundle	protection.attention.detail.needs.adequate	"Το κεφάλαιο ζωής στα ασφαλιστήριά σας είναι {cover} — καλύπτει την ανάγκη που υπολογίσαμε ({need})."
+bundle	protection.attention.detail.needs.assumption	"Τα {years} έτη είναι παραδοχή, όχι ετυμηγορία — αλλάζει αν μας πείτε κάτι διαφορετικό."
+bundle	protection.attention.detail.needs.coverNoPage	"Το κεφάλαιο αναγράφεται στο ασφαλιστήριο και επιβεβαιώθηκε στο κείμενό του."
+bundle	protection.attention.detail.needs.coverPage	"Το κεφάλαιο αναγράφεται στο ασφαλιστήριο, σελίδα {page}, και επιβεβαιώθηκε στο κείμενό του."
+bundle	protection.attention.detail.needs.dependency.minor	"λίγο"
+bundle	protection.attention.detail.needs.dependency.primary	"κυρίως"
+bundle	protection.attention.detail.needs.dependency.shared	"περίπου στο μισό"
+bundle	protection.attention.detail.needs.facts.dependants	"πόσα εξαρτώμενα μέλη έχετε"
+bundle	protection.attention.detail.needs.facts.income	"το ετήσιο εισόδημά σας"
+bundle	protection.attention.detail.needs.facts.income_dependency	"πόσο βασίζεται σε αυτό το νοικοκυριό"
+bundle	protection.attention.detail.needs.need	"Ανάγκη: ετήσιο εισόδημα {income} × {years} έτη, γιατί το νοικοκυριό βασίζεται σε αυτό {dependency}, με {dependants} εξαρτώμενα μέλη. Το εισόδημα μάς το δώσατε εσείς{when}."
+bundle	protection.attention.detail.needs.needWhen	" ({month})"
+bundle	protection.attention.detail.needs.notApplicable	"Χωρίς εξαρτώμενα μέλη δεν υπολογίζουμε ανάγκη αναπλήρωσης εισοδήματος."
+bundle	protection.attention.detail.needs.notCheckable	"Δεν έχουμε διαβάσει κεφάλαιο ζωής σε ασφαλιστήριο σε ισχύ, οπότε δεν συγκρίνουμε."
+bundle	protection.attention.detail.needs.questionCitation	"Διαβάσαμε κεφάλαιο ζωής {cover}, αλλά δεν επιβεβαιώθηκε στο κείμενο του ασφαλιστηρίου — μέχρι την επόμενη ανάλυση ο έλεγχος μένει ερώτηση, όχι εύρημα."
+bundle	protection.attention.detail.needs.questionFacts	"Για να ελέγξουμε αν το κεφάλαιο ζωής φτάνει, χρειαζόμαστε: {facts}."
+bundle	protection.attention.detail.needs.questionNeedEvidence	"Η ανάγκη ({need}) υπολογίστηκε από στοιχεία που δεν δηλώσατε εσείς ακριβώς ({weaker}) — ερώτηση, όχι εύρημα. Επιβεβαιώστε τα και ο έλεγχος γίνεται εύρημα."
+bundle	protection.attention.detail.needs.shortfall	"Το κεφάλαιο ζωής στα ασφαλιστήριά σας είναι {cover}. Η ανάγκη που υπολογίσαμε είναι {need} — υπολείπονται {shortfall}."
+bundle	protection.attention.detail.needs.title	"Ανάγκη έναντι κάλυψης"
 bundle	protection.attention.detail.noPolicies	"Δεν έχουμε δει ασφαλιστήριο για αυτή την περιοχή."
 bundle	protection.attention.detail.openPolicy	"Προβολή ασφαλιστηρίου"
 bundle	protection.attention.detail.policiesLead	"Μόνο όσα ασφαλιστήρια έχουμε δει — και μόνο όσο από αυτά έχουμε διαβάσει."
