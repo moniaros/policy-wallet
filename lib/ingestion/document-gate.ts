@@ -35,7 +35,7 @@ import { logger } from "@/lib/logger"
 import { hashDocumentBuffer } from "@/lib/services/analysis/extraction-cache"
 import { estimatePolicyAnalysisTokenBudget } from "@/lib/services/analysis/token-budget-estimator"
 import type { BatchFailureCode } from "@/lib/wallet/batch-upload-errors"
-import { probePdf, type PdfProbeFailure, type PdfProbeResult } from "./pdf-probe"
+import { probePdf, type PdfProbeFailure, type PdfProbeOptions, type PdfProbeResult } from "./pdf-probe"
 import {
     classifyLexically,
     ACCEPT_CONFIDENCE,
@@ -245,9 +245,13 @@ export function localTextFrom(probe: PdfProbeResult): LocalDocumentText | null {
  * arm, where the verdict comes from the stamp and the probe never ran in this
  * request. ~100 ms for a PDF; null for anything else.
  */
-export async function readLocalText(bytes: Buffer | Uint8Array, canonicalMime: string): Promise<LocalDocumentText | null> {
+export async function readLocalText(
+    bytes: Buffer | Uint8Array,
+    canonicalMime: string,
+    opts: PdfProbeOptions = {}
+): Promise<LocalDocumentText | null> {
     if (canonicalMime !== "application/pdf") return null
-    return localTextFrom(await probePdf(bytes))
+    return localTextFrom(await probePdf(bytes, opts))
 }
 
 interface LocalTextSink {
