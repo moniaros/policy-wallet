@@ -1245,6 +1245,29 @@
       }
     },
     {
+      "route": "v1/jobs/pitr-re-erasure/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
       "route": "v1/jobs/privacy-retention/route.ts",
       "methods": [
         "GET",
