@@ -44,7 +44,7 @@ export const cyberContent: BranchContent = {
             en: 'Learn the incident steps in advance: bank → authorities (cybercrime unit) → insurer. Order and speed matter.',
         },
         {
-            el: 'Κρατήστε screenshots και emails από κάθε ύποπτη συναλλαγή — είναι τα βασικά αποδεικτικά του φακέλου.',
+            el: 'Κρατήστε στιγμιότυπα οθόνης και emails από κάθε ύποπτη συναλλαγή — είναι τα βασικά αποδεικτικά του φακέλου.',
             en: 'Keep screenshots and emails of any suspicious transaction — they are the core evidence of the file.',
         },
         {
@@ -140,8 +140,8 @@ export const cyberContent: BranchContent = {
             en: 'File a report with the cybercrime unit — the case number is almost always required by the insurer.',
         },
         {
-            el: 'Συγκεντρώστε αποδεικτικά (screenshots, emails, κινήσεις λογαριασμού) και δηλώστε το περιστατικό στον ασφαλιστή σας εντός της προθεσμίας του ασφαλιστηρίου.',
-            en: 'Gather evidence (screenshots, emails, statements) and report to your insurer within the policy deadline.',
+            el: 'Συγκεντρώστε αποδεικτικά (στιγμιότυπα οθόνης, emails, κινήσεις λογαριασμού) και δηλώστε το περιστατικό στον ασφαλιστή σας εντός της προθεσμίας του ασφαλιστηρίου.',
+            en: 'Gather evidence (στιγμιότυπα οθόνης, emails, statements) and report to your insurer within the policy deadline.',
         },
     ],
     renewalNote: {

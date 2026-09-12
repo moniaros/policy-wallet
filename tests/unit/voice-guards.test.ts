@@ -114,7 +114,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // Round 1 closes the agent-CRM anglicisms and the auth screens; the
         // remaining count is the Round-2 backlog and is asserted here so it
         // can only go down.
-        expect(bad.length, `English-in-el (metric 6) = ${bad.length}, above the Round-1 level:\n${bad.slice(0, 20).join('\n')}`).toBeLessThanOrEqual(40)
+        expect(bad.length, `English-in-el (metric 6) = ${bad.length}, above the Round-1 level:\n${bad.slice(0, 20).join('\n')}`).toBeLessThanOrEqual(29)
     })
 
     it('number-format-guard — thousands separator per locale', () => {
@@ -126,7 +126,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
     })
 
     it('claims-guard — the retired claims never return, outbound templates included', () => {
-        const RETIRED = /500\s?\+|10[.,]000\s?\+|\b98\s?%\s?(ακρίβ|accuracy)|χιλιάδες (χρήστ|πελάτ|ασφαλισμ)|μας εμπιστεύ|5-1[05]%\s?έκπτωσ|€100-150|σε λιγότερο από 1 λεπτό/i
+        const RETIRED = /500\s?\+|10[.,]000\s?\+|\b98\s?%\s?(ακρίβ|accuracy)|χιλιάδες (χρήστ|πελάτ|ασφαλισμ)|μας εμπιστεύ|5-1[05]%\s?έκπτωσ|€100-150|σε λιγότερο από (\d+|ένα|μία|δύο) (λεπτ|δευτερόλεπτ)/i
         const bad = offenders((l) => RETIRED.test(l.text))
         expect(bad, `a retired or unsourced claim is back:\n${bad.join('\n')}`).toEqual([])
     })

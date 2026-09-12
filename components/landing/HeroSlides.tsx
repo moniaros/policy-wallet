@@ -139,7 +139,7 @@ const SLIDES: Slide[] = [
             ),
         lead: (locale) =>
             locale === "el"
-                ? "Οδική βοήθεια, ετήσιο check-up, απευθείας πληρωμή νοσοκομείου, επαναπατρισμός: πολλά μπορεί να τα έχετε ήδη. Σας δείχνουμε ποια, με απλά λόγια."
+                ? "Οδική βοήθεια, ετήσιος προληπτικός έλεγχος, απευθείας πληρωμή νοσοκομείου, επαναπατρισμός: πολλά μπορεί να τα έχετε ήδη. Σας δείχνουμε ποια, με απλά λόγια."
                 : "Roadside assistance, an annual check-up, direct hospital billing, repatriation: plenty may already be yours. We show you which, in plain words.",
     },
 ]

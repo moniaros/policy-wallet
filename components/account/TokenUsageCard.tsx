@@ -54,7 +54,7 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
 
     const I18N = {
         el: {
-            title: "Χρήση AI Tokens",
+            title: "Χρήση tokens AI",
             monthlyUsage: "Μηνιαία χρήση",
             extraTokens: "Επιπλέον tokens",
             buyExtra: "Αγορά επιπλέον tokens",

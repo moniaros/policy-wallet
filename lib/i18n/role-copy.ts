@@ -416,7 +416,7 @@ const roleCopy: Record<Language, RoleCopy> = {
         },
         auth: {
             createAccountTitle: "Δημιουργία λογαριασμού",
-            createAccountSubtitle: "Ξεκινήστε με το PolicyWallet σε λιγότερο από 2 λεπτά.",
+            createAccountSubtitle: "Λογαριασμός και πρώτο ασφαλιστήριο σε λίγα βήματα.",
             fullNamePlaceholder: "Όνομα Επώνυμο",
             emailPlaceholder: "name@example.com",
             passwordPlaceholder: "********",

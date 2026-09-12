@@ -489,8 +489,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                     >
                         <div className="flex items-center gap-1.5">
                             <Shield className="h-3.5 w-3.5 text-primary dark:text-[#A7F3D0]" />
-                            <span className="text-micro font-semibold text-neutral-900 dark:text-white">{t("Σκορ Προστασίας", "Protection Score")}</span>
-                            <span className="text-micro font-bold text-primary dark:text-[#A7F3D0]">87/100</span>
+                            <span className="text-micro font-semibold text-neutral-900 dark:text-white">{t("Ευρήματα με πηγή", "Findings with their source")}</span>
                         </div>
                         <span className="rounded-full bg-brand-green px-3 py-1.5 text-kicker font-bold text-white">
                             {t("Αποστολή →", "Send →")}
