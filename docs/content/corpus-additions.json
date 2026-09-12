@@ -4,5 +4,6 @@
   "call:components/account/Achievements.tsx::κερδισμένα",
   "call:components/landing/AgentWidgets.tsx::Έτοιμη για αποστολή",
   "call:app/auth/signup/confirmation/page.tsx::Ασφαλής ρύθμιση",
-  "bundle:help.articles.premiumFeatures::Τι προσφέρουν τα πληρωμένα πλάνα"
+  "bundle:help.articles.premiumFeatures::Τι προσφέρουν τα πληρωμένα πλάνα",
+  "call:components/landing/AgentWidgets.tsx::Ευρήματα με πηγή"
 ]

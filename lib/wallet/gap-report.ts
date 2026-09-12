@@ -968,7 +968,7 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
     },
     "missing-microchip-number": {
         concept: "missing-microchip-number",
-        titleEl: "Δεν καταγράφεται ο αριθμός microchip",
+        titleEl: "Δεν καταγράφεται ο αριθμός μικροτσίπ",
         titleEn: "Microchip number not recorded",
         mechanic: "other",
         coverageArea: "pet",

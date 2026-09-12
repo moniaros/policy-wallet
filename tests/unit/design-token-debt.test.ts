@@ -188,7 +188,7 @@ const HARDCODED_COLOUR_DEBT: Record<string, number> = {
     'components/landing/AgentWidgets.tsx::#28ca41': 1,
     'components/landing/AgentWidgets.tsx::#29685b': 4,
     'components/landing/AgentWidgets.tsx::#374151': 1,
-    'components/landing/AgentWidgets.tsx::#a7f3d0': 8,
+    'components/landing/AgentWidgets.tsx::#a7f3d0': 7,
     'components/landing/AgentWidgets.tsx::#bfdbfe': 1,
     'components/landing/AgentWidgets.tsx::#ff5f57': 1,
     'components/landing/AgentWidgets.tsx::#ffbd2e': 1,

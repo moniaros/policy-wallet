@@ -33,3 +33,5 @@ Rows C1–C7 are re-verified, not re-argued, in each round. New numeric claims f
 Round-1 audit get a row **before** they are edited. The composed strings (298) are not in
 this table yet — their assembled outputs are measured in the Round-1 fixture matrix and
 their numbers (counts, days, amounts) come from data, not copy.
+
+**Round-2 retirements (2026-09-13).** Two timing promises had no row and were removed, not softened: `wallet.emptyState.benefit` «σε λιγότερο από 30 δευτερόλεπτα» and `role-copy createAccountSubtitle` «σε λιγότερο από 2 λεπτά». The claims-guard now matches «σε λιγότερο από N λεπτά/δευτερόλεπτα» for any N (it knew only «1 λεπτό»); the probe carries a «2 λεπτά» line. The public agents-page demo's «Σκορ Προστασίας 87/100» (no row; the product computes no score since Aug 2026) is removed under D-V07.

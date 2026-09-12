@@ -24,7 +24,7 @@ export const marineHullContent: BranchContent = {
             en: 'A warranty is not a recommendation. Failing it — a lapsed certificate, capacity exceeded, hot works on board — can remove cover for the incident in question.',
         },
         {
-            el: 'Οι απαιτήσεις συντήρησης έχουν συχνά ρυθμό: ετήσιο service σύμφωνα με τις οδηγίες του κατασκευαστή, συναρμολόγηση και αποσυναρμολόγηση από εξουσιοδοτημένο συνεργείο. Πρόκειται για ημερολόγιο υποχρεώσεων, όχι για μία υπογραφή στην έναρξη.',
+            el: 'Οι απαιτήσεις συντήρησης έχουν συχνά ρυθμό: ετήσιο σέρβις σύμφωνα με τις οδηγίες του κατασκευαστή, συναρμολόγηση και αποσυναρμολόγηση από εξουσιοδοτημένο συνεργείο. Πρόκειται για ημερολόγιο υποχρεώσεων, όχι για μία υπογραφή στην έναρξη.',
             en: 'Maintenance requirements usually have a rhythm: annual servicing to the maker’s instructions, assembly and disassembly by an authorised workshop. This is a calendar of obligations, not a single signature at inception.',
         },
         {

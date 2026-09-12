@@ -30,7 +30,7 @@ export const boatHullContent: BranchContent = {
             en: 'Hull deductibles are not one number but a ladder: one for damage to the boat, another for machinery breakdown, another for the shaft and propeller, another for tenders. When one incident touches more than one, the largest is usually the one applied.',
         },
         {
-            el: 'Η επέκταση μηχανικών βλαβών συνήθως συνοδεύεται από απαράβατο όρο συντήρησης σύμφωνα με τις οδηγίες του κατασκευαστή — με βάση ώρες λειτουργίας ή έτη. Χωρίς τα service, η επέκταση που πληρώθηκε ενδέχεται να μην ενεργοποιηθεί.',
+            el: 'Η επέκταση μηχανικών βλαβών συνήθως συνοδεύεται από απαράβατο όρο συντήρησης σύμφωνα με τις οδηγίες του κατασκευαστή — με βάση ώρες λειτουργίας ή έτη. Χωρίς τα σέρβις, η επέκταση που πληρώθηκε ενδέχεται να μην ενεργοποιηθεί.',
             en: 'The machinery-damage extension normally comes with a warranty to service to the manufacturer’s instructions — by engine hours or by age. Without those services, the extension that was paid for may not respond.',
         },
         {
@@ -66,7 +66,7 @@ export const boatHullContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Κρατήστε τα δελτία service μηχανής μαζί με το ασφαλιστήριο. Στη μηχανική βλάβη το πρώτο ερώτημα είναι σχεδόν πάντα πότε έγινε η τελευταία συντήρηση και με ποιες προδιαγραφές.',
+            el: 'Κρατήστε τα δελτία σέρβις μηχανής μαζί με το ασφαλιστήριο. Στη μηχανική βλάβη το πρώτο ερώτημα είναι σχεδόν πάντα πότε έγινε η τελευταία συντήρηση και με ποιες προδιαγραφές.',
             en: 'Keep the engine service records with the policy. In a machinery claim the first question is nearly always when the last service happened and to what specification.',
         },
         {
@@ -95,7 +95,7 @@ export const boatHullContent: BranchContent = {
             id: 'boat_hull_machinery_warranty_gap',
             title: { el: 'Επέκταση μηχανικών βλαβών χωρίς τεκμηριωμένη συντήρηση', en: 'Machinery extension without documented servicing' },
             description: {
-                el: 'Η επέκταση ενδέχεται να τελεί υπό όρο τακτικής συντήρησης. Χωρίς αποδεικτικά service, η κάλυψη που πληρώθηκε μπορεί να μην ενεργοποιηθεί.',
+                el: 'Η επέκταση ενδέχεται να τελεί υπό όρο τακτικής συντήρησης. Χωρίς αποδεικτικά σέρβις, η κάλυψη που πληρώθηκε μπορεί να μην ενεργοποιηθεί.',
                 en: 'The extension can be conditional on regular servicing. Without service records, the cover that was paid for may not respond.',
             },
         },
@@ -177,7 +177,7 @@ export const boatHullContent: BranchContent = {
             en: 'For theft or malicious damage, report to the police or the port authority at once — a late report is remarked upon in the file.',
         },
         {
-            el: 'Συγκεντρώστε δελτία service, τιμολόγια εξοπλισμού και την κατάσταση αντικειμένων που είχε δοθεί στην ανάληψη· εκεί κρίνεται η αξία, όχι στην εκτίμηση της στιγμής.',
+            el: 'Συγκεντρώστε δελτία σέρβις, τιμολόγια εξοπλισμού και την κατάσταση αντικειμένων που είχε δοθεί στην ανάληψη· εκεί κρίνεται η αξία, όχι στην εκτίμηση της στιγμής.',
             en: 'Gather service records, equipment invoices and the schedule submitted at inception; that is where value is settled, not in an on-the-spot estimate.',
         },
         {

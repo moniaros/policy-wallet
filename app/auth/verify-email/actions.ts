@@ -12,7 +12,7 @@ const vErr = (language: "el" | "en", el: string, en: string) => (language === "e
 export async function verifyEmailToken(token: string, email: string, language: "el" | "en" = "el") {
     try {
         if (!token || !email) {
-            return { success: false, error: vErr(language, "Λείπει το token ή το email", "Missing token or email") }
+            return { success: false, error: vErr(language, "Λείπει ο κωδικός ή το email", "Missing token or email") }
         }
 
         // 1. Verify token exists in our database and is valid

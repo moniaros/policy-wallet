@@ -199,7 +199,7 @@ export const HERO_EMAIL_CTA: Bilingual = {
 
 /** The demoted feature line — the old slide-1 headline, now the fixed sub-head. */
 export const HERO_SUBHEAD: Bilingual = {
-    el: "Όλα τα ασφαλιστήρια, από όλες τις εταιρείες, σε ένα σημείο — διαβασμένα και εξηγημένα στα ελληνικά.",
+    el: "Όλα τα ασφαλιστήρια, από όλες τις εταιρείες, σε ένα σημείο — τα διαβάζουμε και σας τα εξηγούμε σε απλά ελληνικά.",
     en: "Every policy, from every company, in one place — read and explained in plain language.",
 }
 
