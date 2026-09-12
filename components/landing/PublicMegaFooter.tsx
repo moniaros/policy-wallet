@@ -168,7 +168,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         </Link>
                         <p className="mt-4 max-w-[320px] text-body leading-relaxed text-neutral-600 dark:text-slate-300">
                             {t(
-                                "Η ζωή σας αλλάζει και τα ρίσκα σας μαζί της. Σας λέμε αν η ασφάλειά σας κράτησε τον ρυθμό. Δεν πουλάμε ασφάλειες.",
+                                "Η ζωή σας αλλάζει και τα ρίσκα σας μαζί της. Σας λέμε αν η ασφάλισή σας κράτησε τον ρυθμό. Δεν πουλάμε ασφάλειες.",
                                 "Your life changes and your risks change with it. We tell you whether your insurance kept up. We do not sell insurance."
                             )}
                         </p>

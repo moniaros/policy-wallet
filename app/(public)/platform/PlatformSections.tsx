@@ -66,7 +66,7 @@ const STEPS: { n: string; title: { el: string; en: string }; body: { el: string;
             en: "Rules check that data",
         },
         body: {
-            el: "Ό,τι σας παρουσιάζουμε ως κενό κάλυψης το βρήκε κανόνας που κοίταξε συγκεκριμένα πεδία του συμβολαίου σας — όχι ένα μοντέλο που σχημάτισε γνώμη. Κάθε εύρημα κρατά ποιος κανόνας το έβγαλε και τι τιμές διάβασε, ώστε να μπορεί να ελεγχθεί και να αμφισβητηθεί.",
+            el: "Ό,τι σας παρουσιάζουμε ως κενό κάλυψης το βρήκε κανόνας που κοίταξε συγκεκριμένα πεδία του ασφαλιστηρίου σας — όχι ένα μοντέλο που σχημάτισε γνώμη. Κάθε εύρημα κρατά ποιος κανόνας το έβγαλε και τι τιμές διάβασε, ώστε να μπορεί να ελεγχθεί και να αμφισβητηθεί.",
             en: "Anything we show you as a coverage gap was found by a rule that looked at specific fields of your policy — not by a model forming an opinion. Every finding keeps which rule produced it and what values that rule read, so it can be checked and argued with.",
         },
     },
@@ -161,7 +161,7 @@ export function PlatformSections({ locale }: { locale: Locale }) {
                         <p className="mt-3 text-body leading-relaxed text-[#334155] dark:text-slate-200">
                             {t(
                                 locale,
-                                "Η ανάλυση δεν είναι ασφαλιστική συμβουλή και δεν υποκαθιστά το ίδιο το συμβόλαιο ούτε τον αδειοδοτημένο διαμεσολαβητή σας.",
+                                "Η ανάλυση δεν είναι ασφαλιστική συμβουλή και δεν υποκαθιστά το ίδιο το ασφαλιστήριο ούτε τον αδειοδοτημένο διαμεσολαβητή σας.",
                                 "The analysis is not insurance advice and does not replace the policy document itself or your licensed intermediary."
                             )}
                         </p>
@@ -192,7 +192,7 @@ export const PLATFORM_FAQS: { q: { el: string; en: string }; a: { el: string; en
     },
     {
         q: {
-            el: "Τι γίνεται αν το συμβόλαιο δεν αναφέρει κάτι;",
+            el: "Τι γίνεται αν το ασφαλιστήριο δεν αναφέρει κάτι;",
             en: "What happens if my policy does not mention something?",
         },
         a: STEPS[3].body,

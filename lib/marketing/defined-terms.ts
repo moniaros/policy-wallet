@@ -29,7 +29,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
         glossarySlug: "kalypsi",
         term: { el: "κάλυψη", en: "coverage" },
         definition: {
-            el: "Ο κίνδυνος που το συμβόλαιο αναλαμβάνει να πληρώσει — με τα όρια και τις προϋποθέσεις που γράφει, όχι με όσα υποθέτετε.",
+            el: "Ο κίνδυνος που το ασφαλιστήριο αναλαμβάνει να πληρώσει — με τα όρια και τις προϋποθέσεις που γράφει, όχι με όσα υποθέτετε.",
             en: "The risk the policy undertakes to pay for — with the limits and conditions it states, not the ones you assume.",
         },
     },
@@ -38,7 +38,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
         glossarySlug: "exairesi",
         term: { el: "εξαίρεση", en: "exclusion" },
         definition: {
-            el: "Ό,τι το συμβόλαιο ρητά δεν πληρώνει. Συνήθως βρίσκεται στα ψιλά γράμματα — και είναι ο λόγος που δύο «ίδιες» καλύψεις διαφέρουν.",
+            el: "Ό,τι το ασφαλιστήριο ρητά δεν πληρώνει. Συνήθως βρίσκεται στα ψιλά γράμματα — και είναι ο λόγος που δύο «ίδιες» καλύψεις διαφέρουν.",
             en: "What the policy explicitly does not pay. Usually in the small print — and the reason two 'identical' covers differ.",
         },
     },

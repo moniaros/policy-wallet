@@ -49,7 +49,7 @@ export const landingContent: LandingContentModel = {
         steps: [
             {
                 id: "step-upload",
-                title: { el: "Ανεβάστε το συμβόλαιό σας", en: "Upload your policy" },
+                title: { el: "Ανεβάστε το ασφαλιστήριό σας", en: "Upload your policy" },
                 description: {
                     el: "PDF ή φωτογραφία, από οποιαδήποτε ασφαλιστική. Δεν χρειάζεται να το διαβάσετε.",
                     en: "A PDF or a photo, from any insurance company. You do not need to read it.",
@@ -82,7 +82,7 @@ export const landingContent: LandingContentModel = {
                 id: "step-monitor",
                 title: { el: "Μένετε πάντα ενημερωμένοι", en: "You always stay informed" },
                 description: {
-                    el: "Σας ειδοποιούμε πριν από κάθε λήξη — και όταν έρθει το νέο συμβόλαιο, βλέπετε τι άλλαξε.",
+                    el: "Σας ειδοποιούμε πριν από κάθε λήξη — και όταν έρθει το νέο ασφαλιστήριο, βλέπετε τι άλλαξε.",
                     en: "We remind you before every expiry — and when the new policy arrives, you see what changed.",
                 },
                 emphasis: { el: "βλέπετε τι άλλαξε", en: "you see what changed" },
@@ -119,7 +119,7 @@ export const landingContent: LandingContentModel = {
                     // institution pays for an embedded deployment. The claims
                     // that survive every scenario: no commission, identical
                     // analysis whoever issued the policy.
-                    el: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία, δεν πουλάμε συμβόλαια και δεν παίρνουμε προμήθεια από καμία εταιρεία. Η ανάλυση είναι ίδια για κάθε συμβόλαιο, όποιος κι αν το εξέδωσε — η απάντηση που παίρνετε δεν έχει λόγο να είναι μεροληπτική.",
+                    el: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία, δεν πουλάμε ασφαλιστήρια και δεν παίρνουμε προμήθεια από καμία εταιρεία. Η ανάλυση είναι ίδια για κάθε ασφαλιστήριο, όποιος κι αν το εξέδωσε — η απάντηση που παίρνετε δεν έχει λόγο να είναι μεροληπτική.",
                     en: "No. We are not an insurance company, we sell no policies, and we take no commission from any company. The analysis is the same for every policy, whoever issued it — the answer you get has no reason to be biased.",
                 },
             },
@@ -135,7 +135,7 @@ export const landingContent: LandingContentModel = {
                 id: "faq-carriers-visibility",
                 question: { el: "Μπορεί η ασφαλιστική μου να δει τα δεδομένα μου;", en: "Can my insurance company see my data?" },
                 answer: {
-                    el: "Όχι. Κανείς δεν βλέπει τα συμβόλαιά σας εκτός αν εσείς επιλέξετε ρητά να τα μοιραστείτε — για παράδειγμα με τον ασφαλιστή σας. Την άδεια τη δίνετε και την παίρνετε πίσω εσείς.",
+                    el: "Όχι. Κανείς δεν βλέπει τα ασφαλιστήριά σας εκτός αν εσείς επιλέξετε ρητά να τα μοιραστείτε — για παράδειγμα με τον ασφαλιστή σας. Την άδεια τη δίνετε και την παίρνετε πίσω εσείς.",
                     en: "No. Nobody sees your policies unless you explicitly choose to share them — with your own agent, for example. You give that permission and you can take it back.",
                 },
             },
@@ -146,7 +146,7 @@ export const landingContent: LandingContentModel = {
                 id: "faq-which-insurers",
                 question: { el: "Δουλεύει με την ασφαλιστική μου;", en: "Does it work with my insurance company?" },
                 answer: {
-                    el: `Ναι. Διαβάζουμε συμβόλαια από κάθε ασφαλιστική εταιρεία που δραστηριοποιείται στην Ελλάδα, σε ${productCategories.length} είδη ασφάλισης — από αυτοκίνητο και κατοικία μέχρι υγεία, ομαδικά και κατοικίδια. Αρκεί να έχετε το αρχείο.`,
+                    el: `Ναι. Διαβάζουμε ασφαλιστήρια από κάθε ασφαλιστική εταιρεία που δραστηριοποιείται στην Ελλάδα, σε ${productCategories.length} είδη ασφάλισης — από αυτοκίνητο και κατοικία μέχρι υγεία, ομαδικά και κατοικίδια. Αρκεί να έχετε το αρχείο.`,
                     en: `Yes. We read policies from every insurance company operating in Greece, across ${productCategories.length} types of insurance — from car and home to health, group schemes and pets. All we need is the file.`,
                 },
             },
@@ -179,7 +179,7 @@ export const landingContent: LandingContentModel = {
                 // grammatical genders depending on the page.
                 question: { el: "Πόσο σωστή είναι η ανάλυση του AI;", en: "How accurate is the AI analysis?" },
                 answer: {
-                    el: "Παίρνετε γρήγορη, πρακτική εικόνα για το τι καλύπτεστε και τι όχι. Δεν αντικαθιστά τους όρους του συμβολαίου ούτε τον ασφαλιστή σας — σας δείχνουμε τι αξίζει να ελέγξετε και αποφασίζετε εσείς.",
+                    el: "Παίρνετε γρήγορη, πρακτική εικόνα για το τι καλύπτεστε και τι όχι. Δεν αντικαθιστά τους όρους του ασφαλιστηρίου ούτε τον ασφαλιστή σας — σας δείχνουμε τι αξίζει να ελέγξετε και αποφασίζετε εσείς.",
                     en: "You get a fast, practical picture of what you are covered for and what you are not. It does not replace the policy terms or your agent — we show you what is worth checking, and you decide.",
                 },
             },
@@ -189,7 +189,7 @@ export const landingContent: LandingContentModel = {
         el: {
             locale: "el",
             path: "/",
-            title: "Μάθετε τι πραγματικά καλύπτουν τα συμβόλαιά σας | PolicyWallet",
+            title: "Τι πραγματικά καλύπτουν τα ασφαλιστήριά σας | PolicyWallet",
             description:
                 "Ανεβάστε κάθε ασφαλιστήριο, από κάθε εταιρεία. Η ανάλυση εξηγεί καλύψεις, εξαιρέσεις και κενά σε απλά ελληνικά — χωρίς πώληση, χωρίς προμήθεια.",
             keywords: [
@@ -199,7 +199,7 @@ export const landingContent: LandingContentModel = {
                 "ανεξάρτητος έλεγχος ρίσκου",
                 "PolicyWallet",
             ],
-            ogTitle: "Μάθετε τι πραγματικά καλύπτουν τα συμβόλαιά σας | PolicyWallet",
+            ogTitle: "Τι πραγματικά καλύπτουν τα ασφαλιστήριά σας | PolicyWallet",
             ogDescription:
                 "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι και πού όχι — και, με το Family, τι να διορθώσετε πρώτα.",
             twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",

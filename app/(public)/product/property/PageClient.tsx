@@ -26,7 +26,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                         {t("Το σπίτι σας, ασφαλισμένο στη σωστή αξία.", "Your home, insured at the right value.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε τι κεφάλαιο δηλώνει το συμβόλαιό σας, τι καλύπτεται σε σεισμό ή πλημμύρα, και αν έχετε την τριάδα για την έκπτωση ΕΝΦΙΑ.", "See what sum insured your policy states, what is covered in an earthquake or a flood, and whether you hold the trio for the ENFIA discount.")}
+                        {t("Δείτε τι κεφάλαιο δηλώνει το ασφαλιστήριό σας, τι καλύπτεται σε σεισμό ή πλημμύρα, και αν έχετε την τριάδα για την έκπτωση ΕΝΦΙΑ.", "See what sum insured your policy states, what is covered in an earthquake or a flood, and whether you hold the trio for the ENFIA discount.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -121,7 +121,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                             <>
                                 <ul className="space-y-4 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                                     <li>{t("Έκπτωση 20% για κατοικίες με φορολογητέα αξία έως €500.000 — 10% πάνω από αυτήν. Ισχύει από το 2025.", "A 20% discount for homes with taxable value up to €500,000 — 10% above that. In force from 2025.")}</li>
-                                    <li>{t("Χρειάζονται και οι τρεις κίνδυνοι στο ίδιο συμβόλαιο: σεισμός, πυρκαγιά και πλημμύρα.", "All three perils must be on the same policy: earthquake, fire and flood.")}</li>
+                                    <li>{t("Χρειάζονται και οι τρεις κίνδυνοι στο ίδιο ασφαλιστήριο: σεισμός, πυρκαγιά και πλημμύρα.", "All three perils must be on the same policy: earthquake, fire and flood.")}</li>
                                     <li>{t("Το κεφάλαιο πρέπει να καλύπτει όλη την αξία του κτίσματος σε βάση ανακατασκευής — ο νόμος δεν τη δέχεται κάτω από €1.000 ανά τετραγωνικό.", "The sum insured must cover the building's whole value on a reconstruction basis — the law floors it at €1,000 per square metre.")}</li>
                                     <li>{t("Ελάχιστη διάρκεια ασφάλισης: τρεις μήνες μέσα στο έτος, με αναλογική έκπτωση.", "Minimum insured period: three months in the year, with the discount pro-rated.")}</li>
                                 </ul>
@@ -162,7 +162,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                     {t("Μάθετε αν το σπίτι σας είναι ασφαλισμένο στη σωστή αξία.", "Find out whether your home is insured at the right value.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
-                    {t("Ανεβάστε το συμβόλαιο κατοικίας", "Upload your home policy")}
+                    {t("Ανεβάστε το ασφαλιστήριο κατοικίας", "Upload your home policy")}
                 </Link>
             </section>
 

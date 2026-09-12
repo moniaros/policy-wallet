@@ -52,7 +52,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κάλυψη Ransomware", "Ransomware cover")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε τι ακριβώς πληρώνει το συμβόλαιο σε εκβιασμό ή απώλεια δεδομένων.", "We show you exactly what the policy pays in extortion or data loss.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε τι ακριβώς πληρώνει το ασφαλιστήριο σε εκβιασμό ή απώλεια δεδομένων.", "We show you exactly what the policy pays in extortion or data loss.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -100,7 +100,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                     {t("Μάθετε τι ισχύει πριν συμβεί.", "Find out what applies before it happens.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
-                    {t("Ανεβάστε το συμβόλαιο κυβερνοασφάλειας", "Upload your cyber policy")}
+                    {t("Ανεβάστε το ασφαλιστήριο κυβερνοασφάλειας", "Upload your cyber policy")}
                 </Link>
             </section>
 

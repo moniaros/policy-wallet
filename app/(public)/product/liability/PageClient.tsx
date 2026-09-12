@@ -23,7 +23,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             icon: Dog,
             titleEl: "Ο σκύλος σας δάγκωσε περαστικό",
             titleEn: "Your dog bit a passerby",
-            descEl: "Ιατρικά έξοδα και αξίωση αποζημίωσης βαραίνουν τον ιδιοκτήτη του ζώου. Ελέγξτε αν το συμβόλαιό σας καλύπτει κατοικίδια — δεν το κάνουν όλα.",
+            descEl: "Ιατρικά έξοδα και αξίωση αποζημίωσης βαραίνουν τον ιδιοκτήτη του ζώου. Ελέγξτε αν το ασφαλιστήριό σας καλύπτει κατοικίδια — δεν το κάνουν όλα.",
             descEn: "Medical costs and a compensation claim land on the animal's owner. Check whether your policy covers pets — not all of them do.",
         },
         {
@@ -48,7 +48,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                         {t("Όταν η ζημιά είναι σε ξένη περιουσία, ποιος πληρώνει;", "When the damage is to someone else's property, who pays?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Η αστική ευθύνη καλύπτει ζημιές που προκαλείτε εσείς, το παιδί ή ο σκύλος σας σε τρίτους. Συχνά όμως υπάρχει ήδη μέσα στο συμβόλαιο κατοικίας σας — και την ξαναγοράζετε χωρίς να το ξέρετε.", "Liability cover pays for damage you, your child or your dog cause to others. But it often already sits inside your home policy — and you buy it again without knowing.")}
+                        {t("Η αστική ευθύνη καλύπτει ζημιές που προκαλείτε εσείς, το παιδί ή ο σκύλος σας σε τρίτους. Συχνά, όμως, υπάρχει ήδη μέσα στο ασφαλιστήριο κατοικίας σας — και την ξαναγοράζετε χωρίς να το ξέρετε.", "Liability cover pays for damage you, your child or your dog cause to others. But it often already sits inside your home policy — and you buy it again without knowing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -69,7 +69,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                             {t("Τρεις καθημερινές στιγμές που γίνονται λογαριασμός.", "Three everyday moments that turn into a bill.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Καμία δεν είναι σπάνια και καμία δεν προαναγγέλλεται. Δείτε αν το συμβόλαιό σας απαντά σε καθεμία — με τα όρια και τις εξαιρέσεις της.", "None of them is rare and none announces itself. See whether your policy answers each one — with its limits and exclusions.")}
+                            {t("Καμία δεν είναι σπάνια και καμία δεν προαναγγέλλεται. Δείτε αν το ασφαλιστήριό σας απαντά σε καθεμία — με τα όρια και τις εξαιρέσεις της.", "None of them is rare and none announces itself. See whether your policy answers each one — with its limits and exclusions.")}
                         </p>
                     </div>
 
@@ -98,7 +98,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                             {t("Πριν την αγοράσετε, δείτε αν την έχετε ήδη.", "Before you buy it, see if you already own it.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-6">
-                            {t("Πολλά συμβόλαια κατοικίας περιλαμβάνουν αστική ευθύνη ως ενσωματωμένη κάλυψη — αγορασμένη μαζί με την πυρκαγιά και ξεχασμένη από την πρώτη μέρα. Όταν ανεβάζετε τα συμβόλαιά σας, η ανάλυση διαβάζει κάθε κάλυψη ξεχωριστά και, στο πλάνο Family, δείχνει πού η ίδια προστασία εμφανίζεται δύο φορές.", "Many home policies include liability as a bundled cover — bought together with the fire section and forgotten since day one. When you upload your policies, the analysis reads every cover separately and, on the Family plan, shows where the same protection appears twice.")}
+                            {t("Πολλά ασφαλιστήρια κατοικίας περιλαμβάνουν αστική ευθύνη ως ενσωματωμένη κάλυψη — αγορασμένη μαζί με την πυρκαγιά και ξεχασμένη από την πρώτη μέρα. Όταν ανεβάζετε τα ασφαλιστήριά σας, η ανάλυση διαβάζει κάθε κάλυψη ξεχωριστά και, στο πλάνο Family, δείχνει πού η ίδια προστασία εμφανίζεται δύο φορές.", "Many home policies include liability as a bundled cover — bought together with the fire section and forgotten since day one. When you upload your policies, the analysis reads every cover separately and, on the Family plan, shows where the same protection appears twice.")}
                         </p>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Αν λείπει, το βλέπετε κι αυτό: το κενό εμφανίζεται δίπλα στα υπόλοιπα, με τα όρια που ισχύουν σήμερα.", "And if it's missing, you see that too: the gap appears next to everything else, with the limits that apply today.")}
@@ -126,7 +126,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                                     <p className="font-medium text-amber-900 dark:text-amber-200 text-sm flex items-center gap-2">
                                         <Copy className="w-4 h-4" /> {t("Πιθανή διπλή κάλυψη", "Possible duplicate cover")}
                                     </p>
-                                    <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">{t("Το ξεχωριστό συμβόλαιο ευθύνης επικαλύπτει την Ενότητα Δ", "A separate liability policy overlaps Section D")}</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">{t("Το ξεχωριστό ασφαλιστήριο ευθύνης επικαλύπτει την Ενότητα Δ", "A separate liability policy overlaps Section D")}</p>
                                 </div>
                             </div>
                             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg text-sm border border-slate-200 dark:border-white/10">

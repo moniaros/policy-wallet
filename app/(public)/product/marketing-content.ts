@@ -11,7 +11,7 @@ export const PRODUCT_STEPS = [
     {
         n: "01",
         icon: Upload,
-        titleEl: "Στείλτε τα συμβόλαιά σας",
+        titleEl: "Στείλτε τα ασφαλιστήριά σας",
         titleEn: "Send us your policies",
         descEl: "Βγάλτε φωτογραφία ή στείλτε το PDF. Βρίσκουμε μόνοι μας όλα τα σημαντικά σημεία.",
         descEn: "Take a photo or send the PDF. We find every important point ourselves.",
@@ -56,7 +56,7 @@ export const PRODUCT_STATS = [
         // (SPEED_CLAIM in lib/marketing/positioning.ts).
         valueEl: "Λίγα λεπτά",
         valueEn: "A few minutes",
-        labelEl: "για να διαβαστούν τρία συμβόλαια",
+        labelEl: "για να διαβαστούν τρία ασφαλιστήρια",
         labelEn: "to read three policies",
     },
     {
@@ -77,7 +77,7 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Δουλεύει με όλες τις ασφαλιστικές εταιρείες;",
         qEn: "Does it work with all insurance companies?",
-        aEl: "Ναι. Αρκεί να έχετε το συμβόλαιο σε αρχείο ή φωτογραφία. Δεν έχει σημασία ποια εταιρεία ή ποιος ασφαλιστής σας το πούλησε.",
+        aEl: "Ναι. Αρκεί να έχετε το ασφαλιστήριο σε αρχείο ή φωτογραφία. Δεν έχει σημασία ποια εταιρεία ή ποιος ασφαλιστής σας το πούλησε.",
         aEn: "Yes. All we need is the policy as a file or a photo. It does not matter which company or which agent sold it to you.",
     },
     {
@@ -89,7 +89,7 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Μπορώ να το δοκιμάσω δωρεάν;",
         qEn: "Can I try it for free?",
-        aEl: "Ναι. Στείλτε έως 3 συμβόλαια και πάρτε την πλήρη ανάλυση, χωρίς πιστωτική κάρτα και χωρίς δέσμευση.",
+        aEl: "Ναι. Στείλτε έως 3 ασφαλιστήρια και πάρτε την πλήρη ανάλυση, χωρίς πιστωτική κάρτα και χωρίς δέσμευση.",
         aEn: "Yes. Send us up to 3 policies and get the full analysis, with no credit card and no commitment.",
     },
 ] as const

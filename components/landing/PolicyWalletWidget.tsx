@@ -71,7 +71,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
     // gap is a Family job, and this mock sits beside a free-tier
     // promise.
     const alternative = t(
-        "Παράδειγμα αποτελέσματος με το Family: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το συμβόλαιο λήγει σε 14 μέρες.",
+        "Παράδειγμα αποτελέσματος με το Family: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το ασφαλιστήριο λήγει σε 14 μέρες.",
         "Example result with Family: car and health are covered, while the home is missing flood cover and that policy runs out in 14 days.",
     )
 
@@ -108,7 +108,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                     {t("Η εικόνα ρίσκου σας", "Your risk picture")}
                                 </p>
                                 <p className="text-micro text-muted-foreground dark:text-slate-400">
-                                    {t("3 ασφάλειες, 1 κενό", "3 policies, 1 gap")}
+                                    {t("3 ασφαλιστήρια, 1 κενό", "3 policies, 1 gap")}
                                 </p>
                             </div>
                             {/* A count, not a score. The chip used to read "84%",

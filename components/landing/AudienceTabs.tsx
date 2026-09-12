@@ -249,7 +249,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     </h3>
                     <p className="mt-g-4 max-w-[56ch] text-g-body-lg text-fg-secondary">
                         {t(
-                            "Τέλος το ψάξιμο στα συρτάρια. Όλα τα συμβόλαιά σας, πάντα ενημερωμένα.",
+                            "Τέλος το ψάξιμο στα συρτάρια. Όλα τα ασφαλιστήριά σας, πάντα ενημερωμένα.",
                             "No more digging through drawers. All your policies, always up to date.",
                         )}
                     </p>
@@ -305,7 +305,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
             "All your clients on one screen — who is running out, who has a gap",
         ),
         t(
-            "Προτάσεις για το τι λείπει σε κάθε πελάτη, βγαλμένες από τα ίδια του τα συμβόλαια",
+            "Προτάσεις για το τι λείπει σε κάθε πελάτη, βγαλμένες από τα ίδια του τα ασφαλιστήρια",
             "Suggestions for what each client is missing, taken from their own policies",
         ),
         t(
@@ -324,7 +324,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                         <BrushUnderline>
                             <span className="text-fg-brand">{t("risk profile", "risk profile")}</span>
                         </BrushUnderline>
-                        {t(" του πελάτη σας — όχι μόνο τα συμβόλαιά του.", " — not just their policies.")}
+                        {t(" του πελάτη σας — όχι μόνο τα ασφαλιστήριά του.", " — not just their policies.")}
                     </h3>
                     <p className="mt-g-4 max-w-[56ch] text-g-body-lg text-fg-secondary">
                         {t(

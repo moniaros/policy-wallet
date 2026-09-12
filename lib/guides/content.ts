@@ -183,12 +183,12 @@ export const guides: Guide[] = [
             },
             {
                 heading: {
-                    el: "Πώς ελέγχετε ότι το συμβόλαιό σας πληροί τα κριτήρια;",
+                    el: "Πώς ελέγχετε ότι το ασφαλιστήριό σας πληροί τα κριτήρια;",
                     en: "How do you check that your policy qualifies?",
                 },
                 paragraphs: [
                     {
-                        el: "Ανοίξτε τον πίνακα καλύψεων του ασφαλιστηρίου και αναζητήστε ρητά τις λέξεις «σεισμός», «πυρκαγιά» και «πλημμύρα» στις καλυπτόμενες ζημιές — όχι στις προαιρετικές ή στις εξαιρέσεις. Ελέγξτε επίσης το ασφαλιζόμενο κεφάλαιο κτίσματος σε σχέση με τα τετραγωνικά μέτρα. Εναλλακτικά, ανεβάστε το PDF του συμβολαίου στο PolicyWallet: η ανάλυση AI σας δείχνει ποιες καλύψεις αναφέρει το συμβόλαιο, ώστε να δείτε αν λείπει κάποιος από τους τρεις κινδύνους της έκπτωσης ΕΝΦΙΑ — και, εφόσον το έγγραφο αναφέρει και τα δύο ποσά, αν το ασφαλισμένο κεφάλαιο υπολείπεται του κόστους ανακατασκευής.",
+                        el: "Ανοίξτε τον πίνακα καλύψεων του ασφαλιστηρίου και αναζητήστε ρητά τις λέξεις «σεισμός», «πυρκαγιά» και «πλημμύρα» στις καλυπτόμενες ζημιές — όχι στις προαιρετικές ή στις εξαιρέσεις. Ελέγξτε επίσης το ασφαλιζόμενο κεφάλαιο κτίσματος σε σχέση με τα τετραγωνικά μέτρα. Εναλλακτικά, ανεβάστε το PDF του ασφαλιστηρίου στο PolicyWallet: η ανάλυση AI σας δείχνει ποιες καλύψεις αναφέρει το ασφαλιστήριο, ώστε να δείτε αν λείπει κάποιος από τους τρεις κινδύνους της έκπτωσης ΕΝΦΙΑ — και, εφόσον το έγγραφο αναφέρει και τα δύο ποσά, αν το ασφαλισμένο κεφάλαιο υπολείπεται του κόστους ανακατασκευής.",
                         en: "Open your policy's coverage table and look for earthquake, fire, and flood explicitly listed among the covered perils — not in the optional add-ons or the exclusions. Also check the insured building sum against your square meters. Alternatively, upload the policy PDF to PolicyWallet: the AI analysis shows you which perils the policy names, so you can see whether one of the three ENFIA-discount perils is missing — and, provided the document states both amounts, whether the insured sum falls below the reconstruction cost.",
                     },
                 ],
@@ -197,11 +197,11 @@ export const guides: Guide[] = [
         faq: [
             {
                 question: {
-                    el: "Ισχύει η έκπτωση ΕΝΦΙΑ αν η ασφάλεια καλύπτει μόνο πυρκαγιά;",
+                    el: "Ισχύει η έκπτωση ΕΝΦΙΑ αν η ασφάλιση καλύπτει μόνο πυρκαγιά;",
                     en: "Does the ENFIA discount apply if the policy only covers fire?",
                 },
                 answer: {
-                    el: "Όχι. Απαιτείται σωρευτική κάλυψη και των τριών κινδύνων — σεισμού, πυρκαγιάς και πλημμύρας. Συμβόλαιο μόνο πυρός δεν θεμελιώνει δικαίωμα έκπτωσης.",
+                    el: "Όχι. Απαιτείται σωρευτική κάλυψη και των τριών κινδύνων — σεισμού, πυρκαγιάς και πλημμύρας. Ασφαλιστήριο μόνο πυρός δεν θεμελιώνει δικαίωμα έκπτωσης.",
                     en: "No. Cumulative coverage of all three risks — earthquake, fire, and flood — is required. A fire-only policy does not qualify.",
                 },
             },
@@ -281,13 +281,13 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Η ελληνική αγορά έχει από τα χαμηλότερα ποσοστά ασφάλισης στην Ευρωπαϊκή Ένωση — σύμφωνα με τα δημοσιευμένα στοιχεία της ΕΑΕΕ, μόνο μία μικρή μειοψηφία κατοικιών διαθέτει ασφάλιση. Ακόμα όμως και όσοι έχουν συμβόλαια συναντούν επαναλαμβανόμενα κενά:",
+                        el: "Η ελληνική αγορά έχει από τα χαμηλότερα ποσοστά ασφάλισης στην Ευρωπαϊκή Ένωση — σύμφωνα με τα δημοσιευμένα στοιχεία της ΕΑΕΕ, μόνο μία μικρή μειοψηφία κατοικιών διαθέτει ασφάλιση. Ακόμα όμως και όσοι έχουν ασφαλιστήρια συναντούν επαναλαμβανόμενα κενά:",
                         en: "The Greek market has one of the lowest insurance penetration rates in the European Union — according to data published by the Hellenic Association of Insurance Companies (HAIC), only a small minority of homes carry insurance. But even policyholders run into recurring gaps:",
                     },
                 ],
                 bullets: [
                     {
-                        el: "Σεισμός εκτός κάλυψης: σε πολλά στεγαστικά συμβόλαια ο σεισμός είναι προαιρετική επέκταση και δεν προστέθηκε ποτέ.",
+                        el: "Σεισμός εκτός κάλυψης: σε πολλά ασφαλιστήρια κατοικίας ο σεισμός είναι προαιρετική επέκταση και δεν προστέθηκε ποτέ.",
                         en: "Earthquake not covered: in many mortgage-linked policies earthquake is an optional extension that was never added.",
                     },
                     {
@@ -303,7 +303,7 @@ export const guides: Guide[] = [
                         en: "Roadside assistance and own damage: assumed by default in motor policies but often missing from basic packages.",
                     },
                     {
-                        el: "Επικαλύψεις: δύο συμβόλαια που πληρώνετε για τον ίδιο κίνδυνο (π.χ. ταξιδιωτική κάλυψη σε κάρτα και σε αυτόνομο συμβόλαιο) — χρήματα χαμένα.",
+                        el: "Επικαλύψεις: δύο ασφαλιστήρια που πληρώνετε για τον ίδιο κίνδυνο (π.χ. ταξιδιωτική κάλυψη σε κάρτα και σε αυτόνομο ασφαλιστήριο) — χρήματα χαμένα.",
                         en: "Overlaps: two policies paying for the same risk (e.g., travel cover on a card and in a standalone policy) — wasted money.",
                     },
                 ],
@@ -327,7 +327,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των συμβολαίων και η AI διαβάζει καλύψεις και εξαιρέσεις και επισημαίνει τα κενά σε απλά ελληνικά — και, στο πλάνο Family, τα διασταυρώνει μεταξύ τους και εντοπίζει τα κενά και τις επικαλύψεις.",
+                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των ασφαλιστηρίων και η AI διαβάζει καλύψεις και εξαιρέσεις και επισημαίνει τα κενά σε απλά ελληνικά — και, στο πλάνο Family, τα διασταυρώνει μεταξύ τους και εντοπίζει τα κενά και τις επικαλύψεις.",
                         en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions — and, on the Family plan, cross-checks them and flags gaps and overlaps in plain language.",
                     },
                 ],
@@ -350,7 +350,7 @@ export const guides: Guide[] = [
                     en: "Does a coverage gap mean my agent failed me?",
                 },
                 answer: {
-                    el: "Όχι απαραίτητα. Οι ανάγκες αλλάζουν πιο γρήγορα από τα συμβόλαια. Ένα ουδέτερο εργαλείο ανάλυσης σας δίνει καθαρή εικόνα, ώστε η συζήτηση με τον ασφαλιστή σας να γίνεται με συγκεκριμένα δεδομένα.",
+                    el: "Όχι απαραίτητα. Οι ανάγκες αλλάζουν πιο γρήγορα από τα ασφαλιστήρια. Ένα ουδέτερο εργαλείο ανάλυσης σας δίνει καθαρή εικόνα, ώστε η συζήτηση με τον ασφαλιστή σας να γίνεται με συγκεκριμένα δεδομένα.",
                     en: "Not necessarily. Needs change faster than policies do. A neutral analysis tool gives you a clear picture so the conversation with your agent starts from concrete data.",
                 },
             },
@@ -360,7 +360,7 @@ export const guides: Guide[] = [
                     en: "Can the AI read any insurance policy?",
                 },
                 answer: {
-                    el: "Ναι — εφόσον έχετε το συμβόλαιο σε PDF, η ανάλυση λειτουργεί ανεξάρτητα από ασφαλιστική εταιρεία ή διαμεσολαβητή, για όλες τις βασικές κατηγορίες: αυτοκίνητο, κατοικία, υγεία, ομαδικά, κυβερνοασφάλεια και κατοικίδια.",
+                    el: "Ναι — εφόσον έχετε το ασφαλιστήριο σε PDF, η ανάλυση λειτουργεί ανεξάρτητα από ασφαλιστική εταιρεία ή διαμεσολαβητή, για όλες τις βασικές κατηγορίες: αυτοκίνητο, κατοικία, υγεία, ομαδικά, κυβερνοασφάλεια και κατοικίδια.",
                     en: "Yes — as long as you have the policy PDF, the analysis works regardless of insurer or intermediary, across all major lines: motor, home, health, group, cyber, and pet.",
                 },
             },
@@ -580,7 +580,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε προ τετελεσμένου με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των συμβολαίων σας σε ένα σημείο και — από το πλάνο Plus — σας ειδοποιεί εγκαίρως, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
+                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε προ τετελεσμένου με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των ασφαλιστηρίων σας σε ένα σημείο και — από το πλάνο Plus — σας ειδοποιεί εγκαίρως, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
                         // The Greek says «από το πλάνο Plus»; the English had
                         // dropped it, so it promised renewal alerts on a page
                         // whose CTA is "Start free with one policy". Free has
@@ -597,13 +597,13 @@ export const guides: Guide[] = [
                     en: "Can the insurer change the terms at renewal?",
                 },
                 answer: {
-                    el: "Ναι — η ανανέωση είναι νομικά νέα σύμβαση. Ασφάλιστρο, απαλλαγές και εξαιρέσεις μπορούν να αλλάξουν, γι' αυτό η σύγκριση του νέου συμβολαίου με το παλιό είναι απαραίτητη κάθε χρόνο.",
+                    el: "Ναι — η ανανέωση είναι νομικά νέα σύμβαση. Ασφάλιστρο, απαλλαγές και εξαιρέσεις μπορούν να αλλάξουν, γι' αυτό η σύγκριση του νέου ασφαλιστηρίου με το παλιό είναι απαραίτητη κάθε χρόνο.",
                     en: "Yes — a renewal is legally a new contract. Premium, deductibles, and exclusions can all change, which is why comparing the new policy against the old one is essential every year.",
                 },
             },
             {
                 question: {
-                    el: "Τι γίνεται αν αφήσω το συμβόλαιο να λήξει για λίγες μέρες;",
+                    el: "Τι γίνεται αν αφήσω το ασφαλιστήριο να λήξει για λίγες μέρες;",
                     en: "What happens if I let the policy lapse for a few days?",
                 },
                 answer: {
@@ -617,7 +617,7 @@ export const guides: Guide[] = [
                     en: "Can I switch insurers at renewal?",
                 },
                 answer: {
-                    el: "Ναι — η λήξη είναι η φυσική στιγμή αλλαγής χωρίς κόστος. Προσοχή σε όρους αυτόματης ανανέωσης: αν το συμβόλαιο ανανεώνεται σιωπηρά, στείλτε έγκαιρα έγγραφη ειδοποίηση μη ανανέωσης με βάση την προθεσμία των όρων.",
+                    el: "Ναι — η λήξη είναι η φυσική στιγμή αλλαγής χωρίς κόστος. Προσοχή σε όρους αυτόματης ανανέωσης: αν το ασφαλιστήριο ανανεώνεται σιωπηρά, στείλτε έγκαιρα έγγραφη ειδοποίηση μη ανανέωσης με βάση την προθεσμία των όρων.",
                     en: "Yes — expiry is the natural moment to switch at no cost. Watch auto-renewal clauses: if the policy renews tacitly, send timely written non-renewal notice per the deadline in the terms.",
                 },
             },
@@ -741,11 +741,11 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Οι εξαιρέσεις είναι το σημείο όπου οι περισσότεροι οδηγοί εκπλήσσονται τη στιγμή της ζημιάς. Οι πιο συνηθισμένες: οδήγηση υπό την επήρεια αλκοόλ ή ουσιών, οδηγός χωρίς ισχύουσα άδεια ή εκτός των δηλωμένων οδηγών, συμμετοχή σε αγώνες, χρήση του οχήματος για σκοπό διαφορετικό από τον δηλωμένο (π.χ. επαγγελματική διανομή με συμβόλαιο ιδιωτικής χρήσης) και φυσιολογική φθορά ή μηχανικές βλάβες.",
+                        el: "Οι εξαιρέσεις είναι το σημείο όπου οι περισσότεροι οδηγοί εκπλήσσονται τη στιγμή της ζημιάς. Οι πιο συνηθισμένες: οδήγηση υπό την επήρεια αλκοόλ ή ουσιών, οδηγός χωρίς ισχύουσα άδεια ή εκτός των δηλωμένων οδηγών, συμμετοχή σε αγώνες, χρήση του οχήματος για σκοπό διαφορετικό από τον δηλωμένο (π.χ. επαγγελματική διανομή με ασφαλιστήριο ιδιωτικής χρήσης) και φυσιολογική φθορά ή μηχανικές βλάβες.",
                         en: "Exclusions are where most drivers get surprised at claim time. The most common: driving under the influence of alcohol or drugs, a driver without a valid license or outside the declared drivers, participation in racing, using the vehicle for a purpose other than declared (e.g. commercial delivery on a private-use policy), and normal wear or mechanical failure.",
                     },
                     {
-                        el: "Στην αστική ευθύνη, η εταιρεία μπορεί να αποζημιώσει τον τρίτο και στη συνέχεια να στραφεί αναγωγικά εναντίον σας αν συνέτρεχε λόγος εξαίρεσης — π.χ. μέθη. Διαβάστε τους γενικούς και ειδικούς όρους: εκεί ορίζεται τι ακριβώς εξαιρείται στο δικό σας συμβόλαιο.",
+                        el: "Στην αστική ευθύνη, η εταιρεία μπορεί να αποζημιώσει τον τρίτο και στη συνέχεια να στραφεί αναγωγικά εναντίον σας αν συνέτρεχε λόγος εξαίρεσης — π.χ. μέθη. Διαβάστε τους γενικούς και ειδικούς όρους: εκεί ορίζεται τι ακριβώς εξαιρείται στο δικό σας ασφαλιστήριο.",
                         en: "Under liability cover, the insurer may compensate the third party and then seek recovery from you if an exclusion applied — e.g. drunk driving. Read the general and special terms: that is where your own policy's exact exclusions are defined.",
                     },
                 ],
@@ -794,7 +794,7 @@ export const guides: Guide[] = [
                     en: "Am I covered if someone else drives my car?",
                 },
                 answer: {
-                    el: "Εξαρτάται από τους όρους: κάποια συμβόλαια καλύπτουν οποιονδήποτε νόμιμο οδηγό, άλλα μόνο δηλωμένους. Οδηγοί κάτω των 23-25 ετών ή με νέο δίπλωμα συχνά απαιτούν επασφάλιστρο ή δήλωση.",
+                    el: "Εξαρτάται από τους όρους: κάποια ασφαλιστήρια καλύπτουν οποιονδήποτε νόμιμο οδηγό, άλλα μόνο δηλωμένους. Οδηγοί κάτω των 23-25 ετών ή με νέο δίπλωμα συχνά απαιτούν επασφάλιστρο ή δήλωση.",
                     en: "It depends on the terms: some policies cover any lawful driver, others only declared ones. Drivers under 23-25 or newly licensed often require an extra premium or explicit declaration.",
                 },
             },
@@ -848,7 +848,7 @@ export const guides: Guide[] = [
             en: "How health insurance deductibles work: annual or per incident, how they combine with EOPYY and employer group policies, and how much they cut premiums.",
         },
         summary: {
-            el: "Η απαλλαγή είναι το ποσό των εξόδων νοσηλείας που πληρώνετε εσείς πριν ενεργοποιηθεί το συμβόλαιο υγείας. Ορίζεται ετησίως ή ανά περιστατικό — συνήθως από 300 έως 5.000 ευρώ — και όσο υψηλότερη είναι, τόσο χαμηλότερο το ασφάλιστρο. Συχνά μπορεί να καλυφθεί από τον ΕΟΠΥΥ ή από ομαδικό συμβόλαιο εργασίας, ώστε ίσως να μην πληρώσετε τίποτα.",
+            el: "Η απαλλαγή είναι το ποσό των εξόδων νοσηλείας που πληρώνετε εσείς πριν ενεργοποιηθεί το ασφαλιστήριο υγείας. Ορίζεται ετησίως ή ανά περιστατικό — συνήθως από 300 έως 5.000 ευρώ — και όσο υψηλότερη είναι, τόσο χαμηλότερο το ασφάλιστρο. Συχνά μπορεί να καλυφθεί από τον ΕΟΠΥΥ ή από ομαδικό συμβόλαιο εργασίας, ώστε ίσως να μην πληρώσετε τίποτα.",
             en: "A deductible is the portion of hospital costs you pay before your health policy kicks in. It is defined annually or per incident — typically €300 to €5,000 — and the higher it is, the lower your premium. It can often be absorbed by the public fund (EOPYY) or an employer group policy, so you may end up paying nothing.",
         },
         datePublished: "2026-07-13",
@@ -878,7 +878,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Στην ασφάλεια υγείας, απαλλαγή (ή «εκπιπτόμενο ποσό») είναι το τμήμα των αναγνωρισμένων εξόδων που αναλαμβάνετε εσείς. Αν το συμβόλαιό σας έχει απαλλαγή 1.500 ευρώ και η νοσηλεία κοστίσει 6.000, η εταιρεία καλύπτει τα 4.500 — εφόσον τα έξοδα είναι εντός των όρων και των ανώτατων ορίων.",
+                        el: "Στην ασφάλεια υγείας, απαλλαγή (ή «εκπιπτόμενο ποσό») είναι το τμήμα των αναγνωρισμένων εξόδων που αναλαμβάνετε εσείς. Αν το ασφαλιστήριό σας έχει απαλλαγή 1.500 ευρώ και η νοσηλεία κοστίσει 6.000, η εταιρεία καλύπτει τα 4.500 — εφόσον τα έξοδα είναι εντός των όρων και των ανώτατων ορίων.",
                         en: "In health insurance, the deductible is the portion of recognized expenses you bear yourself. If your policy has a €1,500 deductible and a hospitalization costs €6,000, the insurer covers €4,500 — provided the expenses fall within the terms and the policy limits.",
                     },
                     {
@@ -898,7 +898,7 @@ export const guides: Guide[] = [
                         en: "An annual deductible applies once per policy year: exhaust it on one hospitalization and subsequent ones within the same year are covered with no further charge. A per-incident deductible applies to each hospitalization separately — two stays mean paying it twice.",
                     },
                     {
-                        el: "Στους όρους θα δείτε επίσης «κλιμακωτές» εκδοχές: π.χ. η απαλλαγή μειώνεται ή μηδενίζεται όταν χρησιμοποιηθεί δημόσιος φορέας ή άλλο συμβόλαιο. Αυτή η λεπτομέρεια αλλάζει δραστικά το πραγματικό κόστος.",
+                        el: "Στους όρους θα δείτε επίσης «κλιμακωτές» εκδοχές: π.χ. η απαλλαγή μειώνεται ή μηδενίζεται όταν χρησιμοποιηθεί δημόσιος φορέας ή άλλο ασφαλιστήριο. Αυτή η λεπτομέρεια αλλάζει δραστικά το πραγματικό κόστος.",
                         en: "The terms may also include tiered versions: e.g. the deductible shrinks or drops to zero when a public fund or another policy is used. This detail dramatically changes the real cost.",
                     },
                 ],
@@ -1157,7 +1157,7 @@ export const guides: Guide[] = [
                     en: "Are contents covered against earthquake?",
                 },
                 answer: {
-                    el: "Μόνο αν έχει ασφαλιστεί ρητά και το περιεχόμενο με κάλυψη σεισμού — η κάλυψη κτιρίου δεν το περιλαμβάνει αυτόματα. Ελέγξτε τον πίνακα καλύψεων του συμβολαίου σας.",
+                    el: "Μόνο αν έχει ασφαλιστεί ρητά και το περιεχόμενο με κάλυψη σεισμού — η κάλυψη κτιρίου δεν το περιλαμβάνει αυτόματα. Ελέγξτε τον πίνακα καλύψεων του ασφαλιστηρίου σας.",
                     en: "Only if contents are explicitly insured with earthquake cover — building cover does not include them automatically. Check your policy's coverage schedule.",
                 },
             },
@@ -1167,7 +1167,7 @@ export const guides: Guide[] = [
                     en: "Does the cover apply immediately after purchase?",
                 },
                 answer: {
-                    el: "Κατά κανόνα ναι, από την έναρξη του συμβολαίου — αλλά ορισμένα προγράμματα προβλέπουν σύντομη περίοδο αναμονής για τον κίνδυνο σεισμού. Επιβεβαιώστε το στους όρους πριν βασιστείτε στην κάλυψη.",
+                    el: "Κατά κανόνα ναι, από την έναρξη του ασφαλιστηρίου — αλλά ορισμένα προγράμματα προβλέπουν σύντομη περίοδο αναμονής για τον κίνδυνο σεισμού. Επιβεβαιώστε το στους όρους πριν βασιστείτε στην κάλυψη.",
                     en: "Generally yes, from the policy start date — but some plans apply a short waiting period to the earthquake peril. Confirm it in the terms before relying on the cover.",
                 },
             },
@@ -1261,7 +1261,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Προϋπάρχουσα θεωρείται κάθε πάθηση που εκδηλώθηκε — ή έδωσε συμπτώματα — πριν από την έναρξη του συμβολαίου ή μέσα στην περίοδο αναμονής. Οι εταιρείες την εξαιρούν για να μην ασφαλίζεται ζημιά που έχει ήδη συμβεί. Στην πράξη αυτό σημαίνει ότι όσο νωρίτερα ασφαλίσετε το ζώο, τόσο περισσότερα καλύπτονται στη διάρκεια της ζωής του.",
+                        el: "Προϋπάρχουσα θεωρείται κάθε πάθηση που εκδηλώθηκε — ή έδωσε συμπτώματα — πριν από την έναρξη του ασφαλιστηρίου ή μέσα στην περίοδο αναμονής. Οι εταιρείες την εξαιρούν για να μην ασφαλίζεται ζημιά που έχει ήδη συμβεί. Στην πράξη αυτό σημαίνει ότι όσο νωρίτερα ασφαλίσετε το ζώο, τόσο περισσότερα καλύπτονται στη διάρκεια της ζωής του.",
                         en: "Pre-existing means any condition that appeared — or showed symptoms — before the policy started or within the waiting period. Insurers exclude it so that already-occurred loss cannot be insured. In practice this means the earlier you insure the animal, the more of its lifetime is coverable.",
                     },
                     {
@@ -1277,7 +1277,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Μετά την έναρξη του συμβολαίου, κάθε ομάδα καλύψεων ενεργοποιείται με διαφορετική καθυστέρηση: τα ατυχήματα συνήθως άμεσα ή μέσα σε λίγες ημέρες, οι ασθένειες σε 14-30 ημέρες, ενώ χειρουργεία συγκεκριμένων κατηγοριών (π.χ. ορθοπεδικά) μπορεί να απαιτούν αρκετούς μήνες. Ό,τι εκδηλωθεί μέσα στην αναμονή αντιμετωπίζεται ως προϋπάρχον.",
+                        el: "Μετά την έναρξη του ασφαλιστηρίου, κάθε ομάδα καλύψεων ενεργοποιείται με διαφορετική καθυστέρηση: τα ατυχήματα συνήθως άμεσα ή μέσα σε λίγες ημέρες, οι ασθένειες σε 14-30 ημέρες, ενώ χειρουργεία συγκεκριμένων κατηγοριών (π.χ. ορθοπεδικά) μπορεί να απαιτούν αρκετούς μήνες. Ό,τι εκδηλωθεί μέσα στην αναμονή αντιμετωπίζεται ως προϋπάρχον.",
                         en: "After the policy starts, each benefit group activates with a different delay: accidents usually immediately or within days, illnesses in 14-30 days, while certain surgery categories (e.g. orthopedic) may require several months. Anything arising during the wait is treated as pre-existing.",
                     },
                 ],
@@ -1319,7 +1319,7 @@ export const guides: Guide[] = [
                         en: "Check: per-incident limits and the annual cap.",
                     },
                     {
-                        el: "Ελέγξτε: αν το συμβόλαιο απαιτεί ηλεκτρονική σήμανση (τσιπ) — που είναι ούτως ή άλλως υποχρεωτική από τον νόμο.",
+                        el: "Ελέγξτε: αν το ασφαλιστήριο απαιτεί ηλεκτρονική σήμανση (τσιπ) — που είναι ούτως ή άλλως υποχρεωτική από τον νόμο.",
                         en: "Check: whether the policy requires microchipping — which Greek law mandates anyway.",
                     },
                 ],
@@ -1338,7 +1338,7 @@ export const guides: Guide[] = [
             },
             {
                 question: {
-                    el: "Αξίζει η ασφάλεια για γάτα εσωτερικού χώρου;",
+                    el: "Αξίζει η ασφάλιση για γάτα εσωτερικού χώρου;",
                     en: "Is insurance worth it for an indoor cat?",
                 },
                 answer: {
@@ -1435,7 +1435,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Τρία δομικά όρια: πρώτον, η κάλυψη λήγει όταν αποχωρήσετε — παραίτηση, απόλυση ή συνταξιοδότηση σημαίνει απώλεια της προστασίας τη στιγμή ίσως που τη χρειάζεστε περισσότερο, και σε ηλικία που το ατομικό συμβόλαιο κοστίζει ακριβότερα ή απαιτεί νέο έλεγχο υγείας. Δεύτερον, τα κεφάλαια είναι συχνά χαμηλά σε σχέση με το πραγματικό κόστος μιας σοβαρής νοσηλείας σε ιδιωτικό θεραπευτήριο. Τρίτον, τους όρους τους διαπραγματεύεται ο εργοδότης — δεν προσαρμόζονται στις δικές σας ανάγκες.",
+                        el: "Τρία δομικά όρια: πρώτον, η κάλυψη λήγει όταν αποχωρήσετε — παραίτηση, απόλυση ή συνταξιοδότηση σημαίνει απώλεια της προστασίας τη στιγμή ίσως που τη χρειάζεστε περισσότερο, και σε ηλικία που το ατομικό ασφαλιστήριο κοστίζει ακριβότερα ή απαιτεί νέο έλεγχο υγείας. Δεύτερον, τα κεφάλαια είναι συχνά χαμηλά σε σχέση με το πραγματικό κόστος μιας σοβαρής νοσηλείας σε ιδιωτικό θεραπευτήριο. Τρίτον, τους όρους τους διαπραγματεύεται ο εργοδότης — δεν προσαρμόζονται στις δικές σας ανάγκες.",
                         en: "Three structural limits: first, cover ends when you leave — resignation, dismissal, or retirement means losing protection possibly when you need it most, at an age when an individual policy costs more or requires fresh underwriting. Second, sums are often low relative to the real cost of a serious private-hospital stay. Third, the employer negotiates the terms — they are not tailored to your needs.",
                     },
                     {
@@ -1636,7 +1636,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Αν λάβετε ειδοποίηση: ασφαλίστε το όχημα άμεσα — η κάλυψη ενεργοποιείται από την έκδοση του συμβολαίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται ηλεκτρονικά, μέσω ειδικής εφαρμογής της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης, εντός δέκα (10) εργάσιμων ημερών από την κοινοποίηση, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο.",
+                        el: "Αν λάβετε ειδοποίηση: ασφαλίστε το όχημα άμεσα — η κάλυψη ενεργοποιείται από την έκδοση του ασφαλιστηρίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται ηλεκτρονικά, μέσω ειδικής εφαρμογής της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης, εντός δέκα (10) εργάσιμων ημερών από την κοινοποίηση, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο.",
                         en: "If you receive a notice: insure the vehicle immediately — cover activates upon policy issuance — and pay the fee within the stated deadline. If the vehicle is off the road, declare immobility so it stops appearing in future cross-checks. If you believe the notice is wrong (e.g. you were insured), file an objection electronically through the national digital portal within 10 working days of notification, with proof of insurance for the disputed period.",
                     },
                 ],
@@ -1687,7 +1687,7 @@ export const guides: Guide[] = [
         faq: [
             {
                 question: {
-                    el: "Το όχημα είναι στην αυλή μου και δεν κυκλοφορεί — χρειάζεται ασφάλεια;",
+                    el: "Το όχημα είναι στην αυλή μου και δεν κυκλοφορεί — χρειάζεται ασφάλιση;",
                     en: "My vehicle sits in my yard unused — does it need insurance?",
                 },
                 answer: {
@@ -1772,7 +1772,7 @@ export const guides: Guide[] = [
             en: "Insurer portal, agent app or a policy wallet? A category-by-category comparison: documents, coverage analysis, renewals, premium payments and claims.",
         },
         summary: {
-            el: "Τα εργαλεία που υπόσχονται «όλα τα ασφαλιστήρια σε ένα σημείο» χωρίζονται σε πέντε κατηγορίες: portal ασφαλιστικής εταιρείας, εφαρμογή πράκτορα, συγκριτική πλατφόρμα, γενική αποθήκευση αρχείων και ψηφιακό πορτοφόλι ασφαλίσεων. Μόνο η τελευταία δέχεται συμβόλαια από όλες τις εταιρείες μαζί και διαβάζει το περιεχόμενό τους. Καμία τους όμως δεν εισπράττει ασφάλιστρα και δεν δίνει επίσημη κατάσταση αποζημίωσης.",
+            el: "Τα εργαλεία που υπόσχονται «όλα τα ασφαλιστήρια σε ένα σημείο» χωρίζονται σε πέντε κατηγορίες: portal ασφαλιστικής εταιρείας, εφαρμογή πράκτορα, συγκριτική πλατφόρμα, γενική αποθήκευση αρχείων και ψηφιακό πορτοφόλι ασφαλίσεων. Μόνο η τελευταία δέχεται ασφαλιστήρια από όλες τις εταιρείες μαζί και διαβάζει το περιεχόμενό τους. Καμία τους, όμως, δεν εισπράττει ασφάλιστρα και δεν δίνει επίσημη κατάσταση αποζημίωσης.",
             en: "Tools that promise “all your policies in one place” fall into five categories: an insurer's own portal, an agent's app, a comparison site, generic file storage, and an insurance policy wallet. Only the last accepts policies from every insurer at once and actually reads what they say. None of them, however, collects premiums or returns official claim status.",
         },
         datePublished: "2026-07-27",
@@ -1786,21 +1786,21 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Το ερώτημα «πού τα βάζω όλα μαζί» έχει πέντε πιθανές απαντήσεις στην ελληνική αγορά, και καμία τους δεν κάνει ακριβώς το ίδιο πράγμα. Η ουσιαστική διαφορά δεν είναι η εμφάνιση αλλά το εύρος: άλλα εργαλεία βλέπουν μόνο τα συμβόλαια μιας εταιρείας, άλλα μόνο όσα πέρασαν από έναν διαμεσολαβητή, και άλλα ό,τι ανεβάσετε εσείς.",
+                        el: "Το ερώτημα «πού τα βάζω όλα μαζί» έχει πέντε πιθανές απαντήσεις στην ελληνική αγορά, και καμία τους δεν κάνει ακριβώς το ίδιο πράγμα. Η ουσιαστική διαφορά δεν είναι η εμφάνιση αλλά το εύρος: άλλα εργαλεία βλέπουν μόνο τα ασφαλιστήρια μιας εταιρείας, άλλα μόνο όσα πέρασαν από έναν διαμεσολαβητή, και άλλα ό,τι ανεβάσετε εσείς.",
                         en: "The question “where do I keep everything together” has five possible answers in the Greek market, and no two of them do quite the same job. The real difference is not the interface but the scope: some tools see only one insurer's policies, some only what was written through one intermediary, and some whatever you upload yourself.",
                     },
                 ],
                 bullets: [
                     {
-                        el: "Το portal ή η εφαρμογή της ασφαλιστικής σας εταιρείας: πλήρης εικόνα, αλλά μόνο για τα δικά της συμβόλαια. Με τρεις εταιρείες χρειάζεστε τρεις λογαριασμούς.",
+                        el: "Το portal ή η εφαρμογή της ασφαλιστικής σας εταιρείας: πλήρης εικόνα, αλλά μόνο για τα δικά της ασφαλιστήρια. Με τρεις εταιρείες χρειάζεστε τρεις λογαριασμούς.",
                         en: "Your insurer's own portal or app: a complete picture, but only of its own policies. With three insurers you need three logins.",
                     },
                     {
-                        el: "Η εφαρμογή του πράκτορα ή του πρακτορείου σας: βλέπει όσα συμβόλαια εκδόθηκαν μέσω αυτού, ανεξάρτητα από εταιρεία. Ό,τι κλείσατε αλλού λείπει.",
+                        el: "Η εφαρμογή του πράκτορα ή του πρακτορείου σας: βλέπει όσα ασφαλιστήρια εκδόθηκαν μέσω αυτού, ανεξάρτητα από εταιρεία. Ό,τι κλείσατε αλλού λείπει.",
                         en: "Your agent's or agency's app: it sees whatever was written through them, across insurers. Anything you bought elsewhere is missing.",
                     },
                     {
-                        el: "Οι συγκριτικές πλατφόρμες: φτιαγμένες για τη στιγμή της αγοράς. Μετά την έκδοση του συμβολαίου δεν το διαχειρίζονται.",
+                        el: "Οι συγκριτικές πλατφόρμες: φτιαγμένες για τη στιγμή της αγοράς. Μετά την έκδοση του ασφαλιστηρίου δεν το διαχειρίζονται.",
                         en: "Comparison sites: built for the moment of purchase. Once the policy is issued they do not manage it.",
                     },
                     {
@@ -1808,7 +1808,7 @@ export const guides: Guide[] = [
                         en: "Generic file storage, such as a cloud drive or photos on your phone: it keeps the PDFs but understands nothing inside them.",
                     },
                     {
-                        el: "Το ψηφιακό πορτοφόλι ασφαλίσεων: δέχεται συμβόλαια από οποιαδήποτε εταιρεία και διαβάζει τι λένε. Δεν εισπράττει όμως ασφάλιστρα.",
+                        el: "Το ψηφιακό πορτοφόλι ασφαλίσεων: δέχεται ασφαλιστήρια από οποιαδήποτε εταιρεία και διαβάζει τι λένε. Δεν εισπράττει, όμως, ασφάλιστρα.",
                         en: "The insurance policy wallet: it takes policies from any insurer and reads what they say. It does not, however, collect premiums.",
                     },
                 ],
@@ -1912,11 +1912,11 @@ export const guides: Guide[] = [
                         en: "Two things never move to a third-party app. The first is collecting the premium: it is paid to the insurer or the intermediary — by web banking, a standing order, a card on the insurer's own portal, or at the agent's office. A management platform is not a payment institution and does not sit in that flow.",
                     },
                     {
-                        el: "Το δεύτερο είναι η επίσημη κατάσταση μιας αποζημίωσης. Ο φάκελος ζημιάς ζει στα συστήματα της εταιρείας· χωρίς σύνδεση με αυτά, καμία τρίτη εφαρμογή δεν ξέρει σε ποιο στάδιο βρίσκεται. Αυτό που μπορεί να κάνει είναι να σας δώσει τα δικά σας δεδομένα τη στιγμή που τα χρειάζεστε: προθεσμία δήλωσης, υποχρεώσεις, αριθμό συμβολαίου και το τηλέφωνο του σωστού κλάδου.",
+                        el: "Το δεύτερο είναι η επίσημη κατάσταση μιας αποζημίωσης. Ο φάκελος ζημιάς ζει στα συστήματα της εταιρείας· χωρίς σύνδεση με αυτά, καμία τρίτη εφαρμογή δεν ξέρει σε ποιο στάδιο βρίσκεται. Αυτό που μπορεί να κάνει είναι να σας δώσει τα δικά σας δεδομένα τη στιγμή που τα χρειάζεστε: προθεσμία δήλωσης, υποχρεώσεις, αριθμό ασφαλιστηρίου και το τηλέφωνο του σωστού κλάδου.",
                         en: "The second is official claim status. The claim file lives in the insurer's systems; without a feed from them, no third-party app knows what stage it has reached. What it can do is hand you your own data at the moment you need it: the notification deadline, your obligations, your policy number, and the right claims line for that branch.",
                     },
                     {
-                        el: "Το ίδιο ισχύει για τον έλεγχο συμβολαίου με τον αριθμό ασφαλιστηρίου: αυτή η αναζήτηση δουλεύει στο portal της εταιρείας που το εξέδωσε. Ένα πορτοφόλι ασφαλίσεων σάς δείχνει την κατάσταση που προκύπτει από το ίδιο σας το έγγραφο — σε ισχύ, λήγει σύντομα ή έληξε — όχι την εγγραφή της εταιρείας.",
+                        el: "Το ίδιο ισχύει για τον έλεγχο ασφαλιστηρίου με τον αριθμό ασφαλιστηρίου: αυτή η αναζήτηση δουλεύει στο portal της εταιρείας που το εξέδωσε. Ένα πορτοφόλι ασφαλίσεων σάς δείχνει την κατάσταση που προκύπτει από το ίδιο σας το έγγραφο — σε ισχύ, λήγει σύντομα ή έληξε — όχι την εγγραφή της εταιρείας.",
                         en: "The same goes for checking a policy by its policy number: that lookup works on the portal of the insurer that issued it. A policy wallet shows you the status derived from your own document — active, expiring soon, or expired — not the insurer's record.",
                     },
                 ],
@@ -1928,7 +1928,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Το PolicyWallet ανήκει στην τελευταία κατηγορία — και την πηγαίνει ένα βήμα πιο πέρα: είναι πλατφόρμα προσωπικής ανάλυσης ρίσκου, που δεν αποθηκεύει απλώς τα συμβόλαια αλλά σας λέει αν είστε καλυμμένοι. Ανεβάζετε το PDF ή μια φωτογραφία κάθε ασφαλιστηρίου — αυτοκίνητο, κατοικία, υγεία, ομαδικό, ταξίδι, κατοικίδιο — και η AI το διαβάζει και βγάζει σε απλά ελληνικά τι καλύπτεται, τι εξαιρείται, ποια είναι τα όρια, οι απαλλαγές και οι κρίσιμες ημερομηνίες.",
+                        el: "Το PolicyWallet ανήκει στην τελευταία κατηγορία — και την πηγαίνει ένα βήμα πιο πέρα: είναι πλατφόρμα προσωπικής ανάλυσης ρίσκου, που δεν αποθηκεύει απλώς τα ασφαλιστήρια αλλά σας λέει αν είστε καλυμμένοι. Ανεβάζετε το PDF ή μια φωτογραφία κάθε ασφαλιστηρίου — αυτοκίνητο, κατοικία, υγεία, ομαδικό, ταξίδι, κατοικίδιο — και η AI το διαβάζει και βγάζει σε απλά ελληνικά τι καλύπτεται, τι εξαιρείται, ποια είναι τα όρια, οι απαλλαγές και οι κρίσιμες ημερομηνίες.",
                         en: "PolicyWallet sits in that last category — and takes it one step further: it is a personal risk intelligence platform, which does not just store your policies but tells you whether you are covered. You upload the PDF or a photo of each policy — motor, home, health, group, travel, pet — and the AI reads it and sets out in plain language what is covered, what is excluded, and what the limits, deductibles and key dates are.",
                     },
                     {
@@ -1936,7 +1936,7 @@ export const guides: Guide[] = [
                         en: "Because it sees them together, it does something no single insurer's portal can: it cross-checks them against each other, on the Family plan. It flags gaps — a home with no earthquake cover, for instance — underinsurance against rebuild cost, and overlaps where you pay twice for the same risk. Each finding appears on its own inside the app, with its reasoning and a pointer to your own document — along with what it does not mean.",
                     },
                     {
-                        el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, και — με το πλάνο Family — ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",
+                        el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, και — με το πλάνο Family — ερωτήσεις στην AI για ένα συγκεκριμένο ασφαλιστήριο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",
                         en: "Beyond that: renewal reminders from 90 days before expiry on paid plans, and — on the Family plan — AI questions about a specific policy, secure sharing with an advisor that you can revoke at any time, and report export. PolicyWallet does not sell insurance and takes no commission: it is neither an insurance undertaking nor an intermediary.",
                     },
                 ],
@@ -1948,21 +1948,21 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Δεν χρειάζονται όλοι το ίδιο εργαλείο. Ο αριθμός των εταιρειών με τις οποίες συνεργάζεστε, και όχι ο αριθμός των συμβολαίων, είναι αυτός που καθορίζει την απάντηση.",
+                        el: "Δεν χρειάζονται όλοι το ίδιο εργαλείο. Ο αριθμός των εταιρειών με τις οποίες συνεργάζεστε, και όχι ο αριθμός των ασφαλιστηρίων, είναι αυτός που καθορίζει την απάντηση.",
                         en: "Not everyone needs the same tool. It is the number of insurers you deal with, rather than the number of policies, that decides the answer.",
                     },
                 ],
                 bullets: [
                     {
-                        el: "Ένα συμβόλαιο σε μία εταιρεία: το portal της εταιρείας αρκεί και είναι δωρεάν.",
+                        el: "Ένα ασφαλιστήριο σε μία εταιρεία: το portal της εταιρείας αρκεί και είναι δωρεάν.",
                         en: "One policy with one insurer: the insurer's own portal is enough, and it is free.",
                     },
                     {
-                        el: "Όλα τα συμβόλαια μέσω ενός πράκτορα: η εφαρμογή του πρακτορείου καλύπτει τα περισσότερα — αρκεί να μη διαφεύγει κάτι που κλείσατε αλλού.",
+                        el: "Όλα τα ασφαλιστήρια μέσω ενός πράκτορα: η εφαρμογή του πρακτορείου καλύπτει τα περισσότερα — αρκεί να μη διαφεύγει κάτι που κλείσατε αλλού.",
                         en: "Everything through one agent: the agency's app covers most of it — as long as nothing you bought elsewhere slips through.",
                     },
                     {
-                        el: "Συμβόλαια σε δύο ή περισσότερες εταιρείες: μόνο ένα εργαλείο ανεξάρτητο από εταιρεία σάς δίνει ενιαία εικόνα.",
+                        el: "Ασφαλιστήρια σε δύο ή περισσότερες εταιρείες: μόνο ένα εργαλείο ανεξάρτητο από εταιρεία σάς δίνει ενιαία εικόνα.",
                         en: "Policies across two or more insurers: only an insurer-independent tool gives you a single view.",
                     },
                     {
@@ -1983,7 +1983,7 @@ export const guides: Guide[] = [
                     en: "Where can I manage all my insurance policies in one place?",
                 },
                 answer: {
-                    el: "Σε ένα ψηφιακό πορτοφόλι ασφαλίσεων ανεξάρτητο από ασφαλιστική εταιρεία. Τα portal των εταιρειών δείχνουν μόνο τα δικά τους συμβόλαια, ενώ ένα πορτοφόλι δέχεται συμβόλαια από όλες τις εταιρείες μαζί και τα διαβάζει.",
+                    el: "Σε ένα ψηφιακό πορτοφόλι ασφαλίσεων ανεξάρτητο από ασφαλιστική εταιρεία. Τα portal των εταιρειών δείχνουν μόνο τα δικά τους ασφαλιστήρια, ενώ ένα πορτοφόλι δέχεται ασφαλιστήρια από όλες τις εταιρείες μαζί και τα διαβάζει.",
                     en: "In an insurer-independent policy wallet. Insurers' portals show only their own contracts, whereas a wallet accepts policies from every insurer at once and reads them.",
                 },
             },
@@ -1999,7 +1999,7 @@ export const guides: Guide[] = [
             },
             {
                 question: {
-                    el: "Μπορώ να ελέγξω κατάσταση συμβολαίου με τον αριθμό ασφαλιστηρίου;",
+                    el: "Μπορώ να ελέγξω κατάσταση ασφαλιστηρίου με τον αριθμό ασφαλιστηρίου;",
                     en: "Can I check a policy's status by policy number?",
                 },
                 answer: {
@@ -2019,11 +2019,11 @@ export const guides: Guide[] = [
             },
             {
                 question: {
-                    el: "Ποια είναι η καλύτερη επιλογή αν έχω πολλά συμβόλαια;",
+                    el: "Ποια είναι η καλύτερη επιλογή αν έχω πολλά ασφαλιστήρια;",
                     en: "What is the best option if I have several policies?",
                 },
                 answer: {
-                    el: "Ένα εργαλείο που δέχεται συμβόλαια από οποιαδήποτε εταιρεία και τα διαβάζει, όχι απλώς τα αποθηκεύει. Με τρία ή περισσότερα συμβόλαια η αξία δεν είναι στο να τα βρίσκετε, αλλά στο να βλέπετε τι λείπει και τι πληρώνετε δύο φορές.",
+                    el: "Ένα εργαλείο που δέχεται ασφαλιστήρια από οποιαδήποτε εταιρεία και τα διαβάζει, όχι απλώς τα αποθηκεύει. Με τρία ή περισσότερα ασφαλιστήρια η αξία δεν είναι στο να τα βρίσκετε, αλλά στο να βλέπετε τι λείπει και τι πληρώνετε δύο φορές.",
                     en: "A tool that accepts policies from any insurer and reads them, rather than merely storing them. With three or more policies the value is not in finding them, but in seeing what is missing and what you are paying for twice.",
                 },
             },
@@ -2094,7 +2094,7 @@ export const guides: Guide[] = [
             en: "What a digital wallet means in insurance, how premiums are actually paid in Greece, and what you can track digitally without paying from the app.",
         },
         summary: {
-            el: "Στην ασφάλιση ο όρος «ψηφιακό πορτοφόλι» σημαίνει δύο εντελώς διαφορετικά πράγματα. Το πορτοφόλι πληρωμών κρατά κάρτες και μεταφέρει χρήματα, οπότε μπορεί να εξοφλήσει ένα ασφάλιστρο όπου η εταιρεία δέχεται τη μέθοδο. Το πορτοφόλι ασφαλίσεων κρατά τα συμβόλαια και τις καλύψεις σας: σας δείχνει πόσο πληρώνετε και πότε λήγει η κάλυψη, χωρίς να κινεί χρήματα.",
+            el: "Στην ασφάλιση ο όρος «ψηφιακό πορτοφόλι» σημαίνει δύο εντελώς διαφορετικά πράγματα. Το πορτοφόλι πληρωμών κρατά κάρτες και μεταφέρει χρήματα, οπότε μπορεί να εξοφλήσει ένα ασφάλιστρο όπου η εταιρεία δέχεται τη μέθοδο. Το πορτοφόλι ασφαλίσεων κρατά τα ασφαλιστήρια και τις καλύψεις σας: σας δείχνει πόσο πληρώνετε και πότε λήγει η κάλυψη, χωρίς να κινεί χρήματα.",
             en: "In insurance, “digital wallet” means two entirely different things. A payment wallet holds cards and moves money, so it can settle a premium wherever the insurer accepts that method. A policy wallet holds your contracts and your cover: it shows you what you pay and when cover ends, without moving any money at all.",
         },
         datePublished: "2026-07-27",
@@ -2186,7 +2186,7 @@ export const guides: Guide[] = [
                         en: "A recurring card charge that you set up once with the insurer.",
                     },
                     {
-                        el: "Πληρωμή με κάρτα στο portal ή στην εφαρμογή της εταιρείας — εκεί εμφανίζονται και τα πορτοφόλια κινητού, όπου το checkout τα υποστηρίζει.",
+                        el: "Πληρωμή με κάρτα στο portal ή στην εφαρμογή της εταιρείας — εκεί εμφανίζονται και τα πορτοφόλια κινητού, όπου το σύστημα πληρωμής τα υποστηρίζει.",
                         en: "A card payment on the insurer's portal or app — this is also where mobile wallets appear, where the checkout supports them.",
                     },
                     {
@@ -2210,7 +2210,7 @@ export const guides: Guide[] = [
                         en: "It does not collect or forward premiums. It holds no IBAN, registers no standing orders, and is not a payment institution. PolicyWallet specifically is not an insurance undertaking and does not distribute insurance products: it does not intermediate in the conclusion or management of insurance contracts, as the distribution framework (IDD, Greek Law 4583/2018) defines it.",
                     },
                     {
-                        el: "Αυτό είναι σχεδιαστική επιλογή, όχι ελλιπής υλοποίηση. Ένα εργαλείο που δεν πουλά, δεν εισπράττει και δεν παίρνει προμήθεια δεν έχει λόγο να σας δείξει το ένα συμβόλαιο καλύτερα από το άλλο. Η ουδετερότητα είναι ακριβώς αυτό που κάνει την ανάλυση κενών χρήσιμη.",
+                        el: "Αυτό είναι σχεδιαστική επιλογή, όχι ελλιπής υλοποίηση. Ένα εργαλείο που δεν πουλά, δεν εισπράττει και δεν παίρνει προμήθεια δεν έχει λόγο να σας δείξει το ένα ασφαλιστήριο καλύτερα από το άλλο. Η ουδετερότητα είναι ακριβώς αυτό που κάνει την ανάλυση κενών χρήσιμη.",
                         en: "That is a design choice, not a missing feature. A tool that does not sell, does not collect and takes no commission has no reason to show one policy in a better light than another. That neutrality is precisely what makes the gap analysis worth reading.",
                     },
                 ],
@@ -2228,11 +2228,11 @@ export const guides: Guide[] = [
                 ],
                 bullets: [
                     {
-                        el: "Το ασφάλιστρο και τη συχνότητα πληρωμής όπως αναγράφονται στο συμβόλαιο.",
+                        el: "Το ασφάλιστρο και τη συχνότητα πληρωμής όπως αναγράφονται στο ασφαλιστήριο.",
                         en: "The premium and the payment frequency exactly as the policy states them.",
                     },
                     {
-                        el: "Το συνολικό ετήσιο κόστος όλων των συμβολαίων μαζί — συνήθως η πρώτη έκπληξη.",
+                        el: "Το συνολικό ετήσιο κόστος όλων των ασφαλιστηρίων μαζί — συνήθως η πρώτη έκπληξη.",
                         en: "The combined annual cost of every policy together — usually the first surprise.",
                     },
                     {
@@ -2240,7 +2240,7 @@ export const guides: Guide[] = [
                         en: "Expiry and renewal dates, with reminders from 90 days out on paid plans.",
                     },
                     {
-                        el: "Τι άλλαξε ανάμεσα σε δύο εκδόσεις του ίδιου συμβολαίου, ώστε μια αύξηση ασφαλίστρου να συγκρίνεται με το τι πήρατε επιπλέον.",
+                        el: "Τι άλλαξε ανάμεσα σε δύο εκδόσεις του ίδιου ασφαλιστηρίου, ώστε μια αύξηση ασφαλίστρου να συγκρίνεται με το τι πήρατε επιπλέον.",
                         en: "What changed between two versions of the same policy, so a premium increase can be weighed against what you actually gained.",
                     },
                 ],
@@ -2253,7 +2253,7 @@ export const guides: Guide[] = [
                     en: "What role do digital wallets play in insurance premium payments?",
                 },
                 answer: {
-                    el: "Τα πορτοφόλια πληρωμών λειτουργούν ως τρόπος εξόφλησης: παρουσιάζουν την κάρτα σας στο checkout της ασφαλιστικής εταιρείας, όπου αυτό τα υποστηρίζει. Τα πορτοφόλια ασφαλίσεων παίζουν διαφορετικό ρόλο — δείχνουν τι πληρώνετε, πότε και για ποια κάλυψη, χωρίς να συμμετέχουν στη συναλλαγή.",
+                    el: "Τα πορτοφόλια πληρωμών λειτουργούν ως τρόπος εξόφλησης: παρουσιάζουν την κάρτα σας στο σύστημα πληρωμής της ασφαλιστικής εταιρείας, όπου αυτό τα υποστηρίζει. Τα πορτοφόλια ασφαλίσεων παίζουν διαφορετικό ρόλο — δείχνουν τι πληρώνετε, πότε και για ποια κάλυψη, χωρίς να συμμετέχουν στη συναλλαγή.",
                     en: "Payment wallets act as a settlement method: they present your card at the insurer's checkout, where it supports them. Policy wallets play a different role — they show what you pay, when, and for which cover, without taking part in the transaction.",
                 },
             },
@@ -2273,7 +2273,7 @@ export const guides: Guide[] = [
                     en: "How do I see what I pay in premiums overall?",
                 },
                 answer: {
-                    el: "Ανεβάζοντας όλα τα συμβόλαια σε ένα σημείο. Το ασφάλιστρο κάθε συμβολαίου εξάγεται από το ίδιο το έγγραφο, οπότε το άθροισμα προκύπτει χωρίς να το υπολογίσετε εσείς.",
+                    el: "Ανεβάζοντας όλα τα ασφαλιστήρια σε ένα σημείο. Το ασφάλιστρο κάθε ασφαλιστηρίου εξάγεται από το ίδιο το έγγραφο, οπότε το άθροισμα προκύπτει χωρίς να το υπολογίσετε εσείς.",
                     en: "By uploading every policy to one place. Each premium is extracted from the document itself, so the total adds up without you working it out.",
                 },
             },
@@ -2283,7 +2283,7 @@ export const guides: Guide[] = [
                     en: "Is PolicyWallet an insurer or an intermediary?",
                 },
                 answer: {
-                    el: "Ούτε το ένα ούτε το άλλο. Δεν εκδίδει, δεν πουλά και δεν διαχειρίζεται ασφαλιστικές συμβάσεις, και δεν λαμβάνει προμήθειες. Είναι εργαλείο κατανόησης και οργάνωσης των συμβολαίων που ήδη έχετε.",
+                    el: "Ούτε το ένα ούτε το άλλο. Δεν εκδίδει, δεν πουλά και δεν διαχειρίζεται ασφαλιστικές συμβάσεις, και δεν λαμβάνει προμήθειες. Είναι εργαλείο κατανόησης και οργάνωσης των ασφαλιστηρίων που ήδη έχετε.",
                     en: "Neither. It does not issue, sell or administer insurance contracts, and it receives no commission. It is a tool for understanding and organizing the policies you already hold.",
                 },
             },
@@ -2397,7 +2397,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Η ασφαλιστική εταιρεία που εξέδωσε το συμβόλαιο και ο διαμεσολαβητής σας. Κανείς άλλος. Ο φάκελος ζημιάς — αριθμός, πραγματογνώμονας, εγκρίσεις, ποσό, ημερομηνία πληρωμής — υπάρχει μόνο στα συστήματά της. Μια εφαρμογή τρίτου χωρίς σύνδεση με αυτά δεν έχει από πού να αντλήσει την πληροφορία, όσο καλή κι αν είναι.",
+                        el: "Η ασφαλιστική εταιρεία που εξέδωσε το ασφαλιστήριο και ο διαμεσολαβητής σας. Κανείς άλλος. Ο φάκελος ζημιάς — αριθμός, πραγματογνώμονας, εγκρίσεις, ποσό, ημερομηνία πληρωμής — υπάρχει μόνο στα συστήματά της. Μια εφαρμογή τρίτου χωρίς σύνδεση με αυτά δεν έχει από πού να αντλήσει την πληροφορία, όσο καλή κι αν είναι.",
                         en: "The insurer that issued the policy, and your intermediary. Nobody else. The claim file — its number, the loss adjuster, approvals, the amount, the payment date — exists only in their systems. A third-party app with no feed from them has nowhere to read that from, however good it is.",
                     },
                     {
@@ -2417,7 +2417,7 @@ export const guides: Guide[] = [
                         en: "Not file status, but something that in practice goes missing far more often: your own data, at the moment you need it. In the first hours after an incident the question is not how the claim is progressing — it is what you must do right now so you do not forfeit your right to be paid.",
                     },
                     {
-                        el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας συμβόλαιο: η προθεσμία δήλωσης και οι υποχρεώσεις ειδοποίησης όπως τις αναφέρει το έγγραφό σας, ο αριθμός ασφαλιστηρίου, και το τηλέφωνο του σωστού κλάδου — γραμμή δήλωσης ατυχήματος για το αυτοκίνητο, τεχνική βοήθεια για την κατοικία, κέντρο συντονισμού για την υγεία. Όταν το τηλέφωνο δεν υπάρχει στο έγγραφο, το λέει ευθέως αντί να επινοήσει έναν αριθμό. Αυτή είναι η διαφορά μιας πλατφόρμας προσωπικής ανάλυσης ρίσκου από μια απλή αποθήκη εγγράφων: δεν σας δίνει απλώς το αρχείο — σας δίνει το τι σημαίνει.",
+                        el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας ασφαλιστήριο: η προθεσμία δήλωσης και οι υποχρεώσεις ειδοποίησης όπως τις αναφέρει το έγγραφό σας, ο αριθμός ασφαλιστηρίου, και το τηλέφωνο του σωστού κλάδου — γραμμή δήλωσης ατυχήματος για το αυτοκίνητο, τεχνική βοήθεια για την κατοικία, κέντρο συντονισμού για την υγεία. Όταν το τηλέφωνο δεν υπάρχει στο έγγραφο, το λέει ευθέως αντί να επινοήσει έναν αριθμό. Αυτή είναι η διαφορά μιας πλατφόρμας προσωπικής ανάλυσης ρίσκου από μια απλή αποθήκη εγγράφων: δεν σας δίνει απλώς το αρχείο — σας δίνει το τι σημαίνει.",
                         en: "In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadline and reporting obligations exactly as your document states them, your policy number, and the right claims line — the accident-declaration line for motor, technical assistance for home, the coordination centre for health. Where the number is not in the document, it says so plainly rather than inventing one. That is the difference between a personal risk intelligence platform and a plain document store: it does not just hand you the file — it hands you what the file means.",
                     },
                     {
@@ -2437,7 +2437,7 @@ export const guides: Guide[] = [
                         en: "You upload the PDF or a photo of each policy, from any insurer, and the AI reads it. Instead of one more file in a folder, you get plain-language answers on what is covered, what is excluded, what the limits and deductibles are, and which dates matter.",
                     },
                     {
-                        el: "Επειδή τα συμβόλαια βρίσκονται μαζί, με το πλάνο Family εντοπίζονται και τα κενά ανάμεσά τους: κατοικία χωρίς κάλυψη σεισμού, ασφαλιζόμενο κεφάλαιο κάτω από το κόστος ανακατασκευής, ή δύο συμβόλαια που πληρώνουν τον ίδιο κίνδυνο. Στο ίδιο πλάνο ανήκουν και οι ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο και η ασφαλής κοινοποίηση σε σύμβουλο· υπενθυμίσεις ανανέωσης υπάρχουν από το πλάνο Plus.",
+                        el: "Επειδή τα ασφαλιστήρια βρίσκονται μαζί, με το πλάνο Family εντοπίζονται και τα κενά ανάμεσά τους: κατοικία χωρίς κάλυψη σεισμού, ασφαλιζόμενο κεφάλαιο κάτω από το κόστος ανακατασκευής, ή δύο ασφαλιστήρια που πληρώνουν τον ίδιο κίνδυνο. Στο ίδιο πλάνο ανήκουν και οι ερωτήσεις στην AI για ένα συγκεκριμένο ασφαλιστήριο και η ασφαλής κοινοποίηση σε σύμβουλο· υπενθυμίσεις ανανέωσης υπάρχουν από το πλάνο Plus.",
                         en: "Because the policies sit together, the Family plan surfaces the gaps between them too: a home with no earthquake cover, a sum insured below rebuild cost, or two policies paying for the same risk. AI questions about a specific policy and secure sharing with an advisor belong to the same plan; renewal reminders start from the Plus plan.",
                     },
                 ],
@@ -2450,7 +2450,7 @@ export const guides: Guide[] = [
                     en: "What are popular apps for organizing policies, claim updates, and coverage information in one place?",
                 },
                 answer: {
-                    el: "Οι εφαρμογές των ασφαλιστικών εταιρειών καλύπτουν και τα τρία, αλλά μόνο για τα δικά τους συμβόλαια. Τα πορτοφόλια ασφαλίσεων καλύπτουν έγγραφα και καλύψεις για όλες τις εταιρείες μαζί, με οδηγίες αντί για κατάσταση ζημιάς. Οι εφαρμογές πρακτορείων βρίσκονται ενδιάμεσα.",
+                    el: "Οι εφαρμογές των ασφαλιστικών εταιρειών καλύπτουν και τα τρία, αλλά μόνο για τα δικά τους ασφαλιστήρια. Τα πορτοφόλια ασφαλίσεων καλύπτουν έγγραφα και καλύψεις για όλες τις εταιρείες μαζί, με οδηγίες αντί για κατάσταση ζημιάς. Οι εφαρμογές πρακτορείων βρίσκονται ενδιάμεσα.",
                     en: "Insurers' own apps cover all three, but only for their own policies. Policy wallets cover documents and coverage across every insurer, with guidance rather than claim status. Agency apps sit in between.",
                 },
             },
@@ -2460,7 +2460,7 @@ export const guides: Guide[] = [
                     en: "Is there an app that shows my claim status across every insurer?",
                 },
                 answer: {
-                    el: "Όχι. Η κατάσταση του φακέλου ζημιάς υπάρχει μόνο στα συστήματα της εταιρείας που εξέδωσε το συμβόλαιο, οπότε η ενημέρωση έρχεται από τη δική της εφαρμογή ή από τον διαμεσολαβητή σας.",
+                    el: "Όχι. Η κατάσταση του φακέλου ζημιάς υπάρχει μόνο στα συστήματα της εταιρείας που εξέδωσε το ασφαλιστήριο, οπότε η ενημέρωση έρχεται από τη δική της εφαρμογή ή από τον διαμεσολαβητή σας.",
                     en: "No. Claim file status lives only in the systems of the insurer that issued the policy, so updates come from that insurer's own app or from your intermediary.",
                 },
             },
@@ -2476,11 +2476,11 @@ export const guides: Guide[] = [
             },
             {
                 question: {
-                    el: "Πώς βρίσκω την προθεσμία δήλωσης ζημιάς στο συμβόλαιό μου;",
+                    el: "Πώς βρίσκω την προθεσμία δήλωσης ζημιάς στο ασφαλιστήριό μου;",
                     en: "How do I find the claim notification deadline in my policy?",
                 },
                 answer: {
-                    el: "Βρίσκεται στους γενικούς ή ειδικούς όρους, στο κεφάλαιο για τις υποχρεώσεις του ασφαλισμένου μετά από ζημιά. Αν το συμβόλαιο είναι ήδη αναλυμένο, εμφανίζεται μαζί με τα υπόλοιπα στοιχεία του χωρίς αναζήτηση στους όρους.",
+                    el: "Βρίσκεται στους γενικούς ή ειδικούς όρους, στο κεφάλαιο για τις υποχρεώσεις του ασφαλισμένου μετά από ζημιά. Αν το ασφαλιστήριο είναι ήδη αναλυμένο, εμφανίζεται μαζί με τα υπόλοιπα στοιχεία του χωρίς αναζήτηση στους όρους.",
                     en: "In the general or special terms, under the policyholder's obligations after a loss. If the policy has already been analysed, it appears alongside its other details without you searching the terms.",
                 },
             },

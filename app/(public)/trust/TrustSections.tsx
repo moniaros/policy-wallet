@@ -126,7 +126,7 @@ const SECTIONS: Section[] = [
                 en: "The AI providers' data-processing terms do not permit your data to be used to train their models.",
             },
             {
-                el: "Η τεχνητή νοημοσύνη διαβάζει το έγγραφο και το εξηγεί. Δεν αποφασίζει αυτή ποια κενά κάλυψης έχετε: αυτό το κρίνουν κανόνες που ελέγχουν τα δεδομένα του συμβολαίου σας, και κάθε εύρημα καταγράφει ποιος κανόνας το βρήκε και τι διάβασε.",
+                el: "Η τεχνητή νοημοσύνη διαβάζει το έγγραφο και το εξηγεί. Δεν αποφασίζει αυτή ποια κενά κάλυψης έχετε: αυτό το κρίνουν κανόνες που ελέγχουν τα δεδομένα του ασφαλιστηρίου σας, και κάθε εύρημα καταγράφει ποιος κανόνας το βρήκε και τι διάβασε.",
                 en: "The AI reads your document and explains it. It does not decide which coverage gaps you have: rules do that, checking the data extracted from your policy, and every finding records which rule found it and what that rule read.",
             },
         ],
@@ -139,11 +139,11 @@ const SECTIONS: Section[] = [
         },
         body: [
             {
-                el: "Κάθε ανάγνωση ενός συμβολαίου περνά από ένα σημείο ελέγχου στην εφαρμογή, που ρωτά το ίδιο πράγμα κάθε φορά: το κατέχετε εσείς, ή σας το έχει μοιραστεί ρητά κάποιος; Δοκιμή στο CI ελέγχει κάθε διαδρομή και ενέργεια που μπορεί να ζητήσει ένα συμβόλαιο, και αποτυγχάνει αν κάποια νέα δεν περνά από εκεί.",
+                el: "Κάθε ανάγνωση ενός ασφαλιστηρίου περνά από ένα σημείο ελέγχου στην εφαρμογή, που ρωτά το ίδιο πράγμα κάθε φορά: το κατέχετε εσείς, ή σας το έχει μοιραστεί ρητά κάποιος; Δοκιμή στο CI ελέγχει κάθε διαδρομή και ενέργεια που μπορεί να ζητήσει ένα ασφαλιστήριο, και αποτυγχάνει αν κάποια νέα δεν περνά από εκεί.",
                 en: "Every read of a policy goes through one checkpoint in the application, which asks the same question every time: do you own it, or has someone explicitly shared it with you? A CI test checks every route and action that can name a policy, and fails if a new one does not go through it.",
             },
             {
-                el: "Η πρόσβαση ενός ασφαλιστή τελειώνει μαζί με τη σχέση σας. Αν τη διακόψετε, παύει να βλέπει και τα συμβόλαια που ανέβασε ο ίδιος για εσάς.",
+                el: "Η πρόσβαση ενός ασφαλιστή τελειώνει μαζί με τη σχέση σας. Αν τη διακόψετε, παύει να βλέπει και τα ασφαλιστήρια που ανέβασε ο ίδιος για εσάς.",
                 en: "An advisor's access ends with your relationship. If you end it, they stop seeing even the policies they uploaded for you themselves.",
             },
             {
@@ -190,7 +190,7 @@ export function TrustSections({ locale }: { locale: Locale }) {
                     <h1 className="mt-3 text-display font-semibold text-balance text-[#0F172A] dark:text-white">
                         {t(
                             locale,
-                            "Τι γίνεται με το συμβόλαιό σας αφού το ανεβάσετε",
+                            "Τι γίνεται με το ασφαλιστήριό σας αφού το ανεβάσετε",
                             "What happens to your policy after you upload it"
                         )}
                     </h1>

@@ -55,7 +55,7 @@ const services = [
         titleEl: "Τι σημαίνει αυτό;",
         titleEn: "What does this mean?",
         // Policy Q&A is Plus-only — same naming rule.
-        descEl: "Ρωτήστε με απλά λόγια. Απαντάμε από το ίδιο σας το συμβόλαιο, όχι από γενικές πληροφορίες — με το πλάνο Family.",
+        descEl: "Ρωτήστε με απλά λόγια. Απαντάμε από το ίδιο σας το ασφαλιστήριο, όχι από γενικές πληροφορίες — με το πλάνο Family.",
         descEn: "Ask in plain words. We answer from your own policy, not from general information — on the Family plan.",
         benefitEl: "Καταλαβαίνετε τι υπογράψατε",
         benefitEn: "You understand what you signed",

@@ -21,7 +21,7 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Ταξιδιωτική ασφάλεια", "Travel insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Διαβάστε το συμβόλαιο πριν το check-in.", "Read the policy before you check in.")}
+                        {t("Διαβάστε το ασφαλιστήριο πριν το check-in.", "Read the policy before you check in.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Η ταξιδιωτική ασφάλεια αγοράζεται σε δύο κλικ μαζί με το εισιτήριο — και συνήθως κανείς δεν βλέπει τα όρια, τις εξαιρέσεις ή την απαλλαγή — το ποσό που μένει πάνω σας. Σας τα δείχνουμε πριν φύγετε, όχι στο ταμείο ενός νοσοκομείου στο εξωτερικό.", "Travel cover is bought in two clicks with the ticket — and usually nobody looks at the limits, the exclusions or the deductible — the amount that stays with you. We show them to you before you leave, not at the cashier's desk of a hospital abroad.")}

@@ -78,7 +78,7 @@ export const READING_DEMO_TABS: readonly ReadingDemoTab[] = [
 ]
 
 export const READING_DEMO_STRINGS = {
-    heading: { el: "Δείτε πώς διαβάζουμε ένα συμβόλαιο.", en: "See how we read a policy." },
+    heading: { el: "Δείτε πώς διαβάζουμε ένα ασφαλιστήριο.", en: "See how we read a policy." },
     tablistLabel: { el: "Δείγματα ασφαλιστηρίων", en: "Sample policies" },
     stamp: { el: "ΔΕΙΓΜΑ — ΟΧΙ ΠΡΑΓΜΑΤΙΚΟ ΑΣΦΑΛΙΣΤΗΡΙΟ", en: "SAMPLE — NOT A REAL POLICY" },
     scanning: { el: "Διαβάζουμε το δείγμα…", en: "Reading the sample…" },

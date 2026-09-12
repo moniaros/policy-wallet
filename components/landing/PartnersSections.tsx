@@ -34,7 +34,7 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
         {
             title: ["Κατανόηση καλύψεων", "Coverage understanding"],
             body: [
-                "Κάθε συμβόλαιο, από όποιον κι αν εκδόθηκε, γίνεται δομημένα δεδομένα: καλύψεις, όρια, απαλλαγές, εξαιρέσεις, περίοδοι αναμονής — με παραπομπή στο ίδιο το έγγραφο.",
+                "Κάθε ασφαλιστήριο, από όποιον κι αν εκδόθηκε, γίνεται δομημένα δεδομένα: καλύψεις, όρια, απαλλαγές, εξαιρέσεις, περίοδοι αναμονής — με παραπομπή στο ίδιο το έγγραφο.",
                 "Every policy, whoever issued it, becomes structured data: covers, limits, deductibles, exclusions, waiting periods — anchored to the document itself.",
             ],
         },
@@ -127,7 +127,7 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
                     </p>
                     <p className="mx-auto mt-g-4 max-w-[62ch] text-g-body-sm text-fg-secondary">
                         {t(
-                            "Γι' αυτό τα δεδομένα είναι αξιόπιστα: η ίδια ανάλυση για κάθε συμβόλαιο σημαίνει εικόνα χωρίς μεροληψία καναλιού.",
+                            "Γι' αυτό τα δεδομένα είναι αξιόπιστα: η ίδια ανάλυση για κάθε ασφαλιστήριο σημαίνει εικόνα χωρίς μεροληψία καναλιού.",
                             "That is why the data is trustworthy: the same analysis for every policy means a picture with no channel bias.",
                         )}
                     </p>

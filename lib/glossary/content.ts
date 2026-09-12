@@ -64,7 +64,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                 en: "A policy is not a brochure; it is the text that counts when you make a claim. The most important information is rarely on the first page: exclusions, deductibles and claim deadlines usually sit in the general and special terms.",
             },
             {
-                el: "Ένα τυπικό ασφαλιστήριο έχει τον πίνακα καλύψεων (τι καλύπτεται και μέχρι ποιο ποσό), τους όρους (πώς και πότε ισχύει η κάλυψη) και τα στοιχεία του συμβολαίου (αριθμός, διάρκεια, ασφάλιστρο). Το να τα διαβάσετε μία φορά με την ησυχία σας κοστίζει λιγότερο από το να τα ανακαλύψετε μετά από ζημιά.",
+                el: "Ένα τυπικό ασφαλιστήριο έχει τον πίνακα καλύψεων (τι καλύπτεται και μέχρι ποιο ποσό), τους όρους (πώς και πότε ισχύει η κάλυψη) και τα στοιχεία του ασφαλιστηρίου (αριθμός, διάρκεια, ασφάλιστρο). Το να τα διαβάσετε μία φορά με την ησυχία σας κοστίζει λιγότερο από το να τα ανακαλύψετε μετά από ζημιά.",
                 en: "A typical policy has the schedule of cover (what is covered and up to what amount), the terms (how and when cover applies) and the contract details (number, duration, premium). Reading them once, calmly, costs less than discovering them after a loss.",
             },
         ],
@@ -114,11 +114,11 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "What is insurance coverage (kalypsi)?",
         },
         metaDescription: {
-            el: "Κάλυψη είναι ο κίνδυνος που αναλαμβάνει να πληρώσει το ασφαλιστήριο, με τα όρια και τις προϋποθέσεις που γράφει. Δείτε πώς να βρείτε τις καλύψεις στο συμβόλαιό σας.",
+            el: "Κάλυψη είναι ο κίνδυνος που αναλαμβάνει να πληρώσει το ασφαλιστήριο, με τα όρια και τις προϋποθέσεις που γράφει. Δείτε πώς να βρείτε τις καλύψεις στο ασφαλιστήριό σας.",
             en: "Coverage is the risk your policy undertakes to pay for, within the limits and conditions it states. See how to find the covers in your own policy.",
         },
         shortDefinition: {
-            el: "Κάλυψη είναι ο συγκεκριμένος κίνδυνος που το ασφαλιστήριο αναλαμβάνει να πληρώσει — πυρκαγιά, νοσηλεία, αστική ευθύνη — με τα όρια, τις απαλλαγές και τις προϋποθέσεις που ορίζει το ίδιο το συμβόλαιο. Ό,τι δεν αναφέρεται ως κάλυψη, ή αναφέρεται ως εξαίρεση, δεν πληρώνεται.",
+            el: "Κάλυψη είναι ο συγκεκριμένος κίνδυνος που το ασφαλιστήριο αναλαμβάνει να πληρώσει — πυρκαγιά, νοσηλεία, αστική ευθύνη — με τα όρια, τις απαλλαγές και τις προϋποθέσεις που ορίζει το ίδιο το ασφαλιστήριο. Ό,τι δεν αναφέρεται ως κάλυψη, ή αναφέρεται ως εξαίρεση, δεν πληρώνεται.",
             en: "A coverage is the specific risk your policy undertakes to pay for — fire, hospitalisation, liability — within the limits, deductibles and conditions the contract itself sets. Whatever is not named as a cover, or is named as an exclusion, is not paid.",
         },
         body: [
@@ -132,7 +132,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Ανοίξτε τον πίνακα καλύψεων και σημειώστε για καθεμία το όριο και την απαλλαγή της. Μετά διαβάστε τις εξαιρέσεις της ίδιας ενότητας. Στο PolicyWallet, οι καλύψεις κάθε συμβολαίου εμφανίζονται με τα όριά τους και την κατάστασή τους — ενεργή, προαιρετική που δεν επιλέχθηκε, ή εξαιρούμενη.",
+            el: "Ανοίξτε τον πίνακα καλύψεων και σημειώστε για καθεμία το όριο και την απαλλαγή της. Μετά διαβάστε τις εξαιρέσεις της ίδιας ενότητας. Στο PolicyWallet, οι καλύψεις κάθε ασφαλιστηρίου εμφανίζονται με τα όριά τους και την κατάστασή τους — ενεργή, προαιρετική που δεν επιλέχθηκε, ή εξαιρούμενη.",
             en: "Open the schedule of cover and note each cover's limit and deductible. Then read the exclusions of the same section. In PolicyWallet, each policy's covers appear with their limits and their status — active, optional-not-taken, or excluded.",
         },
         faq: [
@@ -142,7 +142,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "If something is not mentioned at all, is it covered?",
                 },
                 answer: {
-                    el: "Κατά κανόνα όχι: στα περισσότερα συμβόλαια πληρώνονται μόνο οι κατονομασμένοι κίνδυνοι. Αν δεν είστε βέβαιοι, είναι ακριβώς η ερώτηση που αξίζει να κάνετε γραπτώς στον ασφαλιστή σας.",
+                    el: "Κατά κανόνα όχι: στα περισσότερα ασφαλιστήρια πληρώνονται μόνο οι κατονομασμένοι κίνδυνοι. Αν δεν είστε βέβαιοι, είναι ακριβώς η ερώτηση που αξίζει να κάνετε γραπτώς στον ασφαλιστή σας.",
                     en: "As a rule, no: most policies pay only the named risks. If you are unsure, that is exactly the question worth putting to your insurer in writing.",
                 },
             },
@@ -169,7 +169,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         term: { el: "Απαλλαγή", en: "Deductible (apallagi)" },
         aliases: [{ el: "Ίδια κράτηση", en: "Excess" }],
         metaTitle: {
-            el: "Τι σημαίνει απαλλαγή στην ασφάλεια;",
+            el: "Τι σημαίνει απαλλαγή στην ασφάλιση;",
             en: "What is a deductible (apallagi)?",
         },
         metaDescription: {
@@ -182,11 +182,11 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Η απαλλαγή είναι ο πιο συνηθισμένος λόγος που δύο συμβόλαια με «ίδια κάλυψη» κοστίζουν διαφορετικά. Μεταφέρει μέρος του μικρού ρίσκου σε εσάς, ώστε η ασφαλιστική να χρεώνει χαμηλότερο ασφάλιστρο. Είναι λογική επιλογή αν μπορείτε να απορροφήσετε μια μικρή ζημιά μόνοι σας.",
+                el: "Η απαλλαγή είναι ο πιο συνηθισμένος λόγος που δύο ασφαλιστήρια με «ίδια κάλυψη» κοστίζουν διαφορετικά. Μεταφέρει μέρος του μικρού ρίσκου σε εσάς, ώστε η ασφαλιστική να χρεώνει χαμηλότερο ασφάλιστρο. Είναι λογική επιλογή αν μπορείτε να απορροφήσετε μια μικρή ζημιά μόνοι σας.",
                 en: "The deductible is the most common reason two policies with the “same cover” cost differently. It shifts part of the small risk onto you, so the insurer charges a lower premium. It is a sensible choice if you can absorb a small loss yourself.",
             },
             {
-                el: "Πολλά συμβόλαια έχουν διαφορετική απαλλαγή ανά κάλυψη — άλλη για θραύση κρυστάλλων, άλλη για φυσικά φαινόμενα. Το «έχω μικτή» δεν σας λέει πόσα θα πληρώσετε· η απαλλαγή σας το λέει.",
+                el: "Πολλά ασφαλιστήρια έχουν διαφορετική απαλλαγή ανά κάλυψη — άλλη για θραύση κρυστάλλων, άλλη για φυσικά φαινόμενα. Το «έχω μικτή» δεν σας λέει πόσα θα πληρώσετε· η απαλλαγή σας το λέει.",
                 en: "Many policies have a different deductible per cover — one for glass breakage, another for natural events. “I have comprehensive” does not tell you how much you will pay; the deductible does.",
             },
         ],
@@ -211,7 +211,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Does the deductible apply to every claim?",
                 },
                 answer: {
-                    el: "Συνήθως ναι, ανά περιστατικό. Ορισμένες καλύψεις μπορεί να μην έχουν απαλλαγή — αυτό φαίνεται στους όρους του συμβολαίου σας.",
+                    el: "Συνήθως ναι, ανά περιστατικό. Ορισμένες καλύψεις μπορεί να μην έχουν απαλλαγή — αυτό φαίνεται στους όρους του ασφαλιστηρίου σας.",
                     en: "Usually yes, per incident. Some covers may carry no deductible — that appears in your policy terms.",
                 },
             },
@@ -234,7 +234,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "What is an insurance exclusion (exairesi)?",
         },
         metaDescription: {
-            el: "Εξαίρεση είναι κάθε περίπτωση που το συμβόλαιο ρητά δεν καλύπτει. Είναι ο πιο συχνός λόγος απόρριψης αποζημίωσης — δείτε πού να τις βρείτε στο ασφαλιστήριό σας.",
+            el: "Εξαίρεση είναι κάθε περίπτωση που το ασφαλιστήριο ρητά δεν καλύπτει. Είναι ο πιο συχνός λόγος απόρριψης αποζημίωσης — δείτε πού να τις βρείτε στο ασφαλιστήριό σας.",
             en: "An exclusion is any case the policy expressly does not cover. It is the most common reason a claim is denied — see where to find exclusions in your policy.",
         },
         shortDefinition: {
@@ -247,7 +247,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                 en: "Most claim disputes start from an exclusion nobody had read. Typical examples: intentional or grossly negligent damage, wear and tear, undeclared use, war or pandemic. They are not “fine print to trap you”; they are how the price of the risk is defined.",
             },
             {
-                el: "Υπάρχουν γενικές εξαιρέσεις (ισχύουν σε όλο το συμβόλαιο) και ειδικές εξαιρέσεις (ανά κάλυψη). Το να ξέρετε τις εξαιρέσεις σας από πριν σημαίνει ότι κάνετε τις σωστές ερωτήσεις στον ασφαλιστή σας πριν συμβεί κάτι, όχι μετά.",
+                el: "Υπάρχουν γενικές εξαιρέσεις (ισχύουν σε όλο το ασφαλιστήριο) και ειδικές εξαιρέσεις (ανά κάλυψη). Το να ξέρετε τις εξαιρέσεις σας από πριν σημαίνει ότι κάνετε τις σωστές ερωτήσεις στον ασφαλιστή σας πριν συμβεί κάτι, όχι μετά.",
                 en: "There are general exclusions (applying to the whole policy) and specific exclusions (per cover). Knowing your exclusions in advance means you ask your insurer the right questions before something happens, not after.",
             },
         ],
@@ -301,7 +301,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Το ασφαλισμένο κεφάλαιο είναι το πιο παρεξηγημένο νούμερο στο συμβόλαιο. Στην κατοικία, πολλοί το μπερδεύουν με την εμπορική αξία ή την αντικειμενική — αλλά η ασφάλιση πληρώνει για να ξαναχτιστεί το σπίτι, όχι για να αγοραστεί το οικόπεδο. Το σωστό μέγεθος είναι το κόστος ανακατασκευής.",
+                el: "Το ασφαλισμένο κεφάλαιο είναι το πιο παρεξηγημένο νούμερο στο ασφαλιστήριο. Στην κατοικία, πολλοί το μπερδεύουν με την εμπορική αξία ή την αντικειμενική — αλλά η ασφάλιση πληρώνει για να ξαναχτιστεί το σπίτι, όχι για να αγοραστεί το οικόπεδο. Το σωστό μέγεθος είναι το κόστος ανακατασκευής.",
                 en: "The sum insured is the most misunderstood number in a policy. For a home, many confuse it with market or tax value — but insurance pays to rebuild the home, not to buy the land. The right figure is the rebuild cost.",
             },
             {
@@ -440,11 +440,11 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "What is a waiting period in insurance?",
         },
         metaDescription: {
-            el: "Χρόνος αναμονής είναι το διάστημα μετά την έναρξη κατά το οποίο μια κάλυψη δεν ισχύει ακόμη. Δείτε πού συναντάται συχνά και πώς να τον ελέγξετε στο συμβόλαιό σας.",
+            el: "Χρόνος αναμονής είναι το διάστημα μετά την έναρξη κατά το οποίο μια κάλυψη δεν ισχύει ακόμη. Δείτε πού συναντάται συχνά και πώς να τον ελέγξετε στο ασφαλιστήριό σας.",
             en: "A waiting period is the time after inception during which a cover does not yet apply. See where it is common and how to check it in your policy.",
         },
         shortDefinition: {
-            el: "Χρόνος αναμονής είναι το χρονικό διάστημα από την έναρξη του συμβολαίου κατά το οποίο μια συγκεκριμένη κάλυψη δεν ισχύει ακόμη. Συναντάται συχνά στην υγεία (π.χ. για τοκετό ή προϋπάρχουσες παθήσεις) και στη νομική προστασία. Ζημιά ή περιστατικό μέσα στην αναμονή συνήθως δεν αποζημιώνεται.",
+            el: "Χρόνος αναμονής είναι το χρονικό διάστημα από την έναρξη του ασφαλιστηρίου κατά το οποίο μια συγκεκριμένη κάλυψη δεν ισχύει ακόμη. Συναντάται συχνά στην υγεία (π.χ. για τοκετό ή προϋπάρχουσες παθήσεις) και στη νομική προστασία. Ζημιά ή περιστατικό μέσα στην αναμονή συνήθως δεν αποζημιώνεται.",
             en: "A waiting period is the interval from the start of the policy during which a specific cover does not yet apply. It is common in health insurance (e.g. for maternity or pre-existing conditions) and in legal expenses cover. A loss or event within the waiting period is usually not paid.",
         },
         body: [
@@ -464,7 +464,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Does a waiting period apply if I changed insurer?",
                 },
                 answer: {
-                    el: "Συχνά ναι, το νέο συμβόλαιο ξεκινά τη δική του αναμονή. Ρωτήστε αν αναγνωρίζεται η προϋπηρεσία από το προηγούμενο συμβόλαιο.",
+                    el: "Συχνά ναι, το νέο ασφαλιστήριο ξεκινά τη δική του αναμονή. Ρωτήστε αν αναγνωρίζεται η προϋπηρεσία από το προηγούμενο ασφαλιστήριο.",
                     en: "Often yes; the new policy starts its own waiting period. Ask whether prior continuous cover is recognised.",
                 },
             },
@@ -492,7 +492,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Ο ξεπερασμένος δικαιούχος είναι ένα από τα πιο συχνά και πιο επώδυνα λάθη στην ασφάλιση ζωής. Ένα συμβόλαιο που ανοίχτηκε πριν από έναν γάμο ή ένα παιδί μπορεί να πληρώνει ακόμη τον λάθος άνθρωπο. Η διόρθωση είναι απλή — μια δήλωση στην εταιρεία — αλλά κανείς δεν τη θυμάται αν δεν το ελέγξει.",
+                el: "Ο ξεπερασμένος δικαιούχος είναι ένα από τα πιο συχνά και πιο επώδυνα λάθη στην ασφάλιση ζωής. Ένα ασφαλιστήριο που ανοίχτηκε πριν από έναν γάμο ή ένα παιδί μπορεί να πληρώνει ακόμη τον λάθος άνθρωπο. Η διόρθωση είναι απλή — μια δήλωση στην εταιρεία — αλλά κανείς δεν τη θυμάται αν δεν το ελέγξει.",
                 en: "An outdated beneficiary is one of the most common and most painful mistakes in life insurance. A policy opened before a marriage or a child may still pay the wrong person. The fix is simple — a declaration to the insurer — but nobody remembers it unless they check.",
             },
         ],
@@ -535,12 +535,12 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "Roadside assistance and accident care are two different covers that are often confused. See what each covers and how to tell them apart.",
         },
         shortDefinition: {
-            el: "Οδική βοήθεια είναι η κάλυψη που μεταφέρει ή επισκευάζει επί τόπου το όχημά σας σε βλάβη ή ακινητοποίηση, οπουδήποτε. Διαφέρει από τη «φροντίδα ατυχήματος», που ενεργοποιείται μόνο μετά από τροχαίο για να καταγράψει τη ζημιά. Πολλά συμβόλαια αναγράφουν τηλέφωνο φροντίδας ατυχήματος χωρίς να περιλαμβάνουν οδική βοήθεια.",
+            el: "Οδική βοήθεια είναι η κάλυψη που μεταφέρει ή επισκευάζει επί τόπου το όχημά σας σε βλάβη ή ακινητοποίηση, οπουδήποτε. Διαφέρει από τη «φροντίδα ατυχήματος», που ενεργοποιείται μόνο μετά από τροχαίο για να καταγράψει τη ζημιά. Πολλά ασφαλιστήρια αναγράφουν τηλέφωνο φροντίδας ατυχήματος χωρίς να περιλαμβάνουν οδική βοήθεια.",
             en: "Roadside assistance is the cover that tows or repairs your vehicle on the spot in a breakdown or immobilization, anywhere. It differs from “accident care”, which is triggered only after a collision to record the damage. Many policies print an accident-care phone line without including roadside assistance.",
         },
         body: [
             {
-                el: "Αυτή η σύγχυση κοστίζει πραγματικά χρήματα και ταλαιπωρία. Ένας οδηγός βλέπει ένα 24ωρο τηλέφωνο στο συμβόλαιό του και υποθέτει ότι έχει οδική βοήθεια — μέχρι που μένει από λάστιχο στον αυτοκινητόδρομο και ανακαλύπτει ότι η γραμμή αφορά μόνο την καταγραφή τροχαίου. Οι δύο καλύψεις πωλούνται και τιμολογούνται χωριστά.",
+                el: "Αυτή η σύγχυση κοστίζει πραγματικά χρήματα και ταλαιπωρία. Ένας οδηγός βλέπει ένα 24ωρο τηλέφωνο στο ασφαλιστήριό του και υποθέτει ότι έχει οδική βοήθεια — μέχρι που μένει από λάστιχο στον αυτοκινητόδρομο και ανακαλύπτει ότι η γραμμή αφορά μόνο την καταγραφή τροχαίου. Οι δύο καλύψεις πωλούνται και τιμολογούνται χωριστά.",
                 en: "This confusion costs real money and hassle. A driver sees a 24-hour phone number in their policy and assumes they have roadside assistance — until they get a flat tyre on the motorway and discover the line only handles accident reporting. The two covers are sold and priced separately.",
             },
         ],
@@ -583,7 +583,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Η «μικτή» δεν είναι ένα ενιαίο πράγμα· είναι ένα καλάθι επιμέρους καλύψεων που διαφέρει ανά εταιρεία και ανά πακέτο. Δύο συμβόλαια που λέγονται και τα δύο «μικτή» μπορεί να έχουν τελείως διαφορετικές απαλλαγές, όρια και εξαιρέσεις. Η αξία της κρίνεται στις λεπτομέρειες, όχι στον τίτλο.",
+                el: "Η «μικτή» δεν είναι ένα ενιαίο πράγμα· είναι ένα καλάθι επιμέρους καλύψεων που διαφέρει ανά εταιρεία και ανά πακέτο. Δύο ασφαλιστήρια που λέγονται και τα δύο «μικτή» μπορεί να έχουν τελείως διαφορετικές απαλλαγές, όρια και εξαιρέσεις. Η αξία της κρίνεται στις λεπτομέρειες, όχι στον τίτλο.",
                 en: "“Comprehensive” is not a single thing; it is a basket of component covers that varies by insurer and package. Two policies both called “comprehensive” can have completely different deductibles, limits and exclusions. Its value is judged in the details, not the label.",
             },
         ],
@@ -598,7 +598,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Does comprehensive cover damage I cause to my own car?",
                 },
                 answer: {
-                    el: "Τυπικά ναι, μέσω της κάλυψης ιδίων ζημιών — αλλά με απαλλαγή και εντός των ορίων του συμβολαίου σας.",
+                    el: "Τυπικά ναι, μέσω της κάλυψης ιδίων ζημιών — αλλά με απαλλαγή και εντός των ορίων του ασφαλιστηρίου σας.",
                     en: "Typically yes, through own-damage cover — but with a deductible and within your policy's limits.",
                 },
             },
@@ -623,12 +623,12 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "The Green Card is the international certificate proving car insurance abroad. See when you need it and how to check it is valid.",
         },
         shortDefinition: {
-            el: "Πράσινη κάρτα είναι το διεθνές πιστοποιητικό ασφάλισης που αποδεικνύει ότι το όχημά σας έχει ασφάλιση αστικής ευθύνης όταν ταξιδεύετε σε ορισμένες χώρες εκτός της βασικής γεωγραφικής ισχύος του συμβολαίου. Δεν είναι επιπλέον ασφάλιση — είναι απόδειξη της υπάρχουσας κάλυψης για διασυνοριακή χρήση.",
+            el: "Πράσινη κάρτα είναι το διεθνές πιστοποιητικό ασφάλισης που αποδεικνύει ότι το όχημά σας έχει ασφάλιση αστικής ευθύνης όταν ταξιδεύετε σε ορισμένες χώρες εκτός της βασικής γεωγραφικής ισχύος του ασφαλιστηρίου. Δεν είναι επιπλέον ασφάλιση — είναι απόδειξη της υπάρχουσας κάλυψης για διασυνοριακή χρήση.",
             en: "The Green Card is the international insurance certificate proving your vehicle carries liability cover when you travel to certain countries outside your policy's base territory. It is not extra insurance — it is proof of your existing cover for cross-border use.",
         },
         body: [
             {
-                el: "Η πράσινη κάρτα έχει σημασία όταν σχεδιάζετε ταξίδι με το αυτοκίνητο εκτός Ελλάδας. Η γεωγραφική ισχύς του συμβολαίου καθορίζει πού καλύπτεστε· η πράσινη κάρτα καταγράφει τις χώρες όπου αναγνωρίζεται η ασφάλισή σας. Ελέγξτε την πριν περάσετε σύνορα, όχι στο τελωνείο.",
+                el: "Η πράσινη κάρτα έχει σημασία όταν σχεδιάζετε ταξίδι με το αυτοκίνητο εκτός Ελλάδας. Η γεωγραφική ισχύς του ασφαλιστηρίου καθορίζει πού καλύπτεστε· η πράσινη κάρτα καταγράφει τις χώρες όπου αναγνωρίζεται η ασφάλισή σας. Ελέγξτε την πριν περάσετε σύνορα, όχι στο τελωνείο.",
                 en: "The Green Card matters when you plan to drive outside Greece. The policy's territorial scope defines where you are covered; the Green Card records the countries where your insurance is recognised. Check it before you cross a border, not at customs.",
             },
         ],
@@ -649,7 +649,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                 // also shipped inside FAQPage structured data and contradicted
                 // /guides/ti-kalyptei-i-asfaleia-aytokinitou.
                 answer: {
-                    el: "Όχι — εντός ΕΕ και ΕΟΧ η ελληνική ασφάλιση αναγνωρίζεται χωρίς πράσινη κάρτα. Τη χρειάζεστε για χώρες του συστήματος εκτός ΕΟΧ, όπως η Αλβανία, η Βόρεια Μακεδονία ή η Τουρκία. Ελέγξτε και τη γεωγραφική ισχύ του συμβολαίου σας πριν το ταξίδι.",
+                    el: "Όχι — εντός ΕΕ και ΕΟΧ η ελληνική ασφάλιση αναγνωρίζεται χωρίς πράσινη κάρτα. Τη χρειάζεστε για χώρες του συστήματος εκτός ΕΟΧ, όπως η Αλβανία, η Βόρεια Μακεδονία ή η Τουρκία. Ελέγξτε και τη γεωγραφική ισχύ του ασφαλιστηρίου σας πριν το ταξίδι.",
                     en: "No — within the EU and EEA your Greek insurance is recognised without one. You need it for Green Card countries outside the EEA, such as Albania, North Macedonia or Turkey. Also check your policy's territorial scope before travelling.",
                 },
             },
@@ -669,11 +669,11 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "What is the surrender of a policy?",
         },
         metaDescription: {
-            el: "Εξαγορά είναι η πρόωρη διακοπή ενός αποταμιευτικού ή συνταξιοδοτικού συμβολαίου με επιστροφή της αξίας του. Δείτε γιατί τα πρώτα χρόνια κοστίζει περισσότερο.",
+            el: "Εξαγορά είναι η πρόωρη διακοπή ενός αποταμιευτικού ή συνταξιοδοτικού ασφαλιστηρίου με επιστροφή της αξίας του. Δείτε γιατί τα πρώτα χρόνια κοστίζει περισσότερο.",
             en: "Surrender is ending a savings or pension policy early and getting back its value. See why the first years cost you more.",
         },
         shortDefinition: {
-            el: "Εξαγορά είναι η πρόωρη διακοπή ενός αποταμιευτικού ή συνταξιοδοτικού ασφαλιστηρίου, με επιστροφή της συσσωρευμένης αξίας του (αξία εξαγοράς). Τα πρώτα χρόνια η αξία εξαγοράς είναι συνήθως σημαντικά χαμηλότερη από τα καταβληθέντα ασφάλιστρα, λόγω εξόδων και ποινών· αυξάνεται όσο ωριμάζει το συμβόλαιο.",
+            el: "Εξαγορά είναι η πρόωρη διακοπή ενός αποταμιευτικού ή συνταξιοδοτικού ασφαλιστηρίου, με επιστροφή της συσσωρευμένης αξίας του (αξία εξαγοράς). Τα πρώτα χρόνια η αξία εξαγοράς είναι συνήθως σημαντικά χαμηλότερη από τα καταβληθέντα ασφάλιστρα, λόγω εξόδων και ποινών· αυξάνεται όσο ωριμάζει το ασφαλιστήριο.",
             en: "Surrender is ending a savings or pension policy early and receiving its accumulated value (the surrender value). In the early years the surrender value is usually well below the premiums paid, due to charges and penalties; it rises as the policy matures.",
         },
         body: [
@@ -722,7 +722,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Το υποόριο είναι από τους πιο συχνούς λόγους που μια αποζημίωση βγαίνει μικρότερη από το αναμενόμενο. Δύο συμβόλαια με το ίδιο «ασφαλισμένο κεφάλαιο» μπορεί να πληρώνουν πολύ διαφορετικά, αν το ένα έχει αυστηρά υποόρια ανά κατηγορία — π.χ. για κλοπή, για μετρητά, για ένα μεμονωμένο αντικείμενο ή, στην υγεία, ανά ημέρα νοσηλείας ή ανά πράξη. Το υποόριο δεν είναι εξαίρεση: η ζημιά καλύπτεται, αλλά μέχρι ένα χαμηλότερο ποσό.",
+                el: "Το υποόριο είναι από τους πιο συχνούς λόγους που μια αποζημίωση βγαίνει μικρότερη από το αναμενόμενο. Δύο ασφαλιστήρια με το ίδιο «ασφαλισμένο κεφάλαιο» μπορεί να πληρώνουν πολύ διαφορετικά, αν το ένα έχει αυστηρά υποόρια ανά κατηγορία — π.χ. για κλοπή, για μετρητά, για ένα μεμονωμένο αντικείμενο ή, στην υγεία, ανά ημέρα νοσηλείας ή ανά πράξη. Το υποόριο δεν είναι εξαίρεση: η ζημιά καλύπτεται, αλλά μέχρι ένα χαμηλότερο ποσό.",
                 en: "A sublimit is one of the most common reasons a payout comes out smaller than expected. Two policies with the same “sum insured” can pay very differently if one carries strict sublimits per category — for theft, for cash, for a single item, or, in health, per day of hospitalisation or per procedure. A sublimit is not an exclusion: the loss is covered, but only up to a lower amount.",
             },
         ],
@@ -777,7 +777,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Η συμμετοχή μπερδεύεται συχνά με την απαλλαγή, αλλά είναι διαφορετική: η απαλλαγή είναι ένα σταθερό ποσό που πληρώνετε πρώτοι σε κάθε ζημιά, ενώ η συμμετοχή είναι ένα ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Δύο συμβόλαια που «καλύπτουν νοσηλεία» μπορεί να σας κοστίσουν πολύ διαφορετικά αν το ένα έχει συμμετοχή 10% και το άλλο 30%. Ορισμένα προγράμματα έχουν και ανώτατο όριο ετήσιας συμμετοχής, πάνω από το οποίο ο ασφαλιστής καλύπτει το 100%.",
+                el: "Η συμμετοχή μπερδεύεται συχνά με την απαλλαγή, αλλά είναι διαφορετική: η απαλλαγή είναι ένα σταθερό ποσό που πληρώνετε πρώτοι σε κάθε ζημιά, ενώ η συμμετοχή είναι ένα ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Δύο ασφαλιστήρια που «καλύπτουν νοσηλεία» μπορεί να σας κοστίσουν πολύ διαφορετικά αν το ένα έχει συμμετοχή 10% και το άλλο 30%. Ορισμένα προγράμματα έχουν και ανώτατο όριο ετήσιας συμμετοχής, πάνω από το οποίο ο ασφαλιστής καλύπτει το 100%.",
                 en: "Co-payment is often confused with a deductible, but it is different: a deductible is a fixed amount you pay first on each claim, while a co-payment is a percentage of the cost you share with the insurer. Two policies that both “cover hospitalisation” can cost you very differently if one has a 10% co-payment and the other 30%. Some plans also cap your annual co-payment, above which the insurer covers 100%.",
             },
         ],
@@ -792,7 +792,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "What is the difference between a co-payment and a deductible?",
                 },
                 answer: {
-                    el: "Η απαλλαγή είναι σταθερό ποσό που πληρώνετε πρώτοι· η συμμετοχή είναι ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Ένα συμβόλαιο μπορεί να έχει και τα δύο.",
+                    el: "Η απαλλαγή είναι σταθερό ποσό που πληρώνετε πρώτοι· η συμμετοχή είναι ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Ένα ασφαλιστήριο μπορεί να έχει και τα δύο.",
                     en: "A deductible is a fixed amount you pay first; a co-payment is a percentage of the cost you share with the insurer. A policy can have both.",
                 },
             },
@@ -802,7 +802,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Do I pay a co-payment even if the treatment is covered?",
                 },
                 answer: {
-                    el: "Συνήθως ναι. Η κάλυψη μειώνει το κόστος σας κατά το ποσοστό του ασφαλιστή, αλλά η συμμετοχή σας παραμένει εκτός αν το συμβόλαιο ορίζει διαφορετικά.",
+                    el: "Συνήθως ναι. Η κάλυψη μειώνει το κόστος σας κατά το ποσοστό του ασφαλιστή, αλλά η συμμετοχή σας παραμένει εκτός αν το ασφαλιστήριο ορίζει διαφορετικά.",
                     en: "Usually yes. Cover reduces your cost by the insurer's share, but your co-payment remains unless the policy states otherwise.",
                 },
             },
@@ -851,7 +851,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Does my policy renew automatically?",
                 },
                 answer: {
-                    el: "Εξαρτάται από τους όρους του συμβολαίου σας. Ορισμένα ανανεώνονται αυτόματα εκτός αν δηλώσετε το αντίθετο· άλλα απαιτούν ενεργή επιβεβαίωση και πληρωμή. Ελέγξτε τους όρους ή ρωτήστε τον ασφαλιστή σας.",
+                    el: "Εξαρτάται από τους όρους του ασφαλιστηρίου σας. Ορισμένα ανανεώνονται αυτόματα εκτός αν δηλώσετε το αντίθετο· άλλα απαιτούν ενεργή επιβεβαίωση και πληρωμή. Ελέγξτε τους όρους ή ρωτήστε τον ασφαλιστή σας.",
                     en: "It depends on your policy terms. Some renew automatically unless you say otherwise; others require active confirmation and payment. Check the terms or ask your insurer.",
                 },
             },
@@ -891,7 +891,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Η εκπνοή διαφέρει από την ακύρωση. Η ακύρωση είναι μια σκόπιμη ενέργεια — εσείς ή ο ασφαλιστής τερματίζετε το συμβόλαιο μέσα στη διάρκειά του. Η εκπνοή προκύπτει συχνά από αδράνεια: αφήσατε τη λήξη να περάσει ή δεν ολοκληρώθηκε η πληρωμή. Το αποτέλεσμα και στις δύο περιπτώσεις είναι το ίδιο — δεν είστε πλέον ασφαλισμένος.",
+                el: "Η εκπνοή διαφέρει από την ακύρωση. Η ακύρωση είναι μια σκόπιμη ενέργεια — εσείς ή ο ασφαλιστής τερματίζετε το ασφαλιστήριο μέσα στη διάρκειά του. Η εκπνοή προκύπτει συχνά από αδράνεια: αφήσατε τη λήξη να περάσει ή δεν ολοκληρώθηκε η πληρωμή. Το αποτέλεσμα και στις δύο περιπτώσεις είναι το ίδιο — δεν είστε πλέον ασφαλισμένος.",
                 en: "A lapse is different from a cancellation. Cancellation is a deliberate act — you or the insurer end the contract during its term. A lapse often results from inaction: you let the expiry pass, or a payment did not go through. The result in both cases is the same — you are no longer insured.",
             },
             {
@@ -920,7 +920,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "What is the difference between a lapse and a cancellation?",
                 },
                 answer: {
-                    el: "Η ακύρωση είναι σκόπιμος τερματισμός του συμβολαίου μέσα στη διάρκειά του· η εκπνοή είναι το τέλος χωρίς ανανέωση, συχνά από αδράνεια. Και οι δύο σας αφήνουν χωρίς κάλυψη.",
+                    el: "Η ακύρωση είναι σκόπιμος τερματισμός του ασφαλιστηρίου μέσα στη διάρκειά του· η εκπνοή είναι το τέλος χωρίς ανανέωση, συχνά από αδράνεια. Και οι δύο σας αφήνουν χωρίς κάλυψη.",
                     en: "Cancellation is a deliberate ending of the contract during its term; a lapse is the end without renewal, often through inaction. Both leave you without cover.",
                 },
             },
@@ -969,7 +969,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Why is my payout smaller than my loss?",
                 },
                 answer: {
-                    el: "Συνήθως λόγω απαλλαγής, συμμετοχής, ορίων ή υποασφάλισης, ή επειδή η κάλυψη αποτιμά την τρέχουσα και όχι την καινούρια αξία. Οι όροι του συμβολαίου σας εξηγούν τη βάση.",
+                    el: "Συνήθως λόγω απαλλαγής, συμμετοχής, ορίων ή υποασφάλισης, ή επειδή η κάλυψη αποτιμά την τρέχουσα και όχι την καινούρια αξία. Οι όροι του ασφαλιστηρίου σας εξηγούν τη βάση.",
                     en: "Usually because of a deductible, co-payment, limits or underinsurance, or because the cover values the current rather than the new price. Your policy terms explain the basis.",
                 },
             },
@@ -1008,12 +1008,12 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "Replacement value is the cost to replace an item with a new equivalent, without deducting for age. See how it differs from current (actual cash) value.",
         },
         shortDefinition: {
-            el: "Αξία αντικατάστασης (ή αξία καινούριου) είναι το κόστος να αντικαταστήσετε ένα κατεστραμμένο ή χαμένο αντικείμενο με καινούριο ισοδύναμο, χωρίς αφαίρεση για παλαιότητα ή φθορά. Διαφέρει από την «τρέχουσα αξία», που αφαιρεί την απόσβεση και πληρώνει λιγότερα. Το ποια βάση χρησιμοποιεί το συμβόλαιό σας καθορίζει πόσα θα λάβετε.",
+            el: "Αξία αντικατάστασης (ή αξία καινούριου) είναι το κόστος να αντικαταστήσετε ένα κατεστραμμένο ή χαμένο αντικείμενο με καινούριο ισοδύναμο, χωρίς αφαίρεση για παλαιότητα ή φθορά. Διαφέρει από την «τρέχουσα αξία», που αφαιρεί την απόσβεση και πληρώνει λιγότερα. Το ποια βάση χρησιμοποιεί το ασφαλιστήριό σας καθορίζει πόσα θα λάβετε.",
             en: "Replacement value (new-for-old) is the cost to replace a damaged or lost item with a new equivalent, without deducting for age or wear. It differs from “current value”, which subtracts depreciation and pays less. Which basis your policy uses decides how much you receive.",
         },
         body: [
             {
-                el: "Δύο συμβόλαια που «καλύπτουν» την ίδια συσκευή μπορεί να πληρώσουν πολύ διαφορετικά: το ένα σε αξία καινούριου (αγοράζετε καινούρια), το άλλο σε τρέχουσα αξία (λαμβάνετε την παλιά, μειωμένη τιμή). Στην ασφάλιση κατοικίας και περιεχομένου, αυτή η διαφορά είναι από τις πιο σημαντικές και συχνά περνά απαρατήρητη μέχρι τη ζημιά.",
+                el: "Δύο ασφαλιστήρια που «καλύπτουν» την ίδια συσκευή μπορεί να πληρώσουν πολύ διαφορετικά: το ένα σε αξία καινούριου (αγοράζετε καινούρια), το άλλο σε τρέχουσα αξία (λαμβάνετε την παλιά, μειωμένη τιμή). Στην ασφάλιση κατοικίας και περιεχομένου, αυτή η διαφορά είναι από τις πιο σημαντικές και συχνά περνά απαρατήρητη μέχρι τη ζημιά.",
                 en: "Two policies that both “cover” the same appliance can pay very differently: one at new-for-old (you buy new), the other at current value (you get the old, reduced price). In home and contents insurance this difference is one of the most important, and it often goes unnoticed until a loss.",
             },
         ],
@@ -1038,7 +1038,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Is new-for-old always covered?",
                 },
                 answer: {
-                    el: "Όχι — εξαρτάται από το συμβόλαιο και συχνά από την ηλικία του αντικειμένου. Ορισμένες καλύψεις περνούν σε τρέχουσα αξία μετά από κάποια έτη. Ελέγξτε τους όρους.",
+                    el: "Όχι — εξαρτάται από το ασφαλιστήριο και συχνά από την ηλικία του αντικειμένου. Ορισμένες καλύψεις περνούν σε τρέχουσα αξία μετά από κάποια έτη. Ελέγξτε τους όρους.",
                     en: "No — it depends on the policy and often on the item's age. Some covers switch to current value after a number of years. Check the terms.",
                 },
             },
@@ -1068,7 +1068,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Μια πρόσθετη πράξη είναι ο τρόπος που αλλάζει ένα συμβόλαιο χωρίς να εκδοθεί νέο: προσθέτετε έναν οδηγό, αυξάνετε το ασφαλισμένο κεφάλαιο μετά από ανακαίνιση, διορθώνετε μια διεύθυνση. Επειδή υπερισχύει των αρχικών όρων, μια πρόσθετη πράξη που λείπει μπορεί να σημαίνει ότι διαβάζετε λάθος εκδοχή της κάλυψής σας.",
+                el: "Μια πρόσθετη πράξη είναι ο τρόπος που αλλάζει ένα ασφαλιστήριο χωρίς να εκδοθεί νέο: προσθέτετε έναν οδηγό, αυξάνετε το ασφαλισμένο κεφάλαιο μετά από ανακαίνιση, διορθώνετε μια διεύθυνση. Επειδή υπερισχύει των αρχικών όρων, μια πρόσθετη πράξη που λείπει μπορεί να σημαίνει ότι διαβάζετε λάθος εκδοχή της κάλυψής σας.",
                 en: "An endorsement is how a policy changes without a whole new one being issued: you add a driver, increase the sum insured after a renovation, correct an address. Because it prevails over the original terms, a missing endorsement can mean you are reading the wrong version of your own cover.",
             },
         ],
@@ -1123,11 +1123,11 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Η ακύρωση δεν είναι πάντα «δωρεάν»: κάποια συμβόλαια προβλέπουν ποινή ή κρατούν ένα ελάχιστο ασφάλιστρο, ενώ άλλα επιστρέφουν αναλογικά το ποσό που δεν χρησιμοποιήσατε. Σε ορισμένες περιπτώσεις ο νόμος δίνει δικαίωμα εναντίωσης ή υπαναχώρησης μέσα σε συγκεκριμένη προθεσμία μετά τη σύναψη — χωρίς επιβάρυνση.",
+                el: "Η ακύρωση δεν είναι πάντα «δωρεάν»: κάποια ασφαλιστήρια προβλέπουν ποινή ή κρατούν ένα ελάχιστο ασφάλιστρο, ενώ άλλα επιστρέφουν αναλογικά το ποσό που δεν χρησιμοποιήσατε. Σε ορισμένες περιπτώσεις ο νόμος δίνει δικαίωμα εναντίωσης ή υπαναχώρησης μέσα σε συγκεκριμένη προθεσμία μετά τη σύναψη — χωρίς επιβάρυνση.",
                 en: "Cancellation is not always “free”: some policies apply a penalty or keep a minimum premium, while others refund the unused amount pro-rata. In certain cases the law grants a right of objection or withdrawal within a set period after signing — at no cost.",
             },
             {
-                el: "Πριν ακυρώσετε, αξίζει να ελέγξετε δύο πράγματα: τι θα κοστίσει η ακύρωση και πότε ακριβώς σταματά η κάλυψη. Το κενό μεταξύ της ακύρωσης ενός συμβολαίου και της έναρξης ενός νέου είναι διάστημα χωρίς προστασία.",
+                el: "Πριν ακυρώσετε, αξίζει να ελέγξετε δύο πράγματα: τι θα κοστίσει η ακύρωση και πότε ακριβώς σταματά η κάλυψη. Το κενό μεταξύ της ακύρωσης ενός ασφαλιστηρίου και της έναρξης ενός νέου είναι διάστημα χωρίς προστασία.",
                 en: "Before cancelling, it is worth checking two things: what the cancellation will cost, and exactly when cover stops. The gap between cancelling one policy and a new one starting is a period with no protection.",
             },
         ],
@@ -1142,7 +1142,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Do I get premium back if I cancel?",
                 },
                 answer: {
-                    el: "Συχνά ναι, αναλογικά για το διάστημα που δεν χρησιμοποιήσατε — αλλά κάποια συμβόλαια κρατούν ποινή ή ελάχιστο ασφάλιστρο. Το ορίζουν οι όροι σας.",
+                    el: "Συχνά ναι, αναλογικά για το διάστημα που δεν χρησιμοποιήσατε — αλλά κάποια ασφαλιστήρια κρατούν ποινή ή ελάχιστο ασφάλιστρο. Το ορίζουν οι όροι σας.",
                     en: "Often yes, pro-rata for the unused period — but some policies keep a penalty or a minimum premium. Your terms decide.",
                 },
             },
@@ -1152,7 +1152,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "What is the difference between cancellation and lapse?",
                 },
                 answer: {
-                    el: "Η ακύρωση είναι απόφαση να τερματιστεί το συμβόλαιο μέσα στη διάρκειά του· η εκπνοή είναι το τέλος χωρίς ανανέωση, συνήθως από αδράνεια. Και οι δύο σας αφήνουν χωρίς κάλυψη.",
+                    el: "Η ακύρωση είναι απόφαση να τερματιστεί το ασφαλιστήριο μέσα στη διάρκειά του· η εκπνοή είναι το τέλος χωρίς ανανέωση, συνήθως από αδράνεια. Και οι δύο σας αφήνουν χωρίς κάλυψη.",
                     en: "Cancellation is a decision to end the contract during its term; a lapse is the end without renewal, usually through inaction. Both leave you without cover.",
                 },
             },

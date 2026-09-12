@@ -20,7 +20,7 @@ import { CATEGORY, CATEGORY_NAME } from "@/lib/marketing/positioning"
 const COPY = {
     el: {
         headline: "Σας λέμε αν είστε καλυμμένοι.",
-        sub: `Η ${CATEGORY_NAME.el}. Διαβάζουμε τις ασφάλειες που ήδη έχετε — δεν τις πουλάμε.`,
+        sub: `Η ${CATEGORY_NAME.el}. Διαβάζουμε τα ασφαλιστήρια που ήδη έχετε — δεν πουλάμε ασφάλειες.`,
         chips: ["Ανεξάρτητοι", "Χωρίς προμήθεια", "EL / EN"],
     },
     en: {
