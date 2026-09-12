@@ -98,7 +98,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
     it('locale-purity-guard — Latin runs in Greek copy beyond the allowlist (metric 6)', () => {
         const ALLOW = new Set('PolicyWallet AI PDF IDD GDPR EU email e-mail Email Google Apple Stripe Family Plus Starter Pro Agent Agency URL OK PIN OTP QR SMS IBAN VAT VIN HR CEO ID app App portal Portal site cookies Cookies cookie Excel CSV JSON API MB KB GB JPG PNG Schengen ransomware cyber Cyber premium Premium DPO Art CRM online Online push Push credits tokens Wi-Fi iOS Android FAQ HTTPS Face Touch Vercel Sentry Supabase PayPal Pay Wallet wallet Unit-Linked MEDIC ACORD AES- PCI DSS YTD spam gov Allianz Eurolife maria example jet ski analytics marketing web banking Web Banking IRIS Tip claim updates TLS emails Interamerican Ethniki Generali NN Groupama Hellas Eurobank Alpha Piraeus Anytime Ergo Hospital Line Europ Assistance Eurolife FFH ERB Allianz Direct Ydrogios Minetta Syneteristiki Atlantiki Enosi Dynamis Interlife Personal Orizon Prime KATO Visa Mastercard American Express WhatsApp Discord Safari Chrome iPhone iPad myAADE DORA Act Lux WEBP HEIC EUR VAPID PWA PIR EET newsletter'.split(' '))
         // H-V05 keeps `wallet` allowed until the product noun is decided.
-        const LATIN = /[A-Za-z][A-Za-z\-]{2,}/g // no quote in the class: «AI'» is not a word
+        const LATIN = /[A-Za-z][A-Za-z-]{2,}/g // no quote in the class: «AI'» is not a word
         const isPlainLiteral = (t: string) => !/^\s*[{[]/.test(t) && !/<[a-z]/.test(t) && /["'`]/.test(t)
         const bad = offenders((l) => {
             if (!isPlainLiteral(l.text)) return false
@@ -126,7 +126,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
     })
 
     it('claims-guard — the retired claims never return, outbound templates included', () => {
-        const RETIRED = /500\s?\+|10[\.,]000\s?\+|\b98\s?%\s?(ακρίβ|accuracy)|χιλιάδες (χρήστ|πελάτ|ασφαλισμ)|μας εμπιστεύ|5-1[05]%\s?έκπτωσ|€100-150|σε λιγότερο από 1 λεπτό/i
+        const RETIRED = /500\s?\+|10[.,]000\s?\+|\b98\s?%\s?(ακρίβ|accuracy)|χιλιάδες (χρήστ|πελάτ|ασφαλισμ)|μας εμπιστεύ|5-1[05]%\s?έκπτωσ|€100-150|σε λιγότερο από 1 λεπτό/i
         const bad = offenders((l) => RETIRED.test(l.text))
         expect(bad, `a retired or unsourced claim is back:\n${bad.join('\n')}`).toEqual([])
     })
