@@ -62,6 +62,10 @@
       "schedule": "45 6 * * *"
     },
     {
+      "path": "/api/v1/jobs/pitr-re-erasure",
+      "schedule": "50 6 * * *"
+    },
+    {
       "path": "/api/v1/jobs/reap-stale-analyses",
       "schedule": "15 5 * * *"
     },

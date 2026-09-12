@@ -96,9 +96,16 @@
    `ADMIN_INITIATED` request already approved and execute it immediately —
    same eraser, same audit trail.
 6. **Backups / PITR**: database restores can resurrect erased personal data.
-   After ANY production restore, list `deletion_requests` with
-   `status='completed'` and `completed_at` AFTER the restore point and
-   re-execute each (idempotent). Record this in the evidence doc.
+   After ANY production restore, set `PITR_RESTORE_POINT` (Vercel, production)
+   to the restore's target instant in ISO-8601 and redeploy; the daily job
+   `/api/v1/jobs/pitr-re-erasure` (06:50 UTC, or `POST` it as an admin to run it
+   now) re-executes the eraser for every `deletion_requests` row with
+   `status='completed'` and `completed_at` after that instant, idempotently, and
+   records the outcome as a `job_runs` row (`summary.outcome`: `executed` with
+   the request ids, `already_done`, or `no_restore_point`). A restore point
+   already handled is skipped on later days; a new restore is a new value.
+   Record the run in the evidence doc. (PW-PROVENANCE-01 R-02 — the manual step
+   this replaced is what §14.6 of the review pack described.)
 7. **Retention sweep**: `/api/v1/jobs/privacy-retention` (daily cron, 06:45
    UTC) purges expired data-export payloads and 90-day-dead invites. If it
    fails repeatedly, escalate — expired export rows hold full PII snapshots.

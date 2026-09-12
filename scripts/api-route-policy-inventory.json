@@ -998,6 +998,29 @@
       }
     },
     {
+      "route": "v1/jobs/event-sweep/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
       "route": "v1/jobs/execute-analysis/route.ts",
       "methods": [
         "POST"
@@ -1062,29 +1085,6 @@
       }
     },
     {
-      "route": "v1/jobs/event-sweep/route.ts",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "policy": {
-        "auth": {
-          "mode": "role",
-          "roles": [
-            "admin"
-          ]
-        },
-        "rateLimit": {
-          "required": false,
-          "profile": "none"
-        },
-        "validation": {
-          "required": false,
-          "profile": "optional"
-        }
-      }
-    },
-    {
       "route": "v1/jobs/obligation-scan/route.ts",
       "methods": [
         "GET",
@@ -1108,7 +1108,7 @@
       }
     },
     {
-      "route": "v1/jobs/risk-review-scan/route.ts",
+      "route": "v1/jobs/perk-reminders/route.ts",
       "methods": [
         "GET",
         "POST"
@@ -1131,7 +1131,7 @@
       }
     },
     {
-      "route": "v1/jobs/perk-reminders/route.ts",
+      "route": "v1/jobs/pitr-re-erasure/route.ts",
       "methods": [
         "GET",
         "POST"
@@ -1243,6 +1243,29 @@
     },
     {
       "route": "v1/jobs/renewal-check/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/risk-review-scan/route.ts",
       "methods": [
         "GET",
         "POST"
