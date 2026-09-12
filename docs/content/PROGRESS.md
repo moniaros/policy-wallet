@@ -30,3 +30,13 @@ One row per goal, with the before/after metrics the goal's acceptance names. Ste
 | 2026-09-06 | **`renters` becomes a write branch** rather than authoring conditional home rules. | The taxonomy already modelled it (child of home, label «Ενοικιαστή»); it is the only way "renters no longer renders the unauthored state" is measurable; a flag flip is reversible; the conditional alternative mis-composes (Step 0 A3). | Set `writeEnabled: false` and remove it from `WRITE_BRANCH_IDS`. |
 | 2026-09-06 | **Goals 5–6 ship on their own PR, gated on the production catalogue alignment.** | The engine plans and evaluates from the database's active definitions while the composition fingerprints the repository catalogue: deploying new rules without aligning production would make every new production run render the stale line, permanently, until the alignment. The alignment is a production write, forbidden here without explicit approval. | Approve and run the one command; then merge. |
 | 2026-09-06 | **Dev's active catalogue was moved back from 50 to 29 rows (deactivated, never deleted) so the shipping PR's CI could pass.** CI's `verify:gap-catalogue` step checks the repository catalogue against the dev database; the rules branch had aligned dev to 50 ahead of the merge order, so PR #308 (29 rules) went red with «nobody wrote these» for the 21 new slugs. `align:gap-catalogue --apply` from the `feat/content-01` checkout deactivated them; both sides then print `2df9d0fd4b581caa`, the fingerprint production carries. Dev: 29 active / 24 inactive. | The merge order is #308 first, rules second; the database must follow the branch that is shipping, and deactivation is the reversible move the align script was designed for. | Merge the rules PR and re-run the alignment (upsert on slug re-activates the 21 rows; ids and any `gap_instances` survive). This is now step one of BL-C1's sequence, on dev before prod. |
+
+---
+
+# PW-VOICE-01 — progress ledger
+
+Loop protocol, max 3 rounds. Step 0: `VOICE-01-STEP0.md` (report for approval, 2026-09-12). Lexicon: `LEXICON.md`. Claims: `CLAIMS.md`. Halts: `HALTS.md`. Corpus: `CORPUS.md` + `corpus.json`. Screen: `voice-01-findings.json`.
+
+| Round | Status | Date | Findings (Blocking / Major / Minor / Blocked) | Strings changed | Guards added (proven red first) | Clean? |
+|---|---|---|---|---|---|---|
+| 0 — inventory & calibration | report delivered, **awaiting approval** | 2026-09-12 | 7 / ~90 / ~14 / 7 halts (H-V01–H-V07); two brief halts not reproduced (H-V08, H-V09) | 0 | none yet (§7 guards are Round-1 work) | n/a |
