@@ -467,8 +467,8 @@ Two controls, applied in this order:
 ### 13.4 Breach notification
 
 Published commitment: notification to the data subject and to the **HDPA (ΑΠΔΠΧ)**
-in accordance with Art. 33 and 34. *No tested incident-response runbook exists —
-see §14.7.*
+in accordance with Art. 33 and 34. *Runbook and tabletop drill since 2026-09-12 —
+see §14.7 addendum.*
 
 ### 13.5 Automated decision-making (Art. 22) and advice positioning
 
@@ -575,6 +575,14 @@ point, and re-execute each (idempotent). Not automated, not alerted.
 
 The Art. 33/34 commitment is published, but there is no documented breach
 detection, triage, or 72-hour notification procedure, and no drill evidence.
+
+> **Addendum 2026-09-12 (PW-PROVENANCE-01 R-03).** The procedure now exists:
+> `docs/operations/RUNBOOK_PERSONAL_DATA_BREACH.md` (trigger → containment → assessment →
+> ΑΠΔΠΧ within 72 h → Art. 34 → evidence), the Art. 33(5) register at
+> `docs/compliance/evidence/breach-register.md`, and a first tabletop drill
+> (`docs/operations/PERSONAL_DATA_BREACH_DRILL_EVIDENCE_2026-09.md`). A guard fails CI when the
+> runbook cites a file or route that does not exist. Rotation and notification were simulated, not
+> performed; the finding is downgraded to «documented and drilled (tabletop)», not closed.
 
 ### 14.8 Outstanding items already queued with counsel — **INFORMATIONAL**
 
