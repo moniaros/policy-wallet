@@ -25,7 +25,7 @@ const pick = (pair: { el: string; en: string }, language: string) =>
 const SECTION = {
     heading: { el: "Διαθέσιμα με το Family", en: "Available with Family" },
     sub: {
-        el: "Το βασικό σας summary είναι έτοιμο. Δείτε τι προσθέτει η πλήρης AI εμπειρία.",
+        el: "Η βασική σας σύνοψη είναι έτοιμη. Δείτε τι προσθέτει η πλήρης ανάλυση AI.",
         en: "Your basic summary is ready. Here's what the full AI experience adds.",
     },
 }
@@ -34,7 +34,7 @@ const CARDS: { featureKey: FeatureKey; title: { el: string; en: string }; Icon: 
     { featureKey: "full_ai_policy_analysis", title: { el: "Πλήρης AI ανάλυση", en: "Full AI analysis" }, Icon: Sparkles },
     { featureKey: "advanced_gap_detection", title: { el: "Πιθανά κενά κάλυψης", en: "Possible coverage gaps" }, Icon: ShieldAlert },
     { featureKey: "unlimited_ai_questions", title: { el: "Ερωτήσεις στο AI", en: "Ask the AI" }, Icon: MessageCircleQuestion },
-    { featureKey: "advanced_renewal_reminders", title: { el: "Έξυπνες ενέργειες πριν την ανανέωση", en: "Smart pre-renewal actions" }, Icon: BellRing },
+    { featureKey: "advanced_renewal_reminders", title: { el: "Ενέργειες πριν την ανανέωση", en: "Smart pre-renewal actions" }, Icon: BellRing },
     { featureKey: "claims_preparation_assistant", title: { el: "Οδηγός προετοιμασίας ζημιάς", en: "Claim preparation guide" }, Icon: FileText },
     { featureKey: "multi_insurer_insights", title: { el: "Ανάλυση ασφαλιστηρίων από διαφορετικές ασφαλιστικές", en: "Multi-insurer analysis" }, Icon: Building2 },
 ]

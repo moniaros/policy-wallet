@@ -169,7 +169,7 @@ export const landingContent: LandingContentModel = {
                 // the same capability to Plus. It also ships inside FAQPage
                 // JSON-LD, so an unqualified version travels further than the page.
                 answer: {
-                    el: "Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε με ένα κλικ — με το πλάνο Family.",
+                    el: "Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε όποτε θέλετε — με το πλάνο Family.",
                     en: "You do not need one. PolicyWallet works completely on its own. If you later want to work with an agent, you can connect one with a single click — on the Family plan.",
                 },
             },

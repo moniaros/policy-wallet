@@ -171,19 +171,19 @@ export async function updateRenewalOutcome(
     if (renewal.policy && renewal.policy.ownerUserId !== dbUser.id) {
         const outcomeMessage: Record<typeof data.outcome, { el: string; en: string }> = {
             renewed_same_insurer: {
-                el: "Το συμβόλαιό σας ανανεώθηκε στον ίδιο ασφαλιστή.",
+                el: "Το ασφαλιστήριό σας ανανεώθηκε στην ίδια ασφαλιστική.",
                 en: "Your policy was renewed with the same insurer.",
             },
             renewed_different_insurer: {
-                el: "Το συμβόλαιό σας ανανεώθηκε σε νέο ασφαλιστή.",
+                el: "Το ασφαλιστήριό σας ανανεώθηκε σε νέα ασφαλιστική.",
                 en: "Your policy was renewed with a new insurer.",
             },
             lapsed: {
-                el: "Το συμβόλαιό σας έληξε χωρίς ανανέωση.",
+                el: "Το ασφαλιστήριό σας έληξε χωρίς ανανέωση.",
                 en: "Your policy lapsed without renewal.",
             },
             cancelled: {
-                el: "Το συμβόλαιό σας ακυρώθηκε.",
+                el: "Το ασφαλιστήριό σας ακυρώθηκε.",
                 en: "Your policy was cancelled.",
             },
         }

@@ -103,7 +103,7 @@ export function getDocumentPolicySummary(
             return {
                 label: language === "el" ? "ΑΚΥΡΟ" : "CANCELLED",
                 tone: "inactive",
-                message: language === "el" ? "Το συμβόλαιο έχει ακυρωθεί." : "This policy is cancelled.",
+                message: language === "el" ? "Το ασφαλιστήριο έχει ακυρωθεί." : "This policy is cancelled.",
                 daysUntilExpiry,
             }
         }

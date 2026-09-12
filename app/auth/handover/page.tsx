@@ -56,7 +56,7 @@ function HandoverContent() {
                 </h1>
                 <p className="mt-g-3 text-g-body text-fg-secondary">
                     {isMobile
-                        ? t("Εντοπίσαμε ότι χρησιμοποιείτε κινητό. Για καλύτερη εμπειρία, χρησιμοποιήστε την εφαρμογή μας.", "We detected you are on mobile. For the best experience, use our native app.")
+                        ? t("Εντοπίσαμε ότι χρησιμοποιείτε κινητό. Για μεγαλύτερη ευκολία, χρησιμοποιήστε την εφαρμογή μας.", "We detected you are on mobile. For the best experience, use our native app.")
                         : t("Πατήστε παρακάτω για να συνεχίσετε στο ασφαλές ψηφιακό πορτοφόλι ασφάλισής σας.", "Click below to continue to your secure insurance wallet.")}
                 </p>
 
@@ -75,7 +75,7 @@ function HandoverContent() {
                         className="w-full"
                     >
                         {isMobile
-                            ? t("Συνέχεια στον browser", "Continue in Browser")
+                            ? t("Συνέχεια στον περιηγητή", "Continue in Browser")
                             : t("Συνέχεια στο Πορτοφόλι", "Continue to Wallet")}
                     </Button>
                 </div>
@@ -92,8 +92,8 @@ function HandoverContent() {
                 open={appFallbackOpen}
                 onOpenChange={setAppFallbackOpen}
                 title={t("Η εφαρμογή δεν ανοίγει;", "App not opening?")}
-                description={t("Θέλετε να συνεχίσετε στον browser;", "Would you like to stay on the web?")}
-                confirmLabel={t("Συνέχεια στον browser", "Continue on the web")}
+                description={t("Θέλετε να συνεχίσετε στον περιηγητή;", "Would you like to stay on the web?")}
+                confirmLabel={t("Συνέχεια στον περιηγητή", "Continue on the web")}
                 onConfirm={handleContinueWeb}
             />
         </AuthShell>

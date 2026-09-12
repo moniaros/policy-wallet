@@ -1007,7 +1007,7 @@ export const guides: Guide[] = [
             en: "What drives the cost of earthquake insurance in Greece: insured sum, construction year, deductible — plus indicative rates and the ENFIA tax discount.",
         },
         summary: {
-            el: "Η κάλυψη σεισμού τιμολογείται ως ποσοστό επί του ασφαλιζόμενου κεφαλαίου — ενδεικτικά λίγα ευρώ ανά 1.000 ευρώ κεφαλαίου ετησίως, ανάλογα με το έτος κατασκευής και την περιοχή. Για κατοικία με κεφάλαιο 150.000 ευρώ, το επιπλέον κόστος κινείται συνήθως σε μερικές δεκάδες έως λίγες εκατοντάδες ευρώ τον χρόνο, με απαλλαγή περίπου 2% του κεφαλαίου. Η τριπλή κάλυψη σεισμού-πυρκαγιάς-πλημμύρας ξεκλειδώνει και την έκπτωση ΕΝΦΙΑ.",
+            el: "Η κάλυψη σεισμού τιμολογείται ως ποσοστό επί του ασφαλιζόμενου κεφαλαίου — ενδεικτικά λίγα ευρώ ανά 1.000 ευρώ κεφαλαίου ετησίως, ανάλογα με το έτος κατασκευής και την περιοχή. Για κατοικία με κεφάλαιο 150.000 ευρώ, το επιπλέον κόστος κινείται συνήθως σε μερικές δεκάδες έως λίγες εκατοντάδες ευρώ τον χρόνο, με απαλλαγή περίπου 2% του κεφαλαίου. Η τριπλή κάλυψη σεισμού-πυρκαγιάς-πλημμύρας θεμελιώνει και την έκπτωση ΕΝΦΙΑ.",
             en: "Earthquake cover is priced as a rate on the insured sum — indicatively a few euros per €1,000 of capital per year, depending on construction year and location. For a home insured for €150,000, the extra cost typically runs from tens to a few hundred euros annually, with a deductible around 2% of the sum insured. Combined earthquake-fire-flood cover also unlocks the ENFIA tax discount.",
         },
         datePublished: "2026-07-13",
@@ -1636,7 +1636,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Αν λάβετε ειδοποίηση: ασφαλίστε το όχημα άμεσα — η κάλυψη ενεργοποιείται από την έκδοση του ασφαλιστηρίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται ηλεκτρονικά, μέσω ειδικής εφαρμογής της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης, εντός δέκα (10) εργάσιμων ημερών από την κοινοποίηση, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο.",
+                        el: "Αν λάβετε ειδοποίηση: ο νόμος απαιτεί άμεση ασφάλιση του οχήματος — η κάλυψη ενεργοποιείται από την έκδοση του ασφαλιστηρίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται ηλεκτρονικά, μέσω ειδικής εφαρμογής της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης, εντός δέκα (10) εργάσιμων ημερών από την κοινοποίηση, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο.",
                         en: "If you receive a notice: insure the vehicle immediately — cover activates upon policy issuance — and pay the fee within the stated deadline. If the vehicle is off the road, declare immobility so it stops appearing in future cross-checks. If you believe the notice is wrong (e.g. you were insured), file an objection electronically through the national digital portal within 10 working days of notification, with proof of insurance for the disputed period.",
                     },
                 ],
@@ -1768,11 +1768,11 @@ export const guides: Guide[] = [
             en: "Manage all your policies in one place",
         },
         metaDescription: {
-            el: "Portal ασφαλιστικής, εφαρμογή πράκτορα ή ψηφιακό πορτοφόλι; Σύγκριση ανά κατηγορία: έγγραφα, ανάλυση καλύψεων, ανανεώσεις, πληρωμές, αποζημιώσεις.",
+            el: "Portal ασφαλιστικής, εφαρμογή ασφαλιστή ή ψηφιακό πορτοφόλι; Σύγκριση ανά κατηγορία: έγγραφα, ανάλυση καλύψεων, ανανεώσεις, πληρωμές, αποζημιώσεις.",
             en: "Insurer portal, agent app or a policy wallet? A category-by-category comparison: documents, coverage analysis, renewals, premium payments and claims.",
         },
         summary: {
-            el: "Τα εργαλεία που υπόσχονται «όλα τα ασφαλιστήρια σε ένα σημείο» χωρίζονται σε πέντε κατηγορίες: portal ασφαλιστικής εταιρείας, εφαρμογή πράκτορα, συγκριτική πλατφόρμα, γενική αποθήκευση αρχείων και ψηφιακό πορτοφόλι ασφαλίσεων. Μόνο η τελευταία δέχεται ασφαλιστήρια από όλες τις εταιρείες μαζί και διαβάζει το περιεχόμενό τους. Καμία τους, όμως, δεν εισπράττει ασφάλιστρα και δεν δίνει επίσημη κατάσταση αποζημίωσης.",
+            el: "Τα εργαλεία που υπόσχονται «όλα τα ασφαλιστήρια σε ένα σημείο» χωρίζονται σε πέντε κατηγορίες: portal ασφαλιστικής εταιρείας, εφαρμογή ασφαλιστή, συγκριτική πλατφόρμα, γενική αποθήκευση αρχείων και ψηφιακό πορτοφόλι ασφαλίσεων. Μόνο η τελευταία δέχεται ασφαλιστήρια από όλες τις εταιρείες μαζί και διαβάζει το περιεχόμενό τους. Καμία τους, όμως, δεν εισπράττει ασφάλιστρα και δεν δίνει επίσημη κατάσταση αποζημίωσης.",
             en: "Tools that promise “all your policies in one place” fall into five categories: an insurer's own portal, an agent's app, a comparison site, generic file storage, and an insurance policy wallet. Only the last accepts policies from every insurer at once and actually reads what they say. None of them, however, collects premiums or returns official claim status.",
         },
         datePublished: "2026-07-27",
@@ -1796,7 +1796,7 @@ export const guides: Guide[] = [
                         en: "Your insurer's own portal or app: a complete picture, but only of its own policies. With three insurers you need three logins.",
                     },
                     {
-                        el: "Η εφαρμογή του πράκτορα ή του πρακτορείου σας: βλέπει όσα ασφαλιστήρια εκδόθηκαν μέσω αυτού, ανεξάρτητα από εταιρεία. Ό,τι κλείσατε αλλού λείπει.",
+                        el: "Η εφαρμογή του ασφαλιστή ή του πρακτορείου σας: βλέπει όσα ασφαλιστήρια εκδόθηκαν μέσω αυτού, ανεξάρτητα από εταιρεία. Ό,τι κλείσατε αλλού λείπει.",
                         en: "Your agent's or agency's app: it sees whatever was written through them, across insurers. Anything you bought elsewhere is missing.",
                     },
                     {
@@ -1852,13 +1852,13 @@ export const guides: Guide[] = [
                         },
                         {
                             cells: [
-                                { el: "Εφαρμογή πράκτορα ή πρακτορείου", en: "Agent or agency app" },
+                                { el: "Εφαρμογή ασφαλιστή ή πρακτορείου", en: "Agent or agency app" },
                                 { el: "Μόνο του χαρτοφυλακίου του", en: "Only their own book" },
                                 true,
                                 { el: "Μερικώς", en: "Partly" },
                                 true,
                                 { el: "Κατά περίπτωση", en: "Case by case" },
-                                { el: "Μέσω του πράκτορα", en: "Via the agent" },
+                                { el: "Μέσω του ασφαλιστή", en: "Via the agent" },
                             ],
                         },
                         {
@@ -1908,7 +1908,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Δύο πράγματα δεν μεταφέρονται σε καμία εφαρμογή τρίτου. Το πρώτο είναι η είσπραξη του ασφαλίστρου: πληρώνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή, με web banking, πάγια εντολή, κάρτα στο portal της εταιρείας ή στο γραφείο του πράκτορα. Μια πλατφόρμα διαχείρισης δεν είναι ίδρυμα πληρωμών και δεν μπαίνει σε αυτή τη ροή.",
+                        el: "Δύο πράγματα δεν μεταφέρονται σε καμία εφαρμογή τρίτου. Το πρώτο είναι η είσπραξη του ασφαλίστρου: πληρώνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή, με web banking, πάγια εντολή, κάρτα στο portal της εταιρείας ή στο γραφείο του ασφαλιστή. Μια πλατφόρμα διαχείρισης δεν είναι ίδρυμα πληρωμών και δεν μπαίνει σε αυτή τη ροή.",
                         en: "Two things never move to a third-party app. The first is collecting the premium: it is paid to the insurer or the intermediary — by web banking, a standing order, a card on the insurer's own portal, or at the agent's office. A management platform is not a payment institution and does not sit in that flow.",
                     },
                     {
@@ -1958,7 +1958,7 @@ export const guides: Guide[] = [
                         en: "One policy with one insurer: the insurer's own portal is enough, and it is free.",
                     },
                     {
-                        el: "Όλα τα ασφαλιστήρια μέσω ενός πράκτορα: η εφαρμογή του πρακτορείου καλύπτει τα περισσότερα — αρκεί να μη διαφεύγει κάτι που κλείσατε αλλού.",
+                        el: "Όλα τα ασφαλιστήρια μέσω ενός ασφαλιστή: η εφαρμογή του πρακτορείου καλύπτει τα περισσότερα — αρκεί να μη διαφεύγει κάτι που κλείσατε αλλού.",
                         en: "Everything through one agent: the agency's app covers most of it — as long as nothing you bought elsewhere slips through.",
                     },
                     {
@@ -2401,7 +2401,7 @@ export const guides: Guide[] = [
                         en: "The insurer that issued the policy, and your intermediary. Nobody else. The claim file — its number, the loss adjuster, approvals, the amount, the payment date — exists only in their systems. A third-party app with no feed from them has nowhere to read that from, however good it is.",
                     },
                     {
-                        el: "Πρακτικά αυτό σημαίνει ότι η εφαρμογή ή το portal της εταιρείας σας παραμένει το σημείο αναφοράς για την πορεία μιας ζημιάς, και ο πράκτοράς σας ο συντομότερος δρόμος όταν κάτι κολλήσει. Αν μια εφαρμογή τρίτου υπόσχεται «claim updates», αξίζει να δείτε αν εννοεί πραγματική κατάσταση φακέλου ή απλώς υπενθυμίσεις και οδηγίες.",
+                        el: "Πρακτικά αυτό σημαίνει ότι η εφαρμογή ή το portal της εταιρείας σας παραμένει το σημείο αναφοράς για την πορεία μιας ζημιάς, και ο ασφαλιστής σας ο συντομότερος δρόμος όταν κάτι κολλήσει. Αν μια εφαρμογή τρίτου υπόσχεται «claim updates», αξίζει να δείτε αν εννοεί πραγματική κατάσταση φακέλου ή απλώς υπενθυμίσεις και οδηγίες.",
                         en: "In practice that means your insurer's app or portal stays the reference point for how a claim is progressing, and your agent is the fastest route when something stalls. If a third-party app promises “claim updates”, it is worth checking whether it means real file status or simply reminders and guidance.",
                     },
                 ],

@@ -22,11 +22,12 @@ the claims that *do* exist (149 non-composed numeric statements, 144 distinct).
 | C7 | «μόνο μία μικρή μειοψηφία κατοικιών διαθέτει ασφάλιση — σύμφωνα με την ΕΑΕΕ» | guide | `guide.sources[]` (ΕΑΕΕ) — `sources-freshness` guard | sourced |
 | C8 | σεισμός «ενδεικτικά λίγα ευρώ ανά 1.000 ευρώ κεφαλαίου» | guide | hedged; needs a `sources[]` row naming the rate basis | **needs source** |
 | C9 | «14 ημέρες δωρεάν δοκιμή» | `components/monetization/UpgradeModal.tsx` | must equal the Stripe trial configuration; none is documented in the plan catalogue | **unsourced — HALT H-V07** (removal may break the modal's argument, §9.4) |
-| C10 | «Οι περισσότεροι ασφαλιστές προσφέρουν 5-15% έκπτωση» (multi-policy) | `lib/services/analysis/deterministic-savings.ts` | none — a market statistic stated as fact, in product voice | **V8 Blocking** — direction: remove the number; keep the question to the ασφαλιστής |
-| C11 | «σε λιγότερο από 1 λεπτό» (upload) | `help.shortcuts.uploadDesc` | none measured | **V8 Blocking** — direction: drop the figure (`no-overpromise-copy` already bans seconds-claims about the *analysis*; this is its sibling) |
-| C12 | «Όλα καθαρά για τις επόμενες 30 ημέρες!» | `status.allClear30Days` | the check's denominator | **INV Blocking** — reassurance without «τα N που ελέγξαμε»; see H-V03 for the render condition |
+| C10 | «Οι περισσότεροι ασφαλιστές προσφέρουν 5-15% έκπτωση» (multi-policy) | `lib/services/analysis/deterministic-savings.ts` | none — a market statistic stated as fact, in product voice | **applied Round 1** — number removed; the line now asks the ασφαλιστής whether a multi-policy discount applies |
+| C11 | «σε λιγότερο από 1 λεπτό» (upload) | `help.shortcuts.uploadDesc` | none measured | **applied Round 1** — figure dropped |
+| C12 | «Όλα καθαρά για τις επόμενες 30 ημέρες!» | `status.allClear30Days` | the check's denominator | **applied Round 1** — «Στα ελεγμένα: καμία ενέργεια για 30 ημέρες.» names its scope |
 | C13 | «Ελέγξαμε N ασφαλιστήρια και δεν εντοπίσαμε κενά» | `dashboard.home.noGapsAmongAssessed*`, `protection.gaps.allClear*` | the assessed count — this is the *correct* shape (denominator stated) | sourced, model for C12 |
 | C14 | 12–18 μήνες horizon (onboarding question) | onboarding | question wording, not a claim | n/a |
+| C15 | «Αυξάνοντάς την σε €100-150 μειώνετε συνήθως το ασφάλιστρο κατά 5-10%» | `deterministic-savings.ts` (deductible tip) | none — a market rule of thumb stated as fact, and advice in platform voice (V9) | **found and applied Round 1** — numbers removed, the sentence now asks the ασφαλιστής; the whole savings module is attributed to the partner |
 
 Rows C1–C7 are re-verified, not re-argued, in each round. New numeric claims found by the
 Round-1 audit get a row **before** they are edited. The composed strings (298) are not in

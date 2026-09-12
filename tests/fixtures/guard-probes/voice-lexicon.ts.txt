@@ -1,0 +1,10 @@
+// Probe for tests/unit/voice-guards.test.ts → lexicon-guard. Copy to lib/services/probe-voice.ts
+// and run: it MUST fail on the three prose lines below and on nothing else.
+// The comment may say συμβόλαιο and πράκτορας; comments are stripped first.
+export const PROBE = {
+    a: { el: "Το συμβόλαιό σας λήγει σε 30 ημέρες.", en: "Your policy expires in 30 days." },
+    b: { el: "Ρωτήστε τον πράκτορά σας.", en: "Ask your agent." },
+    c: { el: "Ασφαλιστικό αποτύπωμα", en: "Insurance footprint" },
+    ok1: { el: "Το ομαδικό συμβόλαιο εργασίας σας.", en: "Your group policy." },
+    ok2: { el: "Λογισμικό για ασφαλιστικούς πράκτορες", en: "Software for insurance agents" },
+}

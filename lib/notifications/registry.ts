@@ -674,7 +674,7 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         businessEvent: "New recommendations were produced",
         copy: {
             title: { el: "Νέες προτάσεις για εσάς", en: "New recommendations for you" },
-            message: { el: "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.", en: "Based on what we know about your life and your policies." },
+            message: { el: "Με βάση όσα ξέρουμε για τη ζωή σας και τα ασφαλιστήριά σας.", en: "Based on what we know about your life and your policies." },
         },
         triggerCondition: "syncRecommendations() reports created > 0",
         category: "risk",
@@ -1543,7 +1543,7 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         businessEvent: "The customer unlocked an achievement",
         copy: {
             title: { el: "Νέο επίτευγμα", en: "Achievement unlocked" },
-            message: { el: "Ξεκλειδώσατε ένα νέο επίτευγμα.", en: "You unlocked a new achievement." },
+            message: { el: "Κερδίσατε ένα νέο επίτευγμα.", en: "You unlocked a new achievement." },
         },
         triggerCondition: "An achievement's condition is first satisfied",
         category: "engagement",

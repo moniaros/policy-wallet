@@ -56,8 +56,8 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
         el: {
             title: "Χρήση AI Tokens",
             monthlyUsage: "Μηνιαία χρήση",
-            extraTokens: "Επιπλέον Tokens",
-            buyExtra: "Αγορά επιπλέον Tokens",
+            extraTokens: "Επιπλέον tokens",
+            buyExtra: "Αγορά επιπλέον tokens",
             freeTierNote: "Αναβαθμίστε για αγορά επιπλέον tokens",
             mostPopular: "Πιο δημοφιλές",
             cancel: "Ακύρωση",

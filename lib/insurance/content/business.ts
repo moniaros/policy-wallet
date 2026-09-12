@@ -136,7 +136,7 @@ export const businessContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Ασφαλίστε τον χώρο και περιορίστε τη ζημιά αν γίνεται με ασφάλεια — μην πετάξεις κατεστραμμένα αντικείμενα πριν την πραγματογνωμοσύνη.',
+            el: 'Ασφαλίστε τον χώρο και περιορίστε τη ζημιά αν γίνεται με ασφάλεια — μην πετάξετε κατεστραμμένα αντικείμενα πριν την πραγματογνωμοσύνη.',
             en: 'Secure the site and limit the damage if safe — do not discard damaged items before the loss adjuster’s visit.',
         },
         {

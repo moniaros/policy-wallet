@@ -113,7 +113,7 @@ export default function AgentSolutionsPage() {
                             </div>
                             <div className="p-6">
                                 <h3 className="mb-2 text-h3 font-semibold leading-tight text-[#0F172A] dark:text-white">
-                                    {t("Υπενθυμίσεις με ένα κλικ", "Reminders in one click")}
+                                    {t("Έτοιμες υπενθυμίσεις", "Reminders in one click")}
                                 </h3>
                                 <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                     {t(
@@ -320,7 +320,7 @@ export default function AgentSolutionsPage() {
                             </h3>
                             <p className="text-body text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Ο πελάτης σάς δίνει πρόσβαση με ένα κλικ και τη διακόπτει όποτε θέλει. Η σχέση παραμένει δική του — και δική σας.",
+                                    "Ο πελάτης σάς δίνει πρόσβαση ο ίδιος και τη διακόπτει όποτε θέλει. Η σχέση παραμένει δική του — και δική σας.",
                                     "Your client grants you access with one click and withdraws it whenever they choose. The relationship stays theirs — and yours."
                                 )}
                             </p>

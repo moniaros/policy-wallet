@@ -136,7 +136,7 @@ const NO_AGENT_COPY = {
     },
     previewLabel: { el: "Παράδειγμα", en: "Example" },
     exampleName: { el: "Γιώργος Π. — Ασφαλιστικός σύμβουλος", en: "George P. — Insurance Advisor" },
-    exampleMeta: { el: "Πιστοποιημένος συνεργάτης", en: "Verified partner" },
+    exampleMeta: { el: "Πιστοποιημένος σύμβουλος", en: "Verified partner" },
     exampleBadge: { el: "Συνδεδεμένος", en: "Connected" },
     inputLabel: { el: "Κωδικός πρόσκλησης", en: "Invite code" },
     inputPlaceholder: { el: "π.χ. 8f3a-…", en: "e.g. 8f3a-…" },

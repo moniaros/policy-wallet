@@ -171,8 +171,8 @@ export async function runObligationScan(now: Date = new Date()): Promise<Obligat
                 },
                 message: {
                     el: due.length > 1
-                        ? `Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει ${due.length} προϋποθέσεις που πρέπει να τηρούνται. Η πρώτη: ${lead.el}`
-                        : `Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει την εξής προϋπόθεση κάλυψης: ${lead.el}`,
+                        ? `Το ασφαλιστήριό σας με την ${policy.insurerName} θέτει ${due.length} προϋποθέσεις που πρέπει να τηρούνται. Η πρώτη: ${lead.el}`
+                        : `Το ασφαλιστήριό σας με την ${policy.insurerName} θέτει την εξής προϋπόθεση κάλυψης: ${lead.el}`,
                     en: due.length > 1
                         ? `Your policy with ${policy.insurerName} sets ${due.length} conditions that have to be kept. The first: ${lead.en}`
                         : `Your policy with ${policy.insurerName} sets this condition of cover: ${lead.en}`,

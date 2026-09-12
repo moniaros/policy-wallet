@@ -58,11 +58,11 @@ function checkMinimumDeductible(
             {
                 action: {
                     en: "Consider raising your deductible to reduce premium",
-                    el: "Εξετάστε την αύξηση της απαλλαγής για μείωση ασφαλίστρου",
+                    el: "Ρωτήστε για υψηλότερη απαλλαγή και χαμηλότερο ασφάλιστρο",
                 },
                 rationale: {
                     en: `Your deductible is €${deductible}, which is at the minimum level. Raising it to €100-150 typically reduces premiums by 5-10%.`,
-                    el: `Η απαλλαγή σας είναι €${deductible}, στο ελάχιστο επίπεδο. Αυξάνοντάς την σε €100-150 μειώνετε συνήθως το ασφάλιστρο κατά 5-10%.`,
+                    el: `Η απαλλαγή σας είναι €${deductible}, στο ελάχιστο επίπεδο. Ρωτήστε τον ασφαλιστή σας τι θα άλλαζε στο ασφάλιστρο με υψηλότερη απαλλαγή.`,
                 },
                 estimatedAnnualSavingsEur: estimatedSaving,
                 confidence: 0.75,
@@ -87,11 +87,11 @@ function checkMultiPolicyBundle(
         {
             action: {
                 en: "Ask your insurer about a multi-policy bundle discount",
-                el: "Ρωτήστε τον ασφαλιστή σας για έκπτωση πολλαπλών συμβολαίων",
+                el: "Ρωτήστε τον ασφαλιστή σας για έκπτωση πολλαπλών ασφαλιστηρίων",
             },
             rationale: {
                 en: `You have ${input.sameInsurerPolicyCount} policies with the same insurer. Most insurers offer 5-15% bundle discounts when combining policies.`,
-                el: `Έχετε ${input.sameInsurerPolicyCount} συμβόλαια με τον ίδιο ασφαλιστή. Οι περισσότεροι ασφαλιστές προσφέρουν 5-15% έκπτωση ομαδοποίησης.`,
+                el: `Έχετε ${input.sameInsurerPolicyCount} ασφαλιστήρια με την ίδια ασφαλιστική. Ρωτήστε τον ασφαλιστή σας αν προβλέπεται έκπτωση πολλαπλών ασφαλιστηρίων.`,
             },
             estimatedAnnualSavingsEur: estimatedSaving,
             confidence: 0.80,
@@ -117,11 +117,11 @@ function checkStalePolicy(
         {
             action: {
                 en: "Request a market comparison — your policy is over 3 years old",
-                el: "Ζητήστε σύγκριση αγοράς — το συμβόλαιό σας είναι πάνω από 3 ετών",
+                el: "Σύγκριση αγοράς: το ασφαλιστήριό σας είναι πάνω από 3 ετών",
             },
             rationale: {
                 en: `This policy has been active for ${Math.floor(policyAgeYears)} years without a rate review. Insurance markets change frequently and a fresh comparison could reveal better rates.`,
-                el: `Αυτό το συμβόλαιο είναι ενεργό εδώ και ${Math.floor(policyAgeYears)} χρόνια χωρίς επανέλεγχο τιμών. Η αγορά αλλάζει συχνά και μια νέα σύγκριση μπορεί να αποκαλύψει καλύτερες τιμές.`,
+                el: `Αυτό το ασφαλιστήριο είναι ενεργό εδώ και ${Math.floor(policyAgeYears)} χρόνια χωρίς επανέλεγχο τιμών. Ρωτήστε τον ασφαλιστή σας για μια νέα σύγκριση αγοράς.`,
             },
             estimatedAnnualSavingsEur: estimatedSaving,
             confidence: 0.70,

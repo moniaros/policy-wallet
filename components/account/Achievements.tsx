@@ -82,7 +82,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
                             {t("Επιτεύγματα", "Achievements")}
                         </h3>
                         <p className="text-xs text-black/60 dark:text-white/50">
-                            {unlockedCount}/{totalCount} {t("ξεκλειδωμένα", "unlocked")}
+                            {unlockedCount}/{totalCount} {t("κερδισμένα", "unlocked")}
                         </p>
                     </div>
                 </div>

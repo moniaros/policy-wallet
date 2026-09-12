@@ -1,0 +1,5 @@
+// Probe → register-guard. Copy to lib/services/probe-voice.ts. MUST fail on `bad` only.
+export const PROBE = {
+    bad: { el: "Δες το ασφαλιστήριό σου πριν λήξει.", en: "Check your policy before it expires." },
+    ok: { el: "Δείτε το ασφαλιστήριό σας πριν λήξει.", en: "Check your policy before it expires." },
+}

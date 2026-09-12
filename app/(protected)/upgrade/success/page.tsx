@@ -22,11 +22,11 @@ import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 const COPY = {
     title: { el: "Η αναβάθμιση ολοκληρώθηκε", en: "Upgrade complete" },
     body: {
-        el: "Το πλάνο σας είναι ενεργό. Ξεκλειδώσατε πλήρη ανάλυση, περισσότερα ασφαλιστήρια και απεριόριστες ερωτήσεις AI.",
+        el: "Το πλάνο σας είναι ενεργό. Έχετε πλέον πλήρη ανάλυση, περισσότερα ασφαλιστήρια και απεριόριστες ερωτήσεις AI.",
         en: "Your plan is active. You unlocked full analysis, more policies and unlimited AI questions.",
     },
     agentBody: {
-        el: "Το πλάνο πράκτορα είναι ενεργό. Ξεκλειδώσατε περισσότερους πελάτες, πλήρες pipeline εσόδων και προτεραιότητα στην ανάλυση AI.",
+        el: "Το πλάνο συμβούλου είναι ενεργό. Έχετε πλέον περισσότερους πελάτες, πλήρη ροή εσόδων και προτεραιότητα στην ανάλυση AI.",
         en: "Your agent plan is active. You unlocked more customers, the full revenue pipeline and priority AI analysis.",
     },
     pendingTitle: { el: "Η πληρωμή επεξεργάζεται", en: "Payment processing" },
@@ -45,7 +45,7 @@ const COPY = {
         el: "Τα επιπλέον tokens προστέθηκαν στον λογαριασμό σας και είναι άμεσα διαθέσιμα.",
         en: "Your extra tokens were added to your account and are available immediately.",
     },
-    reportTitle: { el: "Η αναφορά ξεκλειδώθηκε", en: "Report unlocked" },
+    reportTitle: { el: "Η αναφορά είναι διαθέσιμη", en: "Report unlocked" },
     reportBody: {
         el: "Όλα τα κενά κάλυψης του ασφαλιστηρίου σας είναι πλέον ορατά, μαζί με τις πλήρεις εξηγήσεις και προτάσεις.",
         en: "All coverage gaps of your policy are now visible, with full explanations and recommendations.",

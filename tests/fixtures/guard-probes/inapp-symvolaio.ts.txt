@@ -1,0 +1,12 @@
+// Probe for tests/unit/policy-term-asfalistirio.test.ts — the in-app arm.
+//
+// Copy to lib/services/probe-symvolaio.ts (as .ts) and run that test: it MUST
+// fail on exactly ONE line — the notification body below — and not on the
+// comment above it or the group-policy line. Delete the copy afterwards.
+//
+// The word the comment says: the renewal flow used to say «Το συμβόλαιό σας έληξε».
+
+export const PROBE = {
+    group: { el: "Το ομαδικό συμβόλαιο εργασίας σας ανανεώθηκε.", en: "Your group policy renewed." },
+    renewal: { el: "Το συμβόλαιό σας έληξε χωρίς ανανέωση.", en: "Your policy lapsed without renewal." },
+}

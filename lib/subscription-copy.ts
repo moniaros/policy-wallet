@@ -54,23 +54,23 @@ export const subscriptionCopy = {
     // Feature Labels
     features: {
         policyLimit: {
-            el: 'Μέχρι {count} συμβόλαια',
+            el: 'Μέχρι {count} ασφαλιστήρια',
             en: 'Up to {count} policies'
         },
         policyLimitLabel: {
-            el: 'Όριο συμβολαίων',
+            el: 'Όριο ασφαλιστηρίων',
             en: 'Policy limit'
         },
         unlimitedPolicies: {
-            el: 'Απεριόριστα συμβόλαια',
+            el: 'Απεριόριστα ασφαλιστήρια',
             en: 'Unlimited policies'
         },
         basicAI: {
-            el: 'Βασική σύνοψη συμβολαίου από το AI',
+            el: 'Βασική σύνοψη ασφαλιστηρίου από το AI',
             en: 'Basic AI policy summary'
         },
         advancedAI: {
-            el: 'Προηγμένη ανάλυση AI',
+            el: 'Πλήρης ανάλυση AI',
             en: 'Advanced AI analysis'
         },
         manualGapDetection: {
@@ -102,7 +102,7 @@ export const subscriptionCopy = {
             en: 'Priority support'
         },
         advancedAnalytics: {
-            el: 'Προηγμένα analytics',
+            el: 'Αναλυτικά στοιχεία',
             en: 'Advanced analytics'
         },
         agentCollaboration: {
@@ -206,11 +206,11 @@ export const subscriptionCopy = {
     // Status Messages
     messages: {
         limitReached: {
-            el: 'Έχετε φτάσει το όριο των {limit} συμβολαίων',
+            el: 'Έχετε φτάσει το όριο των {limit} ασφαλιστηρίων',
             en: 'You\'ve reached your limit of {limit} policies'
         },
         upgradeToUnlock: {
-            el: 'Αναβαθμίστε για να ξεκλειδώσετε αυτή τη λειτουργία',
+            el: 'Αναβαθμίστε για να αποκτήσετε αυτή τη λειτουργία',
             en: 'Upgrade to unlock this feature'
         },
         premiumFeature: {
@@ -238,7 +238,7 @@ export const subscriptionCopy = {
             en: 'Subscription canceled successfully'
         },
         policiesUsed: {
-            el: '{used} από {limit} συμβόλαια',
+            el: '{used} από {limit} ασφαλιστήρια',
             en: '{used} of {limit} policies'
         },
         unlimited: {

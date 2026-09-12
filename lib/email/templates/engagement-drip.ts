@@ -18,18 +18,18 @@ export function getWelcomeEmail(language: 'el' | 'en', name?: string): { subject
         <h2>${isGreek ? 'Καλώς ήρθες στο PolicyWallet!' : 'Welcome to PolicyWallet!'}</h2>
         <p>${hello}</p>
         <p>${isGreek
-            ? 'Δημιουργήσατε με επιτυχία τον λογαριασμό σας. Τώρα μπορείτε να οργανώσετε όλα τα ασφαλιστήρια συμβόλαιά σας σε ένα ασφαλές μέρος.'
+            ? 'Δημιουργήσατε με επιτυχία τον λογαριασμό σας. Τώρα μπορείτε να οργανώσετε όλα τα ασφαλιστήριά σας σε ένα ασφαλές μέρος.'
             : 'You\'ve successfully created your account. You can now organize all your insurance policies in one secure place.'
         }</p>
         <p><strong>${isGreek ? 'Τα πρώτα βήματα:' : 'Your first steps:'}</strong></p>
         <ul>
             <li>${isGreek ? '📎 Ανεβάστε το πρώτο ασφαλιστήριο (PDF ή φωτογραφία)' : '📎 Upload your first policy (PDF or photo)'}</li>
             <li>${isGreek ? '🤖 Η AI θα αναλύσει αυτόματα την κάλυψή σας' : '🤖 AI will automatically analyze your coverage'}</li>
-            <li>${isGreek ? '🔍 Ανακαλύψτε κενά κάλυψης και ευκαιρίες εξοικονόμησης' : '🔍 Discover coverage gaps and savings opportunities'}</li>
+            <li>${isGreek ? '🔍 Δείτε κενά κάλυψης και ευκαιρίες εξοικονόμησης' : '🔍 Discover coverage gaps and savings opportunities'}</li>
         </ul>
-        <a href="${APP_URL}/wallet/add" class="button">${isGreek ? 'Ανεβάστε το πρώτο σας συμβόλαιο' : 'Upload Your First Policy'}</a>
+        <a href="${APP_URL}/wallet/add" class="button">${isGreek ? 'Ανεβάστε το πρώτο σας ασφαλιστήριο' : 'Upload Your First Policy'}</a>
         <p style="color: #6B7280; font-size: 14px;">${isGreek
-            ? 'Αν χρειάζεστε βοήθεια, επισκεφθείτε το Help Center μας.'
+            ? 'Αν χρειάζεστε βοήθεια, επισκεφθείτε το Κέντρο βοήθειας.'
             : 'If you need help, visit our Help Center.'
         }</p>
     `
@@ -48,7 +48,7 @@ export function getDay3Email(language: 'el' | 'en', name?: string): { subject: s
     const hello = greeting(name, isGreek)
 
     const subject = isGreek
-        ? '📎 Ανεβάσατε το πρώτο σας συμβόλαιο;'
+        ? '📎 Ανεβάσατε το πρώτο σας ασφαλιστήριο;'
         : '📎 Have you uploaded your first policy?'
 
     const content = `
@@ -61,13 +61,13 @@ export function getDay3Email(language: 'el' | 'en', name?: string): { subject: s
         <p><strong>${isGreek ? 'Πώς λειτουργεί:' : 'How it works:'}</strong></p>
         <ul>
             <li>${isGreek ? '1. Ανεβάστε ένα PDF ή βγάλτε φωτογραφία' : '1. Upload a PDF or take a photo'}</li>
-            <li>${isGreek ? '2. Η AI διαβάζει και αναλύει το συμβόλαιο' : '2. AI reads and analyzes the policy'}</li>
+            <li>${isGreek ? '2. Η AI διαβάζει και αναλύει το ασφαλιστήριο' : '2. AI reads and analyzes the policy'}</li>
             <li>${isGreek ? '3. Λαμβάνετε ρεπορτ κάλυψης σε λεπτά' : '3. Get a coverage report in minutes'}</li>
         </ul>
         <a href="${APP_URL}/wallet/add" class="button">${isGreek ? 'Ανεβάστε τώρα' : 'Upload Now'}</a>
         <div class="divider"></div>
         <p style="color: #6B7280; font-size: 14px;">${isGreek
-            ? '💡 Tip: Μπορείτε να ανεβάσετε συμβόλαια από αυτοκίνητο, σπίτι, υγεία, ζωή — όλα σε ένα μέρος.'
+            ? '💡 Μπορείτε να ανεβάσετε ασφαλιστήρια από αυτοκίνητο, σπίτι, υγεία, ζωή — όλα σε ένα μέρος.'
             : '💡 Tip: Upload motor, home, health, life policies — everything in one place.'
         }</p>
     `

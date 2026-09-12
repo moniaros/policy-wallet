@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
         emailPlaceholder: "name@example.com",
         send: t("Αποστολή συνδέσμου", "Send reset link"),
         sending: t("Αποστολή...", "Sending..."),
-        sentTitle: t("Ελέγξτε το inbox σας", "Check your inbox"),
+        sentTitle: t("Ελέγξτε τα εισερχόμενα", "Check your inbox"),
         sentBody: t(
             "Αν υπάρχει λογαριασμός για αυτό το email, στάλθηκε σύνδεσμος επαναφοράς.",
             "If an account exists for this email, we have sent a reset link."

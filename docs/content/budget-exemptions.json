@@ -1,0 +1,17 @@
+[
+  {
+    "locator": "inline:lib/subscription-copy.ts",
+    "text": "Όριο ασφαλιστηρίων",
+    "reason": "V1 lock: «συμβόλαιο»→«ασφαλιστήριο» adds 3 letters to a 15-char label (D-V01)."
+  },
+  {
+    "locator": "inline:lib/i18n/role-copy.ts",
+    "text": "Βεβαίωση ασφαλιστή",
+    "reason": "D-V01 — V1 partner-term lock on a bare 14-char label («Βεβαίωση agent», 14 → 18); no shorter Greek names the person."
+  },
+  {
+    "locator": "bundle:dashboard.home.quickUploadAria",
+    "text": "Γρήγορη μεταφόρτωση",
+    "reason": "LEXICON #21 noun lock on an aria-label («Γρήγορο upload», 14 → 19); the label is read by assistive tech, never laid out, so no slot exists to overflow."
+  }
+]

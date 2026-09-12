@@ -67,7 +67,7 @@ const services = [
         titleEn: "Who can help you?",
         // Advisor sharing is a paid feature — the tier is named so the card
         // never promises on Free what only Family delivers.
-        descEl: "Δείξτε ό,τι θέλετε στον ασφαλιστή σας, με ένα κλικ — διαθέσιμο με το πλάνο Family.",
+        descEl: "Δείξτε ό,τι θέλετε στον ασφαλιστή σας, όποτε θέλετε — διαθέσιμο με το πλάνο Family.",
         descEn: "Show your agent whatever you choose, with one click — available on the Family plan.",
         benefitEl: "Εσείς αποφασίζετε τι βλέπει",
         benefitEn: "You decide what they see",

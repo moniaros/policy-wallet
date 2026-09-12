@@ -106,11 +106,11 @@ function SignupConfirmationContent() {
 
     const copy = useMemo(() => ({
         heading: t("Ο λογαριασμός σας είναι έτοιμος", "Your wallet account is ready"),
-        subtitle: t("Ένα γρήγορο βήμα και συνεχίζετε στο onboarding.", "One quick checkpoint, then continue to onboarding."),
+        subtitle: t("Ένας γρήγορος έλεγχος και συνεχίζετε στα πρώτα βήματα.", "One quick checkpoint, then continue to onboarding."),
         shellTitle: t("Ρύθμιση πρώτης εμπειρίας", "First-login setup shell"),
         shellDesc: t("Θα χρειαστεί περίπου 2 λεπτά. Θα δεις AI ανάλυση και υπενθυμίσεις.", "This takes about 2 minutes. You will unlock AI insights and reminders."),
         verifyTitle: t("Επαλήθευση email", "Verify your email"),
-        verifyDesc: t("Χρησιμοποιήστε τον σύνδεσμο που στείλαμε στο inbox σας.", "Use the link we sent to your inbox."),
+        verifyDesc: t("Χρησιμοποιήστε τον σύνδεσμο που στείλαμε στα εισερχόμενά σας.", "Use the link we sent to your inbox."),
         checkVerified: t("Έκανα επαλήθευση, συνέχεια", "I verified, continue"),
         resend: t("Επαναποστολή email", "Resend verification email"),
         startSetup: t("Έναρξη ρύθμισης", "Start setup"),
@@ -122,17 +122,17 @@ function SignupConfirmationContent() {
         authMissing: t("Η συνεδρία έληξε. Συνδεθείτε ξανά για να συνεχίσετε.", "Your session expired. Sign in again to continue."),
         signin: t("Μετάβαση σε σύνδεση", "Go to sign in"),
         stepLabel: t("Βήμα 2 από 6", "Step 2 of 6"),
-        secureSetup: t("Ασφαλές setup", "Secure setup"),
+        secureSetup: t("Ασφαλής ρύθμιση", "Secure setup"),
         loading: t("Φόρτωση...", "Loading..."),
         trustedPoints: [
             t("Ασφαλής αποθήκευση εγγράφων σε ένα σημείο", "Secure document storage in one place"),
             t("AI εξήγηση καλύψεων σε απλή γλώσσα", "AI explanation of coverage in plain language"),
-            t("Έξυπνες υπενθυμίσεις ανανέωσης", "Smart renewal reminders"),
+            t("Υπενθυμίσεις ανανέωσης", "Smart renewal reminders"),
         ],
         selectedPlanTitle: t("Το πλάνο σας", "Your selected plan"),
         selectedPlanBillingMonthly: t("Μηνιαία χρέωση", "Monthly billing"),
         selectedPlanBillingAnnual: t("Ετήσια χρέωση", "Annual billing"),
-        selectedPlanNote: t("Θα ενεργοποιηθεί μετά το onboarding.", "Will be activated after onboarding."),
+        selectedPlanNote: t("Θα ενεργοποιηθεί μετά τα πρώτα βήματα.", "Will be activated after onboarding."),
         backHome: t("← Αρχική", "← Home"),
     }), [language])
 
@@ -220,7 +220,7 @@ function SignupConfirmationContent() {
         } catch {
             setNotice({
                 kind: "error",
-                message: t("Αποτυχία μετάβασης στο onboarding. Δοκιμάστε ξανά.", "Could not continue to onboarding. Please try again."),
+                message: t("Αποτυχία μετάβασης στα πρώτα βήματα. Δοκιμάστε ξανά.", "Could not continue to onboarding. Please try again."),
             })
         } finally {
             setIsContinuing(false)

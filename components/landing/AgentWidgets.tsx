@@ -507,7 +507,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                 >
                     <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
                     <p className="text-micro font-semibold text-status-success">
-                        {t("Έτοιμη να σταλεί με ένα κλικ", "Ready to send in one click")}
+                        {t("Έτοιμη για αποστολή", "Ready to send in one click")}
                     </p>
                 </div>
             </div>
