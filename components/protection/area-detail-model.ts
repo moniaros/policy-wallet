@@ -25,6 +25,8 @@ import {
     type NextStep,
     UNCERTAINTY_DONT_KNOW_COVERAGE,
 } from "@/lib/protection/attention-areas"
+import { isPublishedNeedsVerdict, type NeedsComparison, type NeedsVerdict } from "@/lib/protection/needs-against-cover"
+import { formatCurrency } from "@/lib/i18n/format"
 import { areaForPolicyLine, type CoverageLine } from "@/lib/protection/coverage-model"
 import { AREA_ORDER, AREAS, type AttentionAreaId } from "@/lib/protection/domains"
 import { factEvidence, type EvidenceLevel, type FactProvenanceMap, type ProtectionDetail } from "@/lib/protection/evidence"
@@ -597,6 +599,86 @@ export function preventionFromPolicies(
 
 // ── The detail ────────────────────────────────────────────────────────
 
+/**
+ * W3-01 — the needs-against-cover check as the area renders it. `published`
+ * is true only for «shortfall» / «adequate», the verdicts both sides' evidence
+ * supports; every other verdict is a question and reads as one. Each figure
+ * names its source and date, and the assumption is stated as an assumption.
+ */
+export interface NeedsCheckView {
+    verdict: NeedsVerdict
+    published: boolean
+    headline: string
+    lines: string[]
+    assumption: string | null
+}
+
+function monthOf(iso: string | null, language: Language): string | null {
+    if (!iso || Number.isNaN(Date.parse(iso))) return null
+    return new Intl.DateTimeFormat(language === "el" ? "el-GR" : "en-GB", { month: "long", year: "numeric" }).format(new Date(iso))
+}
+
+function fillNeeds(template: string, values: Record<string, string>): string {
+    return template.replace(/\{(\w+)\}/g, (m, key: string) => values[key] ?? m)
+}
+
+export function needsCheckView(comparison: NeedsComparison | undefined, t: Translations, language: Language): NeedsCheckView | null {
+    if (!comparison) return null
+    const c = t.protection.attention.detail.needs
+    const money = (n: number) => formatCurrency(n, language)
+    const published = isPublishedNeedsVerdict(comparison.verdict)
+    const { need, cover } = comparison
+    const lines: string[] = []
+    let assumption: string | null = null
+    let headline: string
+    const needLine = (): string | null => {
+        if (!need) return null
+        const month = monthOf(need.incomeAt, language)
+        return fillNeeds(c.need, {
+            income: money(need.annualIncome),
+            years: String(need.years),
+            dependency: c.dependency[need.incomeDependency],
+            dependants: String(need.dependants),
+            when: month ? fillNeeds(c.needWhen, { month }) : "",
+        })
+    }
+    const coverLine = (): string | null => (cover ? (cover.page ? fillNeeds(c.coverPage, { page: String(cover.page) }) : c.coverNoPage) : null)
+    switch (comparison.verdict) {
+        case "shortfall":
+        case "adequate": {
+            headline = fillNeeds(comparison.verdict === "shortfall" ? c.shortfall : c.adequate, {
+                cover: money(cover?.amount ?? 0),
+                need: money(need?.amount ?? 0),
+                shortfall: money(Math.max(0, comparison.shortfall ?? 0)),
+            })
+            for (const line of [needLine(), coverLine()]) if (line) lines.push(line)
+            if (need) assumption = fillNeeds(c.assumption, { years: String(need.years) })
+            break
+        }
+        case "question": {
+            const facts = comparison.missing.filter((m): m is "dependants" | "income" | "income_dependency" => m in c.facts)
+            if (facts.length > 0) {
+                headline = fillNeeds(c.questionFacts, { facts: facts.map((f) => c.facts[f]).join(", ") })
+            } else if (comparison.missing.includes("citation")) {
+                headline = fillNeeds(c.questionCitation, { cover: money(cover?.amount ?? 0) })
+                const line = needLine()
+                if (line) lines.push(line)
+            } else {
+                headline = fillNeeds(c.questionNeedEvidence, { need: money(need?.amount ?? 0), weaker: confidenceLabel(comparison.weaker, language) })
+                for (const line of [needLine(), coverLine()]) if (line) lines.push(line)
+            }
+            if (need) assumption = fillNeeds(c.assumption, { years: String(need.years) })
+            break
+        }
+        case "not_applicable":
+            headline = c.notApplicable
+            break
+        default:
+            headline = c.notCheckable
+    }
+    return { verdict: comparison.verdict, published, headline, lines, assumption }
+}
+
 export interface AreaDetailModel {
     area: AttentionAreaId
     label: string
@@ -630,6 +712,8 @@ export interface AreaDetailModel {
     deepAnalysisLocked: boolean
     mitigations: MitigationGroups
     preventionFromPolicies: PreventionFromPolicyView[]
+    /** W3-01: present only on the area the life line is listed under. */
+    needsCheck: NeedsCheckView | null
 }
 
 export interface BuildAreaDetailInput {
@@ -640,6 +724,8 @@ export interface BuildAreaDetailInput {
     policyRows: ReadonlyMap<string, AreaPolicyRow>
     uncertaintyReasons: readonly string[]
     deepAnalysisLocked: boolean
+    /** W3-01: the bundle's comparisons; the model keeps the one for this area's line. */
+    needsAgainstCover?: readonly NeedsComparison[]
     t: Translations
     language: Language
     now?: Date
@@ -686,6 +772,10 @@ export function buildAreaDetail(input: BuildAreaDetailInput): AreaDetailModel {
         deepAnalysisLocked: input.deepAnalysisLocked,
         mitigations: groupMitigations(assessments, view.area, language),
         preventionFromPolicies: preventionFromPolicies(view.protection.lines, policyRows, language),
+        needsCheck:
+            view.area === areaForPolicyLine("life").area
+                ? needsCheckView(input.needsAgainstCover?.find((c) => c.pair === "life_death_benefit"), t, language)
+                : null,
     }
 }
 
