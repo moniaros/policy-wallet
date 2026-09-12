@@ -66,6 +66,7 @@ export default async function ProtectionAreaPage({ params }: { params: Promise<{
         // the one predicate every gate reads (lib/monetization/feature-gates.ts).
         // A paying Starter is locked too, and the detail says so as a fact.
         deepAnalysisLocked: !canRunDeepAnalysis(entitlements.tier),
+        needsAgainstCover: bundle.needsAgainstCover,
         t,
         language: lang,
         now,
