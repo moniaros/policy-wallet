@@ -97,8 +97,18 @@ describe('settings never renders a control nothing backs', () => {
         expect(all).not.toMatch(/activeSessions|ActiveSession|is_current/)
     })
 
-    it('does not offer MFA, 2FA or passkeys — none are implemented', () => {
-        expect(all).not.toMatch(/\bMFA\b|two-factor|twoFactor|passkey|webauthn/i)
+    it('does not offer MFA, 2FA or TOTP — none are implemented', () => {
+        expect(all).not.toMatch(/\bMFA\b|two-factor|twoFactor|totp/i)
+    })
+
+    it('offers passkeys ONLY behind the deployment flag — the block that can enrol renders, a dead one never does (R-01)', () => {
+        // PW-PROVENANCE-01 R-01: passkeys exist now. The honesty rule survives
+        // as a gate: the section renders the block only when the server says the
+        // deployment enables it, so an account never sees a control it cannot use.
+        const security = strip(readFileSync('components/settings/sections/SecuritySection.tsx', 'utf-8'))
+        expect(security).toMatch(/data\.passkeys\.enabled\s*\?\s*\([\s\S]*?<PasskeysBlock/)
+        const others = SECTIONS.filter((f) => !f.endsWith('SecuritySection.tsx')).map((f) => strip(readFileSync(f, 'utf-8'))).join('\n')
+        expect(others).not.toMatch(/passkey|webauthn/i)
     })
 
     it('does not render an invoice table or a saved card — neither model is written', () => {

@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3723
+# bundle entries: 3744
 # inline entries: 4923 across 222 files
 # ternary entries: 294 across 43 files
 # call entries: 1148 across 86 files
@@ -706,6 +706,14 @@ bundle	auth.signInPage.verificationEmailSent	"Στάλθηκε email επιβε�
 bundle	auth.signInPage.verifyAndReset	"Επιβεβαίωση & αλλαγή"
 bundle	auth.signOut	"Αποσύνδεση"
 bundle	auth.signUp	"Εγγραφή"
+bundle	auth.stepUp.asking	"Ο λογαριασμός σας ζητά το κλειδί πρόσβασης (δακτυλικό αποτύπωμα, πρόσωπο ή κλειδί ασφαλείας). Ακολουθήστε το μήνυμα της συσκευής σας."
+bundle	auth.stepUp.failed	"Δεν επιβεβαιώθηκε. Δοκιμάστε ξανά."
+bundle	auth.stepUp.lockedOut	"Δεν έχετε πια το κλειδί; Αποσυνδεθείτε και επικοινωνήστε μαζί μας για να το αφαιρέσουμε από τον λογαριασμό."
+bundle	auth.stepUp.retry	"Δοκιμή ξανά"
+bundle	auth.stepUp.signOut	"Αποσύνδεση"
+bundle	auth.stepUp.title	"Επιβεβαιώστε με το κλειδί πρόσβασής σας"
+bundle	auth.stepUp.unsupported	"Αυτό το πρόγραμμα περιήγησης δεν υποστηρίζει κλειδιά πρόσβασης. Χρησιμοποιήστε τη συσκευή όπου το καταχωρίσατε."
+bundle	auth.stepUp.verifying	"Επιβεβαίωση…"
 bundle	auth.terms	"Όρους"
 bundle	auth.termsAgree	"Συνδεόμενοι, συμφωνείτε με τους"
 bundle	auth.tryDifferentEmail	"Δοκιμάστε διαφορετικό email"
@@ -2762,6 +2770,19 @@ bundle	settings.security.forgotPassword	"Δεν θυμάστε τον τρέχο
 bundle	settings.security.forgotPasswordCta	"Επαναφορά μέσω email"
 bundle	settings.security.fromIp	"από"
 bundle	settings.security.newPassword	"Νέος κωδικός"
+bundle	settings.security.passkeyAdd	"Προσθήκη κλειδιού πρόσβασης"
+bundle	settings.security.passkeyAdded	"προστέθηκε"
+bundle	settings.security.passkeyLabel	"Κλειδί πρόσβασης"
+bundle	settings.security.passkeyLastUsed	"τελευταία χρήση"
+bundle	settings.security.passkeyRemove	"Αφαίρεση"
+bundle	settings.security.passkeysAdded	"Το κλειδί πρόσβασης καταχωρίστηκε."
+bundle	settings.security.passkeysDesc	"Ένας δεύτερος παράγοντας: το δακτυλικό σας αποτύπωμα, το πρόσωπό σας ή το κλειδί ασφαλείας σας, μετά τον κωδικό."
+bundle	settings.security.passkeysEffect	"Από την επόμενη σύνδεση και μετά, ο λογαριασμός θα το ζητά σε κάθε νέο πρόγραμμα περιήγησης — και ξανά κάθε 12 ώρες."
+bundle	settings.security.passkeysFailed	"Δεν ολοκληρώθηκε. Δοκιμάστε ξανά."
+bundle	settings.security.passkeysNone	"Δεν έχετε καταχωρίσει κλειδί πρόσβασης."
+bundle	settings.security.passkeysRemoved	"Το κλειδί πρόσβασης αφαιρέθηκε."
+bundle	settings.security.passkeysTitle	"Κλειδιά πρόσβασης (passkeys)"
+bundle	settings.security.passkeysUnsupported	"Αυτό το πρόγραμμα περιήγησης δεν υποστηρίζει κλειδιά πρόσβασης."
 bundle	settings.security.passwordChanged	"Ο κωδικός σας άλλαξε."
 bundle	settings.security.passwordDesc	"Χρησιμοποιήστε έναν κωδικό που δεν έχετε αλλού."
 bundle	settings.security.passwordFailed	"Η αλλαγή του κωδικού απέτυχε. Δοκιμάστε ξανά."

@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+
+import { STEP_UP_COOKIE, verifyStepUpToken } from "@/lib/auth/step-up"
 import { rateLimit } from "@/lib/rate-limit"
 import { getPostLoginRedirectByRole, getPrimaryRole, type AppRole } from "@/lib/auth/role-routing"
 import { isIndexableDeployment } from "@/lib/seo/site"
@@ -123,6 +125,26 @@ export function decideRoleRedirect(pathname: string, role: AppRole): "/dashboard
     const owner = resolveRouteOwner(pathname)
     if (owner === null || owner === role) return null
     return role === "agent" ? "/dashboard/agent" : "/dashboard"
+}
+
+/** The claim the passkey enrolment writes; read here without a database round trip. */
+export function passkeysEnrolled(user: { app_metadata?: Record<string, unknown> | null } | null | undefined): boolean {
+    const n = Number(user?.app_metadata?.passkeys ?? 0)
+    return Number.isFinite(n) && n > 0
+}
+
+/**
+ * True when the request must be sent to /auth/step-up: the flag is on, the
+ * person has a passkey enrolled, and this browser carries no valid proof.
+ */
+export async function stepUpRequired(
+    request: NextRequest,
+    user: { id: string; app_metadata?: Record<string, unknown> | null } | null | undefined
+): Promise<boolean> {
+    if (process.env.PASSKEYS_ENABLED !== "1") return false
+    if (!user || !passkeysEnrolled(user)) return false
+    const token = request.cookies.get(STEP_UP_COOKIE)?.value
+    return !(await verifyStepUpToken(token, user.id))
 }
 
 export async function proxy(request: NextRequest) {
@@ -352,6 +374,18 @@ export async function proxy(request: NextRequest) {
 
         const encodedCallbackUrl = encodeURIComponent(callbackUrl)
         return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl))
+    }
+
+    // PW-PROVENANCE-01 R-01 — the second factor. A signed-in person whose
+    // Supabase `app_metadata.passkeys` claim says a passkey is enrolled (the
+    // enrolment writes it; server-only, never user-editable) must present it
+    // once per browser per twelve hours before any non-public page. The proof
+    // is the signed step-up cookie; a missing, forged, foreign or expired one
+    // sends them to /auth/step-up and back. Nothing is enforced while the flag
+    // is off — that is the break-glass for a lost authenticator.
+    if (isLoggedIn && !isPublicRoute && !nextUrl.pathname.startsWith("/api/") && await stepUpRequired(request, user)) {
+        const encodedCallbackUrl = encodeURIComponent(nextUrl.pathname + nextUrl.search)
+        return NextResponse.redirect(new URL(`/auth/step-up?callbackUrl=${encodedCallbackUrl}`, nextUrl))
     }
 
     // Canonical dashboard URL. /home and /dashboard rendered the SAME policyholder

@@ -180,6 +180,20 @@ export const FEATURE_FLAGS: Record<string, FlagDefinition> = {
         envOnlyReason:
             "Read synchronously while building the extraction prompt and response schema (prompts.ts, extraction-schema.ts, mock-ai.service.ts). Reading it from the database would make prompt construction async — a change to the extraction contract on the money path, which does not belong in an admin-console change.",
     },
+    "auth.passkeys": {
+        key: "auth.passkeys",
+        kind: "boolean",
+        label: "Passkeys as a second factor",
+        description:
+            "Lets a signed-in person enrol a passkey in Settings → Security; once one is enrolled, the proxy asks for it before any protected page, for twelve hours per browser. Off: no settings block, the routes refuse, nothing is enforced — and that is the break-glass for a lost passkey.",
+        category: "auth",
+        envVar: "PASSKEYS_ENABLED",
+        defaultValue: false,
+        readAt: "lib/auth/passkeys.ts passkeysEnabled; proxy.ts step-up gate",
+        envOnly: true,
+        envOnlyReason:
+            "Enforcement runs in the proxy on every request, before any database read; a database-backed value there would put the flags table in the request path of every page.",
+    },
     "extraction.text_first": {
         key: "extraction.text_first",
         kind: "boolean",

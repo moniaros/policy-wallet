@@ -201,6 +201,17 @@ export const en: TranslationKeys = {
 
     // Auth
     auth: {
+        // R-01 — the second factor, asked once per browser per 12 hours after sign-in.
+        stepUp: {
+            title: 'Confirm with your passkey',
+            asking: 'This account asks for its passkey (fingerprint, face or security key). Follow your device\'s prompt.',
+            verifying: 'Verifying…',
+            failed: 'Not confirmed. Try again.',
+            unsupported: 'This browser does not support passkeys. Use the device where you enrolled it.',
+            retry: 'Try again',
+            lockedOut: 'Lost the passkey? Sign out and contact us to remove it from the account.',
+            signOut: 'Sign out',
+        },
         signInPage: {
             accountNotVerified: 'Account is not verified.',
             signInFailed: 'Sign in failed.',
@@ -3279,6 +3290,20 @@ export const en: TranslationKeys = {
             forgotPasswordCta: 'Reset it by email',
 
             devicesTitle: 'Signed-in devices',
+            // R-01 — passkeys as a second factor; shown only while the deployment enables them.
+            passkeysTitle: 'Passkeys',
+            passkeysDesc: 'A second factor: your fingerprint, your face or your security key, after the password.',
+            passkeysNone: 'You have not enrolled a passkey.',
+            passkeysEffect: 'From your next sign-in, the account will ask for it in every new browser — and again every 12 hours.',
+            passkeyAdd: 'Add a passkey',
+            passkeyLabel: 'Passkey',
+            passkeyAdded: 'added',
+            passkeyLastUsed: 'last used',
+            passkeyRemove: 'Remove',
+            passkeysAdded: 'The passkey was enrolled.',
+            passkeysRemoved: 'The passkey was removed.',
+            passkeysFailed: 'That did not complete. Try again.',
+            passkeysUnsupported: 'This browser does not support passkeys.',
             devicesDesc: 'If you used PolicyWallet on a device you no longer have, end that session.',
             signOutOthers: 'Sign out on other devices',
             signOutOthersDesc: 'You stay signed in here. Everywhere else will need to sign in again.',
