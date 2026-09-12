@@ -3,13 +3,14 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { KeyRound, Loader2, LogIn, Mail, MonitorSmartphone, ShieldAlert, ShieldCheck } from "lucide-react"
+import { Fingerprint, KeyRound, Loader2, LogIn, Mail, MonitorSmartphone, ShieldAlert, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
 import { SettingRow } from "@/components/settings/SettingRow"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { ChangePasswordModal } from "@/components/settings/ChangePasswordModal"
+import { PasskeysBlock } from "@/components/settings/PasskeysBlock"
 import { signOutEverywhere, signOutOtherDevices } from "@/app/(protected)/account/security-actions"
 import type { SecurityData } from "@/app/(protected)/account/data"
 import { resolveLocale } from "@/lib/i18n/format"
@@ -18,10 +19,13 @@ import { resolveLocale } from "@/lib/i18n/format"
  * What we can honestly say about this account's security.
  *
  * Not shown, because none of it exists: a per-device session list (the table it
- * read is never written), two-factor authentication, passkeys, and a
- * "download security report" button that had no handler. An empty list of
- * devices and a dead button are worse than their absence — they suggest a
- * protection the account does not have.
+ * read is never written) and a "download security report" button that had no
+ * handler. An empty list of devices and a dead button are worse than their
+ * absence — they suggest a protection the account does not have.
+ *
+ * Passkeys (PW-PROVENANCE-01 R-01) are shown ONLY while the deployment enables
+ * them (`PASSKEYS_ENABLED`): then the block can actually enrol one, and an
+ * empty list next to a working button is a fact, not a suggestion.
  */
 
 const EVENT_META = {
@@ -90,6 +94,12 @@ export function SecuritySection({ data }: { data: SecurityData }) {
                     />
                 </SettingsRowList>
             </SettingsSection>
+
+            {data.passkeys.enabled ? (
+                <SettingsSection icon={Fingerprint} title={copy.passkeysTitle} description={copy.passkeysDesc}>
+                    <PasskeysBlock items={data.passkeys.items} />
+                </SettingsSection>
+            ) : null}
 
             <SettingsSection icon={MonitorSmartphone} title={copy.devicesTitle} description={copy.devicesDesc}>
                 <SettingsRowList>
