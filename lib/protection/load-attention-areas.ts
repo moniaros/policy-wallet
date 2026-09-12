@@ -59,8 +59,8 @@ import {
     protectionDetailFrom,
     type GapFindingInput,
     type PolicyEvidenceInput,
-    type PolicyLifecycleBand,
-} from "@/lib/protection/coverage-model"
+    type PolicyLifecycleBand, areaForPolicyLine, isHeldBand } from "@/lib/protection/coverage-model"
+import { needsAgainstCover, type NeedsComparison } from "./needs-against-cover"
 import type { AttentionAreaId } from "@/lib/protection/domains"
 import { parseFactProvenance, type FactProvenanceMap, type ProtectionDetail } from "@/lib/protection/evidence"
 import { toLifeContext, type ContextFactorKey, type LifeContext } from "@/lib/services/gap-engine/life-context"
@@ -90,6 +90,8 @@ export interface AttentionBundleNeeds extends AttentionNeeds {
 }
 
 export interface AttentionAreasBundle {
+    /** W3-01: needs against cover, one comparison per pair the product checks, with evidence on both sides. */
+    needsAgainstCover: NeedsComparison[]
     /** All ten areas, in the composition's order (activated first). */
     areas: AttentionAreaView[]
     /** Counts of words — never a figure. */
@@ -343,8 +345,22 @@ export async function loadAttentionAreas({ userId, language, now = new Date() }:
         language,
     })
 
+    // W3-01 — the cover from the document (with its citation state), the need
+    // from the profile (with its provenance); the comparison names the weaker.
+    const comparisons = needsAgainstCover({
+        ctx,
+        provenance,
+        policies: readPolicies.map((policy, i) => ({
+            id: policy.id,
+            lob: areaForPolicyLine(policy.lineOfBusiness).lob,
+            held: isHeldBand(evidence[i].lifecycle),
+            acordData: policy.acordData,
+        })),
+    })
+
     return {
         areas,
+        needsAgainstCover: comparisons,
         summary: attentionSummary(areas),
         factorsToResolve: factorsToResolve(assessments),
         ctx,
