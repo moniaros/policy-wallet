@@ -253,7 +253,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                 <aside className="rounded-2xl bg-cta-dark p-8 text-white md:p-10">
                     <h2 className="mb-3 text-h3 font-semibold tracking-tight">
                         {t(
-                            "Ελέγξτε τα δικά σας συμβόλαια σε λίγα λεπτά",
+                            "Ελέγξτε τα δικά σας ασφαλιστήρια σε λίγα λεπτά",
                             "Check your own policies in minutes"
                         )}
                     </h2>

@@ -28,14 +28,14 @@ export const NOT_CONFUSABLES: readonly { q: Bilingual; a: Bilingual }[] = [
     {
         q: { el: "Portal ασφαλιστικής εταιρείας;", en: "An insurer's portal?" },
         a: {
-            el: "Όχι. Ένα portal σάς δείχνει μόνο τα συμβόλαια μίας εταιρείας. Εμείς διαβάζουμε όλα σας τα ασφαλιστήρια, από όποια εταιρεία κι αν είναι — και δεν μας πληρώνει καμία.",
+            el: "Όχι. Ένα portal σάς δείχνει μόνο τα ασφαλιστήρια μίας εταιρείας. Εμείς διαβάζουμε όλα σας τα ασφαλιστήρια, από όποια εταιρεία κι αν είναι — και δεν μας πληρώνει καμία.",
             en: "No. An insurer's portal shows you one company's policies only. We read all your policies, from any company — and no company pays us.",
         },
     },
     {
         q: { el: "Ιστότοπος σύγκρισης τιμών;", en: "A price-comparison site?" },
         a: {
-            el: "Όχι. Τα site συγκρίσεων πουλάνε νέα συμβόλαια με προμήθεια. Εμείς δεν πουλάμε κανένα συμβόλαιο — αναλύουμε αυτά που ήδη έχετε.",
+            el: "Όχι. Τα site συγκρίσεων πουλάνε νέα ασφαλιστήρια με προμήθεια. Εμείς δεν πουλάμε κανένα ασφαλιστήριο — αναλύουμε αυτά που ήδη έχετε.",
             en: "No. Comparison sites sell new policies on commission. We sell no policies — we analyze the ones you already own.",
         },
     },
@@ -87,7 +87,7 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                     </h1>
                     <p className="mx-auto max-w-[640px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                         {t(
-                            "Καλή ερώτηση. Να η απάντηση, χωρίς ωραιοποιήσεις: ο ασφαλιστής σας κάνει πολλά καλά. Απλώς πληρώνεται από την εταιρεία που σας πουλάει το συμβόλαιο.",
+                            "Καλή ερώτηση. Να η απάντηση, χωρίς ωραιοποιήσεις: ο ασφαλιστής σας κάνει πολλά καλά. Απλώς πληρώνεται από την εταιρεία που σας πουλάει το ασφαλιστήριο.",
                             "Fair question. Here is the honest answer: your agent does a lot of things well. They are just paid by the company that sells you the policy.",
                         )}
                     </p>
@@ -300,7 +300,7 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                 <div className="mx-auto max-w-[640px]">
                     <h2 className="mb-6 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white text-balance">
                         {t(
-                            "Ο πίνακας λέει μία ιστορία. Το δικό σας συμβόλαιο λέει τη δική σας.",
+                            "Ο πίνακας λέει μία ιστορία. Το δικό σας ασφαλιστήριο λέει τη δική σας.",
                             "The table tells one story. Your own policy tells yours.",
                         )}
                     </h2>

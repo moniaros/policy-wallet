@@ -98,7 +98,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Εγγυημένο ή επενδυτικό σκέλος", "Guaranteed or investment part")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Ποιο μέρος της αποταμίευσής σας είναι εγγυημένο και ποιο ακολουθεί την αγορά; Η διάκριση είναι κρίσιμη — και συχνά ασαφής στο συμβόλαιο.", "Which part of your savings is guaranteed and which follows the market? The distinction is critical — and often unclear in the contract.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Ποιο μέρος της αποταμίευσής σας είναι εγγυημένο και ποιο ακολουθεί την αγορά; Η διάκριση είναι κρίσιμη — και συχνά ασαφής στο ασφαλιστήριο.", "Which part of your savings is guaranteed and which follows the market? The distinction is critical — and often unclear in the contract.")}</p>
                                 </div>
                             </li>
                         </ul>

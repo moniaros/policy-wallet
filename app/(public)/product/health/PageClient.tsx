@@ -44,10 +44,10 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Τι καλύπτει το συμβόλαιο υγείας σας;", "What does your health policy cover?")}
+                            {t("Τι καλύπτει το ασφαλιστήριο υγείας σας;", "What does your health policy cover?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Μεταφράζουμε τα ψιλά γράμματα των συμβολαίων υγείας σε καθαρή εικόνα: τι καλύπτεται, μέχρι πού, με πόση δική σας συμμετοχή. Δεν χρειάζεται πια να μαντεύετε τι καλύπτεται.", "We translate the fine print of health policies into a clear picture: what is covered, up to how much, with how much you pay yourself. No more guessing what is covered.")}
+                            {t("Μεταφράζουμε τα ψιλά γράμματα των ασφαλιστηρίων υγείας σε καθαρή εικόνα: τι καλύπτεται, μέχρι πού, με πόση δική σας συμμετοχή. Δεν χρειάζεται πια να μαντεύετε τι καλύπτεται.", "We translate the fine print of health policies into a clear picture: what is covered, up to how much, with how much you pay yourself. No more guessing what is covered.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
@@ -115,7 +115,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                                 </p>
                                 <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300 mb-4">
                                     {t(
-                                        "Το γράμμα της αύξησης όμως δεν εξηγεί τι παίρνετε για το νέο ασφάλιστρο. Το PolicyWallet διαβάζει το συμβόλαιό σας και σας δείχνει τα όρια, τις εξαιρέσεις και τις περιόδους αναμονής που ήδη έχετε — ώστε το τηλεφώνημα στον ασφαλιστή σας να γίνει με τα δεδομένα μπροστά σας.",
+                                        "Το γράμμα της αύξησης, όμως, δεν εξηγεί τι παίρνετε για το νέο ασφάλιστρο. Το PolicyWallet διαβάζει το ασφαλιστήριό σας και σας δείχνει τα όρια, τις εξαιρέσεις και τις περιόδους αναμονής που ήδη έχετε — ώστε το τηλεφώνημα στον ασφαλιστή σας να γίνει με τα δεδομένα μπροστά σας.",
                                         "The increase letter, though, does not explain what you get for the new premium. PolicyWallet reads your policy and shows you the limits, exclusions and waiting periods you already hold — so the call to your insurer happens with the facts in front of you.",
                                     )}
                                 </p>
@@ -141,7 +141,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Πέντε ερωτήσεις πριν ανανεώσετε", "Five questions before you renew")}
                     </h2>
                     <ol className="list-decimal space-y-4 pl-6 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
-                        <li>{t("Τι ακριβώς άλλαξε σε σχέση με το περσινό συμβόλαιο — στις καλύψεις, όχι μόνο στο ασφάλιστρο;", "What exactly changed from last year's policy — in the covers, not just the premium?")}</li>
+                        <li>{t("Τι ακριβώς άλλαξε σε σχέση με το περσινό ασφαλιστήριο — στις καλύψεις, όχι μόνο στο ασφάλιστρο;", "What exactly changed from last year's policy — in the covers, not just the premium?")}</li>
                         <li>{t("Άλλαξαν τα όρια κάλυψης ή η απαλλαγή μου;", "Did my limits or my deductible change?")}</li>
                         <li>{t("Προστέθηκαν ή αφαιρέθηκαν εξαιρέσεις;", "Were any exclusions added or removed?")}</li>
                         <li>{t("Ισχύουν ακόμη περίοδοι αναμονής για κάποια κάλυψη;", "Do waiting periods still apply to any cover?")}</li>
@@ -163,10 +163,10 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Μάθετε τι πληρώνει το συμβόλαιο υγείας σας.", "Know what your health policy pays.")}
+                    {t("Μάθετε τι πληρώνει το ασφαλιστήριο υγείας σας.", "Know what your health policy pays.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
-                    {t("Ανεβάστε το συμβόλαιο υγείας", "Upload your health policy")}
+                    {t("Ανεβάστε το ασφαλιστήριο υγείας", "Upload your health policy")}
                 </Link>
             </section>
 

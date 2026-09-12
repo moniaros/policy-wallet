@@ -29,7 +29,7 @@ export function ClearLimits({ locale }: { locale: MarketingLocale }) {
         {
             title: t("Διαβάζουμε μόνο ό,τι είναι γραμμένο", "We only read what is written"),
             body: t(
-                "Αν κάτι σας το υποσχέθηκαν προφορικά αλλά δεν μπήκε στο συμβόλαιο, δεν μπορούμε να το δούμε — και δεν θα το δει ούτε η ασφαλιστική την ώρα της αποζημίωσης.",
+                "Αν κάτι σας το υποσχέθηκαν προφορικά αλλά δεν μπήκε στο ασφαλιστήριο, δεν μπορούμε να το δούμε — και δεν θα το δει ούτε η ασφαλιστική την ώρα της αποζημίωσης.",
                 "If something was promised to you verbally but never made it into the contract, we cannot see it — and neither will the insurer at the moment of a claim.",
             ),
         },

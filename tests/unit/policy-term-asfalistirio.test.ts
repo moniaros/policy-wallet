@@ -12,8 +12,10 @@ const EL = readFileSync('lib/i18n/translations/el.ts', 'utf-8')
 const EN = readFileSync('lib/i18n/translations/en.ts', 'utf-8')
 
 // In-app B2C UI components with hardcoded Greek labels — standardized too.
-// (Long-form editorial content — guides, glossary bodies, branch education, SEO,
-// marketing narrative — deliberately keeps «συμβόλαιο» as a prose synonym.)
+// (Until 2026-09-12 the long-form editorial content — guides, glossary bodies,
+// SEO, marketing narrative — kept «συμβόλαιο» as a ratified prose synonym. The
+// public copy pass of that date aligned it with the app; see the public-roots
+// test below for the two exemptions that survive and why.)
 const UI_FILES = [
     // CoverageInsightsClient retired 2026-09-07 («Καλύψεις & κενά» story); its
     // successors on /protection carry no inline Greek and are scanned by the
@@ -65,9 +67,9 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
                 if (statSync(p).isDirectory()) return collect(p)
                 return p.endsWith('.tsx') ? [p] : []
             })
-        // ALL in-app component trees. Only components/landing is exempt — it
-        // renders public marketing narrative, where «συμβόλαιο» stays a ratified
-        // prose synonym. Cycle B of the enterprise loop found stragglers in
+        // ALL in-app component trees. components/landing is left to the
+        // public-roots test below, which scans it with the two named
+        // exemptions. Cycle B of the enterprise loop found stragglers in
         // onboarding/notifications/monetization/agent, so the scan covers the
         // whole tree rather than an allowlist that goes stale.
         const { readdirSync: rd } = require('node:fs') as typeof import('node:fs')
@@ -94,6 +96,59 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
     })
 
     /**
+     * The public site — every root the marketing copy lives in, enumerated from
+     * the filesystem — says «ασφαλιστήριο» too, since the copy pass of
+     * 2026-09-12 (the site had drifted to 186 «συμβόλαιο» against 163
+     * «ασφαλιστήριο», with no rule deciding which went where).
+     *
+     * Two forms survive on purpose, matched per LINE so an exemption cannot
+     * blanket a file:
+     *   - «ομαδικό συμβόλαιο» — the term of art in Greek benefits language
+     *     (an HR department says it far more than «ομαδικό ασφαλιστήριο»), a
+     *     documented keyword target, and the slug of its own guide;
+     *   - «ασφαλιστήριο συμβόλαιο» — the glossary entry that TEACHES the full
+     *     term, plus a `keywords:` array, which is search vocabulary not prose.
+     *
+     * Comments are stripped before matching. The first probe run of a sibling
+     * guard in this repo passed because the probe's own comment named the
+     * banned word while describing what it was failing to do — a guard that
+     * greps prose grades prose. Probe: tests/fixtures/guard-probes/public-symvolaio.tsx.txt.
+     */
+    it('the public site says «ασφαλιστήριο» — «συμβόλαιο» survives only as the group term and the glossary definition', () => {
+        const { readdirSync, statSync } = require('node:fs') as typeof import('node:fs')
+        const { join } = require('node:path') as typeof import('node:path')
+        const PUBLIC_ROOTS = [
+            'app/(public)', 'components/landing', 'lib/marketing', 'lib/landing', 'lib/seo',
+            'lib/product', 'lib/guides', 'lib/glossary', 'lib/needs', 'lib/trust', 'lib/pricing',
+        ]
+        const collect = (dir: string): string[] =>
+            readdirSync(dir).flatMap((name) => {
+                const p = join(dir, name)
+                if (statSync(p).isDirectory()) return collect(p)
+                return /\.tsx?$/.test(name) ? [p] : []
+            })
+        const files = PUBLIC_ROOTS.flatMap(collect)
+        expect(files.length).toBeGreaterThan(100) // the scan must actually see the site
+
+        const EXEMPT = /ομαδικ|ασφαλιστήριο συμβόλαιο|\bkeywords\s*:/i
+        const offenders: string[] = []
+        for (const file of files) {
+            const code = readFileSync(file, 'utf-8')
+                .replace(/\/\*[\s\S]*?\*\//g, '')
+                .replace(/^[ \t]*\/\/.*$/gm, '')
+            code.split('\n').forEach((line, i) => {
+                if (/συμβόλαι|συμβολαί/i.test(line) && !EXEMPT.test(line)) {
+                    offenders.push(`${file}:${i + 1}  ${line.trim().slice(0, 100)}`)
+                }
+            })
+        }
+        expect(
+            offenders,
+            `public copy still says «συμβόλαιο» for the policy document — write «ασφαλιστήριο», or name the exemption:\n${offenders.join('\n')}`
+        ).toEqual([])
+    })
+
+    /**
      * KNOWN GAP, measured 2026-08-27 — this guard's universe stops at
      * `components/*` (minus landing) plus the two translation files. Customer-
      * facing Greek copy also lives in `lib/**` and `app/(protected)/**`, and
@@ -105,13 +160,15 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
      * new string and the *translation-file* half of this guard fired on the copy.
      * The original was invisible. Fixed at the same time as this note.
      *
-     * NOT widened here, deliberately: a naive scan of `lib/` and `app/` matches
-     * **75 files**. Most are legitimate — this file's own rule ratifies
-     * «συμβόλαιο» as prose in public marketing narrative, which covers
-     * `app/(public)/**`, `lib/guides/`, `lib/glossary/` and the editorial
-     * content modules. Turning that into a failing assertion would either be
-     * red on day one or need a 60-entry allowlist, and an allowlist that large
-     * is a second place for the rule to rot.
+     * NOT widened here at the time: a naive scan of `lib/` and `app/` matched
+     * **75 files**, most of them the public editorial prose this file then
+     * ratified «συμβόλαιο» for. Turning that into a failing assertion would
+     * have been red on day one or needed a 60-entry allowlist.
+     *
+     * UPDATE 2026-09-12: the PUBLIC half of that gap is closed — the copy pass
+     * aligned the prose and the test above now scans those roots with a
+     * two-form, per-line exemption rather than an allowlist. What remains open
+     * is the in-app half below.
      *
      * The in-app subset that a widened guard SHOULD cover, from that scan:
      * `app/(protected)/protection/page.tsx` («Άλλο Συμβόλαιο»),

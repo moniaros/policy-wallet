@@ -34,7 +34,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
 
     const typicallyExcluded = [
         {
-            titleEl: "Διαφορές που ξεκίνησαν πριν το συμβόλαιο",
+            titleEl: "Διαφορές που ξεκίνησαν πριν το ασφαλιστήριο",
             titleEn: "Disputes that began before the policy",
             descEl: "Η κάλυψη αφορά μελλοντικές διαφορές. Ό,τι είχε ήδη ξεκινήσει πριν την έναρξη — ή μέσα στην περίοδο αναμονής — μένει συνήθως απέξω.",
             descEn: "Cover applies to future disputes. Anything already underway before the start date — or during the waiting period — usually stays out.",
@@ -63,10 +63,10 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                         {t("Νομική προστασία", "Legal expenses insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("«Έχω νομική προστασία.» Ξέρετε όμως για τι;", "“I have legal cover.” But do you know for what?")}
+                        {t("«Έχω νομική προστασία.» Ξέρετε, όμως, για τι;", "“I have legal cover.” But do you know for what?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Η νομική προστασία πληρώνει δικηγόρους, δικαστικά έξοδα και πραγματογνώμονες — αλλά μόνο για τις κατηγορίες διαφορών που γράφει το συμβόλαιο. Δείτε τις δικές σας, όχι τις υποθετικές.", "Legal expenses insurance pays for lawyers, court costs and expert witnesses — but only for the dispute categories written in your policy. See yours, not the hypothetical ones.")}
+                        {t("Η νομική προστασία πληρώνει δικηγόρους, δικαστικά έξοδα και πραγματογνώμονες — αλλά μόνο για τις κατηγορίες διαφορών που γράφει το ασφαλιστήριο. Δείτε τις δικές σας, όχι τις υποθετικές.", "Legal expenses insurance pays for lawyers, court costs and expert witnesses — but only for the dispute categories written in your policy. See yours, not the hypothetical ones.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -132,7 +132,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                     </div>
 
                     <p className="mt-10 max-w-[820px] text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                        {t("Στείλτε μας το συμβόλαιό σας. Θα δείτε δύο καθαρές στήλες: τι καλύπτεται και τι όχι. Με τα όρια, τις αναμονές και τα ελάχιστα ποσά, σε απλά ελληνικά.", "Send us your policy. You will see two clear columns: what is covered and what is not. With the limits, the waiting periods and the minimum amounts, in plain words.")}
+                        {t("Στείλτε μας το ασφαλιστήριό σας. Θα δείτε δύο καθαρές στήλες: τι καλύπτεται και τι όχι. Με τα όρια, τις αναμονές και τα ελάχιστα ποσά, σε απλά ελληνικά.", "Send us your policy. You will see two clear columns: what is covered and what is not. With the limits, the waiting periods and the minimum amounts, in plain words.")}
                     </p>
                 </div>
             </section>
@@ -144,7 +144,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Μάθετε τι πληρώνει το συμβόλαιο πριν χρειαστείτε δικηγόρο.", "Learn what your policy pays before you need a lawyer.")}
+                    {t("Μάθετε τι πληρώνει το ασφαλιστήριο πριν χρειαστείτε δικηγόρο.", "Learn what your policy pays before you need a lawyer.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε τη νομική σας προστασία", "Upload your legal expenses policy")}

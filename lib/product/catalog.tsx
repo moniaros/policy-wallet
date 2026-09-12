@@ -47,9 +47,9 @@ export const productCategories = [
         // "Market value tracking" would imply an external price feed. The
         // real capability: we surface what the policy would pay; the reader
         // compares it with what the car is worth.
-        headlineEl: "Τι θα πλήρωνε το συμβόλαιο — και κενά οδικής βοήθειας.",
+        headlineEl: "Τι θα πλήρωνε το ασφαλιστήριο — και κενά οδικής βοήθειας.",
         headlineEn: "What the policy would pay — and roadside assistance gaps.",
-        descEl: "Δείτε την αποζημίωση που προβλέπει το συμβόλαιό σας και — με το Family — τι λείπει από την οδική βοήθεια.",
+        descEl: "Δείτε την αποζημίωση που προβλέπει το ασφαλιστήριό σας και — με το Family — τι λείπει από την οδική βοήθεια.",
         descEn: "See the payout your policy provides and — with Family — what is missing from your roadside assistance.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
@@ -101,7 +101,7 @@ export const productCategories = [
         headlineEn: "Cover for ransomware and for your work coming to a stop.",
         // The incident response team belongs to the insurer, not to us — the
         // copy says what the policy provides, not what we provide.
-        descEl: "Δείτε τι προβλέπει το συμβόλαιό σας για την ώρα της επίθεσης — χωρίς ψάξιμο σε παλιά έγγραφα.",
+        descEl: "Δείτε τι προβλέπει το ασφαλιστήριό σας για την ώρα της επίθεσης — χωρίς ψάξιμο σε παλιά έγγραφα.",
         descEn: "See what your policy provides for the moment of an attack — no digging through old documents.",
         surface: "bg-white",
         border: "border-[#E2E8F0]",
@@ -118,7 +118,7 @@ export const productCategories = [
         headlineEl: "Ζημιές σε τρίτους — και έλεγχος για διπλή κάλυψη.",
         headlineEn: "Third-party damage — with a double-coverage check.",
         // The double-coverage check is Plus-only — the teaser names the plan.
-        descEl: "Η αστική ευθύνη συχνά υπάρχει ήδη μέσα στο συμβόλαιο κατοικίας σας. Με το Family, δείτε αν την πληρώνετε δύο φορές.",
+        descEl: "Η αστική ευθύνη συχνά υπάρχει ήδη μέσα στο ασφαλιστήριο κατοικίας σας. Με το Family, δείτε αν την πληρώνετε δύο φορές.",
         descEn: "Liability cover often already sits inside your home policy. With Family, see if you are paying for it twice.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
@@ -132,7 +132,7 @@ export const productCategories = [
         labelEn: "Legal Expenses",
         tagEl: "Νομικά",
         tagEn: "Legal",
-        headlineEl: "Δικηγόροι και δικαστήρια: τι πληρώνει το συμβόλαιο.",
+        headlineEl: "Δικηγόροι και δικαστήρια: τι πληρώνει το ασφαλιστήριο.",
         headlineEn: "Lawyers and courts: what your policy pays for.",
         descEl: "Τροχαία, εργασιακές και καταναλωτικές διαφορές. Δείτε ποιες υποθέσεις καλύπτονται και ποιες εξαιρούνται.",
         descEn: "Traffic, employment and consumer disputes. See which cases are covered and which are excluded.",
@@ -201,7 +201,7 @@ export const productCategories = [
         tagEn: "Family",
         headlineEl: "Κεφάλαιο κάλυψης, σοβαρές ασθένειες και προστασία δανείου.",
         headlineEn: "Cover amount, serious illness and mortgage protection.",
-        descEl: "Δείτε αν το κεφάλαιο του συμβολαίου ζωής σας φτάνει πραγματικά για την οικογένεια και το στεγαστικό σας.",
+        descEl: "Δείτε αν το κεφάλαιο του ασφαλιστηρίου ζωής σας φτάνει πραγματικά για την οικογένεια και το στεγαστικό σας.",
         descEn: "See whether your life policy's capital actually covers your family and your outstanding mortgage.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
@@ -249,7 +249,7 @@ export const productCategories = [
         tagEn: "Marine",
         headlineEl: "Υποχρεωτική αστική ευθύνη και κάλυψη σκάφους & μηχανής.",
         headlineEn: "Mandatory liability plus hull & machinery coverage.",
-        descEl: "Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα. Δείτε τι άλλο καλύπτει το συμβόλαιό σας πριν λύσετε κάβους.",
+        descEl: "Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα. Δείτε τι άλλο καλύπτει το ασφαλιστήριό σας πριν λύσετε κάβους.",
         descEn: "Liability cover is mandatory in Greek waters. See what else your policy includes before you cast off.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
@@ -270,7 +270,7 @@ export const productCategories = [
         tagEn: "Collections",
         headlineEl: "Κάθε έργο με τη δική του αξία — και τους όρους που την κρατούν σε ισχύ.",
         headlineEn: "Each piece at its own value — and the conditions that keep it in force.",
-        descEl: "Διαβάζουμε την κατάσταση αντικειμένων, τις συμφωνημένες αξίες και τους όρους ασφαλείας — όπως τον συναγερμό που το συμβόλαιο θεωρεί δεδομένο.",
+        descEl: "Διαβάζουμε την κατάσταση αντικειμένων, τις συμφωνημένες αξίες και τους όρους ασφαλείας — όπως τον συναγερμό που το ασφαλιστήριο θεωρεί δεδομένο.",
         descEn: "We read the schedule of items, the agreed values and the security conditions — like the alarm your policy takes for granted.",
         surface: "bg-white",
         border: "border-[#E2E8F0]",

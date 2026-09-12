@@ -54,7 +54,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                 <div className="mt-10 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-3 flex items-center gap-2 text-body font-semibold text-[#0F172A] dark:text-white">
                         <ShieldCheck className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
-                        {t("Πώς το ελέγχετε στο συμβόλαιό σας", "How to check it in your policy")}
+                        {t("Πώς το ελέγχετε στο ασφαλιστήριό σας", "How to check it in your policy")}
                     </div>
                     <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                         {entry.howToCheck[lang]}
@@ -63,7 +63,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                         href={authHref(`/auth/signup?role=policyholder&source=lexiko_${entry.slug}`, language)}
                         className="pw-primary-button pw-btn-lg mt-5"
                     >
-                        {t("Ανεβάστε το συμβόλαιό σας — δωρεάν σύνοψη", "Upload your policy — free summary")}
+                        {t("Ανεβάστε το ασφαλιστήριό σας — δωρεάν σύνοψη", "Upload your policy — free summary")}
                         <ArrowRight className="h-4 w-4" />
                     </Link>
                 </div>
@@ -114,7 +114,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                 <p className="mt-12 flex items-start gap-2 text-body-sm leading-relaxed text-[#5B6A7A] dark:text-slate-400">
                     <Check className="mt-0.5 h-4 w-4 shrink-0" />
                     {t(
-                        "Ενημερωτικό περιεχόμενο, όχι ασφαλιστική συμβουλή. Το PolicyWallet εξηγεί τι σημαίνει ο όρος και σας βοηθά να τον εντοπίσετε στο δικό σας έγγραφο — δεν βεβαιώνει τι καλύπτει το συμβόλαιό σας.",
+                        "Ενημερωτικό περιεχόμενο, όχι ασφαλιστική συμβουλή. Το PolicyWallet εξηγεί τι σημαίνει ο όρος και σας βοηθά να τον εντοπίσετε στο δικό σας έγγραφο — δεν βεβαιώνει τι καλύπτει το ασφαλιστήριό σας.",
                         "Educational content, not insurance advice. PolicyWallet explains what the term means and helps you find it in your own document — it does not assert what your policy covers."
                     )}
                 </p>

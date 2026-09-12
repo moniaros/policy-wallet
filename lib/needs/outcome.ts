@@ -108,7 +108,7 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
             title: { el: "Δάνειο", en: "Loan" },
             because: { el: "Είπατε ότι έχετε δάνειο σε εξέλιξη.", en: "You said you have a loan running." },
             check: {
-                el: "Πολλά δάνεια συνοδεύονται από ασφάλεια που όρισε η τράπεζα. Δείτε τι ακριβώς καλύπτει και αν το υπόλοιπο του δανείου είναι ακόμη το ίδιο με το ασφαλισμένο ποσό.",
+                el: "Πολλά δάνεια συνοδεύονται από ασφάλιση που όρισε η τράπεζα. Δείτε τι ακριβώς καλύπτει και αν το υπόλοιπο του δανείου είναι ακόμη το ίδιο με το ασφαλισμένο ποσό.",
                 en: "Many loans come with cover the bank arranged. Check what it actually covers, and whether the loan balance still matches the sum insured.",
             },
         })
@@ -278,7 +278,7 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
             title: { el: "Ψηφιακή ζωή", en: "Digital life" },
             because: { el: "Είπατε ότι σχεδόν τα πάντα περνούν από το κινητό σας.", en: "You said almost everything runs through your phone." },
             check: {
-                el: "Δείτε αν κάποιο από τα ασφαλιστήριά σας καλύπτει απάτη σε ηλεκτρονική συναλλαγή — τα περισσότερα οικογενειακά συμβόλαια δεν την αναφέρουν καθόλου.",
+                el: "Δείτε αν κάποιο από τα ασφαλιστήριά σας καλύπτει απάτη σε ηλεκτρονική συναλλαγή — τα περισσότερα οικογενειακά ασφαλιστήρια δεν την αναφέρουν καθόλου.",
                 en: "Check whether any of your policies covers fraud on an online transaction — most household policies do not mention it at all.",
             },
         })

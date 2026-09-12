@@ -42,7 +42,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Το συμβόλαιο ζωής δεν είναι «ένα χαρτί στο συρτάρι».", "A life policy is not just paper in a drawer.")}
+                            {t("Το ασφαλιστήριο ζωής δεν είναι «ένα χαρτί στο συρτάρι».", "A life policy is not just paper in a drawer.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
                             {t("Παροχή θανάτου, μόνιμη αναπηρία, σοβαρές ασθένειες, προστασία δανείου — τέσσερα σκέλη που συχνά αγοράστηκαν πριν χρόνια και δεν ξαναδιαβάστηκαν ποτέ. Τα ξεχωρίζουμε και σας τα εξηγούμε ένα προς ένα.", "Death benefit, permanent disability, serious illness, mortgage protection — four components often bought years ago and never re-read. We separate them and explain each one to you.")}
@@ -117,7 +117,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                     {t("Δώστε στην οικογένειά σας απαντήσεις, όχι ερωτηματικά.", "Give your family answers, not question marks.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
-                    {t("Ανεβάστε το συμβόλαιο ζωής σας", "Upload your life policy")}
+                    {t("Ανεβάστε το ασφαλιστήριο ζωής σας", "Upload your life policy")}
                 </Link>
             </section>
 

@@ -81,7 +81,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
         <BrowserChrome
             url={`${PRODUCT_DISPLAY_HOST}/agent/clients`}
             label={t(
-                "Παράδειγμα: μία οθόνη με τους πελάτες σας — ποιος έχει ενεργή ασφάλεια, ποιανού λήγει σύντομα και ποιος έχει κενό κάλυψης.",
+                "Παράδειγμα: μία οθόνη με τους πελάτες σας — ποιος έχει ενεργή ασφάλιση, ποιανού λήγει σύντομα και ποιος έχει κενό κάλυψης.",
                 "Example: one screen with your clients — who is active, whose cover runs out soon, and who has a gap."
             )}
         >
@@ -237,7 +237,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                     style={{ transitionDelay: "400ms" }}
                 >
                     <div className="mb-2 flex items-center justify-between">
-                        <span className="text-micro font-medium text-neutral-600 dark:text-slate-300">{t("Διαβάζουμε τα συμβόλαια", "Reading the policies")}</span>
+                        <span className="text-micro font-medium text-neutral-600 dark:text-slate-300">{t("Διαβάζουμε τα ασφαλιστήρια", "Reading the policies")}</span>
                         <span className="text-micro font-bold text-neutral-900 dark:text-white">{scanProgress}%</span>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-slate-800">
@@ -324,7 +324,7 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
         <BrowserChrome
             url={`${PRODUCT_DISPLAY_HOST}/agent/renewals`}
             label={t(
-                "Παράδειγμα: λίστα με τέσσερις πελάτες των οποίων η ασφάλεια λήγει μέσα στις επόμενες 60 μέρες, με τον πιο επείγοντα πρώτο.",
+                "Παράδειγμα: λίστα με τέσσερις πελάτες των οποίων η ασφάλιση λήγει μέσα στις επόμενες 60 μέρες, με τον πιο επείγοντα πρώτο.",
                 "Example: a list of four clients whose cover runs out within the next 60 days, most urgent first."
             )}
         >

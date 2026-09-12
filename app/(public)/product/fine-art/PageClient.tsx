@@ -35,7 +35,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
                         {t("Ό,τι δεν αντικαθίσταται, ασφαλίζεται με όνομα και αξία.", "What can't be replaced is insured by name and value.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Τα έργα τέχνης και τα τιμαλφή ασφαλίζονται ανά αντικείμενο, σε συμφωνημένη αξία — και η κάλυψη συχνά εξαρτάται από όρους ασφαλείας που πρέπει να τηρούνται. Εμείς διαβάζουμε το συμβόλαιό σας και σας δείχνουμε την κατάσταση αντικειμένων, τις αξίες και τους όρους της.", "Artworks and valuables are insured item by item, at agreed values — and the cover often rests on security conditions that have to be kept. We read your policy and show you the schedule of items, the values and its conditions.")}
+                        {t("Τα έργα τέχνης και τα τιμαλφή ασφαλίζονται ανά αντικείμενο, σε συμφωνημένη αξία — και η κάλυψη συχνά εξαρτάται από όρους ασφαλείας που πρέπει να τηρούνται. Εμείς διαβάζουμε το ασφαλιστήριό σας και σας δείχνουμε την κατάσταση αντικειμένων, τις αξίες και τους όρους της.", "Artworks and valuables are insured item by item, at agreed values — and the cover often rests on security conditions that have to be kept. We read your policy and show you the schedule of items, the values and its conditions.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -63,7 +63,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κατάσταση αντικειμένων & αξίες", "Schedule of items & values")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε κάθε ασφαλισμένο έργο με τη συμφωνημένη αξία του και το συνολικό όριο — όπως ακριβώς τα γράφει το συμβόλαιο.", "See every insured piece with its agreed value and the overall limit — exactly as the policy states them.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε κάθε ασφαλισμένο έργο με τη συμφωνημένη αξία του και το συνολικό όριο — όπως ακριβώς τα γράφει το ασφαλιστήριο.", "See every insured piece with its agreed value and the overall limit — exactly as the policy states them.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -84,7 +84,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Πού ισχύει η κάλυψη", "Where the cover applies")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Η κάλυψη συνήθως δένεται με τον χώρο που δηλώνεται στο συμβόλαιο. Δείτε τι αναφέρει το δικό σας πριν ένα έργο ταξιδέψει σε έκθεση ή συντηρητή.", "Cover is usually tied to the premises the policy names. See what yours says before a piece travels to an exhibition or a restorer.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Η κάλυψη συνήθως δένεται με τον χώρο που δηλώνεται στο ασφαλιστήριο. Δείτε τι αναφέρει το δικό σας πριν ένα έργο ταξιδέψει σε έκθεση ή συντηρητή.", "Cover is usually tied to the premises the policy names. See what yours says before a piece travels to an exhibition or a restorer.")}</p>
                                 </div>
                             </li>
                         </ul>

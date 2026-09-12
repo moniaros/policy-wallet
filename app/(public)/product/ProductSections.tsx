@@ -73,7 +73,7 @@ export function ProductSections({ language }: { language: Language }) {
 
                     <p className="mx-auto mb-10 max-w-[640px] text-lead leading-[1.55] text-[#475569] dark:text-slate-300 md:text-title">
                         {t(
-                            "Δεν πουλάμε ασφάλειες — σας λέμε αν είστε καλυμμένοι. Δείτε τι καλύπτει κάθε συμβόλαιο και τι δεν καλύπτει.",
+                            "Δεν πουλάμε ασφάλειες — σας λέμε αν είστε καλυμμένοι. Δείτε τι καλύπτει κάθε ασφαλιστήριο και τι δεν καλύπτει.",
                             "We do not sell insurance — we tell you if you are covered. See what every policy covers and what it does not."
                         )}
                     </p>
@@ -122,7 +122,7 @@ export function ProductSections({ language }: { language: Language }) {
                         </p>
                         <ul className="space-y-3">
                             {[
-                                t("Διαβάζουμε κάθε συμβόλαιο σε λίγα λεπτά", "We read every policy in minutes"),
+                                t("Διαβάζουμε κάθε ασφαλιστήριο σε λίγα λεπτά", "We read every policy in minutes"),
                                 t("Βρίσκουμε διπλές καλύψεις σε κάθε πλάνο — και κενά κάλυψης με το Family", "We find doubled-up cover on every plan — and coverage gaps with Family"),
                                 t("Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus", "We warn you before something runs out — from the Plus plan"),
                                 // `agentCollaboration` is false on free AND on
@@ -148,7 +148,7 @@ export function ProductSections({ language }: { language: Language }) {
                     <div
                         role="img"
                         aria-label={t(
-                            "Παράδειγμα: τρεις ασφάλειες με τις ημερομηνίες λήξης τους, και μια επισήμανση ότι το σπίτι είναι ασφαλισμένο για λιγότερα από όσα κοστίζει να ξαναχτιστεί.",
+                            "Παράδειγμα: τρία ασφαλιστήρια με τις ημερομηνίες λήξης τους, και μια επισήμανση ότι το σπίτι είναι ασφαλισμένο για λιγότερα από όσα κοστίζει να ξαναχτιστεί.",
                             "Example: three policies with their end dates, and a note that the home is insured for less than it would cost to rebuild."
                         )}
                         className="relative"
@@ -269,7 +269,7 @@ export function ProductSections({ language }: { language: Language }) {
                                 className="max-w-[500px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white focus:outline-none lg:text-h1"
                             >
                                 {t(
-                                    `${productCategories.length} είδη συμβολαίων. Μία ανάλυση.`,
+                                    `${productCategories.length} είδη ασφαλιστηρίων. Μία ανάλυση.`,
                                     `${productCategories.length} kinds of policies. One analysis.`
                                 )}
                             </h2>
@@ -399,7 +399,7 @@ export function ProductSections({ language }: { language: Language }) {
                 <div className="mx-auto max-w-[860px] text-center">
                     <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white [overflow-wrap:anywhere] md:text-h1 lg:text-display">
                         {t(
-                            "Στείλτε ένα συμβόλαιο και δείτε τι βρίσκουμε.",
+                            "Στείλτε ένα ασφαλιστήριο και δείτε τι βρίσκουμε.",
                             "Send us a policy and see what we find."
                         )}
                     </h2>

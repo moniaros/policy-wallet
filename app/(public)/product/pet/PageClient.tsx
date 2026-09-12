@@ -24,7 +24,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Οι εξαιρέσεις του κατοικιδίου σας, στο φως.", "Your pet policy's exclusions, out in the open.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε ποιες παθήσεις εξαιρεί το συμβόλαιό σας, ποια είναι τα ετήσια όριά του και αν καλύπτεται η λεϊσμανίαση — πριν το χρειαστείτε.", "See which conditions your policy excludes, what its yearly limits are, and whether leishmaniasis is covered — before you need it.")}
+                        {t("Δείτε ποιες παθήσεις εξαιρεί το ασφαλιστήριό σας, ποια είναι τα ετήσια όριά του και αν καλύπτεται η λεϊσμανίαση — πριν το χρειαστείτε.", "See which conditions your policy excludes, what its yearly limits are, and whether leishmaniasis is covered — before you need it.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -83,7 +83,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Ποιες παθήσεις εξαιρούνται", "Which conditions are excluded")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε συγκεντρωτικά ποιες γενετικές ή προϋπάρχουσες εξαιρέσεις βαραίνουν το συμβόλαιό σας.", "See in one place which genetic or pre-existing exclusions weigh on your policy.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε συγκεντρωτικά ποιες γενετικές ή προϋπάρχουσες εξαιρέσεις βαραίνουν το ασφαλιστήριό σας.", "See in one place which genetic or pre-existing exclusions weigh on your policy.")}</p>
                                 </div>
                             </li>
                         </ul>
@@ -101,7 +101,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                     {t("Μάθετε τι καλύπτεται πριν τον κτηνίατρο.", "Know what's covered before the vet visit.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
-                    {t("Ανεβάστε το συμβόλαιο του κατοικιδίου", "Upload your pet policy")}
+                    {t("Ανεβάστε το ασφαλιστήριο του κατοικιδίου", "Upload your pet policy")}
                 </Link>
             </section>
 

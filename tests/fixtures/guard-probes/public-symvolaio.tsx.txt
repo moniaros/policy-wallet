@@ -1,0 +1,24 @@
+// Probe for tests/unit/policy-term-asfalistirio.test.ts — the public-roots arm.
+//
+// Copy to components/landing/ProbeSymvolaio.tsx (as .tsx) and run that test: it
+// MUST fail on exactly ONE line — the second t() call below — and on neither of
+// the other two, which are the two survivals the rule names. Delete the copy after.
+//
+// Three lines, three claims:
+//   1. a comment that says the word — a guard that greps prose grades this; the
+//      real guard strips comments first, so this line must NOT be reported:
+//      «Δείτε τι λέει το συμβόλαιό σας» was the old hero line.
+//   2. the group-insurance term of art, which stays: ομαδικό συμβόλαιο.
+//   3. the policy document in running copy, which must be «ασφαλιστήριο».
+
+"use client"
+
+export function ProbeSymvolaio({ locale }: { locale: "el" | "en" }) {
+    const t = (el: string, en: string) => (locale === "el" ? el : en)
+    return (
+        <section>
+            <p>{t("Το ομαδικό συμβόλαιο εργασίας σας καλύπτει νοσηλεία.", "Your employer group policy covers hospital care.")}</p>
+            <p>{t("Ανεβάστε το συμβόλαιό σας και δείτε τι καλύπτει.", "Upload your policy and see what it covers.")}</p>
+        </section>
+    )
+}

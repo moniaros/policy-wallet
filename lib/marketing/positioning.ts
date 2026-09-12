@@ -66,7 +66,7 @@ export const CATEGORY_NAME: Bilingual = {
  * (footer identity line) and anywhere the plain claim carries alone.
  */
 export const CATEGORY: Bilingual = {
-    el: "Δεν αξιολογούμε συμβόλαια. Αξιολογούμε την προστασία σας.",
+    el: "Δεν αξιολογούμε ασφαλιστήρια. Αξιολογούμε την προστασία σας.",
     // OQ5, decided 2026-08-30: the English mirrors the Greek PROMISE. It had
     // been "AI Personal Risk Intelligence" — a category label, i.e. a different
     // claim — violating this module's own rule that en carries identical
@@ -88,15 +88,15 @@ export const STORY: Record<"changed" | "matters" | "helps" | "next", Bilingual> 
         en: "Your life changes.",
     },
     matters: {
-        el: "Μαζί της αλλάζουν και τα ρίσκα σας. Η ασφάλειά σας όμως έμεινε εκεί που την αφήσατε.",
+        el: "Μαζί της αλλάζουν και τα ρίσκα σας. Η ασφάλισή σας, όμως, έμεινε εκεί που την αφήσατε.",
         en: "Your risks change with it. Your insurance stayed where you left it.",
     },
     helps: {
-        el: "Το PolicyWallet διαβάζει τις ασφάλειές σας και σας λέει αν είστε ακόμη προστατευμένοι.",
+        el: "Το PolicyWallet διαβάζει τα ασφαλιστήριά σας και σας λέει αν είστε ακόμη προστατευμένοι.",
         en: "PolicyWallet reads your insurance and tells you whether you are still protected.",
     },
     next: {
-        el: "Στείλτε ένα συμβόλαιο και δείτε την απάντηση σήμερα.",
+        el: "Στείλτε ένα ασφαλιστήριο και δείτε την απάντηση σήμερα.",
         en: "Send us one policy and see the answer today.",
     },
 }
@@ -188,7 +188,7 @@ export const PROMISE: { lead: Bilingual; accent: Bilingual } = {
     // line demotes to HERO_SUBHEAD below, and the rotating headline is gone:
     // one visitor, one value proposition, one <h1>.
     lead: { el: "Μάθετε τι πραγματικά", en: "Know what your policies" },
-    accent: { el: "καλύπτουν τα συμβόλαιά σας.", en: "actually cover." },
+    accent: { el: "καλύπτουν τα ασφαλιστήριά σας.", en: "actually cover." },
 }
 
 /** The hero email-capture CTA — same single-source rule as PRIMARY_ACTION. */
@@ -218,7 +218,7 @@ export const HERO_SUBHEAD: Bilingual = {
  * standalone and embedded.
  */
 export const NEUTRALITY_STATEMENT: Bilingual = {
-    el: "Καμία ασφαλιστική και καμία τράπεζα δεν μας πληρώνει για να σας προτείνουμε κάτι. Δεν παίρνουμε προμήθεια. Η ανάλυση είναι ίδια για κάθε συμβόλαιο, όποιος κι αν το εξέδωσε — και τίποτα από όσα ανεβάζετε δεν κοινοποιείται χωρίς τη δική σας, ξεχωριστή και ανακλητή συγκατάθεση.",
+    el: "Καμία ασφαλιστική και καμία τράπεζα δεν μας πληρώνει για να σας προτείνουμε κάτι. Δεν παίρνουμε προμήθεια. Η ανάλυση είναι ίδια για κάθε ασφαλιστήριο, όποιος κι αν το εξέδωσε — και τίποτα από όσα ανεβάζετε δεν κοινοποιείται χωρίς τη δική σας, ξεχωριστή και ανακλητή συγκατάθεση.",
     en: "No insurer and no bank pays us to recommend anything. We take no commission. The analysis is the same for every policy, whoever issued it — and nothing you upload is shared without your separate, revocable consent.",
 }
 
@@ -253,7 +253,7 @@ export const DIFFERENTIATORS: readonly { title: Bilingual; body: Bilingual }[] =
             en: "We do not sell your data",
         },
         body: {
-            el: "Τα συμβόλαιά σας είναι δικά σας. Κανείς άλλος δεν τα βλέπει — ούτε ασφαλιστική, ούτε τράπεζα — παρά μόνο αν το επιλέξετε εσείς, ξεχωριστά για κάθε έγγραφο.",
+            el: "Τα ασφαλιστήριά σας είναι δικά σας. Κανείς άλλος δεν τα βλέπει — ούτε ασφαλιστική, ούτε τράπεζα — παρά μόνο αν το επιλέξετε εσείς, ξεχωριστά για κάθε έγγραφο.",
             en: "Your policies are yours. Nobody else sees them — not an insurer, not a bank — unless you choose it, separately for each document.",
         },
     },
@@ -317,11 +317,11 @@ export const TRUST_FACTS: readonly { label: Bilingual; detail: Bilingual }[] = [
 export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
     {
         title: {
-            el: "Η ζωή αλλάζει. Το συμβόλαιο μένει ίδιο.",
+            el: "Η ζωή αλλάζει. Το ασφαλιστήριο μένει ίδιο.",
             en: "Life changes. The policy stays the same.",
         },
         body: {
-            el: "Το συμβόλαιο που υπογράψατε πέρυσι δεν ξέρει για το παιδί, το νέο σπίτι ή τη νέα δουλειά.",
+            el: "Το ασφαλιστήριο που υπογράψατε πέρυσι δεν ξέρει για το παιδί, το νέο σπίτι ή τη νέα δουλειά.",
             en: "The policy you signed last year knows nothing about the child, the new home or the new job.",
         },
     },
@@ -341,7 +341,7 @@ export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
             en: "You may be paying twice for the same thing.",
         },
         body: {
-            el: "Δύο συμβόλαια μπορεί να καλύπτουν το ίδιο πράγμα. Εσείς πληρώνετε και τα δύο.",
+            el: "Δύο ασφαλιστήρια μπορεί να καλύπτουν το ίδιο πράγμα. Εσείς πληρώνετε και τα δύο.",
             en: "Two policies can cover the same thing. You pay for both of them.",
         },
     },
@@ -449,7 +449,7 @@ export const COMPARISON_COLUMNS: readonly {
     {
         key: "insurer",
         label: { el: "Η ασφαλιστική σας", en: "Your insurance company" },
-        note: { el: "Βλέπει μόνο τα δικά της συμβόλαια.", en: "Sees only its own policies." },
+        note: { el: "Βλέπει μόνο τα δικά της ασφαλιστήρια.", en: "Sees only its own policies." },
     },
     {
         key: "advisor",
@@ -471,7 +471,7 @@ export const COMPARISON_ROWS: readonly {
     policywallet: ComparisonVerdict
 }[] = [
     {
-        job: { el: "Βλέπετε όλα τα συμβόλαια μαζί", en: "See all your policies together" },
+        job: { el: "Βλέπετε όλα τα ασφαλιστήρια μαζί", en: "See all your policies together" },
         folder: "partial",
         insurer: "no",
         advisor: "partial",

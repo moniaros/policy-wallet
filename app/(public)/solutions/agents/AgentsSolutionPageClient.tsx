@@ -46,7 +46,7 @@ export default function AgentSolutionsPage() {
                         </h1>
                         <p className="mx-auto max-w-[760px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Στέλνετε τα συμβόλαια των πελατών σας. Βλέπετε ποιος έχει κενό, ποιος λήγει σύντομα και πού υπάρχει ευκαιρία — πριν σας το ζητήσει κανείς. Είναι η ίδια ανεξάρτητη ανάλυση ρίσκου που εμπιστεύεται ο ασφαλισμένος — σε όλο το χαρτοφυλάκιό σας.",
+                                "Στέλνετε τα ασφαλιστήρια των πελατών σας. Βλέπετε ποιος έχει κενό, ποιος λήγει σύντομα και πού υπάρχει ευκαιρία — πριν σας το ζητήσει κανείς. Είναι η ίδια ανεξάρτητη ανάλυση ρίσκου που εμπιστεύεται ο ασφαλισμένος — σε όλο το χαρτοφυλάκιό σας.",
                                 "You send your clients' policies. You see who has a gap, whose cover runs out soon, and where there is an opening — before anyone asks you. It is the same independent risk analysis the policyholder trusts — across your whole book."
                             )}
                         </p>
@@ -96,11 +96,11 @@ export default function AgentSolutionsPage() {
                             </div>
                             <div className="p-6">
                                 <h3 className="mb-2 text-h3 font-semibold leading-tight text-[#0F172A] dark:text-white">
-                                    {t("Ελέγχουμε κάθε συμβόλαιο με κανόνες", "We check every policy against rules")}
+                                    {t("Ελέγχουμε κάθε ασφαλιστήριο με κανόνες", "We check every policy against rules")}
                                 </h3>
                                 <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                     {t(
-                                        "Διαβάζουμε κάθε συμβόλαιο, βρίσκουμε τι λείπει και σας λέμε τι να κάνετε μετά.",
+                                        "Διαβάζουμε κάθε ασφαλιστήριο, βρίσκουμε τι λείπει και σας λέμε τι να κάνετε μετά.",
                                         "We read every policy, find what is missing, and tell you what to do next."
                                     )}
                                 </p>
@@ -120,7 +120,7 @@ export default function AgentSolutionsPage() {
                                         // The expiring-policies list is gated to Agent
                                         // Starter+ in the pricing matrix — the feature
                                         // names the plan, same rule as the consumer side.
-                                        "Στείλτε στον πελάτη μια υπενθύμιση με το όνομά του, πριν λήξει το συμβόλαιό του — από το Agent Starter.",
+                                        "Στείλτε στον πελάτη μια υπενθύμιση με το όνομά του, πριν λήξει το ασφαλιστήριό του — από το Agent Starter.",
                                         "Send your client a reminder with their name on it, before their policy runs out — from Agent Starter."
                                     )}
                                 </p>
@@ -150,14 +150,14 @@ export default function AgentSolutionsPage() {
             <section className="bg-[#F8FAFC] dark:bg-slate-900 px-6 py-20 lg:px-12 lg:py-28">
                 <div className="mx-auto max-w-[1040px]">
                     <h2 className="mb-10 text-center text-h2 font-semibold tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
-                        {t("Από το συμβόλαιο στην αναφορά, σε τρία βήματα.", "From policy to report, in three steps.")}
+                        {t("Από το ασφαλιστήριο στην αναφορά, σε τρία βήματα.", "From policy to report, in three steps.")}
                     </h2>
 
                     <div className="grid gap-4 md:grid-cols-3">
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
                             <p className="mb-3 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-[#A7F3D0]">01</p>
                             <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
-                                {t("Στέλνετε το συμβόλαιο", "You send the policy")}
+                                {t("Στέλνετε το ασφαλιστήριο", "You send the policy")}
                             </h3>
                             <p className="text-body text-[#475569] dark:text-slate-300">
                                 {t("Έως 10 αρχεία με μία κίνηση. Το πελατολόγιό σας το ανεβάζετε χωριστά — έως 100 πελάτες στο Agent Starter.", "Up to 10 files in a single step. Your client list imports separately — up to 100 clients on Agent Starter.")}
@@ -223,7 +223,7 @@ export default function AgentSolutionsPage() {
                         </p>
                         <ul className="space-y-4">
                             {[
-                                t("Κάθε συμβόλαιο διαβασμένο σε λίγα λεπτά", "Every policy read in minutes"),
+                                t("Κάθε ασφαλιστήριο διαβασμένο σε λίγα λεπτά", "Every policy read in minutes"),
                                 t(
                                     `${productCategories.length} ασφαλιστικοί κλάδοι, κάθε ελληνική ασφαλιστική`,
                                     `${productCategories.length} lines of insurance, every Greek insurer`,

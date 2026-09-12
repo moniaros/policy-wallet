@@ -24,7 +24,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Πριν λύσετε κάβους, λύστε τα ψιλά γράμματα.", "Before you cast off, untangle the fine print.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Η αστική ευθύνη σκάφους αναψυχής είναι υποχρεωτική στα ελληνικά ύδατα — αλλά το τι καλύπτεται πέρα από αυτήν διαφέρει από συμβόλαιο σε συμβόλαιο. Εμείς διαβάζουμε το δικό σας και σας δείχνουμε τι ισχύει για σκάφος, μηχανή και τρίτους.", "Third-party liability for leisure boats is mandatory in Greek waters — but what is covered beyond it varies from contract to contract. We read yours and show you what applies to hull, machinery and third parties.")}
+                        {t("Η αστική ευθύνη σκάφους αναψυχής είναι υποχρεωτική στα ελληνικά ύδατα — αλλά το τι καλύπτεται πέρα από αυτή διαφέρει από ασφαλιστήριο σε ασφαλιστήριο. Εμείς διαβάζουμε το δικό σας και σας δείχνουμε τι ισχύει για σκάφος, μηχανή και τρίτους.", "Third-party liability for leisure boats is mandatory in Greek waters — but what is covered beyond it varies from contract to contract. We read yours and show you what applies to hull, machinery and third parties.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -42,7 +42,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Ευθύνη, σκάφος, αρωγή: τρία σκέλη, ένα συμβόλαιο.", "Liability, hull, salvage: three sections, one contract.")}
+                            {t("Ευθύνη, σκάφος, αρωγή: τρία σκέλη, ένα ασφαλιστήριο.", "Liability, hull, salvage: three sections, one contract.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
                             {t("Το ασφαλιστήριο του σκάφους γράφει με μία ανάσα τι θα πληρωθεί σε πρόσκρουση, βύθιση ή ζημιά σε τρίτο. Εμείς το χωρίζουμε σε καθαρές κάρτες, με τα όρια δίπλα σε κάθε κάλυψη.", "A boat policy states in one breath what gets paid in a collision, sinking or third-party damage. We split it into clean cards, with the limits next to each cover.")}
@@ -52,7 +52,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Υποχρεωτική αστική ευθύνη", "Mandatory third-party liability")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε τα όρια για σωματικές βλάβες και υλικές ζημιές τρίτων και βεβαιωθείτε ότι το συμβόλαιο είναι σε ισχύ πριν βγείτε από το λιμάνι.", "See your limits for third-party bodily injury and property damage, and confirm the policy is in force before you leave port.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε τα όρια για σωματικές βλάβες και υλικές ζημιές τρίτων και βεβαιωθείτε ότι το ασφαλιστήριο είναι σε ισχύ πριν βγείτε από το λιμάνι.", "See your limits for third-party bodily injury and property damage, and confirm the policy is in force before you leave port.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -66,7 +66,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Επιθαλάσσια αρωγή & ανέλκυση", "Salvage & wreck removal")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Ρυμούλκηση, αρωγή και ανέλκυση ναυαγίου κοστίζουν ακριβά και δεν περιλαμβάνονται πάντα. Μάθετε αν το δικό σας συμβόλαιο τα καλύπτει.", "Towing, salvage and wreck removal are expensive and not always included. Find out whether your own contract covers them.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Ρυμούλκηση, αρωγή και ανέλκυση ναυαγίου κοστίζουν ακριβά και δεν περιλαμβάνονται πάντα. Μάθετε αν το δικό σας ασφαλιστήριο τα καλύπτει.", "Towing, salvage and wreck removal are expensive and not always included. Find out whether your own contract covers them.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -116,7 +116,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                     {t("Στη θάλασσα με σιγουριά, όχι με υποθέσεις.", "At sea with certainty, not assumptions.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
-                    {t("Ανεβάστε το συμβόλαιο του σκάφους", "Upload your boat policy")}
+                    {t("Ανεβάστε το ασφαλιστήριο του σκάφους", "Upload your boat policy")}
                 </Link>
             </section>
 

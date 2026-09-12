@@ -24,7 +24,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Αυτοκίνητο, μηχανή, οδική βοήθεια: μία καθαρή εικόνα.", "Car, motorbike, roadside assistance: one clear picture.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε τι θα πλήρωνε το συμβόλαιο, τι περιλαμβάνει η οδική βοήθεια και πότε λήγει.", "See what the policy would pay, what your roadside assistance includes, and when it runs out.")}
+                        {t("Δείτε τι θα πλήρωνε το ασφαλιστήριο, τι περιλαμβάνει η οδική βοήθεια και πότε λήγει.", "See what the policy would pay, what your roadside assistance includes, and when it runs out.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -45,14 +45,14 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             {t("Η κάλυψη ακολουθεί ακόμη την αξία του οχήματός σας;", "Does your cover still match your vehicle's value?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Το συμβόλαιο το διαβάζουμε εμείς και σας δείχνουμε τι θα πλήρωνε. Αν φτάνει για το αυτοκίνητό σας σήμερα, το βλέπετε με μια ματιά.", "We read the policy and show you what it would pay. You can see at a glance whether that is enough for your car today.")}
+                            {t("Το ασφαλιστήριο το διαβάζουμε εμείς και σας δείχνουμε τι θα πλήρωνε. Αν φτάνει για το αυτοκίνητό σας σήμερα, το βλέπετε με μια ματιά.", "We read the policy and show you what it would pay. You can see at a glance whether that is enough for your car today.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Αποζημίωση και αξία", "Payout vs value")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε την αποζημίωση που προβλέπει το συμβόλαιο — συγκρίνετέ τη με το τι αξίζει σήμερα το αυτοκίνητό σας.", "We show you the payout the policy provides — compare it with what your car is worth today.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε την αποζημίωση που προβλέπει το ασφαλιστήριο — συγκρίνετέ τη με το τι αξίζει σήμερα το αυτοκίνητό σας.", "We show you the payout the policy provides — compare it with what your car is worth today.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -103,7 +103,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             {t("Μοτοσικλέτα & οδική βοήθεια", "Motorbike & roadside assistance")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Δεν οδηγείτε μόνο αυτοκίνητο; Η ίδια ανάλυση διαβάζει και τα υπόλοιπα συμβόλαια των οχημάτων σας.", "More than just a car? The same analysis reads the rest of your vehicle policies too.")}
+                            {t("Δεν οδηγείτε μόνο αυτοκίνητο; Η ίδια ανάλυση διαβάζει και τα υπόλοιπα ασφαλιστήρια των οχημάτων σας.", "More than just a car? The same analysis reads the rest of your vehicle policies too.")}
                         </p>
                     </div>
                     <div className="grid gap-6 md:grid-cols-2">
@@ -113,7 +113,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Μοτοσικλέτα", "Motorbike")}</h3>
                             <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t("Το συμβόλαιο της μοτοσικλέτας αναλύεται όπως και του αυτοκινήτου: αστική ευθύνη, ίδιες ζημιές, εξαιρέσεις — και κοινές ημερομηνίες ανανέωσης σε ένα ημερολόγιο.", "Your motorbike policy is analyzed just like your car's: liability, own damage, exclusions — with all renewal dates in one calendar.")}
+                                {t("Το ασφαλιστήριο της μοτοσικλέτας αναλύεται όπως και του αυτοκινήτου: αστική ευθύνη, ίδιες ζημιές, εξαιρέσεις — και κοινές ημερομηνίες ανανέωσης σε ένα ημερολόγιο.", "Your motorbike policy is analyzed just like your car's: liability, own damage, exclusions — with all renewal dates in one calendar.")}
                             </p>
                         </div>
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
@@ -122,7 +122,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Οδική βοήθεια", "Roadside assistance")}</h3>
                             <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t("Αυτόνομο συμβόλαιο ή παροχή μέσα στο ασφαλιστήριο; Με το Family, δείτε αν πληρώνετε δύο φορές για επιτόπου επισκευή και μεταφορά σε συνεργείο — ή αν δεν την έχετε καθόλου.", "Standalone contract or a benefit inside your motor policy? With Family, see if you're paying twice for on-the-spot repair and towing — or don't have it at all.")}
+                                {t("Ξεχωριστό ασφαλιστήριο ή παροχή μέσα στο υπάρχον; Με το Family, δείτε αν πληρώνετε δύο φορές για επιτόπου επισκευή και μεταφορά σε συνεργείο — ή αν δεν την έχετε καθόλου.", "Standalone contract or a benefit inside your motor policy? With Family, see if you're paying twice for on-the-spot repair and towing — or don't have it at all.")}
                             </p>
                         </div>
                     </div>
@@ -139,7 +139,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                     {t("Δείτε αν η κάλυψη φτάνει για το όχημά σας σήμερα.", "See whether your cover is still enough for your vehicle today.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
-                    {t("Ανεβάστε το συμβόλαιο του οχήματος", "Upload your motor policy")}
+                    {t("Ανεβάστε το ασφαλιστήριο του οχήματος", "Upload your motor policy")}
                 </Link>
             </section>
 

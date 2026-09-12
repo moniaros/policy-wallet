@@ -167,7 +167,7 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
             },
         },
         {
-            q: { el: "Χρειάζομαι ατομική ασφάλεια αν έχω ομαδικό στη δουλειά;", en: "Do I need a personal policy if I have a group plan at work?" },
+            q: { el: "Χρειάζομαι ατομική ασφάλιση αν έχω ομαδικό στη δουλειά;", en: "Do I need a personal policy if I have a group plan at work?" },
             a: {
                 el: "Εξαρτάται από το τι καλύπτει το ομαδικό. Το ομαδικό σταματά όταν αλλάξετε δουλειά, και τα όριά του μπορεί να μην αρκούν — γι' αυτό αξίζει να δείτε τα δύο μαζί.",
                 en: "It depends on what the group plan covers. The group plan stops when you change jobs, and its limits may not be enough — which is why it pays to look at the two together.",
@@ -337,14 +337,14 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Τι σημαίνει «συμφωνημένη αξία»;", en: "What does \"agreed value\" mean?" },
             a: {
-                el: "Ότι η αποζημίωση για κάθε έργο έχει οριστεί εκ των προτέρων στο συμβόλαιο, αντί να εκτιμηθεί η αγοραία αξία τη στιγμή της ζημιάς. Γι' αυτό η κατάσταση αντικειμένων και οι αξίες της πρέπει να μένουν ενημερωμένες.",
+                el: "Ότι η αποζημίωση για κάθε έργο έχει οριστεί εκ των προτέρων στο ασφαλιστήριο, αντί να εκτιμηθεί η αγοραία αξία τη στιγμή της ζημιάς. Γι' αυτό η κατάσταση αντικειμένων και οι αξίες της πρέπει να μένουν ενημερωμένες.",
                 en: "That the payout for each piece is fixed in the policy in advance, instead of being valued at market price at the time of loss. That is why the schedule of items and its values need to stay current.",
             },
         },
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλιση έργων τέχνης;", en: "How does PolicyWallet help with fine art insurance?" },
             a: {
-                el: "Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απαλλαγή και τους όρους ασφαλείας — όπως τον συναγερμό που το συμβόλαιο απαιτεί — καθώς και αν προαιρετικές καλύψεις όπως ο σεισμός έχουν επιλεγεί. Δωρεάν για 3 ασφαλιστήρια, χωρίς κάρτα.",
+                el: "Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απαλλαγή και τους όρους ασφαλείας — όπως τον συναγερμό που το ασφαλιστήριο απαιτεί — καθώς και αν προαιρετικές καλύψεις όπως ο σεισμός έχουν επιλεγεί. Δωρεάν για 3 ασφαλιστήρια, χωρίς κάρτα.",
                 en: "You send us the policy and we read the schedule of items, the values, the deductible and the security conditions — like the alarm the policy requires — plus whether optional covers such as earthquake were taken. Free for 3 policies, no card.",
             },
         },

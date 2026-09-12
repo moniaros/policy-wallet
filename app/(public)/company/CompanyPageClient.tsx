@@ -56,7 +56,7 @@ export default function CompanyPage() {
                                     en: "We are not an insurance company and we do not sell insurance products — we are the policyholder's neutral tool.",
                                 },
                                 {
-                                    el: "Διαβάζουμε συμβόλαια από κάθε ασφαλιστική εταιρεία: αυτοκίνητο, κατοικία, υγεία, ομαδικά, κυβερνοασφάλεια και κατοικίδια.",
+                                    el: "Διαβάζουμε ασφαλιστήρια από κάθε ασφαλιστική εταιρεία: αυτοκίνητο, κατοικία, υγεία, ομαδικά, κυβερνοασφάλεια και κατοικίδια.",
                                     en: "We read policies from any insurance company: car, home, health, group schemes, cyber and pets.",
                                 },
                                 {
@@ -127,13 +127,13 @@ export default function CompanyPage() {
                     <div className="space-y-5 text-lead leading-[1.75] text-[#334155] dark:text-slate-300">
                         <p>
                             {t(
-                                "Όσοι έχουν ιδιωτική ασφάλιση στην Ελλάδα σπάνια ξέρουν τι ακριβώς καλύπτει το συμβόλαιό τους. Οι όροι είναι μακροσκελείς, οι εξαιρέσεις κρυμμένες και η σύγκριση σχεδόν αδύνατη για έναν μη ειδικό.",
+                                "Όσοι έχουν ιδιωτική ασφάλιση στην Ελλάδα σπάνια ξέρουν τι ακριβώς καλύπτει το ασφαλιστήριό τους. Οι όροι είναι μακροσκελείς, οι εξαιρέσεις κρυμμένες και η σύγκριση σχεδόν αδύνατη για έναν μη ειδικό.",
                                 "People with private insurance in Greece rarely know what their policy actually covers. Terms run long, exclusions stay hidden, and comparison is nearly impossible for a non-expert."
                             )}
                         </p>
                         <p>
                             {t(
-                                "Το PolicyWallet φτιάχνεται στην Ελλάδα, για την ελληνική αγορά, από ανθρώπους με εμπειρία στο λογισμικό και στις χρηματοοικονομικές υπηρεσίες. Φτιάχνουμε το εργαλείο που θα θέλαμε να έχουμε εμείς ως ασφαλισμένοι: κάτι που διαβάζει τα συμβόλαια για εσάς, εξηγεί τι λένε και σας ειδοποιεί πριν μείνετε ακάλυπτοι.",
+                                "Το PolicyWallet φτιάχνεται στην Ελλάδα, για την ελληνική αγορά, από ανθρώπους με εμπειρία στο λογισμικό και στις χρηματοοικονομικές υπηρεσίες. Φτιάχνουμε το εργαλείο που θα θέλαμε να έχουμε εμείς ως ασφαλισμένοι: κάτι που διαβάζει τα ασφαλιστήρια για εσάς, εξηγεί τι λένε και σας ειδοποιεί πριν μείνετε ακάλυπτοι.",
                                 "PolicyWallet is built in Greece, for the Greek market, by people with a background in software and financial services. We are building the tool we wish we had as policyholders. Something that reads the policies for you, explains what they say, and warns you before you are left uncovered."
                             )}
                         </p>
