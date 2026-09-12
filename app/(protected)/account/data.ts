@@ -1,6 +1,7 @@
 import "server-only"
 
 import { db } from "@/lib/db"
+import { listPasskeys, passkeysEnabled, type PasskeySummary } from "@/lib/auth/passkeys"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { getCanonicalPlanForTier, getPlanById } from "@/lib/pricing/plan-catalog"
@@ -165,6 +166,11 @@ export type SecurityEventType = "login_success" | "email_change" | "password_cha
 
 export interface SecurityData {
     events: Array<{ id: string; type: SecurityEventType | string; ip: string | null; at: string }>
+    /**
+     * R-01: passkeys, shown only while the deployment enables them — a block
+     * that cannot enrol anything is the dead list the screen refuses to show.
+     */
+    passkeys: { enabled: boolean; items: PasskeySummary[] }
 }
 
 export async function getSecurityData(): Promise<SecurityData> {
@@ -176,7 +182,9 @@ export async function getSecurityData(): Promise<SecurityData> {
         select: { id: true, eventType: true, ipAddress: true, createdAt: true },
     })
 
+    const passkeysOn = passkeysEnabled()
     return {
+        passkeys: { enabled: passkeysOn, items: passkeysOn ? await listPasskeys(dbUser.id) : [] },
         events: events.map((e) => ({
             id: e.id,
             type: e.eventType,

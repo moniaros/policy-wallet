@@ -4,9 +4,9 @@ import { globSync } from "../helpers/glob"
 
 /**
  * The auth UI must not promise biometric / FaceID login the product cannot
- * deliver. There is no WebAuthn/passkey login flow (the passkeyCredential /
- * webAuthnChallenge tables are referenced only by GDPR erasure, not by any
- * authentication path). The sign-in page's fake "Biometric / PIN" unlock was
+ * deliver. There is no WebAuthn/passkey LOGIN flow: since PW-PROVENANCE-01
+ * R-01 a passkey is a SECOND factor (app/auth/step-up, the settings block),
+ * asked after the password — never a way to sign in. The sign-in page's fake "Biometric / PIN" unlock was
  * removed for exactly this reason — but its twin, a "Use FaceID after first
  * signup" hint, survived on the sign-up form and shipped on every device
  * (FaceID is Apple-only). A false trust signal on the very first screen.
@@ -43,19 +43,24 @@ describe('the auth UI never claims biometric/FaceID login without a real WebAuth
         'app/auth/signin/page.tsx',
     ]
 
-    it('no client-side WebAuthn login flow exists yet (guard premise still holds)', () => {
-        // If this ever fails, real biometric login was implemented — revisit the
-        // copy guard below and allow an HONEST claim tied to that flow.
-        const src = [
+    it('the only WebAuthn flows are the SECOND-factor surfaces (R-01) — no sign-in or sign-up screen carries one', () => {
+        // PW-PROVENANCE-01 R-01 implemented passkeys as a second factor over the
+        // Supabase session: the step-up page and the settings enrolment block.
+        // Neither is a LOGIN, so the copy guard below still holds for the auth
+        // screens — a "sign in with FaceID" claim would still be a promise the
+        // product cannot keep. The set is asserted EXACTLY so a flow appearing
+        // on a login screen is noticed, as is one of these two going missing.
+        const flows = [
             ...globSync('app/**/*.ts'),
             ...globSync('app/**/*.tsx'),
             ...globSync('hooks/**/*.ts'),
             ...globSync('components/**/*.tsx'),
         ]
             .filter((f) => !f.includes('.test.') && !f.includes('erasure'))
-            .map((f) => readFileSync(f, 'utf-8'))
-            .join('\n')
-        expect(WEBAUTHN_FLOW.test(src)).toBe(false)
+            .filter((f) => WEBAUTHN_FLOW.test(stripComments(readFileSync(f, 'utf-8'))))
+            .sort()
+        expect(flows).toEqual(['app/auth/step-up/StepUpClient.tsx', 'components/settings/PasskeysBlock.tsx'])
+        for (const f of authFiles) expect(WEBAUTHN_FLOW.test(readFileSync(f, 'utf-8')), f).toBe(false)
     })
 
     it('no auth screen renders a FaceID / biometric-unlock promise', () => {
