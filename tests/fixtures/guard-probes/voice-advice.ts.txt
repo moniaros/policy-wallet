@@ -1,0 +1,5 @@
+// Probe → advice-verb-guard. Copy to lib/services/probe-voice.ts. MUST fail on `bad` only.
+export const PROBE = {
+    bad: { el: "Σας προτείνουμε να αυξήσετε το κεφάλαιο ζωής.", en: "We recommend raising your life cover." },
+    ok: { el: "Ρωτήστε τον ασφαλιστή σας αν συνιστάται μεγαλύτερο κεφάλαιο.", en: "Ask your agent whether a larger sum is advisable." },
+}

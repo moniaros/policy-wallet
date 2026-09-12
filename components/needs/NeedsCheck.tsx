@@ -368,7 +368,7 @@ export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
                         </div>
                         <p className="mt-4 text-body-sm text-[#5B6A7A] dark:text-slate-400">
                             {t(
-                                "Οι απαντήσεις σας μένουν στον browser σας μέχρι να φτιάξετε λογαριασμό. Δεν στέλνονται πουθενά μέχρι τότε.",
+                                "Οι απαντήσεις σας μένουν στον περιηγητή σας μέχρι να φτιάξετε λογαριασμό. Δεν στέλνονται πουθενά μέχρι τότε.",
                                 "Your answers stay in your browser until you create an account. Nothing is sent anywhere before that.",
                             )}
                         </p>

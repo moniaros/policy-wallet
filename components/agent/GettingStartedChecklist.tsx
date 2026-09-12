@@ -59,7 +59,7 @@ export function AgentGettingStartedChecklist({
             id: "profile",
             titleEl: "Ολοκλήρωση προφίλ",
             titleEn: "Complete your profile",
-            descEl: "Προσθέστε logo, brand color και στοιχεία επικοινωνίας.",
+            descEl: "Προσθέστε λογότυπο, χρώμα και στοιχεία επικοινωνίας.",
             descEn: "Add logo, brand color and contact information.",
             href: "/agent/settings",
             icon: UserCircle,

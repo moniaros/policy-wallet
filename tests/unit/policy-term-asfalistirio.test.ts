@@ -149,6 +149,48 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
     })
 
     /**
+     * The in-app half — closed by PW-VOICE-01 Round 1 (2026-09-13). The 31
+     * survivors lived exactly where the note below said they would: renewals
+     * actions, the notifications registry, the savings and clarity modules,
+     * subscription copy, the drip emails, policy.service. Same per-line
+     * exemptions as the public arm, comments stripped first.
+     * Probe: tests/fixtures/guard-probes/inapp-symvolaio.ts.txt.
+     */
+    it('the in-app roots say «ασφαλιστήριο» — services, notifications, email, subscription copy, protected app', () => {
+        const { readdirSync, statSync, existsSync } = require('node:fs') as typeof import('node:fs')
+        const { join } = require('node:path') as typeof import('node:path')
+        const INAPP_ROOTS = [
+            'app/(protected)', 'app/api', 'app/auth', 'app/onboarding',
+            'lib/services', 'lib/notifications', 'lib/email', 'lib/wallet',
+            'lib/help-content.ts', 'lib/subscription-copy.ts', 'lib/subscription-limits.ts',
+            'lib/subscription-entitlements.ts', 'lib/i18n/role-copy.ts',
+        ]
+        const collect = (p: string): string[] => {
+            if (!existsSync(p)) return []
+            if (!statSync(p).isDirectory()) return /\.tsx?$/.test(p) ? [p] : []
+            return readdirSync(p).flatMap((name) => collect(join(p, name)))
+        }
+        const files = INAPP_ROOTS.flatMap(collect)
+        expect(files.length).toBeGreaterThan(150) // the scan must actually see the app
+        const EXEMPT = /ομαδικ|ασφαλιστήριο συμβόλαιο|\bkeywords\s*:/i
+        const offenders: string[] = []
+        for (const file of files) {
+            const code = readFileSync(file, 'utf-8')
+                .replace(/\/\*[\s\S]*?\*\//g, '')
+                .replace(/^[ \t]*\/\/.*$/gm, '')
+            code.split('\n').forEach((line, i) => {
+                if (/συμβόλαι|συμβολαί/i.test(line) && !EXEMPT.test(line)) {
+                    offenders.push(`${file}:${i + 1}  ${line.trim().slice(0, 100)}`)
+                }
+            })
+        }
+        expect(
+            offenders,
+            `in-app copy still says «συμβόλαιο» for the policy document — write «ασφαλιστήριο», or name the exemption:\n${offenders.join('\n')}`
+        ).toEqual([])
+    })
+
+    /**
      * KNOWN GAP, measured 2026-08-27 — this guard's universe stops at
      * `components/*` (minus landing) plus the two translation files. Customer-
      * facing Greek copy also lives in `lib/**` and `app/(protected)/**`, and
@@ -165,10 +207,9 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
      * ratified «συμβόλαιο» for. Turning that into a failing assertion would
      * have been red on day one or needed a 60-entry allowlist.
      *
-     * UPDATE 2026-09-12: the PUBLIC half of that gap is closed — the copy pass
-     * aligned the prose and the test above now scans those roots with a
-     * two-form, per-line exemption rather than an allowlist. What remains open
-     * is the in-app half below.
+     * UPDATE 2026-09-12: the PUBLIC half of that gap was closed by the copy pass.
+     * UPDATE 2026-09-13: the IN-APP half is closed by PW-VOICE-01 Round 1 — the
+     * test above scans the roots this note names. The gap is closed.
      *
      * The in-app subset that a widened guard SHOULD cover, from that scan:
      * `app/(protected)/protection/page.tsx` («Άλλο Συμβόλαιο»),

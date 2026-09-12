@@ -32,11 +32,11 @@ export const INSURANCE_CLARITY_CHECKLIST: InsuranceClarityChecklistPillar[] = [
         key: "policy_metadata_completeness",
         title: {
             en: "Policy data completeness",
-            el: "Πληρότητα βασικών στοιχείων συμβολαίου",
+            el: "Πληρότητα βασικών στοιχείων ασφαλιστηρίου",
         },
         description: {
             en: "Validates insurer, policy number, dates, premium, and limits.",
-            el: "Ελέγχει ασφαλιστή, αριθμό συμβολαίου, ημερομηνίες, ασφάλιστρο και όρια.",
+            el: "Ελέγχει ασφαλιστική, αριθμό ασφαλιστηρίου, ημερομηνίες, ασφάλιστρο και όρια.",
         },
         checks: [
             "insurer_present",
@@ -55,7 +55,7 @@ export const INSURANCE_CLARITY_CHECKLIST: InsuranceClarityChecklistPillar[] = [
         },
         description: {
             en: "Explains what is covered, not covered, and key restrictions in plain language.",
-            el: "Εξηγεί απλά τι καλύπτεται, τι δεν καλύπτεται και ποιους περιορισμούς έχει το συμβόλαιο.",
+            el: "Εξηγεί απλά τι καλύπτεται, τι δεν καλύπτεται και ποιους περιορισμούς έχει το ασφαλιστήριο.",
         },
         checks: [
             "core_coverages_mapped",

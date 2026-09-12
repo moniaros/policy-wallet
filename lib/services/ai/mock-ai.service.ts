@@ -334,7 +334,7 @@ export class MockAIService implements IAIService {
         return {
             plainLanguageSummary: {
                 en: `This ${metadata.lineOfBusiness} policy is active and can be improved in selected areas.`,
-                el: `Το συμβόλαιο ${metadata.lineOfBusiness} είναι ενεργό και μπορεί να βελτιωθεί σε επιλεγμένα σημεία.`,
+                el: `Το ασφαλιστήριο ${metadata.lineOfBusiness} είναι ενεργό και μπορεί να βελτιωθεί σε επιλεγμένα σημεία.`,
             },
             coverageSnapshot: {
                 covered: ['Third party liability', 'Legal protection'],

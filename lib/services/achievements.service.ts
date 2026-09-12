@@ -153,7 +153,7 @@ export const ACHIEVEMENTS: Achievement[] = [
         id: "premium_member",
         titleEl: "Premium Μέλος",
         titleEn: "Premium Member",
-        descriptionEl: "Αναβαθμίσατε σε paid plan",
+        descriptionEl: "Αναβαθμίσατε το πλάνο σας",
         descriptionEn: "Upgraded to a paid plan",
         icon: "💎",
         category: "milestone",

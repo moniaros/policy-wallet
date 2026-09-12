@@ -160,7 +160,7 @@ export function ProductSections({ language }: { language: Language }) {
                                         {t("Οι ασφάλειές σας", "Your policies")}
                                     </p>
                                     <p className="text-lead font-semibold text-[#0F172A] dark:text-white">
-                                        {t("Γεια σου, Νίκο", "Hi, Nick")}
+                                        {t("Γεια σας, Νίκο", "Hi, Nick")}
                                     </p>
                                 </div>
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#29685B] text-body font-bold text-white">

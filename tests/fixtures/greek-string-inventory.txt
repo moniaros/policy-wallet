@@ -63,13 +63,13 @@ bundle	agentDashboard.actionQueue	"Ουρά ενεργειών"
 bundle	agentDashboard.allCaughtUp	"Όλα ενημερωμένα!"
 bundle	agentDashboard.atRisk	"Σε κίνδυνο"
 bundle	agentDashboard.clients	"Πελάτες"
-bundle	agentDashboard.commissionPipeline	"Pipeline Προμηθειών"
+bundle	agentDashboard.commissionPipeline	"Ροή προμηθειών"
 bundle	agentDashboard.completeProfiles	"Πλήρη προφίλ"
 bundle	agentDashboard.consentEmailFailed	"Το αίτημα καταχωρήθηκε, αλλά το email δεν παραδόθηκε."
 bundle	agentDashboard.consentEmailFailedLinkCopied	"Το email δεν παραδόθηκε — ο σύνδεσμος πρόσκλησης αντιγράφηκε, μοιραστείτε τον χειροκίνητα."
 bundle	agentDashboard.consentRequestFailed	"Η αποστολή του αιτήματος συγκατάθεσης απέτυχε."
 bundle	agentDashboard.coverageGaps	"Κενά κάλυψης"
-bundle	agentDashboard.crossSell	"Ευκαιρίες Cross-sell"
+bundle	agentDashboard.crossSell	"Ευκαιρίες πώλησης"
 bundle	agentDashboard.crossSellPotential	"πιθανή προμήθεια"
 bundle	agentDashboard.inRenewalsAtRisk	"σε ανανεώσεις σε κίνδυνο"
 bundle	agentDashboard.inactive	"Ανενεργοί"
@@ -80,8 +80,8 @@ bundle	agentDashboard.itemsNeedAttention	"{count} στοιχεία χρειάζ�
 bundle	agentDashboard.monthlyRevenue	"Μηνιαία έσοδα"
 bundle	agentDashboard.needsAttention	"Χρειάζεται προσοχή"
 bundle	agentDashboard.noCrossSellDesc	"Καθώς αναλύονται τα χαρτοφυλάκια των πελατών σας, οι ευκαιρίες κάλυψης με εκτιμώμενη προμήθεια θα εμφανίζονται εδώ."
-bundle	agentDashboard.noCrossSellTitle	"Καμία ευκαιρία cross-sell ακόμη"
-bundle	agentDashboard.noFollowUps	"Κανένα follow-up για σήμερα"
+bundle	agentDashboard.noCrossSellTitle	"Καμία ευκαιρία πώλησης ακόμη"
+bundle	agentDashboard.noFollowUps	"Καμία επανεπαφή για σήμερα"
 bundle	agentDashboard.noPendingItems	"Κανένα εκκρεμές στοιχείο σήμερα"
 bundle	agentDashboard.noTasksDesc	"Δεν υπάρχει τίποτα εκκρεμές για σήμερα. Νέες υπενθυμίσεις και ενέργειες θα εμφανίζονται εδώ."
 bundle	agentDashboard.noTasksTitle	"Καμία εκκρεμής εργασία"
@@ -101,9 +101,9 @@ bundle	agentDashboard.reviewClientList	"Ελέγξτε τη λίστα πελα�
 bundle	agentDashboard.startBuildingPortfolio	"Ξεκινήστε να χτίζετε το χαρτοφυλάκιό σας"
 bundle	agentDashboard.taskDueToday	"Λήγει σήμερα"
 bundle	agentDashboard.taskOverdue	"Εκπρόθεσμο"
-bundle	agentDashboard.todaysFollowUps	"Σημερινά Follow-ups"
+bundle	agentDashboard.todaysFollowUps	"Σημερινές επανεπαφές"
 bundle	agentDashboard.verifyBannerCheckInbox	"Ελέγξτε τα εισερχόμενά σας"
-bundle	agentDashboard.verifyBannerDismiss	"Κλείσιμο banner επιβεβαίωσης"
+bundle	agentDashboard.verifyBannerDismiss	"Κλείσιμο ειδοποίησης"
 bundle	agentDashboard.verifyBannerError	"Δεν ήταν δυνατή η αποστολή email επιβεβαίωσης αυτή τη στιγμή."
 bundle	agentDashboard.verifyBannerResend	"Επαναποστολή email επιβεβαίωσης"
 bundle	agentDashboard.verifyBannerSending	"Αποστολή..."
@@ -154,7 +154,7 @@ bundle	agentModals.addCustomer.taxId	"ΑΦΜ"
 bundle	agentModals.addCustomer.title	"Προσθήκη νέου"
 bundle	agentModals.addCustomer.titleAccent	"Πελάτη."
 bundle	agentModals.addCustomer.uploadDesc	"Μεταφορτώστε το έγγραφο: το PolicyWallet AI εξάγει τα στοιχεία, εσείς τα επιβεβαιώνετε και το ασφαλιστήριο αποθηκεύεται μαζί με το αρχείο του."
-bundle	agentModals.addCustomer.uploadTitle	"Ανέβασε ασφαλιστήριο"
+bundle	agentModals.addCustomer.uploadTitle	"Ανεβάστε ασφαλιστήριο"
 bundle	agentModals.bulkImport.back	"Πίσω"
 bundle	agentModals.bulkImport.clickToUpload	"Κάντε κλικ για μεταφόρτωση αρχείου CSV"
 bundle	agentModals.bulkImport.colEmail	"Email"
@@ -308,7 +308,7 @@ bundle	agentModals.opportunityUpdate.updateError	"Αποτυχία ενημέρ�
 bundle	agentModals.opportunityUpdate.updating	"Ενημέρωση..."
 bundle	agentModals.uploadPolicy.afmLabel	"ΑΦΜ"
 bundle	agentModals.uploadPolicy.agentConsentLink	"Δώστε συγκατάθεση για AI"
-bundle	agentModals.uploadPolicy.analysisBlockedQuota	"Το ασφαλιστήριο αποθηκεύτηκε, αλλά η ανάγνωσή του με AI δεν ξεκίνησε: χρειάζεται πλάνο συνεργάτη με διαθέσιμο όριο ανάλυσης. Το έγγραφο παραμένει στον φάκελο του πελάτη."
+bundle	agentModals.uploadPolicy.analysisBlockedQuota	"Το ασφαλιστήριο αποθηκεύτηκε, αλλά η ανάγνωσή του με AI δεν ξεκίνησε: χρειάζεται πλάνο συμβούλου με διαθέσιμο όριο ανάλυσης. Το έγγραφο παραμένει στον φάκελο του πελάτη."
 bundle	agentModals.uploadPolicy.analysisConsentRequired	"Απαιτείται η συγκατάθεση του πελάτη πριν την ανάλυση με AI."
 bundle	agentModals.uploadPolicy.analysisLimitReached	"Φτάσατε το μηνιαίο όριο αναλύσεων AI του πλάνου σας."
 bundle	agentModals.uploadPolicy.analysisStarted	"Η ανάλυση εκτελείται στο παρασκήνιο — μπορείτε να κλείσετε αυτό το παράθυρο και να συνεχίσετε. Θα ειδοποιηθείτε μόλις ολοκληρωθεί."
@@ -342,7 +342,7 @@ bundle	agentModals.uploadPolicy.duplicateTitle	"Πιθανό διπλότυπο"
 bundle	agentModals.uploadPolicy.emailLabel	"Email"
 bundle	agentModals.uploadPolicy.extractedTitle	"Στοιχεία από το έγγραφο"
 bundle	agentModals.uploadPolicy.genericError	"Κάτι πήγε στραβά. Δοκιμάστε ξανά."
-bundle	agentModals.uploadPolicy.kicker	"Έξυπνη μεταφόρτωση"
+bundle	agentModals.uploadPolicy.kicker	"Μεταφόρτωση"
 bundle	agentModals.uploadPolicy.matchedDesc	"Το ασφαλιστήριο θα προστεθεί σε αυτόν τον πελάτη. Επιβεβαιώστε ή επιλέξτε άλλον."
 bundle	agentModals.uploadPolicy.matchedTitle	"Βρέθηκε πελάτης"
 bundle	agentModals.uploadPolicy.multipleDesc	"Επιλέξτε τον σωστό πελάτη — το ΑΦΜ βοηθά στη διάκριση."
@@ -484,9 +484,9 @@ bundle	agentUi.openFindingsLabel	"ανοιχτά ευρήματα"
 bundle	agentUi.policiesAbbr	"ασφ."
 bundle	agentUi.portfolioHealth	"Υγεία χαρτοφυλακίου"
 bundle	agentUi.portfolioHealthEmpty	"Κανένας πελάτης ακόμη — προσκαλέστε τον πρώτο σας για να δείτε την υγεία χαρτοφυλακίου."
-bundle	agentUi.qualificationHealthTitle	"Ποιότητα αξιολόγησης (pipeline)"
+bundle	agentUi.qualificationHealthTitle	"Ποιότητα αξιολόγησης ευκαιριών"
 bundle	agentUi.qualificationMissingEb	"χωρίς αποφασίζοντα"
-bundle	agentUi.qualificationShareDesc	"της αξίας του pipeline έχει πλήρη εικόνα αξιολόγησης"
+bundle	agentUi.qualificationShareDesc	"της αξίας των ευκαιριών έχει πλήρη εικόνα αξιολόγησης"
 bundle	agentUi.qualificationUnconfirmedPain	"με ανεπιβεβαίωτη ανάγκη"
 bundle	agentUi.questions	"ερωτήσεις"
 bundle	agentUi.responsesSubmitted	"Οι απαντήσεις σας υποβλήθηκαν με επιτυχία."
@@ -512,9 +512,9 @@ bundle	analysis.actions.viewAgentPlans	"Δείτε τα πλάνα συνεργ�
 bundle	analysis.actions.viewMoreDetails	"Περισσότερες λεπτομέρειες"
 bundle	analysis.analysisComplete	"Η ανάλυση ολοκληρώθηκε. Βρέθηκαν "
 bundle	analysis.analyzing	"Ανάλυση..."
-bundle	analysis.errors.agentUpgradeRequired	"Η επανάληψη ανάλυσης απαιτεί πληρωμένο πλάνο συνεργάτη"
+bundle	analysis.errors.agentUpgradeRequired	"Η επανάληψη ανάλυσης απαιτεί πληρωμένο πλάνο συμβούλου"
 bundle	analysis.errors.agentUpgradeRequiredHint	"Η χειροκίνητη επανάληψη της ανάλυσης AI είναι διαθέσιμη στα πλάνα Starter, Pro και Agency. Η αυτόματη ανάλυση κατά τη μεταφόρτωση συνεχίζει να λειτουργεί κανονικά."
-bundle	analysis.errors.auth	"Απέτυχε η ταυτοποίηση προς τον AI provider. Δοκιμάστε σύντομα."
+bundle	analysis.errors.auth	"Απέτυχε η ταυτοποίηση προς τον πάροχο AI. Δοκιμάστε σύντομα."
 bundle	analysis.errors.document	"Το έγγραφο ασφαλιστηρίου δεν μπόρεσε να αναλυθεί. Ανεβάστε το ξανά."
 bundle	analysis.errors.extractionEmpty	"Το έγγραφο διαβάστηκε, αλλά δεν περιέχει στοιχεία ασφαλιστηρίου — ούτε ασφαλιστική εταιρεία, ούτε αριθμό, ούτε περίοδο κάλυψης. Ελέγξτε αν ανεβάσατε το σωστό αρχείο."
 bundle	analysis.errors.generic	"Η ανάλυση απέτυχε. Δοκιμάστε ξανά."
@@ -552,7 +552,7 @@ bundle	analysis.report.summaryFoundMany	"κενά κάλυψης"
 bundle	analysis.report.summaryFoundOne	"κενό κάλυψης"
 bundle	analysis.report.summaryFoundPrefix	"Εντοπίστηκαν"
 bundle	analysis.report.summaryUnderReview	"— εκ των οποίων {count} υπό αξιολόγηση, δεν έχουν ταξινομηθεί ακόμη"
-bundle	analysis.report.unlockCtaPrefix	"Ξεκλειδώστε και τα υπόλοιπα"
+bundle	analysis.report.unlockCtaPrefix	"Δείτε και τα υπόλοιπα"
 bundle	analysis.report.unlockCtaSuffix	"κενά — €3"
 bundle	analysis.report.unlockError	"Η έναρξη πληρωμής απέτυχε. Δοκιμάστε ξανά."
 bundle	analysis.report.unlockTrust	"Ασφαλής πληρωμή με Stripe · Χωρίς συνδρομή"
@@ -583,7 +583,7 @@ bundle	analysis.status.retryMissingStarted	"Ξεκίνησε επανάληψη 
 bundle	analysis.status.retrying	"Επανάληψη..."
 bundle	analysis.status.starting	"Προετοιμασία εγγράφου για AI ανάλυση..."
 bundle	analysis.status.stillProcessingHint	"Η ανάλυση συνεχίζει στο παρασκήνιο."
-bundle	analysis.steps.checklist_scoring_and_actions	"Βαθμολόγηση checklist και ενεργειών"
+bundle	analysis.steps.checklist_scoring_and_actions	"Έλεγχος λίστας και ενεργειών"
 bundle	analysis.steps.coverage_mapping	"Χαρτογράφηση καλύψεων"
 bundle	analysis.steps.document_load_and_validation	"Φόρτωση εγγράφου ασφαλιστηρίου"
 bundle	analysis.steps.gap_detection	"Έλεγχος κενών κάλυψης"
@@ -639,7 +639,7 @@ bundle	auth.checkEmailCorrect	"Βεβαιωθείτε ότι η διεύθυνσ
 bundle	auth.checkInbox	"Ελέγξτε τα εισερχόμενά σας"
 bundle	auth.checkSpam	"Ελέγξτε τον φάκελο spam ή ανεπιθύμητης αλληλογραφίας"
 bundle	auth.clickLinkToVerify	"Κάντε κλικ στο σύνδεσμο στο email για να επαληθεύσετε τη διεύθυνση email σας και να ενεργοποιήσετε τον λογαριασμό σας."
-bundle	auth.clickToSignIn	"Κάντε κλικ στο link για να συνδεθείτε."
+bundle	auth.clickToSignIn	"Πατήστε τον σύνδεσμο για να συνδεθείτε."
 bundle	auth.confirmPassword	"Επιβεβαίωση κωδικού"
 bundle	auth.createAccount	"Δημιουργία λογαριασμού"
 bundle	auth.didntReceiveEmail	"Δεν λάβατε το email;"
@@ -669,7 +669,7 @@ bundle	auth.signInPage.backHome	"Αρχική"
 bundle	auth.signInPage.closeLabel	"Κλείσιμο"
 bundle	auth.signInPage.confirmPassword	"Επιβεβαίωση"
 bundle	auth.signInPage.createAccount	"Δημιουργία λογαριασμού"
-bundle	auth.signInPage.encryptionSubtitle	"Δεν αποθηκεύουμε κωδικούς σε plaintext."
+bundle	auth.signInPage.encryptionSubtitle	"Δεν αποθηκεύουμε κωδικούς σε απλό κείμενο."
 bundle	auth.signInPage.encryptionTitle	"AES-256 κρυπτογράφηση"
 bundle	auth.signInPage.fieldRequired	"Συμπληρώστε αυτό το πεδίο."
 bundle	auth.signInPage.fillAllFields	"Συμπληρώστε όλα τα πεδία για να συνδεθείτε."
@@ -762,19 +762,19 @@ bundle	billing.statusBadge.paid	"Πληρώθηκε"
 bundle	billing.statusBadge.upcoming	"Επερχόμενο"
 bundle	billing.subscriptionStatus	"Κατάσταση συνδρομής"
 bundle	billing.terminateCycle	"Ακύρωση ανανέωσης"
-bundle	branches.agentConnectedHint	"Ο σύμβουλός σου {name} μπορεί να σε βοηθήσει να ελέγξεις τις καλύψεις σε αυτόν τον κλάδο."
-bundle	branches.agentDisconnectedHint	"Σύνδεσε τον ασφαλιστικό σου σύμβουλο για να ελέγξετε μαζί τις καλύψεις σου."
-bundle	branches.askAgent	"Ρώτησε τον σύμβουλό σου"
+bundle	branches.agentConnectedHint	"Ο σύμβουλός σας {name} μπορεί να σας βοηθήσει να ελέγξετε τις καλύψεις σε αυτόν τον κλάδο."
+bundle	branches.agentDisconnectedHint	"Συνδέστε τον ασφαλιστικό σας σύμβουλο για να ελέγξετε μαζί τις καλύψεις σας."
+bundle	branches.askAgent	"Ρωτήστε τον σύμβουλό σας"
 bundle	branches.claimsPrep	"Αν συμβεί ζημιά"
 bundle	branches.commonGaps	"Συχνά κενά κάλυψης"
 bundle	branches.detectedGaps	"Εντοπισμένα κενά"
-bundle	branches.detectedInPortfolio	"Εντοπίστηκε στο χαρτοφυλάκιό σου"
+bundle	branches.detectedInPortfolio	"Εντοπίστηκε στο χαρτοφυλάκιό σας"
 bundle	branches.expiresInDays	"Λήγει σε {days} ημέρες"
 bundle	branches.howToUseBetter	"Πώς να το αξιοποιήσεις καλύτερα"
 bundle	branches.noRenewalsSoon	"Καμία ανανέωση τους επόμενους 3 μήνες."
 bundle	branches.onePolicy	"1 ασφαλιστήριο"
-bundle	branches.perksTitle	"Παροχές από τα ασφαλιστήριά σου"
-bundle	branches.policiesInBranch	"Τα ασφαλιστήριά σου"
+bundle	branches.perksTitle	"Παροχές από τα ασφαλιστήριά σας"
+bundle	branches.policiesInBranch	"Τα ασφαλιστήριά σας"
 bundle	branches.policyCountN	"{count} ασφαλιστήρια"
 bundle	branches.recommendedActions	"Προτεινόμενες ενέργειες"
 bundle	branches.renewal	"Ανανέωση"
@@ -783,16 +783,16 @@ bundle	branches.statusCovered	"Καλυμμένο"
 bundle	branches.statusNeutral	"Δεν έχει αξιολογηθεί"
 bundle	branches.statusNotHeld	"Χωρίς ασφαλιστήριο"
 bundle	branches.statusUnread	"Δεν έχει διαβαστεί"
-bundle	branches.suggestedQuestions	"Ρώτησε το AI για το ασφαλιστήριό σου"
+bundle	branches.suggestedQuestions	"Ρωτήστε το AI για το ασφαλιστήριό σας"
 bundle	branches.upcomingRenewals	"Επερχόμενες ανανεώσεις"
-bundle	branches.viewBranch	"Δες τον κλάδο"
+bundle	branches.viewBranch	"Δείτε τον κλάδο"
 bundle	branches.whatWeAnalyze	"Τι αναλύει το PolicyWallet"
 bundle	branches.whyItMatters	"Γιατί έχει σημασία"
 bundle	clientFinancials.commissionEarned	"Προμήθεια (YTD)"
 bundle	clientFinancials.featureLabel	"Οικονομική ανάλυση πελάτη"
 bundle	clientFinancials.highRenewal	"Υψηλή πιθανότητα ανανέωσης"
 bundle	clientFinancials.lowRenewal	"Χαμηλή πιθανότητα — άμεση δράση"
-bundle	clientFinancials.moderateRenewal	"Μέτρια πιθανότητα — χρειάζεται follow-up"
+bundle	clientFinancials.moderateRenewal	"Μέτρια πιθανότητα — χρειάζεται επανεπαφή"
 bundle	clientFinancials.premiumsByLob	"Ασφάλιστρα ανά κλάδο"
 bundle	clientFinancials.projected	"Προβλεπόμενη (12μ)"
 bundle	clientFinancials.renewalProbability	"Πιθανότητα ανανέωσης"
@@ -1426,7 +1426,7 @@ bundle	dashboard.home.quickActionGaps	"Δείτε τα κενά μου"
 bundle	dashboard.home.quickActionRecommendations	"Λάβετε προτάσεις"
 bundle	dashboard.home.quickActionReminders	"Ρυθμίστε υπενθυμίσεις"
 bundle	dashboard.home.quickActionsTitle	"Γρήγορες ενέργειες"
-bundle	dashboard.home.quickUploadAria	"Γρήγορο upload"
+bundle	dashboard.home.quickUploadAria	"Γρήγορη μεταφόρτωση"
 bundle	dashboard.home.recAdvisorConfirmed	"Επιβεβαιωμένο από σύμβουλο"
 bundle	dashboard.home.recAdvisorValidated	"Σύσταση συμβούλου"
 bundle	dashboard.home.recPriorityCritical	"Κρίσιμη προτεραιότητα"
@@ -1480,9 +1480,9 @@ bundle	dashboard.items	"στοιχεία"
 bundle	dashboard.myPolicies	"Τα ασφαλιστήρια μου"
 bundle	dashboard.next	"Επόμενο"
 bundle	dashboard.noPolicies	"Δεν βρέθηκαν ασφαλιστήρια"
-bundle	dashboard.noPriorities	"Δεν υπάρχουν προτεραιότητες αυτή τη στιγμή. Εξαιρετική δουλειά!"
+bundle	dashboard.noPriorities	"Δεν υπάρχουν προτεραιότητες αυτή τη στιγμή."
 bundle	dashboard.policyNumber	"Αριθμός ασφαλιστηρίου"
-bundle	dashboard.portfolioInsights.allGood	"Όλα τα ενεργά ασφαλιστήρια είναι εντάξει"
+bundle	dashboard.portfolioInsights.allGood	"Στα ασφαλιστήρια που ελέγξαμε δεν βρήκαμε κάτι"
 bundle	dashboard.portfolioInsights.missingCoverage.health	"Δεν εντοπίστηκε κάλυψη υγείας"
 bundle	dashboard.portfolioInsights.missingCoverage.home	"Δεν εντοπίστηκε ασφάλεια κατοικίας"
 bundle	dashboard.portfolioInsights.missingCoverage.life	"Δεν έχει οριστεί δικαιούχος ζωής"
@@ -1527,12 +1527,12 @@ bundle	emptyStates.example	"Παράδειγμα"
 bundle	emptyStates.inbox.noResultsDescription	"Καμία συνομιλία δεν ταιριάζει με την αναζήτηση ή τα φίλτρα σας."
 bundle	emptyStates.inbox.startCta	"Νέο μήνυμα"
 bundle	emptyStates.inbox.startDescription	"Στείλτε μηνύματα, ζητήστε έγγραφα και προτάσεις — όλα σε μία συνομιλία."
-bundle	emptyStates.insights.opportunitiesDesc	"Οι ευκαιρίες cross-sell και βελτίωσης κάλυψης που εντοπίζονται θα εμφανίζονται εδώ."
+bundle	emptyStates.insights.opportunitiesDesc	"Οι ευκαιρίες πώλησης και βελτίωσης κάλυψης που εντοπίζονται θα εμφανίζονται εδώ."
 bundle	emptyStates.insights.premiumBreakdownDesc	"Η κατανομή ασφαλίστρων ανά κλάδο εμφανίζεται εδώ καθώς προστίθενται ασφαλιστήρια πελατών."
 bundle	emptyStates.insights.renewalsDesc	"Κανένα από τα ασφαλιστήρια που βλέπετε δεν λήγει τις επόμενες 90 ημέρες. Ασφαλιστήρια χωρίς πρόσβαση ή χωρίς αναγνώσιμη ημερομηνία λήξης δεν μετρώνται εδώ."
 bundle	emptyStates.loadError.description	"Κάτι πήγε στραβά κατά τη φόρτωση. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
 bundle	emptyStates.loadError.headline	"Αποτυχία φόρτωσης"
-bundle	emptyStates.opportunities.description	"Εκτελέστε ανίχνευση κενών στα ασφαλιστήρια των πελατών σας για να εντοπίσετε ευκαιρίες cross-sell και κάλυψης."
+bundle	emptyStates.opportunities.description	"Εκτελέστε ανίχνευση κενών στα ασφαλιστήρια των πελατών σας για να εντοπίσετε ευκαιρίες πώλησης και κάλυψης."
 bundle	emptyStates.opportunities.exampleMeta	"Μαρία Κ. · πιθανή μετατροπή"
 bundle	emptyStates.opportunities.exampleTitle	"Λείπει ασφάλιση κατοικίας"
 bundle	emptyStates.opportunities.exampleUrgency	"Υψηλή"
@@ -1586,12 +1586,12 @@ bundle	help.article.notFound	"Το άρθρο δεν βρέθηκε"
 bundle	help.article.personalizedHelp	"Θέλεις εξατομικευμένη βοήθεια;"
 bundle	help.article.print	"Εκτύπωση οδηγού"
 bundle	help.article.share	"Κοινοποίηση άρθρου"
-bundle	help.article.supportDescription	"Η ομάδα υποστήριξης μπορεί να σε καθοδηγήσει στο επόμενο βήμα, με βάση το προφίλ και τις καλύψεις σου."
+bundle	help.article.supportDescription	"Η ομάδα υποστήριξης μπορεί να σας καθοδηγήσει στο επόμενο βήμα, με βάση το προφίλ και τις καλύψεις σας."
 bundle	help.article.thanksFeedback	"Ευχαριστούμε για τα σχόλιά σας!"
 bundle	help.article.yes	"Ναι"
 bundle	help.articles.installPWA	"Πώς να εγκαταστήσετε την Εφαρμογή"
 bundle	help.articles.notifications	"Διαχείριση ειδοποιήσεων"
-bundle	help.articles.premiumFeatures	"Κατανόηση των premium προνομίων"
+bundle	help.articles.premiumFeatures	"Τι προσφέρουν τα πληρωμένα πλάνα"
 bundle	help.articles.resetPassword	"Πώς να επαναφέρετε τον κωδικό σας"
 bundle	help.articles.sharingAccess	"Κοινοποίηση πρόσβασης με την οικογένεια"
 bundle	help.articles.updatePayment	"Ενημέρωση μεθόδου πληρωμής"
@@ -1639,7 +1639,7 @@ bundle	help.shortcuts.coverageDesc	"Ανοίξτε την ανάλυση κάλ�
 bundle	help.shortcuts.coverageLabel	"Δείτε τις καλύψεις σας καθαρά"
 bundle	help.shortcuts.shareDesc	"Συνεργασία με πλήρη έλεγχο δικαιωμάτων."
 bundle	help.shortcuts.shareLabel	"Κοινοποίηση με σύμβουλο ή οικογένεια"
-bundle	help.shortcuts.uploadDesc	"Ξεκινήστε από το πορτοφόλι σας σε λιγότερο από 1 λεπτό."
+bundle	help.shortcuts.uploadDesc	"Ξεκινήστε από το πορτοφόλι σας."
 bundle	help.shortcuts.uploadLabel	"Ανεβάστε νέο ασφαλιστήριο"
 bundle	help.startLearning	"Έναρξη εκμάθησης"
 bundle	help.stillNeedHelp	"Χρειάζεστε ακόμα βοήθεια;"
@@ -2381,7 +2381,7 @@ bundle	protection.attention.monitoring.title	"Παρακολούθηση"
 bundle	protection.attention.needs.lead	"Κάθε απάντηση ξεκαθαρίζει τουλάχιστον έναν κίνδυνο. Πατήστε για να απαντήσετε στην περιοχή του."
 bundle	protection.attention.needs.none	"Δεν λείπει κάποιο στοιχείο από εσάς για να αποφανθούμε — ό,τι μένει ανοιχτό εξαρτάται από τα ασφαλιστήριά σας."
 bundle	protection.attention.needs.title	"Τι χρειάζεται ακόμη να καταλάβουμε"
-bundle	protection.attention.needs.unlocks	"Ξεκλειδώνει: {area}"
+bundle	protection.attention.needs.unlocks	"Ανοίγει: {area}"
 bundle	protection.attention.next.answer_question_one	"Απαντήστε μία σύντομη ερώτηση."
 bundle	protection.attention.next.answer_questions	"Απαντήστε {count} σύντομες ερωτήσεις."
 bundle	protection.attention.next.check_first_policy	"Προσθέστε ένα ασφαλιστήριο για αυτό, για να το ελέγξουμε."
@@ -2454,7 +2454,7 @@ bundle	protection.improve.title	"Πώς μπορείτε να ενισχύσετ
 bundle	protection.lensAria	"Προβολή προστασίας"
 bundle	protection.lensByBranch	"Ανά κλάδο"
 bundle	protection.lensByRisk	"Ανά κίνδυνο"
-bundle	protection.life.lead	"Όσα μας λέτε αλλάζουν τι ελέγχουμε και τι σας προτείνουμε."
+bundle	protection.life.lead	"Όσα μας λέτε αλλάζουν τι ελέγχουμε και τι σας δείχνουμε."
 bundle	protection.life.title	"Με βάση τη ζωή σας"
 bundle	protection.nextStep.add_first.body	"Προσθέστε το πρώτο σας ασφαλιστήριο για να δούμε τι σας προστατεύει."
 bundle	protection.nextStep.add_first.cta	"Προσθήκη ασφαλιστηρίου"
@@ -2739,7 +2739,7 @@ bundle	settings.profile.role	"Ρόλος"
 bundle	settings.profile.roleAdmin	"Διαχειριστής"
 bundle	settings.profile.roleAgent	"Ασφαλιστικός σύμβουλος"
 bundle	settings.profile.rolePolicyholder	"Ασφαλισμένος"
-bundle	settings.push.denied	"Οι ειδοποιήσεις είναι αποκλεισμένες για αυτόν τον ιστότοπο. Μπορείτε να τις επιτρέψετε από τις ρυθμίσεις του browser."
+bundle	settings.push.denied	"Οι ειδοποιήσεις είναι αποκλεισμένες για αυτόν τον ιστότοπο. Μπορείτε να τις επιτρέψετε από τις ρυθμίσεις του περιηγητή."
 bundle	settings.push.description	"Λάβετε επείγοντα ευρήματα σε αυτή τη συσκευή, ακόμη κι όταν το PolicyWallet είναι κλειστό."
 bundle	settings.push.disable	"Απενεργοποίηση σε αυτή τη συσκευή"
 bundle	settings.push.enable	"Ενεργοποίηση σε αυτή τη συσκευή"
@@ -2827,7 +2827,7 @@ bundle	settings.updateFailed	"Η ενημέρωση απέτυχε. Δοκιμά
 bundle	settings.updateSuccess	"Τα στοιχεία ενημερώθηκαν"
 bundle	status.activePolicies	"Ενεργή προστασία"
 bundle	status.added	"προστεθέντα"
-bundle	status.allClear30Days	"Όλα καθαρά για τις επόμενες 30 ημέρες!"
+bundle	status.allClear30Days	"Στα ελεγμένα: καμία ενέργεια για 30 ημέρες."
 bundle	status.attentionNeeded	"Χρειάζεται προσοχή"
 bundle	status.auto	"Αυτοκίνητο"
 bundle	status.expiringSoon	"Λήγουν σύντομα"
@@ -2845,7 +2845,7 @@ bundle	status.premiumExcludesOtherCurrency	"{count} ασφαλιστήριο σ�
 bundle	status.premiumExcludesOtherCurrencyPlural	"{count} ασφαλιστήρια σε άλλο νόμισμα δεν προσμετρώνται στο σύνολο"
 bundle	status.premiumExcludesUnknown	"{count} ασφαλιστήριο χωρίς αναγνώσιμη ημ/νία λήξης δεν προσμετράται"
 bundle	status.premiumExcludesUnknownPlural	"{count} ασφαλιστήρια χωρίς αναγνώσιμη ημ/νία λήξης δεν προσμετρώνται"
-bundle	status.totalPremium	"Ασφαλιστικό αποτύπωμα"
+bundle	status.totalPremium	"Σύνολο ασφαλίστρων"
 bundle	status.travel	"Ταξίδι"
 bundle	status.upcomingRenewals	"Επερχόμενες ανανεώσεις"
 bundle	status.within30Days	"Εντός 30 ημερών"
@@ -2927,8 +2927,8 @@ bundle	wallet.addPolicyForm.attachmentsSkipped	"Το ασφαλιστήριο π
 bundle	wallet.addPolicyForm.coverageTypeRequired	"Παρακαλώ επιλέξτε είδος κάλυψης"
 bundle	wallet.addPolicyForm.gateChangeType	"Άλλαξε τύπο σε «{branch}»"
 bundle	wallet.addPolicyForm.gateConfirm	"Επιβεβαίωση και συνέχεια"
-bundle	wallet.addPolicyForm.gateContinueAs	"Συνέχισε ως «{branch}»"
-bundle	wallet.addPolicyForm.gateUploadAnother	"Ανέβασε άλλο έγγραφο"
+bundle	wallet.addPolicyForm.gateContinueAs	"Συνέχεια ως «{branch}»"
+bundle	wallet.addPolicyForm.gateUploadAnother	"Ανεβάστε άλλο έγγραφο"
 bundle	wallet.addPolicyForm.policyNumberPlaceholder	"π.χ. POL-123456789"
 bundle	wallet.addPolicyForm.tooManyFiles	"Έως {max} αρχεία ανά ασφαλιστήριο — το πρώτο διαβάζεται ως ασφαλιστήριο, τα υπόλοιπα επισυνάπτονται."
 bundle	wallet.addPolicyForm.unknownInsurer	"Άγνωστος ασφαλιστής"
@@ -3311,12 +3311,12 @@ bundle	wallet.healthScore.title	"Έλεγχος ασφαλιστηρίου"
 bundle	wallet.history	"Ιστορικό"
 bundle	wallet.insurer	"Ασφαλιστική εταιρεία"
 bundle	wallet.insurerProvider	"Ασφαλιστικός πάροχος"
-bundle	wallet.invitationCreated	"Η πρόσκληση δημιουργήθηκε. Στείλτε το link στον σύμβουλό σας."
+bundle	wallet.invitationCreated	"Η πρόσκληση δημιουργήθηκε. Στείλτε τον σύνδεσμο στον σύμβουλό σας."
 bundle	wallet.invitationEmailFailed	"Το email δεν παραδόθηκε — αντιγράψτε τον σύνδεσμο και μοιραστείτε τον εσείς."
-bundle	wallet.invitationLinkCreated	"Δημιουργήθηκε Link Πρόσκλησης"
+bundle	wallet.invitationLinkCreated	"Έτοιμος ο σύνδεσμος πρόσκλησης"
 bundle	wallet.lastCheck	"Τελευταίος έλεγχος"
 bundle	wallet.lineOfBusiness	"Κλάδος"
-bundle	wallet.linkCopied	"Το link αντιγράφηκε!"
+bundle	wallet.linkCopied	"Αντιγράφηκε ο σύνδεσμος"
 bundle	wallet.manageTrack	"Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος."
 bundle	wallet.manualEntry	"Χειροκίνητη προσθήκη"
 bundle	wallet.mobileCard.coverage	"Κάλυψη"
@@ -3351,7 +3351,7 @@ bundle	wallet.noPoliciesFound	"Δεν βρέθηκαν ασφαλιστήρια"
 bundle	wallet.noPoliciesFoundDesc	"Δεν μπορέσαμε να βρούμε ασφαλιστήρια που να ταιριάζουν με την αναζήτησή σας."
 bundle	wallet.noPoliciesYetDesc	"Ξεκινήστε προσθέτοντας το πρώτο σας ασφαλιστήριο στο ψηφιακό σας πορτοφόλι."
 bundle	wallet.notices.actionNeeded	"{policy}: λείπουν στοιχεία από το έγγραφο."
-bundle	wallet.notices.allClear	"Όλα εντάξει — κανένα ασφαλιστήριο δεν χρειάζεται ενέργεια."
+bundle	wallet.notices.allClear	"Κανένα από τα ασφαλιστήρια που ελέγξαμε δεν χρειάζεται ενέργεια."
 bundle	wallet.notices.expired	"{policy}: έληξε στις {date}."
 bundle	wallet.notices.expiringSoon	"{policy}: λήγει σε {days} ημέρες."
 bundle	wallet.notices.showLess	"Λιγότερα"
@@ -3390,7 +3390,7 @@ bundle	wallet.policyDetailsPage.agentLockedHint	"Η συνεργασία με τ
 bundle	wallet.policyDetailsPage.agentSectionTitle	"Σημειώσεις συμβούλου & συνεργασία"
 bundle	wallet.policyDetailsPage.analysisBlockedConsentHint	"Η ανάλυση δεν απέτυχε — χρειάζεται πρώτα η ρητή συγκατάθεση του κατόχου για επεξεργασία των εγγράφων από AI. Δώστε τη συγκατάθεση και ξεκινήστε ξανά την ανάλυση."
 bundle	wallet.policyDetailsPage.analysisBlockedConsentTitle	"Εκκρεμεί συγκατάθεση για επεξεργασία AI"
-bundle	wallet.policyDetailsPage.analysisBlockedUpgradeHint	"Η ανάλυση δεν απέτυχε — η αναλυτική κάλυψη, τα κενά και οι όροι ξεκλειδώνουν με αναβάθμιση σε Plus. Το έγγραφό σας είναι εντάξει· δεν χρειάζεται νέα μεταφόρτωση."
+bundle	wallet.policyDetailsPage.analysisBlockedUpgradeHint	"Η ανάλυση δεν απέτυχε — η αναλυτική κάλυψη, τα κενά και οι όροι περιλαμβάνονται στο Plus. Το έγγραφό σας είναι εντάξει· δεν χρειάζεται νέα μεταφόρτωση."
 bundle	wallet.policyDetailsPage.analysisBlockedUpgradeTitle	"Η πλήρης ανάλυση AI είναι δυνατότητα του Plus"
 bundle	wallet.policyDetailsPage.analysisDegradedHint	"Κάποια βήματα της ανάλυσης δεν ολοκληρώθηκαν, γι’ αυτό λείπουν στοιχεία κάλυψης. Σε αντίθεση με μια καθαρή ανάλυση που δεν βρήκε τίποτα, εδώ αξίζει να δοκιμάσετε ξανά — η αιτία είναι συχνά προσωρινή."
 bundle	wallet.policyDetailsPage.analysisDegradedTitle	"Η ανάλυση δεν ολοκληρώθηκε κανονικά"
@@ -3637,7 +3637,7 @@ bundle	wallet.policyDetailsPage.summaryTitle	"Το ασφαλιστήριό σα
 bundle	wallet.policyDetailsPage.tabAnalysis	"Ανάλυση"
 bundle	wallet.policyDetailsPage.tabCollaboration	"Συνεργασία"
 bundle	wallet.policyDetailsPage.tabQa	"AI Q&A"
-bundle	wallet.policyDetailsPage.upgradeHint	"Ξεκλειδώστε συνεργασία με σύμβουλο, προηγμένες αναλύσεις και απεριόριστες ερωτήσεις AI με Plus ή Pro."
+bundle	wallet.policyDetailsPage.upgradeHint	"Με αναβάθμιση: συνεργασία με σύμβουλο, πλήρεις αναλύσεις και απεριόριστες ερωτήσεις AI."
 bundle	wallet.policyDetailsPage.usageLimitLabel	"Χρήση"
 bundle	wallet.policyDetailsPage.valueUnreadable	"Δεν διαβάστηκε από το έγγραφο"
 bundle	wallet.policyDetailsPage.valueUnreadableCta	"Άνοιγμα εγγράφου"
@@ -3854,7 +3854,7 @@ inline	app/(protected)/agent/AgentClient.tsx	"Ο σύμβουλός σας βλ�
 inline	app/(protected)/agent/AgentClient.tsx	"Ο σύνδεσμος αντιγράφηκε"
 inline	app/(protected)/agent/AgentClient.tsx	"Ολοκληρωμένα"
 inline	app/(protected)/agent/AgentClient.tsx	"Παράδειγμα"
-inline	app/(protected)/agent/AgentClient.tsx	"Πιστοποιημένος συνεργάτης"
+inline	app/(protected)/agent/AgentClient.tsx	"Πιστοποιημένος σύμβουλος"
 inline	app/(protected)/agent/AgentClient.tsx	"Πολλές προσκλήσεις. Δοκιμάστε ξανά αργότερα."
 inline	app/(protected)/agent/AgentClient.tsx	"Προστέθηκε από τον σύμβουλο"
 inline	app/(protected)/agent/AgentClient.tsx	"Προτάσεις"
@@ -3878,10 +3878,10 @@ inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Κάτι πήγε �
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Μετάβαση σε ασφαλή πληρωμή..."
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Πρακτορείο"
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "5 AI αναλύσεις/μήνα", "Βασικό CRM", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Pipeline εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Επώνυμα emails", "Μαζική εισαγωγή (100 γραμμές)", "Ανάλυση χαρτοφυλακίου", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "200 AI αναλύσεις/μήνα", "Πλήρες pipeline + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 πράκτορες)", "Cross-sell ευφυΐα", "Προτεραιότητα στην ανάλυση", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & πράκτορες", "Απεριόριστες AI αναλύσεις", "Απεριόριστη μαζική εισαγωγή", "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)", "Αποκλειστική υποστήριξη", "Όλα τα Pro χαρακτηριστικά", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	{ title: "Πλάνα Πρακτόρων", subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.", free: "Δωρεάν", month: "/μήνα", currentPlan: "Τρέχον πλάνο", upgrade: "Αναβάθμιση", getStarted: "Ξεκινήστε", contact: "Επικοινωνία", popular: "Δημοφιλέστερο", backToDashboard: "Πίσω στο Dashboard", vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.", vatIncluded: "με ΦΠΑ", recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.", }
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Ροή εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Επώνυμα emails", "Μαζική εισαγωγή (100 γραμμές)", "Ανάλυση χαρτοφυλακίου", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "200 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", "Προτεραιότητα στην ανάλυση", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & σύμβουλοι", "Απεριόριστες AI αναλύσεις", "Απεριόριστη μαζική εισαγωγή", "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)", "Αποκλειστική υποστήριξη", "Όλα τα Pro χαρακτηριστικά", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	{ title: "Πλάνα Πρακτόρων", subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.", free: "Δωρεάν", month: "/μήνα", currentPlan: "Τρέχον πλάνο", upgrade: "Αναβάθμιση", getStarted: "Ξεκινήστε", contact: "Επικοινωνία", popular: "Δημοφιλέστερο", backToDashboard: "Πίσω στην αρχική", vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.", vatIncluded: "με ΦΠΑ", recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.", }
 inline	app/(protected)/agent/relationship-actions.ts	"Η συνεργασία τερματίστηκε"
 inline	app/(protected)/agent/relationship-actions.ts	`${actorName || "Ο πελάτης"} τερμάτισε τη συνεργασία. Δεν έχετε πλέον πρόσβαση στα ασφαλιστήριά του.`
 inline	app/(protected)/agent/relationship-actions.ts	`${actorName || "Ο σύμβουλός σας"} τερμάτισε τη συνεργασία. Δεν έχει πλέον πρόσβαση στα ασφαλιστήριά σας.`
@@ -3928,30 +3928,30 @@ inline	app/(protected)/insights/InsightsClient.tsx	"Υγεία"
 inline	app/(protected)/protection/page.tsx	event.definitionId
 inline	app/(protected)/questionnaires/QuestionnairesClient.tsx	{ kicker: "ΕΡΩΤΗΜΑΤΟΛΟΓΙΑ", title: "Διαχείριση ερωτηματολογίων", subtitle: "Δημιουργήστε πρότυπα, παρακολουθήστε και αναλύστε απαντήσεις πελατών.", templates: "Πρότυπα", sent: "Απεσταλμένα", createNew: "Νέο πρότυπο", system: "Σύστημα", custom: "Προσαρμοσμένο", questions: "ερωτήσεις", sentCount: "αποστολές", editTemplate: "Επεξεργασία", moreQuestions: "+{n} ακόμη", namePlaceholder: "π.χ. Ετήσιος έλεγχος κάλυψης", errorNameRequired: "Δώστε ένα όνομα στο πρότυπο", errorAddQuestion: "Προσθέστε τουλάχιστον μία ερώτηση", errorQuestionText: "Κάθε ερώτηση χρειάζεται κείμενο", deleteTemplate: "Διαγραφή", deleteTemplateTitle: "Διαγραφή του προτύπου;", deleteTemplateBody: "Το πρότυπο αφαιρείται από τη βιβλιοθήκη σας. Τα ερωτηματολόγια που έχουν ήδη σταλεί διατηρούν τις απαντήσεις τους.", deleteTemplateFailed: "Το πρότυπο δεν διαγράφηκε. Δοκιμάστε ξανά.", saveTemplateFailed: "Το πρότυπο δεν αποθηκεύτηκε. Δοκιμάστε ξανά.", templateName: "Όνομα προτύπου", lob: "Κλάδος ασφάλισης", addQuestion: "Προσθήκη ερώτησης", questionLabel: "Κείμενο ερώτησης (EN)", questionLabelEl: "Κείμενο ερώτησης (EL)", questionType: "Τύπος", removeQuestion: "Αφαίρεση ερώτησης", markRequired: "Υποχρεωτική ερώτηση", required: "Υποχρεωτικό", optional: "Προαιρετικό", options: "Επιλογές (χωρισμένες με κόμμα)", optionsEl: "Επιλογές EL (χωρισμένες με κόμμα)", save: "Αποθήκευση", cancel: "Ακύρωση", customer: "Πελάτης", sortLabel: "Ταξινόμηση", defaultOrder: "Προεπιλεγμένη σειρά", template: "Πρότυπο", status: "Κατάσταση", sentAt: "Αποστολή", pending: "Αναμονή", completed: "Ολοκληρωμένο", analyze: "Ανάλυση AI", noTemplates: "Δεν υπάρχουν πρότυπα", noTemplatesDesc: "Δημιουργήστε ένα επαναχρησιμοποιήσιμο ερωτηματολόγιο για να καταγράφετε ανάγκες πελατών και να εντοπίζετε κενά κάλυψης πιο γρήγορα.", noInstances: "Δεν υπάρχουν απεσταλμένα ερωτηματολόγια", noInstancesDesc: "Στείλτε ένα ερωτηματολόγιο από το προφίλ ενός πελάτη για να αρχίσετε να συλλέγετε απαντήσεις εδώ.", viewClients: "Προβολή πελατών", analysisTitle: "Ανάλυση απαντήσεων", needs: "Αναγνωρισμένες ανάγκες", recommendations: "Συστάσεις", missingCoverage: "Ελλείψεις κάλυψης", answers: "Απαντήσεις", essential: "Απαραίτητο", text: "Κείμενο", number: "Αριθμός", boolean: "Ναι/Όχι", select: "Λίστα", }
 inline	app/(protected)/renewals/RenewalsClient.tsx	{ title: "Ανανεώσεις", sortLabel: "Ταξινόμηση", defaultOrder: "Προεπιλεγμένη σειρά", subtitle: "Παρακολούθηση και διαχείριση ανανεώσεων ασφαλιστηρίων.", kicker: "PIPELINE", pending: "Εκκρεμεί", readyToContact: "Έτοιμο για επικοινωνία", noActiveConnection: "Χωρίς ενεργή σύνδεση", overdue: "Ληξιπρόθεσμο", expiresToday: "Σήμερα", expiresTomorrow: "Αύριο", daysLeftSuffix: " ημ.", completed: "Ολοκληρώθηκε", lapsed: "Εκπνοή", all: "Όλα", expiringThisWeek: "Λήγουν αυτή την εβδομάδα", expiringThisMonth: "Λήγουν αυτόν τον μήνα", completedThisMonth: "Ανανεώθηκαν", lapsedThisMonth: "Εκπνοή μήνα", premiumAtRisk: "Ασφάλιστρα σε κίνδυνο", totalTracked: "Σύνολο", filterBy: "Φίλτρο", timeframe: "Χρονικό πλαίσιο", days: "ημέρες", customer: "Πελάτης", policy: "Ασφαλιστήριο", insurer: "Ασφαλιστής", lob: "Κλάδος", premium: "Ασφάλιστρο", expires: "Λήξη", daysLeft: "Ημέρες", status: "Κατάσταση", actions: "Ενέργειες", markOutcome: "Καταγραφή Αποτελέσματος", renewedSame: "Ανανέωση (ίδιος ασφαλιστής)", renewedDifferent: "Ανανέωση (διαφορετικός)", cancelled: "Ακύρωση", sendReminder: "Αποστολή Υπενθύμισης", sendBatchReminder: "Αποστολή Υπενθυμίσεων", noRenewals: "Δεν υπάρχουν ανανεώσεις", noRenewalsDesc: "Οι ανανεώσεις θα εμφανιστούν εδώ καθώς πλησιάζουν οι ημερομηνίες λήξης.", emptyHeadline: "Κανένας συναγερμός ανανέωσης", emptyBenefit: "Μόλις προστεθούν ασφαλιστήρια πελατών, οι λήξεις εμφανίζονται εδώ 90 ημέρες πριν — ποτέ ξανά χαμένη ανανέωση.", emptyCta: "Προσθήκη ασφαλιστηρίων πελατών", emptyPreviewLabel: "Παράδειγμα", emptyExampleName: "Μαρία Κ. — Αυτοκίνητο", emptyExampleMeta: "Interamerican · €312/έτος", emptyExampleDays: "σε 45 ημέρες", selected: "επιλεγμένα", notes: "Σημειώσεις (προαιρετικά)", save: "Αποθήκευση", cancel: "Ακύρωση", outcomeRecorded: "Αποτέλεσμα καταγράφηκε", actionFailed: "Αποτυχία", }
-inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας έληξε χωρίς ανανέωση."
-inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας ακυρώθηκε."
-inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας ανανεώθηκε σε νέο ασφαλιστή."
-inline	app/(protected)/renewals/actions.ts	"Το συμβόλαιό σας ανανεώθηκε στον ίδιο ασφαλιστή."
+inline	app/(protected)/renewals/actions.ts	"Το ασφαλιστήριό σας έληξε χωρίς ανανέωση."
+inline	app/(protected)/renewals/actions.ts	"Το ασφαλιστήριό σας ακυρώθηκε."
+inline	app/(protected)/renewals/actions.ts	"Το ασφαλιστήριό σας ανανεώθηκε σε νέα ασφαλιστική."
+inline	app/(protected)/renewals/actions.ts	"Το ασφαλιστήριό σας ανανεώθηκε στην ίδια ασφαλιστική."
 inline	app/(protected)/renewals/actions.ts	`Ενημέρωση ανανέωσης: ${renewal.policy.policyNumber}`
 inline	app/(protected)/renewals/actions.ts	`Το ασφαλιστήριο ${renewal.policy.policyNumber} λήγει στις ${formatDate(renewal.policyEndDate, "el")}. Ο ασφαλιστικός σας σύμβουλος θα ήθελε να συζητήσετε τις επιλογές ανανέωσης.`
 inline	app/(protected)/renewals/actions.ts	`Υπενθύμιση ανανέωσης: ${renewal.policy.insurerName}`
 inline	app/(protected)/tasks/actions.ts	"Ο πελάτης συμπλήρωσε το ερωτηματολόγιο"
 inline	app/(protected)/tasks/actions.ts	`${customerName} απάντησε στο «${instance.template.name}».`
-inline	app/(protected)/team/TeamClient.tsx	{ kicker: "ΠΡΑΚΤΟΡΕΙΟ", title: "Διαχείριση ομάδας", subtitle: "Διαχειριστείτε την ομάδα σας, αναθέστε πελάτες και παρακολουθήστε την απόδοση.", noTeam: "Δεν έχει δημιουργηθεί πρακτορείο", noTeamDesc: "Δημιουργήστε ένα πρακτορείο για να προσκαλέσετε μέλη, να μοιραστείτε πελάτες και να παρακολουθείτε τη ροή εργασίας.", createAgency: "Δημιουργία πρακτορείου", agencyName: "Όνομα πρακτορείου", website: "Ιστοσελίδα", phone: "Τηλέφωνο", address: "Διεύθυνση", taxId: "ΑΦΜ", members: "Μέλη ομάδας", invite: "Πρόσκληση μέλους", email: "Διεύθυνση email", role: "Ρόλος", owner: "Ιδιοκτήτης", manager: "Διαχειριστής", member: "Μέλος", invited: "Προσκεκλημένο", active: "Ενεργό", suspended: "Αναστολή", customers: "Πελάτες", pipeline: "Σωλήνας", won: "Κερδ.", remove: "Αφαίρεση", changeRole: "Αλλαγή ρόλου", actionFailed: "Η ενέργεια δεν ολοκληρώθηκε. Δοκιμάστε ξανά.", teamStats: "Επισκόπηση ομάδας", totalMembers: "Σύνολο μελών", totalCustomers: "Σύνολο πελατών", totalPipeline: "Αξία Pipeline", totalWon: "Κερδισμένα έσοδα", sharedPipeline: "Κοινό pipeline", agent: "Σύμβουλος", customer: "Πελάτης", sortLabel: "Ταξινόμηση", defaultOrder: "Προεπιλεγμένη σειρά", status: "Κατάσταση", value: "Αξία", lob: "Κλάδος", noOpps: "Δεν υπάρχουν ευκαιρίες ακόμα.", noOppsDesc: "Οι ευκαιρίες εμφανίζονται εδώ καθώς η ομάδα σας καταγράφει προοπτικές cross-sell και κάλυψης για κοινούς πελάτες.", transfer: "Μεταφορά", transferCustomer: "Μεταφορά πελάτη", transferTo: "Μεταφορά σε", cancel: "Ακύρωση", confirm: "Επιβεβαίωση", }
+inline	app/(protected)/team/TeamClient.tsx	{ kicker: "ΠΡΑΚΤΟΡΕΙΟ", title: "Διαχείριση ομάδας", subtitle: "Διαχειριστείτε την ομάδα σας, αναθέστε πελάτες και παρακολουθήστε την απόδοση.", noTeam: "Δεν έχει δημιουργηθεί πρακτορείο", noTeamDesc: "Δημιουργήστε ένα πρακτορείο για να προσκαλέσετε μέλη, να μοιραστείτε πελάτες και να παρακολουθείτε τη ροή εργασίας.", createAgency: "Δημιουργία πρακτορείου", agencyName: "Όνομα πρακτορείου", website: "Ιστοσελίδα", phone: "Τηλέφωνο", address: "Διεύθυνση", taxId: "ΑΦΜ", members: "Μέλη ομάδας", invite: "Πρόσκληση μέλους", email: "Διεύθυνση email", role: "Ρόλος", owner: "Ιδιοκτήτης", manager: "Διαχειριστής", member: "Μέλος", invited: "Προσκεκλημένο", active: "Ενεργό", suspended: "Αναστολή", customers: "Πελάτες", pipeline: "Ροή", won: "Κερδ.", remove: "Αφαίρεση", changeRole: "Αλλαγή ρόλου", actionFailed: "Η ενέργεια δεν ολοκληρώθηκε. Δοκιμάστε ξανά.", teamStats: "Επισκόπηση ομάδας", totalMembers: "Σύνολο μελών", totalCustomers: "Σύνολο πελατών", totalPipeline: "Αξία ροής", totalWon: "Κερδισμένα έσοδα", sharedPipeline: "Κοινή ροή", agent: "Σύμβουλος", customer: "Πελάτης", sortLabel: "Ταξινόμηση", defaultOrder: "Προεπιλεγμένη σειρά", status: "Κατάσταση", value: "Αξία", lob: "Κλάδος", noOpps: "Δεν υπάρχουν ευκαιρίες ακόμα.", noOppsDesc: "Οι ευκαιρίες εμφανίζονται εδώ καθώς η ομάδα σας καταγράφει προοπτικές πώλησης και κάλυψης για κοινούς πελάτες.", transfer: "Μεταφορά", transferCustomer: "Μεταφορά πελάτη", transferTo: "Μεταφορά σε", cancel: "Ακύρωση", confirm: "Επιβεβαίωση", }
 inline	app/(protected)/upgrade/page.tsx	'Κάτι πήγε στραβά. Δοκιμάστε ξανά.'
 inline	app/(protected)/upgrade/page.tsx	'Μετάβαση σε ασφαλή πληρωμή...'
 inline	app/(protected)/upgrade/success/page.tsx	"Όλα τα κενά κάλυψης του ασφαλιστηρίου σας είναι πλέον ορατά, μαζί με τις πλήρεις εξηγήσεις και προτάσεις."
 inline	app/(protected)/upgrade/success/page.tsx	"Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή"
 inline	app/(protected)/upgrade/success/page.tsx	"Η αγορά ολοκληρώθηκε"
 inline	app/(protected)/upgrade/success/page.tsx	"Η αναβάθμιση ολοκληρώθηκε"
-inline	app/(protected)/upgrade/success/page.tsx	"Η αναφορά ξεκλειδώθηκε"
+inline	app/(protected)/upgrade/success/page.tsx	"Η αναφορά είναι διαθέσιμη"
 inline	app/(protected)/upgrade/success/page.tsx	"Η πληρωμή επεξεργάζεται"
 inline	app/(protected)/upgrade/success/page.tsx	"Η συνδρομή σας ενεργοποιείται. Αν δεν εμφανιστεί σε λίγα λεπτά, επικοινωνήστε μαζί μας."
 inline	app/(protected)/upgrade/success/page.tsx	"Μετάβαση στο πορτοφόλι"
 inline	app/(protected)/upgrade/success/page.tsx	"Συνέχεια"
 inline	app/(protected)/upgrade/success/page.tsx	"Τα επιπλέον tokens προστέθηκαν στον λογαριασμό σας και είναι άμεσα διαθέσιμα."
-inline	app/(protected)/upgrade/success/page.tsx	"Το πλάνο πράκτορα είναι ενεργό. Ξεκλειδώσατε περισσότερους πελάτες, πλήρες pipeline εσόδων και προτεραιότητα στην ανάλυση AI."
-inline	app/(protected)/upgrade/success/page.tsx	"Το πλάνο σας είναι ενεργό. Ξεκλειδώσατε πλήρη ανάλυση, περισσότερα ασφαλιστήρια και απεριόριστες ερωτήσεις AI."
+inline	app/(protected)/upgrade/success/page.tsx	"Το πλάνο σας είναι ενεργό. Έχετε πλέον πλήρη ανάλυση, περισσότερα ασφαλιστήρια και απεριόριστες ερωτήσεις AI."
+inline	app/(protected)/upgrade/success/page.tsx	"Το πλάνο συμβούλου είναι ενεργό. Έχετε πλέον περισσότερους πελάτες, πλήρη ροή εσόδων και προτεραιότητα στην ανάλυση AI."
 inline	app/(protected)/wallet/actions.ts	"Ένα ασφαλιστήριο διαγράφηκε"
 inline	app/(protected)/wallet/actions.ts	"Ένα ασφαλιστήριό σας ενημερώθηκε"
 inline	app/(protected)/wallet/actions.ts	"Ένα κοινοποιημένο ασφαλιστήριο διαγράφηκε"
@@ -4089,7 +4089,7 @@ inline	app/(public)/trust/TrustSections.tsx	"Ποιος μπορεί να δει
 inline	app/(public)/trust/TrustSections.tsx	"Πού δεν πηγαίνουν τα δεδομένα σας"
 inline	app/(public)/trust/TrustSections.tsx	"Τα έγγραφά σας"
 inline	app/(public)/trust/TrustSections.tsx	"Τα αρχεία σας κρυπτογραφούνται κατά τη μεταφορά (TLS) και κατά την αποθήκευση, και φυλάσσονται σε υποδομή στην Ευρωπαϊκή Ένωση — συγκεκριμένα στην περιοχή eu-west-3 (Παρίσι)."
-inline	app/(public)/trust/TrustSections.tsx	"Τη διαγραφή τη ζητάτε με ένα κλικ· την εκτελεί άνθρωπος και ολοκληρώνεται το αργότερο εντός ενός μήνα. Ό,τι μας υποχρεώνει ο νόμος να κρατήσουμε — για παράδειγμα τιμολόγια για πέντε χρόνια — παραμένει σε ανωνυμοποιημένη μορφή."
+inline	app/(public)/trust/TrustSections.tsx	"Τη διαγραφή τη ζητάτε από τον λογαριασμό σας· την εκτελεί άνθρωπος και ολοκληρώνεται το αργότερο εντός ενός μήνα. Ό,τι μας υποχρεώνει ο νόμος να κρατήσουμε — για παράδειγμα τιμολόγια για πέντε χρόνια — παραμένει σε ανωνυμοποιημένη μορφή."
 inline	app/(public)/trust/TrustSections.tsx	"Τι κάνει η τεχνητή νοημοσύνη — και τι δεν αποφασίζει"
 inline	app/(public)/trust/TrustSections.tsx	"Χρησιμοποιούνται τα έγγραφά μου για εκπαίδευση μοντέλων AI;"
 inline	app/api/v1/agent/policies/[id]/branded-report/route.ts	"Δημιουργήθηκε αναφορά για ασφαλιστήριό σας"
@@ -4155,7 +4155,7 @@ inline	components/account/BillingHistory.tsx	'Απέτυχε'
 inline	components/account/BillingHistory.tsx	'Εκκρεμεί'
 inline	components/account/BillingHistory.tsx	'Πληρώθηκε'
 inline	components/account/PricingComparison.tsx	value
-inline	components/account/TokenUsageCard.tsx	{ title: "Χρήση AI Tokens", monthlyUsage: "Μηνιαία χρήση", extraTokens: "Επιπλέον Tokens", buyExtra: "Αγορά επιπλέον Tokens", freeTierNote: "Αναβαθμίστε για αγορά επιπλέον tokens", mostPopular: "Πιο δημοφιλές", cancel: "Ακύρωση", remaining: "διαθέσιμα", used: "χρησιμοποιήθηκαν", purchaseFailed: "Σφάλμα κατά την αγορά. Δοκιμάστε ξανά.", }
+inline	components/account/TokenUsageCard.tsx	{ title: "Χρήση AI Tokens", monthlyUsage: "Μηνιαία χρήση", extraTokens: "Επιπλέον tokens", buyExtra: "Αγορά επιπλέον tokens", freeTierNote: "Αναβαθμίστε για αγορά επιπλέον tokens", mostPopular: "Πιο δημοφιλές", cancel: "Ακύρωση", remaining: "διαθέσιμα", used: "χρησιμοποιήθηκαν", purchaseFailed: "Σφάλμα κατά την αγορά. Δοκιμάστε ξανά.", }
 inline	components/admin/TokenAnalyticsDashboard.tsx	'Ανά λειτουργία'
 inline	components/admin/TokenAnalyticsDashboard.tsx	'Ανά πλάνο'
 inline	components/admin/TokenAnalyticsDashboard.tsx	'Ανάλυση χρήσης Tokens'
@@ -4304,16 +4304,16 @@ inline	components/landing/grafi/HowItWorks.tsx	"Δείτε το παράδειγ
 inline	components/monetization/CarriedPlanCard.tsx	"Όχι τώρα"
 inline	components/monetization/CarriedPlanCard.tsx	"Δεν ήταν δυνατή η έναρξη της πληρωμής. Δοκιμάστε ξανά."
 inline	components/monetization/CarriedPlanCard.tsx	"Ενεργοποίηση {plan}"
-inline	components/monetization/CarriedPlanCard.tsx	"Κατά την εγγραφή διάλεξες το {plan}. Ενεργοποίησέ το για να ξεκλειδώσεις πλήρη ανάλυση AI, περισσότερα ασφαλιστήρια και έξυπνες υπενθυμίσεις."
+inline	components/monetization/CarriedPlanCard.tsx	"Κατά την εγγραφή διαλέξατε το {plan}. Ενεργοποιήστε το για πλήρη ανάλυση AI, περισσότερα ασφαλιστήρια και υπενθυμίσεις."
 inline	components/monetization/CarriedPlanCard.tsx	"Το πλάνο που επέλεξες σε περιμένει"
-inline	components/monetization/PremiumInsightCards.tsx	"Έξυπνες ενέργειες πριν την ανανέωση"
 inline	components/monetization/PremiumInsightCards.tsx	"Ανάλυση ασφαλιστηρίων από διαφορετικές ασφαλιστικές"
 inline	components/monetization/PremiumInsightCards.tsx	"Διαθέσιμα με το Family"
+inline	components/monetization/PremiumInsightCards.tsx	"Ενέργειες πριν την ανανέωση"
 inline	components/monetization/PremiumInsightCards.tsx	"Ερωτήσεις στο AI"
+inline	components/monetization/PremiumInsightCards.tsx	"Η βασική σας σύνοψη είναι έτοιμη. Δείτε τι προσθέτει η πλήρης ανάλυση AI."
 inline	components/monetization/PremiumInsightCards.tsx	"Οδηγός προετοιμασίας ζημιάς"
 inline	components/monetization/PremiumInsightCards.tsx	"Πιθανά κενά κάλυψης"
 inline	components/monetization/PremiumInsightCards.tsx	"Πλήρης AI ανάλυση"
-inline	components/monetization/PremiumInsightCards.tsx	"Το βασικό σας summary είναι έτοιμο. Δείτε τι προσθέτει η πλήρης AI εμπειρία."
 inline	components/monetization/UpgradeModal.tsx	"/έτος"
 inline	components/monetization/UpgradeModal.tsx	"/μήνα"
 inline	components/monetization/UpgradeModal.tsx	"14 ημέρες δωρεάν δοκιμή"
@@ -4760,7 +4760,7 @@ inline	lib/guides/content.ts	"Minimum deductible"
 inline	lib/guides/content.ts	"Negligence / fraud"
 inline	lib/guides/content.ts	"Objectively material to the assessment of the risk"
 inline	lib/guides/content.ts	"Portal ασφαλιστικής εταιρείας"
-inline	lib/guides/content.ts	"Portal ασφαλιστικής, εφαρμογή πράκτορα ή ψηφιακό πορτοφόλι; Σύγκριση ανά κατηγορία: έγγραφα, ανάλυση καλύψεων, ανανεώσεις, πληρωμές, αποζημιώσεις."
+inline	lib/guides/content.ts	"Portal ασφαλιστικής, εφαρμογή ασφαλιστή ή ψηφιακό πορτοφόλι; Σύγκριση ανά κατηγορία: έγγραφα, ανάλυση καλύψεων, ανανεώσεις, πληρωμές, αποζημιώσεις."
 inline	lib/guides/content.ts	"Single crop and livestock declaration"
 inline	lib/guides/content.ts	"Statement of the policyholder / proposal form"
 inline	lib/guides/content.ts	"Sum insured"
@@ -4781,7 +4781,7 @@ inline	lib/guides/content.ts	"Ένα ασφαλιστήριο σε μία ετα
 inline	lib/guides/content.ts	"Ένα εργαλείο που δέχεται ασφαλιστήρια από οποιαδήποτε εταιρεία και τα διαβάζει, όχι απλώς τα αποθηκεύει. Με τρία ή περισσότερα ασφαλιστήρια η αξία δεν είναι στο να τα βρίσκετε, αλλά στο να βλέπετε τι λείπει και τι πληρώνετε δύο φορές."
 inline	lib/guides/content.ts	"Έξι σημεία, με τους όρους όπως τυπώνονται στα ελληνικά έγγραφα και την αγγλική τους απόδοση."
 inline	lib/guides/content.ts	"Έξι σημεία, με τους όρους όπως τυπώνονται στα ελληνικά έγγραφα και την αγγλική τους απόδοση."
-inline	lib/guides/content.ts	"Όλα τα ασφαλιστήρια μέσω ενός πράκτορα: η εφαρμογή του πρακτορείου καλύπτει τα περισσότερα — αρκεί να μη διαφεύγει κάτι που κλείσατε αλλού."
+inline	lib/guides/content.ts	"Όλα τα ασφαλιστήρια μέσω ενός ασφαλιστή: η εφαρμογή του πρακτορείου καλύπτει τα περισσότερα — αρκεί να μη διαφεύγει κάτι που κλείσατε αλλού."
 inline	lib/guides/content.ts	"Όλες οι ασφαλιστικές μαζί"
 inline	lib/guides/content.ts	"Όποιος ψάχνει εφαρμογή για τα ασφαλιστήριά του συνήθως θέλει τρία πράγματα ταυτόχρονα, χωρίς να τα ξεχωρίζει. Το πρόβλημα είναι ότι λύνονται σε διαφορετικά σημεία, και μια εφαρμογή που υπόσχεται και τα τρία μάλλον υπερβάλλει σε ένα από αυτά."
 inline	lib/guides/content.ts	"Όπου δέχονται τη μέθοδο"
@@ -4812,7 +4812,7 @@ inline	lib/guides/content.ts	"Αν δεν το δήλωσα, χάνω την κ�
 inline	lib/guides/content.ts	"Αν δηλώσετε κεφάλαιο χαμηλότερο από το πραγματικό κόστος ανακατασκευής για να μειώσετε το ασφάλιστρο, σε ζημιά θα αποζημιωθείτε με τον «αναλογικό κανόνα» (pro-rata): κατοικία που κοστίζει 200.000 € να ξαναχτιστεί, ασφαλισμένη για 100.000 €, εισπράττει το 50% κάθε ζημιάς — και μετά την απαλλαγή. Ενημερώνετε το κεφάλαιο σε κάθε ανανέωση, ειδικά όταν το κατασκευαστικό κόστος αυξάνεται."
 inline	lib/guides/content.ts	"Αν η κάλυψη είναι σε Α΄ κίνδυνο, ισχύει ο όρος;"
 inline	lib/guides/content.ts	"Αν η κατοικία σας είναι ασφαλισμένη και για τους τρεις κινδύνους — σεισμό, πυρκαγιά και πλημμύρα — δικαιούστε έκπτωση στον ΕΝΦΙΑ. Η έκπτωση ξεκίνησε στο 10% το 2022 και έχει αυξηθεί για κατοικίες με χαμηλότερη φορολογητέα αξία. Απαιτείται ελάχιστη διάρκεια ασφάλισης και επαρκές ασφαλιζόμενο κεφάλαιο· η ασφαλιστική σας εταιρεία διαβιβάζει τα στοιχεία στην ΑΑΔΕ."
-inline	lib/guides/content.ts	"Αν λάβετε ειδοποίηση: ασφαλίστε το όχημα άμεσα — η κάλυψη ενεργοποιείται από την έκδοση του ασφαλιστηρίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται ηλεκτρονικά, μέσω ειδικής εφαρμογής της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης, εντός δέκα (10) εργάσιμων ημερών από την κοινοποίηση, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο."
+inline	lib/guides/content.ts	"Αν λάβετε ειδοποίηση: ο νόμος απαιτεί άμεση ασφάλιση του οχήματος — η κάλυψη ενεργοποιείται από την έκδοση του ασφαλιστηρίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται ηλεκτρονικά, μέσω ειδικής εφαρμογής της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης, εντός δέκα (10) εργάσιμων ημερών από την κοινοποίηση, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο."
 inline	lib/guides/content.ts	"Αν το σπίτι σας κοστίζει 200.000 € να ξαναχτιστεί αλλά το έχετε ασφαλίσει για 100.000 €, δεν θα πάρετε 100.000 € σε ολική ζημιά — ο «αναλογικός κανόνας» (pro-rata) σημαίνει ότι κάθε αποζημίωση, ακόμη και μερική, μειώνεται στο ποσοστό της υπασφάλισης. Ζημιά 20.000 € αποζημιώνεται με 10.000 €. Γι' αυτό ο έλεγχος του κεφαλαίου ανακατασκευής είναι το πιο σημαντικό, και πιο παραμελημένο, σημείο κάθε ανανέωσης."
 inline	lib/guides/content.ts	"Αν υπάρχει ιδιωτικό ασφαλιστήριο για την εκμετάλλευση ή για την ίδια καλλιέργεια, αυτό είναι το έγγραφο που μπορεί να διαβάσει: ποιους κινδύνους ονομάζει, ποια ποσά και απαλλαγές ορίζει, τι καταγράφει ως εξαιρέσεις — και πού σιωπά. Όταν το έγγραφο δεν αναφέρει κάτι, το PolicyWallet το δηλώνει ως μη καταγεγραμμένο· δεν το συμπεραίνει και δεν το εκλαμβάνει ως κάλυψη."
 inline	lib/guides/content.ts	"Αν υπάρχει και ιδιωτικό ασφαλιστήριο"
@@ -4915,7 +4915,7 @@ inline	lib/guides/content.ts	"Δουλεύει με όλες τις ασφαλι
 inline	lib/guides/content.ts	"Δύο ασφαλιστήρια που μοιάζουν ίδια στον πίνακα καλύψεων μπορεί να συμπεριφέρονται διαφορετικά, γιατί μια κάλυψη γραμμένη σε Α΄ κίνδυνο εξαιρείται ρητά από τον όρο στο κείμενο που παραθέτουμε. Το ποιο ισχύει για εσάς δεν φαίνεται από το ποσό· φαίνεται από τη διατύπωση δίπλα του."
 inline	lib/guides/content.ts	"Δύο μηχανισμοί λειτουργούν παράλληλα. Ο πρώτος είναι ηλεκτρονικός: η Γενική Γραμματεία Πληροφοριακών Συστημάτων και Ψηφιακής Διακυβέρνησης (Γ.Γ.Π.Σ.Ψ.Δ.) του Υπουργείου Ψηφιακής Διακυβέρνησης διασταυρώνει, τουλάχιστον μία φορά ανά ημερολογιακό εξάμηνο, το μητρώο οχημάτων με το Κέντρο Πληροφοριών ασφαλισμένων οχημάτων· όποιο όχημα με ενεργή άδεια κυκλοφορίας δεν εμφανίζεται ασφαλισμένο, εντοπίζεται χωρίς να χρειαστεί έλεγχος στον δρόμο. Ο δεύτερος είναι ο κλασικός έλεγχος από την Τροχαία."
 inline	lib/guides/content.ts	"Δύο περιορισμοί, και οι δύο μέσα στο ίδιο απόσπασμα. Πρώτον, η ρήτρα βρίσκεται στις εξαιρέσεις της κλοπής και δεν λέει τίποτα για πυρκαγιά ή ζημιά από νερό — μην τη γενικεύσετε. Δεύτερον, το κείμενο προβλέπει ρητά ότι μπορεί να έχει συμφωνηθεί μεγαλύτερο διάστημα, γραπτά, στο ίδιο το ασφαλιστήριο. Το αν αυτό έγινε στη δική σας περίπτωση φαίνεται μόνο από το δικό σας έγγραφο."
-inline	lib/guides/content.ts	"Δύο πράγματα δεν μεταφέρονται σε καμία εφαρμογή τρίτου. Το πρώτο είναι η είσπραξη του ασφαλίστρου: πληρώνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή, με web banking, πάγια εντολή, κάρτα στο portal της εταιρείας ή στο γραφείο του πράκτορα. Μια πλατφόρμα διαχείρισης δεν είναι ίδρυμα πληρωμών και δεν μπαίνει σε αυτή τη ροή."
+inline	lib/guides/content.ts	"Δύο πράγματα δεν μεταφέρονται σε καμία εφαρμογή τρίτου. Το πρώτο είναι η είσπραξη του ασφαλίστρου: πληρώνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή, με web banking, πάγια εντολή, κάρτα στο portal της εταιρείας ή στο γραφείο του ασφαλιστή. Μια πλατφόρμα διαχείρισης δεν είναι ίδρυμα πληρωμών και δεν μπαίνει σε αυτή τη ροή."
 inline	lib/guides/content.ts	"Δύο, σε δύο διαφορετικές χρονικές στιγμές. Κατά τη σύναψη, δημοσιευμένοι όροι κατοικίας αυτής της κατηγορίας ορίζουν ότι ο λήπτης της ασφάλισης «υποχρεούται να δηλώσει στην Εταιρία κάθε στοιχείο ή περιστατικό που γνωρίζει, το οποίο είναι αντικειμενικά ουσιώδες για την εκτίμηση του κινδύνου», και να απαντήσει σε κάθε σχετική ερώτηση."
 inline	lib/guides/content.ts	"ΕΑΕΕ — Ένωση Ασφαλιστικών Εταιρειών Ελλάδος"
 inline	lib/guides/content.ts	"ΕΑΕΕ — Ένωση Ασφαλιστικών Εταιρειών Ελλάδος"
@@ -4966,7 +4966,7 @@ inline	lib/guides/content.ts	"Ετήσια ή ανά περιστατικό — 
 inline	lib/guides/content.ts	"Εφαρμογές για ασφαλιστήρια και ζημιές"
 inline	lib/guides/content.ts	"Εφαρμογές για ασφαλιστήρια και ζημιές"
 inline	lib/guides/content.ts	"Εφαρμογές για ασφαλιστήρια, καλύψεις και ζημιές: τι κάνει η καθεμία;"
-inline	lib/guides/content.ts	"Εφαρμογή πράκτορα ή πρακτορείου"
+inline	lib/guides/content.ts	"Εφαρμογή ασφαλιστή ή πρακτορείου"
 inline	lib/guides/content.ts	"Ζημιά 20.000 €"
 inline	lib/guides/content.ts	"Ζημιές στο φυτικό κεφάλαιο"
 inline	lib/guides/content.ts	"Η «βεβαίωση ασφάλισης» (certificate of insurance) για κάθε περίοδο που ακουμπά την επίμαχη ημέρα, όχι μόνο για την τρέχουσα."
@@ -4990,10 +4990,10 @@ inline	lib/guides/content.ts	"Η είσπραξη γίνεται πάντα απ
 inline	lib/guides/content.ts	"Η ελληνική αγορά έχει από τα χαμηλότερα ποσοστά ασφάλισης στην Ευρωπαϊκή Ένωση — σύμφωνα με τα δημοσιευμένα στοιχεία της ΕΑΕΕ, μόνο μία μικρή μειοψηφία κατοικιών διαθέτει ασφάλιση. Ακόμα όμως και όσοι έχουν ασφαλιστήρια συναντούν επαναλαμβανόμενα κενά:"
 inline	lib/guides/content.ts	"Η εξαίρεση από τον όρο"
 inline	lib/guides/content.ts	"Η ετήσια απαλλαγή εφαρμόζεται μία φορά ανά ασφαλιστικό έτος: αν την «εξαντλήσετε» σε μία νοσηλεία, οι επόμενες μέσα στο ίδιο έτος καλύπτονται χωρίς νέα επιβάρυνση. Η απαλλαγή ανά περιστατικό εφαρμόζεται σε κάθε νοσηλεία ξεχωριστά — δύο νοσηλείες σημαίνουν δύο φορές το ποσό."
-inline	lib/guides/content.ts	"Η εφαρμογή του πράκτορα ή του πρακτορείου σας: βλέπει όσα ασφαλιστήρια εκδόθηκαν μέσω αυτού, ανεξάρτητα από εταιρεία. Ό,τι κλείσατε αλλού λείπει."
+inline	lib/guides/content.ts	"Η εφαρμογή του ασφαλιστή ή του πρακτορείου σας: βλέπει όσα ασφαλιστήρια εκδόθηκαν μέσω αυτού, ανεξάρτητα από εταιρεία. Ό,τι κλείσατε αλλού λείπει."
 inline	lib/guides/content.ts	"Η ημερομηνία κοινοποίησης της πράξης, από την οποία μετρούν οι δέκα εργάσιμες ημέρες."
 inline	lib/guides/content.ts	"Η κάλυψη σεισμού είναι ο ένας από τους τρεις κινδύνους — μαζί με πυρκαγιά και πλημμύρα — που απαιτούνται για την έκπτωση στον ΕΝΦΙΑ. Για πολλές κατοικίες, το φορολογικό όφελος καλύπτει σημαντικό μέρος του κόστους της κάλυψης, αλλάζοντας ουσιαστικά τη σχέση κόστους-οφέλους. Δείτε τον αναλυτικό οδηγό μας για τις προϋποθέσεις και τη διαδικασία δήλωσης."
-inline	lib/guides/content.ts	"Η κάλυψη σεισμού τιμολογείται ως ποσοστό επί του ασφαλιζόμενου κεφαλαίου — ενδεικτικά λίγα ευρώ ανά 1.000 ευρώ κεφαλαίου ετησίως, ανάλογα με το έτος κατασκευής και την περιοχή. Για κατοικία με κεφάλαιο 150.000 ευρώ, το επιπλέον κόστος κινείται συνήθως σε μερικές δεκάδες έως λίγες εκατοντάδες ευρώ τον χρόνο, με απαλλαγή περίπου 2% του κεφαλαίου. Η τριπλή κάλυψη σεισμού-πυρκαγιάς-πλημμύρας ξεκλειδώνει και την έκπτωση ΕΝΦΙΑ."
+inline	lib/guides/content.ts	"Η κάλυψη σεισμού τιμολογείται ως ποσοστό επί του ασφαλιζόμενου κεφαλαίου — ενδεικτικά λίγα ευρώ ανά 1.000 ευρώ κεφαλαίου ετησίως, ανάλογα με το έτος κατασκευής και την περιοχή. Για κατοικία με κεφάλαιο 150.000 ευρώ, το επιπλέον κόστος κινείται συνήθως σε μερικές δεκάδες έως λίγες εκατοντάδες ευρώ τον χρόνο, με απαλλαγή περίπου 2% του κεφαλαίου. Η τριπλή κάλυψη σεισμού-πυρκαγιάς-πλημμύρας θεμελιώνει και την έκπτωση ΕΝΦΙΑ."
 inline	lib/guides/content.ts	"Η λεϊσμανίαση (καλαζάρ), ενδημική στην Ελλάδα, αντιμετωπίζεται διαφορετικά ανά πρόγραμμα: άλλα την καλύπτουν με προϋποθέσεις προληπτικών μέτρων, άλλα την εξαιρούν ρητά. Για σκύλο στην Ελλάδα, αυτός ο όρος αξίζει ειδικό έλεγχο πριν από την υπογραφή."
 inline	lib/guides/content.ts	"Η μείωση απαλλαγής αντιμετωπίζεται συχνά ως αναβάθμιση και μπορεί να απαιτεί νέο έλεγχο ασφαλισιμότητας. Η αύξηση είναι ευκολότερη. Ρωτήστε πριν υπογράψετε — οι κανόνες διαφέρουν ανά εταιρεία."
 inline	lib/guides/content.ts	"Η μικτή (πλήρης) ασφάλεια καλύπτει επιπλέον τις ίδιες ζημιές: επισκευή του δικού σας οχήματος ακόμη και αν ευθύνεστε εσείς. Σχεδόν πάντα προβλέπει απαλλαγή — ένα ποσό, συνήθως από 300 έως 1.000 ευρώ ανά ζημιά, που επιβαρύνει εσάς πριν πληρώσει η εταιρεία."
@@ -5048,7 +5048,7 @@ inline	lib/guides/content.ts	"Λιγότερα από όσα ίσως περιμ
 inline	lib/guides/content.ts	"Λόγος"
 inline	lib/guides/content.ts	"Μένετε ακάλυπτοι για κάθε ζημιά στο διάστημα αυτό, στο αυτοκίνητο κινδυνεύετε με πρόστιμο ανασφάλιστου οχήματος, και στην κατοικία μπορεί να χάσετε την αναλογία της έκπτωσης ΕΝΦΙΑ για τη χρονιά."
 inline	lib/guides/content.ts	"Μέσω της υπηρεσίας ελέγχου ασφάλισης οχήματος στο Κέντρο Πληροφοριών (μέσω gov.gr) με τον αριθμό κυκλοφορίας. Αξίζει έλεγχο μετά από κάθε αλλαγή εταιρείας — καθυστερημένη ενημέρωση του μητρώου έχει προκαλέσει εσφαλμένες ειδοποιήσεις."
-inline	lib/guides/content.ts	"Μέσω του πράκτορα"
+inline	lib/guides/content.ts	"Μέσω του ασφαλιστή"
 inline	lib/guides/content.ts	"Με τον αριθμό, μόνο στο portal της εταιρείας που το εξέδωσε. Ένα πορτοφόλι ασφαλίσεων υπολογίζει την κατάσταση από το δικό σας έγγραφο — σε ισχύ, λήγει σύντομα ή έληξε — χωρίς να ρωτά την εταιρεία."
 inline	lib/guides/content.ts	"Μερικώς"
 inline	lib/guides/content.ts	"Μετά την έναρξη του ασφαλιστηρίου, κάθε ομάδα καλύψεων ενεργοποιείται με διαφορετική καθυστέρηση: τα ατυχήματα συνήθως άμεσα ή μέσα σε λίγες ημέρες, οι ασθένειες σε 14-30 ημέρες, ενώ χειρουργεία συγκεκριμένων κατηγοριών (π.χ. ορθοπεδικά) μπορεί να απαιτούν αρκετούς μήνες. Ό,τι εκδηλωθεί μέσα στην αναμονή αντιμετωπίζεται ως προϋπάρχον."
@@ -5162,7 +5162,7 @@ inline	lib/guides/content.ts	"Πού διαχειρίζεστε όλα τα ασ
 inline	lib/guides/content.ts	"Πού διαχειρίζεστε όλα τα ασφαλιστήριά σας online;"
 inline	lib/guides/content.ts	"Πού μπορώ να διαχειρίζομαι όλα τα ασφαλιστήριά μου σε ένα σημείο;"
 inline	lib/guides/content.ts	"Πού σταματά η προστασία του ομαδικού;"
-inline	lib/guides/content.ts	"Πρακτικά αυτό σημαίνει ότι η εφαρμογή ή το portal της εταιρείας σας παραμένει το σημείο αναφοράς για την πορεία μιας ζημιάς, και ο πράκτοράς σας ο συντομότερος δρόμος όταν κάτι κολλήσει. Αν μια εφαρμογή τρίτου υπόσχεται «claim updates», αξίζει να δείτε αν εννοεί πραγματική κατάσταση φακέλου ή απλώς υπενθυμίσεις και οδηγίες."
+inline	lib/guides/content.ts	"Πρακτικά αυτό σημαίνει ότι η εφαρμογή ή το portal της εταιρείας σας παραμένει το σημείο αναφοράς για την πορεία μιας ζημιάς, και ο ασφαλιστής σας ο συντομότερος δρόμος όταν κάτι κολλήσει. Αν μια εφαρμογή τρίτου υπόσχεται «claim updates», αξίζει να δείτε αν εννοεί πραγματική κατάσταση φακέλου ή απλώς υπενθυμίσεις και οδηγίες."
 inline	lib/guides/content.ts	"Πριν από κάθε ανανέωση ασφαλιστηρίου ελέγξτε επτά πράγματα: τι άλλαξε στη ζωή σας, αν τα κεφάλαια αντιστοιχούν στις σημερινές αξίες, το ύψος της απαλλαγής, τις εξαιρέσεις, την αύξηση του ασφαλίστρου, τουλάχιστον μία εναλλακτική προσφορά και τη συνέχεια της κάλυψης χωρίς κενό ημερών. Ξεκινήστε 30 ημέρες πριν από τη λήξη."
 inline	lib/guides/content.ts	"Προϋπάρχουσα θεωρείται κάθε πάθηση που εκδηλώθηκε — ή έδωσε συμπτώματα — πριν από την έναρξη του ασφαλιστηρίου ή μέσα στην περίοδο αναμονής. Οι εταιρείες την εξαιρούν για να μην ασφαλίζεται ζημιά που έχει ήδη συμβεί. Στην πράξη αυτό σημαίνει ότι όσο νωρίτερα ασφαλίσετε το ζώο, τόσο περισσότερα καλύπτονται στη διάρκεια της ζωής του."
 inline	lib/guides/content.ts	"Προϋπάρχουσες παθήσεις, περίοδοι αναμονής, όρια ηλικίας και εξαιρέσεις φυλών: τι δεν καλύπτει συνήθως η ασφάλεια κατοικιδίου και τι να προσέξετε στους όρους."
@@ -5251,7 +5251,7 @@ inline	lib/guides/content.ts	"Σχεδόν όλα όσα εννοεί κανεί
 inline	lib/guides/content.ts	"Τα ανασφάλιστα οχήματα εντοπίζονται με ηλεκτρονικές διασταυρώσεις της Γ.Γ.Π.Σ.Ψ.Δ. και ελέγχους της Τροχαίας. Η διασταύρωση επιφέρει πρόστιμο ανά κατηγορία οχήματος — 250 ευρώ για δίκυκλα, 500 ευρώ για επιβατηγά και 1.000 ευρώ για λεωφορεία και φορτηγά δημόσιας χρήσης — ενώ ο έλεγχος στον δρόμο προσθέτει πρόστιμο και αφαίρεση στοιχείων κυκλοφορίας. Σε ατύχημα, το Επικουρικό Κεφάλαιο αποζημιώνει τον τρίτο και αναζητά το σύνολο από τον ιδιοκτήτη."
 inline	lib/guides/content.ts	"Τα δύο βήματα μαζί εξηγούν γιατί το ποσό που καταβάλλεται δεν ταυτίζεται με το ποσό της ζημιάς, ακόμη και σε ολική απώλεια της σοδειάς. Ο πίνακας κάνει την αριθμητική πάνω σε μια υποθετική ασφαλιζόμενη αξία 10.000 ευρώ."
 inline	lib/guides/content.ts	"Τα ελάχιστα όρια κάλυψης ορίζονται από τη νομοθεσία και αναπροσαρμόζονται περιοδικά· είναι της τάξης εκατομμυρίων ευρώ ανά ατύχημα για σωματικές βλάβες και υλικές ζημιές. Τα ακριβή ισχύοντα ποσά δημοσιεύονται από την Ένωση Ασφαλιστικών Εταιριών Ελλάδος (ΕΑΕΕ)."
-inline	lib/guides/content.ts	"Τα εργαλεία που υπόσχονται «όλα τα ασφαλιστήρια σε ένα σημείο» χωρίζονται σε πέντε κατηγορίες: portal ασφαλιστικής εταιρείας, εφαρμογή πράκτορα, συγκριτική πλατφόρμα, γενική αποθήκευση αρχείων και ψηφιακό πορτοφόλι ασφαλίσεων. Μόνο η τελευταία δέχεται ασφαλιστήρια από όλες τις εταιρείες μαζί και διαβάζει το περιεχόμενό τους. Καμία τους, όμως, δεν εισπράττει ασφάλιστρα και δεν δίνει επίσημη κατάσταση αποζημίωσης."
+inline	lib/guides/content.ts	"Τα εργαλεία που υπόσχονται «όλα τα ασφαλιστήρια σε ένα σημείο» χωρίζονται σε πέντε κατηγορίες: portal ασφαλιστικής εταιρείας, εφαρμογή ασφαλιστή, συγκριτική πλατφόρμα, γενική αποθήκευση αρχείων και ψηφιακό πορτοφόλι ασφαλίσεων. Μόνο η τελευταία δέχεται ασφαλιστήρια από όλες τις εταιρείες μαζί και διαβάζει το περιεχόμενό τους. Καμία τους, όμως, δεν εισπράττει ασφάλιστρα και δεν δίνει επίσημη κατάσταση αποζημίωσης."
 inline	lib/guides/content.ts	"Τα περισσότερα «βασικά» πακέτα της αγοράς συνδυάζουν την αστική ευθύνη με καλύψεις όπως θραύση κρυστάλλων, οδική βοήθεια ή φροντίδα ατυχήματος και νομική προστασία. Ενδιάμεσα πακέτα προσθέτουν πυρκαγιά, ολική κλοπή και φυσικά φαινόμενα."
 inline	lib/guides/content.ts	"Τα περισσότερα σύγχρονα προγράμματα προβλέπουν ότι, αν μέρος των εξόδων καλυφθεί από τον ΕΟΠΥΥ ή από ομαδικό συμβόλαιο εργοδότη, το ποσό αυτό «μετρά» έναντι της απαλλαγής. Έτσι, ένα ομαδικό που καλύπτει π.χ. 1.500 ευρώ μπορεί να μηδενίσει πλήρως τη δική σας επιβάρυνση σε ατομικό πρόγραμμα με ίση απαλλαγή."
 inline	lib/guides/content.ts	"Τα πορτοφόλια πληρωμών λειτουργούν ως τρόπος εξόφλησης: παρουσιάζουν την κάρτα σας στο σύστημα πληρωμής της ασφαλιστικής εταιρείας, όπου αυτό τα υποστηρίζει. Τα πορτοφόλια ασφαλίσεων παίζουν διαφορετικό ρόλο — δείχνουν τι πληρώνετε, πότε και για ποια κάλυψη, χωρίς να συμμετέχουν στη συναλλαγή."
@@ -5376,10 +5376,10 @@ inline	lib/guides/content.ts	"Ψηφιακό πορτοφόλι ασφαλίσε
 inline	lib/guides/content.ts	"ν. 5113/2024 (ΦΕΚ Α΄ 96) — ανασφάλιστα οχήματα, άρθρα 22–24"
 inline	lib/guides/content.ts	"ν. 5113/2024 (ΦΕΚ Α΄ 96/21.06.2024) — ηλεκτρονικοί διασταυρωτικοί έλεγχοι και ένσταση, άρθρα 22-24 (PDF)"
 inline	lib/guides/content.ts	"ν. 5162/2024, άρθρο 10 — ΦΕΚ Α΄ 198/05.12.2024 (ΑΑΔΕ)"
-inline	lib/help-content.ts	{ 'upload-policy': { id: 'upload-policy', title: 'Πώς να ανεβάσετε το πρώτο σας ασφαλιστήριο', subtitle: 'Ψηφιοποιήστε με ασφάλεια τα ασφαλιστήριά σας χρησιμοποιώντας τον AI σαρωτή μας.', readTime: '4 λεπτά', category: 'Ξεκινώντας', sections: [ { heading: 'Προετοιμασία', text: 'Πριν ξεκινήσετε, βεβαιωθείτε ότι έχετε ένα καθαρό αντίγραφο PDF ή μια φωτογραφία υψηλής ποιότητας του εγγράφου του ασφαλιστηρίου σας. Η AI μας λειτουργεί καλύτερα με έγγραφα όπου το κείμενο είναι ευανάγνωστο.', note: 'Συμβουλή: Μπορείτε να ανεβάσετε πολλά αρχεία ταυτόχρονα εάν το ασφαλιστήριό σας καλύπτει πολλά έγγραφα.' }, { heading: 'Βήμα 1: Μετάβαση στο Πορτοφόλι', text: 'Από τον πίνακα ελέγχου, εντοπίστε την καρτέλα "Πορτοφόλι" στο κεντρικό μενού πλοήγησης. Αυτό είναι το κεντρικό σημείο για όλα τα ασφαλιστήριά σας.', }, { heading: 'Βήμα 2: Προσθήκη Νέου Ασφαλιστηρίου', text: 'Κάντε κλικ στο μεγάλο πετρόλ κουμπί "Προσθήκη ασφαλιστηρίου". Θα σας παρουσιαστούν δύο επιλογές: "Μεταφόρτωση εγγράφου" και "Χειροκίνητη προσθήκη". Επιλέξτε "Μεταφόρτωση εγγράφου" για την πιο γρήγορη εμπειρία.', }, { heading: 'Βήμα 3: Ανάλυση & Επαλήθευση', text: 'Μόλις μεταφορτωθεί το αρχείο σας, η AI μας θα ξεκινήσει αυτόματα τη σάρωση. Θα δείτε μια κατάσταση "Επεξεργασία" — η ανάλυση ολοκληρώνεται συνήθως μέσα σε λίγα λεπτά και θα ειδοποιηθείτε μόλις είναι έτοιμη.', list: [ 'Η AI εξάγει το Όνομα της Ασφαλιστικής', 'Εντοπίζει τον Αριθμό Ασφαλιστηρίου', 'Καταγράφει ημερομηνίες κάλυψης και ασφάλιστρα', 'Σαρώνει για συγκεκριμένες λεπτομέρειες κάλυψης' ] }, { heading: 'Βήμα 4: Επιβεβαίωση Στοιχείων', text: 'Ελέγξτε τις πληροφορίες που εξαγάγαμε. Ενώ η AI μας είναι εξαιρετικά ακριβής, είναι πάντα καλή πρακτική να ελέγχετε ξανά τις κρίσιμες λεπτομέρειες όπως ημερομηνίες έναρξης/λήξης και ποσά ασφαλίστρων σε σύγκριση με το αρχικό σας έγγραφο. Κάντε κλικ στο "Αποθήκευση" για να ολοκληρώσετε.', } ] }, 'sharing-access': { id: 'sharing-access', title: 'Κοινοποίηση πρόσβασης ασφαλιστηρίου', subtitle: 'Δώστε ασφαλή, προσωρινή ή μόνιμη πρόσβαση σε μέλη της οικογένειας ή στον ασφαλιστικό σας σύμβουλο.', readTime: '2 λεπτά', category: 'Συνεργασία', sections: [ { heading: 'Γιατί να Κοινοποιήσετε Πρόσβαση;', text: 'Η κοινοποίηση πρόσβασης είναι κρίσιμη για να διασφαλίσετε ότι οι αγαπημένοι σας έχουν πρόσβαση σε κρίσιμα έγγραφα σε περίπτωση έκτακτης ανάγκης, ή για να επιτρέψετε στον σύμβουλό σας να ελέγξει την κάλυψή σας για κενά.', }, { heading: 'Κοινοποίηση με Οικογένεια', text: 'Μεταβείτε στο ασφαλιστήριο που θέλετε να μοιραστείτε. Κάντε κλικ στο εικονίδιο "Κοινοποίηση". Εισάγετε τη διεύθυνση email του μέλους της οικογένειας. Θα λάβουν έναν ασφαλή σύνδεσμο για να δουν το ασφαλιστήριο.', note: 'Δεν χρειάζονται πληρωμένο λογαριασμό για να δουν ασφαλιστήρια που μοιράζεστε μαζί τους.' }, { heading: 'Κοινοποίηση με Σύμβουλο', text: 'Εάν συνεργάζεστε με ασφαλιστικό σύμβουλο, μπορείτε να μοιραστείτε μαζί του μεμονωμένα ασφαλιστήρια, ώστε να ελέγξει τις καλύψεις σας και να σας προτείνει επιλογές. Εσείς έχετε τον έλεγχο: επιλέγετε τι κοινοποιείτε και μπορείτε να ανακαλέσετε την πρόσβαση όποτε θέλετε.', list: [ 'Ανοίξτε το ασφαλιστήριο που θέλετε να μοιραστείτε και πατήστε "Κοινοποίηση σε σύμβουλο"', 'Εισάγετε το email του συμβούλου σας', 'Εναλλακτικά, ανοίξτε τη σελίδα "Σύμβουλος" για να συνδεθείτε μία φορά — τα ασφαλιστήρια που μοιράζεστε εμφανίζονται εκεί', 'Ελέγχετε ή ανακαλείτε οποιαδήποτε πρόσβαση από το ίδιο σημείο, όποτε θέλετε' ] } ] }, 'premium-features': { id: 'premium-features', title: 'Κατανόηση των προνομίων των πληρωμένων πλάνων', subtitle: 'Ξεκλειδώστε την πλήρη ανάλυση AI και περισσότερο χώρο ασφαλιστηρίων με τα πληρωμένα πλάνα.', readTime: '5 λεπτά', category: 'Δυνατότητες', sections: [ { heading: 'Ανάλυση Κενών με AI', text: 'Το βασικό πλεονέκτημα των πληρωμένων πλάνων είναι η εις βάθος ανάλυση. Η AI μας δεν διαβάζει απλώς το ασφαλιστήριό σας. Το κατανοεί. Συγκρίνει την κάλυψή σας με τα πρότυπα της αγοράς για να βρει "Κενά" - κινδύνους στους οποίους είστε εκτεθειμένοι αλλά όχι καλυμμένοι.', }, { heading: 'Περισσότερος χώρος ασφαλιστηρίων', text: 'Το δωρεάν πλάνο περιλαμβάνει 3 ασφαλιστήρια με πλήρη ανάλυση AI. Το Plus επιτρέπει έως 10 και το Family έως 25 — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο. Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο.', }, { heading: 'Προτεραιότητα Υποστήριξης', text: 'Τα πληρωμένα πλάνα περιλαμβάνουν προτεραιότητα υποστήριξης μέσω email. Για ερωτήσεις σχετικά με την κάλυψή σας, μπορείτε επίσης να ρωτήσετε απευθείας την AI στη σελίδα κάθε ασφαλιστηρίου, ή να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο και να το εξετάσετε μαζί του.', } ] }, 'reset-password': { id: 'reset-password', title: 'Πώς να επαναφέρετε τον κωδικό σας', subtitle: 'Ανακτήστε την πρόσβαση στον λογαριασμό σας με ασφάλεια.', readTime: '1 λεπτό', category: 'Λογαριασμός & Ασφάλεια', sections: [ { heading: 'Ξεχάσατε τον Κωδικό;', text: 'Εάν δεν μπορείτε να συνδεθείτε, κάντε κλικ στον σύνδεσμο "Ξεχάσατε τον Κωδικό;" στην οθόνη εισόδου. Εισάγετε την εγγεγραμμένη διεύθυνση email σας.', }, { heading: 'Ελέγξτε το Email σας', text: 'Θα στείλουμε έναν ασφαλή, χρονικά περιορισμένο σύνδεσμο στο email σας. Κάντε κλικ σε αυτόν τον σύνδεσμο εντός 30 λεπτών για να ορίσετε νέο κωδικό.', note: 'Εάν δεν βλέπετε το email, ελέγξτε τον φάκελο ανεπιθύμητων.' }, { heading: 'Αλλαγή Κωδικού από Ρυθμίσεις', text: 'Εάν είστε ήδη συνδεδεμένοι και θέλετε να αλλάξετε τον κωδικό σας για λόγους ασφαλείας, μεταβείτε στο "Λογαριασμός" -> "Ρυθμίσεις" -> "Ασφάλεια" και επιλέξτε "Αλλαγή Κωδικού".' } ] }, 'notifications': { id: 'notifications', title: 'Διαχείριση προτιμήσεων ειδοποιήσεων', subtitle: 'Προσαρμόστε πώς και πότε το PolicyWallet επικοινωνεί μαζί σας.', readTime: '3 λεπτά', category: 'Ρυθμίσεις', sections: [ { heading: 'Τύποι Ειδοποιήσεων', text: 'Στέλνουμε ειδοποιήσεις για κρίσιμα γεγονότα για να σας κρατάμε προστατευμένους.', list: [ 'Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15 και 7 ημέρες στα πληρωμένα πλάνα', 'Επιβεβαιώσεις πληρωμής', 'Ειδοποιήσεις ασφαλείας (συνδέσεις από νέες συσκευές)', 'Αποτελέσματα Ανάλυσης AI' ] }, { heading: 'Προσαρμογή καναλιών', text: 'Οι ειδοποιήσεις έρχονται με email. Αν τις επιτρέψετε στον browser σας, μπορείτε να τις λαμβάνετε και ως push — δεν χρειάζεται εφαρμογή. Μεταβείτε στις Ρυθμίσεις -> Ειδοποιήσεις για να επιλέξετε ποιες θέλετε.', } ] }, 'install-pwa': { id: 'install-pwa', title: 'Πώς να εγκαταστήσετε την εφαρμογή', subtitle: 'Αποκτήστε το PolicyWallet στην αρχική σας οθόνη για άμεση πρόσβαση.', readTime: '2 λεπτά', category: 'Mobile App & PWA', sections: [ { heading: 'Προοδευτική Εφαρμογή Ιστού (PWA)', text: 'Το PolicyWallet είναι μια Προοδευτική Εφαρμογή Ιστού. Αυτό σημαίνει ότι μπορείτε να την εγκαταστήσετε απευθείας από τον browser σας χωρίς να επισκεφτείτε ένα κατάστημα εφαρμογών. Λειτουργεί εκτός σύνδεσης και καταλαμβάνει ελάχιστο χώρο.', }, { heading: 'Εγκατάσταση σε iOS (iPhone/iPad)', text: 'Ανοίξτε το PolicyWallet στο Safari.', list: [ 'Πατήστε το κουμπί "Κοινοποίηση" (κουτί με βέλος προς τα πάνω)', 'Κυλήστε προς τα κάτω και πατήστε "Προσθήκη στην Αρχική Οθόνη"', 'Πατήστε "Προσθήκη" στην επάνω δεξιά γωνία' ] }, { heading: 'Εγκατάσταση σε Android', text: 'Ανοίξτε το PolicyWallet στο Chrome.', list: [ 'Πατήστε το εικονίδιο μενού (τρεις τελείες) επάνω δεξιά', 'Πατήστε "Εγκατάσταση Εφαρμογής" ή "Προσθήκη στην Αρχική Οθόνη"', 'Ακολουθήστε την οδηγία στην οθόνη' ] } ] }, 'update-payment': { id: 'update-payment', title: 'Ενημέρωση μεθόδου πληρωμής', subtitle: 'Διαχειριστείτε με ασφάλεια τα στοιχεία πληρωμής της συνδρομής σας.', readTime: '2 λεπτά', category: 'Χρεώσεις & Συνδρομές', sections: [ { heading: 'Πρόσβαση στις Ρυθμίσεις Χρέωσης', text: 'Μεταβείτε στο "Λογαριασμός" -> "Χρέωση". Εδώ θα δείτε το τρέχον πλάνο σας και την καταχωρημένη κάρτα.', }, { heading: 'Προσθήκη Νέας Κάρτας', text: 'Κάντε κλικ στο "Προσθήκη Μεθόδου Πληρωμής". Εισάγετε τα στοιχεία της νέας σας κάρτας. Υποστηρίζουμε Visa, Mastercard και American Express. Τα δεδομένα της κάρτας σας κρυπτογραφούνται και διαχειρίζονται από τη Stripe.', }, { heading: 'Ορισμός ως Προεπιλογή', text: 'Μόλις προστεθεί, κάντε κλικ στις τρεις τελείες δίπλα στη νέα σας κάρτα και επιλέξτε "Ορισμός ως Προεπιλογή". Το επόμενο τιμολόγιό σας θα χρεωθεί σε αυτήν την κάρτα.', } ] } }
+inline	lib/help-content.ts	{ 'upload-policy': { id: 'upload-policy', title: 'Πώς να ανεβάσετε το πρώτο σας ασφαλιστήριο', subtitle: 'Ψηφιοποιήστε με ασφάλεια τα ασφαλιστήριά σας χρησιμοποιώντας τον AI σαρωτή μας.', readTime: '4 λεπτά', category: 'Ξεκινώντας', sections: [ { heading: 'Προετοιμασία', text: 'Πριν ξεκινήσετε, βεβαιωθείτε ότι έχετε ένα καθαρό αντίγραφο PDF ή μια φωτογραφία υψηλής ποιότητας του εγγράφου του ασφαλιστηρίου σας. Η AI μας λειτουργεί καλύτερα με έγγραφα όπου το κείμενο είναι ευανάγνωστο.', note: 'Συμβουλή: Μπορείτε να ανεβάσετε πολλά αρχεία ταυτόχρονα εάν το ασφαλιστήριό σας καλύπτει πολλά έγγραφα.' }, { heading: 'Βήμα 1: Μετάβαση στο Πορτοφόλι', text: 'Από τον πίνακα ελέγχου, εντοπίστε την καρτέλα "Πορτοφόλι" στο κεντρικό μενού πλοήγησης. Αυτό είναι το κεντρικό σημείο για όλα τα ασφαλιστήριά σας.', }, { heading: 'Βήμα 2: Προσθήκη Νέου Ασφαλιστηρίου', text: 'Κάντε κλικ στο μεγάλο πετρόλ κουμπί "Προσθήκη ασφαλιστηρίου". Θα σας παρουσιαστούν δύο επιλογές: "Μεταφόρτωση εγγράφου" και "Χειροκίνητη προσθήκη". Επιλέξτε "Μεταφόρτωση εγγράφου" για την πιο γρήγορη εμπειρία.', }, { heading: 'Βήμα 3: Ανάλυση & Επαλήθευση', text: 'Μόλις μεταφορτωθεί το αρχείο σας, η AI μας θα ξεκινήσει αυτόματα τη σάρωση. Θα δείτε μια κατάσταση "Επεξεργασία" — η ανάλυση ολοκληρώνεται συνήθως μέσα σε λίγα λεπτά και θα ειδοποιηθείτε μόλις είναι έτοιμη.', list: [ 'Η AI εξάγει το Όνομα της Ασφαλιστικής', 'Εντοπίζει τον Αριθμό Ασφαλιστηρίου', 'Καταγράφει ημερομηνίες κάλυψης και ασφάλιστρα', 'Σαρώνει για συγκεκριμένες λεπτομέρειες κάλυψης' ] }, { heading: 'Βήμα 4: Επιβεβαίωση Στοιχείων', text: 'Ελέγξτε τις πληροφορίες που εξαγάγαμε. Ενώ η AI μας είναι εξαιρετικά ακριβής, είναι πάντα καλή πρακτική να ελέγχετε ξανά τις κρίσιμες λεπτομέρειες όπως ημερομηνίες έναρξης/λήξης και ποσά ασφαλίστρων σε σύγκριση με το αρχικό σας έγγραφο. Κάντε κλικ στο "Αποθήκευση" για να ολοκληρώσετε.', } ] }, 'sharing-access': { id: 'sharing-access', title: 'Κοινοποίηση πρόσβασης ασφαλιστηρίου', subtitle: 'Δώστε ασφαλή, προσωρινή ή μόνιμη πρόσβαση σε μέλη της οικογένειας ή στον ασφαλιστικό σας σύμβουλο.', readTime: '2 λεπτά', category: 'Συνεργασία', sections: [ { heading: 'Γιατί να Κοινοποιήσετε Πρόσβαση;', text: 'Η κοινοποίηση πρόσβασης είναι κρίσιμη για να διασφαλίσετε ότι οι αγαπημένοι σας έχουν πρόσβαση σε κρίσιμα έγγραφα σε περίπτωση έκτακτης ανάγκης, ή για να επιτρέψετε στον σύμβουλό σας να ελέγξει την κάλυψή σας για κενά.', }, { heading: 'Κοινοποίηση με Οικογένεια', text: 'Μεταβείτε στο ασφαλιστήριο που θέλετε να μοιραστείτε. Κάντε κλικ στο εικονίδιο "Κοινοποίηση". Εισάγετε τη διεύθυνση email του μέλους της οικογένειας. Θα λάβουν έναν ασφαλή σύνδεσμο για να δουν το ασφαλιστήριο.', note: 'Δεν χρειάζονται πληρωμένο λογαριασμό για να δουν ασφαλιστήρια που μοιράζεστε μαζί τους.' }, { heading: 'Κοινοποίηση με Σύμβουλο', text: 'Εάν συνεργάζεστε με ασφαλιστικό σύμβουλο, μπορείτε να μοιραστείτε μαζί του μεμονωμένα ασφαλιστήρια, ώστε να ελέγξει τις καλύψεις σας και να σας προτείνει επιλογές. Εσείς έχετε τον έλεγχο: επιλέγετε τι κοινοποιείτε και μπορείτε να ανακαλέσετε την πρόσβαση όποτε θέλετε.', list: [ 'Ανοίξτε το ασφαλιστήριο που θέλετε να μοιραστείτε και πατήστε "Κοινοποίηση σε σύμβουλο"', 'Εισάγετε το email του συμβούλου σας', 'Εναλλακτικά, ανοίξτε τη σελίδα "Σύμβουλος" για να συνδεθείτε μία φορά — τα ασφαλιστήρια που μοιράζεστε εμφανίζονται εκεί', 'Ελέγχετε ή ανακαλείτε οποιαδήποτε πρόσβαση από το ίδιο σημείο, όποτε θέλετε' ] } ] }, 'premium-features': { id: 'premium-features', title: 'Κατανόηση των προνομίων των πληρωμένων πλάνων', subtitle: 'Αποκτήστε την πλήρη ανάλυση AI και περισσότερο χώρο ασφαλιστηρίων με τα πληρωμένα πλάνα.', readTime: '5 λεπτά', category: 'Δυνατότητες', sections: [ { heading: 'Ανάλυση Κενών με AI', text: 'Το βασικό πλεονέκτημα των πληρωμένων πλάνων είναι η εις βάθος ανάλυση. Η AI μας δεν διαβάζει απλώς το ασφαλιστήριό σας. Το κατανοεί. Συγκρίνει την κάλυψή σας με τα πρότυπα της αγοράς για να βρει "Κενά" - κινδύνους στους οποίους είστε εκτεθειμένοι αλλά όχι καλυμμένοι.', }, { heading: 'Περισσότερος χώρος ασφαλιστηρίων', text: 'Το δωρεάν πλάνο περιλαμβάνει 3 ασφαλιστήρια με πλήρη ανάλυση AI. Το Plus επιτρέπει έως 10 και το Family έως 25 — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο. Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο.', }, { heading: 'Προτεραιότητα Υποστήριξης', text: 'Τα πληρωμένα πλάνα περιλαμβάνουν προτεραιότητα υποστήριξης μέσω email. Για ερωτήσεις σχετικά με την κάλυψή σας, μπορείτε επίσης να ρωτήσετε απευθείας την AI στη σελίδα κάθε ασφαλιστηρίου, ή να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο και να το εξετάσετε μαζί του.', } ] }, 'reset-password': { id: 'reset-password', title: 'Πώς να επαναφέρετε τον κωδικό σας', subtitle: 'Ανακτήστε την πρόσβαση στον λογαριασμό σας με ασφάλεια.', readTime: '1 λεπτό', category: 'Λογαριασμός & Ασφάλεια', sections: [ { heading: 'Ξεχάσατε τον Κωδικό;', text: 'Εάν δεν μπορείτε να συνδεθείτε, κάντε κλικ στον σύνδεσμο "Ξεχάσατε τον Κωδικό;" στην οθόνη εισόδου. Εισάγετε την εγγεγραμμένη διεύθυνση email σας.', }, { heading: 'Ελέγξτε το Email σας', text: 'Θα στείλουμε έναν ασφαλή, χρονικά περιορισμένο σύνδεσμο στο email σας. Κάντε κλικ σε αυτόν τον σύνδεσμο εντός 30 λεπτών για να ορίσετε νέο κωδικό.', note: 'Εάν δεν βλέπετε το email, ελέγξτε τον φάκελο ανεπιθύμητων.' }, { heading: 'Αλλαγή Κωδικού από Ρυθμίσεις', text: 'Εάν είστε ήδη συνδεδεμένοι και θέλετε να αλλάξετε τον κωδικό σας για λόγους ασφαλείας, μεταβείτε στο "Λογαριασμός" -> "Ρυθμίσεις" -> "Ασφάλεια" και επιλέξτε "Αλλαγή Κωδικού".' } ] }, 'notifications': { id: 'notifications', title: 'Διαχείριση προτιμήσεων ειδοποιήσεων', subtitle: 'Προσαρμόστε πώς και πότε το PolicyWallet επικοινωνεί μαζί σας.', readTime: '3 λεπτά', category: 'Ρυθμίσεις', sections: [ { heading: 'Τύποι Ειδοποιήσεων', text: 'Στέλνουμε ειδοποιήσεις για κρίσιμα γεγονότα για να σας κρατάμε προστατευμένους.', list: [ 'Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15 και 7 ημέρες στα πληρωμένα πλάνα', 'Επιβεβαιώσεις πληρωμής', 'Ειδοποιήσεις ασφαλείας (συνδέσεις από νέες συσκευές)', 'Αποτελέσματα Ανάλυσης AI' ] }, { heading: 'Προσαρμογή καναλιών', text: 'Οι ειδοποιήσεις έρχονται με email. Αν τις επιτρέψετε στον περιηγητή σας, μπορείτε να τις λαμβάνετε και ως push — δεν χρειάζεται εφαρμογή. Μεταβείτε στις Ρυθμίσεις -> Ειδοποιήσεις για να επιλέξετε ποιες θέλετε.', } ] }, 'install-pwa': { id: 'install-pwa', title: 'Πώς να εγκαταστήσετε την εφαρμογή', subtitle: 'Αποκτήστε το PolicyWallet στην αρχική σας οθόνη για άμεση πρόσβαση.', readTime: '2 λεπτά', category: 'Mobile App & PWA', sections: [ { heading: 'Προοδευτική Εφαρμογή Ιστού (PWA)', text: 'Το PolicyWallet είναι μια Προοδευτική Εφαρμογή Ιστού. Αυτό σημαίνει ότι μπορείτε να την εγκαταστήσετε απευθείας από τον περιηγητή σας χωρίς να επισκεφτείτε ένα κατάστημα εφαρμογών. Λειτουργεί εκτός σύνδεσης και καταλαμβάνει ελάχιστο χώρο.', }, { heading: 'Εγκατάσταση σε iOS (iPhone/iPad)', text: 'Ανοίξτε το PolicyWallet στο Safari.', list: [ 'Πατήστε το κουμπί "Κοινοποίηση" (κουτί με βέλος προς τα πάνω)', 'Κυλήστε προς τα κάτω και πατήστε "Προσθήκη στην Αρχική Οθόνη"', 'Πατήστε "Προσθήκη" στην επάνω δεξιά γωνία' ] }, { heading: 'Εγκατάσταση σε Android', text: 'Ανοίξτε το PolicyWallet στο Chrome.', list: [ 'Πατήστε το εικονίδιο μενού (τρεις τελείες) επάνω δεξιά', 'Πατήστε "Εγκατάσταση Εφαρμογής" ή "Προσθήκη στην Αρχική Οθόνη"', 'Ακολουθήστε την οδηγία στην οθόνη' ] } ] }, 'update-payment': { id: 'update-payment', title: 'Ενημέρωση μεθόδου πληρωμής', subtitle: 'Διαχειριστείτε με ασφάλεια τα στοιχεία πληρωμής της συνδρομής σας.', readTime: '2 λεπτά', category: 'Χρεώσεις & Συνδρομές', sections: [ { heading: 'Πρόσβαση στις Ρυθμίσεις Χρέωσης', text: 'Μεταβείτε στο "Λογαριασμός" -> "Χρέωση". Εδώ θα δείτε το τρέχον πλάνο σας και την καταχωρημένη κάρτα.', }, { heading: 'Προσθήκη Νέας Κάρτας', text: 'Κάντε κλικ στο "Προσθήκη Μεθόδου Πληρωμής". Εισάγετε τα στοιχεία της νέας σας κάρτας. Υποστηρίζουμε Visa, Mastercard και American Express. Τα δεδομένα της κάρτας σας κρυπτογραφούνται και διαχειρίζονται από τη Stripe.', }, { heading: 'Ορισμός ως Προεπιλογή', text: 'Μόλις προστεθεί, κάντε κλικ στις τρεις τελείες δίπλα στη νέα σας κάρτα και επιλέξτε "Ορισμός ως Προεπιλογή". Το επόμενο τιμολόγιό σας θα χρεωθεί σε αυτήν την κάρτα.', } ] } }
 inline	lib/i18n/format.ts	'el-GR'
 inline	lib/i18n/index.ts	el
-inline	lib/i18n/role-copy.ts	{ shell: { agentSection: "Πρακτορείο", agentProfile: "Προφίλ Συμβούλου", closeMenu: "Κλείσιμο μενού", theme: "Θέμα εμφάνισης", roleViewingAs: (roleLabel: string) => `Προβολή ως ${roleLabel}`, roleViewingAsLabel: "Προβολή ως", }, defaults: { userName: "Χρήστης", policyholderName: "Ασφαλισμένος", agentName: "Ασφαλιστικός Σύμβουλος", agentCompany: "Ασφαλιστικό Γραφείο", vehicle: "Όχημα", property: "Ακίνητο", loadingError: "Σφάλμα φόρτωσης λογαριασμού.", }, tasks: { completed: "Η εργασία ολοκληρώθηκε.", updateFailed: "Η ενημέρωση της εργασίας απέτυχε.", updateError: "Παρουσιάστηκε σφάλμα κατά την ενημέρωση της εργασίας.", assignedBy: "Ανάθεση από", viewDetails: "Προβολή λεπτομερειών", updating: "Ενημέρωση...", }, agentSettings: { title: "Προφίλ γραφείου", subtitle: "Τα στοιχεία του πρακτορείου σας και οι προμήθειες ανά κλάδο.", agencyProfile: "Προφίλ γραφείου", status: "Κατάσταση", pending: "Σε αξιολόγηση", verifiedLabel: "Επιβεβαιωμένος", rejectedLabel: "Δεν εγκρίθηκε", verifiedDescription: "Τα επαγγελματικά σας στοιχεία έχουν επιβεβαιωθεί.", underReviewDescription: "Το προφίλ σας αξιολογείται από την ομάδα κανονιστικής συμμόρφωσης.", rejectedDescription: "Η ομάδα κανονιστικής συμμόρφωσης δεν ενέκρινε τα στοιχεία σας. Επικοινωνήστε μαζί μας για τα επόμενα βήματα.", agencyName: "Επωνυμία πρακτορείου", agencyNamePlaceholder: "π.χ. Alpha Insurance Advisors", licenseNumber: "Αριθμός άδειας", licenseNumberPlaceholder: "π.χ. LIC-12345678", saveChanges: "Αποθήκευση αλλαγών", saving: "Αποθήκευση...", commissionRatesTitle: "Ποσοστά προμήθειας", commissionRatesDesc: "Ορίστε το ποσοστό σας ανά κλάδο ασφάλισης. Χρησιμοποιείται στον υπολογισμό των προμηθειών σας.", saveCommissions: "Αποθήκευση προμηθειών", subscription: "Το πρόγραμμά σας", customers: "Πελάτες", aiAnalysesPerMonth: "Αναλύσεις AI ανά μήνα", upgradePlan: "Δείτε τα προγράμματα", personalSettingsTitle: "Ο προσωπικός σας λογαριασμός", personalSettingsDesc: "Το όνομα, το email, ο κωδικός και τα δεδομένα σας βρίσκονται στις ρυθμίσεις λογαριασμού.", personalSettingsCta: "Ρυθμίσεις λογαριασμού", dangerZone: "Διαγραφή λογαριασμού", dangerDescription: "Η διαγραφή του λογαριασμού σας γίνεται από τις ρυθμίσεις απορρήτου, όπου εξηγείται ακριβώς τι διαγράφεται και τι διατηρείται.", deactivateAccount: "Απόρρητο και δεδομένα", updatedSuccess: "Το προφίλ ενημερώθηκε επιτυχώς.", updatedError: "Δεν ήταν δυνατή η ενημέρωση του προφίλ.", }, agentDashboard: { workspace: "Χώρος Εργασίας", brandAgent: "Σύμβουλος", briefing: "Η σημερινή σας ενημέρωση. Έχετε", // The relative clause inflects with the count — «που χρειάζεται» at // one, «που χρειάζονται» beyond (count-copy-agreement.test.ts). itemsAttention: (n: number) => n === 1 ? "1 στοιχείο που χρειάζεται προσοχή." : `${n} στοιχεία που χρειάζονται προσοχή.`, totalClients: "Σύνολο Πελατών", activePolicies: "Ενεργά ασφαλιστήρια", pendingActions: "Εκκρεμείς Ενέργειες", conversionRate: "Ρυθμός Μετατροπής", clientStatus: "Κατάσταση Πελατών", liveFeed: "Ζωντανή Ροή", viewAll: "Προβολή Όλων", online: "Συνδεδεμένος", across: "σε", clients: "πελάτες", requiresAttention: "Χρειάζεται προσοχή", inviteAcceptance: "Αποδοχή πρόσκλησης", thisWeek: "αυτή την εβδομάδα", critical: "Κρίσιμο", high: "Υψηλό", medium: "Μεσαίο", noClientsYet: "Δεν υπάρχουν πελάτες ακόμη", due: "Προθεσμία", feedItems: [ { name: "Μαρία Κ.", action: "ανέβασε ασφαλιστήριο αυτοκινήτου", time: "2 λεπτά πριν", color: "blue" }, { name: "Γιάννης Δ.", action: "εντοπίστηκε νέο κενό κάλυψης", time: "1 ώρα πριν", color: "purple" }, { name: "Σταύρος Λ.", action: "αποδέχθηκε πρόσκληση συνεργασίας", time: "3 ώρες πριν", color: "emerald" }, ], dashboardTitle: "Πίνακας Συμβούλου", dashboardSubtitle: "Καλώς ήρθατε ξανά. Επισκόπηση ημέρας.", recentActivity: "Πρόσφατη Δραστηριότητα", allCaughtUpSubtext: "Δεν υπάρχουν εκκρεμότητες αυτή τη στιγμή. Συνεχίστε έτσι.", }, customerList: { searchPlaceholder: "Αναζήτηση πελατών...", all: "Όλοι", activated: "Ενεργοί", invited: "Προσκεκλημένοι", inactive: "Ανενεργοί", selectedOne: "πελάτης επιλεγμένος", selectedMany: "πελάτες επιλεγμένοι", sendEmail: "Αποστολή email", export: "Εξαγωγή", emptyTitle: "Δεν βρέθηκαν πελάτες", emptySubtitle: "Δοκιμάστε να προσαρμόσετε φίλτρα ή λέξεις αναζήτησης.", addClient: "Προσθήκη Πελάτη", tableClient: "Πελάτης", tableContact: "Επικοινωνία", tableStatus: "Κατάσταση", tablePolicies: "Ασφαλιστήρια", tableLastActivity: "Τελευταία Δραστηριότητα", never: "Ποτέ", today: "Σήμερα", yesterday: "Χθες", daysAgo: (n: number) => `${n}η πριν`, opportunitiesOne: "ευκαιρία", opportunitiesMany: "ευκαιρίες", policies: "ασφαλιστήρια", openOpportunityOne: "ανοικτή ευκαιρία", openOpportunityMany: "ανοικτές ευκαιρίες", profile: "Προφίλ", zeroHeadline: "Χτίστε το πελατολόγιό σας", zeroBenefit: "Προσθέστε τον πρώτο σας πελάτη και δείτε καλύψεις, κενά και ανανεώσεις σε ένα ταμπλό.", zeroCta: "Προσθήκη πρώτου πελάτη", zeroTrust: "Τα δεδομένα πελατών μένουν ιδιωτικά — πρόσβαση μόνο με σχέση ή άδεια", zeroPreviewLabel: "Παράδειγμα", zeroExampleName1: "Μαρία Κ.", zeroExampleMeta1: "3 ασφαλιστήρια · 1 κενό κάλυψης", zeroExampleName2: "Νίκος Δ.", zeroExampleMeta2: "2 ασφαλιστήρια · ανανέωση σε 45 ημέρες", invitedEmptyTitle: "Καμία εκκρεμής πρόσκληση", invitedEmptySubtitle: "Οι προσκλήσεις ενεργοποιούν τους πελάτες σας — και το προφίλ σας γίνεται ο σύμβουλός τους στο app.", invitedEmptyCta: "Αποστολή πρόσκλησης", tableNextRenewal: "Επόμενη Ανανέωση", tableGaps: "Κενά", underReview: "υπό αξιολόγηση", tableConsent: "Συναίνεση AI", tableAction: "Προτεινόμενη Ενέργεια", consentGranted: "Ενεργή", consentAttested: "Βεβαίωση agent", consentNone: "Εκκρεμεί", actionResendInvite: "Επαναποστολή πρόσκλησης", actionAddFirstPolicy: "Προσθήκη πρώτου ασφαλιστηρίου", actionRequestConsent: "Αίτημα συναίνεσης AI", actionReviewRenewal: "Έλεγχος ανανέωσης", actionDiscussGaps: "Συζήτηση κενών κάλυψης", actionCheckIn: "Επικοινωνία επανασύνδεσης", actionAllGood: "Όλα καλά", }, agentKpis: { heading: "Δείκτες βιβλίου", totalClients: "Σύνολο πελατών", expiringClients: "Ασφαλιστήρια που λήγουν", gapClients: "Με κενά κάλυψης", pendingInvites: "Εκκρεμείς προσκλήσεις", policiesThisMonth: "Ασφαλιστήρια αυτόν τον μήνα", followUps: "Προτεινόμενα follow-ups", pipeline: "Εκτίμηση ευκαιριών", completeness: "Μέσος δείκτης προστασίας", noScores: "Χωρίς βαθμολόγηση ακόμα", }, walletDashboard: { checkExpirations: "Ελέγξτε λήξεις και πιθανά κενά κάλυψης.", coverageUpToDate: "Η κάλυψή σας είναι ενημερωμένη.", allPoliciesActive: "Όλα τα ασφαλιστήρια είναι ενεργά", clearFilters: "Καθαρισμός φίλτρων", addDetailsManually: "Χειροκίνητη προσθήκη", uploadDocument: "Μεταφόρτωση εγγράφου", batchUpload: "Μαζική μεταφόρτωση", addPolicyAria: "Προσθήκη ασφαλιστηρίου", noPoliciesYet: "Το Πορτοφόλι Μου", addFirstPolicy: "Προσθήκη ασφαλιστηρίου", policiesCount: (n: number) => `${n} ασφαλιστήρια`, viewList: "Προβολή Λίστας", viewCard: "Προβολή Κάρτας", agentChat: "Συνεργασία", upgrade: "Αναβάθμιση", missingCoverages: "Πιθανά κενά κάλυψης:", viewAllRecommendations: "Δείτε όλες τις προτάσεις →", healthTitle: "Ασφάλιση Υγείας", healthDescription: "Προστατέψτε την υγεία της οικογένειάς σας από απρόβλεπτα ιατρικά έξοδα.", homeTitle: "Ασφάλιση Κατοικίας", homeDescription: "Προστατέψτε την περιουσία σας από ζημιές, φυσικά φαινόμενα και κλοπή.", lifeTitle: "Ασφάλιση Ζωής", lifeDescription: "Εξασφαλίστε οικονομική στήριξη για τα αγαπημένα σας πρόσωπα.", petTitle: "Ασφάλιση Κατοικιδίου", petDescription: "Προστασία για κτηνιατρικά έξοδα και περίθαλψη κατοικιδίου.", yearlyFootprint: "Ετήσιο ασφαλιστικό αποτύπωμα", emptyWalletTitle: "Δεν υπάρχουν ασφαλιστήρια ακόμη", emptyWalletDescription: "Πρόσθεσε το πρώτο σου ασφαλιστήριο για να ξεκινήσεις.", expires: "Λήγει", policyCountLabel: "ασφαλιστήρια", subtitle: "Τα ασφαλιστήριά σας σε μία καθαρή εικόνα.", }, auth: { createAccountTitle: "Δημιουργία λογαριασμού", createAccountSubtitle: "Ξεκινήστε με το PolicyWallet σε λιγότερο από 2 λεπτά.", fullNamePlaceholder: "Όνομα Επώνυμο", emailPlaceholder: "name@example.com", passwordPlaceholder: "********", licensePlaceholder: "ΑΣ-12345", agencyPlaceholder: "Επωνυμία πρακτορείου", termsAndConditions: "Όρους Χρήσης", privacyPolicy: "Πολιτική Απορρήτου", joinAs: "Εγγραφή ως", switchAgent: "Είμαι ασφαλιστικός σύμβουλος", switchPolicyholder: "Συνέχεια ως ασφαλισμένος", alreadyHaveAccount: "Έχετε ήδη λογαριασμό;", noAccount: "Δεν έχετε λογαριασμό;", forgotPassword: "Ξέχασα τον κωδικό", signInSubtitle: "Συνδεθείτε για να διαχειριστείτε το ασφαλιστικό σας πορτοφόλι.", resendVerification: "Επανάληψη αποστολής email επιβεβαίωσης", resendSent: "Το email επιβεβαίωσης εστάλη.", checkInbox: "Ελέγξτε τα εισερχόμενα. Δεν το βρήκατε;", unverified: "Το email σας δεν έχει επιβεβαιωθεί ακόμη.", orContinueWith: "Ή συνεχίστε με", }, }
+inline	lib/i18n/role-copy.ts	{ shell: { agentSection: "Πρακτορείο", agentProfile: "Προφίλ Συμβούλου", closeMenu: "Κλείσιμο μενού", theme: "Θέμα εμφάνισης", roleViewingAs: (roleLabel: string) => `Προβολή ως ${roleLabel}`, roleViewingAsLabel: "Προβολή ως", }, defaults: { userName: "Χρήστης", policyholderName: "Ασφαλισμένος", agentName: "Ασφαλιστικός Σύμβουλος", agentCompany: "Ασφαλιστικό Γραφείο", vehicle: "Όχημα", property: "Ακίνητο", loadingError: "Σφάλμα φόρτωσης λογαριασμού.", }, tasks: { completed: "Η εργασία ολοκληρώθηκε.", updateFailed: "Η ενημέρωση της εργασίας απέτυχε.", updateError: "Παρουσιάστηκε σφάλμα κατά την ενημέρωση της εργασίας.", assignedBy: "Ανάθεση από", viewDetails: "Προβολή λεπτομερειών", updating: "Ενημέρωση...", }, agentSettings: { title: "Προφίλ γραφείου", subtitle: "Τα στοιχεία του πρακτορείου σας και οι προμήθειες ανά κλάδο.", agencyProfile: "Προφίλ γραφείου", status: "Κατάσταση", pending: "Σε αξιολόγηση", verifiedLabel: "Επιβεβαιωμένος", rejectedLabel: "Δεν εγκρίθηκε", verifiedDescription: "Τα επαγγελματικά σας στοιχεία έχουν επιβεβαιωθεί.", underReviewDescription: "Το προφίλ σας αξιολογείται από την ομάδα κανονιστικής συμμόρφωσης.", rejectedDescription: "Η ομάδα κανονιστικής συμμόρφωσης δεν ενέκρινε τα στοιχεία σας. Επικοινωνήστε μαζί μας για τα επόμενα βήματα.", agencyName: "Επωνυμία πρακτορείου", agencyNamePlaceholder: "π.χ. Alpha Insurance Advisors", licenseNumber: "Αριθμός άδειας", licenseNumberPlaceholder: "π.χ. LIC-12345678", saveChanges: "Αποθήκευση αλλαγών", saving: "Αποθήκευση...", commissionRatesTitle: "Ποσοστά προμήθειας", commissionRatesDesc: "Ορίστε το ποσοστό σας ανά κλάδο ασφάλισης. Χρησιμοποιείται στον υπολογισμό των προμηθειών σας.", saveCommissions: "Αποθήκευση προμηθειών", subscription: "Το πρόγραμμά σας", customers: "Πελάτες", aiAnalysesPerMonth: "Αναλύσεις AI ανά μήνα", upgradePlan: "Δείτε τα προγράμματα", personalSettingsTitle: "Ο προσωπικός σας λογαριασμός", personalSettingsDesc: "Το όνομα, το email, ο κωδικός και τα δεδομένα σας βρίσκονται στις ρυθμίσεις λογαριασμού.", personalSettingsCta: "Ρυθμίσεις λογαριασμού", dangerZone: "Διαγραφή λογαριασμού", dangerDescription: "Η διαγραφή του λογαριασμού σας γίνεται από τις ρυθμίσεις απορρήτου, όπου εξηγείται ακριβώς τι διαγράφεται και τι διατηρείται.", deactivateAccount: "Απόρρητο και δεδομένα", updatedSuccess: "Το προφίλ ενημερώθηκε επιτυχώς.", updatedError: "Δεν ήταν δυνατή η ενημέρωση του προφίλ.", }, agentDashboard: { workspace: "Χώρος Εργασίας", brandAgent: "Σύμβουλος", briefing: "Η σημερινή σας ενημέρωση. Έχετε", // The relative clause inflects with the count — «που χρειάζεται» at // one, «που χρειάζονται» beyond (count-copy-agreement.test.ts). itemsAttention: (n: number) => n === 1 ? "1 στοιχείο που χρειάζεται προσοχή." : `${n} στοιχεία που χρειάζονται προσοχή.`, totalClients: "Σύνολο Πελατών", activePolicies: "Ενεργά ασφαλιστήρια", pendingActions: "Εκκρεμείς Ενέργειες", conversionRate: "Ρυθμός Μετατροπής", clientStatus: "Κατάσταση Πελατών", liveFeed: "Ζωντανή Ροή", viewAll: "Προβολή Όλων", online: "Συνδεδεμένος", across: "σε", clients: "πελάτες", requiresAttention: "Χρειάζεται προσοχή", inviteAcceptance: "Αποδοχή πρόσκλησης", thisWeek: "αυτή την εβδομάδα", critical: "Κρίσιμο", high: "Υψηλό", medium: "Μεσαίο", noClientsYet: "Δεν υπάρχουν πελάτες ακόμη", due: "Προθεσμία", feedItems: [ { name: "Μαρία Κ.", action: "ανέβασε ασφαλιστήριο αυτοκινήτου", time: "2 λεπτά πριν", color: "blue" }, { name: "Γιάννης Δ.", action: "εντοπίστηκε νέο κενό κάλυψης", time: "1 ώρα πριν", color: "purple" }, { name: "Σταύρος Λ.", action: "αποδέχθηκε πρόσκληση συνεργασίας", time: "3 ώρες πριν", color: "emerald" }, ], dashboardTitle: "Πίνακας Συμβούλου", dashboardSubtitle: "Καλώς ήρθατε ξανά. Επισκόπηση ημέρας.", recentActivity: "Πρόσφατη Δραστηριότητα", allCaughtUpSubtext: "Δεν υπάρχουν εκκρεμότητες αυτή τη στιγμή. Συνεχίστε έτσι.", }, customerList: { searchPlaceholder: "Αναζήτηση πελατών...", all: "Όλοι", activated: "Ενεργοί", invited: "Προσκεκλημένοι", inactive: "Ανενεργοί", selectedOne: "πελάτης επιλεγμένος", selectedMany: "πελάτες επιλεγμένοι", sendEmail: "Αποστολή email", export: "Εξαγωγή", emptyTitle: "Δεν βρέθηκαν πελάτες", emptySubtitle: "Δοκιμάστε να προσαρμόσετε φίλτρα ή λέξεις αναζήτησης.", addClient: "Προσθήκη Πελάτη", tableClient: "Πελάτης", tableContact: "Επικοινωνία", tableStatus: "Κατάσταση", tablePolicies: "Ασφαλιστήρια", tableLastActivity: "Τελευταία Δραστηριότητα", never: "Ποτέ", today: "Σήμερα", yesterday: "Χθες", daysAgo: (n: number) => `${n}η πριν`, opportunitiesOne: "ευκαιρία", opportunitiesMany: "ευκαιρίες", policies: "ασφαλιστήρια", openOpportunityOne: "ανοικτή ευκαιρία", openOpportunityMany: "ανοικτές ευκαιρίες", profile: "Προφίλ", zeroHeadline: "Χτίστε το πελατολόγιό σας", zeroBenefit: "Προσθέστε τον πρώτο σας πελάτη και δείτε καλύψεις, κενά και ανανεώσεις σε ένα ταμπλό.", zeroCta: "Προσθήκη πρώτου πελάτη", zeroTrust: "Τα δεδομένα πελατών μένουν ιδιωτικά — πρόσβαση μόνο με σχέση ή άδεια", zeroPreviewLabel: "Παράδειγμα", zeroExampleName1: "Μαρία Κ.", zeroExampleMeta1: "3 ασφαλιστήρια · 1 κενό κάλυψης", zeroExampleName2: "Νίκος Δ.", zeroExampleMeta2: "2 ασφαλιστήρια · ανανέωση σε 45 ημέρες", invitedEmptyTitle: "Καμία εκκρεμής πρόσκληση", invitedEmptySubtitle: "Οι προσκλήσεις ενεργοποιούν τους πελάτες σας — και το προφίλ σας γίνεται ο σύμβουλός τους στο app.", invitedEmptyCta: "Αποστολή πρόσκλησης", tableNextRenewal: "Επόμενη Ανανέωση", tableGaps: "Κενά", underReview: "υπό αξιολόγηση", tableConsent: "Συναίνεση AI", tableAction: "Προτεινόμενη Ενέργεια", consentGranted: "Ενεργή", consentAttested: "Βεβαίωση ασφαλιστή", consentNone: "Εκκρεμεί", actionResendInvite: "Επαναποστολή πρόσκλησης", actionAddFirstPolicy: "Προσθήκη πρώτου ασφαλιστηρίου", actionRequestConsent: "Αίτημα συναίνεσης AI", actionReviewRenewal: "Έλεγχος ανανέωσης", actionDiscussGaps: "Συζήτηση κενών κάλυψης", actionCheckIn: "Επικοινωνία επανασύνδεσης", actionAllGood: "Όλα καλά", }, agentKpis: { heading: "Δείκτες βιβλίου", totalClients: "Σύνολο πελατών", expiringClients: "Ασφαλιστήρια που λήγουν", gapClients: "Με κενά κάλυψης", pendingInvites: "Εκκρεμείς προσκλήσεις", policiesThisMonth: "Ασφαλιστήρια αυτόν τον μήνα", followUps: "Προτεινόμενες επανεπαφές", pipeline: "Εκτίμηση ευκαιριών", completeness: "Μέσος δείκτης προστασίας", noScores: "Χωρίς βαθμολόγηση ακόμα", }, walletDashboard: { checkExpirations: "Ελέγξτε λήξεις και πιθανά κενά κάλυψης.", coverageUpToDate: "Η κάλυψή σας είναι ενημερωμένη.", allPoliciesActive: "Όλα τα ασφαλιστήρια είναι ενεργά", clearFilters: "Καθαρισμός φίλτρων", addDetailsManually: "Χειροκίνητη προσθήκη", uploadDocument: "Μεταφόρτωση εγγράφου", batchUpload: "Μαζική μεταφόρτωση", addPolicyAria: "Προσθήκη ασφαλιστηρίου", noPoliciesYet: "Το Πορτοφόλι Μου", addFirstPolicy: "Προσθήκη ασφαλιστηρίου", policiesCount: (n: number) => `${n} ασφαλιστήρια`, viewList: "Προβολή Λίστας", viewCard: "Προβολή Κάρτας", agentChat: "Συνεργασία", upgrade: "Αναβάθμιση", missingCoverages: "Πιθανά κενά κάλυψης:", viewAllRecommendations: "Δείτε όλες τις προτάσεις →", healthTitle: "Ασφάλιση Υγείας", healthDescription: "Προστατέψτε την υγεία της οικογένειάς σας από απρόβλεπτα ιατρικά έξοδα.", homeTitle: "Ασφάλιση Κατοικίας", homeDescription: "Προστατέψτε την περιουσία σας από ζημιές, φυσικά φαινόμενα και κλοπή.", lifeTitle: "Ασφάλιση Ζωής", lifeDescription: "Εξασφαλίστε οικονομική στήριξη για τα αγαπημένα σας πρόσωπα.", petTitle: "Ασφάλιση Κατοικιδίου", petDescription: "Προστασία για κτηνιατρικά έξοδα και περίθαλψη κατοικιδίου.", yearlyFootprint: "Ετήσιο σύνολο ασφαλίστρων", emptyWalletTitle: "Δεν υπάρχουν ασφαλιστήρια ακόμη", emptyWalletDescription: "Προσθέστε το πρώτο σας ασφαλιστήριο για να ξεκινήσετε.", expires: "Λήγει", policyCountLabel: "ασφαλιστήρια", subtitle: "Τα ασφαλιστήριά σας σε μία καθαρή εικόνα.", }, auth: { createAccountTitle: "Δημιουργία λογαριασμού", createAccountSubtitle: "Ξεκινήστε με το PolicyWallet σε λιγότερο από 2 λεπτά.", fullNamePlaceholder: "Όνομα Επώνυμο", emailPlaceholder: "name@example.com", passwordPlaceholder: "********", licensePlaceholder: "ΑΣ-12345", agencyPlaceholder: "Επωνυμία πρακτορείου", termsAndConditions: "Όρους Χρήσης", privacyPolicy: "Πολιτική Απορρήτου", joinAs: "Εγγραφή ως", switchAgent: "Είμαι ασφαλιστικός σύμβουλος", switchPolicyholder: "Συνέχεια ως ασφαλισμένος", alreadyHaveAccount: "Έχετε ήδη λογαριασμό;", noAccount: "Δεν έχετε λογαριασμό;", forgotPassword: "Ξέχασα τον κωδικό", signInSubtitle: "Συνδεθείτε για να διαχειριστείτε το ασφαλιστικό σας πορτοφόλι.", resendVerification: "Επανάληψη αποστολής email επιβεβαίωσης", resendSent: "Το email επιβεβαίωσης εστάλη.", checkInbox: "Ελέγξτε τα εισερχόμενα. Δεν το βρήκατε;", unverified: "Το email σας δεν έχει επιβεβαιωθεί ακόμη.", orContinueWith: "Ή συνεχίστε με", }, }
 inline	lib/insurance/clause-sets.ts	'Έκπλυση από το κατάστρωμα'
 inline	lib/insurance/clause-sets.ts	'Ανατροπή ή εκτροχιασμός'
 inline	lib/insurance/clause-sets.ts	'Απεργίες και ταραχές'
@@ -5620,7 +5620,7 @@ inline	lib/insurance/content/business.ts	'Αν η επιχείρηση κλεί�
 inline	lib/insurance/content/business.ts	'Ανεβάστε ασφαλιστήριο'
 inline	lib/insurance/content/business.ts	'Ανεβάστε το ασφαλιστήριο της επιχείρησής σας και δείτε αν στέγη, εξοπλισμός, εμπορεύματα και ευθύνη καλύπτονται όπως νομίζετε.'
 inline	lib/insurance/content/business.ts	'Αστική ευθύνη (γενική, επαγγελματική, εργοδοτική) όπως εμφανίζεται στο ασφαλιστήριο.'
-inline	lib/insurance/content/business.ts	'Ασφαλίστε τον χώρο και περιορίστε τη ζημιά αν γίνεται με ασφάλεια — μην πετάξεις κατεστραμμένα αντικείμενα πριν την πραγματογνωμοσύνη.'
+inline	lib/insurance/content/business.ts	'Ασφαλίστε τον χώρο και περιορίστε τη ζημιά αν γίνεται με ασφάλεια — μην πετάξετε κατεστραμμένα αντικείμενα πριν την πραγματογνωμοσύνη.'
 inline	lib/insurance/content/business.ts	'Για διακοπή εργασιών, κρατήστε στοιχεία τζίρου πριν και μετά — η αποζημίωση υπολογίζεται πάνω σε αυτά.'
 inline	lib/insurance/content/business.ts	'Δείτε αν υπάρχει κάλυψη διακοπής εργασιών'
 inline	lib/insurance/content/business.ts	'Δείτε με τον σύμβουλό σας αν οι καλύψεις ταιριάζουν με τη δραστηριότητα'
@@ -6892,7 +6892,7 @@ inline	lib/landing/content.ts	"Όχι. Δεν είμαστε ασφαλιστι�
 inline	lib/landing/content.ts	"Όχι. Κανείς δεν βλέπει τα ασφαλιστήριά σας εκτός αν εσείς επιλέξετε ρητά να τα μοιραστείτε — για παράδειγμα με τον ασφαλιστή σας. Την άδεια τη δίνετε και την παίρνετε πίσω εσείς."
 inline	lib/landing/content.ts	"Ανεβάστε το ασφαλιστήριό σας"
 inline	lib/landing/content.ts	"Βρίσκουμε τι καλύπτει, τι δεν καλύπτει και πότε λήγει."
-inline	lib/landing/content.ts	"Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε με ένα κλικ — με το πλάνο Family."
+inline	lib/landing/content.ts	"Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε όποτε θέλετε — με το πλάνο Family."
 inline	lib/landing/content.ts	"Δεν χρειάζεται"
 inline	lib/landing/content.ts	"Δουλεύει με την ασφαλιστική μου;"
 inline	lib/landing/content.ts	"Είναι ασφαλή τα δεδομένα μου;"
@@ -7279,9 +7279,10 @@ inline	lib/notifications/registry.ts	"Καθημερινή σύνοψη"
 inline	lib/notifications/registry.ts	"Καλώς ήρθατε στο PolicyWallet"
 inline	lib/notifications/registry.ts	"Καταγράφηκε επισήμανση για μια αυτόματη ανάγνωση που χρειάζεται έλεγχο."
 inline	lib/notifications/registry.ts	"Καταγράψαμε την αλλαγή σας"
+inline	lib/notifications/registry.ts	"Κερδίσατε ένα νέο επίτευγμα."
 inline	lib/notifications/registry.ts	"Λάβαμε την αξιολόγησή σας"
 inline	lib/notifications/registry.ts	"Λάβαμε την αξιολόγηση του άρθρου"
-inline	lib/notifications/registry.ts	"Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας."
+inline	lib/notifications/registry.ts	"Με βάση όσα ξέρουμε για τη ζωή σας και τα ασφαλιστήριά σας."
 inline	lib/notifications/registry.ts	"Μια ανατεθειμένη ενέργεια πέρασε την προθεσμία της."
 inline	lib/notifications/registry.ts	"Μια εκκρεμότητα ανανέωσης έκλεισε. Δείτε το αποτέλεσμα."
 inline	lib/notifications/registry.ts	"Μια ενέργεια καθυστερεί"
@@ -7295,7 +7296,6 @@ inline	lib/notifications/registry.ts	"Νέες προτάσεις για εσά�
 inline	lib/notifications/registry.ts	"Νέο επίτευγμα"
 inline	lib/notifications/registry.ts	"Νέο ερωτηματολόγιο από τον σύμβουλό σας"
 inline	lib/notifications/registry.ts	"Νέο μήνυμα"
-inline	lib/notifications/registry.ts	"Ξεκλειδώσατε ένα νέο επίτευγμα."
 inline	lib/notifications/registry.ts	"Ο κωδικός σας άλλαξε"
 inline	lib/notifications/registry.ts	"Ο κωδικός του λογαριασμού σας άλλαξε. Αν δεν το κάνατε εσείς, επικοινωνήστε μαζί μας αμέσως."
 inline	lib/notifications/registry.ts	"Ο πελάτης σας ανέβασε το έγγραφο που ζητήσατε."
@@ -7425,8 +7425,6 @@ inline	lib/pricing/public-pricing-content.ts	"Agent Pro"
 inline	lib/pricing/public-pricing-content.ts	"Agent Starter"
 inline	lib/pricing/public-pricing-content.ts	"Family"
 inline	lib/pricing/public-pricing-content.ts	"Plus"
-inline	lib/pricing/public-pricing-content.ts	"Έξυπνες υπενθυμίσεις & εξαγωγή αναφοράς"
-inline	lib/pricing/public-pricing-content.ts	"Έξυπνες υπενθυμίσεις, οδηγός ζημιάς & εξαγωγή αναφοράς"
 inline	lib/pricing/public-pricing-content.ts	"Έως 10 ασφαλιστήρια"
 inline	lib/pricing/public-pricing-content.ts	"Έως 25 ασφαλιστήρια"
 inline	lib/pricing/public-pricing-content.ts	"Όλοι οι πελάτες σε μία οθόνη"
@@ -7510,9 +7508,11 @@ inline	lib/pricing/public-pricing-content.ts	"Σύγκριση δυνατοτή�
 inline	lib/pricing/public-pricing-content.ts	"Τι γίνεται αν ακυρώσω;"
 inline	lib/pricing/public-pricing-content.ts	"Το δωρεάν πλάνο καλύπτει τρία ασφαλιστήρια, με πλήρη ανάλυση, και δεν ζητά κάρτα. Το Plus κοστίζει €39 τον χρόνο (ή €4.99 τον μήνα) για 10 ασφαλιστήρια, και το Family €79 τον χρόνο (ή €8.99 τον μήνα) για 25. Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο. Όλες οι τιμές περιλαμβάνουν ΦΠΑ."
 inline	lib/pricing/public-pricing-content.ts	"Υπάρχει έκπτωση στην ετήσια χρέωση;"
+inline	lib/pricing/public-pricing-content.ts	"Υπενθυμίσεις & εξαγωγή αναφοράς"
 inline	lib/pricing/public-pricing-content.ts	"Υπενθυμίσεις ανανέωσης (email)"
 inline	lib/pricing/public-pricing-content.ts	"Υπενθυμίσεις ανανέωσης (email)"
 inline	lib/pricing/public-pricing-content.ts	"Υπενθυμίσεις ανανέωσης"
+inline	lib/pricing/public-pricing-content.ts	"Υπενθυμίσεις, οδηγός ζημιάς & εξαγωγή αναφοράς"
 inline	lib/pricing/public-pricing-content.ts	"Υποστηρίζεται ομαδική συνεργασία στο γραφείο;"
 inline	lib/pricing/public-pricing-content.ts	"Χαρακτηριστικό"
 inline	lib/pricing/public-pricing-content.ts	"Χαρτοφυλάκιο πελατών"
@@ -7681,29 +7681,29 @@ inline	lib/services/ai/mock-ai.service.ts	'Το ασφάλιστρο φαίνε�
 inline	lib/services/ai/mock-ai.service.ts	`Εικονική αξιολόγηση για ${pillar.title.el}.`
 inline	lib/services/ai/mock-ai.service.ts	`Εικονική εξήγηση για ${def.name}`
 inline	lib/services/ai/mock-ai.service.ts	`Εικονική πρόταση για ${def.name}`
-inline	lib/services/ai/mock-ai.service.ts	`Το συμβόλαιο ${metadata.lineOfBusiness} είναι ενεργό και μπορεί να βελτιωθεί σε επιλεγμένα σημεία.`
+inline	lib/services/ai/mock-ai.service.ts	`Το ασφαλιστήριο ${metadata.lineOfBusiness} είναι ενεργό και μπορεί να βελτιωθεί σε επιλεγμένα σημεία.`
 inline	lib/services/ai/openai-ai.service.ts	z.string()
 inline	lib/services/ai/openai-ai.service.ts	z.string()
 inline	lib/services/ai/openai-ai.service.ts	z.string()
 inline	lib/services/ai/openai-ai.service.ts	z.string().describe("Greek risk summary (2-3 sentences)")
-inline	lib/services/analysis/deterministic-savings.ts	"Εξετάστε την αύξηση της απαλλαγής για μείωση ασφαλίστρου"
-inline	lib/services/analysis/deterministic-savings.ts	"Ζητήστε σύγκριση αγοράς — το συμβόλαιό σας είναι πάνω από 3 ετών"
-inline	lib/services/analysis/deterministic-savings.ts	"Ρωτήστε τον ασφαλιστή σας για έκπτωση πολλαπλών συμβολαίων"
-inline	lib/services/analysis/deterministic-savings.ts	`Έχετε ${input.sameInsurerPolicyCount} συμβόλαια με τον ίδιο ασφαλιστή. Οι περισσότεροι ασφαλιστές προσφέρουν 5-15% έκπτωση ομαδοποίησης.`
-inline	lib/services/analysis/deterministic-savings.ts	`Αυτό το συμβόλαιο είναι ενεργό εδώ και ${Math.floor(policyAgeYears)} χρόνια χωρίς επανέλεγχο τιμών. Η αγορά αλλάζει συχνά και μια νέα σύγκριση μπορεί να αποκαλύψει καλύτερες τιμές.`
-inline	lib/services/analysis/deterministic-savings.ts	`Η απαλλαγή σας είναι €${deductible}, στο ελάχιστο επίπεδο. Αυξάνοντάς την σε €100-150 μειώνετε συνήθως το ασφάλιστρο κατά 5-10%.`
+inline	lib/services/analysis/deterministic-savings.ts	"Ρωτήστε για υψηλότερη απαλλαγή και χαμηλότερο ασφάλιστρο"
+inline	lib/services/analysis/deterministic-savings.ts	"Ρωτήστε τον ασφαλιστή σας για έκπτωση πολλαπλών ασφαλιστηρίων"
+inline	lib/services/analysis/deterministic-savings.ts	"Σύγκριση αγοράς: το ασφαλιστήριό σας είναι πάνω από 3 ετών"
+inline	lib/services/analysis/deterministic-savings.ts	`Έχετε ${input.sameInsurerPolicyCount} ασφαλιστήρια με την ίδια ασφαλιστική. Ρωτήστε τον ασφαλιστή σας αν προβλέπεται έκπτωση πολλαπλών ασφαλιστηρίων.`
+inline	lib/services/analysis/deterministic-savings.ts	`Αυτό το ασφαλιστήριο είναι ενεργό εδώ και ${Math.floor(policyAgeYears)} χρόνια χωρίς επανέλεγχο τιμών. Ρωτήστε τον ασφαλιστή σας για μια νέα σύγκριση αγοράς.`
+inline	lib/services/analysis/deterministic-savings.ts	`Η απαλλαγή σας είναι €${deductible}, στο ελάχιστο επίπεδο. Ρωτήστε τον ασφαλιστή σας τι θα άλλαζε στο ασφάλιστρο με υψηλότερη απαλλαγή.`
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Αποκαλύπτει κρυφούς περιορισμούς, υπο-όρια, υποχρεώσεις ειδοποίησης και απρόσμενες συνθήκες που μπορεί να επηρεάσουν αποζημιώσεις."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Διασφαλίζει ορατότητα σε λήξεις και ενέργειες περιοδικού ελέγχου."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Διασφαλίζει ότι όλες οι δωρεάν υπηρεσίες, οι παροχές πρόληψης, τα τηλέφωνα βοήθειας και τα δώρα που περιλαμβάνονται στο ασφαλιστήριο είναι ορατά στον χρήστη."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Διαφάνεια ψιλών γραμμάτων"
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Δικαιούχοι και στοιχεία έκτακτης ανάγκης"
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Ελέγχει απαιτήσεις της ελληνικής αγοράς: ΕΝΦΙΑ, κέντρα συντονισμού, λεϊσμανίαση και πράσινη κάρτα."
-inline	lib/services/analysis/insurance-clarity-checklist.ts	"Ελέγχει ασφαλιστή, αριθμό συμβολαίου, ημερομηνίες, ασφάλιστρο και όρια."
+inline	lib/services/analysis/insurance-clarity-checklist.ts	"Ελέγχει ασφαλιστική, αριθμό ασφαλιστηρίου, ημερομηνίες, ασφάλιστρο και όρια."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Ελέγχει δικαιούχους, στοιχεία επικοινωνίας και ετοιμότητα για αποζημίωση."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Εντοπίζει δυνατότητες βελτιστοποίησης κόστους και πιθανή ετήσια εξοικονόμηση."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Εντοπίζει ουσιαστικά κενά κάλυψης και ιεραρχεί την έκθεση κινδύνου."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Εντοπισμός κενών κάλυψης"
-inline	lib/services/analysis/insurance-clarity-checklist.ts	"Εξηγεί απλά τι καλύπτεται, τι δεν καλύπτεται και ποιους περιορισμούς έχει το συμβόλαιο."
+inline	lib/services/analysis/insurance-clarity-checklist.ts	"Εξηγεί απλά τι καλύπτεται, τι δεν καλύπτεται και ποιους περιορισμούς έχει το ασφαλιστήριο."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Επιβεβαιώνει ότι τα κρίσιμα έγγραφα υπάρχουν και είναι αξιοποιήσιμα."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Επιβεβαιώνει ότι όλα τα ενεργά ασφαλιστήρια έχουν καταγραφεί σωστά."
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Ευκαιρίες εξοικονόμησης"
@@ -7711,7 +7711,7 @@ inline	lib/services/analysis/insurance-clarity-checklist.ts	"Καταγραφή 
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Οργάνωση και προσβασιμότητα εγγράφων"
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Παροχές και υπηρεσίες πρόληψης"
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Πειθαρχία επανελέγχου και ανανέωσης"
-inline	lib/services/analysis/insurance-clarity-checklist.ts	"Πληρότητα βασικών στοιχείων συμβολαίου"
+inline	lib/services/analysis/insurance-clarity-checklist.ts	"Πληρότητα βασικών στοιχείων ασφαλιστηρίου"
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Σαφήνεια καλύψεων και εξαιρέσεων"
 inline	lib/services/analysis/insurance-clarity-checklist.ts	"Συμμόρφωση Ελληνικής αγοράς"
 inline	lib/services/analysis/policy-analysis-orchestrator.service.ts	"Η σύνοψη δεν είναι διαθέσιμη λόγω υποβάθμισης ανάλυσης."
@@ -7736,7 +7736,7 @@ inline	lib/services/collaboration.service.ts	"Νέα συζήτηση"
 inline	lib/services/collaboration.service.ts	"Νέο μήνυμα"
 inline	lib/services/collaboration.service.ts	params.message
 inline	lib/services/compliance/obligation-scan.ts	`Προϋπόθεση κάλυψης προς έλεγχο — ${elBranch}`
-inline	lib/services/compliance/obligation-scan.ts	due.length > 1 ? `Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει ${due.length} προϋποθέσεις που πρέπει να τηρούνται. Η πρώτη: ${lead.el}` : `Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει την εξής προϋπόθεση κάλυψης: ${lead.el}`
+inline	lib/services/compliance/obligation-scan.ts	due.length > 1 ? `Το ασφαλιστήριό σας με την ${policy.insurerName} θέτει ${due.length} προϋποθέσεις που πρέπει να τηρούνται. Η πρώτη: ${lead.el}` : `Το ασφαλιστήριό σας με την ${policy.insurerName} θέτει την εξής προϋπόθεση κάλυψης: ${lead.el}`
 inline	lib/services/compliance/obligation-scan.ts	due[0].text
 inline	lib/services/cross-sell.service.ts	"Αστική Ευθύνη"
 inline	lib/services/cross-sell.service.ts	"Αυτοκίνητο"
@@ -7911,7 +7911,7 @@ inline	lib/services/gap-engine/recommendation-context.ts	"Το αν η κάλυ�
 inline	lib/services/gap-engine/recommendation-context.ts	"Το ασφαλιστήριο που κάλυπτε αυτόν τον κίνδυνο έχει λήξει, οπότε η έκθεση είναι ανοιχτή αυτή τη στιγμή."
 inline	lib/services/gap-engine/recommendation-context.ts	"Το κόστος της ζημιάς παύει να είναι δικό σας βάρος και οι αποταμιεύσεις σας μένουν εκεί που τις προορίζατε."
 inline	lib/services/gap-engine/recommendation-context.ts	`Βρίσκεστε στην ηλικιακή ζώνη όπου οι όροι σε αυτόν τον κλάδο στενεύουν, και πολλές ελληνικές ασφαλιστικές σταματούν να δέχονται νέες αιτήσεις γύρω στα ${window.to}. Μια αίτηση νωρίτερα συνήθως κοστίζει λιγότερο και γίνεται πιο εύκολα δεκτή.`
-inline	lib/services/gap-engine/recommendation-generator.ts	"Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας."
+inline	lib/services/gap-engine/recommendation-generator.ts	"Με βάση όσα ξέρουμε για τη ζωή σας και τα ασφαλιστήριά σας."
 inline	lib/services/gap-engine/recommendation-generator.ts	"Νέα πρόταση για εσάς"
 inline	lib/services/gap-engine/recommendation-generator.ts	`${created} νέες προτάσεις για εσάς`
 inline	lib/services/gap-engine/recommendation-generator.ts	content.titleEl
@@ -8292,10 +8292,10 @@ inline	lib/services/policy.service.ts	`Δεν έχετε δικαίωμα να �
 inline	lib/services/policy.service.ts	`Η ανάλυση ${subject.el} δεν ξεκίνησε επειδή εξαντλήθηκε το διαθέσιμο όριο AI. Αναβαθμίστε το πρόγραμμά σας ή αγοράστε credits και δοκιμάστε ξανά — το έγγραφό σας είναι αποθηκευμένο.`
 inline	lib/services/policy.service.ts	`Η ανάλυση ${subject.el} δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.`
 inline	lib/services/policy.service.ts	`Η ανάλυση ${subject.el} χρειάζεται τη συγκατάθεσή σας για επεξεργασία με τεχνητή νοημοσύνη. Δώστε τη συγκατάθεση από τις ρυθμίσεις και δοκιμάστε ξανά — το έγγραφό σας είναι αποθηκευμένο.`
-inline	lib/services/policy.service.ts	`Η νέα μεταφόρτωση ενσωματώθηκε στο υπάρχον συμβόλαιο ${currentPolicy.policyNumber}.`
+inline	lib/services/policy.service.ts	`Η νέα μεταφόρτωση ενσωματώθηκε στο υπάρχον ασφαλιστήριο ${currentPolicy.policyNumber}.`
 inline	lib/services/policy.service.ts	`Το ασφαλιστήριο συμβόλαιο ${analyzedLabel} αναλύθηκε από τον σύμβουλό σας.`
 inline	lib/services/policy.service.ts	`Το ασφαλιστήριο συμβόλαιο ${analyzedLabel} αναλύθηκε επιτυχώς.`
-inline	lib/services/policy.service.ts	label ? `του συμβολαίου ${label}` : 'του εγγράφου που ανεβάσατε'
+inline	lib/services/policy.service.ts	label ? `του ασφαλιστηρίου ${label}` : 'του εγγράφου που ανεβάσατε'
 inline	lib/services/protection-profile/derive-priorities.ts	"Άλλαξε πρόσφατα — αξίζει να το δούμε πρώτο."
 inline	lib/services/protection-profile/derive-priorities.ts	"Άλλοι βασίζονται σε σένα."
 inline	lib/services/protection-profile/derive-priorities.ts	"Έρχεται σύντομα — καλύτερα να το προλάβουμε."
@@ -8578,24 +8578,25 @@ inline	lib/subscription-copy.ts	'/μήνα'
 inline	lib/subscription-copy.ts	'14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ'
 inline	lib/subscription-copy.ts	'Family'
 inline	lib/subscription-copy.ts	'Plus'
-inline	lib/subscription-copy.ts	'{used} από {limit} συμβόλαια'
-inline	lib/subscription-copy.ts	'Έχετε φτάσει το όριο των {limit} συμβολαίων'
-inline	lib/subscription-copy.ts	'Όριο συμβολαίων'
+inline	lib/subscription-copy.ts	'{used} από {limit} ασφαλιστήρια'
+inline	lib/subscription-copy.ts	'Έχετε φτάσει το όριο των {limit} ασφαλιστηρίων'
+inline	lib/subscription-copy.ts	'Όριο ασφαλιστηρίων'
 inline	lib/subscription-copy.ts	'Ακύρωση ανά πάσα στιγμή'
 inline	lib/subscription-copy.ts	'Ακύρωση'
 inline	lib/subscription-copy.ts	'Αναβάθμιση λογαριασμού'
 inline	lib/subscription-copy.ts	'Αναβάθμιση σε Family'
 inline	lib/subscription-copy.ts	'Αναβάθμιση σε Plus'
 inline	lib/subscription-copy.ts	'Αναβάθμιση'
-inline	lib/subscription-copy.ts	'Αναβαθμίστε για να ξεκλειδώσετε αυτή τη λειτουργία'
-inline	lib/subscription-copy.ts	'Απεριόριστα συμβόλαια'
+inline	lib/subscription-copy.ts	'Αναβαθμίστε για να αποκτήσετε αυτή τη λειτουργία'
+inline	lib/subscription-copy.ts	'Αναλυτικά στοιχεία'
+inline	lib/subscription-copy.ts	'Απεριόριστα ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Απεριόριστα'
 inline	lib/subscription-copy.ts	'Ασφαλής αποθήκευση εγγράφων'
 inline	lib/subscription-copy.ts	'Ασφαλής πληρωμή με Stripe'
 inline	lib/subscription-copy.ts	'Αυτή η λειτουργία απαιτεί αναβάθμιση'
 inline	lib/subscription-copy.ts	'Αυτόματος εντοπισμός κενών'
 inline	lib/subscription-copy.ts	'Βασικές πληροφορίες κάλυψης'
-inline	lib/subscription-copy.ts	'Βασική σύνοψη συμβολαίου από το AI'
+inline	lib/subscription-copy.ts	'Βασική σύνοψη ασφαλιστηρίου από το AI'
 inline	lib/subscription-copy.ts	'Βασικό πλάνο'
 inline	lib/subscription-copy.ts	'Για τα ασφαλιστήρια όλου του σπιτιού'
 inline	lib/subscription-copy.ts	'Για όλα τα δικά σας ασφαλιστήρια'
@@ -8623,7 +8624,7 @@ inline	lib/subscription-copy.ts	'Ιστορικό Χρεώσεων'
 inline	lib/subscription-copy.ts	'Καλύτερη αξία'
 inline	lib/subscription-copy.ts	'Λήψη PDF'
 inline	lib/subscription-copy.ts	'Μέθοδος Πληρωμής'
-inline	lib/subscription-copy.ts	'Μέχρι {count} συμβόλαια'
+inline	lib/subscription-copy.ts	'Μέχρι {count} ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Μηνιαία'
 inline	lib/subscription-copy.ts	'Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή;'
 inline	lib/subscription-copy.ts	'Μπορώ να αναβαθμίσω αργότερα;'
@@ -8636,10 +8637,9 @@ inline	lib/subscription-copy.ts	'Ξεκινήστε δωρεάν δοκιμή 14
 inline	lib/subscription-copy.ts	'Ξεκινήστε δωρεάν και αναβαθμίστε όποτε είστε έτοιμοι'
 inline	lib/subscription-copy.ts	'Οι πληρωμές γίνονται εξ ολοκλήρου μέσα στο Stripe, πιστοποιημένο κατά PCI DSS Level 1. Τα στοιχεία της κάρτας σας δεν περνούν ποτέ από τους δικούς μας διακομιστές και δεν τα αποθηκεύουμε.'
 inline	lib/subscription-copy.ts	'ΠΕΡΙΜΕΝΕΤΕ...'
+inline	lib/subscription-copy.ts	'Πλήρης ανάλυση AI'
 inline	lib/subscription-copy.ts	'Ποιες μέθοδοι πληρωμής δέχεστε;'
 inline	lib/subscription-copy.ts	'Προβολή Τιμολογίων'
-inline	lib/subscription-copy.ts	'Προηγμένα analytics'
-inline	lib/subscription-copy.ts	'Προηγμένη ανάλυση AI'
 inline	lib/subscription-copy.ts	'Πρόσβαση μέχρι: {date}'
 inline	lib/subscription-copy.ts	'Συνδρομή & Χρεώσεις'
 inline	lib/subscription-copy.ts	'Συνεργασία με σύμβουλο'
@@ -8665,7 +8665,7 @@ inline	lib/subscription-entitlements.ts	"Δωρεάν Πράκτορας"
 inline	lib/subscription-entitlements.ts	"Πράκτορας Pro"
 inline	lib/subscription-entitlements.ts	"Πράκτορας Starter"
 inline	lib/subscription-entitlements.ts	"Πρακτορείο"
-inline	lib/subscription-limits.ts	"Έχετε φτάσει το όριο συμβολαίων του πλάνου σας. Αναβαθμίστε για περισσότερα."
+inline	lib/subscription-limits.ts	"Έχετε φτάσει το όριο ασφαλιστηρίων του πλάνου σας. Αναβαθμίστε για περισσότερα."
 inline	lib/subscription-limits.ts	"Αυτό είναι χαρακτηριστικό επί πληρωμή πλάνου. Αναβαθμίστε για πρόσβαση."
 inline	lib/subscription-limits.ts	"Οι ειδοποιήσεις email είναι διαθέσιμες σε επί πληρωμή πλάνα."
 inline	lib/trust/methodology-content.ts	"Ένα κενό κάλυψης το αποφασίζει ένας κανόνας, όχι ένα μοντέλο. Κάθε κανόνας είναι μια σταθερή συνθήκη πάνω σε πεδία που εξάγονται από το έγγραφο — «το έγγραφο δηλώνει ότι ο σεισμός δεν καλύπτεται», «δεν καταγράφεται δικαιούχος». Ο ίδιος κανόνας πάνω στα ίδια πεδία δίνει πάντα το ίδιο αποτέλεσμα."
@@ -8780,19 +8780,19 @@ ternary	lib/email/templates/churn-prevention.ts	`<p>${isGreek ? 'Δεν εντο
 ternary	lib/email/templates/churn-prevention.ts	counted(expiringPolicies, 'ασφαλιστήριο λήγει σύντομα', 'ασφαλιστήρια λήγουν σύντομα')
 ternary	lib/email/templates/churn-prevention.ts	counted(openGaps, 'κενό κάλυψης χρειάζεται αντιμετώπιση', 'κενά κάλυψης χρειάζονται αντιμετώπιση')
 ternary	lib/email/templates/engagement-drip.ts	'1. Ανεβάστε ένα PDF ή βγάλτε φωτογραφία'
-ternary	lib/email/templates/engagement-drip.ts	'2. Η AI διαβάζει και αναλύει το συμβόλαιο'
+ternary	lib/email/templates/engagement-drip.ts	'2. Η AI διαβάζει και αναλύει το ασφαλιστήριο'
 ternary	lib/email/templates/engagement-drip.ts	'3. Λαμβάνετε ρεπορτ κάλυψης σε λεπτά'
 ternary	lib/email/templates/engagement-drip.ts	'Άνοιγμα πίνακα ελέγχου'
 ternary	lib/email/templates/engagement-drip.ts	'Ένα βήμα σας χωρίζει!'
 ternary	lib/email/templates/engagement-drip.ts	'Έχει περάσει μία εβδομάδα από την εγγραφή σας. Ας δούμε πού βρίσκεστε:'
-ternary	lib/email/templates/engagement-drip.ts	'Αν χρειάζεστε βοήθεια, επισκεφθείτε το Help Center μας.'
+ternary	lib/email/templates/engagement-drip.ts	'Αν χρειάζεστε βοήθεια, επισκεφθείτε το Κέντρο βοήθειας.'
 ternary	lib/email/templates/engagement-drip.ts	'Αναλύθηκε 1 ασφαλιστήριο'
 ternary	lib/email/templates/engagement-drip.ts	'Ανεβάστε τα ασφαλιστήρια σας για να δείτε τη σύνοψη κάλυψής σας.'
-ternary	lib/email/templates/engagement-drip.ts	'Ανεβάστε το πρώτο σας συμβόλαιο'
+ternary	lib/email/templates/engagement-drip.ts	'Ανεβάστε το πρώτο σας ασφαλιστήριο'
 ternary	lib/email/templates/engagement-drip.ts	'Ανεβάστε τώρα'
 ternary	lib/email/templates/engagement-drip.ts	'Ασφαλιστήρια'
 ternary	lib/email/templates/engagement-drip.ts	'Δεν έχει αναλυθεί ακόμη'
-ternary	lib/email/templates/engagement-drip.ts	'Δημιουργήσατε με επιτυχία τον λογαριασμό σας. Τώρα μπορείτε να οργανώσετε όλα τα ασφαλιστήρια συμβόλαιά σας σε ένα ασφαλές μέρος.'
+ternary	lib/email/templates/engagement-drip.ts	'Δημιουργήσατε με επιτυχία τον λογαριασμό σας. Τώρα μπορείτε να οργανώσετε όλα τα ασφαλιστήριά σας σε ένα ασφαλές μέρος.'
 ternary	lib/email/templates/engagement-drip.ts	'Η πρώτη σας εβδομάδα!'
 ternary	lib/email/templates/engagement-drip.ts	'Καλώς ήρθες στο PolicyWallet!'
 ternary	lib/email/templates/engagement-drip.ts	'Κενά κάλυψης'
@@ -8801,11 +8801,11 @@ ternary	lib/email/templates/engagement-drip.ts	'Πώς λειτουργεί:'
 ternary	lib/email/templates/engagement-drip.ts	'Τα ασφαλιστήριά σας δεν έχουν αναλυθεί ακόμη, οπότε δεν γνωρίζουμε αν υπάρχουν κενά κάλυψης. Ξεκινήστε την ανάλυση από τον πίνακα ελέγχου.'
 ternary	lib/email/templates/engagement-drip.ts	'Τα πρώτα βήματα:'
 ternary	lib/email/templates/engagement-drip.ts	'🎉 Καλώς ήρθες στο PolicyWallet!'
-ternary	lib/email/templates/engagement-drip.ts	'💡 Tip: Μπορείτε να ανεβάσετε συμβόλαια από αυτοκίνητο, σπίτι, υγεία, ζωή — όλα σε ένα μέρος.'
+ternary	lib/email/templates/engagement-drip.ts	'💡 Μπορείτε να ανεβάσετε ασφαλιστήρια από αυτοκίνητο, σπίτι, υγεία, ζωή — όλα σε ένα μέρος.'
 ternary	lib/email/templates/engagement-drip.ts	'📊 Η εβδομαδιαία σύνοψη κάλυψης'
-ternary	lib/email/templates/engagement-drip.ts	'📎 Ανεβάσατε το πρώτο σας συμβόλαιο;'
+ternary	lib/email/templates/engagement-drip.ts	'📎 Ανεβάσατε το πρώτο σας ασφαλιστήριο;'
 ternary	lib/email/templates/engagement-drip.ts	'📎 Ανεβάστε το πρώτο ασφαλιστήριο (PDF ή φωτογραφία)'
-ternary	lib/email/templates/engagement-drip.ts	'🔍 Ανακαλύψτε κενά κάλυψης και ευκαιρίες εξοικονόμησης'
+ternary	lib/email/templates/engagement-drip.ts	'🔍 Δείτε κενά κάλυψης και ευκαιρίες εξοικονόμησης'
 ternary	lib/email/templates/engagement-drip.ts	'🤖 Η AI θα αναλύσει αυτόματα την κάλυψή σας'
 ternary	lib/email/templates/engagement-drip.ts	` <p style="color: #6B7280; font-size: 14px;">${isGreek ? counted(remainder, 'ασφαλιστήριο δεν έχει αναλυθεί ακόμη.', 'ασφαλιστήρια δεν έχουν αναλυθεί ακόμη.') : counted(remainder, 'policy has not been analysed yet.', 'policies have not been analysed yet.') }</p> `
 ternary	lib/email/templates/engagement-drip.ts	` <p style="margin-top: 16px;"> <span class="warning-badge">${isGreek ? counted(stats.gapCount, 'κενό κάλυψης χρειάζεται προσοχή', 'κενά κάλυψης χρειάζονται προσοχή') : counted(stats.gapCount, 'coverage gap needs attention', 'coverage gaps need attention')}</span> </p> `
@@ -8855,8 +8855,8 @@ ternary	lib/services/collaboration-reminders.service.ts	"ανοιχτές συζ
 ternary	lib/services/collaboration-reminders.service.ts	"ανοιχτή συζήτηση"
 ternary	lib/services/collaboration-reminders.service.ts	"εκπρόθεσμες ενέργειες"
 ternary	lib/services/collaboration-reminders.service.ts	"εκπρόθεσμη ενέργεια"
-ternary	lib/services/compliance/obligation-scan.ts	`Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει ${due.length} προϋποθέσεις που πρέπει να τηρούνται. Η πρώτη: ${lead.el}`
-ternary	lib/services/compliance/obligation-scan.ts	`Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει την εξής προϋπόθεση κάλυψης: ${lead.el}`
+ternary	lib/services/compliance/obligation-scan.ts	`Το ασφαλιστήριό σας με την ${policy.insurerName} θέτει ${due.length} προϋποθέσεις που πρέπει να τηρούνται. Η πρώτη: ${lead.el}`
+ternary	lib/services/compliance/obligation-scan.ts	`Το ασφαλιστήριό σας με την ${policy.insurerName} θέτει την εξής προϋπόθεση κάλυψης: ${lead.el}`
 ternary	lib/services/gap-analysis.service.ts	'Δεν έχετε δικαίωμα να απορρίψετε αυτό το κενό'
 ternary	lib/services/gap-analysis.service.ts	'Δεν έχετε δικαίωμα να επιλύσετε αυτό το κενό'
 ternary	lib/services/gap-engine/portfolio-rules.ts	" — αύριο"
@@ -8903,13 +8903,13 @@ ternary	lib/services/gap-engine/risk-catalog.ts	`Έχετε ${n} ${plural(n, "κ
 ternary	lib/services/gap-engine/risk-catalog.ts	`Οι αξιώσεις που προκύπτουν από ${occ.el} στρέφονται εναντίον σας προσωπικά, και τα έξοδα υπεράσπισης τρέχουν πολύ πριν κριθεί η ευθύνη.`
 ternary	lib/services/gap-engine/risk-catalog.ts	`Σας ανήκουν ${ctx.propertiesOwned} ακίνητα, γεγονός που αυξάνει την πιθανότητα διαφοράς ορίων, εργασιών ή κοινοχρήστων.`
 ternary	lib/services/gap-engine/risk-catalog.ts	`Σας ανήκουν ${ctx.propertiesOwned} ακίνητα.`
-ternary	lib/services/policy.service.ts	'Δεν έχετε δικαίωμα επεξεργασίας αυτού του συμβολαίου'
+ternary	lib/services/policy.service.ts	'Δεν έχετε δικαίωμα επεξεργασίας αυτού του ασφαλιστηρίου'
 ternary	lib/services/policy.service.ts	'Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης'
 ternary	lib/services/policy.service.ts	'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
 ternary	lib/services/policy.service.ts	'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
 ternary	lib/services/policy.service.ts	'του εγγράφου που ανεβάσατε'
 ternary	lib/services/policy.service.ts	`Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
-ternary	lib/services/policy.service.ts	`του συμβολαίου ${label}`
+ternary	lib/services/policy.service.ts	`του ασφαλιστηρίου ${label}`
 ternary	lib/services/renewal.service.ts	"αύριο"
 ternary	lib/services/renewal.service.ts	"λήγει αύριο"
 ternary	lib/services/renewal.service.ts	"λήγει σήμερα"
@@ -8993,7 +8993,7 @@ ternary	lib/wallet/document-insights.ts	"ΕΠΙΒΕΒΑΙΩΜΕΝΗ"
 ternary	lib/wallet/document-insights.ts	"Η ανάλυση AI είναι σε εξέλιξη."
 ternary	lib/wallet/document-insights.ts	"ΛΕΙΠΟΥΝ ΣΤΟΙΧΕΙΑ"
 ternary	lib/wallet/document-insights.ts	"ΛΗΓΜΕΝΟ"
-ternary	lib/wallet/document-insights.ts	"Το συμβόλαιο έχει ακυρωθεί."
+ternary	lib/wallet/document-insights.ts	"Το ασφαλιστήριο έχει ακυρωθεί."
 ternary	lib/wallet/document-insights.ts	"ΧΡΕΙΑΖΕΤΑΙ ΑΝΑΝΕΩΣΗ"
 ternary	lib/wallet/document-insights.ts	"ΧΡΕΙΑΖΕΤΑΙ ΕΛΕΓΧΟ"
 ternary	lib/wallet/document-insights.ts	"Χρειάζεται έλεγχος πεδίων από το έγγραφο."
@@ -9067,7 +9067,7 @@ call	app/(public)/lexiko/[term]/GlossaryTermClient.tsx	"Σχετικά"
 call	app/(public)/needs/NeedsPageBody.tsx	"Δεν χρειάζεται λογαριασμό, ούτε να ανεβάσετε ασφαλιστήριο. Απαντήστε ό,τι ξέρετε απ' έξω και θα σας πούμε ποια σημεία έχουν σημασία για κάποιον στη δική σας κατάσταση — και τι ακριβώς να κοιτάξετε."
 call	app/(public)/product/ProductSections.tsx	"Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων."
 call	app/(public)/product/ProductSections.tsx	"Βρίσκουμε διπλές καλύψεις σε κάθε πλάνο — και κενά κάλυψης με το Family"
-call	app/(public)/product/ProductSections.tsx	"Γεια σου, Νίκο"
+call	app/(public)/product/ProductSections.tsx	"Γεια σας, Νίκο"
 call	app/(public)/product/ProductSections.tsx	"Δείτε πώς ακριβώς"
 call	app/(public)/product/ProductSections.tsx	"Δείτε τι αναλύουμε"
 call	app/(public)/product/ProductSections.tsx	"Δείτε τις τιμές"
@@ -9380,6 +9380,7 @@ call	app/(public)/product/travel/PageClient.tsx	"Ταξιδέψτε ξέροντ
 call	app/(public)/product/travel/PageClient.tsx	"Ταξιδιωτική ασφάλεια"
 call	app/(public)/product/travel/PageClient.tsx	"Τρία πράγματα που ελέγχουμε πριν πετάξετε."
 call	app/(public)/product/travel/PageClient.tsx	"Χαμένη βαλίτσα, καθυστερημένη πτήση, ανάγκη επιστροφής στην Ελλάδα: δείτε τι από αυτά περιλαμβάνει το δικό σας πρόγραμμα και πού σταματάει η κάλυψη."
+call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Έτοιμες υπενθυμίσεις"
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Έως 10 αρχεία με μία κίνηση. Το πελατολόγιό σας το ανεβάζετε χωριστά — έως 100 πελάτες στο Agent Starter."
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Όλοι οι πελάτες σας σε μία οθόνη."
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Όλοι οι πελάτες σε μία οθόνη"
@@ -9407,7 +9408,7 @@ call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Και εξει
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Ξεκινήστε δωρεάν"
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Ξεκινήστε σήμερα"
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Ο πελάτης βλέπει τα ίδια στοιχεία με εσάς. Η κουβέντα ξεκινά από κοινή βάση, όχι από ένα PDF που δεν άνοιξε ποτέ."
-call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Ο πελάτης σάς δίνει πρόσβαση με ένα κλικ και τη διακόπτει όποτε θέλει. Η σχέση παραμένει δική του — και δική σας."
+call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Ο πελάτης σάς δίνει πρόσβαση ο ίδιος και τη διακόπτει όποτε θέλει. Η σχέση παραμένει δική του — και δική σας."
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Πλατφόρμα προσωπικής ανάλυσης ρίσκου — για ασφαλιστές"
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Ποιος λήγει, τι εκκρεμεί και πού υπάρχει ευκαιρία — όλα σε ένα σημείο."
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Στέλνετε τα ασφαλιστήρια των πελατών σας. Βλέπετε ποιος έχει κενό, ποιος λήγει σύντομα και πού υπάρχει ευκαιρία — πριν σας το ζητήσει κανείς. Είναι η ίδια ανεξάρτητη ανάλυση ρίσκου που εμπιστεύεται ο ασφαλισμένος — σε όλο το χαρτοφυλάκιό σας."
@@ -9421,7 +9422,6 @@ call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Τι παίρν
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Τιμές για ασφαλιστές"
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Το διαβάζουμε"
 call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Το τοπίο του κινδύνου αλλάζει."
-call	app/(public)/solutions/agents/AgentsSolutionPageClient.tsx	"Υπενθυμίσεις με ένα κλικ"
 call	app/auth/auth-code-error/page.tsx	"Επιστροφή στη σύνδεση"
 call	app/auth/auth-code-error/page.tsx	"Η ταυτοποίηση απέτυχε"
 call	app/auth/auth-code-error/page.tsx	"Ο σύνδεσμος σύνδεσης μπορεί να έχει λήξει ή να μην είναι έγκυρος."
@@ -9433,7 +9433,7 @@ call	app/auth/forgot-password/page.tsx	"Αποστολή..."
 call	app/auth/forgot-password/page.tsx	"Αρχική"
 call	app/auth/forgot-password/page.tsx	"Ασφαλής ανάκτηση"
 call	app/auth/forgot-password/page.tsx	"Εισάγετε το email σας και θα σας στείλουμε ασφαλή σύνδεσμο επαναφοράς."
-call	app/auth/forgot-password/page.tsx	"Ελέγξτε το inbox σας"
+call	app/auth/forgot-password/page.tsx	"Ελέγξτε τα εισερχόμενα"
 call	app/auth/forgot-password/page.tsx	"Επαναφορά κωδικού"
 call	app/auth/forgot-password/page.tsx	"Επιστροφή στη σύνδεση"
 call	app/auth/forgot-password/page.tsx	"Κάτι πήγε στραβά. Δοκιμάστε ξανά."
@@ -9441,14 +9441,14 @@ call	app/auth/forgot-password/page.tsx	"Κρυπτογράφηση AES-256"
 call	app/auth/forgot-password/page.tsx	"Ο σύνδεσμος ισχύει για 30 λεπτά."
 call	app/auth/handover/page.tsx	"Άνοιγμα εφαρμογής PolicyWallet"
 call	app/auth/handover/page.tsx	"Άνοιγμα στην εφαρμογή PolicyWallet;"
-call	app/auth/handover/page.tsx	"Εντοπίσαμε ότι χρησιμοποιείτε κινητό. Για καλύτερη εμπειρία, χρησιμοποιήστε την εφαρμογή μας."
+call	app/auth/handover/page.tsx	"Εντοπίσαμε ότι χρησιμοποιείτε κινητό. Για μεγαλύτερη ευκολία, χρησιμοποιήστε την εφαρμογή μας."
 call	app/auth/handover/page.tsx	"Η εφαρμογή δεν ανοίγει;"
-call	app/auth/handover/page.tsx	"Θέλετε να συνεχίσετε στον browser;"
+call	app/auth/handover/page.tsx	"Θέλετε να συνεχίσετε στον περιηγητή;"
 call	app/auth/handover/page.tsx	"Καλώς ήρθατε στο PolicyWallet"
 call	app/auth/handover/page.tsx	"Πατήστε παρακάτω για να συνεχίσετε στο ασφαλές ψηφιακό πορτοφόλι ασφάλισής σας."
 call	app/auth/handover/page.tsx	"Συνέχεια στο Πορτοφόλι"
-call	app/auth/handover/page.tsx	"Συνέχεια στον browser"
-call	app/auth/handover/page.tsx	"Συνέχεια στον browser"
+call	app/auth/handover/page.tsx	"Συνέχεια στον περιηγητή"
+call	app/auth/handover/page.tsx	"Συνέχεια στον περιηγητή"
 call	app/auth/signup/SignupForm.tsx	"Έχετε ήδη λογαριασμό;"
 call	app/auth/signup/SignupForm.tsx	"Αν σας προσκάλεσε ο ασφαλιστικός σας σύμβουλος, χρησιμοποιήστε τον σύνδεσμο της πρόσκλησης — αυτός εξακολουθεί να λειτουργεί."
 call	app/auth/signup/SignupForm.tsx	"Ανεβάζετε τα ασφαλιστήριά σας και σας λέω τι καλύπτουν, τι δεν καλύπτουν και πότε λήγουν."
@@ -9471,20 +9471,19 @@ call	app/auth/signup/SignupForm.tsx	"ή"
 call	app/auth/signup/SignupForm.tsx	"π.χ. Μαρία Παπαδοπούλου"
 call	app/auth/signup/confirmation/page.tsx	"AI εξήγηση καλύψεων σε απλή γλώσσα"
 call	app/auth/signup/confirmation/page.tsx	"Έκανα επαλήθευση, συνέχεια"
-call	app/auth/signup/confirmation/page.tsx	"Ένα γρήγορο βήμα και συνεχίζετε στο onboarding."
 call	app/auth/signup/confirmation/page.tsx	"Έναρξη ρύθμισης"
-call	app/auth/signup/confirmation/page.tsx	"Έξυπνες υπενθυμίσεις ανανέωσης"
+call	app/auth/signup/confirmation/page.tsx	"Ένας γρήγορος έλεγχος και συνεχίζετε στα πρώτα βήματα."
 call	app/auth/signup/confirmation/page.tsx	"Αποτυχία αποστολής email επαλήθευσης."
-call	app/auth/signup/confirmation/page.tsx	"Αποτυχία μετάβασης στο onboarding. Δοκιμάστε ξανά."
-call	app/auth/signup/confirmation/page.tsx	"Ασφαλές setup"
+call	app/auth/signup/confirmation/page.tsx	"Αποτυχία μετάβασης στα πρώτα βήματα. Δοκιμάστε ξανά."
 call	app/auth/signup/confirmation/page.tsx	"Ασφαλής αποθήκευση εγγράφων σε ένα σημείο"
+call	app/auth/signup/confirmation/page.tsx	"Ασφαλής ρύθμιση"
 call	app/auth/signup/confirmation/page.tsx	"Βήμα 2 από 6"
 call	app/auth/signup/confirmation/page.tsx	"Δεν έχει ολοκληρωθεί ακόμα η επαλήθευση. Ελέγξτε ξανά το email σας."
 call	app/auth/signup/confirmation/page.tsx	"Επαλήθευση email"
 call	app/auth/signup/confirmation/page.tsx	"Επαναποστολή email"
 call	app/auth/signup/confirmation/page.tsx	"Ετήσια χρέωση"
 call	app/auth/signup/confirmation/page.tsx	"Η συνεδρία έληξε. Συνδεθείτε ξανά για να συνεχίσετε."
-call	app/auth/signup/confirmation/page.tsx	"Θα ενεργοποιηθεί μετά το onboarding."
+call	app/auth/signup/confirmation/page.tsx	"Θα ενεργοποιηθεί μετά τα πρώτα βήματα."
 call	app/auth/signup/confirmation/page.tsx	"Θα χρειαστεί περίπου 2 λεπτά. Θα δεις AI ανάλυση και υπενθυμίσεις."
 call	app/auth/signup/confirmation/page.tsx	"Μετάβαση σε σύνδεση"
 call	app/auth/signup/confirmation/page.tsx	"Μηνιαία χρέωση"
@@ -9494,8 +9493,9 @@ call	app/auth/signup/confirmation/page.tsx	"Ρύθμιση πρώτης εμπε
 call	app/auth/signup/confirmation/page.tsx	"Στάλθηκε νέο email επαλήθευσης."
 call	app/auth/signup/confirmation/page.tsx	"Το email επαληθεύτηκε. Συνεχίζουμε."
 call	app/auth/signup/confirmation/page.tsx	"Το πλάνο σας"
+call	app/auth/signup/confirmation/page.tsx	"Υπενθυμίσεις ανανέωσης"
 call	app/auth/signup/confirmation/page.tsx	"Φόρτωση..."
-call	app/auth/signup/confirmation/page.tsx	"Χρησιμοποιήστε τον σύνδεσμο που στείλαμε στο inbox σας."
+call	app/auth/signup/confirmation/page.tsx	"Χρησιμοποιήστε τον σύνδεσμο που στείλαμε στα εισερχόμενά σας."
 call	app/auth/signup/confirmation/page.tsx	"← Αρχική"
 call	app/auth/social/actions.ts	"Αυτή η μέθοδος σύνδεσης δεν είναι διαθέσιμη."
 call	app/auth/social/actions.ts	"Η σύνδεση με τον πάροχο απέτυχε. Δοκιμάστε ξανά ή χρησιμοποιήστε email."
@@ -9517,7 +9517,7 @@ call	app/onboarding/agent/LeftColumnContent.tsx	"Επώνυμη πύλη πελ�
 call	app/onboarding/agent/LeftColumnContent.tsx	"Το ψηφιακό σας ασφαλιστικό γραφείο."
 call	components/account/Achievements.tsx	"Όλα"
 call	components/account/Achievements.tsx	"Επιτεύγματα"
-call	components/account/Achievements.tsx	"ξεκλειδωμένα"
+call	components/account/Achievements.tsx	"κερδισμένα"
 call	components/agent/GettingStartedChecklist.tsx	"Ανάπτυξη"
 call	components/agent/GettingStartedChecklist.tsx	"Απόρριψη"
 call	components/agent/GettingStartedChecklist.tsx	"Ξεκινώντας"
@@ -9754,7 +9754,7 @@ call	components/landing/AgentWidgets.tsx	"3 κενά σε αυτόν τον πε
 call	components/landing/AgentWidgets.tsx	"450 €/έτος"
 call	components/landing/AgentWidgets.tsx	"Έλεγχος ενεργός"
 call	components/landing/AgentWidgets.tsx	"Έλεγχος κενών"
-call	components/landing/AgentWidgets.tsx	"Έτοιμη να σταλεί με ένα κλικ"
+call	components/landing/AgentWidgets.tsx	"Έτοιμη για αποστολή"
 call	components/landing/AgentWidgets.tsx	"Α"
 call	components/landing/AgentWidgets.tsx	"Αναφορά ασφάλισης"
 call	components/landing/AgentWidgets.tsx	"Αποστολή →"
@@ -10011,7 +10011,7 @@ call	components/needs/NeedsCheck.tsx	"Δεν έχουμε δει τα ασφαλ
 call	components/needs/NeedsCheck.tsx	"Δημιουργήστε λογαριασμό"
 call	components/needs/NeedsCheck.tsx	"Θέλετε την απάντηση, όχι τη λίστα;"
 call	components/needs/NeedsCheck.tsx	"Κρατήσαμε τις απαντήσεις σας από την προηγούμενη φορά."
-call	components/needs/NeedsCheck.tsx	"Οι απαντήσεις σας μένουν στον browser σας μέχρι να φτιάξετε λογαριασμό. Δεν στέλνονται πουθενά μέχρι τότε."
+call	components/needs/NeedsCheck.tsx	"Οι απαντήσεις σας μένουν στον περιηγητή σας μέχρι να φτιάξετε λογαριασμό. Δεν στέλνονται πουθενά μέχρι τότε."
 call	components/needs/NeedsCheck.tsx	"Πίσω"
 call	components/needs/NeedsCheck.tsx	"Συνέχεια"
 call	components/needs/NeedsCheck.tsx	"Τι αξίζει να ελέγξετε"

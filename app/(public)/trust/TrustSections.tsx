@@ -168,7 +168,7 @@ const SECTIONS: Section[] = [
                 en: "A few things are not in that copy and are provided on request: payment-method details, session and security records, the history of who viewed your data, usage metering, and the free-text notes your advisor wrote about you. Their structured assessment of you is included.",
             },
             {
-                el: "Τη διαγραφή τη ζητάτε με ένα κλικ· την εκτελεί άνθρωπος και ολοκληρώνεται το αργότερο εντός ενός μήνα. Ό,τι μας υποχρεώνει ο νόμος να κρατήσουμε — για παράδειγμα τιμολόγια για πέντε χρόνια — παραμένει σε ανωνυμοποιημένη μορφή.",
+                el: "Τη διαγραφή τη ζητάτε από τον λογαριασμό σας· την εκτελεί άνθρωπος και ολοκληρώνεται το αργότερο εντός ενός μήνα. Ό,τι μας υποχρεώνει ο νόμος να κρατήσουμε — για παράδειγμα τιμολόγια για πέντε χρόνια — παραμένει σε ανωνυμοποιημένη μορφή.",
                 en: "Deletion you ask for with one click; a person carries it out and it completes within one month at the latest. Anything the law requires us to keep — invoices for five years, for example — remains in anonymized form.",
             },
         ],

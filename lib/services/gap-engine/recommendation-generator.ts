@@ -809,7 +809,7 @@ export async function syncRecommendations(
                     ? { el: "Νέα πρόταση για εσάς", en: "A new recommendation for you" }
                     : { el: `${created} νέες προτάσεις για εσάς`, en: `${created} new recommendations for you` },
             message: {
-                el: "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.",
+                el: "Με βάση όσα ξέρουμε για τη ζωή σας και τα ασφαλιστήριά σας.",
                 en: "Based on what we know about your life and your policies.",
             },
             relatedObjectType: "recommendation",

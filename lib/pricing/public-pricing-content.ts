@@ -168,7 +168,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { label: { el: "Πλήρης ανάλυση AI & απεριόριστες ερωτήσεις", en: "Full AI analysis & unlimited Q&A" }, included: true, highlight: true },
                     { label: { el: "Εντοπισμός κενών & διπλών καλύψεων", en: "Gap & duplicate-coverage detection" }, included: true },
                     { label: { el: "Ανάλυση από πολλές ασφαλιστικές", en: "Multi-insurer insights" }, included: true },
-                    { label: { el: "Έξυπνες υπενθυμίσεις, οδηγός ζημιάς & εξαγωγή αναφοράς", en: "Smart reminders, claim guide & report export" }, included: true },
+                    { label: { el: "Υπενθυμίσεις, οδηγός ζημιάς & εξαγωγή αναφοράς", en: "Smart reminders, claim guide & report export" }, included: true },
                 ],
             },
         ],
@@ -223,7 +223,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 values: { free: false, plus: true, pro: true },
             },
             {
-                name: { el: "Έξυπνες υπενθυμίσεις & εξαγωγή αναφοράς", en: "Smart reminders & report export" },
+                name: { el: "Υπενθυμίσεις & εξαγωγή αναφοράς", en: "Smart reminders & report export" },
                 values: { free: false, plus: false, pro: true },
             },
             {

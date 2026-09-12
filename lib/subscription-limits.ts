@@ -108,7 +108,7 @@ export async function isSubscriptionActive(userId: string): Promise<boolean> {
 export function getUpgradeMessage(reason: string, language: "el" | "en" = "el") {
     const messages = {
         policy_limit_reached: {
-            el: "Έχετε φτάσει το όριο συμβολαίων του πλάνου σας. Αναβαθμίστε για περισσότερα.",
+            el: "Έχετε φτάσει το όριο ασφαλιστηρίων του πλάνου σας. Αναβαθμίστε για περισσότερα.",
             en: "You reached your plan's policy limit. Upgrade for more capacity.",
         },
         feature_locked: {

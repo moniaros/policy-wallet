@@ -238,7 +238,7 @@ export class PolicyService extends BaseService {
         if (!access.canWrite) {
             throw AppError.forbidden(
                 language === 'el'
-                    ? 'Δεν έχετε δικαίωμα επεξεργασίας αυτού του συμβολαίου'
+                    ? 'Δεν έχετε δικαίωμα επεξεργασίας αυτού του ασφαλιστηρίου'
                     : 'You do not have permission to edit this policy'
             )
         }
@@ -785,7 +785,7 @@ export class PolicyService extends BaseService {
                             en: 'Policy Analysis Complete',
                         },
                         message: {
-                            el: `Η νέα μεταφόρτωση ενσωματώθηκε στο υπάρχον συμβόλαιο ${currentPolicy.policyNumber}.`,
+                            el: `Η νέα μεταφόρτωση ενσωματώθηκε στο υπάρχον ασφαλιστήριο ${currentPolicy.policyNumber}.`,
                             en: `Your upload was merged into existing policy ${currentPolicy.policyNumber}.`,
                         },
                         relatedObjectType: 'policy',
@@ -1070,7 +1070,7 @@ export class PolicyService extends BaseService {
             // naive join printed "PENDING-1786… (__PENDING_EXTRACTION__)".
             const label = policyLabel(policy ?? {})
             const subject = {
-                el: label ? `του συμβολαίου ${label}` : 'του εγγράφου που ανεβάσατε',
+                el: label ? `του ασφαλιστηρίου ${label}` : 'του εγγράφου που ανεβάσατε',
                 en: label ? `of policy ${label}` : 'of the document you uploaded',
             }
 
