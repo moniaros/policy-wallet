@@ -148,7 +148,9 @@ export function triggerLabel(trigger: string): Bilingual {
 }
 
 /**
- * Why the score moved, in words.
+ * What a re-assessment found, in words — never how far the score moved. The
+ * score is a metric nobody is shown (H-V12, PW-VOICE-01); the timeline says what
+ * HAPPENED: which risks opened or closed and what prompted the check.
  *
  * Names counts rather than every risk: "three risks opened" is readable, and a
  * list of eleven risk names in a timeline row is not. The rows for the risks
@@ -216,20 +218,12 @@ export function explainScoreChange(
         })
     }
 
-    const delta = current.overallScore - previous.overallScore
-    const movement: Bilingual =
-        delta > 0
-            ? { en: `rose ${delta} points`, el: `ανέβηκε ${delta} μονάδες` }
-            : delta < 0
-              ? { en: `fell ${Math.abs(delta)} points`, el: `έπεσε ${Math.abs(delta)} μονάδες` }
-              : { en: "did not move", el: "δεν μετακινήθηκε" }
-
     if (parts.length === 0) {
         // The fingerprint only writes a version on a material change, so this is
         // a confidence or coverage shift with no status movement behind it.
         return {
-            en: `Your score ${movement.en} after ${trigger.en}. What changed was how much of your position we could establish, not which risks apply.`,
-            el: `Το σκορ σας ${movement.el} μετά από ${trigger.el}. Αυτό που άλλαξε είναι πόσα μπορέσαμε να διαπιστώσουμε για τη θέση σας, όχι ποιοι κίνδυνοι ισχύουν.`,
+            en: `We re-assessed your protection after ${trigger.en}. What changed was how much of your position we could establish, not which risks apply.`,
+            el: `Επανελέγξαμε την προστασία σας μετά από ${trigger.el}. Αυτό που άλλαξε είναι πόσα μπορέσαμε να διαπιστώσουμε για τη θέση σας, όχι ποιοι κίνδυνοι ισχύουν.`,
         }
     }
 
@@ -239,7 +233,7 @@ export function explainScoreChange(
             : `${items.slice(0, -1).join(", ")} ${lang === "el" ? "και" : "and"} ${items[items.length - 1]}`
 
     return {
-        en: `Your score ${movement.en} after ${trigger.en}: ${join(parts.map((p) => p.en), "en")}.`,
-        el: `Το σκορ σας ${movement.el} μετά από ${trigger.el}: ${join(parts.map((p) => p.el), "el")}.`,
+        en: `We re-assessed your protection after ${trigger.en}: ${join(parts.map((p) => p.en), "en")}.`,
+        el: `Επανελέγξαμε την προστασία σας μετά από ${trigger.el}: ${join(parts.map((p) => p.el), "el")}.`,
     }
 }

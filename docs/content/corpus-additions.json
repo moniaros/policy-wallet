@@ -5,5 +5,7 @@
   "call:components/landing/AgentWidgets.tsx::Έτοιμη για αποστολή",
   "call:app/auth/signup/confirmation/page.tsx::Ασφαλής ρύθμιση",
   "bundle:help.articles.premiumFeatures::Τι προσφέρουν τα πληρωμένα πλάνα",
-  "call:components/landing/AgentWidgets.tsx::Ευρήματα με πηγή"
+  "call:components/landing/AgentWidgets.tsx::Ευρήματα με πηγή",
+  "call:components/timeline/LifeTimeline.tsx::Αξιολογήσεις",
+  "inline:lib/i18n/role-copy.ts::Εκκρεμεί ανάλυση"
 ]

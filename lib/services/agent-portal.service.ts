@@ -26,6 +26,7 @@ export type RecommendedActionKey =
     | "request_consent"
     | "review_renewal"
     | "discuss_gaps"
+    | "run_analysis"
     | "check_in"
     | "all_good"
 
@@ -68,6 +69,8 @@ export interface RecommendedActionFacts {
     activationStatus: "invited" | "activated" | "inactive"
     relationshipCreatedAt: Date
     activePolicyCount: number
+    /** Active policies a completed analysis has read. Zero with policies present means «all good» would be a verdict over nothing (H-V13). */
+    analysedPolicyCount: number
     consentStatus: ConsentStatus
     nextRenewalDate: Date | null
     gapCount: number
@@ -103,6 +106,11 @@ export function deriveRecommendedAction(facts: RecommendedActionFacts): Recommen
         facts.nextRenewalDate.getTime() - now.getTime() <= EXPIRING_WINDOW_DAYS * DAY_MS
     ) {
         return "review_renewal"
+    }
+    // Nothing has read the book yet: a gap count of zero is not evidence of no
+    // gaps, so «all good» would render the absence of a check as reassurance.
+    if (facts.activePolicyCount > 0 && facts.analysedPolicyCount === 0) {
+        return "run_analysis"
     }
     if (facts.criticalGapCount > 0 || facts.gapCount >= 2) {
         return "discuss_gaps"
@@ -152,7 +160,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
                             // placeholder-prone endDate column.
                             policiesOwned: {
                                 where: visibilityWhere,
-                                select: { id: true, status: true, coverageEndDate: true },
+                                select: { id: true, status: true, coverageEndDate: true, lastAnalyzedAt: true },
                             },
                         },
                     },
@@ -253,6 +261,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
             activationStatus,
             relationshipCreatedAt: rel.createdAt,
             activePolicyCount: activePolicies.length,
+            analysedPolicyCount: activePolicies.filter((p) => p.lastAnalyzedAt).length,
             consentStatus,
             nextRenewalDate: nextRenewal,
             gapCount: gaps.total,

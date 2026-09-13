@@ -82,7 +82,7 @@ describe("F2 — the panel renders the B3 disclosed treatment where the numbers 
         whatChanged: { el: "Οικογένεια: πτώση κατά 5 από τον προηγούμενο έλεγχο.", en: "Family fell by 5 since we last looked." },
         whyItMatters: { el: "Γιατί έχει σημασία.", en: "Why it matters." },
         nextAction: { el: "Επόμενο βήμα.", en: "Next step." },
-        ifActioned: { points: 7, statement: { el: "Η κάλυψη αυτού θα μετακινούσε το σκορ προστασίας σας κατά περίπου 7 μονάδες.", en: "Answering this would move your protection score by about 7 points." } },
+        ifActioned: { points: 7 },
         openCount: 1,
         applicableCount: 3,
         risks: [],

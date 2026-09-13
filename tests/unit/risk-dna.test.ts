@@ -455,7 +455,6 @@ describe("the advisor queue ranks by need, not closeability", () => {
         expect(impact.whyItMatters.el.length).toBeGreaterThan(0)
         expect(impact.nextAction.el.length).toBeGreaterThan(0)
         expect(impact.confidence).toBeTruthy()
-        expect(impact.howItImproves.el.length).toBeGreaterThan(0)
     })
 
     it("measures the book in protection, not production", () => {
@@ -508,7 +507,6 @@ describe("every dimension is renderable in both languages", () => {
                 for (const text of [
                     dimension.whyItMatters.en, dimension.whyItMatters.el,
                     dimension.whatChanged?.en, dimension.confidenceLimit?.el,
-                    dimension.ifActioned?.statement.el,
                 ]) {
                     if (text) expect(text).not.toMatch(/undefined|NaN|\[object/)
                 }

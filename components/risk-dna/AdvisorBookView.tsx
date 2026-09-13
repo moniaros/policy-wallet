@@ -25,7 +25,6 @@ interface HouseholdView {
     whatChanged: Bilingual | null
     whyItMatters: Bilingual
     nextAction: Bilingual
-    howItImproves: Bilingual
     confidence: "high" | "medium" | "low"
     healthIndex: number | null
     dependantCount: number
@@ -163,9 +162,6 @@ export function AdvisorBookView({
                                         </p>
                                         <p className="mt-1 text-caption font-semibold text-primary dark:text-mint [overflow-wrap:anywhere]">
                                             {household.nextAction[lang] || household.nextAction.en}
-                                        </p>
-                                        <p className="mt-1 text-caption leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
-                                            {household.howItImproves[lang] || household.howItImproves.en}
                                         </p>
                                     </div>
                                 </div>

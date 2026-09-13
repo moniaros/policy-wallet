@@ -67,7 +67,7 @@ export interface DimensionResult {
     whyItMatters: Bilingual
     nextAction: Bilingual | null
     /** Movement in the PROTECTION SCORE if `nextAction` were taken. */
-    ifActioned: { points: number; statement: Bilingual } | null
+    ifActioned: { points: number } | null
 
     /**
      * The risks counted here, open first.
@@ -299,13 +299,7 @@ function projectImprovement(
     // one would be the sales instinct this product is built against.
     if (points <= 0) return null
 
-    return {
-        points,
-        statement: {
-            en: `Answering this would move your protection score by about ${points} ${points === 1 ? "point" : "points"}.`,
-            el: `Η κάλυψη αυτού θα μετακινούσε το σκορ προστασίας σας κατά περίπου ${points} ${points === 1 ? "μονάδα" : "μονάδες"}.`,
-        },
-    }
+    return { points }
 }
 
 function whatChanged(delta: number | null, definition: DimensionDefinition): Bilingual | null {

@@ -97,11 +97,21 @@ const JSX_RENDER = new RegExp(
  */
 const TPL_PERCENT = new RegExp(`\\$\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])[^}\\n]*\\}\\s*%`)
 const TPL_ANY = new RegExp(`\\$\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])[^}\\n]*\\}`, "g")
-const SCORE_LABEL = /Βαθμολογία προστασίας|σκορ προστασίας|[Pp]rotection [Ss]core/
+// Case-insensitive: «Σκορ Προστασίας 87/100» sat on the PUBLIC agents page for weeks
+// because this matched only the lower-case form (PW-VOICE-01 H-V03/H-V12).
+const SCORE_LABEL = /βαθμολογία προστασίας|σκορ προστασίας|protection score/i
+/**
+ * A literal score value dressed as a fraction of 100 or a percentage within sight
+ * of a score word — the demo-widget shape («Σκορ Προστασίας» … `87/100`), which
+ * interpolates no identifier and so slipped every net above.
+ */
+const LITERAL_SCORE = /(σκορ|score|βαθμολογία)[\s\S]{0,200}\b\d{1,3}\s*\/\s*100\b|\b\d{1,3}\s*\/\s*100\b[\s\S]{0,200}(σκορ|score|βαθμολογία)/i
 
 function rendersScoreValue(src: string): boolean {
     if (JSX_RENDER.test(src)) return true
     if (TPL_PERCENT.test(src)) return true
+    // Comments are prose, not renders: the engine's own history mentions «0/100 "Critical"».
+    if (LITERAL_SCORE.test(src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, ""))) return true
     for (const m of src.matchAll(TPL_ANY)) {
         const at = m.index ?? 0
         const window = src.slice(Math.max(0, at - 120), at + m[0].length + 120)
@@ -169,6 +179,11 @@ describe("the protection score value renders nowhere", () => {
         for (const t of titles) {
             expect(t, "a timeline title interpolates the score value").not.toMatch(/overallScore/)
         }
+        // The explanation beneath the title said «έπεσε 15 μονάδες» until Sept 2026 —
+        // the movement is the score by another name (H-V12).
+        const diff = readFileSync(path.join(ROOT, "lib/services/timeline/diff.ts"), "utf8")
+        expect(diff).not.toMatch(/(ανέβηκε|έπεσε|rose|fell) \$\{/)
+        expect(diff).not.toMatch(/Το σκορ σας|Your score/)
     })
 
     it("the changes widget renders no bare delta", () => {
@@ -194,6 +209,10 @@ describe("the matcher itself is proven against committed probes", () => {
 
     it("flags the email template probe (the weekly-digest leak's shape)", () => {
         expect(rendersScoreValue(probe("score-render-email.ts.txt"))).toBe(true)
+    })
+
+    it("flags the literal-score probe — a demo widget printing «Σκορ Προστασίας 87/100» (PW-VOICE-01 H-V12)", () => {
+        expect(rendersScoreValue(probe("score-literal-demo.tsx.txt"))).toBe(true)
     })
 
     it("flags the marketing-surface probe — a hook card quoting the score (GROWTH-HOOKS-01)", () => {

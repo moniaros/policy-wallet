@@ -16,20 +16,7 @@
  */
 
 import { Fragment, useCallback, useMemo, useRef, useState } from "react"
-import {
-    ArrowUpRight,
-    CalendarDays,
-    ChevronDown,
-    ChevronUp,
-    CircleHelp,
-    FileText,
-    Handshake,
-    RefreshCw,
-    ShieldAlert,
-    Sparkles,
-    TrendingDown,
-    TrendingUp,
-} from "lucide-react"
+import { ArrowUpRight, CalendarDays, ChevronDown, ChevronUp, CircleHelp, FileText, Handshake, RefreshCw, ShieldAlert, Sparkles, Activity } from "lucide-react"
 import { formatDate } from "@/lib/i18n/format"
 import type { TimelineKind } from "@/lib/services/timeline/types"
 
@@ -61,7 +48,7 @@ const KIND_ICON: Record<TimelineKind, typeof CalendarDays> = {
     coverage_change: ShieldAlert,
     renewal: RefreshCw,
     risk_change: ShieldAlert,
-    score_change: TrendingUp,
+    score_change: Activity,
     recommendation: Sparkles,
     advisor_action: Handshake,
 }
@@ -167,7 +154,7 @@ export function LifeTimeline({ entries, language }: LifeTimelineProps) {
                 case "risk_change":
                     return t("Κίνδυνοι", "Risks")
                 case "score_change":
-                    return t("Σκορ", "Score")
+                    return t("Αξιολογήσεις", "Assessments")
                 case "recommendation":
                     return t("Προτάσεις", "Recommendations")
                 case "advisor_action":
@@ -250,16 +237,8 @@ export function LifeTimeline({ entries, language }: LifeTimelineProps) {
     const byKind = [...counts.entries()].sort((a, b) => b[1] - a[1])
 
     const renderEntry = (entry: TimelineEntryView) => {
-        const Icon =
-            entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta < 0
-                ? TrendingDown
-                : KIND_ICON[entry.kind]
-        const accent =
-            entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta !== 0
-                ? entry.delta > 0
-                    ? "text-primary dark:text-mint"
-                    : "text-red-600 dark:text-red-400"
-                : KIND_ACCENT[entry.kind]
+        const Icon = KIND_ICON[entry.kind]
+        const accent = KIND_ACCENT[entry.kind]
 
         return (
             <li

@@ -24,7 +24,8 @@ import { withDb } from "./surface-harness"
 test.describe.configure({ mode: "serial" })
 
 const DASH_EMAIL = "e2e-ph-dash@policywallet.test"
-const STATES: PortfolioState[] = ["empty", "typical", "heavy", "all-expired"]
+// VOICE_MATRIX_STATES=all-expired re-runs one state when a shared pooler killed the others' siblings.
+const STATES: PortfolioState[] = ((process.env.VOICE_MATRIX_STATES || "empty,typical,heavy,all-expired").split(",") as PortfolioState[])
 const ROUTES = ["/dashboard", "/wallet", "/protection", "/recommendations", "/account"]
 const OUT = path.join(process.cwd(), "docs/evidence/voice-01")
 

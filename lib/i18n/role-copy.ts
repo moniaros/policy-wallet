@@ -143,6 +143,7 @@ type RoleCopy = {
         actionRequestConsent: string
         actionReviewRenewal: string
         actionDiscussGaps: string
+        actionRunAnalysis: string
         actionCheckIn: string
         actionAllGood: string
     }
@@ -156,8 +157,6 @@ type RoleCopy = {
         policiesThisMonth: string
         followUps: string
         pipeline: string
-        completeness: string
-        noScores: string
     }
     walletDashboard: {
         checkExpirations: string
@@ -366,6 +365,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             actionRequestConsent: "Αίτημα συναίνεσης AI",
             actionReviewRenewal: "Έλεγχος ανανέωσης",
             actionDiscussGaps: "Συζήτηση κενών κάλυψης",
+            actionRunAnalysis: "Εκκρεμεί ανάλυση",
             actionCheckIn: "Επικοινωνία επανασύνδεσης",
             actionAllGood: "Όλα καλά",
         },
@@ -378,8 +378,6 @@ const roleCopy: Record<Language, RoleCopy> = {
             policiesThisMonth: "Ασφαλιστήρια αυτόν τον μήνα",
             followUps: "Προτεινόμενες επανεπαφές",
             pipeline: "Εκτίμηση ευκαιριών",
-            completeness: "Μέσος δείκτης προστασίας",
-            noScores: "Χωρίς βαθμολόγηση ακόμα",
         },
         walletDashboard: {
             checkExpirations: "Ελέγξτε λήξεις και πιθανά κενά κάλυψης.",
@@ -583,6 +581,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             actionRequestConsent: "Request AI consent",
             actionReviewRenewal: "Review renewal",
             actionDiscussGaps: "Discuss coverage gaps",
+            actionRunAnalysis: "Analysis pending",
             actionCheckIn: "Check in",
             actionAllGood: "All good",
         },
@@ -595,8 +594,6 @@ const roleCopy: Record<Language, RoleCopy> = {
             policiesThisMonth: "Policies this month",
             followUps: "Recommended follow-ups",
             pipeline: "Revenue opportunity",
-            completeness: "Avg. protection score",
-            noScores: "No scores yet",
         },
         walletDashboard: {
             checkExpirations: "Check expirations and potential coverage gaps.",
