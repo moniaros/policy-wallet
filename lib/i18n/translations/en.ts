@@ -3412,7 +3412,6 @@ export const en: TranslationKeys = {
             openedBecause: 'Because',
             due: 'Due',
             findings: 'open findings',
-            scoreThen: 'Your score when it opened',
             cta: 'Review details',
             complete: 'Review completed',
             dismiss: 'Not now',

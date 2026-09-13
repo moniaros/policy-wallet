@@ -138,6 +138,7 @@ export function CustomerList({
         request_consent: roleCopy.customerList.actionRequestConsent,
         review_renewal: roleCopy.customerList.actionReviewRenewal,
         discuss_gaps: roleCopy.customerList.actionDiscussGaps,
+        run_analysis: roleCopy.customerList.actionRunAnalysis,
         check_in: roleCopy.customerList.actionCheckIn,
         all_good: roleCopy.customerList.actionAllGood,
     }
@@ -150,6 +151,7 @@ export function CustomerList({
         request_consent: "bg-status-warning-tint text-status-warning",
         review_renewal: "bg-status-warning-tint text-status-warning",
         discuss_gaps: "bg-status-danger-tint text-status-danger",
+        run_analysis: "bg-status-info-tint text-status-info",
         check_in: "bg-muted text-muted-foreground",
         all_good: "bg-status-success-tint text-status-success",
     }

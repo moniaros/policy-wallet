@@ -231,7 +231,7 @@ describe("diffing two versions says what actually moved", () => {
 })
 
 describe("every score change explains itself", () => {
-    it("names the movement, the trigger and what moved", () => {
+    it("names the trigger and what moved — never how far the score moved (H-V12)", () => {
         const before = version({ version: 1, overallScore: 70, risks: [risk("a", "already_covered")] })
         const after = version({
             version: 2,
@@ -240,11 +240,11 @@ describe("every score change explains itself", () => {
             risks: [risk("a", "protection_gap")],
         })
         const explanation = explainScoreChange(before, after, diffVersions(before, after))
-        expect(explanation.en).toContain("fell 15 points")
+        expect(explanation.en).not.toMatch(/rose|fell|\d+ points|score/)
         expect(explanation.en).toContain("told us about")
         expect(explanation.en).toContain("1 risk opened")
-        expect(explanation.el).toContain("15")
-        expect(explanation.el.length).toBeGreaterThan(20)
+        expect(explanation.el).not.toMatch(/σκορ|μονάδες/)
+        expect(explanation.el).toContain("άνοιξε")
     })
 
     it("does not invent a movement against a score nobody saw", () => {
@@ -269,7 +269,7 @@ describe("every score change explains itself", () => {
         const before = version({ version: 1, overallScore: 60, risks: [risk("a", "protection_gap")] })
         const after = version({ version: 2, overallScore: 60, risks: [risk("a", "protection_gap")] })
         const explanation = explainScoreChange(before, after, diffVersions(before, after))
-        expect(explanation.en).toContain("did not move")
+        expect(explanation.en).not.toMatch(/rose|fell|\d+ points|score/)
         expect(explanation.en).toMatch(/how much of your position/)
     })
 

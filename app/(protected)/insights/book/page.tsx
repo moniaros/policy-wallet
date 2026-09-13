@@ -33,7 +33,6 @@ export default async function AdvisorBookPage() {
                         whatChanged: h.impact.whatChanged,
                         whyItMatters: h.impact.whyItMatters,
                         nextAction: h.impact.nextAction,
-                        howItImproves: h.impact.howItImproves,
                         confidence: h.impact.confidence,
                         healthIndex: h.healthIndex,
                         dependantCount: h.dependantCount,

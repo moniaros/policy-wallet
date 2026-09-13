@@ -291,9 +291,9 @@ export function buildTimeline(sources: TimelineSources, now: Date = new Date()):
             // point: the badge renders this number directly, so a delta that
             // survives while the sentence beside it is suppressed prints
             // "+NaN" next to "we know too little to say".
-            delta: comparableScores(previous, current)
-                ? current.overallScore - previous.overallScore
-                : null,
+            // No delta leaves the server: the badge never rendered it, and the
+            // client coloured the row by its sign — the score by another name.
+            delta: null,
             href: "/protection",
         })
 

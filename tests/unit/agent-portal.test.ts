@@ -15,6 +15,7 @@ function facts(overrides: Partial<RecommendedActionFacts> = {}): RecommendedActi
         activationStatus: 'activated',
         relationshipCreatedAt: new Date(NOW.getTime() - 100 * DAY),
         activePolicyCount: 2,
+        analysedPolicyCount: 2,
         consentStatus: 'granted',
         nextRenewalDate: new Date(NOW.getTime() + 200 * DAY),
         gapCount: 0,
@@ -38,6 +39,12 @@ describe('deriveConsentStatus', () => {
 describe('deriveRecommendedAction — priority order', () => {
     it('healthy client → all_good', () => {
         expect(deriveRecommendedAction(facts())).toBe('all_good')
+    })
+
+    it('policies nobody has analysed → run_analysis, never all_good (H-V13)', () => {
+        expect(deriveRecommendedAction(facts({ analysedPolicyCount: 0 }))).toBe('run_analysis')
+        // a renewal inside the window still comes first — it is time-critical
+        expect(deriveRecommendedAction(facts({ analysedPolicyCount: 0, nextRenewalDate: new Date(NOW.getTime() + 10 * DAY) }))).toBe('review_renewal')
     })
 
     it('stale invite outranks everything', () => {

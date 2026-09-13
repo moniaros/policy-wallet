@@ -3469,7 +3469,6 @@ export const el = {
             openedBecause: 'Επειδή',
             due: 'Έως',
             findings: 'ανοιχτά ευρήματα',
-            scoreThen: 'Το σκορ σας όταν άνοιξε',
             cta: 'Έλεγχος στοιχείων',
             complete: 'Ολοκληρώθηκε ο έλεγχος',
             dismiss: 'Όχι τώρα',

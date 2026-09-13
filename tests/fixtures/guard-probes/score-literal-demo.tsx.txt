@@ -1,0 +1,11 @@
+// Probe → tests/unit/score-containment.test.ts (LITERAL_SCORE net). Read by the test
+// directly; not copied anywhere. The exact shape that sat on /solutions/agents until
+// PW-VOICE-01 Round 2: a demo widget printing a score nobody computes.
+export function ProbeLiteralScore({ t }: { t: (el: string, en: string) => string }) {
+    return (
+        <div className="flex items-center gap-1.5">
+            <span className="text-micro font-semibold">{t("Σκορ Προστασίας", "Protection Score")}</span>
+            <span className="text-micro font-bold">87/100</span>
+        </div>
+    )
+}

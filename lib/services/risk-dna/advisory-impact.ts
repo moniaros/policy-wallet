@@ -42,7 +42,6 @@ export interface AdvisoryImpact {
     whyItMatters: Bilingual
     nextAction: Bilingual
     confidence: "high" | "medium" | "low"
-    howItImproves: Bilingual
 }
 
 export interface ImpactInputs {
@@ -136,16 +135,6 @@ export function advisoryImpact(inputs: ImpactInputs): AdvisoryImpact {
         // The advisor's own confidence in this ranking, which is the customer's
         // health confidence — the ranking cannot be surer than its inputs.
         confidence: health.confidence,
-        howItImproves: {
-            en:
-                recoverablePoints > 0
-                    ? `Closing what is open would move their protection score by about ${recoverablePoints} ${recoverablePoints === 1 ? "point" : "points"}.`
-                    : "There is no score movement available here; the value is in confirming what we could not read.",
-            el:
-                recoverablePoints > 0
-                    ? `Η κάλυψη των ανοιχτών θεμάτων θα μετακινούσε το σκορ προστασίας τους κατά περίπου ${recoverablePoints} ${recoverablePoints === 1 ? "μονάδα" : "μονάδες"}.`
-                    : "Δεν υπάρχει διαθέσιμη μετακίνηση σκορ εδώ· η αξία βρίσκεται στην επιβεβαίωση όσων δεν μπορέσαμε να διαβάσουμε.",
-        },
     }
 }
 

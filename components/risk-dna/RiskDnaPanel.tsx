@@ -46,7 +46,7 @@ export interface DimensionView {
     whyItMatters: Bilingual
     nextAction: Bilingual | null
     /** A points estimate — never rendered (F2). */
-    ifActioned: { points: number; statement: Bilingual } | null
+    ifActioned: { points: number } | null
     openCount: number
     applicableCount: number
     risks: Array<{
