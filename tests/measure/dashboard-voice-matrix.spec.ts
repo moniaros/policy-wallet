@@ -17,8 +17,8 @@ import { withDb } from "./surface-harness"
  * Asserts two things per page: it does not scroll sideways, and no rewritten
  * string that is on the page is clipped (ellipsis or line-clamp overflow) or
  * pushed past the right edge. Everything seen is written to
- * docs/evidence/voice-01/round2-matrix.json so the round report quotes a
- * measurement, not a claim. Off-canvas shell items (skip link, drawers) are
+ * docs/evidence/voice-01/<VOICE_MATRIX_FILE or matrix-<date>.json> so the round
+ * report quotes a measurement, not a claim — one file per run, never overwritten. Off-canvas shell items (skip link, drawers) are
  * not page flow and are excluded by the same rule as the overlap metric.
  */
 test.describe.configure({ mode: "serial" })
@@ -112,7 +112,7 @@ for (const state of STATES) {
             }
         }
         mkdirSync(OUT, { recursive: true })
-        writeFileSync(path.join(OUT, "round2-matrix.json"), JSON.stringify({ generated: new Date().toISOString(), states: STATES, widths: WIDTHS, routes: ROUTES, patterns: REWRITTEN.length, rows }, null, 1))
+        writeFileSync(path.join(OUT, process.env.VOICE_MATRIX_FILE || `matrix-${new Date().toISOString().slice(0, 10)}.json`), JSON.stringify({ generated: new Date().toISOString(), states: STATES, widths: WIDTHS, routes: ROUTES, patterns: REWRITTEN.length, rows }, null, 1))
 
         const sideways = rows.filter((r) => r.state === state && r.hscroll > 1).map((r) => `${r.width}px ${r.route}: ${r.hscroll}px`)
         expect(sideways, `pages that scroll sideways in state ${state}:\n${sideways.join("\n")}`).toEqual([])

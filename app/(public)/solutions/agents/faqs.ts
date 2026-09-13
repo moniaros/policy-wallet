@@ -28,7 +28,7 @@ export const AGENT_FAQS: { q: { el: string; en: string }; a: { el: string; en: s
             en: "Who can see my client's data?",
         },
         a: {
-            el: "Μόνο ό,τι μοιράζεται ο πελάτης, και μόνο όσο το επιτρέπει. Την πρόσβαση τη δίνει και την ανακαλεί ο ίδιος, όποτε θέλει. Δεν πουλάμε δεδομένα και δεν τα χρησιμοποιούμε για διαφημιστικό profiling.",
+            el: "Μόνο ό,τι μοιράζεται ο πελάτης, και μόνο όσο το επιτρέπει. Την πρόσβαση τη δίνει και την ανακαλεί ο ίδιος, όποτε θέλει. Δεν πουλάμε δεδομένα και δεν τα χρησιμοποιούμε για διαφημιστική κατάρτιση προφίλ.",
             en: "Only what the client shares, and only for as long as they allow it. They grant access and can revoke it themselves at any time. We do not sell data and do not use it for advertising profiles.",
         },
     },

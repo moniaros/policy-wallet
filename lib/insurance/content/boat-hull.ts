@@ -38,7 +38,7 @@ export const boatHullContent: BranchContent = {
             en: 'Equipment, tenders and outboards are often insured at their own values, separate from the parent craft. Where no itemised schedule has been given, proving value after a loss becomes hard.',
         },
         {
-            el: 'Ο τόπος ελλιμενισμού συνήθως αποτελεί όρο κάλυψης, όχι λεπτομέρεια. Οργανωμένη μαρίνα, φυλασσόμενος χώρος ή parking σκαφών ενδέχεται να ζητούνται ρητά, ενώ ο μόνιμος ελλιμενισμός με ρεμέτζο μπορεί να εξαιρείται.',
+            el: 'Ο τόπος ελλιμενισμού συνήθως αποτελεί όρο κάλυψης, όχι λεπτομέρεια. Οργανωμένη μαρίνα, φυλασσόμενος χώρος ή χώρος στάθμευσης σκαφών ενδέχεται να ζητούνται ρητά, ενώ ο μόνιμος ελλιμενισμός με ρεμέτζο μπορεί να εξαιρείται.',
             en: 'Where the craft is berthed is usually a condition of cover, not a detail. An organised marina, a fenced yard or a boat park may be required in terms, while a permanent swinging mooring can be excluded outright.',
         },
         {
@@ -186,7 +186,7 @@ export const boatHullContent: BranchContent = {
         },
     ],
     renewalNote: {
-        el: 'Στην ανανέωση αξίζει έλεγχος σε τρία σημεία: αξία σκάφους, κατάσταση εξοπλισμού και αν τηρήθηκαν τα service που ζητά το ασφαλιστήριο.',
+        el: 'Στην ανανέωση αξίζει έλεγχος σε τρία σημεία: αξία σκάφους, κατάσταση εξοπλισμού και αν τηρήθηκαν τα σέρβις που ζητά το ασφαλιστήριο.',
         en: 'At renewal three things are worth checking: the boat’s value, the equipment schedule, and whether the servicing the policy asks for was actually done.',
     },
     emptyState: {
