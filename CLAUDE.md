@@ -250,6 +250,21 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   `tests/unit/score-containment.test.ts`, `tests/unit/protection-score-honesty.test.tsx`.
   The `missing`-operator wording rule and `scoreSupport()` are the same idea
   applied to gaps and to the score.
+- **The product reads and explains; the licensed partner advises. Copy that blurs the
+  two is a regulatory defect, not a tone problem.** (PW-VOICE-01, Sept 2026 — an IDD
+  exposure, not a style preference.) Advice verbs in platform voice («σας προτείνουμε»,
+  «θα πρέπει να ασφαλίσετε») are findings unless the sentence attributes them to the
+  ασφαλιστής; a public number needs a row in `docs/content/CLAIMS.md` or it goes; an
+  all-clear names what it checked («Στα ασφαλιστήρια που ελέγξαμε…»). One term per
+  concept (`docs/content/LEXICON.md`): the document is «ασφαλιστήριο», the partner
+  «ασφαλιστής» in prose and «Σύμβουλος» as a label, the total premium «Σύνολο
+  ασφαλίστρων» — a coinage gets retired, not explained. Guards:
+  `tests/unit/voice-guards.test.ts` (lexicon, advice-verb, register, locale-purity,
+  number-format, claims, length-budget, new-string — each with a probe under
+  `tests/fixtures/guard-probes/voice-*.ts.txt`) and
+  `tests/measure/dashboard-voice-matrix.spec.ts`, which renders every rewritten string
+  at 320/390/430 against the degraded portfolio states. A string under an open halt in
+  `docs/content/HALTS.md` is left alone, not guessed.
 - **A measurement over a visible denominator is publishable; a judgment the engine cannot
   substantiate is not — and the human who confirms the record, not the model that filled it,
   is what makes it authoritative.** (PW-TRANSPARENCY-02.) Concretely: `gap_instances` has ONE

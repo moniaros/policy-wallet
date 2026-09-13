@@ -757,7 +757,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ο πρακτικός κανόνας συγκρίνει την εμπορική αξία του οχήματος με τη διαφορά ασφαλίστρου. Για ένα όχημα αξίας 3.000 ευρώ, η μικτή σπάνια συμφέρει: με απαλλαγή 500 ευρώ, η πραγματική προστασία είναι μικρή σε σχέση με το επιπλέον κόστος. Για νεότερα οχήματα ή οχήματα με δάνειο/leasing, η μικτή είναι συχνά απαραίτητη — και μπορεί να απαιτείται από τον χρηματοδότη.",
+                        el: "Ο πρακτικός κανόνας συγκρίνει την εμπορική αξία του οχήματος με τη διαφορά ασφαλίστρου. Για ένα όχημα αξίας 3.000 ευρώ, η μικτή σπάνια συμφέρει: με απαλλαγή 500 ευρώ, η πραγματική προστασία είναι μικρή σε σχέση με το επιπλέον κόστος. Για νεότερα οχήματα ή οχήματα με δάνειο ή χρηματοδοτική μίσθωση, η μικτή είναι συχνά απαραίτητη — και μπορεί να απαιτείται από τον χρηματοδότη.",
                         en: "The practical rule compares the vehicle's market value with the premium difference. For a €3,000 car, comprehensive rarely pays off: with a €500 deductible, the real protection is small relative to the extra cost. For newer or financed/leased vehicles, comprehensive is often essential — and may be required by the lender.",
                     },
                     {
@@ -1419,7 +1419,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Το τυπικό ομαδικό πρόγραμμα ελληνικής επιχείρησης περιλαμβάνει: νοσοκομειακή περίθαλψη (με όριο ανά έτος ή περιστατικό), εξωνοσοκομειακές παροχές με πλαφόν, ασφάλεια ζωής ως πολλαπλάσιο του μισθού και κάλυψη μόνιμης ολικής ή μερικής ανικανότητας. Μεγαλύτερα προγράμματα προσθέτουν επίδομα μητρότητας, οδοντιατρικά ή check-up.",
+                        el: "Το τυπικό ομαδικό πρόγραμμα ελληνικής επιχείρησης περιλαμβάνει: νοσοκομειακή περίθαλψη (με όριο ανά έτος ή περιστατικό), εξωνοσοκομειακές παροχές με πλαφόν, ασφάλεια ζωής ως πολλαπλάσιο του μισθού και κάλυψη μόνιμης ολικής ή μερικής ανικανότητας. Μεγαλύτερα προγράμματα προσθέτουν επίδομα μητρότητας, οδοντιατρικά ή προληπτικό έλεγχο.",
                         en: "A typical Greek company plan includes: hospital care (with an annual or per-incident limit), capped outpatient benefits, life insurance as a salary multiple, and permanent total or partial disability cover. Larger schemes add maternity allowances, dental, or check-ups.",
                     },
                     {
@@ -1804,7 +1804,7 @@ export const guides: Guide[] = [
                         en: "Comparison sites: built for the moment of purchase. Once the policy is issued they do not manage it.",
                     },
                     {
-                        el: "Η γενική αποθήκευση αρχείων, όπως ένα cloud drive ή φωτογραφίες στο κινητό: κρατά τα PDF, δεν καταλαβαίνει το περιεχόμενό τους.",
+                        el: "Η γενική αποθήκευση αρχείων, όπως έναν δίσκο στο cloud ή φωτογραφίες στο κινητό: κρατά τα PDF, δεν καταλαβαίνει το περιεχόμενό τους.",
                         en: "Generic file storage, such as a cloud drive or photos on your phone: it keeps the PDFs but understands nothing inside them.",
                     },
                     {

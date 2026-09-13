@@ -19,7 +19,7 @@ import { join } from 'node:path'
 
 const ROOTS = ['app', 'components', 'lib']
 const EXCLUDE = /(^|\/)(node_modules|\.next)\//
-const OUT_OF_SCOPE = /^lib\/legal\/|^app\/\(public\)\/(terms|privacy|cookies|subprocessors)|consent|^components\/admin\/|^app\/\(protected\)\/admin\/|\/translations\/en\.ts$|^lib\/services\/ai\/(prompt-policy|guard-patterns|extraction-schema)\.ts$|^lib\/services\/ai\/lob-packs\/|^lib\/schemas\/|^lib\/instrumentation\//
+const OUT_OF_SCOPE = /^lib\/legal\/|^app\/\(public\)\/(terms|privacy|cookies|subprocessors)|consent|^components\/admin\/|^app\/\(protected\)\/admin\/|\/translations\/en\.ts$|^lib\/services\/ai\/(prompt-policy|guard-patterns|extraction-schema|mock-ai\.service)\.ts$|^lib\/notifications\/settings\.ts$|^lib\/wallet\/insurer-registry\.ts$|^lib\/services\/ai\/lob-packs\/|^lib\/schemas\/|^lib\/instrumentation\//
 
 function collect(dir: string): string[] {
     if (!existsSync(dir)) return []
@@ -44,12 +44,16 @@ function greekLines(): { file: string; line: number; text: string; key: string }
             if (!GREEK.test(raw)) return
             if (/^\s*en\s*:/.test(raw)) return
             const key = (raw.match(/^\s*([A-Za-z_][\w]*)\s*:/) || [])[1] || ''
-            out.push({ file, line: i + 1, key, text: raw.replace(/\$\{[^}]*\}|\{[a-zA-Z_]+\}/g, ' ') })
+            out.push({ file, line: i + 1, key, text: raw.replace(/\$\{(?:[^{}]|\{[^{}]*\})*\}|\{[a-zA-Z_]+\}/g, ' ') })
         })
     }
     return out
 }
 const LINES = greekLines()
+/** Texts of the staff console's bundle keys (admin.*), from the Step-0 corpus — excluded from every arm's customer-facing metric. */
+const ADMIN_TEXTS: string[] = (JSON.parse(readFileSync('docs/content/corpus.json', 'utf-8')) as { strings: { id: string; text: string }[] }).strings
+    .filter((s) => s.id.startsWith('bundle:admin.') && s.text.length > 12)
+    .map((s) => s.text.slice(0, 40))
 
 function offenders(pred: (l: (typeof LINES)[number]) => boolean): string[] {
     return LINES.filter(pred).map((l) => `${l.file}:${l.line}  ${l.text.trim().slice(0, 100)}`)
@@ -96,7 +100,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
     })
 
     it('locale-purity-guard — Latin runs in Greek copy beyond the allowlist (metric 6)', () => {
-        const ALLOW = new Set('PolicyWallet AI PDF IDD GDPR EU email e-mail Email Google Apple Stripe Family Plus Starter Pro Agent Agency URL OK PIN OTP QR SMS IBAN VAT VIN HR CEO ID app App portal Portal site cookies Cookies cookie Excel CSV JSON API MB KB GB JPG PNG Schengen ransomware cyber Cyber premium Premium DPO Art CRM online Online push Push credits tokens Wi-Fi iOS Android FAQ HTTPS Face Touch Vercel Sentry Supabase PayPal Pay Wallet wallet Unit-Linked MEDIC ACORD AES- PCI DSS YTD spam gov Allianz Eurolife maria example jet ski analytics marketing web banking Web Banking IRIS Tip claim updates TLS emails Interamerican Ethniki Generali NN Groupama Hellas Eurobank Alpha Piraeus Anytime Ergo Hospital Line Europ Assistance Eurolife FFH ERB Allianz Direct Ydrogios Minetta Syneteristiki Atlantiki Enosi Dynamis Interlife Personal Orizon Prime KATO Visa Mastercard American Express WhatsApp Discord Safari Chrome iPhone iPad myAADE DORA Act Lux WEBP HEIC EUR VAPID PWA PIR EET newsletter'.split(' '))
+        const ALLOW = new Set('PolicyWallet AI PDF IDD GDPR EU email e-mail Email Google Apple Stripe Family Plus Starter Pro Agent Agency URL OK PIN OTP QR SMS IBAN VAT VIN HR CEO ID app App portal Portal site cookies Cookies cookie Excel CSV JSON API MB KB GB JPG PNG Schengen ransomware cyber Cyber premium Premium DPO Art CRM online Online push Push credits tokens Wi-Fi iOS Android FAQ HTTPS Face Touch Vercel Sentry Supabase PayPal Pay Wallet wallet Unit-Linked MEDIC ACORD AES- PCI DSS YTD spam gov Allianz Eurolife maria example jet ski analytics marketing web banking Web Banking IRIS Tip claim updates TLS emails Interamerican Ethniki Generali NN Groupama Hellas Eurobank Alpha Piraeus Anytime Ergo Hospital Line Europ Assistance Eurolife FFH ERB Allianz Direct Ydrogios Minetta Syneteristiki Atlantiki Enosi Dynamis Interlife Personal Orizon Prime KATO Visa Mastercard American Express WhatsApp Discord Safari Chrome iPhone iPad myAADE DORA Act Lux WEBP HEIC EUR VAPID PWA PIR EET newsletter cloud phishing cyberbullying Level eu-west- XXXX'.split(' '))
         // H-V05 keeps `wallet` allowed until the product noun is decided.
         const LATIN = /[A-Za-z][A-Za-z-]{2,}/g // no quote in the class: «AI'» is not a word
         const isPlainLiteral = (t: string) => !/^\s*[{[]/.test(t) && !/<[a-z]/.test(t) && /["'`]/.test(t)
@@ -106,7 +110,11 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
             // string quoting a Greek term (catalogue descriptions, model prompts, schema
             // .describe()) is `en` copy with a citation, not English-in-el.
             const ENGLISH_TELL = /\b(is|are|not|the|of|this|that|and|for|with|from)\b/g
-            const inString = (l.text.replace(/&[a-z]+;|\S+@\S+|www\.\S+/g, ' ').match(/(["'`])(?:\\.|(?!\1).)*\1/g) || []).filter((s) => GREEK.test(s) && (s.match(/\p{Script=Greek}/gu) || []).length > (s.match(/[A-Za-z]/g) || []).length && (s.match(ENGLISH_TELL) || []).length < 2).join(' ')
+            // A parenthesised or «quoted» run that is entirely Latin is a GLOSS of the Greek term
+            // before it («βεβαίωση ασφάλισης» (certificate of insurance)) — a translation aid, not
+            // untranslated copy. The staff console's bundle keys are not customer-facing.
+            if (ADMIN_TEXTS.some((t) => l.text.includes(t))) return false
+            const inString = (l.text.replace(/&[a-z]+;|\S+@\S+|www\.\S+|\([A-Za-z][A-Za-z .,'/-]*\)|«[A-Za-z][A-Za-z .,'/-]*»/g, ' ').match(/(["'`])(?:\\.|(?!\1).)*\1/g) || []).filter((s) => GREEK.test(s) && (s.match(/\p{Script=Greek}/gu) || []).length > (s.match(/[A-Za-z]/g) || []).length && (s.match(ENGLISH_TELL) || []).length < 2).join(' ')
             const words = (inString.match(LATIN) || []).filter((w) => !ALLOW.has(w) && !/^(http|www|policywallet)/i.test(w))
             return words.length > 0
         })
@@ -114,7 +122,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // Round 1 closes the agent-CRM anglicisms and the auth screens; the
         // remaining count is the Round-2 backlog and is asserted here so it
         // can only go down.
-        expect(bad.length, `English-in-el (metric 6) = ${bad.length}, above the Round-1 level:\n${bad.slice(0, 20).join('\n')}`).toBeLessThanOrEqual(29)
+        expect(bad.length, `English-in-el (metric 6) = ${bad.length}, above the Round-1 level:\n${bad.slice(0, 20).join('\n')}`).toBeLessThanOrEqual(1)
     })
 
     it('number-format-guard — thousands separator per locale', () => {

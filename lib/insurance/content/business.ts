@@ -24,7 +24,7 @@ export const businessContent: BranchContent = {
             en: 'If you employ staff, employer liability is a separate cover — it does not follow automatically from general liability.',
         },
         {
-            el: 'Οι καλύψεις πρέπει να παρακολουθούν την πραγματική δραστηριότητα: νέος εξοπλισμός, νέο υποκατάστημα ή e-shop αλλάζουν την εικόνα κινδύνου.',
+            el: 'Οι καλύψεις πρέπει να παρακολουθούν την πραγματική δραστηριότητα: νέος εξοπλισμός, νέο υποκατάστημα ή ηλεκτρονικό κατάστημα αλλάζουν την εικόνα κινδύνου.',
             en: 'Covers must track the real activity: new equipment, a new branch or an e-shop change the risk picture.',
         },
     ],

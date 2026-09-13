@@ -1199,38 +1199,38 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο PolicyWallet, το Σκορ Προστασίας εμφανίζεται στην αρχική σας οθόνη μαζί με την ανάλυση ανά κατηγορία και τη μεθοδολογία του. Είναι ενημερωτική ένδειξη με βάση τα έγγραφα που έχετε ανεβάσει — δεν αποτελεί εξατομικευμένη ασφαλιστική συμβουλή. Για σύσταση προσαρμοσμένη στις ανάγκες σας απευθυνθείτε σε αδειοδοτημένο ασφαλιστικό διαμεσολαβητή.",
-            en: "In PolicyWallet the Protection Score appears on your home screen together with the per-category breakdown and its methodology. It is an informational indicator based on the documents you upload — not personalised insurance advice. For a recommendation tailored to your needs, speak to a licensed insurance intermediary.",
+            el: "Το PolicyWallet δεν εμφανίζει πλέον σκορ. Στην αρχική οθόνη βλέπετε τα ίδια τα γεγονότα — πόσα ασφαλιστήρια έχετε, πόσα λήγουν, πόσα δεν έχουν αναλυθεί — και κάθε εύρημα με την πηγή του. Καμία ένδειξη δεν αποτελεί εξατομικευμένη σύσταση· για αυτή απευθυνθείτε στον ασφαλιστή σας.",
+            en: "PolicyWallet no longer shows a score. Your home screen shows the facts themselves — how many policies you hold, how many are expiring, how many have not been analysed — and every finding with its source. None of it is personalised advice; for that, speak to your insurance intermediary.",
         },
         faq: [
             {
                 question: {
-                    el: "Πώς υπολογίζεται το Σκορ Προστασίας;",
-                    en: "How is the Protection Score calculated?",
+                    el: "Πώς υπολογιζόταν το Σκορ Προστασίας;",
+                    en: "How was the Protection Score calculated?",
                 },
                 answer: {
-                    el: "Συγκρίνει τους κλάδους που θα ήταν αναμενόμενοι για το προφίλ σας με αυτούς που έχετε, με σταθμίσεις: Υγεία 25, Ζωή και εισόδημα 25, Ακίνητα και αυτοκίνητο 20, Προστασία εισοδήματος 15, Αστική ευθύνη 10, λοιπά 5. Από το σύνολο αφαιρούνται μονάδες για κενά που εντοπίζονται μέσα στα ασφαλιστήριά σας.",
-                    en: "It compares the branches expected for your profile against the ones you hold, weighted: Health 25, Life and income 25, Property and motor 20, Income protection 15, Liability 10, other 5. Points are then deducted for gaps found inside your own policies.",
+                    el: "Σύγκρινε τους κλάδους που θα ήταν αναμενόμενοι για το προφίλ σας με αυτούς που είχατε, με σταθμίσεις: Υγεία 25, Ζωή και εισόδημα 25, Ακίνητα και αυτοκίνητο 20, Προστασία εισοδήματος 15, Αστική ευθύνη 10, λοιπά 5. Αυτός ο υπολογισμός δεν τρέχει πια — αντικαταστάθηκε από τα καταμετρημένα γεγονότα.",
+                    en: "It compared the branches expected for your profile against the ones you held, weighted: Health 25, Life and income 25, Property and motor 20, Income protection 15, Liability 10, other 5. That calculation no longer runs — the counted facts replaced it.",
                 },
             },
             {
                 question: {
-                    el: "Σημαίνει το υψηλό σκορ ότι είμαι επαρκώς ασφαλισμένος;",
-                    en: "Does a high score mean I am adequately insured?",
+                    el: "Σήμαινε το υψηλό σκορ ότι ήμουν επαρκώς ασφαλισμένος;",
+                    en: "Did a high score mean I was adequately insured?",
                 },
                 answer: {
-                    el: "Όχι. Το σκορ δείχνει πόσο πλήρης είναι η εικόνα των καλύψεών σας, όχι αν τα ποσά και τα όρια επαρκούν για τη δική σας περίπτωση. Δύο άνθρωποι με το ίδιο σκορ μπορεί να έχουν πολύ διαφορετική πραγματική προστασία.",
-                    en: "No. The score shows how complete your coverage picture is, not whether the sums and limits are enough for your situation. Two people with the same score can have very different real protection.",
+                    el: "Όχι. Το σκορ έδειχνε πόσο πλήρης ήταν η εικόνα των καλύψεών σας, όχι αν τα ποσά και τα όρια επαρκούσαν για τη δική σας περίπτωση. Δύο άνθρωποι με το ίδιο σκορ μπορούσαν να έχουν πολύ διαφορετική πραγματική προστασία.",
+                    en: "No. The score showed how complete your coverage picture was, not whether the sums and limits were enough for your situation. Two people with the same score could have very different real protection.",
                 },
             },
             {
                 question: {
-                    el: "Είναι το Σκορ Προστασίας ασφαλιστική συμβουλή;",
-                    en: "Is the Protection Score insurance advice?",
+                    el: "Ήταν το Σκορ Προστασίας ασφαλιστική συμβουλή;",
+                    en: "Was the Protection Score insurance advice?",
                 },
                 answer: {
-                    el: "Όχι. Είναι ενημερωτική ένδειξη που προκύπτει από τα έγγραφα που ανεβάζετε. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθεια. Για εξατομικευμένη σύσταση απευθυνθείτε σε αδειοδοτημένο ασφαλιστικό διαμεσολαβητή.",
-                    en: "No. It is an informational indicator derived from the documents you upload. PolicyWallet sells no insurance and takes no commission. For a personalised recommendation, speak to a licensed insurance intermediary.",
+                    el: "Όχι. Ήταν ενημερωτική ένδειξη που προέκυπτε από τα έγγραφα που ανεβάζατε. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθεια. Για εξατομικευμένη σύσταση απευθυνθείτε σε αδειοδοτημένο ασφαλιστικό διαμεσολαβητή.",
+                    en: "No. It was an informational indicator derived from the documents you uploaded. PolicyWallet sells no insurance and takes no commission. For a personalised recommendation, speak to a licensed insurance intermediary.",
                 },
             },
         ],

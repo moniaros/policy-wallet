@@ -179,7 +179,7 @@ export const marineCargoContent: BranchContent = {
             en: 'Keep the goods and packaging as received until the survey, and photograph before any unpacking.',
         },
         {
-            el: 'Συγκεντρώστε τιμολόγιο, packing list, φορτωτική και αποδεικτικά συσκευασίας· η αξία και η αιτία κρίνονται από αυτά μαζί, όχι από ένα.',
+            el: 'Συγκεντρώστε τιμολόγιο, λίστα συσκευασίας, φορτωτική και αποδεικτικά συσκευασίας· η αξία και η αιτία κρίνονται από αυτά μαζί, όχι από ένα.',
             en: 'Gather the invoice, packing list, waybill and packing evidence; value and cause are settled from those together, not from any one of them.',
         },
     ],
