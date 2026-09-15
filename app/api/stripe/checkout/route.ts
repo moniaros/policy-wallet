@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { withLegacyBillingDeprecationHeaders } from '@/lib/api-deprecation'
 import { rateLimit } from '@/lib/rate-limit'
 import { getSiteOrigin } from '@/lib/seo/site'
+import { TRIAL_DAYS_BY_PLAN } from '@/lib/billing/trial-plans'
 
 const stripe = getStripe()
 
@@ -62,8 +63,21 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        if (hasPriorSubscription === 0) {
-            subscription_data.trial_period_days = 14
+        // THE CATALOGUE DECIDES THE TRIAL, NOT THIS ROUTE.
+        //
+        // This hardcoded `14` gave a 14-day trial to BOTH tiers, while the
+        // catalogue grants one to `ph-pro` only: `lib/billing.ts:90` reads
+        // `plan.trialDays ?? TRIAL_DAYS_BY_PLAN[planId]`, an admin can set it to 0
+        // from /admin/plans, and the upgrade modal shows its line only when the
+        // figure is non-zero. A route that invents its own number advertises a
+        // trial the modal never promised — the same class of defect as the false
+        // Agent Pro trial badge in the Jul-2026 billing audit.
+        const planId = tier === 'pro' ? 'ph-pro' : 'ph-plus'
+        const plan = await db.plan.findUnique({ where: { id: planId }, select: { trialDays: true } })
+        const trialDays = plan?.trialDays ?? TRIAL_DAYS_BY_PLAN[planId] ?? 0
+
+        if (hasPriorSubscription === 0 && trialDays > 0) {
+            subscription_data.trial_period_days = trialDays
         }
 
         // Create Stripe checkout session
