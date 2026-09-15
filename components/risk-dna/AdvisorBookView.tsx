@@ -21,7 +21,9 @@ interface HouseholdView {
     userId: string
     name: string
     impact: number
-    factors: { recoverable: number; exposure: number; reach: number; unresolved: number }
+    /** Only `exposure` crosses: it gates the urgent badge. The other three factors are
+     *  scaled score transforms and were passed unread until 2026-09-15 (B-V14). */
+    factors: { exposure: number }
     whatChanged: Bilingual | null
     whyItMatters: Bilingual
     nextAction: Bilingual
@@ -36,7 +38,7 @@ export interface AdvisorBookViewProps {
         householdCount: number
         peopleCovered: number
         urgentHouseholds: number
-        recoverablePoints: number
+        openAreas: number
         unknownHouseholds: number
         medianHealth: number | null
         whatChanged: Bilingual | null
@@ -71,11 +73,11 @@ export function AdvisorBookView({
                     <Stat label={t("Νοικοκυριά", "Households")} value={overview.householdCount} />
                     <Stat label={t("Άτομα που καλύπτονται", "People covered")} value={overview.peopleCovered} />
                     <Stat label={t("Επείγοντα", "Need attention")} value={overview.urgentHouseholds} tone="warn" />
-                    <Stat
-                        label={t("Ανακτήσιμες μονάδες", "Recoverable points")}
-                        value={overview.recoverablePoints}
-                        tone="good"
-                    />
+                    {/* A COUNT, not a score. «Ανακτήσιμες μονάδες» printed summed
+                        protection-score points — the number the deleted advisor sentence
+                        used to narrate — on a surface where the score itself is not
+                        rendered anywhere (B-V14). No tone: a count is not a verdict. */}
+                    <Stat label={t("Ανοιχτές περιοχές", "Open areas")} value={overview.openAreas} />
                 </dl>
 
                 <p className="mt-3 text-caption leading-relaxed text-black/70 dark:text-white/70">

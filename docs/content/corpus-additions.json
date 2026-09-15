@@ -8,5 +8,6 @@
   "call:components/landing/AgentWidgets.tsx::Ευρήματα με πηγή",
   "call:components/timeline/LifeTimeline.tsx::Αξιολογήσεις",
   "inline:lib/i18n/role-copy.ts::Εκκρεμεί ανάλυση",
-  "call:components/landing/GrafiHero.tsx::Το πορτοφόλι μου"
+  "call:components/landing/GrafiHero.tsx::Το πορτοφόλι μου",
+  "call:components/risk-dna/AdvisorBookView.tsx::Ανοιχτές περιοχές"
 ]

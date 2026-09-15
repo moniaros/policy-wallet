@@ -146,8 +146,13 @@ export interface BookOverview {
     peopleCovered: number
     /** Households with at least one urgent exposure. */
     urgentHouseholds: number
-    /** Protection points recoverable across the whole book. */
-    recoverablePoints: number
+    /**
+     * Risk areas standing open across the book — a COUNT, summed from each
+     * household's `openDimensions`. It replaced `recoverablePoints`, which summed
+     * protection-score points: the score has no render site since Aug 2026, and a
+     * points total is the score by another name (PW-VOICE-01 B-V14).
+     */
+    openAreas: number
     /** Households whose picture is too thin to advise on. */
     unknownHouseholds: number
     /** Median health index — how well the book is understood. */
@@ -171,7 +176,9 @@ export function bookOverview(
     impacts: AdvisoryImpact[],
     healths: CustomerHealthIndex[],
     peopleCovered: number,
-    worseningHouseholds: number
+    worseningHouseholds: number,
+    /** Summed `openDimensions` across the scored households — see BookOverview.openAreas. */
+    openAreas = 0
 ): BookOverview {
     const scored = healths.map((h) => h.index).filter((v): v is number => typeof v === "number")
     const sorted = [...scored].sort((a, b) => a - b)
@@ -183,14 +190,13 @@ export function bookOverview(
               : Math.round((sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2)
 
     const urgentHouseholds = impacts.filter((i) => i.factors.exposure >= 40).length
-    const recoverablePoints = impacts.reduce((sum, i) => sum + Math.round(i.factors.recoverable / 4), 0)
     const unknownHouseholds = healths.filter((h) => h.index === null).length
 
     return {
         householdCount: impacts.length,
         peopleCovered,
         urgentHouseholds,
-        recoverablePoints,
+        openAreas,
         unknownHouseholds,
         medianHealth,
         whatChanged:

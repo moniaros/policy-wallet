@@ -86,7 +86,8 @@ export async function getAdvisorBook(agentUserId: string, now: Date = new Date()
             households.map((h) => h.impact),
             households.map((h) => ({ index: h.healthIndex }) as any),
             peopleCovered,
-            worseningHouseholds
+            worseningHouseholds,
+            households.reduce((sum, h) => sum + h.openDimensions, 0)
         ),
         households,
         totalCustomers: relationships.length,
