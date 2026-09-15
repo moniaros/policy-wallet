@@ -47,9 +47,15 @@ import { GAP_CONTENT_MAP } from "@/lib/wallet/gap-report"
 /** The clock every date below is relative to. */
 const AT = "2026-09-04T10:00:00.000Z"
 const NOW = new Date(AT)
-const NEXT_YEAR = new Date("2027-09-04T00:00:00.000Z")
-const LAST_WINTER = new Date("2026-01-15T00:00:00.000Z")
-const IN_TEN_DAYS = new Date("2026-09-14T00:00:00.000Z")
+const DAY = 24 * 60 * 60 * 1000
+// RELATIVE TO THE REAL CLOCK, not to `AT`. `resolvePolicyLifecycle` reads the system
+// date; `AT` only stamps fact provenance. A literal here is a time bomb on a timer:
+// `IN_TEN_DAYS` was written as "2026-09-14", stopped being ten days out, and on
+// 2026-09-15 turned the in-force case expired — the suite went red on a date roll with
+// nothing changed. A future date in this file is always an offset.
+const NEXT_YEAR = new Date(Date.now() + 365 * DAY)
+const LAST_WINTER = new Date("2026-01-15T00:00:00.000Z") // a past date stays past — safe as a literal
+const IN_TEN_DAYS = new Date(Date.now() + 10 * DAY)
 
 const exact = (source: "onboarding" | "assessment" = "onboarding") => ({ source, precision: "exact" as const, at: AT })
 
