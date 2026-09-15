@@ -91,7 +91,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         expect(bad, `advice in platform voice (attribute it to the ασφαλιστής or remove it):\n${bad.join('\n')}`).toEqual([])
     })
 
-    it('register-guard — no singular address outside the onboarding stage (H-V01)', () => {
+    it('register-guard — no singular address anywhere (H-V01 answered: D-V10)', () => {
         // Only forms that cannot also be a third-person aorist: «ανέβασε» is
         // "upload!" AND "she uploaded", so it is not evidence; «Δες» is.
         const SINGULAR = /(?<!\p{L})(σου|εσύ|εσένα|Δες|Κάνε|Πάτα|Μπες|Γράψε|Βάλε|Στείλε|Επίλεξε|Ξεκίνα|Μάθε|Βρες|Πάρε|Σύνδεσε|Μοιράσου|Ενεργοποίησέ)(?!\p{L})/u
@@ -99,7 +99,20 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // formal plural like everything else, so the guard covers the whole corpus.
         // The one survivor is the user's own first-person answer, «Δεν είμαι
         // σίγουρος/η», which is not an address at all.
-        const bad = offenders((l) => SINGULAR.test(l.text.split('Δεν είμαι σίγουρος/η').join('')) && !/^\s*\/\//.test(l.text))
+        // The singular object clitic «σε» — «Θα σε ρωτήσουμε» — which the pronoun
+        // sweep misses because «σε» is also the preposition («σε ένα σημείο»).
+        // ONLY 1st/2nd-person-plural verb endings are matched: no Greek noun ends
+        // in -ουμε/-ετε/-ουν, so this is unambiguous. A wider net was tried and
+        // rejected — «σε έ…» looked like the past-tense augment but flagged 62
+        // false positives, because «ένα/έναν» is the indefinite article.
+        // LIMIT, recorded rather than papered over: the 3rd-person past form
+        // («Τι σε έφερε εδώ;») is NOT guardable this way and was found by walking
+        // the flow in a browser. See LEXICON, "Accent-blind matching".
+        const CLITIC = /(?<!\p{L})σε\s+\p{L}+(?:ουμε|ετε|ουν)(?!\p{L})/u
+        const bad = offenders((l) => {
+            const text = l.text.split('Δεν είμαι σίγουρος/η').join('')
+            return (SINGULAR.test(text) || CLITIC.test(text)) && !/^\s*\/\//.test(l.text)
+        })
         const filtered = bad
         expect(filtered, `singular register outside onboarding (V4):\n${filtered.join('\n')}`).toEqual([])
     })
