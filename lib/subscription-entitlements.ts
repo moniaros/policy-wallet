@@ -49,29 +49,30 @@ export { AGENT_TIER_HIERARCHY, isAgentTierSufficient } from "@/lib/pricing/plan-
 
 // ── B2B Agent Pricing ────────────────────────────────────────────────
 
+/**
+ * Agent tier economics. NO display names: the tier is named by `displayName` on
+ * the plan row (what Stripe shows the customer) and by the public pricing
+ * template — never here. A `label` field lived here unread until 2026-09-15,
+ * carrying the only «Πράκτορας …» strings left in the product (D-V12).
+ */
 export const AGENT_PRICING: Record<AgentTier, {
     monthlyEur: number
-    label: { en: string; el: string }
     tokenTopUpEur: number | null
 }> = {
     agent_free: {
         monthlyEur: 0,
-        label: { en: "Agent Free", el: "Δωρεάν Πράκτορας" },
         tokenTopUpEur: null,
     },
     agent_starter: {
         monthlyEur: 29,
-        label: { en: "Agent Starter", el: "Πράκτορας Starter" },
         tokenTopUpEur: 1.99, // per 100K tokens
     },
     agent_pro: {
         monthlyEur: 79,
-        label: { en: "Agent Pro", el: "Πράκτορας Pro" },
         tokenTopUpEur: 0.99, // per 100K tokens
     },
     agency: {
         monthlyEur: 199,
-        label: { en: "Agency", el: "Πρακτορείο" },
         tokenTopUpEur: 0.49, // per 100K tokens
     },
 }

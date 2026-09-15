@@ -1,10 +1,15 @@
 // Probe for tests/unit/voice-guards.test.ts → lexicon-guard. Copy to lib/services/probe-voice.ts
-// and run: it MUST fail on the three prose lines below and on nothing else.
+// and run: it MUST fail on the four prose lines below and on nothing else.
 // The comment may say συμβόλαιο and πράκτορας; comments are stripped first.
 export const PROBE = {
     a: { el: "Το συμβόλαιό σας λήγει σε 30 ημέρες.", en: "Your policy expires in 30 days." },
     b: { el: "Ρωτήστε τον πράκτορά σας.", en: "Ask your agent." },
+    // The genitive plural moves the stress (πράκτορ-ας → πρακτόρ-ων), which /πράκτορ/
+    // could not see: «Πλάνα Πρακτόρων» shipped in-app for months (2026-09-15).
+    d: { el: "Πλάνα Πρακτόρων", en: "Agent plans" },
     c: { el: "Ασφαλιστικό αποτύπωμα", en: "Insurance footprint" },
     ok1: { el: "Το ομαδικό συμβόλαιο εργασίας σας.", en: "Your group policy." },
     ok2: { el: "Λογισμικό για ασφαλιστικούς πράκτορες", en: "Software for insurance agents" },
+    ok3: { el: "ΠΡΑΚΤΟΡΕΙΟ", en: "AGENCY" },
+    ok4: { el: "Στοιχεία πρακτορείου", en: "Agency details" },
 }

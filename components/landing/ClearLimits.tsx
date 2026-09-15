@@ -36,7 +36,7 @@ export function ClearLimits({ locale }: { locale: MarketingLocale }) {
         {
             title: t("Δεν στέλνουμε τα δεδομένα σας πουθενά", "We send your data nowhere"),
             body: t(
-                "Καμία ασφαλιστική δεν βλέπει τι ανεβάσατε. Κανένας ασφαλιστής δεν βλέπει τον φάκελό σας αν δεν του δώσετε εσείς πρόσβαση, και μπορείτε να την πάρετε πίσω όποτε θέλετε.",
+                "Καμία ασφαλιστική δεν βλέπει τι ανεβάσατε. Κανένας ασφαλιστής δεν βλέπει το πορτοφόλι σας αν δεν του δώσετε εσείς πρόσβαση, και μπορείτε να την πάρετε πίσω όποτε θέλετε.",
                 "No insurance company sees what you uploaded. No agent sees your file unless you give them access, and you can take it back whenever you want.",
             ),
         },

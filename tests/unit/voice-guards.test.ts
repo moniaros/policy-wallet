@@ -13,13 +13,14 @@ import { join } from 'node:path'
  * tests/fixtures/guard-probes/voice-*.txt that turns it red.
  *
  * Halted decisions are ALLOWLISTED, not silently passed: H-V01 (onboarding
- * register), H-V04 (Greek plan names), H-V05 (the product noun). When a halt
- * is answered, its allowlist entry is deleted and the guard tightens.
+ * Every halt that carried an allowlist here has been answered and its entry
+ * deleted: H-V01 the onboarding register (D-V10), H-V04 the plan names (D-V12),
+ * H-V05 the product noun (D-V11). The guard now covers the whole corpus.
  */
 
 const ROOTS = ['app', 'components', 'lib']
 const EXCLUDE = /(^|\/)(node_modules|\.next)\//
-const OUT_OF_SCOPE = /^lib\/legal\/|^app\/\(public\)\/(terms|privacy|cookies|subprocessors)|consent|^components\/admin\/|^app\/\(protected\)\/admin\/|\/translations\/en\.ts$|^lib\/services\/ai\/(prompt-policy|guard-patterns|extraction-schema|mock-ai\.service)\.ts$|^lib\/notifications\/settings\.ts$|^lib\/wallet\/insurer-registry\.ts$|^lib\/services\/ai\/lob-packs\/|^lib\/schemas\/|^lib\/instrumentation\//
+const OUT_OF_SCOPE = /^lib\/legal\/|^app\/\(public\)\/(terms|privacy|cookies|subprocessors)|consent|^components\/admin\/|^app\/\(protected\)\/admin\/|\/translations\/en\.ts$|^lib\/services\/ai\/(prompt-policy|guard-patterns|extraction-schema|mock-ai\.service)\.ts$|^lib\/notifications\/settings\.ts$|^lib\/wallet\/insurer-registry\.ts$|^lib\/services\/ai\/lob-packs\/|^lib\/schemas\/|^lib\/instrumentation\/|^lib\/ingestion\/lexicon\.ts$/
 
 function collect(dir: string): string[] {
     if (!existsSync(dir)) return []
@@ -68,10 +69,16 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // LEXICON #1 the document; #2 the partner; #8 the coinage.
         const SYMVOLAIO = /συμβόλαι|συμβολαί/i
         const SYMVOLAIO_OK = /ομαδικ|ασφαλιστήριο συμβόλαιο|\bkeywords\s*:/i
-        const PRAKTORAS = /πράκτορ(?!εί)/i
-        // H-V04: the Greek plan names are catalogue rows; «ασφαλιστικός πράκτορας»
-        // is the regulatory category and a search term (LEXICON #2 note).
-        const PRAKTORAS_OK = /\bkeywords\s*:|Πράκτορας (Starter|Pro)|Δωρεάν Πράκτορας|ασφαλιστικ(ούς|ού|ός) πράκτορ|slug|href/i
+        // The stem is matched with BOTH accentuations and an accent-blind lookahead:
+        // Greek moves the stress in the genitive plural (πράκτορ-ας → πρακτόρ-ων), so
+        // /πράκτορ/ never saw «Πλάνα Πρακτόρων», which shipped in-app for months; and
+        // «ΠΡΑΚΤΟΡΕΙΟ» in caps carries no tonos, so (?!εί) failed to exempt it.
+        const PRAKTORAS = /πρ[άα]κτ[οό]ρ(?!ε[ίι])/i
+        // «ασφαλιστικός πράκτορας» is the regulatory category under Law 4583/2018 and
+        // the term agents search for (LEXICON #2 note, D-V03). The plan-name exemption
+        // that sat here was deleted with the strings it covered: they were never
+        // catalogue rows, only unread constants (D-V12).
+        const PRAKTORAS_OK = /\bkeywords\s*:|ασφαλιστικ(ούς|ού|ός|ή) πράκτορ|slug|href/i
         const COINAGE = /ασφαλιστικ[όο] αποτύπωμα/i
         const bad = offenders((l) => (SYMVOLAIO.test(l.text) && !SYMVOLAIO_OK.test(l.text)) || (PRAKTORAS.test(l.text) && !PRAKTORAS_OK.test(l.text)) || COINAGE.test(l.text))
         expect(bad, `banned lexicon variant:\n${bad.join('\n')}`).toEqual([])
@@ -88,20 +95,19 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // Only forms that cannot also be a third-person aorist: «ανέβασε» is
         // "upload!" AND "she uploaded", so it is not evidence; «Δες» is.
         const SINGULAR = /(?<!\p{L})(σου|εσύ|εσένα|Δες|Κάνε|Πάτα|Μπες|Γράψε|Βάλε|Στείλε|Επίλεξε|Ξεκίνα|Μάθε|Βρες|Πάρε|Σύνδεσε|Μοιράσου|Ενεργοποίησέ)(?!\p{L})/u
-        const ONBOARDING = /onboarding|protection-profile|ProtectionProfile|protectionProfile/
-        const bad = offenders((l) => SINGULAR.test(l.text) && !ONBOARDING.test(l.file) && !ONBOARDING.test(l.key) && !/^\s*\/\//.test(l.text))
-        // The onboarding bundle keys live inside el.ts; scope them by the section
-        // they sit in rather than the file: the guard reads the key path prefix
-        // from the inventory when it needs it (docs/content/corpus.json).
-        const corpus = JSON.parse(readFileSync('docs/content/corpus.json', 'utf-8')) as { strings: { id: string; text: string }[] }
-        const onboardingTexts = new Set(corpus.strings.filter((s) => s.id.startsWith('bundle:onboarding')).map((s) => s.text.replace(/\{[a-zA-Z_]+\}/g, ' ')))
-        const filtered = bad.filter((line) => ![...onboardingTexts].some((t) => t.length > 12 && line.includes(t.slice(0, 40))))
+        // The onboarding allowlist is GONE (D-V10, 2026-09-15): the stage speaks the
+        // formal plural like everything else, so the guard covers the whole corpus.
+        // The one survivor is the user's own first-person answer, «Δεν είμαι
+        // σίγουρος/η», which is not an address at all.
+        const bad = offenders((l) => SINGULAR.test(l.text.split('Δεν είμαι σίγουρος/η').join('')) && !/^\s*\/\//.test(l.text))
+        const filtered = bad
         expect(filtered, `singular register outside onboarding (V4):\n${filtered.join('\n')}`).toEqual([])
     })
 
     it('locale-purity-guard — Latin runs in Greek copy beyond the allowlist (metric 6)', () => {
         const ALLOW = new Set('PolicyWallet AI PDF IDD GDPR EU email e-mail Email Google Apple Stripe Family Plus Starter Pro Agent Agency URL OK PIN OTP QR SMS IBAN VAT VIN HR CEO ID app App portal Portal site cookies Cookies cookie Excel CSV JSON API MB KB GB JPG PNG Schengen ransomware cyber Cyber premium Premium DPO Art CRM online Online push Push credits tokens Wi-Fi iOS Android FAQ HTTPS Face Touch Vercel Sentry Supabase PayPal Pay Wallet wallet Unit-Linked MEDIC ACORD AES- PCI DSS YTD spam gov Allianz Eurolife maria example jet ski analytics marketing web banking Web Banking IRIS Tip claim updates TLS emails Interamerican Ethniki Generali NN Groupama Hellas Eurobank Alpha Piraeus Anytime Ergo Hospital Line Europ Assistance Eurolife FFH ERB Allianz Direct Ydrogios Minetta Syneteristiki Atlantiki Enosi Dynamis Interlife Personal Orizon Prime KATO Visa Mastercard American Express WhatsApp Discord Safari Chrome iPhone iPad myAADE DORA Act Lux WEBP HEIC EUR VAPID PWA PIR EET newsletter cloud phishing cyberbullying Level eu-west- XXXX'.split(' '))
-        // H-V05 keeps `wallet` allowed until the product noun is decided.
+        // D-V11 settled the product noun, so Latin `wallet` is no longer allowed on its
+        // own; `Wallet` survives only inside the Apple/Google trademarks. Ceiling 0.
         const LATIN = /[A-Za-z][A-Za-z-]{2,}/g // no quote in the class: «AI'» is not a word
         const isPlainLiteral = (t: string) => !/^\s*[{[]/.test(t) && !/<[a-z]/.test(t) && /["'`]/.test(t)
         const bad = offenders((l) => {
@@ -122,7 +128,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // Round 1 closes the agent-CRM anglicisms and the auth screens; the
         // remaining count is the Round-2 backlog and is asserted here so it
         // can only go down.
-        expect(bad.length, `English-in-el (metric 6) = ${bad.length}, above the Round-1 level:\n${bad.slice(0, 20).join('\n')}`).toBeLessThanOrEqual(1)
+        expect(bad.length, `English-in-el (metric 6) = ${bad.length}, above the Round-1 level:\n${bad.slice(0, 20).join('\n')}`).toBeLessThanOrEqual(0)
     })
 
     it('number-format-guard — thousands separator per locale', () => {

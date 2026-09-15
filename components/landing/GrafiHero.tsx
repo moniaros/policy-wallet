@@ -38,8 +38,8 @@ export function GrafiHero({ locale }: { locale: MarketingLocale }) {
             )
         }
     const screens = [
-        { id: "home", label: t("Αρχική — τι περιέχει ο φάκελος", "Home — what the folder holds"), content: screen("home", <DashboardScreen locale={locale} />) },
-        { id: "wallet", label: t("Ο φάκελός μου", "My wallet"), content: screen("wallet", <WalletScreen locale={locale} />) },
+        { id: "home", label: t("Αρχική — τι περιέχει το πορτοφόλι", "Home — what the wallet holds"), content: screen("home", <DashboardScreen locale={locale} />) },
+        { id: "wallet", label: t("Το πορτοφόλι μου", "My wallet"), content: screen("wallet", <WalletScreen locale={locale} />) },
         { id: "map", label: t("Χάρτης κάλυψης", "Coverage map"), content: screen("protection", <CoverageMapScreen locale={locale} />) },
     ]
 

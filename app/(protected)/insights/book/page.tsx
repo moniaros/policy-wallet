@@ -29,7 +29,7 @@ export default async function AdvisorBookPage() {
                         userId: h.userId,
                         name: h.name,
                         impact: h.impact.impact,
-                        factors: h.impact.factors,
+                        factors: { exposure: h.impact.factors.exposure },
                         whatChanged: h.impact.whatChanged,
                         whyItMatters: h.impact.whyItMatters,
                         nextAction: h.impact.nextAction,

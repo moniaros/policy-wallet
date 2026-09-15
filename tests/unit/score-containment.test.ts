@@ -77,7 +77,11 @@ const RELATIONSHIP_HEALTH_RENDERS = new Set<string>([])
 /** The identifiers that carry the portfolio score value through the code. */
 // A-12 (PW-BRIDGE-01): a score recorded at review-open and a score DELTA are the same
 // figure by another name; both rendered as numbers until 2026-09-07.
-const IDS = "(?:overallScore|healthScore|protectionScore|previousScore|currentScore|scoreAtOpen|scoreDelta)"
+// B-V14 (PW-VOICE-01, 2026-09-15): so is a SUM of score points. «Ανακτήσιμες μονάδες»
+// printed `recoverablePoints` — the advisor book's total of `ifActioned.points` — on a
+// surface where the score itself renders nowhere, and it survived the Aug-2026 removal
+// because no net knew the identifier. A points total is the score by another name.
+const IDS = "(?:overallScore|healthScore|protectionScore|previousScore|currentScore|scoreAtOpen|scoreDelta|recoverablePoints|recoverable)"
 
 /**
  * JSX interpolation of the score value. The negative lookahead `(?!\s*[.:])`
@@ -95,6 +99,14 @@ const JSX_RENDER = new RegExp(
  *   - the value interpolated within sight of a score label in either language
  * Internal uses (hash inputs, comparisons) match neither.
  */
+/**
+ * The score handed to a presentational component as a PROP — `value={overview.x}`.
+ * JSX_RENDER only sees an interpolation adjacent to a tag boundary, so a prop on a
+ * multi-line element slipped it: that is exactly how «Ανακτήσιμες μονάδες» kept
+ * printing a points total after Aug 2026 (B-V14). A value that reaches a renderer
+ * as a prop has reached the screen.
+ */
+const JSX_PROP = new RegExp(`\\b[a-zA-Z][a-zA-Z0-9]*=\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])[^}\\n]*\\}`)
 const TPL_PERCENT = new RegExp(`\\$\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])[^}\\n]*\\}\\s*%`)
 const TPL_ANY = new RegExp(`\\$\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])[^}\\n]*\\}`, "g")
 // Case-insensitive: «Σκορ Προστασίας 87/100» sat on the PUBLIC agents page for weeks
@@ -111,6 +123,7 @@ function rendersScoreValue(src: string): boolean {
     if (JSX_RENDER.test(src)) return true
     if (TPL_PERCENT.test(src)) return true
     // Comments are prose, not renders: the engine's own history mentions «0/100 "Critical"».
+    if (JSX_PROP.test(src)) return true
     if (LITERAL_SCORE.test(src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, ""))) return true
     for (const m of src.matchAll(TPL_ANY)) {
         const at = m.index ?? 0
@@ -209,6 +222,10 @@ describe("the matcher itself is proven against committed probes", () => {
 
     it("flags the email template probe (the weekly-digest leak's shape)", () => {
         expect(rendersScoreValue(probe("score-render-email.ts.txt"))).toBe(true)
+    })
+
+    it("flags the points-tile probe — a SUM of score points under a label that never says «σκορ» (B-V14)", () => {
+        expect(rendersScoreValue(probe("score-points-tile.tsx.txt"))).toBe(true)
     })
 
     it("flags the literal-score probe — a demo widget printing «Σκορ Προστασίας 87/100» (PW-VOICE-01 H-V12)", () => {

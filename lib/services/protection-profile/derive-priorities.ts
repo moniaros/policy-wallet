@@ -55,20 +55,20 @@ export type PriorityReasonId =
 
 /** Singular register — the onboarding's voice; the dashboard card wraps its own. */
 const REASON_TEXT: Record<PriorityReasonId, Bilingual> = {
-    stated_primary: { el: "Το ανέφερες ως αυτό που θα σε επηρέαζε περισσότερο.", en: "You named it as what would affect you most." },
-    stated_secondary: { el: "Το ξεχώρισες κι εσύ.", en: "You singled it out too." },
+    stated_primary: { el: "Το αναφέρατε ως αυτό που θα σας επηρέαζε περισσότερο.", en: "You named it as what would affect you most." },
+    stated_secondary: { el: "Το ξεχωρίσατε κι εσείς.", en: "You singled it out too." },
     changed_recently: { el: "Άλλαξε πρόσφατα — αξίζει να το δούμε πρώτο.", en: "It changed recently — worth looking at first." },
     planned: { el: "Έρχεται σύντομα — καλύτερα να το προλάβουμε.", en: "It is coming up — better to get ahead of it." },
-    dependants: { el: "Άλλοι βασίζονται σε σένα.", en: "Others depend on you." },
-    income_dependency: { el: "Είπες ότι άλλοι βασίζονται στο εισόδημά σου.", en: "You said others rely on your income." },
-    owned_home: { el: "Είπες ότι το σπίτι είναι δικό σου.", en: "You said the home is yours." },
-    renting: { el: "Είπες ότι νοικιάζεις — τα πράγματά σου και η ευθύνη σου είναι δικά σου.", en: "You said you rent — your things and your liability are still yours." },
-    debt: { el: "Είπες ότι τρέχει δάνειο ή άλλη υποχρέωση.", en: "You said a loan or another commitment is running." },
-    business: { el: "Είπες ότι η δουλειά είναι δική σου.", en: "You said the work is your own." },
-    vehicle: { el: "Είπες ότι οδηγείς.", en: "You said you drive." },
-    health_everyone: { el: "Αφορά όλους — και αξίζει να ξέρεις τι ισχύει για σένα.", en: "It concerns everyone — and it is worth knowing what applies to you." },
-    mentioned_not_present: { el: "Το ανέφερες εσύ — δεν φαίνεται να ισχύει σήμερα, αλλά το κρατάμε.", en: "You mentioned it — it does not seem to apply today, but we keep it." },
-    unsure: { el: "Δεν το ξεκαθαρίσαμε — θα το δούμε όταν δούμε τις καλύψεις σου.", en: "We did not settle it — we will when we see your cover." },
+    dependants: { el: "Άλλοι βασίζονται σε εσάς.", en: "Others depend on you." },
+    income_dependency: { el: "Μας είπατε ότι άλλοι βασίζονται στο εισόδημά σας.", en: "You said others rely on your income." },
+    owned_home: { el: "Μας είπατε ότι το σπίτι είναι δικό σας.", en: "You said the home is yours." },
+    renting: { el: "Μας είπατε ότι νοικιάζετε — τα πράγματά σας και η ευθύνη σας είναι δικά σας.", en: "You said you rent — your things and your liability are still yours." },
+    debt: { el: "Μας είπατε ότι τρέχει δάνειο ή άλλη υποχρέωση.", en: "You said a loan or another commitment is running." },
+    business: { el: "Μας είπατε ότι η δουλειά είναι δική σας.", en: "You said the work is your own." },
+    vehicle: { el: "Μας είπατε ότι οδηγείτε.", en: "You said you drive." },
+    health_everyone: { el: "Αφορά όλους — και αξίζει να ξέρετε τι ισχύει για εσάς.", en: "It concerns everyone — and it is worth knowing what applies to you." },
+    mentioned_not_present: { el: "Το αναφέρατε εσείς — δεν φαίνεται να ισχύει σήμερα, αλλά το κρατάμε.", en: "You mentioned it — it does not seem to apply today, but we keep it." },
+    unsure: { el: "Δεν το ξεκαθαρίσαμε — θα το δούμε όταν δούμε τις καλύψεις σας.", en: "We did not settle it — we will when we see your cover." },
 }
 
 export interface ProtectionStatementsLike {

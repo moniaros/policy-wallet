@@ -69,7 +69,7 @@ describe("the first upload reports the real status", () => {
         await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(labels.status.needsReview))
 
         // The exact singular-register line, and none of the words that would claim a reading.
-        expect(labels.status.needsReview).toBe("Δεν βρήκαμε στοιχεία ασφαλιστηρίου σε αυτό το έγγραφο. Δες αν είναι το σωστό αρχείο — μπορείς να ανεβάσεις άλλο.")
+        expect(labels.status.needsReview).toBe("Δεν βρήκαμε στοιχεία ασφαλιστηρίου σε αυτό το έγγραφο. Δείτε αν είναι το σωστό αρχείο — μπορείτε να ανεβάσετε άλλο.")
         expect(screen.getByRole("status").textContent).not.toMatch(/διαβάσαμε|έτοιμ|ready/i)
         expect(container.querySelector('[data-upload-outcome="needs_review"]')).toBeTruthy()
         for (const lang of ["el", "en"] as const) {

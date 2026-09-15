@@ -1,0 +1,18 @@
+// Probe → tests/unit/score-containment.test.ts (JSX_PROP + the widened IDS). Read by the
+// test directly; not copied anywhere.
+//
+// The EXACT shape that shipped on /insights/book until 2026-09-15 (PW-VOICE-01 B-V14):
+// a SUM of protection-score points, handed to a presentational component as a PROP on a
+// multi-line element, under a label that never says «σκορ». Two nets missed it — the
+// identifier was unknown, and JSX_RENDER only sees interpolations next to a tag boundary.
+export function ProbePointsTile({ overview, t }: { overview: { recoverablePoints: number }; t: (el: string, en: string) => string }) {
+    return (
+        <dl>
+            <Stat
+                label={t("Ανακτήσιμες μονάδες", "Recoverable points")}
+                value={overview.recoverablePoints}
+                tone="good"
+            />
+        </dl>
+    )
+}
