@@ -43,3 +43,13 @@ Brand and product names above; acronyms `AI PDF IDD GDPR EU CRM CSV FAQ OTP QR S
 
 **Accent-blind matching (2026-09-15).** Greek moves the stress when a word inflects — πράκτορ**ας** → πρακτόρ**ων** — so a guard pattern written with one accentuation is blind to the others. `voice-guards`'s partner-term net matches `πρ[άα]κτ[οό]ρ` with an accent-blind lookahead `(?!ε[ίι])`, which keeps «Πρακτορείο» and the uppercase kicker «ΠΡΑΚΤΟΡΕΙΟ» exempt. The same care is owed to any future stem net.
 
+**The clitic «σε» (2026-09-15).** After D-V10 the singular object clitic is a register
+finding — «Θα σε ρωτήσουμε» should be «Θα σας ρωτήσουμε» — but it is only partly
+guardable, because «σε» is also the preposition. `register-guard` matches it before an
+unambiguous 1st/2nd-person-plural verb ending (-ουμε/-ετε/-ουν); no Greek noun ends that
+way, so the net has zero false positives across the corpus. A wider net keyed on the
+past-tense augment («σε έ…») was **tried and rejected**: it flagged 62 false positives,
+because «ένα/έναν» is the indefinite article. So the 3rd-person past form — «Τι σε έφερε
+εδώ;» — is not guardable this way. That one was found by walking the onboarding flow in a
+browser at 320px, which is the argument for keeping a render pass in the verification even
+when every guard is green.

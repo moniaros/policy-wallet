@@ -3,3 +3,6 @@ export const PROBE = {
     bad: { el: "Δες το ασφαλιστήριό σου πριν λήξει.", en: "Check your policy before it expires." },
     ok: { el: "Δείτε το ασφαλιστήριό σας πριν λήξει.", en: "Check your policy before it expires." },
 }
+// The object clitic «σε» before a 1st-person-plural verb — singular address that
+// the pronoun list alone does not see (added 2026-09-15, D-V10).
+export const probeClitic = 'Θα σε ρωτήσουμε λίγα ακόμη.'
