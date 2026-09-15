@@ -35,3 +35,16 @@ this table yet — their assembled outputs are measured in the Round-1 fixture m
 their numbers (counts, days, amounts) come from data, not copy.
 
 **Round-2 retirements (2026-09-13).** Two timing promises had no row and were removed, not softened: `wallet.emptyState.benefit` «σε λιγότερο από 30 δευτερόλεπτα» and `role-copy createAccountSubtitle` «σε λιγότερο από 2 λεπτά». The claims-guard now matches «σε λιγότερο από N λεπτά/δευτερόλεπτα» for any N (it knew only «1 λεπτό»); the probe carries a «2 λεπτά» line. The public agents-page demo's «Σκορ Προστασίας 87/100» (no row; the product computes no score since Aug 2026) is removed under D-V07.
+
+**C8 re-read (2026-09-15) — larger than the row described, and left alone deliberately.**
+The summary's «ενδεικτικά λίγα ευρώ ανά 1.000 ευρώ κεφαλαίου» is not an isolated hedged
+figure: it is a plain-language restatement of a full indicative rate table in the guide's
+own body (`poso-kostizei-i-asfalisi-seismou` — 0,5‰ / 1‰ / 3‰ with worked examples at
+100.000 / 150.000 / 250.000 €, plus the 2 % deductible and a «100 τ.μ.» FAQ). Dropping the
+figure from the summary alone would leave the summary vaguer than the article it
+summarises, and the `metaDescription` promises «ενδεικτικά κόστη». So the real choice is
+not a rewrite: either the rate basis gets named in the guide's `sources[]` (today it
+carries ΕΑΕΕ, ΑΑΔΕ and the Bank of Greece, none tied to the coefficients), or the whole
+rate apparatus comes out. That is an editorial call on a genuinely useful guide, so C8 is
+**re-raised for the owner** rather than half-applied. Status unchanged: **needs source**.
+

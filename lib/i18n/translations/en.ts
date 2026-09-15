@@ -2749,8 +2749,6 @@ export const en: TranslationKeys = {
         priorityQueue: 'Priority Queue',
         items: 'items',
         item: 'item',
-        allClear: 'All Clear!',
-        noPriorities: 'No priorities at the moment. Great work staying on top of everything!',
         today: 'Today\'s',
         inviteSuccess: 'Invitation sent successfully!',
         inviteFail: 'Failed to send invitation.',

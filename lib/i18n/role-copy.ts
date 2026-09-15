@@ -367,7 +367,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             actionDiscussGaps: "Συζήτηση κενών κάλυψης",
             actionRunAnalysis: "Εκκρεμεί ανάλυση",
             actionCheckIn: "Επικοινωνία επανασύνδεσης",
-            actionAllGood: "Όλα καλά",
+            actionAllGood: "Καμία εκκρεμότητα",
         },
         agentKpis: {
             heading: "Δείκτες βιβλίου",
@@ -583,7 +583,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             actionDiscussGaps: "Discuss coverage gaps",
             actionRunAnalysis: "Analysis pending",
             actionCheckIn: "Check in",
-            actionAllGood: "All good",
+            actionAllGood: "Nothing pending",
         },
         agentKpis: {
             heading: "Book indicators",
