@@ -96,13 +96,52 @@ export async function withDb<T>(fn: (db: any) => Promise<T>): Promise<T> {
     const base = process.env.DATABASE_URL || ""
     const url = base.replace(/connection_limit=\d+/, "connection_limit=1").replace(/pool_timeout=\d+/, "pool_timeout=120")
     const { PrismaClient } = await import("@prisma/client")
-    const db = new PrismaClient({ datasources: { db: { url } } })
     try {
-        return await fn(db)
+        return await withPoolerRetry(async () => {
+            const db = new PrismaClient({ datasources: { db: { url } } })
+            try {
+                return await fn(db)
+            } finally {
+                await db.$disconnect()
+            }
+        })
     } finally {
-        await db.$disconnect()
         release()
     }
+}
+
+/**
+ * Retry a fixture write while the SESSION pooler is saturated by something the
+ * lock above cannot see.
+ *
+ * `acquirePoolerLock` serialises OUR measurement processes. It cannot serialise a
+ * parallel session's `next dev`, which holds connections on the same 15-client
+ * pooler for as long as it runs — and that is what actually happened: the
+ * `all-expired` state of the voice matrix failed its fixture write six times over
+ * two days with «Timed out fetching a new connection» / «Can't reach database
+ * server … :6543», while every other state passed (PW-VOICE-01 B-V12).
+ *
+ * The connection frees as the other server's queries finish, so the honest fix is
+ * to wait rather than to declare the suite unrunnable. Bounded and narrow: only
+ * pooler-exhaustion errors are retried, never a fixture that is genuinely wrong.
+ */
+const POOLER_EXHAUSTED = /Timed out fetching a new connection|Can't reach database server|max clients reached|too many connections/i
+
+async function withPoolerRetry<T>(run: () => Promise<T>, attempts = 4): Promise<T> {
+    let lastError: unknown
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+        try {
+            return await run()
+        } catch (error) {
+            lastError = error
+            const message = error instanceof Error ? `${error.message}` : String(error)
+            if (!POOLER_EXHAUSTED.test(message) || attempt === attempts) throw error
+            const backoffMs = 2_000 * 2 ** (attempt - 1) // 2s, 4s, 8s
+            console.warn(`withDb: pooler saturated (attempt ${attempt}/${attempts}), retrying in ${backoffMs}ms`)
+            await new Promise((resolve) => setTimeout(resolve, backoffMs))
+        }
+    }
+    throw lastError
 }
 
 /**
