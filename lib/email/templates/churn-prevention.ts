@@ -158,7 +158,7 @@ export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: s
     const hello = greeting(name, isGreek)
 
     const subject = isGreek
-        ? 'Ο ασφαλιστικός σας φάκελος σας περιμένει'
+        ? 'Το ασφαλιστικό σας πορτοφόλι περιμένει'
         : 'Your insurance wallet is waiting for you'
 
     const content = `

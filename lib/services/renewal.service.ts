@@ -444,7 +444,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     en: "Your policy has lapsed",
                 },
                 message: {
-                    el: `${ref} πέρασε την ημερομηνία λήξης χωρίς ανανέωση. Αν το ανανεώσατε αλλού, ενημερώστε το wallet σας.`,
+                    el: `${ref} πέρασε την ημερομηνία λήξης χωρίς ανανέωση. Αν το ανανεώσατε αλλού, ενημερώστε το πορτοφόλι σας.`,
                     en: `${ref} passed its end date without being renewed. If you renewed elsewhere, update your wallet.`,
                 },
                 relatedObjectType: "policy",

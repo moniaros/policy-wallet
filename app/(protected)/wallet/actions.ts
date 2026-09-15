@@ -1527,7 +1527,7 @@ export async function deletePolicy(policyId: string) {
                 en: "A policy was removed",
             },
             message: {
-                el: `Το ασφαλιστήριο ${policy.policyNumber} (${policy.insurerName}) διαγράφηκε από το wallet σας.`,
+                el: `Το ασφαλιστήριο ${policy.policyNumber} (${policy.insurerName}) διαγράφηκε από το πορτοφόλι σας.`,
                 en: `Policy ${policy.policyNumber} (${policy.insurerName}) was removed from your wallet.`,
             },
             // No relatedObject: the policy no longer exists, and a link to a

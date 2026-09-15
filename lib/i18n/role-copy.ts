@@ -167,7 +167,6 @@ type RoleCopy = {
         uploadDocument: string
         batchUpload: string
         addPolicyAria: string
-        noPoliciesYet: string
         addFirstPolicy: string
         policiesCount: (n: number) => string
         viewList: string
@@ -388,8 +387,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             uploadDocument: "Μεταφόρτωση εγγράφου",
             batchUpload: "Μαζική μεταφόρτωση",
             addPolicyAria: "Προσθήκη ασφαλιστηρίου",
-            noPoliciesYet: "Το Πορτοφόλι Μου",
-            addFirstPolicy: "Προσθήκη ασφαλιστηρίου",
+                addFirstPolicy: "Προσθήκη ασφαλιστηρίου",
             policiesCount: (n: number) => `${n} ασφαλιστήρια`,
             viewList: "Προβολή Λίστας",
             viewCard: "Προβολή Κάρτας",
@@ -604,7 +602,6 @@ const roleCopy: Record<Language, RoleCopy> = {
             uploadDocument: "Upload document",
             batchUpload: "Batch upload",
             addPolicyAria: "Add policy",
-            noPoliciesYet: "My Wallet",
             addFirstPolicy: "Add Policy",
             policiesCount: (n: number) => `${n} Policies`,
             viewList: "View List",

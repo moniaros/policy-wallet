@@ -1277,7 +1277,7 @@ export async function addPolicyForCustomer(data: {
             // someone another party can now see their policy — it was
             // English-only, branch label included.
             message: {
-                el: `Ο/Η ${agentLabel} πρόσθεσε ένα ασφαλιστήριο ${addedBranch.label.el} από ${input.policy.insurerName} στο wallet σας και μπορεί να το βλέπει και να το διαχειρίζεται. Μπορείτε να ανακαλέσετε αυτή την πρόσβαση οποτεδήποτε από «Ο σύμβουλός μου».`,
+                el: `Ο/Η ${agentLabel} πρόσθεσε ένα ασφαλιστήριο ${addedBranch.label.el} από ${input.policy.insurerName} στο πορτοφόλι σας και μπορεί να το βλέπει και να το διαχειρίζεται. Μπορείτε να ανακαλέσετε αυτή την πρόσβαση οποτεδήποτε από «Ο σύμβουλός μου».`,
                 en: `${agentLabel} added a ${addedBranch.label.en} policy from ${input.policy.insurerName} to your wallet and can view and manage that policy. You can revoke this access at any time from My Agent.`,
             },
             relatedObjectType: 'policy',

@@ -32,7 +32,7 @@ export const ACHIEVEMENTS: Achievement[] = [
         id: "policy_collector",
         titleEl: "Συλλέκτης",
         titleEn: "Policy Collector",
-        descriptionEl: "5+ ασφαλιστήρια στο wallet σας",
+        descriptionEl: "5+ ασφαλιστήρια στο πορτοφόλι σας",
         descriptionEn: "5+ policies in your wallet",
         icon: "🗂️",
         category: "policies",

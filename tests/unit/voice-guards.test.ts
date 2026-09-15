@@ -107,7 +107,8 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
 
     it('locale-purity-guard — Latin runs in Greek copy beyond the allowlist (metric 6)', () => {
         const ALLOW = new Set('PolicyWallet AI PDF IDD GDPR EU email e-mail Email Google Apple Stripe Family Plus Starter Pro Agent Agency URL OK PIN OTP QR SMS IBAN VAT VIN HR CEO ID app App portal Portal site cookies Cookies cookie Excel CSV JSON API MB KB GB JPG PNG Schengen ransomware cyber Cyber premium Premium DPO Art CRM online Online push Push credits tokens Wi-Fi iOS Android FAQ HTTPS Face Touch Vercel Sentry Supabase PayPal Pay Wallet wallet Unit-Linked MEDIC ACORD AES- PCI DSS YTD spam gov Allianz Eurolife maria example jet ski analytics marketing web banking Web Banking IRIS Tip claim updates TLS emails Interamerican Ethniki Generali NN Groupama Hellas Eurobank Alpha Piraeus Anytime Ergo Hospital Line Europ Assistance Eurolife FFH ERB Allianz Direct Ydrogios Minetta Syneteristiki Atlantiki Enosi Dynamis Interlife Personal Orizon Prime KATO Visa Mastercard American Express WhatsApp Discord Safari Chrome iPhone iPad myAADE DORA Act Lux WEBP HEIC EUR VAPID PWA PIR EET newsletter cloud phishing cyberbullying Level eu-west- XXXX'.split(' '))
-        // H-V05 keeps `wallet` allowed until the product noun is decided.
+        // D-V11 settled the product noun, so Latin `wallet` is no longer allowed on its
+        // own; `Wallet` survives only inside the Apple/Google trademarks. Ceiling 0.
         const LATIN = /[A-Za-z][A-Za-z-]{2,}/g // no quote in the class: «AI'» is not a word
         const isPlainLiteral = (t: string) => !/^\s*[{[]/.test(t) && !/<[a-z]/.test(t) && /["'`]/.test(t)
         const bad = offenders((l) => {
@@ -128,7 +129,7 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // Round 1 closes the agent-CRM anglicisms and the auth screens; the
         // remaining count is the Round-2 backlog and is asserted here so it
         // can only go down.
-        expect(bad.length, `English-in-el (metric 6) = ${bad.length}, above the Round-1 level:\n${bad.slice(0, 20).join('\n')}`).toBeLessThanOrEqual(1)
+        expect(bad.length, `English-in-el (metric 6) = ${bad.length}, above the Round-1 level:\n${bad.slice(0, 20).join('\n')}`).toBeLessThanOrEqual(0)
     })
 
     it('number-format-guard — thousands separator per locale', () => {
