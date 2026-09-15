@@ -13,13 +13,13 @@ import { join } from 'node:path'
  * tests/fixtures/guard-probes/voice-*.txt that turns it red.
  *
  * Halted decisions are ALLOWLISTED, not silently passed: H-V01 (onboarding
- * register), H-V04 (Greek plan names), H-V05 (the product noun). When a halt
- * is answered, its allowlist entry is deleted and the guard tightens.
+ * register), H-V05 (the product noun). When a halt is answered, its allowlist
+ * entry is deleted and the guard tightens.
  */
 
 const ROOTS = ['app', 'components', 'lib']
 const EXCLUDE = /(^|\/)(node_modules|\.next)\//
-const OUT_OF_SCOPE = /^lib\/legal\/|^app\/\(public\)\/(terms|privacy|cookies|subprocessors)|consent|^components\/admin\/|^app\/\(protected\)\/admin\/|\/translations\/en\.ts$|^lib\/services\/ai\/(prompt-policy|guard-patterns|extraction-schema|mock-ai\.service)\.ts$|^lib\/notifications\/settings\.ts$|^lib\/wallet\/insurer-registry\.ts$|^lib\/services\/ai\/lob-packs\/|^lib\/schemas\/|^lib\/instrumentation\//
+const OUT_OF_SCOPE = /^lib\/legal\/|^app\/\(public\)\/(terms|privacy|cookies|subprocessors)|consent|^components\/admin\/|^app\/\(protected\)\/admin\/|\/translations\/en\.ts$|^lib\/services\/ai\/(prompt-policy|guard-patterns|extraction-schema|mock-ai\.service)\.ts$|^lib\/notifications\/settings\.ts$|^lib\/wallet\/insurer-registry\.ts$|^lib\/services\/ai\/lob-packs\/|^lib\/schemas\/|^lib\/instrumentation\/|^lib\/ingestion\/lexicon\.ts$/
 
 function collect(dir: string): string[] {
     if (!existsSync(dir)) return []
@@ -68,10 +68,16 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // LEXICON #1 the document; #2 the partner; #8 the coinage.
         const SYMVOLAIO = /συμβόλαι|συμβολαί/i
         const SYMVOLAIO_OK = /ομαδικ|ασφαλιστήριο συμβόλαιο|\bkeywords\s*:/i
-        const PRAKTORAS = /πράκτορ(?!εί)/i
-        // H-V04: the Greek plan names are catalogue rows; «ασφαλιστικός πράκτορας»
-        // is the regulatory category and a search term (LEXICON #2 note).
-        const PRAKTORAS_OK = /\bkeywords\s*:|Πράκτορας (Starter|Pro)|Δωρεάν Πράκτορας|ασφαλιστικ(ούς|ού|ός) πράκτορ|slug|href/i
+        // The stem is matched with BOTH accentuations and an accent-blind lookahead:
+        // Greek moves the stress in the genitive plural (πράκτορ-ας → πρακτόρ-ων), so
+        // /πράκτορ/ never saw «Πλάνα Πρακτόρων», which shipped in-app for months; and
+        // «ΠΡΑΚΤΟΡΕΙΟ» in caps carries no tonos, so (?!εί) failed to exempt it.
+        const PRAKTORAS = /πρ[άα]κτ[οό]ρ(?!ε[ίι])/i
+        // «ασφαλιστικός πράκτορας» is the regulatory category under Law 4583/2018 and
+        // the term agents search for (LEXICON #2 note, D-V03). The plan-name exemption
+        // that sat here was deleted with the strings it covered: they were never
+        // catalogue rows, only unread constants (D-V12).
+        const PRAKTORAS_OK = /\bkeywords\s*:|ασφαλιστικ(ούς|ού|ός|ή) πράκτορ|slug|href/i
         const COINAGE = /ασφαλιστικ[όο] αποτύπωμα/i
         const bad = offenders((l) => (SYMVOLAIO.test(l.text) && !SYMVOLAIO_OK.test(l.text)) || (PRAKTORAS.test(l.text) && !PRAKTORAS_OK.test(l.text)) || COINAGE.test(l.text))
         expect(bad, `banned lexicon variant:\n${bad.join('\n')}`).toEqual([])

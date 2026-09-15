@@ -141,7 +141,7 @@ const copy = {
         recurringNote: "Paid plans are monthly subscriptions that auto-renew. Cancel anytime from your account.",
     },
     el: {
-        title: "Πλάνα Πρακτόρων",
+        title: "Πλάνα συμβούλων",
         subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.",
         free: "Δωρεάν",
         month: "/μήνα",

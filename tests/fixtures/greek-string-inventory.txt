@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3760
-# inline entries: 4918 across 222 files
+# inline entries: 4914 across 221 files
 # ternary entries: 288 across 43 files
 # call entries: 1148 across 86 files
 
@@ -3878,7 +3878,7 @@ inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Ροή εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Επώνυμα emails", "Μαζική εισαγωγή (100 γραμμές)", "Ανάλυση χαρτοφυλακίου", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "200 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", "Προτεραιότητα στην ανάλυση", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & σύμβουλοι", "Απεριόριστες AI αναλύσεις", "Απεριόριστη μαζική εισαγωγή", "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)", "Αποκλειστική υποστήριξη", "Όλα τα Pro χαρακτηριστικά", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	{ title: "Πλάνα Πρακτόρων", subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.", free: "Δωρεάν", month: "/μήνα", currentPlan: "Τρέχον πλάνο", upgrade: "Αναβάθμιση", getStarted: "Ξεκινήστε", contact: "Επικοινωνία", popular: "Δημοφιλέστερο", backToDashboard: "Πίσω στην αρχική", vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.", vatIncluded: "με ΦΠΑ", recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.", }
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	{ title: "Πλάνα συμβούλων", subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.", free: "Δωρεάν", month: "/μήνα", currentPlan: "Τρέχον πλάνο", upgrade: "Αναβάθμιση", getStarted: "Ξεκινήστε", contact: "Επικοινωνία", popular: "Δημοφιλέστερο", backToDashboard: "Πίσω στην αρχική", vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.", vatIncluded: "με ΦΠΑ", recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.", }
 inline	app/(protected)/agent/relationship-actions.ts	"Η συνεργασία τερματίστηκε"
 inline	app/(protected)/agent/relationship-actions.ts	`${actorName || "Ο πελάτης"} τερμάτισε τη συνεργασία. Δεν έχετε πλέον πρόσβαση στα ασφαλιστήριά του.`
 inline	app/(protected)/agent/relationship-actions.ts	`${actorName || "Ο σύμβουλός σας"} τερμάτισε τη συνεργασία. Δεν έχει πλέον πρόσβαση στα ασφαλιστήριά σας.`
@@ -8653,10 +8653,6 @@ inline	lib/subscription-copy.ts	'€39'
 inline	lib/subscription-copy.ts	'€4.99'
 inline	lib/subscription-copy.ts	'€79'
 inline	lib/subscription-copy.ts	'€8.99'
-inline	lib/subscription-entitlements.ts	"Δωρεάν Πράκτορας"
-inline	lib/subscription-entitlements.ts	"Πράκτορας Pro"
-inline	lib/subscription-entitlements.ts	"Πράκτορας Starter"
-inline	lib/subscription-entitlements.ts	"Πρακτορείο"
 inline	lib/subscription-limits.ts	"Έχετε φτάσει το όριο ασφαλιστηρίων του πλάνου σας. Αναβαθμίστε για περισσότερα."
 inline	lib/subscription-limits.ts	"Αυτό είναι χαρακτηριστικό επί πληρωμή πλάνου. Αναβαθμίστε για πρόσβαση."
 inline	lib/subscription-limits.ts	"Οι ειδοποιήσεις email είναι διαθέσιμες σε επί πληρωμή πλάνα."
