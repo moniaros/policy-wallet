@@ -13,5 +13,10 @@
     "locator": "bundle:dashboard.home.quickUploadAria",
     "text": "Γρήγορη μεταφόρτωση",
     "reason": "LEXICON #21 noun lock on an aria-label («Γρήγορο upload», 14 → 19); the label is read by assistive tech, never laid out, so no slot exists to overflow."
+  },
+  {
+    "locator": "inline:lib/services/protection-profile/derive-priorities.ts",
+    "text": "Μας είπατε ότι οδηγείτε.",
+    "reason": "D-V10 register flip. «Είπες ότι οδηγείς.» (18) → «Μας είπατε ότι οδηγείτε.» (24): the growth IS the polite plural's own length, the same shape D-V01 allows for a term lock. The wording is not free either — it is copied verbatim from `protection.attention.reasons`, so the onboarding and /protection tables now agree character for character."
   }
 ]

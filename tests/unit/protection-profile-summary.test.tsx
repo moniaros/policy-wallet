@@ -12,7 +12,7 @@ import { assessRisks, type HeldPolicy } from "@/lib/services/gap-engine/risk-ass
 import { RISK_CATALOG } from "@/lib/services/gap-engine/risk-catalog"
 import { EVENT_DOMAIN_LABELS } from "@/lib/services/life-events/registry"
 import type { FirstInsight } from "@/lib/services/onboarding/quick-start"
-import { FORMAL_PLURAL } from "../helpers/greek-register"
+import { SINGULAR_FORMS } from "../helpers/greek-register"
 import {
     deriveProtectionPriorities,
     type ProtectionPriority,
@@ -20,7 +20,7 @@ import {
 } from "@/lib/services/protection-profile/derive-priorities"
 
 /**
- * The protection map — «Η εικόνα σου μέχρι τώρα» — rendered from the
+ * The protection map — «Η εικόνα σας μέχρι τώρα» — rendered from the
  * attention areas the loader composes. Every fixture goes through the real
  * composition (facts → exposure → protection → alignment), so what the
  * card may say is asserted against what the evidence actually supports:
@@ -83,7 +83,11 @@ const RULE_GAP = {
     title: { el: "Ασφαλισμένο κεφάλαιο μικρότερο από την ανάγκη", en: "Sum insured below the need" },
 }
 
-const FORMAL = /(?<![\p{L}])(σας|εσάς|εσείς)(?![\p{L}])/u
+// INVERTED 2026-09-15 (D-V10): the stage speaks the formal plural, so what must
+// NOT appear in this render is the singular. «Δεν είμαι σίγουρος/η» is the user's
+// own first-person answer and is stripped before the check.
+const SINGULAR = /(?<![\p{L}])(σου|εσένα|σένα|έχεις|είσαι|είπες)(?![\p{L}])/u
+const stripFirstPerson = (s: string) => s.split("Δεν είμαι σίγουρος/η").join("")
 const COVERED = /καλύπτεται/
 
 function draw(w: World, over: Partial<React.ComponentProps<typeof ProtectionMapCard>> = {}) {
@@ -107,8 +111,8 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         // The triplet in the singular, from structured fields.
         expect(text).toContain(mapLabels.alignment.not_yet_checked)
         expect(text).toContain(mapLabels.alignment.unknown)
-        expect(text).toContain("Δεν ξέρουμε ακόμη: το εισόδημά σου")
-        expect(text).toContain("την ηλικία σου")
+        expect(text).toContain("Δεν ξέρουμε ακόμη: το εισόδημά σας")
+        expect(text).toContain("την ηλικία σας")
         expect(text).toContain(mapLabels.confidence.inferred)
         expect(text).toContain(labels.disclaimer)
         expect(text).toContain(labels.confidence.gaps)
@@ -119,13 +123,23 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         // No score, no percentage, no accusation.
         expect(text).not.toMatch(/\d\s?%/)
         expect(text).not.toMatch(/σκορ|score|βαθμ|καλύπτεσαι|ανασφάλιστ/i)
-        // The formal explanation /protection renders is never read here.
+        // The DEEPER explanation /protection renders is never read here.
+        //
+        // NARROWED to `next` by D-V10, and the reason is worth recording: two of
+        // the three fields were never separate copy. `explanation.why` is
+        // `copy.reasons[priority.reason.id]` (attention-areas.ts:413) — the same
+        // reason this card shows — and `explanation.unknown` names the same
+        // unknown factors this card lists. They read as different strings only
+        // because the two surfaces spoke different registers; unifying the
+        // register makes them identical by construction, so asserting they
+        // differ would now be asserting a difference that no longer exists.
+        //
+        // `next` IS separate copy — the coaching step — and stays guarded: it is
+        // what actually makes /protection the deeper surface.
         for (const a of areas) {
-            expect(text).not.toContain(a.explanation.why)
-            expect(text).not.toContain(a.explanation.unknown)
             expect(text).not.toContain(a.explanation.next)
         }
-        expect(text).not.toMatch(FORMAL)
+        expect(stripFirstPerson(text)).not.toMatch(SINGULAR)
 
         // The closing caveat — once, next to the disclaimer.
         expect(text.split(mapLabels.absenceCaveat).length - 1).toBe(1)
@@ -221,13 +235,13 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
             expect(card, risk.id).toBeTruthy()
             expect(card?.textContent, risk.id).toBe(labels.insightLine.replace("{name}", risk.name.el))
             expect(text, risk.id).not.toContain("ΣΩΜΑ-")
-            expect(text, `${risk.id}: ${card?.textContent}`).not.toMatch(FORMAL_PLURAL)
+            expect(stripFirstPerson(text), `${risk.id}: ${card?.textContent}`).not.toMatch(SINGULAR_FORMS)
             unmount()
         }
         // No insight, no card — and nothing formal either.
         const none = draw({ profile: FAMILY, statements: FAMILY_SAID }, { insight: null })
         expect(none.container.querySelector("[data-insight]")).toBeNull()
-        expect(none.text).not.toMatch(FORMAL_PLURAL)
+        expect(none.text).not.toMatch(SINGULAR_FORMS)
     })
 
     it("«φαίνεται να καλύπτεται» appears only on a row with a policy in force behind it — and says the limits were not read", () => {
@@ -277,7 +291,7 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         expect(caveats).toHaveLength(rows.filter((r) => r.lapsedOnly && !r.heldLine).length)
         expect(caveats[0]?.textContent).toBe(mapLabels.lapsedOnly)
         expect(caveats[0]?.closest("li")?.textContent).toContain(mapLabels.alignment.not_yet_checked)
-        expect(mapLabels.lapsedOnly).not.toMatch(FORMAL)
+        expect(mapLabels.lapsedOnly).not.toMatch(SINGULAR)
         expect(draw({ profile: FAMILY, statements: FAMILY_SAID }).container.querySelector('[data-caveat="lapsed"]')).toBeNull()
     })
 
@@ -289,7 +303,7 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         expect(expiring.container.querySelector('li[data-alignment="appears_covered"]')?.textContent).toContain(
             `${mapLabels.alignment.appears_covered} — ${mapLabels.limitsUnread}, ${mapLabels.expiringSoon}`
         )
-        expect(mapLabels.expiringSoon).not.toMatch(FORMAL)
+        expect(mapLabels.expiringSoon).not.toMatch(SINGULAR)
         const active = draw({ profile: FAMILY, statements: FAMILY_SAID, policies: [lifePolicy()] })
         expect(active.text).not.toContain(mapLabels.expiringSoon)
         const moved = movedRows(mapRowsFrom(active.areas, active.priorities), mapRowsFrom(expiring.areas, expiring.priorities))
@@ -311,7 +325,7 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
     })
 
     it("guidance decides how much coaching is OPEN, never whether it exists: the why folds behind a disclosure, the next step is always in view", () => {
-        const why = "Είπες ότι άλλοι βασίζονται στο εισόδημά σου."
+        const why = "Μας είπατε ότι άλλοι βασίζονται στο εισόδημά σας."
         const expanded = draw({ profile: FAMILY, statements: FAMILY_SAID, needs: { guidancePreference: "explain_everything" } })
         expect(expanded.text).toContain(why)
         expect(expanded.text).toContain(mapLabels.next.check_first_policy)
@@ -334,7 +348,7 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
             }
             // The facts stay whatever the density: the alignment, the unknowns, the confidence.
             expect(text).toContain(mapLabels.alignment.not_yet_checked)
-            expect(text).toContain("Δεν ξέρουμε ακόμη: το εισόδημά σου")
+            expect(text).toContain("Δεν ξέρουμε ακόμη: το εισόδημά σας")
             expect(text).toContain(mapLabels.confidence.inferred)
         }
     })
@@ -359,7 +373,7 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         expect(strip.querySelector('[data-moved="household"]')).toBeTruthy()
         expect(read.text).not.toContain(labels.afterUpload.nothingYet)
         expect(read.text).not.toContain(labels.afterUpload.readNoChange)
-        expect(read.text).not.toMatch(FORMAL)
+        expect(read.text).not.toMatch(SINGULAR)
 
         // Queued: the picture has not changed, and the line says so — never «έτοιμη».
         const queued = draw({ profile: FAMILY, statements: FAMILY_SAID }, { afterUpload: { read: false, moved: [] } })
@@ -384,7 +398,7 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         expect(reviewStrip.textContent).not.toContain(labels.afterUpload.nothingYet)
         expect(reviewStrip.textContent).not.toContain(labels.afterUpload.readNoChange)
         expect(reviewStrip.textContent).not.toMatch(/διαβάσαμε|έτοιμ/i)
-        expect(notAPolicy.text).not.toMatch(FORMAL)
+        expect(notAPolicy.text).not.toMatch(SINGULAR)
         const credited = draw({ profile: FAMILY, statements: FAMILY_SAID, policies: [lifePolicy()] }, { afterUpload: { read: true, moved, notAPolicy: true } })
         expect(credited.container.querySelector("[data-moved]")).toBeNull()
         expect(credited.container.querySelector("[data-after-upload]")?.textContent).toContain(labels.afterUpload.notAPolicy)
@@ -400,7 +414,7 @@ describe("ProtectionMapCard — the protection map, from the attention areas", (
         expect(text).toContain(labels.leadNone)
         expect(text).toContain(labels.notAskedYet)
         expect(text).not.toMatch(COVERED)
-        expect(text).not.toMatch(FORMAL)
+        expect(stripFirstPerson(text)).not.toMatch(SINGULAR)
         // Only the areas a fact could not settle are listed — nothing dormant.
         for (const li of Array.from(container.querySelectorAll("li[data-alignment]"))) expect(li.getAttribute("data-alignment")).toBe("unknown")
         expect(container.querySelector('[data-count="needs.unsureCount"]')).toBeNull()

@@ -11,7 +11,7 @@ import { RISK_CATALOG } from "@/lib/services/gap-engine/risk-catalog"
 // The formal plural the onboarding must never speak («έχετε», «είστε»…);
 // «έχουμε» / «ξέρουμε» are «we» and allowed. Shared with the rendered insight
 // card in tests/unit/protection-profile-summary.test.tsx.
-import { FORMAL_PLURAL } from "../helpers/greek-register"
+import { FORMAL_PLURAL, SINGULAR_FORMS } from "../helpers/greek-register"
 
 const STEPS: Array<[string, readonly string[]]> = [
     ["intent", INTENT_VALUES], ["people", PEOPLE_VALUES], ["home", HOME_VALUES], ["income", INCOME_VALUES],
@@ -62,10 +62,16 @@ describe("the map's singular vocabulary is complete in both languages", () => {
         })
     }
 
-    it("the Greek onboarding copy is the singular register — never «σας», «εσάς», «εσείς», «συνδεθήκατε»", () => {
-        // The WHOLE stage: questions, map, upload, advisor. The formal plural
-        // is the dashboard's voice; one screen that slips («Συνδεθήκατε!»
-        // did) breaks the register mid-flow.
+    it("the Greek onboarding copy is the formal plural — never «σου», «εσένα», «έχεις» (D-V10)", () => {
+        // INVERTED 2026-09-15. The stage spoke in the singular by a Sept-2026
+        // decision that assumed it was a sealed one-time flow. It is not: it is
+        // skippable, resumable and re-enterable from a dashboard banner, and the
+        // two registers already met on the upload screen, which renders the
+        // shared wallet errors («Το αρχείο που ανεβάσατε…») and the AI-consent
+        // modal beside «Όποιο έχεις πρόχειρο». One product, one register.
+        //
+        // The ONE exception is the user's own answer about themselves —
+        // «Δεν είμαι σίγουρος/η» is first person and never inflects.
         const stage = getTranslations("el").onboarding.protectionProfile
         const leaves: string[] = []
         const visit = (node: unknown) => {
@@ -76,20 +82,23 @@ describe("the map's singular vocabulary is complete in both languages", () => {
         expect(leaves.length).toBeGreaterThan(200)
         // The pronouns and the second-person-plural verb forms the formal
         // nouns use («έχετε», «είστε»); «έχουμε» / «ξέρουμε» are «we» and allowed.
-        const offenders = leaves.filter((s) => FORMAL_PLURAL.test(s))
-        expect(offenders, `formal plural inside the onboarding stage: ${offenders.join(" | ")}`).toEqual([])
+        const FIRST_PERSON = "Δεν είμαι σίγουρος/η"
+        const offenders = leaves
+            .map((s) => s.split(FIRST_PERSON).join(""))
+            .filter((s) => SINGULAR_FORMS.test(s))
+        expect(offenders, `singular register inside the onboarding stage: ${offenders.join(" | ")}`).toEqual([])
         // The lead carries no number: the only priority count is `needs.priorityCount`.
-        expect(stage.summary.lead).toBe("Με βάση όσα μας είπες, αυτά φαίνεται να έχουν μεγαλύτερη σημασία για σένα.")
+        expect(stage.summary.lead).toBe("Με βάση όσα μας είπατε, αυτά φαίνεται να έχουν μεγαλύτερη σημασία για εσάς.")
         expect(stage.summary.lead).not.toMatch(/\d|\{n\}/)
         expect(stage.summary).not.toHaveProperty("leadOne")
         // The insight line names the risk and nothing else of the catalogue's prose.
         expect(stage.summary.insightLine).toContain("{name}")
         expect(stage.summary).not.toHaveProperty("insightKicker")
         expect(stage.advisor.connected).toBe("Έγινε η σύνδεση")
-        expect(stage.advisor.inviteSentBody).toBe("Θα συνδεθείς αυτόματα μόλις ο σύμβουλός σου δεχτεί την πρόσκληση.")
+        expect(stage.advisor.inviteSentBody).toBe("Θα συνδεθείτε αυτόματα μόλις ο σύμβουλός σας δεχτεί την πρόσκληση.")
         expect(stage.summary.unsureCount).toBe("{n} σημεία μένουν ανοιχτά — θα τα δούμε μαζί.")
-        expect(stage.q.hurt_most.why).toBe("Αυτό ορίζει από πού ξεκινά η εικόνα σου — δεν υπάρχει σωστή απάντηση.")
-        expect(stage.q.hurt_most.hint).toMatch(/^Διάλεξε ένα — ή δύο/)
+        expect(stage.q.hurt_most.why).toBe("Αυτό ορίζει από πού ξεκινά η εικόνα σας — δεν υπάρχει σωστή απάντηση.")
+        expect(stage.q.hurt_most.hint).toMatch(/^Διαλέξτε ένα — ή δύο/)
         for (const lang of ["el", "en"] as const) {
             const t = getTranslations(lang).onboarding.protectionProfile
             for (const key of ["title", "nothingYet", "readNoChange", "notOnMap", "beforeLabel", "afterLabel", "cta", "notAPolicy"] as const) expect(t.summary.afterUpload[key], `${lang} summary.afterUpload.${key}`).toBeTruthy()
@@ -106,12 +115,12 @@ describe("the map's singular vocabulary is complete in both languages", () => {
     })
 
     it("every catalogue risk NAME is register-neutral — it is the one catalogue string the onboarding's insight line renders", () => {
-        // «Ένα πράγμα που ίσως δεν έχεις σκεφτεί: {name}» — a name that says
-        // «την επαγγελματική σας εργασία» puts the formal plural inside the
-        // singular sentence. The body sentences stay formal and stay on the
-        // area detail; the names must read in both voices.
+        // «Ένα πράγμα που ίσως δεν έχετε σκεφτεί: {name}» — the frame is the
+        // formal plural since D-V10, so a name carrying «σου» would now be the
+        // mismatch. Register-neutral names still read in both voices, which is
+        // what this asserts; the direction flipped with the stage.
         expect(RISK_CATALOG.length).toBeGreaterThan(15)
-        const offenders = RISK_CATALOG.filter((r) => FORMAL_PLURAL.test(r.name.el)).map((r) => `${r.id}: ${r.name.el}`)
-        expect(offenders, `formal plural in a catalogue name: ${offenders.join(" | ")}`).toEqual([])
+        const offenders = RISK_CATALOG.filter((r) => SINGULAR_FORMS.test(r.name.el)).map((r) => `${r.id}: ${r.name.el}`)
+        expect(offenders, `singular register in a catalogue name: ${offenders.join(" | ")}`).toEqual([])
     })
 })

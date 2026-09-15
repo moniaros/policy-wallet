@@ -13,8 +13,9 @@ import { join } from 'node:path'
  * tests/fixtures/guard-probes/voice-*.txt that turns it red.
  *
  * Halted decisions are ALLOWLISTED, not silently passed: H-V01 (onboarding
- * register), H-V05 (the product noun). When a halt is answered, its allowlist
- * entry is deleted and the guard tightens.
+ * Every halt that carried an allowlist here has been answered and its entry
+ * deleted: H-V01 the onboarding register (D-V10), H-V04 the plan names (D-V12),
+ * H-V05 the product noun (D-V11). The guard now covers the whole corpus.
  */
 
 const ROOTS = ['app', 'components', 'lib']
@@ -94,14 +95,12 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
         // Only forms that cannot also be a third-person aorist: «ανέβασε» is
         // "upload!" AND "she uploaded", so it is not evidence; «Δες» is.
         const SINGULAR = /(?<!\p{L})(σου|εσύ|εσένα|Δες|Κάνε|Πάτα|Μπες|Γράψε|Βάλε|Στείλε|Επίλεξε|Ξεκίνα|Μάθε|Βρες|Πάρε|Σύνδεσε|Μοιράσου|Ενεργοποίησέ)(?!\p{L})/u
-        const ONBOARDING = /onboarding|protection-profile|ProtectionProfile|protectionProfile/
-        const bad = offenders((l) => SINGULAR.test(l.text) && !ONBOARDING.test(l.file) && !ONBOARDING.test(l.key) && !/^\s*\/\//.test(l.text))
-        // The onboarding bundle keys live inside el.ts; scope them by the section
-        // they sit in rather than the file: the guard reads the key path prefix
-        // from the inventory when it needs it (docs/content/corpus.json).
-        const corpus = JSON.parse(readFileSync('docs/content/corpus.json', 'utf-8')) as { strings: { id: string; text: string }[] }
-        const onboardingTexts = new Set(corpus.strings.filter((s) => s.id.startsWith('bundle:onboarding')).map((s) => s.text.replace(/\{[a-zA-Z_]+\}/g, ' ')))
-        const filtered = bad.filter((line) => ![...onboardingTexts].some((t) => t.length > 12 && line.includes(t.slice(0, 40))))
+        // The onboarding allowlist is GONE (D-V10, 2026-09-15): the stage speaks the
+        // formal plural like everything else, so the guard covers the whole corpus.
+        // The one survivor is the user's own first-person answer, «Δεν είμαι
+        // σίγουρος/η», which is not an address at all.
+        const bad = offenders((l) => SINGULAR.test(l.text.split('Δεν είμαι σίγουρος/η').join('')) && !/^\s*\/\//.test(l.text))
+        const filtered = bad
         expect(filtered, `singular register outside onboarding (V4):\n${filtered.join('\n')}`).toEqual([])
     })
 
