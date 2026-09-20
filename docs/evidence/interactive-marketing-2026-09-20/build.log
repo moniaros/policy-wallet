@@ -1,0 +1,342 @@
+
+> policy-wallet@0.1.0 build
+> next build
+
+▲ Next.js 16.2.10 (Turbopack)
+- Environments: .env.local, .env
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 15.7s
+  Running next.config.js provided runAfterProductionCompile ...
+✓ Completed runAfterProductionCompile in 4.4s
+  Running TypeScript ...
+  Finished TypeScript in 20.8s ...
+  Collecting page data using 13 workers ...
+  Generating static pages using 13 workers (0/322) ...
+  Generating static pages using 13 workers (80/322)
+  Generating static pages using 13 workers (160/322)
+  Generating static pages using 13 workers (241/322)
+✓ Generating static pages using 13 workers (322/322) in 3.9s
+  Finalizing page optimization ...
+
+Route (app)                                                    Revalidate  Expire
+┌ ○ /                                                                  5m      1y
+├ ○ /_not-found
+├ ƒ /account
+├ ƒ /account/history
+├ ƒ /account/notifications
+├ ƒ /account/plan
+├ ƒ /account/privacy
+├ ƒ /account/profile
+├ ƒ /account/security
+├ ƒ /activity
+├ ƒ /admin/activity
+├ ƒ /admin/ai
+├ ƒ /admin/ai/prompts
+├ ƒ /admin/ai/prompts/[overrideId]
+├ ƒ /admin/ai/settings
+├ ƒ /admin/automation
+├ ƒ /admin/automation/analytics
+├ ƒ /admin/automation/events
+├ ƒ /admin/automation/flags
+├ ƒ /admin/automation/localization
+├ ƒ /admin/automation/queues
+├ ƒ /admin/automation/schedules
+├ ƒ /admin/billing-reconciliation
+├ ƒ /admin/dashboard
+├ ƒ /admin/dsr
+├ ƒ /admin/extraction-flags
+├ ƒ /admin/gaps
+├ ƒ /admin/gaps/[gapDefinitionId]
+├ ƒ /admin/insurers
+├ ƒ /admin/insurers/[insurerId]
+├ ƒ /admin/launch-readiness
+├ ƒ /admin/notifications
+├ ƒ /admin/notifications/history
+├ ƒ /admin/notifications/templates
+├ ƒ /admin/notifications/templates/[eventType]
+├ ƒ /admin/notifications/triggers
+├ ƒ /admin/notifications/triggers/[eventType]
+├ ƒ /admin/notifications/workflows
+├ ƒ /admin/partners
+├ ƒ /admin/partners/[vendorId]
+├ ƒ /admin/plans
+├ ƒ /admin/plans/[planId]
+├ ƒ /admin/policies
+├ ƒ /admin/submissions
+├ ƒ /admin/tokens
+├ ƒ /admin/types
+├ ƒ /admin/users
+├ ƒ /admin/users/[id]
+├ ƒ /agent
+├ ƒ /agent/pricing
+├ ƒ /agent/settings
+├ ƒ /api-docs
+├ ƒ /api/admin/ai-performance
+├ ƒ /api/admin/tokens/analytics
+├ ƒ /api/admin/tokens/usage
+├ ƒ /api/auth/passkeys
+├ ƒ /api/auth/passkeys/[id]
+├ ƒ /api/auth/passkeys/challenge
+├ ƒ /api/auth/passkeys/options
+├ ƒ /api/auth/passkeys/register
+├ ƒ /api/auth/passkeys/verify
+├ ƒ /api/auth/reset-password
+├ ƒ /api/auth/verify
+├ ƒ /api/contact
+├ ƒ /api/doc
+├ ƒ /api/health
+├ ƒ /api/notifications
+├ ƒ /api/notifications/mark-all-read
+├ ƒ /api/notifications/mark-read
+├ ƒ /api/policies/batch-create
+├ ƒ /api/policies/extract
+├ ƒ /api/stripe/checkout
+├ ƒ /api/stripe/portal
+├ ƒ /api/stripe/webhook
+├ ƒ /api/user/language
+├ ƒ /api/v1/access-grants
+├ ƒ /api/v1/access-grants/[id]
+├ ƒ /api/v1/activity-log
+├ ƒ /api/v1/agent/playbooks
+├ ƒ /api/v1/agent/policies/[id]/branded-report
+├ ƒ /api/v1/auth/logout
+├ ƒ /api/v1/auth/magic-link/request
+├ ƒ /api/v1/billing/checkout
+├ ƒ /api/v1/billing/portal
+├ ƒ /api/v1/billing/revenuecat-webhook
+├ ƒ /api/v1/billing/webhook
+├ ƒ /api/v1/collaboration/document-requests
+├ ƒ /api/v1/collaboration/document-requests/[id]
+├ ƒ /api/v1/collaboration/events
+├ ƒ /api/v1/collaboration/proposals
+├ ƒ /api/v1/collaboration/proposals/[id]
+├ ƒ /api/v1/collaboration/threads
+├ ƒ /api/v1/collaboration/threads/[id]
+├ ƒ /api/v1/collaboration/threads/[id]/actions
+├ ƒ /api/v1/collaboration/threads/[id]/actions/[actionId]
+├ ƒ /api/v1/collaboration/threads/[id]/messages
+├ ƒ /api/v1/consents
+├ ƒ /api/v1/consents/current
+├ ƒ /api/v1/contact
+├ ƒ /api/v1/customers/bulk-import
+├ ƒ /api/v1/feedback
+├ ƒ /api/v1/gaps/[id]/acknowledge
+├ ƒ /api/v1/invites
+├ ƒ /api/v1/jobs/billing-reconciliation
+├ ƒ /api/v1/jobs/churn-prevention
+├ ƒ /api/v1/jobs/collaboration-reminders
+├ ƒ /api/v1/jobs/dsr-evidence-snapshot
+├ ƒ /api/v1/jobs/engagement-drip
+├ ƒ /api/v1/jobs/event-sweep
+├ ƒ /api/v1/jobs/execute-analysis
+├ ƒ /api/v1/jobs/launch-readiness-snapshot
+├ ƒ /api/v1/jobs/notification-retry
+├ ƒ /api/v1/jobs/obligation-scan
+├ ƒ /api/v1/jobs/perk-reminders
+├ ƒ /api/v1/jobs/pitr-re-erasure
+├ ƒ /api/v1/jobs/privacy-retention
+├ ƒ /api/v1/jobs/process-policy
+├ ƒ /api/v1/jobs/protection-score-refresh
+├ ƒ /api/v1/jobs/reap-stale-analyses
+├ ƒ /api/v1/jobs/renewal-check
+├ ƒ /api/v1/jobs/risk-review-scan
+├ ƒ /api/v1/jobs/synthetic-launch-check
+├ ƒ /api/v1/jobs/weekly-digest
+├ ƒ /api/v1/life-events
+├ ƒ /api/v1/me
+├ ƒ /api/v1/me/achievements
+├ ƒ /api/v1/me/credits
+├ ƒ /api/v1/me/data-export
+├ ƒ /api/v1/me/data-export/[id]
+├ ƒ /api/v1/me/deletion-request
+├ ƒ /api/v1/me/deletion-request/[id]
+├ ƒ /api/v1/me/referral
+├ ƒ /api/v1/me/subscription
+├ ƒ /api/v1/newsletter/subscribe
+├ ƒ /api/v1/notifications
+├ ƒ /api/v1/notifications/device-token
+├ ƒ /api/v1/notifications/preferences
+├ ƒ /api/v1/policies
+├ ƒ /api/v1/policies/[id]
+├ ƒ /api/v1/policies/[id]/analysis-runs/[runId]
+├ ƒ /api/v1/policies/[id]/analysis-runs/[runId]/retry-missing
+├ ƒ /api/v1/policies/[id]/analysis-runs/compare
+├ ƒ /api/v1/policies/[id]/documents
+├ ƒ /api/v1/policies/[id]/documents/[docId]
+├ ƒ /api/v1/policies/[id]/gaps
+├ ƒ /api/v1/policies/[id]/report-unlock
+├ ƒ /api/v1/policies/[id]/review
+├ ƒ /api/v1/policies/[id]/savings-report
+├ ƒ /api/v1/policies/share
+├ ƒ /api/v1/portfolio/gaps
+├ ƒ /api/v1/questionnaires
+├ ƒ /api/v1/questionnaires/[id]
+├ ƒ /api/v1/recommendations
+├ ƒ /api/v1/recommendations/[id]
+├ ƒ /api/v1/risk-profile
+├ ƒ /api/v1/tokens/purchase
+├ ƒ /api/v1/tokens/usage
+├ ƒ /api/v1/upload
+├ ○ /apple-icon.png
+├ ○ /auth/auth-code-error
+├ ƒ /auth/callback
+├ ○ /auth/forgot-password
+├ ○ /auth/handover
+├ ○ /auth/reset-password
+├ ○ /auth/signin
+├ ƒ /auth/signup
+├ ○ /auth/signup/agent                                                30s      1y
+├ ○ /auth/signup/confirmation
+├ ○ /auth/signup/policyholder                                         30s      1y
+├ ƒ /auth/step-up
+├ ○ /auth/verify-email
+├ ƒ /benefits
+├ ○ /changelog
+├ ƒ /collaboration/threads/[id]
+├ ƒ /commissions
+├ ○ /company
+├ ○ /compare
+├ ƒ /consent/ai
+├ ○ /contact
+├ ƒ /cookies
+├ ƒ /coverage
+├ ƒ /customers
+├ ƒ /customers/[id]
+├ ƒ /customers/[id]/policy/[policyId]
+├ ƒ /customers/invite
+├ ƒ /dashboard
+├ ƒ /dashboard/agent
+├ ○ /en                                                                5m      1y
+├ ○ /en/changelog
+├ ○ /en/company
+├ ○ /en/compare
+├ ○ /en/contact
+├ ○ /en/cookies
+├ ○ /en/for-agents
+├ ○ /en/guides
+├ ● /en/guides/[slug]
+│ ├ /en/guides/ekptosi-enfia-asfalisi-katoikias
+│ ├ /en/guides/kena-kalypsis-ti-einai-pos-ta-vriskete
+│ ├ /en/guides/checklist-ananeosis-asfalistiriou
+│ └ [+12 more paths]
+├ ○ /en/lexiko
+├ ● /en/lexiko/[term]
+│ ├ /en/lexiko/asfalistirio
+│ ├ /en/lexiko/kalypsi
+│ ├ /en/lexiko/apallagi
+│ └ [+19 more paths]
+├ ○ /en/methodology
+├ ○ /en/needs
+├ ○ /en/platform
+├ ○ /en/pricing                                                        5m      1y
+├ ○ /en/privacy
+├ ○ /en/product
+├ ○ /en/product/boat
+├ ○ /en/product/business
+├ ○ /en/product/cyber
+├ ○ /en/product/fine-art
+├ ○ /en/product/group-health
+├ ○ /en/product/group-life
+├ ○ /en/product/group-pension
+├ ○ /en/product/health
+├ ○ /en/product/legal-expenses
+├ ○ /en/product/liability
+├ ○ /en/product/life
+├ ○ /en/product/motor
+├ ○ /en/product/pension
+├ ○ /en/product/pet
+├ ○ /en/product/property
+├ ○ /en/product/travel
+├ ○ /en/solutions/agents
+├ ○ /en/status
+├ ○ /en/subprocessors
+├ ○ /en/terms
+├ ○ /en/trust
+├ ○ /for-agents
+├ ○ /guides
+├ ● /guides/[slug]
+│ ├ /guides/ekptosi-enfia-asfalisi-katoikias
+│ ├ /guides/kena-kalypsis-ti-einai-pos-ta-vriskete
+│ ├ /guides/checklist-ananeosis-asfalistiriou
+│ └ [+12 more paths]
+├ ƒ /help
+├ ƒ /help/article/[slug]
+├ ƒ /home
+├ ○ /icon.svg
+├ ƒ /insights
+├ ƒ /insights/book
+├ ƒ /invite/[token]
+├ ○ /landing
+├ ○ /lexiko
+├ ● /lexiko/[term]
+│ ├ /lexiko/asfalistirio
+│ ├ /lexiko/kalypsi
+│ ├ /lexiko/apallagi
+│ └ [+19 more paths]
+├ ○ /methodology
+├ ○ /needs
+├ ƒ /notifications
+├ ƒ /onboarding
+├ ƒ /onboarding/agent
+├ ○ /opengraph-image
+├ ○ /opengraph-image-en
+├ ƒ /opportunities
+├ ○ /perks                                                             5m      1y
+├ ○ /platform
+├ ○ /pricing                                                           5m      1y
+├ ƒ /privacy
+├ ○ /product
+├ ○ /product/boat
+├ ○ /product/business
+├ ○ /product/cyber
+├ ○ /product/fine-art
+├ ○ /product/group-health
+├ ○ /product/group-life
+├ ○ /product/group-pension
+├ ○ /product/health
+├ ○ /product/legal-expenses
+├ ○ /product/liability
+├ ○ /product/life
+├ ○ /product/motor
+├ ○ /product/pension
+├ ○ /product/pet
+├ ○ /product/property
+├ ○ /product/travel
+├ ƒ /protection
+├ ƒ /protection/[branch]
+├ ƒ /protection/areas/[area]
+├ ƒ /questionnaires
+├ ƒ /recommendations
+├ ƒ /renewals
+├ ○ /robots.txt
+├ ○ /sitemap.xml
+├ ○ /solutions/agents
+├ ○ /solutions/partners
+├ ○ /solutions/synergates
+├ ○ /status
+├ ○ /styleguide
+├ ƒ /subprocessors
+├ ƒ /tasks
+├ ƒ /tasks/[id]
+├ ƒ /team
+├ ƒ /terms
+├ ○ /trust
+├ ○ /twitter-image
+├ ƒ /upgrade
+├ ƒ /upgrade/success
+├ ƒ /wallet
+├ ƒ /wallet/[id]
+├ ƒ /wallet/[id]/edit
+├ ƒ /wallet/[id]/review
+└ ƒ /wallet/add
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand

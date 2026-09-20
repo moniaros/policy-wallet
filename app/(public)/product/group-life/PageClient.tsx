@@ -26,7 +26,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             href: "/product/group-health",
             titleEl: "Ομαδική Υγεία",
             titleEn: "Group Health",
-            descEl: "Νοσοκομειακή και εξωνοσοκομειακή περίθαλψη για το προσωπικό — η πιο ορατή παροχή στην καθημερινότητα της ομάδας.",
+            descEl: "Νοσηλεία, εξετάσεις και επισκέψεις σε γιατρούς για τους εργαζομένους, ανάλογα με τους όρους του προγράμματος.",
             descEn: "Hospital and outpatient care for staff — the benefit your team feels most in everyday life.",
         },
         {
@@ -35,7 +35,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             href: "/product/group-pension",
             titleEl: "Ομαδική Σύνταξη",
             titleEn: "Group Pension",
-            descEl: "Συνταξιοδοτική αποταμίευση με εισφορές εργοδότη ανά εργαζόμενο — δείτε τι έχει χτιστεί για κάθε μέλος της ομάδας.",
+            descEl: "Χρήματα που βάζει ο εργοδότης για τη σύνταξη κάθε εργαζομένου. Δείτε τα ποσά που γράφουν τα έγγραφα του προγράμματος.",
             descEn: "Pension savings with employer contributions per employee — see what has been built for each member of the team.",
         },
     ]
@@ -119,7 +119,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                 <div className="mx-auto max-w-page grid gap-16 md:grid-cols-2">
                     <div>
                         <h2 className="text-h3 font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#0F172A] dark:text-white">
-                            {t("Για HR και ιδιοκτήτες επιχειρήσεων", "For HR and business owners")}
+                            {t("Για υπεύθυνους προσωπικού και επιχειρηματίες", "For HR and business owners")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Ανεβάστε το ομαδικό συμβόλαιο και δείτε τις παροχές του χαρτογραφημένες: κεφάλαια ανά εργαζόμενο, συμπληρωματικές καλύψεις, ημερομηνία ανανέωσης. Όταν έρθει η στιγμή της διαπραγμάτευσης, ξέρετε τι ακριβώς πληρώνετε.", "Upload the group policy and see its benefits mapped: capital per employee, supplementary covers, renewal date. When negotiation time comes, you know exactly what you are paying for.")}

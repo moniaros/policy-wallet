@@ -179,7 +179,7 @@ export const landingContent: LandingContentModel = {
                 // grammatical genders depending on the page.
                 question: { el: "Πόσο σωστή είναι η ανάλυση του AI;", en: "How accurate is the AI analysis?" },
                 answer: {
-                    el: "Παίρνετε γρήγορη, πρακτική εικόνα για το τι καλύπτεστε και τι όχι. Δεν αντικαθιστά τους όρους του ασφαλιστηρίου ούτε τον ασφαλιστή σας — σας δείχνουμε τι αξίζει να ελέγξετε και αποφασίζετε εσείς.",
+                    el: "Παίρνετε γρήγορη, πρακτική εικόνα για το τι καλύπτεται και τι όχι. Δεν αντικαθιστά τους όρους του ασφαλιστηρίου ούτε τον ασφαλιστή σας — σας δείχνουμε τι αξίζει να ελέγξετε και αποφασίζετε εσείς.",
                     en: "You get a fast, practical picture of what you are covered for and what you are not. It does not replace the policy terms or your agent — we show you what is worth checking, and you decide.",
                 },
             },
@@ -203,7 +203,7 @@ export const landingContent: LandingContentModel = {
             ogDescription:
                 "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι και πού όχι — και, με το Family, τι να διορθώσετε πρώτα.",
             twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",
-            twitterDescription: "Δεν πουλάμε ασφάλειες. Σας λέμε τι δεν καλύπτεστε.",
+            twitterDescription: "Δεν πουλάμε ασφάλειες. Σας λέμε σε τι δεν καλύπτεστε.",
         },
         en: {
             locale: "en",

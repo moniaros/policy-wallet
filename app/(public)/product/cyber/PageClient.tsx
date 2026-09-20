@@ -21,7 +21,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Κυβερνοασφάλεια", "Cyber insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Ransomware, διακοπή λειτουργίας, ευθύνη: τι σας καλύπτει;", "Ransomware, downtime, liability: what covers you?")}
+                        {t("Κυβερνοεπίθεση: τι καλύπτει η ασφάλειά σας;", "Ransomware, downtime, liability: what covers you?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Δείτε τι καλύπτεται αν κλειδώσουν τα δεδομένα σας, μέχρι ποιο ποσό, και πόσο πληρώνεστε για κάθε μέρα που η δουλειά σταματά.", "See what is covered if your data is locked, up to what amount, and how much you are paid for every day the business stops.")}
@@ -42,7 +42,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Αν χτυπήσει επίθεση, ξέρετε ήδη τι ισχύει;", "If an attack hits, do you already know what applies?")}
+                            {t("Αν γίνει κυβερνοεπίθεση, ξέρετε τι καλύπτεται;", "If an attack hits, do you already know what applies?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
                             {t("Σε περίπτωση παραβίασης, ο χρόνος είναι χρήμα. Το PolicyWallet κρατά τα στοιχεία της ομάδας άμεσης επέμβασης πάντα διαθέσιμα.", "In a breach, time is money. PolicyWallet keeps the details of your incident response team always at hand.")}
@@ -51,7 +51,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κάλυψη Ransomware", "Ransomware cover")}</h3>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κάλυψη για ψηφιακό εκβιασμό", "Ransomware cover")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε τι ακριβώς πληρώνει το ασφαλιστήριο σε εκβιασμό ή απώλεια δεδομένων.", "We show you exactly what the policy pays in extortion or data loss.")}</p>
                                 </div>
                             </li>

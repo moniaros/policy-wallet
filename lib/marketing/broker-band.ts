@@ -22,7 +22,7 @@ export const BROKER_BAND = {
         { el: "Όλοι οι πελάτες σε μία οθόνη", en: "All your clients on one screen" },
         { el: "Ανάλυση κενών ανά πελάτη", en: "Gap analysis per client" },
         { el: "Υπενθυμίσεις ανανεώσεων", en: "Renewal reminders" },
-        { el: "Επώνυμη αναφορά προστασίας", en: "Branded protection report" },
+        { el: "Αναφορά με το όνομά σας", en: "Branded protection report" },
     ] as readonly Bilingual[],
     cta: { el: "Δείτε τη λύση για ασφαλιστές", en: "See the agent solution" },
 } as const
@@ -43,7 +43,7 @@ export const BROKER_SCAN_ROWS: readonly {
         client: { el: "Πελάτης Α", en: "Client A" },
         lines: { el: "Υγεία + Ζωή", en: "Health + Life" },
         state: "gap",
-        finding: { el: "Η εξωνοσοκομειακή εξαιρείται — θέμα για το επόμενο ραντεβού.", en: "Outpatient excluded — one for the next meeting." },
+        finding: { el: "Οι επισκέψεις και εξετάσεις εκτός νοσηλείας δεν καλύπτονται. Θέμα για το επόμενο ραντεβού.", en: "Outpatient excluded — one for the next meeting." },
     },
     {
         client: { el: "Πελάτης Β", en: "Client B" },

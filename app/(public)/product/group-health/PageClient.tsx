@@ -45,7 +45,7 @@ export default function GroupHealthProductPage({ locale }: { locale: "el" | "en"
                             {t("Πληρώνετε διπλά για τις ίδιες καλύψεις;", "Are you double-paying for the same coverage?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Μία κάλυψη αρκεί: ό,τι σας παρέχει ήδη η εταιρεία σας δεν χρειάζεται να το ξαναπληρώσετε. Συνδυάστε τις παροχές του ομαδικού με το ατομικό σας συμβόλαιο.", "One cover is enough: what your company already provides, you do not need to pay for again. Combine the benefits of your group plan with your personal policy.")}
+                            {t("Δύο ασφαλιστήρια μπορεί να καλύπτουν το ίδιο έξοδο με διαφορετικούς όρους. Δείτε τι πληρώνει το καθένα και συζητήστε με τον ασφαλιστή σας αν το ένα συμπληρώνει το άλλο.", "Two policies may cover the same expense under different terms. Check what each pays and discuss with your insurance advisor whether one complements the other.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">

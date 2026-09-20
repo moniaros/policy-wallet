@@ -42,7 +42,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Ευθύνη, σκάφος, αρωγή: τρία σκέλη, ένα ασφαλιστήριο.", "Liability, hull, salvage: three sections, one contract.")}
+                            {t("Ζημιές σε άλλους, στο σκάφος και βοήθεια στη θάλασσα.", "Liability, hull, salvage: three sections, one contract.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
                             {t("Το ασφαλιστήριο του σκάφους γράφει με μία ανάσα τι θα πληρωθεί σε πρόσκρουση, βύθιση ή ζημιά σε τρίτο. Εμείς το χωρίζουμε σε καθαρές κάρτες, με τα όρια δίπλα σε κάθε κάλυψη.", "A boat policy states in one breath what gets paid in a collision, sinking or third-party damage. We split it into clean cards, with the limits next to each cover.")}
@@ -59,14 +59,14 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Σκάφος & Μηχανή", "Hull & machinery")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Οι ίδιες ζημιές είναι προαιρετικό σκέλος: αν λείπει, μια πρόσκρουση ή κακοκαιρία μένει εξ ολοκλήρου δικό σας κόστος. Το επισημαίνουμε στην ανάλυση.", "Own-damage cover is optional: if it's missing, a collision or storm damage remains entirely your cost. We flag it in the analysis.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Η κάλυψη για ζημιές στο δικό σας σκάφος είναι προαιρετική. Δείτε αν περιλαμβάνει, για παράδειγμα, χτύπημα σε βράχο ή ζημιά από κακοκαιρία.", "Own-damage cover is optional: if it's missing, a collision or storm damage remains entirely your cost. We flag it in the analysis.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Επιθαλάσσια αρωγή & ανέλκυση", "Salvage & wreck removal")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Ρυμούλκηση, αρωγή και ανέλκυση ναυαγίου κοστίζουν ακριβά και δεν περιλαμβάνονται πάντα. Μάθετε αν το δικό σας ασφαλιστήριο τα καλύπτει.", "Towing, salvage and wreck removal are expensive and not always included. Find out whether your own contract covers them.")}</p>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Βοήθεια στη θάλασσα και ανάσυρση σκάφους", "Salvage & wreck removal")}</h3>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Η μεταφορά ενός σκάφους που έπαθε βλάβη ή η ανάσυρσή του από τον βυθό δεν καλύπτονται πάντα. Δείτε τι γράφει το δικό σας ασφαλιστήριο.", "Towing, salvage and wreck removal are expensive and not always included. Find out whether your own contract covers them.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">

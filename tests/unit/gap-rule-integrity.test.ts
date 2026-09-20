@@ -88,9 +88,9 @@ describe('a premium-saving idea is not a coverage gap', () => {
  * are fed to the model, so the product was teaching itself the wrong concept.
  */
 describe('ENFIA is described as the tax discount it is', () => {
-    it('the guide, which was always correct, still is', () => {
+    it('the guide describes a conditional tax reduction', () => {
         const guides = read('lib/guides/content.ts')
-        expect(guides).toMatch(/entitled to an ENFIA property-tax discount/)
+        expect(guides).toMatch(/may reduce your ENFIA property tax if it meets AADE’s conditions/)
     })
 
     it('no source calls it a requirement or a compliance obligation', () => {

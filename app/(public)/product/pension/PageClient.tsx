@@ -24,7 +24,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                         {t("Ξέρετε τι υπογράψατε για τη σύνταξή σας;", "Do you know what you signed for your retirement?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Τα αποταμιευτικά και συνταξιοδοτικά προγράμματα είναι δεσμεύσεις δεκαετιών με εισφορές, όρους ωρίμανσης και ρήτρες εξαγοράς. Τα μεταφράζουμε σε καθαρή εικόνα: τι πληρώνετε, τι χτίζετε, τι χάνετε αν σταματήσετε.", "Savings and pension plans are decade-long commitments with contributions, maturity terms and surrender clauses. We turn them into a clear picture: what you pay, what you build, and what you lose if you stop.")}
+                        {t("Ένα πρόγραμμα αποταμίευσης ή σύνταξης μπορεί να κρατά πολλά χρόνια. Σας εξηγούμε τι πληρώνετε, πότε παίρνετε τα χρήματα και τι κόστος έχει αν σταματήσετε νωρίτερα.", "Savings and pension plans are decade-long commitments with contributions, maturity terms and surrender clauses. We turn them into a clear picture: what you pay, what you build, and what you lose if you stop.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -65,7 +65,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                             <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800/40 flex gap-3">
                                 <AlertTriangle className="w-5 h-5 text-amber-700 dark:text-amber-200 flex-shrink-0" />
                                 <div>
-                                    <p className="font-medium text-amber-900 dark:text-amber-200 text-sm">{t("Ποινή πρόωρης εξαγοράς", "Penalty for cashing in early")}</p>
+                                    <p className="font-medium text-amber-900 dark:text-amber-200 text-sm">{t("Χρέωση αν σταματήσετε νωρίτερα", "Penalty for cashing in early")}</p>
                                     <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">{t("Ισχύει πριν το 10ο έτος — δείτε τους όρους", "Applies before year 10 — see the terms")}</p>
                                 </div>
                             </div>
@@ -83,21 +83,21 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Εφάπαξ ή σύνταξη;", "Lump sum or a pension?")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Οι επιλογές ωρίμανσης καθορίζουν αν στη λήξη παίρνετε ένα ποσό ή μηνιαίο εισόδημα. Δείτε τις δικές σας πριν πλησιάσει η ημερομηνία.", "Maturity options decide whether at the end you receive a single amount or a monthly income. See yours before the date approaches.")}</p>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Όλα τα χρήματα μαζί ή μηνιαία σύνταξη;", "Lump sum or a pension?")}</h3>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Στη λήξη μπορεί να πάρετε τα χρήματα όλα μαζί ή ως μηνιαία σύνταξη. Δείτε ποιες επιλογές δίνει το δικό σας πρόγραμμα.", "Maturity options decide whether at the end you receive a single amount or a monthly income. See yours before the date approaches.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Όροι εξαγοράς στο φως", "Surrender terms in the open")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Η πρόωρη διακοπή έχει κόστος που ελάχιστοι έχουν διαβάσει. Βρίσκουμε τη ρήτρα εξαγοράς και σας δείχνουμε τι σημαίνει στην πράξη.", "Stopping early has a cost that very few people have read. We find the surrender clause and show you what it means in practice.")}</p>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Τι γίνεται αν σταματήσετε νωρίτερα", "Surrender terms in the open")}</h3>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Αν σταματήσετε νωρίτερα, μπορεί να πάρετε λιγότερα χρήματα από όσα βάλατε. Βρίσκουμε τους σχετικούς όρους και σας τους εξηγούμε.", "Stopping early has a cost that very few people have read. We find the surrender clause and show you what it means in practice.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Εγγυημένο ή επενδυτικό σκέλος", "Guaranteed or investment part")}</h3>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Ποιο ποσό είναι εγγυημένο;", "Guaranteed or investment part")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Ποιο μέρος της αποταμίευσής σας είναι εγγυημένο και ποιο ακολουθεί την αγορά; Η διάκριση είναι κρίσιμη — και συχνά ασαφής στο ασφαλιστήριο.", "Which part of your savings is guaranteed and which follows the market? The distinction is critical — and often unclear in the contract.")}</p>
                                 </div>
                             </li>

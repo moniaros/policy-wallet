@@ -51,11 +51,11 @@ const STEPS: { n: string; title: { el: string; en: string }; body: { el: string;
     {
         n: "01",
         title: {
-            el: "Το έγγραφο γίνεται δομημένα δεδομένα",
+            el: "Βάζουμε τα στοιχεία του εγγράφου σε σειρά",
             en: "The document becomes structured data",
         },
         body: {
-            el: "Ένα ασφαλιστήριο είναι PDF γραμμένο όπως θέλει η κάθε εταιρεία. Το διαβάζουμε σε ένα κοινό σχήμα: καλύψεις, όρια, απαλλαγές, εξαιρέσεις και οι όροι που μπορούν να ακυρώσουν μια κάλυψη αν δεν τηρηθούν. Το ίδιο σχήμα για κάθε ασφαλιστική, στα ελληνικά και στα αγγλικά.",
+            el: "Κάθε εταιρεία γράφει το ασφαλιστήριο με τον δικό της τρόπο. Εμείς βάζουμε τα στοιχεία σε ίδια σειρά: τι καλύπτεται, μέχρι πόσο, τι πληρώνετε εσείς και τι δεν καλύπτεται. Κρατάμε και τις προϋποθέσεις που πρέπει να τηρούνται.",
             en: "A policy is a PDF written however each company likes. We read it into one common shape: coverages, limits, deductibles, exclusions, and the conditions that can void a cover if they are not met. The same shape for every insurer, in Greek and English.",
         },
     },
@@ -66,7 +66,7 @@ const STEPS: { n: string; title: { el: string; en: string }; body: { el: string;
             en: "Rules check that data",
         },
         body: {
-            el: "Ό,τι σας παρουσιάζουμε ως κενό κάλυψης το βρήκε κανόνας που κοίταξε συγκεκριμένα πεδία του ασφαλιστηρίου σας — όχι ένα μοντέλο που σχημάτισε γνώμη. Κάθε εύρημα κρατά ποιος κανόνας το έβγαλε και τι τιμές διάβασε, ώστε να μπορεί να ελεγχθεί και να αμφισβητηθεί.",
+            el: "Κάθε κενό κάλυψης προκύπτει από συγκεκριμένο έλεγχο στα στοιχεία του ασφαλιστηρίου σας. Κρατάμε ποιος έλεγχος το βρήκε και σε ποια στοιχεία στηρίχτηκε. Έτσι μπορείτε να ζητήσετε να ελεγχθεί ή να διορθωθεί.",
             en: "Anything we show you as a coverage gap was found by a rule that looked at specific fields of your policy — not by a model forming an opinion. Every finding keeps which rule produced it and what values that rule read, so it can be checked and argued with.",
         },
     },
@@ -77,7 +77,7 @@ const STEPS: { n: string; title: { el: string; en: string }; body: { el: string;
             en: "The AI puts it into words",
         },
         body: {
-            el: "Αφού αποφασίσουν οι κανόνες, η τεχνητή νοημοσύνη εξηγεί το εύρημα σε απλά ελληνικά. Δεν μπορεί να προσθέσει κενό που δεν βρήκαν οι κανόνες, ούτε να κρίνει πόσο σοβαρό είναι — τα πεδία αυτά δεν υπάρχουν καν στη διεπαφή που της δίνουμε.",
+            el: "Οι κανόνες βρίσκουν τα σημεία που χρειάζονται έλεγχο. Η τεχνητή νοημοσύνη τα εξηγεί με απλά λόγια. Δεν προσθέτει δικά της κενά κάλυψης και δεν αποφασίζει πόσο σοβαρά είναι.",
             en: "Once the rules have decided, the AI explains the finding in plain language. It cannot add a gap the rules did not find, and it cannot judge how serious one is — those fields do not exist in the interface we give it.",
         },
     },
@@ -154,14 +154,14 @@ export function PlatformSections({ locale }: { locale: Locale }) {
                         <p className="mt-3 text-body leading-relaxed text-[#334155] dark:text-slate-200">
                             {t(
                                 locale,
-                                "Οι κανόνες καλύπτουν όσα έχει γράψει κάποιος ως κανόνα — όχι κάθε πιθανό κενό σε κάθε κλάδο. Εκεί που δεν υπάρχει κανόνας, δεν σας δείχνουμε εύρημα· προτιμούμε το κενό στην οθόνη από ένα εύρημα που δεν στηρίζεται.",
+                                "Δεν ελέγχουμε κάθε πιθανό πρόβλημα σε κάθε είδος ασφάλισης. Αν δεν έχουμε φτιάξει τον σχετικό έλεγχο, δεν βγάζουμε συμπέρασμα. Το ότι δεν εμφανίζεται εύρημα δεν σημαίνει ότι όλα καλύπτονται.",
                                 "The rules cover what someone has written a rule for — not every possible gap in every branch. Where there is no rule, we show you no finding: we would rather leave the screen empty than fill it with something we cannot stand behind."
                             )}
                         </p>
                         <p className="mt-3 text-body leading-relaxed text-[#334155] dark:text-slate-200">
                             {t(
                                 locale,
-                                "Η ανάλυση δεν είναι ασφαλιστική συμβουλή και δεν υποκαθιστά το ίδιο το ασφαλιστήριο ούτε τον αδειοδοτημένο διαμεσολαβητή σας.",
+                                "Η ανάλυση σας βοηθά να καταλάβετε το έγγραφο. Δεν αντικαθιστά τους όρους του ούτε τη συμβουλή του ασφαλιστή σας.",
                                 "The analysis is not insurance advice and does not replace the policy document itself or your licensed intermediary."
                             )}
                         </p>

@@ -142,6 +142,8 @@ describe('double-wrapped {el,en} objects can never reach the prompt or the cache
         })
         const out = await batchTranslateToEnglish(['', 'πραγματικό κείμενο'])
         expect(out).toEqual(['', 'Only real text'])
+        // Finish this case's fire-and-forget write before the next case clears the cache.
+        await vi.waitFor(() => expect(dbRows.size).toBe(1))
         const prompt: string = generateObjectMock.mock.calls[0][0].prompt
         expect(prompt).toContain('1 Greek insurance texts')
         expect(prompt).not.toContain('[object Object]')

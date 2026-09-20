@@ -1,5 +1,6 @@
 "use client"
 
+import "@/components/landing/product-stage.css"
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -255,7 +256,7 @@ export default function PricingPage({
                         <div
                             role="group"
                             aria-label={labels.audienceGroup[language]}
-                            className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900"
+                            className="pw-pricing-selector"
                         >
                             <button
                                 type="button"
@@ -263,7 +264,7 @@ export default function PricingPage({
                                 onClick={() => setAudience("policyholder")}
                                 className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
                                     audience === "policyholder"
-                                        ? "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                        ? "text-white"
                                         : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                                 }`}
                             >
@@ -275,7 +276,7 @@ export default function PricingPage({
                                 onClick={() => setAudience("agent")}
                                 className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
                                     audience === "agent"
-                                        ? "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                        ? "text-white"
                                         : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                                 }`}
                             >
@@ -341,7 +342,7 @@ export default function PricingPage({
                         <div
                             role="group"
                             aria-label={labels.billingGroup[language]}
-                            className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900"
+                            className="pw-pricing-selector"
                         >
                             <button
                                 type="button"
@@ -349,7 +350,7 @@ export default function PricingPage({
                                 onClick={() => setBillingPeriod("monthly")}
                                 className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
                                     billingPeriod === "monthly"
-                                        ? "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                        ? "text-white"
                                         : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                                 }`}
                             >
@@ -361,7 +362,7 @@ export default function PricingPage({
                                 onClick={() => setBillingPeriod("annual")}
                                 className={`relative inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
                                     billingPeriod === "annual"
-                                        ? "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                        ? "text-white"
                                         : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                                 }`}
                             >

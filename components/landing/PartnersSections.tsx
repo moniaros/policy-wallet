@@ -27,7 +27,7 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
         {
             title: ["Συγκατάθεση πρώτα", "Consent-first ingestion"],
             body: [
-                "Ο πελάτης ανεβάζει ή εξουσιοδοτεί· κάθε έγγραφο έχει τη δική του, ανακλητή συγκατάθεση. Χωρίς αυτήν, τίποτα δεν διαβάζεται και τίποτα δεν κοινοποιείται.",
+                "Ο πελάτης ανεβάζει το έγγραφο ή δίνει άδεια για αυτό. Δίνει τη συγκατάθεσή του για κάθε έγγραφο και μπορεί να την πάρει πίσω. Χωρίς αυτήν, το έγγραφο δεν διαβάζεται ούτε κοινοποιείται.",
                 "The customer uploads or authorises; every document carries its own revocable consent. Without it, nothing is read and nothing is shared.",
             ],
         },
@@ -65,7 +65,7 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
         {
             title: ["GDPR — άρθρο 9", "GDPR — Article 9"],
             body: [
-                "Τα δεδομένα υγείας είναι ειδικής κατηγορίας: η ανάλυση τρέχει μόνο με ρητή, χωριστή και ανακλητή συγκατάθεση, ανά πρόσωπο και ανά έγγραφο. Η κατάσταση συγκατάθεσης είναι ελέγξιμη.",
+                "Τα στοιχεία υγείας χρειάζονται ιδιαίτερη προστασία. Για να αναλυθούν, κάθε πρόσωπο δίνει ξεχωριστή, ρητή συγκατάθεση για κάθε έγγραφο. Μπορεί να την πάρει πίσω. Κρατάμε αρχείο της συγκατάθεσης, ώστε να μπορεί να ελεγχθεί.",
                 "Health data is special-category: analysis runs only on explicit, separate, revocable consent, per person and per document. Consent state is auditable.",
             ],
         },
@@ -93,7 +93,7 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
                         {t("Για τράπεζες και θεσμικούς συνεργάτες — πρώιμη διάθεση", "For banks and institutional partners — early access")}
                     </p>
                     <h1 className="mt-g-4 text-g-display-xl font-extrabold tracking-[-0.024em] text-fg-primary text-balance">
-                        {t("Κατανόηση καλύψεων, ενσωματωμένη.", "Coverage understanding, embedded.")}
+                        {t("Εξηγήστε τις καλύψεις μέσα από τη δική σας υπηρεσία.", "Explain coverage within your own service.")}
                     </h1>
                     <p className="mx-auto mt-g-5 max-w-[56ch] text-g-body-lg text-fg-secondary">
                         {t(

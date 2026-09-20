@@ -111,7 +111,7 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
         id: "home",
         title: { el: "Το σπίτι σας", en: "Your home" },
         intro: {
-            el: "Η κατοικία είναι ο μεγαλύτερος κίνδυνος των περισσότερων νοικοκυριών — και ο πιο παρεξηγημένος στην Ελλάδα.",
+            el: "Το πού μένετε βοηθά να βρούμε ποια θέματα ασφάλισης κατοικίας σας αφορούν.",
             en: "The home is most households' largest risk — and the most misunderstood one in Greece.",
         },
         questions: [

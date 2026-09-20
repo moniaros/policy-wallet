@@ -218,7 +218,7 @@ export const HERO_SUBHEAD: Bilingual = {
  * standalone and embedded.
  */
 export const NEUTRALITY_STATEMENT: Bilingual = {
-    el: "Καμία ασφαλιστική και καμία τράπεζα δεν μας πληρώνει για να σας προτείνουμε κάτι. Δεν παίρνουμε προμήθεια. Η ανάλυση είναι ίδια για κάθε ασφαλιστήριο, όποιος κι αν το εξέδωσε — και τίποτα από όσα ανεβάζετε δεν κοινοποιείται χωρίς τη δική σας, ξεχωριστή και ανακλητή συγκατάθεση.",
+    el: "Καμία ασφαλιστική και καμία τράπεζα δεν μας πληρώνει για να σας προτείνουμε κάτι. Δεν παίρνουμε προμήθεια. Η ανάλυση είναι ίδια για κάθε ασφαλιστήριο, όποιος κι αν το εξέδωσε — και τίποτα από όσα ανεβάζετε δεν κοινοποιείται χωρίς τη δική σας ξεχωριστή συγκατάθεση. Μπορείτε να την πάρετε πίσω.",
     en: "No insurer and no bank pays us to recommend anything. We take no commission. The analysis is the same for every policy, whoever issued it — and nothing you upload is shared without your separate, revocable consent.",
 }
 

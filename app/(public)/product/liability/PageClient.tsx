@@ -150,7 +150,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Μία κάλυψη αρκεί. Δύο είναι σπατάλη.", "One cover is enough. Two is a waste.")}
+                    {t("Δείτε πού οι καλύψεις σας συμπίπτουν.", "See where your cover overlaps.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ελέγξτε τι έχετε ήδη", "Check what you already have")}

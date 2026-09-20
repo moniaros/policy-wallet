@@ -122,7 +122,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                                 <ul className="space-y-4 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                                     <li>{t("Έκπτωση 20% για κατοικίες με φορολογητέα αξία έως €500.000 — 10% πάνω από αυτήν. Ισχύει από το 2025.", "A 20% discount for homes with taxable value up to €500,000 — 10% above that. In force from 2025.")}</li>
                                     <li>{t("Χρειάζονται και οι τρεις κίνδυνοι στο ίδιο ασφαλιστήριο: σεισμός, πυρκαγιά και πλημμύρα.", "All three perils must be on the same policy: earthquake, fire and flood.")}</li>
-                                    <li>{t("Το κεφάλαιο πρέπει να καλύπτει όλη την αξία του κτίσματος σε βάση ανακατασκευής — ο νόμος δεν τη δέχεται κάτω από €1.000 ανά τετραγωνικό.", "The sum insured must cover the building's whole value on a reconstruction basis — the law floors it at €1,000 per square metre.")}</li>
+                                    <li>{t("Το ποσό ασφάλισης πρέπει να καλύπτει την αξία ανακατασκευής του κτιρίου. Ελέγξτε την ελάχιστη αξία ανά τετραγωνικό στις οδηγίες της ΑΑΔΕ για το έτος της αίτησής σας.", "The insured amount must cover the building’s rebuild value. Check AADE’s minimum value per square metre for your application year.")}</li>
                                     <li>{t("Ελάχιστη διάρκεια ασφάλισης: τρεις μήνες μέσα στο έτος, με αναλογική έκπτωση.", "Minimum insured period: three months in the year, with the discount pro-rated.")}</li>
                                 </ul>
                                 <p className="mt-6 text-body-sm text-[#5B6A7A] dark:text-slate-400">

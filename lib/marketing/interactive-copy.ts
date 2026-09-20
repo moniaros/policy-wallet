@@ -1,0 +1,16 @@
+export const interactiveCopy = {
+    overview: { el: "Επισκόπηση", en: "Overview" },
+    wallet: { el: "Ασφαλιστήρια", en: "Policies" },
+    coverage: { el: "Καλύψεις", en: "Coverage" },
+    views: { el: "Εξερευνήστε την εφαρμογή", en: "Explore the app" },
+    document: { el: "Το έγγραφο", en: "The document" },
+    information: { el: "Με απλά λόγια", en: "In plain words" },
+    findings: { el: "Τι χρειάζεται προσοχή", en: "What needs attention" },
+    search: { el: "Αναζήτηση στους οδηγούς", en: "Search the guides" },
+    searchHint: { el: "π.χ. κατοικία, απαλλαγή, ανανέωση", en: "e.g. home, deductible, renewal" },
+    reset: { el: "Καθαρισμός", en: "Clear search" },
+    noResults: { el: "Δεν βρέθηκε οδηγός. Δοκιμάστε άλλη λέξη ή καθαρίστε την αναζήτηση.", en: "No guides found. Try another word or clear the search." },
+    results: { el: "Οδηγοί που βρέθηκαν", en: "Guides found" },
+    sample: { el: "Δείγμα ασφαλιστηρίου", en: "Sample policy" },
+    sampleNote: { el: "Παράδειγμα για να δείτε πώς λειτουργεί. Δεν είναι το δικό σας ασφαλιστήριο.", en: "An example showing how it works. This is not your policy." },
+} as const

@@ -53,8 +53,8 @@ describe("Goal 7 — methodology-numbers-from-catalogue", () => {
     })
     it("capability claims match the code: rules decide, the AI has no verdict field, severity renders nowhere, no score", () => {
         const el = methodologySections("el").flatMap((s) => s.body.map((b) => b.el)).join(" ")
-        expect(el).toMatch(/το αποφασίζει ένας κανόνας/)
-        expect(el).toMatch(/δεν έχει καν τέτοιο πεδίο/)
+        expect(el).toMatch(/Οι απαντήσεις προκύπτουν από κανόνες που έχουμε ορίσει, όχι από γνώμη της τεχνητής νοημοσύνης/)
+        expect(el).toMatch(/Δεν αποφασίζει αν υπάρχει κενό κάλυψης ούτε πόσο σοβαρό είναι/)
         expect(el).toMatch(/Δεν δίνουμε βαθμολογία προστασίας/)
         expect(readFileSync("lib/services/ai/extraction-schema.ts", "utf8")).not.toMatch(/isDetected/)
         expect(readFileSync("lib/gaps/provenance.ts", "utf8")).toMatch(/GAP_PROVENANCE/)

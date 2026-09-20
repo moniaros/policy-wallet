@@ -29,7 +29,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
                     <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ασφάλιση έργων τέχνης & τιμαλφών", "Fine art & valuables insurance")}
+                        {t("Ασφάλιση έργων τέχνης και πολύτιμων αντικειμένων", "Fine art & valuables insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
                         {t("Ό,τι δεν αντικαθίσταται, ασφαλίζεται με όνομα και αξία.", "What can't be replaced is insured by name and value.")}
@@ -62,7 +62,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κατάσταση αντικειμένων & αξίες", "Schedule of items & values")}</h3>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Λίστα αντικειμένων και αξίες", "Schedule of items & values")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Δείτε κάθε ασφαλισμένο έργο με τη συμφωνημένη αξία του και το συνολικό όριο — όπως ακριβώς τα γράφει το ασφαλιστήριο.", "See every insured piece with its agreed value and the overall limit — exactly as the policy states them.")}</p>
                                 </div>
                             </li>

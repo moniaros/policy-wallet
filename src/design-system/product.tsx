@@ -102,9 +102,19 @@ export function DeviceFrame({
     className,
     width = 248,
     padded = true,
+    autoplay = true,
+    selectedIndex,
+    onSelect,
+    showControls = true,
+    controlsLabel = "Οθόνες εφαρμογής",
 }: {
     /** `content` may be a function of `active`, so a screen can play its own entrance when it becomes the live one. */
     screens: { id: string; label: string; content: ReactNode | ((active: boolean) => ReactNode) }[]
+    autoplay?: boolean
+    selectedIndex?: number
+    onSelect?: (index: number) => void
+    showControls?: boolean
+    controlsLabel?: string
     interval?: number
     className?: string
     /** Outer width in px. The hero shows REAL app screens (390px layouts scaled down), which need a wider frame to stay legible. */
@@ -112,7 +122,8 @@ export function DeviceFrame({
     /** False when a screen brings its own layout edge to edge (a real app screen). */
     padded?: boolean
 }) {
-    const [index, setIndex] = useState(0)
+    const [internalIndex, setIndex] = useState(0)
+    const index = Math.max(0, Math.min(selectedIndex ?? internalIndex, screens.length - 1))
     const [reduced, setReduced] = useState(false)
     const [inView, setInView] = useState(true)
     const hold = useRef(false)
@@ -128,12 +139,12 @@ export function DeviceFrame({
     }, [])
 
     useEffect(() => {
-        if (reduced || !inView) return
+        if (!autoplay || selectedIndex !== undefined || reduced || !inView) return
         const t = window.setInterval(() => {
-            if (!hold.current) setIndex((i) => (i + 1) % screens.length)
+            if (!document.hidden && !hold.current) setIndex((i) => (i + 1) % screens.length)
         }, interval)
         return () => window.clearInterval(t)
-    }, [reduced, inView, interval, screens.length])
+    }, [autoplay, selectedIndex, reduced, inView, interval, screens.length])
 
     return (
         <div
@@ -150,6 +161,7 @@ export function DeviceFrame({
                         <div
                             key={s.id}
                             aria-hidden={i !== index}
+                            inert={i !== index}
                             // The outgoing screen leaves fast and the incoming one
                             // arrives on a short fade; a screen that knows it is
                             // active (a real app screen) pushes its own content in
@@ -167,20 +179,20 @@ export function DeviceFrame({
                     ))}
                 </div>
             </div>
-            <div role="tablist" aria-label="Οθόνες εφαρμογής" className="flex gap-g-1">
+            {showControls && <div role="group" aria-label={controlsLabel} className="flex gap-g-1">
                 {screens.map((s, i) => (
                     <button
                         key={s.id}
-                        role="tab"
-                        aria-selected={i === index}
-                        onClick={() => setIndex(i)}
+                        type="button"
+                        aria-pressed={i === index}
+                        onClick={() => { setIndex(i); onSelect?.(i) }}
                         className="grid size-11 place-items-center rounded-g-pill focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus"
                     >
                         <span className="sr-only">{s.label}</span>
                         <span aria-hidden className={cn("block h-2 rounded-g-pill transition-all duration-200 motion-reduce:transition-none", i === index ? "w-6 bg-fg-brand" : "w-2 bg-border-strong")} />
                     </button>
                 ))}
-            </div>
+            </div>}
         </div>
     )
 }

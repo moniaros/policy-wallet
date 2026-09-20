@@ -56,7 +56,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                             <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg flex justify-between border border-rose-100 dark:border-rose-800/40">
                                 <div>
                                     <p className="font-medium text-rose-900 dark:text-rose-200 text-sm flex items-center gap-2">
-                                        <ShieldAlert className="w-4 h-4" /> {t("Εξαιρούμενες παθήσεις", "Excluded conditions")}
+                                        <ShieldAlert className="w-4 h-4" /> {t("Παθήσεις που δεν καλύπτονται", "Excluded conditions")}
                                     </p>
                                     <p className="text-xs text-rose-700 dark:text-rose-200 mt-1">{t("- Δυσπλασία ισχίου (προϋπάρχουσα)", "- Hip dysplasia (pre-existing)")}</p>
                                 </div>
@@ -83,7 +83,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Ποιες παθήσεις εξαιρούνται", "Which conditions are excluded")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε συγκεντρωτικά ποιες γενετικές ή προϋπάρχουσες εξαιρέσεις βαραίνουν το ασφαλιστήριό σας.", "See in one place which genetic or pre-existing exclusions weigh on your policy.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε αν εξαιρούνται παθήσεις που κληρονομούνται ή υπήρχαν πριν αρχίσει η ασφάλιση.", "See in one place which genetic or pre-existing exclusions weigh on your policy.")}</p>
                                 </div>
                             </li>
                         </ul>

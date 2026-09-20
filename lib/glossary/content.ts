@@ -55,7 +55,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "An asfalistirio is the document that proves your insurance contract: coverages, exclusions, limits and dates. See what it contains and how to read it.",
         },
         shortDefinition: {
-            el: "Το ασφαλιστήριο (ή ασφαλιστήριο συμβόλαιο) είναι το έγγραφο που αποδεικνύει την ασφαλιστική σας σύμβαση. Το εκδίδει η ασφαλιστική εταιρεία και περιγράφει ποιους κινδύνους καλύπτει, με ποια όρια και απαλλαγές, τι εξαιρεί, καθώς και τη διάρκεια, το ασφάλιστρο και τα στοιχεία των συμβαλλομένων.",
+            el: "Το ασφαλιστήριο (ή ασφαλιστήριο συμβόλαιο) είναι το έγγραφο της ασφάλισής σας. Το εκδίδει η ασφαλιστική εταιρεία. Γράφει τι καλύπτει, τι δεν καλύπτει, μέχρι πόσο πληρώνει και ποιο μέρος πληρώνετε εσείς. Περιλαμβάνει επίσης το κόστος, τις ημερομηνίες και τα στοιχεία των προσώπων που αφορά.",
             en: "An asfalistirio (insurance policy) is the document that proves your insurance contract. The insurer issues it and it sets out which risks are covered, with what limits and deductibles, what is excluded, plus the duration, the premium and the details of the parties.",
         },
         body: [
@@ -103,7 +103,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
             { label: { el: "Ανάλυση ασφαλιστηρίου με AI", en: "AI policy analysis" }, href: "/product" },
         ],
-        dateModified: "2026-07-21",
+        dateModified: "2026-09-20",
     },
     {
         slug: "kalypsi",
@@ -238,7 +238,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "An exclusion is any case the policy expressly does not cover. It is the most common reason a claim is denied — see where to find exclusions in your policy.",
         },
         shortDefinition: {
-            el: "Εξαίρεση είναι κάθε περίπτωση, αιτία ή περιουσιακό στοιχείο που το ασφαλιστήριο ρητά δεν καλύπτει. Οι εξαιρέσεις ορίζουν τα όρια της κάλυψης εξίσου με τις ίδιες τις καλύψεις: μια ζημιά μπορεί να ανήκει σε καλυπτόμενο κίνδυνο και όμως να απορριφθεί επειδή εμπίπτει σε εξαίρεση.",
+            el: "Εξαίρεση είναι κάτι που το ασφαλιστήριο λέει ότι δεν καλύπτει. Μπορεί να αφορά ένα γεγονός, μια αιτία ή ένα αντικείμενο. Για παράδειγμα, μπορεί να καλύπτεται μια ζημιά γενικά, αλλά όχι όταν συμβεί για έναν λόγο που αναφέρεται στις εξαιρέσεις.",
             en: "An exclusion is any case, cause or asset that the policy expressly does not cover. Exclusions define the boundary of cover just as much as the covers themselves: a loss can fall under a covered risk and still be denied because it meets an exclusion.",
         },
         body: [
@@ -281,14 +281,14 @@ export const glossaryTerms: GlossaryTerm[] = [
             { label: { el: "Ασφαλιστήριο", en: "Insurance policy" }, href: "/lexiko/asfalistirio" },
             { label: { el: "Κενά κάλυψης", en: "Coverage gaps" }, href: "/guides/kena-kalypsis-ti-einai-pos-ta-vriskete" },
         ],
-        dateModified: "2026-07-21",
+        dateModified: "2026-09-20",
     },
     {
         slug: "asfalismeno-kefalaio",
         term: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured (asfalismeno kefalaio)" },
-        aliases: [{ el: "Ασφαλιζόμενο ποσό", en: "Insured amount" }],
+        aliases: [{ el: "Ασφαλιζόμενο ποσό", en: "Insured amount" }, { el: "Ασφαλιζόμενο κεφάλαιο", en: "Insured sum" }],
         metaTitle: {
-            el: "Τι είναι το ασφαλισμένο κεφάλαιο;",
+            el: "Τι είναι το ασφαλιζόμενο κεφάλαιο;",
             en: "What is the sum insured?",
         },
         metaDescription: {
@@ -316,6 +316,16 @@ export const glossaryTerms: GlossaryTerm[] = [
         faq: [
             {
                 question: {
+                    el: "Ασφαλιζόμενο κεφάλαιο και ασφάλιστρο είναι το ίδιο;",
+                    en: "Are the sum insured and the premium the same?",
+                },
+                answer: {
+                    el: "Όχι. Το ασφάλιστρο είναι το ποσό που πληρώνετε για την ασφάλιση. Το ασφαλιζόμενο κεφάλαιο είναι το ποσό που αναγράφεται για την κάλυψη. Η αποζημίωση εξαρτάται και από τους όρους, τις απαλλαγές και τα επιμέρους όρια· δεν είναι αυτόματη καταβολή ολόκληρου του κεφαλαίου.",
+                    en: "No. The premium is what you pay for insurance. The sum insured is the amount stated for the cover. A payout also depends on the terms, deductibles and sublimits; it is not an automatic payment of the full sum insured.",
+                },
+            },
+            {
+                question: {
                     el: "Το ασφαλισμένο κεφάλαιο είναι η αξία του σπιτιού μου;",
                     en: "Is the sum insured my home's value?",
                 },
@@ -339,7 +349,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             { label: { el: "Υπασφάλιση", en: "Underinsurance (ypasfalisi)" }, href: "/lexiko/ypasfalisi" },
             { label: { el: "Ασφάλεια κατοικίας", en: "Home insurance" }, href: "/product/property" },
         ],
-        dateModified: "2026-07-21",
+        dateModified: "2026-09-20",
     },
     {
         slug: "asfalistro",
@@ -673,7 +683,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "Surrender is ending a savings or pension policy early and getting back its value. See why the first years cost you more.",
         },
         shortDefinition: {
-            el: "Εξαγορά είναι η πρόωρη διακοπή ενός αποταμιευτικού ή συνταξιοδοτικού ασφαλιστηρίου, με επιστροφή της συσσωρευμένης αξίας του (αξία εξαγοράς). Τα πρώτα χρόνια η αξία εξαγοράς είναι συνήθως σημαντικά χαμηλότερη από τα καταβληθέντα ασφάλιστρα, λόγω εξόδων και ποινών· αυξάνεται όσο ωριμάζει το ασφαλιστήριο.",
+            el: "Εξαγορά σημαίνει ότι σταματάτε νωρίτερα ένα ασφαλιστήριο αποταμίευσης ή σύνταξης και παίρνετε το ποσό που προβλέπουν οι όροι του. Αυτό λέγεται «αξία εξαγοράς». Στα πρώτα χρόνια μπορεί να είναι πολύ μικρότερο από όσα πληρώσατε, επειδή αφαιρούνται έξοδα και χρεώσεις πρόωρης διακοπής.",
             en: "Surrender is ending a savings or pension policy early and receiving its accumulated value (the surrender value). In the early years the surrender value is usually well below the premiums paid, due to charges and penalties; it rises as the policy matures.",
         },
         body: [
@@ -683,8 +693,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο ζωής ή αποταμίευσης, αναζητήστε τον πίνακα αξιών εξαγοράς και τους όρους πρόωρης διακοπής. Το PolicyWallet εντοπίζει αναφορές σε αξία εξαγοράς και ημερομηνίες ωρίμανσης, ώστε να δείτε πότε το πρόγραμμα αρχίζει να σας συμφέρει.",
-            en: "In your own life or savings policy, look for the surrender-value table and the early-termination terms. PolicyWallet surfaces references to surrender value and maturity dates, so you can see when the plan starts working in your favour.",
+            el: "Στο ασφαλιστήριο ζωής ή αποταμίευσης, βρείτε τον πίνακα «αξιών εξαγοράς»: δείχνει τι ποσό παίρνετε αν σταματήσετε νωρίτερα. Διαβάστε και τους σχετικούς όρους. Το PolicyWallet εντοπίζει αυτά τα ποσά και τις ημερομηνίες, ώστε να τα συζητήσετε με τον ασφαλιστή σας.",
+            en: "In your life or savings policy, find the surrender-value table: it shows what you receive if you stop early. Read the terms too. PolicyWallet finds these amounts and dates so you can discuss them with your insurance advisor.",
         },
         faq: [
             {
@@ -702,7 +712,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             { label: { el: "Ασφάλεια ζωής", en: "Life insurance" }, href: "/product/life" },
             { label: { el: "Σύνταξη & αποταμίευση", en: "Pension & savings" }, href: "/product/pension" },
         ],
-        dateModified: "2026-07-21",
+        dateModified: "2026-09-20",
     },
     {
         slug: "ypoorio",
@@ -722,7 +732,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Το υποόριο είναι από τους πιο συχνούς λόγους που μια αποζημίωση βγαίνει μικρότερη από το αναμενόμενο. Δύο ασφαλιστήρια με το ίδιο «ασφαλισμένο κεφάλαιο» μπορεί να πληρώνουν πολύ διαφορετικά, αν το ένα έχει αυστηρά υποόρια ανά κατηγορία — π.χ. για κλοπή, για μετρητά, για ένα μεμονωμένο αντικείμενο ή, στην υγεία, ανά ημέρα νοσηλείας ή ανά πράξη. Το υποόριο δεν είναι εξαίρεση: η ζημιά καλύπτεται, αλλά μέχρι ένα χαμηλότερο ποσό.",
+                el: "Υποόριο είναι ένα μικρότερο όριο μέσα στη συνολική κάλυψη. Μπορεί να αφορά, για παράδειγμα, ένα αντικείμενο ή μία ημέρα νοσηλείας. Έτσι, δύο ασφαλιστήρια με το ίδιο συνολικό ποσό μπορεί να πληρώνουν διαφορετικά. Δεν είναι εξαίρεση: η ζημιά καλύπτεται, αλλά μέχρι το μικρότερο ποσό.",
                 en: "A sublimit is one of the most common reasons a payout comes out smaller than expected. Two policies with the same “sum insured” can pay very differently if one carries strict sublimits per category — for theft, for cash, for a single item, or, in health, per day of hospitalisation or per procedure. A sublimit is not an exclusion: the loss is covered, but only up to a lower amount.",
             },
         ],
@@ -757,7 +767,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
             { label: { el: "Εξαίρεση", en: "Exclusion" }, href: "/lexiko/exairesi" },
         ],
-        dateModified: "2026-07-25",
+        dateModified: "2026-09-20",
     },
     {
         slug: "symmetochi",
@@ -950,7 +960,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Η αρχή της αποζημίωσης εξηγεί γιατί η πληρωμή δεν ισούται πάντα με το ποσό που ζητάτε. Ο ασφαλιστής υπολογίζει την πραγματική σας ζημιά, αφαιρεί την απαλλαγή και τυχόν συμμετοχή, και εφαρμόζει τα όρια και υποόρια της κάλυψης. Αν είστε υπασφαλισμένος, μπορεί να μειωθεί κι άλλο αναλογικά.",
+                el: "Η αποζημίωση δεν είναι πάντα όλο το ποσό που ζητάτε. Η ασφαλιστική υπολογίζει τη ζημιά και εφαρμόζει τους όρους: τι πληρώνετε εσείς και μέχρι πόσο πληρώνει εκείνη. Αν το ασφαλισμένο ποσό είναι μικρότερο από την αξία του αντικειμένου, μπορεί να μειωθεί κι άλλο η πληρωμή.",
                 en: "The principle of indemnity explains why a payout does not always equal the amount you claim. The insurer works out your actual loss, subtracts the deductible and any co-payment, and applies the cover's limits and sublimits. If you are underinsured, it can be reduced further, proportionally.",
             },
             {
@@ -993,7 +1003,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                 href: "/guides/efarmoges-asfalistirion-apozimioseis",
             },
         ],
-        dateModified: "2026-07-26",
+        dateModified: "2026-09-20",
     },
     {
         slug: "axia-antikatastasis",
@@ -1118,7 +1128,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "Cancellation is deliberately ending a policy before its expiry. See when a penalty or premium refund applies, and how it differs from a lapse.",
         },
         shortDefinition: {
-            el: "Ακύρωση είναι ο σκόπιμος τερματισμός ενός ασφαλιστηρίου πριν από τη φυσιολογική του λήξη, από εσάς ή από την ασφαλιστική. Ανάλογα με τους όρους και τον χρόνο, μπορεί να συνεπάγεται ποινή ακύρωσης ή επιστροφή του μη δεδουλευμένου ασφαλίστρου. Διαφέρει από την εκπνοή, που προκύπτει από αδράνεια και όχι από απόφαση.",
+            el: "Ακύρωση σημαίνει ότι εσείς ή η ασφαλιστική σταματάτε το ασφαλιστήριο πριν λήξει. Οι όροι ορίζουν αν υπάρχει χρέωση ή αν επιστρέφονται χρήματα για το διάστημα που μένει. Διαφέρει από τη λήξη χωρίς ανανέωση: εδώ κάποιος αποφασίζει να το σταματήσει νωρίτερα.",
             en: "Cancellation is the deliberate ending of a policy before its normal expiry, by you or the insurer. Depending on the terms and the timing, it may carry a cancellation penalty or entitle you to a refund of the unused premium. It differs from a lapse, which happens through inaction rather than a decision.",
         },
         body: [
@@ -1162,7 +1172,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             { label: { el: "Ανανέωση", en: "Renewal" }, href: "/lexiko/ananeosi" },
             { label: { el: "Ασφάλιστρο", en: "Premium" }, href: "/lexiko/asfalistro" },
         ],
-        dateModified: "2026-07-26",
+        dateModified: "2026-09-20",
     },
     {
         // The category's named instrument. Weights and limits below are the
@@ -1239,7 +1249,7 @@ export const glossaryTerms: GlossaryTerm[] = [
             { label: { el: "Υπασφάλιση", en: "Underinsurance (ypasfalisi)" }, href: "/lexiko/ypasfalisi" },
             { label: { el: "Τι δεν είναι το PolicyWallet", en: "What PolicyWallet is not" }, href: "/compare" },
         ],
-        dateModified: "2026-08-06",
+        dateModified: "2026-09-20",
     },
 ]
 

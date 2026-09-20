@@ -105,14 +105,14 @@ export const guides: Guide[] = [
             en: "What your home policy needs for Greece's ENFIA property-tax discount: earthquake, fire and flood cover, minimum duration and how AADE gets the data.",
         },
         summary: {
-            el: "Αν η κατοικία σας είναι ασφαλισμένη και για τους τρεις κινδύνους — σεισμό, πυρκαγιά και πλημμύρα — δικαιούστε έκπτωση στον ΕΝΦΙΑ. Η έκπτωση ξεκίνησε στο 10% το 2022 και έχει αυξηθεί για κατοικίες με χαμηλότερη φορολογητέα αξία. Απαιτείται ελάχιστη διάρκεια ασφάλισης και επαρκές ασφαλιζόμενο κεφάλαιο· η ασφαλιστική σας εταιρεία διαβιβάζει τα στοιχεία στην ΑΑΔΕ.",
-            en: "If your home is insured against all three risks — earthquake, fire, and flood — you are entitled to an ENFIA property-tax discount. The discount started at 10% in 2022 and has since been increased for homes with lower taxable value. A minimum policy duration and adequate insured sum are required; your insurer reports the data to the Greek tax authority (AADE).",
+            el: "Η ασφάλιση κατοικίας μπορεί να μειώσει τον ΕΝΦΙΑ σας, αν πληροί τις προϋποθέσεις της ΑΑΔΕ. Χρειάζεται κάλυψη για σεισμό, πυρκαγιά και πλημμύρα, για το απαιτούμενο διάστημα και ποσό. Η ασφαλιστική στέλνει τα στοιχεία στην ΑΑΔΕ. Εσείς ελέγχετε την αίτηση και συνδέετε το ασφαλιστήριο με την κατοικία σας.",
+            en: "Home insurance may reduce your ENFIA property tax if it meets AADE’s conditions. You need earthquake, fire and flood cover for the required period and amount. Your insurer sends the details to AADE. You check the application and link the policy to your home.",
         },
         datePublished: "2026-07-07",
         // TODO(quarterly-review): ENFIA discount rates/thresholds change with
         // tax legislation — re-verify against aade.gr every quarter (next due
         // 2026-10-01) and bump dateModified ONLY when actually reviewed.
-        dateModified: "2026-07-07",
+        dateModified: "2026-09-20",
         readingMinutes: 6,
         related: [
             {
@@ -138,8 +138,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Η έκπτωση θεσπίστηκε με τον ν. 4916/2022 και εφαρμόζεται από τον ΕΝΦΙΑ του 2022. Για να τη δικαιούστε, το ασφαλιστήριο κατοικίας πρέπει να πληροί σωρευτικά συγκεκριμένες προϋποθέσεις:",
-                        en: "The discount was introduced by Law 4916/2022 and applies from the 2022 ENFIA onward. To qualify, your home policy must cumulatively meet specific conditions:",
+                        el: "Για την έκπτωση δεν αρκεί να έχετε ασφάλεια κατοικίας. Πρέπει να ισχύουν μαζί οι παρακάτω προϋποθέσεις. Ελέγξτε και τις οδηγίες της ΑΑΔΕ για το έτος της αίτησής σας:",
+                        en: "Having home insurance alone is not enough for the reduction. The conditions below must all be met. Also check AADE’s instructions for your application year:",
                     },
                 ],
                 bullets: [
@@ -152,8 +152,8 @@ export const guides: Guide[] = [
                         en: "Minimum insured duration of three months within the previous year — for less than a full year, the discount is prorated.",
                     },
                     {
-                        el: "Το ασφαλιζόμενο κεφάλαιο πρέπει να καλύπτει το σύνολο της αξίας του ακινήτου, υπολογισμένης ως αξία ανακατασκευής του κτίσματος — και ο νόμος ορίζει ότι αυτή δεν υπολογίζεται κάτω από 1.000 ευρώ ανά τετραγωνικό μέτρο (ν. 5162/2024, άρθρο 10).",
-                        en: "The insured sum must cover the whole value of the property, calculated as the building's reconstruction value — and the law floors that calculation at €1,000 per square metre (Law 5162/2024, art. 10).",
+                        el: "Το ποσό ασφάλισης πρέπει να καλύπτει όλη την αξία ανακατασκευής: πόσο κοστίζει να ξαναχτιστεί το κτίριο. Η ΑΑΔΕ ορίζει ελάχιστη αξία ανά τετραγωνικό για κάθε έτος. Ελέγξτε το ποσό που ισχύει για τη δική σας αίτηση.",
+                        en: "The sum insured must cover the full rebuild value: what it costs to rebuild the building. AADE sets a minimum value per square metre for each year. Check the amount that applies to your application.",
                     },
                 ],
             },
@@ -164,8 +164,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Για τον ΕΝΦΙΑ του 2022 και του 2023 η έκπτωση ήταν 10% για πλήρες έτος ασφάλισης. Από τον ΕΝΦΙΑ του 2024 η έκπτωση διπλασιάστηκε σε 20% για κατοικίες με φορολογητέα αξία έως 500.000 ευρώ που είναι ασφαλισμένες για ολόκληρο το έτος· για μεγαλύτερες αξίες παραμένει το 10%. Επειδή οι λεπτομέρειες ενδέχεται να αλλάζουν με νέες αποφάσεις, ελέγχετε πάντα την τρέχουσα ανακοίνωση της ΑΑΔΕ πριν από την εκκαθάριση.",
-                        en: "For the 2022 and 2023 ENFIA the discount was 10% for a full year of coverage. From the 2024 ENFIA the discount was doubled to 20% for homes with a taxable value up to €500,000 insured for the full year; above that, 10% still applies. Because the details can change with new decisions, always check the current AADE announcement before assessment time.",
+                        el: "Για τον ΕΝΦΙΑ του 2026, η μείωση είναι 20% για κατοικίες με φορολογητέα αξία έως €500.000 και 10% πάνω από αυτό το ποσό. Χρειάζεται ασφάλιση για ολόκληρο το έτος. Για μικρότερο διάστημα, τουλάχιστον τριών μηνών, η μείωση είναι ανάλογη. Δείτε τις ισχύουσες οδηγίες της ΑΑΔΕ πριν κάνετε αίτηση.",
+                        en: "For 2026 ENFIA, the reduction is 20% for homes with a taxable value up to €500,000 and 10% above that amount. Full-year insurance is required. For a shorter period of at least three months, the reduction is proportional. Check AADE’s current instructions before applying.",
                     },
                 ],
             },
@@ -228,6 +228,10 @@ export const guides: Guide[] = [
         ],
         sources: [
             {
+                label: { el: "ΑΑΔΕ — οδηγίες μείωσης ΕΝΦΙΑ για το 2026", en: "AADE — ENFIA reduction guidance for 2026" },
+                url: "https://aade.gr/sites/default/files/2026-01/dt_14.01.2026_0.pdf",
+            },
+            {
                 // The statutory claim's PRIMARY source: ν. 5162/2024 άρθρο 10
                 // (ΦΕΚ Α΄ 198/05.12.2024), amending παρ. 7Ζ άρθρου 3 ν. 4223/2013 —
                 // the ΑΑΔΕ re-host of the signed ΦΕΚ PDF, verified against the
@@ -271,7 +275,7 @@ export const guides: Guide[] = [
             en: "A coverage gap is the difference between what you think your policy covers and what it actually covers. It hides in exclusions, insufficient insured sums, and risks that were never added. You find it by carefully reading the terms — or automatically, with an analysis tool like PolicyWallet, on the Family plan.",
         },
         datePublished: "2026-07-07",
-        dateModified: "2026-07-07",
+        dateModified: "2026-09-20",
         readingMinutes: 7,
         sections: [
             {
@@ -315,8 +319,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Αν το σπίτι σας κοστίζει 200.000 € να ξαναχτιστεί αλλά το έχετε ασφαλίσει για 100.000 €, δεν θα πάρετε 100.000 € σε ολική ζημιά — ο «αναλογικός κανόνας» (pro-rata) σημαίνει ότι κάθε αποζημίωση, ακόμη και μερική, μειώνεται στο ποσοστό της υπασφάλισης. Ζημιά 20.000 € αποζημιώνεται με 10.000 €. Γι' αυτό ο έλεγχος του κεφαλαίου ανακατασκευής είναι το πιο σημαντικό, και πιο παραμελημένο, σημείο κάθε ανανέωσης.",
-                        en: "If your home costs €200,000 to rebuild but you insured it for €100,000, you will not receive €100,000 on a total loss — the average rule (pro-rata) means every claim, even a partial one, is reduced by the underinsurance ratio. A €20,000 loss pays out €10,000. That is why checking the reconstruction sum is the most important — and most neglected — step of every renewal.",
+                        el: "Παράδειγμα: ένα σπίτι κοστίζει €200.000 να ξαναχτιστεί, αλλά είναι ασφαλισμένο για €100.000, δηλαδή για το μισό ποσό. Αν εφαρμόζεται ο αναλογικός κανόνας, μια ζημιά €20.000 μπορεί να δώσει αποζημίωση €10.000, πριν από άλλες αφαιρέσεις. Αυτό λέγεται υπασφάλιση. Ελέγξτε αν ο κανόνας ισχύει στη δική σας κάλυψη και συζητήστε το ποσό με τον ασφαλιστή σας.",
+                        en: "Example: a home costs €200,000 to rebuild but is insured for €100,000, half that amount. If the average clause applies, a €20,000 loss may result in a €10,000 payout before other deductions. This is underinsurance. Check whether the clause applies to your cover and discuss the insured amount with your insurance advisor.",
                     },
                 ],
             },
@@ -421,7 +425,7 @@ export const guides: Guide[] = [
             en: "Before every policy renewal, check seven things: what changed in your life, whether insured sums match today's values, the deductible level, the exclusions, the premium increase, at least one alternative quote, and continuity of coverage with no gap days. Start 30 days before expiry.",
         },
         datePublished: "2026-07-07",
-        dateModified: "2026-07-07",
+        dateModified: "2026-09-20",
         readingMinutes: 5,
         // HowTo structured data for the 7-step checklist (rendered by the
         // guide route when howToSteps is present). Every name and text is a
@@ -580,7 +584,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε προ τετελεσμένου με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των ασφαλιστηρίων σας σε ένα σημείο και — από το πλάνο Plus — σας ειδοποιεί εγκαίρως, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
+                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε χωρίς χρόνο να αποφασίσετε με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των ασφαλιστηρίων σας σε ένα σημείο και — από το πλάνο Plus — σας ειδοποιεί εγκαίρως, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
                         // The Greek says «από το πλάνο Plus»; the English had
                         // dropped it, so it promised renewal alerts on a page
                         // whose CTA is "Start free with one policy". Free has
@@ -2881,11 +2885,11 @@ export const guides: Guide[] = [
             en: "What Greek home policy wordings require you to declare at inception and mid-term, what they say about unoccupied premises, and where to find both in your text.",
         },
         summary: {
-            el: "Οι δημοσιευμένοι όροι κατοικίας ζητούν, κατά τη σύναψη, δήλωση κάθε στοιχείου αντικειμενικά ουσιώδους για την εκτίμηση του κινδύνου, και στη διάρκεια δήλωση μέσα σε δεκατέσσερις ημέρες για ό,τι επιτείνει σημαντικά τον κίνδυνο. Αν η βραχυχρόνια μίσθωση εμπίπτει σε αυτά, δεν το απαντά ένας οδηγός: το κριτήριο το ορίζουν οι όροι και το εφαρμόζει η εταιρεία σας. Εδώ είναι τι λέει το κείμενο και πού το βρίσκετε.",
-            en: "Published Greek home wordings require, at inception, disclosure of everything objectively material to the assessment of the risk, and mid-term a declaration within fourteen days of anything that materially aggravates it. Whether short-term letting falls inside that is not something a guide can answer: the wording sets the criterion and your insurer applies it. Here is what the text says and where to find it.",
+            el: "Νοικιάζετε το σπίτι για λίγες ημέρες κάθε φορά; Δείτε τι ζητά η ασφάλειά σας να δηλώσετε όταν ξεκινά η κάλυψη και όταν αλλάζει η χρήση του σπιτιού. Οι όροι που διαβάσαμε δίνουν προθεσμία δεκατεσσάρων ημερών για αλλαγές που αυξάνουν σημαντικά τον κίνδυνο. Το αν η δική σας μίσθωση θεωρείται τέτοια αλλαγή εξαρτάται από το ασφαλιστήριό σας και την ασφαλιστική εταιρεία. Ο οδηγός δείχνει πού να ψάξετε.",
+            en: "Do you rent out your home for a few days at a time? Check what your insurance asks you to declare when cover starts and when the use of your home changes. The terms we read allow fourteen days to report changes that significantly increase the risk. Whether your rental counts as such a change depends on your policy and your insurer. This guide shows you where to look.",
         },
         datePublished: "2026-08-26",
-        dateModified: "2026-08-26",
+        dateModified: "2026-09-20",
         readingMinutes: 7,
         related: [
             {
@@ -3155,11 +3159,11 @@ export const guides: Guide[] = [
             en: "Which perils the Greek crop insurance regulation covers, how the compensation figure is worked out and what stays outside it, cited to the government gazette.",
         },
         summary: {
-            el: "Η υποχρεωτική ασφάλιση του ΕΛ.Γ.Α. καλύπτει κλειστό κατάλογο ζημιογόνων αιτίων και αφορά την παραγωγή της χρονιάς, όχι το φυτικό κεφάλαιο. Ζημιά έως και είκοσι τοις εκατό της παραγωγής του αγροτεμαχίου κατά κανόνα δεν αποζημιώνεται· πάνω από αυτό, ο Κανονισμός δίνει ογδόντα οκτώ τοις εκατό του πάνω από δεκαπέντε τοις εκατό ποσοστού. Η ασφαλιζόμενη αξία ορίζεται διοικητικά. Εδώ είναι πώς προκύπτει το ποσό.",
-            en: "Greece's compulsory crop insurance scheme covers a closed list of causes and insures the season's production, not the plant capital. A loss of up to twenty per cent of the parcel's production is, as a rule, not compensated; above that, the regulation pays eighty-eight per cent of the portion above fifteen per cent. The insured value is set administratively. Here is how the figure is arrived at.",
+            el: "Η ασφάλιση του ΕΛ.Γ.Α. καλύπτει συγκεκριμένες αιτίες ζημιάς στην παραγωγή της χρονιάς. Δεν καλύπτει γενικά τα ίδια τα δέντρα ή τα φυτά· ο Κανονισμός αναφέρει εξαίρεση για τα σπαράγγια. Το ποσό που θα πάρετε μπορεί να είναι μικρότερο από τη ζημιά. Υπολογίζεται με κανόνες και τιμές που ορίζει το κράτος, όχι μόνο με το κόστος σας. Παρακάτω εξηγούμε τα βήματα με ένα παράδειγμα.",
+            en: "ELGA insurance covers specific causes of damage to the current year’s crop. It does not generally cover the trees or plants themselves; the Regulation makes an exception for asparagus. The payment may be less than your loss. It follows official rules and values, rather than just your own costs. Below, we explain the steps with an example.",
         },
         datePublished: "2026-08-26",
-        dateModified: "2026-08-26",
+        dateModified: "2026-09-20",
         readingMinutes: 7,
         related: [
             {

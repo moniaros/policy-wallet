@@ -16,7 +16,7 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
             icon: Building2,
             titleEl: "Επαγγελματική Στέγη",
             titleEn: "Business Property",
-            descEl: "Κτίριο και βελτιώσεις: πυρκαγιά, σεισμός, φυσικά φαινόμενα. Το θεμέλιο κάθε πολυασφαλιστηρίου.",
+            descEl: "Κτίριο και βελτιώσεις: πυρκαγιά, σεισμός, φυσικά φαινόμενα. Μέρος ενός προγράμματος που συνδυάζει πολλές καλύψεις.",
             descEn: "Building and improvements: fire, earthquake, natural events. The foundation of every multi-risk policy.",
         },
         {
@@ -66,10 +66,10 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
                         {t("Ασφάλεια επιχείρησης", "Business insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Έξι κίνδυνοι, ένα πολυασφαλιστήριο, μηδέν ασάφεια.", "Six risks, one multi-risk policy, zero ambiguity.")}
+                        {t("Τι καλύπτει η ασφάλεια της επιχείρησής σας;", "What does your business insurance cover?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Το πολυασφαλιστήριο μιας μικρής επιχείρησης καλύπτει στέγη, εξοπλισμό, εμπορεύματα, διακοπή εργασιών και ευθύνες — αλλά όχι πάντα όλα μαζί. Σας δείχνουμε ποια σκέλη έχετε αγοράσει και ποια λείπουν.", "A small business multi-risk policy covers premises, equipment, stock, business interruption and liabilities — but not always all of them together. We show you which sections you bought and which are missing.")}
+                        {t("Ένα πρόγραμμα για μικρές επιχειρήσεις μπορεί να συνδυάζει πολλές καλύψεις: κτίριο, εξοπλισμό, εμπορεύματα, έξοδα αν σταματήσει η δουλειά και ζημιές σε άλλους. Δείτε ποιες περιλαμβάνει το δικό σας.", "A small business multi-risk policy covers premises, equipment, stock, business interruption and liabilities — but not always all of them together. We show you which sections you bought and which are missing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -87,10 +87,10 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Τα σκέλη που πρέπει να ξέρει κάθε ΜμΕ.", "The sections every SME should know.")}
+                            {t("Τι να κοιτάξετε στην ασφάλεια της επιχείρησής σας.", "The sections every SME should know.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Ανεβάστε το ασφαλιστήριο της επιχείρησης και δείτε το χαρτογραφημένο σε αυτές τις κατηγορίες — με τα όρια, τις απαλλαγές και τα κενά ανά σκέλος.", "Upload your business policy and see it mapped across these categories — with limits, deductibles and gaps per section.")}
+                            {t("Ανεβάστε το ασφαλιστήριο της επιχείρησης. Δείτε τι καλύπτει κάθε κατηγορία, μέχρι ποιο ποσό και ποιο μέρος της ζημιάς πληρώνετε εσείς.", "Upload your business policy and see it mapped across these categories — with limits, deductibles and gaps per section.")}
                         </p>
                     </div>
 
@@ -121,7 +121,7 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
                     {t("Η επιχείρησή σας δεν χωράει «μάλλον καλυπτόμαστε».", "Your business has no room for “we're probably covered”.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
-                    {t("Χαρτογραφήστε τις καλύψεις σας", "Map your coverage")}
+                    {t("Δείτε τις καλύψεις σας", "Map your coverage")}
                 </Link>
             </section>
 

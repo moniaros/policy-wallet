@@ -99,7 +99,7 @@ export default function CompanyPage() {
                             </h3>
                             <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Σας δείχνουμε τι καλύπτεστε, τι εξαιρείται και τι μπορείτε να κάνετε. Χωρίς αστερίσκους.",
+                                    "Σας δείχνουμε τι καλύπτεται και τι όχι, με τους όρους και τα όρια που γράφει το ασφαλιστήριό σας.",
                                     "We show you what you are covered for, what is excluded, and what you can do about it. No asterisks."
                                 )}
                             </p>

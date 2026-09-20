@@ -300,7 +300,7 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                 <div className="mx-auto max-w-[640px]">
                     <h2 className="mb-6 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white text-balance">
                         {t(
-                            "Ο πίνακας λέει μία ιστορία. Το δικό σας ασφαλιστήριο λέει τη δική σας.",
+                            "Δείτε τι λέει το δικό σας ασφαλιστήριο.",
                             "The table tells one story. Your own policy tells yours.",
                         )}
                     </h2>

@@ -278,13 +278,13 @@ export default function AgentSolutionsPage() {
                     </h2>
                     <p className="mx-auto mb-4 max-w-[720px] text-center text-body text-[#475569] dark:text-slate-300">
                         {t(
-                            "Γεωπολιτική, κλιματική αλλαγή, εξαρτήσεις εφοδιαστικής αλυσίδας και νέες τεχνολογίες κάνουν τις εκθέσεις σε κίνδυνο όλο και πιο αλληλένδετες.",
+                            "Πόλεμοι, ακραίος καιρός ή ένα πρόβλημα σε προμηθευτή μπορούν να επηρεάσουν την ίδια επιχείρηση. Οι κίνδυνοι συχνά συνδέονται μεταξύ τους.",
                             "Geopolitics, climate change, supply chain dependencies and emerging technologies are making exposures increasingly interconnected."
                         )}
                     </p>
                     <p className="mx-auto mb-10 max-w-[720px] text-center text-body font-semibold text-[#0F172A] dark:text-white">
                         {t(
-                            "Η ανθεκτικότητα δεν χτίζεται μόνο με ασφαλιστική ικανότητα. Χτίζεται με διάλογο, διαφάνεια και συνεργασία ανάμεσα στον πελάτη, τον διαμεσολαβητή και την ασφαλιστική.",
+                            "Για να προετοιμαστεί μια επιχείρηση, χρειάζεται και συζήτηση. Ο πελάτης, ο ασφαλιστής και η ασφαλιστική πρέπει να ξέρουν τι καλύπτεται και τι μένει έξω.",
                             "Resilience is not built on capacity alone. It is built on dialogue, transparency and collaboration between the client, the intermediary and the insurer."
                         )}
                     </p>

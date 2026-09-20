@@ -93,7 +93,7 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Τι καλύπτει η κυβερνοασφάλεια;", en: "What does cyber insurance cover?" },
             a: {
-                el: "Συνήθως ζημιές από επιθέσεις όπως ransomware, την παραβίαση δεδομένων, τη διακοπή της λειτουργίας σας και αξιώσεις τρίτων αν διαρρεύσουν δικά τους δεδομένα — μέχρι τα όρια και με τις εξαιρέσεις του κάθε ασφαλιστηρίου.",
+                el: "Μπορεί να καλύπτει ζημιές από ψηφιακές επιθέσεις: κλείδωμα αρχείων με απαίτηση λύτρων, κλοπή δεδομένων ή διακοπή της δουλειάς. Μπορεί επίσης να καλύπτει αποζημιώσεις που ζητούν άλλοι για διαρροή των στοιχείων τους. Ισχύουν τα όρια και οι εξαιρέσεις του προγράμματος.",
                 en: "Usually losses from attacks such as ransomware, data breaches, the interruption of your operations, and third-party claims if their data leaks — up to each policy's limits and subject to its exclusions.",
             },
         },
@@ -185,7 +185,7 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Τι είναι το ομαδικό ασφαλιστήριο ζωής;", en: "What is a group life policy?" },
             a: {
-                el: "Κεφάλαιο ζωής και ανικανότητας που παρέχει ο εργοδότης για κάθε εργαζόμενο. Συμπληρώνει το πακέτο παροχών δίπλα στην ομαδική υγεία και σύνταξη.",
+                el: "Ασφάλιση που παρέχει ο εργοδότης και προβλέπει ένα ποσό σε περίπτωση θανάτου ή αδυναμίας για εργασία, σύμφωνα με τους όρους της. Είναι διαφορετική από την ομαδική ασφάλιση υγείας ή σύνταξης.",
                 en: "A life and disability benefit an employer provides for every employee. It completes the benefits package alongside group health and pension.",
             },
         },

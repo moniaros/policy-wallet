@@ -18,5 +18,70 @@
     "locator": "inline:lib/services/protection-profile/derive-priorities.ts",
     "text": "Μας είπατε ότι οδηγείτε.",
     "reason": "D-V10 register flip. «Είπες ότι οδηγείς.» (18) → «Μας είπατε ότι οδηγείτε.» (24): the growth IS the polite plural's own length, the same shape D-V01 allows for a term lock. The wording is not free either — it is copied verbatim from `protection.attention.reasons`, so the onboarding and /protection tables now agree character for character."
+  },
+  {
+    "locator": "inline:app/(public)/trust/TrustSections.tsx",
+    "text": "Κατεβάζετε αντίγραφο των δεδομένων σας όποτε θέλετε, μόνοι σας, χωρίς να το ζητήσετε από κανέναν. Παίρνετε αρχείο με τα στοιχεία σας οργανωμένα, όχι εικόνες της οθόνης.",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "inline:app/(public)/trust/TrustSections.tsx",
+    "text": "Η ανάλυση ξεκινά μόνο αν συμφωνήσετε ξεκάθαρα. Χωρίς τη συγκατάθεσή σας, δεν στέλνουμε το έγγραφο στην εταιρεία που παρέχει την τεχνητή νοημοσύνη.",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "inline:lib/marketing/broker-band.ts",
+    "text": "Οι επισκέψεις και εξετάσεις εκτός νοσηλείας δεν καλύπτονται. Θέμα για το επόμενο ραντεβού.",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "inline:lib/pricing/public-pricing-content.ts",
+    "text": "Ερωτήσεις στην τεχνητή νοημοσύνη",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "inline:lib/product/lob-faqs.ts",
+    "text": "Μπορεί να καλύπτει ζημιές από ψηφιακές επιθέσεις: κλείδωμα αρχείων με απαίτηση λύτρων, κλοπή δεδομένων ή διακοπή της δουλειάς. Μπορεί επίσης να καλύπτει αποζημιώσεις που ζητούν άλλοι για διαρροή των στοιχείων τους. Ισχύουν τα όρια και οι εξαιρέσεις του προγράμματος.",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "inline:lib/product/lob-faqs.ts",
+    "text": "Ασφάλιση που παρέχει ο εργοδότης και προβλέπει ένα ποσό σε περίπτωση θανάτου ή αδυναμίας για εργασία, σύμφωνα με τους όρους της. Είναι διαφορετική από την ομαδική ασφάλιση υγείας ή σύνταξης.",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/fine-art/PageClient.tsx",
+    "text": "Ασφάλιση έργων τέχνης και πολύτιμων αντικειμένων",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/group-life/PageClient.tsx",
+    "text": "Για υπεύθυνους προσωπικού και επιχειρηματίες",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/pension/PageClient.tsx",
+    "text": "Όλα τα χρήματα μαζί ή μηνιαία σύνταξη;",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/pet/PageClient.tsx",
+    "text": "Παθήσεις που δεν καλύπτονται",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/property/PageClient.tsx",
+    "text": "Το ποσό ασφάλισης πρέπει να καλύπτει την αξία ανακατασκευής του κτιρίου. Ελέγξτε την ελάχιστη αξία ανά τετραγωνικό στις οδηγίες της ΑΑΔΕ για το έτος της αίτησής σας.",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/travel/PageClient.tsx",
+    "text": "Επείγοντα ιατρικά έξοδα και βίζα Σένγκεν",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/travel/PageClient.tsx",
+    "text": "Αποσκευές και επιστροφή στην Ελλάδα",
+    "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
   }
 ]

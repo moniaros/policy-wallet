@@ -18,7 +18,7 @@ export function MethodologySections({ locale }: { locale: Locale }) {
                 <section className="mx-auto max-w-form px-4 pt-16 pb-10 text-center sm:pt-24">
                     <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-[#A7F3D0]">{t(locale, "Μεθοδολογία", "Methodology")}</p>
                     <h1 className="mt-3 text-display font-semibold text-balance text-[#0F172A] dark:text-white">{t(locale, "Πώς αποφασίζεται ένα εύρημα", "How a finding is decided")}</h1>
-                    <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">{t(locale, "Κανόνες αποφασίζουν, η τεχνητή νοημοσύνη διαβάζει και εξηγεί. Κάθε πρόταση εδώ περιγράφει τι κάνει ο κώδικας σήμερα, και κάθε αριθμός διαβάζεται από τον κατάλογο.", "Rules decide; the AI reads and explains. Every sentence here describes what the code does today, and every number is read from the catalogue.")}</p>
+                    <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">{t(locale, "Η τεχνητή νοημοσύνη διαβάζει το έγγραφο. Έπειτα, συγκεκριμένοι έλεγχοι βρίσκουν τι χρειάζεται προσοχή. Εδώ εξηγούμε πώς γίνονται αυτοί οι έλεγχοι και πού σταματούν.", "Rules decide; the AI reads and explains. Every sentence here describes what the code does today, and every number is read from the catalogue.")}</p>
                 </section>
                 <section className="mx-auto max-w-form px-4 pb-16">
                     <div className="flex flex-col gap-10">

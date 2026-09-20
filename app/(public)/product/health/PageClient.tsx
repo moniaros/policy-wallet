@@ -23,7 +23,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Ζωή & υγεία", "Life & health")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Νοσήλια, δίκτυα, συμμετοχές — σε απλά ελληνικά.", "Hospital cover, networks, out-of-pocket — in plain language.")}
+                        {t("Ποια έξοδα υγείας πληρώνει η ασφάλειά σας;", "Hospital cover, networks, out-of-pocket — in plain language.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Δείτε πόσα θα πληρώσετε από την τσέπη σας στη χειρότερη περίπτωση, ποια νοσοκομεία είναι συμβεβλημένα και πού μένετε ακάλυπτοι.", "See how much you would pay yourself in the worst case, which hospitals bill your insurer directly, and where you are left uncovered.")}
@@ -84,7 +84,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="font-medium text-blue-900 dark:text-blue-200 text-sm">{t("Μέγιστη δική σας συμμετοχή: 1.500 €", "Most you pay yourself: €1,500")}</div>
                             </div>
                             <div className="p-4 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-lg text-sm border border-slate-200 dark:border-white/10">
-                                <p className="font-bold flex items-center gap-2 mb-2"><Activity className="w-4 h-4" /> {t("Συμβεβλημένα δίκτυα", "Partner hospital networks")}</p>
+                                <p className="font-bold flex items-center gap-2 mb-2"><Activity className="w-4 h-4" /> {t("Νοσοκομεία που συνεργάζονται με την ασφαλιστική", "Partner hospital networks")}</p>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">{t("Απευθείας χρέωση: ενεργή", "Direct billing: on")}</p>
                             </div>
                         </div>

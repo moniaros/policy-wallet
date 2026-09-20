@@ -52,10 +52,10 @@ export function PricingCard({
 
     return (
         <div
-            className={`relative rounded-2xl p-8 transition-all duration-300 ${
+            className={`relative rounded-2xl p-6 sm:p-8 transition-colors duration-200 motion-reduce:transition-none ${
                 plan.isHighlighted
-                    ? "scale-105 border-2 border-[#29685B] bg-[#F0FDF4] shadow-xl shadow-[#29685B]/10 dark:border-[#89D9B2]/60 dark:bg-slate-900"
-                    : "border border-slate-200 dark:border-white/10 bg-white hover:border-[#A7F3D0] hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:hover:border-[#89D9B2]/50"
+                    ? "border-2 border-[#29685B] bg-[#F0FDF4] shadow-xl shadow-[#29685B]/10 dark:border-[#89D9B2]/60 dark:bg-slate-900"
+                    : "border border-slate-200 dark:border-white/10 bg-white hover:border-[#A7F3D0] dark:border-slate-700 dark:bg-slate-900 dark:hover:border-[#89D9B2]/50"
             } ${className}`}
         >
             {plan.badge && !isLoading && (

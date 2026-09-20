@@ -136,6 +136,7 @@ export function AppScreen({
     minHeight,
     active,
     fixed = false,
+    animateEntrance = true,
     chrome = "app",
     tab = "home",
 }: {
@@ -148,6 +149,7 @@ export function AppScreen({
     minHeight?: number
     active?: boolean
     fixed?: boolean
+    animateEntrance?: boolean
     /** "app": status bar + tab bar (the policyholder app); "bar": status bar only; "none". */
     chrome?: "app" | "bar" | "none"
     tab?: AppTab
@@ -202,9 +204,9 @@ export function AppScreen({
     }, [active])
 
     useEffect(() => {
-        if (!live || !inner.current) return
+        if (!animateEntrance || !live || !inner.current) return
         playEntrance(inner.current)
-    }, [live])
+    }, [live, animateEntrance])
 
     return (
         <div
@@ -217,7 +219,7 @@ export function AppScreen({
                 inert
                 className={cn(
                     "rs-screen pw-app-canvas absolute left-0 top-0 flex flex-col font-sans text-foreground [&_*]:pointer-events-none",
-                    live && "rs-live"
+                    live && animateEntrance && "rs-live"
                 )}
                 style={{ width: APP_WIDTH, height: innerHeight, transform: `scale(${scale})`, transformOrigin: "top left" }}
             >

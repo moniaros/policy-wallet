@@ -1,4 +1,5 @@
 import React from "react"
+import { ProductWalkthrough } from "@/components/landing/ProductWalkthrough"
 import Link from "next/link"
 import {
     ArrowRight,
@@ -59,12 +60,9 @@ export function ProductSections({ language }: { language: Language }) {
                 <div className="mx-auto max-w-[860px]">
                     {/* The category claim, in the same slot the homepage uses —
                         the platform's own page names the platform's category. */}
-                    <div className="mb-8 inline-flex select-none items-center gap-2 rounded-full bg-[#DCEBDA] dark:bg-[#29685B]/30 px-3 py-1.5 text-caption font-semibold uppercase tracking-wide text-[#166534] dark:text-[#A7F3D0]">
-                        <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
-                        {t(CATEGORY_NAME.el, CATEGORY_NAME.en)}
-                    </div>
 
-                    <h1 className="mb-6 inline-flex min-h-[24px] items-center text-h1 font-semibold leading-[1.02] tracking-[-0.045em] text-[#0F172A] dark:text-white md:text-display text-balance">
+
+                    <h1 className="mb-6 inline-flex min-h-[24px] items-center text-h1 font-semibold leading-[1.02] tracking-[-0.03em] text-[#0F172A] dark:text-white md:text-display text-balance">
                         {t(
                             "Κάθε ασφάλειά σας, διαβασμένη για εσάς.",
                             "Every policy you own, read for you."
@@ -103,6 +101,39 @@ export function ProductSections({ language }: { language: Language }) {
                         )}
                     </p>
                 </div>
+            </section>
+
+            <section id="how-it-works" className="mx-auto max-w-page scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
+                <div className="mb-16 text-center">
+                    <h2
+                        id="how-it-works-heading"
+                        tabIndex={-1}
+                        className="mx-auto max-w-[560px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white focus:outline-none lg:text-h1"
+                    >
+                        {t(
+                            "Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων.",
+                            "From PDF to a clear picture, without reading the fine print."
+                        )}
+                    </h2>
+                    {/* The mechanism, named on the page and not only in the
+                        search snippet. The metas have said "με AI" for months
+                        while no visible sentence anywhere told a visitor that a
+                        model reads their document — so the first place they
+                        learned it was the consent dialog. Naming it here, with
+                        its limit, and linking to the page that explains it. */}
+                    <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">
+                        {t(
+                            "Το έγγραφό σας το διαβάζει τεχνητή νοημοσύνη και το μεταφράζει σε δεδομένα. Ποια κενά κάλυψης έχετε το κρίνουν κανόνες, όχι το μοντέλο.",
+                            "Artificial intelligence reads your document and turns it into data. Which coverage gaps you have is decided by rules, not by the model."
+                        )}{" "}
+                        <Link href={localizeHref("/platform", language)} className="underline">
+                            {t("Δείτε πώς ακριβώς", "See exactly how")}
+                        </Link>
+                    </p>
+                </div>
+
+                <ProductWalkthrough locale={language} />
+
             </section>
 
             <section className="mx-auto max-w-page px-6 py-20 md:px-12 lg:py-28">
@@ -324,61 +355,7 @@ export function ProductSections({ language }: { language: Language }) {
                 </div>
             </section>
 
-            <section id="how-it-works" className="mx-auto max-w-page scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
-                <div className="mb-16 text-center">
-                    <h2
-                        id="how-it-works-heading"
-                        tabIndex={-1}
-                        className="mx-auto max-w-[560px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white focus:outline-none lg:text-h1"
-                    >
-                        {t(
-                            "Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων.",
-                            "From PDF to a clear picture, without reading the fine print."
-                        )}
-                    </h2>
-                    {/* The mechanism, named on the page and not only in the
-                        search snippet. The metas have said "με AI" for months
-                        while no visible sentence anywhere told a visitor that a
-                        model reads their document — so the first place they
-                        learned it was the consent dialog. Naming it here, with
-                        its limit, and linking to the page that explains it. */}
-                    <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">
-                        {t(
-                            "Το έγγραφό σας το διαβάζει τεχνητή νοημοσύνη και το μεταφράζει σε δεδομένα. Ποια κενά κάλυψης έχετε το κρίνουν κανόνες, όχι το μοντέλο.",
-                            "Artificial intelligence reads your document and turns it into data. Which coverage gaps you have is decided by rules, not by the model."
-                        )}{" "}
-                        <Link href={localizeHref("/platform", language)} className="underline">
-                            {t("Δείτε πώς ακριβώς", "See exactly how")}
-                        </Link>
-                    </p>
-                </div>
 
-                <div className="grid gap-8 md:grid-cols-3 lg:gap-12">
-                    {STEPS.map((step) => {
-                        const Icon = step.icon
-
-                        return (
-                            <div key={step.n} className="relative flex flex-col">
-                                <div className="mb-6 flex items-center gap-3">
-                                    <span className="rounded-full bg-[#DCEBDA] dark:bg-[#29685B]/30 px-2.5 py-1 text-micro font-bold tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                                        {step.n}
-                                    </span>
-                                    <div className="h-px flex-1 bg-[#E2E8F0] dark:bg-slate-800" />
-                                </div>
-                                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 shadow-sm">
-                                    <Icon className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
-                                </div>
-                                <h3 className="mb-3 text-title font-semibold leading-snug tracking-tight text-[#0F172A] dark:text-white">
-                                    {t(step.titleEl, step.titleEn)}
-                                </h3>
-                                <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
-                                    {t(step.descEl, step.descEn)}
-                                </p>
-                            </div>
-                        )
-                    })}
-                </div>
-            </section>
 
             {/* Invented testimonial removed (brand doc §7): only named, consented
                 customers may appear here — verifiable facts carry the page until then. */}

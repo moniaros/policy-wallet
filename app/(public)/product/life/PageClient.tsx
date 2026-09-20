@@ -21,10 +21,10 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Ασφάλεια ζωής", "Life insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Αρκεί το κεφάλαιο για τους δικούς σας;", "Would the payout be enough for your loved ones?")}
+                        {t("Αρκούν τα χρήματα της ασφάλειας για την οικογένειά σας;", "Would the payout be enough for your loved ones?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Υπόλοιπο στεγαστικού, έξοδα οικογένειας, σπουδές παιδιών: βάλτε το κεφάλαιο κάλυψης δίπλα στις πραγματικές σας υποχρεώσεις και δείτε αν στέκει.", "Outstanding mortgage, family expenses, children's education: place your coverage amount next to your real obligations and see if it holds up.")}
+                        {t("Πόσα μένουν από το στεγαστικό σας; Ποια έξοδα έχει η οικογένεια; Συγκρίνετε αυτά τα ποσά με το ποσό που γράφει η ασφάλεια ζωής σας.", "Outstanding mortgage, family expenses, children's education: place your coverage amount next to your real obligations and see if it holds up.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -45,13 +45,13 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                             {t("Το ασφαλιστήριο ζωής δεν είναι «ένα χαρτί στο συρτάρι».", "A life policy is not just paper in a drawer.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Παροχή θανάτου, μόνιμη αναπηρία, σοβαρές ασθένειες, προστασία δανείου — τέσσερα σκέλη που συχνά αγοράστηκαν πριν χρόνια και δεν ξαναδιαβάστηκαν ποτέ. Τα ξεχωρίζουμε και σας τα εξηγούμε ένα προς ένα.", "Death benefit, permanent disability, serious illness, mortgage protection — four components often bought years ago and never re-read. We separate them and explain each one to you.")}
+                            {t("Τι χρήματα προβλέπονται σε περίπτωση θανάτου, μόνιμης αναπηρίας ή σοβαρής ασθένειας; Υπάρχει κάλυψη για το δάνειο; Ξεχωρίζουμε όσα γράφει το έγγραφο και σας τα εξηγούμε.", "Death benefit, permanent disability, serious illness, mortgage protection — four components often bought years ago and never re-read. We separate them and explain each one to you.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κεφάλαιο σε σχέση με τις υποχρεώσεις", "Cover against what you owe")}</h3>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Ποσό κάλυψης και έξοδα της οικογένειας", "Cover against what you owe")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Ένα κεφάλαιο που ορίστηκε όταν το στεγαστικό ήταν στην αρχή του μπορεί σήμερα να μην καλύπτει ούτε το υπόλοιπο του δανείου.", "A sum insured set when your mortgage was new may no longer cover even the remaining loan balance today.")}</p>
                                 </div>
                             </li>
@@ -77,7 +77,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <p className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">{t("Προστασία οικογένειας", "Family protection")}</p>
-                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Πρόσκαιρη ζωής · 2 εξαρτώμενοι", "Term life · 2 dependents")}</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Ζωής για ορισμένα χρόνια · 2 μέλη οικογένειας", "Term life · 2 dependents")}</p>
                             </div>
                         </div>
                         <div className="space-y-5">

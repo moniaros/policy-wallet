@@ -1,6 +1,11 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
+import { useState } from "react"
+import { interactiveCopy as C } from "@/lib/marketing/interactive-copy"
+import { trackGoogleEvent } from "@/lib/analytics/google-analytics"
+import { SearchQuestions } from "@/components/landing/SearchQuestions"
 import { ArrowRight } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -56,7 +61,10 @@ export default function GuidesIndexClient() {
     const t = (el: string, en: string) => (isGreek ? el : en)
     const lang = isGreek ? "el" : "en"
 
-    const ordered = guidesNewestFirst()
+    const [query, setQuery] = useState("")
+    const [imageFailed, setImageFailed] = useState(false)
+    const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase(lang).trim()
+    const ordered = guidesNewestFirst().filter(guide => normalize(`${guide.title[lang]} ${guide.summary[lang]}`).includes(normalize(query)))
     const [lead, ...rest] = ordered
 
     const meta = (guide: (typeof ordered)[number]) => (
@@ -78,26 +86,34 @@ export default function GuidesIndexClient() {
 
     return (
         <LoBPageShell activeNav="none" locale={language}>
-            <section className="mx-auto max-w-[860px] px-6 pb-14 text-center md:px-12">
-                <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-display dark:text-white">
+            <section className="mx-auto grid max-w-[1180px] items-center gap-10 px-6 pb-12 md:px-12 lg:grid-cols-[1.25fr_1fr]">
+                <div><h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-display dark:text-white">
                     {t("Οδηγοί ασφάλισης για την ελληνική αγορά", "Insurance guides for the Greek market")}
                 </h1>
                 <p className="mx-auto max-w-[620px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                     {t(
-                        "Πρακτικές απαντήσεις στα ερωτήματα που καθορίζουν την κάλυψή σας: έκπτωση ΕΝΦΙΑ, κενά κάλυψης, κόστος σεισμού, ανανεώσεις και διαχείριση ασφαλιστηρίων — χωρίς ασφαλιστικά λατινικά.",
+                        "Απλές απαντήσεις για την ασφάλισή σας: τι καλύπτει, τι αφήνει έξω, πότε ανανεώνεται και πώς οργανώνετε τα έγγραφά σας. Θα βρείτε και οδηγούς για την κατοικία και την έκπτωση ΕΝΦΙΑ.",
                         "Practical answers to the questions that decide your cover: ENFIA discount, coverage gaps, earthquake cost, renewals and managing your policies — without the insurance Latin.",
                     )}
-                </p>
+                </p></div>
+                {!imageFailed && <Image src="/images/guide-still-life.webp" alt="" loading="eager" width={960} height={723} sizes="(max-width: 1023px) 480px, 520px" className="w-full rounded-2xl" onError={() => setImageFailed(true)} />}
             </section>
 
-            {/* Growth hooks — ROTATING here and only here: this page has
-                no other rotator (D-G05). Under prefers-reduced-motion the
-                component renders its static stack instead. */}
-            <div className="mx-auto max-w-[820px] px-6 pb-10 md:px-12">
-                <HookTicker locale={lang} mode="rotating" />
-            </div>
-
             <div className="mx-auto max-w-[820px] px-6 pb-24 md:px-12">
+                <form role="search" className="mb-10" onSubmit={event => {
+                    event.preventDefault()
+                    trackGoogleEvent("marketing_guide_search", { route: lang === "el" ? "/guides" : "/en/guides", locale: lang, control: "search", result_count: ordered.length })
+                }}>
+                    <label htmlFor="guide-search" className="mb-3 block text-lg font-semibold">{C.search[lang]}</label>
+                    <div className="flex flex-wrap gap-3">
+                        <input id="guide-search" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={C.searchHint[lang]} className="min-h-12 min-w-0 flex-1 rounded-xl border border-border-strong bg-surface-base px-4 text-fg-primary focus-visible:outline-2 focus-visible:outline-fg-brand" />
+                        <button type="submit" className="pw-primary-button">{C.search[lang]}</button>
+                        {query && <button type="button" className="pw-secondary-button" onClick={() => setQuery("")}>{C.reset[lang]}</button>}
+                    </div>
+                    <p className="mt-3 text-sm text-fg-secondary" role="status">{query ? `${C.results[lang]}: ${ordered.length}` : ""}</p>
+                </form>
+                {ordered.length === 0 && <p className="py-8 text-lg">{C.noResults[lang]}</p>}
+
                 {/* Lead story. One item at full weight, so the page has a
                     starting point instead of sixteen equal ones. */}
                 {lead && (
@@ -157,6 +173,8 @@ export default function GuidesIndexClient() {
                     </Link>
                 </p>
             </div>
+            <SearchQuestions locale={lang} />
+            <div className="mx-auto max-w-[820px] px-6 pb-12"><HookTicker locale={lang} mode="static" /></div>
         </LoBPageShell>
     )
 }

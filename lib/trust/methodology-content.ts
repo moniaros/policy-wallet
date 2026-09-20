@@ -34,15 +34,15 @@ export function methodologySections(lang: Language): MethodologySection[] {
             title: { el: "Ποιος αποφασίζει ότι υπάρχει κενό", en: "Who decides that a gap exists" },
             body: [
                 {
-                    el: "Ένα κενό κάλυψης το αποφασίζει ένας κανόνας, όχι ένα μοντέλο. Κάθε κανόνας είναι μια σταθερή συνθήκη πάνω σε πεδία που εξάγονται από το έγγραφο — «το έγγραφο δηλώνει ότι ο σεισμός δεν καλύπτεται», «δεν καταγράφεται δικαιούχος». Ο ίδιος κανόνας πάνω στα ίδια πεδία δίνει πάντα το ίδιο αποτέλεσμα.",
+                    el: "Κάθε έλεγχος απαντά μια συγκεκριμένη ερώτηση. Για παράδειγμα: «Το έγγραφο λέει ότι δεν καλύπτεται ο σεισμός;» ή «Γράφει ποιος παίρνει την αποζημίωση;». Οι απαντήσεις προκύπτουν από κανόνες που έχουμε ορίσει, όχι από γνώμη της τεχνητής νοημοσύνης. Ο ίδιος έλεγχος στα ίδια στοιχεία δίνει το ίδιο αποτέλεσμα.",
                     en: "A coverage gap is decided by a rule, not by a model. Each rule is a fixed condition on fields extracted from the document — “the document says earthquake is not covered”, “no beneficiary is recorded”. The same rule on the same fields always gives the same result.",
                 },
                 {
-                    el: "Η τεχνητή νοημοσύνη κάνει δύο πράγματα: διαβάζει το έγγραφο και συμπληρώνει τα πεδία, και γράφει την εξήγηση ενός ευρήματος σε απλά ελληνικά. Δεν αποφασίζει αν υπάρχει κενό ούτε πόσο σοβαρό είναι — το σχήμα που της ζητάμε δεν έχει καν τέτοιο πεδίο.",
+                    el: "Η τεχνητή νοημοσύνη διαβάζει το έγγραφο και βρίσκει τα στοιχεία του. Μετά εξηγεί τα αποτελέσματα των ελέγχων με απλά λόγια. Δεν αποφασίζει αν υπάρχει κενό κάλυψης ούτε πόσο σοβαρό είναι.",
                     en: "The AI does two things: it reads the document and fills in the fields, and it writes a finding's explanation in plain language. It does not decide whether a gap exists or how serious it is — the schema we ask it for has no such field.",
                 },
                 {
-                    el: "Η «σοβαρότητα» ενός κανόνα υπάρχει στη βάση επειδή το σχήμα την απαιτεί. Δεν εμφανίζεται πουθενά και δεν ταξινομεί τίποτα: τα ευρήματα ταξινομούνται μόνο κατά την προέλευση της απαίτησης και τη σειρά του καταλόγου.",
+                    el: "Δεν παρουσιάζουμε ένα εύρημα ως «σοβαρό» μόνο επειδή το βρήκε το πρόγραμμα. Η σειρά εμφάνισης ακολουθεί την πηγή κάθε απαίτησης και τον κατάλογο ελέγχων μας.",
                     en: "A rule's “severity” exists in the database because the schema requires it. It renders nowhere and orders nothing: findings are ordered only by the provenance of the requirement and by the catalogue's declared order.",
                 },
             ],
@@ -51,14 +51,14 @@ export function methodologySections(lang: Language): MethodologySection[] {
             // GapInstance carries rule_id, engine_version, rule_inputs, analysis_run_id, catalogue_version (lib/gaps/gap-instance-writer.ts);
             // Composition.stale (lib/gaps/composition.ts) is the dated stale-catalogue state.
             id: "reproducibility",
-            title: { el: "Αναπαραγωγιμότητα", en: "Reproducibility" },
+            title: { el: "Πώς μπορείτε να ελέγξετε ένα εύρημα", en: "How you can check a finding" },
             body: [
                 {
-                    el: "Το ίδιο έγγραφο, με τον ίδιο κατάλογο κανόνων, δίνει τα ίδια ευρήματα. Κάθε εύρημα καταγράφει ποιος κανόνας το αποφάσισε, με ποια έκδοση του μηχανισμού, πάνω σε ποιες τιμές, και από ποια ανάλυση προήλθε — με ημερομηνία.",
-                    en: "The same document, with the same rule catalogue, yields the same findings. Every finding records which rule decided it, with which engine version, on which values, and from which analysis it came — dated.",
+                    el: "Οι ίδιοι κανόνες πάνω στα ίδια στοιχεία δίνουν το ίδιο αποτέλεσμα. Για κάθε εύρημα κρατάμε ποιος έλεγχος το βρήκε, ποια στοιχεία χρησιμοποίησε και πότε έγινε η ανάλυση. Έτσι μπορεί να ελεγχθεί ξανά.",
+                    en: "The same rules applied to the same data give the same result. For each finding, we record the check, the data it used and the dated analysis it came from. This makes the result traceable.",
                 },
                 {
-                    el: "Όταν ο κατάλογος μεγαλώνει, μια παλαιότερη ανάλυση δεν αποκτά σιωπηλά ελέγχους που δεν έκανε: η σύνθεση υπολογίζεται πάντα με το σχέδιο ελέγχων της ίδιας της ανάλυσης, και μια πρόταση λέει ότι προστέθηκαν έλεγχοι από τότε. Η νέα ανάλυση είναι δική σας ενέργεια, ποτέ αυτόματη.",
+                    el: "Αν προσθέσουμε νέους ελέγχους, τα παλιά αποτελέσματα δεν αλλάζουν μόνα τους. Βλέπετε μήνυμα ότι υπάρχουν νεότεροι έλεγχοι. Εσείς επιλέγετε αν θα κάνετε νέα ανάλυση.",
                     en: "When the catalogue grows, an older analysis does not silently acquire checks it never ran: the composition is always computed against that analysis's own check plan, and one sentence says checks were added since. A new analysis is your action, never automatic.",
                 },
             ],
@@ -73,7 +73,7 @@ export function methodologySections(lang: Language): MethodologySection[] {
                     en: `The catalogue holds ${rules} rules across ${withChecks} lines (${branchNames}) out of the ${writable} lines the product accepts. The remaining ${without} lines have no check yet: there the app says “we have not assessed this” and shows neither a composition nor a reassurance.`,
                 },
                 {
-                    el: "Κάθε κανόνας διαβάζει πεδία που ο μηχανισμός εξαγωγής πράγματι συμπληρώνει για τον κλάδο του, δηλώνει τα δεδομένα εισόδου του εκ των προτέρων, και συνοδεύεται από δύο δοκιμαστικά έγγραφα: ένα που τον ενεργοποιεί και ένα που σωστά δεν τον ενεργοποιεί. Χωρίς αυτά, ο κανόνας δεν μπαίνει στον κατάλογο.",
+                    el: "Κάθε έλεγχος χρησιμοποιεί συγκεκριμένα στοιχεία που μπορούμε να διαβάσουμε από το έγγραφο. Τον δοκιμάζουμε σε δύο περιπτώσεις: μία όπου πρέπει να βρει κάτι και μία όπου δεν πρέπει. Μόνο τότε τον προσθέτουμε.",
                     en: "Every rule reads fields the extractor actually fills for its line, declares its inputs up front, and ships with two test documents: one that fires it and one where it correctly stays quiet. Without those, a rule does not enter the catalogue.",
                 },
                 {
@@ -107,7 +107,7 @@ export function methodologySections(lang: Language): MethodologySection[] {
                     en: "We do not give a protection score, an index out of a hundred, or a severity colour. A number out of a total appears only with its denominator and what was counted.",
                 },
                 {
-                    el: "Η απουσία ευρήματος δεν είναι καθησυχασμός. Τρεις καταστάσεις λένε ρητά τι δεν ελέγχθηκε: ανάλυση πριν από το σχέδιο ελέγχων, κλάδος χωρίς ελέγχους, και κατάλογος που άλλαξε μετά την ανάλυση.",
+                    el: "Αν δεν βρέθηκε κάτι, αυτό δεν σημαίνει ότι όλα είναι καλυμμένα. Σας λέμε αν λείπουν στοιχεία από μια παλιά ανάλυση, αν δεν υπάρχουν έλεγχοι για το είδος ασφάλισης ή αν προστέθηκαν νέοι έλεγχοι από τότε.",
                     en: "The absence of a finding is not reassurance. Three states say explicitly what was not checked: an analysis that predates the check plan, a line with no checks, and a catalogue that changed after the analysis.",
                 },
                 {

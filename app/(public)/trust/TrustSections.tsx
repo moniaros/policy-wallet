@@ -118,7 +118,7 @@ const SECTIONS: Section[] = [
         },
         body: [
             {
-                el: "Η ανάλυση ξεκινά μόνο αφού δώσετε ρητή συγκατάθεση. Χωρίς αυτήν, το έγγραφο δεν φεύγει ποτέ προς πάροχο μοντέλου.",
+                el: "Η ανάλυση ξεκινά μόνο αν συμφωνήσετε ξεκάθαρα. Χωρίς τη συγκατάθεσή σας, δεν στέλνουμε το έγγραφο στην εταιρεία που παρέχει την τεχνητή νοημοσύνη.",
                 en: "Analysis starts only after you give explicit consent. Without it, the document never leaves for a model provider.",
             },
             {
@@ -139,7 +139,7 @@ const SECTIONS: Section[] = [
         },
         body: [
             {
-                el: "Κάθε ανάγνωση ενός ασφαλιστηρίου περνά από ένα σημείο ελέγχου στην εφαρμογή, που ρωτά το ίδιο πράγμα κάθε φορά: το κατέχετε εσείς, ή σας το έχει μοιραστεί ρητά κάποιος; Δοκιμή στο CI ελέγχει κάθε διαδρομή και ενέργεια που μπορεί να ζητήσει ένα ασφαλιστήριο, και αποτυγχάνει αν κάποια νέα δεν περνά από εκεί.",
+                el: "Κάθε φορά που ανοίγετε ένα ασφαλιστήριο, ελέγχουμε αν είναι δικό σας ή αν ο κάτοχός του σας έχει δώσει πρόσβαση. Αυτός ο έλεγχος γίνεται και όταν ζητάτε το έγγραφο με άλλον τρόπο μέσα από την εφαρμογή.",
                 en: "Every read of a policy goes through one checkpoint in the application, which asks the same question every time: do you own it, or has someone explicitly shared it with you? A CI test checks every route and action that can name a policy, and fails if a new one does not go through it.",
             },
             {
@@ -160,7 +160,7 @@ const SECTIONS: Section[] = [
         },
         body: [
             {
-                el: "Κατεβάζετε αντίγραφο των δεδομένων σας όποτε θέλετε, μόνοι σας, χωρίς να το ζητήσετε από κανέναν. Είναι δομημένο αρχείο, όχι στιγμιότυπα οθόνης.",
+                el: "Κατεβάζετε αντίγραφο των δεδομένων σας όποτε θέλετε, μόνοι σας, χωρίς να το ζητήσετε από κανέναν. Παίρνετε αρχείο με τα στοιχεία σας οργανωμένα, όχι εικόνες της οθόνης.",
                 en: "You can download a copy of your data whenever you want, yourself, without asking anyone. It is a structured file, not screenshots.",
             },
             {
@@ -197,7 +197,7 @@ export function TrustSections({ locale }: { locale: Locale }) {
                     <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">
                         {t(
                             locale,
-                            "Χωρίς γενικότητες. Κάθε πρόταση εδώ περιγράφει κάτι που κάνει ο κώδικας σήμερα.",
+                            "Δείτε πού φυλάσσονται τα αρχεία σας, ποιος μπορεί να τα δει και πώς ζητάτε αντίγραφο ή διαγραφή.",
                             "No generalities. Every sentence here describes something the code does today."
                         )}
                     </p>

@@ -1,3 +1,4 @@
+import { SearchQuestions } from "@/components/landing/SearchQuestions"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
@@ -85,6 +86,7 @@ export function WorldClassLanding({
                 {/* ── 5. THE ANSWER BLOCK (§6) — one extractable paragraph
                     plus the four defined terms it leans on. */}
                 <AnswerBlock locale={locale} />
+                <SearchQuestions locale={locale} />
 
                 {/* ── 6. HOW IT WORKS (§6) — four numbered steps with per-step
                     arrows, the closing line, and the ReadingDemo, on Grafí. Copy

@@ -48,7 +48,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
         {
             titleEl: "Ποσά κάτω από το ελάχιστο όριο",
             titleEn: "Amounts below the minimum threshold",
-            descEl: "Πολλά προγράμματα ορίζουν ελάχιστο ύψος διαφοράς και ανώτατο όριο εξόδων ανά υπόθεση. Τα ψιλά γράμματα εδώ κρίνουν τα πάντα.",
+            descEl: "Πολλά προγράμματα ορίζουν ελάχιστο ποσό για να καλυφθεί μια διαφωνία και ανώτατο όριο εξόδων ανά υπόθεση. Τα ψιλά γράμματα εδώ κρίνουν τα πάντα.",
             descEn: "Many plans set a minimum dispute value and a per-case cost cap. The fine print here decides everything.",
         },
     ]
@@ -84,7 +84,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Ο πιο παρεξηγημένος κλάδος της ελληνικής αγοράς.", "The most misunderstood line of insurance in the Greek market.")}
+                            {t("Δεν καλύπτει κάθε νομικό πρόβλημα.", "The most misunderstood line of insurance in the Greek market.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Δεν καλύπτει «ό,τι νομικό προκύψει». Κάθε πρόγραμμα ορίζει κατηγορίες διαφορών, περιόδους αναμονής και όρια εξόδων. Έτσι μοιάζει συνήθως η εικόνα:", "It does not cover “whatever legal issue comes up”. Every plan defines dispute categories, waiting periods and cost limits. This is what the picture usually looks like:")}

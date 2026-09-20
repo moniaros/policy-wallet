@@ -1,0 +1,17 @@
+
+ RUN  v4.0.18 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+ ✓ tests/unit/marketing-mock-honesty.test.ts (10 tests) 19ms
+ ✓ tests/unit/marketing-content-contracts.test.ts (40 tests) 7ms
+ ✓ tests/unit/wallet-expiry-date-athens.test.ts (3 tests) 69ms
+ ✓ tests/unit/seo-metadata.test.ts (221 tests) 9ms
+ ✓ tests/unit/pricing-refuses-unchargeable-plans.test.tsx (12 tests) 28ms
+ ✓ tests/unit/voice-guards.test.ts (9 tests) 127ms
+ ✓ tests/unit/gap-severity-display-single-source.test.ts (26 tests) 20ms
+ ✓ tests/unit/marketing-interactions.test.tsx (3 tests) 167ms
+ ✓ tests/unit/clamped-text-reachability.test.tsx (28 tests) 139ms
+
+ Test Files  9 passed (9)
+      Tests  352 passed (352)
+   Start at  22:24:09
+   Duration  1.60s (transform 1.51s, setup 1.64s, import 2.45s, tests 586ms, environment 4.05s)

@@ -24,7 +24,7 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Διαβάστε το ασφαλιστήριο πριν το check-in.", "Read the policy before you check in.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Η ταξιδιωτική ασφάλεια αγοράζεται σε δύο κλικ μαζί με το εισιτήριο — και συνήθως κανείς δεν βλέπει τα όρια, τις εξαιρέσεις ή την απαλλαγή — το ποσό που μένει πάνω σας. Σας τα δείχνουμε πριν φύγετε, όχι στο ταμείο ενός νοσοκομείου στο εξωτερικό.", "Travel cover is bought in two clicks with the ticket — and usually nobody looks at the limits, the exclusions or the deductible — the amount that stays with you. We show them to you before you leave, not at the cashier's desk of a hospital abroad.")}
+                        {t("Η ταξιδιωτική ασφάλεια αγοράζεται σε δύο κλικ μαζί με το εισιτήριο — και συνήθως κανείς δεν βλέπει τα όρια, τις εξαιρέσεις ή την απαλλαγή — το ποσό που πληρώνετε εσείς. Σας τα δείχνουμε πριν φύγετε, όχι στο ταμείο ενός νοσοκομείου στο εξωτερικό.", "Travel cover is bought in two clicks with the ticket — and usually nobody looks at the limits, the exclusions or the deductible — the amount that stays with you. We show them to you before you leave, not at the cashier's desk of a hospital abroad.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -54,7 +54,7 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                             <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                 <Stethoscope className="h-5 w-5 text-[#0F172A] dark:text-white" />
                             </div>
-                            <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Ιατρικά έκτακτα & Σένγκεν", "Emergency medical & Schengen")}</h3>
+                            <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Επείγοντα ιατρικά έξοδα και βίζα Σένγκεν", "Emergency medical & Schengen")}</h3>
                             <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t("Πόσο είναι το όριο ιατρικής κάλυψης στο εξωτερικό; Αν φιλοξενείτε ταξιδιώτη που χρειάζεται βίζα Σένγκεν, η αίτηση απαιτεί ταξιδιωτική ιατρική ασφάλιση με ελάχιστη κάλυψη 30.000 €.", "What is your medical cover limit abroad? If you host a traveler who needs a Schengen visa, the application requires travel medical insurance with at least €30,000 of cover.")}
                             </p>
@@ -72,7 +72,7 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                             <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                 <Luggage className="h-5 w-5 text-[#0F172A] dark:text-white" />
                             </div>
-                            <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Αποσκευές & επαναπατρισμός", "Luggage & repatriation")}</h3>
+                            <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Αποσκευές και επιστροφή στην Ελλάδα", "Luggage & repatriation")}</h3>
                             <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t("Χαμένη βαλίτσα, καθυστερημένη πτήση, ανάγκη επιστροφής στην Ελλάδα: δείτε τι από αυτά περιλαμβάνει το δικό σας πρόγραμμα και πού σταματάει η κάλυψη.", "Lost luggage, a delayed flight, needing to return to Greece: see which of these your plan includes and where the cover stops.")}
                             </p>

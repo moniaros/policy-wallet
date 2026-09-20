@@ -202,7 +202,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 values: { free: true, plus: true, pro: true },
             },
             {
-                name: { el: "Διαδραστικές ερωτήσεις AI", en: "Interactive AI Q&A" },
+                name: { el: "Ερωτήσεις στην τεχνητή νοημοσύνη", en: "Interactive AI Q&A" },
                 values: { free: false, plus: false, pro: true },
             },
             {
@@ -307,7 +307,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { label: { el: "10 πελάτες", en: "10 clients" }, included: true },
                     { label: { el: "5 AI αναλύσεις / μήνα", en: "5 AI analyses / month" }, included: true },
                     { label: { el: "Βασική εικόνα πελατών", en: "Basic client view" }, included: true },
-                    { label: { el: "Μαζική εισαγωγή", en: "Bulk import" }, included: false },
+                    { label: { el: "Προσθήκη πολλών πελατών μαζί", en: "Bulk import" }, included: false },
                     { label: { el: "Αυτοματισμοί ανανέωσης", en: "Renewal automation" }, included: false },
                 ],
             },
@@ -332,7 +332,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     // pipeline" in English inside the Greek column.
                     { label: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" }, included: true, highlight: true },
                     { label: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" }, included: true },
-                    { label: { el: "Μαζική εισαγωγή έως 100 πελάτες", en: "Bulk import up to 100 clients" }, included: true },
+                    { label: { el: "Προσθήκη έως 100 πελατών μαζί", en: "Bulk import up to 100 clients" }, included: true },
                     { label: { el: "Ερωτηματολόγια πελατών (5 πρότυπα)", en: "Client questionnaires (5 templates)" }, included: true },
                 ],
             },
