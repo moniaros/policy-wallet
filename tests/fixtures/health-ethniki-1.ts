@@ -1,18 +1,7 @@
 /**
- * Test fixture: Εθνική Full Health policy #1651622
- *
- * Derived from docs/policies/health_ethniki_1.pdf.
- * Policyholder: ΚΟΚΚΑΛΙΑ ΑΡΤΕΜΙΣ
- * Period: 22/05/2024 – 22/05/2025
- *
- * Premium breakdown:
- *   Hospital care          €812.66
- *   Diagnostics (AFFIDEA)  €134.00
- *   Accident expenses       €77.00
- *   Emergency assistance    €22.61
- *   Emergency incidents     €92.00
- *   ──────────────────────────────
- *   Total                €1,138.27
+ * Synthetic health-policy shape fixture. Identity fields are invented and the
+ * email uses the reserved .invalid domain. Coverage values exercise parsers;
+ * this is not an anonymised source PDF or an extraction-accuracy benchmark.
  */
 
 import type {
@@ -23,7 +12,7 @@ import type {
 export const HEALTH_ETHNIKI_1: AIPolicyExtractionResponse = {
     // Required fields
     insurerName: "Η ΕΘΝΙΚΗ",
-    policyNumber: "1651622",
+    policyNumber: "9000001",
     lineOfBusiness: "health",
     startDate: "2024-05-22",
     endDate: "2025-05-22",
@@ -32,9 +21,9 @@ export const HEALTH_ETHNIKI_1: AIPolicyExtractionResponse = {
         "Full Health: hospital care (€1.5M annual limit, €1,500 deductible), diagnostics at AFFIDEA–Ευρωιατρική (€2,000/yr), accident expenses (€2,000/incident), emergency medical assistance, emergency incidents (€1,000/incident, max 3/yr)",
 
     // Customer identification
-    customerName: "ΑΡΤΕΜΙΣ",
-    customerSurname: "ΚΟΚΚΑΛΙΑ",
-    customerEmail: "artemiskohas@gmail.com",
+    customerName: "ΔΟΚΙΜΗ",
+    customerSurname: "ΠΑΡΑΔΕΙΓΜΑΤΟΣ",
+    customerEmail: "fixture-policyholder@example.invalid",
 
     // Policy exclusions / special conditions
     exclusions: ["10% co-pay for US hospitalisation"],
@@ -69,7 +58,7 @@ export const HEALTH_ETHNIKI_1: AIPolicyExtractionResponse = {
  */
 export const HEALTH_ETHNIKI_1_METADATA: PolicyMetadata = {
     insurerName: "Η ΕΘΝΙΚΗ",
-    policyNumber: "1651622",
+    policyNumber: "9000001",
     lineOfBusiness: "health",
     startDate: new Date("2024-05-22"),
     endDate: new Date("2025-05-22"),

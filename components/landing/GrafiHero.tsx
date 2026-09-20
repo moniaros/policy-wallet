@@ -12,12 +12,12 @@
 import type React from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { CATEGORY, CTA_REASSURANCE, HERO_EMAIL_CTA, HERO_SUBHEAD, PRIMARY_ACTION, PROMISE, pick, type MarketingLocale } from "@/lib/marketing/positioning"
+import { CATEGORY, CTA_REASSURANCE, HERO_EMAIL_CTA, REGISTRATION_PAUSED, EXPLORE_NEEDS, HERO_SUBHEAD, PRIMARY_ACTION, PROMISE, pick, type MarketingLocale } from "@/lib/marketing/positioning"
 import { authHref, localizeHref } from "@/lib/seo/locale-links"
 import { EmailCapture, DeviceFrame } from "@/src/design-system"
 import { AppScreen, DashboardScreen, WalletScreen, CoverageMapScreen, SampleStamp, type AppTab } from "@/components/landing/real-screens/RealScreens"
 
-export function GrafiHero({ locale }: { locale: MarketingLocale }) {
+export function GrafiHero({ locale, registrationsOpen = true }: { locale: MarketingLocale; registrationsOpen?: boolean }) {
     const router = useRouter()
     const t = (el: string, en: string) => (locale === "el" ? el : en)
 
@@ -44,8 +44,8 @@ export function GrafiHero({ locale }: { locale: MarketingLocale }) {
     ]
 
     return (
-        <section className="px-g-6 lg:px-g-12 [padding-block:var(--space-section)]">
-            <div className="mx-auto grid max-w-[1180px] items-center gap-g-10 lg:grid-cols-[1.15fr_0.85fr]">
+        <section className="px-g-6 py-g-10 lg:px-g-12 lg:py-g-12">
+            <div className="mx-auto grid max-w-[1180px] items-start gap-g-10 lg:grid-cols-[1.15fr_0.85fr]">
                 <div>
                    
                     <h1 className="max-w-[15ch] text-balance text-g-display-xl font-extrabold tracking-[-0.024em] text-fg-primary">
@@ -56,21 +56,21 @@ export function GrafiHero({ locale }: { locale: MarketingLocale }) {
                         {pick(HERO_SUBHEAD, locale)}
                     </p>
                     <div className="mt-g-6">
-                        <EmailCapture
+                        {registrationsOpen ? <EmailCapture
                             label={t("Το email σας", "Your email")}
                             cta={pick(HERO_EMAIL_CTA, locale)}
                             formAriaLabel={pick(PRIMARY_ACTION, locale)}
                             onSubmit={(email) =>
                                 router.push(authHref(`/auth/signup?role=policyholder&source=landing_hero&email=${encodeURIComponent(email)}`, locale))
                             }
-                        />
-                        <p className="mt-g-2 text-sm text-fg-secondary">{pick(CTA_REASSURANCE, locale)}</p>
-                        <Link
+                        /> : <Link href={localizeHref("/needs", locale)} className="pw-primary-button pw-btn-lg">{pick(EXPLORE_NEEDS, locale)}</Link>}
+                        <p className="mt-g-2 text-sm text-fg-secondary">{pick(registrationsOpen ? CTA_REASSURANCE : REGISTRATION_PAUSED, locale)}</p>
+                        {registrationsOpen && <Link
                             href={localizeHref("/needs", locale)}
                             className="mt-g-3 inline-block min-h-11 py-g-2 font-semibold text-fg-brand underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus"
                         >
                             {t("Ή κάντε τον έλεγχο αναγκών σε 6 βήματα →", "Or take the 6-step needs check →")}
-                        </Link>
+                        </Link>}
                     </div>
                 </div>
                 <div className="flex flex-col items-center gap-g-2 justify-self-center">

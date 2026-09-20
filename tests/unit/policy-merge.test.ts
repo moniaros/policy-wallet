@@ -70,7 +70,7 @@ describe('requestPolicyMerge — consent, never a silent overwrite', () => {
                 ownerUserId: OWNER,
                 createdByUserId: OWNER, // the policyholder uploaded it first
                 insurerName: 'Εθνική Ασφαλιστική',
-                policyNumber: '1651622',
+                policyNumber: '9000001',
             })
             .mockResolvedValueOnce({
                 id: 'pol_incoming',
@@ -151,7 +151,7 @@ describe('decidePolicyMerge', () => {
                 endDate: new Date('2025-05-22'),
                 acordData: {},
                 documents: [],
-                policyNumber: '1651622',
+                policyNumber: '9000001',
             })
             .mockResolvedValueOnce({
                 id: 'pol_incoming',
@@ -164,7 +164,7 @@ describe('decidePolicyMerge', () => {
                 startDate: new Date('2026-07-11'),
                 premiumAmount: null,
                 coverageSummary: null,
-                policyNumber: '1651622',
+                policyNumber: '9000001',
             })
 
         const result = await decidePolicyMerge('mr_1', OWNER, 'approved')

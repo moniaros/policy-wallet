@@ -1,5 +1,6 @@
 "use client"
 
+import { EXPLORE_NEEDS, pick } from "@/lib/marketing/positioning"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -16,6 +17,7 @@ import {
 } from "@/lib/nav/public-nav"
 
 interface PublicHeaderProps {
+    registrationsOpen?: boolean
     locale: "el" | "en"
     /** Appended as `?source=<ctaSource>` to CTAs for attribution (optional). */
     ctaSource?: string
@@ -31,7 +33,7 @@ interface PublicHeaderProps {
  * works on the homepage (no LanguageContext) and inside the app shell alike.
  */
 
-export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHeaderProps) {
+export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registrationsOpen = true }: PublicHeaderProps) {
     const isGreek = locale === "el"
     const elActive = isGreek
     const enActive = !isGreek
@@ -53,10 +55,10 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
     // authHref, not localizeHref: there is no /en/auth mirror, so the locale
     // rides as ?lang= and the auth tree pins itself to it. Without this the
     // English header dropped a visitor into a Greek signup form.
-    const primaryHref = authHref(
+    const primaryHref = registrationsOpen ? authHref(
         ctaSource ? `${PRIMARY_CTA.href}&source=${ctaSource}` : PRIMARY_CTA.href,
         locale
-    )
+    ) : l("/needs")
     const secondaryHref = authHref(
         ctaSource ? `${SECONDARY_CTA.href}?source=${ctaSource}_login` : SECONDARY_CTA.href,
         locale
@@ -199,7 +201,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             {SECONDARY_CTA.label[locale]}
                         </Link>
                         <Link href={primaryHref} onClick={onPrimaryCtaClick} className="pw-primary-button pw-btn-sm">
-                            {PRIMARY_CTA.label[locale]}
+                            {registrationsOpen ? PRIMARY_CTA.label[locale] : pick(EXPLORE_NEEDS, locale)}
                         </Link>
                     </div>
 
@@ -320,7 +322,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                                 closeMenu()
                             }}
                         >
-                            {PRIMARY_CTA.label[locale]}
+                            {registrationsOpen ? PRIMARY_CTA.label[locale] : pick(EXPLORE_NEEDS, locale)}
                         </Link>
                     </div>
                 </div>

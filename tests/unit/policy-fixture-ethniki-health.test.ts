@@ -18,19 +18,19 @@ describe("HEALTH_ETHNIKI_1 fixture — AIPolicyExtractionResponse shape", () => 
         expect(typeof HEALTH_ETHNIKI_1.coverageSummary).toBe("string")
     })
 
-    it("carries correct identification data from the PDF", () => {
+    it("carries synthetic policy identification", () => {
         expect(HEALTH_ETHNIKI_1).toMatchObject({
             insurerName: "Η ΕΘΝΙΚΗ",
-            policyNumber: "1651622",
+            policyNumber: "9000001",
             lineOfBusiness: "health",
         })
     })
 
-    it("carries correct policyholder PII", () => {
+    it("carries synthetic policyholder identity", () => {
         expect(HEALTH_ETHNIKI_1).toMatchObject({
-            customerName: "ΑΡΤΕΜΙΣ",
-            customerSurname: "ΚΟΚΚΑΛΙΑ",
-            customerEmail: "artemiskohas@gmail.com",
+            customerName: "ΔΟΚΙΜΗ",
+            customerSurname: "ΠΑΡΑΔΕΙΓΜΑΤΟΣ",
+            customerEmail: "fixture-policyholder@example.invalid",
         })
     })
 

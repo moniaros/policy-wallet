@@ -17,7 +17,7 @@ vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
 describe("scoreExtraction", () => {
     const expected = {
         insurerName: "Η ΕΘΝΙΚΗ",
-        policyNumber: "1651622",
+        policyNumber: "9000001",
         lineOfBusiness: "health",
         startDate: "2024-05-22",
         endDate: "2025-05-22",

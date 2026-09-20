@@ -64,6 +64,9 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Reject committed private material
+        run: node scripts/audit-private-material.mjs
+
       - name: Install dependencies
         run: npm ci
 
@@ -143,6 +146,9 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Reject committed private material
+        run: node scripts/audit-private-material.mjs
+
       - name: Install dependencies
         run: npm ci
 
@@ -164,6 +170,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+
+      - name: Reject committed private material
+        run: node scripts/audit-private-material.mjs
 
       - name: Install dependencies
         run: npm ci
@@ -222,6 +231,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+
+      - name: Reject committed private material
+        run: node scripts/audit-private-material.mjs
 
       - name: Install dependencies
         if: env.E2E_DATABASE_URL != ''
@@ -286,6 +298,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+
+      - name: Reject committed private material
+        run: node scripts/audit-private-material.mjs
 
       - name: Install dependencies
         run: npm ci

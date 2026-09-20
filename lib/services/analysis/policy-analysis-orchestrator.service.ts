@@ -1908,6 +1908,10 @@ export class PolicyAnalysisOrchestratorService {
                 const allEnglish = await batchTranslateToEnglish(allGreekTexts, {
                     userId: run.userId,
                     policyId: run.policyId,
+                    onDegraded: () => {
+                        translationFailed = true
+                        missingArtifacts.add("translation")
+                    },
                 })
                 const clarityEnglish = allEnglish.slice(0, clarityCollection.texts.length)
                 const gapEnglish = allEnglish.slice(clarityCollection.texts.length)

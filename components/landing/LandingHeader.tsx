@@ -6,6 +6,7 @@ import { trackLandingEvent } from "@/lib/landing/analytics"
 import type { LandingLocale } from "@/types/landing-content"
 
 interface LandingHeaderProps {
+    registrationsOpen?: boolean
     locale: LandingLocale
     /**
      * Retained for call-site compatibility. The #perks in-page anchor is no
@@ -20,7 +21,7 @@ interface LandingHeaderProps {
  * Keeping this thin wrapper lets the landing page fire its page-view + nav-CTA
  * events without special-casing the shared header.
  */
-export function LandingHeader({ locale }: LandingHeaderProps) {
+export function LandingHeader({ locale, registrationsOpen = true }: LandingHeaderProps) {
     useEffect(() => {
         trackLandingEvent("page_view_landing", {
             locale,
@@ -31,11 +32,12 @@ export function LandingHeader({ locale }: LandingHeaderProps) {
     return (
         <PublicHeader
             locale={locale}
+            registrationsOpen={registrationsOpen}
             ctaSource="landing_nav"
             onPrimaryCtaClick={() =>
                 trackLandingEvent("cta_clicked_hero", {
                     locale,
-                    cta: "start_free",
+                    cta: registrationsOpen ? "start_free" : "needs_check",
                     location: "nav",
                 })
             }

@@ -1,3 +1,4 @@
+import { registrationsOpen } from "@/lib/auth/registration-gate"
 import type { Metadata } from "next"
 import { WorldClassLanding } from "@/components/landing/WorldClassLanding"
 import { buildLandingJsonLd, buildLandingMetadata } from "@/lib/landing/seo"
@@ -10,7 +11,7 @@ export const metadata: Metadata = buildLandingMetadata("en")
 
 // ISR backstop; /admin/partners saves revalidate the partner-offers tag, and
 // /admin/plans revalidates the plan-catalog tag behind the price band.
-export const revalidate = 300
+export const revalidate = 30
 
 export default async function LandingPageEnglish() {
     const jsonLd = buildLandingJsonLd("en")
@@ -24,7 +25,7 @@ export default async function LandingPageEnglish() {
         <>
             {/* NOT wrapped in Suspense — see the Greek homepage for why: the
                 boundary hid the entire page from JS-less crawlers. */}
-            <WorldClassLanding locale="en" partnerOffers={partnerOffers} pricingPlans={pricingPlans} />
+            <WorldClassLanding locale="en" partnerOffers={partnerOffers} pricingPlans={pricingPlans} registrationsOpen={await registrationsOpen()} />
             {/* Server-rendered so crawlers without JS see the structured data. */}
             <JsonLd data={jsonLd} />
         </>

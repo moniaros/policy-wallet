@@ -31,6 +31,8 @@ const BATCH_SIZE = 40
 export interface TranslationTracking {
     userId: string
     policyId?: string
+    /** Preserve source text on failure, but disclose that English is incomplete. */
+    onDegraded?: () => void
 }
 
 /**
@@ -93,6 +95,7 @@ export async function batchTranslateToEnglish(
                     typeof candidate !== "string" ||
                     candidate.trim() === "" ||
                     /^n\/?a$/i.test(candidate.trim())
+                if (junk) tracking?.onDegraded?.()
                 const translated = junk ? batchTexts[j] : candidate
                 results[batchIndices[j]] = translated
                 if (!junk) {
@@ -111,6 +114,7 @@ export async function batchTranslateToEnglish(
                 error: error instanceof Error ? error.message : String(error),
                 batchSize: batchTexts.length,
             })
+            tracking?.onDegraded?.()
             // Graceful degradation: use Greek text as-is
             for (const idx of batchIndices) {
                 results[idx] = greekTexts[idx]

@@ -69,7 +69,6 @@ const MIXED_SURFACE_FILES = [
     // The auth pages left this list on 2026-09-03: their dark literals were
     // hand-rolled dark-mode buttons and dialogs, now the Grafí Button and
     // the surface tokens, which theme themselves.
-    'components/landing/WorldClassLanding.tsx',
     'components/wallet/PolicyQA.tsx',
 ]
 

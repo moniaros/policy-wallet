@@ -1,3 +1,4 @@
+import { registrationsOpen } from "@/lib/auth/registration-gate"
 import type { Metadata } from "next"
 import { WorldClassLanding } from "@/components/landing/WorldClassLanding"
 import { buildLandingJsonLd, buildLandingMetadata } from "@/lib/landing/seo"
@@ -10,7 +11,7 @@ export const metadata: Metadata = buildLandingMetadata("el")
 
 // ISR backstop; /admin/partners saves revalidate the partner-offers tag, and
 // /admin/plans revalidates the plan-catalog tag behind the price band.
-export const revalidate = 300
+export const revalidate = 30
 
 export default async function LandingPage() {
     const jsonLd = buildLandingJsonLd("el")
@@ -27,7 +28,7 @@ export default async function LandingPage() {
                 JS (several AI crawlers) saw an empty homepage. Both data reads
                 above are already awaited, so there is nothing left to suspend
                 on — the markup renders straight into the server HTML. */}
-            <WorldClassLanding locale="el" partnerOffers={partnerOffers} pricingPlans={pricingPlans} />
+            <WorldClassLanding locale="el" partnerOffers={partnerOffers} pricingPlans={pricingPlans} registrationsOpen={await registrationsOpen()} />
             {/* Server-rendered so crawlers without JS see the structured data. */}
             <JsonLd data={jsonLd} />
         </>

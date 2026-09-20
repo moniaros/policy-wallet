@@ -1,0 +1,450 @@
+[
+  {
+    "route": "/",
+    "width": 390,
+    "status": 200,
+    "title": "Μάθετε τι πραγματικά καλύπτουν τα συμβόλαιά σας | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Μάθετε τι πραγματικά καλύπτουν τα συμβόλαιά σας.",
+      "3 ασφαλιστήρια1 λήγει μέσα σε 30 ημέρες",
+      "Χρειάζεται την προσοχή σας",
+      "Επισκόπηση",
+      "Χάρτης κάλυψης",
+      "Τι είναι το PolicyWallet;",
+      "Τέσσερα απλά βήματα.",
+      "Για εσάς. Ξεκάθαρα.",
+      "Χάρτης κάλυψης",
+      "Το πρόβλημα δεν είναι να μην έχετε ασφάλεια. Είναι να νομίζετε ότι έχετε.",
+      "3 ασφαλιστήρια1 λήγει μέσα σε 30 ημέρες",
+      "Χρειάζεται την προσοχή σας",
+      "Δύο αριθμοί που αξίζει να ξέρετε.",
+      "Κανείς δεν μας πληρώνει για να σας πούμε κάτι συγκεκριμένο.",
+      "Μία συνδρομή, όλα τα ασφαλιστήριά σας διαβασμένα.",
+      "Πείτε μας πώς μπορούμε να βοηθήσουμε",
+      "Συχνές ερωτήσεις",
+      "Δείτε τι γράφει το συμβόλαιό σας. Κρατήστε τις ερωτήσεις για τον ασφαλιστή σας.",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/",
+    "width": 1280,
+    "status": 200,
+    "title": "Μάθετε τι πραγματικά καλύπτουν τα συμβόλαιά σας | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Μάθετε τι πραγματικά καλύπτουν τα συμβόλαιά σας.",
+      "3 ασφαλιστήρια1 λήγει μέσα σε 30 ημέρες",
+      "Χρειάζεται την προσοχή σας",
+      "Επισκόπηση",
+      "Χάρτης κάλυψης",
+      "Τι είναι το PolicyWallet;",
+      "Τέσσερα απλά βήματα.",
+      "Για εσάς. Ξεκάθαρα.",
+      "Χάρτης κάλυψης",
+      "Το πρόβλημα δεν είναι να μην έχετε ασφάλεια. Είναι να νομίζετε ότι έχετε.",
+      "3 ασφαλιστήρια1 λήγει μέσα σε 30 ημέρες",
+      "Χρειάζεται την προσοχή σας",
+      "Δύο αριθμοί που αξίζει να ξέρετε.",
+      "Κανείς δεν μας πληρώνει για να σας πούμε κάτι συγκεκριμένο.",
+      "Μία συνδρομή, όλα τα ασφαλιστήριά σας διαβασμένα.",
+      "Πείτε μας πώς μπορούμε να βοηθήσουμε",
+      "Συχνές ερωτήσεις",
+      "Δείτε τι γράφει το συμβόλαιό σας. Κρατήστε τις ερωτήσεις για τον ασφαλιστή σας.",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/en",
+    "width": 390,
+    "status": 200,
+    "title": "Know what your policies actually cover | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Know what your policies actually cover.",
+      "3 policies1 expires within 30 days",
+      "Needs your attention",
+      "Overview",
+      "Coverage map",
+      "What is PolicyWallet?",
+      "Four simple steps.",
+      "For you. Clearly.",
+      "Coverage map",
+      "The problem is not having no insurance. It is thinking you have it.",
+      "3 policies1 expires within 30 days",
+      "Needs your attention",
+      "Two numbers worth knowing.",
+      "Nobody pays us to tell you a particular thing.",
+      "One subscription, every policy of yours read.",
+      "Tell us how we can help",
+      "Common questions",
+      "See what your policy says. Keep your questions for your insurance agent.",
+      "Cookie Preferences"
+    ],
+    "email": true
+  },
+  {
+    "route": "/en",
+    "width": 1280,
+    "status": 200,
+    "title": "Know what your policies actually cover | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Know what your policies actually cover.",
+      "2 policies1 expires within 30 days",
+      "Needs your attention",
+      "Overview",
+      "Coverage map",
+      "What is PolicyWallet?",
+      "Four simple steps.",
+      "For you. Clearly.",
+      "Coverage map",
+      "The problem is not having no insurance. It is thinking you have it.",
+      "3 policies1 expires within 30 days",
+      "Needs your attention",
+      "Two numbers worth knowing.",
+      "Nobody pays us to tell you a particular thing.",
+      "One subscription, every policy of yours read.",
+      "Tell us how we can help",
+      "Common questions",
+      "See what your policy says. Keep your questions for your insurance agent.",
+      "Cookie Preferences"
+    ],
+    "email": true
+  },
+  {
+    "route": "/product",
+    "width": 390,
+    "status": 200,
+    "title": "Έλεγχος ασφάλισης με AI: καλύψεις και κενά | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Κάθε ασφάλειά σας, διαβασμένη για εσάς.",
+      "Καθαρές απαντήσεις, χωρίς να διαβάσετε ούτε μία σελίδα.",
+      "16 είδη συμβολαίων. Μία ανάλυση.",
+      "Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων.",
+      "Συχνές ερωτήσεις",
+      "Στείλτε ένα συμβόλαιο και δείτε τι βρίσκουμε.",
+      "Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/product",
+    "width": 1280,
+    "status": 200,
+    "title": "Έλεγχος ασφάλισης με AI: καλύψεις και κενά | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Κάθε ασφάλειά σας, διαβασμένη για εσάς.",
+      "Καθαρές απαντήσεις, χωρίς να διαβάσετε ούτε μία σελίδα.",
+      "16 είδη συμβολαίων. Μία ανάλυση.",
+      "Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων.",
+      "Συχνές ερωτήσεις",
+      "Στείλτε ένα συμβόλαιο και δείτε τι βρίσκουμε.",
+      "Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/en/product",
+    "width": 390,
+    "status": 200,
+    "title": "AI insurance check: coverages and gaps | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Every policy you own, read for you.",
+      "Clear answers, without reading a single page.",
+      "16 kinds of policies. One analysis.",
+      "From PDF to a clear picture, without reading the fine print.",
+      "Frequently asked questions",
+      "Send us a policy and see what we find.",
+      "Free for 3 policies. Upgrade whenever you need it.",
+      "Cookie Preferences"
+    ],
+    "email": true
+  },
+  {
+    "route": "/en/product",
+    "width": 1280,
+    "status": 200,
+    "title": "AI insurance check: coverages and gaps | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Every policy you own, read for you.",
+      "Clear answers, without reading a single page.",
+      "16 kinds of policies. One analysis.",
+      "From PDF to a clear picture, without reading the fine print.",
+      "Frequently asked questions",
+      "Send us a policy and see what we find.",
+      "Free for 3 policies. Upgrade whenever you need it.",
+      "Cookie Preferences"
+    ],
+    "email": true
+  },
+  {
+    "route": "/pricing",
+    "width": 390,
+    "status": 200,
+    "title": "Τιμές: Δωρεάν, Plus €39, Family €79/χρόνο | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Διαλέξτε το πλάνο που σας ταιριάζει",
+      "Πλάνα για ιδιώτες",
+      "Πλάνα για ασφαλιστές & γραφεία",
+      "Σύγκριση δυνατοτήτων ιδιωτών",
+      "Σύγκριση δυνατοτήτων ασφαλιστών",
+      "Συχνές ερωτήσεις ιδιωτών",
+      "Συχνές ερωτήσεις ασφαλιστών",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/pricing",
+    "width": 1280,
+    "status": 200,
+    "title": "Τιμές: Δωρεάν, Plus €39, Family €79/χρόνο | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Διαλέξτε το πλάνο που σας ταιριάζει",
+      "Πλάνα για ιδιώτες",
+      "Πλάνα για ασφαλιστές & γραφεία",
+      "Σύγκριση δυνατοτήτων ιδιωτών",
+      "Σύγκριση δυνατοτήτων ασφαλιστών",
+      "Συχνές ερωτήσεις ιδιωτών",
+      "Συχνές ερωτήσεις ασφαλιστών",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/en/pricing",
+    "width": 390,
+    "status": 200,
+    "title": "Pricing: Free, Plus €39/year, Family €79/year | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Pick the plan that fits you",
+      "Plans for individuals",
+      "Plans for agents & agencies",
+      "Feature comparison for individuals",
+      "Agent feature comparison",
+      "FAQs for individuals",
+      "Agent FAQs",
+      "Cookie Preferences"
+    ],
+    "email": true
+  },
+  {
+    "route": "/en/pricing",
+    "width": 1280,
+    "status": 200,
+    "title": "Pricing: Free, Plus €39/year, Family €79/year | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Pick the plan that fits you",
+      "Plans for individuals",
+      "Plans for agents & agencies",
+      "Feature comparison for individuals",
+      "Agent feature comparison",
+      "FAQs for individuals",
+      "Agent FAQs",
+      "Cookie Preferences"
+    ],
+    "email": true
+  },
+  {
+    "route": "/solutions/agents",
+    "width": 390,
+    "status": 200,
+    "title": "Λογισμικό με AI για ασφαλιστικούς πράκτορες | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Όλοι οι πελάτες σας σε μία οθόνη.",
+      "Τι κάνει για εσάς",
+      "Από το συμβόλαιο στην αναφορά, σε τρία βήματα.",
+      "Το τοπίο του κινδύνου αλλάζει.",
+      "Συχνές ερωτήσεις ασφαλιστών",
+      "Πλήρης ανάλυση κάθε ασφαλιστηρίου με το Family.",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/solutions/agents",
+    "width": 1280,
+    "status": 200,
+    "title": "Λογισμικό με AI για ασφαλιστικούς πράκτορες | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Όλοι οι πελάτες σας σε μία οθόνη.",
+      "Τι κάνει για εσάς",
+      "Από το συμβόλαιο στην αναφορά, σε τρία βήματα.",
+      "Το τοπίο του κινδύνου αλλάζει.",
+      "Συχνές ερωτήσεις ασφαλιστών",
+      "Πλήρης ανάλυση κάθε ασφαλιστηρίου με το Family.",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/en/solutions/agents",
+    "width": 390,
+    "status": 200,
+    "title": "AI software for insurance agents | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "All your clients on one screen.",
+      "What it does for you",
+      "From policy to report, in three steps.",
+      "The risk landscape is changing.",
+      "Common questions from agents",
+      "Full analysis of every policy with Family.",
+      "Cookie Preferences"
+    ],
+    "email": true
+  },
+  {
+    "route": "/en/solutions/agents",
+    "width": 1280,
+    "status": 200,
+    "title": "AI software for insurance agents | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "All your clients on one screen.",
+      "What it does for you",
+      "From policy to report, in three steps.",
+      "The risk landscape is changing.",
+      "Common questions from agents",
+      "Full analysis of every policy with Family.",
+      "Cookie Preferences"
+    ],
+    "email": true
+  },
+  {
+    "route": "/trust",
+    "width": 390,
+    "status": 200,
+    "title": "Εμπιστοσύνη και προστασία δεδομένων | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Τι γίνεται με το συμβόλαιό σας αφού το ανεβάσετε",
+      "Πού δεν πηγαίνουν τα δεδομένα σας",
+      "Τα έγγραφά σας",
+      "Τι κάνει η τεχνητή νοημοσύνη — και τι δεν αποφασίζει",
+      "Ποιος μπορεί να δει τι",
+      "Παίρνετε τα δεδομένα σας μαζί σας",
+      "Ποιος ευθύνεται",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/trust",
+    "width": 1280,
+    "status": 200,
+    "title": "Εμπιστοσύνη και προστασία δεδομένων | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Τι γίνεται με το συμβόλαιό σας αφού το ανεβάσετε",
+      "Πού δεν πηγαίνουν τα δεδομένα σας",
+      "Τα έγγραφά σας",
+      "Τι κάνει η τεχνητή νοημοσύνη — και τι δεν αποφασίζει",
+      "Ποιος μπορεί να δει τι",
+      "Παίρνετε τα δεδομένα σας μαζί σας",
+      "Ποιος ευθύνεται",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/methodology",
+    "width": 390,
+    "status": 200,
+    "title": "Μεθοδολογία — πώς αποφασίζεται ένα εύρημα | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Πώς αποφασίζεται ένα εύρημα",
+      "Ποιος αποφασίζει ότι υπάρχει κενό",
+      "Αναπαραγωγιμότητα",
+      "Τι ελέγχουμε σήμερα",
+      "Πού στηρίζεται κάθε απαίτηση",
+      "Τι δεν κάνουμε",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/methodology",
+    "width": 1280,
+    "status": 200,
+    "title": "Μεθοδολογία — πώς αποφασίζεται ένα εύρημα | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Πώς αποφασίζεται ένα εύρημα",
+      "Ποιος αποφασίζει ότι υπάρχει κενό",
+      "Αναπαραγωγιμότητα",
+      "Τι ελέγχουμε σήμερα",
+      "Πού στηρίζεται κάθε απαίτηση",
+      "Τι δεν κάνουμε",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/contact",
+    "width": 390,
+    "status": 200,
+    "title": "Επικοινωνία: υποστήριξη και συνεργασίες | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Πείτε μας πώς μπορούμε να βοηθήσουμε.",
+      "Πώς αλλιώς να μας βρείτε",
+      "Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  },
+  {
+    "route": "/contact",
+    "width": 1280,
+    "status": 200,
+    "title": "Επικοινωνία: υποστήριξη και συνεργασίες | PolicyWallet",
+    "h1": 1,
+    "overflow": false,
+    "headings": [
+      "Πείτε μας πώς μπορούμε να βοηθήσουμε.",
+      "Πώς αλλιώς να μας βρείτε",
+      "Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.",
+      "Ρυθμίσεις Cookies"
+    ],
+    "email": true
+  }
+]
