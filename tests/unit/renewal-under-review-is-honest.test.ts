@@ -131,7 +131,7 @@ describe("the write that makes the state reachable", () => {
  * renewal is trusted precisely to move dates.
  */
 describe("a renewal that names another policy", () => {
-    const MISMATCH = { expected: "1651622", found: "9999999" }
+    const MISMATCH = { expected: "9000001", found: "9999999" }
 
     it("outranks every date verdict, and the in-progress state", () => {
         expect(resolveAttention({ ...EXPIRED, renewalMismatch: MISMATCH }).kind).toBe("renewal_mismatch")
@@ -142,7 +142,7 @@ describe("a renewal that names another policy", () => {
 
     it("carries BOTH numbers, so the reader can compare two pieces of paper", () => {
         const a = resolveAttention({ ...EXPIRED, renewalMismatch: MISMATCH })
-        expect(a.values).toEqual({ expected: "1651622", found: "9999999" })
+        expect(a.values).toEqual({ expected: "9000001", found: "9999999" })
     })
 
     it("points at the documents section, where the offending file is", () => {

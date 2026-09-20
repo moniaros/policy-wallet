@@ -20,9 +20,9 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 3760
-# inline entries: 4914 across 221 files
+# inline entries: 4917 across 221 files
 # ternary entries: 288 across 43 files
-# call entries: 1148 across 86 files
+# call entries: 1147 across 86 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -6967,6 +6967,8 @@ inline	lib/marketing/positioning.ts	"Αποθήκευση στην ΕΕ"
 inline	lib/marketing/positioning.ts	"Βλέπει μόνο τα δικά της ασφαλιστήρια."
 inline	lib/marketing/positioning.ts	"Βλέπετε όλα τα ασφαλιστήρια μαζί"
 inline	lib/marketing/positioning.ts	"Βρίσκει αν πληρώνετε δύο φορές"
+inline	lib/marketing/positioning.ts	"Δείτε τι γράφει το ασφαλιστήριό σας. Κρατήστε τις ερωτήσεις για τον ασφαλιστή σας."
+inline	lib/marketing/positioning.ts	"Δείτε τις ανάγκες σας"
 inline	lib/marketing/positioning.ts	"Δεν αξιολογούμε ασφαλιστήρια. Αξιολογούμε την προστασία σας."
 inline	lib/marketing/positioning.ts	"Δεν είμαστε ασφαλιστική εταιρεία. Δεν έχουμε προϊόν να σας προτείνουμε."
 inline	lib/marketing/positioning.ts	"Δεν κερδίζει τίποτα από την απάντηση"
@@ -6998,6 +7000,7 @@ inline	lib/marketing/positioning.ts	"Ξέρετε πάντα πότε λήγει
 inline	lib/marketing/positioning.ts	"Ξεκινήστε δωρεάν"
 inline	lib/marketing/positioning.ts	"Ο ασφαλιστής σας"
 inline	lib/marketing/positioning.ts	"Ο φάκελος στο συρτάρι"
+inline	lib/marketing/positioning.ts	"Οι νέες εγγραφές είναι προσωρινά κλειστές. Αν έχετε πρόσκληση, ανοίξτε τον σύνδεσμό της. Μπορείτε να κάνετε τον έλεγχο αναγκών χωρίς λογαριασμό."
 inline	lib/marketing/positioning.ts	"Πήρατε δάνειο"
 inline	lib/marketing/positioning.ts	"Πήρατε δάνειο"
 inline	lib/marketing/positioning.ts	"Πήρατε σκύλο"
@@ -9953,7 +9956,6 @@ call	components/landing/WhyDifferent.tsx	"Τι σας δίνει κάθε επι
 call	components/landing/WhyNow.tsx	"Είναι να νομίζετε ότι έχετε."
 call	components/landing/WhyNow.tsx	"Το πρόβλημα δεν είναι να μην έχετε ασφάλιση."
 call	components/landing/WorldClassLanding.tsx	"Είμαι ασφαλιστής"
-call	components/landing/WorldClassLanding.tsx	"Μάθετε σήμερα αν είστε ακόμη προστατευμένοι."
 call	components/landing/grafi/AnswerBlock.tsx	"Όλο το λεξικό ασφαλιστικών όρων →"
 call	components/landing/grafi/AnswerBlock.tsx	"Τι είναι το PolicyWallet;"
 call	components/landing/grafi/ComparisonBand.tsx	"Η σύγκριση"

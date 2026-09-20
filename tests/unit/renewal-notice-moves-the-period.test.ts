@@ -46,7 +46,7 @@ const buildMetadata = (policy: any, extraction: any) =>
 const IDENTIFIED = {
     id: "pol_1",
     insurerName: "Εθνική Ασφαλιστική",
-    policyNumber: "1651622",
+    policyNumber: "9000001",
     lineOfBusiness: "motor",
     startDate: new Date("2025-07-11"),
     endDate: new Date("2026-07-11"),
@@ -63,7 +63,7 @@ const RENEWAL = {
     // The SAME policy, punctuated the way the renewal happens to print it —
     // which also proves the number comparison is presentation-insensitive
     // end to end, not just in its own unit test.
-    policyNumber: "165-1622",
+    policyNumber: "900-0001",
     premiumAmount: 355,
     coverageSummary: "Prose the notice happens to carry",
 }
@@ -80,7 +80,7 @@ describe("a renewal notice on an identified policy", () => {
         // insurer or number must not rewrite the contract it refers to.
         const m = buildMetadata(IDENTIFIED, RENEWAL)
         expect(m.insurerName).toBe("Εθνική Ασφαλιστική")
-        expect(m.policyNumber).toBe("1651622")
+        expect(m.policyNumber).toBe("9000001")
     })
 
     it("does not restate the cover", () => {
@@ -149,6 +149,6 @@ describe("a renewal that names a different policy", () => {
     it("leaves the identity exactly as recorded", () => {
         const m = buildMetadata(IDENTIFIED, WRONG)
         expect(m.insurerName).toBe("Εθνική Ασφαλιστική")
-        expect(m.policyNumber).toBe("1651622")
+        expect(m.policyNumber).toBe("9000001")
     })
 })

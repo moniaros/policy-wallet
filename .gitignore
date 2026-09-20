@@ -107,3 +107,11 @@ ds-bundle/
 .github/skills/
 .impeccable/
 .playwright-mcp/
+
+# S0: downloaded service-account credentials never belong in source control.
+**/*-firebase-adminsdk-*.json
+**/*service-account*.json
+**/*service_account*.json
+**/*serviceAccount*.json
+*.p12
+*.pfx

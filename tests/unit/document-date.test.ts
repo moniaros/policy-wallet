@@ -9,7 +9,7 @@ import {
 
 const iso = (raw: unknown) => toIsoDateString(parseDocumentDate(raw))
 
-describe('parseDocumentDate — the exact strings from policy 1651622', () => {
+describe('parseDocumentDate — the exact strings from policy 9000001', () => {
     it('parses the extracted DD-MM-YYYY values', () => {
         expect(iso('22-05-2024')).toBe('2024-05-22')
         expect(iso('22-05-2025')).toBe('2025-05-22')

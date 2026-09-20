@@ -55,7 +55,9 @@ import {
     collectGapTextsForTranslation,
 } from '@/lib/services/translation/greek-to-bilingual'
 
-beforeEach(() => {
+beforeEach(async () => {
+    // Let the previous case finish its deliberately asynchronous cache write.
+    await new Promise(resolve => setTimeout(resolve, 0))
     vi.clearAllMocks()
     dbRows.clear()
 })
@@ -143,5 +145,24 @@ describe('double-wrapped {el,en} objects can never reach the prompt or the cache
         const prompt: string = generateObjectMock.mock.calls[0][0].prompt
         expect(prompt).toContain('1 Greek insurance texts')
         expect(prompt).not.toContain('[object Object]')
+    })
+})
+
+
+describe('fallback is disclosed to the analysis run', () => {
+    it('reports provider failure while preserving Greek source text', async () => {
+        generateObjectMock.mockRejectedValueOnce(new Error('provider unavailable'))
+        const onDegraded = vi.fn()
+        const result = await batchTranslateToEnglish(['Κάλυψη'], { userId: 'test-user', onDegraded })
+        expect(result).toEqual(['Κάλυψη'])
+        expect(onDegraded).toHaveBeenCalledOnce()
+        expect(dbRows.size).toBe(0)
+    })
+    it('reports a partial junk response while retaining successful translations', async () => {
+        generateObjectMock.mockResolvedValueOnce({ object: { translations: ['Coverage', 'N/A'] }, usage: {} })
+        const onDegraded = vi.fn()
+        const result = await batchTranslateToEnglish(['Κάλυψη', 'Όριο'], { userId: 'test-user', onDegraded })
+        expect(result).toEqual(['Coverage', 'Όριο'])
+        expect(onDegraded).toHaveBeenCalledOnce()
     })
 })

@@ -519,3 +519,17 @@ export const COMPARISON_ROWS: readonly {
         policywallet: "yes",
     },
 ]
+
+/** Public entry copy must reflect the registration switch before collecting an address. */
+export const REGISTRATION_PAUSED: Bilingual = {
+    el: "Οι νέες εγγραφές είναι προσωρινά κλειστές. Αν έχετε πρόσκληση, ανοίξτε τον σύνδεσμό της. Μπορείτε να κάνετε τον έλεγχο αναγκών χωρίς λογαριασμό.",
+    en: "New registrations are temporarily paused. If you have an invitation, open its link. You can take the needs check without an account.",
+}
+export const EXPLORE_NEEDS: Bilingual = {
+    el: "Δείτε τις ανάγκες σας",
+    en: "Explore your needs",
+}
+export const FINAL_ACTION_HEADING: Bilingual = {
+    el: "Δείτε τι γράφει το ασφαλιστήριό σας. Κρατήστε τις ερωτήσεις για τον ασφαλιστή σας.",
+    en: "See what your policy says. Keep your questions for your insurance agent.",
+}

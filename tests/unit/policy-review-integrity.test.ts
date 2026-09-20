@@ -17,7 +17,7 @@ function makePolicy(acordPolicy: Record<string, unknown>, extraction: Record<str
         status: 'active',
         insurerName: 'ΕΘΝΙΚΗ Η ΠΡΩΤΗ ΑΣΦΑΛΙΣΤΙΚΗ',
         lineOfBusiness: 'health',
-        policyNumber: '1651622',
+        policyNumber: '9000001',
         startDate: PLACEHOLDER_START,
         endDate: PLACEHOLDER_END,
         premiumAmount: 1000,
@@ -28,7 +28,7 @@ function makePolicy(acordPolicy: Record<string, unknown>, extraction: Record<str
 
 beforeEach(() => captureMessage.mockClear())
 
-describe('buildPolicyReviewData — the Ethniki #1651622 chain', () => {
+describe('buildPolicyReviewData — the Ethniki #9000001 chain', () => {
     it('shows the extracted envelope dates, never the placeholder columns', () => {
         const data = buildPolicyReviewData(
             makePolicy({ effectiveDate: '2024-05-22', expirationDate: '2025-05-22', issueDate: '22-05-2024' })

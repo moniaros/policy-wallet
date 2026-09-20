@@ -9,5 +9,8 @@
   "call:components/timeline/LifeTimeline.tsx::Αξιολογήσεις",
   "inline:lib/i18n/role-copy.ts::Εκκρεμεί ανάλυση",
   "call:components/landing/GrafiHero.tsx::Το πορτοφόλι μου",
-  "call:components/risk-dna/AdvisorBookView.tsx::Ανοιχτές περιοχές"
+  "call:components/risk-dna/AdvisorBookView.tsx::Ανοιχτές περιοχές",
+  "inline:lib/marketing/positioning.ts::Οι νέες εγγραφές είναι προσωρινά κλειστές. Αν έχετε πρόσκληση, ανοίξτε τον σύνδεσμό της. Μπορείτε να κάνετε τον έλεγχο αναγκών χωρίς λογαριασμό.",
+  "inline:lib/marketing/positioning.ts::Δείτε τις ανάγκες σας",
+  "inline:lib/marketing/positioning.ts::Δείτε τι γράφει το ασφαλιστήριό σας. Κρατήστε τις ερωτήσεις για τον ασφαλιστή σας."
 ]

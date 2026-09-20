@@ -213,7 +213,6 @@ const HARDCODED_COLOUR_DEBT: Record<string, number> = {
     'components/landing/TrustBadges.tsx::#a7f3d0': 1,
     'components/landing/TrustRow.tsx::#a7f3d0': 2,
     'components/landing/WhyNow.tsx::#a7f3d0': 2,
-    'components/landing/WorldClassLanding.tsx::#0f172a': 1,
     'components/wallet/PolicyQA.tsx::#111111': 1,
     'components/wallet/coverage-details/HomeCoverageDetails.tsx::#22c55e': 3,
     'components/wallet/policy-detail/PolicyHead.tsx::#111111': 1,
