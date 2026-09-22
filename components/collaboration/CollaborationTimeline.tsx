@@ -284,6 +284,11 @@ export function CollaborationTimeline({
 
     useEffect(() => {
         loadThreads()
+        const updated = (event: Event) => {
+            if ((event as CustomEvent<{ policyId: string }>).detail?.policyId === policyId) void loadThreads()
+        }
+        window.addEventListener('pw:collaboration-updated', updated)
+        return () => window.removeEventListener('pw:collaboration-updated', updated)
     }, [query])
 
     useEffect(() => {

@@ -39,6 +39,10 @@ const POLICY_SCOPE_PREFIX = "policy:"
 /** Relationship states that end an agent's access. Mirrors computePolicyAccess. */
 export const ENDED_RELATIONSHIP_STATUSES = ["inactive", "terminated"] as const
 
+export function liveAgentRelationshipsWhere(agentUserId: string) {
+    return { agentUserId, status: { notIn: [...ENDED_RELATIONSHIP_STATUSES] } }
+}
+
 /** Policy ids this agent holds an active, policy-scoped grant for. */
 export async function getGrantedPolicyIds(agentUserId: string): Promise<string[]> {
     const grants = await db.accessGrant.findMany({

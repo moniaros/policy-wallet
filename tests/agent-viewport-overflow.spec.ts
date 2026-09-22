@@ -76,3 +76,27 @@ test('a sort control is reachable on a phone where thead is hidden', async ({ pa
         expect(visibleSelects, 'no visible sort select on a phone').toBeGreaterThan(0)
     }
 })
+
+for (const width of [320, 390, 1440]) {
+    test(`policy review workspace @ ${width}px preserves controls and fits`, async ({ page }) => {
+        test.skip(process.env.AGENT_REVIEW_WORKSPACE !== '1', 'Agent review rollout flag is off')
+        test.setTimeout(120_000)
+        await page.setViewportSize({ width, height: 900 })
+        await page.goto('/customers')
+        if (width < 768) await page.getByRole('button', { name: /Προφίλ|Profile/, exact: true }).click()
+        else await page.getByRole('cell', { name: /E2E Policyholder.*e2e-ph@policywallet.test/ }).click()
+        await page.getByRole('tab', { name: /Ασφαλιστήρια|Policies/, exact: true }).click()
+        await page.getByRole('link', { name: /E2E-MOT-001/ }).click()
+        const panel = page.getByRole('region', { name: /Προετοιμασία επικοινωνίας|Prepare a communication/ })
+        await expect(panel).toBeVisible({ timeout: 30000 })
+        await expect(panel.getByRole('textbox', { name: /Κείμενο για τον πελάτη|Customer-facing text/ })).toBeVisible()
+        const layout = await page.evaluate(() => ({
+            width: document.documentElement.clientWidth,
+            scroll: document.documentElement.scrollWidth,
+            offenders: [...document.querySelectorAll('main *')].map(el => ({
+                tag: el.tagName, class: String(el.className), text: el.textContent?.slice(0, 80), box: el.getBoundingClientRect().toJSON(),
+            })).filter(el => el.box.width > 0 && el.box.right > document.documentElement.clientWidth + 1).slice(0, 12),
+        }))
+        expect(layout.scroll, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(layout.width + 1)
+    })
+}

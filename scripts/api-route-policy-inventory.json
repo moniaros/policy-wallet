@@ -2123,6 +2123,51 @@
           "profile": "optional"
         }
       }
+    },
+    {
+      "route": "v1/agent/review-workspace/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "agent"
+          ]
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "agent-review"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod"
+        }
+      }
+    },
+    {
+      "route": "v1/agent/review-workspace/generate/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "agent"
+          ]
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "agent-suggestion"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod"
+        }
+      }
     }
   ]
 }

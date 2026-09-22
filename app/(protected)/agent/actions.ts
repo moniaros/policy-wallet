@@ -1,4 +1,7 @@
 "use server"
+import { sealScan, openScan } from "@/lib/services/analysis/scan-handoff"
+import { hashDocumentBuffer, getExtractionCacheVersion, setCachedExtraction } from "@/lib/services/analysis/extraction-cache"
+
 
 import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
@@ -1191,6 +1194,16 @@ export async function addPolicyForCustomer(data: {
                     },
                 }
             }
+            // Verify actor, exact bytes and extraction version before reusing a scan.
+            // This runs only AFTER the document gate and durable ingestion.
+            const handoff = documentFormData?.get('scanToken')
+            if (typeof handoff === 'string') {
+                const hash = await hashDocumentBuffer(Buffer.from(await file.arrayBuffer()))
+                const version = await getExtractionCacheVersion()
+                const extraction = version ? openScan(handoff, { actorId: agentId, hash, version }) : null
+                const unchanged = extraction && extraction.insurerName === input.policy.insurerName && extraction.policyNumber === input.policy.policyNumber && JSON.stringify(extraction.lineOfBusiness) === JSON.stringify(input.policy.lineOfBusiness) && extraction.startDate === input.policy.startDate && extraction.endDate === input.policy.endDate && extraction.premiumAmount === input.policy.premiumAmount
+                if (unchanged) await setCachedExtraction(ingest.policyId, hash, extraction, version)
+            }
             policy = { id: ingest.policyId, policyNumber: input.policy.policyNumber }
             hasDocument = true
         } else {
@@ -1477,6 +1490,7 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
 
     try {
         const aiService = getAIService();
+        const extractionVersion = await getExtractionCacheVersion()
 
         // Built from the gate's verdict and the validated bytes — the only
         // constructor of an extraction input. The MIME is the one the
@@ -1490,7 +1504,8 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
             { userId: authResult.dbUser.id },
         );
 
-        return { success: true, data: result }
+        const scanToken = extractionVersion ? sealScan({ actorId: authResult.dbUser.id, hash: await hashDocumentBuffer(Buffer.from(scanBytes)), version: extractionVersion, extraction: result }) : null
+        return { success: true, data: result, scanToken }
     } catch (e) {
         await reportActionFailure("parsePolicyPdfWithGemini", e, { agentId: authResult.dbUser.id })
         return { error: "SCAN_FAILED" }
@@ -1533,7 +1548,7 @@ export async function scanPolicyForResolution(formData: FormData) {
         phone: data.customerPhone,
     })
 
-    return { success: true as const, extraction: data, resolution }
+    return { success: true as const, extraction: data, resolution, scanToken: parsed.scanToken }
 }
 
 /**

@@ -49,16 +49,39 @@ export function isTermBearing(doc: ChainDocument): boolean {
  * analysable and linkable, rather than failing MISSING_DOCUMENT or rendering
  * no source link at all.
  *
+ * Stated effective dates take precedence over upload order. Superseded versions
+ * are never eligible. Unknown dates retain the legacy upload-order fallback.
+ *
  * @param newestFirst documents ordered `uploadedAt` descending
  */
-export function selectSourceDocument<T extends { documentKind?: string | null }>(
+interface SourceDocument {
+    documentKind?: string | null
+    effectiveFrom?: Date | string | null
+    supersededById?: string | null
+}
+
+function effectiveTime(doc: SourceDocument): number | null {
+    if (!doc.effectiveFrom) return null
+    const value = new Date(doc.effectiveFrom).getTime()
+    return Number.isFinite(value) ? value : null
+}
+
+export function selectSourceDocument<T extends SourceDocument>(
     newestFirst: readonly T[]
 ): T | undefined {
-    return (
-        newestFirst.find(
-            (doc) => doc.documentKind == null || TERM_BEARING.includes(doc.documentKind as DocumentKind)
-        ) ?? newestFirst[0]
+    const live = newestFirst.filter((doc) => !doc.supersededById)
+    const terms = live.filter(
+        (doc) => doc.documentKind == null || TERM_BEARING.includes(doc.documentKind as DocumentKind)
     )
+    // Stable ordering preserves the caller's upload order for legacy/undated
+    // documents and equal dates. An unknown period cannot override a known one.
+    return [...terms].sort((a, b) => {
+        const aTime = effectiveTime(a)
+        const bTime = effectiveTime(b)
+        if (aTime === null) return bTime === null ? 0 : 1
+        if (bTime === null) return -1
+        return bTime - aTime
+    })[0] ?? live[0]
 }
 
 /** The base contract: the document that carries the full terms. */
@@ -84,8 +107,9 @@ export function orderChain(docs: ChainDocument[]): ChainDocument[] {
 
 /** The renewal in force latest — the one whose terms override. */
 export function newestRenewal(docs: ChainDocument[]): ChainDocument | null {
-    const renewals = orderChain(docs.filter((d) => d.documentKind === "renewal_notice"))
-    return renewals.length ? renewals[renewals.length - 1] : null
+    const renewals = docs.filter((d) => d.documentKind === "renewal_notice")
+        .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime())
+    return selectSourceDocument(renewals) ?? null
 }
 
 export type ChainCompleteness =

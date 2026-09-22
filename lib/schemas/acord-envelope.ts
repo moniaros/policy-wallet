@@ -70,6 +70,12 @@ export const ExtractionEnvelopeSchema = z.strictObject({
             })
         )
         .optional(),
+    independentVerification: z.strictObject({
+        version: z.literal('1'), status: z.enum(['agreed', 'needs_review', 'unavailable']),
+        checkedAt: z.string(), humanConfirmed: z.literal(false),
+        fields: z.partialRecord(z.enum(['insurerName', 'policyNumber', 'lineOfBusiness', 'startDate', 'endDate', 'premiumAmount']), z.enum(['agreed', 'disagreed', 'missing'])),
+        provider: z.string().optional(), model: z.string().optional(), reason: z.string().optional(),
+    }).nullable().optional(),
     missingCriticalFields: z.array(z.string()).optional(),
     requiresReview: z.boolean().optional(),
     /** 'unconfirmed' | 'confirmed' | 'flagged' — lib/wallet/record-status.ts reads it. */

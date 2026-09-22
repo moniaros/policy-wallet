@@ -65,7 +65,7 @@ export const EVIDENCE_LEXICON: Record<EvidenceGroup, string[]> = {
     ],
     policy_identifier: [
         "αριθμοσ συμβολαιου", "αρ. συμβολαιου", "αρ συμβολαιου", "αριθ. συμβολαιου", "αριθμοσ ασφαλιστηριου",
-        "αρ. ασφαλιστηριου", "αριθμοσ συμβασησ", "αριθμοσ πιστοποιητικου", "κωδικοσ συμβολαιου",
+        "αρ. ασφαλιστηριου", "αρ.ασφαλιστηριου", "αριθμοσ συμβασησ", "αριθμοσ πιστοποιητικου", "κωδικοσ συμβολαιου",
         "policy number", "policy no", "policy no.", "policy #", "certificate number", "contract number",
         "policy ref", "policy reference",
     ],
@@ -280,4 +280,12 @@ export function countDistinctTerms(normalizedText: string, terms: readonly strin
     let count = 0
     for (const term of terms) if (containsTerm(normalizedText, term)) count++
     return count
+}
+
+/** Specific headings outrank generic perils in bundled conditions. */
+export const BRANCH_HEADINGS: Partial<Record<BranchFamily, readonly string[]>> = {
+    marine: ['marine cargo policy', 'marine hull dept', 'κλαδου πληρωματων πλοιων', 'κλαδου μεταφορων'],
+    business: ['αστικησ ευθυνησ προσ τριτουσ', 'κλοπησ χρηματων', 'μεταφορασ χρηματων', 'εμπιστοσυνησ υπαλληλων', 'cyber protection', 'διαδικτυακων και ηλεκτρονικων κινδυνων'],
+    health: ['ασφαλιστηριο συμβολαιο υγειασ'],
+    home: ['εργων τεχνησ'],
 }

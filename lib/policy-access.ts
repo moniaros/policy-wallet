@@ -166,9 +166,10 @@ export function computePolicyAccess(input: PolicyAccessInput): PolicyAccess {
  */
 export async function getPolicyAccess(
     policyId: string,
-    viewer: PolicyAccessViewer
+    viewer: PolicyAccessViewer,
+    client: Pick<typeof db, "policy" | "accessGrant" | "customerRelationship"> = db
 ): Promise<PolicyAccess & { policy: { id: string; ownerUserId: string; createdByUserId: string } | null }> {
-    const policy = await db.policy.findUnique({
+    const policy = await client.policy.findUnique({
         where: { id: policyId },
         select: { id: true, ownerUserId: true, createdByUserId: true },
     })
@@ -181,7 +182,7 @@ export async function getPolicyAccess(
     const [grants, relationship] = await Promise.all([
         isOwner
             ? Promise.resolve([])
-            : db.accessGrant.findMany({
+            : client.accessGrant.findMany({
                   where: {
                       granteeUserId: viewer.id,
                       status: "active",
@@ -191,7 +192,7 @@ export async function getPolicyAccess(
               }),
         isOwner || !isAgent
             ? Promise.resolve(null)
-            : db.customerRelationship.findFirst({
+            : client.customerRelationship.findFirst({
                   where: {
                       agentUserId: viewer.id,
                       policyholderUserId: policy.ownerUserId,

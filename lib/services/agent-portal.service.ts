@@ -10,7 +10,7 @@
 import { db } from "@/lib/db"
 import { isAgentAttestedConsent } from "@/lib/ai-consent"
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility"
-import { isCoveredByEndDate } from "@/lib/policy-status"
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -160,7 +160,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
                             // placeholder-prone endDate column.
                             policiesOwned: {
                                 where: visibilityWhere,
-                                select: { id: true, status: true, coverageEndDate: true, lastAnalyzedAt: true },
+                                select: { id: true, status: true, startDate: true, endDate: true, acordData: true, coverageEndDate: true, lastAnalyzedAt: true },
                             },
                         },
                     },
@@ -225,7 +225,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
         const ownerId = gap.policy?.ownerUserId || gap.userId
         if (!ownerId) continue
         const entry = gapsByClient.get(ownerId) || { total: 0, critical: 0, underReview: 0 }
-        if (gap.provenance === "under_review") {
+        if (gap.provenance === "under_review" || gap.evidence !== "gap") {
             entry.underReview += 1
         } else {
             entry.total += 1
@@ -241,9 +241,9 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
 
     for (const rel of relationships) {
         const clientId = rel.customer.id
-        const activePolicies = rel.customer.policiesOwned.filter((p) => isCoveredByEndDate(p))
+        const activePolicies = rel.customer.policiesOwned.filter((p) => ["active", "expiring_soon"].includes(resolvePolicyLifecycle(p, now).status))
         const upcomingRenewals = activePolicies
-            .map((p) => p.coverageEndDate)
+            .map((p) => resolvePolicyLifecycle(p, now).endDate)
             .filter((d): d is Date => Boolean(d && d.getTime() > now.getTime()))
             .sort((a, b) => a.getTime() - b.getTime())
         const nextRenewal = upcomingRenewals[0] ?? null

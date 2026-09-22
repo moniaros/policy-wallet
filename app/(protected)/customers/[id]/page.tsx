@@ -57,7 +57,7 @@ export default async function CustomerProfilePage({ params }: Props) {
             />
             {/* The health score, gaps and cross-sell shown here are AI-generated. */}
             <div className="mx-auto max-w-6xl px-4 pb-10">
-                <AiDisclaimer />
+                <AiDisclaimer audience="agent" />
             </div>
         </>
     )

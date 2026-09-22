@@ -199,10 +199,14 @@ export type UrgencyTier = "needs_attention" | "on_track" | "inactive"
 export type ActionQueueItemType =
     | "expiring_policy"
     | "incomplete_profile"
+    | "finding_review"
+    | "follow_up"
 
 export type OneTapAction =
     | "renew"
     | "complete_profile"
+    | "review_findings"
+    | "open_task"
 
 export interface ActionQueueItem {
     id: string
@@ -229,6 +233,8 @@ export interface ActionQueueItem {
      */
     revenueAtRisk?: number
     metadata?: Record<string, unknown>
+    findingCount?: number
+    taskId?: string
 }
 
 /** A persisted cross-sell opportunity surfaced on the dashboard (Pro+). */
@@ -273,6 +279,9 @@ export interface RevenueMetrics {
 }
 
 export interface PortfolioHealth {
+    customersWithGaps?: number
+    customersWithPolicies?: number
+    customersWithPendingFindings?: number
     totalClients: number
     coverageGapPercent: number
     completeProfilePercent: number

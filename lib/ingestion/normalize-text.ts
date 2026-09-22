@@ -14,7 +14,7 @@
  */
 export function normalizeDocumentText(raw: string): string {
     return String(raw || "")
-        .normalize("NFD")
+        .normalize("NFKD")
         // Combining marks: Greek tonos/dialytika and Latin accents.
         .replace(/[̀-ͯ]/g, "")
         .toLowerCase()

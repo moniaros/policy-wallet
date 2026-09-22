@@ -1,5 +1,6 @@
 "use client"
 
+import { agentWorkspaceCopy } from "@/lib/i18n/agent-workspace"
 import React, { useState } from "react"
 import { SeverityCaveat } from "@/components/gaps/SeverityCaveat"
 import {
@@ -21,11 +22,15 @@ import type { ActionQueueItem, ActionQueueItemType, GapsSummary, OneTapAction } 
 import { resolveLocale } from "@/lib/i18n/format"
 
 const ACTION_ICONS: Record<ActionQueueItemType, React.ElementType> = {
+    finding_review: Eye,
+    follow_up: Clock,
     expiring_policy: Calendar,
     incomplete_profile: UserPlus,
 }
 
 const ONE_TAP_LABELS: Record<OneTapAction, { en: string; el: string }> = {
+    review_findings: { en: agentWorkspaceCopy.en.reviewFindings, el: agentWorkspaceCopy.el.reviewFindings },
+    open_task: { en: agentWorkspaceCopy.en.openTask, el: agentWorkspaceCopy.el.openTask },
     renew: { en: "Renew", el: "Ανανέωση" },
     complete_profile: { en: "Complete", el: "Συμπλήρωση" },
 }
@@ -73,6 +78,7 @@ function describeItem(
             .replace("{lob}", branch.label[lang])
             .replace("{date}", new Date(item.dueDate).toLocaleDateString(resolveLocale(lang)))
     }
+    if (item.type === "finding_review") return agentWorkspaceCopy[lang].findingsAwaiting.replace("{count}", String(item.findingCount ?? 0))
     if (item.type === "incomplete_profile") return t.agentDashboard.queueNoPolicies
     return item.description
 }
@@ -141,14 +147,14 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onGapClientCli
                                 <Icon className={`h-4 w-4 shrink-0 ${getUrgencyStyles(item.urgency)}`} aria-hidden="true" />
                                 <div className="flex-1 min-w-0">
                                     <p className="truncate text-sm font-semibold text-foreground">
-                                        {item.clientName}
+                                        {item.type === "follow_up" ? agentWorkspaceCopy[language].ownTask : item.clientName}
                                     </p>
                                     <p className="truncate text-caption text-muted-foreground">
                                         {description}
                                     </p>
                                 </div>
                                 <span className="whitespace-nowrap text-caption text-muted-foreground">
-                                    {formatRelativeDate(item.dueDate, language)}
+                                    {item.dueDate ? formatRelativeDate(item.dueDate, language) : agentWorkspaceCopy[language].noDeadline}
                                 </span>
                                 <button
                                     type="button"

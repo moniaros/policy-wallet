@@ -1,5 +1,7 @@
 "use server"
 
+import { liveAgentRelationshipsWhere } from "@/lib/agent-visibility"
+
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
@@ -85,7 +87,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
 
     // 1. Customer stats
     const relationships = await db.customerRelationship.findMany({
-        where: { agentUserId: agentId },
+        where: liveAgentRelationshipsWhere(agentId),
         include: {
             customer: {
                 select: { id: true, name: true, email: true }

@@ -75,7 +75,7 @@ describe('buildPolicyReviewData', () => {
         expect(data.overallConfidence).toBe(88)
         expect(data.fieldConfidence.renewalDate).toBe(42)
         expect(data.reviewState).toBe('unconfirmed')
-        expect(data.verified).toBe(true)
+        expect(data.verified).toBe(false) // Model confidence cannot constitute human confirmation.
     })
 
     it('treats unknown reviewState values as null (pre-feature policies)', () => {

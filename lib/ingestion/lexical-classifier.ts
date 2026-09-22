@@ -22,6 +22,7 @@ import {
     ADJACENT_LEXICON,
     ADJACENT_MARKERS,
     BRANCH_LEXICON,
+    BRANCH_HEADINGS,
     DATE_PATTERN,
     EVIDENCE_GROUPS,
     EVIDENCE_LEXICON,
@@ -79,6 +80,9 @@ export function detectBranch(normalizedText: string): BranchDetection {
     for (const family of BRANCH_FAMILIES) {
         scores[family] = countDistinctTerms(normalizedText, BRANCH_LEXICON[family])
     }
+    const heading = normalizedText.slice(0, 1200)
+    const headingFamily = BRANCH_FAMILIES.find(family => (BRANCH_HEADINGS[family] ?? []).some(term => heading.includes(term)))
+    if (headingFamily) return { family: headingFamily, confidence: 0.95, scores }
     const ranked = [...BRANCH_FAMILIES].sort((a, b) => scores[b] - scores[a])
     const top = ranked[0]
     const topScore = scores[top]
@@ -103,6 +107,10 @@ export function classifyLexically(normalizedText: string): LexicalClassification
     // survive text extraction (tables often lose their headers).
     if (countDates(normalizedText) >= 2) groupTermCounts.period += 1
 
+    // Legacy schedules use a bare NUMBER after a titled insurance schedule.
+    // Require the heading and an actual identifier, not merely the word number.
+    const heading = normalizedText.slice(0, 1200)
+    if (/ασφαλιστηρι/.test(heading) && /αριθμοσ\s*:?\s*\d[\d/.-]{3,}/.test(heading)) groupTermCounts.policy_identifier += 1
     const groupsHit = EVIDENCE_GROUPS.filter((group) => groupTermCounts[group] > 0)
     const has = (group: EvidenceGroup) => groupTermCounts[group] > 0
 
@@ -148,20 +156,22 @@ export function classifyLexically(normalizedText: string): LexicalClassification
 
     const branch = detectBranch(normalizedText)
 
+    const headingMarkers = (kind: AdjacentMarker) => countDistinctTerms(heading, ADJACENT_LEXICON[kind])
+    const schedule = has("policy_identifier") && has("insured_party") && (has("premium") || has("period"))
     let documentType: DocumentType
     if (insuranceConfidence <= REJECT_CONFIDENCE || groupsHit.length < 2) {
         documentType = "non_insurance"
-    } else if (adjacentMarkers.claim >= 2) {
+    } else if (headingMarkers("claim") >= 2) {
         documentType = "insurance_claim"
-    } else if (adjacentMarkers.quotation >= 2 && !has("policy_identifier")) {
+    } else if (headingMarkers("quotation") >= 2 && !schedule) {
         documentType = "insurance_quotation"
-    } else if (adjacentMarkers.renewal >= 1 && has("policy_identifier")) {
+    } else if (headingMarkers("renewal") >= 1 && has("policy_identifier")) {
         documentType = "insurance_renewal"
-    } else if (adjacentMarkers.endorsement >= 1 && has("policy_identifier")) {
+    } else if (headingMarkers("endorsement") >= 1 && has("policy_identifier")) {
         documentType = "insurance_endorsement"
     } else if (looksLikePremiumReceipt) {
         documentType = "invoice_payment"
-    } else if (has("policy_identifier") && has("insured_party") && (has("premium") || has("period"))) {
+    } else if (schedule) {
         documentType = adjacentMarkers.certificate >= 1 && !has("coverage") ? "insurance_certificate" : "insurance_policy"
     } else if (adjacentMarkers.certificate >= 1 && has("policy_identifier")) {
         documentType = "insurance_certificate"

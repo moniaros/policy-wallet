@@ -26,6 +26,7 @@ export function ClientOverviewTab({
     const { language, t } = useLanguage()
 
     const activePolicies = policies.filter((p) => p.status === "active" || p.status === "expiring_soon")
+    const activeLines = [...new Set(activePolicies.map(p => p.lineOfBusiness))]
     const openOpportunities = opportunities.filter((o) => o.status === "open" || o.status === "contacted")
 
     return (
@@ -161,11 +162,11 @@ export function ClientOverviewTab({
                                 {t.clientOverview.linesHeld}
                             </p>
                             <p className="text-title font-semibold leading-none tracking-tight tabular-nums text-foreground" data-count="client.linesHeldCount">
-                                {customer.crossSell.existingLines.length}
+                                {activeLines.length}
                             </p>
                         </div>
                         <div className="flex flex-1 flex-wrap gap-1.5">
-                            {customer.crossSell.existingLines.map((line) => (
+                            {activeLines.map((line) => (
                                 <span
                                     key={line}
                                     className="rounded-full bg-status-success-tint px-2.5 py-1 text-caption font-semibold text-status-success"
@@ -173,14 +174,7 @@ export function ClientOverviewTab({
                                     {branchLabel(line, language === 'el' ? 'el' : 'en')}
                                 </span>
                             ))}
-                            {customer.crossSell.missingLines.map((line) => (
-                                <span
-                                    key={line.lob}
-                                    className="rounded-full bg-status-warning-tint px-2.5 py-1 text-caption font-semibold text-status-warning"
-                                >
-                                    {line.label[language] || line.lob}
-                                </span>
-                            ))}
+
                         </div>
                     </div>
                 </section>

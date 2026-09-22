@@ -85,6 +85,20 @@ export interface FlagDefinition {
 }
 
 export const FEATURE_FLAGS: Record<string, FlagDefinition> = {
+    "ai.agent_independent_verification": {
+        key: "ai.agent_independent_verification", kind: "boolean", label: "Independent agent extraction reading",
+        description: "A second authorized provider compares consequential fields; unavailable or disagreeing results require review.",
+        category: "ai", envVar: "AGENT_INDEPENDENT_VERIFICATION", defaultValue: false,
+        readAt: "lib/services/analysis/policy-analysis-orchestrator.service.ts independentlyVerify",
+        envOnly: true, envOnlyReason: "Benchmark provider accuracy and cost before enabling.",
+    },
+    "ai.agent_review_workspace": {
+        key: "ai.agent_review_workspace", kind: "boolean", label: "Agent review workspace",
+        description: "Private versioned drafts with source-bound approval and in-app delivery.",
+        category: "ai", envVar: "AGENT_REVIEW_WORKSPACE", defaultValue: false,
+        readAt: "app/api/v1/agent/review-workspace/route.ts enabled",
+        envOnly: true, envOnlyReason: "Enable only after the additive migration and controlled delivery journey pass.",
+    },
     "ai.failover_openai": {
         key: "ai.failover_openai",
         kind: "boolean",

@@ -9,6 +9,8 @@
  */
 
 import { db } from "@/lib/db"
+import { getAgentPolicyVisibilityWhere, ENDED_RELATIONSHIP_STATUSES } from "@/lib/agent-visibility"
+import { isConsentedRelationship } from "@/lib/agent-consent"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { coverageEngineStatus, isPolicyCoverageActive, resolvePolicyLifecycle } from "@/lib/policy-status"
 import { assembleRiskGraph, type RiskGraphPolicyInput } from "@/lib/services/risk-graph/service"
@@ -191,13 +193,22 @@ export function assembleWatch(inputs: WatchAssemblyInputs): WatchSignal[] {
     })
 }
 
-export async function getRiskIntelligence(userId: string, now: Date = new Date()): Promise<RiskIntelligence> {
+export async function getRiskIntelligence(userId: string, now: Date = new Date(), agentUserId?: string): Promise<RiskIntelligence> {
+    // An owner-wide snapshot cannot be reused for an agent: even its trends
+    // reveal policies and profile facts that may never have been shared.
+    const relationship = agentUserId ? await db.customerRelationship.findFirst({
+        where: { agentUserId, policyholderUserId: userId, status: { notIn: [...ENDED_RELATIONSHIP_STATUSES] } },
+        select: { activationStatus: true },
+    }) : null
+    if (agentUserId && !relationship) throw new Error("Forbidden")
+    const visibility = agentUserId ? await getAgentPolicyVisibilityWhere(agentUserId) : {}
+    const mayReadProfile = !agentUserId || isConsentedRelationship(relationship)
     const [profile, policies, versions] = await Promise.all([
-        db.policyholderProfile.findUnique({ where: { userId } }),
+        mayReadProfile ? db.policyholderProfile.findUnique({ where: { userId } }) : Promise.resolve(null),
         db.policy.findMany({
             // A soft-deleted row is not a policy the owner holds — it must not
             // feed the graph's heldInLine, the dimensions, or the lapse watch.
-            where: { ownerUserId: userId, status: { not: "deleted" } },
+            where: { ownerUserId: userId, status: { not: "deleted" }, ...visibility },
             select: {
                 id: true,
                 lineOfBusiness: true,
@@ -209,7 +220,7 @@ export async function getRiskIntelligence(userId: string, now: Date = new Date()
         }),
         // Fails soft: this table sits behind an unapplied migration, and the
         // whole picture except trend works without it.
-        db.riskProfileVersion
+        agentUserId ? Promise.resolve([] as Array<{ computedAt: Date; risks: unknown }>) : db.riskProfileVersion
             .findMany({
                 where: { userId },
                 select: { computedAt: true, risks: true },

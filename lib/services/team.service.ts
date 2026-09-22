@@ -1,3 +1,5 @@
+
+import { liveAgentRelationshipsWhere } from "@/lib/agent-visibility"
 import { db } from "@/lib/db"
 import { sendNotification } from "@/lib/notifications"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
@@ -483,7 +485,7 @@ export async function getTeamOverview(userId: string): Promise<TeamOverview | nu
         members.map(async (m) => {
             const [customerCount, opportunities] = await Promise.all([
                 db.customerRelationship.count({
-                    where: { agentUserId: m.userId, status: "active" },
+                    where: liveAgentRelationshipsWhere(m.userId),
                 }),
                 db.opportunity.findMany({
                     where: { ownerAgentUserId: m.userId },

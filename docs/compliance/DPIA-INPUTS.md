@@ -15,9 +15,9 @@ today. The assessment itself is a legal judgement and is a halt
 
 | Measure | Value |
 | --- | --- |
-| Stores holding personal data (tagged) | 57 of 57 |
-| Columns across them (relations excluded) | 714 |
-| Columns declared Art. 9 | 7 (stores: 1) |
+| Stores holding personal data (tagged) | 58 of 58 |
+| Columns across them (relations excluded) | 734 |
+| Columns declared Art. 9 | 10 (stores: 2) |
 | Data-subject categories in use | admin, agent, policyholder, third_party |
 | Stores under the AI-analysis purpose | 9 |
 | Published processors | 10 |
@@ -116,6 +116,31 @@ fields are not columns and are not listed.
 | `commissionRates` | `Json?` | ordinary |
 | `onboardingCompletedAt` | `DateTime?` | ordinary |
 | `submittedAt` | `DateTime` | ordinary |
+| `createdAt` | `DateTime` | ordinary |
+| `updatedAt` | `DateTime` | ordinary |
+
+### `AgentReviewRevision` — intermediary · consent · policyholder|agent · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `privateAdvice` | `Json?` | **Art. 9** |
+| `reuseApproved` | `Boolean` | ordinary |
+| `id` | `String` | identifier |
+| `userId` | `String` | subject key |
+| `policyId` | `String` | ordinary |
+| `previousId` | `String?` | identifier |
+| `sourceDigest` | `String` | ordinary |
+| `body` | `String` | **Art. 9** |
+| `language` | `String` | ordinary |
+| `recipientUserId` | `String` | ordinary |
+| `channel` | `String` | ordinary |
+| `status` | `String` | ordinary |
+| `approvalDigest` | `String?` | ordinary |
+| `approvedAt` | `DateTime?` | ordinary |
+| `deliveredAt` | `DateTime?` | ordinary |
+| `messageId` | `String?` | identifier |
+| `feedback` | `String?` | ordinary |
+| `feedbackNote` | `String?` | **Art. 9** |
 | `createdAt` | `DateTime` | ordinary |
 | `updatedAt` | `DateTime` | ordinary |
 
@@ -1038,6 +1063,7 @@ fields are not columns and are not listed.
 
 | Store | Columns | Lawful basis |
 | --- | --- | --- |
+| `AgentReviewRevision` | `body`, `feedbackNote`, `privateAdvice` | Consent — Art. 6(1)(a) |
 | `PolicyholderProfile` | `chronicConditions`, `familyMedicalHistory`, `smokingStatus`, `heightCm`, `weightKg`, `gender`, `activityLevel` | Consent — Art. 6(1)(a) |
 
 Held by the processors that store or carry every table: Supabase, Vercel.
@@ -1069,8 +1095,8 @@ generator rather than rendering a pack without it.
 
 | Processor | Role (published) | Location (published) | Purposes | Stores under those purposes | How | Receives the document | Endpoint, as constructed in code |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 57 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
-| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 57 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
+| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 58 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
+| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 58 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
 | Stripe | Payment and subscription processing | EU/US | billing | `CreditTransaction`, `EntitlementUsage`, `Invoice`, `MonthlyTokenUsage`, `PaymentMethod`, `Referral`, `ReportUnlockPurchase`, `Subscription`, `TokenBalance`, `TokenPurchase`, `TokenUsage` | checkout, subscription and invoice objects; card data never reaches our systems | no | n/a — configured outside the application code |
 | Brevo | Email delivery (notifications, newsletter) | EU (France) | communication | `BusinessEvent`, `NotificationEvent`, `NotificationPreference`, `PushDevice`, `UserNotificationSettings` | the address, name and body of each email sent | no | n/a — configured outside the application code |
 | Upstash | Request rate limiting (Redis) | EU/US | none | none | per-IP request counters for rate limiting — no store feeds it | no | n/a — configured outside the application code |

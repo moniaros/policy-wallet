@@ -45,7 +45,7 @@ export function AgentGettingStartedChecklist({
 }: AgentGettingStartedChecklistProps) {
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const [dismissed, setDismissed] = useState(false)
-    const [collapsed, setCollapsed] = useState(false)
+    const [collapsed, setCollapsed] = useState(hasClients || hasAnalysis)
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -91,7 +91,7 @@ export function AgentGettingStartedChecklist({
             titleEn: "Run demo analysis",
             descEl: "Δοκιμάστε την AI ανάλυση με ένα δοκιμαστικό ασφαλιστήριο.",
             descEn: "Try AI analysis with a sample policy.",
-            href: "/wallet/add",
+            href: "/customers",
             icon: Sparkles,
             completed: hasAnalysis,
         },

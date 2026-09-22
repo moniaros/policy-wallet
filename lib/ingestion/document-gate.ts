@@ -236,7 +236,7 @@ export async function validateDocumentForIngestion(
 
 /** The probe's pages as a LocalDocumentText, or null when there is nothing local to read. */
 export function localTextFrom(probe: PdfProbeResult): LocalDocumentText | null {
-    if (!probe.ok || probe.imageOnly) return null
+    if (!probe.ok || probe.imageOnly || probe.needsVision) return null
     return { pages: probe.pages, sampledPages: probe.sampledPages, pageCount: probe.pageCount }
 }
 
@@ -321,7 +321,7 @@ async function runGate(input: GateInput, deps: GateDependencies, sink: LocalText
         }
         evidence.pageCount = probe.pageCount
         evidence.textChars = probe.textChars
-        evidence.imageOnly = probe.imageOnly
+        evidence.imageOnly = probe.imageOnly || !!probe.needsVision
         text = probe.text
         sink.localText = localTextFrom(probe)
     } else {

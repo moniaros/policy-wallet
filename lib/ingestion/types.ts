@@ -167,7 +167,7 @@ export interface GateEvidence {
     reusedPriorVerdict?: boolean
 }
 
-export const GATE_ENGINE_VERSION = "docgate-1" as const
+export const GATE_ENGINE_VERSION = "docgate-2" as const
 
 /** ActivityLog action types the gate writes — one per verdict. userId only; metadata carries no text and no file name. */
 export const GATE_ACTIVITY = {

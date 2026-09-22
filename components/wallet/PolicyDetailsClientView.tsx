@@ -346,7 +346,7 @@ export function PolicyDetailsClient({
     // documents keep the old behaviour exactly; only a document explicitly
     // classified as not policy-bearing is skipped. Falling back to `[0]` keeps
     // a policy whose only file is a booklet linkable rather than link-less.
-    const documentsNewestFirst: { id: string; documentKind?: string | null }[] = policy.documents ?? []
+    const documentsNewestFirst: { id: string; documentKind?: string | null; effectiveFrom?: string | Date | null; supersededById?: string | null }[] = policy.documents ?? []
     const sourceDocument = selectSourceDocument(documentsNewestFirst)
     const firstDocumentHref = sourceDocument
         ? `/api/v1/policies/${policy.id}/documents/${sourceDocument.id}`

@@ -66,6 +66,9 @@ export default async function PolicyDetailPage({
                         fileSize: true,
                         uploadedAt: true,
                         documentKind: true,
+                        effectiveFrom: true,
+                        effectiveTo: true,
+                        supersededById: true,
                         mimeType: true,
                     },
                 },
@@ -413,7 +416,9 @@ export default async function PolicyDetailPage({
         premiumCurrency: policy.premiumCurrency,
         documents: policy.documents.map(d => ({
             ...d,
-            uploadedAt: d.uploadedAt.toISOString()
+            uploadedAt: d.uploadedAt.toISOString(),
+            effectiveFrom: d.effectiveFrom?.toISOString() ?? null,
+            effectiveTo: d.effectiveTo?.toISOString() ?? null
         })),
         gapInstances: policy.gapInstances.map(g => ({
             ...g,

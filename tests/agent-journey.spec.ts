@@ -45,13 +45,13 @@ test.describe('Agent Journey', () => {
 
         await expect(page).toHaveURL(/questionnaires/);
         const templates = [
-            'Motor Insurance Intake',
-            'Home Insurance Assessment',
-            'Health Insurance Needs Analysis',
-            'Life Insurance Review',
-            'Pet Insurance Questionnaire',
-            'Travel Insurance Intake',
-            'Annual Insurance Needs Review',
+            /Motor Insurance Intake|Στοιχεία ασφάλισης οχήματος/,
+            /Home Insurance Assessment|Έλεγχος αναγκών κατοικίας/,
+            /Health Insurance Needs Analysis|Ανάγκες ασφάλισης υγείας/,
+            /Life Insurance Review|Έλεγχος ασφάλισης ζωής/,
+            /Pet Insurance Questionnaire|Ασφάλιση κατοικιδίου/,
+            /Travel Insurance Intake|Στοιχεία ταξιδιωτικής ασφάλισης/,
+            /Annual Insurance Needs Review|Ετήσιος έλεγχος ασφαλιστικών αναγκών/,
         ];
         for (const name of templates) {
             await expect(page.getByText(name).first()).toBeVisible({ timeout: 20000 });
@@ -288,7 +288,7 @@ test.describe('MEDIC evidence ladder', () => {
         // Metrics: € value-at-risk inline field.
         await page.locator('#medic-var').fill('25000');
         await page.locator('#medic-var-save').click();
-        await expect(page.getByText('€25000').first()).toBeVisible({ timeout: 15000 });
+        await expect(page.getByText(/25[.,]000\s*€|€\s*25[.,]000/).first()).toBeVisible({ timeout: 15000 });
 
         // Economic buyer: named by the advisor = identified.
         await page.locator('#medic-eb-name').fill('Μαρία Ε2Ε');
@@ -306,7 +306,7 @@ test.describe('MEDIC evidence ladder', () => {
         await page.getByRole('button', { name: /Ενημέρωση|Update/i }).first().click();
         await page.getByText(/Προβολή αξιολόγησης|Show qualification/i).click();
         await expect(page.getByText(/Πλήρης εικόνα|Full picture/i).first()).toBeVisible({ timeout: 15000 });
-        await expect(page.getByText('€25000').first()).toBeVisible();
+        await expect(page.getByText(/25[.,]000\s*€|€\s*25[.,]000/).first()).toBeVisible();
 
         // Observable contract in the DB: score crossed the gate + EB persisted.
         const db = await prismaClient();

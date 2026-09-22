@@ -1,5 +1,7 @@
 "use server"
 
+import { questionnaireTitle } from "@/lib/questionnaires/presentation"
+
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
@@ -173,7 +175,7 @@ export async function getSentQuestionnaires(): Promise<InstanceData[]> {
     const instances = await db.questionnaireInstance.findMany({
         where: { sentByUserId: dbUser.id },
         include: {
-            template: { select: { name: true } },
+            template: { select: { id: true, name: true, isSystem: true } },
             receiver: { select: { name: true } },
             responses: { select: { answers: true } },
         },
@@ -183,7 +185,7 @@ export async function getSentQuestionnaires(): Promise<InstanceData[]> {
 
     return instances.map((i) => ({
         id: i.id,
-        templateName: i.template.name,
+        templateName: questionnaireTitle(i.template, dbUser.preferredLanguage),
         customerName: i.receiver.name || "Unknown",
         status: i.status,
         sentAt: i.sentAt.toISOString(),
@@ -309,7 +311,7 @@ export async function analyzeQuestionnaireResponse(instanceId: string) {
 
     return {
         customerName,
-        templateName: instance.template.name,
+        templateName: questionnaireTitle(instance.template, dbUser.preferredLanguage),
         lineOfBusiness: lob,
         answerSummary,
         needsIdentified: needsIdentified.length > 0 ? needsIdentified : ["No critical needs flagged from responses"],

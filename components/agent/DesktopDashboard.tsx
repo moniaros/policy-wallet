@@ -121,7 +121,7 @@ export function DesktopDashboard({
                 </div>
 
                 {/* ── Book-of-business KPI strip ─────────────────────────── */}
-                {data.portalStats && <AgentKpiStrip stats={data.portalStats} />}
+
 
                 {/* ── Above the fold: Action Queue + Revenue Pulse ──────── */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
@@ -151,6 +151,8 @@ export function DesktopDashboard({
                         </AgentPlanGate>
                     </div>
                 </div>
+
+                {data.portalStats && <AgentKpiStrip stats={data.portalStats} />}
 
                 {/* ── Mid fold: Portfolio Health + Today's Follow-ups ──── */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">

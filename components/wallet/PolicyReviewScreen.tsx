@@ -1,5 +1,7 @@
 "use client"
 
+import { agentReviewCopy } from "@/lib/i18n/agent-review"
+
 import React, { useMemo, useState, useTransition } from "react"
 import { toast } from "sonner"
 import {
@@ -434,6 +436,11 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                 )}
             </div>
 
+            {data.independentVerification && <div className="pw-subcard space-y-1 p-4" role="status">
+                <h3 className="text-sm font-semibold">{agentReviewCopy[language].verificationTitle}</h3>
+                <p className="text-sm text-muted-foreground">{data.independentVerification.status === 'agreed' ? agentReviewCopy[language].verificationAgreed : agentReviewCopy[language].verificationReview}</p>
+            </div>}
+            <p className="text-caption text-muted-foreground">{agentReviewCopy[language].confidenceHelp}</p>
             {/* AI-mistake microcopy */}
             <div className="rounded-2xl border border-amber-200 bg-status-warning-tint/60 p-3.5 dark:border-amber-900/40">
                 <p className="flex items-start gap-2 text-xs font-medium leading-relaxed text-status-warning">

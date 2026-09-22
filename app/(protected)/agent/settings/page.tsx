@@ -1,3 +1,5 @@
+
+import { liveAgentRelationshipsWhere } from "@/lib/agent-visibility"
 export const runtime = 'nodejs'
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -11,7 +13,7 @@ export default async function AgentSettingsPage() {
     const [profile, agentEntitlements, customerCount] = await Promise.all([
         db.agentProfile.findUnique({ where: { userId: dbUser.id } }),
         resolveAgentEntitlements(dbUser.id),
-        db.customerRelationship.count({ where: { agentUserId: dbUser.id } }),
+        db.customerRelationship.count({ where: liveAgentRelationshipsWhere(dbUser.id) }),
     ])
 
     const commissionRates = (profile?.commissionRates as Record<string, number> | null) ?? {}

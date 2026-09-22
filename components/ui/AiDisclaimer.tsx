@@ -1,5 +1,6 @@
 "use client"
 
+import { agentWorkspaceCopy } from "@/lib/i18n/agent-workspace"
 import { Info } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getTranslations, type Language } from "@/lib/i18n"
@@ -8,6 +9,7 @@ import { cn } from "@/lib/utils"
 interface AiDisclaimerProps {
     /** Optional explicit language. When omitted, falls back to the LanguageContext. */
     language?: Language
+    audience?: "policyholder" | "agent"
     /** "block" (default) renders a bordered footnote; "inline" renders plain muted text. */
     variant?: "block" | "inline"
     className?: string
@@ -18,9 +20,9 @@ interface AiDisclaimerProps {
  * or protection scores reach a user. Renders the canonical `common.aiAdviceDisclaimer`
  * i18n string (EL/EN) — never hardcode the text at call sites.
  */
-export function AiDisclaimer({ language, variant = "block", className }: AiDisclaimerProps) {
-    const { t } = useLanguage()
-    const text = language ? getTranslations(language).common.aiAdviceDisclaimer : t.common.aiAdviceDisclaimer
+export function AiDisclaimer({ language, audience = "policyholder", variant = "block", className }: AiDisclaimerProps) {
+    const { t, language: contextLanguage } = useLanguage()
+    const text = audience === "agent" ? agentWorkspaceCopy[language ?? contextLanguage].reviewOnly : language ? getTranslations(language).common.aiAdviceDisclaimer : t.common.aiAdviceDisclaimer
 
     return (
         <p
