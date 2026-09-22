@@ -1,6 +1,6 @@
-# Agent workspace implementation — in progress
+# Agent workspace — first release live, full plan in progress
 
-Implementation of the owner-approved B2B plan, begun September 21–22, 2026. The implemented subset is being prepared for production; this is **not acceptance sign-off for the full plan**. Branch: `codex/agent-workspace`.
+Implementation of the owner-approved B2B plan, begun September 21–22, 2026. The implemented subset is live in production; this is **not acceptance sign-off for the full plan**. Branch: `codex/agent-workspace`.
 
 ## Implemented
 
@@ -58,3 +58,14 @@ Validation: 24 tests passed across renewal-chain, analysis source selection and 
 The owner explicitly requested merge and production deployment. Ship the implemented subset without presenting the full accepted plan as complete. Independent second-provider verification remains off pending the PDF benchmark. Production schema access was recovered through the existing authenticated browser session. One read-only verification query initially failed because the editor retained SQL text; replacing the full editor content resolved it, and the subsequent SELECT confirmed the intended state.
 
 Added a behavioral form-recovery regression: edited private feedback cannot be silently lost by switching revisions, generating a draft, saving new text or sharing. Explicit discard restores those controls; feedback submission remains available.
+
+
+### Production release verified (2026-09-22)
+
+PR #363 merged as `4673c1f5c683dcda67cca028e3b6fec046c40309`. A clean worktree with the identical tested tree was deployed using the authenticated Vercel CLI to `moniaros-projects/policy-wallet`; deployment `dpl_9m4G4QGzEbc95VgP6ALTwRMAbbeL` is READY and serves www/app/apex PolicyWallet domains. `AGENT_REVIEW_WORKSPACE=1`; independent verification remains off.
+
+Final local evidence: 7,608 tests / 664 files passed, all 51 agent/responsive browser cases passed without retry, current production build passed. API auth, lint, types, i18n, UTF-8, private material, 78 migrations and the 50-rule catalogue fingerprint passed. Hosted build also passed. Live authenticated smoke confirmed the action-first dashboard, separate pending-findings counts, the policy workspace and a saved private synthetic draft. The draft was exported and committed before deletion under standing authority, then its absence verified after reload. No production communication was approved or delivered.
+
+**Automation limitations:** GitHub CI run 35772058268 never started due to account billing/spending limits, so remote failed statuses are not described as green. The Vercel Git integration points at an inaccessible AgentRise team; authenticated CLI deployment used the correct project. Sentry source maps were not uploaded because its build auth token is missing.
+
+**Security debt, not a new dependency change:** npm audit reports 35 advisories (4 critical, 14 high, 10 moderate, 7 low); package and lock files are unchanged. Critical entries include Next.js, Vitest/UI and transitive tar. Dependency remediation remains urgent follow-up. No claim that the complete requested rollout/benchmark is finished.

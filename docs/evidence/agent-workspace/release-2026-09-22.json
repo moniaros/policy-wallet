@@ -1,0 +1,60 @@
+{
+  "pullRequest": "https://github.com/moniaros/policy-wallet/pull/363",
+  "sourceCommit": "7b6906cfd1ad5faa892c012bc1f4351361fe0c60",
+  "mergeCommit": "4673c1f5c683dcda67cca028e3b6fec046c40309",
+  "localChecks": {
+    "unitFiles": 664,
+    "unitTestsPassed": 7608,
+    "browserTestsPassed": 51,
+    "browserRetries": 0,
+    "build": "passed",
+    "apiInventoryRoutes": 108,
+    "lint": "passed",
+    "types": "passed",
+    "i18n": "passed",
+    "utf8": "passed",
+    "privateMaterial": "passed",
+    "devMigrations": 78,
+    "gapCatalogueFingerprint": "15fa2758cebeaecc"
+  },
+  "devAndProdSchemaVerification": {
+    "columns": 20,
+    "rlsEnabled": true,
+    "foreignKeys": 2,
+    "migrationChecksums": {
+      "20260921160000_agent_review_workspace": "1ca4ba16d8832447f087483afd04cd4a7dd010b2af5d6eb937177162c7b09d9c",
+      "20260921170000_agent_review_feedback": "bbcbf1a5aa2e326615dca43b01816ac5399de0ee491e64e895e8aa99b3c066c1"
+    }
+  },
+  "githubActions": {
+    "run": 35772058268,
+    "result": "not started: account payments/spending limit"
+  },
+  "dependencyAudit": {
+    "total": 35,
+    "critical": 4,
+    "high": 14,
+    "moderate": 10,
+    "low": 7,
+    "dependencyChangesInRelease": false
+  },
+  "productionDeployment": {
+    "id": "dpl_9m4G4QGzEbc95VgP6ALTwRMAbbeL",
+    "url": "https://policy-wallet-3jyvlce1g-moniaros-projects.vercel.app",
+    "status": "READY",
+    "aliases": [
+      "https://www.policywallet.gr",
+      "https://app.policywallet.gr",
+      "https://policywallet.gr"
+    ],
+    "workspaceFlag": true,
+    "independentVerificationFlag": false,
+    "smoke": [
+      "authenticated dashboard reflects action queue and scoped review counts",
+      "source-review queue opens the correct policy",
+      "private draft saved, archived, deleted; absence verified after reload",
+      "no production customer communication sent"
+    ]
+  },
+  "fullPlanAcceptance": false
+}

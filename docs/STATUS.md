@@ -1,30 +1,29 @@
 # STATUS
 
 ## Current phase
-**B2B subset release preparation — 2026-09-22**, branch `codex/agent-workspace`. Not deployed. [Implementation and remaining scope](audits/agent-workspace-implementation-2026-09.md). [Previous release](archive/STATUS-before-agent-workspace-2026-09-22.md).
+**B2B first release live — 2026-09-22.** [PR #363](https://github.com/moniaros/policy-wallet/pull/363), production code `4673c1f5`, [release evidence](evidence/agent-workspace/release-2026-09-22.json). Full accepted plan remains in progress; [scope and backlog](audits/agent-workspace-implementation-2026-09.md).
 
 ## Done
-- Document source selection now respects known effective dates and excludes superseded versions; undated renewals no longer outrank dated renewals. Focused follow-up: 24 tests passed. Date population and explicit queued-document processing remain unfinished.
-- Scoped portfolio/counts and lifecycle corrections; honest extraction/review states, localized templates, active coverage, action-first dashboard, serial multi-file intake and versioned extraction reuse.
-- Flagged private suggestions/feedback/revisions, exact-content approval and idempotent in-app delivery; consent/quota and relationship controls. Hardened historical collaboration access.
-- Two identical additive dev + production migrations verified: 20 columns, RLS, 2 FKs; migration check passes. Browser demo save → stale approval block → fresh approval → delivery verified.
-- Latest full unit checkpoint: 7,603 tests / 663 files passed; agent journey 10 passed + 1 passed on retry. Build, types, lint, API inventory (108), i18n/UTF-8 and dev migration verification passed.
+- Action-first dashboard, consistent portfolio scopes/counts, honest review states, active coverage, localized templates, serial multi-file intake and versioned extraction reuse.
+- Private suggestions/feedback/revisions, exact-content approval and idempotent in-app delivery; ended-relationship access controls; unsaved feedback recovery. Communication workspace enabled; independent second-provider verification off.
+- Identical additive migrations verified dev then prod: 20 columns, RLS, 2 FKs, exact checksums. Production deployment READY on www/app/apex aliases.
+- 7,608 unit tests / 664 files; 51 agent/responsive cases without retry; build, types, lint, API inventory (108), i18n/UTF-8, private-material, migrations and catalogue checks passed locally. Hosted production build passed.
+- Live dashboard and policy workspace verified. Synthetic private draft saved, archived before deletion and absence checked after reload. No production message sent.
 
 ## In progress
-- Focused review-page layout checks pass at 320/390/1440px; full route matrix remains.
-- Remaining accepted scope: durable batches/document chains, page/OCR artifacts, incremental assessments, targeted verification/economics, proposal integration and full 19-PDF accuracy/cost benchmark. Neither AI rollout flag is enabled by default.
+Durable batches/document chains, page/OCR artifacts, incremental assessments, targeted verification/economics, proposal integration and full 19-PDF accuracy/cost benchmark. Dates remain unpopulated in document chains; legacy English and nested agent-copy issues remain.
 
 ## Blocked
-No deployment access blocker: production migrations applied through the existing authenticated Supabase SQL editor; independent SELECT verified columns/RLS/FKs/checksums. Full-plan benchmark and infrastructure remain incomplete.
+GitHub Actions cannot start (billing/spending limit); Vercel Git integration targets an inaccessible team. Release used verified local checks and authenticated CLI against the correct project. Sentry source-map auth token missing.
 
 ## Top risks ranked
-1. **Release gate:** OCR/verification accuracy and costs are not benchmarked; six-field model agreement is not measured accuracy.
-2. **Release gate:** accepted infrastructure/workflow scope remains incomplete; rollout must describe only the shipped subset.
-3. **UX/performance:** earlier 7px overflow not reproduced in final focused checks; dev requests 5–11s, one flaky journey; legacy generated English remains.
+1. **Security debt:** unchanged dependencies report 35 advisories, including 4 critical; triage and patch promptly.
+2. **Full-plan release gate:** OCR/verification accuracy/costs unbenchmarked; six-field agreement is not measured accuracy. Independent verification stays off.
+3. **Functional/UX debt:** durable processing, document-chain completion and all-channel approval integration unfinished; legacy English remains.
 
 ## Next 3 actions
-1. Finish mobile/regression verification and batch/document-chain infrastructure.
-2. Complete independent 19-document ground truth and controlled end-to-end OCR/cost evaluation.
-3. Apply identical additive migrations to production once authenticated access is available, verify, then feature-flagged deploy and live journey.
+1. Triage dependency advisories and repair CI/Vercel Git/Sentry configuration.
+2. Implement durable intake with explicit document targeting/history and derived-artifact lifecycle.
+3. Complete page-referenced 19-PDF ground truth and accuracy/cost evaluation before broader AI rollout.
 
-Before commit/push: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit tests/build and agent journeys.
+Before further commits/pushes: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit/build and relevant journeys.
