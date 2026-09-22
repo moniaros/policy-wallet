@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { agentWorkspaceCopy } from "@/lib/i18n/agent-workspace"
 import { ShieldAlert, UserCheck, AlertTriangle, Activity, Users } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { CardHead } from "@/components/dashboard/home/CardHead"
@@ -43,36 +44,17 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
         )
     }
 
+    const copy = agentWorkspaceCopy[language]
     const metrics = [
-        {
-            label: t.agentUi.coverageGaps,
-            displayValue: `${health.coverageGapPercent}%`,
-            icon: ShieldAlert,
-            description: language === "el"
-                ? "πελατών με κενά κάλυψης"
-                : "of clients have coverage gaps",
-        },
-        {
-            label: t.agentUi.completeProfiles,
-            displayValue: `${health.completeProfilePercent}%`,
-            icon: UserCheck,
-            description: language === "el"
-                ? "πελατών με πλήρες προφίλ"
-                : "of clients have complete profiles",
-        },
-        {
-            label: t.agentUi.atRisk,
-            displayValue: String(health.atRiskCount),
-            icon: AlertTriangle,
-            description: language === "el"
-                ? "πελάτες χρειάζονται προσοχή"
-                : "clients need attention",
-        },
+        { label: copy.detectedCustomers, displayValue: health.customersWithGaps ?? '—', icon: ShieldAlert },
+        { label: copy.recordedPolicies, displayValue: health.customersWithPolicies ?? '—', icon: UserCheck },
+        { label: copy.pendingFindings, displayValue: health.customersWithPendingFindings ?? '—', icon: AlertTriangle },
     ]
 
     return (
         <BrandCard className="pw-pad">
-            <CardHead icon={Activity} title={t.agentUi.portfolioHealth} />
+            <CardHead icon={Activity} title={copy.portfolioFacts} />
+            <p className="mt-2 text-caption text-muted-foreground">{copy.visibleScope}</p>
 
             <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {metrics.map((metric) => {
@@ -85,9 +67,6 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                             </p>
                             <p className="mt-0.5 text-title font-semibold tabular-nums text-foreground">
                                 {metric.displayValue}
-                            </p>
-                            <p className="mt-0.5 text-caption text-muted-foreground">
-                                {metric.description}
                             </p>
                         </div>
                     )

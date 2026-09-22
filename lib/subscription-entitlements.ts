@@ -1,3 +1,5 @@
+
+import { liveAgentRelationshipsWhere } from "@/lib/agent-visibility"
 import { db as prisma } from "@/lib/db"
 
 // Pure local copy of the agent-role check — this module is imported by
@@ -231,7 +233,7 @@ export async function canAgentAddCustomer(userId: string): Promise<{
     // A terminated relationship has left the agent's book (getCustomers hides
     // it, visibility is closed) — it must not keep occupying a plan seat.
     const customerCount = await prisma.customerRelationship.count({
-        where: { agentUserId: userId, status: { not: "terminated" } },
+        where: liveAgentRelationshipsWhere(userId),
     })
 
     if (customerCount >= limit) {

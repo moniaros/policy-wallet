@@ -1,3 +1,4 @@
+import { independentlyVerify } from "./independent-verification"
 import fs from "fs/promises"
 import { isTransientError } from "@/lib/services/ai/shared-utils"
 import path from "path"
@@ -30,6 +31,7 @@ import {
 import {
     hashDocumentBuffer,
     getCachedExtraction,
+    getExtractionCacheVersion,
     setCachedExtraction,
     setDocumentHash,
 } from "./extraction-cache"
@@ -1436,10 +1438,12 @@ export class PolicyAnalysisOrchestratorService {
 
         // Check extraction cache before running AI extraction
         // Pass documentId so a re-upload with the same hash doesn't return a stale cache
+        const extractionVersion = await getExtractionCacheVersion()
         const cachedExtraction = await getCachedExtraction(
             policy.id,
             docStep.result.documentHash,
-            docStep.result.documentId
+            docStep.result.documentId,
+            extractionVersion
         )
 
         let extractionStep: StepExecutionPayload<AIPolicyExtractionResponse>
@@ -1520,7 +1524,7 @@ export class PolicyAnalysisOrchestratorService {
                     return {
                         result: extraction,
                         successPct: Math.round((checksPassed / checks.length) * 100),
-                        logMessage: "Metadata extracted and verified",
+                        logMessage: "Metadata extracted; completeness checked",
                         logJson: {
                             insurerName: extraction.insurerName,
                             policyNumber: extraction.policyNumber,
@@ -1534,16 +1538,28 @@ export class PolicyAnalysisOrchestratorService {
             absorbPayload(extractionStep)
 
             // Cache the extraction result for future re-analysis
-            setCachedExtraction(
+            await setCachedExtraction(
                 policy.id,
                 docStep.result.documentHash,
-                extractionStep.result
+                extractionStep.result,
+                extractionVersion
             ).catch((err) => {
                 logger("warn", "Failed to cache extraction result", {
                     runId,
                     error: err instanceof Error ? err.message : String(err),
                 })
             })
+        }
+        if (process.env.AGENT_INDEPENDENT_VERIFICATION === '1' && userRoles?.split(',').map((r: string) => r.trim()).includes('agent')) {
+            const verification = await independentlyVerify({
+                document: docStep.result.document, extraction: extractionStep.result,
+                primaryProvider: extractionStep.result.usage?.provider ?? (extractionStep.logJson?.provider as AIServiceType) ?? primaryProvider,
+                userId: run.userId, ownerUserId: policy.ownerUserId, policyId: policy.id,
+                providerAllowed: fullFailoverAllowed,
+            })
+            const acord = extractionStep.result.acordData ?? {}
+            extractionStep.result.acordData = { ...acord, extraction: { ...acord.extraction, independentVerification: verification.result, requiresReview: true, reviewState: 'unconfirmed' } }
+            if (verification.usage) { totalInputTokens += verification.usage.inputTokens; totalOutputTokens += verification.usage.outputTokens }
         }
         const metadata = this.buildMetadata(policy, extractionStep.result)
 
@@ -3131,6 +3147,7 @@ export class PolicyAnalysisOrchestratorService {
             extraction: {
                 ...((enriched.acordData as any)?.extraction || {}),
                 reviewState: "unconfirmed",
+                independentVerification: extraction.acordData?.extraction?.independentVerification ?? null,
                 confirmedAt: null,
                 flaggedAt: null,
                 // Deterministic parse state per date field: 'failed'/'missing'

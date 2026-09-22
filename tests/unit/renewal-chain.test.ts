@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import {
+    selectSourceDocument,
     chainCompleteness,
     newestRenewal,
     orderChain,
@@ -74,5 +75,36 @@ describe("a renewal without its original is labelled, not refused", () => {
     it("distinguishes 'no terms at all' from 'renewal only'", () => {
         const chain = [doc("i", "invoice", null, "2026-01-01")]
         expect(chainCompleteness(chain).state).toBe("no_terms")
+    })
+})
+
+
+describe("analysis source respects document chronology", () => {
+    it("does not let a backfilled renewal replace the latest effective renewal", () => {
+        const older = doc("older", "renewal_notice", "2024-01-01", "2026-09-01")
+        const current = doc("current", "renewal_notice", "2026-01-01", "2026-01-01")
+        expect(selectSourceDocument([older, current])?.id).toBe("current")
+    })
+
+    it("does not let an undated renewal override dated evidence", () => {
+        const unknown = doc("unknown", "renewal_notice", null, "2026-09-01")
+        const current = doc("current", "renewal_notice", "2026-01-01", "2026-01-01")
+        expect(newestRenewal([unknown, current])?.id).toBe("current")
+    })
+
+    it("excludes superseded versions even when they have the latest effective date", () => {
+        const old = { ...doc("old", "policy_schedule", "2027-01-01", "2026-09-01"), supersededById: "corrected" }
+        const current = doc("corrected", "policy_schedule", "2026-01-01", "2026-01-01")
+        expect(selectSourceDocument([old, current])?.id).toBe("corrected")
+        expect(selectSourceDocument([old])).toBeUndefined()
+    })
+
+    it("handles serialized dates and invalid dates without changing legacy tie order", () => {
+        const docs = [
+            { id: "invalid", documentKind: "renewal_notice", effectiveFrom: "invalid" },
+            { id: "current", documentKind: "renewal_notice", effectiveFrom: "2026-01-01" },
+            { id: "same", documentKind: "renewal_notice", effectiveFrom: "2026-01-01" },
+        ]
+        expect(selectSourceDocument(docs)?.id).toBe("current")
     })
 })

@@ -43,9 +43,9 @@ describe('estimateAnalysisRunBudget', () => {
         )
     })
 
-    it('a document run costs more than the free agent tier holds in a month — the gate cannot pass there', async () => {
+    it('does not charge local deterministic steps to the model quota', async () => {
         const budget = await estimateAnalysisRunBudget({ lineOfBusiness: 'motor', hasDocument: true })
-        expect(budget.totalEstimatedTokens).toBeGreaterThan(DEFAULT_AGENT_ENTITLEMENT_LIMITS.agent_free.monthlyTokenBudget!)
+        expect(budget.totalEstimatedTokens).toBe(150_000)
     })
 })
 

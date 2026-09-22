@@ -94,7 +94,7 @@ export const aiGateway = {
     async askQuestion(
         metadata: PolicyMetadata,
         question: string,
-        ctx: GatewayContext & { structuredContext?: AIPolicyExtractionResponse }
+        ctx: GatewayContext & { structuredContext?: AIPolicyExtractionResponse; maxOutputTokens?: number }
     ): Promise<string> {
         // Admin runtime overrides (cached; never throws — {} = env behavior).
         const overrides = await getAiRuntimeOverrides()
@@ -106,6 +106,7 @@ export const aiGateway = {
             service.askQuestion(null, metadata, question, {
                 ...trackingFor(route, ctx),
                 structuredContext: ctx.structuredContext,
+                ...(ctx.maxOutputTokens ? { maxOutputTokens: Math.min(ctx.maxOutputTokens, route.maxOutputTokens ?? ctx.maxOutputTokens) } : {}),
                 operatorGuidance: resolveOperatorGuidance(promptOverrides, "askQuestion", ctx.lineOfBusiness),
             })
         )

@@ -79,6 +79,7 @@ export interface PolicyReviewData {
     perksAndBenefits: ReviewPerk[]
     notableConditions: ReviewCondition[]
     finePrintClauses: ReviewFinePrint[]
+    independentVerification?: { status: string; fields: Record<string, string> } | null
     overallConfidence: number | null
     fieldConfidence: Record<string, number>
     /** Per-field document citations (flag-gated feature; empty when absent). */
@@ -288,6 +289,7 @@ export function buildPolicyReviewData(policy: PolicyRowForReview): PolicyReviewD
         perksAndBenefits: asArray<ReviewPerk>(acord?.perksAndBenefits).filter((p) => p && p.name),
         notableConditions: asArray<ReviewCondition>(acord?.notableConditions).filter((c) => c && c.summary),
         finePrintClauses: asArray<ReviewFinePrint>(acord?.finePrintClauses).filter((f) => f && typeof f.clause === 'string'),
+        independentVerification: extraction?.independentVerification ?? null,
         overallConfidence: asNumber(extraction?.confidence?.overall),
         fieldConfidence:
             extraction?.confidence?.fields && typeof extraction.confidence.fields === 'object'
@@ -305,7 +307,7 @@ export function buildPolicyReviewData(policy: PolicyRowForReview): PolicyReviewD
             .filter(Boolean),
         requiresReview: Boolean(extraction?.requiresReview),
         reviewState,
-        verified: Boolean(extraction && !extraction.requiresReview),
+        verified: extraction?.reviewState === 'confirmed',
         processingErrorCode:
             typeof acord?.processingError?.code === 'string' ? acord.processingError.code : null,
     }

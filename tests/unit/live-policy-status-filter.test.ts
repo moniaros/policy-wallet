@@ -264,7 +264,7 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
     },
     // ── Must reach EVERY row, by design ─────────────────────────────────────
     "lib/services/gdpr-erasure.service.ts": {
-        count: 2,
+        count: 3,
         reason:
             "Erasure (Art. 17) must reach every stored row — deleted, analyzing and cancelled " +
             "included. A status filter here would orphan personal data.",

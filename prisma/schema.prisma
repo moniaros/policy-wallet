@@ -64,6 +64,7 @@ enum DeletionRequestStatus {
 
 /// @ropa purpose=service basis=contract subjects=policyholder|agent|admin retention=account_life erasure=anonymize art9=none
 model User {
+  agentReviewRevisions AgentReviewRevision[]
   id                              String                     @id @default(cuid()) @map("user_id")
   name                            String?
   email                           String                     @unique
@@ -395,6 +396,7 @@ model TenantMembership {
 
 /// @ropa purpose=service basis=contract subjects=policyholder retention=account_life erasure=delete art9=none
 model Policy {
+  agentReviewRevisions AgentReviewRevision[]
   id                      String                 @id @default(cuid()) @map("policy_id")
   ownerUserId             String                 @map("owner_user_id")
   createdByUserId         String                 @map("created_by_user_id")
@@ -2627,4 +2629,34 @@ model FeatureFlagRevision {
 
   @@index([flagId, createdAt])
   @@map("feature_flag_revisions")
+}
+
+/// Private advisor work. Never included by customer/report recommendation readers.
+/// @ropa purpose=intermediary basis=consent subjects=policyholder|agent retention=account_life erasure=delete art9=body,feedbackNote,privateAdvice
+model AgentReviewRevision {
+  privateAdvice Json? @map("private_advice")
+  reuseApproved Boolean @default(false) @map("reuse_approved")
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  policyId        String    @map("policy_id")
+  previousId      String?   @unique @map("previous_id")
+  sourceDigest    String    @map("source_digest")
+  body            String
+  language        String
+  recipientUserId String    @map("recipient_user_id")
+  channel         String    @default("collaboration")
+  status          String    @default("draft")
+  approvalDigest  String?   @map("approval_digest")
+  approvedAt      DateTime? @map("approved_at")
+  deliveredAt     DateTime? @map("delivered_at")
+  messageId       String?   @unique @map("message_id")
+  feedback        String?
+  feedbackNote    String?   @map("feedback_note")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  policy          Policy    @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([userId, policyId, createdAt])
+  @@map("agent_review_revisions")
 }

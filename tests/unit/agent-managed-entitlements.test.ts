@@ -93,7 +93,7 @@ describe('canAgentAddCustomer — maxCustomers', () => {
         await canAgentAddCustomer(AGENT)
 
         expect(db.customerRelationship.count).toHaveBeenCalledWith({
-            where: { agentUserId: AGENT, status: { not: 'terminated' } },
+            where: { agentUserId: AGENT, status: { notIn: ['inactive', 'terminated'] } },
         })
     })
 })

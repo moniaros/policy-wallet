@@ -1,5 +1,7 @@
 "use client"
 
+import { questionnaireTitle } from "@/lib/questionnaires/presentation"
+
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { useRef, useId, useState, useEffect, useCallback } from "react"
 import { getQuestionnaireTemplates, sendQuestionnaire } from "@/app/(protected)/agent/actions"
@@ -175,7 +177,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className={`font-bold text-sm ${selectedTemplate === t.id ? 'text-primary dark:text-mint' : 'text-foreground'}`}>
-                                                            {t.name}
+                                                            {questionnaireTitle(t, language)}
                                                         </p>
                                                         <p className="text-kicker text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-0.5">
                                                             {t.lineOfBusiness} · {questionCount} {questionsLabel}

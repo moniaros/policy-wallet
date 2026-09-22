@@ -13,11 +13,14 @@
  */
 
 import { db } from "@/lib/db"
+import { ENDED_RELATIONSHIP_STATUSES, getVisiblePolicyCountsByOwner } from "@/lib/agent-visibility"
+import { presentCustomerIdentity } from "@/lib/agent-consent"
+import { passwordPresence } from "@/lib/services/credential-signals"
 import { getRiskIntelligence } from "./service"
 import { advisoryImpact, bookOverview, type AdvisoryImpact, type BookOverview } from "./advisory-impact"
 
 /** Above this, the page reports that it is showing a window. */
-export const BOOK_SCORING_LIMIT = 60
+export const BOOK_SCORING_LIMIT = 20
 
 export interface ScoredHousehold {
     userId: string
@@ -35,30 +38,43 @@ export interface BookResult {
     totalCustomers: number
     /** True when the book is larger than one page can honestly score. */
     truncated: boolean
+    page: number
+    failedCount: number
+    hasNextPage: boolean
 }
 
-export async function getAdvisorBook(agentUserId: string, now: Date = new Date()): Promise<BookResult> {
-    const relationships = await db.customerRelationship.findMany({
-        where: { agentUserId, status: "active" },
-        select: {
-            policyholderUserId: true,
-            customer: { select: { name: true, email: true } },
-        },
-        orderBy: { createdAt: "desc" },
-    })
-
-    const scoped = relationships.slice(0, BOOK_SCORING_LIMIT)
+export async function getAdvisorBook(agentUserId: string, now: Date = new Date(), requestedPage = 1): Promise<BookResult> {
+    const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? Math.min(requestedPage, 100_000) : 1
+    const where = { agentUserId, status: { notIn: [...ENDED_RELATIONSHIP_STATUSES] } }
+    const [scoped, totalCustomers] = await Promise.all([
+        db.customerRelationship.findMany({
+            where,
+            select: {
+                policyholderUserId: true, activationStatus: true,
+                customer: { select: { name: true, email: true, emailVerified: true } },
+            },
+            orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+            skip: (page - 1) * BOOK_SCORING_LIMIT,
+            take: BOOK_SCORING_LIMIT,
+        }),
+        db.customerRelationship.count({ where }),
+    ])
+    const ids = scoped.map(r => r.policyholderUserId)
+    const [counts, credentials] = await Promise.all([
+        getVisiblePolicyCountsByOwner(agentUserId, ids), passwordPresence(db, ids),
+    ])
+    let failedCount = 0
 
     const households: ScoredHousehold[] = []
     for (const relationship of scoped) {
         try {
-            const intelligence = await getRiskIntelligence(relationship.policyholderUserId, now)
+            const intelligence = await getRiskIntelligence(relationship.policyholderUserId, now, agentUserId)
             const worsening = intelligence.dimensions.filter((d) => d.trend === "worsening").length
             households.push({
                 userId: relationship.policyholderUserId,
                 // Email as the fallback identity: an unnamed customer still has
                 // to be findable, and "Unknown" is not a person an advisor can call.
-                name: relationship.customer?.name || relationship.customer?.email || relationship.policyholderUserId,
+                name: presentCustomerIdentity(relationship, { ...relationship.customer, hasPassword: credentials.has(relationship.policyholderUserId) }, counts.get(relationship.policyholderUserId) ?? 0).name,
                 impact: advisoryImpact({
                     userId: relationship.policyholderUserId,
                     dimensions: intelligence.dimensions,
@@ -72,7 +88,7 @@ export async function getAdvisorBook(agentUserId: string, now: Date = new Date()
             })
         } catch (error) {
             // One unreadable household must not empty an advisor's whole queue.
-            console.error(`Book scoring failed for ${relationship.policyholderUserId}:`, error)
+            failedCount += 1
         }
     }
 
@@ -90,7 +106,9 @@ export async function getAdvisorBook(agentUserId: string, now: Date = new Date()
             households.reduce((sum, h) => sum + h.openDimensions, 0)
         ),
         households,
-        totalCustomers: relationships.length,
-        truncated: relationships.length > scoped.length,
+        totalCustomers,
+        truncated: totalCustomers > scoped.length,
+        page, failedCount,
+        hasNextPage: page * BOOK_SCORING_LIMIT < totalCustomers,
     }
 }

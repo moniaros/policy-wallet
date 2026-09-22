@@ -1,5 +1,6 @@
 "use client"
 
+import { agentWorkspaceCopy } from "@/lib/i18n/agent-workspace"
 import React, { useState } from 'react'
 import { toast } from "sonner"
 import Link from 'next/link'
@@ -95,12 +96,17 @@ const ACCEPTED = acceptAttribute('policy')
 const SCAN_MAX_BYTES = 10 * 1024 * 1024
 
 export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName, presetCustomerConsent }: Props) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
+    const batchCopy = agentWorkspaceCopy[language]
     const up = t.agentModals.uploadPolicy
     const ac = t.agentModals.addCustomer
     const router = useRouter()
 
     const [view, setView] = useState<View>('upload')
+    const [pendingFiles, setPendingFiles] = useState<File[]>([])
+    const [skippedFiles, setSkippedFiles] = useState<File[]>([])
+    const [savedCount, setSavedCount] = useState(0)
+    const [scanToken, setScanToken] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     // Per-field messages from the commit action's Zod issues, keyed by the
@@ -149,7 +155,6 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     // onCloses (stopPropagation does not stop a second listener on the same
     // node) — closing this modal, and the file with it. Suspended while the
     // consent modal is up; it re-arms, and re-takes focus, when that closes.
-    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen && !consentOpen)
 
     const [result, setResult] = useState<{ policyId?: string; customerId?: string; created?: boolean; analysis?: AnalysisOutcome } | null>(null)
     const [consentSent, setConsentSent] = useState(false)
@@ -159,10 +164,9 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     // code picks the copy; the actions depend on what was read.
     const [gate, setGate] = useState<GateVerdict | null>(null)
 
-    if (!isOpen) return null
 
     const reset = () => {
-        setView('upload'); setLoading(false); setError(null); setFieldErrors({}); setScannedFile(null)
+        setScanToken(null); setView('upload'); setLoading(false); setError(null); setFieldErrors({}); setScannedFile(null)
         setResolution(null); setSelected('new'); setResult(null); setConsentSent(false); setDuplicate(null)
         setCustomer({ name: '', surname: '', email: '', phone: '', taxId: '' })
         setPolicy({ insurerName: '', policyNumber: '', lineOfBusiness: 'motor', startDate: '', endDate: '', premiumAmount: '' })
@@ -197,7 +201,20 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         return null
     }
 
-    const closeAll = () => { reset(); onClose() }
+    const closeAll = () => { reset(); setPendingFiles([]); setSkippedFiles([]); setSavedCount(0); onClose() }
+    const dialogRef = useDialog<HTMLDivElement>(() => closeAll(), isOpen && !consentOpen)
+    if (!isOpen) return null
+
+    const nextFile = async (skip = false) => {
+        const [next, ...rest] = pendingFiles
+        if (!next) return
+        if (skip && scannedFile) setSkippedFiles(files => [...files, scannedFile])
+        reset()
+        setPreScanAttested(true)
+        setPendingFiles(rest)
+        setScannedFile(next)
+        await runScan(next)
+    }
 
     const applyExtraction = (data: Extraction) => {
         setCustomer({
@@ -266,6 +283,8 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
      * standalone page, never as a second modal — asking twice gains nothing.
      */
     const runScan = async (file: File, afterConsent = false, branchConfirmed = false) => {
+        const tooBig = preflightUploadSize(file.size, SCAN_MAX_BYTES)
+        if (tooBig) { setError(uploadRejectionMessage(t, tooBig, null, SCAN_MAX_BYTES)); setView('upload'); return }
         setView('parsing'); setLoading(true); setError(null); setConsentLink(false)
 
         const fd = new FormData()
@@ -312,6 +331,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             return
         }
 
+        setScanToken(res.scanToken ?? null)
         applyExtraction(res.extraction as Extraction)
 
         // Per-customer entry: the customer is known — skip resolution.
@@ -336,6 +356,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
         const documentFormData = new FormData()
         if (scannedFile) documentFormData.append('file', scannedFile)
+        if (scanToken) documentFormData.append('scanToken', scanToken)
 
         const policyInput = {
             insurerName: policy.insurerName,
@@ -406,6 +427,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             created: (res as any).created,
             analysis: (res as any).analysis,
         })
+        setSavedCount(count => count + 1)
         setView('success')
         onSuccess?.()
     }
@@ -549,12 +571,12 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                         <div>
                             <UploadDropzone
                                 key={pickerKey}
-                                onFiles={(files) => { const file = files[0]; if (file) void handleFile(file) }}
+                                onFiles={(files) => { const [file, ...rest] = files; setPendingFiles(rest); if (file) void handleFile(file) }}
                                 accept={ACCEPTED}
-                                multiple={false}
+                                multiple
                                 inputId="upload-policy-file"
-                                title={up.uploadCta}
-                                hint={up.dropHint}
+                                title={batchCopy.batch}
+                                hint={batchCopy.batchHelp}
                                 disabled={!preScanAttested}
                             />
                             <p className="mt-2 text-center text-caption text-muted-foreground">{up.uploadHint}</p>
@@ -825,6 +847,15 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                         </div>
                     </div>
                 )}
+
+                {(pendingFiles.length > 0 || savedCount > 0 || skippedFiles.length > 0) && <div className="space-y-2 border-t border-border py-3" aria-live="polite">
+                    <p className="text-sm">{batchCopy.saved}: {savedCount} · {batchCopy.remaining}: {pendingFiles.length + skippedFiles.length}</p>
+                    <p className="text-caption text-muted-foreground">{batchCopy.queueNotice}</p>
+                    {pendingFiles.length > 0 && view !== 'parsing' && <button type="button" disabled={loading} className="pw-soft-button" onClick={() => void nextFile(view !== 'success')}>{view === 'success' ? batchCopy.nextFile : batchCopy.skipFile}</button>}
+                    {pendingFiles.length === 0 && skippedFiles.length > 0 && view !== 'parsing' && <button type="button" className="pw-soft-button" onClick={() => {
+                        const retryFiles = view === 'success' || !scannedFile ? skippedFiles : [...skippedFiles, scannedFile]; const [next, ...rest] = retryFiles; reset(); setPreScanAttested(true); setSkippedFiles([]); setPendingFiles(rest); setScannedFile(next); void runScan(next)
+                    }}>{batchCopy.retry}</button>}
+                </div>}
 
                 {/* ── SUCCESS ── */}
                 {view === 'success' && result && (

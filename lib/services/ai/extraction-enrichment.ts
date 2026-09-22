@@ -1,3 +1,4 @@
+import { isUnreadableValue } from "@/lib/wallet/unreadable-value"
 import type { PremiumFrequency } from './ai-service.interface'
 import { assessExtractionEvidence, type DocumentKind, type EvidenceVerdict } from './document-kind'
 import { sanitizeExtractionSources, verifyExtractionSources } from './extraction-citations'
@@ -135,9 +136,9 @@ function getMissingCriticalFields(payload: RawExtractionPayload): string[] {
     return CRITICAL_FIELDS.filter((key) => {
         const value = payload[key]
         if (key === 'premiumAmount') {
-            return !Number.isFinite(Number(value))
+            return value === null || value === undefined || asText(value) === "" || !Number.isFinite(Number(value))
         }
-        return !asText(value)
+        return !asText(value) || isUnreadableValue(asText(value))
     })
 }
 
@@ -157,9 +158,7 @@ export function enrichExtractionPayload(
     const overallConfidence = explicitOverall ?? inferredOverall
 
     const explicitRequiresReview = (payload.extractionConfidence as any)?.requiresReview
-    const requiresReview = typeof explicitRequiresReview === 'boolean'
-        ? explicitRequiresReview
-        : overallConfidence < 80 || missingCriticalFields.length > 0
+    const requiresReview = missingCriticalFields.length > 0 || overallConfidence < 80 || explicitRequiresReview === true
 
     const exclusions = Array.from(new Set([
         ...toStringArray(payload.exclusions),
@@ -202,7 +201,12 @@ export function enrichExtractionPayload(
                     : {}),
             missingCriticalFields,
             requiresReview,
-            reviewState: (baseAcord?.extraction?.reviewState as string) || 'unconfirmed',
+            // Only trusted, already-stored confirmation can survive enrichment. A model cannot confirm itself.
+            reviewState: (existingAcordData?.extraction?.reviewState as string) || 'unconfirmed',
+            confirmedAt: existingAcordData?.extraction?.confirmedAt ?? null,
+            confirmedBy: existingAcordData?.extraction?.confirmedBy ?? null,
+            flaggedAt: existingAcordData?.extraction?.flaggedAt ?? null,
+            independentVerification: null,
             // Which language the COMPOSED coverageSummary came back in. The
             // schema and prompt both pin Greek, but a model that ignores the
             // instruction must not be able to reach the wallet unnoticed —

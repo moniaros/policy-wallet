@@ -371,7 +371,7 @@ const roleCopy: Record<Language, RoleCopy> = {
         agentKpis: {
             heading: "Δείκτες βιβλίου",
             totalClients: "Σύνολο πελατών",
-            expiringClients: "Ασφαλιστήρια που λήγουν",
+            expiringClients: "Πελάτες με ανανέωση σε 30 ημέρες",
             gapClients: "Με κενά κάλυψης",
             pendingInvites: "Εκκρεμείς προσκλήσεις",
             policiesThisMonth: "Ασφαλιστήρια αυτόν τον μήνα",
@@ -586,7 +586,7 @@ const roleCopy: Record<Language, RoleCopy> = {
         agentKpis: {
             heading: "Book indicators",
             totalClients: "Total clients",
-            expiringClients: "Expiring policies",
+            expiringClients: "Customers renewing within 30 days",
             gapClients: "With coverage gaps",
             pendingInvites: "Pending invitations",
             policiesThisMonth: "Policies this month",

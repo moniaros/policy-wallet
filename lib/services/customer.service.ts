@@ -1,7 +1,7 @@
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { BaseService } from "./base.service";
-import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
+import { liveAgentRelationshipsWhere, agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
 import { agentMaySeeCustomerIdentity, isPhantomCustomer } from "@/lib/agent-consent";
 import { effectivePolicyStatus, isPolicyCoverageActive, isCoveredByEndDate, resolvePolicyLifecycle } from "@/lib/policy-status";
 import { normalizeTaxId } from "@/lib/identity/tax-id";
@@ -49,10 +49,10 @@ export class CustomerService extends BaseService {
         );
 
         const where: Prisma.CustomerRelationshipWhereInput = {
-            agentUserId,
             // Terminated relationships (GDPR erasure or explicit removal) leave the
             // book entirely; an explicit status filter still cannot resurface them.
-            ...(status ? { status } : { status: { not: 'terminated' } }),
+            ...liveAgentRelationshipsWhere(agentUserId),
+            ...(status ? { AND: [{ status }] } : {}),
             ...(search && {
                 OR: [
                     { customer: { name: { contains: search, mode: 'insensitive' } } },

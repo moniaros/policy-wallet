@@ -1,3 +1,5 @@
+import { ReviewWorkspace } from "@/components/agent/ReviewWorkspace"
+import { documentDisplayLabel } from "@/lib/wallet/document-label"
 export const runtime = 'nodejs'
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -224,6 +226,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                 <span className="text-neutral-900 dark:text-neutral-100">{shownPolicyNumber ?? unreadable}</span>
             </nav>
 
+
             {/* Agent Action Banner */}
             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-6 mb-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
                 <div className="flex items-center gap-4">
@@ -341,6 +344,8 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                         canConfirmGaps={isAgentRole(dbUser.roles) && access.canWrite}
                     />
                     </section>
+
+            {process.env.AGENT_REVIEW_WORKSPACE === '1' && isAgentRole(dbUser.roles) && access.hasAgentRelationship && <ReviewWorkspace policyId={policyId} reviewHref={`/wallet/${policyId}/review?returnTo=${returnHere}`} />}
 
                     <CollaborationTimeline
                         policyId={policyId}
@@ -465,7 +470,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                                             </div>
                                             <div className="overflow-hidden">
-                                                <p className="text-xs font-bold text-foreground truncate">{doc.fileName}</p>
+                                                <p className="text-xs font-bold text-foreground truncate">{documentDisplayLabel({ documentKind: doc.documentKind, lineOfBusiness: policy.lineOfBusiness, policyNumber: policy.policyNumber }, language)}</p>
                                                 <p className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{pd.contract}</p>
                                             </div>
                                         </a>

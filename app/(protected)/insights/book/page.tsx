@@ -7,14 +7,15 @@ import { getAdvisorBook } from "@/lib/services/risk-dna/book"
 import { AdvisorBookView } from "@/components/risk-dna/AdvisorBookView"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
-export default async function AdvisorBookPage() {
+export default async function AdvisorBookPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
     const { dbUser } = await getAuthenticatedUser()
     const roles = parseRoles(dbUser.roles)
     // Advisor surface. A policyholder reaching it would see other households.
     if (!roles.includes("agent") && !roles.includes("admin")) redirect("/dashboard")
 
     const language = resolveUserLanguage(dbUser.preferredLanguage)
-    const book = await getAdvisorBook(dbUser.id)
+    const query = await searchParams
+    const book = await getAdvisorBook(dbUser.id, new Date(), Number(query.page ?? 1))
 
     return (
         <div className="pw-page-shell">
@@ -39,6 +40,9 @@ export default async function AdvisorBookPage() {
                     }))}
                     totalCustomers={book.totalCustomers}
                     truncated={book.truncated}
+                    page={book.page}
+                    failedCount={book.failedCount}
+                    hasNextPage={book.hasNextPage}
                 />
             </div>
         </div>

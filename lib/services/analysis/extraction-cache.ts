@@ -2,18 +2,27 @@
  * Extraction Cache
  *
  * Caches AI extraction results per document hash to avoid redundant
- * AI calls when re-analyzing the same document. Saves 80-90% of
- * tokens on re-analysis / Q&A for the same policy.
+ * AI calls when re-analyzing the same document.
  *
  * Cache is stored on the PolicyDocument record alongside the document hash.
- * Cache is valid for 24 hours after extraction.
+ * Validity follows the document and extraction contract, not its age.
  */
 
+import { createHash } from "node:crypto"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import type { AIPolicyExtractionResponse } from "../ai/ai-service.interface"
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
+// Bump when extraction schema, prompt, enrichment or citation semantics change.
+export const EXTRACTION_ARTIFACT_VERSION = "agent-evidence-v1"
+export async function getExtractionCacheVersion(): Promise<string | null> {
+    try {
+    const [{ getPromptOverrides }, { getAiRuntimeOverrides }] = await Promise.all([import("../ai/prompt-overrides"), import("../ai/runtime-config")])
+    const [prompts, routing] = await Promise.all([getPromptOverrides(), getAiRuntimeOverrides()])
+    const models = [process.env.AI_SERVICE_TYPE, process.env.GEMINI_MODEL_EXTRACTION, process.env.OPENAI_MODEL_EXTRACTION, process.env.CLAUDE_MODEL_EXTRACTION, process.env.EXTRACTION_TEXT_FIRST, process.env.EXTRACTION_CITATIONS]
+    return createHash("sha256").update(JSON.stringify([EXTRACTION_ARTIFACT_VERSION, models, Object.entries(prompts).sort(), routing])).digest("hex")
+    } catch { return null } // Config unavailable: miss safely, never mislabel an artifact.
+}
 
 export async function hashDocumentBuffer(buffer: Buffer): Promise<string> {
     const hashBuffer = await crypto.subtle.digest(
@@ -35,7 +44,8 @@ export async function hashDocumentBuffer(buffer: Buffer): Promise<string> {
 export async function getCachedExtraction(
     policyId: string,
     documentHash: string,
-    documentId?: string
+    documentId?: string,
+    version?: string | null
 ): Promise<AIPolicyExtractionResponse | null> {
     try {
         const doc = await db.policyDocument.findFirst({
@@ -55,23 +65,10 @@ export async function getCachedExtraction(
 
         if (!doc?.extractionCache || !doc.extractedAt) return null
 
-        // Check TTL
-        const age = Date.now() - doc.extractedAt.getTime()
-        if (age > CACHE_TTL_MS) {
-            logger("info", "Extraction cache expired", {
-                policyId,
-                ageHours: Math.round(age / (60 * 60 * 1000)),
-            })
-            return null
-        }
-
-        logger("info", "Extraction cache hit", {
-            policyId,
-            documentHash: documentHash.slice(0, 12),
-            ageMinutes: Math.round(age / (60 * 1000)),
-        })
-
-        return doc.extractionCache as unknown as AIPolicyExtractionResponse
+        const cached = doc.extractionCache as unknown as { version?: string; extraction?: AIPolicyExtractionResponse }
+        const expectedVersion = version === undefined ? await getExtractionCacheVersion() : version
+        if (!expectedVersion || cached.version !== expectedVersion || !cached.extraction) return null
+        return cached.extraction
     } catch (error) {
         logger("warn", "Extraction cache lookup failed", {
             policyId,
@@ -87,8 +84,10 @@ export async function getCachedExtraction(
 export async function setCachedExtraction(
     policyId: string,
     documentHash: string,
-    extraction: AIPolicyExtractionResponse
+    extraction: AIPolicyExtractionResponse,
+    version: string | null
 ): Promise<void> {
+    if (!version) return
     try {
         await db.policyDocument.updateMany({
             where: {
@@ -96,7 +95,7 @@ export async function setCachedExtraction(
                 documentHash,
             },
             data: {
-                extractionCache: extraction as any,
+                extractionCache: { version, extraction } as any,
                 extractedAt: new Date(),
             },
         })

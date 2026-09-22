@@ -40,5 +40,8 @@
   "call:app/(public)/product/pet/PageClient.tsx::Δείτε αν εξαιρούνται παθήσεις που κληρονομούνται ή υπήρχαν πριν αρχίσει η ασφάλιση.",
   "call:app/(public)/solutions/agents/AgentsSolutionPageClient.tsx::Για να προετοιμαστεί μια επιχείρηση, χρειάζεται και συζήτηση. Ο πελάτης, ο ασφαλιστής και η ασφαλιστική πρέπει να ξέρουν τι καλύπτεται και τι μένει έξω.",
   "call:app/(public)/solutions/agents/AgentsSolutionPageClient.tsx::Πόλεμοι, ακραίος καιρός ή ένα πρόβλημα σε προμηθευτή μπορούν να επηρεάσουν την ίδια επιχείρηση. Οι κίνδυνοι συχνά συνδέονται μεταξύ τους.",
-  "call:components/landing/PartnersSections.tsx::Εξηγήστε τις καλύψεις μέσα από τη δική σας υπηρεσία."
+  "call:components/landing/PartnersSections.tsx::Εξηγήστε τις καλύψεις μέσα από τη δική σας υπηρεσία.",
+  "bundle:agentDashboard.inRenewalsAtRisk::εκτίμηση προμήθειας ανανέωσης",
+  "bundle:agentPages.policyDetail.acordVerified::Στοιχεία από εξαγωγή AI",
+  "bundle:agentPages.policyDetail.verificationOverviewDesc::Εξαγωγή AI· χρειάζεται επιβεβαίωση από άνθρωπο."
 ]

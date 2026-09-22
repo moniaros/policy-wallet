@@ -452,7 +452,9 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 {/* Relationship danger zone — a card like any other; the danger
                     lives in the copy and the action's colour, not in a dashed
                     red border around a box. */}
-                <section className="pw-card pw-pad flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <details className="pw-card pw-pad">
+                    <summary className="cursor-pointer text-sm font-semibold">{PROFILE_COPY.removeCustomer[language]}</summary>
+                    <div className="mt-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                     <div>
                         <h3 className="text-sm font-semibold text-status-danger">{PROFILE_COPY.removeCustomer[language]}</h3>
                         <p className="mt-1 max-w-md text-caption text-muted-foreground">{PROFILE_COPY.removeCustomerDesc[language]}</p>
@@ -465,7 +467,8 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                     >
                         {isRemovingCustomer ? PROFILE_COPY.removing[language] : PROFILE_COPY.removeCustomer[language]}
                     </button>
-                </section>
+                    </div>
+                </details>
             </ClientDetailView>
 
             <ConfirmDialog

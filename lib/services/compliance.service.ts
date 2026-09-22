@@ -575,7 +575,9 @@ export async function buildUserDataExportPayload(userId: string) {
         throw new Error("User not found")
     }
 
+    const agentReviewRevisions = await db.agentReviewRevision.findMany({ where: { userId }, orderBy: { createdAt: "asc" } })
     return {
+        agentReviewRevisions,
         generatedAt: new Date().toISOString(),
         generatedBy: "self_service_export",
         user: {

@@ -97,13 +97,25 @@ describe("source guard — a document reaches the extraction model only through 
 
     it("every extractPolicyData call receives the constructor's result or the gated prepareDocument result", () => {
         const offenders = files.flatMap((file) =>
-            ungatedExtractionArguments(readFileSync(file, "utf8")).map((arg) => `${rel(file)}: extractPolicyData(${arg}`)
+            ungatedExtractionArguments(readFileSync(file, "utf8"))
+                .filter(arg => !(rel(file) === 'lib/services/analysis/independent-verification.ts' && arg === 'input.document'))
+                .map((arg) => `${rel(file)}: extractPolicyData(${arg}`)
         )
         expect(
             offenders,
             "These call sites hand the model something the gate did not validate. Run validateDocumentForIngestion " +
                 "and build the argument with toValidatedAIDocument:\n" + offenders.join("\n")
         ).toEqual([])
+    })
+
+    it("the second reader accepts only a branded document from the gated orchestrator", () => {
+        const source = blankNonCode(readFileSync('lib/services/analysis/independent-verification.ts', 'utf8'))
+        expect(source).toMatch(/document:\s*ValidatedAIDocument/)
+        const calls = files.flatMap(file => {
+            const code = blankNonCode(readFileSync(file, 'utf8'))
+            return [...code.matchAll(/await\s+independentlyVerify\s*\(\s*\{\s*document:\s*([^,]+)/g)].map(m => `${rel(file)}:${m[1].trim()}`)
+        })
+        expect(calls).toEqual(['lib/services/analysis/policy-analysis-orchestrator.service.ts:docStep.result.document'])
     })
 
     it("the interface still takes a ValidatedAIDocument", () => {

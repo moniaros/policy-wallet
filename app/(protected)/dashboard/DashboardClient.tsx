@@ -73,6 +73,8 @@ export function DashboardClient({
     }
 
     const handleActionQueueItem = (item: ActionQueueItem) => {
+        if (item.type === "follow_up") { router.push("/tasks"); return }
+        if (item.type === "finding_review" && item.policyId) { router.push(`/customers/${item.clientId}/policy/${item.policyId}`); return }
         if (item.clientId) {
             router.push(`/customers/${item.clientId}`)
         }
@@ -153,6 +155,16 @@ export function DashboardClient({
                 </div>
             )}
 
+            <DesktopDashboard
+                data={dashboardData}
+                recentActivity={recentActivity}
+                agentTier={agentTier}
+                agentName={agentName}
+                onActionQueueItem={handleActionQueueItem}
+                onClientClick={handleClientClick}
+                onInviteCustomer={() => setIsInviteModalOpen(true)}
+                onQuickAdd={handleQuickAdd}
+            />
             {/* First-run getting-started checklist. Self-hides (renders null)
                 once every step is done or the agent dismisses it, so the empty
                 wrapper collapses via [&:empty]:hidden — no stray gap above the
@@ -168,16 +180,6 @@ export function DashboardClient({
                 />
             </div>
 
-            <DesktopDashboard
-                data={dashboardData}
-                recentActivity={recentActivity}
-                agentTier={agentTier}
-                agentName={agentName}
-                onActionQueueItem={handleActionQueueItem}
-                onClientClick={handleClientClick}
-                onInviteCustomer={() => setIsInviteModalOpen(true)}
-                onQuickAdd={handleQuickAdd}
-            />
             <InviteModal
                 isOpen={isInviteModalOpen}
                 onClose={() => setIsInviteModalOpen(false)}

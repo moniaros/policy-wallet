@@ -71,6 +71,8 @@ export type PdfProbeResult =
           textChars: number
           /** No usable text layer in the sampled pages — a scan or a blank. */
           imageOnly: boolean
+          /** Sparse opening pages can be scans even when later terms have text. */
+          needsVision?: boolean
       }
     | { ok: false; failure: PdfProbeFailure; pageCount?: number }
 
@@ -165,6 +167,7 @@ export async function probePdf(bytes: Uint8Array, opts: PdfProbeOptions = {}): P
             pages: parts.map((p) => p.replace(/\s+/g, " ").trim()),
             textChars,
             imageOnly: textChars < IMAGE_ONLY_TEXT_THRESHOLD,
+            needsVision: (parts[0] ?? "").replace(/\s+/g, "").length < IMAGE_ONLY_TEXT_THRESHOLD,
         }
     } finally {
         try {

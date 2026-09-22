@@ -1,5 +1,7 @@
 "use server"
 
+import { questionnaireTitle } from "@/lib/questionnaires/presentation"
+
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { db } from "@/lib/db"
@@ -90,7 +92,7 @@ export async function getPendingActionItems(): Promise<ActionItem[]> {
             id: q.id,
             source: 'questionnaire',
             type: 'questionnaire',
-            title: q.template.name,
+            title: questionnaireTitle(q.template, authResult.dbUser.preferredLanguage),
             description: tr.tasks.questionnaireFrom.replace('{name}', q.sender.name),
             priority: 'high', // Questionnaires are always important
             status: 'pending',

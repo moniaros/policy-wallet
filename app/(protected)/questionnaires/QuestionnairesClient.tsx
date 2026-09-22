@@ -1,5 +1,7 @@
 "use client"
 
+import { questionnaireTitle } from "@/lib/questionnaires/presentation"
+
 import { useId, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -307,7 +309,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                 <div key={tpl.id} className="pw-card pw-pad flex flex-col">
                     <CardHead
                         icon={ClipboardList}
-                        title={tpl.name}
+                        title={questionnaireTitle(tpl, language)}
                         meta={
                             <span className={`${pill} bg-muted text-foreground`}>
                                 {tpl.isSystem ? t.system : t.custom}
@@ -348,7 +350,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                             <button
                                 type="button"
                                 onClick={() => setPendingDeleteId(tpl.id)}
-                                aria-label={`${t.deleteTemplate}: ${tpl.name}`}
+                                aria-label={`${t.deleteTemplate}: ${questionnaireTitle(tpl, language)}`}
                                 className="pw-soft-button h-11 w-11 px-0 text-status-danger"
                             >
                                 <Trash2 className="h-4 w-4" aria-hidden="true" />

@@ -1,3 +1,5 @@
+import { getPolicyAccess } from "@/lib/policy-access"
+import { ENDED_RELATIONSHIP_STATUSES, getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import { db } from "@/lib/db"
 import { sendNotification } from "@/lib/notifications"
 
@@ -52,6 +54,14 @@ export class CollaborationService {
             thread.relationship.agentUserId === userId || thread.relationship.policyholderUserId === userId
 
         if (!isParticipant && !inRelationship) return null
+        // An old thread/participant record must not outlive the agent's authority.
+        if (userId !== thread.relationship.policyholderUserId) {
+            if (ENDED_RELATIONSHIP_STATUSES.includes(thread.relationship.status as any)) return null
+            if (thread.policyId) {
+                const access = await getPolicyAccess(thread.policyId, { id: userId, roles: rolesRaw })
+                if (!access.canRead) return null
+            }
+        }
         return thread
     }
 
@@ -76,6 +86,14 @@ export class CollaborationService {
                 { relationship: { policyholderUserId: userId } },
                 { participants: { some: { userId } } },
             ]
+        }
+
+        if (roles.includes('agent') && !roles.includes('admin')) {
+            const visible = await getAgentPolicyVisibilityWhere(userId)
+            where.AND = [{ OR: [
+                { relationship: { policyholderUserId: userId } },
+                { relationship: { status: { notIn: [...ENDED_RELATIONSHIP_STATUSES] } }, OR: [{ policyId: null }, { policy: visible }] },
+            ] }]
         }
 
         const threads = await db.collaborationThread.findMany({

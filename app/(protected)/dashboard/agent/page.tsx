@@ -1,3 +1,4 @@
+import { isAgentVerified } from "@/lib/agent/verification"
 export const runtime = "nodejs"
 
 import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
@@ -122,6 +123,7 @@ export default async function DashboardPage() {
                 logoUrl: true,
                 brandColor: true,
                 licenseNumber: true,
+                verificationStatus: true,
                 documents: true,
             },
         }),
@@ -210,8 +212,7 @@ export default async function DashboardPage() {
         ? opportunities
             .filter((o) =>
                 (o.status === "open" || o.status === "contacted") &&
-                Boolean(o.lineOfBusiness) &&
-                Number(o.estimatedCommission ?? 0) > 0
+                Boolean(o.lineOfBusiness)
             )
             .map((o) => ({
                 id: o.id,
@@ -365,6 +366,24 @@ export default async function DashboardPage() {
     for (const row of gapRows) {
         if ((row.provenance === "under_review" || row.evidence !== "gap") && row.policyId) underReviewByPolicy.set(row.policyId, (underReviewByPolicy.get(row.policyId) ?? 0) + 1)
     }
+    for (const policy of policies) {
+        const count = underReviewByPolicy.get(policy.id)
+        const relation = relByPolicyholder.get(policy.ownerUserId)
+        if (!count || !relation) continue
+        actionQueue.push({ id: `review-${policy.id}`, type: 'finding_review', clientId: relation.customer.id,
+            clientName: presentName(relation.customer.id), description: '', dueDate: '', urgency: 'medium',
+            oneTapAction: 'review_findings', policyId: policy.id, findingCount: count })
+    }
+    for (const task of agentTasks) {
+        actionQueue.push({ id: `task-${task.id}`, type: 'follow_up', clientId: '', clientName: '', description: task.title,
+            dueDate: task.dueDate?.toISOString() ?? '', urgency: task.dueDate && task.dueDate < startOfToday ? 'high' : 'medium',
+            oneTapAction: 'open_task', taskId: task.id })
+    }
+    // Operational urgency and real deadlines decide order; revenue does not hide customer work.
+    actionQueue.sort((a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency]
+        || (a.dueDate ? Date.parse(a.dueDate) : Infinity) - (b.dueDate ? Date.parse(b.dueDate) : Infinity)
+        || a.id.localeCompare(b.id))
+
     // Intersect with the CURRENT client set: a policy whose owner is no longer a
     // relationship (orphaned / uploaded for a non-client) must not push the
     // numerator past customersNow → the percentages below could exceed 100%.
@@ -390,6 +409,9 @@ export default async function DashboardPage() {
     )
 
     const portfolioHealth = {
+        customersWithGaps: clientsWithGaps.size,
+        customersWithPolicies: clientsWithPolicies.size,
+        customersWithPendingFindings: new Set(policies.filter(p => underReviewByPolicy.has(p.id) && relByPolicyholder.has(p.ownerUserId)).map(p => p.ownerUserId)).size,
         totalClients: customersNow,
         coverageGapPercent: customersNow > 0
             ? Math.round((clientsWithGaps.size / customersNow) * 100)
@@ -456,7 +478,7 @@ export default async function DashboardPage() {
             policyCount: clientPolicies.length,
             urgencyTier,
             nextActionDue: nextAction?.dueDate || null,
-            nextActionLabel: nextAction?.description || null,
+            nextActionLabel: null,
             activationStatus: rel.status === "active" ? "activated" : rel.status === "pending_activation" ? "invited" : "inactive",
             gapCount: clientGaps,
             underReviewCount: clientUnderReview,
@@ -583,6 +605,7 @@ export default async function DashboardPage() {
             Boolean(agentProfile?.phone) &&
             Boolean(agentProfile?.logoUrl || agentProfile?.brandColor),
         licenseUploaded:
+            isAgentVerified(agentProfile?.verificationStatus) ||
             profileDocuments.some((d) => d?.type === "license") ||
             Boolean(agentProfile?.licenseNumber),
         hasClients: customersNow > 0,
