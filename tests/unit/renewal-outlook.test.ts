@@ -54,11 +54,11 @@ describe("deriveRenewalChecklist", () => {
 describe("upcomingReminderMilestones", () => {
     it("promises the full ladder only ahead of where the policy stands", () => {
         // 80 days out: 90 has already passed — promising it would be false.
-        expect(upcomingReminderMilestones(80, [], true)).toEqual([60, 30, 15, 7])
+        expect(upcomingReminderMilestones(80, [], true)).toEqual([60, 30, 15, 7, 3])
     })
 
     it("never re-promises a milestone already sent", () => {
-        expect(upcomingReminderMilestones(80, [60, 30], true)).toEqual([15, 7])
+        expect(upcomingReminderMilestones(80, [60, 30], true)).toEqual([15, 7, 3])
     })
 
     it("is tier-truthful: the free floor is the single 30-day reminder", () => {

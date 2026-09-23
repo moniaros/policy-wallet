@@ -121,6 +121,9 @@ Rule = operator + catalogue row + trace test + provenance (CLAUDE.md "a new dete
 
 ### Phase 3 — Notification matrix (§14, §22.3)
 
+**Delivered 2026-09-23 (`feat/spec-v2-phase3`):** 3.1 day-3 rung (paid ladder; free tier 30 only, owner decision 2026-07); 3.2 `green_card_expiry` (renewal-check, `lib/renewals/green-card.ts`) and `enfia_season` (new yearly job + cron, `lib/services/enfia-season.service.ts`); grace period = existing `renewal_overdue`; benefit reminder waits for Phase 4's check-up tracker; 3.3 `PushOptIn` on the onboarding advisor screen with the iOS install-first rule. Matrix row 3.5 → 85, 3.7 → 75.
+
+
 | Task | Deliverable | Files |
 |---|---|---|
 | 3.1 Milestones | Add day-3 to `lib/renewals/milestones.ts`; decide free-tier milestones (owner: today 30 only). | `lib/renewals/milestones.ts` |

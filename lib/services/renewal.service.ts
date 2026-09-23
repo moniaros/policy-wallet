@@ -8,6 +8,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { RENEWAL_MILESTONES, BASIC_MILESTONES, type Milestone } from "@/lib/renewals/milestones"
+import { greenCardDaysLeft, MOTOR_FAMILY_IDS } from "@/lib/renewals/green-card"
 
 /**
  * Close out the renewal rows whose end date a policy has just moved past.
@@ -97,6 +98,7 @@ export type RenewalRunSummary = {
     agentTasksCreated: number
     policyholderNotificationsSent: number
     agentNotificationsSent: number
+    greenCardNotificationsSent: number
     errors: string[]
 }
 
@@ -123,6 +125,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
         agentTasksCreated: 0,
         policyholderNotificationsSent: 0,
         agentNotificationsSent: 0,
+        greenCardNotificationsSent: 0,
         errors: [],
     }
 
@@ -462,7 +465,52 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
         logger("error", msg)
     }
 
+    // Green cards lapse on their own calendar, not the policy's (spec v2 §14).
+    // Its own try: a failure here must not hide a renewal-ladder failure, or
+    // the other way round.
+    try {
+        summary.greenCardNotificationsSent = await runGreenCardScan(now)
+    } catch (err) {
+        const msg = `Green card scan failed: ${err}`
+        summary.errors.push(msg)
+        logger("error", msg)
+    }
+
     return summary
+}
+
+/**
+ * One reminder per policy per green-card expiry date, 30 days out. The
+ * extraction is the only source of the date; a policy with none is silent.
+ */
+export async function runGreenCardScan(now: Date = new Date()): Promise<number> {
+    const policies = await db.policy.findMany({
+        where: {
+            status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
+            lineOfBusiness: { in: [...MOTOR_FAMILY_IDS] },
+        },
+        select: { id: true, ownerUserId: true, insurerName: true, policyNumber: true, acordData: true },
+    })
+    let sent = 0
+    for (const policy of policies) {
+        const window = greenCardDaysLeft(policy.acordData, now)
+        if (!window) continue
+        const isoDay = window.expiresOn.toISOString().slice(0, 10)
+        await emit({
+            event: "green_card_expiry",
+            userId: policy.ownerUserId,
+            title: { el: "Η Πράσινη Κάρτα σας λήγει σύντομα", en: "Your green card expires soon" },
+            message: {
+                el: `Η Πράσινη Κάρτα του ασφαλιστηρίου ${policy.insurerName} λήγει στις ${formatDate(window.expiresOn, "el")}. Χωρίς αυτήν δεν αποδεικνύεται η ασφάλιση εκτός Ελλάδας — ζητήστε νέα από τον ασφαλιστή σας.`,
+                en: `The green card on your ${policy.insurerName} policy expires on ${formatDate(window.expiresOn, "en")}. Without it, cover cannot be shown abroad — ask your insurer for a new one.`,
+            },
+            relatedObjectType: "policy",
+            relatedObjectId: policy.id,
+            dedupeKey: `green_card_expiry:${policy.id}:${isoDay}`,
+        })
+        sent++
+    }
+    return sent
 }
 
 // ---------------------------------------------------------------------------

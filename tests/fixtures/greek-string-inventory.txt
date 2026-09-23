@@ -19,8 +19,8 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3772
-# inline entries: 4967 across 226 files
+# bundle entries: 3773
+# inline entries: 4975 across 227 files
 # ternary entries: 289 across 44 files
 # call entries: 1134 across 85 files
 
@@ -2744,6 +2744,7 @@ bundle	settings.push.disable	"Απενεργοποίηση σε αυτή τη σ
 bundle	settings.push.enable	"Ενεργοποίηση σε αυτή τη συσκευή"
 bundle	settings.push.enabled	"Ενεργό σε αυτή τη συσκευή"
 bundle	settings.push.failed	"Δεν ήταν δυνατή η ενεργοποίηση των ειδοποιήσεων. Δοκιμάστε ξανά."
+bundle	settings.push.installFirst	"Στο iPhone οι ειδοποιήσεις λειτουργούν μόνο αφού προσθέσετε το PolicyWallet στην αρχική οθόνη (Κοινοποίηση → Προσθήκη στην αρχική οθόνη)."
 bundle	settings.push.title	"Ειδοποιήσεις push"
 bundle	settings.push.unavailable	"Οι ειδοποιήσεις push δεν έχουν ρυθμιστεί ακόμη σε αυτή την εγκατάσταση."
 bundle	settings.push.unsupported	"Αυτό το πρόγραμμα περιήγησης δεν υποστηρίζει ειδοποιήσεις push."
@@ -7286,6 +7287,7 @@ inline	lib/notifications/registry.ts	"Δεν έχετε πλέον πρόσβα�
 inline	lib/notifications/registry.ts	"Δεν μπορέσαμε να διαβάσουμε το ασφαλιστήριο. Δοκιμάστε ξανά ή ανεβάστε ένα καθαρότερο αρχείο."
 inline	lib/notifications/registry.ts	"Δημιουργήθηκε αναφορά για ασφαλιστήριό σας"
 inline	lib/notifications/registry.ts	"Δύο εγγραφές του ίδιου ασφαλιστηρίου έγιναν μία."
+inline	lib/notifications/registry.ts	"Ελέγξτε το ασφαλιστήριο κατοικίας σας για τη μείωση ΕΝΦΙΑ"
 inline	lib/notifications/registry.ts	"Ενέργεια διαχειριστή στον λογαριασμό"
 inline	lib/notifications/registry.ts	"Εντοπίσαμε κενό κάλυψης"
 inline	lib/notifications/registry.ts	"Εντοπίστηκε διπλό ασφαλιστήριο"
@@ -7296,6 +7298,8 @@ inline	lib/notifications/registry.ts	"Ευχαριστούμε — η αξιολ
 inline	lib/notifications/registry.ts	"Ευχαριστούμε — η γνώμη σας καταγράφηκε."
 inline	lib/notifications/registry.ts	"Ζητήθηκε προσφορά ανανέωσης"
 inline	lib/notifications/registry.ts	"Ζητήθηκε προσφορά για την ανανέωση ενός ασφαλιστηρίου."
+inline	lib/notifications/registry.ts	"Η Πράσινη Κάρτα ενός ασφαλιστηρίου αυτοκινήτου λήγει εντός 30 ημερών. Χωρίς αυτήν δεν αποδεικνύεται η ασφάλιση εκτός Ελλάδας — ζητήστε νέα από τον ασφαλιστή σας."
+inline	lib/notifications/registry.ts	"Η Πράσινη Κάρτα σας λήγει σύντομα"
 inline	lib/notifications/registry.ts	"Η αλλαγή στη ζωή σας καταγράφηκε και θα ληφθεί υπόψη στην εικόνα της κάλυψής σας."
 inline	lib/notifications/registry.ts	"Η αλλαγή του πλάνου σας ολοκληρώθηκε."
 inline	lib/notifications/registry.ts	"Η ανάλυση αποτυγχάνει επανειλημμένα για έναν πελάτη."
@@ -7310,6 +7314,7 @@ inline	lib/notifications/registry.ts	"Η εβδομάδα σας στο PolicyWa
 inline	lib/notifications/registry.ts	"Η εβδομαδιαία σύνοψη του χαρτοφυλακίου σας."
 inline	lib/notifications/registry.ts	"Η ημερομηνία λήξης πέρασε χωρίς ανανέωση — ίσως μένετε χωρίς κάλυψη."
 inline	lib/notifications/registry.ts	"Η κατάσταση της δήλωσης ζημιάς σας άλλαξε."
+inline	lib/notifications/registry.ts	"Η μείωση ΕΝΦΙΑ για ασφαλισμένες κατοικίες προϋποθέτει κάλυψη πυρκαγιάς, σεισμού και πλημμύρας. Δείτε τι καταγράφει το ασφαλιστήριό σας και ρωτήστε τον ασφαλιστή σας για ό,τι λείπει."
 inline	lib/notifications/registry.ts	"Η πληρωμή σας απέτυχε"
 inline	lib/notifications/registry.ts	"Η πληρωμή της συνδρομής σας δεν ολοκληρώθηκε. Ενημερώστε τον τρόπο πληρωμής σας."
 inline	lib/notifications/registry.ts	"Η πρόσβαση σε ένα ασφαλιστήριο ανακλήθηκε"
@@ -7817,6 +7822,8 @@ inline	lib/services/cross-sell.service.ts	"Νομική Προστασία"
 inline	lib/services/cross-sell.service.ts	"Ταξίδι"
 inline	lib/services/cross-sell.service.ts	"Υγεία"
 inline	lib/services/cross-sell.service.ts	`Η προσθήκη κάλυψης ${lob} θα ενισχύσει τη συνολική προστασία.`
+inline	lib/services/enfia-season.service.ts	"Ελέγξτε το ασφαλιστήριο κατοικίας σας για τη μείωση ΕΝΦΙΑ"
+inline	lib/services/enfia-season.service.ts	"Η μείωση ΕΝΦΙΑ για ασφαλισμένες κατοικίες προϋποθέτει κάλυψη πυρκαγιάς, σεισμού και πλημμύρας. Δείτε τι καταγράφει το ασφαλιστήριό σας και ρωτήστε τον ασφαλιστή σας για ό,τι λείπει."
 inline	lib/services/engagement-drip.service.ts	"Σας στείλαμε ένα email καλωσορίσματος με τα πρώτα βήματα."
 inline	lib/services/engagement-drip.service.ts	"Σας στείλαμε ένα email με το επόμενο βήμα: το πρώτο σας ασφαλιστήριο."
 inline	lib/services/engagement-drip.service.ts	`Η εικόνα σας μετά την πρώτη εβδομάδα: ${policyCount} ασφαλιστήρια, ${analysedPolicyCount} αναλυμένα, ${gapCount} ευρήματα.`
@@ -8372,9 +8379,11 @@ inline	lib/services/protection-profile/derive-priorities.ts	"Μας είπατε
 inline	lib/services/protection-profile/derive-priorities.ts	"Το αναφέρατε εσείς — δεν φαίνεται να ισχύει σήμερα, αλλά το κρατάμε."
 inline	lib/services/protection-profile/derive-priorities.ts	"Το αναφέρατε ως αυτό που θα σας επηρέαζε περισσότερο."
 inline	lib/services/protection-profile/derive-priorities.ts	"Το ξεχωρίσατε κι εσείς."
+inline	lib/services/renewal.service.ts	"Η Πράσινη Κάρτα σας λήγει σύντομα"
 inline	lib/services/renewal.service.ts	"Το ασφαλιστήριό σας έληξε"
 inline	lib/services/renewal.service.ts	`${ref} πέρασε την ημερομηνία λήξης χωρίς ανανέωση. Αν το ανανεώσατε αλλού, ενημερώστε το πορτοφόλι σας.`
 inline	lib/services/renewal.service.ts	`Ειδοποίηση ανανέωσης: ${customerName} — ${branchLabel.el}`
+inline	lib/services/renewal.service.ts	`Η Πράσινη Κάρτα του ασφαλιστηρίου ${policy.insurerName} λήγει στις ${formatDate(window.expiresOn, "el")}. Χωρίς αυτήν δεν αποδεικνύεται η ασφάλιση εκτός Ελλάδας — ζητήστε νέα από τον ασφαλιστή σας.`
 inline	lib/services/renewal.service.ts	`Η ασφάλισή σας ${daysLeftPhrase(daysUntilExpiry, true)}`
 inline	lib/services/renewal.service.ts	`Το ασφαλιστήριο ${policy.insurerName} (${policy.policyNumber}) λήγει στις ${formatDate(policy.endDate, "el")}. Ελέγξτε τις επιλογές ανανέωσής σας.`
 inline	lib/services/renewal.service.ts	`Το ασφαλιστήριο ${policy.insurerName} (${policy.policyNumber}) του πελάτη ${customerName} λήγει στις ${formatDate(policy.endDate, "el")} — ${awayEl}. Χρειάζεται ενέργεια.`

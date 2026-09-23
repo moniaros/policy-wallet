@@ -3463,6 +3463,7 @@ export const en: TranslationKeys = {
             denied: 'Notifications are blocked for this site. You can allow them in your browser settings.',
             unavailable: 'Push notifications are not configured on this installation yet.',
             failed: 'Notifications could not be enabled. Please try again.',
+            installFirst: 'On iPhone, notifications work only after you add PolicyWallet to your home screen (Share → Add to Home Screen).',
         },
         nuclearDeletion: 'Delete account',
         nuclearDesc: 'Your request starts the deletion process (GDPR, Article 17): it will be reviewed and completed within one month at the latest. Your policies, documents and personal data are deleted; anything the law requires us to keep (for example invoices for 5 years) is kept in anonymized form.',

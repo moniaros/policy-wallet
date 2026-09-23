@@ -88,6 +88,10 @@
     {
       "path": "/api/v1/jobs/obligation-scan",
       "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/enfia-season",
+      "schedule": "0 8 1 11 *"
     }
   ]
 }

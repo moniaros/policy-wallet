@@ -1,5 +1,6 @@
 "use client"
 
+import { PushOptIn } from "@/components/notifications/PushOptIn"
 import { forwardRef, useState } from "react"
 import { Check, Users } from "lucide-react"
 import { toast } from "sonner"
@@ -163,6 +164,13 @@ export const AdvisorScreen = forwardRef<HTMLHeadingElement, {
                     ) : null}
                 </div>
             )}
+
+            {/* Spec v2 §18.1 / §20.2: push is offered during onboarding, after the
+                install prompt has had its chance, and only ever from a click —
+                PushOptIn owns the one-shot permission and the iOS install rule. */}
+            <div className="pw-subcard mt-6 p-4">
+                <PushOptIn />
+            </div>
 
             {/* ONE exit. The screen is optional, so until there is something to
                 finish with (a connection or an invite sent) the only way out is

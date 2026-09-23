@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { detectPushSupport, subscribeToPush, unsubscribeFromPush } from "@/lib/push/register"
 
-type State = "checking" | "unsupported" | "unavailable" | "off" | "on" | "denied" | "working"
+type State = "checking" | "unsupported" | "unavailable" | "install_first" | "off" | "on" | "denied" | "working"
 
 /**
  * Push opt-in, as a control the customer chooses rather than a prompt that
@@ -31,6 +31,16 @@ export function PushOptIn() {
 
         async function check() {
             const support = detectPushSupport()
+            // iOS delivers web push only to an app installed to the home screen
+            // (spec v2 §18.1): a Safari tab can subscribe to nothing, so asking
+            // there would spend the one-shot prompt on a channel that cannot
+            // work. Say what to do first instead.
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+            const standalone = window.matchMedia("(display-mode: standalone)").matches || Boolean((window.navigator as any).standalone)
+            if (isIOS && !standalone) {
+                if (!cancelled) setState("install_first")
+                return
+            }
             if (!support.supported) {
                 if (!cancelled) setState("unsupported")
                 return
@@ -88,7 +98,7 @@ export function PushOptIn() {
 
     if (state === "checking") return null
 
-    if (state === "unsupported" || state === "unavailable" || state === "denied") {
+    if (state === "unsupported" || state === "unavailable" || state === "denied" || state === "install_first") {
         return (
             <div className="flex items-start justify-between gap-3">
                 <div>
@@ -100,7 +110,9 @@ export function PushOptIn() {
                             ? t.settings.push.unsupported
                             : state === "unavailable"
                               ? t.settings.push.unavailable
-                              : t.settings.push.denied}
+                              : state === "install_first"
+                                ? t.settings.push.installFirst
+                                : t.settings.push.denied}
                     </p>
                 </div>
             </div>
