@@ -8,7 +8,8 @@
  */
 
 // Milestone days before policy expiry when reminders are sent
-export const RENEWAL_MILESTONES = [90, 60, 30, 15, 7] as const
+// Spec v2 §14 asks for 30 / 7 / 3; the ladder keeps its earlier rungs and gains 3.
+export const RENEWAL_MILESTONES = [90, 60, 30, 15, 7, 3] as const
 // Free plan floor (owner-approved, conversion audit 2026-07): one basic
 // reminder at 30 days; the full milestone ladder is a paid feature
 // (advanced_renewal_reminders / notifications entitlement).

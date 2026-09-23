@@ -356,7 +356,7 @@ use them and so adding transport later is one adapter file.
 
 _Generated from `lib/notifications/registry.ts` by `scripts/generate-notification-matrix.mjs`. Do not edit by hand._
 
-**83 business events declared — 78 live, 5 planned.**
+**85 business events declared — 80 live, 5 planned.**
 
 ### Risk, gaps, score and recommendations
 
@@ -388,6 +388,8 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `policy_merge_requested` | Someone proposed merging two policy records | PolicyMergeRequest created | normal | in_app, email | counterparty | approve_or_reject_merge | — | 3× exponential, from 15m | 14d | notification_event | live |
 | `policy_merge_rejected` | A proposed merge was rejected | PolicyMergeRequest transitions to rejected | normal | in_app | counterparty | — | — | none | 14d | notification_event | live · transactional |
 | `policy_expiring` | A policy is approaching its renewal date | renewal-check cron finds a policy inside a reminder milestone | high | in_app, email, push | owner | review_renewal_options | — | 3× exponential, from 15m | 3d | notification_event | live |
+| `green_card_expiry` | A motor policy's green card is inside its expiry window | renewal-check cron finds vehicle.greenCardExpiryDate within 30 days (lib/renewals/green-card.ts) | normal | in_app, email, push | owner | review_renewal_options | — | none | 7d | notification_event | live |
+| `enfia_season` | The pre-ENFIA season prompt for home policies | enfia-season cron (1 November) finds an in-force home-family policy | low | in_app, email, push | owner | review_gap | — | none | 30d | notification_event | live |
 | `renewal_overdue` | A policy passed its end date without being renewed | renewal-check cron finds endDate in the past and no successor policy | critical | in_app, email, push | owner, advisor | renew_or_confirm_lapsed | unread 3d → advisor (`renewal_milestone`) | 5× exponential, from 30m | 30d | activity_log | live · transactional |
 | `renewal_outcome` | A renewal was resolved | PolicyRenewal reaches a terminal state | normal | in_app, email | owner | — | — | 3× exponential, from 15m | 30d | notification_event | live · transactional |
 | `obligation_due` | A policy condition the customer must keep is coming due | a compliance scan finds an acordData.conditions entry with a recurrence inside its reminder window | high | in_app, email | owner | confirm_condition_met | — | 3× exponential, from 15m | 14d | notification_event | live |
@@ -497,6 +499,8 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 - **`risk_level_changed`** — In-app only on purpose. A risk CLOSING is good news and does not deserve an interruption; a risk OPENING is GAP_DETECTED, which does.
 - **`recommendation_generated`** — Batched: one notification for the run, never one per card. A person who gains six recommendations has learned one thing, not six.
 - **`recommendation_dismissed`** — Recorded, not delivered. Notifying someone about their own click is noise; but a dismissal is the clearest signal a customer ever gives us and the advisor surfaces need it.
+- **`green_card_expiry`** — Spec v2 §14 / §22.3 GREEN_CARD_EXPIRY. The gap rule green_card_expiring fires only at analysis time; this is the calendar-driven reminder. Deduped per policy per expiry date.
+- **`enfia_season`** — Spec v2 §14 / §22.3 ENFIA_SEASON_ALERT. A prompt to CHECK, one per owner per year; eligibility itself is decided only by missing_enfia_components on a policy whose extraction stated all three perils (Law 4223/2013 art. 3 §7ζ, lib/gaps/provenance.ts).
 - **`renewal_overdue`** — Critical and transactional: the customer may now be uninsured, and for motor in Greece that is also unlawful. This is not a marketing reminder and cannot be switched off.
 - **`claim_opened`** — Blocked on a claims model. Wiring is one entry here plus one emitter once Claim exists.
 - **`claim_status_changed`** — Blocked on a claims model.
