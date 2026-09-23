@@ -85,6 +85,7 @@ export type ErasureSummary = {
     deletedPushDevices: number
     deletedHealthBenefitUsages: number
     deletedHealthRiskAssessments: number
+    deletedWalletMemberships: number
     deletedBusinessEvents: number
     deletedRiskReviews: number
     deletedNotificationSettings: number
@@ -229,6 +230,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedPushDevices,
                 deletedHealthBenefitUsages,
                 deletedHealthRiskAssessments,
+                deletedWalletMemberships,
                 deletedBusinessEvents,
                 deletedRiskReviews,
                 deletedNotificationSettings,
@@ -286,6 +288,9 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 // Art. 9 data the person typed themselves.
                 tx.healthBenefitUsage.deleteMany({ where: { userId } }),
                 tx.healthRiskAssessment.deleteMany({ where: { userId } }),
+                // Spec v2 §13: both directions — the wallets they owned and the
+                // ones they belonged to.
+                tx.walletMembership.deleteMany({ where: { OR: [{ walletOwnerUserId: userId }, { memberUserId: userId }] } }),
                 // The event log is a durable record of what happened to this
                 // person: policies, life events, score movements. `subjectUserId`
                 // is the field that makes it theirs.
@@ -495,6 +500,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedPushDevices: deletedPushDevices.count,
                 deletedHealthBenefitUsages: deletedHealthBenefitUsages.count,
                 deletedHealthRiskAssessments: deletedHealthRiskAssessments.count,
+                deletedWalletMemberships: deletedWalletMemberships.count,
                 deletedBusinessEvents: deletedBusinessEvents.count,
                 deletedRiskReviews: deletedRiskReviews.count,
                 deletedNotificationSettings: deletedNotificationSettings.count,

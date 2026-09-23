@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, Building2, ChevronRight, CreditCard, Gift, History, Lock, ShieldCheck, User, type LucideIcon } from "lucide-react"
+import { Bell, Building2, ChevronRight, CreditCard, Gift, History, Lock, ShieldCheck, User, Users, type LucideIcon } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { activeSectionFor, settingsSectionsFor, type SettingsSectionId } from "@/lib/settings/sections"
 
@@ -12,6 +12,7 @@ export const SETTINGS_ICONS: Record<SettingsSectionId, LucideIcon> = {
     security: ShieldCheck,
     notifications: Bell,
     privacy: Lock,
+    family: Users,
     history: History,
     benefits: Gift,
     agency: Building2,

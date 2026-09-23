@@ -356,7 +356,7 @@ use them and so adding transport later is one adapter file.
 
 _Generated from `lib/notifications/registry.ts` by `scripts/generate-notification-matrix.mjs`. Do not edit by hand._
 
-**86 business events declared — 81 live, 5 planned.**
+**88 business events declared — 83 live, 5 planned.**
 
 ### Risk, gaps, score and recommendations
 
@@ -395,6 +395,8 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `obligation_due` | A policy condition the customer must keep is coming due | a compliance scan finds an acordData.conditions entry with a recurrence inside its reminder window | high | in_app, email | owner | confirm_condition_met | — | 3× exponential, from 15m | 14d | notification_event | live |
 | `claim_opened` | A claim was opened | No source exists — the product has no claims model | critical | in_app, email, push | owner, advisor | track_claim | — | 5× exponential, from 30m | 90d | activity_log | planned · transactional |
 | `claim_status_changed` | A claim changed status | No source exists — the product has no claims model | high | in_app, email, push | owner | review_claim | — | 5× exponential, from 30m | 90d | activity_log | planned · transactional |
+| `family_member_joined` | A family-wallet invite was accepted | applyInviteRedemption consumes a `family` invite (both sides are told) | high | in_app, email, push | owner, counterparty | — | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
+| `family_member_left` | A family-wallet membership ended | endFamilyMembership by the owner (remove) or the member (leave); the OTHER side is told | high | in_app, email, push | counterparty | — | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
 | `policy_details_confirmed` | An advisor confirmed the extracted values on a policy | confirmPolicyReview() commits, with an agent as the actor | normal | in_app, email | owner | review_change | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
 
 ### Advisor collaboration
@@ -506,6 +508,8 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 - **`benefit_reminder`** — Spec v2 §14 / §22.3 BENEFIT_REMINDER. Sent only when the policy's own reading STATES the benefit — never from silence — and never after the person marked it done (lib/services/checkup-reminder.service.ts).
 - **`claim_opened`** — Blocked on a claims model. Wiring is one entry here plus one emitter once Claim exists.
 - **`claim_status_changed`** — Blocked on a claims model.
+- **`family_member_joined`** — Spec v2 §13 / §25.3: the moment another person gains sight of a wallet is one both people are entitled to know about. Transactional and unsuppressible.
+- **`family_member_left`** — Spec v2 §13: the inverse of family_member_joined, told to the party who did not act.
 - **`advisor_assigned`** — Transactional and audit-logged: this is the moment another person gains sight of the customer's policies, and they are entitled to know it happened.
 - **`advisor_relationship_ended`** — The exact inverse of advisor_assigned, and transactional for the same reason: if the moment another person GAINS sight of your policies is one you are entitled to know about, so is the moment it ends — whichever side ended it. Emitted to the party who did NOT act; telling someone what they just did is noise (PW-BRIDGE-01 I-05, I-06).
 - **`policy_details_confirmed`** — Confirming a review OVERWRITES the owner's insurerName, policyNumber, dates, premium and sum insured, and removes the «unverified» badge — the record becomes authoritative because a person said so. The person whose record it is was told nothing (PW-BRIDGE-01 I-08). Same class as policy_updated, which is why it carries the same review action.

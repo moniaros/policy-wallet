@@ -876,6 +876,12 @@ export async function updatePolicy(policyId: string, formData: FormData) {
         if (rawData.coverageSummary) data.coverageSummary = rawData.coverageSummary
         // Present-but-empty CLEARS the nickname; absent leaves it alone.
         if (formData.has("nickname")) data.nickname = String(formData.get("nickname") ?? "").trim().slice(0, 60) || null
+        // Spec v2 §13: only the OWNER decides what stays out of the family wallet.
+        if (formData.has("privateToOwner")) {
+            const { getPolicyAccess } = await import("@/lib/policy-access")
+            const access = await getPolicyAccess(policyId, { id: authResult.dbUser.id, roles: authResult.dbUser.roles })
+            if (access.isOwner) data.privateToOwner = formData.get("privateToOwner") === "true"
+        }
 
         const policyService = new PolicyService()
         const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)

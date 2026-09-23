@@ -50,6 +50,10 @@ export interface FeatureGate {
 // "Plus", €7.99). Only the organizer-level gates (more policies, in-app PDF
 // preview, token top-ups) unlock at "plus" (displayed "Starter", €2.99).
 /**
+ * spec v2 Phase 5 (2026-09-23): family sharing now EXISTS (/account/family,
+ * WalletMembership); its gate is the plan TIER checked in inviteFamilyMember,
+ * not a feature key here, so no upgrade copy can promise more than the action does.
+ *
  * `family_portfolio` used to be defined here, with full upgrade copy — "See and
  * organize your whole family's policies together", four benefits and a primary
  * CTA reading "Enable family portfolio", gated at Pro.

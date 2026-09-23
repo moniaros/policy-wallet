@@ -191,3 +191,28 @@ describe("computePolicyAccess — matrix", () => {
         expect(a.canDelete).toBe(true)
     })
 })
+
+describe("family membership (spec v2 §13)", () => {
+    it("an active membership reads and writes, never deletes", () => {
+        const a = access({ membership: { status: "active" } })
+        expect(a.isFamilyMember).toBe(true)
+        expect(a.canRead).toBe(true)
+        expect(a.canWrite).toBe(true)
+        expect(a.canAnalyze).toBe(true)
+        expect(a.canDelete).toBe(false)
+    })
+
+    it("a policy kept private, an ended membership, or no membership: nothing", () => {
+        expect(access({ membership: { status: "active" }, policy: { ...POLICY, privateToOwner: true } }).canRead).toBe(false)
+        expect(access({ membership: { status: "ended" } }).canRead).toBe(false)
+        expect(access({ membership: null }).canRead).toBe(false)
+        expect(access({}).isFamilyMember).toBe(false)
+    })
+
+    it("the owner is never a member of their own wallet", () => {
+        const a = access({ viewer: { id: POLICY.ownerUserId, roles: "policyholder" }, membership: { status: "active" } })
+        expect(a.isOwner).toBe(true)
+        expect(a.isFamilyMember).toBe(false)
+        expect(a.canDelete).toBe(true)
+    })
+})

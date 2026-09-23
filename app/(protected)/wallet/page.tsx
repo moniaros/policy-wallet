@@ -113,8 +113,28 @@ export default async function WalletPage() {
         }
     })
 
+    // Spec v2 §13: the policies of every family wallet this person belongs to,
+    // minus what each owner kept private — the same rows getPolicyAccess lets
+    // them open. Read after the owner's own list so a self-owned policy is
+    // never listed twice.
+    const memberships = await db.walletMembership.findMany({
+        where: { memberUserId: dbUser.id, status: "active" },
+        select: { walletOwnerUserId: true, owner: { select: { name: true, email: true } } },
+    })
+    const familyOwnerNames = new Map(memberships.map((m) => [m.walletOwnerUserId, displayPersonName(m.owner.name) || m.owner.email]))
+    const familyPolicies = memberships.length === 0 ? [] : await db.policy.findMany({
+        where: { ownerUserId: { in: [...familyOwnerNames.keys()] }, status: { not: "deleted" }, privateToOwner: false },
+        include: {
+            documents: true,
+            _count: { select: { gapInstances: { where: { status: { in: ['open', 'detected', 'acknowledged'] }, supersededAt: null } } } },
+        },
+        orderBy: { endDate: "asc" },
+    })
+    const ownRows = policies.map((p) => ({ row: p, familyOwnerName: null as string | null }))
+    const familyRows = familyPolicies.map((p) => ({ row: p, familyOwnerName: familyOwnerNames.get(p.ownerUserId) ?? null }))
+
     // Map Prisma types to UI types
-    const mappedPolicies: Policy[] = policies.map(p => {
+    const mappedPolicies: Policy[] = [...ownRows, ...familyRows].map(({ row: p, familyOwnerName }) => {
         // Find grants for this policy
         const policyGrants = allGrants.filter(g => g.scope === `policy:${p.id}`)
 
@@ -180,6 +200,7 @@ export default async function WalletPage() {
             ),
             insurerLogo: null, // Placeholder
             nickname: p.nickname ?? null,
+            familyOwnerName,
             lineOfBusiness: p.lineOfBusiness as any,
             // Pass the RAW stored status and the extracted envelope; the card
             // derives the displayed status via getPolicyStatusView /

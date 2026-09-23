@@ -47,6 +47,7 @@ const tx = {
     pushDevice: { deleteMany: vi.fn(async (_a?: any) => count(2)) },
     healthBenefitUsage: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     healthRiskAssessment: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
+    walletMembership: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     businessEvent: { deleteMany: vi.fn(async (_a?: any) => count(5)) },
     riskReview: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     userNotificationSettings: { deleteMany: vi.fn(async (_a?: any) => count(1)) },

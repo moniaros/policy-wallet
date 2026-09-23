@@ -19,9 +19,9 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3863
-# inline entries: 4979 across 228 files
-# ternary entries: 289 across 44 files
+# bundle entries: 3897
+# inline entries: 4990 across 229 files
+# ternary entries: 292 across 45 files
 # call entries: 1134 across 85 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -1553,6 +1553,35 @@ bundle	errors.notFound	"Δεν βρέθηκε"
 bundle	errors.somethingWentWrong	"Κάτι πήγε στραβά"
 bundle	errors.tryAgain	"Δοκιμάστε ξανά"
 bundle	errors.unauthorized	"Μη εξουσιοδοτημένο"
+bundle	family.ended	"Η πρόσβαση έκλεισε."
+bundle	family.errors.ALREADY_MEMBER	"Αυτό το άτομο είναι ήδη μέλος."
+bundle	family.errors.INVALID_EMAIL	"Γράψτε ένα έγκυρο email."
+bundle	family.errors.NOT_FOUND	"Δεν βρέθηκε."
+bundle	family.errors.RATE_LIMITED	"Πολλές προσκλήσεις σε λίγο χρόνο. Δοκιμάστε αργότερα."
+bundle	family.errors.SELF	"Δεν μπορείτε να προσκαλέσετε τον εαυτό σας."
+bundle	family.errors.UPGRADE_REQUIRED	"Η πρόσκληση μέλους περιλαμβάνεται στα πληρωμένα πλάνα."
+bundle	family.intro	"Μοιραστείτε το πορτοφόλι σας με σύζυγο ή σύντροφο: βλέπετε και διαχειρίζεστε μαζί τα ασφαλιστήρια. Ό,τι κρατήσετε ιδιωτικό μένει μόνο σε εσάς."
+bundle	family.inviteCta	"Αποστολή πρόσκλησης"
+bundle	family.inviteLabel	"Email μέλους"
+bundle	family.invitePlaceholder	"email συζύγου ή συντρόφου"
+bundle	family.inviteRevoked	"Η πρόσκληση ακυρώθηκε."
+bundle	family.inviteSent	"Η πρόσκληση εστάλη."
+bundle	family.inviteSentNoEmail	"Η πρόσκληση δημιουργήθηκε, αλλά το email δεν παραδόθηκε. Δοκιμάστε ξανά αργότερα."
+bundle	family.leave	"Αποχώρηση"
+bundle	family.managePrivate	"Ορίστε ποια μένουν ιδιωτικά από το κάθε ασφαλιστήριο"
+bundle	family.membersTitle	"Μέλη του πορτοφολιού σας"
+bundle	family.membershipsTitle	"Πορτοφόλια στα οποία συμμετέχετε"
+bundle	family.noMembers	"Δεν έχετε προσθέσει κανένα μέλος ακόμη."
+bundle	family.noMemberships	"Δεν συμμετέχετε σε άλλο πορτοφόλι."
+bundle	family.pendingSince	"Πρόσκληση εστάλη {date}"
+bundle	family.remove	"Αφαίρεση"
+bundle	family.revokeInvite	"Ακύρωση"
+bundle	family.since	"Από {date}"
+bundle	family.title	"Οικογενειακό πορτοφόλι"
+bundle	family.upgradeCta	"Δείτε τα πλάνα"
+bundle	family.upgradeToInvite	"Η πρόσκληση μέλους περιλαμβάνεται στα πληρωμένα πλάνα."
+bundle	family.visibilityRule	"Κάθε μέλος βλέπει και επεξεργάζεται όλα τα ασφαλιστήριά σας εκτός από όσα έχετε σημειώσει ως ιδιωτικά ({n} ιδιωτικά σήμερα). Διαγραφή κάνετε μόνο εσείς."
+bundle	family.visibilityTitle	"Τι βλέπει η οικογένειά σας"
 bundle	formErrors.contactRequired	"Δώστε email, ή έγκυρο ΑΦΜ και ελληνικό κινητό."
 bundle	formErrors.endBeforeStart	"Η ημερομηνία λήξης πρέπει να είναι μετά την έναρξη."
 bundle	formErrors.invalid	"Η τιμή δεν είναι έγκυρη."
@@ -2611,6 +2640,8 @@ bundle	settings.nav.agency.description	"Στοιχεία πρακτορείου 
 bundle	settings.nav.agency.label	"Προφίλ γραφείου"
 bundle	settings.nav.benefits.description	"Προσφορές διαθέσιμες με το πρόγραμμά σας"
 bundle	settings.nav.benefits.label	"Οφέλη συνεργατών"
+bundle	settings.nav.family.description	"Ποιος βλέπει τα ασφαλιστήριά σας μαζί σας"
+bundle	settings.nav.family.label	"Οικογενειακό πορτοφόλι"
 bundle	settings.nav.history.description	"Τι άλλαξε στην προστασία σας, πότε και γιατί"
 bundle	settings.nav.history.label	"Ιστορικό δραστηριότητας"
 bundle	settings.nav.notifications.description	"Τι σας στέλνουμε και πότε"
@@ -3308,6 +3339,7 @@ bundle	wallet.expiresDate	"Λήγει στις"
 bundle	wallet.expiresIn	"Λήγει σε"
 bundle	wallet.expiringPolicies	"Λήγουν"
 bundle	wallet.failedAnswer	"Αποτυχία λήψης απάντησης"
+bundle	wallet.fromFamilyMember	"Από {name}"
 bundle	wallet.googleWallet	"Google Wallet"
 bundle	wallet.healthScore.gaps	"Κενά κάλυψης"
 bundle	wallet.healthScore.methodologyBody	"Ξεκινά από το 100 και μειώνεται για κάθε κενό κάλυψης και για όρους των ψιλών γραμμάτων που η ανάλυση επισημαίνει ως κρίσιμους ή προς προσοχή. Μια επιβεβαιωμένη ανάγνωση προσθέτει λίγους πόντους."
@@ -3660,6 +3692,8 @@ bundle	wallet.premium	"Ασφάλιστρο"
 bundle	wallet.premiumAmount	"Ποσό ασφαλίστρου"
 bundle	wallet.premiumFound	"Ασφάλιστρο"
 bundle	wallet.preview	"Προεπισκόπηση"
+bundle	wallet.privateToOwner	"Ιδιωτικό — εκτός οικογενειακού πορτοφολιού"
+bundle	wallet.privateToOwnerHint	"Τα μέλη του οικογενειακού σας πορτοφολιού δεν θα το βλέπουν."
 bundle	wallet.processing	"Επεξεργασία..."
 bundle	wallet.profileScreen.cardsAndBilling	"Κάρτες και χρεώσεις"
 bundle	wallet.profileScreen.defaultUser	"Χρήστης"
@@ -3887,6 +3921,9 @@ bundle	wellness.statusLabel	"Κατάσταση ελέγχου"
 bundle	wellness.submit	"Δείτε το αποτέλεσμα"
 bundle	wellness.title	"Ευεξία"
 bundle	wellness.worthRaising	"Αξίζει να ρωτήσετε τον γιατρό σας για"
+inline	app/(protected)/account/family/actions.ts	"Το οικογενειακό πορτοφόλι άλλαξε"
+inline	app/(protected)/account/family/actions.ts	`${actorName || "Ένα μέλος"} αποχώρησε από το οικογενειακό σας πορτοφόλι.`
+inline	app/(protected)/account/family/actions.ts	`${actorName || "Ο κάτοχος"} έκλεισε την πρόσβασή σας στο οικογενειακό πορτοφόλι.`
 inline	app/(protected)/activity/actions.ts	'Αλληλεπίδραση Πελάτη'
 inline	app/(protected)/activity/actions.ts	'Αποστολή Ερωτηματολογίου'
 inline	app/(protected)/activity/actions.ts	'Νέα Ευκαιρία'
@@ -6989,12 +7026,16 @@ inline	lib/insurance/taxonomy.ts	'Φορτηγό / Αγροτικό'
 inline	lib/insurance/taxonomy.ts	'Χρήματα'
 inline	lib/invites/redeem-invite.ts	"Ένα ασφαλιστήριο κοινοποιήθηκε μαζί σας"
 inline	lib/invites/redeem-invite.ts	"Η κοινοποίηση ενεργοποιήθηκε"
+inline	lib/invites/redeem-invite.ts	"Μπήκατε σε ένα οικογενειακό πορτοφόλι"
+inline	lib/invites/redeem-invite.ts	"Νέο μέλος στο οικογενειακό σας πορτοφόλι"
 inline	lib/invites/redeem-invite.ts	"Νέος πελάτης συνδέθηκε"
 inline	lib/invites/redeem-invite.ts	"Συνδεθήκατε με σύμβουλο"
 inline	lib/invites/redeem-invite.ts	`${advisorName || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
 inline	lib/invites/redeem-invite.ts	`${customerName || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
 inline	lib/invites/redeem-invite.ts	`${granteeName || "Ο σύμβουλός σας"} αποδέχτηκε και βλέπει πλέον το ασφαλιστήριο. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
 inline	lib/invites/redeem-invite.ts	`${granterName || "Ένας πελάτης"} σας έδωσε πρόσβαση σε ένα ασφαλιστήριο.`
+inline	lib/invites/redeem-invite.ts	`${memberName || "Ένα μέλος της οικογένειας"} αποδέχτηκε την πρόσκληση και βλέπει πλέον τα ασφαλιστήρια που δεν έχετε κρατήσει ιδιωτικά.`
+inline	lib/invites/redeem-invite.ts	`Βλέπετε πλέον τα ασφαλιστήρια ${whoseEl} που δεν έχουν κρατηθεί ιδιωτικά. Μπορείτε να αποχωρήσετε οποτεδήποτε από τις Ρυθμίσεις.`
 inline	lib/journey/conversion-events.ts	payload
 inline	lib/journey/conversion-events.ts	readable
 inline	lib/landing/content.ts	"PDF ή φωτογραφία, από οποιαδήποτε ασφαλιστική. Δεν χρειάζεται να το διαβάσετε."
@@ -7350,6 +7391,7 @@ inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριο κοινο
 inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριο λήγει σύντομα"
 inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριο προστέθηκε στο πορτοφόλι σας."
 inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριό σας ενημερώθηκε"
+inline	lib/notifications/registry.ts	"Ένα μέλος της οικογένειας βλέπει πλέον τα ασφαλιστήρια που δεν έχετε κρατήσει ιδιωτικά."
 inline	lib/notifications/registry.ts	"Ένα μήνυμα περιμένει την απάντησή σας εδώ και μέρες."
 inline	lib/notifications/registry.ts	"Ένα νέο έγγραφο προστέθηκε σε ασφαλιστήριό σας από τον σύμβουλό σας. Το ασφαλιστήριο επανεξετάζεται."
 inline	lib/notifications/registry.ts	"Ένα πιθανό κενό στην κάλυψή σας χρειάζεται τη ματιά σας."
@@ -7435,6 +7477,7 @@ inline	lib/notifications/registry.ts	"Μια ανατεθειμένη ενέργ
 inline	lib/notifications/registry.ts	"Μια εκκρεμότητα ανανέωσης έκλεισε. Δείτε το αποτέλεσμα."
 inline	lib/notifications/registry.ts	"Μια ενέργεια καθυστερεί"
 inline	lib/notifications/registry.ts	"Μια ενέργεια σε συζήτηση συνεργασίας περιμένει από εσάς."
+inline	lib/notifications/registry.ts	"Μια πρόσβαση στο οικογενειακό πορτοφόλι έκλεισε."
 inline	lib/notifications/registry.ts	"Μια συζήτηση συνεργασίας ανατέθηκε σε εσάς."
 inline	lib/notifications/registry.ts	"Μια υποχρέωση του ασφαλιστηρίου σας πλησιάζει στην προθεσμία της."
 inline	lib/notifications/registry.ts	"Νέα ευκαιρία"
@@ -7443,6 +7486,7 @@ inline	lib/notifications/registry.ts	"Νέα σύνδεση στον λογαρ�
 inline	lib/notifications/registry.ts	"Νέες προτάσεις για εσάς"
 inline	lib/notifications/registry.ts	"Νέο επίτευγμα"
 inline	lib/notifications/registry.ts	"Νέο ερωτηματολόγιο από τον σύμβουλό σας"
+inline	lib/notifications/registry.ts	"Νέο μέλος στο οικογενειακό σας πορτοφόλι"
 inline	lib/notifications/registry.ts	"Νέο μήνυμα"
 inline	lib/notifications/registry.ts	"Ο ετήσιος έλεγχος υγείας σας είναι διαθέσιμος"
 inline	lib/notifications/registry.ts	"Ο κωδικός σας άλλαξε"
@@ -7486,6 +7530,7 @@ inline	lib/notifications/registry.ts	"Το ασφαλιστήριο διαβάσ
 inline	lib/notifications/registry.ts	"Το ασφαλιστήριο υγείας σας καταγράφει ετήσιο έλεγχο. Αν δεν τον έχετε κάνει φέτος, δείτε πώς κλείνετε ραντεβού στη σελίδα Ευεξία."
 inline	lib/notifications/registry.ts	"Το διπλό ασφαλιστήριο παραμένει ως ξεχωριστή εγγραφή."
 inline	lib/notifications/registry.ts	"Το επόμενο βήμα σας"
+inline	lib/notifications/registry.ts	"Το οικογενειακό πορτοφόλι άλλαξε"
 inline	lib/notifications/registry.ts	"Το πλάνο σας άλλαξε"
 inline	lib/notifications/registry.ts	"Το προφίλ σας ενημερώθηκε"
 inline	lib/notifications/retry.ts	`${row.attempts} αποτυχημένες προσπάθειες παράδοσης της ειδοποίησης «${row.title}» για τον χρήστη ${row.userId}.`
@@ -8908,6 +8953,7 @@ ternary	lib/email/invite-emails.ts	`το ασφαλιστήριο ${safeNumber}`
 ternary	lib/email/invite-emails.ts	{ subject: "Αίτημα συγκατάθεσης για ανάλυση AI", title: "Ο σύμβουλός σας ζητά τη συγκατάθεσή σας", body: `${agent} ζητά τη συγκατάθεσή σας για να αναλύσει τα ασφαλιστήριά σας με AI στο PolicyWallet. Η συγκατάθεση καταγράφεται και μπορείτε να την ανακαλέσετε ανά πάσα στιγμή.`, action: "Έλεγχος & έγκριση", }
 ternary	lib/email/invite-emails.ts	{ subject: "Κοινοποιήθηκε ένα ασφαλιστήριο μαζί σας", title: "Κοινοποιήθηκε ένα ασφαλιστήριο στο πορτοφόλι σας", body: `${inviter} κοινοποίησε ${label} στο πορτοφόλι σας. Συνδεθείτε για να δείτε τα στοιχεία του κοινοποιημένου ασφαλιστηρίου.`, action: "Άνοιγμα πορτοφολιού", }
 ternary	lib/email/invite-emails.ts	{ subject: "Πρόσκληση από το PolicyWallet", title: "Έχετε προσκληθεί για συνεργασία", body: `${inviter} σας προσκάλεσε να αποκτήσετε πρόσβαση σε ${label} στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο πρόσκλησης για να αποδεχτείτε την πρόσβαση.`, action: "Άνοιγμα πρόσκλησης", }
+ternary	lib/email/invite-emails.ts	{ subject: "Πρόσκληση σε οικογενειακό πορτοφόλι στο PolicyWallet", title: "Έχετε προσκληθεί σε ένα οικογενειακό πορτοφόλι", body: `${inviter} σας προσκάλεσε να μοιράζεστε το ασφαλιστικό πορτοφόλι του στο PolicyWallet: θα βλέπετε και θα διαχειρίζεστε μαζί τα ασφαλιστήρια που δεν έχει κρατήσει ιδιωτικά. Ανοίξτε τον ασφαλή σύνδεσμο για να αποδεχτείτε.`, action: "Άνοιγμα πρόσκλησης", }
 ternary	lib/email/invite-emails.ts	{ subject: `${inviter} σας προσκαλεί ως σύμβουλό του στο PolicyWallet`, title: "Προσκληθήκατε ως σύμβουλος", body: `${inviter} θέλει να σας συνδέσει ως ασφαλιστικό σύμβουλό του στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο για να δημιουργήσετε λογαριασμό συμβούλου ή να συνδεθείτε — θα συνδεθείτε αυτόματα.`, action: "Αποδοχή πρόσκλησης", }
 ternary	lib/email/templates/churn-prevention.ts	'Άνοιγμα πίνακα ελέγχου'
 ternary	lib/email/templates/churn-prevention.ts	'Έχει περάσει καιρός από την τελευταία σας επίσκεψη. Τα ασφαλιστήριά σας είναι αποθηκευμένα με ασφάλεια και σας περιμένουν.'
@@ -9006,6 +9052,8 @@ ternary	lib/i18n/amount-format.ts	'Απεριόριστο'
 ternary	lib/i18n/amount-format.ts	'Μεταβλητό'
 ternary	lib/i18n/role-copy.ts	"1 στοιχείο που χρειάζεται προσοχή."
 ternary	lib/i18n/role-copy.ts	`${n} στοιχεία που χρειάζονται προσοχή.`
+ternary	lib/invites/redeem-invite.ts	"του πορτοφολιού"
+ternary	lib/invites/redeem-invite.ts	`του/της ${ownerName}`
 ternary	lib/notifications/risk-events.ts	`${first.el} και ${changed.length - 1} ακόμη αλλαγές.`
 ternary	lib/services/ai/mock-ai.service.ts	{ extractionSources: { insurerName: { page: 1, snippet: 'Mock Insurance Co. — Ασφαλιστήριο Συμβόλαιο' }, endDate: { page: 2, snippet: 'Λήξη ασφάλισης: όπως ορίζεται στον πίνακα καλύψεων' }, premiumAmount: { page: 2, snippet: 'Ετήσια ολικά ασφάλιστρα: €500,00' }, }, }
 ternary	lib/services/collaboration-reminders.service.ts	"ανοιχτές συζητήσεις"

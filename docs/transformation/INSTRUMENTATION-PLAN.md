@@ -198,6 +198,12 @@ findings never enter `findingCount`; recording-class findings («δεν κατα
 status. Severity is not read. The dashboard's branch map projects the same status onto its tile
 words (`toTileState`), so the two surfaces cannot disagree about one branch.
 
+### Additions ratified 2026-09-23 (spec-v2 Phase 5 — family wallet)
+
+New fact key: `policy.familyOwner` *(subject-scoped by policy id)* — on a wallet row that belongs
+to a family wallet the viewer is a member of, whose it is. Rendered only on rows the membership
+arm of `computePolicyAccess` would let the viewer open.
+
 ### Additions ratified 2026-09-23 (spec-v2 Phase 4 — wellness)
 
 New fact keys: `wellness.checkupStatus` *(subject-scoped by policy id)* — the status the person

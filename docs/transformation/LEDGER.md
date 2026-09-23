@@ -27,6 +27,7 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] Αρχική `/dashboard`
 - [x] Συστάσεις `/recommendations` (added 2026-09-07 — the recommendations block of `/protection` as its own page)
 - [x] Ευεξία `/wellness` (added 2026-09-23 — spec v2 §9, the health check-up tracker and self-assessment)
+- [x] Οικογενειακό πορτοφόλι `/account/family` (added 2026-09-23 — spec v2 §13)
 - [x] Πορτοφόλι `/wallet`
 - [x] Ασφαλιστήριο `/wallet/[id]`
 - [x] Αναλύσεις `/coverage-insights`
@@ -38,6 +39,22 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] 7 overlays
 
 ---
+
+## Οικογενειακό πορτοφόλι — `/account/family`
+
+Source: `app/(protected)/account/family/{page,actions}.ts(x)`, `components/settings/sections/FamilySection.tsx`, `lib/policy-access.ts` (the membership arm), `lib/invites/redeem-invite.ts` (the `family` branch)
+
+Added by spec v2 Phase 5 (2026-09-23). A membership is the owner's accepted,
+email-bound invite; it grants a member the owner's own view and edit rights on
+every policy not kept `privateToOwner`, never a delete. Not a
+CustomerRelationship — a member appears on no agent surface.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| FW-01 | «What your family can see» — the rule and the count kept private | fact | **KEEP** | the visibility card; the per-policy toggle lives on the policy's edit form (owner only) | — |
+| FW-02 | Invite a member by email (paid plans) | action | **KEEP** | the form; free tier sees the rule and a link to the plans, the section itself is never hidden (§21.2) | — |
+| FW-03 | Remove a member / leave a wallet | action | **KEEP** | either side, same write; the OTHER side is told (`family_member_left`) | — |
+| FW-04 | Rows from a family wallet on `/wallet` (`policy.familyOwner`) | fact | **KEEP** | the member's own wallet list, after their own rows | — |
 
 ## Ευεξία — `/wellness`
 

@@ -19,6 +19,7 @@ export type SettingsSectionId =
     | "security"
     | "notifications"
     | "privacy"
+    | "family"
     | "history"
     | "benefits"
     | "agency"
@@ -44,6 +45,9 @@ export const SETTINGS_SECTIONS: SettingsSectionDef[] = [
     { id: "security", href: "/account/security", labelKey: "security" },
     { id: "notifications", href: "/account/notifications", labelKey: "notifications" },
     { id: "privacy", href: "/account/privacy", labelKey: "privacy" },
+    // Spec v2 §13: family sharing lives in Ρυθμίσεις; the INVITE is what the
+    // paid plan gates, the section itself is shown to everyone (§21.2).
+    { id: "family", href: "/account/family", labelKey: "family", requiresRole: "policyholder" },
     // The relocated timeline (V2-P2-02, ledger T-01): activity history is a
     // thing you consult about your account, not a destination — it lives here
     // rather than holding a menu slot.
