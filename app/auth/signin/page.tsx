@@ -84,7 +84,10 @@ export default function SignInPage() {
     // Hidden again once the deployment answers PASSKEYS_DISABLED.
     const [passkeyState, setPasskeyState] = useState<"idle" | "working" | "hidden">("idle")
     const [passkeyNotice, setPasskeyNotice] = useState<string | null>(null)
-    const webAuthnAvailable = typeof window !== "undefined" && "PublicKeyCredential" in window
+    // Decided after mount: the server renders no button, so the first client
+    // paint matches the HTML and the button appears only where WebAuthn exists.
+    const [webAuthnAvailable, setWebAuthnAvailable] = useState(false)
+    useEffect(() => { setWebAuthnAvailable("PublicKeyCredential" in window) }, [])
 
     const passkeySignIn = async () => {
         const identifier = email.trim()
