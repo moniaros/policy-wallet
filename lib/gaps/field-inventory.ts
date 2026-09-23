@@ -27,6 +27,7 @@ export const BRANCH_SECTIONS: Readonly<Record<string, readonly string[]>> = Obje
     pet: ["pet"], travel: ["travel"],
     boat: ["marineVessel"], boat_hull: ["marineVessel"], boat_tpl: ["marineVessel"], marine_hull: ["marineVessel"], marine_crew: ["marineVessel"],
     marine_cargo: ["transit"], transports: ["transit"],
+    liability: ["professionalLiability"], professional_liability: ["professionalLiability"],
 })
 
 export function sectionsFor(branch: string): string[] {

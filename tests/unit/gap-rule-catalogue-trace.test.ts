@@ -141,6 +141,46 @@ const TRACE: Record<string, Case[]> = {
         },
         { name: "neither figure was extracted", acord: {}, fires: false },
     ],
+    // ── Spec v2 Phase 2 (2026-09-23) ──
+    motor_insured_value_below_market: [
+        {
+            name: "a car declared at €15,000 but insured for only €6,000",
+            acord: { vehicle: { insuredValue: 6000, estimatedMarketValue: 15000 } },
+            fires: true,
+        },
+        {
+            name: "insured 10% under the declared value — inside the tolerance",
+            acord: { vehicle: { insuredValue: 9000, estimatedMarketValue: 10000 } },
+            fires: false,
+        },
+        {
+            name: "over-insured — the other direction, which this rule ignores",
+            acord: { vehicle: { insuredValue: 15000, estimatedMarketValue: 6000 } },
+            fires: false,
+        },
+        { name: "no declared market value was extracted", acord: { vehicle: { insuredValue: 6000 } }, fires: false },
+        { name: "neither figure was extracted", acord: {}, fires: false },
+    ],
+    retroactive_date_not_recorded: recordedFieldCases(
+        "professionalLiability.retroactiveDate",
+        "retroactive date",
+        "2019-01-01"
+    ),
+    liability_limit_not_recorded: recordedFieldCases(
+        "professionalLiability.limitPerClaim",
+        "per-claim liability limit",
+        500000
+    ),
+    marine_navigation_limits_not_recorded: recordedFieldCases(
+        "territorialScope.navigationLimits",
+        "navigation limits",
+        "Greek territorial waters"
+    ),
+    marine_lay_up_terms_not_recorded: recordedFieldCases(
+        "marineVessel.layUpPeriod",
+        "lay-up terms",
+        "1 Nov – 31 Mar, ashore at Alimos marina"
+    ),
     insured_value_below_rebuild_cost: [
         {
             name: "a home insured for €90,000 against a stated €200,000 rebuild cost",

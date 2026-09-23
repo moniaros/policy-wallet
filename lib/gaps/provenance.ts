@@ -139,6 +139,12 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     missing_accident_declaration_phone: PD_237_1986_ART_9,
     green_card_expiring: UNDER_REVIEW,
     insured_value_above_declared: LAW_2496_1997_ART_17,
+    // spec v2 Phase 2 (2026-09-23) — unclassified until an underwriter reads them
+    motor_insured_value_below_market: UNDER_REVIEW,
+    retroactive_date_not_recorded: UNDER_REVIEW,
+    liability_limit_not_recorded: UNDER_REVIEW,
+    marine_navigation_limits_not_recorded: UNDER_REVIEW,
+    marine_lay_up_terms_not_recorded: UNDER_REVIEW,
     // motorbike
     moto_no_own_damage_cover: UNDER_REVIEW,
     moto_no_roadside_assistance: UNDER_REVIEW,

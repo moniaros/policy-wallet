@@ -436,6 +436,37 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "other",
         coverageArea: "hospital",
     },
+    // ── Spec v2 Phase 2 (2026-09-23) ──
+    "motor-insured-value-below-market": {
+        titleEl: "Ασφαλισμένο ποσό κάτω από τη δηλωμένη αξία",
+        titleEn: "Insured value below the declared value",
+        mechanic: "limit",
+        coverageArea: "vehicle",
+    },
+    "retroactive-date-not-recorded": {
+        titleEl: "Δεν καταγράφεται ημερομηνία αναδρομικής ισχύος",
+        titleEn: "No retroactive date recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "liability-limit-not-recorded": {
+        titleEl: "Δεν καταγράφεται όριο ευθύνης ανά αξίωση",
+        titleEn: "No per-claim liability limit recorded",
+        mechanic: "limit",
+        coverageArea: "general",
+    },
+    "marine-navigation-limits-not-recorded": {
+        titleEl: "Δεν καταγράφονται όρια πλεύσης",
+        titleEn: "No navigation limits recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "marine-lay-up-terms-not-recorded": {
+        titleEl: "Δεν καταγράφονται όροι παροπλισμού",
+        titleEn: "No lay-up terms recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
     "missing-leishmaniasis": {
         titleEl: "Πιθανή έλλειψη κάλυψης λεϊσμανίασης",
         titleEn: "Possible missing leishmaniasis coverage",

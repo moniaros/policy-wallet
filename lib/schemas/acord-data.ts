@@ -271,6 +271,26 @@ export const AcordDataSchema = z.object({
     // ─── Cross-section fields ───────────────────────────────────────────
     // Canonical policy envelope — extraction enrichment normalizes provider
     // output into this shape; the review screen reads/writes it.
+    /**
+     * Professional (incl. medical) civil liability — spec v2 §8.6. Claims-made
+     * wordings pay only for claims NOTIFIED during the period, and only for
+     * acts after the retroactive date; a doctor whose retroactive date is
+     * later than the day they started practising carries permanent exposure
+     * for the years between. Every field is what the SCHEDULE states — no
+     * specialty benchmark, no settlement table (that reference data does not
+     * exist in this codebase; see docs/planning/INSURED_VALUE_ADEQUACY.md for
+     * the same rule applied to sums insured). Booleans are three-state.
+     */
+    professionalLiability: z.object({
+        profession: z.string().optional().describe("The insured activity as printed, e.g. ιατρός — παθολόγος, δικηγόρος, μηχανικός"),
+        claimsMade: z.boolean().optional().describe("true when the wording is claims-made («βάση αξιώσεων»), false when occurrence («βάση συμβάντος»); omit when the schedule does not say"),
+        retroactiveDate: z.string().optional().describe("ISO date — «ημερομηνία αναδρομικής ισχύος». Acts before it are not covered under a claims-made wording"),
+        limitPerClaim: z.number().optional().describe("Limit per claim («όριο ανά αξίωση»)"),
+        aggregateLimit: z.number().optional().describe("Aggregate limit per period («ανώτατο όριο περιόδου»)"),
+        extendedReportingPeriodMonths: z.number().optional().describe("Extended reporting / run-off period in months, where stated"),
+        defenceCostsIncluded: z.boolean().optional().describe("true when defence costs are inside the limit or covered in addition; omit when unstated"),
+    }).optional(),
+
     policy: z.object({
         insurerName: z.string().nullable().optional(),
         policyNumber: z.string().nullable().optional(),

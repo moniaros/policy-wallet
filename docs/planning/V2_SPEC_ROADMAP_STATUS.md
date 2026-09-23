@@ -107,6 +107,9 @@ Each is a small, self-contained fix with a guard test. Order is by blast radius.
 
 ### Phase 2 — Gap engine & schema completion
 
+**Delivered 2026-09-23 (`feat/spec-v2-phase2`):** 2.1 `professionalLiability` block + inventory mapping; 2.2 five rules (motor under-insurance drift, retroactive date, per-claim limit, navigation limits, lay-up terms) traced, titled, provenance `under_review`; catalogue 55 active, fingerprint `33a0731577205d72` dev, prod parked-then-activated. **Not delivered:** benchmark rules (cost index, savings, settlement tables, vet costs) need dated market reference data (CLAUDE.md: a check that reports a number must say where it came from); `marine_tender_not_listed` needs a new array-membership operator; 2.3 visualisations depend on the same reference data; 2.4 «Ask your advisor» already exists (`notifyAgentAboutGap`), new insight kinds wait for Phase 4 data. Matrix row 1.11 → 70, 1.5 → 95.
+
+
 Rule = operator + catalogue row + trace test + provenance (CLAUDE.md "a new deterministic check is a rule plus an operator").
 
 | Task | Deliverable | Files |
