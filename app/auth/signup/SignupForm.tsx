@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
+import { Loader2, Lock } from "lucide-react"
 import { registerUser } from "../actions"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { authHref } from "@/lib/seo/locale-links"
@@ -310,6 +310,17 @@ function SignUpForm({ fixedRole, registrationsOpen }: SignUpProps) {
                 </button>
 
                 <p className="text-center text-g-caption text-fg-secondary">{copy.underCta}</p>
+
+                {/* Spec v2 §25.2: the GDPR badge on the signup screen — the same
+                    trust line the sign-in page carries. */}
+                <div data-gdpr-badge className="mt-g-2 flex items-center gap-g-3 rounded-g-md bg-surface-sunken px-g-4 py-g-3">
+                    <Lock aria-hidden className="size-4 flex-shrink-0 text-fg-brand" />
+                    <div className="min-w-0 flex-1">
+                        <p className="text-g-caption font-semibold text-fg-primary">{t("AES-256 κρυπτογράφηση", "AES-256 encryption")}</p>
+                        <p className="text-g-caption text-fg-secondary">{t("Δεν αποθηκεύουμε κωδικούς σε απλό κείμενο.", "Passwords are never stored in plaintext.")}</p>
+                    </div>
+                    <span className="flex-shrink-0 rounded-g-pill bg-state-covered-fill px-g-2 py-g-1 text-g-caption font-semibold text-state-covered">GDPR</span>
+                </div>
             </form>
 
             <div className="mt-g-6 flex flex-col gap-g-3 border-t border-border-subtle pt-g-5">

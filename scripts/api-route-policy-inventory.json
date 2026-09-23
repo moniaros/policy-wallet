@@ -183,6 +183,44 @@
       }
     },
     {
+      "route": "auth/passkeys/login/options/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "auth-passkey"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "auth/passkeys/login/verify/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "auth-passkey"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
       "route": "auth/reset-password/route.ts",
       "methods": [
         "POST"
@@ -1687,6 +1725,25 @@
     },
     {
       "route": "v1/me/subscription/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/me/offline-card/route.ts",
       "methods": [
         "GET"
       ],

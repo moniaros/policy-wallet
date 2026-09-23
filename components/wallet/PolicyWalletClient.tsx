@@ -88,6 +88,12 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
 
     const copy = t.wallet.analysisNotifications
 
+    // Spec v2 §18.1: refresh the roadside-numbers card the service worker
+    // caches for /offline. Fire-and-forget — the worker stores the response.
+    React.useEffect(() => {
+        void fetch("/api/v1/me/offline-card", { cache: "no-store" }).catch(() => undefined)
+    }, [])
+
     /**
      * Raise the "your analysis finished" notification.
      *

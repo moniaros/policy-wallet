@@ -175,6 +175,11 @@ export async function proxy(request: NextRequest) {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
+            // Spec v2 §19.1 step 4: the cookie lives 30 days. The refresh
+            // token's own lifetime is a Supabase dashboard setting the owner keeps
+            // in step with this; the cookie is the client-side half of «no
+            // re-authentication within 30 days of inactivity».
+            cookieOptions: { maxAge: 60 * 60 * 24 * 30 },
             // ONE cookie adapter shape, the same one `lib/supabase/server.ts`
             // uses. This was the legacy per-name `get`/`set`/`remove` trio, and
             // it was broken in two independent ways that compounded:
@@ -285,6 +290,9 @@ export async function proxy(request: NextRequest) {
         // a load balancer reads as either "up" (it followed the redirect) or
         // "down". A health check behind a login wall checks nothing.
         "/api/health",
+        // Served by the service worker when the network is gone (spec v2 §18.1);
+        // it must be fetchable without a session so the worker can precache it.
+        "/offline",
         "/",
         "/en",
         "/terms",

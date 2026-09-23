@@ -8,6 +8,11 @@ export async function createClient() {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
+            // Spec v2 §19.1 step 4: the cookie lives 30 days. The refresh
+            // token's own lifetime is a Supabase dashboard setting the owner keeps
+            // in step with this; the cookie is the client-side half of «no
+            // re-authentication within 30 days of inactivity».
+            cookieOptions: { maxAge: 60 * 60 * 24 * 30 },
             cookies: {
                 getAll() {
                     return cookieStore.getAll()

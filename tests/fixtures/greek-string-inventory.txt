@@ -19,10 +19,10 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3897
-# inline entries: 4990 across 229 files
+# bundle entries: 3917
+# inline entries: 4992 across 231 files
 # ternary entries: 292 across 45 files
-# call entries: 1134 across 85 files
+# call entries: 1136 across 85 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -683,6 +683,11 @@ bundle	auth.signInPage.otpInvalid	"Ο κωδικός OTP δεν είναι έγ�
 bundle	auth.signInPage.otpLabel	"Κωδικός OTP"
 bundle	auth.signInPage.otpRequestFailed	"Σφάλμα αποστολής OTP."
 bundle	auth.signInPage.otpSentIfExists	"Αν το email υπάρχει, θα λάβετε κωδικό OTP."
+bundle	auth.signInPage.passkeyButton	"Σύνδεση με κλειδί πρόσβασης"
+bundle	auth.signInPage.passkeyFailed	"Η σύνδεση με κλειδί δεν ολοκληρώθηκε. Δοκιμάστε ξανά ή συνδεθείτε με τον κωδικό σας."
+bundle	auth.signInPage.passkeyNeedsEmail	"Γράψτε πρώτα το email σας για να χρησιμοποιήσετε το κλειδί πρόσβασης."
+bundle	auth.signInPage.passkeyOrPassword	"ή με τον κωδικό σας"
+bundle	auth.signInPage.passkeyUnavailable	"Δεν υπάρχει κλειδί πρόσβασης για αυτή τη διεύθυνση. Συνδεθείτε με τον κωδικό σας και καταχωρίστε ένα από τις Ρυθμίσεις."
 bundle	auth.signInPage.passwordLabel	"Κωδικός"
 bundle	auth.signInPage.passwordMinLength	"Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες."
 bundle	auth.signInPage.passwordUpdated	"Ο κωδικός ενημερώθηκε επιτυχώς."
@@ -1838,6 +1843,18 @@ bundle	notifications.showFullMessage	"Εμφάνιση ολόκληρου μην
 bundle	notifications.showLessMessage	"Εμφάνιση λιγότερων"
 bundle	notifications.viewAllNotifications	"Προβολή όλων των ειδοποιήσεων"
 bundle	notifications.viewPolicy	"Προβολή ασφαλιστηρίου"
+bundle	offline.asOf	"Αποθηκεύτηκαν: {when}"
+bundle	offline.endsOn	"Λήγει στις {date}"
+bundle	offline.intro	"Δεν υπάρχει σύνδεση στο δίκτυο. Εδώ είναι τα τηλέφωνα που καταγράφουν τα ασφαλιστήριά σας, όπως αποθηκεύτηκαν την τελευταία φορά που ανοίξατε το πορτοφόλι σας."
+bundle	offline.kinds.accident	"Δήλωση ατυχήματος"
+bundle	offline.kinds.coordination	"Κέντρο συντονισμού"
+bundle	offline.kinds.emergency	"Βοήθεια έκτακτης ανάγκης"
+bundle	offline.kinds.roadside	"Οδική βοήθεια"
+bundle	offline.kinds.technical	"Τεχνική βοήθεια"
+bundle	offline.nothingCached	"Δεν έχουν αποθηκευτεί ακόμη τηλέφωνα. Ανοίξτε το πορτοφόλι σας μία φορά με σύνδεση."
+bundle	offline.retryHint	"Μόλις επανέλθει η σύνδεση, ανανεώστε τη σελίδα."
+bundle	offline.title	"Χωρίς σύνδεση"
+bundle	offline.unknownInsurer	"Ασφαλιστική εταιρεία"
 bundle	onboarding.protectionProfile.advisor.advisorLabel	"Σύμβουλος"
 bundle	onboarding.protectionProfile.advisor.body	"Αν έχετε ασφαλιστικό σύμβουλο, μπορεί να βλέπει την εικόνα σας και να σας βοηθά. Προαιρετικό — μπορείτε να το κάνετε όποτε θέλετε από την αρχική."
 bundle	onboarding.protectionProfile.advisor.codePlaceholder	"Κωδικός πρόσκλησης"
@@ -2620,7 +2637,10 @@ bundle	settings.cadence.saveFailed	"Δεν ήταν δυνατή η αποθήκ
 bundle	settings.cadence.title	"Πόσο συχνά σας ενοχλούμε"
 bundle	settings.cancelDeletion	"Ανάκληση αιτήματος"
 bundle	settings.deleteAccountConfirm	"Να υποβληθεί αίτημα διαγραφής του λογαριασμού σας; Μετά την ολοκλήρωσή του η διαγραφή δεν αναστρέφεται."
+bundle	settings.deleteContinue	"Συνέχεια"
 bundle	settings.deleteFailed	"Η υποβολή του αιτήματος διαγραφής απέτυχε"
+bundle	settings.deleteFinalDesc	"Το αίτημα θα σταλεί για έλεγχο και ο λογαριασμός με όλα τα δεδομένα σας θα διαγραφεί οριστικά. Μπορείτε να το ανακαλέσετε όσο εκκρεμεί."
+bundle	settings.deleteFinalTitle	"Τελική επιβεβαίωση"
 bundle	settings.deletePermanently	"Αίτημα διαγραφής"
 bundle	settings.deletionAlreadyPending	"Υπάρχει ήδη αίτημα διαγραφής σε εξέλιξη για τον λογαριασμό σας."
 bundle	settings.deletionCancelInFlight	"Το αίτημα έχει ήδη εγκριθεί και δεν μπορεί να ανακληθεί εδώ. Επικοινωνήστε με το dpo@policywallet.gr."
@@ -4170,6 +4190,7 @@ inline	app/(public)/en/guides/[slug]/page.tsx	path
 inline	app/(public)/en/lexiko/[term]/page.tsx	path
 inline	app/(public)/guides/[slug]/page.tsx	path
 inline	app/(public)/lexiko/[term]/page.tsx	path
+inline	app/(public)/offline/page.tsx	getTranslations("el").offline
 inline	app/(public)/platform/PlatformSections.tsx	"«Δεν ξέρω» δεν σημαίνει «δεν καλύπτεσαι»"
 inline	app/(public)/platform/PlatformSections.tsx	"Αν το έγγραφο δεν λέει τίποτα για μια κάλυψη, δεν συμπεραίνουμε ότι λείπει: η σιωπή δεν είναι απόδειξη απουσίας και ένα εύρημα που στηρίζεται σε σιωπή είναι λάθος που κοστίζει. Όπου ένας κανόνας ελέγχει αν κάτι έχει καταγραφεί, το εύρημα το λέει ακριβώς έτσι — «δεν έχει καταγραφεί», όχι «δεν καλύπτεστε»."
 inline	app/(public)/platform/PlatformSections.tsx	"Αποφασίζει η τεχνητή νοημοσύνη αν έχω κενό κάλυψης;"
@@ -8901,6 +8922,7 @@ inline	lib/wallet/gap-report.ts	"Πιθανή εξαίρεση κάλυψης"
 inline	lib/wallet/gap-report.ts	"Πιθανή συμμετοχή στα έξοδα"
 inline	lib/wallet/gap-report.ts	"Πιθανός περιορισμός κάλυψης"
 inline	lib/wallet/gap-report.ts	"Σημείο προσοχής στην κάλυψη"
+inline	lib/wallet/offline-card.ts	branch.label.el
 inline	lib/wallet/policy-review.ts	'Αξία αντικατάστασης κατοικίας'
 inline	lib/wallet/policy-review.ts	'Αξία αντικατάστασης κατοικίας'
 inline	lib/wallet/policy-review.ts	'Ασφαλισμένη αξία κατοικίας'
@@ -9648,11 +9670,13 @@ call	app/auth/handover/page.tsx	"Πατήστε παρακάτω για να σ�
 call	app/auth/handover/page.tsx	"Συνέχεια στο Πορτοφόλι"
 call	app/auth/handover/page.tsx	"Συνέχεια στον περιηγητή"
 call	app/auth/handover/page.tsx	"Συνέχεια στον περιηγητή"
+call	app/auth/signup/SignupForm.tsx	"AES-256 κρυπτογράφηση"
 call	app/auth/signup/SignupForm.tsx	"Έχετε ήδη λογαριασμό;"
 call	app/auth/signup/SignupForm.tsx	"Αν σας προσκάλεσε ο ασφαλιστικός σας σύμβουλος, χρησιμοποιήστε τον σύνδεσμο της πρόσκλησης — αυτός εξακολουθεί να λειτουργεί."
 call	app/auth/signup/SignupForm.tsx	"Ανεβάζετε τα ασφαλιστήριά σας και σας λέω τι καλύπτουν, τι δεν καλύπτουν και πότε λήγουν."
 call	app/auth/signup/SignupForm.tsx	"Δείτε τι λείπει από τους πελάτες σας."
 call	app/auth/signup/SignupForm.tsx	"Δείτε τι πραγματικά σας καλύπτει."
+call	app/auth/signup/SignupForm.tsx	"Δεν αποθηκεύουμε κωδικούς σε απλό κείμενο."
 call	app/auth/signup/SignupForm.tsx	"Δεν δεχόμαστε νέους λογαριασμούς αυτή τη στιγμή. Αν έχετε ήδη λογαριασμό, μπορείτε να συνδεθείτε κανονικά."
 call	app/auth/signup/SignupForm.tsx	"Δημιουργία λογαριασμού"
 call	app/auth/signup/SignupForm.tsx	"Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε."

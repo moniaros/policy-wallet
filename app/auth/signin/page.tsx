@@ -3,7 +3,8 @@
 import { useId, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { AlertCircle, ArrowRight, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
+import { KeyRound, AlertCircle, ArrowRight, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
+import { startAuthentication } from "@simplewebauthn/browser"
 import { createClient } from "@/lib/supabase/client"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { AuthShell } from "@/components/auth/AuthShell"
@@ -77,6 +78,56 @@ export default function SignInPage() {
     const [resetError, setResetError] = useState<string | null>(null)
     const [resetNotice, setResetNotice] = useState<string | null>(null)
     const [resetLoading, setResetLoading] = useState(false)
+    // Spec v2 §19.1: the passkey is the FIRST option wherever the browser can
+    // do WebAuthn. Identifier-first — the challenge is scoped to the account
+    // the email names — so the button asks for the email when it is empty.
+    // Hidden again once the deployment answers PASSKEYS_DISABLED.
+    const [passkeyState, setPasskeyState] = useState<"idle" | "working" | "hidden">("idle")
+    const [passkeyNotice, setPasskeyNotice] = useState<string | null>(null)
+    const webAuthnAvailable = typeof window !== "undefined" && "PublicKeyCredential" in window
+
+    const passkeySignIn = async () => {
+        const identifier = email.trim()
+        if (!identifier) {
+            setTab("email")
+            setPasskeyNotice(copy.passkeyNeedsEmail)
+            identifierRef.current?.focus()
+            return
+        }
+        setPasskeyState("working")
+        setPasskeyNotice(null)
+        try {
+            const options = await fetch("/api/auth/passkeys/login/options", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: identifier }),
+            })
+            if (options.status === 404) {
+                const payload = await options.json().catch(() => null)
+                if (payload?.error?.code === "PASSKEYS_DISABLED") { setPasskeyState("hidden"); return }
+                setPasskeyNotice(copy.passkeyUnavailable)
+                setPasskeyState("idle")
+                return
+            }
+            if (!options.ok) throw new Error(`options ${options.status}`)
+            const { data } = await options.json()
+            const assertion = await startAuthentication({ optionsJSON: data })
+            const verify = await fetch("/api/auth/passkeys/login/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: identifier, response: assertion }),
+            })
+            if (!verify.ok) throw new Error(`verify ${verify.status}`)
+            const { data: session } = await verify.json()
+            window.localStorage.setItem("pw_quick_identifier", identifier)
+            const callbackUrl = sanitizeCallbackUrl(new URLSearchParams(window.location.search).get("callbackUrl"))
+            router.refresh()
+            router.push(callbackUrl || session?.redirectTo || "/dashboard")
+        } catch {
+            setPasskeyNotice(copy.passkeyFailed)
+            setPasskeyState("idle")
+        }
+    }
 
     /**
      * Remember-this-device: a successful sign-in stores the identifier (see
@@ -266,6 +317,17 @@ export default function SignInPage() {
                         </Button>
                     )}
                     {resendMessage && <p role="status" className="mb-g-4 text-g-body-sm text-fg-secondary">{resendMessage}</p>}
+
+                    {webAuthnAvailable && passkeyState !== "hidden" && (
+                        <div className="mb-g-4">
+                            <Button type="button" size="lg" loading={passkeyState === "working"} onClick={passkeySignIn} className="w-full">
+                                {passkeyState !== "working" && <KeyRound aria-hidden className="size-4" />}
+                                {copy.passkeyButton}
+                            </Button>
+                            {passkeyNotice && <p role="status" className="mt-g-2 text-g-caption text-fg-secondary">{passkeyNotice}</p>}
+                            <p className="mt-g-2 text-center text-g-caption text-fg-secondary">{copy.passkeyOrPassword}</p>
+                        </div>
+                    )}
 
                     <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-g-4">
                         {/* Email / Phone toggle */}

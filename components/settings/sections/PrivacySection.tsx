@@ -70,9 +70,13 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
         }
     }
 
+    // Spec v2 §25.2: deletion is a multi-step confirmation, never one tap. The
+    // first dialog lists the consequences; the second is the final word.
+    const [deleteFinalOpen, setDeleteFinalOpen] = useState(false)
+
     const handleDelete = async () => {
         const result = await deleteAccount()
-        setDeleteOpen(false)
+        setDeleteFinalOpen(false)
         if (result.success || result.error === "DELETION_ALREADY_PENDING") {
             // Nothing is deleted yet — the request enters a review queue, so the
             // page stays put and says exactly that.
@@ -233,6 +237,15 @@ export function PrivacySection({ data }: { data: PrivacyData }) {
                 title={t.settings.nuclearDeletion}
                 description={t.settings.deleteAccountConfirm}
                 consequences={[t.settings.nuclearDesc]}
+                confirmLabel={t.settings.deleteContinue}
+                onConfirm={() => { setDeleteOpen(false); setDeleteFinalOpen(true) }}
+            />
+            <ConfirmDialog
+                open={deleteFinalOpen}
+                onOpenChange={setDeleteFinalOpen}
+                destructive
+                title={t.settings.deleteFinalTitle}
+                description={t.settings.deleteFinalDesc}
                 confirmLabel={t.settings.deletePermanently}
                 onConfirm={handleDelete}
             />

@@ -1,20 +1,49 @@
 /* PolicyWallet service worker.
  *
  * Deliberately minimal: this exists to receive Web Push and to open the right
- * page when someone taps a notification. It does NOT cache anything — an
- * offline cache for an app whose whole job is showing current policy data
- * would be a way to show someone stale cover, and that is worse than a page
- * that fails honestly.
+ * page when someone taps a notification.
+ *
+ * It caches exactly TWO things (spec v2 §18.1): the /offline page and the
+ * /api/v1/me/offline-card JSON — the phone numbers a person needs at the
+ * roadside with no signal. Nothing else: an offline copy of the wallet would
+ * be a way to show someone stale cover, which is worse than a page that
+ * fails honestly. The card carries its own generatedAt so /offline can say
+ * how old the numbers are.
  */
+const OFFLINE_CACHE = "pw-offline-v1"
+const OFFLINE_PAGE = "/offline"
+const OFFLINE_CARD = "/api/v1/me/offline-card"
 
-self.addEventListener("install", () => {
+self.addEventListener("install", (event) => {
     // Take over immediately: a customer who just granted permission should be
     // reachable on the next event, not after their next full page load.
     self.skipWaiting()
+    event.waitUntil(caches.open(OFFLINE_CACHE).then((cache) => cache.add(OFFLINE_PAGE).catch(() => undefined)))
 })
 
 self.addEventListener("activate", (event) => {
     event.waitUntil(self.clients.claim())
+})
+
+self.addEventListener("fetch", (event) => {
+    const url = new URL(event.request.url)
+    if (url.origin !== self.location.origin) return
+    // The card: network first, cached copy when the network is gone.
+    if (url.pathname === OFFLINE_CARD && event.request.method === "GET") {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    if (response.ok) caches.open(OFFLINE_CACHE).then((cache) => cache.put(OFFLINE_CARD, response.clone()))
+                    return response
+                })
+                .catch(() => caches.match(OFFLINE_CARD).then((cached) => cached || new Response("", { status: 503 })))
+        )
+        return
+    }
+    // A page navigation that cannot reach the network lands on /offline.
+    if (event.request.mode === "navigate") {
+        event.respondWith(fetch(event.request).catch(() => caches.match(OFFLINE_PAGE).then((cached) => cached || Response.error())))
+    }
 })
 
 self.addEventListener("push", (event) => {

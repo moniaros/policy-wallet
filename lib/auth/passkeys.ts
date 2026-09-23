@@ -30,6 +30,7 @@ import {
 } from "@simplewebauthn/server"
 
 import { db } from "@/lib/db"
+import { normalizeEmail } from "@/lib/identity/normalize-email"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 export const PASSKEY_CLAIM = "passkeys"
@@ -189,4 +190,33 @@ export async function removePasskey(user: { id: string; supabaseUserId: string }
     const { count: deleted } = await db.passkeyCredential.deleteMany({ where: { id: passkeyId, userId: user.id } })
     const count = await syncPasskeyClaim(user.id, user.supabaseUserId)
     return { removed: deleted > 0, count }
+}
+
+/**
+ * Spec v2 §19.1 — passkey as the FIRST sign-in, identifier-first: the person
+ * types (or the device remembers) their email, the server answers with a
+ * challenge scoped to that account's own credentials, and the assertion is
+ * exchanged for a Supabase session (app/api/auth/passkeys/login/verify).
+ *
+ * Both functions answer the same way for «no such account» and «no passkey»
+ * so the login page cannot be used to enumerate addresses.
+ */
+export async function loginOptionsForEmail(rawEmail: string): Promise<PublicKeyCredentialRequestOptionsJSON | null> {
+    const email = normalizeEmail(rawEmail)
+    if (!email) return null
+    const user = await db.user.findUnique({ where: { email }, select: { id: true } })
+    if (!user) return null
+    return authenticationOptions(user.id)
+}
+
+export async function verifyLoginForEmail(
+    rawEmail: string,
+    response: AuthenticationResponseJSON
+): Promise<{ ok: true; userId: string; email: string } | { ok: false; reason: string }> {
+    const email = normalizeEmail(rawEmail)
+    const user = email ? await db.user.findUnique({ where: { email }, select: { id: true, email: true } }) : null
+    if (!user) return { ok: false, reason: "no_account" }
+    const result = await verifyAuthentication(user.id, response)
+    if (!result.ok) return result
+    return { ok: true, userId: user.id, email: user.email }
 }
