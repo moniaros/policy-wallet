@@ -85,7 +85,7 @@ test("baseline: AI Consent Modal, opened from /wallet/add on submit", async ({ p
     try {
         for (const width of WIDTHS) {
             await openSurface(page, "/wallet/add", width)
-            await page.selectOption("#add-lineOfBusiness", "motor")
+            await page.click('#add-lineOfBusiness [data-branch="motor"]')
             // Client-side state only — this never reaches Supabase storage,
             // because the consent check in `handleSubmit` runs BEFORE
             // `submitPolicy`'s upload.
@@ -116,7 +116,7 @@ test("baseline: Coverage Limit Modal, opened from /wallet/add (real POLICY_LIMIT
     test.setTimeout(6 * 60_000)
     for (const width of WIDTHS) {
         await openSurface(page, "/wallet/add", width)
-        await page.selectOption("#add-lineOfBusiness", "motor")
+        await page.click('#add-lineOfBusiness [data-branch="motor"]')
         await page.setInputFiles("#file-upload", {
             name: "policy.pdf",
             mimeType: "application/pdf",

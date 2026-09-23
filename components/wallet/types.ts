@@ -15,6 +15,8 @@ export interface Policy {
     policyNumber: string
     insurerName: string
     insurerLogo: string | null
+    /** Owner-typed display name (spec v2 §10.1); null when unset. */
+    nickname?: string | null
     lineOfBusiness: 'motor' | 'health' | 'home' | 'life' | 'travel' | 'liability' | 'pet' | 'professional' | 'other' | 'breakdown' | 'legal_expenses' | 'income_protection' | 'gadget' | 'bicycle' | 'business' | 'cyber' | 'motorbike' | 'public_liability' | 'renters'
     status: 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' | 'analyzing' | 'cancelled'
     startDate: string | null

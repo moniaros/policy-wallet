@@ -198,6 +198,15 @@ findings never enter `findingCount`; recording-class findings («δεν κατα
 status. Severity is not read. The dashboard's branch map projects the same status onto its tile
 words (`toTileState`), so the two surfaces cannot disagree about one branch.
 
+### Additions ratified 2026-09-23 (spec-v2 Phase 1.2 — branch quick facts)
+
+New fact key: `policy.quickFact` *(subject-scoped by `<policy id>:<fact key>`)* — the wallet
+card's glanceable per-branch facts (hospital class, coordination centre, green card, ENFIA and
+the three perils, fund value, microchip, annual limit…). One resolver, `lib/wallet/quick-facts.ts`,
+renders a fact only when the extraction stated it and routes strings through
+`unreadable-value`, so a chip never comes from silence or from a mask. Also `policy.nickname`
+*(subject-scoped by policy id)* — the owner-typed name (§10.1), never extracted.
+
 ### Additions ratified 2026-09-23 (spec-v2 Phase 0.6 — silent advisor actions)
 
 New fact key: `policy.addedByAdvisor` *(subject-scoped by policy id)* — the wallet card marks a

@@ -21,6 +21,7 @@ interface EditPolicyFormProps {
         endDate: Date
         premiumAmount?: number | null
         coverageSummary?: string | null
+        nickname?: string | null
     }
     t?: any
     /** Same-origin path to navigate back to after save (agent surfaces). */
@@ -43,6 +44,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
         endDate: policy.endDate ? new Date(policy.endDate).toISOString().split("T")[0] : "",
         premiumAmount: policy.premiumAmount ? String(policy.premiumAmount) : "",
         coverageSummary: policy.coverageSummary || "",
+        nickname: policy.nickname || "",
     })
 
     const copy = {
@@ -57,6 +59,8 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
             start: i18n.wallet.starts,
             end: i18n.wallet.ends,
             summary: i18n.wallet.summary,
+            nickname: i18n.wallet.nickname,
+            nicknameHint: i18n.wallet.nicknameHint,
         },
     }
 
@@ -76,6 +80,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
             data.append("endDate", formData.endDate)
             if (formData.premiumAmount) data.append("premiumAmount", formData.premiumAmount)
             if (formData.coverageSummary) data.append("coverageSummary", formData.coverageSummary)
+            data.append("nickname", formData.nickname)
 
             const result = await updatePolicy(policy.id, data)
 
@@ -192,6 +197,22 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
                         className={inputClass}
                         disabled={isPending}
                     />
+                </div>
+
+                <div className="grid gap-2">
+                    <label htmlFor="nickname" className={labelClass}>{copy.labels.nickname}</label>
+                    <input
+                        id="nickname"
+                        name="nickname"
+                        type="text"
+                        maxLength={60}
+                        value={formData.nickname}
+                        onChange={handleChange}
+                        className={inputClass}
+                        disabled={isPending}
+                        aria-describedby="nickname-hint"
+                    />
+                    <p id="nickname-hint" className="text-caption text-muted-foreground">{copy.labels.nicknameHint}</p>
                 </div>
 
                 <div className="grid gap-2">

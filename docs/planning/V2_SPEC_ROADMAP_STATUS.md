@@ -94,6 +94,9 @@ Each is a small, self-contained fix with a guard test. Order is by blast radius.
 
 ### Phase 1 — Core loop UX parity: Upload → Extraction → Cards (B2C)
 
+**Delivered 2026-09-23 (`feat/spec-v2-phase1`):** 1.1 wizard (tiles, `capture`, stepped state, extracted-fields check + edit, analyse/share CTAs) — the policyholder confirm step shows what was read and links to edit rather than gating on a «save»; 1.2 as a single resolver `lib/wallet/quick-facts.ts` + chip row on `PolicyCard` (fact key `policy.quickFact`), not five card components; 1.3 grouping, sort, insurer filter, `Policy.nickname` (migration `20260923120000_policy_nickname`, dev + prod). **Not delivered, by recorded decision:** 1.4 tabs (CoverageTabView documents why stacked; the per-branch sections already render every schema field), 1.5 dashboard FAB / AI-insight card (the story dashboard measured duplicate upload offers as a defect — §11), savings badge (needs a provenance/claims decision before a € figure renders), support chat (no backend). Matrix rows 1.6→80, 1.8→85, 1.9→85.
+
+
 | Task | Deliverable | Files |
 |---|---|---|
 | 1.1 Upload wizard | 5-step flow: branch tiles → file input with `accept="application/pdf" capture="environment"` → branded step progress driven by run `steps[]` → **policyholder** confirm/edit screen (reuse `PolicyReviewScreen.tsx`, remove agent-only gate) → success with "Analyse coverage" / "Share with advisor". | `components/wallet/AddPolicyClient.tsx`, `components/wallet/PolicyReviewScreen.tsx`, `app/(protected)/wallet/add/page.tsx`, new `components/wallet/upload/BranchTiles.tsx`, `ExtractionProgress.tsx` |

@@ -4,7 +4,10 @@ import React, { useState, useTransition, useEffect, useRef, useCallback } from "
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { createPolicy, getPolicyAnalysisStatus, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(protected)/wallet/actions"
+import { createPolicy, getPolicyAnalysisStatus, getPolicyReviewData, retryPolicyAnalysis, runPolicyAnalysis } from "@/app/(protected)/wallet/actions"
+import { getBranchIcon } from "@/lib/insurance/branch-icons"
+import { formatCurrency, formatDate } from "@/lib/i18n/format"
+import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
@@ -26,6 +29,9 @@ import {
     Sparkles,
     AlertTriangle,
     RefreshCw,
+    Camera,
+    Share2,
+    Search,
 } from 'lucide-react'
 import { acceptAttribute } from "@/lib/security/file-upload"
 
@@ -62,19 +68,28 @@ function fill(template: string, vars: Record<string, string>): string {
     return template.replace(/\{(\w+)\}/g, (_m, key: string) => vars[key] ?? '')
 }
 
-function getAnalyzingStep(elapsed: number, t: any): string {
-    const steps = t.wallet.review
-    if (elapsed < 5) return steps.stepUploading
-    if (elapsed < 15) return steps.stepExtracting
-    if (elapsed < 40) return steps.stepAnalyzing
-    return steps.stepGenerating
+/** Spec v2 §10.2 step 3: which of the four reading stages the clock says we are in. */
+function analyzingStepIndex(elapsed: number): number {
+    if (elapsed < 5) return 0
+    if (elapsed < 15) return 1
+    if (elapsed < 40) return 2
+    return 3
 }
 
 export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClientProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
+    const locale = language === 'el' ? 'el' : 'en'
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+    // Spec v2 §10.2 step 1: the type is a tile, not a <select>. A hidden input
+    // carries it in the same FormData the gate's «change type» resubmits.
+    const [selectedBranch, setSelectedBranch] = useState<string>('')
+    // Re-render once a second while the reading screen is up, so the step
+    // list advances with the clock rather than only when a poll returns.
+    const [, setTick] = useState(0)
+    const [analysing, setAnalysing] = useState(false)
+    const [analysisUpgradeOpen, setAnalysisUpgradeOpen] = useState(false)
     // Inline field errors. These were toast-only: the message named a problem
     // but pointed at no field, and vanished when the toast timed out.
     const [fieldErrors, setFieldErrors] = useState<{ files?: string; lineOfBusiness?: string }>({})
@@ -212,8 +227,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         const formData = lastFormDataRef.current
         if (!formData) return
         formData.set("lineOfBusiness", branch)
-        const select = document.getElementById("add-lineOfBusiness") as HTMLSelectElement | null
-        if (select) select.value = branch
+        setSelectedBranch(branch)
         setGate(null)
         submitPolicy(formData)
     }
@@ -279,6 +293,30 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     usePolling(pollReviewData, {
         enabled: phase === 'reviewing' && Boolean(createdPolicyId) && !reviewData && !discarded,
     })
+
+    useEffect(() => {
+        if (phase !== 'reviewing' || reviewData || discarded) return
+        const timer = setInterval(() => setTick((n) => n + 1), 1000)
+        return () => clearInterval(timer)
+    }, [phase, reviewData, discarded])
+
+    /** Step 5 «Analyse coverage»: the deep run, then the policy page. */
+    const analyseCoverage = async () => {
+        if (!createdPolicyId || analysing) return
+        setAnalysing(true)
+        try {
+            const result = await runPolicyAnalysis(createdPolicyId)
+            if (result.error) {
+                if (result.error === 'UPGRADE_REQUIRED') { setAnalysisUpgradeOpen(true); return }
+                toast.error(mapWalletErrorToMessage(result.error, t, 'analysis'))
+                return
+            }
+            toast.success(t.toast.analysisStarted)
+            router.push(`/wallet/${createdPolicyId}`)
+        } finally {
+            setAnalysing(false)
+        }
+    }
 
     const reviewCopy = t.wallet.review
 
@@ -457,11 +495,24 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         <p className="text-sm font-semibold text-foreground">
                                             {reviewCopy.analyzing}
                                         </p>
-                                        <p className="mt-1 text-xs text-muted-foreground animate-pulse">
-                                            {getAnalyzingStep(elapsedSecs, t)}
-                                        </p>
                                     </div>
                                 </div>
+
+                                {/* Spec v2 §10.2 step 3: a branded, stepped reading state — not a blank spinner. */}
+                                <ol className="space-y-2" aria-label={reviewCopy.analyzing}>
+                                    {[reviewCopy.stepUploading, reviewCopy.stepExtracting, reviewCopy.stepAnalyzing, reviewCopy.stepGenerating].map((label, i) => {
+                                        const current = analyzingStepIndex(elapsedSecs)
+                                        const state = i < current ? 'done' : i === current ? 'active' : 'todo'
+                                        return (
+                                            <li key={label} className="flex items-center gap-3 text-sm" aria-current={state === 'active' ? 'step' : undefined}>
+                                                <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${state === 'done' ? 'bg-primary text-primary-foreground' : state === 'active' ? 'bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint' : 'bg-muted text-muted-foreground'}`} aria-hidden="true">
+                                                    {state === 'done' ? <Check className="h-3.5 w-3.5" /> : state === 'active' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span className="text-caption">{i + 1}</span>}
+                                                </span>
+                                                <span className={state === 'todo' ? 'text-muted-foreground' : 'text-foreground'}>{label}</span>
+                                            </li>
+                                        )
+                                    })}
+                                </ol>
 
                                 {/* Skeleton rows */}
                                 <div className="space-y-4 pt-2">
@@ -487,9 +538,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 </div>
                             </div>
                         ) : (
-                            /* ── Analysis complete — the extraction review is an
-                                agent-only step, so the policyholder goes straight
-                                to their policy page ── */
+                            /* ── Spec v2 §10.2 steps 4–5: what was read, with a way
+                                to correct it, then the two next things to do. The
+                                policy is already in the wallet; a «save» button here
+                                would pretend otherwise. The agent-only extraction
+                                review (verification) is a different, professional step. ── */
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center gap-4 py-4">
                                     <div className="w-16 h-16 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
@@ -501,16 +554,64 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         </p>
                                     </div>
                                 </div>
+
+                                <dl className="grid grid-cols-1 gap-3 rounded-2xl border border-border bg-muted/40 p-4 text-sm sm:grid-cols-2">
+                                    {([
+                                        [reviewCopy.insurer, displayInsurerName(reviewData.insurerName)],
+                                        [reviewCopy.policyType, (t.policyTypes as Record<string, string>)[reviewData.lineOfBusiness] ?? reviewData.lineOfBusiness],
+                                        [t.wallet.policyNumber, displayPolicyNumber(reviewData.policyNumber)],
+                                        [reviewCopy.period, reviewData.startDate && reviewData.endDate ? `${formatDate(reviewData.startDate, locale)} – ${formatDate(reviewData.endDate, locale)}` : null],
+                                        [reviewCopy.premium, reviewData.premiumAmount !== null ? formatCurrency(reviewData.premiumAmount, locale, { currency: reviewData.premiumCurrency, decimals: 2 }) : null],
+                                    ] as Array<[string, string | null | undefined]>).map(([label, value]) => (
+                                        <div key={label} className="min-w-0">
+                                            <dt className="text-caption uppercase tracking-wide text-muted-foreground">{label}</dt>
+                                            <dd className={`font-semibold [overflow-wrap:anywhere] ${value ? 'text-foreground' : 'text-muted-foreground'}`}>{value || reviewCopy.notFound}</dd>
+                                        </div>
+                                    ))}
+                                </dl>
                                 <button
                                     type="button"
-                                    onClick={() => router.push(`/wallet/${createdPolicyId}`)}
-                                    className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                    onClick={() => router.push(`/wallet/${createdPolicyId}/edit?returnTo=/wallet/${createdPolicyId}`)}
+                                    className="pw-soft-button w-full"
                                 >
-                                    <span className="flex items-center justify-center gap-2">
-                                        <Check className="w-5 h-5" />
-                                        {reviewCopy.viewPolicy}
-                                    </span>
+                                    <Pencil className="w-4 h-4" />
+                                    {reviewCopy.edit}
                                 </button>
+
+                                <div className="flex flex-col gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={analyseCoverage}
+                                        disabled={analysing}
+                                        className="pw-primary-button w-full uppercase tracking-widest"
+                                    >
+                                        {analysing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+                                        {t.dashboard.runAnalysis}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => router.push(`/wallet/${createdPolicyId}#agent`)}
+                                        className="pw-soft-button w-full"
+                                    >
+                                        <Share2 className="w-4 h-4" />
+                                        {t.wallet.shareWithAgent}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => router.push(`/wallet/${createdPolicyId}`)}
+                                        className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
+                                    >
+                                        {reviewCopy.viewPolicy}
+                                    </button>
+                                </div>
+
+                                <UpgradeModal
+                                    isOpen={analysisUpgradeOpen}
+                                    onClose={() => setAnalysisUpgradeOpen(false)}
+                                    featureKey="full_ai_policy_analysis"
+                                    triggerSource="wallet_add_policy_success"
+                                    returnTo={`/wallet/${createdPolicyId}`}
+                                />
                             </div>
                         )}
                     </div>
@@ -569,7 +670,48 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
                 <form onSubmit={handleSubmit} className="space-y-8">
 
-                    {/* File Upload Section */}
+                    {/* Step 1 — «What type of policy is this?» (spec v2 §10.2) */}
+                    <fieldset className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
+                        <legend className="sr-only">{t.wallet.coverageType}</legend>
+                        <h1 className="text-xl font-black text-foreground">{formCopy.chooseType}</h1>
+                        <input type="hidden" name="lineOfBusiness" value={selectedBranch} />
+                        <div
+                            role="radiogroup"
+                            id="add-lineOfBusiness"
+                            aria-label={t.wallet.coverageType}
+                            aria-invalid={fieldErrors.lineOfBusiness ? true : undefined}
+                            aria-describedby={fieldErrors.lineOfBusiness ? "add-lineOfBusiness-error" : undefined}
+                            className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4"
+                        >
+                            {types.map((typeItem) => {
+                                const selected = selectedBranch === typeItem.slug
+                                const glyph = { Icon: getBranchIcon(typeItem.slug) }
+                                return (
+                                    <button
+                                        key={typeItem.id}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={selected}
+                                        data-branch={typeItem.slug}
+                                        onClick={() => { setSelectedBranch(typeItem.slug); setFieldErrors((prev) => ({ ...prev, lineOfBusiness: undefined })) }}
+                                        className={`pw-subcard flex min-h-[4.5rem] flex-col items-start justify-between gap-2 p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${selected ? 'ring-2 ring-primary bg-primary-tint dark:bg-primary/10' : 'hover:bg-muted'}`}
+                                    >
+                                        <span className="pw-card-chip" aria-hidden="true"><glyph.Icon className="h-4 w-4" strokeWidth={1.75} /></span>
+                                        <span className="text-sm font-semibold leading-snug text-foreground [overflow-wrap:anywhere]">
+                                            {t.policyTypes[typeItem.slug as keyof typeof t.policyTypes] || typeItem.name}
+                                        </span>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                        {fieldErrors.lineOfBusiness && (
+                            <p id="add-lineOfBusiness-error" role="alert" className="mt-2 ml-1 text-xs font-semibold text-red-700 dark:text-red-400">
+                                {fieldErrors.lineOfBusiness}
+                            </p>
+                        )}
+                    </fieldset>
+
+                    {/* Step 2 — File Upload Section */}
                     <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
@@ -583,9 +725,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     from several places and the sr-only headings added
                                     earlier both landed in a branch that never renders,
                                     so the route reported no <h1> at all. */}
-                                <h1 className="text-xl font-black text-foreground">
+                                <h2 className="text-xl font-black text-foreground">
                                     {t.wallet.uploadDocument}
-                                </h1>
+                                </h2>
                             </div>
 
                             <UploadDropzone
@@ -607,6 +749,27 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 title={t.wallet.tapToUpload}
                                 hint={t.wallet.dragDrop}
                             />
+
+                            {/* Spec v2 §18.1 / §23.1: a photo of the paper policy through the
+                                standard file input's `capture` — the same gate reads scans. */}
+                            <label className="pw-soft-button mt-3 w-full cursor-pointer sm:w-auto">
+                                <Camera className="h-4 w-4" aria-hidden="true" />
+                                {formCopy.takePhoto}
+                                <input
+                                    type="file"
+                                    accept={acceptAttribute("image")}
+                                    capture="environment"
+                                    className="sr-only"
+                                    onChange={(e) => {
+                                        const files = Array.from(e.target.files ?? [])
+                                        e.target.value = ''
+                                        if (files.length === 0) return
+                                        setGate(null)
+                                        setSelectedFiles((prev) => [...prev, ...files].slice(0, MAX_ADD_POLICY_FILES))
+                                        setFieldErrors((prev) => ({ ...prev, files: undefined }))
+                                    }}
+                                />
+                            </label>
 
                             {gate && gateCopy && (
                                 <div id="add-policy-gate" role="alert" data-gate-code={gate.code} className="mt-4 rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/10 p-4">
@@ -684,35 +847,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         </div>
 
                         <div className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Type - REQUIRED */}
-                                <div className="space-y-2">
-                                    <label htmlFor="add-lineOfBusiness" className="text-xs font-bold uppercase tracking-wider text-foreground ml-1 block">
-                                        {t.wallet.coverageType} <span className="text-red-500">*</span>
-                                    </label>
-                                    <select
-                                        id="add-lineOfBusiness"
-                                        name="lineOfBusiness"
-                                        required
-                                        aria-invalid={fieldErrors.lineOfBusiness ? true : undefined}
-                                        aria-describedby={fieldErrors.lineOfBusiness ? "add-lineOfBusiness-error" : undefined}
-                                        onChange={() => setFieldErrors(prev => ({ ...prev, lineOfBusiness: undefined }))}
-                                        className={`w-full appearance-none bg-primary-tint dark:bg-primary/10 border rounded-xl px-4 py-3.5 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary focus:bg-card transition-all ${fieldErrors.lineOfBusiness ? "border-red-500 ring-2 ring-red-500/40" : "border-primary-soft dark:border-primary/30"}`}
-                                    >
-                                        <option value="">{t.wallet.selectTypePlaceholder}</option>
-                                        {types.map(typeItem => (
-                                            <option key={typeItem.id} value={typeItem.slug}>
-                                                {t.policyTypes[typeItem.slug as keyof typeof t.policyTypes] || typeItem.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {fieldErrors.lineOfBusiness && (
-                                        <p id="add-lineOfBusiness-error" role="alert" className="ml-1 text-xs font-semibold text-red-700 dark:text-red-400">
-                                            {fieldErrors.lineOfBusiness}
-                                        </p>
-                                    )}
-                                </div>
-
+                            <div className="grid grid-cols-1 gap-6">
                                 {/* Insurer - OPTIONAL */}
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center ml-1">

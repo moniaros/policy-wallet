@@ -874,6 +874,8 @@ export async function updatePolicy(policyId: string, formData: FormData) {
         if (rawData.endDate) data.endDate = rawData.endDate
         if (rawData.premiumAmount) data.premiumAmount = Number(rawData.premiumAmount)
         if (rawData.coverageSummary) data.coverageSummary = rawData.coverageSummary
+        // Present-but-empty CLEARS the nickname; absent leaves it alone.
+        if (formData.has("nickname")) data.nickname = String(formData.get("nickname") ?? "").trim().slice(0, 60) || null
 
         const policyService = new PolicyService()
         const language = resolveUserLanguage(authResult.dbUser.preferredLanguage)
