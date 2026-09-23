@@ -240,6 +240,7 @@ export const FACT_KEYS: Record<string, string> = {
     "policy.attention": "The head's attention banner (PolicyHead).",
     "grant.level": "Customer /agent page: a grant's normalised level (read/write/manage), subject = grant id — what the advisor can do (A-10).",
     "policy.sharedWithAdvisor": "Wallet card: this policy is visible to the advisor, subject = policy id (A-09).",
+    "policy.addedByAdvisor": "Wallet card: a document on this policy was uploaded by the advisor, subject = policy id (spec v2 §12.3 / Journey 6, Phase 0.6 2026-09-23).",
     "policy.rowStatus": "A list row's lifecycle status label, subject = policy id (wallet card, agent client-policies row) — PW-BRIDGE-01 A-08.",
     "client.nextRenewalDate": "Agent customer list: the client's next renewal date among visible policies, subject = customer id (A-08).",
 }
@@ -275,6 +276,7 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "client.unsharedPolicyCount",
     "grant.level",
     "policy.sharedWithAdvisor",
+    "policy.addedByAdvisor",
 ])
 
 export function isRegisteredCountKey(key: string): boolean {

@@ -68,7 +68,10 @@ describe("scheduled jobs are observable", () => {
         )
         // execute-analysis is the QStash worker, not a schedule: it is invoked
         // per policy, and a "run history" of it would be an upload log.
-        const expected = unrecorded.filter((f) => !f.includes("execute-analysis"))
+        // analysis-failed is that worker's failure callback — same shape.
+        const expected = unrecorded.filter(
+            (f) => !f.includes("execute-analysis") && !f.includes("analysis-failed")
+        )
         expect(expected, `these jobs record no run:\n${expected.join("\n")}`).toEqual([])
     })
 

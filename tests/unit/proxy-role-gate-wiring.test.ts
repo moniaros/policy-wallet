@@ -26,17 +26,23 @@ vi.mock('@/lib/rate-limit', () => ({
 
 import { proxy } from '@/proxy'
 
-function sessionFor(role: string | null) {
+function sessionFor(role: string | null, appRoles?: string) {
     getUserMock.mockResolvedValue({
         data: {
             user: role === null
                 ? null
-                : { id: 'user-1', email: 'u@example.com', user_metadata: { role } },
+                : {
+                    id: 'user-1',
+                    email: 'u@example.com',
+                    user_metadata: { role },
+                    ...(appRoles !== undefined ? { app_metadata: { roles: appRoles } } : {}),
+                },
         },
     })
 }
 
-const run = (path: string) => proxy(new NextRequest(`http://localhost:3000${path}`))
+const run = (path: string, cookie?: string) =>
+    proxy(new NextRequest(`http://localhost:3000${path}`, cookie ? { headers: { cookie } } : undefined))
 
 beforeEach(() => {
     getUserMock.mockReset()
@@ -91,5 +97,34 @@ describe('proxy() role gate wiring', () => {
         const res = await run('/protection')
         expect(res.status).toBe(307)
         expect(res.headers.get('location')).toContain('/auth/signin?callbackUrl=')
+    })
+
+    // Phase 0.2 (spec-v2 audit 2026-09-23): a "policyholder,agent" user who
+    // switched to agent in the shell was still bounced off /customers, because
+    // the gate read only the FIRST token of the claim and ignored the cookie.
+    it('honours the active-role cookie for a role the session holds', async () => {
+        sessionFor('policyholder,agent')
+        const bounced = await run('/customers')
+        expect(bounced.status).toBe(307)
+        expect(bounced.headers.get('location')).toBe('http://localhost:3000/dashboard')
+
+        const switched = await run('/customers', 'pw_active_role=agent')
+        expect(switched.status).toBe(200)
+        expect(switched.headers.get('location')).toBeNull()
+    })
+
+    it('ignores the cookie for a role the session does NOT hold', async () => {
+        sessionFor('policyholder')
+        const res = await run('/customers', 'pw_active_role=agent')
+        expect(res.status).toBe(307)
+        expect(res.headers.get('location')).toBe('http://localhost:3000/dashboard')
+    })
+
+    it('trusts app_metadata.roles over the user-editable user_metadata.role', async () => {
+        // A policyholder who wrote role=agent into their own user_metadata.
+        sessionFor('agent', 'policyholder')
+        const res = await run('/customers')
+        expect(res.status).toBe(307)
+        expect(res.headers.get('location')).toBe('http://localhost:3000/dashboard')
     })
 })

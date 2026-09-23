@@ -52,6 +52,10 @@ export async function enqueueAnalysisRun(
             // INSIDE that window and the run was never resumed; 5 retries
             // stretch the schedule well past lease expiry.
             retries: 5,
+            // When those retries are spent QStash tells us, and the run is
+            // marked failed there — otherwise it sat `queued` for a day
+            // waiting for a reaper that only looks at expired leases.
+            failureCallback: `${base}/api/v1/jobs/analysis-failed`,
         })
         return true
     } catch (error) {

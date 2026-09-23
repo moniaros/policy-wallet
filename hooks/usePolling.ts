@@ -28,6 +28,26 @@ export const DEFAULT_POLL_BACKOFF = [
 ] as const
 export const DEFAULT_POLL_TAIL_MS = 10_000
 
+/**
+ * A poll that never ends is a poll nobody stops: the spec's client-side
+ * state machine (§20.1) says give up after five minutes with an honest
+ * "taking longer" message — the job continues server-side and the
+ * `policy_analyzed` notification closes the loop.
+ */
+export const ANALYSIS_POLL_TIMEOUT_MS = 5 * 60 * 1000
+
+/** The delay before the next poll, `elapsed` ms after polling began. */
+export function nextPollDelay(
+    elapsed: number,
+    backoff: ReadonlyArray<{ untilMs: number; intervalMs: number }> = DEFAULT_POLL_BACKOFF,
+    tailIntervalMs: number = DEFAULT_POLL_TAIL_MS
+): number {
+    for (const step of backoff) {
+        if (elapsed < step.untilMs) return step.intervalMs
+    }
+    return tailIntervalMs
+}
+
 export interface UsePollingOptions {
     /** Poll only while true. Flipping to false clears the timer and resets backoff. */
     enabled: boolean
@@ -37,6 +57,9 @@ export interface UsePollingOptions {
     tailIntervalMs?: number
     /** Run one poll immediately when enabled, before the first delay. */
     immediate?: boolean
+    /** Stop polling this long after it began (per enable), then call onTimeout once. */
+    timeoutMs?: number
+    onTimeout?: () => void
 }
 
 export function usePolling(
@@ -46,14 +69,18 @@ export function usePolling(
         backoff = DEFAULT_POLL_BACKOFF,
         tailIntervalMs = DEFAULT_POLL_TAIL_MS,
         immediate = false,
+        timeoutMs,
+        onTimeout,
     }: UsePollingOptions
 ) {
     const callbackRef = useRef(callback)
+    const onTimeoutRef = useRef(onTimeout)
     // Synced in an effect, not during render — writing a ref during render is a
     // React rule violation the repo's lint enforces. useRef's initial value
     // already holds the first callback, so the timer never reads a stale one.
     useEffect(() => {
         callbackRef.current = callback
+        onTimeoutRef.current = onTimeout
     })
 
     const startedAtRef = useRef(0)
@@ -68,16 +95,14 @@ export function usePolling(
         let timeout: ReturnType<typeof setTimeout> | undefined
         let cancelled = false
 
-        const nextDelay = () => {
-            const elapsed = Date.now() - startedAtRef.current
-            for (const step of backoff) {
-                if (elapsed < step.untilMs) return step.intervalMs
-            }
-            return tailIntervalMs
-        }
+        const nextDelay = () => nextPollDelay(Date.now() - startedAtRef.current, backoff, tailIntervalMs)
 
         const tick = () => {
             if (cancelled) return
+            if (timeoutMs !== undefined && Date.now() - startedAtRef.current >= timeoutMs) {
+                onTimeoutRef.current?.()
+                return
+            }
             // A hidden tab burns battery and quota for output nobody can see.
             if (typeof document === "undefined" || !document.hidden) {
                 void callbackRef.current()
@@ -103,5 +128,5 @@ export function usePolling(
         // `callback` is deliberately absent — it lives in a ref so that a caller
         // re-render (which router.refresh() causes on every tick) does not
         // restart the schedule.
-    }, [enabled, backoff, tailIntervalMs, immediate])
+    }, [enabled, backoff, tailIntervalMs, immediate, timeoutMs])
 }

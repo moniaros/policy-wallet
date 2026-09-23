@@ -461,7 +461,8 @@ export class PolicyService extends BaseService {
             // caller's `after()` defers the actual run — so every surface keyed
             // on `status === 'analyzing'` stops asserting the pre-renewal verdict.
             markPolicyAnalyzing: true,
-            source: 'policyholder',
+            // Names the actor: the wallet renders «added by your advisor» from it.
+            source: policy.ownerUserId === userId ? 'policyholder' : 'agent',
         })
         if (!result.ok) throw this.ingestFailureToError(result, language)
 

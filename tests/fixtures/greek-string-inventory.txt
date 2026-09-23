@@ -19,8 +19,8 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 3760
-# inline entries: 4963 across 226 files
+# bundle entries: 3762
+# inline entries: 4967 across 226 files
 # ternary entries: 289 across 44 files
 # call entries: 1134 across 85 files
 
@@ -573,6 +573,7 @@ bundle	analysis.status.completedWithWarnings	"Η ανάλυση ολοκληρώ
 bundle	analysis.status.completedWithWarningsHint	"Λείπουν κάποιες ενότητες. Μπορείτε να επαναλάβετε μόνο τα ελλιπή τμήματα."
 bundle	analysis.status.inProgress	"Η AI ανάλυση εκτελείται"
 bundle	analysis.status.inProgressHint	"Επαληθεύουμε και εξάγουμε συμπεράσματα από το ασφαλιστήριό σας."
+bundle	analysis.status.pollTimeoutHint	"Διαρκεί περισσότερο από το συνηθισμένο. Η ανάλυση συνεχίζει και θα σας ειδοποιήσουμε μόλις ολοκληρωθεί."
 bundle	analysis.status.queued	"Η ανάλυση μπήκε σε ουρά"
 bundle	analysis.status.retry	"Επανάληψη"
 bundle	analysis.status.retryFailed	"Η επανάληψη απέτυχε. Δοκιμάστε ξανά."
@@ -2936,6 +2937,7 @@ bundle	wallet.addToGoogle	"Προσθήκη στο Google Wallet"
 bundle	wallet.addToWallet	"Προσθήκη στο πορτοφόλι"
 bundle	wallet.addToWalletAction	"Προσθήκη στο πορτοφόλι"
 bundle	wallet.addWalletDesc	"Προσθέστε αυτό το ασφαλιστήριο στο κινητό σας για γρήγορη πρόσβαση."
+bundle	wallet.addedByAdvisor	"Έγγραφο από τον σύμβουλο"
 bundle	wallet.advisorScreen.call	"Κλήση"
 bundle	wallet.advisorScreen.chat	"Συνομιλία"
 bundle	wallet.advisorScreen.email	"Email"
@@ -3958,6 +3960,7 @@ inline	app/(protected)/wallet/actions.ts	"Ζητήθηκε προσφορά αν
 inline	app/(protected)/wallet/actions.ts	"Η αυτόματη ανάγνωση χρειάζεται έλεγχο"
 inline	app/(protected)/wallet/actions.ts	"Η πρόσβαση σε ένα ασφαλιστήριο ανακλήθηκε"
 inline	app/(protected)/wallet/actions.ts	"Νέος πελάτης συνδέθηκε"
+inline	app/(protected)/wallet/actions.ts	"Ο σύμβουλός σας πρόσθεσε ένα έγγραφο"
 inline	app/(protected)/wallet/actions.ts	"Πελάτης ζήτησε προσφορά ανανέωσης"
 inline	app/(protected)/wallet/actions.ts	"Συνδεθήκατε με σύμβουλο"
 inline	app/(protected)/wallet/actions.ts	"Τα στοιχεία του ασφαλιστηρίου σας επιβεβαιώθηκαν"
@@ -3970,6 +3973,7 @@ inline	app/(protected)/wallet/actions.ts	`${askerName} ζήτησε προσφο
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(agent.name) || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`
+inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} πρόσθεσε ένα νέο έγγραφο σε ασφαλιστήριό σας. Το ασφαλιστήριο επανεξετάζεται.`
 inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`
 inline	app/(protected)/wallet/actions.ts	`${flaggerName || "Ο σύμβουλός σας"} επισήμανε ότι η αυτόματη ανάγνωση του ασφαλιστηρίου ${policy.policyNumber} χρειάζεται έλεγχο${trimmedReason ? `: ${trimmedReason}` : "."}`
 inline	app/(protected)/wallet/actions.ts	`${granterName || "Ο πελάτης"} ανακάλεσε την πρόσβασή σας${label ? ` στο ασφαλιστήριο ${label}` : ""}.`
@@ -4112,14 +4116,6 @@ inline	app/api/v1/recommendations/[id]/route.ts	"Η πρόταση απορρί�
 inline	app/api/v1/recommendations/[id]/route.ts	"Η πρόταση δρομολογήθηκε."
 inline	app/api/v1/recommendations/[id]/route.ts	"Προχωρήσατε μια πρόταση"
 inline	app/api/v1/recommendations/[id]/route.ts	parsed.data.reason
-inline	app/auth/actions.ts	"Ένα ασφαλιστήριο κοινοποιήθηκε μαζί σας"
-inline	app/auth/actions.ts	"Η κοινοποίηση ενεργοποιήθηκε"
-inline	app/auth/actions.ts	"Νέος πελάτης συνδέθηκε"
-inline	app/auth/actions.ts	"Συνδεθήκατε με σύμβουλο"
-inline	app/auth/actions.ts	`${advisorName || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
-inline	app/auth/actions.ts	`${customerName || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
-inline	app/auth/actions.ts	`${granteeName || "Ο σύμβουλός σας"} αποδέχτηκε και βλέπει πλέον το ασφαλιστήριο. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
-inline	app/auth/actions.ts	`${granterName || "Ένας πελάτης"} σας έδωσε πρόσβαση σε ένα ασφαλιστήριο.`
 inline	app/auth/forgot-password/page.tsx	"Δώστε ένα έγκυρο email"
 inline	app/auth/reset-password/page.tsx	"Αποθήκευση νέου κωδικού"
 inline	app/auth/reset-password/page.tsx	"Αποθήκευση..."
@@ -6890,6 +6886,14 @@ inline	lib/insurance/taxonomy.ts	'Τεχνικά Έργα'
 inline	lib/insurance/taxonomy.ts	'Υγεία'
 inline	lib/insurance/taxonomy.ts	'Φορτηγό / Αγροτικό'
 inline	lib/insurance/taxonomy.ts	'Χρήματα'
+inline	lib/invites/redeem-invite.ts	"Ένα ασφαλιστήριο κοινοποιήθηκε μαζί σας"
+inline	lib/invites/redeem-invite.ts	"Η κοινοποίηση ενεργοποιήθηκε"
+inline	lib/invites/redeem-invite.ts	"Νέος πελάτης συνδέθηκε"
+inline	lib/invites/redeem-invite.ts	"Συνδεθήκατε με σύμβουλο"
+inline	lib/invites/redeem-invite.ts	`${advisorName || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
+inline	lib/invites/redeem-invite.ts	`${customerName || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
+inline	lib/invites/redeem-invite.ts	`${granteeName || "Ο σύμβουλός σας"} αποδέχτηκε και βλέπει πλέον το ασφαλιστήριο. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
+inline	lib/invites/redeem-invite.ts	`${granterName || "Ένας πελάτης"} σας έδωσε πρόσβαση σε ένα ασφαλιστήριο.`
 inline	lib/journey/conversion-events.ts	payload
 inline	lib/journey/conversion-events.ts	readable
 inline	lib/landing/content.ts	"PDF ή φωτογραφία, από οποιαδήποτε ασφαλιστική. Δεν χρειάζεται να το διαβάσετε."
@@ -7246,6 +7250,7 @@ inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριο λήγει
 inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριο προστέθηκε στο πορτοφόλι σας."
 inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριό σας ενημερώθηκε"
 inline	lib/notifications/registry.ts	"Ένα μήνυμα περιμένει την απάντησή σας εδώ και μέρες."
+inline	lib/notifications/registry.ts	"Ένα νέο έγγραφο προστέθηκε σε ασφαλιστήριό σας από τον σύμβουλό σας. Το ασφαλιστήριο επανεξετάζεται."
 inline	lib/notifications/registry.ts	"Ένα πιθανό κενό στην κάλυψή σας χρειάζεται τη ματιά σας."
 inline	lib/notifications/registry.ts	"Ένα προνόμιο λήγει σύντομα"
 inline	lib/notifications/registry.ts	"Ένα προνόμιο συνεργάτη λήγει σύντομα — προλάβετε να το χρησιμοποιήσετε."
@@ -7344,6 +7349,7 @@ inline	lib/notifications/registry.ts	"Ο σύμβουλός σας έλεγξε 
 inline	lib/notifications/registry.ts	"Ο σύμβουλός σας δημιούργησε μια αναφορά με βάση τα ευρήματα αυτού του ασφαλιστηρίου."
 inline	lib/notifications/registry.ts	"Ο σύμβουλός σας ζήτησε ένα έγγραφο"
 inline	lib/notifications/registry.ts	"Ο σύμβουλός σας ζητά τη συγκατάθεσή σας για ανάλυση των εγγράφων σας."
+inline	lib/notifications/registry.ts	"Ο σύμβουλός σας πρόσθεσε ένα έγγραφο"
 inline	lib/notifications/registry.ts	"Ο σύμβουλός σας σάς έστειλε μια πρόταση για αξιολόγηση."
 inline	lib/notifications/registry.ts	"Οι αλλαγές στο προφίλ σας αποθηκεύτηκαν."
 inline	lib/notifications/registry.ts	"Οι πληρωμές ενός πελάτη αποτυγχάνουν επανειλημμένα και χρειάζονται ανθρώπινη ματιά."

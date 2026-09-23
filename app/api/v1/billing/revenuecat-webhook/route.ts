@@ -80,10 +80,13 @@ export const POST = withApiGuard(
             case 'INITIAL_PURCHASE':
             case 'RENEWAL':
             case 'UNCANCEL':
-                // Use the new @unique revenueCatIdentifier for upserts
+                // Keyed on the RevenueCat SUBSCRIBER (app_user_id = our user id),
+                // never the product: `revenueCatIdentifier` is @unique, and a
+                // product id is the same for every buyer, so keying on it made
+                // the second purchaser of a plan overwrite the first one's row.
                 await (db.subscription as any).upsert({
                     where: {
-                        revenueCatIdentifier: productIdentifier
+                        revenueCatIdentifier: userId
                     },
                     update: {
                         status: 'active',
@@ -99,7 +102,7 @@ export const POST = withApiGuard(
                         status: 'active',
                         currentPeriodStart: purchaseDate,
                         currentPeriodEnd: expirationAt || daysFromNow(SUBSCRIPTION_PERIOD_DAYS),
-                        revenueCatIdentifier: productIdentifier
+                        revenueCatIdentifier: userId
                     }
                 });
                 break;

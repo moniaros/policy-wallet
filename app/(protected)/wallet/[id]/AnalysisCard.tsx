@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
+import { ANALYSIS_POLL_TIMEOUT_MS, nextPollDelay } from "@/hooks/usePolling"
 import Link from "next/link"
 import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap, confirmGap } from "../actions"
 import { requestAiConsent } from "@/app/(protected)/agent/actions"
@@ -507,14 +508,32 @@ export function AnalysisCard({
             }
         }
 
+        // The shared schedule (2s → 5s → 10s) and the spec's five-minute cap
+        // (§20.1): this used to be a fixed 2.5s setInterval that only a status
+        // change could stop. On timeout the run continues server-side and the
+        // policy_analyzed notification closes the loop; the card says so.
+        const startedAt = Date.now()
+        let timer: ReturnType<typeof setTimeout> | undefined
+        const schedule = () => {
+            if (cancelled) return
+            const elapsed = Date.now() - startedAt
+            if (elapsed >= ANALYSIS_POLL_TIMEOUT_MS) {
+                setRunStepHint(statusCopy.pollTimeoutHint)
+                return
+            }
+            timer = setTimeout(async () => {
+                await pollRun()
+                schedule()
+            }, nextPollDelay(elapsed))
+        }
         pollRun()
-        const interval = setInterval(pollRun, 2500)
+        schedule()
         const onVisible = () => { if (!document.hidden) void pollRun() }
         document.addEventListener("visibilitychange", onVisible)
 
         return () => {
             cancelled = true
-            clearInterval(interval)
+            if (timer) clearTimeout(timer)
             document.removeEventListener("visibilitychange", onVisible)
         }
     }, [
@@ -533,6 +552,7 @@ export function AnalysisCard({
         statusCopy.completedWithWarningsHint,
         statusCopy.inProgress,
         statusCopy.inProgressHint,
+        statusCopy.pollTimeoutHint,
         statusCopy.queued,
         statusCopy.starting,
         stepLabels,

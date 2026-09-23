@@ -198,6 +198,14 @@ findings never enter `findingCount`; recording-class findings («δεν κατα
 status. Severity is not read. The dashboard's branch map projects the same status onto its tile
 words (`toTileState`), so the two surfaces cannot disagree about one branch.
 
+### Additions ratified 2026-09-23 (spec-v2 Phase 0.6 — silent advisor actions)
+
+New fact key: `policy.addedByAdvisor` *(subject-scoped by policy id)* — the wallet card marks a
+policy on which the advisor uploaded a document («Έγγραφο από τον σύμβουλο»), resolved from the
+document's `source`, which `attachRenewalDocument` now names after the actor. Spec v2 §12.3 /
+Journey 6: an advisor-added document is visible as theirs, and the owner is told
+(`agent_document_added`).
+
 ## Action verbs
 
 `upload` · `analyse` · `viewPolicy` · `viewGap` · `renew` · `contactAdvisor` · `callClaims` ·

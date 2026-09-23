@@ -41,6 +41,12 @@ vi.mock('@/lib/supabase/admin', () => ({
         auth: { admin: { updateUserById: (...a: unknown[]) => (mockUpdateUserById as any)(...a) } },
     }),
     getSupabaseAuthUserByEmail: (...a: unknown[]) => (mockGetAuthUser as any)(...a),
+    // Phase 0.2: one helper writes both claims (app_metadata.roles is the one the proxy trusts).
+    syncAuthRoleClaim: (authUser: any, roles: string) =>
+        (mockUpdateUserById as any)(authUser.id, {
+            app_metadata: { ...authUser.app_metadata, roles },
+            user_metadata: { ...authUser.user_metadata, role: roles },
+        }),
 }))
 
 // Other module-level imports of admin/actions.ts — mocked so the module loads.
@@ -79,6 +85,7 @@ describe('changeUserRole', () => {
         // JWT synced by the EMAIL-resolved auth id, with metadata merged (not clobbered)
         expect(mockGetAuthUser).toHaveBeenCalledWith('u@example.gr')
         expect(mockUpdateUserById).toHaveBeenCalledWith('auth-uuid-1', {
+            app_metadata: { roles: 'admin' },
             user_metadata: { language: 'el', email_verified: true, role: 'admin' },
         })
 

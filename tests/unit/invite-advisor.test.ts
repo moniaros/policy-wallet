@@ -42,6 +42,12 @@ const mockGetAuthUserByEmail = vi.fn(async () => ({ id: 'auth-uuid', user_metada
 vi.mock('@/lib/supabase/admin', () => ({
     createAdminClient: () => ({ auth: { admin: { updateUserById: (...a: unknown[]) => (mockUpdateUserById as any)(...a) } } }),
     getSupabaseAuthUserByEmail: (...a: unknown[]) => (mockGetAuthUserByEmail as any)(...a),
+    // Phase 0.2: one helper writes both claims (app_metadata.roles is the one the proxy trusts).
+    syncAuthRoleClaim: (authUser: any, roles: string) =>
+        (mockUpdateUserById as any)(authUser.id, {
+            app_metadata: { ...authUser.app_metadata, roles },
+            user_metadata: { ...authUser.user_metadata, role: roles },
+        }),
 }))
 
 // ── module-load stubs so relationship-actions.ts + auth/actions.ts import ────
@@ -166,6 +172,7 @@ describe('redeemInvite — client_agent branch', () => {
         expect(db.agentProfile.upsert).toHaveBeenCalled()
         expect(mockGetAuthUserByEmail).toHaveBeenCalledWith('advisor@example.gr')
         expect(mockUpdateUserById).toHaveBeenCalledWith('auth-uuid', {
+            app_metadata: { roles: 'policyholder,agent' },
             user_metadata: { language: 'el', role: 'policyholder,agent' },
         })
         // connected: advisor is the agent, inviter is the client

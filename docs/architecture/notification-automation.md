@@ -356,7 +356,7 @@ use them and so adding transport later is one adapter file.
 
 _Generated from `lib/notifications/registry.ts` by `scripts/generate-notification-matrix.mjs`. Do not edit by hand._
 
-**74 business events declared — 69 live, 5 planned.**
+**83 business events declared — 78 live, 5 planned.**
 
 ### Risk, gaps, score and recommendations
 
@@ -367,8 +367,8 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `policy_analyzed` | AI extraction finished and the policy is readable | PolicyAnalysisRun completes successfully | high | in_app, email, push | owner | review_findings | — | 3× exponential, from 15m | 30d | notification_event | live |
 | `policy_analysis_failed` | AI extraction failed | PolicyAnalysisRun terminates in failed | high | in_app, email, push | owner | retry_or_contact_support | 3 failures → admin (`admin_analysis_failure_spike`) | 3× exponential, from 15m | 14d | activity_log | live · transactional |
 | `extraction_flagged` | Extraction succeeded but confidence was too low to trust | An extracted field lands below the confidence floor | high | in_app, email | owner | confirm_extracted_values | — | 3× exponential, from 15m | 30d | notification_event | live |
+| `extraction_flag_raised` | An advisor flagged a reading as untrustworthy | flagPolicyExtraction() commits | normal | in_app | advisor | — | — | none | 90d | activity_log | live · transactional |
 | `GAP_DETECTED` | A coverage gap was found | A risk transitions into protection_gap between two RiskProfileVersions | high | in_app, email, push | owner | review_gap | — | 3× exponential, from 15m | 30d | notification_event | live |
-| `protection_score_changed` | The customer's protection score moved materially | recordRiskProfileVersion() writes a version whose score delta clears the materiality threshold | normal | in_app, email | owner | review_what_changed | — | 3× exponential, from 15m | 14d | notification_event | live |
 | `risk_level_changed` | A specific risk changed status | diffVersions() reports a transition other than into protection_gap | normal | in_app | owner | review_risk | — | none | 14d | notification_event | live |
 | `recommendation_generated` | New recommendations were produced | syncRecommendations() reports created > 0 | normal | in_app | owner | review_recommendations | — | none | 30d | notification_event | live |
 | `recommendation_dismissed` | The customer dismissed a recommendation | PATCH /api/v1/recommendations/[id] with action=dismiss | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
@@ -378,18 +378,22 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 
 | Event | Business event | Trigger condition | Priority | Channels | Recipients | Required action | Escalation | Retry | Expires | Audit | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| `agent_document_added` | An advisor attached a document to the customer's policy | addRenewalDocument by a user who is not the policy owner | normal | in_app, email, push | owner | — | — | none | 30d | notification_event | live · transactional |
 | `policy_added` | A policy was added to the wallet | Policy row created by upload, advisor or onboarding | normal | in_app | owner | — | — | none | 30d | notification_event | live · transactional |
-| `policy_updated` | A policy's terms changed | Policy update commits a change to cover, dates or premium | normal | in_app, email | owner | review_change | — | 3× exponential, from 15m | 30d | notification_event | live · transactional |
-| `policy_removed` | A policy was removed from the wallet | deletePolicy() commits | high | in_app, email | owner | — | — | 3× exponential, from 15m | 90d | activity_log | live · transactional |
+| `policy_updated` | A policy's terms changed | Policy update commits a change to cover, dates or premium | normal | in_app, email | owner, advisor | review_change | — | 3× exponential, from 15m | 30d | notification_event | live · transactional |
+| `policy_removed` | A policy was removed from the wallet | deletePolicy() commits | high | in_app, email | owner, advisor | — | — | 3× exponential, from 15m | 90d | activity_log | live · transactional |
 | `policy_shared` | A policy was shared with an advisor | An AccessGrant is created over a policy | normal | in_app, email | counterparty | — | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
+| `policy_share_revoked` | A policy share was withdrawn | revokeShare() sets an AccessGrant to revoked | normal | in_app, email | counterparty | — | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
 | `policy_merged` | Two records of one policy were merged | A PolicyMergeRequest is approved and applied | normal | in_app | owner | — | — | none | 30d | notification_event | live · transactional |
 | `policy_merge_requested` | Someone proposed merging two policy records | PolicyMergeRequest created | normal | in_app, email | counterparty | approve_or_reject_merge | — | 3× exponential, from 15m | 14d | notification_event | live |
 | `policy_merge_rejected` | A proposed merge was rejected | PolicyMergeRequest transitions to rejected | normal | in_app | counterparty | — | — | none | 14d | notification_event | live · transactional |
 | `policy_expiring` | A policy is approaching its renewal date | renewal-check cron finds a policy inside a reminder milestone | high | in_app, email, push | owner | review_renewal_options | — | 3× exponential, from 15m | 3d | notification_event | live |
 | `renewal_overdue` | A policy passed its end date without being renewed | renewal-check cron finds endDate in the past and no successor policy | critical | in_app, email, push | owner, advisor | renew_or_confirm_lapsed | unread 3d → advisor (`renewal_milestone`) | 5× exponential, from 30m | 30d | activity_log | live · transactional |
 | `renewal_outcome` | A renewal was resolved | PolicyRenewal reaches a terminal state | normal | in_app, email | owner | — | — | 3× exponential, from 15m | 30d | notification_event | live · transactional |
+| `obligation_due` | A policy condition the customer must keep is coming due | a compliance scan finds an acordData.conditions entry with a recurrence inside its reminder window | high | in_app, email | owner | confirm_condition_met | — | 3× exponential, from 15m | 14d | notification_event | live |
 | `claim_opened` | A claim was opened | No source exists — the product has no claims model | critical | in_app, email, push | owner, advisor | track_claim | — | 5× exponential, from 30m | 90d | activity_log | planned · transactional |
 | `claim_status_changed` | A claim changed status | No source exists — the product has no claims model | high | in_app, email, push | owner | review_claim | — | 5× exponential, from 30m | 90d | activity_log | planned · transactional |
+| `policy_details_confirmed` | An advisor confirmed the extracted values on a policy | confirmPolicyReview() commits, with an agent as the actor | normal | in_app, email | owner | review_change | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
 
 ### Advisor collaboration
 
@@ -401,7 +405,7 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `document_requested` | An advisor asked for a document | DocumentRequest created | normal | in_app, email, push | owner | upload_document | unread 7d → advisor (`collaboration_unread_followup`) | 3× exponential, from 15m | 30d | notification_event | live |
 | `ai_consent_request` | An advisor asked to run AI analysis on the customer's documents | An advisor requests AI processing consent | high | in_app, email, push | owner | grant_or_refuse_consent | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
 | `renewal_milestone` | An advisor's client has a renewal approaching | renewal-check cron, for policies with an advisor relationship | normal | in_app, email | advisor | contact_client | — | 3× exponential, from 15m | 7d | notification_event | live |
-| `renewal_quote_requested` | The customer asked for a renewal quote | A renewal quote request is submitted | high | in_app, email | advisor | provide_quote | unread 2d → admin (`admin_unanswered_quote`) | 3× exponential, from 15m | 14d | notification_event | live · transactional |
+| `renewal_quote_requested` | The customer asked for a renewal quote | A renewal quote request is submitted | high | in_app, email | owner, advisor | provide_quote | unread 2d → admin (`admin_unanswered_quote`) | 3× exponential, from 15m | 14d | notification_event | live · transactional |
 | `collaboration_message` | A message was sent in an advisory thread | CollaborationMessage created | high | in_app, email, push | counterparty | read_and_reply | — | 3× exponential, from 15m | 30d | notification_event | live |
 | `collaboration_thread_assigned` | An advisory thread was assigned | CollaborationThread assignee changes | normal | in_app, email | counterparty | take_ownership | — | 3× exponential, from 15m | 14d | notification_event | live · transactional |
 | `collaboration_action_assigned` | An action was assigned in a thread | CollaborationAction created with an assignee | normal | in_app, email | counterparty | complete_action | unread 3d → counterparty (`collaboration_action_overdue`) | 3× exponential, from 15m | 14d | notification_event | live |
@@ -410,6 +414,8 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `collaboration_daily_digest` | A day's advisory activity, summarised | collaboration-reminders cron, once daily per participant with activity | low | in_app, email | counterparty | — | — | none | 2d | notification_event | live |
 | `advisor_assigned` | An advisor and a customer were connected | CustomerRelationship becomes active | high | in_app, email | owner, advisor | — | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
 | `customer_transferred` | A customer was moved between advisors | CustomerRelationship agentUserId changes | high | in_app, email | owner, advisor | — | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
+| `advisor_relationship_ended` | An advisor and a customer were disconnected | CustomerRelationship becomes terminated, from either side | high | in_app, email | owner, advisor | — | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
+| `branded_report_generated` | An advisor generated a branded report about a customer's policy | The branded-report route renders a report for a policy the agent can see | normal | in_app | owner | — | — | none | 30d | activity_log | live |
 | `proposal_received` | An advisor sent a proposal | Proposal created | high | in_app, email, push | owner | review_proposal | unread 5d → advisor (`collaboration_unread_followup`) | 3× exponential, from 15m | 30d | notification_event | live |
 | `proposal_accepted` | A proposal was accepted | Proposal transitions to accepted | high | in_app, email | counterparty | issue_policy | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
 | `proposal_declined` | A proposal was declined | Proposal transitions to declined | normal | in_app, email | counterparty | — | — | 3× exponential, from 15m | 14d | notification_event | live · transactional |
@@ -417,7 +423,7 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `opportunity_created` | An advisory opportunity was opened | Opportunity created | normal | in_app | advisor | work_opportunity | — | none | 30d | notification_event | live · transactional |
 | `team_invite` | Someone was invited to an advisory team | TenantMembership invite issued | high | in_app, email | counterparty | accept_or_decline_invite | — | 3× exponential, from 15m | 14d | activity_log | live · transactional |
 | `team_invite_accepted` | A team invitation was accepted | TenantMembership transitions to active | normal | in_app, email | counterparty | — | — | 3× exponential, from 15m | 14d | activity_log | live · transactional |
-| `scheduled_review_due` | A periodic cover review is due | No emitter yet — needs a review cadence per customer | normal | in_app, email | owner, advisor | book_review | — | 3× exponential, from 15m | 14d | notification_event | planned |
+| `scheduled_review_due` | A periodic cover review is due | No emitter yet — needs a review cadence per customer | normal | in_app, email | owner, advisor | book_review | — | 3× exponential, from 15m | 14d | notification_event | live |
 
 ### Billing and subscription
 
@@ -426,7 +432,7 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `payment_failed` | A subscription payment failed | Stripe invoice.payment_failed marks the subscription past_due | critical | in_app, email, push | owner | update_payment_method | 3 failures → admin (`admin_dunning_exhausted`) | 5× exponential, from 30m | 30d | activity_log | live · transactional |
 | `subscription_expired` | A subscription ended | Stripe customer.subscription.deleted, or the period lapses unrenewed | critical | in_app, email, push | owner | resubscribe_or_export_data | — | 5× exponential, from 30m | 30d | activity_log | live · transactional |
 | `subscription_upgraded` | The customer changed plan | Subscription plan changes on a Stripe lifecycle event | high | in_app, email | owner | — | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
-| `bonus_credits_granted` | Credits were granted to the account | A credit grant commits | normal | in_app | owner | — | — | none | 30d | notification_event | live · transactional |
+| `bonus_credits_granted` | Credits were granted to the account | A credit grant commits | normal | in_app | owner | — | — | none | 30d | notification_event | planned · transactional |
 
 ### Security
 
@@ -468,6 +474,9 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `conv_checkout_cancelled` | Checkout was abandoned | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
 | `conv_limit_hit` | A plan limit was reached | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
 | `conv_free_ai_call_blocked` | A free-tier AI call was blocked | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
+| `conv_protection_profile_completed` | A protection profile was completed | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
+| `conv_first_policy_uploaded` | A first policy was uploaded | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
+| `conv_risk_assessment_completed` | A risk assessment was completed | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
 | `conv_paid_ai_call_started` | A paid AI call started | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
 | `conv_paid_ai_call_completed` | A paid AI call completed | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
 | `conv_proposal_accepted` | A proposal was accepted (funnel mirror) | recordConversionEvent() — server-side funnel mirror | low | analytics | owner | — | — | none | never | notification_event | live · transactional |
@@ -475,14 +484,16 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 ### Why these rules are what they are
 
 - **`life_event_recorded`** — Confirms we heard them. The RISK consequence is a separate event, because the two are different claims: one is 'recorded', the other is 'this changed your exposure'.
-- **`profile_updated`** — Deliberately NOT wired. A profile, household or asset edit already produces the notification that matters — the RISK consequence, via protection_score_changed / GAP_DETECTED / risk_level_changed off the same recalculation. A second 'you changed something' ping for an edit the customer made ten seconds ago is noise, and noise is what makes people switch the useful ones off. The case that WOULD justify it is an ADVISOR editing a customer's profile, which is a security signal rather than a confirmation; that needs the advisor-edit path identified first, and inventing an emitter before then would fire it on the wrong half of the cases.
+- **`profile_updated`** — Deliberately NOT wired. A profile, household or asset edit already produces the notification that matters — the RISK consequence, via GAP_DETECTED / risk_level_changed off the same recalculation. (protection_score_changed was once part of that list; the protection score was removed from the product in Aug 2026 and that event no longer exists.) A second 'you changed something' ping for an edit the customer made ten seconds ago is noise, and noise is what makes people switch the useful ones off. The case that WOULD justify it is an ADVISOR editing a customer's profile, which is a security signal rather than a confirmation; that needs the advisor-edit path identified first, and inventing an emitter before then would fire it on the wrong half of the cases.
+- **`agent_document_added`** — Spec v2 §12.3 / §25.3: silent advisor actions are not permitted. A new POLICY by the advisor already emitted policy_added; a DOCUMENT on an existing policy emitted nothing until Phase 0.6 (2026-09-23).
 - **`policy_removed`** — High, and emailed, because it is destructive and may not have been the owner who did it. This is the notification that lets someone notice.
+- **`policy_share_revoked`** — The mirror of policy_shared, and declared for the same reason: the moment someone stops being able to see a policy is as much a fact about the arrangement as the moment they started. Without it the policy simply vanished from the advisor's book (PW-BRIDGE-01 I-04).
 - **`policy_analyzed`** — The payoff moment of the whole product, and often minutes after the customer navigated away. This is the strongest case for push in the app.
 - **`policy_analysis_failed`** — Transactional: the customer handed us a document and is owed the outcome, good or bad. Silence reads as 'still working'.
-- **`extraction_flagged`** — This is the AI-confidence trigger. It fires on the reading we could not stand behind, which is the only confidence change a customer can act on.
+- **`extraction_flagged`** — This is the AI-confidence trigger. It fires on the reading we could not stand behind, which is the only confidence change a customer can act on. Until 2026-09-08 the one call site emitted it to the FLAGGING AGENT (`userId: dbUser.id`) while this declaration said `owner` and the copy spoke to the owner — the record was marked flagged and its owner heard nothing (PW-BRIDGE-01 I-09). The agent's triage need is a different event, below.
+- **`extraction_flag_raised`** — The triage half of a flag, kept separate from `extraction_flagged` so the two audiences stop sharing one row. The admin triage queue reads THIS event, where the recipient is the person who raised the flag — reading the customer-facing event instead would have listed the customer as the flagger.
 - **`ai_consent_request`** — Transactional and audit-logged: this is a GDPR consent request, and the record of asking matters as much as the asking.
 - **`GAP_DETECTED`** — SCREAMING_CASE is the one inconsistency kept deliberately: it is the key persisted in NotificationPreference rows and read by the settings screen, and renaming it would silently re-enable the stream for everyone who switched it off.
-- **`protection_score_changed`** — Hangs off the version writer, which already fires only on a MATERIAL change (contextHash). Deriving it anywhere else would let the notification disagree with the timeline about the same movement.
 - **`risk_level_changed`** — In-app only on purpose. A risk CLOSING is good news and does not deserve an interruption; a risk OPENING is GAP_DETECTED, which does.
 - **`recommendation_generated`** — Batched: one notification for the run, never one per card. A person who gains six recommendations has learned one thing, not six.
 - **`recommendation_dismissed`** — Recorded, not delivered. Notifying someone about their own click is noise; but a dismissal is the clearest signal a customer ever gives us and the advisor surfaces need it.
@@ -490,11 +501,15 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 - **`claim_opened`** — Blocked on a claims model. Wiring is one entry here plus one emitter once Claim exists.
 - **`claim_status_changed`** — Blocked on a claims model.
 - **`advisor_assigned`** — Transactional and audit-logged: this is the moment another person gains sight of the customer's policies, and they are entitled to know it happened.
+- **`advisor_relationship_ended`** — The exact inverse of advisor_assigned, and transactional for the same reason: if the moment another person GAINS sight of your policies is one you are entitled to know about, so is the moment it ends — whichever side ended it. Emitted to the party who did NOT act; telling someone what they just did is noise (PW-BRIDGE-01 I-05, I-06).
+- **`policy_details_confirmed`** — Confirming a review OVERWRITES the owner's insurerName, policyNumber, dates, premium and sum insured, and removes the «unverified» badge — the record becomes authoritative because a person said so. The person whose record it is was told nothing (PW-BRIDGE-01 I-08). Same class as policy_updated, which is why it carries the same review action.
+- **`branded_report_generated`** — A read path, so it changes nothing — but a document about someone's cover now exists in someone else's hands, including findings still under review, and the person it describes had no record of it (PW-BRIDGE-01 I-17). In-app only and deduped per policy per day: this is a trace to look back on, not an alert.
 - **`payment_failed`** — The sharpest gap the audit found: the subscription was flipped to past_due and the customer was told nothing, losing paid features silently. Transactional — nobody consents away from being told their card failed.
+- **`bonus_credits_granted`** — Was `live`, and the clearest case in this registry of a declared trigger that never fired. Its only emitter was the day-30 churn email, which granted nothing: the sole code path that moves a credit balance is the admin `grantTokens` action. So a daily cron wrote «Πιστώθηκαν επιπλέον credits στον λογαριασμό σας» into the customer's notification list, past tense, for a credit that did not exist. Wiring is one emitter at the point a grant COMMITS — never at the point one is announced.
 - **`achievement_unlocked`** — One event, with the achievement id in relatedObjectId. It used to be fifteen event types (`achievement_first_policy`, …), which meant the registry could never be complete and no preference could ever address the stream.
 - **`password_change`** — Never suppressible. This is the notification that lets someone discover an account takeover.
 - **`admin_action_on_account`** — Deliberately NOT wired yet. Notifying on every admin read would bury the customer and would fire on routine support work; the rule needs to name which admin actions are worth telling someone about, and that is a policy decision, not a code one.
-- **`scheduled_review_due`** — Blocked on a cadence policy: annually, on renewal, or on a material life change. Picking one is a product decision, and a review reminder on the wrong cadence trains people to ignore it.
+- **`scheduled_review_due`** — The cadence policy that blocked this now exists in lib/services/risk-review/policy.ts: annual as the backstop, quarterly only where assessment coverage is too thin to score honestly, and the decade birthday because `age` gates two risks and refines four more. Reactive triggers (life events, renewals) open reviews of their own with heavier weights, and a cooldown keeps a busy fortnight to one conversation.
 
 <!-- END GENERATED TRIGGER MATRIX -->
 

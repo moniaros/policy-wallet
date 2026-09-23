@@ -419,7 +419,10 @@ describe("tiers 2 and 5: the actor is named, and passive is a decision", () => {
     })
 
     it("I-02: redeeming an invite announces what it activates", () => {
-        const src = readFileSync(path.join(ROOT, "app/auth/actions.ts"), "utf8")
+        // Phase 0.4 (2026-09-23): the redemption core moved out of the "use server"
+        // file so redeemInviteCode could share it without exporting a
+        // (token, userId) endpoint.
+        const src = readFileSync(path.join(ROOT, "lib/invites/redeem-invite.ts"), "utf8")
         const body = functionBody(src, "applyInviteRedemption")
         expect(body, "applyInviteRedemption not found").not.toBeNull()
         // Both relationship branches announce it...

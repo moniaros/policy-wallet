@@ -43,5 +43,9 @@
   "call:components/landing/PartnersSections.tsx::Εξηγήστε τις καλύψεις μέσα από τη δική σας υπηρεσία.",
   "bundle:agentDashboard.inRenewalsAtRisk::εκτίμηση προμήθειας ανανέωσης",
   "bundle:agentPages.policyDetail.acordVerified::Στοιχεία από εξαγωγή AI",
-  "bundle:agentPages.policyDetail.verificationOverviewDesc::Εξαγωγή AI· χρειάζεται επιβεβαίωση από άνθρωπο."
+  "bundle:agentPages.policyDetail.verificationOverviewDesc::Εξαγωγή AI· χρειάζεται επιβεβαίωση από άνθρωπο.",
+  "inline:app/(protected)/wallet/actions.ts::Ο σύμβουλός σας πρόσθεσε ένα έγγραφο",
+  "inline:app/(protected)/wallet/actions.ts::${displayPersonName(authResult.dbUser.name) || \"Ο σύμβουλός σας\"} πρόσθεσε ένα νέο έγγραφο σε ασφαλιστήριό σας. Το ασφαλιστήριο επανεξετάζεται.",
+  "inline:lib/notifications/registry.ts::Ο σύμβουλός σας πρόσθεσε ένα έγγραφο",
+  "inline:lib/notifications/registry.ts::Ένα νέο έγγραφο προστέθηκε σε ασφαλιστήριό σας από τον σύμβουλό σας. Το ασφαλιστήριο επανεξετάζεται."
 ]

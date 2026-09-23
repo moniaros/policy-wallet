@@ -13,10 +13,12 @@ vi.mock('@/lib/auth-helpers', () => ({ getAuthenticatedUser: vi.fn() }))
 vi.mock('@/lib/db', () => ({
     db: {
         invite: { findUnique: vi.fn(), update: vi.fn() },
-        customerRelationship: { findFirst: vi.fn(), update: vi.fn(), create: vi.fn() },
-        user: { findUnique: vi.fn() },
+        customerRelationship: { findFirst: vi.fn(), update: vi.fn(), create: vi.fn(), upsert: vi.fn(), updateMany: vi.fn() },
+        user: { findUnique: vi.fn(), update: vi.fn() },
+        agentProfile: { upsert: vi.fn() },
     },
 }))
+vi.mock('@/lib/notifications/dispatch', () => ({ emit: vi.fn() }))
 // Heavy transitive imports of the onboarding actions module — stub them out.
 vi.mock('@/lib/services/policy.service', () => ({ PolicyService: class {} }))
 vi.mock('@/lib/subscription-limits', () => ({ canUserAddPolicy: vi.fn(), getUpgradeMessage: vi.fn() }))
@@ -35,6 +37,8 @@ const baseInvite = {
     token: 't',
     inviteeEmail: 'alice@x.com',
     inviterUserId: 'agent-1',
+    inviteType: 'signup',
+    relationshipType: 'agent_client',
     consumedAt: null,
     expiresAt: future,
 }
@@ -59,33 +63,47 @@ describe('redeemInviteCode — email binding + consent', () => {
     it('grants consent (activationStatus "activated") for the correct account, case-insensitively', async () => {
         mockAuth.mockResolvedValue({ dbUser: { id: 'alice', email: 'Alice@X.com' } } as any)
         vi.mocked(db.invite.findUnique).mockResolvedValue({ ...baseInvite } as any)
-        vi.mocked(db.customerRelationship.findFirst).mockResolvedValue(null)
+        vi.mocked(db.customerRelationship.updateMany).mockResolvedValue({ count: 0 } as any)
         vi.mocked(db.user.findUnique).mockResolvedValue({ name: 'Agent Smith' } as any)
 
         const res = await redeemInviteCode('t')
 
         expect(res).toEqual({ success: true, agentName: 'Agent Smith' })
         expect(db.invite.update).toHaveBeenCalled()
-        expect(db.customerRelationship.create).toHaveBeenCalledWith(
+        // The agent is the INVITER, the redeemer the policyholder — and the
+        // acceptance is consent on both columns, whether the relationship was
+        // pre-created (createAgentInvite) or not (sendClientInvite).
+        expect(db.customerRelationship.upsert).toHaveBeenCalledWith(
             expect.objectContaining({
-                data: expect.objectContaining({ status: 'active', activationStatus: 'activated' }),
+                where: { agentUserId_policyholderUserId: { agentUserId: 'agent-1', policyholderUserId: 'alice' } },
+                create: expect.objectContaining({ status: 'active', activationStatus: 'activated' }),
+                update: expect.objectContaining({ status: 'active', activationStatus: 'activated' }),
             })
         )
     })
 
-    it('activates an existing relationship with consent on the update path', async () => {
-        mockAuth.mockResolvedValue({ dbUser: { id: 'alice', email: 'alice@x.com' } } as any)
-        vi.mocked(db.invite.findUnique).mockResolvedValue({ ...baseInvite } as any)
-        vi.mocked(db.customerRelationship.findFirst).mockResolvedValue({ id: 'rel-1' } as any)
-        vi.mocked(db.user.findUnique).mockResolvedValue({ name: 'Agent Smith' } as any)
+    // Phase 0.4 (spec-v2 audit 2026-09-23): the copy of the logic that lived in
+    // redeemInviteCode ignored relationshipType and ALWAYS made the inviter the
+    // agent, so a client→advisor connect code built the relationship backwards.
+    it('a client→advisor invite makes the REDEEMER the agent, not the inviter', async () => {
+        mockAuth.mockResolvedValue({ dbUser: { id: 'adv-1', email: 'adv@x.com' } } as any)
+        vi.mocked(db.invite.findUnique).mockResolvedValue({
+            ...baseInvite,
+            inviteeEmail: 'adv@x.com',
+            inviterUserId: 'client-1',
+            relationshipType: 'client_agent',
+        } as any)
+        vi.mocked(db.user.findUnique).mockResolvedValue({ email: 'adv@x.com', roles: 'agent', name: 'Client Jane' } as any)
 
-        await redeemInviteCode('t')
+        const res = await redeemInviteCode('t')
 
-        expect(db.customerRelationship.update).toHaveBeenCalledWith(
+        expect(res.success).toBe(true)
+        expect(db.customerRelationship.upsert).toHaveBeenCalledTimes(1)
+        expect(db.customerRelationship.upsert).toHaveBeenCalledWith(
             expect.objectContaining({
-                where: { id: 'rel-1' },
-                data: expect.objectContaining({ status: 'active', activationStatus: 'activated' }),
+                where: { agentUserId_policyholderUserId: { agentUserId: 'adv-1', policyholderUserId: 'client-1' } },
             })
         )
+        expect(db.customerRelationship.create).not.toHaveBeenCalled()
     })
 })

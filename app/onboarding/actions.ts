@@ -11,6 +11,7 @@ import { EXTRACTION_EMPTY_CODE } from "@/lib/wallet/unread-policy"
 import { PREFERENCE_CHANNELS } from "@/lib/notifications/preference-channels"
 import { readLiveGapRows } from "@/lib/gaps/gap-rows"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
+import { applyInviteRedemption } from "@/lib/invites/redeem-invite"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
     "policy_expiring",
@@ -237,36 +238,31 @@ export async function redeemInviteCode(code: string) {
         return { success: false, error: "wrong_account" as const }
     }
 
-    // Redeem invite — create relationship
-    await db.invite.update({
-        where: { id: invite.id },
-        data: { consumedAt: new Date(), inviteeUserId: dbUser.id },
-    })
+    // One redemption core for every kind of invite (lib/invites/redeem-invite.ts).
+    // The copy that lived here always made the inviter the agent, so a
+    // client→advisor connect invite or a policy share entered as a code built
+    // the relationship backwards and announced nothing.
+    await applyInviteRedemption(code, dbUser.id)
 
-    // Accepting the invite IS the customer's explicit consent to this agent, so
-    // set both status (UI/stats) and activationStatus (the identity-consent gate
-    // in lib/agent-consent.ts) — otherwise the agent still couldn't see the
-    // customer they were just connected to.
-    const existingRelationship = await db.customerRelationship.findFirst({
-        where: {
-            agentUserId: invite.inviterUserId,
-            policyholderUserId: dbUser.id,
-        },
-    })
-
-    if (existingRelationship) {
-        await db.customerRelationship.update({
-            where: { id: existingRelationship.id },
-            data: { status: "active", activationStatus: "activated" },
-        })
-    } else {
-        await db.customerRelationship.create({
-            data: {
+    // The agent→client signup invite normally finds its relationship
+    // pre-created `pending_activation` by createAgentInvite; sendClientInvite
+    // (agent onboarding) creates none, so make sure the acceptance lands.
+    // Accepting IS the customer's consent: both status and activationStatus.
+    if (invite.inviteType === "signup" && invite.relationshipType === "agent_client") {
+        await db.customerRelationship.upsert({
+            where: {
+                agentUserId_policyholderUserId: {
+                    agentUserId: invite.inviterUserId,
+                    policyholderUserId: dbUser.id,
+                },
+            },
+            create: {
                 agentUserId: invite.inviterUserId,
                 policyholderUserId: dbUser.id,
                 status: "active",
                 activationStatus: "activated",
             },
+            update: { status: "active", activationStatus: "activated" },
         })
     }
 

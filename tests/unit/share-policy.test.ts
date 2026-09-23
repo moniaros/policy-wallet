@@ -12,9 +12,9 @@ vi.mock('@/lib/db', () => {
     const db: Record<string, any> = {
         policy: { findUnique: vi.fn() },
         user: { findUnique: vi.fn() },
-        accessGrant: { create: vi.fn(), update: vi.fn() },
+        accessGrant: { create: vi.fn(), update: vi.fn(), findFirst: vi.fn() },
         invite: { create: vi.fn() },
-        customerRelationship: { findUnique: vi.fn(), create: vi.fn() },
+        customerRelationship: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
         notificationEvent: { create: vi.fn() },
         activityLog: { create: vi.fn() },
     }
@@ -41,6 +41,8 @@ vi.mock('@/lib/services/collaboration.service', () => ({
 }))
 
 vi.mock('@/lib/logger', () => ({ logger: vi.fn() }))
+vi.mock('@/lib/notifications/dispatch', () => ({ emit: vi.fn(), emitToMany: vi.fn() }))
+vi.mock('@/lib/events/publishers', () => ({ publishAdvisorLinked: vi.fn() }))
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 vi.mock('next/server', () => ({ after: vi.fn((fn: () => unknown) => fn?.()) }))
@@ -110,6 +112,36 @@ describe('sharePolicy ownership gate', () => {
                     scope: 'policy:policy-1',
                 }),
             })
+        )
+    })
+
+    // Phase 0.3 (spec-v2 audit 2026-09-23): AccessGrant has no uniqueness
+    // constraint, and computePolicyAccess reads a grant ALONE.
+    it('re-sharing to the same advisor updates the existing grant instead of adding a second row', async () => {
+        vi.mocked(db.policy.findUnique).mockResolvedValue({ ownerUserId: OWNER_ID, policyNumber: 'P-1', insurerName: 'X', lineOfBusiness: 'motor' } as any)
+        vi.mocked(db.user.findUnique).mockResolvedValue({ id: 'agent-1', email: AGENT_EMAIL } as any)
+        vi.mocked(db.customerRelationship.findUnique).mockResolvedValue({ id: 'rel-1', status: 'active' } as any)
+        vi.mocked(db.accessGrant.findFirst).mockResolvedValue({ id: 'grant-1' } as any)
+
+        await sharePolicy('policy-1', AGENT_EMAIL, 'edit')
+
+        expect(db.accessGrant.create).not.toHaveBeenCalled()
+        expect(db.accessGrant.update).toHaveBeenCalledWith({ where: { id: 'grant-1' }, data: { permissions: 'edit' } })
+    })
+
+    it('sharing to an advisor whose relationship ended revives the relationship with the grant', async () => {
+        vi.mocked(db.policy.findUnique).mockResolvedValue({ ownerUserId: OWNER_ID, policyNumber: 'P-1', insurerName: 'X', lineOfBusiness: 'motor' } as any)
+        vi.mocked(db.user.findUnique).mockResolvedValue({ id: 'agent-1', email: AGENT_EMAIL } as any)
+        vi.mocked(db.customerRelationship.findUnique).mockResolvedValue({ id: 'rel-1', status: 'terminated' } as any)
+        vi.mocked(db.customerRelationship.update).mockResolvedValue({ id: 'rel-1' } as any)
+        vi.mocked(db.accessGrant.findFirst).mockResolvedValue(null as any)
+
+        await sharePolicy('policy-1', AGENT_EMAIL, 'view')
+
+        expect(db.accessGrant.create).toHaveBeenCalledTimes(1)
+        expect(db.customerRelationship.create).not.toHaveBeenCalled()
+        expect(db.customerRelationship.update).toHaveBeenCalledWith(
+            expect.objectContaining({ where: { id: 'rel-1' }, data: { status: 'active', activationStatus: 'active' } })
         )
     })
 

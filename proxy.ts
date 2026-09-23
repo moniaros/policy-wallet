@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { STEP_UP_COOKIE, verifyStepUpToken } from "@/lib/auth/step-up"
 import { rateLimit } from "@/lib/rate-limit"
-import { getPostLoginRedirectByRole, getPrimaryRole, type AppRole } from "@/lib/auth/role-routing"
+import { getPostLoginRedirectByRole, resolveRequestRole, sessionRoleClaim, type AppRole } from "@/lib/auth/role-routing"
+import { ACTIVE_ROLE_COOKIE } from "@/lib/auth/active-role"
 import { isIndexableDeployment } from "@/lib/seo/site"
 import { redactCredentials } from "@/lib/observability/sentry-scrub"
 
@@ -357,7 +358,7 @@ export async function proxy(request: NextRequest) {
         !nextUrl.pathname.startsWith("/auth/verify-email") &&
         !nextUrl.pathname.startsWith("/auth/signup/confirmation")
     ) {
-        const roleRoute = getPostLoginRedirectByRole(String(user?.user_metadata?.role || ""))
+        const roleRoute = getPostLoginRedirectByRole(sessionRoleClaim(user))
         return NextResponse.redirect(new URL(roleRoute, nextUrl))
     }
 
@@ -412,7 +413,7 @@ export async function proxy(request: NextRequest) {
     // Role-based route protection for authenticated users — the decision is
     // decideRoleRedirect's alone (see above); this block only executes it.
     if (isLoggedIn && user) {
-        const userRole = getPrimaryRole((user.user_metadata?.role as string) || "")
+        const userRole = resolveRequestRole(user, request.cookies.get(ACTIVE_ROLE_COOKIE)?.value)
         const bounceTo = decideRoleRedirect(nextUrl.pathname, userRole)
         if (bounceTo) {
             return NextResponse.redirect(new URL(bounceTo, nextUrl))

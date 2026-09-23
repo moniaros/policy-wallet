@@ -1,7 +1,7 @@
-import { Receiver } from "@upstash/qstash"
 import { z } from "zod"
 import { withApiGuard } from "@/lib/api-guard"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { verifyQstashSignature } from "@/lib/jobs/qstash-signature"
 import { logger } from "@/lib/logger"
 
 export const runtime = "nodejs"
@@ -36,28 +36,7 @@ export const POST = withApiGuard(
     {
         auth: {
             mode: "webhook",
-            // Verify the Upstash signature over the raw body. Read a clone so
-            // the handler can still parse the original request body.
-            verify: async ({ req }) => {
-                const currentSigningKey = process.env.QSTASH_CURRENT_SIGNING_KEY
-                const nextSigningKey = process.env.QSTASH_NEXT_SIGNING_KEY
-                if (!currentSigningKey) {
-                    return createApiError("SERVICE_UNAVAILABLE", "Queue consumer not configured", 503)
-                }
-                const signature = req.headers.get("upstash-signature")
-                if (!signature) {
-                    return createApiError("UNAUTHORIZED", "Missing signature", 401)
-                }
-                const rawBody = await req.clone().text()
-                const receiver = new Receiver({ currentSigningKey, nextSigningKey })
-                let valid = false
-                try {
-                    valid = await receiver.verify({ signature, body: rawBody })
-                } catch {
-                    valid = false
-                }
-                return valid ? null : createApiError("UNAUTHORIZED", "Invalid signature", 401)
-            },
+            verify: verifyQstashSignature,
         },
     },
     async ({ req }) => {
