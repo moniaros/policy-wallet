@@ -72,6 +72,8 @@ import { greekVocative } from "@/lib/i18n/greek-vocative"
 import { NextStepBanner, type NextStepView } from "@/components/dashboard/home/NextStepBanner"
 import { QuickActions, type QuickAction } from "@/components/dashboard/home/QuickActions"
 import { PreventiveCard } from "@/components/dashboard/home/PreventiveCard"
+import { CheckupNudgeCard } from "@/components/dashboard/home/CheckupNudgeCard"
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
 /**
  * Calendar days until a date, in Athens.
@@ -1005,6 +1007,22 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             ? { title: home.preventiveTitle, body: home.preventiveBodyWithRecs, cta: home.preventiveCta, href: "/recommendations" }
             : { title: home.preventiveTitle, body: home.preventiveBodyNoRecs, cta: home.preventiveCtaNoRecs, href: "/protection" }
     const preventive = preventiveCandidate && !offeredHrefs.has(preventiveCandidate.href) ? preventiveCandidate : null
+
+    // Spec v2 §5.1 element 8: the check-up nudge, only when a health policy's
+    // reading STATES the benefit and this year's is not marked done.
+    const statesCheckup = activePolicies.some(
+        (p) => branchFamilyId(p.lineOfBusiness) === "health" && (p.acordData as any)?.health?.annualCheckupIncluded === true
+    )
+    const checkupDone = statesCheckup
+        ? await db.healthBenefitUsage.findFirst({
+            where: { userId: dbUser.id, benefit: "annual_checkup", year: new Date().getFullYear(), status: "completed" },
+            select: { id: true },
+        })
+        : null
+    const checkupNudge = statesCheckup && !checkupDone && !offeredHrefs.has("/wellness")
+        ? { title: home.checkupNudgeTitle, body: home.checkupNudgeBody, cta: home.checkupNudgeCta, href: "/wellness" }
+        : null
+    if (checkupNudge) offeredHrefs.add("/wellness")
     if (preventive) offeredHrefs.add(preventive.href)
 
     const quickActions: QuickAction[] = [
@@ -1216,8 +1234,9 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 step title wrapped to three lines). The shortcuts and
                                 the preventive card share the row beneath. */}
                             {planCard}
-                            <div className={`grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 ${preventive ? "md:grid-cols-2" : ""}`}>
+                            <div className={`grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 ${preventive || checkupNudge ? "md:grid-cols-2" : ""}`}>
                                 <QuickActions title={home.quickActionsTitle} actions={quickActions} />
+                                {checkupNudge && <CheckupNudgeCard {...checkupNudge} />}
                                 {preventive && <PreventiveCard {...preventive} />}
                             </div>
 

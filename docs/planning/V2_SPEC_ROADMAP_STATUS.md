@@ -132,6 +132,9 @@ Rule = operator + catalogue row + trace test + provenance (CLAUDE.md "a new dete
 
 ### Phase 4 — Health & Wellness module (§9) — net-new
 
+**Delivered 2026-09-23 (`feat/spec-v2-phase4`):** 4.1 tracker (`HealthBenefitUsage`, per health policy, tap-to-call booking, dashboard nudge, `benefit_reminder` yearly job); 4.2 self-assessment (`HealthRiskAssessment`, consent on the row, deterministic scoring, gauges, delete-all, DSR erase + export, ROPA/DPIA regenerated); 4.3 preventive calendar with mark-done (same store, `policyKey = ""`). Not done: syncing check-up history from a coordination centre (no integration exists); a 6–12-month re-assessment prompt (the page shows the last date instead). Matrix rows 1.13 → 80, 1.14 → 60.
+
+
 | Task | Deliverable | Files |
 |---|---|---|
 | 4.1 Check-up tracker | `HealthBenefitUsage` model (policyId, benefit `annual_checkup`, year, status available/scheduled/completed, note); server actions; nudge card on dashboard + health detail; `perk_reminder` reuse for annual push. | `prisma/schema.prisma`, `app/(protected)/wallet/benefit-actions.ts`, `components/wallet/coverage-details/HealthCoverageDetails.tsx`, `components/dashboard/home/CheckupNudgeCard.tsx` |

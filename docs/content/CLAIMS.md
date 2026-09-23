@@ -28,6 +28,7 @@ the claims that *do* exist (149 non-composed numeric statements, 144 distinct).
 | C13 | «Ελέγξαμε N ασφαλιστήρια και δεν εντοπίσαμε κενά» | `dashboard.home.noGapsAmongAssessed*`, `protection.gaps.allClear*` | the assessed count — this is the *correct* shape (denominator stated) | sourced, model for C12 |
 | C14 | 12–18 μήνες horizon (onboarding question) | onboarding | question wording, not a claim | n/a |
 | C15 | «Αυξάνοντάς την σε €100-150 μειώνετε συνήθως το ασφάλιστρο κατά 5-10%» | `deterministic-savings.ts` (deductible tip) | none — a market rule of thumb stated as fact, and advice in platform voice (V9) | **found and applied Round 1** — numbers removed, the sentence now asks the ασφαλιστής; the whole savings module is attributed to the partner |
+| C16 | preventive calendar intervals (πίεση κάθε έτος, λιπίδια 40+/5 έτη, γλυκόζη 45+/3 έτη, τεστ Παπ 21–65/3 έτη, μαστογραφία 50–69/2 έτη, παχύ έντερο 50–74/2 έτη) | `/wellness` (`lib/wellness/preventive.ts`) | general adult preventive guidance, labelled «γενική οδηγία» with «επιβεβαιώστε με τον γιατρό σας» on every card; no coverage claim is attached to any interval | sourced 2026-09-23 — cite the national screening programme by name when its page is added to `guide.sources[]` |
 
 Rows C1–C7 are re-verified, not re-argued, in each round. New numeric claims found by the
 Round-1 audit get a row **before** they are edited. The composed strings (298) are not in

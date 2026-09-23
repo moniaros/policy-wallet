@@ -26,6 +26,7 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] Ειδοποιήσεις `/notifications`
 - [x] Αρχική `/dashboard`
 - [x] Συστάσεις `/recommendations` (added 2026-09-07 — the recommendations block of `/protection` as its own page)
+- [x] Ευεξία `/wellness` (added 2026-09-23 — spec v2 §9, the health check-up tracker and self-assessment)
 - [x] Πορτοφόλι `/wallet`
 - [x] Ασφαλιστήριο `/wallet/[id]`
 - [x] Αναλύσεις `/coverage-insights`
@@ -37,6 +38,24 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] 7 overlays
 
 ---
+
+## Ευεξία — `/wellness`
+
+Source: `app/(protected)/wellness/page.tsx`, `WellnessClient.tsx`, `actions.ts`; `lib/wellness/{scoring,preventive}.ts`
+
+Added by spec v2 Phase 4 (2026-09-23). Everything on it is the person's own
+Art. 9 record (`health_benefit_usages`, `health_risk_assessments`): consent on
+the assessment row, erased with the account, returned on export, read by no
+admin surface. The policy facts it shows are what each health policy's reading
+STATES; silence renders «δεν καταγράφεται», never a benefit.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| WL-01 | This year's check-up status per health policy (`wellness.checkupStatus`) | fact | **KEEP** | the select on each policy row; the dashboard nudge (`CheckupNudgeCard`) is the same fact with no number | — |
+| WL-02 | Book via the coordination centre | action | **KEEP** | `tel:` on the number the policy records; no number → «δεν καταγράφεται» | — |
+| WL-03 | Self-assessment scores per category (`wellness.score`) | fact | **KEEP** | a fixed table over consented answers, banded low/moderate/elevated, «ενδεικτικό — όχι διάγνωση» on every render | — |
+| WL-04 | Withdraw: delete every assessment | action | **KEEP** | «Διαγραφή όλων» → `deleteHealthAssessments` | — |
+| WL-05 | Preventive calendar, mark done / undo | action | **KEEP** | items keyed off the assessment's age band and sex (CLAIMS C16); no coverage claim per item | — |
 
 ## Συστάσεις — `/recommendations`
 

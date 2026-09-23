@@ -356,7 +356,7 @@ use them and so adding transport later is one adapter file.
 
 _Generated from `lib/notifications/registry.ts` by `scripts/generate-notification-matrix.mjs`. Do not edit by hand._
 
-**85 business events declared — 80 live, 5 planned.**
+**86 business events declared — 81 live, 5 planned.**
 
 ### Risk, gaps, score and recommendations
 
@@ -448,6 +448,7 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 
 | Event | Business event | Trigger condition | Priority | Channels | Recipients | Required action | Escalation | Retry | Expires | Audit | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| `benefit_reminder` | A health policy's annual check-up benefit is unused this year | checkup-reminder cron (15 January) finds an in-force health policy stating annualCheckupIncluded with no completed HealthBenefitUsage this year | low | in_app, email, push | owner | claim_perk | — | none | 60d | notification_event | live |
 | `perk_reminder` | A partner perk is about to expire | perk-reminders cron finds a perk inside its reminder window | low | in_app, email | owner | claim_perk | — | none | 3d | notification_event | live |
 | `weekly_digest` | The week's activity, summarised | weekly-digest cron, for users with something to report | low | in_app, email | owner | — | — | none | 5d | notification_event | live |
 | `churn_prevention` | An at-risk customer needs re-engaging | churn-prevention cron scores a user as at risk | low | in_app, email | owner | — | — | none | 7d | notification_event | live |
@@ -502,6 +503,7 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 - **`green_card_expiry`** — Spec v2 §14 / §22.3 GREEN_CARD_EXPIRY. The gap rule green_card_expiring fires only at analysis time; this is the calendar-driven reminder. Deduped per policy per expiry date.
 - **`enfia_season`** — Spec v2 §14 / §22.3 ENFIA_SEASON_ALERT. A prompt to CHECK, one per owner per year; eligibility itself is decided only by missing_enfia_components on a policy whose extraction stated all three perils (Law 4223/2013 art. 3 §7ζ, lib/gaps/provenance.ts).
 - **`renewal_overdue`** — Critical and transactional: the customer may now be uninsured, and for motor in Greece that is also unlawful. This is not a marketing reminder and cannot be switched off.
+- **`benefit_reminder`** — Spec v2 §14 / §22.3 BENEFIT_REMINDER. Sent only when the policy's own reading STATES the benefit — never from silence — and never after the person marked it done (lib/services/checkup-reminder.service.ts).
 - **`claim_opened`** — Blocked on a claims model. Wiring is one entry here plus one emitter once Claim exists.
 - **`claim_status_changed`** — Blocked on a claims model.
 - **`advisor_assigned`** — Transactional and audit-logged: this is the moment another person gains sight of the customer's policies, and they are entitled to know it happened.

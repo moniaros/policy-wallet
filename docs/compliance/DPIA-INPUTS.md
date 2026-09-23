@@ -15,11 +15,11 @@ today. The assessment itself is a legal judgement and is a halt
 
 | Measure | Value |
 | --- | --- |
-| Stores holding personal data (tagged) | 58 of 58 |
-| Columns across them (relations excluded) | 735 |
-| Columns declared Art. 9 | 10 (stores: 2) |
+| Stores holding personal data (tagged) | 60 of 60 |
+| Columns across them (relations excluded) | 751 |
+| Columns declared Art. 9 | 15 (stores: 4) |
 | Data-subject categories in use | admin, agent, policyholder, third_party |
-| Stores under the AI-analysis purpose | 9 |
+| Stores under the AI-analysis purpose | 10 |
 | Published processors | 10 |
 | … whose published location is EEA-only | 2 (Supabase, Brevo) |
 | … that receive the uploaded document itself | 5 (Supabase, Vercel, Google (Gemini API), Anthropic, OpenAI) |
@@ -361,6 +361,32 @@ fields are not columns and are not listed.
 | `supersededAt` | `DateTime?` | ordinary |
 | `supersededByRunId` | `String?` | ordinary |
 | `priorStatus` | `String?` | ordinary |
+
+### `HealthBenefitUsage` — service · consent · policyholder · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `id` | `String` | identifier |
+| `userId` | `String` | subject key |
+| `policyKey` | `String` | ordinary |
+| `benefit` | `String` | **Art. 9** |
+| `year` | `Int` | ordinary |
+| `status` | `String` | **Art. 9** |
+| `note` | `String?` | **Art. 9** |
+| `completedAt` | `DateTime?` | ordinary |
+| `createdAt` | `DateTime` | ordinary |
+| `updatedAt` | `DateTime` | ordinary |
+
+### `HealthRiskAssessment` — analysis · consent · policyholder · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `id` | `String` | identifier |
+| `userId` | `String` | subject key |
+| `consentVersion` | `String` | ordinary |
+| `answers` | `Json` | **Art. 9** |
+| `scores` | `Json` | **Art. 9** |
+| `createdAt` | `DateTime` | ordinary |
 
 ### `Invite` — intermediary · consent · policyholder|agent|third_party · account_life · delete
 
@@ -1065,6 +1091,8 @@ fields are not columns and are not listed.
 | Store | Columns | Lawful basis |
 | --- | --- | --- |
 | `AgentReviewRevision` | `body`, `feedbackNote`, `privateAdvice` | Consent — Art. 6(1)(a) |
+| `HealthBenefitUsage` | `benefit`, `status`, `note` | Consent — Art. 6(1)(a) |
+| `HealthRiskAssessment` | `answers`, `scores` | Consent — Art. 6(1)(a) |
 | `PolicyholderProfile` | `chronicConditions`, `familyMedicalHistory`, `smokingStatus`, `heightCm`, `weightKg`, `gender`, `activityLevel` | Consent — Art. 6(1)(a) |
 
 Held by the processors that store or carry every table: Supabase, Vercel.
@@ -1096,16 +1124,16 @@ generator rather than rendering a pack without it.
 
 | Processor | Role (published) | Location (published) | Purposes | Stores under those purposes | How | Receives the document | Endpoint, as constructed in code |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 58 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
-| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 58 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
+| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 60 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
+| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 60 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
 | Stripe | Payment and subscription processing | EU/US | billing | `CreditTransaction`, `EntitlementUsage`, `Invoice`, `MonthlyTokenUsage`, `PaymentMethod`, `Referral`, `ReportUnlockPurchase`, `Subscription`, `TokenBalance`, `TokenPurchase`, `TokenUsage` | checkout, subscription and invoice objects; card data never reaches our systems | no | n/a — configured outside the application code |
 | Brevo | Email delivery (notifications, newsletter) | EU (France) | communication | `BusinessEvent`, `NotificationEvent`, `NotificationPreference`, `PushDevice`, `UserNotificationSettings` | the address, name and body of each email sent | no | n/a — configured outside the application code |
 | Upstash | Request rate limiting (Redis) | EU/US | none | none | per-IP request counters for rate limiting — no store feeds it | no | n/a — configured outside the application code |
 | Sentry | Application error monitoring | EU/US | none | none | error events with personal data scrubbed — no store feeds it | no | n/a — configured outside the application code |
-| Google (Gemini API) | AI document analysis — primary provider | EU/US | analysis | `GapInstance`, `LifeEventInstance`, `PolicyAnalysisRun`, `PolicyholderProfile`, `ProtectionProfile`, `ProtectionScore`, `RecommendationInstance`, `RiskProfileVersion`, `RiskReview` | the WHOLE uploaded file, base64, at the extraction step; structured fields at the later model steps (DATA_PROTECTION_REVIEW_PACK.md §7) | **yes** | options `apiKey` — SDK default endpoint (global), no region, no retention option in code (`gemini-ai.service.ts`) |
+| Google (Gemini API) | AI document analysis — primary provider | EU/US | analysis | `GapInstance`, `HealthRiskAssessment`, `LifeEventInstance`, `PolicyAnalysisRun`, `PolicyholderProfile`, `ProtectionProfile`, `ProtectionScore`, `RecommendationInstance`, `RiskProfileVersion`, `RiskReview` | the WHOLE uploaded file, base64, at the extraction step; structured fields at the later model steps (DATA_PROTECTION_REVIEW_PACK.md §7) | **yes** | options `apiKey` — SDK default endpoint (global), no region, no retention option in code (`gemini-ai.service.ts`) |
 | Google (Google Analytics) | Usage analytics | EU/US | none | none | aggregate usage events with the IP anonymised, only after opt-in — no store feeds it | no | n/a — configured outside the application code |
-| Anthropic | AI document analysis — alternate provider | US | analysis | `GapInstance`, `LifeEventInstance`, `PolicyAnalysisRun`, `PolicyholderProfile`, `ProtectionProfile`, `ProtectionScore`, `RecommendationInstance`, `RiskProfileVersion`, `RiskReview` | alternate provider: the same payload as the primary whenever the router selects it; a document reaches a second provider only under the failover gate (§7) | **yes** | options `apiKey` — SDK default endpoint (global), no region, no retention option in code (`anthropic-ai.service.ts`) |
-| OpenAI | AI document analysis — alternate provider | US | analysis | `GapInstance`, `LifeEventInstance`, `PolicyAnalysisRun`, `PolicyholderProfile`, `ProtectionProfile`, `ProtectionScore`, `RecommendationInstance`, `RiskProfileVersion`, `RiskReview` | alternate provider: the same payload as the primary whenever the router selects it; a document reaches a second provider only under the failover gate (§7) | **yes** | options `apiKey` — SDK default endpoint (global), no region, no retention option in code (`openai-ai.service.ts`) |
+| Anthropic | AI document analysis — alternate provider | US | analysis | `GapInstance`, `HealthRiskAssessment`, `LifeEventInstance`, `PolicyAnalysisRun`, `PolicyholderProfile`, `ProtectionProfile`, `ProtectionScore`, `RecommendationInstance`, `RiskProfileVersion`, `RiskReview` | alternate provider: the same payload as the primary whenever the router selects it; a document reaches a second provider only under the failover gate (§7) | **yes** | options `apiKey` — SDK default endpoint (global), no region, no retention option in code (`anthropic-ai.service.ts`) |
+| OpenAI | AI document analysis — alternate provider | US | analysis | `GapInstance`, `HealthRiskAssessment`, `LifeEventInstance`, `PolicyAnalysisRun`, `PolicyholderProfile`, `ProtectionProfile`, `ProtectionScore`, `RecommendationInstance`, `RiskProfileVersion`, `RiskReview` | alternate provider: the same payload as the primary whenever the router selects it; a document reaches a second provider only under the failover gate (§7) | **yes** | options `apiKey` — SDK default endpoint (global), no region, no retention option in code (`openai-ai.service.ts`) |
 
 ## 4. Open questions the assessment inherits
 

@@ -198,6 +198,13 @@ findings never enter `findingCount`; recording-class findings («δεν κατα
 status. Severity is not read. The dashboard's branch map projects the same status onto its tile
 words (`toTileState`), so the two surfaces cannot disagree about one branch.
 
+### Additions ratified 2026-09-23 (spec-v2 Phase 4 — wellness)
+
+New fact keys: `wellness.checkupStatus` *(subject-scoped by policy id)* — the status the person
+set for this year's annual check-up on a health policy; `wellness.score` *(subject-scoped by
+category)* — the self-assessment's attention score, a fixed table over consented answers. Both
+render only on `/wellness`; the dashboard nudge carries no number.
+
 ### Additions ratified 2026-09-23 (spec-v2 Phase 1.2 — branch quick facts)
 
 New fact key: `policy.quickFact` *(subject-scoped by `<policy id>:<fact key>`)* — the wallet

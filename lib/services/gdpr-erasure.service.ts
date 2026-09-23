@@ -83,6 +83,8 @@ export type ErasureSummary = {
     deletedLifeEvents: number
     deletedRiskProfileVersions: number
     deletedPushDevices: number
+    deletedHealthBenefitUsages: number
+    deletedHealthRiskAssessments: number
     deletedBusinessEvents: number
     deletedRiskReviews: number
     deletedNotificationSettings: number
@@ -225,6 +227,8 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedLifeEvents,
                 deletedRiskProfileVersions,
                 deletedPushDevices,
+                deletedHealthBenefitUsages,
+                deletedHealthRiskAssessments,
                 deletedBusinessEvents,
                 deletedRiskReviews,
                 deletedNotificationSettings,
@@ -278,6 +282,10 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 // a notification — the most visible possible breach of Art. 17,
                 // and one they would experience on their own phone.
                 tx.pushDevice.deleteMany({ where: { userId } }),
+                // Spec v2 §9: the check-up tracker and the self-assessment are
+                // Art. 9 data the person typed themselves.
+                tx.healthBenefitUsage.deleteMany({ where: { userId } }),
+                tx.healthRiskAssessment.deleteMany({ where: { userId } }),
                 // The event log is a durable record of what happened to this
                 // person: policies, life events, score movements. `subjectUserId`
                 // is the field that makes it theirs.
@@ -485,6 +493,8 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedLifeEvents: deletedLifeEvents.count,
                 deletedRiskProfileVersions: deletedRiskProfileVersions.count,
                 deletedPushDevices: deletedPushDevices.count,
+                deletedHealthBenefitUsages: deletedHealthBenefitUsages.count,
+                deletedHealthRiskAssessments: deletedHealthRiskAssessments.count,
                 deletedBusinessEvents: deletedBusinessEvents.count,
                 deletedRiskReviews: deletedRiskReviews.count,
                 deletedNotificationSettings: deletedNotificationSettings.count,

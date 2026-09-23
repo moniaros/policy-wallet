@@ -45,6 +45,8 @@ const tx = {
     // Added when these stores were found surviving erasure: the User row is
     // anonymized rather than deleted, so no FK cascade cleans them up.
     pushDevice: { deleteMany: vi.fn(async (_a?: any) => count(2)) },
+    healthBenefitUsage: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
+    healthRiskAssessment: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     businessEvent: { deleteMany: vi.fn(async (_a?: any) => count(5)) },
     riskReview: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     userNotificationSettings: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
