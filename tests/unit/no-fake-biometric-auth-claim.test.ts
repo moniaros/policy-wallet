@@ -43,13 +43,15 @@ describe('the auth UI never claims biometric/FaceID login without a real WebAuth
         'app/auth/signin/page.tsx',
     ]
 
-    it('the only WebAuthn flows are the SECOND-factor surfaces (R-01) — no sign-in or sign-up screen carries one', () => {
+    it('the WebAuthn flows are the step-up, the enrolment block and the sign-in page (spec v2 §19.1) — never sign-up', () => {
         // PW-PROVENANCE-01 R-01 implemented passkeys as a second factor over the
         // Supabase session: the step-up page and the settings enrolment block.
-        // Neither is a LOGIN, so the copy guard below still holds for the auth
-        // screens — a "sign in with FaceID" claim would still be a promise the
-        // product cannot keep. The set is asserted EXACTLY so a flow appearing
-        // on a login screen is noticed, as is one of these two going missing.
+        // Spec v2 Phase 6 (2026-09-23) added a REAL passkey sign-in on the
+        // sign-in page (app/api/auth/passkeys/login/*), so that page now carries
+        // a flow legitimately. The copy guard below still holds: the button says
+        // «κλειδί πρόσβασης», never FaceID — the platform decides the biometric,
+        // not this product. The set is asserted EXACTLY so a flow appearing on
+        // the SIGN-UP screen is noticed, as is one of these going missing.
         const flows = [
             ...globSync('app/**/*.ts'),
             ...globSync('app/**/*.tsx'),
@@ -59,8 +61,8 @@ describe('the auth UI never claims biometric/FaceID login without a real WebAuth
             .filter((f) => !f.includes('.test.') && !f.includes('erasure'))
             .filter((f) => WEBAUTHN_FLOW.test(stripComments(readFileSync(f, 'utf-8'))))
             .sort()
-        expect(flows).toEqual(['app/auth/step-up/StepUpClient.tsx', 'components/settings/PasskeysBlock.tsx'])
-        for (const f of authFiles) expect(WEBAUTHN_FLOW.test(readFileSync(f, 'utf-8')), f).toBe(false)
+        expect(flows).toEqual(['app/auth/signin/page.tsx', 'app/auth/step-up/StepUpClient.tsx', 'components/settings/PasskeysBlock.tsx'])
+        expect(WEBAUTHN_FLOW.test(readFileSync('app/auth/signup/SignupForm.tsx', 'utf-8'))).toBe(false)
     })
 
     it('no auth screen renders a FaceID / biometric-unlock promise', () => {

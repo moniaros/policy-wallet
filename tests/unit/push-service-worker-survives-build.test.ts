@@ -47,11 +47,17 @@ describe("the push service worker is the only thing that owns /sw.js", () => {
         expect(readFileSync("lib/push/register.ts", "utf-8")).toContain('register("/sw.js")')
     })
 
-    it("the worker deliberately caches nothing", () => {
+    it("the worker caches exactly the offline page and the offline card — never the wallet", () => {
         // Stated in its own header: an offline cache for an app whose job is
         // showing CURRENT policy data is a way to show someone stale cover.
-        // This is the reason precaching was removed rather than reconfigured.
+        // Spec v2 §18.1 (Phase 6) allows TWO entries — /offline and the
+        // roadside-numbers JSON, which carries its own generatedAt — and no
+        // precache list, no wildcard, no navigation caching.
         const sw = readFileSync("public/sw.js", "utf-8")
-        expect(sw).not.toMatch(/caches\.(?:open|match|addAll)/)
+        expect(sw).not.toMatch(/addAll|precache|workbox/i)
+        const cached = [...sw.matchAll(/cache\.(?:add|put)\((\w+)/g)].map((m) => m[1]).sort()
+        expect(cached).toEqual(["OFFLINE_CARD", "OFFLINE_PAGE"])
+        expect(sw).toMatch(/const OFFLINE_PAGE = "\/offline"/)
+        expect(sw).toMatch(/const OFFLINE_CARD = "\/api\/v1\/me\/offline-card"/)
     })
 })
