@@ -957,5 +957,93 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
             operator: 'AND'
         },
         isActive: true
-    }
+    },
+    // ── Spec v2 Phase 2 (2026-09-23) ─────────────────────────────────────────
+    // Every input below is a figure or term the SCHEDULE states. The spec's
+    // benchmark checks (construction-cost index, emergency-savings deductible,
+    // specialty settlement tables, breed vet costs) need dated market reference
+    // data this codebase does not carry, and are deliberately not authored.
+    {
+        slug: 'motor_insured_value_below_market',
+        name: 'Insured Value Below Declared Value',
+        title: 'Το ασφαλισμένο ποσό είναι κάτω από τη δηλωμένη αξία',
+        description: 'Η ασφαλισμένη αξία απέχει σημαντικά προς τα κάτω από την αξία που δηλώνει το ίδιο το ασφαλιστήριο για το όχημα. Σε ολική απώλεια η αποζημίωση δεν υπερβαίνει την ασφαλισμένη αξία, οπότε αξίζει να το συζητήσετε με τον ασφαλιστή σας στην επόμενη ανανέωση.',
+        lineOfBusiness: 'motor',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{
+                type: 'acord_field_check',
+                field: 'vehicle.insuredValue',
+                referenceField: 'vehicle.estimatedMarketValue',
+                operator: 'value_drift',
+                direction: 'below',
+                thresholdPct: 20,
+            }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'retroactive_date_not_recorded',
+        name: 'Retroactive Date',
+        title: 'Δεν καταγράφεται ημερομηνία αναδρομικής ισχύος',
+        // `missing` fires on silence: worded "not recorded", never "not covered".
+        description: 'Δεν καταγράφεται ημερομηνία αναδρομικής ισχύος για αυτό το ασφαλιστήριο επαγγελματικής ευθύνης. Στα ασφαλιστήρια βάσει αξιώσεων (claims-made) η κάλυψη ξεκινά από αυτή την ημερομηνία — ελέγξτε το ασφαλιστήριό σας και συζητήστε με τον ασφαλιστή σας από πότε ισχύει η κάλυψη.',
+        lineOfBusiness: 'professional_liability',
+        severity: 'high',
+        defaultSeverity: 'high',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'professionalLiability.retroactiveDate', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'liability_limit_not_recorded',
+        name: 'Professional Liability Limit',
+        title: 'Δεν καταγράφεται όριο ευθύνης ανά αξίωση',
+        description: 'Δεν καταγράφεται όριο κάλυψης ανά αξίωση για αυτό το ασφαλιστήριο επαγγελματικής ευθύνης. Το όριο είναι το ποσό μέχρι το οποίο αποζημιώνεται μια αξίωση — ελέγξτε το ασφαλιστήριό σας και σημειώστε το.',
+        lineOfBusiness: 'professional_liability',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'professionalLiability.limitPerClaim', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'marine_navigation_limits_not_recorded',
+        name: 'Navigation Limits',
+        title: 'Δεν καταγράφονται όρια πλεύσης',
+        description: 'Δεν καταγράφεται η περιοχή πλεύσης (navigation limits) για αυτό το ασφαλιστήριο σκάφους. Η πλεύση εκτός της περιοχής που ορίζει το ασφαλιστήριο συνήθως ακυρώνει την κάλυψη — ελέγξτε το ασφαλιστήριό σας και σημειώστε την.',
+        lineOfBusiness: 'boat',
+        severity: 'high',
+        defaultSeverity: 'high',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'territorialScope.navigationLimits', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'marine_lay_up_terms_not_recorded',
+        name: 'Lay-up Terms',
+        title: 'Δεν καταγράφονται όροι παροπλισμού',
+        description: 'Δεν καταγράφονται όροι παροπλισμού (lay-up) για αυτό το ασφαλιστήριο σκάφους. Το ασφαλιστήριο συνήθως ορίζει πότε και πού πρέπει να βρίσκεται το σκάφος εκτός πλεύσης για να ισχύει η κάλυψη — ελέγξτε το ασφαλιστήριό σας.',
+        lineOfBusiness: 'boat',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'marineVessel.layUpPeriod', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
 ]

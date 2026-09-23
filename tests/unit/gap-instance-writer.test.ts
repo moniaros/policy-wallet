@@ -174,6 +174,7 @@ describe("planAttemptedRules", () => {
             "green_card_expiring",
             "insured_value_above_declared",
             "missing_accident_declaration_phone",
+            "motor_insured_value_below_market",
             "no_glass_breakage_cover",
             "no_own_damage_cover",
             "no_roadside_assistance",

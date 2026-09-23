@@ -78,10 +78,10 @@ function planFor(branch: string) {
 const BRANCHES = [...new Set(AUTHORED_GAP_DEFINITIONS.map((d) => d.lineOfBusiness))]
 
 describe("rule questions and inputs", () => {
-    it("every authored rule is classifiable and declares its inputs; 23 coverage, 27 recording (29 + Goal 5's 11 + Goal 6's 10)", () => {
+    it("every authored rule is classifiable and declares its inputs; 24 coverage, 31 recording (29 + Goal 5's 11 + Goal 6's 10 + spec v2 Phase 2's 5)", () => {
         const questions = AUTHORED_GAP_DEFINITIONS.map((d) => classifyRuleQuestion(d.detectionLogic))
-        expect(questions.filter((q) => q === "coverage")).toHaveLength(23)
-        expect(questions.filter((q) => q === "recording")).toHaveLength(27)
+        expect(questions.filter((q) => q === "coverage")).toHaveLength(24)
+        expect(questions.filter((q) => q === "recording")).toHaveLength(31)
         expect(questions).not.toContain("unknown")
         for (const d of AUTHORED_GAP_DEFINITIONS) expect(declaredInputs(d.detectionLogic), d.slug).not.toBeNull()
     })

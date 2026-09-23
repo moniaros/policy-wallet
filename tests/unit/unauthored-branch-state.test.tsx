@@ -35,7 +35,7 @@ import { en } from "@/lib/i18n/translations/en"
 // PW-CONTENT-01 Goal 5 made `renters` an authored write branch (8 rules) and added
 // 3 home contents rules; the fixtures move to branches that stay unauthored and
 // the counts are read from the catalogue rather than pinned by hand.
-const UNAUTHORED = ["truck", "cyber", "liability", "legal_expenses", "boat", "fine_art", "gadget", "bicycle"]
+const UNAUTHORED = ["truck", "cyber", "liability", "legal_expenses", "employer_liability", "fine_art", "gadget", "bicycle"]
 const AUTHORED: Record<string, number> = Object.fromEntries([...new Set(AUTHORED_GAP_DEFINITIONS.map((d) => d.lineOfBusiness))].map((lob) => [lob, AUTHORED_GAP_DEFINITIONS.filter((d) => d.lineOfBusiness === lob).length]))
 
 const REASSURANCE = /Καλή κάλυψη|Εντάξει|Επαρκής|Προστατευμέν|Σε καλή κατάσταση|Κανένα εύρημα|Δεν εντοπίστηκαν|you are covered|good coverage|all clear|no gaps found|no findings/i

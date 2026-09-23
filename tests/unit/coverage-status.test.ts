@@ -96,8 +96,10 @@ describe("coverage status — the four statuses", () => {
         const r = derive({ policies: [policy({ id: "m1", lineOfBusiness: "motor" })], runs: [completedRun("m1", motorSlugs)] })
         const motor = row(r, "motor")
         expect(motor.status).toBe("appears_covered")
-        expect(motor.checked).toBe(5)
-        expect(motor.covered).toBe(5)
+        // 6 coverage-class motor rules since spec v2 Phase 2 added the
+        // under-insurance drift check (the mirror of insured_value_above_declared).
+        expect(motor.checked).toBe(6)
+        expect(motor.covered).toBe(6)
         expect(motor.flags.limitsUnread).toBe(false)
         expect(r.summary.appearsCovered).toBe(1)
     })
@@ -107,7 +109,7 @@ describe("coverage status — the four statuses", () => {
         const r = derive({ policies: [policy({ id: "m1", lineOfBusiness: "motor", acordData: acord })], runs: [completedRun("m1", motorSlugs)] })
         const motor = row(r, "motor")
         expect(motor.status).toBe("appears_covered")
-        expect(motor.covered).toBe(4)
+        expect(motor.covered).toBe(5)
         expect(motor.indeterminate).toBe(1)
     })
 
