@@ -25,7 +25,7 @@ const OPEN_DELETION_STATUSES = ["requested", "in_review", "approved", "processin
 // with the /admin/plans and /admin/partners action files).
 import { logAdminAction, logAdminRead, verifyAdminRole } from "@/lib/admin/admin-guard"
 import { z } from "zod"
-import { createAdminClient, getSupabaseAuthUserByEmail } from "@/lib/supabase/admin"
+import { createAdminClient, getSupabaseAuthUserByEmail, syncAuthRoleClaim } from "@/lib/supabase/admin"
 import { Prisma } from "@prisma/client"
 import { countGapHistory } from "@/lib/gaps/gap-rows"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
@@ -488,10 +488,7 @@ export async function changeUserRole(userId: string, newRole: string): Promise<C
     try {
         const authUser = await getSupabaseAuthUserByEmail(user.email)
         if (authUser) {
-            const { error: metaError } = await createAdminClient().auth.admin.updateUserById(
-                authUser.id,
-                { user_metadata: { ...authUser.user_metadata, role: validatedRoles } }
-            )
+            const { error: metaError } = await syncAuthRoleClaim(authUser, validatedRoles)
             if (metaError) {
                 Sentry.captureException(metaError)
             } else {

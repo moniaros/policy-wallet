@@ -96,8 +96,9 @@ const envSchema = z.object({
     FCM_CLIENT_EMAIL: z.string().min(1).optional(),
     FCM_PRIVATE_KEY: z.string().min(1).optional(),
 
-    // RevenueCat (webhooks)
+    // RevenueCat (webhooks + the account-page subscriber sync)
     REVENUECAT_WEBHOOK_AUTH_VALUE: z.string().min(1).optional(),
+    REVENUECAT_API_KEY: z.string().min(1).optional(),
 
     // App
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),

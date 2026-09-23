@@ -2,14 +2,14 @@
 import { db } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time";
-
-const REVENUECAT_API_KEY = process.env.REVENUECAT_API_KEY;
+import { env } from "@/lib/env";
 
 /**
  * Syncs a user's subscription status from RevenueCat
  * @param userId - Our internal User ID, which should match RevenueCat's App User ID
  */
 export async function syncRevenueCatSubscription(userId: string) {
+    const REVENUECAT_API_KEY = env.REVENUECAT_API_KEY;
     if (!REVENUECAT_API_KEY) {
         logger('warn', 'REVENUECAT_API_KEY is not set. Skipping sync.');
         return null;
@@ -47,7 +47,6 @@ export async function syncRevenueCatSubscription(userId: string) {
         let activeEntitlement = entitlements['pro'] || entitlements['plus'] || entitlements['premium'] || Object.values(entitlements)[0];
         if (!activeEntitlement) return null;
 
-        const productIdentifier = (activeEntitlement as any).product_identifier;
         const expirationDate = (activeEntitlement as any).expires_date ? new Date((activeEntitlement as any).expires_date) : null;
 
         // Map RC entitlement to internal plan ID
@@ -56,7 +55,9 @@ export async function syncRevenueCatSubscription(userId: string) {
 
         if (entitlementId === 'pro') planId = 'ph-pro';
         else if (entitlementId === 'plus') planId = 'ph-plus';
-        else if (entitlementId === 'premium') planId = 'ph-premium';
+        // `ph-premium` is an orphan plan with no entitlement mapping (see the
+        // webhook): a premium subscriber resolved to FREE. Same mapping as there.
+        else if (entitlementId === 'premium') planId = 'ph-pro';
 
         // Upsert subscription
         const existingSub = await (db.subscription as any).findFirst({
@@ -71,7 +72,8 @@ export async function syncRevenueCatSubscription(userId: string) {
                     planId: planId,
                     currentPeriodEnd: expirationDate || daysFromNow(SUBSCRIPTION_PERIOD_DAYS),
                     autoRenew: (activeEntitlement as any).will_renew,
-                    revenueCatIdentifier: productIdentifier,
+                    // Subscriber-keyed, like the webhook (the column is @unique).
+                    revenueCatIdentifier: userId,
                     updatedAt: new Date()
                 }
             });
@@ -85,7 +87,7 @@ export async function syncRevenueCatSubscription(userId: string) {
                     currentPeriodStart: new Date((activeEntitlement as any).purchase_date),
                     currentPeriodEnd: expirationDate || daysFromNow(SUBSCRIPTION_PERIOD_DAYS),
                     autoRenew: (activeEntitlement as any).will_renew,
-                    revenueCatIdentifier: productIdentifier
+                    revenueCatIdentifier: userId
                 }
             });
         }

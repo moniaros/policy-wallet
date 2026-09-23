@@ -1033,6 +1033,24 @@ export async function addRenewalDocument(policyId: string, formData: FormData) {
 
         const result = await policyService.attachRenewalDocument(policyId, userId, file, language)
 
+        // An advisor acting on a customer's policy is not silent (spec v2
+        // §25.3). A new policy by the advisor already emits policy_added;
+        // a document on an existing one said nothing.
+        if (access.policy && access.policy.ownerUserId !== userId) {
+            await emit({
+                event: "agent_document_added",
+                userId: access.policy.ownerUserId,
+                title: { el: "Ο σύμβουλός σας πρόσθεσε ένα έγγραφο", en: "Your advisor added a document" },
+                message: {
+                    el: `${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} πρόσθεσε ένα νέο έγγραφο σε ασφαλιστήριό σας. Το ασφαλιστήριο επανεξετάζεται.`,
+                    en: `${displayPersonName(authResult.dbUser.name) || "Your advisor"} attached a new document to one of your policies. The policy is being re-read.`,
+                },
+                relatedObjectType: "policy",
+                relatedObjectId: policyId,
+                dedupeKey: `agent_document_added:${result.documentId}`,
+            })
+        }
+
         after(async () => {
             try {
                 // Re-analysis runs over the MERGED view: base terms from the
@@ -1198,16 +1216,47 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         }
     })
 
+    // An ended relationship (terminated by either side, or inactive) must not
+    // quietly acquire a live grant: `computePolicyAccess` reads the grant alone,
+    // so the advisor would regain access that no relationship explains and no
+    // termination path would ever find. The customer initiating a NEW share is
+    // fresh consent, so the relationship is revived — visibly, as a new
+    // activation — rather than refused.
+    const endedRel = existingRel && (existingRel.status === "terminated" || existingRel.status === "inactive")
+        ? existingRel
+        : null
+
     const createdRel = await db.$transaction(async (tx) => {
-        await tx.accessGrant.create({
-            data: {
+        // AccessGrant has no uniqueness constraint; a repeat share to the same
+        // advisor used to add a second identical row every time.
+        const existingGrant = await tx.accessGrant.findFirst({
+            where: {
                 granterUserId: authResult.dbUser.id,
                 granteeUserId: agent.id,
                 scope: `policy:${policyId}`,
-                permissions: permissions,
-                status: "active"
-            }
+                status: "active",
+            },
+            select: { id: true },
         })
+        if (existingGrant) {
+            await tx.accessGrant.update({ where: { id: existingGrant.id }, data: { permissions } })
+        } else {
+            await tx.accessGrant.create({
+                data: {
+                    granterUserId: authResult.dbUser.id,
+                    granteeUserId: agent.id,
+                    scope: `policy:${policyId}`,
+                    permissions: permissions,
+                    status: "active"
+                }
+            })
+        }
+        if (endedRel) {
+            return tx.customerRelationship.update({
+                where: { id: endedRel.id },
+                data: { status: "active", activationStatus: "active" },
+            })
+        }
         if (existingRel) return null
         // Auto-activated: the customer initiated the share, which is the consent.
         return tx.customerRelationship.create({

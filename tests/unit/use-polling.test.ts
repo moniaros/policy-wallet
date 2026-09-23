@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
-import { usePolling, DEFAULT_POLL_BACKOFF, DEFAULT_POLL_TAIL_MS } from '@/hooks/usePolling'
+import { usePolling, DEFAULT_POLL_BACKOFF, DEFAULT_POLL_TAIL_MS, nextPollDelay } from '@/hooks/usePolling'
 
 /**
  * The behaviours worth locking down are the ones the four hand-rolled pollers
@@ -116,5 +116,23 @@ describe('usePolling', () => {
     it('exposes the schedule the wallet established', () => {
         expect(DEFAULT_POLL_BACKOFF[0]).toEqual({ untilMs: 30_000, intervalMs: 2_000 })
         expect(DEFAULT_POLL_TAIL_MS).toBe(10_000)
+    })
+
+    it('stops after timeoutMs and reports the timeout once', () => {
+        const cb = vi.fn()
+        const onTimeout = vi.fn()
+        renderHook(() => usePolling(cb, { enabled: true, timeoutMs: 10_000, onTimeout }))
+        vi.advanceTimersByTime(10_000)
+        const callsAtTimeout = cb.mock.calls.length
+        expect(callsAtTimeout).toBeGreaterThan(0)
+        vi.advanceTimersByTime(60_000)
+        expect(cb).toHaveBeenCalledTimes(callsAtTimeout)
+        expect(onTimeout).toHaveBeenCalledTimes(1)
+    })
+
+    it('exposes the schedule as a pure function for pollers that cannot adopt the hook', () => {
+        expect(nextPollDelay(0)).toBe(2_000)
+        expect(nextPollDelay(30_000)).toBe(5_000)
+        expect(nextPollDelay(120_000)).toBe(DEFAULT_POLL_TAIL_MS)
     })
 })

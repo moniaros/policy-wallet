@@ -44,3 +44,18 @@ export async function getSupabaseAuthUserByEmail(
     }
     return null
 }
+
+/**
+ * Stamp the roles a session carries, on BOTH claims.
+ *
+ * `app_metadata.roles` is the one proxy.ts trusts: only this service-role call
+ * can write it. `user_metadata.role` is kept in step for the sign-in page and
+ * older sessions. Merges, so language / email_verified survive. Takes effect on
+ * the user's next token refresh, not an already-open session.
+ */
+export async function syncAuthRoleClaim(authUser: SupabaseAuthUser, roles: string) {
+    return createAdminClient().auth.admin.updateUserById(authUser.id, {
+        app_metadata: { ...authUser.app_metadata, roles },
+        user_metadata: { ...authUser.user_metadata, role: roles },
+    })
+}

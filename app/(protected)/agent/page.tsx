@@ -29,11 +29,16 @@ export default async function AgentPage() {
     })
 
     // Fetch agent relationship + branding
+    // Live = not ended. The column defaults to pending_activation (CLAUDE.md),
+    // and every visibility rule treats that as live — so an advisor who had
+    // added this customer but not yet been accepted could already see shared
+    // policies while this page showed «no advisor» and offered no disconnect.
     const customerRelationship = await db.customerRelationship.findFirst({
         where: {
             policyholderUserId: dbUser.id,
-            status: 'active'
+            status: { notIn: ['inactive', 'terminated'] }
         },
+        orderBy: { lastInteractionAt: 'desc' },
         include: {
             // The portal card reads five account fields and the profile — never the
             // adviser's whole row (A-01b).

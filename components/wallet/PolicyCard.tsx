@@ -168,6 +168,15 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                     {/* Row 2: LOB type (+ asset identifier) + expiry inline */}
                     <p className="text-caption text-muted-foreground">
                         {localizedLob}
+                        {policy.documents?.some((doc) => doc.uploadedBy === 'agent') && (
+                            <>
+                                {' · '}
+                                {/* Spec v2 §12.3 / Journey 6: a document the advisor added is marked as theirs. */}
+                                <span data-fact="policy.addedByAdvisor" data-fact-subject={policy.id} data-fact-value="agent">
+                                    {t.wallet.addedByAdvisor}
+                                </span>
+                            </>
+                        )}
                         {(policy.sharedWithAgents?.length ?? 0) > 0 && (
                             <>
                                 {' · '}

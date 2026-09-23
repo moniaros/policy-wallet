@@ -289,6 +289,27 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     // ── Policy lifecycle ─────────────────────────────────────────────────────
 
+    agent_document_added: {
+        businessEvent: "An advisor attached a document to the customer's policy",
+        copy: {
+            title: { el: "Ο σύμβουλός σας πρόσθεσε ένα έγγραφο", en: "Your advisor added a document" },
+            message: { el: "Ένα νέο έγγραφο προστέθηκε σε ασφαλιστήριό σας από τον σύμβουλό σας. Το ασφαλιστήριο επανεξετάζεται.", en: "Your advisor attached a new document to one of your policies. The policy is being re-read." },
+        },
+        triggerCondition: "addRenewalDocument by a user who is not the policy owner",
+        category: "policy",
+        priority: "normal",
+        channels: FULL_REACH,
+        recipients: ["owner"],
+        transactional: true,
+        requiredAction: null,
+        escalation: null,
+        retry: NO_RETRY,
+        expiresAfterHours: 30 * DAY,
+        audit: "notification_event",
+        status: "live",
+        emittedBy: "app/(protected)/wallet/actions.ts",
+        note: "Spec v2 §12.3 / §25.3: silent advisor actions are not permitted. A new POLICY by the advisor already emitted policy_added; a DOCUMENT on an existing policy emitted nothing until Phase 0.6 (2026-09-23).",
+    },
     policy_added: {
         businessEvent: "A policy was added to the wallet",
         copy: {

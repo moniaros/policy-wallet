@@ -4,6 +4,7 @@ import { isTransientError } from "@/lib/services/ai/shared-utils"
 import path from "path"
 import { randomUUID } from "crypto"
 import { z } from "zod"
+import { Prisma } from "@prisma/client"
 import { db } from "@/lib/db"
 import { decideGapsForPolicy, GAP_ENGINE_VERSION } from "@/lib/gap-detection"
 import { planAttemptedRules, writeRuleDecidedGaps } from "@/lib/gaps/gap-instance-writer"
@@ -834,6 +835,12 @@ export class PolicyAnalysisOrchestratorService {
         // Scope to specific policies — used by user-facing surfaces to self-heal
         // exactly the policy the user is staring at, without a global sweep.
         policyIds?: string[]
+        // Named runs the queue has given up on (jobs/analysis-failed): these are
+        // reaped whether queued or running and regardless of lease, because no
+        // delivery is coming.
+        runIds?: string[]
+        failureCode?: string
+        failureMessage?: string
     }): Promise<{
         staleCandidates: number
         reaped: number
@@ -843,13 +850,20 @@ export class PolicyAnalysisOrchestratorService {
         const graceMs = options?.graceMs ?? 5 * 60 * 1000
         const limit = options?.limit ?? 50
         const cutoff = new Date(Date.now() - graceMs)
+        const failureCode = options?.failureCode ?? "LEASE_EXPIRED"
+        const failureMessage =
+            options?.failureMessage ?? "Analysis executor died and the run was never resumed"
 
-        const staleRuns = await db.policyAnalysisRun.findMany({
-            where: {
+        const staleWhere: Prisma.PolicyAnalysisRunWhereInput = options?.runIds?.length
+            ? { id: { in: options.runIds }, status: { in: ["queued", "running"] } }
+            : {
                 status: "running",
                 executionLeaseExpiresAt: { lt: cutoff },
                 ...(options?.policyIds?.length ? { policyId: { in: options.policyIds } } : {}),
-            },
+            }
+
+        const staleRuns = await db.policyAnalysisRun.findMany({
+            where: staleWhere,
             select: { id: true, policyId: true, provider: true },
             orderBy: { executionLeaseExpiresAt: "asc" },
             take: limit,
@@ -871,15 +885,17 @@ export class PolicyAnalysisOrchestratorService {
                 // expired lease — a redelivery that resumed it in the meantime
                 // has refreshed the lease and must not be clobbered.
                 const failed = await tx.policyAnalysisRun.updateMany({
-                    where: {
-                        id: run.id,
-                        status: "running",
-                        executionLeaseExpiresAt: { lt: cutoff },
-                    },
+                    where: options?.runIds?.length
+                        ? { id: run.id, status: { in: ["queued", "running"] } }
+                        : {
+                            id: run.id,
+                            status: "running",
+                            executionLeaseExpiresAt: { lt: cutoff },
+                        },
                     data: {
                         status: "failed",
-                        failureCode: "LEASE_EXPIRED",
-                        failureMessage: "Analysis executor died and the run was never resumed",
+                        failureCode,
+                        failureMessage,
                         remediationSummary: remediationSummary as any,
                         executionLeaseId: null,
                         executionLeaseExpiresAt: null,
@@ -911,13 +927,13 @@ export class PolicyAnalysisOrchestratorService {
                                     runId: run.id,
                                     provider: run.provider,
                                     status: "failed",
-                                    lastFailureCode: "LEASE_EXPIRED",
+                                    lastFailureCode: failureCode,
                                     lastFailureAt: new Date().toISOString(),
                                 },
                             },
                             processingError: {
-                                code: "LEASE_EXPIRED",
-                                message: "Analysis was interrupted and did not resume",
+                                code: failureCode,
+                                message: failureMessage,
                                 retryable: true,
                                 occurredAt: new Date().toISOString(),
                             },
