@@ -241,6 +241,8 @@ export const FACT_KEYS: Record<string, string> = {
     "grant.level": "Customer /agent page: a grant's normalised level (read/write/manage), subject = grant id — what the advisor can do (A-10).",
     "policy.sharedWithAdvisor": "Wallet card: this policy is visible to the advisor, subject = policy id (A-09).",
     "policy.nickname": "Wallet card: the owner-typed policy name (spec v2 §10.1), subject = policy id. Never extracted.",
+    "wellness.checkupStatus": "Wellness page: this year's annual check-up status the person set for a health policy, subject = policy id (spec v2 §9.1).",
+    "wellness.score": "Wellness page: the self-assessment's attention score per category, subject = category (spec v2 §9.2) — a fixed table over consented answers, never a model.",
     "policy.quickFact": "Wallet card: one branch quick fact (spec v2 §6), subject = `<policy id>:<fact key>` — resolved only by lib/wallet/quick-facts.ts, never from silence.",
     "policy.addedByAdvisor": "Wallet card: a document on this policy was uploaded by the advisor, subject = policy id (spec v2 §12.3 / Journey 6, Phase 0.6 2026-09-23).",
     "policy.rowStatus": "A list row's lifecycle status label, subject = policy id (wallet card, agent client-policies row) — PW-BRIDGE-01 A-08.",
@@ -281,6 +283,8 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "policy.addedByAdvisor",
     "policy.quickFact",
     "policy.nickname",
+    "wellness.checkupStatus",
+    "wellness.score",
 ])
 
 export function isRegisteredCountKey(key: string): boolean {

@@ -914,6 +914,27 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         emittedBy: "app/(protected)/renewals/actions.ts",
     },
 
+    benefit_reminder: {
+        businessEvent: "A health policy's annual check-up benefit is unused this year",
+        copy: {
+            title: { el: "Ο ετήσιος έλεγχος υγείας σας είναι διαθέσιμος", en: "Your annual health check-up is available" },
+            message: { el: "Το ασφαλιστήριο υγείας σας καταγράφει ετήσιο έλεγχο. Αν δεν τον έχετε κάνει φέτος, δείτε πώς κλείνετε ραντεβού στη σελίδα Ευεξία.", en: "Your health policy records an annual check-up. If you have not used it this year, see how to book on the Wellness page." },
+        },
+        triggerCondition: "checkup-reminder cron (15 January) finds an in-force health policy stating annualCheckupIncluded with no completed HealthBenefitUsage this year",
+        category: "engagement",
+        priority: "low",
+        channels: FULL_REACH,
+        recipients: ["owner"],
+        transactional: false,
+        requiredAction: "claim_perk",
+        escalation: null,
+        retry: NO_RETRY,
+        expiresAfterHours: 60 * DAY,
+        audit: "notification_event",
+        status: "live",
+        emittedBy: "lib/services/checkup-reminder.service.ts",
+        note: "Spec v2 §14 / §22.3 BENEFIT_REMINDER. Sent only when the policy's own reading STATES the benefit — never from silence — and never after the person marked it done (lib/services/checkup-reminder.service.ts).",
+    },
     perk_reminder: {
         businessEvent: "A partner perk is about to expire",
         copy: {

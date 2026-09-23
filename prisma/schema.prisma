@@ -160,6 +160,8 @@ model User {
   recommendations                 RecommendationInstance[]
   lifeEventInstances              LifeEventInstance[]
   riskProfileVersions             RiskProfileVersion[]
+  healthBenefitUsages             HealthBenefitUsage[]
+  healthRiskAssessments           HealthRiskAssessment[]
 
   @@index([taxId])
   @@map("users")
@@ -2634,6 +2636,51 @@ model FeatureFlagRevision {
 }
 
 /// Private advisor work. Never included by customer/report recommendation readers.
+/// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=benefit,status,note
+/// Spec v2 §9.1 / §9.3 — what the person did with a health benefit or a
+/// preventive check this year. `benefit` is `annual_checkup` (per health
+/// policy, `policyKey` = policy id) or a preventive-calendar id (`policyKey`
+/// empty). Health data: written only by the person, read only by their pages.
+model HealthBenefitUsage {
+  id          String    @id @default(cuid()) @map("health_benefit_usage_id")
+  userId      String    @map("user_id")
+  /// The policy the benefit belongs to, or "" for a calendar item — a string so
+  /// the uniqueness below holds (NULL never collides in Postgres).
+  policyKey   String    @default("") @map("policy_key")
+  benefit     String
+  year        Int
+  /// available | scheduled | completed | archived
+  status      String    @default("available")
+  note        String?
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, policyKey, benefit, year])
+  @@index([userId, year])
+  @@map("health_benefit_usages")
+}
+
+/// @ropa purpose=analysis basis=consent subjects=policyholder retention=account_life erasure=delete art9=answers,scores
+/// Spec v2 §9.2 — the optional self-assessment. Explicit consent is recorded ON
+/// the row (`consentVersion`), the scores are a deterministic table
+/// (lib/wellness/scoring.ts) over the answers, never a model's, and every row is
+/// the person's own: no admin surface reads it, erasure deletes it, export
+/// returns it.
+model HealthRiskAssessment {
+  id             String   @id @default(cuid()) @map("health_risk_assessment_id")
+  userId         String   @map("user_id")
+  consentVersion String   @map("consent_version")
+  answers        Json
+  scores         Json
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("health_risk_assessments")
+}
+
 /// @ropa purpose=intermediary basis=consent subjects=policyholder|agent retention=account_life erasure=delete art9=body,feedbackNote,privateAdvice
 model AgentReviewRevision {
   privateAdvice Json? @map("private_advice")

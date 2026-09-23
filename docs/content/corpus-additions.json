@@ -53,5 +53,7 @@
   "inline:lib/notifications/registry.ts::Ελέγξτε το ασφαλιστήριο κατοικίας σας για τη μείωση ΕΝΦΙΑ",
   "inline:lib/notifications/registry.ts::Η μείωση ΕΝΦΙΑ για ασφαλισμένες κατοικίες προϋποθέτει κάλυψη πυρκαγιάς, σεισμού και πλημμύρας. Δείτε τι καταγράφει το ασφαλιστήριό σας και ρωτήστε τον ασφαλιστή σας για ό,τι λείπει.",
   "inline:lib/services/renewal.service.ts::Η Πράσινη Κάρτα σας λήγει σύντομα",
-  "inline:lib/services/renewal.service.ts::Η Πράσινη Κάρτα του ασφαλιστηρίου ${policy.insurerName} λήγει στις ${formatDate(window.expiresOn, \"el\")}. Χωρίς αυτήν δεν αποδεικνύεται η ασφάλιση εκτός Ελλάδας — ζητήστε νέα από τον ασφαλιστή σας."
+  "inline:lib/services/renewal.service.ts::Η Πράσινη Κάρτα του ασφαλιστηρίου ${policy.insurerName} λήγει στις ${formatDate(window.expiresOn, \"el\")}. Χωρίς αυτήν δεν αποδεικνύεται η ασφάλιση εκτός Ελλάδας — ζητήστε νέα από τον ασφαλιστή σας.",
+  "inline:lib/notifications/registry.ts::Ο ετήσιος έλεγχος υγείας σας είναι διαθέσιμος",
+  "inline:lib/notifications/registry.ts::Το ασφαλιστήριο υγείας σας καταγράφει ετήσιο έλεγχο. Αν δεν τον έχετε κάνει φέτος, δείτε πώς κλείνετε ραντεβού στη σελίδα Ευεξία."
 ]

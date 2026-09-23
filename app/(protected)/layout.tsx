@@ -19,7 +19,7 @@ import { signOut } from "@/app/auth/actions"
 import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, FileText, Inbox, Coins, Zap, LogOut, UserRound } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, HeartPulse, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, FileText, Inbox, Coins, Zap, LogOut, UserRound } from 'lucide-react'
 import { displayInsurerName, displayPersonName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import type { CommandSearchItem } from "@/components/shell/CommandSearch"
@@ -134,6 +134,7 @@ export default async function ProtectedLayout({
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 { label: t.nav.protection, href: "/protection", icon: <Shield className="w-5 h-5" /> },
                 { label: t.nav.recommendations, href: "/recommendations", icon: <Lightbulb className="w-5 h-5" /> },
+                { label: t.nav.wellness, href: "/wellness", icon: <HeartPulse className="w-5 h-5" /> },
             ]
         })
         navigation.push({

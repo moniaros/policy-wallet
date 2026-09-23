@@ -36,6 +36,8 @@ export async function buildUserDataExportPayload(userId: string) {
         referralsMade,
         exportRequests,
         protectionProfile,
+        healthBenefitUsages,
+        healthRiskAssessments,
     ] = await Promise.all([
         db.user.findUnique({
             where: { id: userId },
@@ -568,7 +570,18 @@ export async function buildUserDataExportPayload(userId: string) {
                 skippedAt: true,
                 summaryViewedAt: true,
             },
-        })
+        }),
+        // Spec v2 §9 — the person's own health-benefit tracker and self-assessments (Art. 9).
+        db.healthBenefitUsage.findMany({
+            where: { userId },
+            select: { policyKey: true, benefit: true, year: true, status: true, note: true, completedAt: true, createdAt: true },
+            orderBy: { year: "desc" },
+        }),
+        db.healthRiskAssessment.findMany({
+            where: { userId },
+            select: { consentVersion: true, answers: true, scores: true, createdAt: true },
+            orderBy: { createdAt: "desc" },
+        }),
     ])
 
     if (!user) {
@@ -665,6 +678,12 @@ export async function buildUserDataExportPayload(userId: string) {
             occurredAt: toIso(e.occurredAt),
             recordedAt: toIso(e.recordedAt),
         })),
+        healthBenefitUsages: healthBenefitUsages.map((u) => ({
+            ...u,
+            completedAt: u.completedAt ? toIso(u.completedAt) : null,
+            createdAt: toIso(u.createdAt),
+        })),
+        healthRiskAssessments: healthRiskAssessments.map((a) => ({ ...a, createdAt: toIso(a.createdAt) })),
         protectionProfile: protectionProfile
             ? {
                   ...protectionProfile,
