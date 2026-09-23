@@ -218,7 +218,10 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   (`docs/content/PROD-ALIGNMENT.md`). **A catalogue ahead of its deployed code is
   the failure this table's rule exists to prevent — parking is how you undo it
   without deleting anything, and a content md5 taken BEFORE the write is what
-  proves the undo was exact.** Keep the content-not-counts
+  proves the undo was exact.**
+  **Verified 2026-09-23 (spec v2
+  Phase 2): both 55 active on `33a0731577205d72`** — the five new rows were inserted on prod
+  PARKED, activated only after #366 deployed, and fingerprinted from rows handed across as JSON. Keep the content-not-counts
   rule anyway; the pipeline can mint again. This is the third table to drift
   after migrations and plan rows.
   **A fingerprint written in a document is a claim, not a measurement.** The
