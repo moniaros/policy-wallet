@@ -16,7 +16,7 @@ today. The assessment itself is a legal judgement and is a halt
 | Measure | Value |
 | --- | --- |
 | Stores holding personal data (tagged) | 58 of 58 |
-| Columns across them (relations excluded) | 734 |
+| Columns across them (relations excluded) | 735 |
 | Columns declared Art. 9 | 10 (stores: 2) |
 | Data-subject categories in use | admin, agent, policyholder, third_party |
 | Stores under the AI-analysis purpose | 9 |
@@ -548,6 +548,7 @@ fields are not columns and are not listed.
 | `premiumAmount` | `Decimal?` | ordinary |
 | `premiumCurrency` | `String?` | ordinary |
 | `coverageSummary` | `String?` | ordinary |
+| `nickname` | `String?` | ordinary |
 | `createdAt` | `DateTime` | ordinary |
 | `updatedAt` | `DateTime` | ordinary |
 | `acordData` | `Json?` | ordinary |

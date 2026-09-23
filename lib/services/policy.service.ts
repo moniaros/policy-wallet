@@ -208,7 +208,7 @@ export class PolicyService extends BaseService {
     async update(
         policyId: string,
         userId: string,
-        data: Partial<CreatePolicyInput> & { status?: string },
+        data: Partial<CreatePolicyInput> & { status?: string; nickname?: string | null },
         language: 'en' | 'el' = 'en'
     ): Promise<Policy> {
         // Verify existence, write access, and validate the payload BEFORE the
@@ -246,6 +246,7 @@ export class PolicyService extends BaseService {
         // Build update data
         const updateData: any = {}
         if (data.insurerName !== undefined) updateData.insurerName = data.insurerName
+        if (data.nickname !== undefined) updateData.nickname = data.nickname
         if (data.policyNumber !== undefined) updateData.policyNumber = data.policyNumber
         if (data.lineOfBusiness !== undefined) updateData.lineOfBusiness = data.lineOfBusiness
         if (data.startDate !== undefined) updateData.startDate = new Date(data.startDate)

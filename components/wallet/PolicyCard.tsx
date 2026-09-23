@@ -4,7 +4,8 @@ import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { resolvePolicyLifecycle, type PolicyLifecycle } from '@/lib/policy-status'
 import { formatDate } from '@/lib/i18n/format'
-import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
+import { getPolicyStatusView, TONE_CHIP } from '@/lib/wallet/policy-status-view'
+import { quickFacts } from '@/lib/wallet/quick-facts'
 import { displayInsurerName, isPlaceholderInsurerName, policyAssetIdentifier, policyRowIdentity } from '@/lib/wallet/policy-identity'
 import { StatusPill } from '@/components/ui/StatusPill'
 import { BadgeCheck, Sparkles, Search, FileText, Share2, Trash2 } from 'lucide-react'
@@ -116,6 +117,10 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
     const lifecycle = resolvePolicyLifecycle(policy)
     const view = getPolicyStatusView(policy, t)
     const expiryInline = isAnalyzing ? '' : formatRelativeExpiry(lifecycle, locale)
+    // Spec v2 §6: the branch's glanceable facts (hospital class, green card,
+    // ENFIA, fund value, microchip…) from the ONE resolver that knows which
+    // extracted field answers «am I covered?» and when it is safe to show.
+    const facts = isAnalyzing ? [] : quickFacts(policy, t, locale)
 
     // The card used to be ONE <button> that accepted onShare/onViewDocuments/
     // onRunAnalysis/onDelete as props and silently ignored all four. Those actions
@@ -167,6 +172,15 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
 
                     {/* Row 2: LOB type (+ asset identifier) + expiry inline */}
                     <p className="text-caption text-muted-foreground">
+                        {policy.nickname && (
+                            <>
+                                {/* Owner-typed, spec v2 §10.1 — the person's own name for it, first. */}
+                                <span className="font-semibold text-foreground" data-fact="policy.nickname" data-fact-subject={policy.id} data-fact-value={policy.nickname}>
+                                    {policy.nickname}
+                                </span>
+                                {' · '}
+                            </>
+                        )}
                         {localizedLob}
                         {policy.documents?.some((doc) => doc.uploadedBy === 'agent') && (
                             <>
@@ -210,6 +224,31 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                 </div>
                 </div>
             </button>
+
+            {facts.length > 0 && (
+                // Outside the view button: a tap-to-call chip is itself interactive.
+                <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={t.wallet.quickFactsLabel}>
+                    {facts.map((fact) => {
+                        const tone = fact.tone ?? 'neutral'
+                        const body = (
+                            <>
+                                <span className="text-muted-foreground">{fact.label}</span>
+                                <span className="font-semibold">{fact.value}</span>
+                            </>
+                        )
+                        const chipClass = `inline-flex min-h-7 items-center gap-1 rounded-full px-2 py-0.5 text-caption ${TONE_CHIP[tone]}`
+                        return (
+                            <li key={fact.key} data-fact="policy.quickFact" data-fact-subject={`${policy.id}:${fact.key}`} data-fact-value={fact.value}>
+                                {fact.href ? (
+                                    <a href={fact.href} className={`${chipClass} underline-offset-2 hover:underline`}>{body}</a>
+                                ) : (
+                                    <span className={chipClass}>{body}</span>
+                                )}
+                            </li>
+                        )
+                    })}
+                </ul>
+            )}
 
             {hasActions && (
                 <div className="mt-3 flex items-center justify-end gap-0.5 border-t border-border pt-2">

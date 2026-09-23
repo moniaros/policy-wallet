@@ -32,7 +32,7 @@ async function submitUpload(page: Page, file: string, branch: string) {
     await page.goto("/wallet/add")
     await dismissCookieBanner(page)
     await page.setInputFiles("#file-upload", fixture(file))
-    await page.selectOption("#add-lineOfBusiness", branch)
+    await page.click(`#add-lineOfBusiness [data-branch="${branch}"]`)
     await page.locator("form button[type=submit]").click()
     await acceptConsentIfShown(page)
 }

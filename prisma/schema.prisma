@@ -414,6 +414,8 @@ model Policy {
   premiumAmount           Decimal?               @map("premium_amount")
   premiumCurrency         String?                @default("EUR") @map("premium_currency")
   coverageSummary         String?                @map("coverage_summary")
+  /// Owner-typed display name (spec v2 §10.1). Never extracted, never a rule input.
+  nickname                String?
   createdAt               DateTime               @default(now()) @map("created_at")
   updatedAt               DateTime               @updatedAt @map("updated_at")
   acordData               Json?                  @map("acord_data")

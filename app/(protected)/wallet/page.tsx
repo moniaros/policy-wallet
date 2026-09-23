@@ -179,6 +179,7 @@ export default async function WalletPage() {
                 resolveInsurerDisplay(p.insurerName).displayName
             ),
             insurerLogo: null, // Placeholder
+            nickname: p.nickname ?? null,
             lineOfBusiness: p.lineOfBusiness as any,
             // Pass the RAW stored status and the extracted envelope; the card
             // derives the displayed status via getPolicyStatusView /

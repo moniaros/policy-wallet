@@ -13,7 +13,7 @@ import { calculatePremiumFootprintDetailed } from '@/lib/wallet/premium-footprin
 import { getPolicyStatusView, isAttentionKey } from '@/lib/wallet/policy-status-view'
 import { ImportantNotices, type Notice } from './ImportantNotices'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
-import { INSURANCE_BRANCHES, normalizeBranch } from '@/lib/insurance/taxonomy'
+import { INSURANCE_BRANCHES, branchFamilyId, normalizeBranch } from '@/lib/insurance/taxonomy'
 import { formatDate } from '@/lib/i18n/format'
 import { displayInsurerName, policyAssetIdentifier, warnOnHomoglyphNearMisses } from '@/lib/wallet/policy-identity'
 
@@ -40,6 +40,11 @@ export function PolicyWallet({
     const [showAddMenu, setShowAddMenu] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [activeFilter, setActiveFilter] = useState<string>('all')
+    // Spec v2 §10.1: sort by renewal / insurer / type, filter by insurer, and
+    // group by category. Renewal order is the lifecycle's real end date, the
+    // same value the status pill and the notices read — never the raw column.
+    const [sortBy, setSortBy] = useState<'renewal' | 'insurer' | 'type'>('renewal')
+    const [insurerFilter, setInsurerFilter] = useState<string>('all')
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
     const addMenuRef = useRef<HTMLDivElement | null>(null)
 
@@ -66,23 +71,64 @@ export function PolicyWallet({
         }
     }, [showAddMenu])
 
+    // KPI counts come from the computed lifecycle (real end dates), not the
+    // stored status string — nothing ever recomputes the stored value, so an
+    // expired policy would count as active forever.
+    const views = useMemo(() => policies.map((p) => getPolicyStatusView(p, t)), [policies, t])
+    const endDateById = useMemo(() => {
+        const map = new Map<string, number>()
+        policies.forEach((p, i) => { map.set(p.id, views[i].endDate ? new Date(views[i].endDate!).getTime() : Number.POSITIVE_INFINITY) })
+        return map
+    }, [policies, views])
+
     const filteredPolicies = useMemo(() => {
         const query = searchQuery.trim().toLowerCase()
 
-        return policies.filter((policy) => {
+        const filtered = policies.filter((policy) => {
             const byQuery =
                 !query ||
                 policy.policyNumber?.toLowerCase().includes(query) ||
                 policy.insurerName?.toLowerCase().includes(query) ||
+                policy.nickname?.toLowerCase().includes(query) ||
                 policy.lineOfBusiness?.toLowerCase().includes(query) ||
                 // The row shows the asset identifier (plate/address/pet), so
                 // typing what the row shows must find the row.
                 policyAssetIdentifier(policy)?.toLowerCase().includes(query)
 
             const byFilter = activeFilter === 'all' || normalizeBranch(policy.lineOfBusiness).id === activeFilter
-            return byQuery && byFilter
+            const byInsurer = insurerFilter === 'all' || displayInsurerName(policy.insurerName) === insurerFilter
+            return byQuery && byFilter && byInsurer
         })
-    }, [policies, searchQuery, activeFilter])
+        const lang = language === 'el' ? 'el' : 'en'
+        const collator = new Intl.Collator(lang)
+        return [...filtered].sort((a, b) => {
+            if (sortBy === 'insurer') return collator.compare(displayInsurerName(a.insurerName) ?? '', displayInsurerName(b.insurerName) ?? '')
+            if (sortBy === 'type') return collator.compare(normalizeBranch(a.lineOfBusiness).label[lang], normalizeBranch(b.lineOfBusiness).label[lang])
+            return (endDateById.get(a.id) ?? Infinity) - (endDateById.get(b.id) ?? Infinity)
+        })
+    }, [policies, searchQuery, activeFilter, insurerFilter, sortBy, endDateById, language])
+
+    // Grouped by branch FAMILY in taxonomy order (motorbike under motor,
+    // renters under home), so a card is found by what it insures.
+    const groupedPolicies = useMemo(() => {
+        const order = INSURANCE_BRANCHES.map((b) => b.id)
+        const groups = new Map<string, Policy[]>()
+        for (const policy of filteredPolicies) {
+            const family = branchFamilyId(policy.lineOfBusiness)
+            if (!groups.has(family)) groups.set(family, [])
+            groups.get(family)!.push(policy)
+        }
+        return [...groups.entries()].sort(([a], [b]) => {
+            const ia = order.indexOf(a); const ib = order.indexOf(b)
+            return (ia === -1 ? order.length : ia) - (ib === -1 ? order.length : ib)
+        })
+    }, [filteredPolicies])
+
+    const presentInsurers = useMemo(() => {
+        const names = new Set<string>()
+        for (const p of policies) { const n = displayInsurerName(p.insurerName); if (n) names.add(n) }
+        return [...names].sort(new Intl.Collator(language === 'el' ? 'el' : 'en').compare)
+    }, [policies, language])
 
     // Acceptance 3 (P5-wallet-01): Greek/Latin homoglyph pairs among the
     // rendered identifiers («ΙΚΖ-4821» Greek vs «IKZ-4821» Latin) are LOGGED,
@@ -96,10 +142,6 @@ export function PolicyWallet({
         )
     }, [policies])
 
-    // KPI counts come from the computed lifecycle (real end dates), not the
-    // stored status string — nothing ever recomputes the stored value, so an
-    // expired policy would count as active forever.
-    const views = useMemo(() => policies.map((p) => getPolicyStatusView(p, t)), [policies, t])
     const activeCount = views.filter((v) => v.key === 'active').length
     const expiringCount = views.filter((v) => v.key === 'expiring_soon').length
     const attentionCount = views.filter((v) => isAttentionKey(v.key)).length
@@ -207,7 +249,32 @@ export function PolicyWallet({
                         </svg>
                     </div>
 
-                    <div className="flex w-full min-w-0 items-center justify-end gap-2 sm:w-auto">
+                    <div className="flex w-full min-w-0 flex-wrap items-center justify-end gap-2 sm:w-auto">
+                        <label className="sr-only" htmlFor="wallet-sort">{t.common.sort}</label>
+                        <select
+                            id="wallet-sort"
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                            className="pw-input h-10 w-auto min-w-0 py-0 text-sm"
+                        >
+                            <option value="renewal">{t.wallet.sortByRenewal}</option>
+                            <option value="insurer">{t.wallet.sortByInsurer}</option>
+                            <option value="type">{t.wallet.sortByType}</option>
+                        </select>
+                        {presentInsurers.length > 1 && (
+                            <>
+                                <label className="sr-only" htmlFor="wallet-insurer">{t.wallet.insurerFilterLabel}</label>
+                                <select
+                                    id="wallet-insurer"
+                                    value={insurerFilter}
+                                    onChange={(e) => setInsurerFilter(e.target.value)}
+                                    className="pw-input h-10 w-auto min-w-0 py-0 text-sm"
+                                >
+                                    <option value="all">{t.wallet.allInsurers}</option>
+                                    {presentInsurers.map((name) => <option key={name} value={name}>{name}</option>)}
+                                </select>
+                            </>
+                        )}
                         <div className="pw-segmented pw-scroll-strip min-w-0">
                             {filters.map((filter) => (
                                 <button
@@ -272,27 +339,42 @@ export function PolicyWallet({
                     phone and the view toggle is itself desktop-only. `viewMode` only
                     decides what desktop shows. Doing this with a JS breakpoint would
                     reintroduce the hydration fork this change exists to remove. */}
-                <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 ${viewMode === 'list' ? 'xl:hidden' : ''}`}>
-                    {filteredPolicies.map((policy, index) => (
-                        <PolicyCard
-                            key={policy.id}
-                            policy={policy}
-                            onView={() => onViewPolicy?.(policy.id)}
-                            onShare={() => onShareWithAgent?.(policy.id)}
-                            onViewDocuments={() => onViewDocuments?.(policy.id)}
-                            onRunAnalysis={() => onRunAnalysis?.(policy.id)}
-                            // No onDelete on the LIST card. A red trash on every
-                            // row keeps a destructive action permanently in
-                            // thumb's reach next to three routine ones — the
-                            // confirm dialog catches slips, but the HIG's point
-                            // is distance, not recovery. Deletion lives on the
-                            // policy page (PolicyDetailsClientView), where the
-                            // same confirm modal already owns it. The xl:
-                            // PolicyTable keeps its delete column: a desktop
-                            // table row is not a thumb target.
-                            onViewHistory={() => onViewHistory?.(policy.id)}
-                            id={index === 0 ? 'tour-policy-card-0' : undefined}
-                        />
+                <div className={`space-y-5 ${viewMode === 'list' ? 'xl:hidden' : ''}`}>
+                    {groupedPolicies.map(([family, group], groupIndex) => (
+                        <div key={family}>
+                            {/* Category heading (spec v2 §10.1); hidden when a
+                                branch chip already narrows the list to one. */}
+                            {activeFilter === 'all' && (
+                                <h3 className="mb-2 text-caption font-semibold uppercase tracking-wide text-muted-foreground">
+                                    {t.policyTypes?.[family as keyof typeof t.policyTypes] || family}
+                                    {' '}
+                                    <span data-count="branch.policyCount" data-count-subject={family}>({group.length})</span>
+                                </h3>
+                            )}
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                {group.map((policy, index) => (
+                                    <PolicyCard
+                                        key={policy.id}
+                                        policy={policy}
+                                        onView={() => onViewPolicy?.(policy.id)}
+                                        onShare={() => onShareWithAgent?.(policy.id)}
+                                        onViewDocuments={() => onViewDocuments?.(policy.id)}
+                                        onRunAnalysis={() => onRunAnalysis?.(policy.id)}
+                                        // No onDelete on the LIST card. A red trash on every
+                                        // row keeps a destructive action permanently in
+                                        // thumb's reach next to three routine ones — the
+                                        // confirm dialog catches slips, but the HIG's point
+                                        // is distance, not recovery. Deletion lives on the
+                                        // policy page (PolicyDetailsClientView), where the
+                                        // same confirm modal already owns it. The xl:
+                                        // PolicyTable keeps its delete column: a desktop
+                                        // table row is not a thumb target.
+                                        onViewHistory={() => onViewHistory?.(policy.id)}
+                                        id={groupIndex === 0 && index === 0 ? 'tour-policy-card-0' : undefined}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                     ))}
                 </div>
 
@@ -323,6 +405,7 @@ export function PolicyWallet({
                         onClick={() => {
                             setSearchQuery('')
                             setActiveFilter('all')
+                            setInsurerFilter('all')
                         }}
                         className="pw-soft-button mt-6 cursor-pointer"
                     >
