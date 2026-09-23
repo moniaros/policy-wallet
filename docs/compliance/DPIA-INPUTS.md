@@ -15,8 +15,8 @@ today. The assessment itself is a legal judgement and is a halt
 
 | Measure | Value |
 | --- | --- |
-| Stores holding personal data (tagged) | 60 of 60 |
-| Columns across them (relations excluded) | 751 |
+| Stores holding personal data (tagged) | 61 of 61 |
+| Columns across them (relations excluded) | 760 |
 | Columns declared Art. 9 | 15 (stores: 4) |
 | Data-subject categories in use | admin, agent, policyholder, third_party |
 | Stores under the AI-analysis purpose | 10 |
@@ -575,6 +575,7 @@ fields are not columns and are not listed.
 | `premiumCurrency` | `String?` | ordinary |
 | `coverageSummary` | `String?` | ordinary |
 | `nickname` | `String?` | ordinary |
+| `privateToOwner` | `Boolean` | ordinary |
 | `createdAt` | `DateTime` | ordinary |
 | `updatedAt` | `DateTime` | ordinary |
 | `acordData` | `Json?` | ordinary |
@@ -1074,6 +1075,19 @@ fields are not columns and are not listed.
 | `updatedAt` | `DateTime` | ordinary |
 | `completedAt` | `DateTime?` | ordinary |
 
+### `WalletMembership` — service · consent · policyholder · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `id` | `String` | identifier |
+| `walletOwnerUserId` | `String` | subject key |
+| `memberUserId` | `String` | subject key |
+| `status` | `String` | ordinary |
+| `acceptedAt` | `DateTime` | ordinary |
+| `endedAt` | `DateTime?` | ordinary |
+| `createdAt` | `DateTime` | ordinary |
+| `updatedAt` | `DateTime` | ordinary |
+
 ### `WebAuthnChallenge` — security · contract · policyholder|agent|admin · session · delete
 
 | Column | Type | Class |
@@ -1124,8 +1138,8 @@ generator rather than rendering a pack without it.
 
 | Processor | Role (published) | Location (published) | Purposes | Stores under those purposes | How | Receives the document | Endpoint, as constructed in code |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 60 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
-| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 60 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
+| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 61 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
+| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 61 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
 | Stripe | Payment and subscription processing | EU/US | billing | `CreditTransaction`, `EntitlementUsage`, `Invoice`, `MonthlyTokenUsage`, `PaymentMethod`, `Referral`, `ReportUnlockPurchase`, `Subscription`, `TokenBalance`, `TokenPurchase`, `TokenUsage` | checkout, subscription and invoice objects; card data never reaches our systems | no | n/a — configured outside the application code |
 | Brevo | Email delivery (notifications, newsletter) | EU (France) | communication | `BusinessEvent`, `NotificationEvent`, `NotificationPreference`, `PushDevice`, `UserNotificationSettings` | the address, name and body of each email sent | no | n/a — configured outside the application code |
 | Upstash | Request rate limiting (Redis) | EU/US | none | none | per-IP request counters for rate limiting — no store feeds it | no | n/a — configured outside the application code |

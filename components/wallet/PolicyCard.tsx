@@ -182,6 +182,15 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                             </>
                         )}
                         {localizedLob}
+                        {policy.familyOwnerName && (
+                            <>
+                                {' · '}
+                                {/* Spec v2 §13: a row from a family wallet says whose it is. */}
+                                <span data-fact="policy.familyOwner" data-fact-subject={policy.id} data-fact-value={policy.familyOwnerName}>
+                                    {t.wallet.fromFamilyMember.replace('{name}', policy.familyOwnerName)}
+                                </span>
+                            </>
+                        )}
                         {policy.documents?.some((doc) => doc.uploadedBy === 'agent') && (
                             <>
                                 {' · '}

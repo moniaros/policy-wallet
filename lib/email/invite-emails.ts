@@ -116,6 +116,45 @@ export async function sendPolicyInviteEmail(params: {
     })
 }
 
+/** Spec v2 §13 — the family-wallet invite. Art. 14 rides inside, like every invite. */
+export async function sendFamilyInviteEmail(params: {
+    to: string
+    token: string
+    inviterName?: string | null
+    language?: Language
+}) {
+    const language: Language = params.language === "el" ? "el" : "en"
+    const inviter = sanitizeName(params.inviterName, language)
+    const inviteUrl = absoluteUrl(`/invite/${params.token}`)
+
+    const copy = language === "el"
+        ? {
+            subject: "Πρόσκληση σε οικογενειακό πορτοφόλι στο PolicyWallet",
+            title: "Έχετε προσκληθεί σε ένα οικογενειακό πορτοφόλι",
+            body: `${inviter} σας προσκάλεσε να μοιράζεστε το ασφαλιστικό πορτοφόλι του στο PolicyWallet: θα βλέπετε και θα διαχειρίζεστε μαζί τα ασφαλιστήρια που δεν έχει κρατήσει ιδιωτικά. Ανοίξτε τον ασφαλή σύνδεσμο για να αποδεχτείτε.`,
+            action: "Άνοιγμα πρόσκλησης",
+        }
+        : {
+            subject: "Invitation to a family wallet on PolicyWallet",
+            title: "You have been invited to a family wallet",
+            body: `${inviter} invited you to share their insurance wallet on PolicyWallet: you will see and manage together the policies they have not kept private. Open the secure link to accept.`,
+            action: "Open invitation",
+        }
+
+    return sendEmail({
+        to: params.to,
+        subject: copy.subject,
+        html: getBaseTemplate({
+            title: copy.title,
+            description: copy.body,
+            actionUrl: inviteUrl,
+            actionLabel: copy.action,
+            footerText: inviteFooter(language),
+            legalNotice: article14Notice(language),
+        }),
+    })
+}
+
 export async function sendAdvisorInviteEmail(params: {
     to: string
     token: string

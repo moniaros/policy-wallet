@@ -22,17 +22,22 @@ interface EditPolicyFormProps {
         premiumAmount?: number | null
         coverageSummary?: string | null
         nickname?: string | null
+        privateToOwner?: boolean
+        ownerUserId?: string
     }
+    /** The signed-in user — the private toggle is the owner's alone. */
+    viewerId?: string
     t?: any
     /** Same-origin path to navigate back to after save (agent surfaces). */
     returnTo?: string
 }
 
-export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
+export function EditPolicyForm({ policy, t, returnTo, viewerId }: EditPolicyFormProps) {
     const { t: contextT } = useLanguage()
     const i18n = t || contextT
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
+    const isOwner = Boolean(viewerId && policy.ownerUserId && viewerId === policy.ownerUserId)
 
     const [formData, setFormData] = useState({
         // Placeholders are not editable text — the field starts empty so the
@@ -45,6 +50,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
         premiumAmount: policy.premiumAmount ? String(policy.premiumAmount) : "",
         coverageSummary: policy.coverageSummary || "",
         nickname: policy.nickname || "",
+        privateToOwner: Boolean(policy.privateToOwner),
     })
 
     const copy = {
@@ -61,6 +67,8 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
             summary: i18n.wallet.summary,
             nickname: i18n.wallet.nickname,
             nicknameHint: i18n.wallet.nicknameHint,
+            privateToOwner: i18n.wallet.privateToOwner,
+            privateToOwnerHint: i18n.wallet.privateToOwnerHint,
         },
     }
 
@@ -81,6 +89,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
             if (formData.premiumAmount) data.append("premiumAmount", formData.premiumAmount)
             if (formData.coverageSummary) data.append("coverageSummary", formData.coverageSummary)
             data.append("nickname", formData.nickname)
+            if (isOwner) data.append("privateToOwner", formData.privateToOwner ? "true" : "false")
 
             const result = await updatePolicy(policy.id, data)
 
@@ -214,6 +223,23 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
                     />
                     <p id="nickname-hint" className="text-caption text-muted-foreground">{copy.labels.nicknameHint}</p>
                 </div>
+
+                {isOwner && (
+                    <label className="flex items-start gap-2 text-sm text-foreground">
+                        <input
+                            type="checkbox"
+                            name="privateToOwner"
+                            checked={formData.privateToOwner}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, privateToOwner: e.target.checked }))}
+                            className="mt-1"
+                            disabled={isPending}
+                        />
+                        <span>
+                            <span className="font-semibold">{copy.labels.privateToOwner}</span>
+                            <span className="block text-caption text-muted-foreground">{copy.labels.privateToOwnerHint}</span>
+                        </span>
+                    </label>
+                )}
 
                 <div className="grid gap-2">
                     <label htmlFor="coverageSummary" className={labelClass}>{copy.labels.summary}</label>

@@ -32,13 +32,15 @@ export async function applyInviteRedemption(token: string, userId: string) {
     // email-bound like a share invite.
     const isClientAgentInvite =
         invite.inviteType === "signup" && invite.relationshipType === "client_agent"
+    // Spec v2 §13: the family-wallet invite. Email-bound like a share.
+    const isFamilyInvite = invite.inviteType === "family"
 
     // Bind a share/access/client-agent invite to the address it was sent to: a
     // leaked token must not connect/grant whoever opens the link. Check BEFORE
     // consuming so a wrong-recipient click leaves the invite valid for the
     // intended user. (The agent→client signup branch is already email-bound —
     // its relationship was pre-created keyed on the invited user's id.)
-    if ((isShareInvite || isClientAgentInvite) && invite.inviteeEmail) {
+    if ((isShareInvite || isClientAgentInvite || isFamilyInvite) && invite.inviteeEmail) {
         const redeemer = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
         const redeemerEmail = redeemer?.email?.trim().toLowerCase()
         if (!redeemerEmail || redeemerEmail !== invite.inviteeEmail.trim().toLowerCase()) {
@@ -112,6 +114,51 @@ export async function applyInviteRedemption(token: string, userId: string) {
             advisorUserId: userId,
             dedupeSuffix: invite.id,
         })
+        return
+    }
+
+    if (isFamilyInvite) {
+        // The owner cannot be their own member; consume and mint nothing.
+        if (invite.inviterUserId === userId) return
+        await db.walletMembership.upsert({
+            where: { walletOwnerUserId_memberUserId: { walletOwnerUserId: invite.inviterUserId, memberUserId: userId } },
+            create: { walletOwnerUserId: invite.inviterUserId, memberUserId: userId, status: "active" },
+            update: { status: "active", acceptedAt: new Date(), endedAt: null },
+        })
+        // Both sides, each naming the other: another person now sees this
+        // wallet (spec v2 §25.3 — a silent grant of sight is never allowed).
+        try {
+            const [owner, member] = await Promise.all([
+                db.user.findUnique({ where: { id: invite.inviterUserId }, select: { name: true } }),
+                db.user.findUnique({ where: { id: userId }, select: { name: true } }),
+            ])
+            const ownerName = displayPersonName(owner?.name)
+            const memberName = displayPersonName(member?.name)
+            const whoseEl = ownerName ? `του/της ${ownerName}` : "του πορτοφολιού"
+            const whoseEn = ownerName ? `${ownerName}'s` : "the wallet's"
+            await emit({
+                event: "family_member_joined",
+                userId: invite.inviterUserId,
+                title: { el: "Νέο μέλος στο οικογενειακό σας πορτοφόλι", en: "A new member joined your family wallet" },
+                message: {
+                    el: `${memberName || "Ένα μέλος της οικογένειας"} αποδέχτηκε την πρόσκληση και βλέπει πλέον τα ασφαλιστήρια που δεν έχετε κρατήσει ιδιωτικά.`,
+                    en: `${memberName || "A family member"} accepted the invitation and now sees the policies you have not kept private.`,
+                },
+                dedupeKey: `family_member_joined:owner:${invite.id}`,
+            })
+            await emit({
+                event: "family_member_joined",
+                userId,
+                title: { el: "Μπήκατε σε ένα οικογενειακό πορτοφόλι", en: "You joined a family wallet" },
+                message: {
+                    el: `Βλέπετε πλέον τα ασφαλιστήρια ${whoseEl} που δεν έχουν κρατηθεί ιδιωτικά. Μπορείτε να αποχωρήσετε οποτεδήποτε από τις Ρυθμίσεις.`,
+                    en: `You now see ${whoseEn} policies that were not kept private. You can leave at any time from Settings.`,
+                },
+                dedupeKey: `family_member_joined:member:${invite.id}`,
+            })
+        } catch (error) {
+            console.error("Family-joined notification failed", error)
+        }
         return
     }
 

@@ -89,6 +89,12 @@ export interface EmitParams {
      */
     only?: NotificationChannel[]
     /**
+     * Spec v2 §13: a policy-scoped event to a wallet OWNER is mirrored to the
+     * owner's active family members for policies not kept private. Set on the
+     * mirrored copies so they never mirror again.
+     */
+    mirrored?: boolean
+    /**
      * Pre-rendered content for a channel that can carry more than a title and a
      * sentence. Presentation only — the registry still owns who, whether and
      * when. See `ChannelContent`.
@@ -187,6 +193,43 @@ export async function isChannelSuppressed(
  * outcome can, and a caller that does not care can ignore it safely.
  */
 export async function emit(params: EmitParams): Promise<EmitResult> {
+    const result = await emitOne(params)
+    if (!params.mirrored && params.relatedObjectType === "policy" && params.relatedObjectId) {
+        await mirrorToFamily(params).catch((error) =>
+            logger("warn", "[notifications] family mirror failed", { event: params.event, error: String(error) })
+        )
+    }
+    return result
+}
+
+/**
+ * Spec v2 §13 «notifications are mirrored to all wallet members»: the same
+ * event, the same copy, one row per member — deduped per member — and only for
+ * a policy the owner has not kept private. Membership is the arm that makes
+ * the member see the policy at all, so the mirror can never announce a policy
+ * the member cannot open.
+ */
+async function mirrorToFamily(params: EmitParams): Promise<void> {
+    const policy = await db.policy.findUnique({
+        where: { id: params.relatedObjectId! },
+        select: { ownerUserId: true, privateToOwner: true },
+    })
+    if (!policy || policy.ownerUserId !== params.userId || policy.privateToOwner) return
+    const members = await db.walletMembership.findMany({
+        where: { walletOwnerUserId: params.userId, status: "active" },
+        select: { memberUserId: true },
+    })
+    for (const member of members) {
+        await emitOne({
+            ...params,
+            userId: member.memberUserId,
+            mirrored: true,
+            dedupeKey: params.dedupeKey ? `${params.dedupeKey}:family:${member.memberUserId}` : undefined,
+        })
+    }
+}
+
+async function emitOne(params: EmitParams): Promise<EmitResult> {
     try {
         const def = getEventDefinition(params.event)
         if (!def) {

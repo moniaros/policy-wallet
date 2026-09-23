@@ -37,12 +37,18 @@ export interface PolicyAccessViewer {
 }
 
 export interface PolicyAccessInput {
-    policy: { id: string; ownerUserId: string; createdByUserId: string } | null
+    policy: { id: string; ownerUserId: string; createdByUserId: string; privateToOwner?: boolean } | null
     viewer: PolicyAccessViewer
     /** Active grant rows for this viewer (any scope; filtering happens here). */
     grants: { scope: string; permissions: string; status: string }[]
     /** Relationship between viewer-as-agent and the policy owner, if any. */
     relationship: { status: string } | null
+    /**
+     * Spec v2 §13 — the viewer's family membership in the OWNER's wallet, if
+     * any. Optional so the pure function's existing callers stay valid; absent
+     * means "not a member".
+     */
+    membership?: { status: string } | null
 }
 
 export interface PolicyAccess {
@@ -52,6 +58,8 @@ export interface PolicyAccess {
     grantLevel: PolicyPermissionLevel
     /** True when the viewer is an agent with a usable relationship to the owner. */
     hasAgentRelationship: boolean
+    /** Reads/writes through an active family membership (spec v2 §13). */
+    isFamilyMember: boolean
     canRead: boolean
     canWrite: boolean
     canManageDocuments: boolean
@@ -64,6 +72,7 @@ const NO_ACCESS: PolicyAccess = {
     isOwner: false,
     grantLevel: "none",
     hasAgentRelationship: false,
+    isFamilyMember: false,
     canRead: false,
     canWrite: false,
     canManageDocuments: false,
@@ -106,7 +115,7 @@ export function normalizePermissions(permissions: string): PolicyPermissionLevel
 
 /** Pure decision function — all I/O stays in getPolicyAccess. */
 export function computePolicyAccess(input: PolicyAccessInput): PolicyAccess {
-    const { policy, viewer, grants, relationship } = input
+    const { policy, viewer, grants, relationship, membership } = input
     if (!policy) return NO_ACCESS
 
     const isOwner = policy.ownerUserId === viewer.id
@@ -140,20 +149,29 @@ export function computePolicyAccess(input: PolicyAccessInput): PolicyAccess {
     const isManagingAgent =
         hasAgentRelationship && policy.createdByUserId === viewer.id
 
-    const canWrite = isOwner || LEVEL_ORDER[grantLevel] >= LEVEL_ORDER.write
-    const canRead = isOwner || grantLevel !== "none" || isManagingAgent
+    // FAMILY (spec v2 §13): an ACTIVE membership in the owner's wallet gives a
+    // member the owner's own view and edit rights on every policy the owner has
+    // not kept private — and never a delete, which stays the owner's. Membership
+    // exists only through an accepted, email-bound invite; ending it (by either
+    // side) ends this arm in the same write, because it reads the row's status.
+    const isFamilyMember =
+        !isOwner && membership?.status === "active" && policy.privateToOwner !== true
+
+    const canWrite = isOwner || isFamilyMember || LEVEL_ORDER[grantLevel] >= LEVEL_ORDER.write
+    const canRead = isOwner || isFamilyMember || grantLevel !== "none" || isManagingAgent
 
     return {
         exists: true,
         isOwner,
         grantLevel,
         hasAgentRelationship,
+        isFamilyMember,
         canRead,
         canWrite,
         canManageDocuments: canWrite,
         // Analysis spends the agent's tokens on the owner's data — only on
         // policies the agent manages, or with a write/manage grant.
-        canAnalyze: isOwner || LEVEL_ORDER[grantLevel] >= LEVEL_ORDER.write || isManagingAgent,
+        canAnalyze: isOwner || isFamilyMember || LEVEL_ORDER[grantLevel] >= LEVEL_ORDER.write || isManagingAgent,
         // Delete: owner, or a managing agent — the owner can end this at any
         // time by revoking the manage grant.
         canDelete: isOwner || grantLevel === "manage",
@@ -167,11 +185,11 @@ export function computePolicyAccess(input: PolicyAccessInput): PolicyAccess {
 export async function getPolicyAccess(
     policyId: string,
     viewer: PolicyAccessViewer,
-    client: Pick<typeof db, "policy" | "accessGrant" | "customerRelationship"> = db
+    client: Pick<typeof db, "policy" | "accessGrant" | "customerRelationship" | "walletMembership"> = db
 ): Promise<PolicyAccess & { policy: { id: string; ownerUserId: string; createdByUserId: string } | null }> {
     const policy = await client.policy.findUnique({
         where: { id: policyId },
-        select: { id: true, ownerUserId: true, createdByUserId: true },
+        select: { id: true, ownerUserId: true, createdByUserId: true, privateToOwner: true },
     })
 
     if (!policy) return { ...NO_ACCESS, policy: null }
@@ -179,7 +197,7 @@ export async function getPolicyAccess(
     const isOwner = policy.ownerUserId === viewer.id
     const isAgent = parseRoles(viewer.roles ?? "").includes("agent")
 
-    const [grants, relationship] = await Promise.all([
+    const [grants, relationship, membership] = await Promise.all([
         isOwner
             ? Promise.resolve([])
             : client.accessGrant.findMany({
@@ -199,10 +217,16 @@ export async function getPolicyAccess(
                   },
                   select: { status: true },
               }),
+        isOwner
+            ? Promise.resolve(null)
+            : client.walletMembership.findFirst({
+                  where: { walletOwnerUserId: policy.ownerUserId, memberUserId: viewer.id, status: "active" },
+                  select: { status: true },
+              }),
     ])
 
     return {
-        ...computePolicyAccess({ policy, viewer, grants, relationship }),
+        ...computePolicyAccess({ policy, viewer, grants, relationship, membership }),
         policy,
     }
 }

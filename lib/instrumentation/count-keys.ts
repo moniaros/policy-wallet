@@ -240,6 +240,7 @@ export const FACT_KEYS: Record<string, string> = {
     "policy.attention": "The head's attention banner (PolicyHead).",
     "grant.level": "Customer /agent page: a grant's normalised level (read/write/manage), subject = grant id — what the advisor can do (A-10).",
     "policy.sharedWithAdvisor": "Wallet card: this policy is visible to the advisor, subject = policy id (A-09).",
+    "policy.familyOwner": "Wallet card: the owner of the family wallet this row belongs to, subject = policy id (spec v2 §13).",
     "policy.nickname": "Wallet card: the owner-typed policy name (spec v2 §10.1), subject = policy id. Never extracted.",
     "wellness.checkupStatus": "Wellness page: this year's annual check-up status the person set for a health policy, subject = policy id (spec v2 §9.1).",
     "wellness.score": "Wellness page: the self-assessment's attention score per category, subject = category (spec v2 §9.2) — a fixed table over consented answers, never a model.",
@@ -285,6 +286,7 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "policy.nickname",
     "wellness.checkupStatus",
     "wellness.score",
+    "policy.familyOwner",
 ])
 
 export function isRegisteredCountKey(key: string): boolean {

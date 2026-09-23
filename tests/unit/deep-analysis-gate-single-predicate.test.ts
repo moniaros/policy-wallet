@@ -55,6 +55,8 @@ const ALLOWED: Array<{ file: string; snippet: string; reason: string }> = [
     { file: "app/api/v1/tokens/purchase/route.ts", snippet: 'tier === "free"', reason: "token top-ups are a paid-plan feature (token_topup gate)" },
     { file: "app/api/stripe/checkout/route.ts", snippet: "tier === 'pro'", reason: "checkout: tier → Stripe price mapping" },
     { file: "app/api/stripe/checkout/route.ts", snippet: "tier === 'plus'", reason: "checkout: tier → Stripe price mapping" },
+    { file: "app/(protected)/account/family/actions.ts", snippet: 'tier === "free"', reason: "family-wallet invite is a paid-plan action (spec v2 §21.2); the section itself is never gated" },
+    { file: "app/(protected)/account/family/page.tsx", snippet: 'tier !== "free"', reason: "renders the invite form vs the plans link — the same paid-plan rule as the action" },
     { file: "lib/subscription-entitlements.ts", snippet: 'tier !== "free"', reason: "isPaid derivation" },
     { file: "lib/subscription-entitlements.ts", snippet: 'tier !== "pro"', reason: "agent-feature fallback for a dual-role user who pays for B2C Pro (AGENT_UPGRADE_REQUIRED)" },
     { file: "lib/token-tracking.ts", snippet: "tier === 'plus'", reason: "tier string parsing" },

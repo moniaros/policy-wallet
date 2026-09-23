@@ -65,6 +65,7 @@ export default async function EditPolicyPage({ params, searchParams }: Props) {
             <main className="max-w-md mx-auto p-4">
                 <EditPolicyForm
                     policy={sanitizedPolicy}
+                    viewerId={authResult.dbUser.id}
                     t={t}
                     returnTo={safeReturnTo}
                 />

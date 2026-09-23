@@ -143,6 +143,9 @@ Rule = operator + catalogue row + trace test + provenance (CLAUDE.md "a new dete
 
 ### Phase 5 — Family sharing (§13) — net-new, needs a model decision
 
+**Delivered 2026-09-23 (`feat/spec-v2-phase5`, model confirmed by the owner):** `WalletMembership` + `Policy.privateToOwner`; membership arm in `computePolicyAccess` (read/write/analyse, no delete); `family` invite branch in the one redemption core with its own Art. 14 email; `/account/family` settings section (invite gated on tier ≠ free, remove/leave, `family_member_joined` / `family_member_left`); family rows on the member's wallet (`policy.familyOwner`); notification mirroring in `emit` for policy-scoped events on non-private policies; DSR erase + export. **Not done:** dashboard counts remain own-only (a member's home does not merge the owner's portfolio — a decision for the story dashboard); children's cards as a distinct object. Matrix row 2.6 → 80.
+
+
 Recommended model: `WalletMembership` (walletOwnerUserId, memberUserId, role `member`, status, invitedAt/acceptedAt) — NOT a `CustomerRelationship`. `getPolicyAccess` gains a third arm: active membership ⇒ read/write on policies not flagged `privateToOwner`. Per-policy private toggle. Notifications mirrored to members. Gate invite on `ph-plus`+ (`feature-gates.ts` re-adds `family_portfolio`). DSR: export/erase membership rows.
 Files: `prisma/schema.prisma`, `lib/policy-access.ts`, `lib/agent-visibility.ts` (exclude members from advisor lists), `app/(protected)/account/family/*`, `lib/monetization/feature-gates.ts`, `tests/unit/policy-authorization-single-path.test.ts`.
 

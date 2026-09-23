@@ -17,6 +17,8 @@ export interface Policy {
     insurerLogo: string | null
     /** Owner-typed display name (spec v2 §10.1); null when unset. */
     nickname?: string | null
+    /** Spec v2 §13: set when the row belongs to a family wallet the viewer is a member of. */
+    familyOwnerName?: string | null
     lineOfBusiness: 'motor' | 'health' | 'home' | 'life' | 'travel' | 'liability' | 'pet' | 'professional' | 'other' | 'breakdown' | 'legal_expenses' | 'income_protection' | 'gadget' | 'bicycle' | 'business' | 'cyber' | 'motorbike' | 'public_liability' | 'renters'
     status: 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' | 'analyzing' | 'cancelled'
     startDate: string | null

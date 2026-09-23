@@ -162,6 +162,8 @@ model User {
   riskProfileVersions             RiskProfileVersion[]
   healthBenefitUsages             HealthBenefitUsage[]
   healthRiskAssessments           HealthRiskAssessment[]
+  walletsOwned                    WalletMembership[]     @relation("WalletOwner")
+  walletMemberships               WalletMembership[]     @relation("WalletMember")
 
   @@index([taxId])
   @@map("users")
@@ -418,6 +420,9 @@ model Policy {
   coverageSummary         String?                @map("coverage_summary")
   /// Owner-typed display name (spec v2 §10.1). Never extracted, never a rule input.
   nickname                String?
+  /// Spec v2 §13: kept out of the family wallet. Only the owner's own decision
+  /// ever sets it; the membership arm of computePolicyAccess reads it.
+  privateToOwner          Boolean                @default(false) @map("private_to_owner")
   createdAt               DateTime               @default(now()) @map("created_at")
   updatedAt               DateTime               @updatedAt @map("updated_at")
   acordData               Json?                  @map("acord_data")
@@ -2636,6 +2641,30 @@ model FeatureFlagRevision {
 }
 
 /// Private advisor work. Never included by customer/report recommendation readers.
+/// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=none
+/// Spec v2 §13 — family sharing. A member sees and manages the owner's policies
+/// that are not `privateToOwner`, with equal upload/view/manage rights, and
+/// never a deletion. Not a CustomerRelationship: a spouse is not an advisor,
+/// holds no book and appears on no agent surface. Created only by the owner's
+/// invite being ACCEPTED by the addressed email (lib/invites/redeem-invite.ts).
+model WalletMembership {
+  id                String    @id @default(cuid()) @map("wallet_membership_id")
+  walletOwnerUserId String    @map("wallet_owner_user_id")
+  memberUserId      String    @map("member_user_id")
+  /// active | ended
+  status            String    @default("active")
+  acceptedAt        DateTime  @default(now()) @map("accepted_at")
+  endedAt           DateTime? @map("ended_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  owner             User      @relation("WalletOwner", fields: [walletOwnerUserId], references: [id], onDelete: Cascade)
+  member            User      @relation("WalletMember", fields: [memberUserId], references: [id], onDelete: Cascade)
+
+  @@unique([walletOwnerUserId, memberUserId])
+  @@index([memberUserId, status])
+  @@map("wallet_memberships")
+}
+
 /// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=benefit,status,note
 /// Spec v2 §9.1 / §9.3 — what the person did with a health benefit or a
 /// preventive check this year. `benefit` is `annual_checkup` (per health
