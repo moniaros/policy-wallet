@@ -116,7 +116,9 @@ function rulesOf(detectionLogic: unknown): RawRule[] {
 }
 
 const COVERAGE_OPERATORS = new Set(["is_false", "all_false", "value_drift", "falsy", "is_true", "truthy", "equals", "not_equals", "less_than"])
-const RECORDING_OPERATORS = new Set(["missing", "all_missing"])
+const RECORDING_OPERATORS = new Set(["missing", "all_missing", "none_match"])
+/** Gates narrow WHICH policies a rule concerns (e.g. a leisure craft); they ask neither question. */
+const GATE_OPERATORS = new Set(["matches"])
 
 /** Which question a rule asks. A rule that mixes both is `unknown` and is never counted. */
 export function classifyRuleQuestion(detectionLogic: unknown): RuleQuestion {
@@ -131,6 +133,7 @@ export function classifyRuleQuestion(detectionLogic: unknown): RuleQuestion {
         }
         if (rule.type === "acord_field_check") {
             const op = String(rule.operator ?? "")
+            if (GATE_OPERATORS.has(op)) continue
             if (RECORDING_OPERATORS.has(op)) recording++
             else if (COVERAGE_OPERATORS.has(op)) coverage++
             else return "unknown"

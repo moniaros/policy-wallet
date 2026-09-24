@@ -35,7 +35,9 @@ export type EvidenceVerdict = "gap" | "review" | "not_recorded"
 
 const RANK: Record<DocumentEvidence, number> = { policy_silent: 0, policy_asserted: 1, policy_verified: 2 }
 
-const SILENCE_OPERATORS = new Set(["missing", "all_missing"])
+const SILENCE_OPERATORS = new Set(["missing", "all_missing", "none_match"])
+/** Gates narrow which policies a rule concerns; they are not evidence either way. */
+const GATE_OPERATORS = new Set(["matches"])
 
 /** The floor a definition's logic implies: silence-rules ask for nothing, every other rule asks the document. */
 export function defaultEvidenceFloor(detectionLogic: unknown): DocumentEvidence {
@@ -45,6 +47,7 @@ export function defaultEvidenceFloor(detectionLogic: unknown): DocumentEvidence 
         .filter((r): r is Record<string, unknown> => Boolean(r) && typeof r === "object")
         .map((r) => (typeof r.operator === "string" ? r.operator : typeof r.type === "string" ? r.type : ""))
         .filter(Boolean)
+        .filter((op) => !GATE_OPERATORS.has(op))
     if (operators.length === 0) return "policy_verified"
     return operators.every((op) => SILENCE_OPERATORS.has(op)) ? "policy_silent" : "policy_verified"
 }

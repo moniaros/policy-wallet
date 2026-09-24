@@ -51,8 +51,9 @@ describe("every active rule declares, or derives, an evidence floor", () => {
     it("a rule that fires on silence asks for policy_silent; every other rule asks the document", () => {
         const undeclared: string[] = []
         for (const d of active) {
-            const ops = operatorsOf(d.detectionLogic)
-            const silenceOnly = ops.length > 0 && ops.every((o) => o === "missing" || o === "all_missing")
+            // `matches` is a gate (D-V2): it narrows which policies a rule concerns and is not evidence.
+            const ops = operatorsOf(d.detectionLogic).filter((o) => o !== "matches")
+            const silenceOnly = ops.length > 0 && ops.every((o) => o === "missing" || o === "all_missing" || o === "none_match")
             const expected = silenceOnly ? "policy_silent" : "policy_verified"
             if (!d.evidenceFloor && evidenceFloorFor(d) !== expected) undeclared.push(`${d.slug}: ${evidenceFloorFor(d)} (expected ${expected})`)
         }

@@ -372,6 +372,27 @@ export function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
                     return Math.abs(drift) > threshold
             }
         }
+        // A string field matches a pattern (case-insensitive). Used to GATE a
+        // rule on what the document says a thing is — e.g. a leisure craft —
+        // so an absence check does not fire on craft it does not concern.
+        case 'matches': {
+            if (typeof actual !== 'string' || typeof value !== 'string' || !actual.trim()) return false
+            try { return new RegExp(value, 'i').test(actual) } catch { return false }
+        }
+        // No item of an array has `subfield` matching the pattern. Fires ON
+        // SILENCE like `missing` (an empty or absent list matches nothing), so a
+        // finding built on it is worded «δεν καταγράφεται», never «δεν καλύπτεται».
+        case 'none_match': {
+            if (typeof value !== 'string') return false
+            const items = Array.isArray(actual) ? actual : []
+            const sub = typeof rule.subfield === 'string' ? rule.subfield : null
+            let re: RegExp
+            try { re = new RegExp(value, 'i') } catch { return false }
+            return !items.some((item: unknown) => {
+                const text = sub && item && typeof item === 'object' ? (item as Record<string, unknown>)[sub] : item
+                return typeof text === 'string' && re.test(text)
+            })
+        }
         case 'all_false': {
             // Used for "you need ALL of these to qualify" (the ENFIA discount
             // needs fire AND earthquake AND flood). The gap is that at least one

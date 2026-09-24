@@ -59,6 +59,10 @@ function fullFixture(branch: string): { acord: Record<string, unknown>; inputs: 
                 if (rule.type === "date_within_days") setPath(acord, p, "2030-01-01")
                 else if (rule.operator === "value_drift") setPath(acord, p, 10000)
                 // a recording rule may share a path with a value rule (property.insuredValue): never overwrite a value already set
+                // a gate: the fixture is the kind of thing the rule concerns
+                else if (rule.operator === "matches") setPath(acord, p, "yacht")
+                // an absence-in-a-list check: the list names the thing, so it is recorded
+                else if (rule.operator === "none_match") setPath(acord, p, [{ name: "tender" }])
                 else if (rule.operator === "missing" || rule.operator === "all_missing") { if (getPath(acord, p) === undefined) setPath(acord, p, p.endsWith("beneficiaries") || p === "insuredItems" ? [{ name: "x", description: "x" }] : "recorded") }
                 else setPath(acord, p, true)
             }
@@ -78,10 +82,10 @@ function planFor(branch: string) {
 const BRANCHES = [...new Set(AUTHORED_GAP_DEFINITIONS.map((d) => d.lineOfBusiness))]
 
 describe("rule questions and inputs", () => {
-    it("every authored rule is classifiable and declares its inputs; 24 coverage, 31 recording (29 + Goal 5's 11 + Goal 6's 10 + spec v2 Phase 2's 5)", () => {
+    it("every authored rule is classifiable and declares its inputs; 24 coverage, 32 recording (29 + Goal 5's 11 + Goal 6's 10 + spec v2 Phase 2's 5 + the marine tender check)", () => {
         const questions = AUTHORED_GAP_DEFINITIONS.map((d) => classifyRuleQuestion(d.detectionLogic))
         expect(questions.filter((q) => q === "coverage")).toHaveLength(24)
-        expect(questions.filter((q) => q === "recording")).toHaveLength(31)
+        expect(questions.filter((q) => q === "recording")).toHaveLength(32)
         expect(questions).not.toContain("unknown")
         for (const d of AUTHORED_GAP_DEFINITIONS) expect(declaredInputs(d.detectionLogic), d.slug).not.toBeNull()
     })
