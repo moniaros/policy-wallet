@@ -1,67 +1,92 @@
-# PolicyWallet — Spec v2.0 Readiness Audit & Development Roadmap (2026-09-23)
+# PolicyWallet — Spec v2.0 Readiness Status (2026-09-24)
 
-## Context
+**Status of record.** The 2026-09-23 audit measured **≈ 62 %** readiness against
+`docs/design/PRODUCT_SPEC_V2.md` and laid out seven phases. All seven shipped between
+2026-09-23 and 2026-09-24 (PRs #364–#373, every one deployed to production and smoked).
+Measured the same way, readiness is now **≈ 83 %**. The remainder is not unfinished work: it is
+(a) spec items the repo has decided against, (b) checks that need reference data nobody has
+sourced, and (c) owner-side configuration. Each is named below so it can be picked up or closed.
 
-The owner asked for a deep readiness audit of the PWA against `docs/design/PRODUCT_SPEC_V2.md` (Product Spec v2.0 + architecture sections 18–25) and a step-by-step roadmap to 100 % feature completeness. The last spec-status doc (`docs/planning/V2_SPEC_ROADMAP_STATUS.md`, Feb 2026, "~49 %") is stale: since then the document gate, the 50-rule gap catalogue, PW-VOICE/TRANSPARENCY/BRIDGE, the story dashboard and the B2B agent workspace (live 2026-09-22) all shipped. Three read-only audit passes were run over `prisma/schema.prisma`, `app/`, `components/`, `lib/services/`, `lib/gaps/`, `lib/notifications/`, `proxy.ts`, `vercel.json`. Two schema-level defects were re-verified by hand.
-
-Per CLAUDE.md, findings are split: **broken / insecure (gates launch)** vs **spec parity / UX (does not)**.
-
-This session made no code changes. Executing the roadmap is a separate instruction.
+Per CLAUDE.md, findings stay split: **broken / insecure (gates launch)** — all fixed in Phase 0 —
+vs **spec parity / UX (does not)**.
 
 ---
 
-## STEP 1 — Readiness Matrix
+## 1. Readiness matrix (re-scored 2026-09-24)
 
-Overall weighted readiness against Spec v2.0: **≈ 62 %**. Backend/authorization/agent side is strong (≈ 85 %); B2C spec-parity UI (per-type cards, upload wizard, wellness, family, utilities) is where the deficit sits (≈ 35 %).
+Percentages are re-scored against the 2026-09-23 baseline on the same scale. «Evidence» names
+the code that exists now; the 2026-09-23 column is kept so the movement is auditable.
 
 ### 1. Core B2C workflows (policyholder)
 
-| # | Capability | % | Status & evidence |
-|---|---|---|---|
-| 1.1 | Policy upload & ingestion | 85 | ONE path `lib/ingestion/ingest-policy-document.ts` (gate → bucket → Policy+PolicyDocument in one tx). Called from `app/(protected)/wallet/actions.ts:946` (`uploadPolicyDocument`), `app/api/v1/policies/[id]/documents`, agent actions. **Deliberately server-side**, not spec's browser→Supabase direct upload (bucket INSERT policy dropped in Sept). No `capture=` attribute on file input. |
-| 1.2 | Async extraction: QStash | 60 | `lib/services/analysis/analysis-queue.ts` `publishJSON` retries 5, dedupe by runId, flowControl parallelism; receiver `app/api/v1/jobs/execute-analysis/route.ts` verifies `Receiver`. Used only for DEEP runs; first-pass `extractBasicSummary` runs inline in `after()`. **No `failureCallback`/DLQ** — only `jobs/reap-stale-analyses` reaper. |
-| 1.3 | Async extraction: status & polling | 50 | Progress lives in Postgres `PolicyAnalysisRun.steps` (8 steps), served by `GET app/api/v1/policies/[id]/analysis-runs/[runId]`. **No Redis job key**, no `extracting_clauses/scoring_gaps` %. `hooks/usePolling.ts` steps 2s→5s→10s forever (no 5-min cap); `wallet/[id]/AnalysisCard.tsx:511` fixed 2.5 s `setInterval`. Policy `status` is a free string (`analyzing|active|action_needed|incomplete|deleted`); three type lists disagree (`lib/policy-status.ts:134`, `lib/validations/policy.ts:16`, `types/enums.ts:47`). No `failed`/`manually_entered`. |
-| 1.4 | Vercel AI SDK integration | 95 | `ai` v6 `generateObject` in `lib/services/ai/{gemini,anthropic,openai}-ai.service.ts`; router `lib/services/ai/model-router.ts:359`; orchestrator `lib/services/analysis/policy-analysis-orchestrator.service.ts`. `AIPolicyExtractionResponse.acordData` typed `any` (`ai-service.interface.ts`). |
-| 1.5 | `AcordDataSchema` (Zod) | 90 | `lib/schemas/acord-data.ts:93` (v3, 618 lines). ALL spec §22.1 fields present: `vehicle.estimatedMarketValue/hasRoadsideAssistance/namedDrivers/greenCardExpiryDate/deductible`, `property.*` incl. `enfiaEligible`, `health.annualLimit/outOfPocketMax/directBillingAvailable/hospitalClass/annualCheckupIncluded`, `health.coordinationCentreName` (deprecated → `coordinationCentre.{name,phone}`), `lifeAndInvestment.cashValue/maturityDate/beneficiaries` (deprecated → count+relationships), `pet.leishmaniaCovered/breed/annualLimit/microchipNumber/preExistingConditionsExcluded[]`, `marineVessel`, `territorialScope`. **Missing: doctor / professional liability block** (no retroactive date, claims-made). |
-| 1.6 | Quick-view policy cards (per type, §6) | 35 | ONE generic `components/wallet/PolicyCard.tsx` + `PolicyTable.tsx`; varies by branch icon only. No hospital-class badge, coordination-centre tap-to-call, green-card badge, ENFIA badge, fund value/YTD, microchip/annual-limit bar on the card. `components/policy/` does not exist. |
-| 1.7 | Detailed coverage views (§7) | 75 | `components/wallet/coverage-details/{Motor,Health,Home,Life,Pet}CoverageDetails.tsx`; `CoverageTabView.tsx` covered/not-covered exists but rendered `layout="stacked"` (`PolicyDetailsClientView.tsx:955`). Accident-declaration vs roadside are separate `tel:` cards (`MotorCoverageDetails.tsx:158/179`). Missing: hospital/vet network lists, life fund-allocation & goal charts, surrender value, pet breed radar, waiting-period trackers, outpatient-limit progress bars. |
-| 1.8 | My Wallet list (§10.1) | 50 | `components/wallet/PolicyWallet.tsx`: search (number/insurer/LOB/asset) + branch chips. Missing: filter by insurer, sort control, grouping by category, editable nickname (no column), status dot (uses `StatusPill`). |
-| 1.9 | Upload flow 5 steps (§10.2) | 35 | `components/wallet/AddPolicyClient.tsx`: branch is a `<select>` (no tiles); spinner "reviewing" phase (no branded progress); confirm/edit screen `PolicyReviewScreen.tsx` is **agent-only**; success has "View policy" only. `BatchUploadModal.tsx` exists. |
-| 1.10 | Universal detail utilities (§10.3, §15) | 20 | Add note: MISSING (no `PolicyNote`). Compare: `lib/services/renewal-differential.ts` exists but only test-referenced; `PolicyComparison.tsx` is policy-vs-policy. Digital card download: MISSING. Export portfolio PDF: MISSING (only GDPR export + per-policy HTML savings report). |
-| 1.11 | Gap engine rules (§8) | 60 | 50 authored rules (`lib/gaps/authored-catalogue.ts`; home 8, renters 8, motor 6, health 4, pet 3, …). DONE: ENFIA triple (`missing_enfia_components`), rebuild-cost drift (`insured_value_below_rebuild_cost`), leishmania, green card, coordination centre. PARTIAL: motor over-insurance only (`insured_value_above_declared`), legal protection profile-level only. MISSING: construction-cost-index (€/m²) rule, motor under-insurance, health deductible/OOP vs savings, room-class analysis, all doctor-liability rules, all marine rules (cruising area, tender, mooring). Spec's interactive sliders/gauges/simulations: MISSING. |
-| 1.12 | Savings / duplicates / recommendations (§11) | 70 | `deterministic-savings.ts`, `portfolio-rules.ts:285` duplicate cover, `recommendation-generator.ts`, `/recommendations` page. Missing: "Did you know" AI insight card, ENFIA-opportunity (purple) card type, health-risk card type. |
-| 1.13 | Health & Wellness module (§9) | 5 | No model, route or UI. `PreventiveCard.tsx` is generic. Check-up only as extraction field + `no_annual_checkup` gap. |
-| 1.14 | Home dashboard 10 elements (§5.1) | 50 | `components/dashboard/home/*`: counter ✓, renewals timeline ✓, recent documents ✓, agent link ✓. Coverage donut **removed by owner decision** (guard `score-containment.test.ts`). Missing: upload FAB, AI insight card, health check-up nudge, savings badge, support chat. |
-| 1.15 | Bottom navigation (§5.2) | 80 | `components/shell/AppShell.tsx:104`: Home / Wallet / Protection / Recommendations / Settings. "My Agent" lives in sidebar, not bottom nav. |
+| # | Capability | 09-23 | Now | Evidence now |
+|---|---|---|---|---|
+| 1.1 | Policy upload & ingestion | 85 | 90 | One ingest path (`lib/ingestion/ingest-policy-document.ts`); wizard file step with `capture="environment"`. Direct-to-storage upload is a recorded decision against (§23.1). |
+| 1.2 | Async extraction: QStash | 60 | 80 | Queue + `failureCallback` → `jobs/analysis-failed` marks the run failed (Phase 0.5). First-pass summary still inline in `after()` by design. |
+| 1.3 | Async extraction: status & polling | 50 | 80 | `usePolling` backs off and stops at 5 min with copy; `AnalysisCard` uses it; failed runs surface a retry. Progress stays in Postgres run steps (decision against Redis key). |
+| 1.4 | Vercel AI SDK integration | 95 | 95 | unchanged |
+| 1.5 | `AcordDataSchema` | 90 | 95 | `professionalLiability` block + field inventory (Phase 2.1). |
+| 1.6 | Quick-view cards per type (§6) | 35 | 80 | One resolver `lib/wallet/quick-facts.ts` → chip row on `PolicyCard` (fact `policy.quickFact`), never from silence. Not five card components — by design. |
+| 1.7 | Detailed coverage views (§7) | 75 | 75 | Tabs stay stacked (CoverageTabView rationale). Network lists / fund charts need data the extraction does not state. |
+| 1.8 | My Wallet list (§10.1) | 50 | 85 | Grouping, sort, insurer filter, `Policy.nickname`, family rows. |
+| 1.9 | Upload flow 5 steps (§10.2) | 35 | 85 | Tiles → file/camera → stepped reading state → extracted-fields check + edit → analyse/share CTAs. |
+| 1.10 | Detail utilities (§10.3, §15) | 20 | 85 | `PolicyNote` (private, per viewer), compare-with-previous card, printable portfolio report, printable/shareable digital card (Phase 7). PDF/PNG renders not built (see §3). |
+| 1.11 | Gap engine rules (§8) | 60 | 70 | 55 authored rules, fingerprint `33a0731577205d72` dev = prod. Benchmark rules wait for dated reference data (§3). |
+| 1.12 | Savings / duplicates / recommendations (§11) | 70 | 70 | unchanged; new insight kinds wait for the same reference data. |
+| 1.13 | Health & Wellness (§9) | 5 | 80 | `/wellness`: check-up tracker, consented self-assessment (fixed scoring table), preventive calendar; DSR-wired. |
+| 1.14 | Home dashboard elements (§5.1) | 50 | 60 | Check-up nudge added. Donut, FAB, insight card, savings badge, chat are recorded decisions against (§3). |
+| 1.15 | Bottom navigation (§5.2) | 80 | 80 | unchanged |
 
 ### 2. B2B2C / agent connectivity
 
-| # | Capability | % | Status & evidence |
-|---|---|---|---|
-| 2.1 | Prisma multi-tenant models | 95 | `AgentProfile` (:209), `CustomerRelationship` (:620, `@@unique(agent,policyholder)`), `AccessGrant` (:653, scope `policy:<id>`), `Invite` (:675). **No uniqueness on `AccessGrant`** → duplicates possible. |
-| 2.2 | Authorization single path | 95 | `lib/policy-access.ts`, `lib/agent-visibility.ts` (`resolvePolicyAdvisors`). Grants revoked in-tx on terminate (`agent/relationship-actions.ts:51–76`) and transfer (`team.service.ts:364–393`). Guard test exists. |
-| 2.3 | Agent portal | 90 | `/dashboard/agent`, `/customers`, `/customers/[id]`, `/customers/[id]/policy/[policyId]`, `/customers/invite`, `/opportunities`, `/renewals`, `/commissions`, `/questionnaires`, `/tasks`, `/insights`, `/team`, `/agent/settings`, `/wallet/[id]/review`. Consent-gated PII via `lib/agent-consent.ts`. Upload-on-behalf `components/agent/UploadPolicyModal.tsx`. Review workspace (`lib/agent/review-workspace.ts`) behind `AGENT_REVIEW_WORKSPACE=1`. |
-| 2.4 | Customer "My Agent" + granular sharing (§12) | 55 | `/agent` (`AgentClient.tsx`): name/photo/contact ✓, "what your advisor sees" ledger ✓ (`lib/wallet/shared-policy-ledger.ts`), messages ✓. Sharing is **email-based** (`CollaborationPanel.tsx`); no per-policy Shared/Private toggle vs the connected advisor. Page filters `status:'active'` + `findFirst` (hides pending, shows one advisor). No last-activity timestamp. |
-| 2.5 | Agent actions → customer notification/badges (§12.3) | 45 | New policy by agent → `policy_added` ✓. `addRenewalDocument` (`wallet/actions.ts:1006`) sends **nothing**. No `agent_document_added` type. No "added by advisor" badge on wallet card (`uploadedBy` mapped in `wallet/page.tsx:207`, unrendered). |
-| 2.6 | Family sharing (§13) | 0 | No model, route, gate or UI. "Family" is only the `ph-pro` plan name. Help text implies email share, which creates a CustomerRelationship treating the relative as an agent. |
-| 2.7 | Role-based UI (§19.2) | 80 | `app/(protected)/layout.tsx:69–150` swaps nav by role; `pw_active_role` cookie + `RoleSwitcher`. **Bug:** proxy gates on first token of `user_metadata.role` and ignores the cookie → dual-role users bounced from `/customers`. |
+| # | Capability | 09-23 | Now | Evidence now |
+|---|---|---|---|---|
+| 2.1 | Multi-tenant models | 95 | 95 | App-level grant dedupe in `sharePolicy`; no DB partial-unique index yet. |
+| 2.2 | Authorization single path | 95 | 95 | + family membership arm in `computePolicyAccess`. |
+| 2.3 | Agent portal | 90 | 90 | unchanged |
+| 2.4 | «My Agent» + granular sharing (§12) | 55 | 75 | `/agent` reads live relationships and lists all advisors; per-policy private toggle (family scope). Per-advisor per-policy toggle not built. |
+| 2.5 | Agent actions → customer notification (§12.3) | 45 | 85 | `agent_document_added` + «added by advisor» badge. |
+| 2.6 | Family sharing (§13) | 0 | 80 | `WalletMembership` + `privateToOwner`; invite, remove/leave, mirrored notifications, DSR. Dashboard counts own-only by decision. |
+| 2.7 | Role-based UI (§19.2) | 80 | 95 | Proxy gates on `app_metadata.roles` + active-role cookie. |
 
 ### 3. Infrastructure & data contracts
 
-| # | Capability | % | Status & evidence |
-|---|---|---|---|
-| 3.1 | Supabase Auth JWT role checks | 60 | Server pages/actions check DB roles ✓. Proxy trusts **user-editable** `user_metadata.role` (`proxy.ts:415`); `app_metadata` used only for passkey count. NextAuth removed from deps; leftovers `Account/Session/VerificationToken` models + `NEXTAUTH_URL` in `sharePolicy`. |
-| 3.2 | Biometric-first login / passkeys (§19.1) | 30 | Passkeys implemented as **2FA step-up** (`lib/auth/passkeys.ts`, `app/api/auth/passkeys/*`, `app/auth/step-up`), flag `PASSKEYS_ENABLED` OFF. Not a primary sign-in. PIN fallback deliberately removed. No explicit 30-day session maxAge. |
-| 3.3 | RevenueCat server-side sync (§21.1) | 40 | `lib/services/revenuecat.service.ts` (called only from `account/data.ts`), webhook `app/api/v1/billing/revenuecat-webhook/route.ts`. **BUG:** upsert keyed on `revenueCatIdentifier = productIdentifier`, which is `@unique` on `Subscription` (`schema.prisma:904`) → second buyer of the same product overwrites the first user's row. Service maps `premium`→`ph-premium` (orphan plan). `REVENUECAT_API_KEY` absent from `lib/env.ts`. |
-| 3.4 | Stripe checkout + gating (§21) | 85 | `lib/billing.ts`, `app/api/v1/billing/{checkout,webhook}`, `publicCheckoutAvailability()` refuses test key in prod. Limits `lib/pricing/plan-defaults.ts` (3/10/25 policies; AI analyses unlimited by decision). Server gates on portfolio gaps, savings export, comparison, questions/day. `UpgradeModal`, `LockedInsightPreview` ✓. Post-checkout "Activating…" is a static message (no poll). Family gate absent. |
-| 3.5 | NotificationEvent types (§22.3) | 60 | Model ✓ (`schema.prisma:1062`), ~70 snake_case types in `lib/notifications/registry.ts`. ✓ `policy_analyzed`, `gap_detected`; ≈ `policy_expiring` at [90,60,30,15,7] (no 3-day; free tier 30 only), `perk_reminder`, `document_uploaded` (wrong direction). MISSING: grace period, green-card notification (rule only), ENFIA season, agent-document-added. |
-| 3.6 | Cron scheduling | 85 | 17 Vercel crons in `vercel.json`; `proxy.ts:278` allowlists `/api/v1/jobs/`. QStash is a work queue only (no `schedules.create`) — spec says "QStash Cron"; functionally equivalent. |
-| 3.7 | Web Push / PWA (§18) | 65 | `public/manifest.json`, `public/sw.js` (push only), `lib/push/web-push.ts` + `PushDevice`, `components/pwa/InstallPrompt.tsx` in AppShell. **No offline cache** (by design note in sw.js); `lib/services/offline-storage.ts` unreferenced. Push opt-in lives in settings, not onboarding. |
-| 3.8 | GDPR UI (§25) | 70 | Cookie bottom sheet ✓ (`components/compliance/CookieConsentBanner.tsx`). GDPR badge on signin only, not signup. Delete account = single `ConfirmDialog` → `DeletionRequest` for admin (`account/actions.ts:137`), erasure admin-run. |
-| 3.9 | Storage pre-signed retrieval (§23.2) | n/a | Not audited this pass; covered by `docs/audits/upload-pipeline-security-2026-07.md`. |
-| 3.10 | CI / quality | 70 | 659 unit files, enumerated guards. **GitHub Actions blocked (billing)**, Vercel Git integration wrong team, Sentry token missing, 35 npm advisories (4 critical). |
+| # | Capability | 09-23 | Now | Evidence now |
+|---|---|---|---|---|
+| 3.1 | Supabase Auth role checks | 60 | 85 | Server-written `app_metadata.roles`, synced with `user_metadata.role`. NextAuth leftovers (`Account/Session/VerificationToken` models) remain. |
+| 3.2 | Passkeys (§19.1) | 30 | 80 | Passkey sign-in, identifier-first, session via `generateLink(magiclink)` → `verifyOtp`. **`PASSKEYS_ENABLED` still OFF in prod** (owner soak). |
+| 3.3 | RevenueCat sync (§21.1) | 40 | 85 | Rows keyed per subscriber; `premium` → `ph-pro`; env key declared. Dormant until a mobile app exists. |
+| 3.4 | Stripe checkout + gating (§21) | 85 | 90 | + post-checkout activation polling. Prod still on TEST keys (owner). |
+| 3.5 | NotificationEvent types (§22.3) | 60 | 85 | + day-3 rung, `green_card_expiry`, `enfia_season`, `agent_document_added`, `benefit_reminder`, family events. |
+| 3.6 | Cron scheduling | 85 | 85 | + `enfia-season`, `checkup-reminder` crons. |
+| 3.7 | Web Push / PWA (§18) | 65 | 85 | Push opt-in in onboarding (iOS install-first); `/offline` + offline card cached by the worker (exactly two entries). |
+| 3.8 | GDPR UI (§25) | 70 | 90 | GDPR line on signup; two-step deletion. |
+| 3.9 | Storage pre-signed retrieval (§23.2) | n/a | n/a | covered by `docs/audits/upload-pipeline-security-2026-07.md` |
+| 3.10 | CI / quality | 70 | 70 | 670 unit files, guards enumerate. **GitHub Actions still billing-blocked** — every deploy since #364 was a manual `vercel deploy --prod` from a clean worktree. |
 
-### Spec items in conflict with recorded owner decisions (do NOT implement blindly)
+---
+
+## 2. What each phase delivered (2026-09-23 → 24)
+
+| Phase | PR → NEW-UI | Delivered |
+|---|---|---|
+| 0 Blockers | #364 → f86745cc | RevenueCat per-subscriber rows; proxy role gate on a server-written claim; share re-use/revive (no duplicate or orphan grants); one invite-redemption core; polling back-off + 5-min cap; QStash failure callback; advisor-added documents notify + badge. Prod checked by SELECT: 0 duplicate grants, 0 grants on ended relationships. |
+| 1 Core loop | #365 → 129fbcc4 | Upload wizard; branch quick facts; wallet grouping/sort/filter; `Policy.nickname` (migration dev + prod). |
+| 2 Gap engine | #366 → 3569d502, #367 | `professionalLiability` block; five document-stated rules; catalogue 55 active on `33a0731577205d72`, prod parked-then-activated. |
+| 3 Notifications | #368 → e096ed2c | Day-3 rung; green-card and ENFIA-season reminders; push opt-in in onboarding. |
+| 4 Wellness | #369 → 0f87afd7 | Check-up tracker, consented self-assessment, preventive calendar; two Art. 9 stores migrated dev + prod, DSR-wired. |
+| 5 Family | #370 → ce94fd66 | `WalletMembership`, membership arm, `/account/family`, private toggle, mirrored notifications, DSR. |
+| 6 Auth/PWA | #371 → 477374f8, #372 → a39d81fb | Passkey sign-in; 30-day cookie; `/offline` + offline card; GDPR signup line; two-step deletion. |
+| 7 Utilities | #373 → aaa2593b | Policy notes (`policy_notes` dev + prod); renewal compare; portfolio report; digital card; activation polling. |
+
+Every migration was applied to dev first, verified by SELECT, then applied to prod through the
+Supabase MCP with a `_prisma_migrations` row whose checksum equals the file's sha256.
+
+---
+
+## 3. What was NOT built, and why — the only backlog this doc leaves
+
+### 3a. Recorded decisions against the spec (do not implement blindly)
 
 | Spec item | Repo decision | Where recorded |
 |---|---|---|
@@ -73,154 +98,35 @@ Overall weighted readiness against Spec v2.0: **≈ 62 %**. Backend/authorizatio
 | §8 "Revenue opportunity €150–400/yr", €1,600/m² Athens | Public numbers need a `docs/content/CLAIMS.md` row | CLAUDE.md PW-VOICE-01 |
 | §8/§11 CTA copy | Advice verbs must attribute to the ασφαλιστής | `tests/unit/voice-guards.test.ts` |
 | §21.3 RevenueCat as entitlement layer | Stripe is the live web path; RevenueCat is dormant mobile plumbing | `lib/billing.ts`, memory |
+| §6 five per-type card components | One resolver + chip row; a per-type component would duplicate the branch sections | `lib/wallet/quick-facts.ts` |
+| §7 coverage tabs | Stacked on purpose — the section nav is the page's one navigation | `CoverageTabView.tsx` rationale |
+| §5.1 upload FAB / AI insight card / savings badge / support chat | Duplicate upload offers measured as a defect; a € figure needs a claims row; no chat backend | `docs/content/CLAIMS.md`, story-dashboard evidence |
+| §13 family dashboard merging the owner's portfolio | Dashboard counts stay own-only | Phase 5 note |
+| §19.1 «passkey first when a credential exists for the device» | The server cannot know the device; identifier-first with the remembered email is the honest form | Phase 6 note |
+| §25 typed email + reason before deletion | The request enters a reviewable, withdrawable queue; a second dialog is the proportionate step | Phase 6 note |
+
+### 3b. Needs an input nobody has sourced yet
+
+| Item | What it needs | Where it would land |
+|---|---|---|
+| Construction-cost index rule (€/m²), health deductible-vs-savings, specialty settlement tables, breed vet-cost benchmarks | A DATED market source and a `docs/content/CLAIMS.md` row per number | `lib/gaps/authored-catalogue.ts` + a reference-data table |
+| `marine_tender_not_listed` | A new array-membership operator in `lib/gap-detection.ts` | one operator + one catalogue row + trace case |
+| Interactive gap visualisations (§8) | The same reference data | `components/gaps/*` |
+| True PDF portfolio export / PNG digital card | A Greek-capable font file (pdf-lib standard fonts cannot encode Greek) / an image renderer dependency | `lib/services/reports/portfolio-report.ts`, `/wallet/[id]/card` |
+| Hospital / vet network lists, life fund allocation charts | Data the extraction does not state | coverage-details |
+
+### 3c. Owner-side configuration (no code)
+
+1. **`PASSKEYS_ENABLED=1`** in Vercel after a dev soak; align the Supabase refresh-token lifetime with the 30-day cookie.
+2. **Task 0.7 ops:** GitHub Actions billing (restores CI + auto-deploy), Vercel Git integration team, `SENTRY_AUTH_TOKEN`, the four critical npm advisories.
+3. **Stripe LIVE keys** in production (the pricing surface refuses sandbox checkout until then).
+4. Optional: a DB partial-unique index on active `AccessGrant` rows (app-level dedupe exists); retire the NextAuth leftover models.
 
 ---
 
-## STEP 2 — Development Roadmap
+## 4. Verification routine that was used per phase
 
-### Phase 0 — Critical blockers (broken / insecure; gates launch)
-
-Each is a small, self-contained fix with a guard test. Order is by blast radius.
-
-| Task | Fix | Files |
-|---|---|---|
-| 0.1 RevenueCat cross-user overwrite | Key `Subscription` upsert on `(userId, provider)` or on RevenueCat `app_user_id`/`original_transaction_id`; drop or repurpose `@unique revenueCatIdentifier`; map `premium`→`ph-pro` in the service too; add `REVENUECAT_API_KEY` to `lib/env.ts`. Migration: dev then prod (`migrate deploy`, never `migrate dev`). | `app/api/v1/billing/revenuecat-webhook/route.ts:84–102`, `lib/services/revenuecat.service.ts:57–88`, `prisma/schema.prisma:904`, `lib/env.ts:100`, new `tests/unit/revenuecat-subscription-per-user.test.ts` |
-| 0.2 Proxy role gate | Derive route role from the `pw_active_role` cookie validated against a signed roles claim (`app_metadata.roles` set server-side at signup/admin), never `user_metadata`. Honour role switch for dual-role users. | `proxy.ts:415`, `lib/auth/role-routing.ts`, `app/(protected)/role-actions.ts`, `app/auth/actions.ts:217`, `app/(protected)/admin/actions.ts:493`, `app/auth/callback/route.ts:90` |
-| 0.3 AccessGrant hygiene | Partial unique index on `(granterUserId, granteeUserId, scope) WHERE status='active'`; `sharePolicy` refuses (or explicitly revives) a `terminated`/`inactive` relationship instead of minting a bare grant. | `prisma/schema.prisma:653`, `app/(protected)/wallet/actions.ts:1101–1200`, extend `tests/unit/policy-authorization-single-path.test.ts` |
-| 0.4 Invite direction | `redeemInviteCode` must branch on `relationshipType` (`client_agent` vs `agent_client`) like `applyInviteRedemption`; emit activation notification. Reuse `applyInviteRedemption` (export it). | `app/onboarding/actions.ts:218–269`, `app/auth/actions.ts:407` |
-| 0.5 Async state machine completeness | (a) `usePolling` exponential 2→4→8→15 s, hard stop at 5 min with "taking longer" copy; (b) replace `AnalysisCard.tsx:511` interval with `usePolling`; (c) QStash `failureCallback` → `app/api/v1/jobs/analysis-failed/route.ts` marks run `failed` and emits `policy_analysis_failed` (registry has it? verify) so the card shows retry CTA; (d) ONE `PolicyStatus` union exported from `lib/policy-status.ts`, delete the two divergent lists. | `hooks/usePolling.ts`, `app/(protected)/wallet/[id]/AnalysisCard.tsx`, `lib/services/analysis/analysis-queue.ts`, `scripts/api-route-policy-inventory.json`, `lib/validations/policy.ts:16`, `types/enums.ts:47` |
-| 0.6 Silent agent action | `addRenewalDocument` emits `agent_document_added` to the owner (new registry type + EL/EN template); wallet card renders "added by your advisor" from `uploadedBy`; `/agent` page reads live relationships (not `status:'active'`) and lists all advisors. | `app/(protected)/wallet/actions.ts:1006`, `lib/notifications/registry.ts`, `components/wallet/PolicyCard.tsx:171`, `app/(protected)/agent/page.tsx`, `tests/unit/all-clear-honesty.test.ts` pattern |
-| 0.7 Ops (owner-only) | Restore GitHub Actions billing; repoint Vercel Git integration; set `SENTRY_AUTH_TOKEN`; patch 4 critical advisories (`next`, `vitest`, `tar`). | `.github/workflows/ci.yml`, `package.json` |
-
-### Phase 1 — Core loop UX parity: Upload → Extraction → Cards (B2C)
-
-**Delivered 2026-09-23 (`feat/spec-v2-phase1`):** 1.1 wizard (tiles, `capture`, stepped state, extracted-fields check + edit, analyse/share CTAs) — the policyholder confirm step shows what was read and links to edit rather than gating on a «save»; 1.2 as a single resolver `lib/wallet/quick-facts.ts` + chip row on `PolicyCard` (fact key `policy.quickFact`), not five card components; 1.3 grouping, sort, insurer filter, `Policy.nickname` (migration `20260923120000_policy_nickname`, dev + prod). **Not delivered, by recorded decision:** 1.4 tabs (CoverageTabView documents why stacked; the per-branch sections already render every schema field), 1.5 dashboard FAB / AI-insight card (the story dashboard measured duplicate upload offers as a defect — §11), savings badge (needs a provenance/claims decision before a € figure renders), support chat (no backend). Matrix rows 1.6→80, 1.8→85, 1.9→85.
-
-
-| Task | Deliverable | Files |
-|---|---|---|
-| 1.1 Upload wizard | 5-step flow: branch tiles → file input with `accept="application/pdf" capture="environment"` → branded step progress driven by run `steps[]` → **policyholder** confirm/edit screen (reuse `PolicyReviewScreen.tsx`, remove agent-only gate) → success with "Analyse coverage" / "Share with advisor". | `components/wallet/AddPolicyClient.tsx`, `components/wallet/PolicyReviewScreen.tsx`, `app/(protected)/wallet/add/page.tsx`, new `components/wallet/upload/BranchTiles.tsx`, `ExtractionProgress.tsx` |
-| 1.2 Branch quick-view cards | `components/wallet/cards/{Health,Motor,Home,Life,Pet}QuickCard.tsx` rendering spec §6 fields from `acordData` via `lib/wallet/unreadable-value.ts` and `describeSeverity()`; `PolicyCard.tsx` dispatches by branch, keeps generic fallback. `data-fact` attributes on each fact. | `components/wallet/PolicyCard.tsx`, new `components/wallet/cards/*`, `lib/wallet/policy-identity.ts` |
-| 1.3 Wallet list | Group by category, sort control (type/renewal/insurer), insurer filter, `nickname` column on `Policy` (+migration) with inline edit, status dot from `resolvePolicyLifecycle`. | `components/wallet/PolicyWallet.tsx`, `prisma/schema.prisma` Policy, `app/(protected)/wallet/actions.ts` (`renamePolicy`) |
-| 1.4 Detail view tabs | Render `CoverageTabView` as real tabs on phone; add missing per-branch sections (hospital list, waiting periods, outpatient progress; life allocation/goal; pet breed radar placeholder without breed data claims). | `components/wallet/PolicyDetailsClientView.tsx:955`, `coverage-details/*` |
-| 1.5 Dashboard elements | Upload FAB (reuse `components/ui/FloatingActionButton.tsx`), AI insight card (from `recommendation-generator` output, "Did you know" copy under voice guards), savings badge (from `deterministic-savings`), health check-up nudge (depends on 4.1), help entry (link to `/help` until chat exists). | `app/(protected)/dashboard/PolicyholderHome.tsx`, `components/dashboard/home/*` |
-
-### Phase 2 — Gap engine & schema completion
-
-**Delivered 2026-09-23 (`feat/spec-v2-phase2`):** 2.1 `professionalLiability` block + inventory mapping; 2.2 five rules (motor under-insurance drift, retroactive date, per-claim limit, navigation limits, lay-up terms) traced, titled, provenance `under_review`; catalogue 55 active, fingerprint `33a0731577205d72` dev, prod parked-then-activated. **Not delivered:** benchmark rules (cost index, savings, settlement tables, vet costs) need dated market reference data (CLAUDE.md: a check that reports a number must say where it came from); `marine_tender_not_listed` needs a new array-membership operator; 2.3 visualisations depend on the same reference data; 2.4 «Ask your advisor» already exists (`notifyAgentAboutGap`), new insight kinds wait for Phase 4 data. Matrix row 1.11 → 70, 1.5 → 95.
-
-
-Rule = operator + catalogue row + trace test + provenance (CLAUDE.md "a new deterministic check is a rule plus an operator").
-
-| Task | Deliverable | Files |
-|---|---|---|
-| 2.1 Doctor-liability schema | `professionalLiability` block in `AcordDataSchema` (retroactiveDate, claimsMade, limitPerClaim, aggregate, specialty) + extraction prompt + `field-inventory`. | `lib/schemas/acord-data.ts`, `lib/services/ai/extraction-schema.ts`, `lib/gaps/field-inventory.ts` |
-| 2.2 New rules | `motor_insured_value_below_market` (value_drift, below), `health_deductible_above_savings_benchmark` (needs a reference benchmark row + CLAIMS entry), `home_rebuild_below_cost_index` (needs €/m² reference-data table, dated source), `doctor_retroactive_gap`, `marine_cruising_area_not_recorded`, `marine_tender_not_listed`, `marine_layup_cover_missing`. Re-align catalogue fingerprint dev→prod (`align:gap-catalogue --apply`). | `lib/gaps/authored-catalogue.ts`, `lib/gap-detection.ts`, `tests/unit/gap-rule-catalogue-trace.test.ts`, `docs/content/CLAIMS.md`, `docs/planning/INSURED_VALUE_ADEQUACY.md` |
-| 2.3 Interactive visualisations | Market-value meter, replacement-value slider, hospital-cost simulation — only where inputs are policy-stated or a dated market source exists; each shows `findings-provenance`. | new `components/gaps/{MarketValueMeter,ReplacementSlider,HospitalCostScenario}.tsx` |
-| 2.4 Insight card taxonomy | Add `enfia_opportunity` and `health_risk` recommendation kinds with colour tokens; "Ask your advisor" CTA pre-fills a collaboration thread (reuse `app/api/v1/collaboration/threads`). | `lib/services/gap-engine/recommendation-generator.ts`, `components/gaps/*`, `app/(protected)/recommendations` |
-
-### Phase 3 — Notification matrix (§14, §22.3)
-
-**Delivered 2026-09-23 (`feat/spec-v2-phase3`):** 3.1 day-3 rung (paid ladder; free tier 30 only, owner decision 2026-07); 3.2 `green_card_expiry` (renewal-check, `lib/renewals/green-card.ts`) and `enfia_season` (new yearly job + cron, `lib/services/enfia-season.service.ts`); grace period = existing `renewal_overdue`; benefit reminder waits for Phase 4's check-up tracker; 3.3 `PushOptIn` on the onboarding advisor screen with the iOS install-first rule. Matrix row 3.5 → 85, 3.7 → 75.
-
-
-| Task | Deliverable | Files |
-|---|---|---|
-| 3.1 Milestones | Add day-3 to `lib/renewals/milestones.ts`; decide free-tier milestones (owner: today 30 only). | `lib/renewals/milestones.ts` |
-| 3.2 New types | `renewal_grace_period` (fire on endDate when not renewed, from `jobs/renewal-check`), `green_card_expiring` notification bridging the gap rule, `enfia_season` (seasonal cron, eligible home policies only), `agent_document_added` (0.6). Templates EL/EN via admin templates. | `lib/notifications/registry.ts`, `app/api/v1/jobs/renewal-check/route.ts`, new `app/api/v1/jobs/enfia-season/route.ts` + `vercel.json` + inventory + `proxy.ts` allowlist |
-| 3.3 Push during onboarding | Move `PushOptIn` into onboarding after the install prompt; iOS: require installed PWA first. | `components/notifications/PushOptIn.tsx`, `app/onboarding/*`, `components/pwa/InstallPrompt.tsx` |
-
-### Phase 4 — Health & Wellness module (§9) — net-new
-
-**Delivered 2026-09-23 (`feat/spec-v2-phase4`):** 4.1 tracker (`HealthBenefitUsage`, per health policy, tap-to-call booking, dashboard nudge, `benefit_reminder` yearly job); 4.2 self-assessment (`HealthRiskAssessment`, consent on the row, deterministic scoring, gauges, delete-all, DSR erase + export, ROPA/DPIA regenerated); 4.3 preventive calendar with mark-done (same store, `policyKey = ""`). Not done: syncing check-up history from a coordination centre (no integration exists); a 6–12-month re-assessment prompt (the page shows the last date instead). Matrix rows 1.13 → 80, 1.14 → 60.
-
-
-| Task | Deliverable | Files |
-|---|---|---|
-| 4.1 Check-up tracker | `HealthBenefitUsage` model (policyId, benefit `annual_checkup`, year, status available/scheduled/completed, note); server actions; nudge card on dashboard + health detail; `perk_reminder` reuse for annual push. | `prisma/schema.prisma`, `app/(protected)/wallet/benefit-actions.ts`, `components/wallet/coverage-details/HealthCoverageDetails.tsx`, `components/dashboard/home/CheckupNudgeCard.tsx` |
-| 4.2 Health risk self-assessment | Art. 9 data: consent gate + `logAdminRead` scope + DSR wiring (`gdpr-erasure.service.ts`, data export). `HealthRiskAssessment` model, questionnaire (reuse `lib/services/questionnaire`), 0–100 per category, gauges, plain-language copy under voice guards; recommendations link to covered benefits only when `acordData` proves cover. | `prisma/schema.prisma`, `app/(protected)/wellness/*`, `lib/services/wellness/*`, `tests/unit/admin-reads-are-audited.test.ts`, `tests/unit/new-personal-data-stores` guard |
-| 4.3 Preventive calendar | Age/gender/coverage-derived list; mark done → archived. Nav entry "Wellness". | `app/(protected)/wellness/page.tsx`, `components/shell/AppShell.tsx` |
-
-### Phase 5 — Family sharing (§13) — net-new, needs a model decision
-
-**Delivered 2026-09-23 (`feat/spec-v2-phase5`, model confirmed by the owner):** `WalletMembership` + `Policy.privateToOwner`; membership arm in `computePolicyAccess` (read/write/analyse, no delete); `family` invite branch in the one redemption core with its own Art. 14 email; `/account/family` settings section (invite gated on tier ≠ free, remove/leave, `family_member_joined` / `family_member_left`); family rows on the member's wallet (`policy.familyOwner`); notification mirroring in `emit` for policy-scoped events on non-private policies; DSR erase + export. **Not done:** dashboard counts remain own-only (a member's home does not merge the owner's portfolio — a decision for the story dashboard); children's cards as a distinct object. Matrix row 2.6 → 80.
-
-
-Recommended model: `WalletMembership` (walletOwnerUserId, memberUserId, role `member`, status, invitedAt/acceptedAt) — NOT a `CustomerRelationship`. `getPolicyAccess` gains a third arm: active membership ⇒ read/write on policies not flagged `privateToOwner`. Per-policy private toggle. Notifications mirrored to members. Gate invite on `ph-plus`+ (`feature-gates.ts` re-adds `family_portfolio`). DSR: export/erase membership rows.
-Files: `prisma/schema.prisma`, `lib/policy-access.ts`, `lib/agent-visibility.ts` (exclude members from advisor lists), `app/(protected)/account/family/*`, `lib/monetization/feature-gates.ts`, `tests/unit/policy-authorization-single-path.test.ts`.
-
-### Phase 6 — Auth, session, PWA (§18–19)
-
-| Task | Deliverable |
-|---|---|
-| 6.1 Passkey as primary sign-in | New `POST /api/auth/passkeys/login/{options,verify}` exchanging a WebAuthn assertion for a Supabase session (Supabase custom-token or Edge Function); signin page presents passkey first when `PasskeyCredential` exists for the device; email/password collapsed. Flag `PASSKEYS_ENABLED` → on in prod after dev soak. |
-| 6.2 Session persistence | Set cookie `maxAge` 30 d in `lib/supabase/server.ts` + `proxy.ts` cookie options; Supabase dashboard JWT/refresh settings (owner). Test. |
-| 6.3 Offline critical data | Service-worker cache for `/wallet` shell + a tiny `/api/v1/me/offline-card` JSON (roadside/accident/coordination numbers, renewal dates). Reuse `lib/services/offline-storage.ts` or delete it. |
-| 6.4 GDPR polish | GDPR badge on `app/auth/signup/*`; delete flow becomes 2-step (type email + reason) before `DeletionRequest`. |
-
-**Delivered 2026-09-23 (`feat/spec-v2-phase6`):** 6.1 passkey sign-in on the sign-in page, identifier-first (`POST /api/auth/passkeys/login/{options,verify}`, public + rate-limited): the assertion verifies against the account's stored credential, then Supabase's own primitives mint the session — `auth.admin.generateLink({type:"magiclink"})` → `auth.verifyOtp({token_hash})` on the SSR client — so no hand-rolled JWT and no email round-trip; the step-up cookie is issued in the same response. Unknown address and «no passkey» answer identically. Button hides itself when the deployment answers `PASSKEYS_DISABLED`; the flag stays OFF in prod until the owner soaks it. 6.2 30-day cookie window on all three Supabase clients (server, browser, proxy); the refresh-token lifetime is a Supabase dashboard setting (owner). 6.3 `/api/v1/me/offline-card` (own in-force policies' accident / roadside / coordination / technical / emergency numbers the document states, plus end dates; masked values refused) cached by `public/sw.js` network-first, `/offline` public page reads the cache and states the numbers' age; navigations fall back to `/offline`. `lib/services/offline-storage.ts` (unreferenced) deleted. 6.4 GDPR trust line on signup; account deletion is two sequential confirmations. **Not delivered:** «passkey first when a credential exists for the device» — the server cannot know the device; identifier-first with the remembered email is the honest form. The delete flow does not ask for a typed email/reason: the request already enters an admin review queue and can be withdrawn, so a second dialog is the proportionate step. Matrix rows 3.2 → 80, 3.7 → 85, 3.8 → 90.
-
-### Phase 7 — Utilities (§10.3, §15)
-
-| Task | Deliverable | Files |
-|---|---|---|
-| 7.1 Policy notes | `PolicyNote` model (policyId, userId, body, private=true); DSR wiring; note field on detail view. | schema, `wallet/actions.ts`, `PolicyDetailsClientView.tsx` |
-| 7.2 Renewal compare | Wire `buildRenewalDifferential` into detail view "Compare with previous" when a prior document/run exists. | `lib/services/renewal-differential.ts`, `components/wallet/PolicyComparison.tsx` |
-| 7.3 Export portfolio PDF | Server action → `pdf-lib` render of active policies (identity via `policyLabel`, lifecycle via `resolvePolicyLifecycle`) → signed URL; gated `ph-plus`+. | new `lib/services/reports/portfolio-export.ts`, `app/(protected)/wallet/export-actions.ts` |
-| 7.4 Digital cards | Motor/health card PNG via server render → signed URL; share sheet. | new `lib/services/reports/digital-card.ts` |
-| 7.5 Post-checkout activation | `/upgrade/success` polls `getPlanData` up to 60 s before showing the static fallback. | `app/(protected)/upgrade/success/page.tsx` |
-
-**Delivered 2026-09-24 (`feat/spec-v2-phase7`):** 7.1 `PolicyNote` (one private row per viewer per policy; migration `20260924090000_policy_notes` dev + prod, checksum-matched, RLS on; erased, exported, ROPA/DPIA regenerated) with a note card inside the policy page's «Έγγραφα, σημειώσεις & κοινοποίηση» section, saved through `getPolicyAccess`. 7.2 `differentialFromDocuments` (`lib/wallet/renewal-compare.ts`) orders the chain by the period covered and hands the two most recently READ documents to `buildRenewalDifferential`; a compare card in #dates, rendered only when two documents were read. 7.3 `GET /api/v1/me/portfolio-report` — printable HTML of the viewer's own in-force policies (identity via policy-identity, lifecycle via one `resolvePolicyLifecycle` per row, dates via `formatDate`), Pro-only link on `/wallet`. 7.4 `/wallet/[id]/card` — printable and shareable (Web Share / clipboard) card: identity, expiry, the document-stated assistance numbers via `offlineCardRows`. 7.5 `ActivationPoller` on `/upgrade/success` polls the subscription endpoint every 3 s for 60 s and refreshes the page when a paid plan appears. **Not delivered, by decision:** a pdf-lib render (no Greek-capable font is shipped; standard PDF fonts cannot encode Greek, so the export follows the savings report's print-to-PDF shape), a PNG server render of the card (no image renderer is a dependency; the card is a printable page with a share sheet), and a `ph-plus` gate for the export (the repo's one report-export entitlement is Pro; a second gate is a pricing decision). Matrix row 1.10 → 85, 3.4 → 90.
-
-### Exact code checklist (create / refactor)
-
-**Create**
-- `tests/unit/revenuecat-subscription-per-user.test.ts`
-- `app/api/v1/jobs/analysis-failed/route.ts` (+ inventory entry, proxy allowlist already covers `/api/v1/jobs/`)
-- `components/wallet/upload/{BranchTiles,ExtractionProgress,UploadSuccess}.tsx`
-- `components/wallet/cards/{HealthQuickCard,MotorQuickCard,HomeQuickCard,LifeQuickCard,PetQuickCard}.tsx`
-- `components/dashboard/home/{UploadFab,AiInsightCard,SavingsBadge,CheckupNudgeCard}.tsx`
-- `components/gaps/{MarketValueMeter,ReplacementSlider,HospitalCostScenario}.tsx`
-- `app/api/v1/jobs/enfia-season/route.ts`
-- `app/(protected)/wellness/{page.tsx,actions.ts}`, `lib/services/wellness/*`
-- `app/(protected)/account/family/{page.tsx,actions.ts}`
-- `app/api/auth/passkeys/login/{options,verify}/route.ts`
-- `lib/services/reports/{portfolio-export,digital-card}.ts`, `app/(protected)/wallet/export-actions.ts`
-- Prisma migrations: subscription key, access-grant partial unique, `Policy.nickname`, `PolicyNote`, `HealthBenefitUsage`, `HealthRiskAssessment`, `WalletMembership`, `professionalLiability` is JSON (no migration)
-
-**Refactor**
-- `proxy.ts:415`, `lib/auth/role-routing.ts`, `app/(protected)/role-actions.ts`
-- `app/api/v1/billing/revenuecat-webhook/route.ts`, `lib/services/revenuecat.service.ts`, `lib/env.ts`
-- `app/(protected)/wallet/actions.ts` (`sharePolicy`, `addRenewalDocument`, `uploadPolicyDocument` success payload)
-- `app/onboarding/actions.ts` (`redeemInviteCode`), `app/auth/actions.ts` (export `applyInviteRedemption`)
-- `hooks/usePolling.ts`, `app/(protected)/wallet/[id]/AnalysisCard.tsx`
-- `lib/policy-status.ts` (single `PolicyStatus` union) → delete lists in `lib/validations/policy.ts`, `types/enums.ts`
-- `components/wallet/{PolicyCard,PolicyWallet,AddPolicyClient,PolicyReviewScreen,PolicyDetailsClientView}.tsx`
-- `app/(protected)/agent/page.tsx`, `AgentClient.tsx`
-- `lib/gaps/authored-catalogue.ts`, `lib/gap-detection.ts`, `lib/schemas/acord-data.ts`, `lib/gaps/field-inventory.ts`
-- `lib/notifications/registry.ts`, `lib/renewals/milestones.ts`
-- `lib/monetization/feature-gates.ts` (fix stale price comments, re-add `family_portfolio`)
-- `lib/supabase/server.ts` cookie options; `public/sw.js`
-- `docs/planning/V2_SPEC_ROADMAP_STATUS.md` → replace with this matrix; `docs/STATUS.md` at end of each phase
-
-### Verification (per phase)
-
-1. Guardrails before every commit: `npm run audit:api-auth && npm run lint && npm run lint:i18n-changed && npm run lint:utf8 && npm run type-check && npm run verify:migrations && npx vitest --run tests/unit`.
-2. Schema changes: apply to dev, `SELECT` the objects, then `migrate deploy` on prod (Supabase MCP if CLI blocked), `SELECT` again; export affected rows to `docs/archive/` before any destructive statement.
-3. Phase 0: unit probes for 0.1/0.3/0.4; Playwright `tests/agent-journey.spec.ts` + a dual-role switch journey for 0.2; force a QStash failure in dev and assert the card shows retry for 0.5.
-4. Phase 1: Playwright policyholder upload journey at 390 px asserting the 5 states and each quick-card `data-fact`; `tests/measure` overlap metric on wallet.
-5. Phase 2: `npm run verify:gap-catalogue` fingerprint equal on dev and prod after `align:gap-catalogue --apply`; trace tests per rule; voice guards for new copy.
-6. Phase 3: run `jobs/renewal-check` against dev fixtures at day 30/7/3/0 and inspect `notification_events`.
-7. Phases 4–7: DSR drill (`gdpr-erasure.service.ts` test) must cover every new personal-data table; `admin-reads-are-audited` for wellness reads.
-8. Production: owner-session smoke on `policywallet.gr` after each deploy (journey outcomes, not status codes).
-
-### Execution directives (say one of these next)
-
-- "Proceed with Phase 0" — all seven blockers in one branch `fix/spec-v2-phase0`, dev+prod migrations, PR to NEW-UI.
-- "Proceed with Task 0.1" … "Task 0.7" — a single blocker.
-- "Proceed with Phase 1" — upload wizard, branch quick cards, wallet list, dashboard elements.
-- "Proceed with Phase 2" — schema block + seven rules + catalogue alignment.
-- "Proceed with Phase 3 / 4 / 5 / 6 / 7" as above. Phase 5 needs the owner to confirm the `WalletMembership` model; Phase 6.1 needs the Supabase custom-token approach confirmed.
-- "Update the spec status doc" — rewrite `docs/planning/V2_SPEC_ROADMAP_STATUS.md` from this matrix and refresh `docs/STATUS.md`.
-
-Decisions taken under standing authority while planning: none (read-only). Open owner decisions: the eight spec-vs-repo conflicts listed above; whether spec §8 revenue figures may be published (CLAIMS.md); free-tier renewal milestones.
+1. `audit:api-auth`, `lint`, `lint:i18n-changed`, `lint:utf8`, `type-check`, `verify:migrations`, `vitest --run tests/unit`, `next build` — all green before every merge.
+2. Schema: dev `migrate deploy` → SELECT → prod via Supabase MCP `apply_migration` → `_prisma_migrations` row with the file's sha256 → SELECT.
+3. Deploy: squash-merge → `git worktree add` at the merged sha → `vercel deploy --prod --yes` → alias 200s, anonymous probes of the new routes, `vercel logs --json` error scan.
+4. Guard ripple for a new page / store / rule / event / Greek string is recorded in the session memory `spec-v2-program.md`.

@@ -1,7 +1,7 @@
 # STATUS
 
 ## Current phase
-**B2B first release live — 2026-09-22.** [PR #363](https://github.com/moniaros/policy-wallet/pull/363), production code `4673c1f5`, [release evidence](evidence/agent-workspace/release-2026-09-22.json). Full accepted plan remains in progress; [scope and backlog](audits/agent-workspace-implementation-2026-09.md).
+**Spec v2 roadmap complete — 2026-09-24** (Phases 0–7, #364–#373, all live; readiness re-scored ≈ 83 %, residue in [planning/V2_SPEC_ROADMAP_STATUS.md](planning/V2_SPEC_ROADMAP_STATUS.md) §3). **B2B first release live — 2026-09-22.** [PR #363](https://github.com/moniaros/policy-wallet/pull/363), production code `4673c1f5`, [release evidence](evidence/agent-workspace/release-2026-09-22.json). Full accepted plan remains in progress; [scope and backlog](audits/agent-workspace-implementation-2026-09.md).
 
 ## Done
 - **Spec v2 Phase 7 (2026-09-24, `feat/spec-v2-phase7`):** private policy notes (`policy_notes`, migrated dev then prod, checksum-matched; erased + exported), compare-with-previous card from the two most recently read documents of the chain, Pro-only printable portfolio report (`/api/v1/me/portfolio-report`), printable/shareable digital card (`/wallet/[id]/card`), and post-checkout activation polling. The spec v2 roadmap is complete; what was deliberately not built is listed per phase in the roadmap doc.
@@ -25,7 +25,7 @@ Durable batches/document chains, page/OCR artifacts, incremental assessments, ta
 GitHub Actions cannot start (billing/spending limit); Vercel Git integration targets an inaccessible team. Release used verified local checks and authenticated CLI against the correct project. Sentry source-map auth token missing.
 
 ## Top risks ranked
-0. **Spec v2 audit 2026-09-23** ([planning/V2_SPEC_ROADMAP_STATUS.md](planning/V2_SPEC_ROADMAP_STATUS.md), ≈62 % ready): Phase 0 blockers fixed in code (see Done); still open from it: `AccessGrant` has no DB-level uniqueness (app-level dedupe only), `PolicyStatus` lives in three divergent lists, and Task 0.7 (GitHub Actions billing, Vercel Git team, Sentry token, 4 critical advisories) is owner-only.
+0. **Spec v2 residue** ([planning/V2_SPEC_ROADMAP_STATUS.md](planning/V2_SPEC_ROADMAP_STATUS.md) §3, ≈83 % ready): `PASSKEYS_ENABLED` still off in prod, benchmark rules wait for dated reference data; still open: `AccessGrant` has no DB-level uniqueness (app-level dedupe only), `PolicyStatus` lives in three divergent lists, and Task 0.7 (GitHub Actions billing, Vercel Git team, Sentry token, 4 critical advisories) is owner-only.
 1. **Security debt:** unchanged dependencies report 35 advisories, including 4 critical; triage and patch promptly.
 2. **Full-plan release gate:** OCR/verification accuracy/costs unbenchmarked; six-field agreement is not measured accuracy. Independent verification stays off.
 3. **Functional/UX debt:** durable processing, document-chain completion and all-channel approval integration unfinished; legacy English remains.
