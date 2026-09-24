@@ -5,7 +5,7 @@ import Link from "next/link"
 import { BellRing, FileText, MessageCircle, Phone } from "lucide-react"
 import { SourceSnippetBox } from "@/components/ui/SourceSnippetBox"
 import { TONE_CHIP } from "@/lib/wallet/policy-status-view"
-import { formatDate } from "@/lib/i18n/format"
+import { formatCurrency, formatDate } from "@/lib/i18n/format"
 import type { CheckupBenefit } from "@/lib/wellness/checkup-benefit"
 import { setCheckupIntent } from "@/app/(protected)/wellness/actions"
 import { startBranchActionThread } from "@/app/(protected)/wallet/collaborationActions"
@@ -91,7 +91,29 @@ export function BenefitReminderCard({ policyId, label, benefit, value, usage, ad
             {actionable && benefit.citation && (
                 <SourceSnippetBox className="mt-3" snippet={benefit.citation.snippet} page={benefit.citation.page} labels={{ fromDocument: copy.fromDocument, pageAbbrev: copy.pageAbbrev }} />
             )}
-            {actionable && (
+            {actionable && benefit.details.length > 0 && (
+                <div className="mt-3">
+                    <p className="text-caption text-muted-foreground">{copy.detailsIntro}</p>
+                    <dl className="mt-1 space-y-1 text-sm">
+                        {benefit.details.map((d) => (
+                            <div key={d.key} className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-x-2 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                                <dt className="text-caption text-muted-foreground">{copy.detailLabels[d.key]}</dt>
+                                <dd className="min-w-0 break-words text-foreground">
+                                    {d.key === "limitAmount" && typeof d.value === "number"
+                                        ? formatCurrency(d.value, locale)
+                                        : d.key === "waitingPeriodDays" && typeof d.value === "number"
+                                            ? copy.daysValue.replace("{n}", String(d.value))
+                                            : Array.isArray(d.value) ? d.value.join(" · ") : String(d.value)}
+                                    {d.page !== undefined && <span className="text-caption text-muted-foreground"> · {copy.pageAbbrev} {d.page}</span>}
+                                    {!d.verified && <span className="block text-caption text-muted-foreground">{copy.termUnverified}</span>}
+                                </dd>
+                            </div>
+                        ))}
+                    </dl>
+                    {benefit.coreTermsMissing && <p className="mt-1 text-caption text-muted-foreground">{copy.coreMissing}</p>}
+                </div>
+            )}
+            {actionable && benefit.details.length === 0 && (
                 <p className="mt-2 text-caption text-muted-foreground">
                     {benefit.conditions.length > 0 ? copy.conditionsKnown.replace("{limits}", benefit.conditions.join(" · ")) : copy.conditionsUnknown}
                 </p>

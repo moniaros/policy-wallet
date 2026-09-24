@@ -48,6 +48,13 @@ test.beforeAll(async () => {
             _version: 3,
             health: {
                 annualCheckupIncluded: true,
+                checkup: {
+                    frequency: "μία φορά ανά ασφαλιστικό έτος",
+                    limitAmount: 150,
+                    tests: ["γενική αίματος", "σάκχαρο", "καρδιογράφημα"],
+                    network: "συμβεβλημένα διαγνωστικά κέντρα",
+                    waitingPeriodDays: 90,
+                },
                 coordinationCentre: { name: "Κέντρο Συντονισμού Υγείας", phone: "210 000 0000" },
             },
             perksAndBenefits: [{
@@ -58,7 +65,11 @@ test.beforeAll(async () => {
             }],
             extraction: {
                 summaryLanguage: "el",
-                sources: { "acordData.health.annualCheckupIncluded": { page: 4, snippet: "Ετήσιος προληπτικός έλεγχος υγείας", verified: true } },
+                sources: {
+                    "acordData.health.annualCheckupIncluded": { page: 4, snippet: "Ετήσιος προληπτικός έλεγχος υγείας", verified: true },
+                    "acordData.health.checkup.frequency": { page: 4, snippet: "μία φορά ανά ασφαλιστικό έτος", verified: true },
+                    "acordData.health.checkup.limitAmount": { page: 4, snippet: "έως 150 ευρώ", verified: true },
+                },
             },
         }
         const existing = await db.policy.findFirst({ where: { ownerUserId: ph.id, policyNumber: POLICY_NUMBER }, select: { id: true } })
@@ -111,7 +122,13 @@ for (const width of WIDTHS) {
         await expect(card).toHaveAttribute("data-fact-value", "confirmed_by_document")
         await expect(card).toContainText("αναφέρει ετήσιο έλεγχο υγείας")
         await expect(card).toContainText("Ετήσιος προληπτικός έλεγχος υγείας")
-        await expect(card).toContainText("Όπως καταγράφεται: 1 φορά τον χρόνο")
+        await expect(card).toContainText("Όπως αναγράφονται στο ασφαλιστήριο:")
+        await expect(card).toContainText("μία φορά ανά ασφαλιστικό έτος")
+        await expect(card).toContainText("150")
+        await expect(card).toContainText("γενική αίματος · σάκχαρο · καρδιογράφημα")
+        await expect(card).toContainText("90 ημέρες")
+        // Tests / network / waiting carry no verified citation in the seed → marked.
+        await expect(card).toContainText("δεν εντοπίστηκε αυτούσιο στο έγγραφο")
         await expect(card.getByRole("link", { name: /Δείτε τι γράφει το ασφαλιστήριο/ })).toBeVisible()
         await expect(card.getByRole("link", { name: /Καλέστε το κέντρο συντονισμού/ })).toHaveAttribute("href", "tel:2100000000")
         await expect(card).toContainText("Η κράτηση ραντεβού δεν γίνεται μέσα από την εφαρμογή.")

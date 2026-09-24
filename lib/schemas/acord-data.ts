@@ -182,7 +182,28 @@ export const AcordDataSchema = z.object({
         }).optional().describe("Greek health insurance coordination centre"),
         coordinationCentreName: z.string().optional().describe("Deprecated — use coordinationCentre.name"),
         directBillingAvailable: z.boolean().optional(),
-        annualCheckupIncluded: z.boolean().optional(),
+        annualCheckupIncluded: z.boolean().optional()
+            .describe("true only when the document states a preventive check-up benefit («ετήσιος προληπτικός έλεγχος», «check-up», «προληπτικές εξετάσεις»); false only when it explicitly states there is none. Omit when the document is silent."),
+        /**
+         * The check-up's TERMS, only as the document states them (prevention
+         * brief, 2026-09-24). Every field is optional and silence is not a
+         * value: the Benefit Reminder shows «χρειάζεται επιβεβαίωση» for
+         * anything absent here, so a guess would be read as a fact.
+         */
+        checkup: z.object({
+            frequency: z.string().optional()
+                .describe("How often it may be used, in the document's own words, e.g. «μία φορά ανά ασφαλιστικό έτος». Omit if not stated."),
+            limitAmount: z.number().optional()
+                .describe("Monetary cap for the check-up in euros, exactly as printed. Omit when no cap is printed — never a market figure."),
+            tests: z.array(z.string()).optional()
+                .describe("The examinations the check-up lists, verbatim as the document names them. Omit when no list is printed."),
+            network: z.string().optional()
+                .describe("Where it must be done, as stated: a named network, contracted diagnostic centres, or through the coordination centre."),
+            waitingPeriodDays: z.number().optional()
+                .describe("Days from the policy start before the check-up may be used, only when the document states it (convert months to days: 1 month = 30)."),
+            conditions: z.array(z.string()).optional()
+                .describe("Other conditions the document states for the check-up: prior appointment, referral, age limits, insured persons covered. Verbatim, short."),
+        }).optional().describe("Terms of the preventive check-up ONLY as the document states them. Omit every field the document does not state; never infer from what policies usually offer."),
         waitingPeriods: z.array(z.object({
             type: z.string().optional(),
             durationDays: z.number().optional(),

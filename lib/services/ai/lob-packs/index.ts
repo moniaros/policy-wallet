@@ -174,7 +174,43 @@ const LIABILITY_PACK: LobPack = {
     ],
 }
 
+/**
+ * Health — added 2026-09-24 for ONE purpose: the preventive check-up's terms
+ * (prevention brief). Layer 1 already reads hospital cover well; what it did
+ * not do is record the check-up's frequency, cap, list of tests, network and
+ * conditions, so the Benefit Reminder could only ever say «χρειάζεται
+ * επιβεβαίωση». The rules below are about not inventing those terms.
+ */
+const HEALTH_PACK: LobPack = {
+    id: 'health',
+    version: '1.0.0',
+    branchIds: ['health', 'group_health'],
+    terminology: [
+        'ΕΤΗΣΙΟΣ ΠΡΟΛΗΠΤΙΚΟΣ ΕΛΕΓΧΟΣ', 'CHECK-UP', 'ΠΡΟΛΗΠΤΙΚΕΣ ΕΞΕΤΑΣΕΙΣ', 'ΠΡΟΓΡΑΜΜΑ ΠΡΟΛΗΨΗΣ',
+        'ΚΕΝΤΡΟ ΣΥΝΤΟΝΙΣΜΟΥ', 'ΣΥΜΒΕΒΛΗΜΕΝΑ ΔΙΑΓΝΩΣΤΙΚΑ ΚΕΝΤΡΑ', 'ΑΝΑΜΟΝΗ',
+    ],
+    extractionHints: [
+        'A preventive check-up benefit sets health.annualCheckupIncluded = true and its terms go under health.checkup — not into coverages[] alone.',
+        'health.checkup.frequency: the document\'s own wording of how often (e.g. «μία φορά ανά ασφαλιστικό έτος», «κάθε δύο χρόνια»). Keep the words; do not convert them to a number.',
+        'health.checkup.limitAmount: a euro cap printed for the check-up itself (e.g. «έως €150»). A hospital or outpatient limit is NOT the check-up limit.',
+        'health.checkup.tests: the listed examinations verbatim (e.g. «γενική αίματος», «σάκχαρο», «καρδιογράφημα»), one entry each, only when the document lists them.',
+        'health.checkup.network: where it must be done as stated — named diagnostic centres, the insurer\'s network, or «μέσω του κέντρου συντονισμού».',
+        'health.checkup.waitingPeriodDays: a waiting period stated FOR the check-up (months × 30). A general waiting period for illnesses is not it.',
+        'health.checkup.conditions: other stated conditions for the check-up — prior appointment, referral, which insured persons, age limits — each as a short verbatim phrase.',
+    ],
+    evidenceRules: [
+        'Every health.checkup field is optional. Omit any the document does not state; do not fill frequency with «annual» because the benefit is called ετήσιος unless the document states the frequency.',
+        'Never take a figure from another benefit (hospital, outpatient, maternity) and assign it to the check-up.',
+        'annualCheckupIncluded = false only when the document explicitly says no check-up is included; silence means omit.',
+    ],
+    negativeExamples: [
+        'A discount at a diagnostic centre is a perk (perksAndBenefits), not a check-up benefit, unless the document calls it a check-up.',
+        'A general waiting period for pre-existing conditions is not the check-up\'s waiting period.',
+    ],
+}
+
 export const LOB_PACKS: LobPack[] = [
+    HEALTH_PACK,
     MARINE_HULL_PACK,
     MARINE_CARGO_PACK,
     MARINE_CREW_PACK,
@@ -188,7 +224,7 @@ export const LOB_PACKS: LobPack[] = [
  *
  * Matches on the exact branch first and then on the branch family, so
  * `boat_hull` finds the marine pack directly while an unlisted child of `boat`
- * still inherits it. Returns null for lines with no pack — motor, health, home
+ * still inherits it. Returns null for lines with no pack — motor, home
  * and the rest are covered well by Layer 1 and adding thin packs for them would
  * dilute the prompt for no gain.
  */

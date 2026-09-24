@@ -39,9 +39,29 @@ export const IDENTITY_CITATION_FIELDS = [
  * a page. `tests/unit/citation-fields-cover-rule-reads.test.ts` fails when a
  * rule reads a field this list does not name.
  */
+/**
+ * Benefit terms the Benefit Reminder quotes (prevention brief, 2026-09-24).
+ * No rule reads them, so RULE_READ_FIELDS does not list them; without a
+ * citation of their own the card could never say «αναφέρει».
+ */
+export const BENEFIT_CITATION_PATHS = [
+    'health.annualCheckupIncluded',
+    'health.checkup.frequency',
+    'health.checkup.limitAmount',
+    'health.checkup.tests',
+    'health.checkup.network',
+    'health.checkup.waitingPeriodDays',
+    'health.checkup.conditions',
+] as const
+
+const ACORD_CITATION_PATHS: readonly string[] = [
+    ...RULE_READ_FIELDS,
+    ...BENEFIT_CITATION_PATHS.filter((path) => !RULE_READ_FIELDS.includes(path)),
+]
+
 export const CITATION_FIELDS: readonly string[] = [
     ...IDENTITY_CITATION_FIELDS,
-    ...RULE_READ_FIELDS.map((path) => `acordData.${path}`),
+    ...ACORD_CITATION_PATHS.map((path) => `acordData.${path}`),
 ]
 
 /** The `acordData.<path>` citation key for a rule-read path. */
@@ -95,8 +115,8 @@ export const CITATIONS_PROMPT_SECTION = `
 CITATIONS:
 For each of these fields, when you find its value in the document, also return an entry in "extractionSources", keyed exactly as listed:
 ${IDENTITY_CITATION_FIELDS.join(', ')}
-and, for the acordData fields the coverage checks read, keyed "acordData.<path>":
-${RULE_READ_FIELDS.map((path) => `acordData.${path}`).join(', ')}
+and, for the acordData fields the coverage checks and the benefit cards read, keyed "acordData.<path>":
+${ACORD_CITATION_PATHS.map((path) => `acordData.${path}`).join(', ')}
 Each entry: { "page": <1-based page number>, "snippet": "<short VERBATIM quote from the document, max 30 words, original language>" }
 Never invent a snippet — omit the entry if you cannot quote the document.`
 
