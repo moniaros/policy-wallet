@@ -63,7 +63,10 @@ export default async function DigitalCardPage({ params }: { params: Promise<{ id
                 ) : (
                     <p className="mt-4 text-sm text-muted-foreground">{copy.noNumbers}</p>
                 )}
-                <p className="mt-4 text-caption text-muted-foreground">{copy.numbersNote}</p>
+                {/* Honest source line: a catalogue number did not come from the policy. */}
+                <p className="mt-4 text-caption text-muted-foreground">
+                    {phones.some((p) => p.kind === "insurer") ? copy.numbersNoteInsurer : copy.numbersNote}
+                </p>
                 <div className="mt-4 flex flex-wrap gap-2 print:hidden">
                     <ShareCardButton title={copy.title} copy={{ share: copy.share, print: copy.print, copied: copy.copied }} />
                     <Link href={`/wallet/${policy.id}`} className="pw-soft-button">{copy.back}</Link>

@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 4097
+# bundle entries: 4099
 # inline entries: 5004 across 233 files
 # ternary entries: 292 across 45 files
 # call entries: 1136 across 85 files
@@ -1849,6 +1849,7 @@ bundle	notifications.viewAllNotifications	"Προβολή όλων των ειδ
 bundle	notifications.viewPolicy	"Προβολή ασφαλιστηρίου"
 bundle	offline.asOf	"Αποθηκεύτηκαν: {when}"
 bundle	offline.endsOn	"Λήγει στις {date}"
+bundle	offline.insurerNote	"Όπου το ασφαλιστήριο δεν αναφέρει δικό του τηλέφωνο, εμφανίζεται το επιβεβαιωμένο τηλέφωνο εξυπηρέτησης της ασφαλιστικής."
 bundle	offline.intro	"Δεν υπάρχει σύνδεση στο δίκτυο. Εδώ είναι τα τηλέφωνα που καταγράφουν τα ασφαλιστήριά σας, όπως αποθηκεύτηκαν την τελευταία φορά που ανοίξατε το πορτοφόλι σας."
 bundle	offline.kinds.accident	"Δήλωση ατυχήματος"
 bundle	offline.kinds.coordination	"Κέντρο συντονισμού"
@@ -3433,6 +3434,7 @@ bundle	wallet.policyCard.back	"Πίσω στο ασφαλιστήριο"
 bundle	wallet.policyCard.copied	"Ο σύνδεσμος αντιγράφηκε"
 bundle	wallet.policyCard.noNumbers	"Το ασφαλιστήριο δεν καταγράφει τηλέφωνα βοήθειας."
 bundle	wallet.policyCard.numbersNote	"Τα τηλέφωνα είναι όπως τα καταγράφει το ασφαλιστήριό σας."
+bundle	wallet.policyCard.numbersNoteInsurer	"Το ασφαλιστήριο δεν αναφέρει δικό του τηλέφωνο· εμφανίζεται το επιβεβαιωμένο τηλέφωνο εξυπηρέτησης της ασφαλιστικής."
 bundle	wallet.policyCard.print	"Εκτύπωση"
 bundle	wallet.policyCard.share	"Κοινοποίηση"
 bundle	wallet.policyCard.title	"Ψηφιακή κάρτα ασφαλιστηρίου"

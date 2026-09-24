@@ -10,7 +10,7 @@
 **Controller:** Insurance Martech IKE (ΓΕΜΗ 188863359000, ΑΦΜ 302659440, ΔΟΥ Χίου),
 Kalamoti, 82102, Chios, Greece · **Privacy contact:** dpo@policywallet.gr
 
-**Covers 64 of 64 models holding personal data.**
+**Covers 62 of 62 models holding personal data.**
 Recipients and transfers are generated alongside this record in
 [DPIA-INPUTS.md](DPIA-INPUTS.md) §3; security measures are in
 [DATA_PROTECTION_REVIEW_PACK.md](DATA_PROTECTION_REVIEW_PACK.md) §13 — they are
@@ -91,12 +91,10 @@ properties of the deployment, not of a table, so they are not generated here.
 
 | Store | Lawful basis | Data subjects | Retention | On erasure |
 | --- | --- | --- | --- | --- |
-| `Account` | Performance of a contract — Art. 6(1)(b) | policyholder, agent, admin | For as long as the account exists; removed on erasure | Deleted |
 | `ActiveSession` | Legitimate interest — Art. 6(1)(f) | policyholder, agent, admin | For as long as the account exists; removed on erasure | Deleted |
 | `AdminUser` | Performance of a contract — Art. 6(1)(b) | admin | For as long as the account exists; removed on erasure | Deliberately retained, with a documented basis |
 | `PasskeyCredential` | Performance of a contract — Art. 6(1)(b) | policyholder, agent, admin | For as long as the account exists; removed on erasure | Deleted |
 | `SecurityEvent` | Legitimate interest — Art. 6(1)(f) | policyholder, agent, admin | Up to 12 months | Deleted |
-| `Session` | Performance of a contract — Art. 6(1)(b) | policyholder, agent, admin | For the life of the session or challenge | Deleted |
 | `WebAuthnChallenge` | Performance of a contract — Art. 6(1)(b) | policyholder, agent, admin | For the life of the session or challenge | Deleted |
 
 ### Providing the service — account, policy storage, renewal reminders
