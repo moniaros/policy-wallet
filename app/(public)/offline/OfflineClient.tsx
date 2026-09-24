@@ -71,6 +71,9 @@ export function OfflineClient({ copy: copies }: { copy: { el: OfflineCopy; en: O
                         </ul>
                     </>
                 )}
+                {card?.rows.some((r) => r.phones.some((p) => p.kind === "insurer")) && (
+                    <p className="mt-4 text-caption text-muted-foreground">{copy.insurerNote}</p>
+                )}
                 <p className="mt-4 text-caption text-muted-foreground">{copy.retryHint}</p>
             </div>
         </main>

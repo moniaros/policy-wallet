@@ -553,6 +553,7 @@ export const en: TranslationKeys = {
             validUntil: 'Valid until {date}',
             noNumbers: 'The policy records no assistance numbers.',
             numbersNote: 'The numbers are as your policy records them.',
+            numbersNoteInsurer: 'The policy states no number of its own; the insurer\'s verified customer-service number is shown.',
             share: 'Share',
             print: 'Print',
             copied: 'Link copied',
@@ -4283,6 +4284,7 @@ export const en: TranslationKeys = {
         endsOn: 'Ends on {date}',
         unknownInsurer: 'Insurer',
         retryHint: 'Refresh the page once the connection is back.',
+        insurerNote: 'Where a policy states no number of its own, the insurer\'s verified customer-service number is shown.',
         kinds: {
             accident: 'Accident declaration',
             roadside: 'Roadside assistance',
