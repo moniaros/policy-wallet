@@ -198,6 +198,14 @@ findings never enter `findingCount`; recording-class findings («δεν κατα
 status. Severity is not read. The dashboard's branch map projects the same status onto its tile
 words (`toTileState`), so the two surfaces cannot disagree about one branch.
 
+### Additions ratified 2026-09-24 (spec-v2 Phase 7 — utilities)
+
+New fact keys, all *subject-scoped by policy id*: `policy.viewerNote` — the viewer's own private
+note on the policy page, never shown to the advisor or the family; `policy.renewalDifferential` —
+the compare-with-previous card, rendered only when two documents of the chain were read;
+`policy.digitalCard` — the printable/shareable card at `/wallet/[id]/card` (identity through
+policy-identity, expiry through resolvePolicyLifecycle, the document-stated assistance numbers).
+
 ### Additions ratified 2026-09-23 (spec-v2 Phase 5 — family wallet)
 
 New fact key: `policy.familyOwner` *(subject-scoped by policy id)* — on a wallet row that belongs

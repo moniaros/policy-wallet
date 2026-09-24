@@ -30,6 +30,7 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] Οικογενειακό πορτοφόλι `/account/family` (added 2026-09-23 — spec v2 §13)
 - [x] Πορτοφόλι `/wallet`
 - [x] Ασφαλιστήριο `/wallet/[id]`
+- [x] Ψηφιακή κάρτα `/wallet/[id]/card` (added 2026-09-24 — spec v2 §15)
 - [x] Αναλύσεις `/coverage-insights`
 - [x] Σύμβουλος `/agent`
 - [x] Ρυθμίσεις `/account` + 5 subpages
@@ -227,7 +228,14 @@ contradiction. The outbound services are (D-007).
 
 ---
 
-## Ασφαλιστήριο — `/wallet/[id]`
+## Ασφαλιστήριο — `/wallet/[id]`, `/wallet/[id]/card`
+
+**Added 2026-09-24 (spec v2 Phase 7):** a private note card (`PolicyNoteCard`, fact `policy.viewerNote`,
+one row per viewer, never shown to the advisor or the family), a compare-with-previous card in #dates
+(`RenewalDifferentialCard`, fact `policy.renewalDifferential`, only when two documents were read), and a
+link to the printable/shareable **digital card** `/wallet/[id]/card` (fact `policy.digitalCard`: identity
+through policy-identity, expiry through resolvePolicyLifecycle, the document-stated assistance numbers).
+Portfolio export lives on `/wallet` as a Pro-only link to `/api/v1/me/portfolio-report` (printable HTML).
 
 Source: `components/wallet/PolicyDetailsClientView.tsx` + 17 components in
 `components/wallet/policy-detail/`.

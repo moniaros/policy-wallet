@@ -1762,6 +1762,25 @@
       }
     },
     {
+      "route": "v1/me/portfolio-report/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "standard"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
       "route": "v1/newsletter/subscribe/route.ts",
       "methods": [
         "POST"
