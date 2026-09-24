@@ -198,6 +198,11 @@ findings never enter `findingCount`; recording-class findings («δεν κατα
 status. Severity is not read. The dashboard's branch map projects the same status onto its tile
 words (`toTileState`), so the two surfaces cannot disagree about one branch.
 
+### Additions ratified 2026-09-24 (partner referrals)
+
+New fact key: `benefits.offerUsed` *(subject-scoped by offer id)* — on `/benefits`, the date this
+person last used a partner offer, from their own `partner_referrals` rows. Advisors never see it.
+
 ### Additions ratified 2026-09-24 (prevention brief — benefit reminder, daily nudge, health share)
 
 New fact keys: `wellness.checkupBenefit` *(subject-scoped by policy id)* — what a health policy's

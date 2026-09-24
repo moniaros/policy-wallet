@@ -165,6 +165,7 @@ model User {
   policyNotes                     PolicyNote[]
   healthSharesGiven               HealthShare[]    @relation("HealthShareSharer")
   healthSharesReceived            HealthShare[]    @relation("HealthShareAdvisor")
+  partnerReferrals                PartnerReferral[]
   walletsOwned                    WalletMembership[]     @relation("WalletOwner")
   walletMemberships               WalletMembership[]     @relation("WalletMember")
 
@@ -2054,6 +2055,7 @@ model PartnerOffer {
   createdAt        DateTime      @default(now()) @map("created_at")
   updatedAt        DateTime      @updatedAt @map("updated_at")
   vendor           PartnerVendor @relation(fields: [vendorId], references: [id])
+  referrals        PartnerReferral[]
 
   @@index([isActive, sortOrder])
   @@index([vendorId])
@@ -2802,4 +2804,25 @@ model HealthShare {
   @@unique([userId, agentUserId])
   @@index([agentUserId, status])
   @@map("health_shares")
+}
+
+/// @ropa purpose=service basis=contract subjects=policyholder retention=account_life erasure=delete art9=none
+/// A person used a partner offer (owner decision 2026-09-24: no partner
+/// integration yet — record the referral only; no booking, no status from the
+/// partner). Seen by the person on /benefits and by admins as counts per
+/// vendor; advisors never see it.
+model PartnerReferral {
+  id        String       @id @default(cuid()) @map("partner_referral_id")
+  userId    String       @map("user_id")
+  offerId   String       @map("offer_id")
+  vendorId  String       @map("vendor_id")
+  /// link | code | phone — how the person used it
+  method    String
+  createdAt DateTime     @default(now()) @map("created_at")
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offer     PartnerOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@index([userId, offerId])
+  @@index([vendorId, createdAt])
+  @@map("partner_referrals")
 }

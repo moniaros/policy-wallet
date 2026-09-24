@@ -13,6 +13,13 @@ export default async function AdminPartnersPage() {
         orderBy: [{ isActive: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
         include: { _count: { select: { offers: true } } },
     })
+    // Referral COUNTS per vendor, last 30 days — aggregate only, no person
+    // (owner decision 2026-09-24: customer + admin see referrals, advisors never).
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    const referralCounts = await db.partnerReferral
+        .groupBy({ by: ["vendorId"], where: { createdAt: { gte: since } }, _count: { _all: true } })
+        .catch(() => [])
+    const referralsByVendor = new Map(referralCounts.map((r) => [r.vendorId, r._count._all]))
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
@@ -90,7 +97,7 @@ export default async function AdminPartnersPage() {
                                     <div>
                                         <span className="text-stone-900 dark:text-stone-100 font-medium">{vendor.name}</span>
                                         <span className="ml-2 text-xs text-stone-500 dark:text-stone-400">
-                                            {vendor.category} · {vendor._count.offers} offer{vendor._count.offers === 1 ? "" : "s"}
+                                            {vendor.category} · {vendor._count.offers} offer{vendor._count.offers === 1 ? "" : "s"} · {referralsByVendor.get(vendor.id) ?? 0} referrals (30d)
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">

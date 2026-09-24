@@ -88,6 +88,7 @@ export type ErasureSummary = {
     deletedWalletMemberships: number
     deletedPolicyNotes: number
     deletedHealthShares: number
+    deletedPartnerReferrals: number
     deletedBusinessEvents: number
     deletedRiskReviews: number
     deletedNotificationSettings: number
@@ -235,6 +236,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedWalletMemberships,
                 deletedPolicyNotes,
                 deletedHealthShares,
+                deletedPartnerReferrals,
                 deletedBusinessEvents,
                 deletedRiskReviews,
                 deletedNotificationSettings,
@@ -300,6 +302,8 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 // Prevention brief P2: health snapshots, both the ones they shared
                 // and (as an advisor) the ones shared with them.
                 tx.healthShare.deleteMany({ where: { OR: [{ userId }, { agentUserId: userId }] } }),
+                // Partner offers the person used (owner decision 2026-09-24).
+                tx.partnerReferral.deleteMany({ where: { userId } }),
                 // The event log is a durable record of what happened to this
                 // person: policies, life events, score movements. `subjectUserId`
                 // is the field that makes it theirs.
@@ -512,6 +516,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedWalletMemberships: deletedWalletMemberships.count,
                 deletedPolicyNotes: deletedPolicyNotes.count,
                 deletedHealthShares: deletedHealthShares.count,
+                deletedPartnerReferrals: deletedPartnerReferrals.count,
                 deletedBusinessEvents: deletedBusinessEvents.count,
                 deletedRiskReviews: deletedRiskReviews.count,
                 deletedNotificationSettings: deletedNotificationSettings.count,

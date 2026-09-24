@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 4094
+# bundle entries: 4097
 # inline entries: 5004 across 233 files
 # ternary entries: 292 across 45 files
 # call entries: 1136 across 85 files
@@ -729,6 +729,8 @@ bundle	auth.waitFewMinutes	"Περιμένετε μερικά λεπτά - μπ�
 bundle	auth.welcomeBack	"Καλώς ήρθατε πίσω"
 bundle	auth.welcomeToPolicyWallet	"Καλώς ήρθατε στο PolicyWallet"
 bundle	benefits.callToRedeem	"Κλήση για εξαργύρωση"
+bundle	benefits.codeCopied	"Αντιγράφηκε"
+bundle	benefits.copyCode	"Αντιγραφή κωδικού"
 bundle	benefits.emptyBody	"Νέες συνεργασίες προστίθενται σταδιακά — θα τις βρείτε εδώ μόλις ενεργοποιηθούν."
 bundle	benefits.emptyTitle	"Δεν υπάρχουν διαθέσιμες παροχές αυτή τη στιγμή"
 bundle	benefits.includedBadge	"Περιλαμβάνεται στο πλάνο σας"
@@ -742,6 +744,7 @@ bundle	benefits.subtitle	"Υπηρεσίες πρόληψης και προνό�
 bundle	benefits.terms	"Όροι παροχής"
 bundle	benefits.title	"Παροχές συνεργατών"
 bundle	benefits.useCode	"Κωδικός εξαργύρωσης"
+bundle	benefits.usedOn	"Τη χρησιμοποιήσατε στις {date}"
 bundle	benefits.visitPartner	"Μετάβαση στον συνεργάτη"
 bundle	billing.action	"Ενέργεια"
 bundle	billing.addPaymentSource	"Προσθήκη πηγής πληρωμής"

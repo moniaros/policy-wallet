@@ -252,6 +252,7 @@ export const FACT_KEYS: Record<string, string> = {
     "wellness.checkupIntent": "Wellness page: the person's own choice about that benefit (considering|done|not_relevant|later|none), subject = policy id. Never a medical result.",
     "wellness.dailyNudge": "Wellness and home: the day's general habit nudge, subject = Athens date. The same for everyone.",
     "wellness.healthShare": "Wellness page: whether a health snapshot is shared with the selected advisor, subject = relationship id.",
+    "benefits.offerUsed": "Benefits page: when this person last used a partner offer (their own referral record), subject = offer id. Owner decision 2026-09-24.",
     "customer.healthShare": "Advisor customer page: the health snapshot the customer chose to share, subject = customer id. Each render is logged.",
     "policy.digitalCard": "Digital card page: the policy's identity, expiry and document-stated assistance numbers (spec v2 §15), subject = policy id.",
     "policy.rowStatus": "A list row's lifecycle status label, subject = policy id (wallet card, agent client-policies row) — PW-BRIDGE-01 A-08.",
@@ -303,6 +304,7 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "wellness.dailyNudge",
     "wellness.healthShare",
     "customer.healthShare",
+    "benefits.offerUsed",
 ])
 
 export function isRegisteredCountKey(key: string): boolean {
