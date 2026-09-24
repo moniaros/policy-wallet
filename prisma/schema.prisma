@@ -163,6 +163,8 @@ model User {
   healthBenefitUsages             HealthBenefitUsage[]
   healthRiskAssessments           HealthRiskAssessment[]
   policyNotes                     PolicyNote[]
+  healthSharesGiven               HealthShare[]    @relation("HealthShareSharer")
+  healthSharesReceived            HealthShare[]    @relation("HealthShareAdvisor")
   walletsOwned                    WalletMembership[]     @relation("WalletOwner")
   walletMemberships               WalletMembership[]     @relation("WalletMember")
 
@@ -648,6 +650,7 @@ model CustomerRelationship {
   collaborationThreads   CollaborationThread[]
   documentRequests       DocumentRequest[]
   proposals              Proposal[]
+  healthShares           HealthShare[]
 
   @@unique([agentUserId, policyholderUserId])
   // Every B2C page looks up the relationship by policyholder; the unique index
@@ -2439,6 +2442,10 @@ model UserNotificationSettings {
   /// screen's pause control writes 0. See lib/notifications/cadence.ts.
   maxPerDay Int? @map("max_per_day")
 
+  /// Opt-in for ONE daily habit nudge by push (prevention brief). Off unless
+  /// the person turns it on; the in-app card needs no opt-in.
+  dailyNudgeOptIn Boolean @default(false) @map("daily_nudge_opt_in")
+
   /// immediate | daily — reserved for digest batching.
   digestMode String @default("immediate") @map("digest_mode")
 
@@ -2667,7 +2674,7 @@ model WalletMembership {
   @@map("wallet_memberships")
 }
 
-/// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=benefit,status,note
+/// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=benefit,status,note,intent,remindAt
 /// Spec v2 §9.1 / §9.3 — what the person did with a health benefit or a
 /// preventive check this year. `benefit` is `annual_checkup` (per health
 /// policy, `policyKey` = policy id) or a preventive-calendar id (`policyKey`
@@ -2684,6 +2691,14 @@ model HealthBenefitUsage {
   status      String    @default("available")
   note        String?
   completedAt DateTime? @map("completed_at")
+  /// The person's own choice about the benefit (prevention brief, P1):
+  /// considering | later | not_relevant. «Done» is status=completed.
+  intent      String?
+  intentAt    DateTime? @map("intent_at")
+  /// A date the PERSON picked to be reminded; the daily checkup-reminder scan
+  /// sends once and stamps remindedAt. Changing or clearing it cancels.
+  remindAt    DateTime? @map("remind_at") @db.Date
+  remindedAt  DateTime? @map("reminded_at")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -2758,4 +2773,33 @@ model PolicyNote {
   @@unique([policyId, userId])
   @@index([userId])
   @@map("policy_notes")
+}
+
+/// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=snapshot
+/// Prevention brief P2 — the person chose to show ONE advisor a frozen snapshot
+/// of their self-assessment result and/or selected profile health fields.
+/// Explicit consent is recorded on the row; revoking nulls the snapshot; ending
+/// or moving the relationship revokes it in the same transaction as the grants.
+model HealthShare {
+  id             String               @id @default(cuid()) @map("health_share_id")
+  userId         String               @map("user_id")
+  agentUserId    String               @map("agent_user_id")
+  relationshipId String               @map("relationship_id")
+  /// assessment | profile | both
+  scope          String
+  consentVersion String               @map("consent_version")
+  snapshot       Json?
+  /// active | revoked
+  status         String               @default("active")
+  lastViewedAt   DateTime?            @map("last_viewed_at")
+  revokedAt      DateTime?            @map("revoked_at")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+  user           User                 @relation("HealthShareSharer", fields: [userId], references: [id], onDelete: Cascade)
+  agent          User                 @relation("HealthShareAdvisor", fields: [agentUserId], references: [id], onDelete: Cascade)
+  relationship   CustomerRelationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, agentUserId])
+  @@index([agentUserId, status])
+  @@map("health_shares")
 }

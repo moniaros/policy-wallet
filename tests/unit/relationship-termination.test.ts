@@ -33,6 +33,7 @@ vi.mock('@/lib/db', () => ({
         },
         invite: { create: (...a: unknown[]) => (inviteCreate as any)(...a) },
         accessGrant: { updateMany: (...a: unknown[]) => (grantUpdateMany as any)(...a) },
+        healthShare: { updateMany: vi.fn(async () => ({ count: 0 })) },
         activityLog: { create: (...a: unknown[]) => (activityCreate as any)(...a) },
         $transaction: vi.fn(async (ops: unknown[]) => Promise.all(ops as Promise<unknown>[])),
     },

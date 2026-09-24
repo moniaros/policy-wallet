@@ -356,7 +356,7 @@ use them and so adding transport later is one adapter file.
 
 _Generated from `lib/notifications/registry.ts` by `scripts/generate-notification-matrix.mjs`. Do not edit by hand._
 
-**88 business events declared — 83 live, 5 planned.**
+**90 business events declared — 85 live, 5 planned.**
 
 ### Risk, gaps, score and recommendations
 
@@ -410,6 +410,7 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 | `ai_consent_request` | An advisor asked to run AI analysis on the customer's documents | An advisor requests AI processing consent | high | in_app, email, push | owner | grant_or_refuse_consent | — | 3× exponential, from 15m | 30d | activity_log | live · transactional |
 | `renewal_milestone` | An advisor's client has a renewal approaching | renewal-check cron, for policies with an advisor relationship | normal | in_app, email | advisor | contact_client | — | 3× exponential, from 15m | 7d | notification_event | live |
 | `renewal_quote_requested` | The customer asked for a renewal quote | A renewal quote request is submitted | high | in_app, email | owner, advisor | provide_quote | unread 2d → admin (`admin_unanswered_quote`) | 3× exponential, from 15m | 14d | notification_event | live · transactional |
+| `health_share_received` | A customer shared a health snapshot with this advisor | shareHealthWithAdvisor writes an active HealthShare with the person's explicit consent | normal | in_app, email | advisor | — | — | 3× exponential, from 15m | 30d | notification_event | live |
 | `collaboration_message` | A message was sent in an advisory thread | CollaborationMessage created | high | in_app, email, push | counterparty | read_and_reply | — | 3× exponential, from 15m | 30d | notification_event | live |
 | `collaboration_thread_assigned` | An advisory thread was assigned | CollaborationThread assignee changes | normal | in_app, email | counterparty | take_ownership | — | 3× exponential, from 15m | 14d | notification_event | live · transactional |
 | `collaboration_action_assigned` | An action was assigned in a thread | CollaborationAction created with an assignee | normal | in_app, email | counterparty | complete_action | unread 3d → counterparty (`collaboration_action_overdue`) | 3× exponential, from 15m | 14d | notification_event | live |
@@ -450,7 +451,8 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 
 | Event | Business event | Trigger condition | Priority | Channels | Recipients | Required action | Escalation | Retry | Expires | Audit | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| `benefit_reminder` | A health policy's annual check-up benefit is unused this year | checkup-reminder cron (15 January) finds an in-force health policy stating annualCheckupIncluded with no completed HealthBenefitUsage this year | low | in_app, email, push | owner | claim_perk | — | none | 60d | notification_event | live |
+| `benefit_reminder` | The person asked to be reminded about a policy's annual check-up on a date they chose | daily checkup-reminder scan finds a HealthBenefitUsage whose person-chosen remindAt has arrived, not yet reminded, not done and not marked «not relevant» | low | in_app, email, push | owner | claim_perk | — | none | 30d | notification_event | live |
+| `daily_nudge` | One general daily habit nudge for a person who opted in | daily-nudge job, once per Athens day, only for users with dailyNudgeOptIn = true; the text is the day's nudge from lib/wellness/nudges.ts | low | push | owner | — | — | none | 1d | notification_event | live |
 | `perk_reminder` | A partner perk is about to expire | perk-reminders cron finds a perk inside its reminder window | low | in_app, email | owner | claim_perk | — | none | 3d | notification_event | live |
 | `weekly_digest` | The week's activity, summarised | weekly-digest cron, for users with something to report | low | in_app, email | owner | — | — | none | 5d | notification_event | live |
 | `churn_prevention` | An at-risk customer needs re-engaging | churn-prevention cron scores a user as at risk | low | in_app, email | owner | — | — | none | 7d | notification_event | live |
@@ -505,7 +507,9 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 - **`green_card_expiry`** — Spec v2 §14 / §22.3 GREEN_CARD_EXPIRY. The gap rule green_card_expiring fires only at analysis time; this is the calendar-driven reminder. Deduped per policy per expiry date.
 - **`enfia_season`** — Spec v2 §14 / §22.3 ENFIA_SEASON_ALERT. A prompt to CHECK, one per owner per year; eligibility itself is decided only by missing_enfia_components on a policy whose extraction stated all three perils (Law 4223/2013 art. 3 §7ζ, lib/gaps/provenance.ts).
 - **`renewal_overdue`** — Critical and transactional: the customer may now be uninsured, and for motor in Greece that is also unlawful. This is not a marketing reminder and cannot be switched off.
-- **`benefit_reminder`** — Spec v2 §14 / §22.3 BENEFIT_REMINDER. Sent only when the policy's own reading STATES the benefit — never from silence — and never after the person marked it done (lib/services/checkup-reminder.service.ts).
+- **`benefit_reminder`** — Prevention brief P1: the PERSON picks whether and when (the 15 January system send was retired 2026-09-24). Changing the date or marking the benefit done cancels by construction — the scan reads live state.
+- **`daily_nudge`** — Prevention brief: general habits, the same for everyone, off unless the person turns it on. Honours the person's own outbound switch and monthly ceiling like any engagement send.
+- **`health_share_received`** — Prevention brief P2: the notification carries NO health value — only that a share exists; the advisor reads the snapshot on the customer page, and each view is logged.
 - **`claim_opened`** — Blocked on a claims model. Wiring is one entry here plus one emitter once Claim exists.
 - **`claim_status_changed`** — Blocked on a claims model.
 - **`family_member_joined`** — Spec v2 §13 / §25.3: the moment another person gains sight of a wallet is one both people are entitled to know about. Transactional and unsuppressible.

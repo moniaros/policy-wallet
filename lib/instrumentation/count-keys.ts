@@ -248,6 +248,11 @@ export const FACT_KEYS: Record<string, string> = {
     "policy.addedByAdvisor": "Wallet card: a document on this policy was uploaded by the advisor, subject = policy id (spec v2 §12.3 / Journey 6, Phase 0.6 2026-09-23).",
     "policy.viewerNote": "Policy page: the viewer's own private note (spec v2 §10.3), subject = policy id. Never shown to the advisor or the family.",
     "policy.renewalDifferential": "Policy page: what the newest document changed against the one before (spec v2 §10.3), subject = policy id. Rendered only when two documents were read.",
+    "wellness.checkupBenefit": "Wellness page: what one health policy's reading says about an annual check-up, worded by evidence (prevention brief P0), subject = policy id; value = confirmed_by_document|needs_confirmation|stated_not_included|not_recorded|expired.",
+    "wellness.checkupIntent": "Wellness page: the person's own choice about that benefit (considering|done|not_relevant|later|none), subject = policy id. Never a medical result.",
+    "wellness.dailyNudge": "Wellness and home: the day's general habit nudge, subject = Athens date. The same for everyone.",
+    "wellness.healthShare": "Wellness page: whether a health snapshot is shared with the selected advisor, subject = relationship id.",
+    "customer.healthShare": "Advisor customer page: the health snapshot the customer chose to share, subject = customer id. Each render is logged.",
     "policy.digitalCard": "Digital card page: the policy's identity, expiry and document-stated assistance numbers (spec v2 §15), subject = policy id.",
     "policy.rowStatus": "A list row's lifecycle status label, subject = policy id (wallet card, agent client-policies row) — PW-BRIDGE-01 A-08.",
     "client.nextRenewalDate": "Agent customer list: the client's next renewal date among visible policies, subject = customer id (A-08).",
@@ -293,6 +298,11 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "policy.viewerNote",
     "policy.renewalDifferential",
     "policy.digitalCard",
+    "wellness.checkupBenefit",
+    "wellness.checkupIntent",
+    "wellness.dailyNudge",
+    "wellness.healthShare",
+    "customer.healthShare",
 ])
 
 export function isRegisteredCountKey(key: string): boolean {

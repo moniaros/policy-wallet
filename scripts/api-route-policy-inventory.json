@@ -1302,6 +1302,29 @@
       }
     },
     {
+      "route": "v1/jobs/daily-nudge/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
       "route": "v1/jobs/enfia-season/route.ts",
       "methods": [
         "GET",

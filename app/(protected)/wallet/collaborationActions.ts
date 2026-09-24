@@ -14,7 +14,7 @@ import { revalidatePath } from "next/cache"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { resolvePolicyAdvisors } from "@/lib/agent-visibility"
-import { getAgentRequest } from "@/lib/insurance/content/agent-requests"
+import { CHECKUP_TERMS_REQUEST, getAgentRequest } from "@/lib/insurance/content/agent-requests"
 import { collaborationService } from "@/lib/services/collaboration.service"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
@@ -71,7 +71,8 @@ export async function startBranchActionThread(policyId: string, actionId: string
         advisors.find((candidate) => candidate.agentUserId === authResult.dbUser.id) ?? advisors[0]
     if (!relationship) return { error: "NO_AGENT" }
 
-    const spec = getAgentRequest(actionId)
+    // The Benefit Reminder card (prevention brief) raises one non-branch request.
+    const spec = actionId === "health_checkup_terms" ? CHECKUP_TERMS_REQUEST : getAgentRequest(actionId)
     const askerName = displayPersonName(authResult.dbUser.name) || "Policyholder"
 
     // Greek, not the clicker's UI language: this text is read by the ADVISOR,

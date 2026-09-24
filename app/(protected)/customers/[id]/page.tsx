@@ -3,6 +3,8 @@ export const runtime = 'nodejs'
 import { hasPasswordCredential, passwordPresence } from "@/lib/services/credential-signals"
 import { getCustomerProfile } from "../../agent/actions"
 import { CustomerProfileClient } from "./CustomerProfileClient"
+import { SharedHealthPanel } from "./SharedHealthPanel"
+import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { notFound } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -55,6 +57,7 @@ export default async function CustomerProfilePage({ params }: Props) {
                 canBrandedReport={canBrandedReport}
                 customerAiConsent={customerAiConsent}
             />
+            <SharedHealthPanel customerId={customer.id} agentUserId={dbUser.id} language={resolveUserLanguage(dbUser.preferredLanguage)} />
             {/* The health score, gaps and cross-sell shown here are AI-generated. */}
             <div className="mx-auto max-w-6xl px-4 pb-10">
                 <AiDisclaimer audience="agent" />

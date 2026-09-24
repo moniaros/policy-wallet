@@ -1,52 +1,54 @@
 import { db } from "@/lib/db"
 import { emit } from "@/lib/notifications/dispatch"
 import { logger } from "@/lib/logger"
-import { NON_LIVE_POLICY_STATUSES, resolvePolicyLifecycle } from "@/lib/policy-status"
-import { INSURANCE_BRANCHES, branchFamilyId } from "@/lib/insurance/taxonomy"
-
-const HEALTH_FAMILY_IDS: readonly string[] = INSURANCE_BRANCHES.map((b) => b.id).filter((id) => branchFamilyId(id) === "health")
+import { getTranslations } from "@/lib/i18n"
+import { policyLabel } from "@/lib/wallet/policy-identity"
+import { athensDate } from "@/lib/wellness/nudges"
 
 /**
- * Spec v2 §14 BENEFIT_REMINDER: once a year, the owner of an in-force health
- * policy whose reading STATES an annual check-up, and who has not marked this
- * year's as done, is reminded. One per owner per year; silence in the
- * extraction sends nothing.
+ * Prevention brief P1 — the follow-up the PERSON chose. Daily: every
+ * check-up row whose `remindAt` has arrived, not yet reminded, not done and
+ * not marked «not relevant», gets one `benefit_reminder` and is stamped.
+ *
+ * It reads live state, so a changed date or a «done» cancels by
+ * construction. The 15 January send to everyone was retired 2026-09-24: a
+ * reminder nobody asked for is not the person's choice.
  */
-export async function runCheckupReminderScan(now: Date = new Date()): Promise<{ policiesScanned: number; ownersNotified: number; errors: string[] }> {
-    const summary = { policiesScanned: 0, ownersNotified: 0, errors: [] as string[] }
-    const year = now.getFullYear()
+export async function runCheckupReminderScan(now: Date = new Date()): Promise<{ due: number; reminded: number; errors: string[] }> {
+    const summary = { due: 0, reminded: 0, errors: [] as string[] }
+    const today = new Date(`${athensDate(now)}T00:00:00Z`)
     try {
-        const policies = await db.policy.findMany({
-            where: { status: { notIn: [...NON_LIVE_POLICY_STATUSES] }, lineOfBusiness: { in: [...HEALTH_FAMILY_IDS] } },
-            select: { id: true, ownerUserId: true, lineOfBusiness: true, endDate: true, coverageEndDate: true, acordData: true },
+        const due = await db.healthBenefitUsage.findMany({
+            where: {
+                benefit: "annual_checkup",
+                remindAt: { lte: today },
+                remindedAt: null,
+                status: { not: "completed" },
+                OR: [{ intent: null }, { intent: { not: "not_relevant" } }],
+            },
+            select: { id: true, userId: true, policyKey: true, remindAt: true },
         })
-        summary.policiesScanned = policies.length
-        const candidates = new Set<string>()
-        for (const p of policies) {
-            if ((p.acordData as any)?.health?.annualCheckupIncluded !== true) continue
-            const l = resolvePolicyLifecycle(p as any, now)
-            if (l.daysUntilExpiry !== null && l.daysUntilExpiry < 0) continue
-            candidates.add(p.ownerUserId)
-        }
-        if (candidates.size === 0) return summary
-        const done = await db.healthBenefitUsage.findMany({
-            where: { userId: { in: [...candidates] }, benefit: "annual_checkup", year, status: "completed" },
-            select: { userId: true },
-        })
-        const doneUsers = new Set(done.map((d) => d.userId))
-        for (const userId of candidates) {
-            if (doneUsers.has(userId)) continue
-            await emit({
-                event: "benefit_reminder",
-                userId,
-                title: { el: "Ο ετήσιος έλεγχος υγείας σας είναι διαθέσιμος", en: "Your annual health check-up is available" },
-                message: {
-                    el: "Το ασφαλιστήριο υγείας σας καταγράφει ετήσιο έλεγχο. Αν δεν τον έχετε κάνει φέτος, δείτε πώς κλείνετε ραντεβού στη σελίδα Ευεξία.",
-                    en: "Your health policy records an annual check-up. If you have not used it this year, see how to book on the Wellness page.",
-                },
-                dedupeKey: `benefit_reminder:annual_checkup:${year}:${userId}`,
-            })
-            summary.ownersNotified++
+        summary.due = due.length
+        for (const row of due) {
+            try {
+                const policy = row.policyKey
+                    ? await db.policy.findFirst({ where: { id: row.policyKey, ownerUserId: row.userId }, select: { insurerName: true, policyNumber: true } })
+                    : null
+                const label = policy ? policyLabel(policy) : ""
+                const el = getTranslations("el").wellness.benefit
+                const en = getTranslations("en").wellness.benefit
+                await emit({
+                    event: "benefit_reminder",
+                    userId: row.userId,
+                    title: { el: el.reminderTitle, en: en.reminderTitle },
+                    message: { el: el.reminderBody.replace("{label}", label).replace("  ", " "), en: en.reminderBody.replace("{label}", label).replace("  ", " ") },
+                    dedupeKey: `benefit_reminder:${row.id}:${row.remindAt!.toISOString().slice(0, 10)}`,
+                })
+                await db.healthBenefitUsage.update({ where: { id: row.id }, data: { remindedAt: now } })
+                summary.reminded++
+            } catch (err) {
+                summary.errors.push(`row ${row.id}: ${err}`)
+            }
         }
     } catch (err) {
         const msg = `Check-up reminder scan failed: ${err}`

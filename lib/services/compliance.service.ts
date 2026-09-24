@@ -40,6 +40,7 @@ export async function buildUserDataExportPayload(userId: string) {
         healthRiskAssessments,
         walletMemberships,
         policyNotes,
+        healthShares,
     ] = await Promise.all([
         db.user.findUnique({
             where: { id: userId },
@@ -590,6 +591,7 @@ export async function buildUserDataExportPayload(userId: string) {
             select: { status: true, acceptedAt: true, endedAt: true, walletOwnerUserId: true, memberUserId: true, owner: { select: { name: true } }, member: { select: { name: true } } },
         }),
         db.policyNote.findMany({ where: { userId }, select: { policyId: true, body: true, createdAt: true, updatedAt: true } }),
+        db.healthShare.findMany({ where: { userId }, select: { scope: true, status: true, snapshot: true, consentVersion: true, createdAt: true, revokedAt: true, lastViewedAt: true, agent: { select: { name: true } } } }),
     ])
 
     if (!user) {
@@ -692,6 +694,7 @@ export async function buildUserDataExportPayload(userId: string) {
             createdAt: toIso(u.createdAt),
         })),
         healthRiskAssessments: healthRiskAssessments.map((a) => ({ ...a, createdAt: toIso(a.createdAt) })),
+        healthShares: healthShares.map((h) => ({ advisor: h.agent.name, scope: h.scope, status: h.status, snapshot: h.snapshot, consentVersion: h.consentVersion, createdAt: toIso(h.createdAt), revokedAt: h.revokedAt ? toIso(h.revokedAt) : null, lastViewedAt: h.lastViewedAt ? toIso(h.lastViewedAt) : null })),
         policyNotes: policyNotes.map((n) => ({ ...n, createdAt: toIso(n.createdAt), updatedAt: toIso(n.updatedAt) })),
         walletMemberships: walletMemberships.map((m) => ({
             role: m.walletOwnerUserId === userId ? "owner" : "member",

@@ -5,42 +5,76 @@ import { z } from "zod"
 import type { Prisma } from "@prisma/client"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { getPolicyAccess } from "@/lib/policy-access"
+import { athensDate } from "@/lib/wellness/nudges"
+import { reminderWindow } from "@/lib/wellness/checkup-benefit"
 import { ASSESSMENT_QUESTIONS, HEALTH_CONSENT_VERSION, isCompleteAnswers, scoreAssessment, type Answers } from "@/lib/wellness/scoring"
-import { PREVENTIVE_ITEMS } from "@/lib/wellness/preventive"
 
 /**
  * Every export here is a public endpoint: the subject is the session, never a
- * parameter, and every write is the person's own Art. 9 record (spec v2 §9).
+ * parameter, and every write is the person's own record (spec v2 §9,
+ * prevention brief 2026-09-24).
  */
-const BenefitInput = z.object({
-    policyId: z.string().min(1).nullable(),
-    benefit: z.string().min(1).max(40),
-    year: z.number().int().min(2020).max(2100),
-    status: z.enum(["available", "scheduled", "completed", "archived"]),
-    note: z.string().trim().max(200).optional(),
+const IntentInput = z.object({
+    policyId: z.string().min(1),
+    choice: z.enum(["considering", "done", "not_relevant", "later", "clear"]),
+    /** YYYY-MM-DD, required for «later»: tomorrow … twelve months ahead. */
+    remindAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 })
 
-export async function setBenefitStatus(input: z.infer<typeof BenefitInput>) {
+/**
+ * Prevention brief P1: the person's own choice about a check-up benefit.
+ * «Done» asks for nothing medical — no result, no date of the visit.
+ */
+export async function setCheckupIntent(input: z.infer<typeof IntentInput>) {
     const { dbUser } = await getAuthenticatedUser()
-    const parsed = BenefitInput.safeParse(input)
+    const parsed = IntentInput.safeParse(input)
     if (!parsed.success) return { error: "INVALID" as const }
-    const { policyId, benefit, year, status, note } = parsed.data
-    const calendarIds = new Set(PREVENTIVE_ITEMS.map((i) => i.id))
-    if (benefit !== "annual_checkup" && !calendarIds.has(benefit)) return { error: "INVALID" as const }
-    if (policyId) {
-        // The policy named must be the person's own health policy.
-        const owned = await db.policy.findFirst({ where: { id: policyId, ownerUserId: dbUser.id }, select: { id: true } })
-        if (!owned) return { error: "NOT_FOUND" as const }
+    const { policyId, choice, remindAt } = parsed.data
+
+    // The benefit belongs to the policy OWNER: a family member or an advisor
+    // who can read the policy does not record someone else's health intent.
+    const access = await getPolicyAccess(policyId, { id: dbUser.id, roles: dbUser.roles })
+    if (!access.exists || !access.isOwner) return { error: "NOT_FOUND" as const }
+
+    let remindDate: Date | null = null
+    if (choice === "later") {
+        const window = reminderWindow()
+        if (!remindAt || remindAt < window.min || remindAt > window.max) return { error: "INVALID_DATE" as const }
+        remindDate = new Date(`${remindAt}T00:00:00Z`)
     }
-    const policyKey = policyId ?? ""
+
+    const year = Number(athensDate().slice(0, 4))
+    const now = new Date()
+    const data = {
+        status: choice === "done" ? "completed" : "available",
+        completedAt: choice === "done" ? now : null,
+        intent: choice === "done" || choice === "clear" ? null : choice,
+        intentAt: choice === "clear" ? null : now,
+        remindAt: remindDate,
+        remindedAt: null,
+    }
     await db.healthBenefitUsage.upsert({
-        where: { userId_policyKey_benefit_year: { userId: dbUser.id, policyKey, benefit, year } },
-        create: { userId: dbUser.id, policyKey, benefit, year, status, note: note || null, completedAt: status === "completed" ? new Date() : null },
-        update: { status, note: note || null, completedAt: status === "completed" ? new Date() : null },
+        where: { userId_policyKey_benefit_year: { userId: dbUser.id, policyKey: policyId, benefit: "annual_checkup", year } },
+        create: { userId: dbUser.id, policyKey: policyId, benefit: "annual_checkup", year, ...data },
+        update: data,
     })
     revalidatePath("/wellness")
     revalidatePath("/dashboard")
-    return { ok: true as const }
+    return { ok: true as const, year }
+}
+
+/** Opt in or out of the ONE daily habit push. The in-app card needs no opt-in. */
+export async function setDailyNudgeOptIn(on: boolean) {
+    const { dbUser } = await getAuthenticatedUser()
+    const value = on === true
+    await db.userNotificationSettings.upsert({
+        where: { userId: dbUser.id },
+        create: { userId: dbUser.id, dailyNudgeOptIn: value },
+        update: { dailyNudgeOptIn: value },
+    })
+    revalidatePath("/wellness")
+    return { ok: true as const, on: value }
 }
 
 const AnswersInput = z.object({

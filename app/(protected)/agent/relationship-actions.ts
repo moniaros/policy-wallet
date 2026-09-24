@@ -20,6 +20,7 @@ import { normalizeEmail } from "@/lib/identity/normalize-email"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 import { emit } from "@/lib/notifications/dispatch"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { Prisma } from "@prisma/client"
 
 type TerminationResult = { success: true } | { success: false; error: string }
 
@@ -63,6 +64,12 @@ async function terminateRelationship(
                 ],
             },
             data: { status: "revoked", revokedAt: new Date() },
+        }),
+        // A health snapshot the customer shared dies with the relationship too
+        // (prevention brief P2) — revoked AND emptied, in the same transaction.
+        db.healthShare.updateMany({
+            where: { relationshipId: relationship.id, status: "active" },
+            data: { status: "revoked", snapshot: Prisma.DbNull, revokedAt: new Date() },
         }),
         db.activityLog.create({
             data: {

@@ -1,33 +1,42 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import Link from "next/link"
 import { toast } from "sonner"
-import { HeartPulse, Phone, Check, Trash2 } from "lucide-react"
+import { HeartPulse, Check, Trash2 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatDate } from "@/lib/i18n/format"
 import { PageContainer } from "@/components/ui/PageContainer"
 import { ASSESSMENT_QUESTIONS, type CategoryScore } from "@/lib/wellness/scoring"
-import { preventiveItemsFor } from "@/lib/wellness/preventive"
+import type { CheckupBenefit } from "@/lib/wellness/checkup-benefit"
+import type { NudgeId } from "@/lib/wellness/nudges"
 import { TONE_CHIP } from "@/lib/wallet/policy-status-view"
-import { deleteHealthAssessments, setBenefitStatus, submitHealthAssessment } from "./actions"
+import { BenefitReminderCard } from "@/components/wellness/BenefitReminderCard"
+import { DailyNudgeCard } from "@/components/wellness/DailyNudgeCard"
+import { HealthSharePanel } from "@/components/wellness/HealthSharePanel"
+import { deleteHealthAssessments, submitHealthAssessment } from "./actions"
 
-export interface HealthPolicyView {
-    id: string
-    insurer: string
-    /** What the policy STATES about an annual check-up; null = not recorded. */
-    checkupIncluded: boolean | null
-    coordinationCentreName: string | null
-    coordinationCentrePhone: string | null
-    status: "available" | "scheduled" | "completed" | "archived"
-    note: string
+export interface BenefitView {
+    policyId: string
+    label: string
+    benefit: CheckupBenefit
+    value: boolean | null
+    usage: { status: string; intent: string | null; remindAt: string | null }
+    advisorAvailable: boolean
 }
 
 interface Props {
     year: number
-    healthPolicies: HealthPolicyView[]
-    calendarDone: string[]
-    latestAssessment: { answers: Record<string, string>; scores: CategoryScore[]; createdAt: string } | null
+    day: string
+    nudgeId: NudgeId
+    nudgePushOn: boolean
+    hasPolicies: boolean
+    benefits: BenefitView[]
+    window: { min: string; max: string }
+    latestAssessment: { scores: CategoryScore[]; createdAt: string } | null
     assessmentCount: number
+    advisors: Array<{ relationshipId: string; agentUserId: string; name: string }>
+    shares: Array<{ id: string; agentUserId: string; createdAt: string; lastViewedAt: string | null }>
 }
 
 // Tones from the shared status pipeline — no colour literal of its own.
@@ -37,7 +46,7 @@ const BAND_TONE: Record<CategoryScore["band"], string> = {
     elevated: TONE_CHIP.critical,
 }
 
-export function WellnessClient({ year, healthPolicies, calendarDone, latestAssessment, assessmentCount }: Props) {
+export function WellnessClient({ year, day, nudgeId, nudgePushOn, hasPolicies, benefits, window, latestAssessment, assessmentCount, advisors, shares }: Props) {
     const { t, language } = useLanguage()
     const locale = language === "el" ? "el" : "en"
     const copy = t.wellness
@@ -45,13 +54,6 @@ export function WellnessClient({ year, healthPolicies, calendarDone, latestAsses
     const [answers, setAnswers] = useState<Record<string, string>>({})
     const [consent, setConsent] = useState(false)
     const [showForm, setShowForm] = useState(!latestAssessment)
-
-    const setStatus = (policyId: string | null, benefit: string, status: HealthPolicyView["status"]) =>
-        startTransition(async () => {
-            const res = await setBenefitStatus({ policyId, benefit, year, status })
-            if ("error" in res) toast.error(copy.saveFailed)
-            else toast.success(copy.saved)
-        })
 
     const submit = () =>
         startTransition(async () => {
@@ -64,8 +66,6 @@ export function WellnessClient({ year, healthPolicies, calendarDone, latestAsses
             setShowForm(false)
         })
 
-    const calendar = preventiveItemsFor(latestAssessment?.answers.ageBand, latestAssessment?.answers.sex)
-
     return (
         <PageContainer width="reading" className="py-6 lg:py-10 space-y-6">
             <header>
@@ -73,50 +73,25 @@ export function WellnessClient({ year, healthPolicies, calendarDone, latestAsses
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{copy.intro}</p>
             </header>
 
-            {/* §9.1 — annual check-up per health policy */}
-            <section className="pw-card pw-pad" aria-labelledby="checkup-heading">
-                <h2 id="checkup-heading" className="text-title font-semibold text-foreground">{copy.checkupTitle}</h2>
-                {healthPolicies.length === 0 ? (
-                    <p className="mt-2 text-sm text-muted-foreground">{copy.noHealthPolicy}</p>
+            {/* Prevention brief — one small, general habit a day. */}
+            <DailyNudgeCard day={day} text={copy.nudges[nudgeId]} copy={copy.nudge} push={{ on: nudgePushOn }} />
+
+            {/* §9.1 / brief P0–P1 — the check-up each health policy states. */}
+            <section id="benefit" className="pw-card pw-pad scroll-mt-20" aria-labelledby="checkup-heading">
+                <h2 id="checkup-heading" className="text-title font-semibold text-foreground">{copy.benefit.title}</h2>
+                {!hasPolicies ? (
+                    <div className="mt-2">
+                        <p className="text-sm text-muted-foreground">{copy.benefit.noPolicy}</p>
+                        <Link href="/wallet/add" className="pw-primary-button mt-3 inline-flex">{copy.benefit.addPolicy}</Link>
+                    </div>
+                ) : benefits.length === 0 ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{copy.benefit.noHealthPolicy}</p>
                 ) : (
-                    <ul className="mt-3 space-y-3">
-                        {healthPolicies.map((p) => (
-                            <li key={p.id} className="pw-subcard p-3">
-                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                    <div className="min-w-0">
-                                        <p className="font-semibold text-foreground">{p.insurer}</p>
-                                        <p className="text-caption text-muted-foreground">
-                                            {p.checkupIncluded === true ? copy.checkupStated : p.checkupIncluded === false ? copy.checkupStatedNot : copy.checkupNotRecorded}
-                                        </p>
-                                    </div>
-                                    <label className="text-sm">
-                                        <span className="sr-only">{copy.statusLabel}</span>
-                                        <select
-                                            value={p.status}
-                                            disabled={pending}
-                                            onChange={(e) => setStatus(p.id, "annual_checkup", e.target.value as HealthPolicyView["status"])}
-                                            className="pw-input h-10 w-auto py-0 text-sm"
-                                            data-fact="wellness.checkupStatus"
-                                            data-fact-subject={p.id}
-                                            data-fact-value={p.status}
-                                        >
-                                            <option value="available">{copy.status.available}</option>
-                                            <option value="scheduled">{copy.status.scheduled}</option>
-                                            <option value="completed">{copy.status.completed}</option>
-                                        </select>
-                                    </label>
-                                </div>
-                                {p.coordinationCentrePhone ? (
-                                    <a href={`tel:${p.coordinationCentrePhone.replace(/\s+/g, "")}`} className="pw-soft-button mt-3 inline-flex">
-                                        <Phone className="h-4 w-4" aria-hidden="true" />
-                                        {copy.bookVia} {p.coordinationCentreName ?? ""} · {p.coordinationCentrePhone}
-                                    </a>
-                                ) : (
-                                    <p className="mt-2 text-caption text-muted-foreground">{copy.noCentrePhone}</p>
-                                )}
-                            </li>
+                    <div className="mt-3 space-y-3">
+                        {benefits.map((b) => (
+                            <BenefitReminderCard key={b.policyId} {...b} window={window} year={year} locale={locale} copy={copy.benefit} />
                         ))}
-                    </ul>
+                    </div>
                 )}
             </section>
 
@@ -145,11 +120,6 @@ export function WellnessClient({ year, healthPolicies, calendarDone, latestAsses
                                     <div className="mt-2 h-2 w-full rounded-full bg-muted" aria-hidden="true">
                                         <div className="h-2 rounded-full bg-primary" style={{ width: `${s.score}%` }} />
                                     </div>
-                                    {s.checks.length > 0 && (
-                                        <p className="mt-2 text-caption text-muted-foreground">
-                                            {copy.worthRaising}: {s.checks.map((c) => copy.checks[c as keyof typeof copy.checks] ?? c).join(", ")}
-                                        </p>
-                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -194,31 +164,8 @@ export function WellnessClient({ year, healthPolicies, calendarDone, latestAsses
                 )}
             </section>
 
-            {/* §9.3 — preventive calendar, only once an assessment gives age and sex */}
-            <section className="pw-card pw-pad" aria-labelledby="calendar-heading">
-                <h2 id="calendar-heading" className="text-title font-semibold text-foreground">{copy.calendarTitle}</h2>
-                {calendar.length === 0 ? (
-                    <p className="mt-2 text-sm text-muted-foreground">{copy.calendarNeedsAssessment}</p>
-                ) : (
-                    <ul className="mt-3 space-y-2">
-                        {calendar.map((item) => {
-                            const done = calendarDone.includes(item.id)
-                            return (
-                                <li key={item.id} className="pw-subcard flex flex-wrap items-center justify-between gap-2 p-3">
-                                    <div className="min-w-0">
-                                        <p className={`font-semibold ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>{copy.checks[item.id as keyof typeof copy.checks] ?? item.id}</p>
-                                        <p className="text-caption text-muted-foreground">{copy.everyYears.replace("{n}", String(item.everyYears))}</p>
-                                    </div>
-                                    <button type="button" disabled={pending} className="pw-soft-button" onClick={() => setStatus(null, item.id, done ? "available" : "completed")}>
-                                        {done ? copy.markUndone : copy.markDone}
-                                    </button>
-                                </li>
-                            )
-                        })}
-                    </ul>
-                )}
-                <p className="mt-3 text-caption text-muted-foreground">{copy.calendarSource}</p>
-            </section>
+            {/* Brief P2 — the person may show ONE advisor their health picture. */}
+            <HealthSharePanel advisors={advisors} shares={shares} hasAssessment={latestAssessment !== null} locale={locale} copy={copy.share} />
         </PageContainer>
     )
 }

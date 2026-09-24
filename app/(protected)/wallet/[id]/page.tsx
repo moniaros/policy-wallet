@@ -358,15 +358,11 @@ export default async function PolicyDetailPage({
 
     let relationshipId: string | null = null
     if (isOwner) {
-        const rel = await db.customerRelationship.findFirst({
-            where: {
-                policyholderUserId: dbUser.id,
-                status: "active",
-            },
-            orderBy: { createdAt: "desc" },
-            select: { id: true },
-        })
-        relationshipId = rel?.id || null
+        // Only an advisor who can already SEE this policy may be addressed
+        // about it — the same rule the send side applies (resolvePolicyAdvisors).
+        const { resolvePolicyAdvisors } = await import("@/lib/agent-visibility")
+        const advisors = await resolvePolicyAdvisors(policy)
+        relationshipId = advisors[0]?.relationshipId ?? null
     } else {
         const rel = await db.customerRelationship.findFirst({
             where: {

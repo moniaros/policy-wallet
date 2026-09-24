@@ -15,9 +15,9 @@ today. The assessment itself is a legal judgement and is a halt
 
 | Measure | Value |
 | --- | --- |
-| Stores holding personal data (tagged) | 62 of 62 |
-| Columns across them (relations excluded) | 766 |
-| Columns declared Art. 9 | 15 (stores: 4) |
+| Stores holding personal data (tagged) | 63 of 63 |
+| Columns across them (relations excluded) | 783 |
+| Columns declared Art. 9 | 18 (stores: 5) |
 | Data-subject categories in use | admin, agent, policyholder, third_party |
 | Stores under the AI-analysis purpose | 10 |
 | Published processors | 10 |
@@ -374,6 +374,10 @@ fields are not columns and are not listed.
 | `status` | `String` | **Art. 9** |
 | `note` | `String?` | **Art. 9** |
 | `completedAt` | `DateTime?` | ordinary |
+| `intent` | `String?` | **Art. 9** |
+| `intentAt` | `DateTime?` | ordinary |
+| `remindAt` | `DateTime?` | **Art. 9** |
+| `remindedAt` | `DateTime?` | ordinary |
 | `createdAt` | `DateTime` | ordinary |
 | `updatedAt` | `DateTime` | ordinary |
 
@@ -387,6 +391,23 @@ fields are not columns and are not listed.
 | `answers` | `Json` | **Art. 9** |
 | `scores` | `Json` | **Art. 9** |
 | `createdAt` | `DateTime` | ordinary |
+
+### `HealthShare` — service · consent · policyholder · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `id` | `String` | identifier |
+| `userId` | `String` | subject key |
+| `agentUserId` | `String` | subject key |
+| `relationshipId` | `String` | ordinary |
+| `scope` | `String` | ordinary |
+| `consentVersion` | `String` | ordinary |
+| `snapshot` | `Json?` | **Art. 9** |
+| `status` | `String` | ordinary |
+| `lastViewedAt` | `DateTime?` | ordinary |
+| `revokedAt` | `DateTime?` | ordinary |
+| `createdAt` | `DateTime` | ordinary |
+| `updatedAt` | `DateTime` | ordinary |
 
 ### `Invite` — intermediary · consent · policyholder|agent|third_party · account_life · delete
 
@@ -1064,6 +1085,7 @@ fields are not columns and are not listed.
 | `quietHoursStart` | `Int` | ordinary |
 | `quietHoursEnd` | `Int` | ordinary |
 | `maxPerDay` | `Int?` | ordinary |
+| `dailyNudgeOptIn` | `Boolean` | ordinary |
 | `digestMode` | `String` | ordinary |
 | `updatedAt` | `DateTime` | ordinary |
 
@@ -1116,8 +1138,9 @@ fields are not columns and are not listed.
 | Store | Columns | Lawful basis |
 | --- | --- | --- |
 | `AgentReviewRevision` | `body`, `feedbackNote`, `privateAdvice` | Consent — Art. 6(1)(a) |
-| `HealthBenefitUsage` | `benefit`, `status`, `note` | Consent — Art. 6(1)(a) |
+| `HealthBenefitUsage` | `benefit`, `status`, `note`, `intent`, `remindAt` | Consent — Art. 6(1)(a) |
 | `HealthRiskAssessment` | `answers`, `scores` | Consent — Art. 6(1)(a) |
+| `HealthShare` | `snapshot` | Consent — Art. 6(1)(a) |
 | `PolicyholderProfile` | `chronicConditions`, `familyMedicalHistory`, `smokingStatus`, `heightCm`, `weightKg`, `gender`, `activityLevel` | Consent — Art. 6(1)(a) |
 
 Held by the processors that store or carry every table: Supabase, Vercel.
@@ -1149,8 +1172,8 @@ generator rather than rendering a pack without it.
 
 | Processor | Role (published) | Location (published) | Purposes | Stores under those purposes | How | Receives the document | Endpoint, as constructed in code |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 62 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
-| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 62 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
+| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 63 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
+| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 63 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
 | Stripe | Payment and subscription processing | EU/US | billing | `CreditTransaction`, `EntitlementUsage`, `Invoice`, `MonthlyTokenUsage`, `PaymentMethod`, `Referral`, `ReportUnlockPurchase`, `Subscription`, `TokenBalance`, `TokenPurchase`, `TokenUsage` | checkout, subscription and invoice objects; card data never reaches our systems | no | n/a — configured outside the application code |
 | Brevo | Email delivery (notifications, newsletter) | EU (France) | communication | `BusinessEvent`, `NotificationEvent`, `NotificationPreference`, `PushDevice`, `UserNotificationSettings` | the address, name and body of each email sent | no | n/a — configured outside the application code |
 | Upstash | Request rate limiting (Redis) | EU/US | none | none | per-IP request counters for rate limiting — no store feeds it | no | n/a — configured outside the application code |
