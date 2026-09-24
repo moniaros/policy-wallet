@@ -91,7 +91,7 @@ Supabase MCP with a `_prisma_migrations` row whose checksum equals the file's sh
 | Spec item | Repo decision | Where recorded |
 |---|---|---|
 | §5.1 coverage donut / protection score | Removed; guard fails CI on a score render | `tests/unit/score-containment.test.ts`, `ProtectionStatusHero.tsx:149` |
-| §4/§19 biometric-first, PIN fallback | Fake biometric block removed; passkeys are 2FA | `app/auth/signin/page.tsx:85,342` |
+| §4/§19 biometric-first, PIN fallback | No fake biometric block and no PIN; a REAL passkey sign-in exists since Phase 6 (identifier-first, behind `PASSKEYS_ENABLED`), the platform decides the biometric | `app/auth/signin/page.tsx`, `tests/unit/no-fake-biometric-auth-claim.test.ts` |
 | §21.2 daily AI analysis limit | `aiAnalysisPerMonth: null` on all consumer tiers | `lib/pricing/plan-defaults.ts` |
 | §23.1 browser→Supabase direct upload | One server ingest path, bucket INSERT policy dropped | `lib/ingestion/ingest-policy-document.ts`, `docs/audits/document-validation-gate-2026-09.md` |
 | §20.1 Redis progress key | Progress in Postgres run steps | `PolicyAnalysisRun.steps` |
