@@ -35,6 +35,8 @@ import { displayPersonName, policyLabel } from '@/lib/wallet/policy-identity'
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /** The model's stored prose, with policy placeholders and fixture tokens redacted; null stays null. */
+import { differentialFromDocuments } from "@/lib/wallet/renewal-compare"
+
 const scrubProse = (text: string | null | undefined) => (text ? scrubRenderableText(text) : null)
 
 export default async function PolicyDetailPage({
@@ -391,6 +393,16 @@ export default async function PolicyDetailPage({
         remindersSent: normalizeRemindersSent(r.remindersSent)
     }))
 
+    // Spec v2 §10.3: the viewer's own note and the compare-with-previous view.
+    const [viewerNote, chainDocs] = await Promise.all([
+        db.policyNote.findUnique({ where: { policyId_userId: { policyId, userId: dbUser.id } }, select: { body: true } }),
+        db.policyDocument.findMany({
+            where: { policyId, supersededById: null, extractedAt: { not: null } },
+            select: { id: true, uploadedAt: true, effectiveFrom: true, extractionCache: true },
+        }),
+    ])
+    const renewalDifferential = differentialFromDocuments(chainDocs)
+
     const serializedPolicy = {
         ...policy,
         startDate: policy.startDate.toISOString(),
@@ -437,6 +449,8 @@ export default async function PolicyDetailPage({
     return (
         <PolicyDetailsClient
             policy={serializedPolicy}
+            viewerNote={viewerNote?.body ?? ""}
+            renewalDifferential={renewalDifferential}
             findingsProvenance={findingsProvenance}
             composition={composition}
             recordStatus={recordStatus}

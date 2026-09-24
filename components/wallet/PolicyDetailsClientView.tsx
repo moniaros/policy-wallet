@@ -6,6 +6,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { usePolling } from "@/hooks/usePolling"
 import { toast } from "sonner"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
+import { PolicyNoteCard } from "@/components/wallet/policy-detail/PolicyNoteCard"
+import { RenewalDifferentialCard } from "@/components/wallet/policy-detail/RenewalDifferentialCard"
+import type { RenewalDifferential } from "@/lib/services/renewal-differential"
 import { DeletePolicyDialog } from "@/components/wallet/DeletePolicy"
 import { MergeRequestBanner } from "@/components/wallet/MergeRequestBanner"
 import { PolicyHeaderMenu } from "@/components/wallet/policy-detail/PolicyHeaderMenu"
@@ -153,6 +156,10 @@ interface PolicyDetailsClientProps {
     composition?: Composition | null
     /** B1: the record status, resolved server-side from the lifecycle and the latest run. */
     recordStatus?: RecordStatusResult | null
+    /** Spec v2 §10.3: the viewer's private note body ("" when none). */
+    viewerNote?: string
+    /** Spec v2 §10.3: newest document vs the one before it; null = nothing to compare. */
+    renewalDifferential?: RenewalDifferential | null
 }
 
 export function PolicyDetailsClient({
@@ -185,6 +192,8 @@ export function PolicyDetailsClient({
     recordStatus = null,
     exclusionHint = null,
     glossaryHints = null,
+    viewerNote = "",
+    renewalDifferential = null,
 }: PolicyDetailsClientProps) {
     const locale = t.common?.locale || "en-GB"
     const lang: "el" | "en" = locale.startsWith("el") ? "el" : "en"
@@ -1152,6 +1161,23 @@ export function PolicyDetailsClient({
                             forceOpen={openSection === "dates"}
                         >
                             <div className="space-y-4">
+                                {renewalDifferential && (
+                                    <RenewalDifferentialCard
+                                        diff={renewalDifferential}
+                                        locale={locale}
+                                        copy={{
+                                            title: detailsCopy.compareTitle,
+                                            intro: detailsCopy.compareIntro,
+                                            premium: detailsCopy.comparePremium,
+                                            sums: detailsCopy.compareSums,
+                                            terms: detailsCopy.compareTerms,
+                                            noChanges: detailsCopy.compareNoChanges,
+                                            added: detailsCopy.compareAdded,
+                                            removed: detailsCopy.compareRemoved,
+                                            modified: detailsCopy.compareModified,
+                                        }}
+                                    />
+                                )}
                                 <KeyDatesCard
                                     startDate={getStartDate()}
                                     endDate={getEndDate()}
@@ -1312,6 +1338,25 @@ export function PolicyDetailsClient({
                                     previewLabels: t.wallet.documentPreview,
                                 }}
                             />
+
+                            {/* Spec v2 §10.3: the viewer's private note and the
+                                digital card. Inside #documents — the section already
+                                calls itself «Έγγραφα, σημειώσεις & κοινοποίηση». */}
+                            <PolicyNoteCard
+                                policyId={policy.id}
+                                initialBody={viewerNote}
+                                copy={{
+                                    title: detailsCopy.noteTitle,
+                                    hint: detailsCopy.noteHint,
+                                    placeholder: detailsCopy.notePlaceholder,
+                                    save: detailsCopy.noteSave,
+                                    saved: detailsCopy.noteSaved,
+                                    error: detailsCopy.noteError,
+                                }}
+                            />
+                            <Link href={`/wallet/${policy.id}/card`} className="pw-soft-button inline-flex">
+                                {detailsCopy.digitalCardLink}
+                            </Link>
 
                             {/* Attach an extra document to THIS policy. Inside the
                                 #documents section on purpose: a card in here costs

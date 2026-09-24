@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="el" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>PolicyWallet — brag</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="assets/audio-data.js"></script>
+    <style>
+      @font-face {
+        font-family: "InterPW";
+        src: url("assets/fonts/inter-greek.woff2") format("woff2");
+        font-weight: 100 900;
+        font-style: normal;
+        unicode-range: U+0370-03FF, U+1F00-1FFF;
+      }
+      @font-face {
+        font-family: "InterPW";
+        src: url("assets/fonts/inter-latin.woff2") format("woff2");
+        font-weight: 100 900;
+        font-style: normal;
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+          U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      :root {
+        --bg: #12211d;
+        --fg: #f8fafc;
+        --fg-muted: #b7c9c2;
+        --mint: #89d9b2;
+        --green: #29685b;
+        --card: #ffffff;
+        --ink: #0f172a;
+        --ink-muted: #475569;
+        --hair: #e2e8f0;
+        --danger: #b91c1c;
+        --danger-tint: #fef2f2;
+        --warning: #92400e;
+        --warning-tint: #fffbeb;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+      body { font-family: "InterPW", system-ui, sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+
+      /* ---- background layer (untimed) ---- */
+      #bg { position: absolute; inset: 0; }
+      #grid {
+        position: absolute; inset: 0; opacity: 0.05;
+        background-image:
+          linear-gradient(to right, #89d9b2 1px, transparent 1px),
+          linear-gradient(to bottom, #89d9b2 1px, transparent 1px);
+        background-size: 96px 96px;
+      }
+      .glow { position: absolute; border-radius: 50%; will-change: transform; }
+      #glow-a {
+        width: 1300px; height: 1300px; right: -360px; top: -260px;
+        background: radial-gradient(circle, rgba(41, 104, 91, 0.75) 0%, rgba(41, 104, 91, 0) 62%);
+      }
+      #glow-b {
+        width: 900px; height: 900px; left: -320px; bottom: -380px;
+        background: radial-gradient(circle, rgba(137, 217, 178, 0.22) 0%, rgba(137, 217, 178, 0) 62%);
+      }
+      #ghost {
+        position: absolute; right: -40px; bottom: -70px;
+        font-size: 300px; font-weight: 900; letter-spacing: -0.05em; line-height: 1;
+        color: #89d9b2; opacity: 0.045; white-space: nowrap; will-change: transform;
+      }
+
+      /* ---- scenes ---- */
+      .clip { position: absolute; inset: 0; }
+      .scene-inner { position: absolute; inset: 0; padding: 120px; display: grid; align-content: center; }
+      .a { opacity: 0; will-change: transform, opacity; }
+
+      .kicker {
+        font-size: 22px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mint);
+      }
+      .h2 {
+        font-size: 84px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; color: var(--fg);
+        max-width: 780px; text-wrap: balance;
+      }
+      .sub { font-size: 34px; font-weight: 400; line-height: 1.35; color: var(--fg-muted); max-width: 700px; }
+      .copy { display: grid; gap: 28px; }
+
+      /* scene 1 */
+      #s1-inner { gap: 44px; }
+      #s1-h { font-size: 132px; font-weight: 800; letter-spacing: -0.035em; line-height: 1; color: var(--fg); }
+      #chips { display: flex; gap: 18px; }
+      .chip {
+        display: inline-block; padding: 16px 28px; border: 1.5px solid rgba(137, 217, 178, 0.55); border-radius: 999px;
+        font-size: 32px; font-weight: 600; color: var(--fg); background: rgba(137, 217, 178, 0.06);
+      }
+      #s1-l2 { font-size: 54px; font-weight: 400; line-height: 1.25; color: var(--fg-muted); max-width: 1500px; }
+
+      /* scene 2 / 3 grids */
+      #s2-inner { grid-template-columns: 1fr 760px; column-gap: 96px; align-items: center; }
+      #s3-inner { grid-template-columns: 760px 1fr; column-gap: 96px; align-items: center; }
+
+      .card-wrap { position: relative; }
+      .card-glow {
+        position: absolute; inset: -60px -90px; border-radius: 48px; opacity: 0.45;
+        background: radial-gradient(ellipse at center, rgba(41, 104, 91, 0.9) 0%, rgba(41, 104, 91, 0) 70%);
+        filter: blur(30px);
+      }
+      .card {
+        position: relative; background: var(--card); color: var(--ink); border-radius: 24px; padding: 36px 40px 40px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38), 0 2px 0 rgba(255, 255, 255, 0.5) inset;
+        display: grid; gap: 26px; will-change: transform, opacity;
+      }
+      .card-head { display: flex; align-items: center; gap: 12px; font-size: 21px; font-weight: 700; color: var(--ink); }
+      .card-head svg { width: 30px; height: 30px; color: var(--ink); }
+      .card-head .meta { margin-left: auto; font-size: 17px; font-weight: 500; color: #414e61; }
+
+      /* scene 2 card */
+      .drop {
+        border: 2px dashed #cbd5e1; border-radius: 16px; height: 128px; display: flex; align-items: center; justify-content: center;
+        background: #f8fafc;
+      }
+      #pdf {
+        display: flex; align-items: center; gap: 16px; padding: 14px 22px; background: #fff; border: 1px solid var(--hair);
+        border-radius: 12px; box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+      }
+      #pdf .ico {
+        width: 44px; height: 52px; border-radius: 8px; background: var(--danger); color: #fff; font-size: 13px; font-weight: 800;
+        display: grid; place-items: center; letter-spacing: 0.04em;
+      }
+      #pdf .name { font-size: 22px; font-weight: 600; color: var(--ink); }
+      #pdf .size { font-size: 17px; color: var(--ink-muted); }
+      #s2-prog { display: grid; gap: 12px; }
+      .prog-label { position: relative; height: 26px; font-size: 20px; font-weight: 600; color: var(--ink); }
+      .prog-label span { position: absolute; left: 0; top: 0; white-space: nowrap; }
+      #plab-b { opacity: 0; color: var(--green); }
+      .track { width: 100%; height: 10px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+      #s2-fill { display: block; width: 100%; height: 100%; background: var(--green); transform-origin: 0 50%; border-radius: 999px; }
+      .facts { display: grid; }
+      .fact {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding: 16px 0; border-top: 1px solid var(--hair);
+      }
+      .fact .k { font-size: 18px; font-weight: 500; color: var(--ink-muted); }
+      .fact .v { font-size: 26px; font-weight: 700; color: var(--ink); text-align: right; }
+
+      /* scene 3 card */
+      .card-kicker { font-size: 14px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green); }
+      #s3-count { font-size: 27px; font-weight: 700; color: var(--ink); margin-top: 6px; }
+      .section-label { font-size: 15px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); }
+      .item { display: grid; gap: 10px; padding: 20px 0 22px; border-top: 1px solid var(--hair); }
+      .pill {
+        display: inline-block; justify-self: start; padding: 6px 12px; border-radius: 999px; font-size: 16px; font-weight: 700;
+      }
+      .pill.hi { background: var(--danger-tint); color: var(--danger); }
+      .pill.mid { background: var(--warning-tint); color: var(--warning); }
+      .item .t { font-size: 28px; font-weight: 700; line-height: 1.2; color: var(--ink); letter-spacing: -0.01em; }
+      .item .r { font-size: 20px; line-height: 1.4; color: var(--ink-muted); max-width: 660px; }
+
+      /* scene 4 */
+      #s4-inner { place-items: center; text-align: center; gap: 22px; }
+      #s4-l1 { font-size: 60px; font-weight: 300; letter-spacing: 0; color: var(--fg-muted); }
+      #s4-l2 { font-size: 92px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; color: var(--fg); max-width: 1600px; }
+      #s4-logo { display: flex; align-items: center; gap: 16px; margin-top: 44px; }
+      #s4-logo svg { width: 64px; height: 64px; color: var(--fg); }
+      #s4-logo .word { font-size: 60px; font-weight: 800; letter-spacing: -0.03em; color: var(--fg); line-height: 1; }
+      #s4-logo .word b { color: var(--mint); font-weight: 800; }
+      #s4-url { font-size: 30px; font-weight: 500; color: var(--fg-muted); letter-spacing: 0.02em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="22" data-width="1920" data-height="1080">
+      <!-- background layer -->
+      <div id="bg" data-layout-ignore>
+        <div id="grid"></div>
+        <div id="glow-a" class="glow"></div>
+        <div id="glow-b" class="glow"></div>
+        <div id="ghost">ασφαλιστήριο</div>
+      </div>
+
+      <!-- Scene 1 — hook -->
+      <section id="s1" class="clip" data-start="0" data-duration="6" data-track-index="1">
+        <div id="s1-inner" class="scene-inner">
+          <h1 id="s1-h" class="a">Η ζωή σας αλλάζει.</h1>
+          <div id="chips">
+            <span id="chip0" class="chip a">Κάνατε παιδί</span>
+            <span id="chip1" class="chip a">Αλλάξατε σπίτι</span>
+            <span id="chip2" class="chip a">Πήρατε δάνειο</span>
+          </div>
+          <p id="s1-l2" class="a">Η ασφάλισή σας, όμως, έμεινε εκεί που την αφήσατε.</p>
+        </div>
+      </section>
+
+      <!-- Scene 2 — we read it for you -->
+      <section id="s2" class="clip" data-start="5.8" data-duration="6.4" data-track-index="2">
+        <div id="s2-inner" class="scene-inner">
+          <div class="copy">
+            <div id="s2-k" class="kicker a">Πώς λειτουργεί</div>
+            <h2 id="s2-h" class="h2 a">Το διαβάζουμε για εσάς</h2>
+            <p id="s2-p" class="sub a">Βρίσκουμε τι καλύπτει, τι δεν καλύπτει και πότε λήγει.</p>
+          </div>
+          <div class="card-wrap">
+            <div class="card-glow" data-layout-ignore></div>
+            <div id="s2-card" class="card a">
+              <div class="card-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 2.5h12A3.5 3.5 0 0 1 21.5 6v12a3.5 3.5 0 0 1-3.5 3.5H6A3.5 3.5 0 0 1 2.5 18V6A3.5 3.5 0 0 1 6 2.5ZM21.5 9H15a3 3 0 0 0 0 6h6.5Z"/><circle cx="16.4" cy="12" r="2" fill="#29685B"/></svg>
+                <span>Ασφαλιστήρια</span>
+                <span class="meta">Ό,τι περιέχει το πορτοφόλι σας σήμερα</span>
+              </div>
+              <div class="drop">
+                <div id="pdf" class="a">
+                  <div class="ico">PDF</div>
+                  <div>
+                    <div class="name">ασφαλιστήριο-κατοικίας.pdf</div>
+                    <div class="size">1,2 MB · Κατοικία</div>
+                  </div>
+                </div>
+              </div>
+              <div id="s2-prog" class="a">
+                <div class="prog-label">
+                  <span id="plab-a">Το διαβάζουμε για εσάς…</span>
+                  <span id="plab-b" data-layout-allow-overlap>Διαβάστηκε</span>
+                </div>
+                <div class="track"><div id="s2-fill"></div></div>
+              </div>
+              <div class="facts">
+                <div id="fact0" class="fact a"><span class="k">Ασφαλιστική</span><span class="v">Ασφαλιστική Α</span></div>
+                <div id="fact1" class="fact a"><span class="k">Κλάδος</span><span class="v">Κατοικία</span></div>
+                <div id="fact2" class="fact a"><span class="k">Ανανέωση</span><span class="v">σε 74 ημέρες</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 3 — we show you the truth -->
+      <section id="s3" class="clip" data-start="12" data-duration="5.6" data-track-index="3">
+        <div id="s3-inner" class="scene-inner">
+          <div class="card-wrap">
+            <div class="card-glow" data-layout-ignore></div>
+            <div id="s3-card" class="card a">
+              <div>
+                <div class="card-kicker">Συνοπτική εικόνα</div>
+                <div id="s3-count" class="a">2 ευρήματα ίσως χρειάζονται έλεγχο</div>
+              </div>
+              <div class="section-label">Χρειάζεται την προσοχή σας</div>
+              <div>
+                <div id="item0" class="item a">
+                  <span class="pill hi">Υψηλή προτεραιότητα</span>
+                  <div class="t">Κατοικία: ο σεισμός δεν καλύπτεται</div>
+                  <div class="r">Το ασφαλιστήριο κατοικίας δεν περιλαμβάνει σεισμό — ρωτήστε τον ασφαλιστή σας πριν την ανανέωση.</div>
+                </div>
+                <div id="item1" class="item a">
+                  <span class="pill mid">Μεσαία προτεραιότητα</span>
+                  <div class="t">Αυτοκίνητο: ανανέωση σε 18 ημέρες</div>
+                  <div class="r">Ελέγξτε ότι οι ίδιες καλύψεις και απαλλαγές ισχύουν και στη νέα περίοδο.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="copy">
+            <div id="s3-k" class="kicker a">Χρειάζεται την προσοχή σας</div>
+            <h2 id="s3-h" class="h2 a">Σας δείχνουμε την αλήθεια</h2>
+            <p id="s3-p" class="sub a">Σας εξηγούμε με απλά λόγια τι καλύπτουν τα ασφαλιστήριά σας και τι μπορεί να σας λείπει.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 4 — outro -->
+      <section id="s4" class="clip" data-start="17.4" data-duration="4.6" data-track-index="4">
+        <div id="s4-inner" class="scene-inner">
+          <div id="s4-l1" class="a">Δεν αξιολογούμε ασφαλιστήρια.</div>
+          <div id="s4-l2" class="a">Αξιολογούμε την προστασία σας.</div>
+          <div id="s4-logo" class="a">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 2.5h12A3.5 3.5 0 0 1 21.5 6v12a3.5 3.5 0 0 1-3.5 3.5H6A3.5 3.5 0 0 1 2.5 18V6A3.5 3.5 0 0 1 6 2.5ZM21.5 9H15a3 3 0 0 0 0 6h6.5Z"/><circle cx="16.4" cy="12" r="2" fill="#89D9B2"/></svg>
+            <div class="word">Policy<b>Wallet</b></div>
+          </div>
+          <div id="s4-url" class="a">policywallet.gr</div>
+        </div>
+      </section>
+
+      <!-- audio: music on 10, SFX on 11+ -->
+      <audio id="bg-music" data-timeline-role="music" src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
+        data-start="0" data-duration="22" data-track-index="10" data-volume="0.32"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.5,"v":1},{"t":20.4,"v":1},{"t":21.9,"v":0}]}]}'></audio>
+      <audio id="sfx-chip1" src="assets/sfx/interface/drop_001.ogg" data-start="1.6" data-track-index="11" data-volume="0.5"></audio>
+      <audio id="sfx-chip3" src="assets/sfx/interface/drop_002.ogg" data-start="2.69" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-pdf" src="assets/sfx/casino/card-slide-1.ogg" data-start="6.52" data-track-index="13" data-volume="0.55"></audio>
+      <audio id="sfx-fact" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="8.7" data-track-index="14" data-volume="0.6"></audio>
+      <audio id="sfx-find" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="13.07" data-track-index="15" data-volume="0.65"></audio>
+      <audio id="sfx-find2" src="assets/sfx/interface/drop_002.ogg" data-start="14.16" data-track-index="16" data-volume="0.45"></audio>
+      <audio id="sfx-logo" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="19.62" data-track-index="17" data-volume="0.5"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // ---- ambient background ----
+      tl.fromTo("#ghost", { x: 70 }, { x: -70, duration: 22, ease: "sine.inOut" }, 0);
+      // 4s breath cycle, finite repeats: floor(22/4) - 1 = 4
+      tl.to("#glow-b", { scale: 1.12, duration: 4, ease: "sine.inOut", yoyo: true, repeat: 4 }, 0);
+
+      // ---- audio-reactive: bass breathes the brand-green glow and the card halo ----
+      // Pre-extracted bands (assets/audio-data.js); per-frame zero-duration sets are seek-safe.
+      (function () {
+        const n = AUDIO_DATA.totalFrames, fps = AUDIO_DATA.fps;
+        for (let f = 0; f < n; f++) {
+          const b = Math.min(1, AUDIO_DATA.bass[f] * 1.6);
+          tl.set("#glow-a", { scale: 1 + b * 0.08 }, f / fps);
+          tl.set(".card-glow", { opacity: 0.35 + b * 0.3 }, f / fps);
+        }
+      })();
+
+      // ---- scene 1 — hook (0–6.0) ----
+      tl.fromTo("#s1-h", { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.85, ease: "expo.out" }, 0.3);
+      // beat-grid: chips at 1.64s, 2.19s, 2.73s
+      [1.64, 2.19, 2.73].forEach((t, i) => {
+        tl.fromTo("#chip" + i, { scale: 0.82, y: 14, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }, t);
+      });
+      tl.fromTo("#s1-l2", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, ease: "power3.out" }, 3.27);
+      tl.to("#s1-inner", { opacity: 0, duration: 0.45, ease: "power2.in" }, 5.5);
+
+      // ---- scene 2 — we read it for you (5.8–12.2) ----
+      tl.fromTo("#s2-card", { y: 90, scale: 0.96, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 1.0, ease: "expo.out" }, 5.95);
+      tl.fromTo("#s2-k", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 5.9);
+      tl.fromTo("#s2-h", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 6.0);
+      tl.fromTo("#s2-p", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" }, 6.2);
+      tl.fromTo("#pdf", { x: 140, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 6.56); // beat
+      tl.fromTo("#s2-prog", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "none" }, 7.0);
+      tl.fromTo("#s2-fill", { scaleX: 0 }, { scaleX: 1, duration: 1.55, ease: "power1.inOut" }, 7.09);
+      tl.to("#plab-a", { opacity: 0, duration: 0.2, ease: "none" }, 8.6);
+      tl.to("#plab-b", { opacity: 1, duration: 0.2, ease: "none" }, 8.64);
+      // beat-locked: 8.74s (strong cue) — first extracted fact; then beat-grid 9.29s, 9.83s
+      [8.74, 9.29, 9.83].forEach((t, i) => {
+        tl.fromTo("#fact" + i, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, t);
+      });
+      tl.to("#s2-inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, 11.75);
+
+      // ---- scene 3 — we show you the truth (12.0–17.6) ----
+      tl.fromTo("#s3-card", { x: -90, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, ease: "expo.out" }, 12.1);
+      tl.fromTo("#s3-k", { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 12.2);
+      tl.fromTo("#s3-h", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 12.3);
+      tl.fromTo("#s3-p", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" }, 12.5);
+      tl.fromTo("#s3-count", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "none" }, 12.6);
+      // beat-locked: 13.11s (strong cue) — the gap finding lands; beat-grid: 14.20s second item
+      tl.fromTo("#item0", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, 13.11);
+      tl.fromTo("#item1", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, 14.2);
+      tl.to("#s3-inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, 17.15);
+
+      // ---- scene 4 — outro (17.4–22.0) ----
+      // beat-locked: 17.47s, 18.56s, 19.66s (strong cues)
+      tl.fromTo("#s4-l1", { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.9, ease: "power2.out" }, 17.47);
+      tl.fromTo("#s4-l2", { y: 56, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 18.56);
+      tl.fromTo("#s4-logo", { scale: 0.88, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: "back.out(1.4)" }, 19.66);
+      tl.fromTo("#s4-url", { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 20.19);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

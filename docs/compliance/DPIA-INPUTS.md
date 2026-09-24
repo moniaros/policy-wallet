@@ -15,8 +15,8 @@ today. The assessment itself is a legal judgement and is a halt
 
 | Measure | Value |
 | --- | --- |
-| Stores holding personal data (tagged) | 61 of 61 |
-| Columns across them (relations excluded) | 760 |
+| Stores holding personal data (tagged) | 62 of 62 |
+| Columns across them (relations excluded) | 766 |
 | Columns declared Art. 9 | 15 (stores: 4) |
 | Data-subject categories in use | admin, agent, policyholder, third_party |
 | Stores under the AI-analysis purpose | 10 |
@@ -706,6 +706,17 @@ fields are not columns and are not listed.
 | `decidedAt` | `DateTime?` | ordinary |
 | `createdAt` | `DateTime` | ordinary |
 
+### `PolicyNote` — service · contract · policyholder|agent · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `id` | `String` | identifier |
+| `policyId` | `String` | ordinary |
+| `userId` | `String` | subject key |
+| `body` | `String` | ordinary |
+| `createdAt` | `DateTime` | ordinary |
+| `updatedAt` | `DateTime` | ordinary |
+
 ### `PolicyRenewal` — service · contract · policyholder · account_life · cascade
 
 | Column | Type | Class |
@@ -1138,8 +1149,8 @@ generator rather than rendering a pack without it.
 
 | Processor | Role (published) | Location (published) | Purposes | Stores under those purposes | How | Receives the document | Endpoint, as constructed in code |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 61 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
-| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 61 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
+| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 62 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
+| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 62 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
 | Stripe | Payment and subscription processing | EU/US | billing | `CreditTransaction`, `EntitlementUsage`, `Invoice`, `MonthlyTokenUsage`, `PaymentMethod`, `Referral`, `ReportUnlockPurchase`, `Subscription`, `TokenBalance`, `TokenPurchase`, `TokenUsage` | checkout, subscription and invoice objects; card data never reaches our systems | no | n/a — configured outside the application code |
 | Brevo | Email delivery (notifications, newsletter) | EU (France) | communication | `BusinessEvent`, `NotificationEvent`, `NotificationPreference`, `PushDevice`, `UserNotificationSettings` | the address, name and body of each email sent | no | n/a — configured outside the application code |
 | Upstash | Request rate limiting (Redis) | EU/US | none | none | per-IP request counters for rate limiting — no store feeds it | no | n/a — configured outside the application code |

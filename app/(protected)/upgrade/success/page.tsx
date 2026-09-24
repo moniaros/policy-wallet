@@ -9,6 +9,7 @@ import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { FEATURE_GATES, getUpgradeCopy, type FeatureKey } from "@/lib/monetization"
 import { UpgradeSuccessTracker } from "@/components/monetization/UpgradeSuccessTracker"
+import { ActivationPoller } from "@/components/monetization/ActivationPoller"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
@@ -171,6 +172,7 @@ export default async function UpgradeSuccessPage({
                         ? featureCopy.successCta
                         : returnPath === "/wallet" ? pick(COPY.ctaHome, language) : pick(COPY.cta, language)}
                 </Link>
+                {!activated && sessionId && <ActivationPoller />}
                 {activated && !tokenPurchase && !reportUnlock && (
                     <UpgradeSuccessTracker feature={featureKey ?? undefined} plan={activatedPlanId} />
                 )}

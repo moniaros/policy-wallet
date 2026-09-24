@@ -86,6 +86,7 @@ export type ErasureSummary = {
     deletedHealthBenefitUsages: number
     deletedHealthRiskAssessments: number
     deletedWalletMemberships: number
+    deletedPolicyNotes: number
     deletedBusinessEvents: number
     deletedRiskReviews: number
     deletedNotificationSettings: number
@@ -231,6 +232,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedHealthBenefitUsages,
                 deletedHealthRiskAssessments,
                 deletedWalletMemberships,
+                deletedPolicyNotes,
                 deletedBusinessEvents,
                 deletedRiskReviews,
                 deletedNotificationSettings,
@@ -291,6 +293,8 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 // Spec v2 §13: both directions — the wallets they owned and the
                 // ones they belonged to.
                 tx.walletMembership.deleteMany({ where: { OR: [{ walletOwnerUserId: userId }, { memberUserId: userId }] } }),
+                // Spec v2 §10.3: private policy notes are the person's own words.
+                tx.policyNote.deleteMany({ where: { userId } }),
                 // The event log is a durable record of what happened to this
                 // person: policies, life events, score movements. `subjectUserId`
                 // is the field that makes it theirs.
@@ -501,6 +505,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedHealthBenefitUsages: deletedHealthBenefitUsages.count,
                 deletedHealthRiskAssessments: deletedHealthRiskAssessments.count,
                 deletedWalletMemberships: deletedWalletMemberships.count,
+                deletedPolicyNotes: deletedPolicyNotes.count,
                 deletedBusinessEvents: deletedBusinessEvents.count,
                 deletedRiskReviews: deletedRiskReviews.count,
                 deletedNotificationSettings: deletedNotificationSettings.count,

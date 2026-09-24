@@ -349,6 +349,11 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
             {/* The wallet's upgrade trigger. It used to live ONLY in the mobile tree
                 (MyPoliciesScreen), so free users on desktop never saw one on /wallet
                 at all. With one responsive tree it renders at every width. */}
+            {tier === 'pro' && policies.length > 0 && (
+                <a href="/api/v1/me/portfolio-report" target="_blank" rel="noopener" className="pw-soft-button inline-flex">
+                    {t.wallet.portfolioReport.button}
+                </a>
+            )}
             {tier === 'free' && policies.length > 0 && (
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
                     <UpgradeTriggerCard

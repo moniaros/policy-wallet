@@ -162,6 +162,7 @@ model User {
   riskProfileVersions             RiskProfileVersion[]
   healthBenefitUsages             HealthBenefitUsage[]
   healthRiskAssessments           HealthRiskAssessment[]
+  policyNotes                     PolicyNote[]
   walletsOwned                    WalletMembership[]     @relation("WalletOwner")
   walletMemberships               WalletMembership[]     @relation("WalletMember")
 
@@ -441,6 +442,7 @@ model Policy {
   reportUnlocks           ReportUnlockPurchase[]
   mergeRequestsAsExisting PolicyMergeRequest[]   @relation("MergeExisting")
   mergeRequestsAsIncoming PolicyMergeRequest[]   @relation("MergeIncoming")
+  notes                   PolicyNote[]
 
   @@index([ownerUserId])
   @@index([createdByUserId])
@@ -2737,4 +2739,23 @@ model AgentReviewRevision {
 
   @@index([userId, policyId, createdAt])
   @@map("agent_review_revisions")
+}
+
+/// @ropa purpose=service basis=contract subjects=policyholder|agent retention=account_life erasure=delete art9=none
+/// Spec v2 §10.3 — a private note on a policy, one per viewer per policy. The
+/// author's own words, visible only to the author (never to the advisor, the
+/// family or an admin surface); erasure deletes it, export returns it.
+model PolicyNote {
+  id        String   @id @default(cuid()) @map("policy_note_id")
+  policyId  String   @map("policy_id")
+  userId    String   @map("user_id")
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  policy    Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([policyId, userId])
+  @@index([userId])
+  @@map("policy_notes")
 }

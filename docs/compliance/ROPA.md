@@ -10,7 +10,7 @@
 **Controller:** Insurance Martech IKE (ΓΕΜΗ 188863359000, ΑΦΜ 302659440, ΔΟΥ Χίου),
 Kalamoti, 82102, Chios, Greece · **Privacy contact:** dpo@policywallet.gr
 
-**Covers 61 of 61 models holding personal data.**
+**Covers 62 of 62 models holding personal data.**
 Recipients and transfers are generated alongside this record in
 [DPIA-INPUTS.md](DPIA-INPUTS.md) §3; security measures are in
 [DATA_PROTECTION_REVIEW_PACK.md](DATA_PROTECTION_REVIEW_PACK.md) §13 — they are
@@ -108,6 +108,7 @@ properties of the deployment, not of a table, so they are not generated here.
 | `Policy` | Performance of a contract — Art. 6(1)(b) | policyholder | For as long as the account exists; removed on erasure | Deleted |
 | `PolicyDocument` | Performance of a contract — Art. 6(1)(b) | policyholder | For as long as the account exists; removed on erasure | Removed with its parent |
 | `PolicyMergeRequest` | Performance of a contract — Art. 6(1)(b) | policyholder | For as long as the account exists; removed on erasure | Removed with its parent |
+| `PolicyNote` | Performance of a contract — Art. 6(1)(b) | policyholder, agent | For as long as the account exists; removed on erasure | Deleted |
 | `PolicyRenewal` | Performance of a contract — Art. 6(1)(b) | policyholder | For as long as the account exists; removed on erasure | Removed with its parent |
 | `TenantMembership` | Performance of a contract — Art. 6(1)(b) | agent, admin | For as long as the account exists; removed on erasure | Deliberately retained, with a documented basis |
 | `User` | Performance of a contract — Art. 6(1)(b) | policyholder, agent, admin | For as long as the account exists; removed on erasure | Anonymised in place |
