@@ -8,6 +8,7 @@ import { displayPersonName, policyLabel } from "@/lib/wallet/policy-identity"
 import { ENDED_RELATIONSHIP_STATUSES, resolvePolicyAdvisors } from "@/lib/agent-visibility"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { reminderWindow, resolveCheckupBenefit } from "@/lib/wellness/checkup-benefit"
+import { loadCatalogueInsurers, matchVerifiedCallCentre } from "@/lib/wallet/verified-insurer-contact"
 import { athensDate, nudgeForDate } from "@/lib/wellness/nudges"
 import type { CategoryScore } from "@/lib/wellness/scoring"
 import { WellnessClient, type BenefitView } from "./WellnessClient"
@@ -42,6 +43,7 @@ export default async function WellnessPage() {
     ])
 
     const health = policies.filter((p) => branchFamilyId(p.lineOfBusiness) === "health")
+    const catalogue = health.length ? await loadCatalogueInsurers() : []
     const benefits: BenefitView[] = await Promise.all(
         health.map(async (p) => {
             const u = usages.find((row) => row.policyKey === p.id)
@@ -52,6 +54,8 @@ export default async function WellnessPage() {
                 label: p.nickname || policyLabel(p),
                 benefit,
                 value: typeof value === "boolean" ? value : null,
+                // Fallback only: the document's own coordination-centre number wins.
+                insurerCallCentre: benefit.contactPhone ? null : matchVerifiedCallCentre(catalogue, p.insurerName),
                 usage: { status: u?.status ?? "available", intent: u?.intent ?? null, remindAt: u?.remindAt ? u.remindAt.toISOString().slice(0, 10) : null },
                 // An advisor only when one can already see THIS policy, and the plan allows messaging.
                 advisorAvailable: entitlements.limits.agentCollaboration === true && (await resolvePolicyAdvisors(p)).length > 0,

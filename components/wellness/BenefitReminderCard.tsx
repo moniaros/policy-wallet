@@ -20,12 +20,14 @@ type Choice = "considering" | "done" | "not_relevant" | "later"
  * when a verified citation exists, the next steps the evidence supports, and
  * the person's own choice. Booking is never offered: no integration exists.
  */
-export function BenefitReminderCard({ policyId, label, benefit, value, usage, advisorAvailable, window, year, locale, copy }: {
+export function BenefitReminderCard({ policyId, label, benefit, value, insurerCallCentre, usage, advisorAvailable, window, year, locale, copy }: {
     policyId: string
     label: string
     benefit: CheckupBenefit
     /** The raw stated value, to word an unverified `false` honestly. */
     value: boolean | null
+    /** The insurer's VERIFIED call centre, only when the document states no number. */
+    insurerCallCentre: { insurer: string; phone: string } | null
     usage: { status: string; intent: string | null; remindAt: string | null }
     advisorAvailable: boolean
     window: { min: string; max: string }
@@ -125,9 +127,14 @@ export function BenefitReminderCard({ policyId, label, benefit, value, usage, ad
                         <FileText className="h-4 w-4" aria-hidden="true" />{copy.actionTerms}
                     </Link>
                     {benefit.contactPhone ? (
-                        <a href={`tel:${benefit.contactPhone.replace(/\s+/g, "")}`} className="pw-soft-button inline-flex h-auto max-w-full flex-col items-start py-2 text-left">
+                        <a href={`tel:${benefit.contactPhone.replace(/\s+/g, "")}`} className="pw-soft-button inline-flex h-auto max-w-full flex-col items-start whitespace-normal py-2 text-left">
                             <span className="flex min-w-0 flex-wrap items-center gap-x-1"><Phone className="h-4 w-4 shrink-0" aria-hidden="true" /><span>{copy.actionCall}</span><span className="whitespace-nowrap font-semibold">{benefit.contactPhone}</span></span>
-                            <span className="text-caption text-muted-foreground">{copy.actionCallNote}</span>
+                            <span className="min-w-0 max-w-full whitespace-normal break-words text-caption text-muted-foreground">{copy.actionCallNote}</span>
+                        </a>
+                    ) : insurerCallCentre ? (
+                        <a href={`tel:${insurerCallCentre.phone.replace(/\s+/g, "")}`} className="pw-soft-button inline-flex h-auto max-w-full flex-col items-start whitespace-normal py-2 text-left">
+                            <span className="flex min-w-0 flex-wrap items-center gap-x-1"><Phone className="h-4 w-4 shrink-0" aria-hidden="true" /><span>{copy.actionCallInsurer}</span><span className="whitespace-nowrap font-semibold">{insurerCallCentre.phone}</span></span>
+                            <span className="min-w-0 max-w-full whitespace-normal break-words text-caption text-muted-foreground">{copy.actionCallInsurerNote.replace("{insurer}", insurerCallCentre.insurer)}</span>
                         </a>
                     ) : null}
                     {advisorAvailable && (
@@ -137,7 +144,7 @@ export function BenefitReminderCard({ policyId, label, benefit, value, usage, ad
                     )}
                 </div>
             )}
-            {actionable && !benefit.contactPhone && <p className="mt-2 text-caption text-muted-foreground">{copy.noPhone}</p>}
+            {actionable && !benefit.contactPhone && !insurerCallCentre && <p className="mt-2 text-caption text-muted-foreground">{copy.noPhone}</p>}
             {actionable && <p className="mt-1 text-caption text-muted-foreground">{copy.noBooking}</p>}
 
             {actionable && (

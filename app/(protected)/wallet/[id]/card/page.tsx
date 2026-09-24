@@ -9,6 +9,7 @@ import { getTranslations } from "@/lib/i18n"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 import { displayInsurerName, policyLabel } from "@/lib/wallet/policy-identity"
 import { offlineCardRows } from "@/lib/wallet/offline-card"
+import { loadCatalogueInsurers, matchVerifiedCallCentre } from "@/lib/wallet/verified-insurer-contact"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatDate } from "@/lib/i18n/format"
 import { ShareCardButton } from "./ShareCardButton"
@@ -37,7 +38,8 @@ export default async function DigitalCardPage({ params }: { params: Promise<{ id
     const copy = t.wallet.policyCard
     const lifecycle = resolvePolicyLifecycle(policy)
     const branch = normalizeBranch(policy.lineOfBusiness)
-    const phones = offlineCardRows([policy])[0]?.phones ?? []
+    const catalogue = await loadCatalogueInsurers()
+    const phones = offlineCardRows([policy], (name) => matchVerifiedCallCentre(catalogue, name))[0]?.phones ?? []
     const endDate = lifecycle.endDate ? formatDate(lifecycle.endDate, language) : null
 
     return (

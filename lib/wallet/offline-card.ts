@@ -8,7 +8,7 @@ import { extractedField } from "@/lib/wallet/unreadable-value"
  * labelled by what it is for. Pure over the wallet rows, so the service worker
  * can cache the JSON and the /offline page can render it with no server.
  */
-export type OfflinePhoneKind = "accident" | "roadside" | "coordination" | "technical" | "emergency"
+export type OfflinePhoneKind = "accident" | "roadside" | "coordination" | "technical" | "emergency" | "insurer"
 export interface OfflinePhone { kind: OfflinePhoneKind; number: string }
 export interface OfflineCardRow {
     id: string
@@ -18,7 +18,11 @@ export interface OfflineCardRow {
     phones: OfflinePhone[]
 }
 
-export function offlineCardRows(policies: Array<{ id: string; insurerName: string; lineOfBusiness: string; endDate: Date | null; acordData: unknown }>): OfflineCardRow[] {
+export function offlineCardRows(
+    policies: Array<{ id: string; insurerName: string; lineOfBusiness: string; endDate: Date | null; acordData: unknown }>,
+    /** The insurer's VERIFIED call centre — used only when the document states no number. */
+    callCentreFor: (insurerName: string) => { phone: string } | null = () => null
+): OfflineCardRow[] {
     const rows: OfflineCardRow[] = []
     for (const p of policies) {
         const a = (p.acordData ?? {}) as Record<string, any>
@@ -33,6 +37,10 @@ export function offlineCardRows(policies: Array<{ id: string; insurerName: strin
         for (const [kind, raw] of candidates) {
             const value = extractedField(typeof raw === "string" ? raw : null).value
             if (value) phones.push({ kind, number: value })
+        }
+        if (phones.length === 0) {
+            const fallback = callCentreFor(p.insurerName)
+            if (fallback) phones.push({ kind: "insurer", number: fallback.phone })
         }
         if (phones.length === 0) continue
         const branch = normalizeBranch(p.lineOfBusiness)

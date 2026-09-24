@@ -3,6 +3,7 @@ import { createApiResponse } from "@/lib/api-utils"
 import { db } from "@/lib/db"
 import { NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
 import { offlineCardRows } from "@/lib/wallet/offline-card"
+import { loadCatalogueInsurers, matchVerifiedCallCentre } from "@/lib/wallet/verified-insurer-contact"
 
 /**
  * Spec v2 §18.1: the roadside numbers, as a small JSON the service worker
@@ -15,7 +16,8 @@ export const GET = withApiGuard({ auth: { mode: "user" } }, async ({ auth }) => 
         select: { id: true, insurerName: true, lineOfBusiness: true, endDate: true, acordData: true },
         orderBy: { endDate: "asc" },
     })
-    const response = createApiResponse({ generatedAt: new Date().toISOString(), rows: offlineCardRows(policies) })
+    const catalogue = await loadCatalogueInsurers()
+    const response = createApiResponse({ generatedAt: new Date().toISOString(), rows: offlineCardRows(policies, (name) => matchVerifiedCallCentre(catalogue, name)) })
     response.headers.set("Cache-Control", "private, no-store")
     return response
 })

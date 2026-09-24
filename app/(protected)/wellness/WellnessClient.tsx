@@ -21,6 +21,7 @@ export interface BenefitView {
     label: string
     benefit: CheckupBenefit
     value: boolean | null
+    insurerCallCentre: { insurer: string; phone: string } | null
     usage: { status: string; intent: string | null; remindAt: string | null }
     advisorAvailable: boolean
 }
