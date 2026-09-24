@@ -111,10 +111,10 @@ Supabase MCP with a `_prisma_migrations` row whose checksum equals the file's sh
 
 | Item | What it needs | Where it would land |
 |---|---|---|
-| Construction-cost index rule (€/m²), health deductible-vs-savings, specialty settlement tables, breed vet-cost benchmarks | A DATED market source and a `docs/content/CLAIMS.md` row per number | `lib/gaps/authored-catalogue.ts` + a reference-data table |
-| `marine_tender_not_listed` | A new array-membership operator in `lib/gap-detection.ts` | one operator + one catalogue row + trace case |
+| Construction-cost index rule (€/m²) — **kept deferred by the owner 2026-09-24** after research: the only official figure is the Ministry of Finance 2007 tax minimum per municipality (€380–1,250/m² for flats; Ν. 1249/1982 άρθρο 41α), current figures (≈€1,450–2,000/m², 2025) are commercial; health deductible-vs-savings, specialty settlement tables, breed vet-cost benchmarks | A DATED market source and a `docs/content/CLAIMS.md` row per number | `lib/gaps/authored-catalogue.ts` + a reference-data table |
+| `marine_tender_not_listed` | **BUILT 2026-09-24** (D-V2: `matches` + `none_match` operators; 56 rules) | — |
 | Interactive gap visualisations (§8) | The same reference data | `components/gaps/*` |
-| True PDF portfolio export / PNG digital card | A Greek-capable font file (pdf-lib standard fonts cannot encode Greek) / an image renderer dependency | `lib/services/reports/portfolio-report.ts`, `/wallet/[id]/card` |
+| True PDF portfolio export / PNG digital card — **owner 2026-09-24: keep print-to-PDF**, no font dependency | A Greek-capable font file (pdf-lib standard fonts cannot encode Greek) / an image renderer dependency | `lib/services/reports/portfolio-report.ts`, `/wallet/[id]/card` |
 | Hospital / vet network lists, life fund allocation charts | Data the extraction does not state | coverage-details |
 
 ### 3c. Owner-side configuration (no code)

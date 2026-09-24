@@ -192,8 +192,10 @@ const I18N_STORE = "lib/i18n/translations/"
  * the separate assertion that it carries no hand-rolled severity presentation
  * runs alongside — both, not either.
  */
+// Re-pinned 2026-09-24 under DECISIONS.md D-V2 (owner ratified the `matches` / `none_match`
+// operators for the marine tender check). Severity logic unchanged.
 const FROZEN_GAP_DETECTION_SHA256 =
-    "ded6fedd1250b7fff74b3a3ab03cb98ecdf41fb6cc71f71a9fd562a261ba7609"
+    "1d397fd9b04ced40eb853b9c682185a332bbce3f96883c454e026084d20a31f1"
 
 function isExemptWhileFrozen(path: string, sha256: string): boolean {
     return path === "lib/gap-detection.ts" && sha256 === FROZEN_GAP_DETECTION_SHA256

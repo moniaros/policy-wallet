@@ -467,6 +467,12 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "other",
         coverageArea: "general",
     },
+    "marine-tender-not-listed": {
+        titleEl: "Δεν καταγράφεται βοηθητική λέμβος (tender)",
+        titleEn: "No tender listed",
+        mechanic: "other",
+        coverageArea: "general",
+    },
     "missing-leishmaniasis": {
         titleEl: "Πιθανή έλλειψη κάλυψης λεϊσμανίασης",
         titleEn: "Possible missing leishmaniasis coverage",

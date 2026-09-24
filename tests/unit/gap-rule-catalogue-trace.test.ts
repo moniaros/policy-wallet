@@ -181,6 +181,13 @@ const TRACE: Record<string, Case[]> = {
         "lay-up terms",
         "1 Nov – 31 Mar, ashore at Alimos marina"
     ),
+    marine_tender_not_listed: [
+        { name: "a yacht whose covers name no tender", acord: { marineVessel: { vesselType: "Θαλαμηγός" }, coverages: [{ name: "Σκάφος (hull)" }, { name: "Αστική ευθύνη" }] }, fires: true },
+        { name: "a yacht whose covers list its tender", acord: { marineVessel: { vesselType: "sailing yacht" }, coverages: [{ name: "Σκάφος" }, { name: "Βοηθητική λέμβος (tender)" }] }, fires: false },
+        { name: "a yacht with no covers recorded at all (silence → not recorded)", acord: { marineVessel: { vesselType: "yacht" } }, fires: true },
+        { name: "a fishing boat — not a leisure craft, rule does not apply", acord: { marineVessel: { vesselType: "αλιευτικό" }, coverages: [{ name: "Σκάφος" }] }, fires: false },
+        { name: "vessel type not recorded — cannot tell, rule does not apply", acord: { coverages: [{ name: "Σκάφος" }] }, fires: false },
+    ],
     insured_value_below_rebuild_cost: [
         {
             name: "a home insured for €90,000 against a stated €200,000 rebuild cost",
@@ -469,5 +476,16 @@ describe("every rule, traced against a document", () => {
                 "A rule nobody has traced is a claim nobody has checked:\n  " +
                 untraced.join("\n  ")
         ).toEqual([])
+    })
+})
+
+describe("marine tender check — evidence floor (D-V2)", () => {
+    it("a gate plus an absence check is a silence finding, like `missing`", async () => {
+        const { defaultEvidenceFloor } = await import("@/lib/gaps/evidence-floor")
+        const { AUTHORED_GAP_DEFINITIONS } = await import("@/lib/gaps/authored-catalogue")
+        const def = AUTHORED_GAP_DEFINITIONS.find((d) => d.slug === "marine_tender_not_listed")!
+        expect(defaultEvidenceFloor(def.detectionLogic)).toBe("policy_silent")
+        // a gate alone is not evidence of anything
+        expect(defaultEvidenceFloor({ rules: [{ type: "acord_field_check", operator: "matches", field: "x", value: "y" }] })).toBe("policy_verified")
     })
 })

@@ -1046,4 +1046,26 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
         },
         isActive: true
     },
+    {
+        // Owner decision 2026-09-24 (deferred item «tender»). A leisure craft's
+        // policy that names no tender among its covers. Fires on silence by
+        // design (none_match), so it is worded «δεν καταγράφεται» and its
+        // evidence floor is policy_silent: absence is the finding.
+        slug: 'marine_tender_not_listed',
+        name: 'Tender Not Listed',
+        title: 'Δεν καταγράφεται βοηθητική λέμβος (tender)',
+        description: 'Στο ασφαλιστήριο αυτού του σκάφους αναψυχής δεν καταγράφεται βοηθητική λέμβος (tender) στις καλύψεις. Αν το σκάφος έχει λέμβο, ρωτήστε τον ασφαλιστή σας αν καλύπτεται.',
+        lineOfBusiness: 'boat',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [
+                { type: 'acord_field_check', field: 'marineVessel.vesselType', operator: 'matches', value: 'yacht|θαλαμηγ|ιστιοπλο|sail|αναψυχ|pleasure' },
+                { type: 'acord_field_check', field: 'coverages', operator: 'none_match', subfield: 'name', value: 'λέμβ|tender|dinghy|βοηθητικ' },
+            ],
+            operator: 'AND'
+        },
+        isActive: true
+    },
 ]

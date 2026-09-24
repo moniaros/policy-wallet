@@ -145,6 +145,7 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     liability_limit_not_recorded: UNDER_REVIEW,
     marine_navigation_limits_not_recorded: UNDER_REVIEW,
     marine_lay_up_terms_not_recorded: UNDER_REVIEW,
+    marine_tender_not_listed: UNDER_REVIEW,
     // motorbike
     moto_no_own_damage_cover: UNDER_REVIEW,
     moto_no_roadside_assistance: UNDER_REVIEW,
