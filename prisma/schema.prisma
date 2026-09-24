@@ -99,7 +99,6 @@ model User {
   trialAnalysisUsedAt             DateTime?                  @map("trial_analysis_used_at")
   grantsReceived                  AccessGrant[]              @relation("Grantee")
   grantsGiven                     AccessGrant[]              @relation("Granter")
-  accounts                        Account[]
   activeSessions                  ActiveSession[]
   adminProfile                    AdminUser?
   agentProfile                    AgentProfile?
@@ -129,7 +128,6 @@ model User {
   referralsReceived               Referral[]                 @relation("Referred")
   referralsMade                   Referral[]                 @relation("Referrer")
   securityEvents                  SecurityEvent[]
-  sessions                        Session[]
   subscriptions                   Subscription[]
   tasksReceived                   UserTask[]                 @relation("TaskRecipient")
   tasksCreated                    UserTask[]                 @relation("TaskCreator")
@@ -174,35 +172,8 @@ model User {
 }
 
 /// @ropa purpose=security basis=contract subjects=policyholder|agent|admin retention=account_life erasure=delete art9=none
-model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id")
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
 
 /// @ropa purpose=security basis=contract subjects=policyholder|agent|admin retention=session erasure=delete art9=none
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
 
 model VerificationToken {
   identifier String
@@ -665,6 +636,9 @@ model CustomerRelationship {
 }
 
 /// @ropa purpose=intermediary basis=consent subjects=policyholder|agent retention=account_life erasure=delete art9=none
+/// A partial UNIQUE index (migration 20260924190000_access_grant_active_unique)
+/// allows only ONE active grant per (granter, grantee, scope); Prisma cannot
+/// express a partial index, so it lives in SQL only.
 model AccessGrant {
   id            String    @id @default(cuid()) @map("grant_id")
   granterUserId String    @map("granter_user_id")

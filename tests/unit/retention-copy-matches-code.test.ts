@@ -74,10 +74,11 @@ describe("the retention table states what the job actually does", () => {
     })
 
     it("discloses session records, which erasure deletes but no job sweeps", () => {
-        // lib/services/gdpr-erasure.service.ts deletes Session and ActiveSession.
-        // Nothing purges them on a timer, so the table must not imply one.
+        // lib/services/gdpr-erasure.service.ts deletes ActiveSession (the NextAuth
+        // Session table was dropped empty on 2026-09-24). Nothing purges session
+        // records on a timer, so the table must not imply one.
         const eraser = readFileSync("lib/services/gdpr-erasure.service.ts", "utf8")
-        expect(eraser).toMatch(/tx\.session\.deleteMany/)
+        expect(eraser).not.toMatch(/tx\.session\.deleteMany/)
         expect(eraser).toMatch(/tx\.activeSession\.deleteMany/)
 
         expect(statedFor("en", /session records/i)).toMatch(/account is deleted/i)

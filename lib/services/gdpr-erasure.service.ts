@@ -64,8 +64,6 @@ export type ErasureSummary = {
     authUserDeleted: boolean
     storageFilesDeleted: number
     deletedPolicies: number
-    deletedOauthAccounts: number
-    deletedSessions: number
     deletedActiveSessions: number
     deletedPasskeys: number
     deletedChallenges: number
@@ -213,8 +211,6 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
             await tx.agentReviewRevision.deleteMany({ where: { OR: [{ userId }, { policy: { ownerUserId: userId } }] } })
             const [
                 deletedPolicies,
-                deletedOauthAccounts,
-                deletedSessions,
                 deletedActiveSessions,
                 deletedPasskeys,
                 deletedChallenges,
@@ -258,8 +254,6 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedProtectionProfiles,
             ] = await Promise.all([
                 tx.policy.deleteMany({ where: { ownerUserId: userId } }),
-                tx.account.deleteMany({ where: { userId } }),
-                tx.session.deleteMany({ where: { userId } }),
                 tx.activeSession.deleteMany({ where: { userId } }),
                 tx.passkeyCredential.deleteMany({ where: { userId } }),
                 tx.webAuthnChallenge.deleteMany({ where: { userId } }),
@@ -492,8 +486,6 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
             return {
                 anonymizedEmail,
                 deletedPolicies: deletedPolicies.count,
-                deletedOauthAccounts: deletedOauthAccounts.count,
-                deletedSessions: deletedSessions.count,
                 deletedActiveSessions: deletedActiveSessions.count,
                 deletedPasskeys: deletedPasskeys.count,
                 deletedChallenges: deletedChallenges.count,
