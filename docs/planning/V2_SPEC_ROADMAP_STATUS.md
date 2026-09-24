@@ -102,6 +102,8 @@ Supabase MCP with a `_prisma_migrations` row whose checksum equals the file's sh
 | §7 coverage tabs | Stacked on purpose — the section nav is the page's one navigation | `CoverageTabView.tsx` rationale |
 | §5.1 upload FAB / AI insight card / savings badge / support chat | Duplicate upload offers measured as a defect; a € figure needs a claims row; no chat backend | `docs/content/CLAIMS.md`, story-dashboard evidence |
 | §13 family dashboard merging the owner's portfolio | Dashboard counts stay own-only | Phase 5 note |
+| B2B2C distribution through insurers, employers or banks | Kept deferred by the owner on 2026-09-24: no usage data from the benefit journey yet; agencies remain the only B2B2C channel | owner decision, this doc |
+| Partner booking | Owner 2026-09-24: no partner integration yet — referrals are RECORDED only (`partner_referrals`), no booking or partner status | #379 |
 | §19.1 «passkey first when a credential exists for the device» | The server cannot know the device; identifier-first with the remembered email is the honest form | Phase 6 note |
 | §25 typed email + reason before deletion | The request enters a reviewable, withdrawable queue; a second dialog is the proportionate step | Phase 6 note |
 
