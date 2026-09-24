@@ -27,6 +27,7 @@ const AGENT = "e2e-agent@policywallet.test"
 const POLICY_NUMBER = "E2E-PREV-HEALTH-1"
 let phId = ""
 let policyId = ""
+let fallbackPolicyId = ""
 
 test.describe.configure({ mode: "serial" })
 
@@ -82,7 +83,17 @@ test.beforeAll(async () => {
         policyId = existing
             ? (await db.policy.update({ where: { id: existing.id }, data, select: { id: true } })).id
             : (await db.policy.create({ data, select: { id: true } })).id
-        await db.healthBenefitUsage.deleteMany({ where: { userId: ph.id, policyKey: policyId } })
+        // A second health policy whose document states NO phone: the card must
+        // fall back to the insurer's VERIFIED call centre from the catalogue.
+        const fbData = {
+            ...data, policyNumber: "E2E-PREV-HEALTH-2", insurerName: "ΕΘΝΙΚΗ Η ΠΡΩΤΗ ΑΣΦΑΛΙΣΤΙΚΗ",
+            acordData: { _version: 3, health: { annualCheckupIncluded: true }, extraction: { summaryLanguage: "el" } },
+        }
+        const fbExisting = await db.policy.findFirst({ where: { ownerUserId: ph.id, policyNumber: "E2E-PREV-HEALTH-2" }, select: { id: true } })
+        fallbackPolicyId = fbExisting
+            ? (await db.policy.update({ where: { id: fbExisting.id }, data: fbData, select: { id: true } })).id
+            : (await db.policy.create({ data: fbData, select: { id: true } })).id
+        await db.healthBenefitUsage.deleteMany({ where: { userId: ph.id, policyKey: { in: [policyId, fallbackPolicyId] } } })
         await db.healthShare.deleteMany({ where: { userId: ph.id } })
         if (!(await db.healthRiskAssessment.findFirst({ where: { userId: ph.id } }))) {
             await db.healthRiskAssessment.create({
@@ -133,6 +144,12 @@ for (const width of WIDTHS) {
         await expect(card.getByRole("link", { name: /Καλέστε το κέντρο συντονισμού/ })).toHaveAttribute("href", "tel:2100000000")
         await expect(card).toContainText("Η κράτηση ραντεβού δεν γίνεται μέσα από την εφαρμογή.")
         await expect(page.locator('[data-fact="wellness.dailyNudge"]')).toBeVisible()
+        // No phone in the document → the insurer's verified call centre, labelled as such.
+        const fb = page.locator(`[data-fact="wellness.checkupBenefit"][data-fact-subject="${fallbackPolicyId}"]`)
+        await expect(fb).toHaveAttribute("data-fact-value", "needs_confirmation")
+        await expect(fb.getByRole("link", { name: /Καλέστε την ασφαλιστική εταιρεία/ })).toHaveAttribute("href", "tel:+302109099000")
+        await expect(fb).toContainText("επιβεβαιωμένο τηλέφωνο εξυπηρέτησης της Εθνική Ασφαλιστική")
+        await expect(fb).not.toContainText("Το ασφαλιστήριο δεν καταγράφει τηλέφωνο κέντρου συντονισμού.")
         // The retired pieces are gone.
         await expect(page.getByText("Προληπτικοί έλεγχοι")).toHaveCount(0)
         await expect(page.getByText("Αξίζει να ρωτήσετε τον γιατρό σας")).toHaveCount(0)
@@ -164,6 +181,14 @@ test("benefit → «Αργότερα» with a date → persists → undo → «�
     await expect(card.getByRole("button", { name: "Ολοκληρώθηκε" })).toBeVisible()
     await card.getByRole("button", { name: "Ολοκληρώθηκε" }).click()
     await expect(card).toContainText("Σημειώθηκε ως ολοκληρωμένο για το")
+    // The home card stays while ANY health policy still has an open check-up:
+    // settle the second one too, then it must go.
+    await page.goto("/dashboard")
+    await expect(page.locator("[data-checkup-nudge]")).toBeVisible({ timeout: 60_000 })
+    await openWellness(page)
+    const second = page.locator(`[data-fact="wellness.checkupBenefit"][data-fact-subject="${fallbackPolicyId}"]`)
+    await second.getByRole("button", { name: "Δεν με αφορά" }).click()
+    await expect(second).toContainText("Δεν θα το ξαναδείτε φέτος.")
 
     await page.goto("/dashboard")
     await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible({ timeout: 60_000 })

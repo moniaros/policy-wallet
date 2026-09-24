@@ -18,4 +18,12 @@ describe("offlineCardRows", () => {
         const rows = offlineCardRows([{ id: "m2", lineOfBusiness: "motor", ...base, acordData: { motor: { roadsideAssistancePhone: "1158" } } }])
         expect(rows[0].phones).toEqual([{ kind: "roadside", number: "1158" }])
     })
+    it("uses the insurer's verified call centre only when the document states no number", () => {
+        const fallback = () => ({ phone: "+30 210 909 9000" })
+        const silent = offlineCardRows([{ id: "h3", lineOfBusiness: "health", ...base, acordData: { health: {} } }], fallback)
+        expect(silent[0].phones).toEqual([{ kind: "insurer", number: "+30 210 909 9000" }])
+        const stated = offlineCardRows([{ id: "m3", lineOfBusiness: "motor", ...base, acordData: { vehicle: { roadsideAssistancePhone: "1158" } } }], fallback)
+        expect(stated[0].phones).toEqual([{ kind: "roadside", number: "1158" }])
+        expect(offlineCardRows([{ id: "h4", lineOfBusiness: "health", ...base, acordData: {} }], () => null)).toEqual([])
+    })
 })

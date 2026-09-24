@@ -36,6 +36,7 @@ import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /** The model's stored prose, with policy placeholders and fixture tokens redacted; null stays null. */
 import { differentialFromDocuments } from "@/lib/wallet/renewal-compare"
+import { loadCatalogueInsurers, matchVerifiedCallCentre } from "@/lib/wallet/verified-insurer-contact"
 
 const scrubProse = (text: string | null | undefined) => (text ? scrubRenderableText(text) : null)
 
@@ -398,6 +399,9 @@ export default async function PolicyDetailPage({
         }),
     ])
     const renewalDifferential = differentialFromDocuments(chainDocs)
+    // Owner decision 2026-09-24: the insurer's VERIFIED call centre, used only
+    // when the document states no number of its own (the client decides).
+    const insurerCallCentre = matchVerifiedCallCentre(await loadCatalogueInsurers(), policy.insurerName)
 
     const serializedPolicy = {
         ...policy,
@@ -447,6 +451,7 @@ export default async function PolicyDetailPage({
             policy={serializedPolicy}
             viewerNote={viewerNote?.body ?? ""}
             renewalDifferential={renewalDifferential}
+            insurerCallCentre={insurerCallCentre}
             findingsProvenance={findingsProvenance}
             composition={composition}
             recordStatus={recordStatus}

@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 4090
+# bundle entries: 4094
 # inline entries: 5004 across 233 files
 # ternary entries: 292 across 45 files
 # call entries: 1136 across 85 files
@@ -1850,6 +1850,7 @@ bundle	offline.intro	"Δεν υπάρχει σύνδεση στο δίκτυο. 
 bundle	offline.kinds.accident	"Δήλωση ατυχήματος"
 bundle	offline.kinds.coordination	"Κέντρο συντονισμού"
 bundle	offline.kinds.emergency	"Βοήθεια έκτακτης ανάγκης"
+bundle	offline.kinds.insurer	"Εξυπηρέτηση ασφαλιστικής"
 bundle	offline.kinds.roadside	"Οδική βοήθεια"
 bundle	offline.kinds.technical	"Τεχνική βοήθεια"
 bundle	offline.nothingCached	"Δεν έχουν αποθηκευτεί ακόμη τηλέφωνα. Ανοίξτε το πορτοφόλι σας μία φορά με σύνδεση."
@@ -3548,6 +3549,7 @@ bundle	wallet.policyDetailsPage.conditionTypes.notification_obligation	"Υποχ
 bundle	wallet.policyDetailsPage.conditionTypes.sub_limit	"Υποόριο κάλυψης"
 bundle	wallet.policyDetailsPage.conditionTypes.waiting_period	"Περίοδος αναμονής"
 bundle	wallet.policyDetailsPage.contactInsurer	"Επικοινωνία με ασφαλιστή"
+bundle	wallet.policyDetailsPage.contactInsurerVerified	"Εξυπηρέτηση ασφαλιστικής (επιβεβαιωμένο τηλέφωνο)"
 bundle	wallet.policyDetailsPage.copyFailed	"Αποτυχία αντιγραφής συνδέσμου."
 bundle	wallet.policyDetailsPage.digitalCardLink	"Ψηφιακή κάρτα"
 bundle	wallet.policyDetailsPage.documentsArea	"Έγγραφα ασφαλιστηρίου"
@@ -3931,6 +3933,8 @@ bundle	wellness.bands.low	"χαμηλή προσοχή"
 bundle	wellness.bands.moderate	"μέτρια προσοχή"
 bundle	wellness.benefit.actionAsk	"Ρωτήστε τον ασφαλιστή σας για τους όρους"
 bundle	wellness.benefit.actionCall	"Καλέστε το κέντρο συντονισμού"
+bundle	wellness.benefit.actionCallInsurer	"Καλέστε την ασφαλιστική εταιρεία"
+bundle	wellness.benefit.actionCallInsurerNote	"επιβεβαιωμένο τηλέφωνο εξυπηρέτησης της {insurer}· το ασφαλιστήριο δεν αναφέρει δικό του"
 bundle	wellness.benefit.actionCallNote	"όπως καταγράφεται στο ασφαλιστήριο"
 bundle	wellness.benefit.actionTerms	"Δείτε τι γράφει το ασφαλιστήριο"
 bundle	wellness.benefit.addPolicy	"Προσθήκη ασφαλιστηρίου"

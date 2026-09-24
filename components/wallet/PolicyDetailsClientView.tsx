@@ -160,6 +160,8 @@ interface PolicyDetailsClientProps {
     viewerNote?: string
     /** Spec v2 §10.3: newest document vs the one before it; null = nothing to compare. */
     renewalDifferential?: RenewalDifferential | null
+    /** The insurer's verified call centre from the catalogue — fallback only. */
+    insurerCallCentre?: { insurer: string; phone: string } | null
 }
 
 export function PolicyDetailsClient({
@@ -194,6 +196,7 @@ export function PolicyDetailsClient({
     glossaryHints = null,
     viewerNote = "",
     renewalDifferential = null,
+    insurerCallCentre = null,
 }: PolicyDetailsClientProps) {
     const locale = t.common?.locale || "en-GB"
     const lang: "el" | "en" = locale.startsWith("el") ? "el" : "en"
@@ -328,9 +331,12 @@ export function PolicyDetailsClient({
     // this button never rendered and the claims card always said "no number
     // found" while the extracted line sat unused in the same envelope.
     const claimsContact = resolveClaimsContact(policy.acordData, getCoverageType())
-    const insurerPhone = claimsContact?.phone || ""
+    // The document's own number first; the insurer's VERIFIED call centre only
+    // when the document states none (owner decision 2026-09-24).
+    const insurerPhone = claimsContact?.phone || insurerCallCentre?.phone || ""
     const claimsPhoneLabel =
-        claimsContact?.kind === "accident_declaration" ? t.coverageDetails.motor.accidentDeclaration
+        !claimsContact && insurerCallCentre ? detailsCopy.contactInsurerVerified
+        : claimsContact?.kind === "accident_declaration" ? t.coverageDetails.motor.accidentDeclaration
             : claimsContact?.kind === "roadside" ? t.coverageDetails.motor.roadsideAssistance
                 : claimsContact?.kind === "technical_assistance" ? t.coverageDetails.home.technicalAssistance
                     : claimsContact?.kind === "coordination_centre" ? t.coverageDetails.health.coordinationCentre
