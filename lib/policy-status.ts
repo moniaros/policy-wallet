@@ -301,10 +301,10 @@ export function expiryWindowWhere(from: Date, to?: Date) {
  * Lifecycle-derived status for display/grouping. Preserves the transient
  * 'analyzing' state; everything else comes from the real end date.
  */
-export function effectivePolicyStatus(policy: CoverageInput): string {
+export function effectivePolicyStatus(policy: CoverageInput, now: Date = new Date()): string {
     const stored = String(policy.status || '').toLowerCase()
     if (stored === 'analyzing') return 'analyzing'
-    return resolvePolicyLifecycle(policy).status
+    return resolvePolicyLifecycle(policy, now).status
 }
 
 /**
@@ -312,8 +312,8 @@ export function effectivePolicyStatus(policy: CoverageInput): string {
  * coverage" (an expiring-soon policy still protects you today), anything
  * else is the honest lifecycle state.
  */
-export function coverageEngineStatus(policy: CoverageInput): string {
-    return isPolicyCoverageActive(policy) ? 'active' : effectivePolicyStatus(policy)
+export function coverageEngineStatus(policy: CoverageInput, now: Date = new Date()): string {
+    return isPolicyCoverageActive(policy, now) ? 'active' : effectivePolicyStatus(policy, now)
 }
 
 /**

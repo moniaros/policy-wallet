@@ -34,7 +34,7 @@ GitHub Actions cannot start (billing/spending limit); Vercel Git integration tar
 ## Top risks ranked
 0. **Prevention branch awaits merge:** prod migration `20260924120000_prevention_benefits` is applied only at deploy time; `EXTRACTION_CITATIONS` decides whether any benefit reads «αναφέρει» — without it every card says «χρειάζεται επιβεβαίωση».
 1. **Spec v2 residue** ([planning/V2_SPEC_ROADMAP_STATUS.md](planning/V2_SPEC_ROADMAP_STATUS.md) §3, ≈83 % ready): `PASSKEYS_ENABLED` still off in prod, benchmark rules wait for dated reference data; still open: `AccessGrant` has no DB-level uniqueness (app-level dedupe only), `PolicyStatus` lives in three divergent lists, and Task 0.7 (GitHub Actions billing, Vercel Git team, Sentry token, 4 critical advisories) is owner-only.
-1. **Security debt:** 9 advisories remain (1 critical, install-time `tar` via the pinned `unpdf`); moving `unpdf` to v1 needs a Node 20 compatibility check. Sentry source maps upload since 2026-09-25 (integration re-linked to `policy-wallet`).
+1. **Security debt:** 5 advisories remain (0 critical; 1 high: build-time `serialize-javascript` via the PWA plugin, fix is a major bump). Node 20 → 24 and `unpdf` 0.12 → 1.8 on 2026-09-25 cleared the critical `tar` chain. Sentry source maps upload since 2026-09-25 (integration re-linked to `policy-wallet`).
 2. **Full-plan release gate:** OCR/verification accuracy/costs unbenchmarked; six-field agreement is not measured accuracy. Independent verification stays off.
 3. **Functional/UX debt:** durable processing, document-chain completion and all-channel approval integration unfinished; legacy English remains.
 

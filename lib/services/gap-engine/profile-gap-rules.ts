@@ -501,9 +501,9 @@ export type PolicyRowForEngine = { lineOfBusiness: string } & Parameters<typeof 
  * protection loader (lib/protection/load-attention-areas.ts) map through this
  * one function, so no caller can decide liveness its own way.
  */
-export function toPolicyFields(policies: readonly PolicyRowForEngine[]): PolicyFields[] {
+export function toPolicyFields(policies: readonly PolicyRowForEngine[], now: Date = new Date()): PolicyFields[] {
     return policies.map((p) => ({
         lineOfBusiness: p.lineOfBusiness,
-        status: coverageEngineStatus(p),
+        status: coverageEngineStatus(p, now),
     }))
 }

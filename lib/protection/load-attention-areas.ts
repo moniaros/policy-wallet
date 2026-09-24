@@ -329,7 +329,7 @@ export async function loadAttentionAreas({ userId, language, now = new Date() }:
     const readPolicies = policies.filter((policy) => !isUnreadPolicy(policy))
 
     // Layer 3 — the same rows the engine sees, through its own mapper.
-    const assessments = assessRisks(ctx, toPolicyFields(readPolicies))
+    const assessments = assessRisks(ctx, toPolicyFields(readPolicies, now))
 
     // Layer 4 — from policies and rule findings alone.
     const evidence = readPolicies.map((policy) => toEvidence(policy, now))
