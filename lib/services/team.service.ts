@@ -6,6 +6,7 @@ import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { logger } from "@/lib/logger"
 import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeEmail } from "@/lib/identity/normalize-email"
+import { Prisma } from "@prisma/client"
 
 // ────────────────────────────────────────────────
 // Types
@@ -375,6 +376,12 @@ export async function transferCustomer(
                 ],
             },
             data: { status: "revoked", revokedAt: new Date() },
+        }),
+        // The previous advisor also loses any health snapshot the customer
+        // shared with them (prevention brief P2) — the new advisor gets none.
+        db.healthShare.updateMany({
+            where: { userId: relationship.policyholderUserId, agentUserId: previousAgent, status: "active" },
+            data: { status: "revoked", snapshot: Prisma.DbNull, revokedAt: new Date() },
         }),
         db.opportunity.updateMany({
             where: {

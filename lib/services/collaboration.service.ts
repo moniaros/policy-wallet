@@ -196,6 +196,22 @@ export class CollaborationService {
             relationship.policyholderUserId === userId
         if (!isAllowed) throw new Error("Forbidden")
 
+        // A thread about a policy must not announce that policy to an advisor
+        // who cannot already see it (the H-B2 disclosure rule, send side):
+        // the policy must belong to this relationship's customer AND pass the
+        // same visibility rule every agent-facing read uses.
+        if (input.policyId) {
+            const visible = await db.policy.findFirst({
+                where: {
+                    id: input.policyId,
+                    ownerUserId: relationship.policyholderUserId,
+                    ...(await getAgentPolicyVisibilityWhere(relationship.agentUserId)),
+                },
+                select: { id: true },
+            })
+            if (!visible) throw new Error("Policy not visible to this advisor")
+        }
+
         // The notified/emailed recipient must be a party to the relationship —
         // never an arbitrary user id from the caller. Without this clamp, a
         // caller in one relationship could direct a platform-authored email
@@ -494,6 +510,9 @@ export class CollaborationService {
             where: {
                 relationshipId: input.relationshipId,
                 category: input.category,
+                // Reuse is per POLICY: a question about one policy must not land
+                // in an open thread about another.
+                ...(input.policyId ? { policyId: input.policyId } : {}),
                 ...(input.linkedGapInstanceId ? { linkedGapInstanceId: input.linkedGapInstanceId } : {}),
                 ...(input.linkedQuestionnaireInstanceId ? { linkedQuestionnaireInstanceId: input.linkedQuestionnaireInstanceId } : {}),
                 status: { in: ["open", "waiting_agent", "waiting_policyholder"] },

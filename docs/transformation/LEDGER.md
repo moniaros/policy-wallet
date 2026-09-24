@@ -59,7 +59,9 @@ CustomerRelationship — a member appears on no agent surface.
 
 ## Ευεξία — `/wellness`
 
-Source: `app/(protected)/wellness/page.tsx`, `WellnessClient.tsx`, `actions.ts`; `lib/wellness/{scoring,preventive}.ts`
+Source: `app/(protected)/wellness/page.tsx`, `WellnessClient.tsx`, `actions.ts`, `share-actions.ts`; `lib/wellness/{scoring,checkup-benefit,nudges,health-share}.ts`; `components/wellness/*`
+
+**Reworked 2026-09-24 (prevention brief).** The age/sex screening calendar and the «αξίζει να ρωτήσετε τον γιατρό σας για…» list are GONE (no individual screening schedule; guard `wellness-no-individual-screening-schedule`). WL-05 (the calendar) is retired. The check-up row became the blue Benefit Reminder (WL-06…WL-08), a daily nudge (WL-09) and consented advisor sharing (WL-10) were added. WL-01 is superseded by WL-07.
 
 Added by spec v2 Phase 4 (2026-09-23). Everything on it is the person's own
 Art. 9 record (`health_benefit_usages`, `health_risk_assessments`): consent on
@@ -73,7 +75,12 @@ STATES; silence renders «δεν καταγράφεται», never a benefit.
 | WL-02 | Book via the coordination centre | action | **KEEP** | `tel:` on the number the policy records; no number → «δεν καταγράφεται» | — |
 | WL-03 | Self-assessment scores per category (`wellness.score`) | fact | **KEEP** | a fixed table over consented answers, banded low/moderate/elevated, «ενδεικτικό — όχι διάγνωση» on every render | — |
 | WL-04 | Withdraw: delete every assessment | action | **KEEP** | «Διαγραφή όλων» → `deleteHealthAssessments` | — |
-| WL-05 | Preventive calendar, mark done / undo | action | **KEEP** | items keyed off the assessment's age band and sex (CLAIMS C16); no coverage claim per item | — |
+| WL-06 | Benefit Reminder per health policy (`wellness.checkupBenefit`) | fact | **KEEP** | worded by evidence: «αναφέρει» only with a verified citation (quote shown), otherwise «χρειάζεται επιβεβαίωση»; silence «δεν καταγράφηκε… δεν σημαίνει ότι δεν καλύπτεται»; the home card (`CheckupNudgeCard`) is the same resolver | — |
+| WL-07 | The person's choice (`wellness.checkupIntent`): θα το εξετάσω / ολοκληρώθηκε / δεν με αφορά / αργότερα + date | action | **KEEP** | owner only; «αργότερα» drives the daily `benefit_reminder` scan; nothing medical is asked | — |
+| WL-08 | Next steps: terms · coordination centre (as recorded) · ask the advisor about the terms | action | **KEEP** | the advisor button only when an advisor can already see the policy and the plan allows messaging; no booking is offered | — |
+| WL-09 | Daily habit nudge (`wellness.dailyNudge`) + opt-in push | fact/action | **KEEP** | general, the same for everyone; «Όχι σήμερα» per browser; push off by default, one a day | — |
+| WL-10 | Share a health snapshot with one advisor (`wellness.healthShare`) | action | **KEEP** | explicit consent naming the advisor; minimised snapshot; withdraw deletes it; «τελευταία προβολή» from the advisor's logged views | — |
+| WL-05 | Preventive calendar, mark done / undo | action | **RETIRED 2026-09-24** | items keyed off the assessment's age band and sex (CLAIMS C16); no coverage claim per item | — |
 
 ## Συστάσεις — `/recommendations`
 

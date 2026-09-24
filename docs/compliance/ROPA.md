@@ -10,7 +10,7 @@
 **Controller:** Insurance Martech IKE (ΓΕΜΗ 188863359000, ΑΦΜ 302659440, ΔΟΥ Χίου),
 Kalamoti, 82102, Chios, Greece · **Privacy contact:** dpo@policywallet.gr
 
-**Covers 62 of 62 models holding personal data.**
+**Covers 63 of 63 models holding personal data.**
 Recipients and transfers are generated alongside this record in
 [DPIA-INPUTS.md](DPIA-INPUTS.md) §3; security measures are in
 [DATA_PROTECTION_REVIEW_PACK.md](DATA_PROTECTION_REVIEW_PACK.md) §13 — they are
@@ -105,6 +105,7 @@ properties of the deployment, not of a table, so they are not generated here.
 | --- | --- | --- | --- | --- |
 | `AgentProfile` | Performance of a contract — Art. 6(1)(b) | agent | For as long as the account exists; removed on erasure | Anonymised in place |
 | `HealthBenefitUsage` | Consent — Art. 6(1)(a) | policyholder | For as long as the account exists; removed on erasure | Deleted |
+| `HealthShare` | Consent — Art. 6(1)(a) | policyholder | For as long as the account exists; removed on erasure | Deleted |
 | `Policy` | Performance of a contract — Art. 6(1)(b) | policyholder | For as long as the account exists; removed on erasure | Deleted |
 | `PolicyDocument` | Performance of a contract — Art. 6(1)(b) | policyholder | For as long as the account exists; removed on erasure | Removed with its parent |
 | `PolicyMergeRequest` | Performance of a contract — Art. 6(1)(b) | policyholder | For as long as the account exists; removed on erasure | Removed with its parent |
@@ -123,8 +124,9 @@ Art. 9 columns under another basis.
 | Store | Columns | Lawful basis |
 | --- | --- | --- |
 | `AgentReviewRevision` | `body`, `feedbackNote`, `privateAdvice` | Consent — Art. 6(1)(a) |
-| `HealthBenefitUsage` | `benefit`, `status`, `note` | Consent — Art. 6(1)(a) |
+| `HealthBenefitUsage` | `benefit`, `status`, `note`, `intent`, `remindAt` | Consent — Art. 6(1)(a) |
 | `HealthRiskAssessment` | `answers`, `scores` | Consent — Art. 6(1)(a) |
+| `HealthShare` | `snapshot` | Consent — Art. 6(1)(a) |
 | `PolicyholderProfile` | `chronicConditions`, `familyMedicalHistory`, `smokingStatus`, `heightCm`, `weightKg`, `gender`, `activityLevel` | Consent — Art. 6(1)(a) |
 
 **This table is not the whole Art. 9 surface.** It covers the structured columns a

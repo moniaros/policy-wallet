@@ -198,6 +198,15 @@ findings never enter `findingCount`; recording-class findings («δεν κατα
 status. Severity is not read. The dashboard's branch map projects the same status onto its tile
 words (`toTileState`), so the two surfaces cannot disagree about one branch.
 
+### Additions ratified 2026-09-24 (prevention brief — benefit reminder, daily nudge, health share)
+
+New fact keys: `wellness.checkupBenefit` *(subject-scoped by policy id)* — what a health policy's
+reading says about an annual check-up, worded by how sure the evidence is; `wellness.checkupIntent`
+*(policy id)* — the person's own choice about it, never a medical result; `wellness.dailyNudge`
+*(Athens date)* — the day's general habit nudge, the same for everyone; `wellness.healthShare`
+*(relationship id)* and `customer.healthShare` *(customer id)* — the consented snapshot, on the
+customer's panel and on the advisor's customer page (each advisor render is logged).
+
 ### Additions ratified 2026-09-24 (spec-v2 Phase 7 — utilities)
 
 New fact keys, all *subject-scoped by policy id*: `policy.viewerNote` — the viewer's own private

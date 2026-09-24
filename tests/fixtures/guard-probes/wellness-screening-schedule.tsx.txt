@@ -1,0 +1,4 @@
+import { preventiveItemsFor } from "@/lib/wellness/preventive"
+const calendar = preventiveItemsFor(answers.ageBand, answers.sex)
+import type { CategoryScore } from "@/lib/wellness/scoring"
+const asks = (s: CategoryScore) => s.checks.join(", ")

@@ -95,7 +95,11 @@
     },
     {
       "path": "/api/v1/jobs/checkup-reminder",
-      "schedule": "0 8 15 1 *"
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/daily-nudge",
+      "schedule": "0 7 * * *"
     }
   ]
 }

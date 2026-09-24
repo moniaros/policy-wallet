@@ -87,6 +87,7 @@ export type ErasureSummary = {
     deletedHealthRiskAssessments: number
     deletedWalletMemberships: number
     deletedPolicyNotes: number
+    deletedHealthShares: number
     deletedBusinessEvents: number
     deletedRiskReviews: number
     deletedNotificationSettings: number
@@ -233,6 +234,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedHealthRiskAssessments,
                 deletedWalletMemberships,
                 deletedPolicyNotes,
+                deletedHealthShares,
                 deletedBusinessEvents,
                 deletedRiskReviews,
                 deletedNotificationSettings,
@@ -295,6 +297,9 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 tx.walletMembership.deleteMany({ where: { OR: [{ walletOwnerUserId: userId }, { memberUserId: userId }] } }),
                 // Spec v2 §10.3: private policy notes are the person's own words.
                 tx.policyNote.deleteMany({ where: { userId } }),
+                // Prevention brief P2: health snapshots, both the ones they shared
+                // and (as an advisor) the ones shared with them.
+                tx.healthShare.deleteMany({ where: { OR: [{ userId }, { agentUserId: userId }] } }),
                 // The event log is a durable record of what happened to this
                 // person: policies, life events, score movements. `subjectUserId`
                 // is the field that makes it theirs.
@@ -506,6 +511,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedHealthRiskAssessments: deletedHealthRiskAssessments.count,
                 deletedWalletMemberships: deletedWalletMemberships.count,
                 deletedPolicyNotes: deletedPolicyNotes.count,
+                deletedHealthShares: deletedHealthShares.count,
                 deletedBusinessEvents: deletedBusinessEvents.count,
                 deletedRiskReviews: deletedRiskReviews.count,
                 deletedNotificationSettings: deletedNotificationSettings.count,

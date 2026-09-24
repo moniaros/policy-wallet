@@ -54,6 +54,8 @@ const EXEMPT: Record<string, string> = {
         "the customer is granting access in this very action — the relationship is its output, not something to resolve",
     sendQuestionnaire:
         "agent-initiated: the relationship is the action's own subject, supplied and authorised upstream",
+    shareHealthWithAdvisor:
+        "not about a policy: the customer names one of their OWN living relationships (checked in the where), and the thread carries no policy and no health value (prevention brief P2)",
 }
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -191,6 +193,7 @@ describe("every advisor thread is opened by an enumerated call site", () => {
             "app/(protected)/agent/actions.ts",
             "app/(protected)/wallet/actions.ts",
             "app/(protected)/wallet/collaborationActions.ts",
+            "app/(protected)/wellness/share-actions.ts",
         ])
     })
 })

@@ -1,0 +1,5 @@
+// Probe: ends a relationship and revokes grants, but leaves health shares live.
+await db.$transaction([
+    db.customerRelationship.update({ where: { id }, data: { status: "terminated" } }),
+    db.accessGrant.updateMany({ where: { status: "active" }, data: { status: "revoked", revokedAt: new Date() } }),
+])

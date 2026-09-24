@@ -62,5 +62,15 @@
   "inline:lib/notifications/registry.ts::Μια πρόσβαση στο οικογενειακό πορτοφόλι έκλεισε.",
   "ternary:lib/email/invite-emails.ts::{ subject: \"Πρόσκληση σε οικογενειακό πορτοφόλι στο PolicyWallet\", title: \"Έχετε προσκληθεί σε ένα οικογενειακό πορτοφόλι\", body: `${inviter} σας προσκάλεσε να μοιράζεστε το ασφαλιστικό πορτοφόλι του στο PolicyWallet: θα βλέπετε και θα διαχειρίζεστε μαζί τα ασφαλιστήρια που δεν έχει κρατήσει ιδιωτικά. Ανοίξτε τον ασφαλή σύνδεσμο για να αποδεχτείτε.`, action: \"Άνοιγμα πρόσκλησης\", }",
   "call:app/auth/signup/SignupForm.tsx::AES-256 κρυπτογράφηση",
-  "call:app/auth/signup/SignupForm.tsx::Δεν αποθηκεύουμε κωδικούς σε απλό κείμενο."
+  "call:app/auth/signup/SignupForm.tsx::Δεν αποθηκεύουμε κωδικούς σε απλό κείμενο.",
+  "inline:lib/insurance/content/agent-requests.ts::Ερώτηση για τον ετήσιο έλεγχο υγείας",
+  "inline:lib/insurance/content/agent-requests.ts::Ο πελάτης ζητά να του επιβεβαιώσετε τους όρους του ετήσιου ελέγχου υγείας που αναφέρει αυτό το ασφαλιστήριο: συχνότητα, όρια και πώς τον χρησιμοποιεί.",
+  "inline:lib/insurance/content/agent-requests.ts::Κοινοποίηση εικόνας υγείας",
+  "inline:lib/insurance/content/agent-requests.ts::Κοινοποίησα την εικόνα υγείας μου. Θα ήθελα να δούμε αν το ασφαλιστήριό μου ταιριάζει στις ανάγκες μου.",
+  "inline:lib/notifications/registry.ts::Ο ετήσιος έλεγχός σας",
+  "inline:lib/notifications/registry.ts::Ζητήσατε υπενθύμιση για τον ετήσιο έλεγχο που αναφέρει το ασφαλιστήριό σας.",
+  "inline:lib/notifications/registry.ts::Μικρό βήμα για σήμερα",
+  "inline:lib/notifications/registry.ts::Περπατήστε 15 λεπτά σήμερα.",
+  "inline:lib/notifications/registry.ts::Κοινοποίηση εικόνας υγείας",
+  "inline:lib/notifications/registry.ts::Ένας πελάτης σας κοινοποίησε την εικόνα υγείας του."
 ]

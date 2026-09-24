@@ -326,3 +326,29 @@ export const GAP_CLARIFICATION_REQUEST: AgentRequestSpec = {
         en: 'The customer asked for more detail on a finding from their policy analysis.',
     },
 }
+
+/**
+ * Prevention brief — raised from the Benefit Reminder card, not a branch
+ * action. It asks about the TERMS of the check-up benefit; it carries no
+ * health information.
+ */
+export const CHECKUP_TERMS_REQUEST: AgentRequestSpec = {
+    category: 'general',
+    priority: 'medium',
+    subject: { el: 'Ερώτηση για τον ετήσιο έλεγχο υγείας', en: 'Question about the annual health check-up' },
+    message: {
+        el: 'Ο πελάτης ζητά να του επιβεβαιώσετε τους όρους του ετήσιου ελέγχου υγείας που αναφέρει αυτό το ασφαλιστήριο: συχνότητα, όρια και πώς τον χρησιμοποιεί.',
+        en: 'The customer asks you to confirm the terms of the annual health check-up this policy states: frequency, limits and how to use it.',
+    },
+}
+
+/** Opened when a customer shares a health snapshot. No health values in it. */
+export const HEALTH_SHARE_THREAD: AgentRequestSpec = {
+    category: 'general',
+    priority: 'medium',
+    subject: { el: 'Κοινοποίηση εικόνας υγείας', en: 'Health picture shared' },
+    message: {
+        el: 'Κοινοποίησα την εικόνα υγείας μου. Θα ήθελα να δούμε αν το ασφαλιστήριό μου ταιριάζει στις ανάγκες μου.',
+        en: 'I shared my health picture. I would like us to see whether my policy fits my needs.',
+    },
+}

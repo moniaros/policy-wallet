@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { ArrowRight, HeartPulse } from "lucide-react"
+import { ArrowRight, BellRing } from "lucide-react"
+import { TONE_CHIP } from "@/lib/wallet/policy-status-view"
 
 /**
  * Spec v2 §5.1 element 8 / §9.1: shown only when a health policy's own
@@ -7,11 +8,12 @@ import { ArrowRight, HeartPulse } from "lucide-react"
  * year's as done. Silence in the extraction renders nothing — a nudge over
  * a benefit nobody read would be the all-clear defect in reverse.
  */
-export function CheckupNudgeCard({ title, body, cta, href }: { title: string; body: string; cta: string; href: string }) {
+export function CheckupNudgeCard({ kicker, title, body, cta, href }: { kicker: string; title: string; body: string; cta: string; href: string }) {
     return (
         <Link href={href} className="pw-card pw-pad block transition-colors hover:border-primary/40" data-checkup-nudge>
-            <span className="pw-card-chip" aria-hidden="true">
-                <HeartPulse className="h-4 w-4" strokeWidth={1.75} />
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption font-semibold ${TONE_CHIP.info}`}>
+                <BellRing className="h-3.5 w-3.5" aria-hidden="true" />
+                {kicker}
             </span>
             <p className="mt-4 text-title font-semibold leading-snug tracking-tight text-foreground">{title}</p>
             <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">{body}</p>
