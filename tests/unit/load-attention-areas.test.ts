@@ -48,14 +48,15 @@ import { GAP_CONTENT_MAP } from "@/lib/wallet/gap-report"
 const AT = "2026-09-04T10:00:00.000Z"
 const NOW = new Date(AT)
 const DAY = 24 * 60 * 60 * 1000
-// RELATIVE TO THE REAL CLOCK, not to `AT`. `resolvePolicyLifecycle` reads the system
-// date; `AT` only stamps fact provenance. A literal here is a time bomb on a timer:
-// `IN_TEN_DAYS` was written as "2026-09-14", stopped being ten days out, and on
-// 2026-09-15 turned the in-force case expired — the suite went red on a date roll with
-// nothing changed. A future date in this file is always an offset.
-const NEXT_YEAR = new Date(Date.now() + 365 * DAY)
+// RELATIVE TO `NOW`, the clock the loader runs on. A literal here is a time bomb:
+// `IN_TEN_DAYS` was written as "2026-09-14" and went red on 2026-09-15. #357 then
+// made it an offset from the REAL clock, which drifted from `NOW` until, on
+// 2026-09-25, "ten days" was 31 days past `NOW` and out of the 30-day window. The
+// loader now passes `now` to BOTH halves (lifecycle and the risk engine's
+// `toPolicyFields`), so every future date in this file is an offset from `NOW`.
+const NEXT_YEAR = new Date(NOW.getTime() + 365 * DAY)
 const LAST_WINTER = new Date("2026-01-15T00:00:00.000Z") // a past date stays past — safe as a literal
-const IN_TEN_DAYS = new Date(Date.now() + 10 * DAY)
+const IN_TEN_DAYS = new Date(NOW.getTime() + 10 * DAY)
 
 const exact = (source: "onboarding" | "assessment" = "onboarding") => ({ source, precision: "exact" as const, at: AT })
 

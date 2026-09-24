@@ -17,7 +17,7 @@ Guidance for Claude Code when working in this repository. For setup, environment
 
 Stack is in `package.json`. Two things it won't tell you: AI runs through the `ai` SDK with pluggable Gemini / Anthropic / OpenAI providers (selected by which API key is set), and rate-limiting needs Upstash Redis.
 
-- **Node:** `20.20.2` (see `.nvmrc` — run `nvm use`). **Not optional:** vitest 4 + vite 7 need `require(esm)`, which landed in Node 20.19. On 20.11 every test run dies at `failed to load config from vitest.config.ts` with `ERR_REQUIRE_ESM` — a failure that looks like a broken config and is a wrong Node version.
+- **Node:** `24` (see `.nvmrc` — run `nvm use`; Vercel builds on 24.x). **Not optional:** vitest 4 + vite 7 need `require(esm)` (Node ≥ 20.19) and `unpdf` 1.x needs Node ≥ 22. On an old Node every test run dies at `failed to load config from vitest.config.ts` with `ERR_REQUIRE_ESM` — a failure that looks like a broken config and is a wrong Node version.
 - **Path alias:** `@/*` → repo root (e.g. `import { db } from "@/lib/db"`).
 
 ## Commands

@@ -25,7 +25,7 @@ A modern insurance management SaaS platform for agents and policyholders, built 
 
 ## 📋 Prerequisites
 
-- **Node.js**: 20.11.0 or higher (see `.nvmrc`)
+- **Node.js**: 24 (see `.nvmrc`; unpdf 1.x needs ≥ 22)
 - **PostgreSQL**: 14+ (or use Supabase)
 - **Supabase Account**: For authentication and database
 - **Google Gemini API Key**: For AI features (optional)

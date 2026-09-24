@@ -18,10 +18,11 @@
  *      terms booklet adds nothing the gate needs and everything an attacker
  *      would want it to spend time on.
  *
- * `unpdf` (pinned 0.12.x) bundles a serverless build of pdf.js with no DOM or
- * worker requirements; it is the only PDF reader in the codebase and the
- * version is pinned because 1.x requires Node 22 while .nvmrc is 20.20.2
- * (verified: text, page count and corrupt-file detection all work on 20.20.2).
+ * `unpdf` bundles a serverless build of pdf.js with no DOM or worker
+ * requirements; it is the only PDF reader in the codebase. It was pinned to
+ * 0.12.x while the runtime was Node 20; 1.x (Node >= 22) came with the move to
+ * Node 24 in Sept 2026, which also cleared the critical `tar` advisory 0.12
+ * pulled in. `@napi-rs/canvas` is an optional peer, needed only for rendering.
  */
 
 import { getDocumentProxy } from "unpdf"
@@ -171,7 +172,7 @@ export async function probePdf(bytes: Uint8Array, opts: PdfProbeOptions = {}): P
         }
     } finally {
         try {
-            await pdf.destroy()
+            await pdf.loadingTask.destroy()
         } catch {
             /* nothing to release */
         }
