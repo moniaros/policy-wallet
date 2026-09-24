@@ -7,6 +7,7 @@ import {
     CITATIONS_PROMPT_SECTION,
     ExtractionSourcesSchema,
     IDENTITY_CITATION_FIELDS,
+    BENEFIT_CITATION_PATHS,
     sanitizeExtractionSources,
 } from "@/lib/services/ai/extraction-citations"
 
@@ -39,7 +40,12 @@ describe("every field an active rule reads is a citation field", () => {
 
     it("the identity fields come first and unchanged; the rest are acordData paths", () => {
         expect([...CITATION_FIELDS].slice(0, IDENTITY_CITATION_FIELDS.length)).toEqual([...IDENTITY_CITATION_FIELDS])
-        expect([...CITATION_FIELDS].slice(IDENTITY_CITATION_FIELDS.length)).toEqual(RULE_READ_FIELDS.map((p) => `acordData.${p}`))
+        const acord = [...CITATION_FIELDS].slice(IDENTITY_CITATION_FIELDS.length)
+        expect(acord.slice(0, RULE_READ_FIELDS.length)).toEqual(RULE_READ_FIELDS.map((p) => `acordData.${p}`))
+        // Then the benefit terms the Benefit Reminder quotes, once each.
+        expect(acord.slice(RULE_READ_FIELDS.length)).toEqual(
+            BENEFIT_CITATION_PATHS.filter((p) => !RULE_READ_FIELDS.includes(p)).map((p) => `acordData.${p}`)
+        )
     })
 
     it("the prompt and the response schema name the rule-read paths in the same key form", () => {

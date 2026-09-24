@@ -25,9 +25,24 @@ export interface CheckupUsage {
     remindAt: Date | null
 }
 
+export type CheckupDetailKey = "frequency" | "limitAmount" | "tests" | "network" | "waitingPeriodDays" | "conditions"
+
+/** One term of the check-up, as the document states it, with its own evidence. */
+export interface CheckupDetail {
+    key: CheckupDetailKey
+    value: string | number | string[]
+    /** The term's own citation was found in the locally read document. */
+    verified: boolean
+    page?: number
+}
+
 export interface CheckupBenefit {
     state: CheckupState
     citation: { page?: number; snippet?: string } | null
+    /** The check-up's terms from `health.checkup` — only what the document states. */
+    details: CheckupDetail[]
+    /** Frequency and cap are the two terms a person needs first; true when either is unstated. */
+    coreTermsMissing: boolean
     /** Document-stated usage limits of prevention perks; empty = unknown. */
     conditions: string[]
     contactPhone: string | null
@@ -64,6 +79,10 @@ export function resolveCheckupBenefit(
         .map((perk: any) => extractedField(typeof perk.usageLimit === "string" ? perk.usageLimit : null).value)
         .filter((limit: string | null): limit is string => Boolean(limit))
 
+    const details = checkupDetails(health.checkup, sources)
+    const has = (k: CheckupDetailKey) => details.some((d) => d.key === k)
+    const coreTermsMissing = !has("frequency") || !has("limitAmount")
+
     const today = new Date(now.toISOString().slice(0, 10))
     const snoozed = usage?.intent === "later" && usage.remindAt !== null && usage.remindAt > today
     const showCard =
@@ -75,6 +94,8 @@ export function resolveCheckupBenefit(
     return {
         state,
         citation: source && (source.snippet || source.page !== undefined) ? { page: source.page, snippet: source.snippet } : null,
+        details,
+        coreTermsMissing,
         conditions,
         contactPhone: extractedField(health.coordinationCentre?.phone).value,
         contactName: extractedField(health.coordinationCentre?.name ?? health.coordinationCentreName).value,
@@ -82,6 +103,32 @@ export function resolveCheckupBenefit(
     }
 }
 
+
+const DETAIL_ORDER: CheckupDetailKey[] = ["frequency", "limitAmount", "tests", "network", "waitingPeriodDays", "conditions"]
+
+/**
+ * `health.checkup` as a list of stated terms. Masked or empty values are
+ * dropped (an unreadable «XXXX» is not a term), numbers must be positive and
+ * finite, lists keep only readable entries.
+ */
+export function checkupDetails(raw: unknown, sources: ExtractionSources): CheckupDetail[] {
+    const checkup = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>
+    const out: CheckupDetail[] = []
+    for (const key of DETAIL_ORDER) {
+        const v = checkup[key]
+        let value: CheckupDetail["value"] | null = null
+        if (typeof v === "number") value = Number.isFinite(v) && v > 0 ? v : null
+        else if (typeof v === "string") value = extractedField(v).value
+        else if (Array.isArray(v)) {
+            const items = v.map((x) => (typeof x === "string" ? extractedField(x).value : null)).filter((x): x is string => Boolean(x))
+            value = items.length ? items : null
+        }
+        if (value === null) continue
+        const source = sources[citationKeyForAcordPath(`health.checkup.${key}`)]
+        out.push({ key, value, verified: source?.verified === true, ...(source?.page !== undefined ? { page: source.page } : {}) })
+    }
+    return out
+}
 
 // Re-exported so callers of the benefit keep one import.
 export { reminderWindow } from "@/lib/wellness/nudges"

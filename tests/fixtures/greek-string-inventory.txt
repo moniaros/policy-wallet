@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 4080
+# bundle entries: 4090
 # inline entries: 5004 across 233 files
 # ternary entries: 292 across 45 files
 # call entries: 1136 across 85 files
@@ -3943,6 +3943,15 @@ bundle	wellness.benefit.confirmedConsidering	"Σημειώθηκε."
 bundle	wellness.benefit.confirmedDone	"Σημειώθηκε ως ολοκληρωμένο για το {year}."
 bundle	wellness.benefit.confirmedLater	"Θα σας το θυμίσουμε στις {date}."
 bundle	wellness.benefit.confirmedNotRelevant	"Δεν θα το ξαναδείτε φέτος."
+bundle	wellness.benefit.coreMissing	"Ό,τι δεν αναγράφεται εδώ χρειάζεται επιβεβαίωση."
+bundle	wellness.benefit.daysValue	"{n} ημέρες"
+bundle	wellness.benefit.detailLabels.conditions	"Προϋποθέσεις"
+bundle	wellness.benefit.detailLabels.frequency	"Συχνότητα"
+bundle	wellness.benefit.detailLabels.limitAmount	"Όριο"
+bundle	wellness.benefit.detailLabels.network	"Πού γίνεται"
+bundle	wellness.benefit.detailLabels.tests	"Εξετάσεις"
+bundle	wellness.benefit.detailLabels.waitingPeriodDays	"Αναμονή"
+bundle	wellness.benefit.detailsIntro	"Όπως αναγράφονται στο ασφαλιστήριο:"
 bundle	wellness.benefit.expired	"Το ασφαλιστήριο {label} έχει λήξει. Ο έλεγχος που ανέφερε ίσχυε για την περίοδο κάλυψης."
 bundle	wellness.benefit.fromDocument	"Από το ασφαλιστήριο"
 bundle	wellness.benefit.homeCta	"Δείτε την παροχή"
@@ -3964,6 +3973,7 @@ bundle	wellness.benefit.remindSave	"Αποθήκευση"
 bundle	wellness.benefit.reminderBody	"Ζητήσατε υπενθύμιση για τον ετήσιο έλεγχο που αναφέρει το ασφαλιστήριό σας {label}."
 bundle	wellness.benefit.reminderTitle	"Ο ετήσιος έλεγχός σας"
 bundle	wellness.benefit.statedNotIncluded	"Το ασφαλιστήριο {label} αναφέρει ότι δεν περιλαμβάνει ετήσιο έλεγχο."
+bundle	wellness.benefit.termUnverified	"δεν εντοπίστηκε αυτούσιο στο έγγραφο"
 bundle	wellness.benefit.title	"Ετήσιος έλεγχος υγείας"
 bundle	wellness.benefit.undo	"Αναίρεση"
 bundle	wellness.benefit.unverifiedFalse	"Δεν είναι σαφές αν το ασφαλιστήριο {label} περιλαμβάνει ετήσιο έλεγχο. Χρειάζεται επιβεβαίωση από τους όρους ή τον ασφαλιστή σας."

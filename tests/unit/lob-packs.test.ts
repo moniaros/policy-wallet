@@ -35,7 +35,8 @@ describe('LoB packs — selection', () => {
 
     it('returns null for lines Layer 1 already covers well', () => {
         expect(packForLineOfBusiness('motor')).toBeNull()
-        expect(packForLineOfBusiness('health')).toBeNull()
+        // health is NOT here since 2026-09-24: its pack carries only the
+        // preventive check-up's terms (prevention brief) — see the test below.
         expect(packForLineOfBusiness('home')).toBeNull()
         expect(packForLineOfBusiness(null)).toBeNull()
         expect(packForLineOfBusiness('')).toBeNull()
@@ -44,10 +45,10 @@ describe('LoB packs — selection', () => {
 
 describe('LoB packs — prompt composition', () => {
     it('leaves the prompt byte-identical when no pack applies', () => {
-        // The single most important guarantee in this change: motor and health
-        // extraction must not move at all.
+        // The single most important guarantee in this change: motor extraction
+        // must not move at all. (Health moved deliberately on 2026-09-24 — the
+        // check-up pack below — and only by appending its own block.)
         expect(buildExtractionPrompt(undefined, 'motor')).toBe(buildExtractionPrompt())
-        expect(buildExtractionPrompt(undefined, 'health')).toBe(buildExtractionPrompt())
         expect(lobPackBlock('motor')).toBe('')
     })
 
@@ -116,4 +117,21 @@ describe('LoB packs — registry integrity', () => {
             expect(rules, id).toMatch(/NEVER extract the names/)
         }
     })
+
+describe('the health pack (prevention brief, 2026-09-24)', () => {
+    it('applies to individual and group health, and only appends its block', () => {
+        expect(packForLineOfBusiness('health')?.id).toBe('health')
+        expect(packForLineOfBusiness('group_health')?.id).toBe('health')
+        const base = buildExtractionPrompt()
+        const health = buildExtractionPrompt(undefined, 'health')
+        expect(health.startsWith(base)).toBe(true)
+        expect(health.slice(base.length)).toContain('health.checkup.frequency')
+    })
+    it('forbids inventing the terms: silence omits, no figure borrowed from another benefit', () => {
+        const rules = packForLineOfBusiness('health')!.evidenceRules.join(' ')
+        expect(rules).toMatch(/Omit any the document does not state/)
+        expect(rules).toMatch(/Never take a figure from another benefit/)
+        expect(rules).toMatch(/silence means omit/)
+    })
+})
 })

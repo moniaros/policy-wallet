@@ -108,3 +108,52 @@ describe("health share snapshot — minimised by construction (P2)", () => {
         expect(bmiBand(5, 70)).toBeNull()
     })
 })
+
+describe("check-up terms (richer extraction, 2026-09-24)", () => {
+    const withTerms = (checkup: Record<string, unknown>, sources: Record<string, unknown> = {}) =>
+        policy({ annualCheckupIncluded: true, checkup }, { extraction: { sources: { "acordData.health.annualCheckupIncluded": { page: 3, snippet: "x", verified: true }, ...sources } } })
+
+    it("lists only stated terms, in a fixed order, each with its own evidence", () => {
+        const r = resolveCheckupBenefit(withTerms(
+            { limitAmount: 150, frequency: "μία φορά ανά ασφαλιστικό έτος", tests: ["γενική αίματος", "XXXX", "σάκχαρο"], network: "" },
+            { "acordData.health.checkup.frequency": { page: 5, snippet: "μία φορά ανά ασφαλιστικό έτος", verified: true } }
+        ), null, NOW)
+        expect(r.details.map((d) => d.key)).toEqual(["frequency", "limitAmount", "tests"])
+        expect(r.details[0]).toEqual({ key: "frequency", value: "μία φορά ανά ασφαλιστικό έτος", verified: true, page: 5 })
+        expect(r.details[1]).toEqual({ key: "limitAmount", value: 150, verified: false })
+        expect(r.details[2].value).toEqual(["γενική αίματος", "σάκχαρο"])
+        expect(r.coreTermsMissing).toBe(false)
+    })
+    it("frequency without a cap (or the reverse) still says the rest needs confirmation", () => {
+        expect(resolveCheckupBenefit(withTerms({ frequency: "ετησίως" }), null, NOW).coreTermsMissing).toBe(true)
+        expect(resolveCheckupBenefit(withTerms({ limitAmount: 100 }), null, NOW).coreTermsMissing).toBe(true)
+        expect(resolveCheckupBenefit(withTerms({ frequency: "ετησίως", limitAmount: 100 }), null, NOW).coreTermsMissing).toBe(false)
+    })
+    it("nonsense numbers and masks are not terms", () => {
+        const r = resolveCheckupBenefit(withTerms({ limitAmount: 0, waitingPeriodDays: Number.NaN, network: "????" }), null, NOW)
+        expect(r.details).toEqual([])
+        expect(r.coreTermsMissing).toBe(true)
+    })
+    it("the schema accepts the terms and the citation list includes them", async () => {
+        const { AcordDataSchema } = await import("@/lib/schemas/acord-data")
+        const { CITATION_FIELDS } = await import("@/lib/services/ai/extraction-citations")
+        const parsed = AcordDataSchema.safeParse({ health: { annualCheckupIncluded: true, checkup: { frequency: "ετησίως", limitAmount: 150, tests: ["ΓΕΝ"], waitingPeriodDays: 90 } } })
+        expect(parsed.success).toBe(true)
+        for (const k of ["frequency", "limitAmount", "tests", "network", "waitingPeriodDays", "conditions"]) {
+            expect(CITATION_FIELDS).toContain(`acordData.health.checkup.${k}`)
+        }
+        expect(CITATION_FIELDS).toContain("acordData.health.annualCheckupIncluded")
+    })
+})
+
+describe("eval-checkup-extraction — scoring rule", () => {
+    it("a value where the human read nothing is INVENTED; silence both sides is absent", async () => {
+        const { compareTerm } = await import("../../scripts/eval-checkup-extraction")
+        expect(compareTerm(undefined, "ετησίως")).toBe("invented")
+        expect(compareTerm(undefined, undefined)).toBe("absent")
+        expect(compareTerm(150, undefined)).toBe("missed")
+        expect(compareTerm("Μία φορά  ετησίως", "μία φορά ετησίως")).toBe("match")
+        expect(compareTerm(150, 200)).toBe("differs")
+        expect(compareTerm([], ["x"])).toBe("invented")
+    })
+})

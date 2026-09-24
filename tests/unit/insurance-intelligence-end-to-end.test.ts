@@ -228,7 +228,8 @@ describe('mixed portfolio — one household, several lines', () => {
 
     it('selects a knowledge pack only for the lines that have one', () => {
         const packs = portfolio.map((lob) => packForLineOfBusiness(lob)?.id ?? null)
-        expect(packs).toEqual([null, 'personal_cyber', null, 'liability', 'liability', 'crime_and_valuables'])
+        // health gained its pack 2026-09-24 (the preventive check-up's terms).
+        expect(packs).toEqual([null, 'personal_cyber', 'health', 'liability', 'liability', 'crime_and_valuables'])
     })
 
     it('routes a commercial policy into the business family for the advisor view', () => {
