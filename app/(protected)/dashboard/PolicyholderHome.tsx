@@ -74,7 +74,7 @@ import { QuickActions, type QuickAction } from "@/components/dashboard/home/Quic
 import { PreventiveCard } from "@/components/dashboard/home/PreventiveCard"
 import { CheckupNudgeCard } from "@/components/dashboard/home/CheckupNudgeCard"
 import { DailyNudgeCard } from "@/components/wellness/DailyNudgeCard"
-import { resolveCheckupBenefit } from "@/lib/wellness/checkup-benefit"
+import { pickCheckupUsage, resolveCheckupBenefit } from "@/lib/wellness/checkup-benefit"
 import { athensDate, nudgeForDate } from "@/lib/wellness/nudges"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
@@ -1017,12 +1017,12 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     const healthActive = activePolicies.filter((p) => branchFamilyId(p.lineOfBusiness) === "health")
     const checkupUsages = healthActive.length
         ? await db.healthBenefitUsage.findMany({
-            where: { userId: dbUser.id, benefit: "annual_checkup", year: checkupYear },
-            select: { policyKey: true, status: true, intent: true, remindAt: true },
+            where: { userId: dbUser.id, benefit: "annual_checkup", year: { in: [checkupYear - 1, checkupYear] } },
+            select: { policyKey: true, year: true, status: true, intent: true, remindAt: true, remindedAt: true },
         })
         : []
     const checkupStates = healthActive
-        .map((p) => resolveCheckupBenefit(p as any, checkupUsages.find((u) => u.policyKey === p.id) ?? null))
+        .map((p) => resolveCheckupBenefit(p as any, pickCheckupUsage(checkupUsages, p.id, checkupYear)))
         .filter((b) => b.showCard)
     const checkupNudge = checkupStates.length > 0 && !offeredHrefs.has("/wellness")
         ? {

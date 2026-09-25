@@ -7,7 +7,7 @@ import { branchFamilyId } from "@/lib/insurance/taxonomy"
 import { displayPersonName, policyLabel } from "@/lib/wallet/policy-identity"
 import { ENDED_RELATIONSHIP_STATUSES, resolvePolicyAdvisors } from "@/lib/agent-visibility"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
-import { reminderWindow, resolveCheckupBenefit } from "@/lib/wellness/checkup-benefit"
+import { pickCheckupUsage, reminderWindow, resolveCheckupBenefit } from "@/lib/wellness/checkup-benefit"
 import { loadCatalogueInsurers, matchVerifiedCallCentre } from "@/lib/wallet/verified-insurer-contact"
 import { athensDate, nudgeForDate } from "@/lib/wellness/nudges"
 import type { CategoryScore } from "@/lib/wellness/scoring"
@@ -30,7 +30,7 @@ export default async function WellnessPage() {
             select: { id: true, ownerUserId: true, createdByUserId: true, insurerName: true, policyNumber: true, nickname: true, lineOfBusiness: true, status: true, endDate: true, acordData: true },
         }),
         db.policy.count({ where: { ownerUserId: dbUser.id, status: { notIn: [...NON_LIVE_POLICY_STATUSES] } } }),
-        db.healthBenefitUsage.findMany({ where: { userId: dbUser.id, year, benefit: "annual_checkup" }, select: { policyKey: true, status: true, intent: true, remindAt: true } }),
+        db.healthBenefitUsage.findMany({ where: { userId: dbUser.id, year: { in: [year - 1, year] }, benefit: "annual_checkup" }, select: { policyKey: true, year: true, status: true, intent: true, remindAt: true, remindedAt: true } }),
         db.healthRiskAssessment.findMany({ where: { userId: dbUser.id }, orderBy: { createdAt: "desc" }, take: 5, select: { id: true, answers: true, scores: true, createdAt: true } }),
         db.userNotificationSettings.findUnique({ where: { userId: dbUser.id }, select: { dailyNudgeOptIn: true } }).catch(() => null),
         db.customerRelationship.findMany({
@@ -46,8 +46,8 @@ export default async function WellnessPage() {
     const catalogue = health.length ? await loadCatalogueInsurers() : []
     const benefits: BenefitView[] = await Promise.all(
         health.map(async (p) => {
-            const u = usages.find((row) => row.policyKey === p.id)
-            const benefit = resolveCheckupBenefit(p, u ? { status: u.status, intent: u.intent, remindAt: u.remindAt } : null, now)
+            const u = pickCheckupUsage(usages, p.id, year)
+            const benefit = resolveCheckupBenefit(p, u, now)
             const value = (p.acordData as any)?.health?.annualCheckupIncluded
             return {
                 policyId: p.id,

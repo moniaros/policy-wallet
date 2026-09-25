@@ -7,13 +7,13 @@ vi.mock("@/lib/notifications/dispatch", () => ({ emit: vi.fn(async () => ({})) }
 vi.mock("@/lib/services/collaboration.service", () => ({ collaborationService: { ensureAutomationThread: vi.fn(async () => ({ id: "t1" })) } }))
 vi.mock("@/lib/db", () => ({
     db: {
-        healthBenefitUsage: { upsert: vi.fn(async () => ({})), findMany: vi.fn(), update: vi.fn(async () => ({})) },
+        healthBenefitUsage: { upsert: vi.fn(async () => ({})), findMany: vi.fn(), update: vi.fn(async () => ({})), updateMany: vi.fn(async () => ({ count: 0 })) },
         userNotificationSettings: { upsert: vi.fn(async () => ({})), findMany: vi.fn() },
         customerRelationship: { findFirst: vi.fn() },
         healthRiskAssessment: { findFirst: vi.fn() },
         policyholderProfile: { findUnique: vi.fn() },
         healthShare: { upsert: vi.fn(async () => ({ id: "s1", updatedAt: new Date("2026-09-24T10:00:00Z") })), updateMany: vi.fn(async () => ({ count: 1 })) },
-        policy: { findFirst: vi.fn(async () => ({ insurerName: "Εθνική", policyNumber: "P-9" })) },
+        policy: { findFirst: vi.fn(async () => ({ insurerName: "Εθνική", policyNumber: "P-9", status: "active", endDate: new Date("2027-06-30T00:00:00Z") })) },
     },
 }))
 
@@ -24,7 +24,7 @@ import { setCheckupIntent, setDailyNudgeOptIn } from "@/app/(protected)/wellness
 import { revokeHealthShare, shareHealthWithAdvisor } from "@/app/(protected)/wellness/share-actions"
 import { runCheckupReminderScan } from "@/lib/services/checkup-reminder.service"
 import { runDailyNudge } from "@/lib/services/daily-nudge.service"
-import { reminderWindow } from "@/lib/wellness/checkup-benefit"
+import { pickCheckupUsage, reminderWindow } from "@/lib/wellness/checkup-benefit"
 
 beforeEach(() => vi.clearAllMocks())
 
@@ -51,6 +51,37 @@ describe("setCheckupIntent — the owner's own choice (brief P1)", () => {
         expect(arg.update.intent).toBe("later")
         expect(arg.update.remindedAt).toBeNull()
         expect(arg.update.remindAt.toISOString().slice(0, 10)).toBe(w.min)
+    })
+    it("a new choice cancels a reminder still pending on another year's row (one reminder per benefit)", async () => {
+        vi.mocked(getPolicyAccess).mockResolvedValue({ exists: true, isOwner: true } as any)
+        await setCheckupIntent({ policyId: "p1", choice: "done" })
+        const arg = vi.mocked(db.healthBenefitUsage.updateMany).mock.calls[0][0] as any
+        expect(arg.where).toMatchObject({ userId: "u1", policyKey: "p1", benefit: "annual_checkup", remindedAt: null })
+        expect(arg.where.year).toHaveProperty("not")
+        expect(arg.data).toEqual({ remindAt: null })
+    })
+})
+
+describe("pickCheckupUsage — state survives the year boundary, never promises a past date", () => {
+    const row = (o: Partial<{ policyKey: string; year: number; status: string; intent: string | null; remindAt: Date | null; remindedAt: Date | null }>) =>
+        ({ policyKey: "p1", year: 2027, status: "available", intent: null, remindAt: null, remindedAt: null, ...o })
+    it("a November «later» for February still reads on 1 January", () => {
+        const u = pickCheckupUsage([row({ year: 2026, intent: "later", remindAt: new Date("2027-02-10T00:00:00Z") })], "p1", 2027)
+        expect(u).toMatchObject({ intent: "later" })
+        expect(u?.remindAt?.toISOString().slice(0, 10)).toBe("2027-02-10")
+    })
+    it("last year's «done» does not carry over", () => {
+        expect(pickCheckupUsage([row({ year: 2026, status: "completed" })], "p1", 2027)).toBeNull()
+    })
+    it("this year's row wins; a sent reminder reads as no date", () => {
+        const u = pickCheckupUsage([
+            row({ year: 2026, intent: "later", remindAt: new Date("2027-03-01T00:00:00Z") }),
+            row({ intent: "later", remindAt: new Date("2027-01-05T00:00:00Z"), remindedAt: new Date("2027-01-05T06:00:00Z") }),
+        ], "p1", 2027)
+        expect(u).toEqual({ status: "available", intent: "later", remindAt: null })
+    })
+    it("another policy's row is never used", () => {
+        expect(pickCheckupUsage([row({ policyKey: "p2" })], "p1", 2027)).toBeNull()
     })
 })
 
@@ -81,6 +112,18 @@ describe("check-up reminder scan — only what the person asked for", () => {
         expect((vi.mocked(emit).mock.calls[0][0] as any).dedupeKey).toBe("benefit_reminder:r1:2026-09-24")
         expect((vi.mocked(emit).mock.calls[0][0] as any).relatedObjectType).toBeUndefined() // never mirrored to family
         expect(vi.mocked(db.healthBenefitUsage.update).mock.calls[0][0]).toMatchObject({ where: { id: "r1" } })
+    })
+    it.each([
+        ["deleted", null],
+        ["cancelled", { insurerName: "Εθνική", policyNumber: "P-9", status: "cancelled", endDate: new Date("2027-06-30T00:00:00Z") }],
+        ["expired", { insurerName: "Εθνική", policyNumber: "P-9", status: "active", endDate: new Date("2026-01-31T00:00:00Z") }],
+    ])("a %s policy cancels the reminder instead of sending it", async (_label, policy) => {
+        vi.mocked(db.healthBenefitUsage.findMany).mockResolvedValue([{ id: "r1", userId: "u1", policyKey: "p1", remindAt: new Date("2026-09-24T00:00:00Z") }] as any)
+        vi.mocked(db.policy.findFirst).mockResolvedValueOnce(policy as any)
+        const r = await runCheckupReminderScan(new Date("2026-09-24T06:00:00Z"))
+        expect(emit).not.toHaveBeenCalled()
+        expect(r).toMatchObject({ reminded: 0, cancelled: 1 })
+        expect(vi.mocked(db.healthBenefitUsage.update).mock.calls[0][0]).toEqual({ where: { id: "r1" }, data: { remindAt: null } })
     })
 })
 
