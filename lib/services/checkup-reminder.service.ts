@@ -4,6 +4,7 @@ import { logger } from "@/lib/logger"
 import { getTranslations } from "@/lib/i18n"
 import { policyLabel } from "@/lib/wallet/policy-identity"
 import { athensDate } from "@/lib/wellness/nudges"
+import { NON_LIVE_POLICY_STATUSES, resolvePolicyLifecycle } from "@/lib/policy-status"
 
 /**
  * Prevention brief P1 — the follow-up the PERSON chose. Daily: every
@@ -11,11 +12,13 @@ import { athensDate } from "@/lib/wellness/nudges"
  * not marked «not relevant», gets one `benefit_reminder` and is stamped.
  *
  * It reads live state, so a changed date or a «done» cancels by
- * construction. The 15 January send to everyone was retired 2026-09-24: a
+ * construction. A policy that has since been deleted, cancelled or has
+ * expired cancels the reminder instead of sending it: the benefit it names
+ * no longer applies. The 15 January send to everyone was retired 2026-09-24: a
  * reminder nobody asked for is not the person's choice.
  */
-export async function runCheckupReminderScan(now: Date = new Date()): Promise<{ due: number; reminded: number; errors: string[] }> {
-    const summary = { due: 0, reminded: 0, errors: [] as string[] }
+export async function runCheckupReminderScan(now: Date = new Date()): Promise<{ due: number; reminded: number; cancelled: number; errors: string[] }> {
+    const summary = { due: 0, reminded: 0, cancelled: 0, errors: [] as string[] }
     const today = new Date(`${athensDate(now)}T00:00:00Z`)
     try {
         const due = await db.healthBenefitUsage.findMany({
@@ -32,9 +35,15 @@ export async function runCheckupReminderScan(now: Date = new Date()): Promise<{ 
         for (const row of due) {
             try {
                 const policy = row.policyKey
-                    ? await db.policy.findFirst({ where: { id: row.policyKey, ownerUserId: row.userId }, select: { insurerName: true, policyNumber: true } })
+                    ? await db.policy.findFirst({ where: { id: row.policyKey, ownerUserId: row.userId }, select: { insurerName: true, policyNumber: true, status: true, endDate: true } })
                     : null
-                const label = policy ? policyLabel(policy) : ""
+                const gone = !policy || (NON_LIVE_POLICY_STATUSES as readonly string[]).includes(policy.status) || resolvePolicyLifecycle(policy, now).status === "expired"
+                if (gone) {
+                    await db.healthBenefitUsage.update({ where: { id: row.id }, data: { remindAt: null } })
+                    summary.cancelled++
+                    continue
+                }
+                const label = policyLabel(policy)
                 const el = getTranslations("el").wellness.benefit
                 const en = getTranslations("en").wellness.benefit
                 await emit({

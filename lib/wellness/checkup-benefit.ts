@@ -103,6 +103,24 @@ export function resolveCheckupBenefit(
     }
 }
 
+/**
+ * The usage row that speaks for a policy in `year`: that year's, else last
+ * year's while the reminder the person picked is still pending — a date chosen
+ * in November for February must not vanish on 1 January. A reminder that has
+ * already been sent reads as no date at all, so the card offers the choices
+ * again instead of promising a reminder on a day that has passed.
+ */
+export function pickCheckupUsage(
+    rows: Array<{ policyKey: string; year: number; status: string; intent: string | null; remindAt: Date | null; remindedAt: Date | null }>,
+    policyId: string,
+    year: number
+): CheckupUsage | null {
+    const row =
+        rows.find((r) => r.policyKey === policyId && r.year === year) ??
+        rows.find((r) => r.policyKey === policyId && r.year === year - 1 && r.remindAt !== null && r.remindedAt === null)
+    if (!row) return null
+    return { status: row.status, intent: row.intent, remindAt: row.remindedAt ? null : row.remindAt }
+}
 
 const DETAIL_ORDER: CheckupDetailKey[] = ["frequency", "limitAmount", "tests", "network", "waitingPeriodDays", "conditions"]
 

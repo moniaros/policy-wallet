@@ -59,6 +59,12 @@ export async function setCheckupIntent(input: z.infer<typeof IntentInput>) {
         create: { userId: dbUser.id, policyKey: policyId, benefit: "annual_checkup", year, ...data },
         update: data,
     })
+    // One pending reminder per benefit: a date still waiting on last year's
+    // row is superseded by this choice, not sent alongside it.
+    await db.healthBenefitUsage.updateMany({
+        where: { userId: dbUser.id, policyKey: policyId, benefit: "annual_checkup", year: { not: year }, remindedAt: null, remindAt: { not: null } },
+        data: { remindAt: null },
+    })
     revalidatePath("/wellness")
     revalidatePath("/dashboard")
     return { ok: true as const, year }
