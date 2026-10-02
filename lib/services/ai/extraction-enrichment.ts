@@ -181,6 +181,10 @@ export function enrichExtractionPayload(
     // snippet the pages do not contain is marked, not stored as evidence.
     const extractionSources = verifyExtractionSources(sanitizeExtractionSources(payload.extractionSources), localText)
 
+    const previousSources = { ...(existingAcordData?.extraction?.sources || {}) }
+    if (payload.acordData?.perksAndBenefits !== undefined) {
+        for (const key of Object.keys(previousSources)) if (key.startsWith("acordData.perksAndBenefits.")) delete previousSources[key]
+    }
     const acordData = {
         ...baseAcord,
         exclusions,
@@ -194,11 +198,10 @@ export function enrichExtractionPayload(
             },
             // Per-field document citations — a fresh extraction replaces the
             // previous set; re-analysis without citations keeps the old ones.
-            ...(extractionSources
-                ? { sources: extractionSources }
-                : baseAcord?.extraction?.sources
-                    ? { sources: baseAcord.extraction.sources }
-                    : {}),
+            sources: extractionSources ?? previousSources,
+            // Provider payloads cannot mint server-owned document/run provenance.
+            documentId: null,
+            analysisRunId: null,
             missingCriticalFields,
             requiresReview,
             // Only trusted, already-stored confirmation can survive enrichment. A model cannot confirm itself.

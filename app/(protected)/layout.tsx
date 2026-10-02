@@ -54,7 +54,7 @@ export default async function ProtectedLayout({
     // channel is excluded by the same filter: the conversion mirror shares this
     // table and its rows were being counted too.
     const unreadNotificationCount = await db.notificationEvent.count({
-        where: { userId: dbUser.id, channel: "in_app", readAt: null }
+        where: { userId: dbUser.id, channel: "in_app", status: "sent", readAt: null }
     })
 
     // Construct navigation based on roles.

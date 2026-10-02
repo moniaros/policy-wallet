@@ -25,6 +25,7 @@
  *    tomorrow passes the same `dedupeKey` and sends nothing.
  */
 
+import { randomUUID } from "node:crypto"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import {
@@ -230,6 +231,9 @@ async function mirrorToFamily(params: EmitParams): Promise<void> {
 }
 
 async function emitOne(params: EmitParams): Promise<EmitResult> {
+    // One identity shared by all delivery arms, even for non-idempotent callers.
+    // A fresh emission stays distinct; caller keys still control retry deduplication.
+    const emissionKey = params.dedupeKey ?? `emission:${randomUUID()}`
     try {
         const def = getEventDefinition(params.event)
         if (!def) {
@@ -426,7 +430,7 @@ async function emitOne(params: EmitParams): Promise<EmitResult> {
                     message: channelMessage,
                     relatedObjectType: params.relatedObjectType ?? null,
                     relatedObjectId: params.relatedObjectId ?? null,
-                    dedupeKey: params.dedupeKey ?? null,
+                    dedupeKey: emissionKey,
                     // Nothing was attempted for a skip, so the attempt count is 0
                     // and the retry worker will never pick it up.
                     attempts: outcome.status === "skipped" ? 0 : 1,

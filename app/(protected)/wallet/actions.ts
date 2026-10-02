@@ -52,15 +52,15 @@ import { readGapRow } from "@/lib/gaps/gap-rows"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 /**
- * The add-policy form WITH a document. The branch is the only thing the
- * person must choose; identity and dates are optional because the extraction
+ * The document-first add-policy form. Branch, identity and dates are optional
+ * hints; the validated document gate identifies the branch and extraction
  * reads them off the document — the server mints the placeholders the
  * identity layer knows how to hide (lib/wallet/policy-identity.ts). The
  * client used to mint them itself, which is how `__PENDING_EXTRACTION__`
  * became a literal in a component.
  */
 const UploadPolicySchema = z.object({
-    lineOfBusiness: lineOfBusinessEnum,
+    lineOfBusiness: lineOfBusinessEnum.optional(),
     insurerName: z.string().trim().optional(),
     policyNumber: z.string().trim().optional(),
     startDate: z.string().trim().optional(),
@@ -120,7 +120,7 @@ export async function createPolicy(formData: FormData) {
     const rawData = {
         insurerName: formData.get("insurerName") || undefined,
         policyNumber: formData.get("policyNumber") || undefined,
-        lineOfBusiness: formData.get("lineOfBusiness"),
+        lineOfBusiness: formData.get("lineOfBusiness") || undefined,
         startDate: formData.get("startDate") || undefined,
         endDate: formData.get("endDate") || undefined,
         premiumAmount: formData.get("premiumAmount") || undefined,
@@ -149,7 +149,7 @@ export async function createPolicy(formData: FormData) {
             file,
             surface: "wallet_add",
             mode: "policy",
-            declaredBranch: typed.lineOfBusiness,
+            declaredBranch: typed.lineOfBusiness ?? null,
             declaredBranchSource: "user",
             branchConfirmed: formData.get("branchConfirmed") === "true",
             typedMetadata: {

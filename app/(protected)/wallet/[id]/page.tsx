@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import { recommendationsForPolicy } from "@/lib/wallet/policy-recommendations"
 import { scrubRenderableText } from '@/lib/wallet/policy-identity'
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
@@ -285,10 +286,10 @@ export default async function PolicyDetailPage({
     }
 
     // Related recommendations (owner only): reuse the persisted gap-engine
-    // output, preferring same-line-of-business suggestions. Read-only — the
+    // output with exact source-policy provenance. Read-only — the
     // engine itself is not re-run here. Policy-derived recommendations that
     // already render as gap cards above are dropped — the same finding must
-    // not appear twice on this page (profile/portfolio recs stay).
+    // not appear twice. Profile/portfolio suggestions stay on /recommendations.
     let relatedRecommendations: Array<Record<string, unknown>> = []
     if (isOwner) {
         try {
@@ -301,11 +302,9 @@ export default async function PolicyDetailPage({
                 if (concept === null) return true // profile/portfolio rule — always shown
                 return !reportConcepts.has(concept)
             })
-            // Match by branch FAMILY: a motorbike policy's related recommendations are the
-            // MOTOR ones. Raw equality missed them and fell back to generic recs.
-            const policyFamily = branchFamilyId(policy.lineOfBusiness)
-            const sameLob = recommendations.filter(r => branchFamilyId(r.lineOfBusiness) === policyFamily)
-            relatedRecommendations = (sameLob.length > 0 ? sameLob : recommendations)
+            // A category match is not policy provenance. Portfolio suggestions stay
+            // on /recommendations; this section promises this exact policy.
+            relatedRecommendations = recommendationsForPolicy(recommendations, policy.id)
                 .slice(0, 4)
                 .map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))
         } catch (error) {

@@ -30,6 +30,7 @@ export async function shareHealthWithAdvisor(input: { relationshipId: string; sc
     const parsed = ShareInput.safeParse(input)
     if (!parsed.success) return { error: "CONSENT_REQUIRED" as const }
     const { relationshipId, scope } = parsed.data
+    if (scope !== "profile") return { error: "RETIRED" as const }
 
     const relationship = await db.customerRelationship.findFirst({
         where: { id: relationshipId, policyholderUserId: dbUser.id, status: { notIn: [...ENDED_RELATIONSHIP_STATUSES] } },
@@ -38,15 +39,15 @@ export async function shareHealthWithAdvisor(input: { relationshipId: string; sc
     if (!relationship) return { error: "NOT_FOUND" as const }
 
     const [assessment, profile] = await Promise.all([
-        scope === "profile" ? null : db.healthRiskAssessment.findFirst({ where: { userId: dbUser.id }, orderBy: { createdAt: "desc" }, select: { scores: true, createdAt: true } }),
-        scope === "assessment" ? null : db.policyholderProfile.findUnique({
+        null,
+        db.policyholderProfile.findUnique({
             where: { userId: dbUser.id },
             select: { smokingStatus: true, activityLevel: true, chronicConditions: true, familyMedicalHistory: true, heightCm: true, weightKg: true },
         }),
     ])
     const snapshot = buildHealthSnapshot(
         scope,
-        assessment ? { scores: assessment.scores as unknown as CategoryScore[], createdAt: assessment.createdAt } : null,
+        null,
         profile
     )
     if (!snapshot.assessment && !snapshot.profile) return { error: "NOTHING_TO_SHARE" as const }

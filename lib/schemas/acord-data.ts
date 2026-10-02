@@ -1,3 +1,4 @@
+import { BenefitRulesSchema, BenefitContractSchema } from '@/lib/prevention/contracts'
 import { z } from "zod";
 
 /**
@@ -567,19 +568,27 @@ export const AcordDataSchema = z.object({
         relatedCoverage: z.string().optional().describe("Which coverage this clause restricts"),
     })).optional().describe("Hidden restrictions, sub-limits, and gotchas that most consumers would NOT expect"),
 
+    benefitContract: BenefitContractSchema.optional(),
     perksAndBenefits: z.array(z.object({
+        rules: BenefitRulesSchema.optional(),
         perkType: z.enum([
             "free_service", "assistance", "discount", "prevention",
             "loyalty_bonus", "digital_tool", "gift", "legal_aid"
         ]),
         name: z.object({ en: z.string(), el: z.string() }),
         description: z.object({ en: z.string(), el: z.string() }),
+        preventionDomains: z.array(z.enum(["household", "income", "debt", "retirement", "residence", "property", "mobility", "work", "health", "lifestyle"])).optional().describe("Where this benefit is used, independent of the policy branch. Blood tests in a motor policy belong to health. Cyber services belong to lifestyle."),
+        terms: z.object({
+            beneficiaries: z.string().optional(), frequency: z.string().optional(), cost: z.string().optional(),
+            limit: z.string().optional(), network: z.string().optional(), waitingPeriod: z.string().optional(),
+            conditions: z.string().optional(), provider: z.string().optional(), tests: z.string().optional(),
+        }).optional().describe("Only terms explicitly stated for THIS benefit; preserve amounts, units and original wording. Never infer free from discount, beneficiaries from policyholder, or combine rights across benefits."),
         contactPhone: z.string().optional().describe("Direct phone number for the service"),
         contactUrl: z.string().optional(),
         usageLimit: z.string().optional().describe("e.g. '1x per year', 'unlimited', '3 incidents'"),
         expiresWithPolicy: z.boolean().default(true),
         reminderRecommended: z.boolean().default(false).describe("True for perks users often forget to use"),
-    })).optional().describe("Free services, prevention programs, assistance hotlines, gifts, loyalty bonuses"),
+    })).optional().describe("Benefits explicitly stated in ANY branch, including cross-line health services in motor policies, discounts, prevention and post-event assistance (not equivalent to prevention). Do not invent entitlements. Never list exclusions, loss-prevention obligations, general marketing examples or indemnity limits as service benefits. Cite each benefit and each stated term in extractionSources at acordData.perksAndBenefits.<zero-based index>[.terms.<key>]."),
 
     notableConditions: z.array(z.object({
         conditionType: z.enum([

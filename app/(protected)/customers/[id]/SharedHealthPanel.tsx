@@ -22,7 +22,7 @@ export async function SharedHealthPanel({ customerId, agentUserId, language }: {
         },
         select: { id: true, snapshot: true, createdAt: true },
     })
-    if (!share?.snapshot) return null
+    if (!share?.snapshot || !(share.snapshot as unknown as HealthSnapshot).profile) return null
 
     const viewedAt = new Date()
     await db.$transaction([
@@ -55,18 +55,6 @@ export async function SharedHealthPanel({ customerId, agentUserId, language }: {
                         <p className="text-caption text-muted-foreground">{copy.sharedOn.replace("{date}", formatDate(share.createdAt, language))}</p>
                     </div>
                 </div>
-                {snap.assessment && (
-                    <div className="mt-4">
-                        <p className="text-sm font-semibold text-foreground">{copy.assessment.replace("{date}", formatDate(snap.assessment.takenAt, language))}</p>
-                        <ul className="mt-2 space-y-1 text-sm text-foreground">
-                            {snap.assessment.scores.map((s) => (
-                                <li key={s.category}>
-                                    {(t.wellness.categories as Record<string, string>)[s.category] ?? s.category}: {s.score} · {(t.wellness.bands as Record<string, string>)[s.band] ?? s.band}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
                 {snap.profile && (
                     <dl className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-2 text-sm sm:grid-cols-2">
                         <div><dt className="text-caption text-muted-foreground">{copy.smoking}</dt><dd className="text-foreground">{label(copy.smokingValues, snap.profile.smokingStatus)}</dd></div>

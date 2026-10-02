@@ -15,9 +15,9 @@ today. The assessment itself is a legal judgement and is a halt
 
 | Measure | Value |
 | --- | --- |
-| Stores holding personal data (tagged) | 62 of 62 |
-| Columns across them (relations excluded) | 773 |
-| Columns declared Art. 9 | 18 (stores: 5) |
+| Stores holding personal data (tagged) | 65 of 65 |
+| Columns across them (relations excluded) | 807 |
+| Columns declared Art. 9 | 28 (stores: 8) |
 | Data-subject categories in use | admin, agent, policyholder, third_party |
 | Stores under the AI-analysis purpose | 10 |
 | Published processors | 10 |
@@ -753,6 +753,55 @@ fields are not columns and are not listed.
 | `createdAt` | `DateTime` | ordinary |
 | `updatedAt` | `DateTime` | ordinary |
 
+### `PreventionBenefitUse` — service · consent · policyholder · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `id` | `String` | identifier |
+| `userId` | `String` | subject key |
+| `policyId` | `String` | ordinary |
+| `itemKey` | `String` | **Art. 9** |
+| `periodKey` | `String` | ordinary |
+| `sourceVersion` | `String` | ordinary |
+| `status` | `String` | **Art. 9** |
+| `usedOn` | `DateTime?` | **Art. 9** |
+| `consentVersion` | `String?` | ordinary |
+| `createdAt` | `DateTime` | ordinary |
+| `updatedAt` | `DateTime` | ordinary |
+
+### `PreventionCheckIn` — service · consent · policyholder · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `id` | `String` | identifier |
+| `userId` | `String` | subject key |
+| `consentVersion` | `String` | ordinary |
+| `answers` | `Json` | **Art. 9** |
+| `createdAt` | `DateTime` | ordinary |
+
+### `PreventionProgress` — service · consent · policyholder · account_life · delete
+
+| Column | Type | Class |
+| --- | --- | --- |
+| `periodKey` | `String?` | ordinary |
+| `knowsProcedure` | `Boolean?` | **Art. 9** |
+| `plannedFor` | `DateTime?` | **Art. 9** |
+| `id` | `String` | identifier |
+| `userId` | `String` | subject key |
+| `policyId` | `String` | ordinary |
+| `itemKey` | `String` | **Art. 9** |
+| `sourceVersion` | `String` | ordinary |
+| `status` | `String` | **Art. 9** |
+| `consentVersion` | `String?` | ordinary |
+| `barrier` | `String?` | **Art. 9** |
+| `helpful` | `Boolean?` | ordinary |
+| `remindAt` | `DateTime?` | **Art. 9** |
+| `remindedAt` | `DateTime?` | ordinary |
+| `completedAt` | `DateTime?` | ordinary |
+| `firstActedAt` | `DateTime` | ordinary |
+| `createdAt` | `DateTime` | ordinary |
+| `updatedAt` | `DateTime` | ordinary |
+
 ### `Proposal` — intermediary · legitimate_interest · policyholder|agent · advisor_own · retained
 
 | Column | Type | Class |
@@ -1127,6 +1176,9 @@ fields are not columns and are not listed.
 | `HealthRiskAssessment` | `answers`, `scores` | Consent — Art. 6(1)(a) |
 | `HealthShare` | `snapshot` | Consent — Art. 6(1)(a) |
 | `PolicyholderProfile` | `chronicConditions`, `familyMedicalHistory`, `smokingStatus`, `heightCm`, `weightKg`, `gender`, `activityLevel` | Consent — Art. 6(1)(a) |
+| `PreventionBenefitUse` | `itemKey`, `usedOn`, `status` | Consent — Art. 6(1)(a) |
+| `PreventionCheckIn` | `answers` | Consent — Art. 6(1)(a) |
+| `PreventionProgress` | `itemKey`, `status`, `barrier`, `remindAt`, `knowsProcedure`, `plannedFor` | Consent — Art. 6(1)(a) |
 
 Held by the processors that store or carry every table: Supabase, Vercel.
 
@@ -1157,8 +1209,8 @@ generator rather than rendering a pack without it.
 
 | Processor | Role (published) | Location (published) | Purposes | Stores under those purposes | How | Receives the document | Endpoint, as constructed in code |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 62 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
-| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 62 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
+| Supabase | Database, authentication, file storage | EU — eu-west-3 (Paris, France) | all | all 65 | primary store of every table and of the document bucket | **yes** | n/a — configured outside the application code |
+| Vercel | Application hosting and content delivery network (CDN) | EU/US (global network) | all | all 65 | every request and response passes through it in transit; technical logs | **yes** | n/a — configured outside the application code |
 | Stripe | Payment and subscription processing | EU/US | billing | `CreditTransaction`, `EntitlementUsage`, `Invoice`, `MonthlyTokenUsage`, `PaymentMethod`, `Referral`, `ReportUnlockPurchase`, `Subscription`, `TokenBalance`, `TokenPurchase`, `TokenUsage` | checkout, subscription and invoice objects; card data never reaches our systems | no | n/a — configured outside the application code |
 | Brevo | Email delivery (notifications, newsletter) | EU (France) | communication | `BusinessEvent`, `NotificationEvent`, `NotificationPreference`, `PushDevice`, `UserNotificationSettings` | the address, name and body of each email sent | no | n/a — configured outside the application code |
 | Upstash | Request rate limiting (Redis) | EU/US | none | none | per-IP request counters for rate limiting — no store feeds it | no | n/a — configured outside the application code |

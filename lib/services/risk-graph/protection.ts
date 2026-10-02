@@ -435,8 +435,8 @@ function buildEvidence(
         evidence.push({
             kind: "absence",
             statement: {
-                en: "No live policy in your wallet answers this risk.",
-                el: "Κανένα ενεργό ασφαλιστήριο στο πορτοφόλι σας δεν καλύπτει αυτόν τον κίνδυνο.",
+                en: "We have not matched this risk to an active policy in your wallet.",
+                el: "Δεν αντιστοιχίσαμε αυτόν τον κίνδυνο με ενεργό ασφαλιστήριο στο πορτοφόλι σας.",
             },
             confidence: "derived",
         })

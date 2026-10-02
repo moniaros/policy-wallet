@@ -317,3 +317,19 @@ describe("coverage status — probes (inputs a wrong derivation would misjudge)"
         })
     }
 })
+
+// Regression: the live health surface reported covered with 0/2 usable checks.
+describe("all-indeterminate coverage is not reassurance", () => {
+    it.each([
+        { coverages: [{ name: "Health policy" }], health: {} },
+        { coverages: [{ name: "Health policy" }], health: { deductible: "unreadable" } },
+    ])("keeps a completed run with unusable coverage inputs unresolved", (acordData) => {
+        const slugs = AUTHORED_GAP_DEFINITIONS.filter(d => d.lineOfBusiness === "health").map(d => d.slug)
+        const result = derive({ policies: [policy({ id: "health-unknown", lineOfBusiness: "health", acordData })], runs: [completedRun("health-unknown", slugs)] })
+        const health = row(result, "health")
+        expect(health.covered).toBe(0)
+        expect(health.checked).toBeGreaterThan(0)
+        expect(health.status).toBe("not_checked")
+        expect(toTileState(health)).not.toBe("covered")
+    })
+})

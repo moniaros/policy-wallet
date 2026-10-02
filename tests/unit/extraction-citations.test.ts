@@ -84,9 +84,9 @@ describe('extraction citations — enrichment persistence', () => {
         })
     })
 
-    it('omits the sources key entirely when no citations were returned', () => {
+    it('keeps an empty source map when no citations were returned', () => {
         const enriched = enrichExtractionPayload(basePayload)
-        expect('sources' in enriched.acordData.extraction).toBe(false)
+        expect(enriched.acordData.extraction.sources).toEqual({})
     })
 
     it('preserves previous sources when a re-analysis returns none', () => {

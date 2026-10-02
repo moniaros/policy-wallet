@@ -252,8 +252,15 @@ describe("getNotificationData — the Ειδοποιήσεις page lists events
         expect(byId.get("inapp-q")!.unread).toBe(true)
     })
 
-    it("flow-through: the query still spans real channels (grouping, not an in_app filter that would drop email-only events)", async () => {
+    it("the primary inbox shares the bell's in-app delivery and read state", async () => {
         await getNotificationData()
+        expect(mockFindMany).toHaveBeenCalledWith(expect.objectContaining({
+            where: expect.objectContaining({ userId: "u1", channel: "in_app", status: "sent" }),
+        }))
+    })
+
+    it("delivery history preserves every real channel, including email-only events", async () => {
+        await getNotificationData({ deliveries: true })
         // Proves the mocked rows actually travelled the guarded path — a
         // no-op probe that never reached the query would fail here.
         expect(mockFindMany).toHaveBeenCalledTimes(1)

@@ -1,0 +1,316 @@
+{
+  "scope": "Local PDF reading and independently authored citation spans, not a live model accuracy benchmark or entitlement confirmation.",
+  "modelsCalled": 0,
+  "reportDate": "2026-10-02T11:22:14.913Z",
+  "samples": [
+    {
+      "sample": "PW-PREV-01",
+      "sha256": "ac5ef17a9df90c1997bc0bc51cb242375003a1a50a25abd7be926ba9ea0bd9f0",
+      "pageCount": 32,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 32,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_policy",
+      "ms": 510,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-02",
+      "sha256": "3e21d70c4873827208f2eb93e2118624fb35e585ac91e43d8d6fbae38cd7adeb",
+      "pageCount": 34,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 34,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_policy",
+      "ms": 137,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-03",
+      "sha256": "9d23f965dc93e5e448d29f2eb818b19fe61ddbffe32f502d5e80707ad8e86227",
+      "pageCount": 22,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 22,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_policy",
+      "ms": 198,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-04",
+      "sha256": "a8514a5627ef623d450af0f7c6b30ca56c898d3c779c12038a8e9f2f08b36b90",
+      "pageCount": 23,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 23,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_terms_or_guide",
+      "ms": 93,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-05",
+      "sha256": "86d5f09e52207b49ab34b8ac9bb1b2affc9175910f539115a7aa1f04ec018420",
+      "pageCount": 24,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 24,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_terms_or_guide",
+      "ms": 92,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-06",
+      "sha256": "fc05c4c0ba66457547661c68fb7b06704af74a06c908997eb97b888bc58a7b0f",
+      "pageCount": 28,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 28,
+      "imageOnly": false,
+      "needsVision": true,
+      "localClassification": "insurance_policy",
+      "ms": 130,
+      "checks": [
+        {
+          "page": 5,
+          "role": "assistance",
+          "located": true,
+          "locatedPage": 5
+        }
+      ]
+    },
+    {
+      "sample": "PW-PREV-07",
+      "sha256": "550b03d5dd84fd77c093590cdd335fcd1fee6041c286cfd20a15e0c5fcc7420d",
+      "pageCount": 21,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 21,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_terms_or_guide",
+      "ms": 87,
+      "checks": [
+        {
+          "page": 9,
+          "role": "condition",
+          "located": true,
+          "locatedPage": 9
+        }
+      ]
+    },
+    {
+      "sample": "PW-PREV-08",
+      "sha256": "6fdd3375e54b09335fa07329bfe469626925570bdab932274907cb6cd11229c7",
+      "pageCount": 24,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 24,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_terms_or_guide",
+      "ms": 94,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-09",
+      "sha256": "82af45d8346701d001e05772a959358a08c8939d123b72be22ce89e8204a68a6",
+      "pageCount": 1,
+      "expectedPagesMatch": true,
+      "intakePages": 1,
+      "benchmarkPages": 1,
+      "imageOnly": true,
+      "needsVision": true,
+      "localClassification": "non_insurance",
+      "ms": 91,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-10",
+      "sha256": "79045c5023f28ad10d720a726ed7fc2026931c714057b85896fa9b76d3a9f63a",
+      "pageCount": 24,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 24,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_terms_or_guide",
+      "ms": 44,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-11",
+      "sha256": "27abe8d4d476a43df059657d88f8518a96e168291efc20b5eef1a4dcae315249",
+      "pageCount": 11,
+      "expectedPagesMatch": true,
+      "intakePages": 11,
+      "benchmarkPages": 11,
+      "imageOnly": false,
+      "needsVision": true,
+      "localClassification": "insurance_other",
+      "ms": 55,
+      "checks": [
+        {
+          "page": 10,
+          "role": "discount",
+          "located": true,
+          "locatedPage": 10
+        },
+        {
+          "page": 8,
+          "role": "exclusion",
+          "located": true,
+          "locatedPage": 8
+        }
+      ]
+    },
+    {
+      "sample": "PW-PREV-12",
+      "sha256": "583311aa4ad26736e2f6d47c6be7bd654042a45d8b8df6bfc512a7eb8b1041f1",
+      "pageCount": 113,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 113,
+      "imageOnly": true,
+      "needsVision": true,
+      "localClassification": "non_insurance",
+      "ms": 319,
+      "checks": [
+        {
+          "page": 53,
+          "role": "conditional_benefit",
+          "located": true,
+          "locatedPage": 53
+        }
+      ]
+    },
+    {
+      "sample": "PW-PREV-13",
+      "sha256": "d59f36cc56568d1a8a57cf79c1a325ae55589aaa0acbf5c154db7498bbd2e4b7",
+      "pageCount": 10,
+      "expectedPagesMatch": true,
+      "intakePages": 10,
+      "benchmarkPages": 10,
+      "imageOnly": false,
+      "needsVision": true,
+      "localClassification": "insurance_terms_or_guide",
+      "ms": 71,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-14",
+      "sha256": "ce43464ea2bdbb177a8a50a330c48f728a051ef3e8185487b10603d9b613c1e0",
+      "pageCount": 109,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 109,
+      "imageOnly": false,
+      "needsVision": true,
+      "localClassification": "insurance_policy",
+      "ms": 328,
+      "checks": [
+        {
+          "page": 42,
+          "role": "conditional_benefit",
+          "located": true,
+          "locatedPage": 42
+        }
+      ]
+    },
+    {
+      "sample": "PW-PREV-15",
+      "sha256": "adef4bc64034ac93b3b91545facbc5df9974ea4a416df8aeaf41d6805d61ef90",
+      "pageCount": 33,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 33,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_policy",
+      "ms": 261,
+      "checks": [
+        {
+          "page": 19,
+          "role": "indemnity",
+          "located": true,
+          "locatedPage": 19
+        }
+      ]
+    },
+    {
+      "sample": "PW-PREV-16",
+      "sha256": "e2e0c5415969be93ae026ddf78eeb5efe9187fb338e58dbdf3d6acaff392861b",
+      "pageCount": 23,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 23,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_policy",
+      "ms": 160,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-17",
+      "sha256": "279bbf32bd0a05917894ba6dda7a9c41708f1bd6dc66b8db606461b549232c7a",
+      "pageCount": 28,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 28,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_policy",
+      "ms": 134,
+      "checks": [
+        {
+          "page": 5,
+          "role": "assistance",
+          "located": true,
+          "locatedPage": 5
+        }
+      ]
+    },
+    {
+      "sample": "PW-PREV-18",
+      "sha256": "6fc01224b5b2f419b9830a190c9981a2f80c74006ce6e46ae06b2fe850ce6760",
+      "pageCount": 4,
+      "expectedPagesMatch": true,
+      "intakePages": 4,
+      "benchmarkPages": 4,
+      "imageOnly": true,
+      "needsVision": true,
+      "localClassification": "non_insurance",
+      "ms": 229,
+      "checks": []
+    },
+    {
+      "sample": "PW-PREV-19",
+      "sha256": "f8329fcccbbdef778d1344f98daea51d875b729f6a374a79e7788ee76fdf2686",
+      "pageCount": 28,
+      "expectedPagesMatch": true,
+      "intakePages": 12,
+      "benchmarkPages": 28,
+      "imageOnly": false,
+      "needsVision": false,
+      "localClassification": "insurance_policy",
+      "ms": 153,
+      "checks": [
+        {
+          "page": 20,
+          "role": "exclusion",
+          "located": true,
+          "locatedPage": 20
+        }
+      ]
+    }
+  ]
+}

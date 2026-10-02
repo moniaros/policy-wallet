@@ -72,5 +72,15 @@
   "inline:lib/notifications/registry.ts::Μικρό βήμα για σήμερα",
   "inline:lib/notifications/registry.ts::Περπατήστε 15 λεπτά σήμερα.",
   "inline:lib/notifications/registry.ts::Κοινοποίηση εικόνας υγείας",
-  "inline:lib/notifications/registry.ts::Ένας πελάτης σας κοινοποίησε την εικόνα υγείας του."
+  "inline:lib/notifications/registry.ts::Ένας πελάτης σας κοινοποίησε την εικόνα υγείας του.",
+  "inline:lib/services/gap-engine/risk-catalog.ts::Έλεγχος για διαρροές νερού",
+  "inline:lib/services/gap-engine/risk-catalog.ts::Ελέγξτε τις ορατές σωληνώσεις και συνδέσεις συσκευών για διαρροές. Εντοπίστε τον γενικό διακόπτη νερού και ρωτήστε τον ιδιοκτήτη ή έναν υδραυλικό πώς χρησιμοποιείται με ασφάλεια.",
+  "inline:lib/services/gap-engine/risk-catalog.ts::Καταγραφή κόστους αντικατάστασης",
+  "inline:lib/services/gap-engine/risk-catalog.ts::Μια καταγραφή των υπαρχόντων σας και του κόστους αντικατάστασης βοηθά στη συζήτηση με τον ασφαλιστή σας για τις ζημιές που θα μπορούσατε να καλύψετε από αποταμιεύσεις.",
+  "inline:lib/services/gap-engine/risk-catalog.ts::Ρωτήστε τον ασφαλιστή σας αν το σχετικό ασφαλιστήριο περιλαμβάνει περιεχόμενο και ευθύνη ενοικιαστή, καθώς και ποια όρια και εξαιρέσεις ισχύουν.",
+  "inline:lib/services/gap-engine/recommendation-context.ts::Εξετάστε αν μπορείτε να αποφύγετε την πηγή του κινδύνου.",
+  "inline:lib/services/gap-engine/recommendation-context.ts::Ο ασφαλιστής εξηγεί τι καλύπτει κάθε επιλογή, με τα όρια, τις απαλλαγές και τις εξαιρέσεις της.",
+  "inline:lib/services/gap-engine/recommendation-context.ts::Τα βήματα στοχεύουν σε μικρότερη πιθανότητα ή επίπτωση ζημιάς. Δεν εγγυώνται αποτροπή ή χαμηλότερο ασφάλιστρο.",
+  "inline:lib/notifications/registry.ts::Ζητήσατε μια υπενθύμιση. Δείτε την επιλογή σας στην ενότητα Πρόληψη & παροχές.",
+  "inline:lib/notifications/registry.ts::Το μικρό βήμα που επιλέξατε"
 ]

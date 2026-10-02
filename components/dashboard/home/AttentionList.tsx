@@ -125,7 +125,7 @@ export function AttentionList({
                                 <ActionLink
                                     kind="review_finding"
                                     area={item.area}
-                                    href="/protection"
+                                    href={`/recommendations#recommendation-${item.id}`}
                                     className="pw-subcard flex items-start gap-3 p-3.5 transition-colors"
                                 >
                                     <span className="min-w-0 flex-1">

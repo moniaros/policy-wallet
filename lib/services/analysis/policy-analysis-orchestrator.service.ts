@@ -1,3 +1,6 @@
+import { preventionPersonalizationEnabled } from '@/lib/prevention/flag'
+import { composeBenefits, type ContractDocument } from '@/lib/prevention/compose'
+import type { BenefitComposition } from '@/lib/prevention/contracts'
 import { independentlyVerify } from "./independent-verification"
 import fs from "fs/promises"
 import { isTransientError } from "@/lib/services/ai/shared-utils"
@@ -73,7 +76,7 @@ import {
 } from "./step-telemetry"
 import { documentMimeType } from "@/lib/security/file-upload"
 import { validateDocumentForIngestion, readLocalText } from "@/lib/ingestion/document-gate"
-import { EXTRACTION_PROBE } from "@/lib/services/ai/extraction-input"
+import { EXTRACTION_PROBE, resolveExtractionInput } from "@/lib/services/ai/extraction-input"
 import { toValidatedAIDocument, type ValidatedAIDocument } from "@/lib/ingestion/validated-document"
 import { USER_RESOLVABLE_REVIEW_REASONS, type DocumentValidationResult } from "@/lib/ingestion/types"
 import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
@@ -388,6 +391,10 @@ export class PolicyAnalysisOrchestratorService {
         if (!owner?.aiProcessingConsentVersion) {
             return { status: "blocked", reason: "ai_consent_missing" }
         }
+        if (preventionPersonalizationEnabled() && userId !== policy.ownerUserId) {
+            const actor = await db.user.findUnique({ where: { id: userId }, select: { aiProcessingConsentVersion: true } })
+            if (!actor?.aiProcessingConsentVersion) return { status: 'blocked', reason: 'ai_consent_missing' }
+        }
 
         if (!policy.documents?.length) {
             return { status: "failed", reason: "no_document" }
@@ -398,11 +405,21 @@ export class PolicyAnalysisOrchestratorService {
             const service = getAIService()
             // Meter the spend: without userId the provider records no TokenUsage
             // row, so this free/Starter parse ran entirely off the books.
-            const extraction = await service.extractPolicyData(prepared.document, {
-                userId,
-                policyId,
-                lineOfBusinessHint: policy.lineOfBusiness,
-            })
+            const personalized = preventionPersonalizationEnabled()
+            const cacheVersion = personalized ? await getExtractionCacheVersion() : undefined
+            let extraction = personalized ? await getCachedExtraction(policyId, prepared.documentHash, prepared.documentId, cacheVersion!) : null
+            if (!extraction) {
+                const local = prepared.document.localText
+                const estimate = local && !local.requiresVision ? Math.ceil(local.pages.join('').length / 3) + 8000 : 102000
+                const reservation = personalized ? await reserveTokens(userId, estimate) : null
+                if (reservation && !reservation.allowed) return { status: 'blocked', reason: 'quota_required' }
+                try {
+                    extraction = await service.extractPolicyData(prepared.document, { userId, policyId, lineOfBusinessHint: policy.lineOfBusiness })
+                    if (personalized) await setCachedExtraction(policyId, prepared.documentHash, extraction, cacheVersion!)
+                } finally {
+                    if (reservation?.source === 'subscription') await releaseTokenReservation(userId, estimate)
+                }
+            }
             const metadata = this.buildMetadata(policy, extraction)
 
             // NOTHING WAS READ, SO NOTHING BECOMES ACTIVE. A one-line PDF with
@@ -432,16 +449,26 @@ export class PolicyAnalysisOrchestratorService {
             // WHY nothing changed instead of quietly looking unchanged. Written
             // on every renewal run, so a corrected re-upload clears a stale
             // mismatch rather than leaving the customer reading an old error.
-            const renewalReview =
-                extraction.documentKind === "renewal_notice"
-                    ? { acordData: {
-                          ...(((policy.acordData as Record<string, unknown>) || {})),
-                          // undefined rather than null: JSON.stringify drops the
-                          // key, which is how a corrected re-upload clears it.
-                          renewalReview:
-                              this.renewalReviewRecord(this.assessRenewal(policy, extraction), new Date()) ?? undefined,
-                      } as any }
-                    : {}
+            // Basic extraction is also a source of policy benefits. Persist its
+            // trusted extraction envelope, without inventing a deep-analysis run.
+            // Replacing the perk array also replaces indexed evidence; old
+            // evidence must never move to a newly extracted array position.
+            const benefitComposition = preventionPersonalizationEnabled() ? await this.composeBenefitDocuments(policyId, userId, prepared, extraction, null) : null
+            const basicAcord = {
+                ...((policy.acordData as Record<string, unknown>) || {}),
+                ...(extraction.acordData || {}),
+                perksAndBenefits: extraction.acordData?.perksAndBenefits ?? [],
+                extraction: {
+                    ...(extraction.acordData?.extraction || {}),
+                    sources: extraction.acordData?.extraction?.sources ?? {},
+                    documentId: prepared.documentId,
+                    analysisRunId: null,
+                    benefitComposition,
+                },
+                ...(extraction.documentKind === "renewal_notice" ? {
+                    renewalReview: this.renewalReviewRecord(this.assessRenewal(policy, extraction), new Date()) ?? undefined,
+                } : {}),
+            }
 
             await db.policy.update({
                 where: { id: policyId },
@@ -453,14 +480,15 @@ export class PolicyAnalysisOrchestratorService {
                     ...(metadata.endDate ? { endDate: metadata.endDate } : {}),
                     ...(metadata.premiumAmount != null ? { premiumAmount: metadata.premiumAmount } : {}),
                     ...(metadata.coverageSummary ? { coverageSummary: metadata.coverageSummary } : {}),
-                    ...renewalReview,
+                    acordData: basicAcord as any,
                     status: "active",
                 },
             })
             await db.policyDocument.updateMany({
-                where: { policyId },
+                where: { policyId, ...(benefitComposition ? { id: { in: benefitComposition.documents.filter(d => d.status !== 'failed').map(d => d.id) } } : {}) },
                 data: { processingStatus: "completed" },
             })
+            if (benefitComposition?.documents.some(d => d.status === 'failed')) await db.policyDocument.updateMany({ where: { policyId, id: { in: benefitComposition.documents.filter(d => d.status === 'failed').map(d => d.id) } }, data: { processingStatus: 'failed' } })
 
             // Recompute the owner's DETERMINISTIC gaps + protection score. This is
             // the free/Starter path — the deep AI gap analysis is gated to Plus,
@@ -1552,6 +1580,11 @@ export class PolicyAnalysisOrchestratorService {
                 },
             })
             absorbPayload(extractionStep)
+            if (extractionStep.result?.acordData) {
+                const acord = extractionStep.result.acordData as any
+                acord.extraction = { ...acord.extraction, documentId: docStep.result.documentId, analysisRunId: run.id }
+            }
+
 
             // Cache the extraction result for future re-analysis
             await setCachedExtraction(
@@ -1576,6 +1609,12 @@ export class PolicyAnalysisOrchestratorService {
             const acord = extractionStep.result.acordData ?? {}
             extractionStep.result.acordData = { ...acord, extraction: { ...acord.extraction, independentVerification: verification.result, requiresReview: true, reviewState: 'unconfirmed' } }
             if (verification.usage) { totalInputTokens += verification.usage.inputTokens; totalOutputTokens += verification.usage.outputTokens }
+        }
+        if (preventionPersonalizationEnabled()) {
+            const composition = await this.composeBenefitDocuments(policy.id, run.userId, docStep.result, extractionStep.result, run.id)
+            totalInputTokens += composition.additionalUsage?.inputTokens ?? 0
+            totalOutputTokens += composition.additionalUsage?.outputTokens ?? 0
+            extractionStep.result.acordData = { ...extractionStep.result.acordData, extraction: { ...extractionStep.result.acordData?.extraction, benefitComposition: composition } }
         }
         const metadata = this.buildMetadata(policy, extractionStep.result)
 
@@ -2634,7 +2673,87 @@ export class PolicyAnalysisOrchestratorService {
             }
         )
     }
-    private async prepareDocument(policyId: string): Promise<{
+    /** Bounded, sequential benefit composition. Primary policy/gap facts keep their existing path. */
+    private async composeBenefitDocuments(policyId: string, userId: string,
+        primary: { document: ValidatedAIDocument; documentId: string; documentHash: string },
+        primaryExtraction: AIPolicyExtractionResponse, runId: string | null): Promise<BenefitComposition> {
+        const policy = await this.loadAuthorizedPolicy(policyId, userId)
+        const candidates = await db.policyDocument.findMany({ where: { policyId, supersededById: null }, orderBy: { effectiveFrom: 'asc' } })
+        const relevant = candidates.filter(d => d.id === primary.documentId || !d.documentKind || ['policy_schedule', 'renewal_notice', 'certificate', 'terms_and_conditions'].includes(d.documentKind))
+        const selected = [relevant.find(d => d.id === primary.documentId)!, ...relevant.filter(d => d.id !== primary.documentId)].filter(Boolean).slice(0, 8)
+        const additionalUsage = { inputTokens: 0, outputTokens: 0 }
+        const documents: ContractDocument[] = []
+        const failures: BenefitComposition['documents'] = []
+        const version = await getExtractionCacheVersion()
+        const service = getAIService()
+        const actor = await db.user.findUnique({ where: { id: userId }, select: { roles: true } })
+        const providerAllowed = await isFullFailoverAllowed(userId, actor?.roles)
+        for (const row of selected) {
+            try {
+                // Recheck before every provider boundary, including a later document in a run.
+                await this.loadAuthorizedPolicy(policyId, userId)
+                const owner = await db.user.findUnique({ where: { id: policy.ownerUserId }, select: { aiProcessingConsentVersion: true } })
+                if (!owner?.aiProcessingConsentVersion) throw new Error('consent_required')
+                if (userId !== policy.ownerUserId) {
+                    const actorConsent = await db.user.findUnique({ where: { id: userId }, select: { aiProcessingConsentVersion: true } })
+                    if (!actorConsent?.aiProcessingConsentVersion) throw new Error('consent_required')
+                }
+                const prepared = row.id === primary.documentId ? primary : await this.prepareDocument(policyId, row.id)
+                let extraction = row.id === primary.documentId ? primaryExtraction : await getCachedExtraction(policyId, prepared.documentHash, row.id, version)
+                if (!extraction) {
+                    const chars = prepared.document.localText?.pages.join('').length ?? 0
+                    const estimate = prepared.document.localText && !prepared.document.localText.requiresVision ? Math.ceil(chars / 3) + 8000 : 102000
+                    const reservation = await reserveTokens(userId, estimate)
+                    if (!reservation.allowed) throw new Error('quota_required')
+                    try {
+                        extraction = await service.extractPolicyData(prepared.document, { userId, policyId, lineOfBusinessHint: policy.lineOfBusiness })
+                        additionalUsage.inputTokens += extraction.usage?.inputTokens ?? 0
+                        additionalUsage.outputTokens += extraction.usage?.outputTokens ?? 0
+                    }
+                    finally { if (reservation.source === 'subscription') await releaseTokenReservation(userId, estimate) }
+                }
+                // Never let provider output claim a composed snapshot or a prior human approval.
+                const priorVerification = extraction.acordData?.extraction?.independentVerification
+                const verification = priorVerification?.benefits && version
+                    ? { result: priorVerification }
+                    : await independentlyVerify({ document: prepared.document, extraction,
+                        primaryProvider: extraction.usage?.provider ?? (process.env.AI_SERVICE_TYPE as AIServiceType) ?? 'gemini',
+                        userId, ownerUserId: policy.ownerUserId, policyId, providerAllowed, includeBenefits: true })
+                if ('usage' in verification && verification.usage) { additionalUsage.inputTokens += verification.usage.inputTokens; additionalUsage.outputTokens += verification.usage.outputTokens }
+                await db.policyDocument.update({ where: { id: row.id }, data: {
+                    effectiveFrom: parseDocumentDate(extraction.startDate), effectiveTo: parseDocumentDate(extraction.endDate),
+                    ...(extraction.documentKind ? { documentKind: extraction.documentKind } : {}),
+                } })
+                extraction.acordData = { ...extraction.acordData, extraction: { ...extraction.acordData?.extraction,
+                    documentId: row.id, analysisRunId: runId, benefitComposition: null, independentVerification: verification.result } }
+                await setCachedExtraction(policyId, prepared.documentHash, extraction, version)
+                const local = prepared.document.localText
+                const sent = resolveExtractionInput(prepared.document)
+                const reported = extraction.acordData?.benefitContract?.pageReadStatus ?? []
+                const reportedPages = new Set<number>(reported.map((p: { page: number }) => p.page))
+                documents.push({ id: row.id, hash: prepared.documentHash, kind: extraction.documentKind ?? row.documentKind ?? 'unknown', extraction, runId,
+                    verification: verification.result.status,
+                    quality: { pageCount: local?.pageCount,
+                        textPages: local?.pages.flatMap((p, i) => p.replace(/\s/g, '').length >= 80 ? [i + 1] : []),
+                        visionRequestedPages: local?.pages.flatMap((p, i) => p.replace(/\s/g, '').length < 80 ? [i + 1] : []),
+                        modelReportedReadPages: reported.filter((p: { status: string }) => p.status !== 'unreadable').map((p: { page: number }) => p.page),
+                        failedPages: reported.filter((p: { status: string }) => p.status === 'unreadable').map((p: { page: number }) => p.page),
+                        unreportedPages: local ? Array.from({ length: local.pageCount }, (_, i) => i + 1).filter(p => !reportedPages.has(p)) : undefined,
+                        truncated: !local || local.sampledPages < local.pageCount || (sent.kind === "text" && sent.truncated) } })
+            } catch (error) {
+                failures.push({ id: row.id, hash: row.documentHash ?? '', kind: row.documentKind ?? 'unknown', status: 'failed' })
+                logger('warn', 'benefit_document_requires_review', { policyId, documentId: row.id, reason: error instanceof Error ? error.message : 'unavailable' })
+            }
+        }
+        const composition = composeBenefits(documents)
+        composition.additionalUsage = additionalUsage
+        composition.documents.push(...failures)
+        if (failures.length) composition.issues.push('processing_failed')
+        if (relevant.length > selected.length) composition.issues.push('document_limit')
+        return composition
+    }
+
+    private async prepareDocument(policyId: string, selectedDocumentId?: string): Promise<{
         document: ValidatedAIDocument
         documentId: string
         documentHash: string
@@ -2663,7 +2782,7 @@ export class PolicyAnalysisOrchestratorService {
             where: { policyId },
             orderBy: { uploadedAt: "desc" },
         })
-        const document = selectSourceDocument(candidates) ?? null
+        const document = (selectedDocumentId ? candidates.find(d => d.id === selectedDocumentId && !d.supersededById) : selectSourceDocument(candidates)) ?? null
         if (!document) {
             throw new OrchestrationError("No policy document uploaded", {
                 code: "MISSING_DOCUMENT",
@@ -2747,7 +2866,7 @@ export class PolicyAnalysisOrchestratorService {
         // The probe's per-page text, read again here because on the stamped
         // path the gate did not run in this request (W0-02). In memory only.
         // The extraction's own page cap and budget, not the classifier's (W0-03).
-        const localText = await readLocalText(buffer, mimeType, EXTRACTION_PROBE)
+        const localText = await readLocalText(buffer, mimeType, preventionPersonalizationEnabled() ? { ...EXTRACTION_PROBE, samplePages: 200 } : EXTRACTION_PROBE)
 
         return {
             documentId: document.id,
@@ -3127,6 +3246,8 @@ export class PolicyAnalysisOrchestratorService {
                 acordData: {
                     ...(extraction.acordData || {}),
                     ...(clarity.acordData || {}),
+                    // Benefits and their evidence belong to the extraction, not generated clarity prose.
+                    perksAndBenefits: extraction.acordData?.perksAndBenefits,
                 },
             },
             existingAcord,
@@ -3162,8 +3283,12 @@ export class PolicyAnalysisOrchestratorService {
             // flag — the user must review the new values.
             extraction: {
                 ...((enriched.acordData as any)?.extraction || {}),
+                documentId: extraction.acordData?.extraction?.documentId ?? null,
+                analysisRunId: runId,
+                sources: extraction.acordData?.extraction?.sources ?? {},
                 reviewState: "unconfirmed",
                 independentVerification: extraction.acordData?.extraction?.independentVerification ?? null,
+                benefitComposition: extraction.acordData?.extraction?.benefitComposition ?? null,
                 confirmedAt: null,
                 flaggedAt: null,
                 // Deterministic parse state per date field: 'failed'/'missing'
@@ -3414,10 +3539,12 @@ export class PolicyAnalysisOrchestratorService {
                 )
             }
 
+            const benefitDocuments = preventionPersonalizationEnabled() ? (mergedAcord as any).extraction?.benefitComposition?.documents as BenefitComposition['documents'] | undefined : undefined
             await tx.policyDocument.updateMany({
-                where: { policyId: policy.id },
+                where: { policyId: policy.id, ...(benefitDocuments ? { id: { in: benefitDocuments.filter(d => d.status !== 'failed').map(d => d.id) } } : {}) },
                 data: { processingStatus: "completed" },
             })
+            if (benefitDocuments?.some(d => d.status === 'failed')) await tx.policyDocument.updateMany({ where: { policyId: policy.id, id: { in: benefitDocuments.filter(d => d.status === 'failed').map(d => d.id) } }, data: { processingStatus: 'failed' } })
 
             // B0.1: the ONE writer. Live rows are superseded, never deleted or
             // reactivated; this run's findings are new rows attributed to it.
@@ -3639,5 +3766,3 @@ export class PolicyAnalysisOrchestratorService {
         throw new Error("Unauthorized access to policy")
     }
 }
-
-

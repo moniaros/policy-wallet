@@ -186,6 +186,8 @@ export const GATE_ACTIVITY = {
  * spreads the document into a request. PW-PROVENANCE-01 W0-02.
  */
 export interface LocalDocumentText {
+    /** Mixed/image pages require file reading even if later pages have text. */
+    readonly requiresVision?: boolean
     /** `pages[i]` is page `i + 1`, raw text, whitespace-collapsed. */
     readonly pages: readonly string[]
     /** How many pages were read (≤ the probe's sample); `pageCount` is the whole document. */

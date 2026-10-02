@@ -234,6 +234,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                 </div>
             </button>
 
+            {facts.length > 0 && (lifecycle.status === "expired" || lifecycle.status === "cancelled") && <p className="mt-2 text-caption text-status-warning">{t.policyholderExperience.historicalFacts}</p>}
             {facts.length > 0 && (
                 // Outside the view button: a tap-to-call chip is itself interactive.
                 <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={t.wallet.quickFactsLabel}>

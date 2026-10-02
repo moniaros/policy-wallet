@@ -55,6 +55,7 @@ export type NotCheckedReason =
     | "none_after_failure"
     | "pre_plan"
     | "no_extraction"
+    | "inconclusive"
 
 // ── Inputs ────────────────────────────────────────────────────────────────────
 
@@ -378,6 +379,7 @@ export function deriveCoverageStatus(input: CoverageStatusInput): CoverageStatus
         }
         if (checked === 0) return decided("not_checked", null, "never_analysed")
         if (covered === 0 && noExtraction === checked) return decided("not_checked", null, "no_extraction")
+        if (covered === 0) return decided("not_checked", null, "inconclusive")
         return decided("appears_covered", null)
     })
 

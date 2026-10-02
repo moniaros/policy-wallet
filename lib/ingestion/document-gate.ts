@@ -1,3 +1,4 @@
+import { preventionPersonalizationEnabled } from '@/lib/prevention/flag'
 /**
  * The Document Validation Gate.
  *
@@ -236,7 +237,9 @@ export async function validateDocumentForIngestion(
 
 /** The probe's pages as a LocalDocumentText, or null when there is nothing local to read. */
 export function localTextFrom(probe: PdfProbeResult): LocalDocumentText | null {
-    if (!probe.ok || probe.imageOnly || probe.needsVision) return null
+    if (!probe.ok) return null
+    if (preventionPersonalizationEnabled()) return { pages: probe.pages, sampledPages: probe.sampledPages, pageCount: probe.pageCount, requiresVision: probe.pages.some(p => p.replace(/\s/g, "").length < 80) }
+    if (probe.imageOnly || probe.needsVision) return null
     return { pages: probe.pages, sampledPages: probe.sampledPages, pageCount: probe.pageCount }
 }
 

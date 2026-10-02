@@ -248,6 +248,7 @@ export const FACT_KEYS: Record<string, string> = {
     "policy.addedByAdvisor": "Wallet card: a document on this policy was uploaded by the advisor, subject = policy id (spec v2 §12.3 / Journey 6, Phase 0.6 2026-09-23).",
     "policy.viewerNote": "Policy page: the viewer's own private note (spec v2 §10.3), subject = policy id. Never shown to the advisor or the family.",
     "policy.renewalDifferential": "Policy page: what the newest document changed against the one before (spec v2 §10.3), subject = policy id. Rendered only when two documents were read.",
+    "prevention.item": "Prevention hub: one distinct sourced benefit or authored action; subject = stable item key, shared across domain and policy views. Completion is self-reported.",
     "wellness.checkupBenefit": "Wellness page: what one health policy's reading says about an annual check-up, worded by evidence (prevention brief P0), subject = policy id; value = confirmed_by_document|needs_confirmation|stated_not_included|not_recorded|expired.",
     "wellness.checkupIntent": "Wellness page: the person's own choice about that benefit (considering|done|not_relevant|later|none), subject = policy id. Never a medical result.",
     "wellness.dailyNudge": "Wellness and home: the day's general habit nudge, subject = Athens date. The same for everyone.",

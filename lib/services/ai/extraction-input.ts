@@ -44,7 +44,7 @@ export const DOCUMENT_TEXT_INSTRUCTION =
 
 export type ExtractionInput =
     | { kind: "text"; text: string; pagesSent: number; pageCount: number; truncated: boolean }
-    | { kind: "file"; reason: "flag_off" | "not_pdf" | "no_local_text" | "too_thin" }
+    | { kind: "file"; reason: "flag_off" | "not_pdf" | "no_local_text" | "too_thin" | "mixed_pages" }
 
 export type DocumentWithLocalText = AIDocument & { localText?: LocalDocumentText }
 
@@ -77,6 +77,7 @@ export function resolveExtractionInput(document: DocumentWithLocalText): Extract
     if (document.mimeType !== "application/pdf") return { kind: "file", reason: "not_pdf" }
     const local = document.localText
     if (!local || local.pages.length === 0) return { kind: "file", reason: "no_local_text" }
+    if (local.requiresVision) return { kind: "file", reason: "mixed_pages" }
     const chars = local.pages.join("").replace(/\s+/g, "").length
     if (chars < EXTRACTION_MIN_TEXT_CHARS) return { kind: "file", reason: "too_thin" }
     const rendered = renderPagedText(local.pages)
@@ -121,5 +122,7 @@ export function extractionContentParts(
     if (input.kind === "text") {
         return { input, parts: [{ type: "text", text: `${promptText}\n\n${input.text}` }] }
     }
-    return { input, parts: [{ type: "text", text: promptText }, filePart(document)] }
+    const sparse = document.localText?.requiresVision ? document.localText.pages.flatMap((p, i) => p.replace(/\s/g, "").length < 80 ? [i + 1] : []) : []
+    const focus = sparse.length ? `\nPAGE READING: Pages ${sparse.join(", ")} have insufficient local text. Inspect their images, especially schedules and benefit tables. Blank pages need no extraction. Use original PDF page numbers. Do not infer absence from unreadable pages.` : ""
+    return { input, parts: [{ type: "text", text: promptText + focus }, filePart(document)] }
 }

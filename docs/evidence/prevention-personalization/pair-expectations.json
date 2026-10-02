@@ -1,0 +1,154 @@
+{
+  "method": "Manual visual reading of the supplied original PDF pages; PII and originals retained outside repository. These expectations are separate from model outputs and synthetic unit tests.",
+  "criteria": [
+    {
+      "id": "distinct-benefits",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            7,
+            53
+          ]
+        }
+      ],
+      "expected": "Annual check-up and medically necessary diagnostic cover EUR 2000 / 0% participation are distinct benefits, never one check-up allowance."
+    },
+    {
+      "id": "insurance-year",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            7,
+            53
+          ]
+        }
+      ],
+      "expected": "Check-up once per insurance year; do not substitute calendar year."
+    },
+    {
+      "id": "mutual-exclusion",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            53
+          ]
+        }
+      ],
+      "expected": "Annual check-up and prenatal check-up share an exclusion in the same insurance year; prenatal eligibility is conditional, not a universal recommendation."
+    },
+    {
+      "id": "procedure",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            54
+          ]
+        }
+      ],
+      "expected": "Contact coordination centre, identification and active cover. Diagnostic examinations additionally need a physician referral issued within 30 days."
+    },
+    {
+      "id": "waiting",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            53,
+            54
+          ]
+        }
+      ],
+      "expected": "Check-up waiting period 30 days after initial start/reinstatement; prenatal after first insurance year. Renewal does not automatically restart waiting."
+    },
+    {
+      "id": "scoped-exclusions",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            55
+          ]
+        }
+      ],
+      "expected": "Preventive referrals excluded except the explicitly covered annual check-up. Do not apply the diagnostic exclusion to remove that check-up."
+    },
+    {
+      "id": "territorial-special-condition",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            15
+          ]
+        },
+        {
+          "sample": "PW-PREV-13",
+          "pages": [
+            4
+          ]
+        }
+      ],
+      "expected": "USA hospitalization 10% contribution in addition to deductible; renewal preserves existing special conditions. Do not apply this to outpatient check-up."
+    },
+    {
+      "id": "period-chain",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            3
+          ]
+        },
+        {
+          "sample": "PW-PREV-13",
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "expected": "Original 2024-05-22/2025-05-22, renewal 2026-05-22/2027-05-22. Missing 2025-2026 evidence, not proof of lapse."
+    },
+    {
+      "id": "payment",
+      "sources": [
+        {
+          "sample": "PW-PREV-13",
+          "pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "expected": "Renewal depends on payment; paid/active status remains unconfirmed."
+    },
+    {
+      "id": "missing-amendments",
+      "sources": [
+        {
+          "sample": "PW-PREV-13",
+          "pages": [
+            3
+          ]
+        }
+      ],
+      "expected": "Summary of hospital amendments refers to full revised wording not supplied. Keep a review issue rather than invent replacement terms."
+    },
+    {
+      "id": "assistance-not-prevention",
+      "sources": [
+        {
+          "sample": "PW-PREV-12",
+          "pages": [
+            11
+          ]
+        }
+      ],
+      "expected": "Medical assistance and emergency transport are incident preparation/services, not prevention of the event."
+    }
+  ]
+}

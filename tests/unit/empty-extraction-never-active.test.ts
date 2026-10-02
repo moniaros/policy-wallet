@@ -167,6 +167,14 @@ describe("the basic-summary path over a document that carries no policy", () => 
         expect(closeReviewsByPolicyEvidence).not.toHaveBeenCalled()
     })
 
+    it("basic extraction preserves benefits and their actual document without inventing a deep run", async () => {
+        const perk = { perkType: "discount", name: { el: "Έκπτωση εξετάσεων", en: "Test discount" } }
+        const sources = { "acordData.perksAndBenefits.0": { page: 2, snippet: "Test discount", verified: true } }
+        extractPolicyData.mockResolvedValue({ ...PROVIDER_EMPTY, insurerName: "ΕΘΝΙΚΗ", evidence: { sufficient: true }, acordData: { perksAndBenefits: [perk], extraction: { sources } } })
+        expect((await orchestrator().extractBasicSummary("pol-1", OWNER)).status).toBe("completed")
+        expect(updates().at(-1)?.data.acordData).toMatchObject({ perksAndBenefits: [perk], extraction: { sources, documentId: "doc-1", analysisRunId: null } })
+    })
+
     it("a document that states a period, or an insurer, is not empty — it still activates", async () => {
         extractPolicyData.mockResolvedValue({ ...PROVIDER_EMPTY, startDate: "2026-01-01", endDate: "2027-01-01", evidence: { sufficient: true } })
         expect((await orchestrator().extractBasicSummary("pol-1", OWNER)).status).toBe("completed")

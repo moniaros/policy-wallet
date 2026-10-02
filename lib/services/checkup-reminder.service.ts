@@ -29,7 +29,7 @@ export async function runCheckupReminderScan(now: Date = new Date()): Promise<{ 
                 status: { not: "completed" },
                 OR: [{ intent: null }, { intent: { not: "not_relevant" } }],
             },
-            select: { id: true, userId: true, policyKey: true, remindAt: true },
+            select: { id: true, userId: true, policyKey: true, remindAt: true, updatedAt: true },
         })
         summary.due = due.length
         for (const row of due) {
@@ -46,15 +46,21 @@ export async function runCheckupReminderScan(now: Date = new Date()): Promise<{ 
                 const label = policyLabel(policy)
                 const el = getTranslations("el").wellness.benefit
                 const en = getTranslations("en").wellness.benefit
-                await emit({
+                await db.$transaction(async tx => {
+                    // Competes on the same row as the explicit migration to a personal plan.
+                    // A scan that read the old schedule before cancellation cannot send afterwards.
+                    const claimed = await tx.healthBenefitUsage.updateMany({ where: { id: row.id, remindAt: row.remindAt, updatedAt: row.updatedAt, remindedAt: null }, data: { remindedAt: now } })
+                    if (!claimed.count) return
+                    const delivery = await emit({
                     event: "benefit_reminder",
                     userId: row.userId,
                     title: { el: el.reminderTitle, en: en.reminderTitle },
                     message: { el: el.reminderBody.replace("{label}", label).replace("  ", " "), en: en.reminderBody.replace("{label}", label).replace("  ", " ") },
                     dedupeKey: `benefit_reminder:${row.id}:${row.remindAt!.toISOString().slice(0, 10)}`,
-                })
-                await db.healthBenefitUsage.update({ where: { id: row.id }, data: { remindedAt: now } })
-                summary.reminded++
+                    })
+                    if (!delivery.written && !delivery.deduped) throw new Error('delivery_not_recorded')
+                    summary.reminded++
+                }, { timeout: 30000 })
             } catch (err) {
                 summary.errors.push(`row ${row.id}: ${err}`)
             }

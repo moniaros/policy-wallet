@@ -39,6 +39,19 @@ describe("the dispatcher", () => {
         delete process.env.VAPID_PRIVATE_KEY
     })
 
+    it("groups one emission across channels without merging separate emissions", async () => {
+        await emit({ event: "policy_analyzed", userId: "u-1", title: { el: "Ανάλυση", en: "Analysis" }, message: { el: "Ολοκληρώθηκε", en: "Completed" } })
+        const first = dbMock.notificationEvent.create.mock.calls.map((c: any[]) => c[0].data.dedupeKey)
+        expect(first.length).toBeGreaterThan(0)
+        expect(new Set(first).size).toBe(1)
+        expect(first[0]).toMatch(/^emission:/)
+        dbMock.notificationEvent.create.mockClear()
+        await emit({ event: "policy_analyzed", userId: "u-1", title: { el: "Ανάλυση", en: "Analysis" }, message: { el: "Ολοκληρώθηκε", en: "Completed" } })
+        const second = dbMock.notificationEvent.create.mock.calls.map((c: any[]) => c[0].data.dedupeKey)
+        expect(new Set(second).size).toBe(1)
+        expect(second[0]).not.toBe(first[0])
+    })
+
     it("writes one row per attempted channel, all with the same copy", async () => {
         const result = await emit({
             event: "policy_analyzed",

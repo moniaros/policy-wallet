@@ -14,6 +14,9 @@
  */
 export const runtime = 'nodejs'
 
+import Link from "next/link"
+import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
+import { displayInsurerName, policyLabel } from "@/lib/wallet/policy-identity"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -21,7 +24,7 @@ import { formatCurrency, formatDate } from "@/lib/i18n/format"
 import { calendarDaysUntil } from "@/lib/policy-status"
 import { getTranslations } from "@/lib/i18n"
 import type { User } from "@prisma/client"
-import { getCachedProtectionScore, getActiveRecommendations } from "@/lib/services/gap-engine"
+import { getCachedProtectionScore, getEnrichedRecommendations } from "@/lib/services/gap-engine"
 import { getOpenReview } from "@/lib/services/risk-review/service"
 import { getReviewPolicy } from "@/lib/services/risk-review/policy"
 import { RiskReviewCard } from "@/components/risk/RiskReviewCard"
@@ -54,7 +57,6 @@ import { ProtectionPlanCard, type ProtectionPlanStepView } from "@/components/da
 import { ProtectionMonitorCard, type MonitorSignalView } from "@/components/dashboard/home/ProtectionMonitorCard"
 import { LifeEventPromptCard } from "@/components/dashboard/home/LifeEventPromptCard"
 import { AdvisorSupportRow } from "@/components/dashboard/home/AdvisorSupportRow"
-import { PortfolioSummaryCard } from "@/components/dashboard/home/PortfolioSummaryCard"
 import { RenewalsTimelineCard } from "@/components/dashboard/home/RenewalsTimelineCard"
 import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidget"
 import { RecentChangesWidget } from "@/components/dashboard/home/RecentChangesWidget"
@@ -71,9 +73,7 @@ import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 import { greekVocative } from "@/lib/i18n/greek-vocative"
 import { NextStepBanner, type NextStepView } from "@/components/dashboard/home/NextStepBanner"
 import { QuickActions, type QuickAction } from "@/components/dashboard/home/QuickActions"
-import { PreventiveCard } from "@/components/dashboard/home/PreventiveCard"
 import { CheckupNudgeCard } from "@/components/dashboard/home/CheckupNudgeCard"
-import { DailyNudgeCard } from "@/components/wellness/DailyNudgeCard"
 import { pickCheckupUsage, resolveCheckupBenefit } from "@/lib/wellness/checkup-benefit"
 import { athensDate, nudgeForDate } from "@/lib/wellness/nudges"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
@@ -132,6 +132,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     const lang: 'el' | 'en' = resolveUserLanguage(dbUser.preferredLanguage)
     const t = getTranslations(lang)
     const home = t.dashboard.home
+    const experience = t.policyholderExperience
 
     // One parallel batch for every independent read, all keyed on the same user
     // id with no ordering dependencies. This page is READ-ONLY: never call
@@ -167,8 +168,9 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         db.customerRelationship.findFirst({
             where: {
                 policyholderUserId: dbUser.id,
-                status: "active",
+                status: { notIn: ["inactive", "terminated"] },
             },
+            orderBy: { lastInteractionAt: "desc" },
             // Only the two fields the greeting renders — a bare include carried the
             // adviser's whole account row (A-01b).
             include: { agent: { select: { name: true, email: true } } },
@@ -225,7 +227,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             where: { userId: dbUser.id, enabled: true },
             select: { id: true },
         }),
-        getActiveRecommendations(dbUser.id).catch(() => []),
+        getEnrichedRecommendations(dbUser.id).catch(() => []),
         // R3: recommendations derived from under-review findings count nowhere.
         db.recommendationInstance
             .findMany({
@@ -947,43 +949,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     // primary and a second ask would be one too many.
     const firstOpenSetup = planStepViews.find((step) => step.state === "open") ?? null
     const howItWorks = { label: home.nextStepHow, href: "/help" }
-    const nextStep: NextStepView | null = !hasPolicies
-        ? null
-        : firstOpenSetup
-            ? {
-                  id: firstOpenSetup.id,
-                  title: home.nextStepTitle,
-                  body: firstOpenSetup.description ?? "",
-                  cta: firstOpenSetup.title,
-                  href: firstOpenSetup.href,
-                  how: howItWorks,
-              }
-            : activeRecommendations.length > 0
-                ? {
-                      id: "recommendations",
-                      title: home.nextStepTitle,
-                      body: home.nextStepRecommendationsBody,
-                      cta: home.nextStepRecommendationsCta,
-                      href: "/recommendations",
-                      how: null,
-                  }
-                : renewalItems.some((item) => item.days <= 30)
-                    ? {
-                          id: "renewal",
-                          title: home.nextStepTitle,
-                          body: home.nextStepRenewalBody,
-                          cta: home.nextStepRenewalCta,
-                          href: "#renewals",
-                          how: null,
-                      }
-                    : {
-                          id: "add_more",
-                          title: home.nextStepTitle,
-                          body: home.nextStepAddMoreBody,
-                          cta: home.nextStepAddMoreCta,
-                          href: "/wallet/add",
-                          how: howItWorks,
-                      }
+    const nearestRenewal = renewalItems.find((item) => item.days <= 30)
+    const nextStep: NextStepView | null = !hasPolicies ? null : nearestRenewal ? {
+        id: "renewal", title: experience.renewalTitle, body: nearestRenewal.titleLabel,
+        cta: experience.renewalAction, href: `/wallet/${nearestRenewal.id}#dates`, how: null,
+    } : firstOpenSetup ? {
+        id: firstOpenSetup.id, title: home.nextStepTitle, body: firstOpenSetup.description ?? "",
+        cta: firstOpenSetup.title, href: firstOpenSetup.href, how: howItWorks,
+    } : null
 
     // The attention card's lead sentence and its one door — only when there is
     // something classified (or listed) to see. Under-review findings are
@@ -1034,7 +1007,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         }
         : null
     if (checkupNudge) offeredHrefs.add("/wellness")
-    const todayNudge = { day: athensDate(new Date()), text: t.wellness.nudges[nudgeForDate(new Date())] }
     if (preventive) offeredHrefs.add(preventive.href)
 
     const quickActions: QuickAction[] = [
@@ -1047,47 +1019,37 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-page-wide px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-                {/* The review, when one is open. Above everything else on
-                    purpose: a review responds to something that happened in the
-                    customer's life, and nothing below does. */}
-                {openReview && getReviewPolicy(openReview.trigger) && (
-                    <div className="mb-5">
-                        <RiskReviewCard
-                            review={{
-                                id: openReview.id,
-                                trigger: openReview.trigger,
-                                dueAt: openReview.dueAt.toISOString(),
-                                findingsAtOpen: openReview.findingsAtOpen,
-                            }}
-                            label={getReviewPolicy(openReview.trigger)!.label}
-                            reason={getReviewPolicy(openReview.trigger)!.reason}
-                        />
-                    </div>
-                )}
-
-                {/* The page is a story, so it opens like one: what this is, in a
-                    sentence, addressed to the person. No button up here — the
-                    banner below carries the page's one primary. */}
-                <div className="mb-6 max-w-2xl">
-                    <h1 id="dashboard-title" className="text-h2 font-semibold tracking-tight text-foreground">
-                        {home.title}
-                    </h1>
-                    <p className="mt-2 text-body leading-relaxed text-muted-foreground" data-page-lead>
-                        {pageLead}
-                    </p>
-                </div>
-
-                <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_340px]">
-                    {/* ── Main column: the story ─────────────────────────── */}
-                    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5">
-                        {/* LEVEL 1 — MY SITUATION. The next step first (it is the
-                            answer to "what now?"), then the facts row, the branch
-                            map, the person's own picture, and the way to tell us
-                            something changed. */}
-                        <section id="overview" aria-labelledby="protection-status-heading" className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 scroll-mt-20">
-                            {nextStep && <NextStepBanner step={nextStep} />}
-
-                            <ProtectionStatusHero
+                <header className="mb-6 max-w-2xl">
+                    <h1 id="dashboard-title" className="text-h2 font-semibold tracking-tight text-foreground">{experience.homeTitle}</h1>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{experience.homeLead}</p>
+                </header>
+                <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+                    <div className="min-w-0 space-y-6">
+                        {openReview && getReviewPolicy(openReview.trigger) && <RiskReviewCard
+                            review={{ id: openReview.id, trigger: openReview.trigger, dueAt: openReview.dueAt.toISOString(), findingsAtOpen: openReview.findingsAtOpen }}
+                            label={getReviewPolicy(openReview.trigger)!.label} reason={getReviewPolicy(openReview.trigger)!.reason} />}
+                        {nextStep && <NextStepBanner step={nextStep} />}
+                        {hasPolicies ? <section className="pw-card pw-pad" aria-labelledby="home-policies-heading">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                <h2 id="home-policies-heading" className="text-title font-semibold">{experience.policies}</h2>
+                                <Link href="/wallet" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary dark:text-mint">{experience.allPolicies}</Link>
+                            </div>
+                            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{experience.policiesLead}</p>
+                            <ul className="mt-4 divide-y divide-border">
+                                {policies.slice(0, 3).map((policy) => {
+                                    const status = getPolicyStatusView(policy, t, now)
+                                    return <li key={policy.id}>
+                                    <Link href={`/wallet/${policy.id}`} className="group block rounded-lg py-4 focus-visible:outline-2 focus-visible:outline-primary">
+                                        <p className="text-sm font-semibold text-foreground">{policyLabel(policy, t.wallet.policyDetails)}</p>
+                                        <span className={`mt-2 inline-flex rounded-full px-2 py-1 text-caption font-semibold ${status.pillClass}`}>{status.label}</span>
+                                        <p className="mt-2 text-caption text-muted-foreground">{policy.lastAnalyzedAt ? experience.analysisAvailable : experience.analysisPending}</p>
+                                        <span className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-primary dark:text-mint group-hover:underline">{experience.policyDetails}</span>
+                                    </Link>
+                                </li>})}
+                            </ul>
+                            <Link href="/wallet/add" className="pw-soft-button mt-2">{home.quickActionAdd}</Link>
+                        </section> : null}
+                        {!hasPolicies && <div id="overview">                            <ProtectionStatusHero
                                 hasPolicies={hasPolicies}
                                 facts={facts}
                                 areasLine={areasLine}
@@ -1105,65 +1067,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 }}
                             />
 
-                            {/* What the wallet covers, by branch — the snapshot's
-                                second half. Two-up in a narrow column, three-up with
-                                room (container query inside the card). */}
-                            <BranchCoverageMap
-                                entries={coverageMapEntries}
-                                labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
-                            />
-
-                            {protectionCard}
-
-                            {/* Signup-selected plan continuity (never activated → offer checkout) */}
-                            {carriedPlan && <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />}
-
-                            {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
-                                The meter counts every stored policy — that is what checkPolicyLimit
-                                blocks on. Metering only the in-force ones would promise headroom the
-                                next upload does not actually have. */}
-                            {standaloneUpgrade === "policy_upload_limit" && (
-                                <UpgradeTriggerCard
-                                    featureKey="policy_upload_limit"
-                                    triggerSource="home_usage_banner"
-                                    returnTo="/dashboard"
-                                    dismissible
-                                    meter={{
-                                        label: home.freePlanPolicies,
-                                        used: policies.length,
-                                        limit: FREE_POLICY_LIMIT,
-                                        hint: home.freePlanHint,
-                                        // The meter's "used" IS the policy count; its
-                                        // limit is a PLAN fact, not a portfolio one —
-                                        // separate keys keep «2/10» from reading as a
-                                        // contradiction of «2 ασφαλιστήρια».
-                                        usedCountKey: "portfolio.policyCount",
-                                        limitCountKey: "entitlement.policyLimit",
-                                    }}
-                                />
-                            )}
-
-                            {/* What the person can tell us — part of their situation,
-                                before what the engine produced. Full width now: in the
-                                old two-up row it wrapped one word per line at 1280. */}
-                            {hasPolicies && (
-                                <LifeEventPromptCard
-                                    chips={lifeEventChips}
-                                    labels={{
-                                        kicker: home.lifeEventKicker,
-                                        body: home.lifeEventBody,
-                                        cta: home.lifeEventCta,
-                                    }}
-                                />
-                            )}
-                        </section>
-
-                        {/* LEVEL 2 — IS THERE A PROBLEM? The findings, with the
-                            provenance tally INSIDE the card (counts with their
-                            denominator, never a score), one lead sentence and one
-                            door. scroll-mt: the plan card's «+N ακόμη» anchors here. */}
-                        <section id="attention" aria-labelledby="attention-heading" className="min-w-0 scroll-mt-20">
-                            <AttentionList
+</div>}
+                        <section id="prevention" aria-labelledby="prevention-heading" className="space-y-4 scroll-mt-20">
+                            <div>
+                                <h2 id="prevention-heading" className="text-title font-semibold">{experience.prevention}</h2>
+                                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{experience.preventionLead}</p>
+                            </div>
+                            <div id="attention" className="scroll-mt-20">                            <AttentionList
                                 items={attentionItems}
                                 totalCount={activeRecommendations.length}
                                 language={lang}
@@ -1211,13 +1121,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     priorityNote: home.recPriorityNote,
                                 }}
                             />
+</div>
+                            {checkupNudge ? <CheckupNudgeCard {...checkupNudge} /> : <Link href="/wellness#benefit" className="block rounded-xl bg-primary-soft p-5 text-primary dark:bg-primary/10 dark:text-mint">
+                                <h3 className="text-base font-semibold">{experience.benefits}</h3>
+                                <p className="mt-2 text-sm leading-relaxed">{experience.benefitsLead}</p>
+                                <span className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold">{experience.benefitsAction}</span>
+                            </Link>}
                         </section>
-
-                        {/* Still LEVEL 2 — what is dated. Sorted by end date, so
-                            urgency is the order; a renewal inside 30 days also
-                            becomes the banner's next step when nothing else is open. */}
-                        <section id="renewals" aria-labelledby="renewals-heading" className="min-w-0 scroll-mt-20">
-                            <RenewalsTimelineCard
+                        <section id="renewals" aria-labelledby="renewals-heading" className="scroll-mt-20">                            <RenewalsTimelineCard
                                 items={renewalItems}
                                 // The TRUE count, not the rendered rows: items is capped
                                 // at four, and the header used to count the capped list —
@@ -1235,45 +1146,46 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     noExpirationsBody: home.noExpirationsBody,
                                 }}
                             />
-                        </section>
+</section>
+                        {hasPolicies && <details id="overview" className="pw-card pw-pad">
+                            <summary className="min-h-11 cursor-pointer py-2 font-semibold">{experience.portfolioDetails}</summary>
+                            <div className="mt-4 space-y-5 [&_.pw-card]:border-0 [&_.pw-card]:shadow-none [&_.pw-pad]:p-0">                            <ProtectionStatusHero
+                                hasPolicies={hasPolicies}
+                                facts={facts}
+                                areasLine={areasLine}
+                                openRecommendationCount={activeRecommendations.length}
+                                premium={premiumKpi}
+                                language={lang}
+                                labels={{
+                                    kicker: home.heroKicker,
+                                    meta: home.overviewMeta,
+                                    // No «Έλεγχος της προστασίας μου» here any more:
+                                    // the attention card owns the door to /protection.
+                                    emptyTitle: home.heroEmptyTitle,
+                                    emptyBody: home.heroEmptyBody,
+                                    emptyCta: home.heroEmptyCta,
+                                }}
+                            />
 
-                        {/* LEVEL 3 + 4 — WHAT SHOULD I DO, HOW CAN I IMPROVE. The plan
-                            with its current step dominant, the shortcuts, the card
-                            that connects insurance with a life. */}
-                        <section id="plan" aria-labelledby="protection-plan-heading" className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 scroll-mt-20">
-                            {/* The plan takes the full column: its current step is the
-                                dominant row and needs the width (in a half column the
-                                step title wrapped to three lines). The shortcuts and
-                                the preventive card share the row beneath. */}
-                            {planCard}
-                            <div className={`grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-2`}>
-                                <QuickActions title={home.quickActionsTitle} actions={quickActions} />
-                                {checkupNudge && <CheckupNudgeCard {...checkupNudge} />}
-                                <DailyNudgeCard day={todayNudge.day} text={todayNudge.text} copy={t.wellness.nudge} />
-                                {preventive && <PreventiveCard {...preventive} />}
+                            <BranchCoverageMap
+                                entries={coverageMapEntries}
+                                labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
+                            />
+
+</div>
+                        </details>}
+                        <details id="plan" className="pw-card pw-pad">
+                            <summary className="min-h-11 cursor-pointer py-2 font-semibold">{experience.personalize}</summary>
+                            <div className="mt-4 space-y-5 [&_.pw-card]:border-0 [&_.pw-card]:shadow-none [&_.pw-pad]:p-0">
+                                {protectionCard}
+                                {planCard}
+                                <LifeEventPromptCard chips={lifeEventChips} labels={{ kicker: home.lifeEventKicker, body: home.lifeEventBody, cta: home.lifeEventCta }} />
                             </div>
-
-                            {/* Trigger G: multi-insurer portfolio insight for free tier */}
-                            {standaloneUpgrade === "multi_insurer_insights" && (
-                                <UpgradeTriggerCard
-                                    featureKey="multi_insurer_insights"
-                                    triggerSource="home_multi_insurer"
-                                    returnTo="/protection"
-                                    dismissible
-                                />
-                            )}
-                        </section>
+                        </details>
+                        {carriedPlan && <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />}
                     </div>
-
-                    {/* ── Rail: LEVEL 5 — the people and the record ──────── */}
-                    {/* Explicit minmax(0,1fr) tracks all the way down: an implicit
-                        `auto` track grows to the widest item's min-content, and the
-                        portfolio card's document row (a file name that cannot
-                        break) took the whole rail to 396px in a 340px column on
-                        the first capture — the page scrolled sideways by 24px. */}
-                    <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5">
-                        <section id="support" aria-labelledby="advisor-card-heading" className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5">
-                            <AdvisorSupportRow
+                    <aside className="min-w-0 space-y-5">
+                        <section id="support" aria-labelledby="advisor-card-heading">                            <AdvisorSupportRow
                                 agentConnected={Boolean(customerRelationship)}
                                 agentName={agentName || null}
                                 labels={{
@@ -1288,15 +1200,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     helpOpen: home.helpOpen,
                                 }}
                             />
-                            {/* The micro-tip: one sentence of positioning, in the
-                                rail's margin, not a card. */}
-                            <p className="px-1 text-caption leading-relaxed text-muted-foreground" data-micro-tip>
-                                {home.microTip}
-                            </p>
-                        </section>
-
-                        <section id="activity" aria-label={home.recentChangesKicker} className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5">
-                            <RecentChangesWidget
+</section>
+                        <QuickActions title={home.quickActionsTitle} actions={quickActions} />
+                        <details id="activity" className="pw-card pw-pad">
+                            <summary className="min-h-11 cursor-pointer py-2 font-semibold">{experience.activity}</summary>
+                            <div className="mt-4 space-y-5 [&_.pw-card]:border-0 [&_.pw-card]:shadow-none [&_.pw-pad]:p-0">                            <RecentChangesWidget
                                 changes={recentChanges}
                                 labels={{
                                     kicker: home.recentChangesKicker,
@@ -1326,25 +1234,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 />
                             ) : null}
 
-                            {/* Portfolio: per-branch premium + documents. The total sits in
-                                the overview row; the upload offer is the banner's or the
-                                quick actions'. Secondary by design — the dashboard
-                                summarises, the wallet explains. */}
-                            <PortfolioSummaryCard
-                                totalLabel={null}
-                                showAddLink={false}
-                                chips={portfolioChips}
-                                recentDocuments={recentDocuments}
-                                labels={{
-                                    kicker: home.portfolioKicker,
-                                    totalAnnualPremium: home.totalAnnualPremium,
-                                    recentDocuments: home.recentDocuments,
-                                    noDocuments: home.noDocuments,
-                                    addNewPolicy: home.addNewPolicy,
-                                }}
-                                excludedParts={premiumExcludedParts}
-                            />
-                        </section>
+</div>
+                        </details>
                     </aside>
                 </div>
             </div>

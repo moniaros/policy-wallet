@@ -356,7 +356,7 @@ use them and so adding transport later is one adapter file.
 
 _Generated from `lib/notifications/registry.ts` by `scripts/generate-notification-matrix.mjs`. Do not edit by hand._
 
-**90 business events declared — 85 live, 5 planned.**
+**91 business events declared — 86 live, 5 planned.**
 
 ### Risk, gaps, score and recommendations
 
@@ -451,6 +451,7 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 
 | Event | Business event | Trigger condition | Priority | Channels | Recipients | Required action | Escalation | Retry | Expires | Audit | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| `prevention_reminder` | The person explicitly scheduled a private prevention follow-up | Explicitly scheduled PreventionProgress row; unchanged source, owned current policy, not completed or dismissed | low | in_app, email, push | owner | claim_perk | — | none | 30d | notification_event | live |
 | `benefit_reminder` | The person asked to be reminded about a policy's annual check-up on a date they chose | daily checkup-reminder scan finds a HealthBenefitUsage whose person-chosen remindAt has arrived, not yet reminded, not done and not marked «not relevant» | low | in_app, email, push | owner | claim_perk | — | none | 30d | notification_event | live |
 | `daily_nudge` | One general daily habit nudge for a person who opted in | daily-nudge job, once per Athens day, only for users with dailyNudgeOptIn = true; the text is the day's nudge from lib/wellness/nudges.ts | low | push | owner | — | — | none | 1d | notification_event | live |
 | `perk_reminder` | A partner perk is about to expire | perk-reminders cron finds a perk inside its reminder window | low | in_app, email | owner | claim_perk | — | none | 3d | notification_event | live |
@@ -507,6 +508,7 @@ _Generated from `lib/notifications/registry.ts` by `scripts/generate-notificatio
 - **`green_card_expiry`** — Spec v2 §14 / §22.3 GREEN_CARD_EXPIRY. The gap rule green_card_expiring fires only at analysis time; this is the calendar-driven reminder. Deduped per policy per expiry date.
 - **`enfia_season`** — Spec v2 §14 / §22.3 ENFIA_SEASON_ALERT. A prompt to CHECK, one per owner per year; eligibility itself is decided only by missing_enfia_components on a policy whose extraction stated all three perils (Law 4223/2013 art. 3 §7ζ, lib/gaps/provenance.ts).
 - **`renewal_overdue`** — Critical and transactional: the customer may now be uninsured, and for motor in Greece that is also unlawful. This is not a marketing reminder and cannot be switched off.
+- **`prevention_reminder`** — No automatic health preference expansion; explicit per-item date. Generic copy contains no health or policy facts. Legacy check-up rows remain in their original scan.
 - **`benefit_reminder`** — Prevention brief P1: the PERSON picks whether and when (the 15 January system send was retired 2026-09-24). Changing the date or marking the benefit done cancels by construction — the scan reads live state.
 - **`daily_nudge`** — Prevention brief: general habits, the same for everyone, off unless the person turns it on. Honours the person's own outbound switch and monthly ceiling like any engagement send.
 - **`health_share_received`** — Prevention brief P2: the notification carries NO health value — only that a share exists; the advisor reads the snapshot on the customer page, and each view is logged.

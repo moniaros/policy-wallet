@@ -23,6 +23,7 @@ export interface Policy {
     status: 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' | 'analyzing' | 'cancelled'
     startDate: string | null
     endDate: string | null
+    lastAnalyzedAt?: string | null
     lastUpdated: string
     sharedWithAgents: SharedAgent[]
     coverageHighlights: string[]
@@ -48,6 +49,7 @@ export interface Policy {
 }
 
 export interface PolicyWalletProps {
+    initialStatusFilter?: string
     policies: Policy[]
     onViewPolicy?: (policyId: string) => void
     onAddManually?: () => void

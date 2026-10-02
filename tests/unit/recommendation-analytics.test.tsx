@@ -106,7 +106,7 @@ describe("action_started", () => {
             />
         )
         const row = getAllByRole("link").find((a) => a.getAttribute("data-action-kind") === "review_finding")!
-        expect(row.getAttribute("href")).toBe("/protection")
+        expect(row.getAttribute("href")).toBe("/recommendations#recommendation-a")
         fireEvent.click(row)
         expect(calls("action_started")).toEqual([{ kind: "review_finding", area: "residence" }])
     })

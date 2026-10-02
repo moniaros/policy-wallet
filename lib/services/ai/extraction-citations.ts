@@ -117,6 +117,7 @@ For each of these fields, when you find its value in the document, also return a
 ${IDENTITY_CITATION_FIELDS.join(', ')}
 and, for the acordData fields the coverage checks and the benefit cards read, keyed "acordData.<path>":
 ${ACORD_CITATION_PATHS.map((path) => `acordData.${path}`).join(', ')}
+Also cite each explicitly stated benefit on ANY insurance branch as "acordData.perksAndBenefits.<zero-based index>" and each term as "acordData.perksAndBenefits.<index>.terms.<key>" (beneficiaries, frequency, cost, limit, network, waitingPeriod, conditions, provider, tests). Also cite benefit rules as "acordData.perksAndBenefits.<index>.rules", and contract context as "acordData.benefitContract.insuredName", "acordData.benefitContract.paymentRequired", "acordData.benefitContract.changes.<index>" and "acordData.benefitContract.specialConditions.<index>". No citation or benefit may be inferred from branch alone.
 Each entry: { "page": <1-based page number>, "snippet": "<short VERBATIM quote from the document, max 30 words, original language>" }
 Never invent a snippet — omit the entry if you cannot quote the document.`
 
@@ -131,7 +132,7 @@ export function sanitizeExtractionSources(raw: unknown): ExtractionSources | nul
     const result: ExtractionSources = {}
 
     for (const [field, value] of Object.entries(raw as Record<string, unknown>)) {
-        if (!allowed.has(field) || !value || typeof value !== 'object') continue
+        if ((!allowed.has(field) && !/^acordData\.benefitContract\.(?:insuredName|paymentRequired|(?:changes|specialConditions)\.(?:0|[1-9]\d?))$/.test(field) && !/^acordData\.perksAndBenefits\.(?:0|[1-9]\d?)(?:\.rules|\.terms\.(?:beneficiaries|frequency|cost|limit|network|waitingPeriod|conditions|provider|tests))?$/.test(field)) || !value || typeof value !== 'object') continue
         const entry = value as Record<string, unknown>
 
         const source: ExtractionSource = {}
@@ -196,7 +197,8 @@ export function verifyExtractionSources(
             out[field] = { ...source, verified: true, verifiedPage: found + 1 }
             continue
         }
-        const readFarEnough = cited !== null || fullyRead
+        const unreadable = localText.requiresVision && (cited === null || pages[cited - 1].replace(/\s/g, '').length < 80)
+        const readFarEnough = !unreadable && (cited !== null || fullyRead)
         out[field] = readFarEnough ? { ...source, verified: false } : source
     }
     return out

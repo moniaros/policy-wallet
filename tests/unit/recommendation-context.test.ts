@@ -254,13 +254,12 @@ describe("advisor opportunity names their work, not a pitch", () => {
 })
 
 describe("customer benefit follows the mitigation ladder", () => {
-    it("describes keeping a fund when the lead answer is to retain", () => {
+    it("asks about savings capacity rather than asserting a loss is affordable", () => {
         const retained = assess({ hasPets: true, savingsAmount: 400000 }).find(
             (a) => a.mitigations[0]?.kind === "retain"
         )
-        if (retained) {
-            expect(deriveCustomerBenefit(retained).en).toMatch(/keep the premium/)
-        }
+        expect(retained).toBeDefined()
+        expect(deriveCustomerBenefit(retained!).en).toMatch(/Estimate which losses your savings could meet/)
     })
 
     it("never promises a purchase for a risk whose answer is not insurance", () => {
@@ -318,6 +317,24 @@ describe("every open recommendation carries all nine things", () => {
             // that is the honest answer, not a missing field.
             expect(row).toHaveProperty("advisorOpportunity")
         }
+    })
+
+    it("refreshes stored risk explanations from the live assessment without changing policy findings", () => {
+        const assessment = find({}, "home_contents_tenant")
+        const stale = { en: "Old coverage assertion", el: "Παλιά δήλωση κάλυψης" }
+        const rows = [
+            { riskId: "home_contents_tenant", description: stale, personalReason: stale, expectedImpact: stale, mitigations: [] },
+            { riskId: null, description: stale, personalReason: stale, expectedImpact: stale, mitigations: [] },
+        ]
+        const [risk, policy] = withRecommendationContext(rows, [assessment], { age: 41 }, NOW)
+        expect(risk.description).toEqual(assessment.riskExplanation)
+        expect(risk.personalReason).toEqual(assessment.whyItApplies)
+        expect(risk.expectedImpact).toEqual(assessment.expectedImpact)
+        expect(risk.mitigations).toEqual(assessment.mitigations)
+        expect(risk).toHaveProperty("suggestedSolution", assessment.suggestedSolution)
+        expect(risk).toHaveProperty("eligibilityNote", assessment.eligibilityNote)
+        expect(policy.description).toEqual(stale)
+        expect(policy.personalReason).toEqual(stale)
     })
 
     it("leaves a row with no live assessment renderable rather than dropping it", () => {

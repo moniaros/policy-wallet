@@ -1,3 +1,4 @@
+import { BenefitCompositionSchema } from '@/lib/prevention/contracts'
 import { z } from "zod"
 
 import { AcordDataSchema } from "./acord-data"
@@ -46,6 +47,9 @@ export const PartyEnvelopeSchema = z.strictObject({
 })
 
 export const ExtractionEnvelopeSchema = z.strictObject({
+    benefitComposition: BenefitCompositionSchema.nullable().optional(),
+    documentId: z.string().nullable().optional(),
+    analysisRunId: z.string().nullable().optional(),
     /** The provider that produced the extraction: 'gemini' | 'openai' | 'anthropic' | 'mock'. */
     source: z.string().optional(),
     extractedAt: isoString.optional(),
@@ -73,6 +77,7 @@ export const ExtractionEnvelopeSchema = z.strictObject({
     independentVerification: z.strictObject({
         version: z.literal('1'), status: z.enum(['agreed', 'needs_review', 'unavailable']),
         checkedAt: z.string(), humanConfirmed: z.literal(false),
+        benefits: z.record(z.string(), z.enum(['agreed', 'disagreed', 'missing'])).optional(),
         fields: z.partialRecord(z.enum(['insurerName', 'policyNumber', 'lineOfBusiness', 'startDate', 'endDate', 'premiumAmount']), z.enum(['agreed', 'disagreed', 'missing'])),
         provider: z.string().optional(), model: z.string().optional(), reason: z.string().optional(),
     }).nullable().optional(),

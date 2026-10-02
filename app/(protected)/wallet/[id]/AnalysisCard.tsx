@@ -134,7 +134,7 @@ export function AnalysisCard({
     const [consentGranted, setConsentGranted] = useState(false)
     const router = useRouter()
     const { t, language } = useLanguage()
-    const analysisTitle = toGreekUppercaseNoAccents(t.analysis.title, t.common?.locale || 'el-GR')
+    const analysisTitle = t.analysis.title
     const stepsCopy = t.analysis.steps
     const statusCopy = t.analysis.status
     const errorCopy = t.analysis.errors
@@ -681,13 +681,13 @@ export function AnalysisCard({
                 </div>
             )}
         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-xl">
-            <div className="bg-primary p-6 flex justify-between items-center">
+            <div className="bg-primary p-5 flex flex-col items-start gap-4 sm:flex-row sm:justify-between sm:items-center">
                 <div className="flex items-center gap-3 text-white">
-                    <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <div className="w-10 h-10 shrink-0 rounded-xl bg-white/20 flex items-center justify-center">
                         <Sparkles className="w-6 h-6" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-black">{analysisTitle}</h2>
+                        <h2 className="text-lg font-semibold">{analysisTitle}</h2>
                         <p className="text-sm text-white/80 mt-0.5">{t.wallet.analysisSubtitle}</p>
                     </div>
                 </div>
@@ -921,7 +921,7 @@ export function AnalysisCard({
                             {t.analysis.unassessedHint}
                         </p>
                     </div>
-                    ) : (
+                    ) : composition ? null : (
                     <div className="text-center py-8">
                         <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-4">
                             <Sparkles className="w-8 h-8 text-primary dark:text-mint" />
