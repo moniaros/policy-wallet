@@ -7,9 +7,10 @@
 - Simplified policyholder home/intake/navigation, trustworthy policy/recommendation context and notification history; unsupported health scores retired. External action references hidden; policy-document provenance retained.
 - All-branch prevention hub and optional personal progress; gated original/renewal composition, term conflicts, periods and separate benefit use. Owner access, consent, export/erasure and reminder handoff covered.
 - Dev: 88 matching migrations, three prevention tables with RLS, 34 columns and five cascading FKs, queried again after the deployment fix. Two old dev-only phantom migrations/dead objects removed after private backup.
-- Local guardrails and build passed; 7,822 unit tests / 687 files after five production-build execution tests. Earlier 16 relevant browser cases passed together without retries at mobile/desktop, including persistence and English/keyboard.
+- Local guardrails and build passed; 7,827 unit tests / 688 files, including production-build ordering and exact migration-content checks. Earlier 16 relevant browser cases passed together without retries at mobile/desktop, including persistence and English/keyboard.
 - Production flags saved: hub `1`, advanced personalization `0`; effective with the new deployment. No dev secrets transferred to preview.
 - First production attempt stopped before DB access: GitHub's `DIRECT_URL` is not production. Corrected execution to Vercel's production build, retaining project/history/schema checks and stopping the application build on failure.
+- Vercel confirmed production's 86 matching migrations and two expected pending files, then rejected the SQL guard's false positive on `ON DELETE CASCADE` before writing. Corrected to exact reviewed-content hashes, verified even with no pending dev migrations, with regression/probe coverage.
 
 ## In progress
 Promote the verified build-path correction, complete CI/deployment and check production schema, deployment identity and authenticated pages.

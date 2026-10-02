@@ -2,6 +2,7 @@
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { readFileSync, readdirSync } from 'node:fs'
+import { assertReviewedPreventionMigration, reviewedPreventionMigrations } from './prevention-release-migrations'
 
 async function main() {
     const expectedProject = process.env.EXPECTED_DB_PROJECT
@@ -18,7 +19,12 @@ async function main() {
     delete process.env.POOLED_DATABASE_URL
     const { db } = await import('../lib/db')
     const local = readdirSync('prisma/migrations').filter(name => /^\d/.test(name))
-    const allowed = new Set(['20261002120000_prevention_hub', '20261002160000_prevention_personalization'])
+    const allowed = new Set(Object.keys(reviewedPreventionMigrations))
+    // Validate the real SQL even when dev has already applied it. Otherwise
+    // a defective pending-migration check can hide behind an up-to-date dev DB.
+    for (const name of allowed) {
+        assertReviewedPreventionMigration(name, readFileSync(`prisma/migrations/${name}/migration.sql`, 'utf8'))
+    }
     const checksum = (name: string) => createHash('sha256').update(readFileSync(`prisma/migrations/${name}/migration.sql`)).digest('hex')
     const inspect = async () => {
         const rows = await db.$queryRaw<Array<{ migration_name: string; checksum: string; finished_at: Date | null; rolled_back_at: Date | null }>>`SELECT migration_name, checksum, finished_at, rolled_back_at FROM _prisma_migrations ORDER BY migration_name`
@@ -33,10 +39,6 @@ async function main() {
         if (before.pending.some(name => !allowed.has(name))) throw new Error('Unexpected pending migration; release must be reviewed')
         if (before.pending.length) {
             if (!process.argv.includes('--apply')) throw new Error('Pending migrations; explicit --apply required')
-            for (const name of before.pending) {
-                const sql = readFileSync(`prisma/migrations/${name}/migration.sql`, 'utf8')
-                if (/\b(DROP|DELETE|TRUNCATE)\b/i.test(sql)) throw new Error('This release operation accepts only additive migrations')
-            }
             await db.$disconnect()
             execFileSync('node_modules/.bin/prisma', ['migrate', 'deploy'], { stdio: 'inherit', env: process.env })
         }
