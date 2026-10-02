@@ -38,4 +38,30 @@ Automatic approval review rejected a broad production-secret pull. A narrower re
 
 Automatic approval review also rejected copying the existing dev database/auth configuration to this release branch's Vercel preview, citing missing explicit authorization for that sensitive payload/destination. The owner's later instruction waived the preview journey for this release, removing that dependency without transferring credentials or weakening tool approvals.
 
-Separately, the actual two-PDF Gemini/OpenAI benchmark remains awaiting its earlier explicit transmission authorization. It does not justify silently enabling the new personalization flag. Production results, deployment identity and final verification will be appended when measured.
+Separately, the actual two-PDF Gemini/OpenAI benchmark remains awaiting its earlier explicit transmission authorization. It does not justify silently enabling the new personalization flag.
+
+## Production verification
+
+Final application commit: `f3315f124ab26f7c949e8518a343ab5f0777aac8`. [Final CI](https://github.com/moniaros/policy-wallet/actions/runs/37017380421) and [production deployment](https://github.com/moniaros/policy-wallet/actions/runs/37018702624) both passed. Vercel deployment `dpl_6gtQEH39qz1B8ZidsX9CqE3wiJKR` reports **Ready**, target **production**, and this exact commit. Its aliases include `www.policywallet.gr`, `policywallet.gr` and `app.policywallet.gr`.
+
+The Vercel production build queried project `cquudefwfwrmvpftuhyl`: 86 matching applied migrations and exactly the two approved pending files. `prisma migrate deploy` applied the hub at 14:18:00 UTC and personalization schema at 14:18:01 UTC on 2026-10-02. At 14:18:04 UTC, the follow-up query verified:
+
+- 88 matching applied migrations and zero pending migrations.
+- `prevention_progress`, `prevention_check_ins` and `prevention_benefit_uses`, all with row-level security enabled.
+- 34 columns across those tables and five foreign keys with cascading deletion.
+
+These match the repeated dev measurements. No production destructive cleanup or credential export was performed. The two earlier failed attempts stopped before writes.
+
+At 14:21:33 UTC, the live `/api/health` returned `healthy`, database `connected` and API `operational`. The authenticated embedded-browser smoke check verified outcomes on the production domain:
+
+- `/wellness`: new prevention hub, benefits across domains, historical/clarification states and working per-policy view. No active health-score element; no NHTSA, NICE, WHO, CISA or USPSTF action-reference links. Document links remain available. At the existing 975px viewport, page width was 975px.
+- `/notifications`: both inbox and delivery-history buttons reached their selected state after loading; no notifications marked read by the smoke check.
+- `/wallet/add`: document-first intake, automatic category selected, optional manual fields collapsed. No production document was uploaded.
+- `/dashboard`: new policy-reading/prevention hierarchy and collapsed supporting sections loaded for the existing policyholder.
+- `/recommendations`: recommendations loaded; no horizontal overflow at the existing 975px viewport.
+
+The live prevention tab was retained for review; the user's localhost tabs and viewport were not changed. Production retains `PREVENTION_HUB_ENABLED=1` and `PREVENTION_PERSONALIZATION_ENABLED=0`. Local/dev persistence and mobile journeys passed; the live smoke was read-only and is not a new provider benchmark or paid-purchase test. The existing security job permits npm audit/outdated warnings, so a green workflow is not a claim of zero dependency advisories.
+
+## Outcome and remaining work
+
+The authorized production rollout is complete. Both deployment defects were corrected with regression coverage. Preview was waived for this release, not replaced with a secret transfer or a change to tool security approvals. Remaining correctness work is the separately authorized real-PDF benchmark before advanced personalization; broader UI/UX refinements and prior B2B/content-assurance work remain separate backlogs. Presentation artifacts under `output/` remain untouched and uncommitted.
