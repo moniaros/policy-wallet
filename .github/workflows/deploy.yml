@@ -71,16 +71,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # This release's two additive migrations were applied and queried on dev.
-      # Keep production credentials on the existing runner. The bounded script
-      # checks project identity/history, uses SESSION port 5432 for advisory
-      # locks, and queries tables/RLS/cascades before any app deployment.
-      # It refuses any other pending migration rather than silently promoting it.
-      - name: Apply and verify prevention schema before application deployment
-        run: node --import tsx scripts/release-prevention-schema.ts --apply
-        env:
-          DIRECT_URL: ${{ secrets.DIRECT_URL }}
-          EXPECTED_DB_PROJECT: cquudefwfwrmvpftuhyl
+      # The GitHub DIRECT_URL belongs to dev. Production schema verification
+      # runs inside Vercel's production build using its existing credentials:
+      # vercel.json -> scripts/vercel-build.mjs -> release-prevention-schema.ts.
+      # A schema failure stops the build before a new deployment is promoted.
 
       # Current Vercel CLI, invoked directly (Vercel's documented CI pattern).
       # amondnet/vercel-action@v25 pinned CLI 25.1.0 (2021), whose

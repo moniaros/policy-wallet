@@ -1,31 +1,30 @@
 # STATUS
 
 ## Current phase
-**Release prepared; preview approval pending — 2026-10-02.** [PR #386](https://github.com/moniaros/policy-wallet/pull/386), application commit `802d56b4`, [hosted CI success](https://github.com/moniaros/policy-wallet/actions/runs/37010917131). [Release evidence and decisions](audits/prevention-production-release-2026-10-02.md); [implementation/limits](audits/prevention-personalization-2026-10-02.md), [home/intake](audits/policyholder-mobile-ux-2026-10-02.md) and [prior B2B history](archive/status-before-policyholder-ui-2026-10-02.md). No production merge, migration, flag write or deployment yet.
+**Production promotion in progress — 2026-10-02.** [PR #386](https://github.com/moniaros/policy-wallet/pull/386) merged as `2de4618f`; [merged CI passed](https://github.com/moniaros/policy-wallet/actions/runs/37012974690). Owner waived the preview prerequisite for this release. [Release evidence and decisions](audits/prevention-production-release-2026-10-02.md).
 
 ## Done
-- Source-backed original/renewal composition, term conflicts, missing periods/amendments and unconfirmed activation; bounded gated extraction/cache/independent verification. No model calls on page opening or gap-rule changes.
-- Explained personal steps, barriers/planning and separate self-reported benefit use per documented period; legacy calendar-year history retained. Transactional reminder handoff, retry protection, owner access, export and erasure.
-- Owner review adjustment: external action-reference links (NHTSA, NICE, WHO and other catalogue sources) hidden from prevention cards; internal authored references and policy-document provenance retained.
-- Dev additive migration verified: 88 migrations, three prevention tables/RLS, 34 columns and five cascading FKs. Production untouched.
-- Release rerun: all 16 relevant browser cases passed together without retries; unit/build/guardrails passed. Two historical dev-only phantom migrations and dead experimental objects removed after private backup; all 88 checksums now match.
-- 7,817 unit tests / 686 files passed; six new browser cases passed across targeted runs at 320/390/430px and desktop, including persistence, period changes and English/keyboard. API/lint/i18n/UTF-8/type/migration checks and standard build passed. Design verdict **ship**, all three new findings resolved.
-- 19 PDFs locally read: 592 pages, 9/9 reference spans; 11 manually checked expectations for the original/renewal pair. These are not model-accuracy results. Earlier health-score retirement and meeting artifacts remain preserved.
+- Simplified policyholder home/intake/navigation, trustworthy policy/recommendation context and notification history; unsupported health scores retired. External action references hidden; policy-document provenance retained.
+- All-branch prevention hub and optional personal progress; gated original/renewal composition, term conflicts, periods and separate benefit use. Owner access, consent, export/erasure and reminder handoff covered.
+- Dev: 88 matching migrations, three prevention tables with RLS, 34 columns and five cascading FKs, queried again after the deployment fix. Two old dev-only phantom migrations/dead objects removed after private backup.
+- Local guardrails and build passed; 7,822 unit tests / 687 files after five production-build execution tests. Earlier 16 relevant browser cases passed together without retries at mobile/desktop, including persistence and English/keyboard.
+- Production flags saved: hub `1`, advanced personalization `0`; effective with the new deployment. No dev secrets transferred to preview.
+- First production attempt stopped before DB access: GitHub's `DIRECT_URL` is not production. Corrected execution to Vercel's production build, retaining project/history/schema checks and stopping the application build on failure.
 
 ## In progress
-Preview journey and production promotion after the pending permission. Hosted CI is complete; paid-conversion journey was explicitly skipped by its existing credential gate. Kilo review lacked credits. Planned rollout enables the reviewed hub and keeps new personalization off pending actual PDF evaluation.
+Promote the verified build-path correction, complete CI/deployment and check production schema, deployment identity and authenticated pages.
 
 ## Blocked
-Automatic approval review rejected configuring the release preview with dev database/auth secrets without payload/destination-specific permission. Preview journey is required before merge. Broad prod-secret export was also rejected; migrations instead use the existing GitHub runner secret. Separate PDF-provider authorization remains pending.
+No unresolved blocker to the restricted rollout. The actual two-PDF provider benchmark remains separately pending authorization; advanced personalization stays off. Money-path CI journey was skipped by its existing credential gate; Kilo review lacked credits.
 
 ## Top risks ranked
-1. Real model recall/precision, latency and cost remain unmeasured; seven corpus samples need visual reading. Page-read status is model-reported, not OCR certification.
-2. Conditional benefit eligibility, missing years and incomplete amendments stay unresolved; exact identity matching intentionally requires clarification on variants.
-3. Browser coverage is targeted, not complete accessibility certification; earlier B2B/content-assurance backlog remains separate.
+1. **High — correctness:** real model accuracy, latency and cost remain unmeasured. Nineteen local PDFs / 592 pages and reference spans are not model-accuracy evidence.
+2. **Medium — correctness:** conditional eligibility, missing periods and incomplete amendments need clarification; no entitlement or payment confirmation is inferred.
+3. **Medium — UI/UX backlog:** targeted browser checks do not certify complete accessibility; prior B2B/content-assurance backlog remains separate.
 
 ## Next 3 actions
-1. Obtain the specific preview-configuration authorization; do not bypass the automatic-review rejection.
-2. Verify the preview journey, merge, apply/verify prod additive schema on the runner, deploy and check the live product.
-3. Complete the separately authorized PDF benchmark before enabling personalization in production.
+1. Complete the production build and actual schema verification using credentials already held by Vercel.
+2. Verify the authenticated live prevention, intake, dashboard and notification views; record deployment identity.
+3. Complete the separately authorized PDF benchmark before enabling advanced personalization.
 
-Before commits/pushes: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit/build and relevant journeys.
+Before commits/pushes: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit/build and relevant journeys. These passed for this release; the workflow fix changes no UI.

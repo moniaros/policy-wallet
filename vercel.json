@@ -1,4 +1,5 @@
 {
+  "buildCommand": "node scripts/vercel-build.mjs",
   "functions": {
     "app/api/v1/jobs/execute-analysis/route.ts": {
       "maxDuration": 336
