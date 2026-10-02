@@ -277,3 +277,5 @@ call to action, versus link the second render site to the first).
    `lib/wallet/policy-identity.ts`, lifecycle through `resolvePolicyLifecycle`, severity through
    `describeSeverity()`. The attribute asserts "this is that fact", so it must actually be.
 5. Baselines record attribute scan AND value scan until coverage is complete.
+
+- `prevention.item`: one benefit or authored action per stable item key in the selected view. Progress is self-reported, never provider confirmation.

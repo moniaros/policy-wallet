@@ -1,5 +1,6 @@
 "use server"
 
+import { z } from "zod"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
@@ -9,39 +10,35 @@ import { policyLabel, scrubRenderableText } from "@/lib/wallet/policy-identity"
 import { groupNotificationEventRows } from "@/lib/notifications/event-grouping"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
-export async function getNotificationData() {
+export async function getNotificationData(input: { before?: string; deliveries?: boolean } = {}) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
 
+    const parsed = z.object({ before: z.string().max(200).optional(), deliveries: z.boolean().optional() }).strict().safeParse(input)
+    if (!parsed.success) return null
+    const options = parsed.data
     const userId = authResult.dbUser.id
+    const before = typeof options.before === "string" && options.before.length <= 200 ? options.before : undefined
+    const cursor = before ? await db.notificationEvent.findFirst({ where: { id: before, userId }, select: { id: true } }) : null
+    if (before && !cursor) return null
 
-    // 1. Fetch History — bounded to recent rows; this table grows unbounded
-    // per user (every reminder, gap alert, share, quote request).
-    //
-    // This table stores DELIVERY records: one emission writes one row per
-    // channel, each carrying the same `dedupeKey` verbatim (dispatch.ts). The
-    // customer-facing list renders EVENTS (§2.7) — a renewal reminder that
-    // went to in-app and email is ONE thing that happened to this person, not
-    // two, and it rendered here as two identical cards told apart only by a
-    // channel chip. An earlier comment argued the opposite ("this is the
-    // delivery history, and 'we emailed you about this' is exactly what it
-    // should show") — but "which pipe carried it" is operator bookkeeping the
-    // customer cannot act on; the admin delivery history keeps it, this page
-    // does not. So: fetch every real channel — the `analytics` mirror stays
-    // out, its rows carry a machine code as a title and a JSON blob as a body
-    // — then collapse to one entry per event on the stored dedupeKey. This
-    // groups rather than filtering to `in_app` because an event whose channel
-    // set has no in-app arm (an email-only send) must still appear once;
-    // an in_app filter would silently drop it.
+    // Default: the delivered in-app inbox, with the bell's read state.
+    // Explicit delivery history preserves other channels and groups only
+    // records carrying an exact shared event key. Never guess legacy identity.
     const history = await db.notificationEvent.findMany({
-        where: { userId, channel: { not: 'analytics' } },
-        orderBy: { createdAt: 'desc' },
-        take: 50,
+        // The default inbox uses the same in-app delivery and read state as the bell.
+        // Historic channel records remain explicitly available in the delivery view;
+        // unkeyed records cannot safely be merged merely because their words match.
+        where: { userId, ...(options.deliveries ? { channel: { not: 'analytics' } } : { channel: 'in_app', status: 'sent' }) },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        ...(cursor ? { cursor: { id: cursor.id }, skip: 1 } : {}),
+        take: 51,
     })
     // Exact match on the stored key; unkeyed rows stay individual — never
     // merged on a heuristic. Read state comes from the event's in-app arm
     // only. See lib/notifications/event-grouping.ts.
-    const eventGroups = groupNotificationEventRows(history)
+    const pageRows = history.slice(0, 50)
+    const eventGroups = groupNotificationEventRows(pageRows)
 
     // 3. Fetch Policies (for filtering)
     const policies = await db.policy.findMany({
@@ -122,6 +119,10 @@ export async function getNotificationData() {
         }
         return ({
         event_id: e.id,
+        event_key: e.dedupeKey || e.id,
+        has_in_app: g.hasInAppArm,
+        delivery_channel: options.deliveries && !e.dedupeKey ? e.channel : null,
+        action_href: e.eventType.startsWith("collaboration_") && !user.roles.includes("agent") && !user.roles.includes("admin") ? "/agent" : null,
         user_id: e.userId,
         event_type: e.eventType,
         event_category: 'system_confirmation' as 'system_confirmation' | 'reminder' | 'intelligence' | 'agent_action',
@@ -183,6 +184,7 @@ export async function getNotificationData() {
     return {
         user: uiUser,
         history: uiEvents,
+        nextCursor: history.length > 50 ? pageRows.at(-1)?.id ?? null : null,
         policies: uiPolicies,
         relationships: uiRelationships,
     }
@@ -209,7 +211,7 @@ export async function getRecentNotifications(limit = 10): Promise<{ items: Recen
         // an event whose channel set excluded it has declared it should not
         // surface in-product. (An unscoped read here would also toast the
         // same event once per channel, plus once for the analytics mirror.)
-        where: { userId: authResult.dbUser.id, channel: "in_app" },
+        where: { userId: authResult.dbUser.id, channel: "in_app", status: "sent" },
         orderBy: { createdAt: "desc" },
         take: Math.min(Math.max(limit, 1), 25),
         select: {
@@ -263,6 +265,7 @@ export async function markNotificationRead(notificationId: string) {
             // any row by id, so a click could "read" an email we have no way
             // of knowing the user opened, while mark-all refused to.
             channel: "in_app",
+            status: "sent",
             readAt: null,
         },
         data: { readAt: new Date() },
@@ -283,6 +286,7 @@ export async function markAllNotificationsRead() {
             // rows would claim the user "read" an email we have no way of
             // knowing they opened.
             channel: "in_app",
+            status: "sent",
             readAt: null,
         },
         data: { readAt: new Date() },

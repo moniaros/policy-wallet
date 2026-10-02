@@ -88,10 +88,10 @@ describe("daily nudges — general, deterministic, one per Athens day", () => {
 describe("health share snapshot — minimised by construction (P2)", () => {
     const assessment = { createdAt: new Date("2026-09-20T10:00:00Z"), scores: [{ category: "cardiovascular", score: 40, band: "moderate", checks: ["lipid_panel"] }] as any }
     const profile = { smokingStatus: "former", activityLevel: "low", chronicConditions: ["diabetes"], familyMedicalHistory: ["heart_disease", 3], heightCm: 180, weightKg: 90 }
-    it("assessment scope carries scores and date — no checks, no answers", () => {
+    it("assessment scope is retired and carries no score or answers", () => {
         const s = buildHealthSnapshot("assessment", assessment, profile)
         expect(s.profile).toBeUndefined()
-        expect(s.assessment?.scores).toEqual([{ category: "cardiovascular", score: 40, band: "moderate" }])
+        expect(s.assessment).toBeUndefined()
         expect(JSON.stringify(s)).not.toMatch(/checks|lipid|answers/)
     })
     it("profile scope carries a BMI band — never height or weight", () => {

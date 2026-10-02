@@ -18,6 +18,7 @@ import { formatDate } from '@/lib/i18n/format'
 import { displayInsurerName, policyAssetIdentifier, warnOnHomoglyphNearMisses } from '@/lib/wallet/policy-identity'
 
 export function PolicyWallet({
+    initialStatusFilter,
     policies,
     isLoading = false,
     onViewPolicy,
@@ -39,6 +40,8 @@ export function PolicyWallet({
     const roleCopy = getRoleCopy(language)
     const [showAddMenu, setShowAddMenu] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
+    const [statusFilter, setStatusFilter] = useState(initialStatusFilter ?? "all")
+    useEffect(() => setStatusFilter(initialStatusFilter ?? "all"), [initialStatusFilter])
     const [activeFilter, setActiveFilter] = useState<string>('all')
     // Spec v2 §10.1: sort by renewal / insurer / type, filter by insurer, and
     // group by category. Renewal order is the lifecycle's real end date, the
@@ -97,7 +100,11 @@ export function PolicyWallet({
 
             const byFilter = activeFilter === 'all' || normalizeBranch(policy.lineOfBusiness).id === activeFilter
             const byInsurer = insurerFilter === 'all' || displayInsurerName(policy.insurerName) === insurerFilter
-            return byQuery && byFilter && byInsurer
+            const byStatus = statusFilter === 'expired' ? getPolicyStatusView(policy, t).key === 'expired'
+                : statusFilter === 'unanalysed' ? !policy.lastAnalyzedAt
+                : statusFilter === 'failed' ? Boolean(policy.acordData?.processingError)
+                : true
+            return byQuery && byFilter && byInsurer && byStatus
         })
         const lang = language === 'el' ? 'el' : 'en'
         const collator = new Intl.Collator(lang)
@@ -106,7 +113,7 @@ export function PolicyWallet({
             if (sortBy === 'type') return collator.compare(normalizeBranch(a.lineOfBusiness).label[lang], normalizeBranch(b.lineOfBusiness).label[lang])
             return (endDateById.get(a.id) ?? Infinity) - (endDateById.get(b.id) ?? Infinity)
         })
-    }, [policies, searchQuery, activeFilter, insurerFilter, sortBy, endDateById, language])
+    }, [policies, searchQuery, activeFilter, insurerFilter, sortBy, endDateById, language, statusFilter, t])
 
     // Grouped by branch FAMILY in taxonomy order (motorbike under motor,
     // renters under home), so a card is found by what it insures.
@@ -219,6 +226,8 @@ export function PolicyWallet({
         <div className="mx-auto max-w-7xl bg-transparent px-4 pb-10 pt-4 sm:px-6 lg:px-8">
             {/* KPIs lead — they are the answer to "how is my cover doing?" and used to
                 sit below the filter bar, where nobody looked. */}
+            <details className="mb-4 rounded-xl border border-border px-4 py-2">
+                <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold">{t.policyholderExperience.portfolioDetails}</summary>
             <StatusSummary
                 activeCount={activeCount}
                 expiringCount={expiringCount}
@@ -231,8 +240,11 @@ export function PolicyWallet({
                 otherCurrencyCount={premiumFootprint.otherCurrencyCount}
             />
 
+            </details>
+
             <ImportantNotices notices={notices} onSelect={onViewPolicy} />
 
+            {statusFilter !== 'all' && <button type="button" className="pw-soft-button mb-4" onClick={() => setStatusFilter('all')}>{t.policyholderExperience.allPolicies}</button>}
             <div className="mb-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="relative group w-full sm:max-w-md">

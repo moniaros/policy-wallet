@@ -89,14 +89,9 @@ describe('the premium figure claims only what it can support', () => {
         expect(CARD).not.toMatch(/Ενδεικτικό κόστος στην αγορά/)
     })
 
-    it('presents an order of magnitude', () => {
-        expect(CARD).toMatch(/Τάξη μεγέθους ασφαλίστρου/)
-        expect(CARD).toMatch(/Rough order of magnitude/)
-    })
-
-    it('says what the real premium depends on', () => {
-        expect(CARD).toMatch(/εξαρτάται από τα δικά σας στοιχεία/)
-        expect(CARD).toMatch(/depends on your own details/)
+    it('does not publish the unsupported estimate under a softer label', () => {
+        expect(CARD).not.toMatch(/Rough order of magnitude|Τάξη μεγέθους ασφαλίστρου/)
+        expect(CARD).not.toMatch(/formatCurrency\(rec\.estimatedCostEur/)
     })
 
     it('the table records what it is and is not', () => {

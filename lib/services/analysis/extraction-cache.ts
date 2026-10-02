@@ -14,12 +14,12 @@ import { logger } from "@/lib/logger"
 import type { AIPolicyExtractionResponse } from "../ai/ai-service.interface"
 
 // Bump when extraction schema, prompt, enrichment or citation semantics change.
-export const EXTRACTION_ARTIFACT_VERSION = "agent-evidence-v1"
+export const EXTRACTION_ARTIFACT_VERSION = "benefit-contract-v4"
 export async function getExtractionCacheVersion(): Promise<string | null> {
     try {
     const [{ getPromptOverrides }, { getAiRuntimeOverrides }] = await Promise.all([import("../ai/prompt-overrides"), import("../ai/runtime-config")])
     const [prompts, routing] = await Promise.all([getPromptOverrides(), getAiRuntimeOverrides()])
-    const models = [process.env.AI_SERVICE_TYPE, process.env.GEMINI_MODEL_EXTRACTION, process.env.OPENAI_MODEL_EXTRACTION, process.env.CLAUDE_MODEL_EXTRACTION, process.env.EXTRACTION_TEXT_FIRST, process.env.EXTRACTION_CITATIONS]
+    const models = [process.env.AI_SERVICE_TYPE, process.env.GEMINI_MODEL_EXTRACTION, process.env.OPENAI_MODEL_EXTRACTION, process.env.CLAUDE_MODEL_EXTRACTION, process.env.EXTRACTION_TEXT_FIRST, process.env.EXTRACTION_CITATIONS, process.env.PREVENTION_PERSONALIZATION_ENABLED, process.env.AGENT_VERIFICATION_PROVIDER]
     return createHash("sha256").update(JSON.stringify([EXTRACTION_ARTIFACT_VERSION, models, Object.entries(prompts).sort(), routing])).digest("hex")
     } catch { return null } // Config unavailable: miss safely, never mislabel an artifact.
 }

@@ -27,10 +27,10 @@ import { CardHead } from "./CardHead"
 /** B4: the set each fact counts — where its door leads. */
 const FACT_HREF: Record<string, string> = {
     total: "/wallet",
-    expired: "/wallet",
+    expired: "/wallet?status=expired",
     expiringSoon: "#renewals",
-    neverAnalysed: "/wallet",
-    analysisFailed: "/wallet",
+    neverAnalysed: "/wallet?status=unanalysed",
+    analysisFailed: "/wallet?status=failed",
     unassessed: "/protection?lens=branch",
     premiumNoAmount: "/wallet",
 }

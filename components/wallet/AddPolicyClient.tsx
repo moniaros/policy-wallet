@@ -132,7 +132,6 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
         const nextErrors: { files?: string; lineOfBusiness?: string } = {}
         if (selectedFiles.length === 0) nextErrors.files = formCopy.uploadDocumentRequired
-        if (!formData.get("lineOfBusiness")) nextErrors.lineOfBusiness = formCopy.coverageTypeRequired
         setFieldErrors(nextErrors)
 
         if (Object.keys(nextErrors).length > 0) {
@@ -670,50 +669,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
                 <form onSubmit={handleSubmit} className="space-y-8">
 
-                    {/* Step 1 — «What type of policy is this?» (spec v2 §10.2) */}
-                    <fieldset className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
-                        <legend className="sr-only">{t.wallet.coverageType}</legend>
-                        <h1 className="text-xl font-black text-foreground">{formCopy.chooseType}</h1>
-                        <input type="hidden" name="lineOfBusiness" value={selectedBranch} />
-                        <div
-                            role="radiogroup"
-                            id="add-lineOfBusiness"
-                            aria-label={t.wallet.coverageType}
-                            aria-invalid={fieldErrors.lineOfBusiness ? true : undefined}
-                            aria-describedby={fieldErrors.lineOfBusiness ? "add-lineOfBusiness-error" : undefined}
-                            className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4"
-                        >
-                            {types.map((typeItem) => {
-                                const selected = selectedBranch === typeItem.slug
-                                const glyph = { Icon: getBranchIcon(typeItem.slug) }
-                                return (
-                                    <button
-                                        key={typeItem.id}
-                                        type="button"
-                                        role="radio"
-                                        aria-checked={selected}
-                                        data-branch={typeItem.slug}
-                                        onClick={() => { setSelectedBranch(typeItem.slug); setFieldErrors((prev) => ({ ...prev, lineOfBusiness: undefined })) }}
-                                        className={`pw-subcard flex min-h-[4.5rem] flex-col items-start justify-between gap-2 p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${selected ? 'ring-2 ring-primary bg-primary-tint dark:bg-primary/10' : 'hover:bg-muted'}`}
-                                    >
-                                        <span className="pw-card-chip" aria-hidden="true"><glyph.Icon className="h-4 w-4" strokeWidth={1.75} /></span>
-                                        <span className="text-sm font-semibold leading-snug text-foreground [overflow-wrap:anywhere]">
-                                            {t.policyTypes[typeItem.slug as keyof typeof t.policyTypes] || typeItem.name}
-                                        </span>
-                                    </button>
-                                )
-                            })}
-                        </div>
-                        {fieldErrors.lineOfBusiness && (
-                            <p id="add-lineOfBusiness-error" role="alert" className="mt-2 ml-1 text-xs font-semibold text-red-700 dark:text-red-400">
-                                {fieldErrors.lineOfBusiness}
-                            </p>
-                        )}
-                    </fieldset>
-
                     {/* Step 2 — File Upload Section */}
-                    <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                    <div className="pw-card pw-pad">
+
 
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
@@ -725,11 +683,12 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     from several places and the sr-only headings added
                                     earlier both landed in a branch that never renders,
                                     so the route reported no <h1> at all. */}
-                                <h2 className="text-xl font-black text-foreground">
+                                <h1 className="text-xl font-semibold text-foreground">
                                     {t.wallet.uploadDocument}
-                                </h2>
+                                </h1>
                             </div>
 
+                            <p className="mb-5 text-sm leading-relaxed text-muted-foreground">{t.policyholderExperience.uploadLead}</p>
                             <UploadDropzone
                                 onFiles={(files) => {
                                     setGate(null)
@@ -835,8 +794,18 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         </div>
                     </div>
 
-                    {/* Manual Details */}
-                    <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
+                    <div className="space-y-2">
+                        <label htmlFor="add-lineOfBusiness" className="block text-sm font-semibold">{t.wallet.coverageType}</label>
+                        <select id="add-lineOfBusiness" name="lineOfBusiness" value={selectedBranch}
+                            onChange={(event) => setSelectedBranch(event.target.value)} className="pw-input" aria-describedby="category-hint">
+                            <option value="">{t.policyholderExperience.automaticType}</option>
+                            {types.map((item) => <option key={item.id} value={item.slug}>{t.policyTypes[item.slug as keyof typeof t.policyTypes] || item.name}</option>)}
+                        </select>
+                        <p id="category-hint" className="text-sm text-muted-foreground">{t.policyholderExperience.typeHint}</p>
+                    </div>
+
+                    <details className="pw-card pw-pad">
+                        <summary className="cursor-pointer min-h-11 py-2 text-sm font-semibold">{t.policyholderExperience.optionalDetails}</summary>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
                                 <FileText className="w-5 h-5" />
@@ -916,15 +885,14 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </details>
 
                     {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="pw-primary-button w-full group relative overflow-hidden uppercase tracking-widest shadow-primary/25"
+                        className="pw-primary-button w-full"
                     >
-                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                         <span className="relative z-10 flex items-center justify-center gap-2">
                             {isPending ? (
                                 <>

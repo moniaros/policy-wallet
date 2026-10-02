@@ -22,6 +22,7 @@ import { getOrRegisterServiceWorker } from "@/lib/push/register"
 import { firstNameLabel, policyLabel } from '@/lib/wallet/policy-identity'
 
 interface PolicyWalletClientProps {
+    initialStatusFilter?: string
     policies: Policy[]
     user?: {
         id?: string
@@ -34,7 +35,7 @@ interface PolicyWalletClientProps {
     tier?: 'free' | 'plus' | 'pro'
 }
 
-export function PolicyWalletClient({ policies, user, showTour = false, tier = 'free' }: PolicyWalletClientProps) {
+export function PolicyWalletClient({ initialStatusFilter, policies, user, showTour = false, tier = 'free' }: PolicyWalletClientProps) {
     const router = useRouter()
     const { t } = useLanguage()
     const previousStatusesRef = useRef<Map<string, string>>(new Map())
@@ -329,6 +330,7 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
             )}
 
             <PolicyWallet
+                initialStatusFilter={initialStatusFilter}
                 policies={policies}
                 user={user}
                 onViewPolicy={(policyId) => router.push(`/wallet/${policyId}`)}

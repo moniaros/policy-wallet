@@ -10,7 +10,9 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { pickCheckupUsage, reminderWindow, resolveCheckupBenefit } from "@/lib/wellness/checkup-benefit"
 import { loadCatalogueInsurers, matchVerifiedCallCentre } from "@/lib/wallet/verified-insurer-contact"
 import { athensDate, nudgeForDate } from "@/lib/wellness/nudges"
-import type { CategoryScore } from "@/lib/wellness/scoring"
+import { preventionHubEnabled } from "@/lib/prevention/flag"
+import { loadPreventionHub } from "@/lib/prevention/service"
+import { PreventionHubClient } from "./PreventionHubClient"
 import { WellnessClient, type BenefitView } from "./WellnessClient"
 
 /**
@@ -22,6 +24,14 @@ import { WellnessClient, type BenefitView } from "./WellnessClient"
 export default async function WellnessPage() {
     const { dbUser } = await getAuthenticatedUser()
     const now = new Date()
+    if (preventionHubEnabled()) {
+        const [hub, shares, settings] = await Promise.all([
+            loadPreventionHub(dbUser.id, now),
+            db.healthShare.findMany({ where: { userId: dbUser.id, status: "active" }, select: { id: true } }),
+            db.userNotificationSettings.findUnique({ where: { userId: dbUser.id }, select: { dailyNudgeOptIn: true } }).catch(() => undefined),
+        ])
+        return <PreventionHubClient {...hub} shares={shares} nudgePushOn={settings === undefined ? null : settings?.dailyNudgeOptIn ?? false} window={reminderWindow(now)} />
+    }
     const year = Number(athensDate(now).slice(0, 4))
 
     const [policies, policyCount, usages, assessments, settings, relationships, shares, entitlements] = await Promise.all([
@@ -31,7 +41,7 @@ export default async function WellnessPage() {
         }),
         db.policy.count({ where: { ownerUserId: dbUser.id, status: { notIn: [...NON_LIVE_POLICY_STATUSES] } } }),
         db.healthBenefitUsage.findMany({ where: { userId: dbUser.id, year: { in: [year - 1, year] }, benefit: "annual_checkup" }, select: { policyKey: true, year: true, status: true, intent: true, remindAt: true, remindedAt: true } }),
-        db.healthRiskAssessment.findMany({ where: { userId: dbUser.id }, orderBy: { createdAt: "desc" }, take: 5, select: { id: true, answers: true, scores: true, createdAt: true } }),
+        db.healthRiskAssessment.findMany({ where: { userId: dbUser.id }, select: { id: true } }),
         db.userNotificationSettings.findUnique({ where: { userId: dbUser.id }, select: { dailyNudgeOptIn: true } }).catch(() => null),
         db.customerRelationship.findMany({
             where: { policyholderUserId: dbUser.id, status: { notIn: [...ENDED_RELATIONSHIP_STATUSES] } },
@@ -42,7 +52,7 @@ export default async function WellnessPage() {
         resolveUserEntitlements(dbUser.id),
     ])
 
-    const health = policies.filter((p) => branchFamilyId(p.lineOfBusiness) === "health")
+    const health = policies.filter((p) => (p.acordData as any)?.health?.annualCheckupIncluded !== undefined)
     const catalogue = health.length ? await loadCatalogueInsurers() : []
     const benefits: BenefitView[] = await Promise.all(
         health.map(async (p) => {
@@ -73,7 +83,7 @@ export default async function WellnessPage() {
             hasPolicies={policyCount > 0}
             benefits={benefits}
             window={reminderWindow(now)}
-            latestAssessment={latest ? { scores: latest.scores as unknown as CategoryScore[], createdAt: latest.createdAt.toISOString() } : null}
+            latestAssessment={null}
             assessmentCount={assessments.length}
             advisors={relationships.map((r) => ({ relationshipId: r.id, agentUserId: r.agentUserId, name: displayPersonName(r.agent.name) }))}
             shares={shares.map((s) => ({ id: s.id, agentUserId: s.agentUserId, createdAt: s.createdAt.toISOString(), lastViewedAt: s.lastViewedAt?.toISOString() ?? null }))}

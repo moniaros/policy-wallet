@@ -578,7 +578,7 @@ export async function buildUserDataExportPayload(userId: string) {
         // Spec v2 §9 — the person's own health-benefit tracker and self-assessments (Art. 9).
         db.healthBenefitUsage.findMany({
             where: { userId },
-            select: { policyKey: true, benefit: true, year: true, status: true, note: true, completedAt: true, createdAt: true },
+            select: { policyKey: true, benefit: true, year: true, status: true, note: true, intent: true, intentAt: true, remindAt: true, remindedAt: true, completedAt: true, createdAt: true },
             orderBy: { year: "desc" },
         }),
         db.healthRiskAssessment.findMany({
@@ -601,7 +601,11 @@ export async function buildUserDataExportPayload(userId: string) {
     }
 
     const agentReviewRevisions = await db.agentReviewRevision.findMany({ where: { userId }, orderBy: { createdAt: "asc" } })
+    const preventionBenefitUses = await db.preventionBenefitUse.findMany({ where: { userId } })
+    const preventionProgress = await db.preventionProgress.findMany({ where: { userId } })
+    const preventionCheckIns = await db.preventionCheckIn.findMany({ where: { userId } })
     return {
+        preventionProgress, preventionCheckIns, preventionBenefitUses,
         agentReviewRevisions,
         generatedAt: new Date().toISOString(),
         generatedBy: "self_service_export",

@@ -22,7 +22,6 @@ export function HealthSharePanel({ advisors, shares, hasAssessment, locale, copy
 }) {
     const [pending, start] = useTransition()
     const [relationshipId, setRelationshipId] = useState(advisors[0]?.relationshipId ?? "")
-    const [assessment, setAssessment] = useState(hasAssessment)
     const [profile, setProfile] = useState(false)
     const [consent, setConsent] = useState(false)
     const [status, setStatus] = useState<string | null>(null)
@@ -31,8 +30,8 @@ export function HealthSharePanel({ advisors, shares, hasAssessment, locale, copy
     const existing = selected ? shares.find((s) => s.agentUserId === selected.agentUserId) : undefined
 
     const submit = () => {
-        if (!assessment && !profile) { setStatus(copy.nothingSelected); return }
-        const scope = assessment && profile ? "both" : assessment ? "assessment" : "profile"
+        if (!profile) { setStatus(copy.nothingSelected); return }
+        const scope = "profile"
         start(async () => {
             const res = await shareHealthWithAdvisor({ relationshipId, scope, consent })
             setStatus("ok" in res ? copy.shared.replace("{advisor}", selected?.name ?? "").replace("{date}", formatDate(new Date().toISOString(), locale)) : copy.failed)
@@ -80,10 +79,6 @@ export function HealthSharePanel({ advisors, shares, hasAssessment, locale, copy
                     )}
 
                     <fieldset className="space-y-2">
-                        <label className="flex items-start gap-2 text-sm text-foreground">
-                            <input type="checkbox" className="mt-1" checked={assessment} disabled={!hasAssessment} onChange={(e) => setAssessment(e.target.checked)} />
-                            <span>{copy.scopeAssessment}{!hasAssessment && <span className="block text-caption text-muted-foreground">{copy.scopeAssessmentMissing}</span>}</span>
-                        </label>
                         <label className="flex items-start gap-2 text-sm text-foreground">
                             <input type="checkbox" className="mt-1" checked={profile} onChange={(e) => setProfile(e.target.checked)} />
                             <span>{copy.scopeProfile}</span>

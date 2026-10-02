@@ -1,6 +1,7 @@
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { withJobRun } from "@/lib/jobs/run-record"
+import { runPreventionReminders } from "@/lib/prevention/reminders"
 import { runCheckupReminderScan } from "@/lib/services/checkup-reminder.service"
 
 // Daily (vercel.json): the check-up reminders people asked for, on the date
@@ -28,7 +29,8 @@ export async function POST(req: Request) {
     try {
         const { result, paused } = await withJobRun("checkup-reminder", async () => {
             const summary = await runCheckupReminderScan()
-            return createApiResponse({ summary })
+            const prevention = await runPreventionReminders()
+            return createApiResponse({ summary, prevention })
         })
         if (paused) return createApiResponse({ paused: true })
         return result!

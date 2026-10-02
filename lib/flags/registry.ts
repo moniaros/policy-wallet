@@ -180,6 +180,20 @@ export const FEATURE_FLAGS: Record<string, FlagDefinition> = {
         readAt: "lib/auth/registration-gate.ts registrationsOpen",
         safetyCritical: true,
     },
+    "prevention.personalization": {
+        key: "prevention.personalization", kind: "boolean", label: "Evidence-based prevention personalization",
+        description: "Compose benefit documents and enable private period-based use and action planning.",
+        category: "extraction", envVar: "PREVENTION_PERSONALIZATION_ENABLED", defaultValue: false,
+        readAt: "lib/prevention/flag.ts preventionPersonalizationEnabled", envOnly: true,
+        envOnlyReason: "Dev pilot; requires verified additive migration and prevention hub.",
+    },
+    "prevention.hub": {
+        key: "prevention.hub", kind: "boolean", label: "Prevention and benefits pilot",
+        description: "Show cross-policy benefits and private, opt-in small-step progress.",
+        category: "extraction", envVar: "PREVENTION_HUB_ENABLED", defaultValue: false,
+        readAt: "lib/prevention/flag.ts preventionHubEnabled", envOnly: true,
+        envOnlyReason: "Local/dev pilot with an additive storage migration; enable only after migration verification.",
+    },
     "extraction.citations": {
         key: "extraction.citations",
         kind: "boolean",

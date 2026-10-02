@@ -21,6 +21,7 @@
  * UI switches on to build a deep link.
  */
 export type LinkableObjectType =
+    | "prevention"
     | "policy"
     | "customer"
     | "questionnaire"
@@ -43,6 +44,7 @@ export const LINKABLE_OBJECT_TYPES: LinkableObjectType[] = [
     "customer",
     "questionnaire",
     "thread",
+    "prevention",
     "recommendation",
     "renewal",
     "opportunity",
@@ -58,6 +60,8 @@ export function notificationActionPath(
 ): string | undefined {
     if (!relatedObjectType || !relatedObjectId) return undefined
     switch (relatedObjectType) {
+        case "prevention":
+            return `/wellness#${encodeURIComponent(relatedObjectId)}`
         case "policy":
             return `/wallet/${relatedObjectId}`
         case "customer":

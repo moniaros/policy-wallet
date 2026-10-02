@@ -90,6 +90,15 @@ export function withRecommendationContext<
         const graphRisk = graphByRiskId.get(assessment.riskId) ?? null
         return {
             ...rec,
+            // Authored explanations must follow today's assessment too. Keeping
+            // persisted prose here would resurrect corrected catalogue claims
+            // and describe a profile the customer may already have changed.
+            description: assessment.riskExplanation,
+            personalReason: assessment.whyItApplies,
+            expectedImpact: assessment.expectedImpact,
+            mitigations: assessment.mitigations,
+            suggestedSolution: assessment.suggestedSolution,
+            eligibilityNote: assessment.eligibilityNote,
             timing: deriveUrgency(assessment, { ...inputs, graphRisk }, now),
             evidence:
                 graphRisk?.evidence.map((e) => ({ kind: e.kind, statement: e.statement })) ?? null,
@@ -311,24 +320,24 @@ export function deriveCustomerBenefit(assessment: RiskAssessment): Bilingual {
     switch (lead?.kind) {
         case "avoid":
             return {
-                en: "You stop carrying the exposure at all, at no ongoing cost.",
-                el: "Παύετε να φέρετε την έκθεση εξ ολοκλήρου, χωρίς πάγιο κόστος.",
+                en: "Explore whether the activity creating this risk can be avoided.",
+                el: "Εξετάστε αν μπορείτε να αποφύγετε την πηγή του κινδύνου.",
             }
         case "reduce":
             return {
-                en: "The loss becomes smaller and less likely, and any cover you do buy afterwards costs less.",
-                el: "Η ζημιά γίνεται μικρότερη και λιγότερο πιθανή, και όποια κάλυψη αγοράσετε στη συνέχεια κοστίζει λιγότερο.",
+                en: "These steps aim to reduce the likelihood or impact of a loss. They do not guarantee prevention or a lower premium.",
+                el: "Τα βήματα στοχεύουν σε μικρότερη πιθανότητα ή επίπτωση ζημιάς. Δεν εγγυώνται αποτροπή ή χαμηλότερο ασφάλιστρο.",
             }
         case "retain":
             return {
-                en: "You keep the premium and accept a loss you could absorb — a deliberate decision rather than an oversight.",
-                el: "Κρατάτε το ασφάλιστρο και αποδέχεστε μια ζημιά που μπορείτε να απορροφήσετε — συνειδητή απόφαση αντί για παράλειψη.",
+                en: "Estimate which losses your savings could meet before discussing your options with your advisor.",
+                el: "Εκτιμήστε ποιες ζημιές θα μπορούσαν να καλύψουν οι αποταμιεύσεις σας πριν συζητήσετε τις επιλογές σας με τον ασφαλιστή.",
             }
         case "transfer":
         default:
             return {
-                en: "The cost of the loss stops being yours to find, and your savings stay where you meant them to go.",
-                el: "Το κόστος της ζημιάς παύει να είναι δικό σας βάρος και οι αποταμιεύσεις σας μένουν εκεί που τις προορίζατε.",
+                en: "Your advisor can explain what an insurance option covers, including its limits, deductibles and exclusions.",
+                el: "Ο ασφαλιστής εξηγεί τι καλύπτει κάθε επιλογή, με τα όρια, τις απαλλαγές και τις εξαιρέσεις της.",
             }
     }
 }

@@ -10,7 +10,7 @@ import { CommandSearch, type CommandSearchItem, type CommandSearchLabels } from 
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp, Bell, Menu, X } from 'lucide-react'
+import { HeartPulse, Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp, Bell, Menu, X } from 'lucide-react'
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
@@ -111,10 +111,10 @@ const getBottomNavItems = (role: UserRole['role'], t: any): BottomNavItem[] => {
         // a policyholder opens most, in the order the home tells them.
         return [
             { href: '/dashboard', icon: LayoutDashboard, label: t.nav.home, id: 'home' },
-            { href: '/wallet', icon: Wallet, label: t.nav.walletShort, id: 'wallet' },
+            { href: '/wallet', icon: Wallet, label: t.policyholderExperience.navPolicies, id: 'wallet' },
             { href: '/protection', icon: Shield, label: t.nav.protectionShort, id: 'protection' },
-            { href: '/recommendations', icon: Lightbulb, label: t.nav.recommendations, id: 'recommendations' },
-            { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings' }
+            { href: '/recommendations', icon: Lightbulb, label: t.policyholderExperience.navActions, id: 'recommendations' },
+            { href: '/wellness', icon: HeartPulse, label: t.policyholderExperience.navPrevention, id: 'prevention' }
         ]
     } else if (role === 'agent') {
         const translations = {
@@ -508,9 +508,9 @@ export function AppShell({
                            wrapper's bottom padding, so the pill floats 12px above
                            the home indicator. pointer-events-none on the wrapper:
                            the page stays tappable either side of the pill. */
-                        className="pw-above-consent lg:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-center px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] pointer-events-none"
+                        className="pw-above-consent lg:hidden fixed bottom-0 left-0 right-0 z-40 flex justify-center px-2 sm:px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] pointer-events-none"
                     >
-                        <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-foreground p-1.5 shadow-[0_12px_32px_rgba(15,23,42,0.28)]">
+                        <div className="pointer-events-auto flex w-full max-w-md items-stretch rounded-2xl bg-foreground p-1.5 shadow-[0_12px_32px_rgba(15,23,42,0.28)]">
                             {bottomNavItems.map((item) => {
                                 const Icon = item.icon
                                 const isActive = !item.opensDrawer && routeMatches(pathname, item.href)
@@ -537,14 +537,10 @@ export function AppShell({
                                     <Tag
                                         key={item.id}
                                         {...tagProps}
-                                        /* The active tab is the one white disc on the ink
-                                           pill — the reference's grammar. Icon-only: the
-                                           name lives in aria-label, and every glyph here is
-                                           the sidebar's own, so the pairing is learned the
-                                           first time the drawer opens. */
-                                        className={`relative grid h-11 w-11 place-items-center rounded-full transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-foreground ${isActive
+                                        /* Visible labels keep destinations recognizable on a phone. */
+                                        className={`relative flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-foreground ${isActive
                                             ? 'bg-background text-foreground'
-                                            : 'text-background/70 hover:text-background'
+                                            : 'text-background/90 hover:text-background'
                                             }`}
                                         /* The badge is purely visual, so fold the count into
                                            the accessible name — otherwise a screen-reader
@@ -558,6 +554,7 @@ export function AppShell({
                                             className="h-5 w-5"
                                             strokeWidth={isActive ? 2.25 : 1.75}
                                         />
+                                        <span className="text-micro font-medium leading-tight text-center">{item.label}</span>
                                         {item.showsNotificationBadge && notificationCount > 0 && (
                                             !item.opensDrawer ? (
                                                 /* Same fact as the header bell badge — same key, same «9+» saturation. */

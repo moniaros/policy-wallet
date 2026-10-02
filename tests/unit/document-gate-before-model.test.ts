@@ -115,7 +115,7 @@ describe("source guard — a document reaches the extraction model only through 
             const code = blankNonCode(readFileSync(file, 'utf8'))
             return [...code.matchAll(/await\s+independentlyVerify\s*\(\s*\{\s*document:\s*([^,]+)/g)].map(m => `${rel(file)}:${m[1].trim()}`)
         })
-        expect(calls).toEqual(['lib/services/analysis/policy-analysis-orchestrator.service.ts:docStep.result.document'])
+        expect(calls).toEqual(['lib/services/analysis/policy-analysis-orchestrator.service.ts:docStep.result.document', 'lib/services/analysis/policy-analysis-orchestrator.service.ts:prepared.document'])
     })
 
     it("the interface still takes a ValidatedAIDocument", () => {

@@ -3,8 +3,7 @@ import type { CategoryScore } from "@/lib/wellness/scoring"
 /**
  * Prevention brief P2 — what a health share may carry. A FROZEN snapshot,
  * built here and nowhere else, so the minimisation is one reviewable list:
- *   - assessment: the category scores and bands and the date — never the
- *     raw answers, never the «checks»;
+ *   - assessment scores are archive-only: never copied into new shares;
  *   - profile: smoking, activity, conditions, family history and a BMI BAND —
  *     never raw height or weight, never date of birth or gender.
  */
@@ -38,12 +37,7 @@ export function buildHealthSnapshot(
     profile: { smokingStatus?: string | null; activityLevel?: string | null; chronicConditions?: unknown; familyMedicalHistory?: unknown; heightCm?: number | null; weightKg?: number | null } | null
 ): HealthSnapshot {
     const out: HealthSnapshot = {}
-    if ((scope === "assessment" || scope === "both") && assessment) {
-        out.assessment = {
-            takenAt: assessment.createdAt.toISOString(),
-            scores: assessment.scores.map((s) => ({ category: s.category, score: s.score, band: s.band })),
-        }
-    }
+    // Archived scores remain exportable, but are never copied into a new share.
     if ((scope === "profile" || scope === "both") && profile) {
         out.profile = {
             smokingStatus: profile.smokingStatus ?? null,

@@ -11,6 +11,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 const count = (n = 0) => ({ count: n })
 
 const tx = {
+    preventionBenefitUse: { deleteMany: vi.fn(), upsert: vi.fn() }, preventionProgress: { deleteMany: vi.fn(async (_a?: any) => count()) },
+    preventionCheckIn: { deleteMany: vi.fn(async (_a?: any) => count()) },
     agentReviewRevision: { deleteMany: vi.fn(async (_a?: any) => count()) },
     policy: { deleteMany: vi.fn(async (_a?: any) => count(2)) },
     activeSession: { deleteMany: vi.fn(async (_a?: any) => count()) },

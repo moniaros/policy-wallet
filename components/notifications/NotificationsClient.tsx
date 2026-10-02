@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
+import { mergeHistoryPages } from "@/lib/notifications/history-pages"
 import { BellRing, CheckCheck, ChevronRight, Settings2 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -99,8 +100,13 @@ interface NotificationsClientProps {
     /** Role-specific page title; defaults to t.notifications.pageTitle. */
     title?: string
     initialData: {
+        nextCursor?: string | null
         history: Array<{
             event_id: string
+            event_key?: string
+            has_in_app?: boolean
+            delivery_channel?: string | null
+            action_href?: string | null
             event_type: string
             subject: string | null
             message: string | null
@@ -160,7 +166,26 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
     })
     const [markingRead, setMarkingRead] = useState(false)
 
-    const historyItems = useMemo(() => initialData.history.slice(0, 24), [initialData.history])
+    const [historyItems, setHistoryItems] = useState(initialData.history)
+    const [nextCursor, setNextCursor] = useState(initialData.nextCursor ?? null)
+    const [deliveries, setDeliveries] = useState(false)
+    const [loadingHistory, setLoadingHistory] = useState(false)
+    async function loadHistory(allDeliveries: boolean, append = false) {
+        if (loadingHistory) return
+        setLoadingHistory(true)
+        try {
+            const { getNotificationData } = await import("@/app/(protected)/notifications/actions")
+            const data = await getNotificationData({ deliveries: allDeliveries, before: append ? nextCursor ?? undefined : undefined })
+            if (!data) throw new Error("Notification history unavailable")
+            setHistoryItems(previous => {
+                return mergeHistoryPages(append ? previous : [], data.history)
+            })
+            setReadIds(previous => new Set([...(append ? previous : []), ...data.history.filter(row => !row.unread).map(row => row.event_id)]))
+            setNextCursor(data.nextCursor)
+            setDeliveries(allDeliveries)
+        } catch { toast.error(t.policyholderExperience.historyFailed) }
+        finally { setLoadingHistory(false) }
+    }
     const unreadCount = useMemo(
         () => historyItems.filter((e) => !readIds.has(e.event_id)).length,
         [historyItems, readIds]
@@ -186,6 +211,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
 
     const handleMarkAllRead = useCallback(async () => {
         setMarkingRead(true)
+        const priorReadIds = readIds
         const allIds = new Set(historyItems.map((e) => e.event_id))
         setReadIds(allIds)
         try {
@@ -193,7 +219,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
             await markAllNotificationsRead()
             toast.success(t.notifications.allMarkedRead)
         } catch {
-            setReadIds(new Set())
+            setReadIds(priorReadIds)
             toast.error(t.notifications.markAllReadFailed)
         } finally {
             setMarkingRead(false)
@@ -263,6 +289,11 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
                     </div>
                 </header>
 
+                <div className="mb-4 flex flex-wrap gap-2" aria-label={pageTitle}>
+                    <button type="button" className="pw-soft-button" aria-pressed={!deliveries} disabled={loadingHistory} onClick={() => void loadHistory(false)}>{t.policyholderExperience.inbox}</button>
+                    <button type="button" className="pw-soft-button" aria-pressed={deliveries} disabled={loadingHistory} onClick={() => void loadHistory(true)}>{t.policyholderExperience.deliveries}</button>
+                </div>
+                {deliveries && <p className="mb-4 text-sm text-muted-foreground">{t.policyholderExperience.deliveryHint}</p>}
                 {historyItems.length === 0 ? (
                     <section id="history" aria-label={pageTitle} className="pw-card pw-pad-roomy text-center">
                         <BellRing aria-hidden="true" className="mx-auto h-5 w-5 text-muted-foreground" />
@@ -323,6 +354,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
                                                             </p>
                                                             <p className="shrink-0 text-caption tabular-nums text-muted-foreground">{timeText}</p>
                                                         </div>
+                                                        {event.delivery_channel && <p className="mt-1 text-caption text-muted-foreground">{event.delivery_channel === "in_app" ? t.policyholderExperience.inbox : event.delivery_channel}</p>}
                                                         <ClampedMessage
                                                             text={fixMojibakeText(event.message || "")}
                                                             moreLabel={t.notifications.showFullMessage}
@@ -331,6 +363,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
                                                         />
                                                         {/* No channel chip. One row is one EVENT; which
                                                             pipe delivered it is not customer-facing. */}
+                                                        {event.action_href && <Link href={event.action_href} className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-primary dark:text-mint">{t.policyholderExperience.openConversations}</Link>}
                                                         {event.related_policy_id && (
                                                             <Link
                                                                 href={`/wallet/${event.related_policy_id}`}
@@ -355,6 +388,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
                         </div>
                     </section>
                 )}
+                {nextCursor && <button type="button" className="pw-soft-button mt-5" disabled={loadingHistory} onClick={() => void loadHistory(deliveries, true)}>{loadingHistory ? t.common.loading : t.policyholderExperience.olderNotifications}</button>}
                 </div>
             </div>
         </div>

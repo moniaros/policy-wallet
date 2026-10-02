@@ -20,6 +20,11 @@ vi.mock('@/lib/policy-access', () => ({
 }))
 vi.mock('@/lib/db', () => ({
     db: {
+        $transaction: async (fn: any) => fn({
+            policy: { findUniqueOrThrow: async () => ({ acordData: null }) },
+            policyAnalysisRun: { findMany: async () => [] },
+            policyDocument: { delete: (...args: any[]) => deleteDocument(...args) },
+        }),
         policyDocument: {
             findFirst: (...args: any[]) => findFirstDocument(...args),
             delete: (...args: any[]) => deleteDocument(...args),
@@ -178,6 +183,11 @@ describe('GET /api/v1/policies/[id]/documents/[docId] (authorized retrieval)', (
 })
 
 describe('DELETE /api/v1/policies/[id]/documents/[docId] (authorization + cleanup)', () => {
+    it('keeps the reachable record when the storage delete fails', async () => {
+        grantAccess(); deleteFile.mockResolvedValueOnce(false)
+        const response = await DELETE(makeRequest('DELETE'), ctx as any)
+        expect(response.status).toBe(500); expect(deleteDocument).not.toHaveBeenCalled()
+    })
     it('owner delete removes the row AND the backing storage object', async () => {
         findFirstDocument.mockResolvedValue({
             id: 'd1',

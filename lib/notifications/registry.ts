@@ -914,6 +914,18 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         emittedBy: "app/(protected)/renewals/actions.ts",
     },
 
+    prevention_reminder: {
+        businessEvent: "The person explicitly scheduled a private prevention follow-up",
+        copy: {
+            title: { el: "Το μικρό βήμα που επιλέξατε", en: "The small step you chose" },
+            message: { el: "Ζητήσατε μια υπενθύμιση. Δείτε την επιλογή σας στην ενότητα Πρόληψη & παροχές.", en: "You asked for a reminder. Review your choice in Prevention & benefits." },
+        },
+        triggerCondition: "Explicitly scheduled PreventionProgress row; unchanged source, owned current policy, not completed or dismissed",
+        category: "engagement", priority: "low", channels: FULL_REACH, recipients: ["owner"], transactional: false,
+        requiredAction: "claim_perk", escalation: null, retry: NO_RETRY, expiresAfterHours: 30 * DAY,
+        audit: "notification_event", status: "live", emittedBy: "lib/prevention/reminders.ts",
+        note: "No automatic health preference expansion; explicit per-item date. Generic copy contains no health or policy facts. Legacy check-up rows remain in their original scan.",
+    },
     benefit_reminder: {
         businessEvent: "The person asked to be reminded about a policy's annual check-up on a date they chose",
         copy: {

@@ -64,7 +64,7 @@ enum DeletionRequestStatus {
 
 /// @ropa purpose=service basis=contract subjects=policyholder|agent|admin retention=account_life erasure=anonymize art9=none
 model User {
-  agentReviewRevisions AgentReviewRevision[]
+  agentReviewRevisions            AgentReviewRevision[]
   id                              String                     @id @default(cuid()) @map("user_id")
   name                            String?
   email                           String                     @unique
@@ -158,14 +158,17 @@ model User {
   recommendations                 RecommendationInstance[]
   lifeEventInstances              LifeEventInstance[]
   riskProfileVersions             RiskProfileVersion[]
+  preventionBenefitUses           PreventionBenefitUse[]
+  preventionProgress              PreventionProgress[]
+  preventionCheckIns              PreventionCheckIn[]
   healthBenefitUsages             HealthBenefitUsage[]
   healthRiskAssessments           HealthRiskAssessment[]
   policyNotes                     PolicyNote[]
-  healthSharesGiven               HealthShare[]    @relation("HealthShareSharer")
-  healthSharesReceived            HealthShare[]    @relation("HealthShareAdvisor")
+  healthSharesGiven               HealthShare[]              @relation("HealthShareSharer")
+  healthSharesReceived            HealthShare[]              @relation("HealthShareAdvisor")
   partnerReferrals                PartnerReferral[]
-  walletsOwned                    WalletMembership[]     @relation("WalletOwner")
-  walletMemberships               WalletMembership[]     @relation("WalletMember")
+  walletsOwned                    WalletMembership[]         @relation("WalletOwner")
+  walletMemberships               WalletMembership[]         @relation("WalletMember")
 
   @@index([taxId])
   @@map("users")
@@ -375,7 +378,9 @@ model TenantMembership {
 
 /// @ropa purpose=service basis=contract subjects=policyholder retention=account_life erasure=delete art9=none
 model Policy {
-  agentReviewRevisions AgentReviewRevision[]
+  preventionBenefitUses   PreventionBenefitUse[]
+  preventionProgress      PreventionProgress[]
+  agentReviewRevisions    AgentReviewRevision[]
   id                      String                 @id @default(cuid()) @map("policy_id")
   ownerUserId             String                 @map("owner_user_id")
   createdByUserId         String                 @map("created_by_user_id")
@@ -449,26 +454,26 @@ model PolicyDocument {
   /// those are resolved by parsing fileUrl, which is exactly the fragility this
   /// removes: a project-host change or a signed-URL variant makes the URL
   /// unparseable, and the document becomes unreachable with no way back.
-  storageBucket   String?         @map("storage_bucket")
+  storageBucket    String?         @map("storage_bucket")
   /// Object key WITHIN the bucket. The authoritative locator.
-  storageKey      String?         @map("storage_key")
+  storageKey       String?         @map("storage_key")
   /// Which storage system holds it. One value today; named so a second one can
   /// be added without guessing at existing rows.
-  storageProvider String?         @default("supabase") @map("storage_provider")
+  storageProvider  String?         @default("supabase") @map("storage_provider")
   /// Canonical MIME type, derived from verified CONTENT at upload time — not
   /// from the client's claim and not from the filename extension.
-  mimeType        String?         @map("mime_type")
+  mimeType         String?         @map("mime_type")
   /// What kind of document this is, from the AI classifier (see
   /// lib/services/ai/document-kind.ts): policy_schedule, terms_and_conditions,
   /// renewal_notice, forms, certificate, invoice, other.
-  documentKind    String?         @map("document_kind")
+  documentKind     String?         @map("document_kind")
   /// The document gate's verdict (lib/ingestion/document-gate.ts): 'validated'
   /// | 'requires_review' | 'rejected'. NULL = uploaded before the gate existed;
   /// the orchestrator validates such rows lazily before its first model call.
-  validationStatus String?        @map("validation_status")
+  validationStatus String?         @map("validation_status")
   /// The full DocumentValidationResult: type, confidences, branches, evidence. No text, no filename.
-  validationJson   Json?          @map("validation_json")
-  validatedAt      DateTime?      @map("validated_at")
+  validationJson   Json?           @map("validation_json")
+  validatedAt      DateTime?       @map("validated_at")
   /// The period this DOCUMENT covers, as distinct from the policy's period.
   ///
   /// A Greek policy is a chain: the πρωτασφαλιστήριο carries the full terms and
@@ -479,17 +484,17 @@ model PolicyDocument {
   ///
   /// Null on every row predating this column, and on documents that state no
   /// period of their own (a terms booklet, an invoice).
-  effectiveFrom   DateTime?       @map("effective_from")
-  effectiveTo     DateTime?       @map("effective_to")
+  effectiveFrom    DateTime?       @map("effective_from")
+  effectiveTo      DateTime?       @map("effective_to")
   /// Monotonic per policy+document lineage. Everything is version 1 today; the
   /// column exists so replacing a document can supersede rather than destroy,
   /// without restructuring storage.
-  version         Int             @default(1)
+  version          Int             @default(1)
   /// Set when a newer version replaces this one, so history is preserved and
   /// the current document is unambiguous.
-  supersededById  String?         @unique @map("superseded_by_id")
-  supersededBy    PolicyDocument? @relation("DocumentVersion", fields: [supersededById], references: [id], onDelete: SetNull)
-  supersedes      PolicyDocument? @relation("DocumentVersion")
+  supersededById   String?         @unique @map("superseded_by_id")
+  supersededBy     PolicyDocument? @relation("DocumentVersion", fields: [supersededById], references: [id], onDelete: SetNull)
+  supersedes       PolicyDocument? @relation("DocumentVersion")
 
   policy   Policy @relation(fields: [policyId], references: [id], onDelete: Cascade)
   uploader User   @relation(fields: [uploadedByUserId], references: [id])
@@ -1354,9 +1359,9 @@ model PolicyAnalysisRun {
   createdAt               DateTime          @default(now()) @map("created_at")
   updatedAt               DateTime          @updatedAt @map("updated_at")
 
-  policy Policy               @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  user   User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  steps  PolicyAnalysisStep[]
+  policy       Policy               @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps        PolicyAnalysisStep[]
   gapInstances GapInstance[]
 
   @@index([policyId, createdAt])
@@ -2008,27 +2013,27 @@ model PartnerVendor {
 /// offers across edits. An offer renders only while BOTH it and its vendor
 /// are active and now is inside the validity window.
 model PartnerOffer {
-  id               String        @id @default(cuid()) @map("offer_id")
-  vendorId         String        @map("vendor_id")
-  slug             String        @unique
+  id               String            @id @default(cuid()) @map("offer_id")
+  vendorId         String            @map("vendor_id")
+  slug             String            @unique
   title            Json // { el, en }
   description      Json // { el, en }
-  offerType        String        @map("offer_type") // free_service|discount|gift
-  redemptionMethod String        @map("redemption_method") // link|code|phone
-  redemptionUrl    String?       @map("redemption_url")
-  redemptionCode   String?       @map("redemption_code")
-  redemptionPhone  String?       @map("redemption_phone")
-  includedInTiers  String[]      @map("included_in_tiers")
-  profileTags      String[]      @map("profile_tags")
-  linesOfBusiness  String[]      @map("lines_of_business")
-  validFrom        DateTime?     @map("valid_from")
-  validUntil       DateTime?     @map("valid_until")
-  termsUrl         String?       @map("terms_url")
-  isActive         Boolean       @default(false) @map("is_active")
-  sortOrder        Int           @default(0) @map("sort_order")
-  createdAt        DateTime      @default(now()) @map("created_at")
-  updatedAt        DateTime      @updatedAt @map("updated_at")
-  vendor           PartnerVendor @relation(fields: [vendorId], references: [id])
+  offerType        String            @map("offer_type") // free_service|discount|gift
+  redemptionMethod String            @map("redemption_method") // link|code|phone
+  redemptionUrl    String?           @map("redemption_url")
+  redemptionCode   String?           @map("redemption_code")
+  redemptionPhone  String?           @map("redemption_phone")
+  includedInTiers  String[]          @map("included_in_tiers")
+  profileTags      String[]          @map("profile_tags")
+  linesOfBusiness  String[]          @map("lines_of_business")
+  validFrom        DateTime?         @map("valid_from")
+  validUntil       DateTime?         @map("valid_until")
+  termsUrl         String?           @map("terms_url")
+  isActive         Boolean           @default(false) @map("is_active")
+  sortOrder        Int               @default(0) @map("sort_order")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  vendor           PartnerVendor     @relation(fields: [vendorId], references: [id])
   referrals        PartnerReferral[]
 
   @@index([isActive, sortOrder])
@@ -2705,8 +2710,8 @@ model HealthRiskAssessment {
 
 /// @ropa purpose=intermediary basis=consent subjects=policyholder|agent retention=account_life erasure=delete art9=body,feedbackNote,privateAdvice
 model AgentReviewRevision {
-  privateAdvice Json? @map("private_advice")
-  reuseApproved Boolean @default(false) @map("reuse_approved")
+  privateAdvice   Json?     @map("private_advice")
+  reuseApproved   Boolean   @default(false) @map("reuse_approved")
   id              String    @id @default(cuid())
   userId          String    @map("user_id")
   policyId        String    @map("policy_id")
@@ -2799,4 +2804,69 @@ model PartnerReferral {
   @@index([userId, offerId])
   @@index([vendorId, createdAt])
   @@map("partner_referrals")
+}
+
+/// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=itemKey,status,barrier,remindAt,knowsProcedure,plannedFor
+/// Private self-reported progress; never a provider-confirmed use of a benefit.
+model PreventionProgress {
+  periodKey      String?   @map("period_key")
+  knowsProcedure Boolean?  @map("knows_procedure")
+  plannedFor     DateTime? @map("planned_for") @db.Date
+  id             String    @id @default(cuid())
+  userId         String    @map("user_id")
+  policyId       String    @map("policy_id")
+  itemKey        String    @map("item_key")
+  sourceVersion  String    @map("source_version")
+  status         String
+  consentVersion String?   @map("consent_version")
+  barrier        String?
+  helpful        Boolean?
+  remindAt       DateTime? @map("remind_at") @db.Date
+  remindedAt     DateTime? @map("reminded_at")
+  completedAt    DateTime? @map("completed_at")
+  firstActedAt   DateTime  @default(now()) @map("first_acted_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  policy         Policy    @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemKey])
+  @@index([remindAt, remindedAt])
+  @@map("prevention_progress")
+}
+
+/// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=answers
+/// Optional factual check-in, explicitly consented; no score and no agent sharing.
+model PreventionCheckIn {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  consentVersion String   @map("consent_version")
+  answers        Json
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("prevention_check_ins")
+}
+
+/// @ropa purpose=service basis=consent subjects=policyholder retention=account_life erasure=delete art9=itemKey,usedOn,status
+/// Self-reported service use for a stated period; not step completion or provider confirmation.
+model PreventionBenefitUse {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  policyId       String   @map("policy_id")
+  itemKey        String   @map("item_key")
+  periodKey      String   @map("period_key")
+  sourceVersion  String   @map("source_version")
+  status         String
+  usedOn         DateTime? @map("used_on") @db.Date
+  consentVersion String?  @map("consent_version")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  policy         Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemKey, periodKey])
+  @@index([policyId])
+  @@map("prevention_benefit_uses")
 }

@@ -17,7 +17,8 @@ import {
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
-export default async function WalletPage() {
+export default async function WalletPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+    const { status } = await searchParams
     const { dbUser } = await getAuthenticatedUser()
     const language = resolveUserLanguage(dbUser.preferredLanguage)
     const roleCopy = getRoleCopy(language)
@@ -212,6 +213,7 @@ export default async function WalletPage() {
             acordData: p.acordData,
             startDate: p.startDate.toISOString(),
             endDate: p.endDate.toISOString(),
+            lastAnalyzedAt: p.lastAnalyzedAt?.toISOString() ?? null,
             lastUpdated: p.updatedAt.toISOString(),
             premiumAmount: p.premiumAmount ? Number(p.premiumAmount) : undefined,
             premiumCurrency: p.premiumCurrency || 'EUR',
@@ -235,7 +237,7 @@ export default async function WalletPage() {
 
     return (
         <div className="pw-page-shell">
-            <PolicyWalletClient policies={mappedPolicies} user={user} showTour={showTour} tier={tier} />
+            <PolicyWalletClient initialStatusFilter={status} policies={mappedPolicies} user={user} showTour={showTour} tier={tier} />
         </div>
     )
 }

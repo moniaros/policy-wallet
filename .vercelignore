@@ -1,0 +1,6 @@
+# Local presentation deliverables and review evidence are not application assets.
+output/
+docs/evidence/
+test-results/
+playwright-report/
+playwright/.auth/

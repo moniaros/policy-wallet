@@ -1,3 +1,4 @@
+/** ARCHIVE ONLY: no runtime creation, display or sharing. Retained to interpret historical export records. */
 /**
  * The health self-assessment (spec v2 §9.2): a fixed questionnaire and a
  * deterministic point table. Nothing here is a model's output, a diagnosis or

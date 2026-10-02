@@ -144,6 +144,8 @@ export interface MatchedProduct {
 }
 
 export interface RecommendationOutput extends RecommendationAssessment {
+    /** Exact source policy for policy-derived findings; never inferred from branch. */
+    sourcePolicyId?: string | null
     id: string
     lineOfBusiness: string
     ruleId: string | null
@@ -897,7 +899,7 @@ export async function getActiveRecommendations(
                 },
             },
             // Evidence ladder passthrough — lets the card show advisor weight.
-            gapInstance: { select: { validationState: true, definition: { select: { slug: true } } } },
+            gapInstance: { select: { policyId: true, validationState: true, definition: { select: { slug: true } } } },
         },
         orderBy: [{ createdAt: "desc" }],
     }))
@@ -945,6 +947,7 @@ export async function getActiveRecommendations(
         status: r.status,
         createdAt: r.createdAt,
         gapValidationState: r.gapInstance?.validationState ?? null,
+        sourcePolicyId: r.gapInstance?.policyId ?? null,
         citation: recommendationCitation(r),
         // Null on rows written by the pre-assessment engine; the card renders
         // without a status chip rather than inventing one.

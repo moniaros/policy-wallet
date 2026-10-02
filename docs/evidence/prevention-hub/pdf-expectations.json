@@ -1,0 +1,197 @@
+[
+  {
+    "sample": "PW-PREV-01",
+    "sha256": "ac5ef17a9df90c1997bc0bc51cb242375003a1a50a25abd7be926ba9ea0bd9f0",
+    "expectedPages": 32,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-02",
+    "sha256": "3e21d70c4873827208f2eb93e2118624fb35e585ac91e43d8d6fbae38cd7adeb",
+    "expectedPages": 34,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-03",
+    "sha256": "9d23f965dc93e5e448d29f2eb818b19fe61ddbffe32f502d5e80707ad8e86227",
+    "expectedPages": 22,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-04",
+    "sha256": "a8514a5627ef623d450af0f7c6b30ca56c898d3c779c12038a8e9f2f08b36b90",
+    "expectedPages": 23,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-05",
+    "sha256": "86d5f09e52207b49ab34b8ac9bb1b2affc9175910f539115a7aa1f04ec018420",
+    "expectedPages": 24,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-06",
+    "sha256": "fc05c4c0ba66457547661c68fb7b06704af74a06c908997eb97b888bc58a7b0f",
+    "expectedPages": 28,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": [
+      {
+        "page": 5,
+        "snippet": "Γραμμή Βοήθειας στον",
+        "role": "assistance",
+        "interpretation": "Cyber assistance line; availability stated, not digital-security training."
+      }
+    ]
+  },
+  {
+    "sample": "PW-PREV-07",
+    "sha256": "550b03d5dd84fd77c093590cdd335fcd1fee6041c286cfd20a15e0c5fcc7420d",
+    "expectedPages": 21,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": [
+      {
+        "page": 9,
+        "snippet": "προληπτικά μέτρα",
+        "role": "condition",
+        "interpretation": "Loss-prevention obligations are not a service benefit."
+      }
+    ]
+  },
+  {
+    "sample": "PW-PREV-08",
+    "sha256": "6fdd3375e54b09335fa07329bfe469626925570bdab932274907cb6cd11229c7",
+    "expectedPages": 24,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-09",
+    "sha256": "82af45d8346701d001e05772a959358a08c8939d123b72be22ce89e8204a68a6",
+    "expectedPages": 1,
+    "review": "Visually checked all one page: marketing cover for Full Health Plus, no insured-specific terms. Must not become an active policy or personal benefit.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-10",
+    "sha256": "79045c5023f28ad10d720a726ed7fc2026931c714057b85896fa9b76d3a9f63a",
+    "expectedPages": 24,
+    "review": "Application booklet: no personal entitlement inferred from a form or scheme description.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-11",
+    "sha256": "27abe8d4d476a43df059657d88f8518a96e168291efc20b5eef1a4dcae315249",
+    "expectedPages": 11,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": [
+      {
+        "page": 10,
+        "snippet": "Προνομιακός τιμοκατάλογος εξετάσεων",
+        "role": "discount",
+        "interpretation": "Preferential diagnostic prices, not a free check-up."
+      },
+      {
+        "page": 8,
+        "snippet": "Προληπτικές γενικές εξετάσεις",
+        "role": "exclusion",
+        "interpretation": "Mention inside exclusions; not an available benefit."
+      }
+    ]
+  },
+  {
+    "sample": "PW-PREV-12",
+    "sha256": "583311aa4ad26736e2f6d47c6be7bd654042a45d8b8df6bfc512a7eb8b1041f1",
+    "expectedPages": 113,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": [
+      {
+        "page": 53,
+        "snippet": "έναν προληπτικό έλεγχο υγείας",
+        "role": "conditional_benefit",
+        "interpretation": "Annual check-up programme, subject to schedule and contracted centre; do not override exclusions in other covers."
+      }
+    ]
+  },
+  {
+    "sample": "PW-PREV-13",
+    "sha256": "d59f36cc56568d1a8a57cf79c1a325ae55589aaa0acbf5c154db7498bbd2e4b7",
+    "expectedPages": 10,
+    "review": "Renewal chain: sparse/partially image-based schedule, no inheritance of old benefits without linked source and dates.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-14",
+    "sha256": "ce43464ea2bdbb177a8a50a330c48f728a051ef3e8185487b10603d9b613c1e0",
+    "expectedPages": 109,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": [
+      {
+        "page": 42,
+        "snippet": "Προληπτικός έλεγχος (Check up)",
+        "role": "conditional_benefit",
+        "interpretation": "Separate insured person/programme. Do not inherit adult eligibility or sum with prenatal entitlement."
+      }
+    ]
+  },
+  {
+    "sample": "PW-PREV-15",
+    "sha256": "adef4bc64034ac93b3b91545facbc5df9974ea4a416df8aeaf41d6805d61ef90",
+    "expectedPages": 33,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": [
+      {
+        "page": 19,
+        "snippet": "salvage charges incurred in preventing a loss",
+        "role": "indemnity",
+        "interpretation": "Salvage expense cover is not an offered preventive service."
+      }
+    ]
+  },
+  {
+    "sample": "PW-PREV-16",
+    "sha256": "e2e0c5415969be93ae026ddf78eeb5efe9187fb338e58dbdf3d6acaff392861b",
+    "expectedPages": 23,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-17",
+    "sha256": "279bbf32bd0a05917894ba6dda7a9c41708f1bd6dc66b8db606461b549232c7a",
+    "expectedPages": 28,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": [
+      {
+        "page": 5,
+        "snippet": "Γραμμή Βοήθειας στον",
+        "role": "assistance",
+        "interpretation": "Separate policy: same wording must not merge rights."
+      }
+    ]
+  },
+  {
+    "sample": "PW-PREV-18",
+    "sha256": "6fc01224b5b2f419b9830a190c9981a2f80c74006ce6e46ae06b2fe850ce6760",
+    "expectedPages": 4,
+    "review": "Visually checked all four pages: roadside/medical/travel assistance p1-2; p3 mentions preferential health services for family, no specific blood-test list or free claim; p4 blank. Image-only: local quote verification must remain unknown.",
+    "expectedTextSpans": []
+  },
+  {
+    "sample": "PW-PREV-19",
+    "sha256": "f8329fcccbbdef778d1344f98daea51d875b729f6a374a79e7788ee76fdf2686",
+    "expectedPages": 28,
+    "review": "Full local text screened for benefit/service clauses. No positive entitlement inferred from a lack of matches; needs semantic extraction review.",
+    "expectedTextSpans": [
+      {
+        "page": 20,
+        "snippet": "δεν καλύπτονται οι γενικές ιατρικές εξετάσεις",
+        "role": "exclusion",
+        "interpretation": "Crew health expenses explicitly exclude general check-up; do not turn this mention into a perk."
+      }
+    ]
+  }
+]

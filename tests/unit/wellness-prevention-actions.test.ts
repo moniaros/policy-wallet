@@ -3,11 +3,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 vi.mock("@/lib/auth-helpers", () => ({ getAuthenticatedUser: vi.fn(async () => ({ dbUser: { id: "u1", roles: "policyholder" } })) }))
 vi.mock("@/lib/policy-access", () => ({ getPolicyAccess: vi.fn() }))
-vi.mock("@/lib/notifications/dispatch", () => ({ emit: vi.fn(async () => ({})) }))
+vi.mock("@/lib/notifications/dispatch", () => ({ emit: vi.fn(async () => ({written:1,deduped:false})) }))
 vi.mock("@/lib/services/collaboration.service", () => ({ collaborationService: { ensureAutomationThread: vi.fn(async () => ({ id: "t1" })) } }))
 vi.mock("@/lib/db", () => ({
     db: {
-        healthBenefitUsage: { upsert: vi.fn(async () => ({})), findMany: vi.fn(), update: vi.fn(async () => ({})), updateMany: vi.fn(async () => ({ count: 0 })) },
+        $transaction: vi.fn(async cb => cb(db)),
+        healthBenefitUsage: { upsert: vi.fn(async () => ({})), findMany: vi.fn(), update: vi.fn(async () => ({})), updateMany: vi.fn(async () => ({ count: 1 })) },
         userNotificationSettings: { upsert: vi.fn(async () => ({})), findMany: vi.fn() },
         customerRelationship: { findFirst: vi.fn() },
         healthRiskAssessment: { findFirst: vi.fn() },
@@ -41,10 +42,12 @@ describe("setCheckupIntent — the owner's own choice (brief P1)", () => {
         expect(arg.update).toMatchObject({ status: "completed", intent: null, remindAt: null })
         expect(Object.keys(arg.update)).not.toContain("note")
     })
-    it("«later» needs a date inside tomorrow … one year, and resets remindedAt", async () => {
+    it("«later» may have no reminder; a chosen date must be inside tomorrow … one year", async () => {
         vi.mocked(getPolicyAccess).mockResolvedValue({ exists: true, isOwner: true } as any)
         const w = reminderWindow()
-        expect(await setCheckupIntent({ policyId: "p1", choice: "later" })).toEqual({ error: "INVALID_DATE" })
+        expect(await setCheckupIntent({ policyId: "p1", choice: "later" })).toMatchObject({ ok: true })
+        expect((vi.mocked(db.healthBenefitUsage.upsert).mock.calls[0][0] as any).update.remindAt).toBeNull()
+        vi.mocked(db.healthBenefitUsage.upsert).mockClear()
         expect(await setCheckupIntent({ policyId: "p1", choice: "later", remindAt: "2000-01-01" })).toEqual({ error: "INVALID_DATE" })
         await setCheckupIntent({ policyId: "p1", choice: "later", remindAt: w.min })
         const arg = vi.mocked(db.healthBenefitUsage.upsert).mock.calls[0][0] as any
@@ -111,7 +114,7 @@ describe("check-up reminder scan — only what the person asked for", () => {
         expect(r.reminded).toBe(1)
         expect((vi.mocked(emit).mock.calls[0][0] as any).dedupeKey).toBe("benefit_reminder:r1:2026-09-24")
         expect((vi.mocked(emit).mock.calls[0][0] as any).relatedObjectType).toBeUndefined() // never mirrored to family
-        expect(vi.mocked(db.healthBenefitUsage.update).mock.calls[0][0]).toMatchObject({ where: { id: "r1" } })
+        expect(vi.mocked(db.healthBenefitUsage.updateMany).mock.calls[0][0]).toMatchObject({ where: { id: "r1", remindedAt: null } })
     })
     it.each([
         ["deleted", null],
@@ -134,15 +137,15 @@ describe("health share — consent, own living relationship, no values in the ch
     })
     it("only the caller's own, not-ended relationship", async () => {
         vi.mocked(db.customerRelationship.findFirst).mockResolvedValue(null)
-        expect(await shareHealthWithAdvisor({ relationshipId: "rel", scope: "assessment", consent: true })).toEqual({ error: "NOT_FOUND" })
+        expect(await shareHealthWithAdvisor({ relationshipId: "rel", scope: "profile", consent: true })).toEqual({ error: "NOT_FOUND" })
         const where = (vi.mocked(db.customerRelationship.findFirst).mock.calls[0][0] as any).where
         expect(where).toMatchObject({ id: "rel", policyholderUserId: "u1" })
         expect(where.status.notIn).toEqual(["inactive", "terminated"])
     })
     it("writes a minimised snapshot; the notification carries no health value", async () => {
         vi.mocked(db.customerRelationship.findFirst).mockResolvedValue({ id: "rel", agentUserId: "ag" } as any)
-        vi.mocked(db.healthRiskAssessment.findFirst).mockResolvedValue({ createdAt: new Date("2026-09-20"), scores: [{ category: "metabolic", score: 55, band: "elevated", checks: ["glucose"] }] } as any)
-        expect(await shareHealthWithAdvisor({ relationshipId: "rel", scope: "assessment", consent: true })).toEqual({ ok: true })
+        vi.mocked(db.policyholderProfile.findUnique).mockResolvedValue({ smokingStatus: "never" } as any)
+        expect(await shareHealthWithAdvisor({ relationshipId: "rel", scope: "profile", consent: true })).toEqual({ ok: true })
         const snap = (vi.mocked(db.healthShare.upsert).mock.calls[0][0] as any).create.snapshot
         expect(JSON.stringify(snap)).not.toMatch(/glucose|checks/)
         const note = vi.mocked(emit).mock.calls[0][0] as any

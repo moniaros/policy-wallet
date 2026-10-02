@@ -98,25 +98,17 @@ describe("every rendered count is a door", () => {
         for (const key of keys) expect(registry, key).toContain(`"${key}"`)
     })
 
-    it("the home tells its story in order: next step, situation, findings, renewals, plan", () => {
-        // Story rebuild (2026-09-07): LEVEL 1 is the person's situation — the
-        // one next step, the facts, the map, their own picture and what they can
-        // tell us (the life-event prompt) — BEFORE what the engine produced.
-        // LEVEL 2 is "is there a problem?": the findings first, then what is
-        // dated (a renewal inside 30 days also becomes the banner's step). The
-        // plan follows, never precedes, the problems it answers.
+    it("puts urgent work, policy details and prevention before optional setup", () => {
         const home = readFileSync("app/(protected)/dashboard/PolicyholderHome.tsx", "utf8")
         const banner = home.indexOf("<NextStepBanner")
-        const hero = home.indexOf("<ProtectionStatusHero")
-        const life = home.indexOf("<LifeEventPromptCard")
-        const attention = home.indexOf('id="attention"')
+        const policies = home.indexOf('id="home-policies-heading"')
+        const prevention = home.indexOf('id="prevention"')
         const renewals = home.indexOf("<RenewalsTimelineCard")
-        const plan = home.indexOf('id="plan"')
+        const plan = home.indexOf('<details id="plan"')
         expect(banner).toBeGreaterThan(0)
-        expect(banner).toBeLessThan(hero)
-        expect(hero).toBeLessThan(life)
-        expect(life).toBeLessThan(attention)
-        expect(attention).toBeLessThan(renewals)
+        expect(banner).toBeLessThan(policies)
+        expect(policies).toBeLessThan(prevention)
+        expect(prevention).toBeLessThan(renewals)
         expect(renewals).toBeLessThan(plan)
     })
 })

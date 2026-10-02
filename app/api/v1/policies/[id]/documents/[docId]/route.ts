@@ -9,6 +9,8 @@ import { getPolicyAccess } from "@/lib/policy-access"
 import { signStoredObject, type SignedUrlFailure } from "@/lib/supabase/storage-download"
 import { DOWNLOAD_SIGNED_URL_EXPIRY_SECONDS } from "@/lib/constants/time"
 import { z } from "zod"
+import { removeComposedDocument } from '@/lib/prevention/remove-document'
+import { Prisma } from '@prisma/client'
 
 const documentParamsSchema = z.object({
     id: z.string().min(1),
@@ -132,7 +134,7 @@ function documentError(
 <style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
 background:#f7f7f5;color:#111;font:500 16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:24px}
 main{max-width:28rem;text-align:center}p{margin:0 0 1.5rem}
-a{display:inline-block;padding:.85rem 1.5rem;border-radius:999px;background:#0f5132;color:#fff;
+a{display:inline-block;padding:.85rem 1.5rem;border-radius:999px;background:#29685B;color:#fff;
 text-decoration:none;font-weight:700}
 @media(prefers-color-scheme:dark){body{background:#0b0b0b;color:#f5f5f5}}</style></head>
 <body><main><p>${escape(message)}</p>
@@ -185,22 +187,16 @@ export const DELETE = withApiGuard(
 
             if (!document) return createApiError("NOT_FOUND", "Document not found", 404)
 
-            await db.policyDocument.delete({
-                where: { id: docId }
+            // Keep the reachable record if storage deletion fails. Derived compositions
+            // are erased with the row, rather than surviving in an archived run/export.
+            if (!await deleteFile(document.fileUrl)) return createApiError('INTERNAL_ERROR', 'Delete failed', 500)
+            await db.$transaction(async tx => {
+                const current = await tx.policy.findUniqueOrThrow({ where: { id }, select: { acordData: true } })
+                if (current.acordData) await tx.policy.update({ where: { id }, data: { acordData: removeComposedDocument(current.acordData, docId) as Prisma.InputJsonValue } })
+                const runs = await tx.policyAnalysisRun.findMany({ where: { policyId: id, resultJson: { not: Prisma.DbNull } }, select: { id: true, resultJson: true } })
+                for (const run of runs) await tx.policyAnalysisRun.update({ where: { id: run.id }, data: { resultJson: removeComposedDocument(run.resultJson, docId) as Prisma.InputJsonValue } })
+                await tx.policyDocument.delete({ where: { id: docId } })
             })
-
-            // Remove the backing storage object too — deleting only the DB row
-            // left the file orphaned in the bucket. Best-effort: never fail the
-            // request (the record is already gone), just log on failure.
-            try {
-                await deleteFile(document.fileUrl)
-            } catch (storageError) {
-                logger('warn', 'Document storage delete failed (row already removed)', {
-                    docId,
-                    policyId: id,
-                    error: storageError instanceof Error ? storageError.message : String(storageError),
-                })
-            }
 
             await (db.activityLog as any).create({
                 data: {

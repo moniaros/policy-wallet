@@ -2,7 +2,7 @@
 
 import { getTranslations } from "@/lib/i18n"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
 import {
@@ -28,6 +28,7 @@ import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { formatCurrency } from "@/lib/i18n/format"
 import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyState"
 import type { SmartCardContent } from "@/lib/services/gap-engine/portfolio-rules"
+import type { Mitigation } from "@/lib/services/gap-engine/risk-types"
 import { LockedInsightPreview } from "@/components/monetization/LockedInsightPreview"
 import { reasonCountKey } from "@/lib/instrumentation/reason-count-keys"
 import { CardHead } from "@/components/dashboard/home/CardHead"
@@ -54,6 +55,7 @@ interface Recommendation {
     riskStatus?: "not_applicable" | "needs_review" | "already_covered" | "protection_gap" | "opportunity" | "applicable" | null
     confidence?: "high" | "medium" | "low" | null
     expectedImpact?: { en: string; el: string } | null
+    mitigations?: Mitigation[] | null
     suggestedSolution?: { en: string; el: string } | null
     eligibilityNote?: { en: string; el: string } | null
     /**
@@ -171,6 +173,24 @@ export function RecommendationCards({
     const lang = language
     const t = (el: string, en: string) => (lang === "el" ? el : en)
     const home = getTranslations(lang).dashboard.home
+    const experience = getTranslations(lang).policyholderExperience
+
+    // A home-screen finding must remain reachable even when outside the first three.
+    useEffect(() => {
+        const openLinkedFinding = () => {
+            const id = window.location.hash.replace(/^#recommendation-/, "")
+            if (!recommendations.some(rec => rec.id === id)) return
+            setShowAll(true)
+            setExpandedId(id)
+        }
+        openLinkedFinding()
+        window.addEventListener("hashchange", openLinkedFinding)
+        return () => window.removeEventListener("hashchange", openLinkedFinding)
+    }, [recommendations])
+    useEffect(() => {
+        if (!showAll || !expandedId || window.location.hash !== `#recommendation-${expandedId}`) return
+        document.getElementById(`recommendation-${expandedId}`)?.scrollIntoView({ block: "start" })
+    }, [showAll, expandedId])
 
     const visible = recommendations.filter((r) => !dismissedIds.has(r.id))
     const displayed = showAll ? visible : visible.slice(0, 3)
@@ -292,7 +312,7 @@ export function RecommendationCards({
                     const smart = rec.ruleId ? smartContent[rec.ruleId] : undefined
                     const reviewHref = smart?.reviewHref ?? null
                     const isAgentCard = rec.ruleId === "no_agent_connected"
-                    const reviewLabel = t("Έλεγχος", "Review this")
+                    const reviewLabel = reviewHref ? experience.openPolicy : experience.openExplanation
                     // min-h-11: `py-1.5` on `text-micro` renders 28px tall, and this
                     // is a real navigation control, not a badge — it measured
                     // 88x28 on /protection at 320/390/430.
@@ -302,7 +322,8 @@ export function RecommendationCards({
                     return (
                         <div
                             key={rec.id}
-                            className="pw-subcard p-4"
+                            id={`recommendation-${rec.id}`}
+                            className="pw-subcard scroll-mt-24 p-4"
                         >
                             <div className="flex items-start gap-3">
                                 {/* LOB icon */}
@@ -490,10 +511,23 @@ export function RecommendationCards({
                                                     </p>
                                                 </div>
                                             )}
+                                            {rec.mitigations?.some(step => step.kind !== "transfer") && (
+                                                <section aria-label={experience.practicalSteps} className="pw-subcard p-3">
+                                                    <h4 className="text-sm font-semibold text-foreground">{experience.practicalSteps}</h4>
+                                                    <ul className="mt-2 space-y-3">
+                                                        {rec.mitigations.filter(step => step.kind !== "transfer").map((step, index) => (
+                                                            <li key={`${step.kind}-${index}`}>
+                                                                <p className="text-sm font-medium">{step.label[lang]}</p>
+                                                                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.detail[lang]}</p>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </section>
+                                            )}
                                             {rec.suggestedSolution && (
                                                 <div>
                                                     <p className="text-caption font-semibold text-muted-foreground">
-                                                        {t("Τι το καλύπτει", "What covers it")}
+                                                        {experience.discussInsurance}
                                                     </p>
                                                     <p className="mt-0.5 text-xs leading-relaxed text-foreground/80">
                                                         {rec.suggestedSolution[lang] || rec.suggestedSolution.en}
@@ -592,26 +626,8 @@ export function RecommendationCards({
                                                     )}
                                                 </div>
                                             )}
-                                            {/* Was "Ενδεικτικό κόστος στην αγορά" / "Typical market cost" — a
-                                                quantified claim about the Greek market from a flat table of eleven
-                                                numbers that ignores age, vehicle, sum insured and every other
-                                                factor that actually prices a policy. It is an order of magnitude,
-                                                and now says so. */}
-                                            {!rec.matchedProduct && rec.estimatedCostEur != null && (
-                                                <p className="text-xs font-medium text-foreground/80">
-                                                    {t("Τάξη μεγέθους ασφαλίστρου", "Rough order of magnitude")}:{" "}
-                                                    <span className="text-primary dark:text-mint font-semibold">
-                                                        ~{formatCurrency(rec.estimatedCostEur, lang, { decimals: 0 })}
-                                                        {t("/έτος", "/year")}
-                                                    </span>
-                                                    <span className="block text-muted-foreground">
-                                                        {t(
-                                                            "Το πραγματικό ασφάλιστρο εξαρτάται από τα δικά σας στοιχεία (ηλικία, ασφαλιζόμενο κεφάλαιο, ιστορικό).",
-                                                            "Your actual premium depends on your own details (age, sum insured, history)."
-                                                        )}
-                                                    </span>
-                                                </p>
-                                            )}
+                                            {/* A flat branch-level estimate has no quote or evidence
+                                                provenance, so it is not customer-facing pricing. */}
                                         </div>
                                     )}
 
@@ -625,6 +641,7 @@ export function RecommendationCards({
                                         ) : (
                                             <button
                                                 type="button"
+                                                aria-expanded={isExpanded}
                                                 onClick={() => setExpandedId(isExpanded ? null : rec.id)}
                                                 className={`${reviewClasses} cursor-pointer`}
                                             >
@@ -658,6 +675,7 @@ export function RecommendationCards({
                                         {reviewHref && (
                                             <button
                                                 type="button"
+                                                aria-expanded={isExpanded}
                                                 onClick={() => setExpandedId(isExpanded ? null : rec.id)}
                                                 className="ml-auto flex items-center gap-1 text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer"
                                             >

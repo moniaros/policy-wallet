@@ -2,13 +2,12 @@
 
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
-import type { Prisma } from "@prisma/client"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getPolicyAccess } from "@/lib/policy-access"
 import { athensDate } from "@/lib/wellness/nudges"
+import { validReminderDate } from "@/lib/prevention/input"
 import { reminderWindow } from "@/lib/wellness/checkup-benefit"
-import { ASSESSMENT_QUESTIONS, HEALTH_CONSENT_VERSION, isCompleteAnswers, scoreAssessment, type Answers } from "@/lib/wellness/scoring"
 
 /**
  * Every export here is a public endpoint: the subject is the session, never a
@@ -18,7 +17,7 @@ import { ASSESSMENT_QUESTIONS, HEALTH_CONSENT_VERSION, isCompleteAnswers, scoreA
 const IntentInput = z.object({
     policyId: z.string().min(1),
     choice: z.enum(["considering", "done", "not_relevant", "later", "clear"]),
-    /** YYYY-MM-DD, required for «later»: tomorrow … twelve months ahead. */
+    /** Optional YYYY-MM-DD: tomorrow … twelve months ahead. No date means no reminder. */
     remindAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 })
 
@@ -38,10 +37,21 @@ export async function setCheckupIntent(input: z.infer<typeof IntentInput>) {
     if (!access.exists || !access.isOwner) return { error: "NOT_FOUND" as const }
 
     let remindDate: Date | null = null
-    if (choice === "later") {
+    if (remindAt && (choice === "later" || choice === "considering")) {
         const window = reminderWindow()
-        if (!remindAt || remindAt < window.min || remindAt > window.max) return { error: "INVALID_DATE" as const }
+        if (!validReminderDate(remindAt, window)) return { error: "INVALID_DATE" as const }
         remindDate = new Date(`${remindAt}T00:00:00Z`)
+    }
+    if (remindDate) {
+        const { preventionPersonalizationEnabled } = await import('@/lib/prevention/flag')
+        if (preventionPersonalizationEnabled()) {
+            const { PREVENTION_POLICY_SELECT } = await import('@/lib/prevention/service')
+            const { resolvePreventionPolicy } = await import('@/lib/prevention/benefits')
+            const policy = await db.policy.findFirst({ where: { id: policyId, ownerUserId: dbUser.id }, select: PREVENTION_POLICY_SELECT })
+            // The old public action cannot recreate a calendar sender after the
+            // explicit transition to insurance-period plans. Old history stays readable.
+            if (policy && resolvePreventionPolicy(policy).items.some(i => i.rules?.code === 'annual_checkup' && !i.legacyCheckup)) return { error: 'SOURCE_CHANGED' as const }
+        }
     }
 
     const year = Number(athensDate().slice(0, 4))
@@ -89,19 +99,8 @@ const AnswersInput = z.object({
 })
 
 export async function submitHealthAssessment(input: { consent: boolean; answers: Record<string, string> }) {
-    const { dbUser } = await getAuthenticatedUser()
-    // Explicit consent is the precondition, checked before anything is read.
-    const parsed = AnswersInput.safeParse(input)
-    if (!parsed.success) return { error: "CONSENT_REQUIRED" as const }
-    const known = new Set<string>(ASSESSMENT_QUESTIONS.map((q) => q.id))
-    const answers: Answers = Object.fromEntries(Object.entries(parsed.data.answers).filter(([k]) => known.has(k)))
-    if (!isCompleteAnswers(answers)) return { error: "INCOMPLETE" as const }
-    const scores = scoreAssessment(answers)
-    await db.healthRiskAssessment.create({
-        data: { userId: dbUser.id, consentVersion: HEALTH_CONSENT_VERSION, answers, scores: scores as unknown as Prisma.InputJsonValue },
-    })
-    revalidatePath("/wellness")
-    return { ok: true as const, scores }
+    await getAuthenticatedUser()
+    return { error: "RETIRED" as const }
 }
 
 /** The person withdraws: every assessment row goes, at once. */

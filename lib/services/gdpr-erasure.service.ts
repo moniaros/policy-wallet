@@ -208,6 +208,9 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
 
     return db.$transaction(
         async (tx) => {
+            await tx.preventionBenefitUse.deleteMany({ where: { userId } })
+            await tx.preventionProgress.deleteMany({ where: { userId } })
+            await tx.preventionCheckIn.deleteMany({ where: { userId } })
             await tx.agentReviewRevision.deleteMany({ where: { OR: [{ userId }, { policy: { ownerUserId: userId } }] } })
             const [
                 deletedPolicies,

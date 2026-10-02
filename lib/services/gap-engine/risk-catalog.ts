@@ -693,46 +693,46 @@ export const RISK_CATALOG: RiskDefinition[] = [
         },
         applies: (ctx) => ctx.residenceType === "rented",
         riskExplanation: () => ({
-            en: "Your landlord's policy covers the building, not your possessions. It also does not cover you if a leak from your flat damages the one below — a claim tenants in Greek apartment blocks meet regularly.",
-            el: "Το ασφαλιστήριο του ιδιοκτήτη καλύπτει το κτίριο, όχι τα υπάρχοντά σας. Ούτε σας καλύπτει αν μια διαρροή από το διαμέρισμά σας προκαλέσει ζημιά στο από κάτω — αξίωση που οι ενοικιαστές σε ελληνικές πολυκατοικίες συναντούν τακτικά.",
+            en: "Damage to your belongings and responsibility for damage to someone else's property are separate questions. Renting alone does not tell us whether either is insured; the relevant policy terms need checking.",
+            el: "Η ζημιά στα υπάρχοντά σας και η ευθύνη για ζημιές σε ξένη περιουσία είναι διαφορετικά θέματα. Η ενοικίαση από μόνη της δεν δείχνει αν ασφαλίζεται κάποιο από τα δύο· χρειάζεται έλεγχος των σχετικών όρων.",
         }),
         whyItApplies: () => ({
-            en: "You rent the home you live in, so the building is insured by someone else and your contents are not.",
-            el: "Ενοικιάζετε την κατοικία σας, οπότε το κτίριο ασφαλίζεται από άλλον και τα περιεχόμενά σας όχι.",
+            en: "You rent your home. Whether the building, your belongings or your liability are insured needs a separate check.",
+            el: "Ενοικιάζετε την κατοικία σας. Η κάλυψη κτιρίου, υπαρχόντων και ευθύνης χρειάζεται ξεχωριστό έλεγχο.",
         }),
         expectedImpact: (ctx) =>
             ctx.valuablesValue && ctx.valuablesValue > 0
                 ? {
-                      en: `You have declared ${eur(ctx.valuablesValue, "en")} of valuables, and water damage to a neighbouring flat commonly runs to several thousand euros on top.`,
-                      el: `Έχετε δηλώσει ${eur(ctx.valuablesValue, "el")} σε τιμαλφή, και η ζημιά από νερά σε γειτονικό διαμέρισμα κοστίζει συνήθως αρκετές χιλιάδες ευρώ επιπλέον.`,
+                      en: `You have declared ${eur(ctx.valuablesValue, "en")} of valuables. This is a declared value, not an estimate of a loss or an insurance payout.`,
+                      el: `Έχετε δηλώσει ${eur(ctx.valuablesValue, "el")} σε τιμαλφή. Πρόκειται για δηλωμένη αξία, όχι για εκτίμηση ζημιάς ή ασφαλιστικής αποζημίωσης.`,
                   }
                 : {
-                      en: "Replacing the contents of a flat after fire or theft typically runs to five figures; liability for water damage to a neighbour adds to it.",
-                      el: "Η αντικατάσταση των περιεχομένων ενός διαμερίσματος μετά από πυρκαγιά ή κλοπή κοστίζει συνήθως πενταψήφιο ποσό· η ευθύνη για ζημιά από νερά σε γείτονα προστίθεται.",
+                      en: "The financial effect depends on what is damaged, its replacement cost and any responsibility for damage to others. We do not have enough information to estimate an amount.",
+                      el: "Η οικονομική επίπτωση εξαρτάται από όσα θα υποστούν ζημιά, το κόστος αντικατάστασης και τυχόν ευθύνη απέναντι σε άλλους. Δεν έχουμε αρκετά στοιχεία για εκτίμηση ποσού.",
                   },
         mitigations: () => [
             {
                 kind: "reduce",
-                label: { en: "Prevent the claim tenants actually make", el: "Αποτρέψτε την αξίωση που όντως κάνουν οι ενοικιαστές" },
+                label: { en: "Check for water leaks", el: "Έλεγχος για διαρροές νερού" },
                 detail: {
-                    en: "Water damage to the flat below is the common one. Knowing where your stopcock is, and closing it when away for more than a few days, prevents most of it.",
-                    el: "Η ζημιά από νερά στο από κάτω διαμέρισμα είναι η συνηθισμένη. Το να ξέρετε πού είναι ο γενικός διακόπτης νερού και να τον κλείνετε σε απουσίες άνω των λίγων ημερών την αποτρέπει σε μεγάλο βαθμό.",
+                    en: "Check visible pipes and appliance connections for leaks. Learn where the water shut-off is and ask the landlord or a qualified plumber how to use it safely.",
+                    el: "Ελέγξτε τις ορατές σωληνώσεις και συνδέσεις συσκευών για διαρροές. Εντοπίστε τον γενικό διακόπτη νερού και ρωτήστε τον ιδιοκτήτη ή έναν υδραυλικό πώς χρησιμοποιείται με ασφάλεια.",
                 },
             },
             {
                 kind: "retain",
-                label: { en: "Carry it yourself if the contents are modest", el: "Αναλάβετέ το αν τα περιεχόμενα είναι μικρής αξίας" },
+                label: { en: "Record replacement costs", el: "Καταγραφή κόστους αντικατάστασης" },
                 detail: {
-                    en: "If replacing everything you own would not seriously hurt, contents cover is optional. The liability half is the part that can exceed what you could absorb.",
-                    el: "Αν η αντικατάσταση όλων όσων έχετε δεν θα σας έβλαπτε σοβαρά, η ασφάλιση περιεχομένου είναι προαιρετική. Το σκέλος της αστικής ευθύνης είναι αυτό που μπορεί να ξεπεράσει όσα θα αντέχατε.",
+                    en: "An inventory of your belongings and replacement costs can help you discuss with your advisor which losses you could meet from savings.",
+                    el: "Μια καταγραφή των υπαρχόντων σας και του κόστους αντικατάστασης βοηθά στη συζήτηση με τον ασφαλιστή σας για τις ζημιές που θα μπορούσατε να καλύψετε από αποταμιεύσεις.",
                 },
             },
             {
                 kind: "transfer",
                 label: { en: "Contents cover with tenant's liability", el: "Ασφάλιση περιεχομένου με αστική ευθύνη ενοικιαστή" },
                 detail: {
-                    en: "Covers your belongings, and your liability as a tenant towards the landlord and the neighbours.",
-                    el: "Καλύπτει τα υπάρχοντά σας και την ευθύνη σας ως ενοικιαστή απέναντι στον ιδιοκτήτη και τους γείτονες.",
+                    en: "Ask your advisor whether the relevant policy includes belongings and tenant liability, and which limits and exclusions apply.",
+                    el: "Ρωτήστε τον ασφαλιστή σας αν το σχετικό ασφαλιστήριο περιλαμβάνει περιεχόμενο και ευθύνη ενοικιαστή, καθώς και ποια όρια και εξαιρέσεις ισχύουν.",
                 },
                 line: "renters",
             },

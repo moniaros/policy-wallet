@@ -1,7 +1,50 @@
+import { preventionEn } from "../prevention"
 import type { TranslationKeys } from './el'
 
 // English translations
 export const en: TranslationKeys = {
+    prevention: preventionEn,
+    policyholderExperience: {
+        practicalSteps: 'Practical prevention & preparation steps',
+        discussInsurance: 'What to discuss with your advisor',
+        historicalFacts: 'Details from a previous term — they do not confirm current coverage.',
+        navPolicies: 'Policies',
+        inbox: 'In the app',
+        deliveries: 'Delivery history',
+        deliveryHint: 'Includes separate email and push records. Older deliveries may appear once per channel.',
+        historyFailed: 'Could not load notifications. Please try again.',
+        openConversations: 'View conversations',
+        deleteAssessmentsConfirm: 'Delete all your self-assessments? This cannot be undone.',
+
+        homeTitle: 'Your policies, put to use',
+        homeLead: 'What needs attention, what the document says and how to prepare for a risk.',
+        policies: 'Your policies',
+        policiesLead: 'Explore the AI reading, coverage, limits and conditions alongside the original document.',
+        allPolicies: 'All policies',
+        policyDetails: 'View analysis & details',
+        analysisPending: 'Analysis has not completed',
+        analysisAvailable: 'AI reading available · check the source',
+        prevention: 'Prevention in practice',
+        preventionLead: 'Resolve unanswered questions before a loss occurs. These indications do not confirm coverage.',
+        benefits: 'Make use of your benefits',
+        benefitsLead: 'See what your policy says about preventive check-ups and organise a reminder.',
+        benefitsAction: 'Benefits & prevention',
+        portfolioDetails: 'Portfolio summary & coverage map',
+        personalize: 'Profile, life changes & getting started',
+        activity: 'Recent changes & monitoring',
+        renewalTitle: 'Your next renewal',
+        renewalAction: 'Review expiry & next steps',
+        uploadLead: 'Choose your policy document. We will check it and try to identify its category and details.',
+        automaticType: 'Identify the category automatically',
+        typeHint: 'You can select the category if you know it. An uncertain classification needs confirmation.',
+        optionalDetails: 'Add details manually (optional)',
+        navPrevention: 'Prevention',
+        navActions: 'Actions',
+        openExplanation: 'Read the explanation',
+        openPolicy: 'View policy',
+        olderNotifications: 'Older notifications',
+        openActivity: 'Open related action',
+    },
     // Common
     common: {
         removeCustomer: 'Remove Customer',
@@ -145,7 +188,7 @@ export const en: TranslationKeys = {
         encrypted: 'This PDF is password-protected. Save an unlocked copy and upload that.',
     },
     nav: {
-        wellness: 'Wellness',
+        wellness: 'Prevention & benefits',
         navigation: 'Navigation',
         groupProtection: 'Protection',
         groupSupport: 'Support',
@@ -1835,6 +1878,7 @@ export const en: TranslationKeys = {
             in_progress: 'A check is running now.',
             none_after_failure: 'The check failed and there is no earlier one.',
             pre_plan: 'The check predates the check plan — we do not know exactly what was checked.',
+            inconclusive: 'There is not enough information to complete the coverage checks. Review the policy details.',
             no_extraction: 'The details our checks read were not found in the document.',
         },
         categories: {
@@ -4328,7 +4372,7 @@ export const en: TranslationKeys = {
         },
     },
     wellness: {
-        title: 'Wellness',
+        title: 'Prevention & benefits',
         intro: 'What your health policies record about preventive benefits, plus an indicative picture from a short questionnaire. Nothing here is a diagnosis.',
         checkupTitle: 'Annual health check-up',
         noHealthPolicy: 'You have no health policy in force in your wallet.',
