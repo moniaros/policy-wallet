@@ -24,7 +24,9 @@ Production migrations will execute on the existing authenticated GitHub runner, 
 
 ## Release status / blockers
 
-Commit, hosted CI, preview verification and production deployment are being completed; this document is not evidence that production has shipped yet.
+Application commit `802d56b49b9a3ab75e8a46703aa0d2d9feb80970` is pushed in [PR #386](https://github.com/moniaros/policy-wallet/pull/386), targeting `NEW-UI`. [Hosted CI](https://github.com/moniaros/policy-wallet/actions/runs/37010917131) completed successfully, including lint/type/catalogue, unit tests and production build. The existing money-path job skipped its journey because no E2E database secret is configured; no paid-conversion success is claimed. The separate Kilo review could not start because its account has insufficient credits; no review findings were emitted and this is not a configured required branch check.
+
+Preview verification and production deployment remain blocked by the specific pending preview-configuration approval below. No production merge, migration, flag write or deployment has occurred. A documentation-only follow-up records these measured results without changing the tested application code.
 
 Automatic approval review rejected a broad production-secret pull. A narrower read of `DIRECT_URL` returned no value because it is sensitive in Vercel; no production credential was exported. Runner-side migration avoids exporting it.
 

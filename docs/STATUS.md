@@ -1,7 +1,7 @@
 # STATUS
 
 ## Current phase
-**Production release preparation — 2026-10-02.** Owner requested promotion of the reviewed local changes. [Release evidence and decisions](audits/prevention-production-release-2026-10-02.md). [Implementation and limits](audits/prevention-personalization-2026-10-02.md); earlier [prevention pilot](audits/prevention-hub-2026-10-02.md), [home/intake](audits/policyholder-mobile-ux-2026-10-02.md) and [B2B history](archive/status-before-policyholder-ui-2026-10-02.md) preserved. Production deployment not yet completed.
+**Release prepared; preview approval pending — 2026-10-02.** [PR #386](https://github.com/moniaros/policy-wallet/pull/386), application commit `802d56b4`, [hosted CI success](https://github.com/moniaros/policy-wallet/actions/runs/37010917131). [Release evidence and decisions](audits/prevention-production-release-2026-10-02.md); [implementation/limits](audits/prevention-personalization-2026-10-02.md), [home/intake](audits/policyholder-mobile-ux-2026-10-02.md) and [prior B2B history](archive/status-before-policyholder-ui-2026-10-02.md). No production merge, migration, flag write or deployment yet.
 
 ## Done
 - Source-backed original/renewal composition, term conflicts, missing periods/amendments and unconfirmed activation; bounded gated extraction/cache/independent verification. No model calls on page opening or gap-rule changes.
@@ -13,7 +13,7 @@
 - 19 PDFs locally read: 592 pages, 9/9 reference spans; 11 manually checked expectations for the original/renewal pair. These are not model-accuracy results. Earlier health-score retirement and meeting artifacts remain preserved.
 
 ## In progress
-Release PR / hosted CI, preview journey and production promotion. Planned rollout enables the reviewed hub and keeps new personalization off pending actual PDF evaluation.
+Preview journey and production promotion after the pending permission. Hosted CI is complete; paid-conversion journey was explicitly skipped by its existing credential gate. Kilo review lacked credits. Planned rollout enables the reviewed hub and keeps new personalization off pending actual PDF evaluation.
 
 ## Blocked
 Automatic approval review rejected configuring the release preview with dev database/auth secrets without payload/destination-specific permission. Preview journey is required before merge. Broad prod-secret export was also rejected; migrations instead use the existing GitHub runner secret. Separate PDF-provider authorization remains pending.
@@ -24,7 +24,7 @@ Automatic approval review rejected configuring the release preview with dev data
 3. Browser coverage is targeted, not complete accessibility certification; earlier B2B/content-assurance backlog remains separate.
 
 ## Next 3 actions
-1. Complete hosted CI and obtain the specific preview-configuration authorization.
+1. Obtain the specific preview-configuration authorization; do not bypass the automatic-review rejection.
 2. Verify the preview journey, merge, apply/verify prod additive schema on the runner, deploy and check the live product.
 3. Complete the separately authorized PDF benchmark before enabling personalization in production.
 
