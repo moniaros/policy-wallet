@@ -12,11 +12,11 @@
 import { ProductStage } from "./ProductStage"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { CATEGORY, CTA_REASSURANCE, HERO_EMAIL_CTA, REGISTRATION_PAUSED, EXPLORE_NEEDS, HERO_SUBHEAD, PRIMARY_ACTION, PROMISE, pick, type MarketingLocale } from "@/lib/marketing/positioning"
+import { CATEGORY, CTA_REASSURANCE, HERO_EMAIL_CTA, HERO_SUBHEAD, PRIMARY_ACTION, PROMISE, pick, type MarketingLocale } from "@/lib/marketing/positioning"
 import { authHref, localizeHref } from "@/lib/seo/locale-links"
 import { EmailCapture } from "@/src/design-system"
 
-export function GrafiHero({ locale, registrationsOpen = true }: { locale: MarketingLocale; registrationsOpen?: boolean }) {
+export function GrafiHero({ locale }: { locale: MarketingLocale }) {
     const router = useRouter()
     const t = (el: string, en: string) => (locale === "el" ? el : en)
 
@@ -33,21 +33,21 @@ export function GrafiHero({ locale, registrationsOpen = true }: { locale: Market
                         {pick(HERO_SUBHEAD, locale)}
                     </p>
                     <div className="mt-g-6">
-                        {registrationsOpen ? <EmailCapture
+                        <EmailCapture
                             label={t("Το email σας", "Your email")}
                             cta={pick(HERO_EMAIL_CTA, locale)}
                             formAriaLabel={pick(PRIMARY_ACTION, locale)}
                             onSubmit={(email) =>
                                 router.push(authHref(`/auth/signup?role=policyholder&source=landing_hero&email=${encodeURIComponent(email)}`, locale))
                             }
-                        /> : <Link href={localizeHref("/needs", locale)} className="pw-primary-button pw-btn-lg">{pick(EXPLORE_NEEDS, locale)}</Link>}
-                        <p className="mt-g-2 text-sm text-fg-secondary">{pick(registrationsOpen ? CTA_REASSURANCE : REGISTRATION_PAUSED, locale)}</p>
-                        {registrationsOpen && <Link
+                        />
+                        <p className="mt-g-2 text-sm text-fg-secondary">{pick(CTA_REASSURANCE, locale)}</p>
+                        <Link
                             href={localizeHref("/needs", locale)}
                             className="mt-g-3 inline-block min-h-11 py-g-2 font-semibold text-fg-brand underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus"
                         >
                             {t("Ή κάντε τον έλεγχο αναγκών σε 6 βήματα →", "Or take the 6-step needs check →")}
-                        </Link>}
+                        </Link>
                     </div>
                 </div>
                 <div className="w-full min-w-0 justify-self-center">

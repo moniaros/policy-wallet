@@ -82,5 +82,7 @@
   "inline:lib/services/gap-engine/recommendation-context.ts::Ο ασφαλιστής εξηγεί τι καλύπτει κάθε επιλογή, με τα όρια, τις απαλλαγές και τις εξαιρέσεις της.",
   "inline:lib/services/gap-engine/recommendation-context.ts::Τα βήματα στοχεύουν σε μικρότερη πιθανότητα ή επίπτωση ζημιάς. Δεν εγγυώνται αποτροπή ή χαμηλότερο ασφάλιστρο.",
   "inline:lib/notifications/registry.ts::Ζητήσατε μια υπενθύμιση. Δείτε την επιλογή σας στην ενότητα Πρόληψη & παροχές.",
-  "inline:lib/notifications/registry.ts::Το μικρό βήμα που επιλέξατε"
+  "inline:lib/notifications/registry.ts::Το μικρό βήμα που επιλέξατε",
+  "inline:lib/nav/public-nav.ts::Για ασφαλιστές",
+  "call:components/landing/grafi/WhoItIsFor.tsx::Για όσους έχουν ασφαλιστήρια και για όσους τα διαχειρίζονται: δείτε τι κάνει το PolicyWallet για τον καθένα."
 ]
