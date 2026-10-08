@@ -52,10 +52,10 @@ public pages and fail on a signup href rendered while the gate is closed.
    tabs mid-home and the «Ασφαλίζεστε ή ασφαλίζετε άλλους;» band show the need is
    already felt. Add a top-level «Για ασφαλιστές» link; drop the dropdown's agent row.
 3. **«Προϊόντα» contradicts the positioning.** The core claim is «Δεν πουλάμε
-   ασφάλειες», yet the main menu lists 14 insurance branches as "Products". They are
+   ασφάλειες», yet the main menu lists 16 insurance branches as "Products". They are
    *what we read*, not what we sell. «Κλάδοι» (EN "Coverage types") keeps the IA and
    stops the contradiction. Content-owner call under the voice rules (LEXICON.md).
-4. **Fourteen branch pages, one template, no hierarchy.** The footer lists every branch
+4. **Sixteen branch pages, one template, no hierarchy.** The footer lists every branch
    in one column; the "other categories" grid colours some cards mint and others white
    with no legend (it reads as "recommended" vs "not"). Group by audience — Personal
    (Αυτοκίνητο, Κατοικία, Υγεία, Ζωή, Ταξιδιωτική, Κατοικίδιο) / Business & group — and

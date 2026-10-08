@@ -1,7 +1,12 @@
 # STATUS
 
 ## Current phase
-**Public-site language labelling released — 2026-10-08.** [PR #387](https://github.com/moniaros/policy-wallet/pull/387) → `6b71fe38`, CI + Vercel deploy green. Fixes A2–A5 (+ A1 partial) of [the public-site & design-system review](audits/public-site-and-design-system-2026-10.md). Verified live: `/en/*` sends `Content-Language: en`; `/solutions/partners` 308 → `/en/solutions/partners`; ΕΛ/EN toggles land on real pages; with `localStorage.language=en`, `/`, `/trust`, `/product/health`, `/solutions/synergates` render `lang="el"` (Playwright). Kilo review failed (no credits).
+**Public site: language, design fixes, funnel and audiences live — 2026-10-08.** All verified on `www.policywallet.gr` after deploy `4e22d582`:
+- [#387](https://github.com/moniaros/policy-wallet/pull/387) the URL decides the language (A2–A5, A1 partial: `Content-Language: en`).
+- [#388](https://github.com/moniaros/policy-wallet/pull/388) DA1 Grafí sunken surface (live `rgb(231,241,236)`), DA2 dark CTA contrast 9.59:1.
+- [#389](https://github.com/moniaros/policy-wallet/pull/389) deploys skip Vercel's build cache — #388 had shipped the OLD CSS chunk under a green deploy.
+- [#390](https://github.com/moniaros/policy-wallet/pull/390) owner decision: the public site never announces closed sign-ups (signup page only); homepage shows both audiences in full; top-level «Για ασφαλιστές»; desktop nav from 1280px.
+Reviews: [code](audits/public-site-and-design-system-2026-10.md) · [product design](audits/public-site-design-review-2026-10.md) · [SEO/GEO/AEO](audits/public-site-seo-geo-aeo-2026-10.md). Kilo review fails on every PR (no credits).
 
 Previous release (2026-10-02, prevention, `f3315f12`): [evidence](audits/prevention-production-release-2026-10-02.md).
 
@@ -26,8 +31,8 @@ Actual two-PDF provider benchmark still awaits its separate transmission authori
 3. **Medium — UI/UX backlog:** targeted local/mobile and live smoke checks do not certify complete accessibility.
 
 ## Next 3 actions
-1. OWNER: pick the design-system direction (Grafí vs legacy) and the A1 full fix (per-locale root layouts = full reloads between site sections) — see the review doc, Next steps §1–2.
-2. Mechanical design fixes (review §3): DA2 `BrandActionButton` dark contrast 1.66:1, DA1 duplicate `--surface-sunken`, non-flipping `primary-soft` tokens.
+1. SEO S1 (regulatory): reword the advisory entity sentence in `lib/seo/site.ts` / `lib/landing/content.ts` and extend the advice-verb guard to `lib/seo/**`; then S2–S4 (unknown paths 404, `llms.txt`, mock-screen headings).
+2. OWNER: design-system direction (Grafí vs legacy), A1 full fix (per-locale root layouts), rename «Προϊόντα», homepage 7-section spine.
 3. Complete the separately authorized PDF benchmark before enabling advanced personalization; restore money-path test credentials.
 
 Before future commits/pushes: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit/build and relevant journeys. All applicable checks passed for this release.
