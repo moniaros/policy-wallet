@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
-import { localizeHref, authHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref, greekCounterpart, englishCounterpart } from "@/lib/seo/locale-links"
 import { normalizeHeaderPath } from "@/lib/nav/header-path"
 import {
     PRIMARY_CTA,
@@ -48,8 +48,8 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registratio
     const pathname = normalizeHeaderPath(usePathname())
     // Normalise to the Greek path so active-state + the language toggle work
     // regardless of the locale tree we are currently in.
-    const elPath = pathname === "/en" ? "/" : pathname.startsWith("/en/") ? pathname.slice(3) : pathname
-    const enPath = elPath === "/" ? "/en" : `/en${elPath}`
+    const elPath = greekCounterpart(pathname)
+    const enPath = englishCounterpart(elPath)
     const isActive = (href: string) => elPath === href || elPath.startsWith(`${href}/`)
 
     // authHref, not localizeHref: there is no /en/auth mirror, so the locale

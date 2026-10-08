@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { configuredStripeMode } from "@/lib/pricing/stripe-mode"
 import PricingPageClient from "../../pricing/PricingPageClient"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
 import { StaticLanguageProvider } from "@/contexts/LanguageContext"
@@ -20,11 +21,13 @@ export const revalidate = 300
 export default async function PricingPageEnglish() {
     const pricingContent = buildPublicPricingContent(await getPlanCatalog())
     const partnerOffers = await getPublicPartnerOffers()
+    // Same rule as /pricing: without the mode, promotions never render here.
+    const stripeMode = configuredStripeMode()
     const { plans, faqItems } = pricingContent.policyholder
 
     return (
         <StaticLanguageProvider language="en" counterpartPath="/pricing">
-            <PricingPageClient pricingContent={pricingContent} partnerOffers={partnerOffers} />
+            <PricingPageClient pricingContent={pricingContent} partnerOffers={partnerOffers} stripeMode={stripeMode} />
             <JsonLd
                 data={[
                     breadcrumbEnJsonLd(["pricing"]),

@@ -95,27 +95,18 @@ export function LanguageProvider({
 }) {
     const [language, setLanguageState] = useState<Language>(initialLanguage ?? 'el')
     // ONE locale per request (PW-CONTENT-01 Goal 1). When a server layout seeds
-    // the provider from the stored preference, the server value is the truth:
-    // the client never reads localStorage over it, it follows the prop when
-    // the server re-renders after a toggle, and it mirrors the value into
-    // localStorage so the unseeded public tree agrees on the next visit. Only
-    // an UNSEEDED provider (the marketing tree, which has no user) reads
-    // localStorage — that is a visitor preference, not a user's.
+    // the provider from the stored preference, the server value is the truth
+    // and the client follows the prop when the server re-renders after a toggle.
+    // An UNSEEDED provider (the marketing tree, which has no user) stays Greek:
+    // there the URL decides the language (/en/* mounts StaticLanguageProvider).
+    // It used to adopt a stored localStorage "en", which voiced Greek pages
+    // under <html lang="en"> for every returning English visitor (WCAG 3.1.1;
+    // docs/audits/public-site-and-design-system-2026-10.md A2).
     const seeded = initialLanguage !== undefined
 
     useEffect(() => {
-        if (pinned) return
-        if (seeded) {
-            setLanguageState(initialLanguage as Language)
-            try { localStorage.setItem('language', initialLanguage as Language) } catch { /* private mode */ }
-            return
-        }
-        // Load the visitor preference from localStorage
-        let savedLanguage: string | null = null
-        try { savedLanguage = localStorage.getItem('language') } catch { savedLanguage = null }
-        if (savedLanguage === 'el' || savedLanguage === 'en') {
-            setLanguageState(savedLanguage)
-        }
+        if (pinned || !seeded) return
+        setLanguageState(initialLanguage as Language)
     }, [pinned, seeded, initialLanguage])
 
     useEffect(() => {
@@ -155,7 +146,6 @@ export function LanguageProvider({
     const router = useRouter()
     const setLanguage = (lang: Language) => {
         setLanguageState(lang)
-        localStorage.setItem('language', lang)
 
         // Also update in database via API call
         fetch('/api/user/language', {
