@@ -6,6 +6,7 @@ import {
     siteConfig,
 } from "@/lib/seo/site"
 import { CATEGORY } from "@/lib/marketing/positioning"
+import { LEGAL_ENTITY } from "@/lib/legal/entity-placeholders"
 import { enPathFor, marketingPages, type MarketingPageKey } from "@/lib/seo/marketing-pages"
 import { getFounders, teamMembers, type TeamMember } from "@/lib/seo/team"
 
@@ -66,6 +67,13 @@ export function organizationJsonLd(locale: "el" | "en" = "el") {
         email: siteConfig.contactEmail,
         contactPoint,
         areaServed: "GR",
+        // The registered entity behind the trade name, from the same source the
+        // footer and legal documents render (ν. 3419/2005 requires it shown) —
+        // an AI engine asked "who runs PolicyWallet" gets the register's answer
+        // (SEO review 2026-10 C2).
+        legalName: LEGAL_ENTITY[locale].company.replace(/[«»]/g, ""),
+        identifier: { "@type": "PropertyValue", propertyID: "ΓΕΜΗ", value: LEGAL_ENTITY[locale].gemi },
+        vatID: LEGAL_ENTITY[locale].vat.match(/\d{9}/)?.[0],
     }
     if (sameAs.length > 0) {
         organization.sameAs = sameAs

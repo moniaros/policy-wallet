@@ -138,7 +138,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             : "border-gray-200/50 bg-white/80 shadow-sm dark:border-slate-800/50 dark:bg-slate-900/80"
                     }`}
                 >
-                    <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight">
+                    <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight" aria-label={t("PolicyWallet — αρχική", "PolicyWallet — home")}>
                         <span className="text-[#0F172A] dark:text-white">Policy</span>
                         <span className="text-[#5B6A7A] dark:text-slate-400">Wallet</span>
                     </Link>
@@ -243,7 +243,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                 }`}
             >
                 <div className="mx-auto flex h-16 w-full max-w-page-wide items-center justify-between px-6 pt-4">
-                    <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight" onClick={closeMenu}>
+                    <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight" onClick={closeMenu} aria-label={t("PolicyWallet — αρχική", "PolicyWallet — home")}>
                         <span className="text-white">Policy</span>
                         <span className="text-white/80">Wallet</span>
                     </Link>

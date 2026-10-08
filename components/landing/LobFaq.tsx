@@ -4,7 +4,7 @@ import { JsonLd, faqPageJsonLd } from "@/lib/seo/jsonld"
 import { getLobFaqs, getLobRelated } from "@/lib/product/lob-faqs"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { pick, type MarketingLocale } from "@/lib/marketing/positioning"
-import type { ProductCategoryId } from "@/lib/product/catalog"
+import { getProductCategory, type ProductCategoryId } from "@/lib/product/catalog"
 
 /**
  * Per-branch FAQ block for the 15 product pages (AEO).
@@ -27,6 +27,7 @@ export function LobFaq({
     const related = getLobRelated(categoryId)
     const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
+    const category = getProductCategory(categoryId)
 
     return (
         <section
@@ -38,7 +39,9 @@ export function LobFaq({
                     id={`lob-faq-heading-${categoryId}`}
                     className="mb-10 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-balance text-neutral-900 dark:text-white"
                 >
-                    {t("Αυτά που ρωτούν οι περισσότεροι.", "What most people ask.")}
+                    {/* Names its branch: the same heading on 16 pages gave every
+                        branch an identical outline entry (SEO review 2026-10 B2). */}
+                    {t("Συχνές ερωτήσεις", "Common questions")}{category && `: ${t(category.labelEl, category.labelEn)}`}
                 </h2>
                 <div className="space-y-8">
                     {items.map((item) => (

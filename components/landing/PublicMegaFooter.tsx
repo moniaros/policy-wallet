@@ -162,7 +162,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             <div className="px-6 pb-12 lg:px-12">
                 <div className="mx-auto grid max-w-page-wide gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1.25fr]">
                     <div>
-                        <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight">
+                        <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight" aria-label={t("PolicyWallet — αρχική", "PolicyWallet — home")}>
                             <span className="text-neutral-900 dark:text-white">Policy</span>
                             <span className="text-muted-foreground dark:text-slate-400">Wallet</span>
                         </Link>

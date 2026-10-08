@@ -84,5 +84,8 @@
   "inline:lib/notifications/registry.ts::Ζητήσατε μια υπενθύμιση. Δείτε την επιλογή σας στην ενότητα Πρόληψη & παροχές.",
   "inline:lib/notifications/registry.ts::Το μικρό βήμα που επιλέξατε",
   "inline:lib/nav/public-nav.ts::Για ασφαλιστές",
-  "call:components/landing/grafi/WhoItIsFor.tsx::Για όσους έχουν ασφαλιστήρια και για όσους τα διαχειρίζονται: δείτε τι κάνει το PolicyWallet για τον καθένα."
+  "call:components/landing/grafi/WhoItIsFor.tsx::Για όσους έχουν ασφαλιστήρια και για όσους τα διαχειρίζονται: δείτε τι κάνει το PolicyWallet για τον καθένα.",
+  "call:components/landing/LobFaq.tsx::Συχνές ερωτήσεις",
+  "call:components/landing/PublicMegaFooter.tsx::PolicyWallet — αρχική",
+  "call:components/public/PublicHeader.tsx::PolicyWallet — αρχική"
 ]
