@@ -22,10 +22,10 @@ function formatDate(value: string | null) {
 
 function reviewStatePill(state: string | null, handled: boolean) {
     if (handled) {
-        return { label: "Handled", classes: "bg-primary-soft text-status-success dark:bg-primary/15" }
+        return { label: "Handled", classes: "bg-primary-soft text-status-success" }
     }
     if (state === "confirmed") {
-        return { label: "User confirmed", classes: "bg-primary-soft text-status-success dark:bg-primary/15" }
+        return { label: "User confirmed", classes: "bg-primary-soft text-status-success" }
     }
     if (state === "unconfirmed") {
         return { label: "Re-analyzed", classes: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" }

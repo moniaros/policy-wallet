@@ -49,7 +49,7 @@ export function AdvisorSupportRow({
                 <CardHead icon={Users} title={labels.title ?? labels.agentStatus} id="advisor-card-heading" />
                 <div className="mt-4 flex items-center gap-3">
                     <span
-                        className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl bg-primary-soft text-sm font-semibold text-primary dark:bg-primary/15 dark:text-mint"
+                        className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl bg-primary-soft text-sm font-semibold text-primary dark:text-mint"
                         aria-hidden="true"
                     >
                         {agentConnected && initials ? initials : <Users className="h-5 w-5" />}

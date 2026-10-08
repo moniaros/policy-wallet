@@ -736,7 +736,7 @@ export function AnalysisCard({
                 advertised — say it before use, nudge the upgrade after. */}
             {tier === "free" && trialAnalysisAvailable === true && !analysisInProgress && (
                 <div className="px-6 pt-5">
-                    <div className="flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary-tint px-4 py-3 dark:border-primary/35 dark:bg-primary/15">
+                    <div className="flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary-tint px-4 py-3 dark:border-primary/35">
                         <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
                         <p className="text-sm font-medium text-black/75 dark:text-white/80">
                             {t.analysis.freeTrialAvailable}
@@ -756,7 +756,7 @@ export function AnalysisCard({
             )}
             {analysisInProgress && (
                 <div className="px-6 pt-5">
-                    <div className="rounded-xl border border-primary/25 bg-primary-tint p-4 dark:border-primary/35 dark:bg-primary/15">
+                    <div className="rounded-xl border border-primary/25 bg-primary-tint p-4 dark:border-primary/35">
                         <div className="flex items-start gap-3">
                             <Loader2 className="mt-0.5 h-4 w-4 animate-spin text-primary dark:text-mint" />
                             <div className="min-w-0 flex-1">
@@ -923,7 +923,7 @@ export function AnalysisCard({
                     </div>
                     ) : composition ? null : (
                     <div className="text-center py-8">
-                        <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 rounded-2xl bg-primary-soft flex items-center justify-center mx-auto mb-4">
                             <Sparkles className="w-8 h-8 text-primary dark:text-mint" />
                         </div>
                         <p className="text-sm text-slate-600 dark:text-slate-400 font-semibold mb-2">

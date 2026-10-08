@@ -19,7 +19,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Ακίνητα", "Property")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
@@ -79,21 +79,21 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Έλεγχος κόστους ανακατασκευής", "Rebuild cost check")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Με το Family, δείτε αν το ποσό ασφάλισης φτάνει ακόμη για να ξαναχτιστεί το σπίτι σας — πριν πληρώσει λιγότερα η ασφαλιστική.", "With Family, see whether the sum insured is still enough to rebuild your home — before the insurer pays out less.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Έκπτωση ΕΝΦΙΑ (Ελλάδα)", "ENFIA tax discount (GR)")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Ελέγχουμε αν έχετε την τριάδα Σεισμού-Πυρκαγιάς-Πλημμύρας που χρειάζεται για την έκπτωση ΕΝΦΙΑ έως 20%.", "We check whether you have the earthquake-fire-flood trio needed for the ENFIA discount of up to 20%.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Μένετε με ενοίκιο;", "Renting your home?")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Η ασφάλεια κατοικίας δεν αφορά μόνο ιδιοκτήτες. Διαβάζουμε με τον ίδιο τρόπο το περιεχόμενο και την ευθύνη του ενοικιαστή. Έτσι ξέρετε τι σας προστατεύει και στο σπίτι που νοικιάζετε.", "Home insurance is not only for owners. We read contents and tenant liability the same way. So you know what protects you in the home you rent, too.")}</p>
@@ -145,7 +145,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                     </ul>
                     <p className="mt-8 text-body text-[#5B6A7A] dark:text-slate-400">
                         {t("Όλη η διαδικασία, βήμα προς βήμα: ", "The whole process, step by step: ")}
-                        <Link href={localizeHref("/guides/ekptosi-enfia-asfalisi-katoikias", locale)} className="font-semibold text-[#29685B] dark:text-[#A7F3D0] underline underline-offset-4">
+                        <Link href={localizeHref("/guides/ekptosi-enfia-asfalisi-katoikias", locale)} className="font-semibold text-[#29685B] dark:text-brand-accent underline underline-offset-4">
                             {t("ο οδηγός για την έκπτωση ΕΝΦΙΑ.", "the ENFIA discount guide.")}
                         </Link>
                     </p>

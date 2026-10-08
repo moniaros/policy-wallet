@@ -60,7 +60,7 @@ const THREAD_TYPE_LABELS: Record<string, { en: string; el: string }> = {
 // status-labels.ts) so this inbox and the CollaborationTimeline can't drift.
 const STATUS_STYLES: Record<string, string> = {
     open: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-    resolved: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
+    resolved: "bg-primary-soft text-[#166534] dark:text-mint",
     closed: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
     waiting_agent: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
     waiting_policyholder: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",

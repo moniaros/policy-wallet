@@ -59,7 +59,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Νομική προστασία", "Legal expenses insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
@@ -93,14 +93,14 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
 
                     <div className="grid gap-8 lg:grid-cols-2">
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-                            <h3 className="text-body font-bold text-[#166534] dark:text-[#A7F3D0] uppercase tracking-wider mb-6">
+                            <h3 className="text-body font-bold text-[#166534] dark:text-brand-accent uppercase tracking-wider mb-6">
                                 {t("Συνήθως καλύπτεται", "Typically covered")}
                             </h3>
                             <ul className="space-y-6">
                                 {typicallyCovered.map((item) => (
                                     <li key={item.titleEn} className="flex gap-4">
                                         <div className="flex-shrink-0 mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#F0FDF4] dark:bg-[#29685B]/15">
-                                            <Check className="w-4 h-4 text-[#29685B] dark:text-[#A7F3D0]" />
+                                            <Check className="w-4 h-4 text-[#29685B] dark:text-brand-accent" />
                                         </div>
                                         <div>
                                             <h4 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t(item.titleEl, item.titleEn)}</h4>

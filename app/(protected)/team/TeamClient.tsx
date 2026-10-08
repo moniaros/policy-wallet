@@ -343,7 +343,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         {m.photoUrl ? (
                             <img src={m.photoUrl} alt={m.name} className="h-10 w-10 shrink-0 rounded-full object-cover" />
                         ) : (
-                            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary dark:bg-primary/15 dark:text-mint">
+                            <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary-soft text-sm font-semibold text-primary dark:text-mint">
                                 {m.name.charAt(0)}
                             </span>
                         )}
@@ -554,7 +554,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
         <div className="pw-page-shell">
             <div className="mx-auto max-w-lg px-4 pb-10 pt-6 sm:px-6 lg:pt-8">
                 <section className="pw-card pw-pad-roomy text-center">
-                    <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15">
+                    <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft">
                         <Building2 className="h-7 w-7 text-primary dark:text-mint" aria-hidden="true" />
                     </div>
                     {/* This branch is a whole PAGE, not a card inside one — it is

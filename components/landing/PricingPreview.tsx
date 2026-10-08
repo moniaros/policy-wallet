@@ -170,7 +170,7 @@ export function PricingPreview({
                                     <p className="mt-auto flex items-start gap-2 text-body-lg font-medium text-neutral-900 dark:text-white">
                                         <Check
                                             aria-hidden
-                                            className="mt-1 h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]"
+                                            className="mt-1 h-4 w-4 flex-shrink-0 text-primary dark:text-brand-accent"
                                         />
                                         {pick(topFeature.label)}
                                     </p>

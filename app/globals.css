@@ -374,6 +374,11 @@
   /* Primary - mint (dark surfaces) */
   --primary: #89D9B2;
   --primary-foreground: #1A2420;
+  /* The soft/tint fills flip here instead of at every call site: 131 of the
+     146 bg-primary-soft lines carried a hand-written `dark:bg-primary/15`
+     twin (code review 2026-10, step 3). Same colour that twin produced. */
+  --color-primary-soft: color-mix(in oklab, var(--primary) 15%, transparent);
+  --color-primary-tint: color-mix(in oklab, var(--primary) 15%, transparent);
   --primary-hover: #7de8ba;
 
   /* Secondary - dark brand green (dark surfaces) */

@@ -88,7 +88,7 @@ export function PerksCard({ perks, lang, copy, sourceDocumentHref }: PerksCardPr
                                 className="pw-subcard flex flex-col p-4"
                             >
                                 <div className="flex items-start gap-3">
-                                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
+                                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary-soft">
                                         <PerkIcon className="h-4.5 w-4.5 text-primary dark:text-mint" />
                                     </div>
                                     <div className="min-w-0 flex-1">

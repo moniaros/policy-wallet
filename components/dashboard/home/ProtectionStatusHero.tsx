@@ -232,7 +232,7 @@ export function ProtectionStatusHero({
             <section className="pw-card pw-pad-roomy" aria-labelledby="protection-status-heading">
                 <CardHead as="p" icon={Eye} title={labels.kicker} />
                 <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                    <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15">
+                    <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary-soft">
                         <ShieldCheck className="h-7 w-7 text-primary dark:text-mint" aria-hidden="true" />
                     </span>
                     <div className="min-w-0">

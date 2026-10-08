@@ -89,7 +89,7 @@ export function SummaryCard({
                 icon={FileText}
                 title={copy.summaryTitle}
                 meta={
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-primary dark:bg-primary/15 dark:text-mint">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-primary dark:text-mint">
                         <Sparkles className="h-3 w-3" aria-hidden />
                         {copy.summaryAiChip}
                     </span>

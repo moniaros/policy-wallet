@@ -115,7 +115,7 @@ export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
     return (
         <div className="mx-auto max-w-[760px]">
             {restored && !showingResult && (
-                <p className="mb-8 rounded-2xl border border-[#DCEBDA] bg-[#F0FDF4] px-4 py-3 text-body-sm text-[#166534] dark:border-[#29685B]/40 dark:bg-[#29685B]/15 dark:text-[#A7F3D0]">
+                <p className="mb-8 rounded-2xl border border-[#DCEBDA] bg-[#F0FDF4] px-4 py-3 text-body-sm text-[#166534] dark:border-[#29685B]/40 dark:bg-[#29685B]/15 dark:text-brand-accent">
                     {t(
                         "Κρατήσαμε τις απαντήσεις σας από την προηγούμενη φορά.",
                         "We kept your answers from last time.",
@@ -178,7 +178,7 @@ export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
                         })}
                     </ol>
 
-                    <p className="mb-2 text-body-sm font-semibold text-[#29685B] dark:text-[#A7F3D0]">
+                    <p className="mb-2 text-body-sm font-semibold text-[#29685B] dark:text-brand-accent">
                         {t(
                             `Βήμα ${stepIndex + 1} από ${NEEDS_STEPS.length}`,
                             `Step ${stepIndex + 1} of ${NEEDS_STEPS.length}`,
@@ -334,7 +334,7 @@ export function NeedsCheck({ locale }: { locale: "el" | "en" }) {
                                 </p>
                                 <Link
                                     href={localizeHref(`/product/${item.product}`, locale)}
-                                    className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-body-sm font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
+                                    className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-body-sm font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-brand-accent"
                                 >
                                     {t("Τι σημαίνει αυτή η κάλυψη", "What this cover means")}
                                     <ArrowRight aria-hidden className="h-3.5 w-3.5" />

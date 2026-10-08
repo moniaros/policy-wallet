@@ -149,7 +149,7 @@ ${LIFE_CHANGE_EFFECTS.map(
                 including the ones who never touch a chip. */}
             <Link
                 href={localizeHref("/product", locale)}
-                className="lc-more mt-2 inline-flex min-h-11 items-center gap-1 text-body-sm font-semibold text-primary underline-offset-4 hover:underline dark:text-[#A7F3D0]"
+                className="lc-more mt-2 inline-flex min-h-11 items-center gap-1 text-body-sm font-semibold text-primary underline-offset-4 hover:underline dark:text-brand-accent"
             >
                 {t("Δείτε τι μετράει", "See what matters")}
                 <ArrowRight aria-hidden className="h-3.5 w-3.5" />

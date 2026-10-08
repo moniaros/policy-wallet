@@ -112,7 +112,7 @@ export function PremiumInsightCards({
                             className="group relative flex flex-col items-start rounded-2xl border border-black/10 bg-white/60 p-4 text-left transition-all hover:border-primary/40 hover:bg-primary-soft/40 dark:border-white/10 dark:bg-white/5 dark:hover:border-mint/30"
                         >
                             <div className="flex w-full items-start justify-between gap-2">
-                                <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl bg-primary-soft dark:bg-primary/15">
+                                <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl bg-primary-soft">
                                     <Icon className="h-4.5 w-4.5 text-primary dark:text-mint" />
                                 </div>
                                 <Lock className="h-3.5 w-3.5 flex-shrink-0 text-black/30 dark:text-white/35" />

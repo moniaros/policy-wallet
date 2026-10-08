@@ -298,7 +298,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                             )
                         )}
                         {isDirty && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-semibold text-status-success dark:bg-primary/15">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-semibold text-status-success">
                                 <Check className="h-3 w-3" />
                                 {reviewCopy.edit}
                             </span>
@@ -405,7 +405,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-xl font-black text-primary dark:bg-primary/15 dark:text-mint">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-xl font-black text-primary dark:text-mint">
                     {(data.insurerName || lobLabel(data.lineOfBusiness) || "?")[0]?.toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">

@@ -41,7 +41,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Αστική ευθύνη", "Personal liability")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
@@ -116,10 +116,10 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                         <div className="space-y-5">
                             <div className="p-4 bg-[#F0FDF4] dark:bg-[#29685B]/15 rounded-lg flex justify-between items-center border border-[#29685B]/20">
                                 <div>
-                                    <p className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">{t("Ασφάλεια κατοικίας · Ενότητα Δ", "Home policy · Section D")}</p>
-                                    <p className="text-xs text-[#166534] dark:text-[#A7F3D0] mt-1">{t("Περιλαμβάνεται ευθύνη οικογένειας", "Family liability included")}</p>
+                                    <p className="font-medium text-[#166534] dark:text-brand-accent text-sm">{t("Ασφάλεια κατοικίας · Ενότητα Δ", "Home policy · Section D")}</p>
+                                    <p className="text-xs text-[#166534] dark:text-brand-accent mt-1">{t("Περιλαμβάνεται ευθύνη οικογένειας", "Family liability included")}</p>
                                 </div>
-                                <ShieldCheck className="w-5 h-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                <ShieldCheck className="w-5 h-5 text-[#29685B] dark:text-brand-accent" />
                             </div>
                             <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex justify-between border border-amber-100 dark:border-amber-800/40">
                                 <div>

@@ -39,7 +39,7 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                     >
                         {t("Το πρόβλημα δεν είναι να μην έχετε ασφάλιση.", "The problem is not having no insurance.")}
                         <br className="hidden sm:block" />{" "}
-                        <span className="text-primary dark:text-[#A7F3D0]">
+                        <span className="text-primary dark:text-brand-accent">
                             {t("Είναι να νομίζετε ότι έχετε.", "It is thinking you have it.")}
                         </span>
                     </h2>
@@ -53,7 +53,7 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                         >
                             <span
                                 aria-hidden
-                                className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-status-success-tint text-body font-bold text-primary dark:text-[#A7F3D0]"
+                                className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-status-success-tint text-body font-bold text-primary dark:text-brand-accent"
                             >
                                 {index + 1}
                             </span>

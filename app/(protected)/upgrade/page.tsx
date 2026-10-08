@@ -139,7 +139,7 @@ export default function PricingPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-soft dark:bg-primary/15 border border-primary/20 dark:border-primary/30 text-primary dark:text-mint text-xs font-black uppercase tracking-widest mb-8">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-soft border border-primary/20 dark:border-primary/30 text-primary dark:text-mint text-xs font-black uppercase tracking-widest mb-8">
                         <Zap className="w-3.5 h-3.5" />
                         {badgeText}
                     </div>

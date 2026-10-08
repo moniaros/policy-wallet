@@ -16,7 +16,7 @@ export interface CoverageMapEntry {
 
 /** The state pill: word + tone. Colour is never the only carrier. */
 const PILL_STYLES: Record<BranchTileState, string> = {
-    covered: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
+    covered: "bg-primary-soft text-primary dark:text-mint",
     // Amber means gap — "attention" is the one state that earns it.
     attention: "bg-status-warning-tint text-status-warning",
     // §2.2: not owning a product is not a finding — this used to be rose.

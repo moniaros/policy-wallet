@@ -62,10 +62,10 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
           fund, no surrender) rendered nothing — omitting the one figure that IS
           the policy. Leads, in the affirmative treatment fund value uses. */}
       {life.deathBenefit !== undefined && (
-        <div className="p-4 rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30">
+        <div className="p-4 rounded-xl bg-primary-tint border border-primary/20 dark:border-primary/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary-soft flex items-center justify-center">
                 <Shield className="w-5 h-5 text-primary dark:text-mint" />
               </div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.deathBenefit}</span>
@@ -79,7 +79,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
       {life.cashValue !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Wallet className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.cashValue}</span>
@@ -91,7 +91,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
       {life.maturityDate && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Calendar className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.maturityDate}</span>
@@ -101,10 +101,10 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
       )}
 
       {life.currentFundValue !== undefined && (
-        <div className="p-4 rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30">
+        <div className="p-4 rounded-xl bg-primary-tint border border-primary/20 dark:border-primary/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary-soft flex items-center justify-center">
                 <Wallet className="w-5 h-5 text-primary dark:text-mint" />
               </div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.fundValue}</span>
@@ -138,13 +138,13 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
                 <Shield className="w-4 h-4 text-primary dark:text-mint" />
               </div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.taxFreeAtMaturity}</span>
             </div>
             {life.taxFreeAtMaturity ? (
-              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-status-success border border-primary/20 dark:border-primary/30">
+              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft text-status-success border border-primary/20 dark:border-primary/30">
                 <CheckCircle2 className="w-3.5 h-3.5" /> {copy.taxFree}
               </span>
             ) : (
@@ -163,7 +163,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
       {(life.guaranteedPercentage !== undefined || life.unitLinkedPercentage !== undefined) && (
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <PieChart className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.guaranteedVsUnitLinked}</span>
@@ -206,7 +206,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
       {acordData.beneficiaries && acordData.beneficiaries.length > 0 && (
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Users className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.beneficiary ? <GlossaryHint hint={hints.beneficiary} /> : lifeCopy.beneficiaries}</span>
@@ -245,7 +245,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
       {(!acordData.beneficiaries || acordData.beneficiaries.length === 0) && (
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-start gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center flex-shrink-0">
               <UserPlus className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div className="min-w-0">
@@ -278,7 +278,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
       {life.lastPremiumDate && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Calendar className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div>

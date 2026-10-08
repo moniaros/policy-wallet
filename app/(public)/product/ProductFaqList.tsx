@@ -23,7 +23,7 @@ function FAQItem({ q, a }: ProductFaqEntry) {
                     {q}
                 </span>
                 {open ? (
-                    <ChevronUp className="h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
+                    <ChevronUp className="h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-brand-accent" />
                 ) : (
                     <ChevronDown className="h-5 w-5 flex-shrink-0 text-[#5B6A7A] dark:text-slate-400 transition-colors duration-150 group-hover:text-[#29685B]" />
                 )}

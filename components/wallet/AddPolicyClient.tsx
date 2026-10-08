@@ -486,7 +486,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center gap-4 py-4">
                                     <div className="relative">
-                                        <div className="w-16 h-16 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                                        <div className="w-16 h-16 rounded-full bg-primary-soft flex items-center justify-center">
                                             <Sparkles className="w-7 h-7 text-primary dark:text-mint animate-pulse" />
                                         </div>
                                     </div>
@@ -504,7 +504,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         const state = i < current ? 'done' : i === current ? 'active' : 'todo'
                                         return (
                                             <li key={label} className="flex items-center gap-3 text-sm" aria-current={state === 'active' ? 'step' : undefined}>
-                                                <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${state === 'done' ? 'bg-primary text-primary-foreground' : state === 'active' ? 'bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint' : 'bg-muted text-muted-foreground'}`} aria-hidden="true">
+                                                <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${state === 'done' ? 'bg-primary text-primary-foreground' : state === 'active' ? 'bg-primary-soft text-primary dark:text-mint' : 'bg-muted text-muted-foreground'}`} aria-hidden="true">
                                                     {state === 'done' ? <Check className="h-3.5 w-3.5" /> : state === 'active' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span className="text-caption">{i + 1}</span>}
                                                 </span>
                                                 <span className={state === 'todo' ? 'text-muted-foreground' : 'text-foreground'}>{label}</span>
@@ -544,7 +544,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 review (verification) is a different, professional step. ── */
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center gap-4 py-4">
-                                    <div className="w-16 h-16 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                                    <div className="w-16 h-16 rounded-full bg-primary-soft flex items-center justify-center">
                                         <BadgeCheck className="w-7 h-7 text-primary dark:text-mint" />
                                     </div>
                                     <div className="text-center">
@@ -675,7 +675,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 bg-primary-soft dark:bg-primary/15 rounded-xl flex items-center justify-center text-primary dark:text-mint">
+                                <div className="w-10 h-10 bg-primary-soft rounded-xl flex items-center justify-center text-primary dark:text-mint">
                                     <UploadCloud className="w-5 h-5" />
                                 </div>
                                 {/* This is the page's primary heading in the state

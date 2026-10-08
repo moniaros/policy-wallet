@@ -110,7 +110,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Total Tokens */}
-                <div className="bg-primary-tint dark:bg-primary/15 rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
+                <div className="bg-primary-tint rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
                     <div className="flex items-center justify-between mb-2">
                         <Coins className="w-8 h-8 text-primary dark:text-mint" />
                     </div>
@@ -123,7 +123,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 </div>
 
                 {/* Total Cost */}
-                <div className="bg-primary-tint dark:bg-primary/15 rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
+                <div className="bg-primary-tint rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
                     <div className="flex items-center justify-between mb-2">
                         <DollarSign className="w-8 h-8 text-primary dark:text-mint" />
                     </div>

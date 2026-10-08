@@ -66,7 +66,7 @@ export function HookTicker({ locale, mode, className }: HookTickerProps) {
             <span>{hook.line[locale]}</span>
             <ArrowRight
                 aria-hidden
-                className="h-4 w-4 flex-shrink-0 text-[#29685B] transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none dark:text-[#A7F3D0]"
+                className="h-4 w-4 flex-shrink-0 text-[#29685B] transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none dark:text-brand-accent"
             />
         </Link>
     )
@@ -79,7 +79,7 @@ export function HookTicker({ locale, mode, className }: HookTickerProps) {
                 data-mode="static"
                 className={className}
             >
-                <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-brand-accent">
                     {t("Από τους οδηγούς μας", "From our guides")}
                 </p>
                 <ul className="divide-y divide-[#E2E8F0] dark:divide-slate-800">
@@ -108,7 +108,7 @@ export function HookTicker({ locale, mode, className }: HookTickerProps) {
                 aria-label={t("Ερωτήσεις από τους οδηγούς μας", "Questions from our guides")}
                 {...rootPauseProps}
             >
-                <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-brand-accent">
                     {t("Από τους οδηγούς μας", "From our guides")}
                 </p>
 

@@ -68,13 +68,13 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
       {home.enfiaEligible !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Home className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.enfiaEligibility}</span>
           </div>
           {home.enfiaEligible ? (
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-status-success border border-primary/20 dark:border-primary/30">
+            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft text-status-success border border-primary/20 dark:border-primary/30">
               <CheckCircle2 className="w-3.5 h-3.5" /> {copy.eligible}
             </span>
           ) : (
@@ -96,7 +96,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 ml-10.5">
             <div className={`flex flex-col items-center p-2 rounded-lg border ${
               home.catastropheCoverage.fire
-                ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"
+                ? "bg-primary-tint border-primary/20 dark:border-primary/30"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
               <Flame className={`w-4 h-4 mb-1 ${home.catastropheCoverage.fire ? "text-status-success" : "text-red-400 dark:text-red-500"}`} />
@@ -107,7 +107,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
             </div>
             <div className={`flex flex-col items-center p-2 rounded-lg border ${
               home.catastropheCoverage.earthquake
-                ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"
+                ? "bg-primary-tint border-primary/20 dark:border-primary/30"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
               <Mountain className={`w-4 h-4 mb-1 ${home.catastropheCoverage.earthquake ? "text-status-success" : "text-red-400 dark:text-red-500"}`} />
@@ -118,7 +118,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
             </div>
             <div className={`flex flex-col items-center p-2 rounded-lg border ${
               home.catastropheCoverage.flood
-                ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"
+                ? "bg-primary-tint border-primary/20 dark:border-primary/30"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
               <Waves className={`w-4 h-4 mb-1 ${home.catastropheCoverage.flood ? "text-status-success" : "text-red-400 dark:text-red-500"}`} />
@@ -134,10 +134,10 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
       {home.technicalAssistancePhone && (
         <a
           href={`tel:${home.technicalAssistancePhone}`}
-          className="min-h-[44px] flex items-center justify-between p-3 rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 hover:shadow-md transition-shadow"
+          className="min-h-[44px] flex items-center justify-between p-3 rounded-xl bg-primary-tint border border-primary/20 dark:border-primary/30 hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Wrench className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div>
@@ -155,7 +155,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
       {home.mortgageeBank && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Building2 className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.mortgageeBank}</span>
@@ -167,7 +167,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
       {(home.insuredValue !== undefined || home.replacementValue !== undefined || home.estimatedRebuildCost !== undefined) && (
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Home className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.underinsurance ? <GlossaryHint hint={hints.underinsurance} /> : homeCopy.valueComparison}</span>
@@ -214,7 +214,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
       {home.contentsVsStructure && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Home className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.contentsVsStructure}</span>

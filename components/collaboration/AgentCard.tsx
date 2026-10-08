@@ -74,7 +74,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                             {agent.name}
                         </h3>
                         {isAgentVerified(agent.verificationStatus) && (
-                            <span className="flex items-center gap-1 rounded-full bg-primary-soft dark:bg-primary/15 px-2 py-0.5 text-kicker font-medium text-[#166534] dark:text-mint">
+                            <span className="flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-medium text-[#166534] dark:text-mint">
                                 <ShieldCheck className="h-3 w-3" />
                                 {t.agentUi.verified}
                             </span>

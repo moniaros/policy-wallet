@@ -359,7 +359,7 @@ export function CollaborationTimeline({
                                         onClick={() => setSelectedId(thread.id)}
                                         className={`w-full text-left p-3 rounded-lg border transition ${
                                             selectedId === thread.id
-                                                ? "border-primary bg-primary-tint dark:bg-primary/15"
+                                                ? "border-primary bg-primary-tint"
                                                 : "border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                         }`}
                                     >
@@ -406,7 +406,7 @@ export function CollaborationTimeline({
                                 <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
                                     selected.threadType === "document_request"
                                         ? "bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40"
-                                        : "bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/40"
+                                        : "bg-primary-tint border border-primary/30 dark:border-primary/40"
                                 }`}>
                                     {(() => {
                                         const threadType = selected.threadType as ThreadType

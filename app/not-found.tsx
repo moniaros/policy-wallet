@@ -28,7 +28,7 @@ export default function NotFound() {
         // have no "skip to content" destination and no way to jump past the
         // chrome on the one page where they are already lost.
         <main className="flex min-h-screen flex-col items-center justify-center bg-neutral-50 px-6 dark:bg-neutral-900">
-            <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-primary-tint dark:bg-primary/15">
+            <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-primary-tint">
                 <ShieldAlert className="h-10 w-10 text-primary dark:text-mint" aria-hidden="true" />
             </div>
 

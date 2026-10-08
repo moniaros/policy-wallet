@@ -118,7 +118,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
             {!hideTrigger && (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="group flex items-center gap-2 px-3 py-1.5 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint rounded-lg text-xs font-black uppercase tracking-widest hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all"
+                    className="group flex items-center gap-2 px-3 py-1.5 bg-primary-soft text-primary dark:text-mint rounded-lg text-xs font-black uppercase tracking-widest hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all"
                 >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -136,7 +136,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
 
                     <div ref={qsDialogRef} role="dialog" aria-modal="true" aria-labelledby={qsTitleId} tabIndex={-1} className="relative bg-white dark:bg-neutral-800 rounded-[32px] w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-700 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
                         <div className="p-10 overflow-y-auto flex-1 min-h-0">
-                            <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-2xl flex items-center justify-center text-primary dark:text-mint mb-6">
+                            <div className="w-12 h-12 bg-primary-soft rounded-2xl flex items-center justify-center text-primary dark:text-mint mb-6">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                 </svg>
@@ -165,7 +165,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
                                                     aria-pressed={selectedTemplate === t.id}
                                                     onClick={() => setSelectedTemplate(t.id)}
                                                     className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all text-left ${selectedTemplate === t.id
-                                                        ? 'border-primary dark:border-mint bg-primary-tint dark:bg-primary/15'
+                                                        ? 'border-primary dark:border-mint bg-primary-tint'
                                                         : 'border-neutral-100 dark:border-neutral-700 hover:border-neutral-200 bg-neutral-50 dark:bg-neutral-900/50'
                                                         }`}
                                                 >
@@ -197,7 +197,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
 
                             {status === 'success' && (
                                 <div className="mt-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2">
-                                    <div className="p-4 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-2xl text-sm font-bold flex items-center gap-3">
+                                    <div className="p-4 bg-primary-soft text-[#166534] dark:text-mint rounded-2xl text-sm font-bold flex items-center gap-3">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="2" /></svg>
                                         {t.requestSent}
                                     </div>

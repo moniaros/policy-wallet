@@ -85,7 +85,7 @@ export default function ArticlePage() {
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
                     <div className="flex items-center gap-4 mb-6">
-                        <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-xs font-bold uppercase tracking-widest rounded-full">
+                        <span className="px-3 py-1 bg-primary-soft text-primary dark:text-mint text-xs font-bold uppercase tracking-widest rounded-full">
                             {resolved.category}
                         </span>
                         <div className="flex items-center text-muted-foreground text-xs font-semibold uppercase tracking-widest">

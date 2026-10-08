@@ -166,7 +166,7 @@ export default function GuidesIndexClient() {
                     )}{" "}
                     <Link
                         href={localizeHref("/needs", lang)}
-                        className="inline-flex items-center gap-1.5 font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
+                        className="inline-flex items-center gap-1.5 font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-brand-accent"
                     >
                         {t("Έλεγχος αναγκών σε 6 βήματα", "Needs check in 6 steps")}
                         <ArrowRight aria-hidden className="h-4 w-4" />

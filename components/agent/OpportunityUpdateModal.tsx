@@ -47,8 +47,8 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
     const OPPORTUNITY_STATUSES = [
         { value: 'open', label: tt.statusOpen, color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-2 border-amber-500' },
         { value: 'contacted', label: tt.statusContacted, color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-2 border-blue-500' },
-        { value: 'quoted', label: tt.statusQuoted, color: 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-2 border-primary' },
-        { value: 'won', label: tt.statusWon, color: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-2 border-primary' },
+        { value: 'quoted', label: tt.statusQuoted, color: 'bg-primary-soft text-primary dark:text-mint border-2 border-primary' },
+        { value: 'won', label: tt.statusWon, color: 'bg-primary-soft text-[#166534] dark:text-mint border-2 border-primary' },
         { value: 'lost', label: tt.statusLost, color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-2 border-red-500' },
         { value: 'on_hold', label: tt.statusOnHold, color: 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border-2 border-neutral-400' },
     ]

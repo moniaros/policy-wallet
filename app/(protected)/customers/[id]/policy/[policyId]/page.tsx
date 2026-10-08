@@ -271,7 +271,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                             {statusLabel}
                                         </span>
                                         {isManagedByViewer && (
-                                            <span className="px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest bg-primary-soft text-status-success dark:bg-primary/15">
+                                            <span className="px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest bg-primary-soft text-status-success">
                                                 {pd.managedByYou}
                                             </span>
                                         )}
@@ -359,7 +359,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-sm font-black text-foreground uppercase tracking-widest">{pd.aiInsights}</h2>
-                                    <span className="px-2 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-kicker font-black uppercase tracking-widest border border-primary/20 dark:border-primary/30">
+                                    <span className="px-2 py-0.5 rounded-full bg-primary-soft text-primary dark:text-mint text-kicker font-black uppercase tracking-widest border border-primary/20 dark:border-primary/30">
                                         {pd.acordVerified}
                                     </span>
                                 </div>

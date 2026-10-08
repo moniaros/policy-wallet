@@ -345,7 +345,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         <Link href={l("/contact")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
                             {t("Επικοινωνία", "Contact")}
                         </Link>
-                        <span className="inline-flex items-center gap-1.5 text-primary dark:text-[#A7F3D0]">
+                        <span className="inline-flex items-center gap-1.5 text-primary dark:text-brand-accent">
                             <ShieldCheck className="h-4 w-4" />
                             {t("GDPR & AES-256", "GDPR & AES-256")}
                         </span>

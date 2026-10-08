@@ -70,7 +70,7 @@ export function FeatureComparison({ language, plans, rows, className = "" }: Fea
                                     <span
                                         className={
                                             plan.isHighlighted
-                                                ? "font-bold text-[#29685B] dark:text-[#A7F3D0]"
+                                                ? "font-bold text-[#29685B] dark:text-brand-accent"
                                                 : "text-slate-900 dark:text-white"
                                         }
                                     >

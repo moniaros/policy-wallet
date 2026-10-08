@@ -19,7 +19,7 @@ export type ProtectionMapRowLabels = TranslationKeys["onboarding"]["protectionPr
  * «more detail needed». Never amber (means gap) and never red.
  */
 export const IMPORTANCE_TONE: Record<ProtectionPriority["importance"], string> = {
-    high: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
+    high: "bg-primary-soft text-primary dark:text-mint",
     medium: "bg-muted text-foreground",
     watch: "bg-muted text-muted-foreground",
     needs_review: "bg-status-info-tint text-status-info",

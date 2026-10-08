@@ -53,7 +53,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                 {/* How to check it in YOUR policy — honesty-safe, actionable */}
                 <div className="mt-10 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-3 flex items-center gap-2 text-body font-semibold text-[#0F172A] dark:text-white">
-                        <ShieldCheck className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                        <ShieldCheck className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                         {t("Πώς το ελέγχετε στο ασφαλιστήριό σας", "How to check it in your policy")}
                     </div>
                     <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
@@ -100,7 +100,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                                 <Link
                                     key={index}
                                     href={l(link.href)}
-                                    className="group inline-flex items-center gap-2 text-body-lg font-medium text-[#29685B] dark:text-[#A7F3D0] hover:underline"
+                                    className="group inline-flex items-center gap-2 text-body-lg font-medium text-[#29685B] dark:text-brand-accent hover:underline"
                                 >
                                     <ArrowUpRight className="h-4 w-4" />
                                     {link.label[lang]}

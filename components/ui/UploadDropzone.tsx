@@ -65,7 +65,7 @@ export function UploadDropzone({
                 disabled
                     ? "cursor-not-allowed border-border opacity-60"
                     : dragActive
-                        ? "cursor-pointer border-primary bg-primary-tint dark:bg-primary/15"
+                        ? "cursor-pointer border-primary bg-primary-tint"
                         : "cursor-pointer border-border hover:border-primary/60 hover:bg-muted",
                 className
             )}

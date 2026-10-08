@@ -214,7 +214,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                 <div className="p-8 pb-0 border-b border-border">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3 text-primary dark:text-mint">
-                            <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-xl bg-primary-soft flex items-center justify-center">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
@@ -275,7 +275,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                 p-4 rounded-2xl text-left transition-all border-2
                                                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40
                                                 ${isSelected
-                                                    ? 'border-primary bg-primary-tint dark:bg-primary/15'
+                                                    ? 'border-primary bg-primary-tint'
                                                     : 'border-border hover:border-primary/40'
                                                 }
                                                 ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}
@@ -382,7 +382,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                     const raw = rawOf(policy)
                                                     const isBest = best !== null && typeof raw === 'number' && raw === best
                                                     return (
-                                                        <td key={policy.id} className={`py-4 px-6 text-center ${isBest ? 'bg-primary-tint dark:bg-primary/15' : ''}`}>
+                                                        <td key={policy.id} className={`py-4 px-6 text-center ${isBest ? 'bg-primary-tint' : ''}`}>
                                                             {(row as any).isStatus ? (
                                                                 (() => {
                                                                     const view = getPolicyStatusView(policy, t)

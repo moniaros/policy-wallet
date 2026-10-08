@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 
 const TIER_STYLES: Record<PlanTier, string> = {
     free: "bg-muted text-muted-foreground",
-    plus: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
+    plus: "bg-primary-soft text-primary dark:text-mint",
     pro: "bg-primary text-primary-foreground",
 }
 

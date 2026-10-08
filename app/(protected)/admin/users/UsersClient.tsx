@@ -91,7 +91,7 @@ export default function UsersClient({
 
     const getRoleBadgeColor = (role: string) => {
         if (role.includes("admin")) return "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
-        if (role.includes("agent")) return "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint"
+        if (role.includes("agent")) return "bg-primary-soft text-primary dark:text-mint"
         return "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
     }
 

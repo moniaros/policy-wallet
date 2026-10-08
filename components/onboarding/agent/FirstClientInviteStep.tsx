@@ -84,7 +84,7 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
                     </form>
                 ) : (
                     <div className="text-center py-4">
-                        <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <div className="w-12 h-12 bg-primary-soft rounded-full flex items-center justify-center mx-auto mb-3">
                             <Check className="w-6 h-6 text-primary dark:text-mint" />
                         </div>
                         <p className="font-bold text-slate-900 dark:text-white">

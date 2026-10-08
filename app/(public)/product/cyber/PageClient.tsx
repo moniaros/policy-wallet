@@ -17,7 +17,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Κυβερνοασφάλεια", "Cyber insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
@@ -49,14 +49,14 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κάλυψη για ψηφιακό εκβιασμό", "Ransomware cover")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε τι ακριβώς πληρώνει το ασφαλιστήριο σε εκβιασμό ή απώλεια δεδομένων.", "We show you exactly what the policy pays in extortion or data loss.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Απώλεια κερδών", "Loss of profits")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Δείτε τα χρονικά όρια αποζημίωσης σε περίπτωση που η επιχείρηση σταματήσει να λειτουργεί λόγω κυβερνοεπίθεσης.", "See the time limits on compensation if the business stops operating because of a cyber attack.")}</p>
@@ -70,7 +70,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <p className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">{t("Κυβερνοασφάλεια επιχείρησης", "Business cyber cover")}</p>
-                                <p className="text-body-sm text-[#166534] dark:text-[#A7F3D0] font-medium mt-1">{t("Ενεργό", "Active")}</p>
+                                <p className="text-body-sm text-[#166534] dark:text-brand-accent font-medium mt-1">{t("Ενεργό", "Active")}</p>
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A] dark:text-white">{t("2,5 εκατ. €", "€2.5M")}</div>

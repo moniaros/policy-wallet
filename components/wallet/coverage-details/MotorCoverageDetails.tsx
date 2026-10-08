@@ -87,7 +87,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.coverageTier && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             {/* The glossary term behind this hint is «Μικτή ασφάλεια» — the
@@ -99,7 +99,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
           </div>
           <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
             tierCoversOwnVehicle(tier)
-              ? "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-primary/20 dark:border-primary/30"
+              ? "bg-primary-soft text-primary dark:text-mint border-primary/20 dark:border-primary/30"
               : "bg-black/[0.04] dark:bg-white/10 text-black/75 dark:text-white/80 border-black/10 dark:border-white/15"
           } ${tier ? "" : "capitalize"}`}>
             {tierLabel}
@@ -134,7 +134,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.insuredValue !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Car className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.insuredValue}</span>
@@ -146,7 +146,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.estimatedMarketValue !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Car className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.marketValue}</span>
@@ -200,7 +200,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.namedDrivers && motor.namedDrivers.length > 0 && (
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Users className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.namedDrivers}</span>
@@ -227,7 +227,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {greenCardExpiry && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <CreditCard className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div>
@@ -242,7 +242,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
               ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
               : greenCardStatus === "expiring"
                 ? "bg-amber-100 dark:bg-amber-900/30 text-status-warning border-amber-200 dark:border-amber-800"
-                : "bg-primary-soft dark:bg-primary/15 text-status-success border-primary/20 dark:border-primary/30"
+                : "bg-primary-soft text-status-success border-primary/20 dark:border-primary/30"
           }`}>
             {greenCardStatus === "expired" ? copy.expired : greenCardStatus === "expiring" ? copy.expiringSoon : copy.valid}
           </span>
@@ -252,7 +252,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.ownVehicleDamage !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Car className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.ownVehicleDamage}</span>
@@ -272,7 +272,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.glassBreakage !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.glassBreakage}</span>

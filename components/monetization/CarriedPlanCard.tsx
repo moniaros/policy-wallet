@@ -137,7 +137,7 @@ export function CarriedPlanCard({ planId, billingPeriod, className = "" }: Carri
             <div className="pointer-events-none absolute inset-0 bg-primary/5" />
             <div className="relative">
                 <div className="flex items-start gap-3">
-                    <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl bg-primary-soft dark:bg-primary/15">
+                    <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl bg-primary-soft">
                         <Crown className="h-4 w-4 text-primary dark:text-mint" />
                     </span>
                     <div className="min-w-0 flex-1">

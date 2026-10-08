@@ -19,7 +19,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Ζωή & υγεία", "Life & health")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
@@ -51,14 +51,14 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Πληρώνει η ασφαλιστική το νοσοκομείο απευθείας;", "Does the insurer pay the hospital directly?")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Βλέπετε με μια ματιά αν το νοσοκομείο σας χρεώνει απευθείας την ασφαλιστική. Τέλος τα τηλέφωνα την ώρα της ανάγκης.", "See at a glance whether your hospital bills the insurer directly. No more phone calls in the moment of need.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Μέγιστο ποσό δικής σας συμμετοχής", "Most you pay yourself")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Δείτε καθαρά το ανώτατο ποσό που μπορεί να πληρώσετε μόνοι σας μέσα στη χρονιά, ώστε να ξέρετε τι να υπολογίσετε.", "See clearly the most you could pay yourself in a year, so you know what to plan for.")}</p>
@@ -72,7 +72,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <p className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">{t("Πλήρης υγεία", "Full health cover")}</p>
-                                <p className="text-body-sm text-[#166534] dark:text-[#A7F3D0] font-medium mt-1">{t("Ενεργό", "Active")}</p>
+                                <p className="text-body-sm text-[#166534] dark:text-brand-accent font-medium mt-1">{t("Ενεργό", "Active")}</p>
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A] dark:text-white">{t("1 εκατ. €", "€1M")}</div>
@@ -149,7 +149,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                     </ol>
                     <p className="mt-6 text-body text-[#5B6A7A] dark:text-slate-400">
                         {t("Κάποιος όρος σας μπερδεύει; ", "Unsure about a term? ")}
-                        <Link href={localizeHref("/lexiko", locale)} className="font-semibold text-[#29685B] dark:text-[#A7F3D0] underline underline-offset-4">
+                        <Link href={localizeHref("/lexiko", locale)} className="font-semibold text-[#29685B] dark:text-brand-accent underline underline-offset-4">
                             {t("Δείτε το λεξικό ασφαλιστικών όρων.", "See the insurance glossary.")}
                         </Link>
                     </p>

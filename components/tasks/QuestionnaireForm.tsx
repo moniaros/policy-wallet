@@ -81,7 +81,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
     if (isSuccess) {
         return (
             <section className="pw-card pw-pad-roomy flex flex-col items-center text-center animate-in fade-in duration-500">
-                <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15" aria-hidden="true">
+                <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft" aria-hidden="true">
                     <CheckCircle2 className="h-7 w-7 text-primary dark:text-mint" />
                 </span>
                 <h2 className="mt-4 text-title font-semibold text-foreground">

@@ -134,7 +134,7 @@ export function ClientDetailView({
                                 className="h-12 w-12 shrink-0 rounded-full object-cover"
                             />
                         ) : (
-                            <span aria-hidden="true" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-primary-soft text-base font-semibold text-primary dark:bg-primary/15 dark:text-mint">
+                            <span aria-hidden="true" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-primary-soft text-base font-semibold text-primary dark:text-mint">
                                 {initials}
                             </span>
                         )}

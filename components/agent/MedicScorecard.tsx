@@ -44,7 +44,7 @@ interface ScorecardCopy {
 const RATING_STYLE: Record<0 | 1 | 2, string> = {
     0: "bg-black/5 text-black/55 dark:bg-white/10 dark:text-white/60",
     1: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-    2: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
+    2: "bg-primary-soft text-primary dark:text-mint",
 }
 
 export function MedicScorecard({

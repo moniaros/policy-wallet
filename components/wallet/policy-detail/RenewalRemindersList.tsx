@@ -19,7 +19,7 @@ interface RenewalRemindersListProps {
 const STATUS_CHIP: Record<string, string> = {
     pending: "bg-status-info-tint text-status-info",
     contacted: "bg-status-warning-tint text-status-warning",
-    renewed: "bg-primary-soft text-status-success dark:bg-primary/15",
+    renewed: "bg-primary-soft text-status-success",
     lapsed: "bg-status-danger-tint text-status-danger",
     cancelled: "bg-status-danger-tint text-status-danger",
 }

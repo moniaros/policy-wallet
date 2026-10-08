@@ -58,7 +58,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                         animate={{ opacity: 1 }}
                         className="flex flex-col items-center gap-3 py-4 text-center"
                     >
-                        <div className="grid h-12 w-12 place-items-center rounded-full bg-primary-soft dark:bg-primary/15">
+                        <div className="grid h-12 w-12 place-items-center rounded-full bg-primary-soft">
                             <MessageSquare className="h-6 w-6 text-primary dark:text-mint" />
                         </div>
                         <p className="text-sm font-semibold text-black dark:text-white">

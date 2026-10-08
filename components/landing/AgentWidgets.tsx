@@ -92,8 +92,8 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                         <p className="text-micro text-muted-foreground dark:text-slate-400">{t("Πρώτα όποιος σας χρειάζεται", "Whoever needs you first")}</p>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full border border-[#A7F3D0] dark:border-brand-green/50 bg-status-success-tint px-2.5 py-1">
-                        <Shield className="h-3 w-3 text-primary dark:text-[#A7F3D0]" />
-                        <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">{t("Έλεγχος ενεργός", "Scan in progress")}</span>
+                        <Shield className="h-3 w-3 text-primary dark:text-brand-accent" />
+                        <span className="text-micro font-semibold text-primary dark:text-brand-accent">{t("Έλεγχος ενεργός", "Scan in progress")}</span>
                     </div>
                 </div>
 
@@ -223,7 +223,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                                 scanProgress < 100 ? "animate-pulse bg-brand-green" : "bg-[#22C55E]"
                             }`}
                         />
-                        <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
+                        <span className="text-micro font-semibold text-primary dark:text-brand-accent">
                             {scanProgress < 100 ? t("Ελέγχουμε…", "Checking…") : t("Ολοκληρώθηκε", "Done")}
                         </span>
                     </div>
@@ -471,7 +471,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                                     <p className="text-micro text-muted-foreground dark:text-slate-400">{r.insurer}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">{r.premium}</p>
+                                    <p className="text-micro font-semibold text-primary dark:text-brand-accent">{r.premium}</p>
                                     <span className="rounded-full bg-primary-tint dark:bg-brand-green/15 px-1.5 py-0.5 text-kicker font-semibold text-status-success">
                                         {t("Ενεργό", "Active")}
                                     </span>
@@ -488,7 +488,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                         style={{ transitionDelay: "1250ms" }}
                     >
                         <div className="flex items-center gap-1.5">
-                            <Shield className="h-3.5 w-3.5 text-primary dark:text-[#A7F3D0]" />
+                            <Shield className="h-3.5 w-3.5 text-primary dark:text-brand-accent" />
                             <span className="text-micro font-semibold text-neutral-900 dark:text-white">{t("Ευρήματα με πηγή", "Findings with their source")}</span>
                         </div>
                         <span className="rounded-full bg-brand-green px-3 py-1.5 text-kicker font-bold text-white">
@@ -504,7 +504,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                     }`}
                     style={{ transitionDelay: "1450ms" }}
                 >
-                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
+                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-primary dark:text-brand-accent" />
                     <p className="text-micro font-semibold text-status-success">
                         {t("Έτοιμη για αποστολή", "Ready to send in one click")}
                     </p>

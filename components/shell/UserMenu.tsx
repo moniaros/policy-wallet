@@ -95,7 +95,7 @@ export function UserMenu({
                 onClick={() => setIsOpen(!isOpen)}
                 className={`${compact ? 'min-h-11' : 'w-full'} flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
             >
-                <div className="w-9 h-9 rounded-xl bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint text-sm font-semibold flex items-center justify-center flex-shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-primary-soft text-primary dark:text-mint text-sm font-semibold flex items-center justify-center flex-shrink-0">
                     {initials}
                 </div>
                 <div className={`flex-1 min-w-0 text-left ${compact ? 'hidden xl:block max-w-[12rem]' : ''}`}>

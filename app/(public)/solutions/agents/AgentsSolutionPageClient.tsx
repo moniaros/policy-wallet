@@ -32,7 +32,7 @@ export default function AgentSolutionsPage() {
             <section className="px-6 pb-20 lg:px-12">
                 <div className="mx-auto max-w-page">
                     <div className="mb-14 text-center">
-                        <p className="mb-3 text-caption font-semibold uppercase tracking-[0.18em] text-[#29685B] dark:text-[#A7F3D0]">
+                        <p className="mb-3 text-caption font-semibold uppercase tracking-[0.18em] text-[#29685B] dark:text-brand-accent">
                             {/* The category name precedes the audience signal:
                                 the H1 below is verbatim the broker-CRM promise,
                                 so the kicker must say what this actually is. */}
@@ -155,7 +155,7 @@ export default function AgentSolutionsPage() {
 
                     <div className="grid gap-4 md:grid-cols-3">
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-[#A7F3D0]">01</p>
+                            <p className="mb-3 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-brand-accent">01</p>
                             <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
                                 {t("Στέλνετε το ασφαλιστήριο", "You send the policy")}
                             </h3>
@@ -165,7 +165,7 @@ export default function AgentSolutionsPage() {
                         </div>
 
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-[#A7F3D0]">02</p>
+                            <p className="mb-3 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-brand-accent">02</p>
                             <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
                                 {t("Το διαβάζουμε", "We read it")}
                             </h3>
@@ -175,7 +175,7 @@ export default function AgentSolutionsPage() {
                         </div>
 
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-[#A7F3D0]">03</p>
+                            <p className="mb-3 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-brand-accent">03</p>
                             <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
                                 {t("Δίνετε την αναφορά", "You hand over the report")}
                             </h3>
@@ -191,7 +191,7 @@ export default function AgentSolutionsPage() {
                 <div className="mx-auto grid max-w-[1040px] gap-6 lg:grid-cols-[1.35fr_1fr]">
                     <div className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-8">
                         <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 px-3 py-1 text-caption font-semibold uppercase tracking-widest text-[#0F172A] dark:text-white">
-                            <Sparkles className="h-3.5 w-3.5 text-[#29685B] dark:text-[#A7F3D0]" />
+                            <Sparkles className="h-3.5 w-3.5 text-[#29685B] dark:text-brand-accent" />
                             {t("Τιμές για ασφαλιστές", "Pricing for agents")}
                         </div>
                         <h3 className="mb-3 text-h2 font-semibold leading-tight text-[#0F172A] dark:text-white">
@@ -218,7 +218,7 @@ export default function AgentSolutionsPage() {
 
                     {/* Verifiable-fact tile — no invented testimonials (EU consumer-law risk). */}
                     <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-                        <p className="mb-5 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-[#A7F3D0]">
+                        <p className="mb-5 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-brand-accent">
                             {t("Τι παίρνετε από την πρώτη μέρα", "What you get from day one")}
                         </p>
                         <ul className="space-y-4">
@@ -238,7 +238,7 @@ export default function AgentSolutionsPage() {
                                 t("Δεδομένα πελατών σε διακομιστές στην ΕΕ, κρυπτογραφημένα", "Client data on servers in the EU, encrypted"),
                             ].map((fact) => (
                                 <li key={fact} className="flex items-start gap-3 text-body-lg leading-relaxed text-[#0F172A] dark:text-white">
-                                    <CheckCircle2 className="mt-1 h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
+                                    <CheckCircle2 className="mt-1 h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-brand-accent" />
                                     {fact}
                                 </li>
                             ))}
@@ -247,7 +247,7 @@ export default function AgentSolutionsPage() {
                 </div>
 
                 <div className="mx-auto mt-12 max-w-[1040px] rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center">
-                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#ECFDF5] dark:bg-[#29685B]/15 px-3 py-1 text-caption font-semibold uppercase tracking-[0.15em] text-[#166534] dark:text-[#A7F3D0]">
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#ECFDF5] dark:bg-[#29685B]/15 px-3 py-1 text-caption font-semibold uppercase tracking-[0.15em] text-[#166534] dark:text-brand-accent">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         {t("Ξεκινήστε σήμερα", "Start today")}
                     </div>

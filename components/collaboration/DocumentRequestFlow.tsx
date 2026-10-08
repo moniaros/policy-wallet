@@ -317,7 +317,7 @@ export function DocumentRequestCard({ request, viewerRole, agentName, onRespond 
     }
     const statusColors: Record<string, string> = {
         pending: "text-amber-700 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400",
-        uploaded: "text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint",
+        uploaded: "text-[#166534] bg-primary-soft dark:text-mint",
         expired: "text-red-700 bg-red-50 dark:bg-red-900/30 dark:text-red-400",
     }
 

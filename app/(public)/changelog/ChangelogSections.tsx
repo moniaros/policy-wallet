@@ -13,7 +13,7 @@ export function ChangelogSections({ locale }: { locale: Locale }) {
             <PublicHeader locale={locale} />
             <main id="main-content">
                 <section className="mx-auto max-w-form px-4 pt-16 pb-10 text-center sm:pt-24">
-                    <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-[#A7F3D0]">{t(locale, "Τι άλλαξε", "What changed")}</p>
+                    <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-brand-accent">{t(locale, "Τι άλλαξε", "What changed")}</p>
                     <h1 className="mt-3 text-display font-semibold text-balance text-[#0F172A] dark:text-white">{t(locale, "Ημερολόγιο αλλαγών", "Changelog")}</h1>
                     <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">{t(locale, "Κάθε καταχώριση αντιστοιχεί σε αλλαγές που μπήκαν στην υπηρεσία, με την ημερομηνία τους. Ξεκινά από τη σημερινή μορφή του προϊόντος.", "Every entry corresponds to changes that reached the service, with their date. It starts where the current product does.")}</p>
                 </section>
