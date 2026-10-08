@@ -62,12 +62,14 @@ export const siteConfig = {
      * («προσωπική ανάλυση ρίσκου» ↔ "personal risk intelligence").
      */
     definition: {
-        // "What to fix first" is a Plus output and this sentence ships inside
-        // the SAME SoftwareApplication node that advertises the €0 offer — so
-        // the prioritisation clause names its plan. Everything before it is
-        // baseline (reading your policy, showing where cover ends).
-        el: "Το PolicyWallet είναι η ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου για την ελληνική αγορά. Διαβάζει τις ασφάλειές σας και δείχνει πού είστε καλυμμένοι και πού όχι — και, με το Family, τι να διορθώσετε πρώτα. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-        en: "PolicyWallet is the independent personal risk intelligence platform for the Greek market. It reads your insurance and shows where you are covered and where you are not — and, with Family, what to fix first. We do not sell insurance and we take no commission.",
+        // Gap findings are a Family output and this sentence ships inside the
+        // SAME SoftwareApplication node that advertises the €0 offer — so the
+        // clause names its plan. It used to promise "what to fix first": advice
+        // in platform voice, in the sentence AI engines quote verbatim (IDD;
+        // SEO review 2026-10 S1). The product finds and explains; the
+        // ασφαλιστής advises.
+        el: "Το PolicyWallet είναι η ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου για την ελληνική αγορά. Διαβάζει τις ασφάλειές σας και δείχνει πού είστε καλυμμένοι και πού όχι — και, με το Family, ποια κενά βρέθηκαν και τι να ρωτήσετε τον ασφαλιστή σας. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
+        en: "PolicyWallet is the independent personal risk intelligence platform for the Greek market. It reads your insurance and shows where you are covered and where you are not — and, with Family, which gaps were found and what to ask your insurance agent. We do not sell insurance and we take no commission.",
     },
     // App-wide fallback meta (root layout). Kept in step with the home meta:
     // no "fix first" (a Plus output) and no free-fusion.

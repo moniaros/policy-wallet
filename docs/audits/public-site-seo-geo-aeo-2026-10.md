@@ -40,6 +40,8 @@ Companions: [code review](public-site-and-design-system-2026-10.md),
 
 ## A. Broken / risky (fix before investing in content)
 
+**Status 2026-10-08:** S1–S4 fixed on branch `fix/seo-s1-s4` (S5 awaits the owner's root-layout decision). Guards: advice-verb pattern + probe (`voice-guards`), `proxy-app-segments`, `llms-txt`, `marketing-samples-no-headings`.
+
 | # | Finding | Evidence | Fix |
 |---|---|---|---|
 | S1 | **Advisory wording in the entity description every AI engine reads.** Organization + SoftwareApplication JSON-LD (and `/company`, home) say the product shows «με το Family, τι να διορθώσετε πρώτα». That is advice in platform voice — the IDD line CLAUDE.md draws (PW-VOICE-01: the product reads and explains; the partner advises). Structured data is quoted verbatim by LLMs, so this is the most-replicated sentence on the site. | `lib/seo/site.ts:69`, `lib/landing/content.ts:204` | Reword to a reading/explaining claim; extend the voice advice-verb guard to `lib/seo/**` (it evidently does not scan it). |
@@ -67,8 +69,10 @@ Companions: [code review](public-site-and-design-system-2026-10.md),
    `/trust` overlap; `/methodology` is linked from nowhere but the sitemap. Pick one
    primary (methodology is the most citable), merge or differentiate the others, link it
    from the footer and every product page.
-4. **`lastmod` on 74/144 sitemap URLs.** Add it for branch, pricing and company pages —
-   it is the cheapest freshness signal for both Google and AI crawlers.
+4. **`lastmod` on 74/144 sitemap URLs — correct as it is.** `app/sitemap.ts` omits it on
+   static pages on purpose: a request-time stamp claims every page changed at crawl time
+   and teaches crawlers to ignore the field. Add it only where a real modified date
+   exists (e.g. if branch pages gain a content `updatedAt`).
 5. **One OG image for every Greek page.** Guides and branch pages share
    `/opengraph-image`. Per-page OG (title + branch icon) lifts share CTR and gives
    multimodal engines a distinct asset per topic.

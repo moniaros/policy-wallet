@@ -201,7 +201,7 @@ export const landingContent: LandingContentModel = {
             ],
             ogTitle: "Τι πραγματικά καλύπτουν τα ασφαλιστήριά σας | PolicyWallet",
             ogDescription:
-                "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι και πού όχι — και, με το Family, τι να διορθώσετε πρώτα.",
+                "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι και πού όχι — και, με το Family, ποια κενά βρέθηκαν και τι να ρωτήσετε τον ασφαλιστή σας.",
             twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",
             twitterDescription: "Δεν πουλάμε ασφάλειες. Σας λέμε σε τι δεν καλύπτεστε.",
         },
@@ -220,7 +220,7 @@ export const landingContent: LandingContentModel = {
             ],
             ogTitle: "Know what your policies actually cover | PolicyWallet",
             ogDescription:
-                "We read your insurance and tell you where you are covered and where you are not — and, with Family, what to fix first.",
+                "We read your insurance and tell you where you are covered and where you are not — and, with Family, which gaps were found and what to ask your insurance agent.",
             twitterTitle: "PolicyWallet | An independent risk check",
             twitterDescription: "We do not sell insurance. We tell you what you are not covered for.",
         },

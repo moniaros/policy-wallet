@@ -147,8 +147,8 @@ export function ProductSections({ language }: { language: Language }) {
                         </h2>
                         <p className="mb-8 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Σας λέμε τι πληρώνετε δύο φορές — σε κάθε πλάνο — και, με το Family, τι λείπει από την κάλυψή σας και τι αξίζει να διορθώσετε πρώτα.",
-                                "We tell you what you are paying for twice — on every plan — and, with Family, what your cover is missing, and what is worth fixing first."
+                                "Σας λέμε τι πληρώνετε δύο φορές — σε κάθε πλάνο — και, με το Family, τι λείπει από την κάλυψή σας και τι να ρωτήσετε τον ασφαλιστή σας.",
+                                "We tell you what you are paying for twice — on every plan — and, with Family, what your cover is missing and what to ask your insurance agent."
                             )}
                         </p>
                         <ul className="space-y-3">

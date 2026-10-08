@@ -41,7 +41,10 @@ export function BranchCoverageMap({
     entries,
     labels,
     className,
+    headingAs = "h2",
 }: {
+    /** "p" inside a marketing sample: keeps app h2s out of the public outline (SEO review 2026-10 S4). */
+    headingAs?: "h2" | "p"
     entries: CoverageMapEntry[]
     labels: { kicker: string; viewAll: string }
     className?: string
@@ -49,6 +52,7 @@ export function BranchCoverageMap({
     return (
         <section className={cn("pw-card pw-pad @container", className)} aria-labelledby="coverage-map-heading">
             <CardHead
+                as={headingAs}
                 icon={Shield}
                 title={labels.kicker}
                 id="coverage-map-heading"

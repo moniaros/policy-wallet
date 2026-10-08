@@ -56,7 +56,10 @@ export function AttentionList({
     lead = null,
     cta = null,
     labels,
+    headingAs = "h2",
 }: {
+    /** "p" inside a marketing sample: keeps app h2s out of the public outline (SEO review 2026-10 S4). */
+    headingAs?: "h2" | "p"
     /**
      * One sentence over the tally when classified findings exist — awareness
      * before the numbers («εντοπίσαμε σημεία που αξίζει να εξετάσετε»), never
@@ -92,6 +95,7 @@ export function AttentionList({
     return (
         <section className="pw-card pw-pad" aria-labelledby="attention-heading">
             <CardHead
+                as={headingAs}
                 icon={TriangleAlert}
                 title={labels.kicker}
                 id="attention-heading"
