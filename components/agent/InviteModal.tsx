@@ -52,7 +52,7 @@ export function InviteModal({
                 <div className="p-12">
                     <header className="mb-10">
                         <div className="flex items-center gap-3 mb-4 text-primary dark:text-mint">
-                            <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-xl bg-primary-soft flex items-center justify-center">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </div>
                             <span className="text-kicker font-black uppercase tracking-[0.2em]">{t.invite.growthProtocol}</span>

@@ -224,7 +224,7 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
                             <div className="flex items-center gap-3">
                                 <span className="font-semibold">{pkg.label}</span>
                                 {pkg.popular && (
-                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint font-semibold">
+                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary-soft text-primary dark:text-mint font-semibold">
                                         {i18n.mostPopular}
                                     </span>
                                 )}

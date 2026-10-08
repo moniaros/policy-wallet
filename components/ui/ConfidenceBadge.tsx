@@ -27,7 +27,7 @@ export function ConfidenceBadge({
 
     const styles =
         level === "high"
-            ? "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
+            ? "bg-primary-soft text-[#166534] dark:text-mint"
             : level === "medium"
                 ? "bg-[#FEF3C7] text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
                 : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"

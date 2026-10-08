@@ -47,7 +47,7 @@ export function TrustBadges({ isGreek }: { isGreek: boolean }) {
                 >
                     <branch.Icon
                         aria-hidden
-                        className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]"
+                        className="h-4 w-4 flex-shrink-0 text-primary dark:text-brand-accent"
                     />
                     <span className="text-body-sm font-semibold text-neutral-700 dark:text-slate-100">
                         {isGreek ? branch.el : branch.en}

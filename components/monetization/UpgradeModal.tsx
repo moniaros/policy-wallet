@@ -187,7 +187,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                 </span>
                 {/* Header */}
                 <div className="text-center">
-                    <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15">
+                    <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary-soft">
                         <Crown className="h-6 w-6 text-primary dark:text-mint" />
                     </div>
                     <h2 id="upgrade-modal-title" className="mt-4 text-xl font-black text-foreground">{copy.headline}</h2>

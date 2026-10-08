@@ -86,7 +86,7 @@ export function ProductSections({ language }: { language: Language }) {
                             headingId="how-it-works-heading"
                             className="pw-secondary-button pw-btn-lg w-full cursor-pointer sm:w-auto"
                         >
-                            <ChevronDown className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
+                            <ChevronDown className="h-4 w-4 text-[#29685B] dark:text-brand-accent" />
                             {t("Πώς λειτουργεί", "How it works")}
                         </ProductScrollButton>
                     </div>
@@ -166,7 +166,7 @@ export function ProductSections({ language }: { language: Language }) {
                                 t("Δείχνετε στον ασφαλιστή σας ό,τι θέλετε — με το Family", "You show your agent whatever you choose — with Family"),
                             ].map((item) => (
                                 <li key={item} className="flex items-start gap-3 text-body-lg text-[#0F172A] dark:text-white">
-                                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
+                                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-brand-accent" />
                                     {item}
                                 </li>
                             ))}
@@ -234,7 +234,7 @@ export function ProductSections({ language }: { language: Language }) {
                                             className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] ${status === "warn" ? "bg-amber-100 dark:bg-amber-900/40" : "bg-[#DCEBDA] dark:bg-[#29685B]/30"}`}
                                         >
                                             <Icon
-                                                className={`h-4.5 w-4.5 ${status === "warn" ? "text-amber-700 dark:text-amber-300" : "text-[#29685B] dark:text-[#A7F3D0]"}`}
+                                                className={`h-4.5 w-4.5 ${status === "warn" ? "text-amber-700 dark:text-amber-300" : "text-[#29685B] dark:text-brand-accent"}`}
                                             />
                                         </div>
                                         <div className="min-w-0 flex-1">
@@ -307,7 +307,7 @@ export function ProductSections({ language }: { language: Language }) {
                             <ProductScrollButton
                                 targetId="product-categories"
                                 headingId="product-categories-heading"
-                                className="inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-body font-semibold text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto dark:text-[#A7F3D0]"
+                                className="inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-body font-semibold text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto dark:text-brand-accent"
                             >
                                 {t("Δείτε όλα", "See all")}
                                 <ChevronDown className="h-4 w-4" />

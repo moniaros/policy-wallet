@@ -31,7 +31,7 @@ export function TrustRow({ locale }: { locale: MarketingLocale }) {
                         >
                             <Icon
                                 aria-hidden
-                                className="h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-[#A7F3D0]"
+                                className="h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-brand-accent"
                             />
                             <span className="text-body-sm font-semibold text-neutral-700 dark:text-slate-200">
                                 {pick(fact.label, locale)}
@@ -49,7 +49,7 @@ export function TrustRow({ locale }: { locale: MarketingLocale }) {
                         <li key={fact.label.en} className="flex items-start gap-2.5">
                             <Icon
                                 aria-hidden
-                                className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]"
+                                className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-brand-accent"
                             />
                             <span className="text-body-sm leading-snug text-neutral-600 dark:text-slate-300">
                                 <span className="font-semibold text-neutral-900 dark:text-white">

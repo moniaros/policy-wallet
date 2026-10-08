@@ -139,7 +139,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints, la
                   className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15"
                 >
                   <div className="flex items-start gap-2.5">
-                    <div className="w-6 h-6 rounded-md bg-primary-soft dark:bg-primary/15 flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-6 h-6 rounded-md bg-primary-soft flex items-center justify-center mt-0.5 flex-shrink-0">
                       <CheckCircle2 className="w-3.5 h-3.5 text-status-success" />
                     </div>
                     <div className="flex-1 min-w-0">

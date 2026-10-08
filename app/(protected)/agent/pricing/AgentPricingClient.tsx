@@ -232,7 +232,7 @@ export function AgentPricingClient({
                                     isCurrent
                                         ? "border-primary/60 bg-white dark:bg-neutral-900 ring-2 ring-primary/30"
                                         : plan.popular
-                                            ? "border-primary bg-primary-tint dark:bg-primary/15 ring-2 ring-primary/20"
+                                            ? "border-primary bg-primary-tint ring-2 ring-primary/20"
                                             : "border-border bg-white dark:bg-neutral-900"
                                 }`}
                             >

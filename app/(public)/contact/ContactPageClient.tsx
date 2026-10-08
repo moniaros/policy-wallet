@@ -222,7 +222,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
             <section className="px-6 pb-20 md:px-12">
                 <div className="mx-auto max-w-page">
                     <div className="mb-10">
-                        <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                        <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-brand-accent">
                             {t("kicker")}
                         </p>
                         <h1 className="mb-4 text-h1 leading-[1.05] font-semibold tracking-[-0.03em] text-[#0F172A] md:text-display dark:text-white">
@@ -376,7 +376,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                 {/* Announced, not just painted: without a live
                                     region a screen-reader user submits the form
                                     and hears nothing at all. */}
-                                <p role="status" aria-live="polite" className="text-body-sm text-[#166534] dark:text-[#A7F3D0]">
+                                <p role="status" aria-live="polite" className="text-body-sm text-[#166534] dark:text-brand-accent">
                                     {successMessage}
                                 </p>
                                 {submitError ? (
@@ -394,7 +394,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
 
                             <div className="space-y-5 text-body text-[#334155] dark:text-slate-300">
                                 <div className="flex items-start gap-3">
-                                    <Mail aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                    <Mail aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                                     <div>
                                         <p className="font-medium text-[#0F172A] dark:text-white">{t("email")}</p>
                                         {/* Plain-text address so AI crawlers and answer engines
@@ -405,7 +405,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
 
                                 {siteConfig.contactPhone ? (
                                     <div className="flex items-start gap-3">
-                                        <Phone aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                        <Phone aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                                         <div>
                                             <p className="font-medium text-[#0F172A] dark:text-white">{t("phoneLabel")}</p>
                                             <p>{siteConfig.contactPhone}</p>
@@ -415,7 +415,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
 
                                 {hasCompleteAddress() ? (
                                     <div className="flex items-start gap-3">
-                                        <MapPin aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                        <MapPin aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                                         <div>
                                             <p className="font-medium text-[#0F172A] dark:text-white">{t("addressLabel")}</p>
                                             <p>
@@ -428,7 +428,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                 ) : null}
 
                                 <div className="flex items-start gap-3">
-                                    <Clock3 aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                    <Clock3 aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                                     <div>
                                         <p className="font-medium text-[#0F172A] dark:text-white">{t("hoursLabel")}</p>
                                         <p>{t("hoursValue")}</p>

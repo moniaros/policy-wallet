@@ -53,7 +53,7 @@ export function StepUpClient({ callbackUrl }: { callbackUrl: string }) {
     return (
         <main className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col items-center justify-center px-4 py-10 text-center">
             <div className="pw-card pw-pad w-full" data-step-up={state}>
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary-soft">
                     {state === "asking" || state === "verifying" ? (
                         <Loader2 aria-hidden="true" className="h-6 w-6 animate-spin text-primary dark:text-mint" />
                     ) : (

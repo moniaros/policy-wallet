@@ -556,7 +556,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
             <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} data-testid="batch-upload-modal" className="relative w-full max-w-3xl bg-card rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
                 <div className="p-8 pb-0">
                     <div className="flex items-center gap-3 mb-4 text-primary dark:text-mint">
-                        <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-xl bg-primary-soft flex items-center justify-center">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
@@ -600,7 +600,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                     </span>
                                 )}
                                 {readyRows.length > 0 && (
-                                    <span className="flex items-center gap-2 px-3 py-1.5 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint rounded-full text-xs font-bold">
+                                    <span className="flex items-center gap-2 px-3 py-1.5 bg-primary-soft text-primary dark:text-mint rounded-full text-xs font-bold">
                                         <Check className="w-4 h-4" aria-hidden="true" />
                                         {readyRows.length} {copy.completed}
                                     </span>
@@ -653,7 +653,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                             <div className={`
                                                 w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0
                                                 ${row.status === "processing" ? "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200" : ""}
-                                                ${row.status === "ready" ? "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint" : ""}
+                                                ${row.status === "ready" ? "bg-primary-soft text-primary dark:text-mint" : ""}
                                                 ${row.status === "failed" ? "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200" : ""}
                                             `}>
                                                 {row.status === "processing" ? (

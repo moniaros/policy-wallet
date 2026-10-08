@@ -316,7 +316,7 @@ export function ProposalView({
         },
         accepted: {
             label: { en: "Accepted", el: "Αποδεκτή" },
-            style: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
+            style: "bg-primary-soft text-[#166534] dark:text-mint",
         },
         declined: {
             label: { en: "Declined", el: "Απορρίφθηκε" },
@@ -359,7 +359,7 @@ export function ProposalView({
 
             {/* Plain language summary */}
             {proposal.plainLanguageSummary && (
-                <div className="rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 p-4 mb-4">
+                <div className="rounded-xl bg-primary-tint border border-primary/20 dark:border-primary/30 p-4 mb-4">
                     <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
                         {proposal.plainLanguageSummary}
                     </p>

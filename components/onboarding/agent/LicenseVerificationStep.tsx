@@ -95,7 +95,7 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
             <label className="block bg-slate-50 dark:bg-slate-900/50 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 text-center transition-all hover:border-primary hover:bg-primary/5 group cursor-pointer">
                 {file ? (
                     <div className="flex flex-col items-center">
-                        <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-full flex items-center justify-center mb-3">
+                        <div className="w-12 h-12 bg-primary-soft rounded-full flex items-center justify-center mb-3">
                             <CheckCircle2 className="w-6 h-6 text-primary dark:text-mint" />
                         </div>
                         <p className="font-bold text-slate-900 dark:text-white">{file.name}</p>

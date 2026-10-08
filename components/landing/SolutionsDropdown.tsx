@@ -154,7 +154,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                                     onClick={() => setIsOpen(false)}
                                     className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-body-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white dark:focus-visible:outline-[#A7F3D0]"
                                 >
-                                    <category.icon aria-hidden className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
+                                    <category.icon aria-hidden className="h-4 w-4 flex-shrink-0 text-primary dark:text-brand-accent" />
                                     <span className="truncate">
                                         {language === "el" ? category.labelEl : category.labelEn}
                                     </span>

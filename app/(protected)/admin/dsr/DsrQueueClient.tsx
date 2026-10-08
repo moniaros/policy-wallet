@@ -74,7 +74,7 @@ function getStatusClasses(status: string) {
     switch (status) {
         case "completed":
         case "approved":
-            return "bg-primary-soft text-status-success dark:bg-primary/15"
+            return "bg-primary-soft text-status-success"
         case "processing":
         case "in_review":
             return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"

@@ -63,7 +63,7 @@ export function LocaleToggle({
                             className={cn(
                                 "flex min-h-11 items-center gap-2.5 rounded-xl border px-4 py-3 text-left text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                                 selected
-                                    ? "border-primary bg-primary-soft/60 font-semibold text-black dark:border-mint dark:bg-primary/15 dark:text-white"
+                                    ? "border-primary bg-primary-soft/60 font-semibold text-black dark:border-mint dark:text-white"
                                     : "border-black/10 font-medium text-black/80 hover:border-primary/40 dark:border-white/15 dark:text-white/80"
                             )}
                         >

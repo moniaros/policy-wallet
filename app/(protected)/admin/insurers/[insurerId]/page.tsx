@@ -11,7 +11,7 @@ const inputClass = "pw-input pw-input-sm"
 const labelClass = "block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1"
 
 const CONFIDENCE_BADGE_CLASSES: Record<string, string> = {
-    verified_2026: "bg-primary-soft text-status-success dark:bg-primary/15",
+    verified_2026: "bg-primary-soft text-status-success",
     stale: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
     unverified: "bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
     not_applicable: "bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300",

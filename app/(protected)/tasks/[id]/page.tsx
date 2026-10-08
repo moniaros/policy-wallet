@@ -73,7 +73,7 @@ export default async function TaskDetailPage({
             <div className="pw-page-shell">
                 <div className="mx-auto max-w-4xl px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
                     <section className="pw-card pw-pad-roomy flex flex-col items-center text-center">
-                        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15" aria-hidden="true">
+                        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft" aria-hidden="true">
                             <CheckCircle2 className="h-7 w-7 text-primary dark:text-mint" />
                         </span>
                         <h1 className="mt-4 text-title font-semibold text-foreground">{instance.template.name}</h1>

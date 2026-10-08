@@ -67,7 +67,7 @@ export function EmptyState({
         <div
             className={`pw-card flex flex-col items-center px-6 py-10 text-center sm:px-8 sm:py-12 ${className}`}
         >
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft">
                 <Icon className="h-7 w-7 text-primary dark:text-mint" />
             </div>
 
@@ -139,7 +139,7 @@ export function PolicyPreviewRow({
     return (
         <div className="pw-subcard flex items-center gap-3 p-3">
             <div
-                className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] ${warn ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-primary-soft dark:bg-primary/15"}`}
+                className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] ${warn ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-primary-soft"}`}
             >
                 <Icon className={`h-4 w-4 ${warn ? "text-[#92400E] dark:text-amber-200" : "text-primary dark:text-mint"}`} />
             </div>
@@ -151,7 +151,7 @@ export function PolicyPreviewRow({
                 className={`flex-shrink-0 rounded-full px-2 py-0.5 text-caption font-semibold ${
                     warn
                         ? "bg-[#FEF3C7] dark:bg-amber-900/30 text-[#92400E] dark:text-amber-200"
-                        : "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
+                        : "bg-primary-soft text-[#166534] dark:text-mint"
                 }`}
             >
                 {statusLabel}
@@ -198,7 +198,7 @@ export function RenewalPreviewRow({
 }) {
     return (
         <div className="pw-subcard flex items-center gap-3 p-3">
-            <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft dark:bg-primary/15">
+            <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft">
                 <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
             </div>
             <div className="min-w-0 flex-1 text-left">

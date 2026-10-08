@@ -38,7 +38,7 @@ export function Referrals({
             case "credited":
                 return {
                     label: t.referrals.status.credited,
-                    color: "bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-primary/30 dark:border-primary/30",
+                    color: "bg-primary-soft text-[#166534] dark:text-mint border-primary/30 dark:border-primary/30",
                 }
             case "pending":
                 return {

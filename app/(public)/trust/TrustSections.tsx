@@ -184,7 +184,7 @@ export function TrustSections({ locale }: { locale: Locale }) {
             <PublicHeader locale={locale} />
             <main id="main-content">
                 <section className="mx-auto max-w-form px-4 pt-16 pb-10 text-center sm:pt-24">
-                    <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-[#A7F3D0]">
+                    <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-brand-accent">
                         {t(locale, "Εμπιστοσύνη", "Trust")}
                     </p>
                     <h1 className="mt-3 text-display font-semibold text-balance text-[#0F172A] dark:text-white">

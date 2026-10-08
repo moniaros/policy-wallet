@@ -15,7 +15,7 @@ export function StatusSections({ locale }: { locale: Locale }) {
             <PublicHeader locale={locale} />
             <main id="main-content">
                 <section className="mx-auto max-w-form px-4 pt-16 pb-10 text-center sm:pt-24">
-                    <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-[#A7F3D0]">{t(locale, "Κατάσταση", "Status")}</p>
+                    <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-brand-accent">{t(locale, "Κατάσταση", "Status")}</p>
                     <h1 className="mt-3 text-display font-semibold text-balance text-[#0F172A] dark:text-white">{t(locale, "Κατάσταση υπηρεσίας", "Service status")}</h1>
                     <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">{t(locale, "Δείτε πού λειτουργεί η υπηρεσία και πού ανακοινώνονται προβλήματα από τις εταιρείες που τη στηρίζουν. Δεν δημοσιεύουμε ποσοστά διαθεσιμότητας που δεν μετράμε.", "No percentages we do not measure. Where the service runs, where its providers publish their status, and where incidents are recorded.")}</p>
                 </section>

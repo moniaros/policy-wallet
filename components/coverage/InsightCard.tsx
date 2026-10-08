@@ -85,7 +85,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                                 {normalizeBranch(insight.type).label[language === 'el' ? 'el' : 'en']}
                             </span>
                             {insight.isPlusFeature && (
-                                <span className="flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-primary dark:bg-primary/15 dark:text-mint">
+                                <span className="flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-primary dark:text-mint">
                                     <Lock className="w-3 h-3" />
                                     PLUS
                                 </span>
@@ -125,7 +125,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                             <div className="space-y-2">
                                 {insight.checkedItems.slice(0, 3).map((item, idx) => (
                                     <div key={idx} className="flex items-center gap-2.5 text-sm text-foreground/80">
-                                        <div className="w-5 h-5 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                        <div className="w-5 h-5 rounded-full bg-primary-soft flex items-center justify-center flex-shrink-0">
                                             <CheckCircle2 className="w-3.5 h-3.5 text-primary dark:text-mint" />
                                         </div>
                                         <span>{item}</span>

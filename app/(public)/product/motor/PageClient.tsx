@@ -17,7 +17,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Οχήματα", "Vehicles")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
@@ -49,14 +49,14 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Αποζημίωση και αξία", "Payout vs value")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε την αποζημίωση που προβλέπει το ασφαλιστήριο — συγκρίνετέ τη με το τι αξίζει σήμερα το αυτοκίνητό σας.", "We show you the payout the policy provides — compare it with what your car is worth today.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κενά οδικής βοήθειας", "Roadside assistance gaps")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Στο πλάνο Family, βρίσκουμε παροχές που λείπουν ή πληρώνονται δύο φορές — πριν μείνετε στον δρόμο.", "On the Family plan, we find benefits that are missing or paid for twice — before you are left stranded.")}</p>
@@ -74,7 +74,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A] dark:text-white">{t("35.000 €", "€35,000")}</div>
-                                <p className="text-body-sm text-[#166534] dark:text-[#A7F3D0] font-medium">{t("Πλήρης κάλυψη", "Fully covered")}</p>
+                                <p className="text-body-sm text-[#166534] dark:text-brand-accent font-medium">{t("Πλήρης κάλυψη", "Fully covered")}</p>
                             </div>
                         </div>
                         <div className="space-y-4">
@@ -85,7 +85,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                                 <span className="text-[#475569] dark:text-slate-300">{t("Απαλλαγή", "Deductible")}</span>
                                 <span className="font-medium">{t("500 €", "€500")}</span>
                             </div>
-                            <div className="mt-6 flex items-center justify-between bg-[#F0FDF4] dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0] p-4 rounded-lg border border-[#29685B]/20">
+                            <div className="mt-6 flex items-center justify-between bg-[#F0FDF4] dark:bg-[#29685B]/15 text-[#166534] dark:text-brand-accent p-4 rounded-lg border border-[#29685B]/20">
                                 <span className="font-semibold text-sm flex items-center gap-2">
                                     <Car className="w-4 h-4" /> {t("Περιλαμβάνεται οδική βοήθεια", "Roadside assistance included")}
                                 </span>

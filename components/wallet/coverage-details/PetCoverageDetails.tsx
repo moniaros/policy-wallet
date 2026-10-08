@@ -72,7 +72,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
           className="pw-secondary-button w-full justify-between bg-black/[0.02]"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Heart className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div className="text-left">
@@ -91,7 +91,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
                 <Shield className="w-4 h-4 text-primary dark:text-mint" />
               </div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.annualLimit}</span>
@@ -120,13 +120,13 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       {pet.leishmaniaCovered !== undefined && (
         <div className={`flex items-center justify-between p-3 rounded-xl border ${
           pet.leishmaniaCovered
-            ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"
+            ? "bg-primary-tint border-primary/20 dark:border-primary/30"
             : "bg-red-50/80 dark:bg-red-900/20 border-red-200/60 dark:border-red-800/60"
         }`}>
           <div className="flex items-center gap-2.5">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
               pet.leishmaniaCovered
-                ? "bg-primary-soft dark:bg-primary/15"
+                ? "bg-primary-soft"
                 : "bg-red-100 dark:bg-red-900/30"
             }`}>
               <Bug className={`w-4 h-4 ${pet.leishmaniaCovered ? "text-status-success" : "text-red-700 dark:text-red-400"}`} />
@@ -152,14 +152,14 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       {pet.breedSpecificDiseases && pet.breedSpecificDiseases.length > 0 && (
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <Stethoscope className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.breedSpecificDiseases}</span>
           </div>
           <div className="ml-10.5 flex flex-wrap gap-1.5">
             {pet.breedSpecificDiseases.map((disease, i) => (
-              <span key={i} className="px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/20 dark:border-primary/30">
+              <span key={i} className="px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-soft text-primary dark:text-mint border border-primary/20 dark:border-primary/30">
                 {disease}
               </span>
             ))}
@@ -170,7 +170,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       {pet.directVetPayment !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft flex items-center justify-center">
               <CreditCard className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.directVetPayment}</span>

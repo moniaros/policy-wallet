@@ -59,7 +59,7 @@ export function AiConsentModal({ isOpen, onClose, onConsented, source = "ai_cons
         >
             <div className="p-6 md:p-8">
                 <div className="flex items-start gap-4">
-                    <div className="rounded-2xl bg-primary-soft p-3 text-primary dark:bg-primary/15 dark:text-mint">
+                    <div className="rounded-2xl bg-primary-soft p-3 text-primary dark:text-mint">
                         <ShieldCheck className="h-6 w-6" />
                     </div>
                     <div>

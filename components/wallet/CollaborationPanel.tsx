@@ -154,7 +154,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
     const getPermissionBadge = (permission: "view" | "edit" | "manage" = "view") => {
         if (permission === "manage") {
             return (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft dark:bg-primary/15 border border-primary/30 dark:border-primary/40 rounded-full">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft border border-primary/30 dark:border-primary/40 rounded-full">
                     <Shield className="w-3 h-3 text-status-success" />
                     <span className="text-kicker font-bold text-status-success uppercase tracking-wider">{MANAGE_BADGE_COPY[language]}</span>
                 </div>
@@ -171,7 +171,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
         }
 
         return (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft dark:bg-primary/15 border border-primary/30 dark:border-primary/40 rounded-full">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft border border-primary/30 dark:border-primary/40 rounded-full">
                 <Eye className="w-3 h-3 text-primary dark:text-mint" />
                 <span className="text-kicker font-bold text-primary dark:text-mint uppercase tracking-wider">{copy.viewOnly}</span>
             </div>
@@ -230,7 +230,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
             </div>
 
             {inviteLink && (
-                <div className="mx-6 mt-6 bg-primary-tint dark:bg-primary/15 border border-primary-soft dark:border-primary/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="mx-6 mt-6 bg-primary-tint border border-primary-soft dark:border-primary/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="flex items-start gap-3">
                         <div className="mt-0.5">
                             <CheckCircle2 className="w-5 h-5 text-primary dark:text-mint" />
@@ -284,7 +284,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                     type="button"
                                     onClick={() => setPermissions("view")}
                                     className={`group relative px-4 py-3 rounded-xl border-2 transition-all duration-200 ${permissions === "view"
-                                        ? "bg-primary-tint dark:bg-primary/15 border-primary dark:border-mint shadow-lg shadow-primary/20"
+                                        ? "bg-primary-tint border-primary dark:border-mint shadow-lg shadow-primary/20"
                                         : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/40 dark:hover:border-primary/60"
                                         }`}
                                 >

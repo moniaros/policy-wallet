@@ -435,10 +435,10 @@ interface MetricsCardProps {
 
 function MetricsCard({ title, value, change, changeLabel, icon, color }: MetricsCardProps) {
     const colorClasses = {
-        blue: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint",
-        green: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint",
+        blue: "bg-primary-soft text-primary dark:text-mint",
+        green: "bg-primary-soft text-primary dark:text-mint",
         purple: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
-        emerald: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint"
+        emerald: "bg-primary-soft text-primary dark:text-mint"
     }
 
     return (

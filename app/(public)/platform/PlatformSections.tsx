@@ -102,7 +102,7 @@ export function PlatformSections({ locale }: { locale: Locale }) {
             <PublicHeader locale={locale} />
             <main id="main-content">
                 <section className="mx-auto max-w-form px-4 pt-16 pb-10 text-center sm:pt-24">
-                    <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-[#A7F3D0]">
+                    <p className="text-kicker uppercase tracking-wide text-[#29685B] dark:text-brand-accent">
                         {t(locale, "Πώς δουλεύει", "How it works")}
                     </p>
                     <h1 className="mt-3 text-display font-semibold text-balance text-[#0F172A] dark:text-white">
@@ -127,7 +127,7 @@ export function PlatformSections({ locale }: { locale: Locale }) {
                             <li key={step.n} className="flex gap-4">
                                 <span
                                     aria-hidden="true"
-                                    className="text-h4 font-semibold tabular-nums text-[#29685B] dark:text-[#A7F3D0]"
+                                    className="text-h4 font-semibold tabular-nums text-[#29685B] dark:text-brand-accent"
                                 >
                                     {step.n}
                                 </span>

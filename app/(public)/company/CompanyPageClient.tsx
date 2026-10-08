@@ -25,7 +25,7 @@ export default function CompanyPage() {
                 <section className="mx-auto mb-16 max-w-4xl px-6 text-center lg:px-12">
                     {/* Category kicker — the company page opens by naming the
                         category we created; the H1 is its human decode. */}
-                    <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
+                    <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-brand-accent">
                         {t(CATEGORY_NAME.el, CATEGORY_NAME.en)}
                     </p>
                     <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-tight md:text-display">
@@ -69,7 +69,7 @@ export default function CompanyPage() {
                                 },
                             ].map((item) => (
                                 <li key={item.en} className="flex items-start gap-3 text-body-lg leading-relaxed text-[#0F172A] dark:text-white">
-                                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
+                                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-brand-accent" />
                                     {t(item.el, item.en)}
                                 </li>
                             ))}

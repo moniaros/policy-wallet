@@ -317,7 +317,7 @@ export default function PricingPage({
                                                 "{months}",
                                                 String(promo.durationMonths)
                                             )}{" "}
-                                            <code className="rounded bg-white px-2 py-0.5 font-mono text-caption font-semibold tracking-wide text-[#29685B] dark:bg-slate-900 dark:text-[#A7F3D0]">
+                                            <code className="rounded bg-white px-2 py-0.5 font-mono text-caption font-semibold tracking-wide text-[#29685B] dark:bg-slate-900 dark:text-brand-accent">
                                                 {promo.code}
                                             </code>
                                         </p>
@@ -379,15 +379,15 @@ export default function PricingPage({
 
                     <div className="mb-12 flex flex-wrap items-center justify-center gap-6 text-body text-[#475569] dark:text-slate-400">
                         <div className="flex items-center gap-2">
-                            <Shield className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                            <Shield className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                             <span>{labels.secure[language]}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <CreditCard className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                            <CreditCard className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                             <span>{labels.noHiddenFees[language]}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Lock className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                            <Lock className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                             <span>{labels.cancelAnytime[language]}</span>
                         </div>
                     </div>

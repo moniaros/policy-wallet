@@ -17,7 +17,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Ασφάλεια σκάφους", "Boat insurance")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
@@ -49,28 +49,28 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Υποχρεωτική αστική ευθύνη", "Mandatory third-party liability")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Δείτε τα όρια για σωματικές βλάβες και υλικές ζημιές τρίτων και βεβαιωθείτε ότι το ασφαλιστήριο είναι σε ισχύ πριν βγείτε από το λιμάνι.", "See your limits for third-party bodily injury and property damage, and confirm the policy is in force before you leave port.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Σκάφος & Μηχανή", "Hull & machinery")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Η κάλυψη για ζημιές στο δικό σας σκάφος είναι προαιρετική. Δείτε αν περιλαμβάνει, για παράδειγμα, χτύπημα σε βράχο ή ζημιά από κακοκαιρία.", "Own-damage cover is optional: if it's missing, a collision or storm damage remains entirely your cost. We flag it in the analysis.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Βοήθεια στη θάλασσα και ανάσυρση σκάφους", "Salvage & wreck removal")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Η μεταφορά ενός σκάφους που έπαθε βλάβη ή η ανάσυρσή του από τον βυθό δεν καλύπτονται πάντα. Δείτε τι γράφει το δικό σας ασφαλιστήριο.", "Towing, salvage and wreck removal are expensive and not always included. Find out whether your own contract covers them.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Το ασφαλιστήριο πάντα μαζί σας", "Your policy always with you")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Σε έλεγχο Λιμενικού ή στη μαρίνα, το ασφαλιστήριο — και το τι σημαίνει — είναι στο κινητό σας, όχι σε ένα συρτάρι στη στεριά.", "At a coast guard check or the marina, your policy — and what it means — is on your phone, not in a drawer back on land.")}</p>
@@ -86,16 +86,16 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                                 <p className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">{t("Ιστιοπλοϊκό 9,8 μ.", "Sailing yacht 9.8m")}</p>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Μαρίνα Αλίμου · Σε ισχύ", "Alimos Marina · In force")}</p>
                             </div>
-                            <Sailboat className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" />
+                            <Sailboat className="w-6 h-6 text-[#29685B] dark:text-brand-accent" />
                         </div>
                         <div className="space-y-4">
                             <div className="p-4 bg-[#F0FDF4] dark:bg-[#29685B]/15 rounded-lg flex justify-between items-center border border-[#29685B]/20">
-                                <div className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">{t("Αστική ευθύνη: ενεργή", "Third-party liability: active")}</div>
-                                <LifeBuoy className="w-5 h-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                <div className="font-medium text-[#166534] dark:text-brand-accent text-sm">{t("Αστική ευθύνη: ενεργή", "Third-party liability: active")}</div>
+                                <LifeBuoy className="w-5 h-5 text-[#29685B] dark:text-brand-accent" />
                             </div>
                             <div className="p-4 bg-[#F0FDF4] dark:bg-[#29685B]/15 rounded-lg flex justify-between items-center border border-[#29685B]/20">
-                                <div className="font-medium text-[#166534] dark:text-[#A7F3D0] text-body-sm">{t("Σκάφος & μηχανή: καλύπτονται", "Hull & machinery: covered")}</div>
-                                <Anchor className="w-5 h-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                <div className="font-medium text-[#166534] dark:text-brand-accent text-body-sm">{t("Σκάφος & μηχανή: καλύπτονται", "Hull & machinery: covered")}</div>
+                                <Anchor className="w-5 h-5 text-[#29685B] dark:text-brand-accent" />
                             </div>
                             <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg border border-rose-100 dark:border-rose-800/40">
                                 <p className="font-medium text-rose-900 dark:text-rose-200 text-sm">{t("Δεν καλύπτεται", "Not covered")}</p>

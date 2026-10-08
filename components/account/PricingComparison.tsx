@@ -215,7 +215,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             )}
 
                             <div className="mb-6">
-                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isPopular ? 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint' : 'bg-muted text-muted-foreground'
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isPopular ? 'bg-primary-soft text-primary dark:text-mint' : 'bg-muted text-muted-foreground'
                                     }`}>
                                     <tier.icon className="w-6 h-6" />
                                 </div>
@@ -237,7 +237,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                     </span>
                                 </div>
                                 {billingPeriod === 'annual' && tier.annual?.savings && (
-                                    <span className="text-xs font-bold text-primary dark:text-mint px-2 py-1 bg-primary-soft dark:bg-primary/15 rounded-full mt-2 inline-block">
+                                    <span className="text-xs font-bold text-primary dark:text-mint px-2 py-1 bg-primary-soft rounded-full mt-2 inline-block">
                                         {tier.annual.savings[language]}
                                     </span>
                                 )}
@@ -250,7 +250,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         : 'text-muted-foreground line-through decoration-muted-foreground/40'
                                         }`}>
                                         <div className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${feature.included
-                                            ? 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint'
+                                            ? 'bg-primary-soft text-primary dark:text-mint'
                                             : 'bg-muted text-muted-foreground'
                                             }`}>
                                             {feature.included ? <Check className="w-2.5 h-2.5" /> : <X className="w-2.5 h-2.5" />}

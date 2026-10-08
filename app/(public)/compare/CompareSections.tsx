@@ -79,7 +79,7 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
         <LoBPageShell locale={locale}>
             <section className="px-6 pb-16 text-center lg:px-12">
                 <div className="mx-auto max-w-[820px]">
-                    <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                    <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-brand-accent">
                         {t("Σύγκριση", "Compare")}
                     </p>
                     <h1 className="mb-6 text-h1 leading-[1.05] font-semibold tracking-[-0.04em] text-[#0F172A] md:text-display dark:text-white text-balance">
@@ -147,7 +147,7 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                                             scope="col"
                                             className={`py-4 pr-4 align-bottom ${
                                                 column.key === "policywallet"
-                                                    ? "text-[#29685B] dark:text-[#A7F3D0]"
+                                                    ? "text-[#29685B] dark:text-brand-accent"
                                                     : "text-[#0F172A] dark:text-white"
                                             }`}
                                         >

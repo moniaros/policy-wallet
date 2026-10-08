@@ -251,7 +251,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                 {NO_AGENT_COPY.exampleMeta[lang]}
                             </p>
                         </div>
-                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-status-success dark:bg-primary/15">
+                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-caption font-semibold text-status-success">
                             {NO_AGENT_COPY.exampleBadge[lang]}
                         </span>
                     </div>

@@ -23,7 +23,7 @@ const VERDICT_STYLE: Record<
     { chip: string; icon: typeof Check }
 > = {
     clear: {
-        chip: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
+        chip: "bg-primary-soft text-primary dark:text-mint",
         icon: Check,
     },
     attention: {

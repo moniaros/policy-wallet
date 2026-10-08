@@ -116,8 +116,8 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                 like every other fintech health grade. This one is
                                 the tiles below, added up. */}
                             <div className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-status-success-tint px-2.5 py-1 dark:border-brand-green/50">
-                                <ShieldCheck className="h-3 w-3 text-primary dark:text-[#A7F3D0]" />
-                                <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
+                                <ShieldCheck className="h-3 w-3 text-primary dark:text-brand-accent" />
+                                <span className="text-micro font-semibold text-primary dark:text-brand-accent">
                                     {t(
                                         `${okCount} στα ${covers.length} εντάξει`,
                                         `${okCount} of ${covers.length} all good`,
@@ -151,7 +151,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                                 className={`h-5 w-5 ${
                                                     cover.type === "gap"
                                                         ? "text-status-warning"
-                                                        : "text-primary dark:text-[#A7F3D0]"
+                                                        : "text-primary dark:text-brand-accent"
                                                 }`}
                                             />
                                         </div>

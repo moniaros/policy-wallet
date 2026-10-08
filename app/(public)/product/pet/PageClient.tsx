@@ -17,7 +17,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Ζώα συντροφιάς", "Pets")}
                     </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
@@ -50,8 +50,8 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                         </div>
                         <div className="space-y-4">
                             <div className="p-4 bg-[#F0FDF4] dark:bg-[#29685B]/15 rounded-lg flex justify-between items-center border border-[#29685B]/20">
-                                <div className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">{t("Καλύπτεται η λεϊσμανίαση", "Leishmaniasis covered")}</div>
-                                <Heart className="w-5 h-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                <div className="font-medium text-[#166534] dark:text-brand-accent text-sm">{t("Καλύπτεται η λεϊσμανίαση", "Leishmaniasis covered")}</div>
+                                <Heart className="w-5 h-5 text-[#29685B] dark:text-brand-accent" />
                             </div>
                             <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg flex justify-between border border-rose-100 dark:border-rose-800/40">
                                 <div>
@@ -73,14 +73,14 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κάλυψη για λεϊσμανίαση", "Leishmaniasis cover")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Ελέγχουμε αν η ασφάλειά σας καλύπτει τη θεραπεία για τη λεϊσμανίαση και τις άλλες μεσογειακές νόσους.", "We check whether your policy covers treatment for leishmaniasis and other Mediterranean diseases.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Ποιες παθήσεις εξαιρούνται", "Which conditions are excluded")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Δείτε αν εξαιρούνται παθήσεις που κληρονομούνται ή υπήρχαν πριν αρχίσει η ασφάλιση.", "See in one place which genetic or pre-existing exclusions weigh on your policy.")}</p>

@@ -26,7 +26,7 @@ function GuideTableCell({ cell, lang }: { cell: LocalizedString | boolean; lang:
     }
     return cell ? (
         <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#DCFCE7] dark:bg-[#29685B]/25">
-            <Check className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
+            <Check className="h-4 w-4 text-[#29685B] dark:text-brand-accent" />
             <span className="sr-only">{lang === "el" ? "Ναι" : "Yes"}</span>
         </span>
     ) : (
@@ -116,7 +116,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                 <nav className="mb-8">
                     <Link
                         href={localizeHref("/guides", language)}
-                        className="inline-flex items-center gap-1.5 text-body font-medium text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] dark:text-[#A7F3D0] dark:hover:text-white"
+                        className="inline-flex items-center gap-1.5 text-body font-medium text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] dark:text-brand-accent dark:hover:text-white"
                     >
                         <ArrowLeft className="h-4 w-4" />
                         {t("Όλοι οι οδηγοί", "All guides")}
@@ -135,11 +135,11 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                                 : t("Συντακτική ομάδα PolicyWallet", "PolicyWallet editorial team")}
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <CalendarDays className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
+                            <CalendarDays className="h-4 w-4 text-[#29685B] dark:text-brand-accent" />
                             {t("Ενημερώθηκε", "Updated")}: {formatDate(guide.dateModified, language)}
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <Clock3 className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
+                            <Clock3 className="h-4 w-4 text-[#29685B] dark:text-brand-accent" />
                             {guide.readingMinutes} {t("λεπτά ανάγνωσης", "min read")}
                         </span>
                     </div>
@@ -219,7 +219,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                                     href={source.url}
                                     target="_blank"
                                     rel="noreferrer noopener"
-                                    className="inline-flex items-center gap-1.5 text-body text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline dark:text-[#A7F3D0] dark:hover:text-white"
+                                    className="inline-flex items-center gap-1.5 text-body text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline dark:text-brand-accent dark:hover:text-white"
                                 >
                                     {source.label[lang]}
                                     <ExternalLink className="h-3.5 w-3.5" />
@@ -239,7 +239,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                                 <li key={item.href}>
                                     <Link
                                         href={localizeHref(item.href, language)}
-                                        className="inline-flex items-center gap-1.5 text-body text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline dark:text-[#A7F3D0] dark:hover:text-white"
+                                        className="inline-flex items-center gap-1.5 text-body text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline dark:text-brand-accent dark:hover:text-white"
                                     >
                                         {item.label[lang]}
                                         <ArrowRight className="h-3.5 w-3.5" />
