@@ -1,11 +1,11 @@
 import { Heart, ShieldCheck } from "lucide-react"
-import { AudienceTabs } from "@/components/landing/AudienceTabs"
+import { AudienceCards } from "@/components/landing/AudienceCards"
 import { BrushUnderline, Eyebrow } from "@/src/design-system"
 import type { LandingLocale } from "@/types/landing-content"
 
 /**
- * «Για ποιον» (§6): the role switch. Header + the AudienceTabs client island
- * (one pill switch, two stamped role cards) + the one line both roles share.
+ * «Για ποιον» (§6): both roles, side by side in weight. Header + AudienceCards
+ * (two stamped role cards, no switch) + the one line both roles share.
  * Sits directly under HOW IT WORKS: once a visitor knows what happens to a
  * policy, the next question is whether this is for them.
  *
@@ -34,14 +34,14 @@ export function WhoItIsFor({ locale }: { locale: LandingLocale }) {
                     </h2>
                     <p className="mt-g-4 text-g-body-lg text-fg-secondary">
                         {t(
-                            "Ό,τι κι αν ψάχνετε, έχουμε τη λύση. Διαλέξτε τον ρόλο σας και δείτε πώς σας βοηθάμε.",
-                            "Whatever you are looking for, we have the answer. Pick your role and see how we help.",
+                            "Για όσους έχουν ασφαλιστήρια και για όσους τα διαχειρίζονται: δείτε τι κάνει το PolicyWallet για τον καθένα.",
+                            "For people who hold policies and for the agents who look after them: see what PolicyWallet does for each.",
                         )}
                     </p>
                 </header>
 
                 <div className="mt-g-10">
-                    <AudienceTabs isGreek={isGreek} />
+                    <AudienceCards isGreek={isGreek} />
                 </div>
 
                 <p className="mx-auto mt-g-8 flex max-w-[880px] flex-col items-center gap-g-4 rounded-g-lg border border-border-subtle bg-surface-raised px-g-5 py-g-4 text-center sm:flex-row sm:text-left">

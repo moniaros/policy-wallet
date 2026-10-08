@@ -18,11 +18,10 @@ import { HomeFaq } from "@/components/landing/HomeFaq"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
 import type { PartnerOfferView } from "@/lib/partner-offers/matching"
 import type { PublicPricingPlan } from "@/lib/pricing/public-pricing-content"
-import { CTA_REASSURANCE, REGISTRATION_PAUSED, EXPLORE_NEEDS, FINAL_ACTION_HEADING, PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
+import { CTA_REASSURANCE, FINAL_ACTION_HEADING, PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 
 interface WorldClassLandingProps {
     locale: LandingLocale
-    registrationsOpen?: boolean
     /** Live partner offers from getPublicPartnerOffers(); empty/omitted ⇒ the
      *  #perks section and its nav link render nothing (honesty rule). */
     partnerOffers?: PartnerOfferView[]
@@ -33,12 +32,11 @@ interface WorldClassLandingProps {
 
 /**
  * The homepage: document reading, how it works, audiences, independence,
- * pricing and questions, followed by one closing action. Registration copy
- * reflects the server's switch before a visitor is asked for an address.
+ * pricing and questions, followed by one closing action. Whether sign-ups are
+ * open is said only on the signup page — never on the public site (owner, 2026-10-08).
  */
 export function WorldClassLanding({
     locale,
-    registrationsOpen = true,
     partnerOffers = [],
     pricingPlans = [],
 }: WorldClassLandingProps) {
@@ -68,7 +66,7 @@ export function WorldClassLanding({
                 }}
             />
 
-            <LandingHeader locale={locale} registrationsOpen={registrationsOpen} showPerksLink={partnerOffers.length > 0} />
+            <LandingHeader locale={locale} showPerksLink={partnerOffers.length > 0} />
 
             {/* The floating header ends at 72px, so pt-20 clears it with room to
                 spare. The old pt-24 left 24px of nothing on phones — cheap to
@@ -77,7 +75,7 @@ export function WorldClassLanding({
                 {/* ── 1. HERO — Grafí. One fixed promise as the H1, the storage line as
                     the sub-head, product visible immediately. The rotating headline is
                     gone (see GrafiHero's docblock). */}
-                <GrafiHero locale={locale} registrationsOpen={registrationsOpen} />
+                <GrafiHero locale={locale} />
 
                 {/* ── 2. COVERAGE-LINES TICKER (§6) — every line we read,
                     straight from the taxonomy-joined catalogue. */}
@@ -126,16 +124,16 @@ export function WorldClassLanding({
                                 {pick(FINAL_ACTION_HEADING, locale)}
                             </h2>
                             <p className="mx-auto mb-10 max-w-[460px] text-lead text-white/80">
-                                {pick(registrationsOpen ? CTA_REASSURANCE : REGISTRATION_PAUSED, locale)}
+                                {pick(CTA_REASSURANCE, locale)}
                             </p>
                             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                                 <LandingCtaLink
-                                    href={registrationsOpen ? authHref("/auth/signup?role=policyholder&source=landing_cta", locale) : l("/needs")}
+                                    href={authHref("/auth/signup?role=policyholder&source=landing_cta", locale)}
                                     locale={locale}
                                     location="final_cta"
                                     className="pw-primary-button-inverse pw-btn-lg"
                                 >
-                                    {pick(registrationsOpen ? PRIMARY_ACTION : EXPLORE_NEEDS, locale)}
+                                    {pick(PRIMARY_ACTION, locale)}
                                     <ArrowRight aria-hidden className="h-4 w-4" />
                                 </LandingCtaLink>
                                 <Link

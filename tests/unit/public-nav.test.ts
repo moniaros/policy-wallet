@@ -18,6 +18,8 @@ describe("canonical public navigation", () => {
     it("keeps the agreed order and keys", () => {
         expect(PUBLIC_NAV_ITEMS.map((item) => item.key)).toEqual([
             "products",
+            // The second audience's front door (owner, 2026-10-08).
+            "agents",
             // The only entry that is a tool rather than a page. It sits above
             // the explanatory pages on purpose: it is the one thing a stranger
             // can use before deciding anything about PolicyWallet.

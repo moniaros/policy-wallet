@@ -1,4 +1,3 @@
-import { registrationsOpen } from "@/lib/auth/registration-gate"
 import type { Metadata } from "next"
 import { WorldClassLanding } from "@/components/landing/WorldClassLanding"
 import { buildLandingJsonLd, buildLandingMetadata } from "@/lib/landing/seo"
@@ -25,7 +24,7 @@ export default async function LandingPageEnglish() {
         <>
             {/* NOT wrapped in Suspense — see the Greek homepage for why: the
                 boundary hid the entire page from JS-less crawlers. */}
-            <WorldClassLanding locale="en" partnerOffers={partnerOffers} pricingPlans={pricingPlans} registrationsOpen={await registrationsOpen()} />
+            <WorldClassLanding locale="en" partnerOffers={partnerOffers} pricingPlans={pricingPlans} />
             {/* Server-rendered so crawlers without JS see the structured data. */}
             <JsonLd data={jsonLd} />
         </>

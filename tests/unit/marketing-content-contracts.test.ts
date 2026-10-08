@@ -61,7 +61,7 @@ describe('Greek copy holds its register and its accents', () => {
     const marketingSources = [
         'components/landing/WorldClassLanding.tsx',
         'components/landing/HeroSlides.tsx',
-        'components/landing/AudienceTabs.tsx',
+        'components/landing/AudienceCards.tsx',
         'components/landing/ServicesGrid.tsx',
     ]
 

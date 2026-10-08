@@ -401,7 +401,11 @@ export default function PricingPage({
                             {pricingContent[aud].plans.map((plan) => (
                                 <PricingCard
                                     key={plan.key}
-                                    plan={plan}
+                                    // A visitor without a session is sent to signup,
+                                    // never to checkout (handleSelectPlan), so the
+                                    // "purchases paused" notice is for signed-in users
+                                    // only: the public site never says a door is closed.
+                                    plan={session ? plan : { ...plan, checkoutUnavailableReason: undefined }}
                                     language={language}
                                     billingPeriod={billingPeriod}
                                     actionLabel={getPlanActionLabel(plan)}

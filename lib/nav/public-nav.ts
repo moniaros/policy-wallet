@@ -26,6 +26,10 @@ export const PUBLIC_NAV_ITEMS: readonly PublicNavItem[] = [
     // dropdown absorbed the link and took its name: what the site sells is
     // branches of insurance, so "Προϊόντα" is what a visitor is looking for.
     { key: "products", kind: "dropdown", label: { el: "Προϊόντα", en: "Products" } },
+    // The second audience gets a front door of its own (owner, 2026-10-08):
+    // inside the dropdown, agents learned about the product one click later
+    // than policyholders, and only if they opened a menu named for branches.
+    { key: "agents", kind: "link", href: "/solutions/agents", label: { el: "Για ασφαλιστές", en: "For agents" } },
     // A tool, not a page. Every other entry here explains PolicyWallet; this
     // one does something for the visitor before they have decided anything,
     // which is why it sits in the primary nav rather than the footer.

@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef, useState, type ReactNode } from "react"
+import type { ReactNode } from "react"
 import Link from "next/link"
-import { ArrowRight, BriefcaseBusiness, CheckCircle2, UserRound } from "lucide-react"
+import { ArrowRight, CheckCircle2 } from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 import { PUBLIC_COUNTS } from "@/lib/marketing/public-counts"
@@ -11,9 +11,13 @@ import { BrushUnderline, Eyebrow } from "@/src/design-system/layout"
 import { AppScreen, CoverageMapScreen, AdvisorScreen } from "@/components/landing/real-screens/RealScreens"
 
 /**
- * The «Για ποιον» tabs (§6): one pill switch, two role cards — copy on the
- * left, a stamped product sample on the right. Grafí tokens throughout;
- * dark mode comes from the token layer.
+ * The «Για ποιον» cards (§6): both audiences, in full, one after the other —
+ * copy on the left, a stamped product sample on the right. Grafí tokens
+ * throughout; dark mode comes from the token layer.
+ *
+ * Not tabs any more (owner, 2026-10-08): a tab switch defaulted to
+ * «Ιδιώτες» and hid the agent story behind a click, so policyholders and
+ * agents were not equally informed about what the product does.
  *
  * Honesty rules this file carries (see tests/unit/marketing-mock-honesty):
  * no scores, no portfolio sizes, no invented people — lettered clients only;
@@ -22,121 +26,19 @@ import { AppScreen, CoverageMapScreen, AdvisorScreen } from "@/components/landin
  * the three-state vocabulary (STATE_LABELS), never a softer «εντάξει».
  */
 
-interface AudienceTabsProps {
-    isGreek: boolean
-}
-
 const focusRing =
     "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus"
-
-const TAB_BASE =
-    "inline-flex min-h-11 items-center gap-g-2 rounded-g-pill px-g-5 text-g-body-sm font-semibold " +
-    "transition-colors duration-200 [transition-timing-function:var(--ease-out-g)] " + focusRing
-const TAB_ACTIVE = "bg-action-primary-bg text-fg-on-brand"
-const TAB_IDLE = "text-fg-secondary hover:text-fg-primary"
 
 const PRIMARY_LINK =
     "inline-flex min-h-11 items-center justify-center gap-g-2 rounded-g-pill bg-action-primary-bg px-g-6 py-g-3 " +
     "text-g-body-sm font-semibold text-fg-on-brand transition-colors duration-200 hover:bg-action-primary-hover " +
     "[-webkit-tap-highlight-color:transparent] " + focusRing
 
-export function AudienceTabs({ isGreek }: AudienceTabsProps) {
-    const [activeTab, setActiveTab] = useState<"policyholders" | "agents">("policyholders")
-    const t = (el: string, en: string) => (isGreek ? el : en)
-
-    const policyholdersTabRef = useRef<HTMLButtonElement | null>(null)
-    const agentsTabRef = useRef<HTMLButtonElement | null>(null)
-    const tabRefs = { policyholders: policyholdersTabRef, agents: agentsTabRef }
-
-    const phPanelId = "audience-panel-policyholders"
-    const agPanelId = "audience-panel-agents"
-
-    /**
-     * Arrow keys move the SELECTION and the focus together. The next tab is
-     * derived from `activeTab`, never from the button the key fired on: with
-     * a roving tabindex, focus stays where it was pressed, so a per-button
-     * `current` recomputed from the same constant and every arrow after the
-     * first was a no-op (measured; APG tabs pattern requires the pair to move).
-     */
-    const select = (next: "policyholders" | "agents") => {
-        setActiveTab(next)
-        tabRefs[next].current?.focus()
-    }
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-            e.preventDefault()
-            select(activeTab === "policyholders" ? "agents" : "policyholders")
-        }
-        if (e.key === "Home") {
-            e.preventDefault()
-            select("policyholders")
-        }
-        if (e.key === "End") {
-            e.preventDefault()
-            select("agents")
-        }
-    }
-
+export function AudienceCards({ isGreek }: { isGreek: boolean }) {
     return (
-        <div>
-            <div className="flex justify-center">
-                <div
-                    role="tablist"
-                    aria-label={t("Επιλογή κοινού", "Audience selection")}
-                    className="flex rounded-g-pill border border-border-subtle bg-surface-raised p-g-1"
-                >
-                    <button
-                        type="button"
-                        role="tab"
-                        ref={policyholdersTabRef}
-                        id="audience-tab-policyholders"
-                        aria-selected={activeTab === "policyholders" ? "true" : "false"}
-                        aria-controls={phPanelId}
-                        tabIndex={activeTab === "policyholders" ? 0 : -1}
-                        onClick={() => setActiveTab("policyholders")}
-                        onKeyDown={handleKeyDown}
-                        className={`${TAB_BASE} ${activeTab === "policyholders" ? TAB_ACTIVE : TAB_IDLE}`}
-                    >
-                        <UserRound aria-hidden className="size-4" />
-                        {t("Ιδιώτες", "Individuals")}
-                    </button>
-                    <button
-                        type="button"
-                        role="tab"
-                        ref={agentsTabRef}
-                        id="audience-tab-agents"
-                        aria-selected={activeTab === "agents" ? "true" : "false"}
-                        aria-controls={agPanelId}
-                        tabIndex={activeTab === "agents" ? 0 : -1}
-                        onClick={() => setActiveTab("agents")}
-                        onKeyDown={handleKeyDown}
-                        className={`${TAB_BASE} ${activeTab === "agents" ? TAB_ACTIVE : TAB_IDLE}`}
-                    >
-                        <BriefcaseBusiness aria-hidden className="size-4" />
-                        {t("Ασφαλιστές", "Agents")}
-                    </button>
-                </div>
-            </div>
-
-            <div
-                role="tabpanel"
-                id={phPanelId}
-                aria-labelledby="audience-tab-policyholders"
-                hidden={activeTab !== "policyholders"}
-                className="mt-g-8"
-            >
-                <PolicyholderPanel isGreek={isGreek} />
-            </div>
-            <div
-                role="tabpanel"
-                id={agPanelId}
-                aria-labelledby="audience-tab-agents"
-                hidden={activeTab !== "agents"}
-                className="mt-g-8"
-            >
-                <AgentPanel isGreek={isGreek} />
-            </div>
+        <div className="flex flex-col gap-g-8">
+            <PolicyholderPanel isGreek={isGreek} />
+            <AgentPanel isGreek={isGreek} />
         </div>
     )
 }

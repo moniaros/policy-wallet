@@ -1,4 +1,3 @@
-import { registrationsOpen } from "@/lib/auth/registration-gate"
 import type { Metadata } from "next"
 import { WorldClassLanding } from "@/components/landing/WorldClassLanding"
 import { buildLandingJsonLd, buildLandingMetadata } from "@/lib/landing/seo"
@@ -28,7 +27,7 @@ export default async function LandingPage() {
                 JS (several AI crawlers) saw an empty homepage. Both data reads
                 above are already awaited, so there is nothing left to suspend
                 on — the markup renders straight into the server HTML. */}
-            <WorldClassLanding locale="el" partnerOffers={partnerOffers} pricingPlans={pricingPlans} registrationsOpen={await registrationsOpen()} />
+            <WorldClassLanding locale="el" partnerOffers={partnerOffers} pricingPlans={pricingPlans} />
             {/* Server-rendered so crawlers without JS see the structured data. */}
             <JsonLd data={jsonLd} />
         </>

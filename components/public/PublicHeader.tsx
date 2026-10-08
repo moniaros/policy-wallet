@@ -1,6 +1,5 @@
 "use client"
 
-import { EXPLORE_NEEDS, pick } from "@/lib/marketing/positioning"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -17,7 +16,6 @@ import {
 } from "@/lib/nav/public-nav"
 
 interface PublicHeaderProps {
-    registrationsOpen?: boolean
     locale: "el" | "en"
     /** Appended as `?source=<ctaSource>` to CTAs for attribution (optional). */
     ctaSource?: string
@@ -33,7 +31,7 @@ interface PublicHeaderProps {
  * works on the homepage (no LanguageContext) and inside the app shell alike.
  */
 
-export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registrationsOpen = true }: PublicHeaderProps) {
+export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHeaderProps) {
     const isGreek = locale === "el"
     const elActive = isGreek
     const enActive = !isGreek
@@ -55,10 +53,10 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registratio
     // authHref, not localizeHref: there is no /en/auth mirror, so the locale
     // rides as ?lang= and the auth tree pins itself to it. Without this the
     // English header dropped a visitor into a Greek signup form.
-    const primaryHref = registrationsOpen ? authHref(
+    const primaryHref = authHref(
         ctaSource ? `${PRIMARY_CTA.href}&source=${ctaSource}` : PRIMARY_CTA.href,
         locale
-    ) : l("/needs")
+    )
     const secondaryHref = authHref(
         ctaSource ? `${SECONDARY_CTA.href}?source=${ctaSource}_login` : SECONDARY_CTA.href,
         locale
@@ -145,7 +143,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registratio
                         <span className="text-[#5B6A7A] dark:text-slate-400">Wallet</span>
                     </Link>
 
-                    <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 text-body font-medium text-[#475569] lg:flex dark:text-slate-300">
+                    <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 whitespace-nowrap text-body font-medium text-[#475569] xl:flex dark:text-slate-300">
                         {PUBLIC_NAV_ITEMS.map((item) =>
                             item.kind === "dropdown" ? (
                                 <SolutionsDropdown key={item.key} language={locale} />
@@ -164,7 +162,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registratio
                         )}
                     </nav>
 
-                    <div className="hidden items-center gap-5 lg:flex">
+                    <div className="hidden items-center gap-5 whitespace-nowrap xl:flex">
                         <div className="flex items-center gap-1.5" role="group" aria-label={t("Γλώσσα", "Language")}>
                             <Link
                                 href={elPath}
@@ -201,14 +199,14 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registratio
                             {SECONDARY_CTA.label[locale]}
                         </Link>
                         <Link href={primaryHref} onClick={onPrimaryCtaClick} className="pw-primary-button pw-btn-sm">
-                            {registrationsOpen ? PRIMARY_CTA.label[locale] : pick(EXPLORE_NEEDS, locale)}
+                            {PRIMARY_CTA.label[locale]}
                         </Link>
                     </div>
 
                     <button
                         ref={triggerRef}
                         type="button"
-                        className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full text-[#0F172A] transition-colors hover:bg-gray-100 lg:hidden dark:text-white dark:hover:bg-slate-800"
+                        className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full text-[#0F172A] transition-colors hover:bg-gray-100 xl:hidden dark:text-white dark:hover:bg-slate-800"
                         onClick={() => setOpen(true)}
                         aria-label={t("Άνοιγμα μενού", "Open menu")}
                         aria-expanded={open}
@@ -232,7 +230,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registratio
                 // by assistive tech.
                 aria-hidden={!open}
                 inert={!open}
-                // `lg:hidden` — the trigger below is lg:hidden, so the drawer
+                // `xl:hidden` — the trigger below is xl:hidden, so the drawer
                 // must be too; it has no way to open on desktop.
                 // `overflow-y-auto` — the content is centre-justified and
                 // taller than this viewport-height box, so it used to spill out
@@ -240,7 +238,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registratio
                 // which dragged the spill-over (the full-width CTA) back into
                 // view under the header. Containing the overflow is what makes
                 // the closed state genuinely hidden.
-                className={`fixed inset-0 z-[100] flex flex-col overflow-y-auto bg-[#29685B] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:hidden ${
+                className={`fixed inset-0 z-[100] flex flex-col overflow-y-auto bg-[#29685B] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] xl:hidden ${
                     open ? "translate-y-0" : "pointer-events-none -translate-y-full"
                 }`}
             >
@@ -322,7 +320,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick, registratio
                                 closeMenu()
                             }}
                         >
-                            {registrationsOpen ? PRIMARY_CTA.label[locale] : pick(EXPLORE_NEEDS, locale)}
+                            {PRIMARY_CTA.label[locale]}
                         </Link>
                     </div>
                 </div>

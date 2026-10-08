@@ -38,7 +38,7 @@ const strip = (src: string) =>
 
 const MOCK_FILES = [
     'components/landing/AgentWidgets.tsx',
-    'components/landing/AudienceTabs.tsx',
+    'components/landing/AudienceCards.tsx',
     'components/landing/PolicyWalletWidget.tsx',
     // The REAL app screens the hero, the audience tabs and «Γιατί τώρα» show
     // since 2026-09-03: real components on fixture data, stamped as samples.

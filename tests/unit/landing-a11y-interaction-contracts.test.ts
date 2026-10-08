@@ -78,36 +78,6 @@ describe('Products disclosure (SolutionsDropdown)', () => {
     })
 })
 
-describe('Audience tabs keyboard model', () => {
-    const src = readFileSync('components/landing/AudienceTabs.tsx', 'utf-8')
-
-    it('derives the next tab from the SELECTION, not from the key target', () => {
-        // Taking the tab the key fired on as `current` meant that, with a
-        // roving tabindex holding focus in place, every arrow press after the
-        // first recomputed from the same constant and became a no-op.
-        expect(code(src), 'the handler must not take a per-button current').not.toMatch(
-            /handleKeyDown\(e,\s*"(policyholders|agents)"\)/
-        )
-        expect(src, 'the next tab must come from activeTab').toMatch(
-            /activeTab === "policyholders" \? "agents" : "policyholders"/
-        )
-    })
-
-    it('moves focus along with the selection', () => {
-        expect(src, 'both tabs need refs so selection can carry focus').toMatch(
-            /tabRefs\s*=\s*\{\s*policyholders:/
-        )
-        expect(src, 'selecting a tab must focus it').toMatch(
-            /tabRefs\[next\]\.current\?\.focus\(\)/
-        )
-    })
-
-    it('supports Home and End', () => {
-        expect(src).toMatch(/e\.key === "Home"/)
-        expect(src).toMatch(/e\.key === "End"/)
-    })
-})
-
 describe('landmark uniqueness', () => {
     it('/company does not nest a second <main> inside the shell', () => {
         // LoBPageShell already renders <main id={SKIP_LINK_TARGET_ID}>, so a
