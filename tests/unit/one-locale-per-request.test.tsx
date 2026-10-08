@@ -80,7 +80,6 @@ describe("Goal 1 — a seeded provider: the server wins, and follows the server"
         const { getByTestId } = render(<LanguageProvider initialLanguage="en"><Probe /></LanguageProvider>)
         await act(async () => {})
         expect(getByTestId("lang").textContent).toBe("en")
-        expect(localStorage.getItem("language")).toBe("en") // mirrored, so the public tree agrees
     })
     it("follows a new server value after a toggle re-render", async () => {
         const { getByTestId, rerender } = render(<LanguageProvider initialLanguage="en"><Probe /></LanguageProvider>)
@@ -89,11 +88,13 @@ describe("Goal 1 — a seeded provider: the server wins, and follows the server"
         await act(async () => {})
         expect(getByTestId("lang").textContent).toBe("el")
     })
-    it("an UNSEEDED provider (the public tree, no user) still honours the visitor's stored choice", async () => {
+    it("an UNSEEDED provider (the public tree, no user) ignores a stored 'en': the URL decides (audit A2)", async () => {
         localStorage.setItem("language", "en")
+        document.documentElement.setAttribute("lang", "el")
         const { getByTestId } = render(<LanguageProvider><Probe /></LanguageProvider>)
         await act(async () => {})
-        expect(getByTestId("lang").textContent).toBe("en")
+        expect(getByTestId("lang").textContent).toBe("el")
+        expect(document.documentElement.lang).toBe("el")
     })
     it("nested: an unseeded root provider around a seeded 'en' provider — the SEEDED value stamps <html lang> (the root yields)", async () => {
         document.documentElement.setAttribute("lang", "el")

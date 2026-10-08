@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { PartnersSections } from "@/components/landing/PartnersSections"
 
-/** EL mirror of /solutions/partners — same A-04 noindex rule. */
+/** EL mirror of /en/solutions/partners — same A-04 noindex rule. */
 export const metadata: Metadata = {
     title: "PolicyWallet για θεσμικούς συνεργάτες",
     description:

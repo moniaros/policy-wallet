@@ -52,6 +52,28 @@ export function localizeHref(href: string, locale: MarketingLocale): string {
     return path === "/" ? `/en${suffix}` : `/en${path}${suffix}`
 }
 
+/** Twins whose slug differs by language: Greek path → English path (sans /en). */
+const EN_SLUG_FOR_EL: Readonly<Record<string, string>> = { "/solutions/synergates": "/solutions/partners" }
+const EL_SLUG_FOR_EN: Readonly<Record<string, string>> = Object.fromEntries(
+    Object.entries(EN_SLUG_FOR_EL).map(([el, en]) => [en, el])
+)
+
+/** The Greek page for any public path, /en/* included — the language toggle's ΕΛ target. */
+export function greekCounterpart(pathname: string): string {
+    const stripped = pathname === "/en" ? "/" : pathname.startsWith("/en/") ? pathname.slice(3) : pathname
+    return EL_SLUG_FOR_EN[stripped] ?? stripped
+}
+
+/**
+ * The English page for a Greek path — the toggle's EN target. Only a real
+ * mirror is linked; anything else goes to the English home. A blind
+ * `/en${path}` sent /solutions/synergates and /perks to a 404.
+ */
+export function englishCounterpart(elPath: string): string {
+    const twin = EN_SLUG_FOR_EL[elPath] ? `/en${EN_SLUG_FOR_EL[elPath]}` : localizeHref(elPath, "en")
+    return twin === "/en" || twin.startsWith("/en/") ? twin : "/en"
+}
+
 /**
  * Locale-aware href for links from the marketing site INTO the auth tree.
  *

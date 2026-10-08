@@ -83,6 +83,18 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // The root layout emits <html lang="el"> for every route (an inline
+      // script corrects it for /en/* before paint). A crawler that does not run
+      // JS gets this header as the honest language signal for the English tree.
+      // ponytail: header only; per-locale root layouts would fix the attribute itself.
+      {
+        source: "/en",
+        headers: [{ key: "Content-Language", value: "en" }],
+      },
+      {
+        source: "/en/:path*",
+        headers: [{ key: "Content-Language", value: "en" }],
+      },
     ];
   },
 };

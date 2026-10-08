@@ -4,7 +4,7 @@ import { NEUTRALITY_STATEMENT, pick, type MarketingLocale } from "@/lib/marketin
 import { localizeHref } from "@/lib/seo/locale-links"
 
 /**
- * /solutions/partners (EN source) and /solutions/synergates (EL mirror) — the
+ * /en/solutions/partners (EN source) and /solutions/synergates (EL mirror) — the
  * institutions page. Created NOINDEX and unlinked from every nav (A-04): the
  * Terms §3 consent qualification and the IDD opinion are still with legal, so
  * the page exists for direct conversations and review, not for crawlers.
