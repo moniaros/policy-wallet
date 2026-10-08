@@ -23,6 +23,23 @@ const SOCIAL_ICONS: Record<string, LucideIcon> = {
     X: Twitter,
 }
 
+function FooterLinks({ links }: { links: { href: string; label: string }[] }) {
+    return (
+        <ul className="space-y-2.5">
+            {links.map((link) => (
+                <li key={link.href}>
+                    <Link
+                        href={link.href}
+                        className="inline-flex min-h-11 items-center text-body text-neutral-600 dark:text-slate-300 transition-colors hover:text-neutral-900 dark:hover:text-white"
+                    >
+                        {link.label}
+                    </Link>
+                </li>
+            ))}
+        </ul>
+    )
+}
+
 export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
@@ -35,34 +52,38 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     // Honeypot — hidden from humans, irresistible to bots. Filled = silently dropped server-side.
     const [honeypot, setHoneypot] = useState("")
 
-    const productLinks = useMemo(
-        () =>
-            productCategories.map((category) => ({
+    // Four real columns instead of a sitemap (product-design review 2026-10 B5):
+    // the product, the categories people hold, where to learn, who we are.
+    // /methodology, /changelog and /status were reachable from the sitemap only.
+    const PERSONAL = ["motor", "property", "health", "life", "travel", "pet", "pension", "legal-expenses"]
+    const categoryLinks = useMemo(
+        () => [
+            ...PERSONAL.map((id) => productCategories.find((c) => c.id === id)!).map((category) => ({
                 href: l(category.href),
                 label: t(category.labelEl, category.labelEn),
             })),
+            { href: l("/product"), label: t("Όλες οι κατηγορίες", "All categories") },
+        ],
         [isGreek]
     )
-
-    const solutionLinks = [
-        { href: l("/product"), label: t("Για ιδιώτες", "For individuals") },
-        { href: l("/solutions/agents"), label: t("Για ασφαλιστές", "For insurance agents") },
+    const productLinks = [
+        { href: l("/platform"), label: t("Πώς δουλεύει η ανάλυση", "How the analysis works") },
+        { href: l("/needs"), label: t("Έλεγχος αναγκών", "Needs check") },
+        { href: l("/pricing"), label: t("Τιμές", "Pricing") },
         { href: l("/compare"), label: t("Σύγκριση με τις άλλες επιλογές", "How we compare") },
-        { href: l("/pricing?audience=agent"), label: t("Πλάνα ασφαλιστών", "Agent plans") },
-        { href: l("/pricing#pricing-faq"), label: t("Ερωτήσεις για τις τιμές", "Questions about pricing") },
+        { href: l("/solutions/agents"), label: t("Για ασφαλιστές", "For insurance agents") },
     ]
-
-    const companyLinks = [
-        { href: l("/company"), label: t("Εταιρεία", "Company") },
+    const learnLinks = [
         { href: l("/guides"), label: t("Οδηγοί ασφάλισης", "Insurance guides") },
         { href: l("/lexiko"), label: t("Ασφαλιστικό λεξικό", "Insurance glossary") },
-        { href: l("/contact"), label: t("Επικοινωνία", "Contact") },
+        { href: l("/methodology"), label: t("Μεθοδολογία", "Methodology") },
+        { href: l("/changelog"), label: t("Τι άλλαξε", "What changed") },
+        { href: l("/status"), label: t("Κατάσταση υπηρεσίας", "Service status") },
+    ]
+    const companyLinks = [
+        { href: l("/company"), label: t("Εταιρεία", "Company") },
         { href: l("/trust"), label: t("Εμπιστοσύνη και δεδομένα", "Trust and data") },
-        { href: l("/platform"), label: t("Πώς δουλεύει η ανάλυση", "How the analysis works") },
-        { href: l("/privacy"), label: t("Πολιτική απορρήτου", "Privacy policy") },
-        { href: l("/terms"), label: t("Όροι χρήσης", "Terms of service") },
-        { href: l("/cookies"), label: t("Πολιτική cookies", "Cookie policy") },
-        { href: l("/subprocessors"), label: t("Υπο-εκτελούντες επεξεργασίας", "Subprocessors") },
+        { href: l("/contact"), label: t("Επικοινωνία", "Contact") },
     ]
 
     // Legal-identity block. Greek corporate sites must display ΓΕΜΗ
@@ -176,66 +197,31 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
 
                     <div>
                         <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
-                            {t("Προϊόντα", "Products")}
+                            {t("Προϊόν", "Product")}
                         </p>
-                        <ul className="space-y-2.5">
-                            {productLinks.map((link) => (
-                                <li key={link.href}>
-                                    <Link
-                                        href={link.href}
-                                        className="inline-flex min-h-11 items-center text-body text-neutral-600 dark:text-slate-300 transition-colors hover:text-neutral-900 dark:hover:text-white"
-                                    >
-                                        {link.label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
+                        <FooterLinks links={productLinks} />
                     </div>
 
                     <div>
                         <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
-                            {t("Λύσεις", "Solutions")}
+                            {t("Κατηγορίες", "Categories")}
                         </p>
-                        <ul className="space-y-2.5">
-                            {solutionLinks.map((link) => (
-                                <li key={link.href}>
-                                    <Link
-                                        href={link.href}
-                                        className="inline-flex min-h-11 items-center text-body text-neutral-600 dark:text-slate-300 transition-colors hover:text-neutral-900 dark:hover:text-white"
-                                    >
-                                        {link.label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                        <p className="mt-4 text-caption leading-relaxed text-muted-foreground dark:text-slate-400">
-                            {t(
-                                "Οι σελίδες που βοηθούν να αποφασίσετε.",
-                                "The pages that help you decide."
-                            )}
+                        <FooterLinks links={categoryLinks} />
+                    </div>
+
+                    <div>
+                        <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
+                            {t("Μάθετε", "Learn")}
                         </p>
+                        <FooterLinks links={learnLinks} />
                     </div>
 
                     <div>
                         <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
                             {t("Εταιρεία", "Company")}
                         </p>
-                        <ul className="space-y-2.5">
-                            {companyLinks.map((link) => (
-                                <li key={link.href}>
-                                    <Link
-                                        href={link.href}
-                                        className="inline-flex min-h-11 items-center text-body text-neutral-600 dark:text-slate-300 transition-colors hover:text-neutral-900 dark:hover:text-white"
-                                    >
-                                        {link.label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div>
-                        <p className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
+                        <FooterLinks links={companyLinks} />
+                        <p className="mb-3 mt-8 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
                             {t("Ενημερώσεις", "Newsletter")}
                         </p>
                         <p className="mb-4 text-body leading-relaxed text-neutral-600 dark:text-slate-300">
@@ -341,6 +327,12 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         </Link>
                         <Link href={l("/terms")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
                             {t("Όροι", "Terms")}
+                        </Link>
+                        <Link href={l("/cookies")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
+                            {t("Cookies", "Cookies")}
+                        </Link>
+                        <Link href={l("/subprocessors")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
+                            {t("Υπο-εκτελούντες επεξεργασίας", "Subprocessors")}
                         </Link>
                         <Link href={l("/contact")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
                             {t("Επικοινωνία", "Contact")}
