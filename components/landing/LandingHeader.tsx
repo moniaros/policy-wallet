@@ -7,12 +7,6 @@ import type { LandingLocale } from "@/types/landing-content"
 
 interface LandingHeaderProps {
     locale: LandingLocale
-    /**
-     * Retained for call-site compatibility. The #perks in-page anchor is no
-     * longer a global nav item (it is only valid on the homepage); the perks
-     * section itself still renders on the landing page when offers exist.
-     */
-    showPerksLink?: boolean
 }
 
 /**
