@@ -8,6 +8,8 @@
 - [#390](https://github.com/moniaros/policy-wallet/pull/390) owner decision: the public site never announces closed sign-ups (signup page only); homepage shows both audiences in full; top-level «Για ασφαλιστές»; desktop nav from 1280px.
 - [#391](https://github.com/moniaros/policy-wallet/pull/391) SEO S1–S4 (deploy `766d73af`): no "what to fix first" in the entity sentence; unknown paths 404 (app paths still sign-in); `/llms.txt` live (107 links); homepage el/en down to 9 real H2s.
 - [#392](https://github.com/moniaros/policy-wallet/pull/392) SEO C2/C4/B2 (deploy `ccd2c520`): Organization JSON-LD carries legalName/ΓΕΜΗ/vatID; logo aria-label; branch FAQ headings name their branch, pricing band no longer an h2.
+- [#393](https://github.com/moniaros/policy-wallet/pull/393) design step 3a: dead components (PlanGate, ProcessingHUD, TrustStrip, ScoreRing), `showPerksLink`, 8 unused tokens, `.pw-control-boundary`, blob keyframes removed — served CSS verified clean.
+- [#394](https://github.com/moniaros/policy-wallet/pull/394) design step 3b (deploy `110f34e4`): 150× `dark:text-[#A7F3D0]` → `dark:text-brand-accent`; `primary-soft`/`primary-tint` flip under `.dark` so 154 `dark:bg-primary/15` twins are gone. 370 computed-colour samples (8 pages × light/dark) identical on production vs the pre-refactor baseline.
 Reviews: [code](audits/public-site-and-design-system-2026-10.md) · [product design](audits/public-site-design-review-2026-10.md) · [SEO/GEO/AEO](audits/public-site-seo-geo-aeo-2026-10.md). Kilo review fails on every PR (no credits).
 
 Previous release (2026-10-02, prevention, `f3315f12`): [evidence](audits/prevention-production-release-2026-10-02.md).
@@ -33,7 +35,7 @@ Actual two-PDF provider benchmark still awaits its separate transmission authori
 3. **Medium — UI/UX backlog:** targeted local/mobile and live smoke checks do not certify complete accessibility.
 
 ## Next 3 actions
-1. OWNER: design-system direction (Grafí vs legacy); A1/S5 full fix (per-locale root layouts); entity sentence C1 («ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου» vs the concrete «διαβάζει τα ασφαλιστήριά σας…»); rename «Προϊόντα»; homepage 7-section spine.
+1. OWNER (everything left needs a decision): design-system direction (Grafí vs legacy) — MASTER DA3–DA9 wait on it; A1/S5 full fix (per-locale root layouts); entity sentence C1 («ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου» vs the concrete «διαβάζει τα ασφαλιστήριά σας…»); rename «Προϊόντα»; homepage 7-section spine.
 2. SEO next (needs copy approval or a person): B1 keyword-bearing H1s on the 16 branch pages, C3 named reviewer on guides — then content (AEO FAQs, B2B use-case pages) once real query data exists.
 3. Complete the separately authorized PDF benchmark before enabling advanced personalization; restore money-path test credentials.
 
