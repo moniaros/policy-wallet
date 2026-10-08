@@ -80,6 +80,31 @@ export const ROUTE_OWNERSHIP: ReadonlyArray<readonly [pattern: string, owner: Ro
 ]
 
 /**
+ * First path segments that belong to the signed-in app (or are private files).
+ * An anonymous request for a non-public path is sent to sign-in ONLY when it
+ * starts with one of these; anything else does not exist, so it falls through
+ * to the real 404. Redirecting EVERY unknown path to /auth/signin (a
+ * robots-disallowed URL) made crawlers record "redirect to blocked" instead of
+ * 404 and sent /llms.txt and /.well-known/* to a login form (SEO review
+ * 2026-10 S2). Pages still guard themselves (layouts call
+ * getAuthenticatedUser); tests/unit/proxy-app-segments.test.ts enumerates
+ * app/(protected) and fails when a section is missing here.
+ */
+export const APP_SEGMENTS: ReadonlySet<string> = new Set([
+    // app/(protected)/*
+    "account", "activity", "admin", "agent", "benefits", "collaboration", "commissions",
+    "consent", "coverage", "customers", "dashboard", "help", "home", "insights",
+    "notifications", "opportunities", "protection", "questionnaires", "recommendations",
+    "renewals", "tasks", "team", "upgrade", "wallet", "wellness",
+    // other signed-in trees and private files
+    "onboarding", "api", "api-docs", "uploads",
+])
+
+export function isAppPath(pathname: string): boolean {
+    return APP_SEGMENTS.has(pathname.split("/")[1] ?? "")
+}
+
+/**
  * Owner of the most specific ROUTE_OWNERSHIP pattern matching `pathname`, or
  * null when nothing matches. "shared" also resolves to null — both mean the
  * proxy imposes no role gate here.
@@ -340,6 +365,9 @@ export async function proxy(request: NextRequest) {
         // (SEO audit, critical finding #1).
         "/robots.txt",
         "/sitemap.xml",
+        // The AI-engine map (llmstxt.org) — public for signed-in visitors too,
+        // so a step-up never stands between a crawler and it.
+        "/llms.txt",
         "/opengraph-image",
         // The English link-preview card. A separate stable route because Next
         // hashes NESTED metadata routes per build, so /en/opengraph-image
@@ -376,7 +404,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl))
     }
 
-    if (!isLoggedIn && !isPublicRoute) {
+    if (!isLoggedIn && !isPublicRoute && isAppPath(nextUrl.pathname)) {
         let callbackUrl = nextUrl.pathname
         if (nextUrl.search) {
             callbackUrl += nextUrl.search

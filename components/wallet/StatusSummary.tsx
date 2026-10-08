@@ -8,6 +8,8 @@ import { premiumExclusionParts } from '@/lib/wallet/premium-exclusion-note'
 import { resolveLocale } from "@/lib/i18n/format"
 
 interface StatusSummaryProps {
+    /** "p" inside a marketing sample: keeps app h2s out of the public outline (SEO review 2026-10 S4). */
+    headingAs?: "h2" | "p"
     activeCount: number
     expiringCount: number
     /** action_needed + unknown_duration + expired — everything the user should look at. */
@@ -46,6 +48,7 @@ export function StatusSummary({
     unknownPremiumCount = 0,
     premiumCurrency = 'EUR',
     otherCurrencyCount = 0,
+    headingAs = "h2",
 }: StatusSummaryProps) {
     const { t, language } = useLanguage()
 
@@ -88,7 +91,7 @@ export function StatusSummary({
 
     return (
         <section className="pw-card pw-pad mb-4" aria-labelledby="wallet-overview-heading">
-            <CardHead icon={Wallet} title={t.wallet.overview} id="wallet-overview-heading" />
+            <CardHead as={headingAs} icon={Wallet} title={t.wallet.overview} id="wallet-overview-heading" />
 
             <div className="mt-5 flex flex-col gap-4 lg:grid lg:grid-cols-4 lg:gap-0">
                 {/* «Ενεργή προστασία» is the STRICT lifecycle state (in force,

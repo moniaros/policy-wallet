@@ -63,7 +63,10 @@ export function RenewalsTimelineCard({
     hasPolicies,
     showUpgradeTeaser,
     labels,
+    headingAs = "h2",
 }: {
+    /** "p" inside a marketing sample: keeps app h2s out of the public outline (SEO review 2026-10 S4). */
+    headingAs?: "h2" | "p"
     items: RenewalItem[]
     /**
      * Renewals in the 180-day window — the FACT the header states. `items` is
@@ -88,6 +91,7 @@ export function RenewalsTimelineCard({
     return (
         <section className="pw-card pw-pad" aria-labelledby="renewals-heading">
             <CardHead
+                as={headingAs}
                 icon={CalendarClock}
                 title={labels.kicker}
                 id="renewals-heading"

@@ -182,6 +182,7 @@ export function ProtectionStatusHero({
     premium = null,
     language,
     labels,
+    headingAs = "h2",
 }: {
     hasPolicies: boolean
     /**
@@ -202,6 +203,13 @@ export function ProtectionStatusHero({
      */
     premium?: { value: string; label: string; excludedParts: PremiumExclusionPart[] } | null
     language: Language
+    /**
+     * Heading level of the card title. A marketing sample (components/landing/
+     * real-screens) passes "p": the real app's h2s inside a product mock made
+     * the public homepage outline read «Χρειάζεται την προσοχή σας» as page
+     * content (SEO review 2026-10 S4).
+     */
+    headingAs?: "h2" | "p"
     labels: {
         kicker: string
         /**
@@ -218,6 +226,7 @@ export function ProtectionStatusHero({
         meta?: string
     }
 }) {
+    const Heading = headingAs
     if (!hasPolicies) {
         return (
             <section className="pw-card pw-pad-roomy" aria-labelledby="protection-status-heading">
@@ -227,9 +236,9 @@ export function ProtectionStatusHero({
                         <ShieldCheck className="h-7 w-7 text-primary dark:text-mint" aria-hidden="true" />
                     </span>
                     <div className="min-w-0">
-                        <h2 id="protection-status-heading" className="text-title font-semibold text-foreground">
+                        <Heading id="protection-status-heading" className="text-title font-semibold text-foreground">
                             {labels.emptyTitle}
-                        </h2>
+                        </Heading>
                         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                             {labels.emptyBody}
                         </p>
@@ -292,7 +301,7 @@ export function ProtectionStatusHero({
                 «Χρειάζεται βελτίωση» over a wallet with no cover at all. The
                 cells below say what the wallet contains, which is what the
                 reader came for and what cannot be wrong. */}
-            <h2 id="protection-status-heading" className={ROW}>
+            <Heading id="protection-status-heading" className={ROW}>
                 {items.map((item) => {
                     if ("fact" in item && item.index === 0) {
                         return (
@@ -338,7 +347,7 @@ export function ProtectionStatusHero({
                     }
                     return null
                 })}
-            </h2>
+            </Heading>
 
             {/* What the total leaves out: one line per part, each a plain running-
                 text link (the WCAG 2.5.8 inline exception). The earlier inline-flex

@@ -361,6 +361,7 @@ export function DashboardScreen({ locale }: { locale: ScreenLocale }) {
     return (
         <div className="space-y-3">
             <ProtectionStatusHero
+                headingAs="p"
                 hasPolicies
                 facts={facts}
                 areasLine={home.heroAreasMany.replace("{count}", "2")}
@@ -376,6 +377,7 @@ export function DashboardScreen({ locale }: { locale: ScreenLocale }) {
                 }}
             />
             <AttentionList
+                headingAs="p"
                 items={items}
                 totalCount={2}
                 language={locale}
@@ -436,7 +438,7 @@ export function WalletScreen({ locale }: { locale: ScreenLocale }) {
     ]
     return (
         <div>
-            <StatusSummary activeCount={2} expiringCount={1} attentionCount={0} totalPolicies={3} totalPremium={1284} />
+            <StatusSummary headingAs="p" activeCount={2} expiringCount={1} attentionCount={0} totalPolicies={3} totalPremium={1284} />
             <div className="space-y-3">
                 {policies.map((p) => (
                     <PolicyCard key={p.id} policy={p} onView={() => {}} />
@@ -476,6 +478,7 @@ export function RenewalsScreen({ locale }: { locale: ScreenLocale }) {
     }
     return (
         <RenewalsTimelineCard
+            headingAs="p"
             items={[item("sample-motor", "motor", 18, 95), item("sample-home", "home", 74, 80), item("sample-health", "health", 140, 62)]}
             totalCount={3}
             hasPolicies
@@ -504,6 +507,7 @@ export function CoverageMapScreen({ locale }: { locale: ScreenLocale }) {
     }
     return (
         <BranchCoverageMap
+            headingAs="p"
             entries={[
                 entry("motor", "covered", status.statusCovered),
                 entry("home", "attention", status.statusAttention),
