@@ -281,10 +281,13 @@
      sub-cards as "no perceptible container". Two steps on the slate hue,
      between slate-100 and slate-200, are the fix — the ONE new system step
      this pass introduces, recorded here so the ramp stays the ramp.
-     --muted-foreground (#5b6a7a) measures 4.6:1 on --surface-sunken, so meta
-     text inside a sub-card still clears AA. */
+     --muted-foreground (#5b6a7a) measures 4.6:1 on --pw-surface-sunken, so meta
+     text inside a sub-card still clears AA.
+     Prefixed --pw-: unprefixed it silently overrode Grafí's own
+     --surface-sunken (#E7F1EC, app/grafi.css) on every `bg-surface-sunken`
+     call site in light mode (review 2026-10 DA1). */
   --surface-canvas: #E7ECF1;
-  --surface-sunken: #EDF1F5;
+  --pw-surface-sunken: #EDF1F5;
 
   --pw-primary: #29685B;
   --pw-primary-hover: #1C4E44;
@@ -969,7 +972,7 @@ pre {
      page canvas so it reads as "the ground showing through". */
   .pw-subcard {
     border-radius: 12px;
-    background: var(--surface-sunken);
+    background: var(--pw-surface-sunken);
   }
   .dark .pw-subcard {
     background: rgba(255, 255, 255, 0.06);
@@ -997,7 +1000,7 @@ pre {
   :where(.pw-segmented) {
     @apply inline-flex max-w-full gap-0.5 p-1;
     border-radius: 9999px;
-    background: var(--surface-sunken);
+    background: var(--pw-surface-sunken);
   }
   .dark :where(.pw-segmented) {
     background: rgba(255, 255, 255, 0.06);
@@ -1095,7 +1098,7 @@ pre {
      `!px-3.5` on a compact one) wins over the recipe. */
   :where(.pw-soft-button) {
     @apply inline-flex min-h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0];
-    background: var(--surface-sunken);
+    background: var(--pw-surface-sunken);
     color: var(--foreground);
   }
   :where(.pw-soft-button):hover {
