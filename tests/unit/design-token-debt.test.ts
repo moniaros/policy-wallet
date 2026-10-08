@@ -209,8 +209,6 @@ const HARDCODED_COLOUR_DEBT: Record<string, number> = {
     'components/landing/PublicMegaFooter.tsx::#1c4e44': 1,
     'components/landing/ServicesGrid.tsx::#a7f3d0': 2,
     'components/landing/SolutionsDropdown.tsx::#a7f3d0': 4,
-    'components/landing/TrustRow.tsx::#a7f3d0': 2,
-    'components/landing/WhyNow.tsx::#a7f3d0': 2,
     'components/wallet/PolicyQA.tsx::#111111': 1,
     'components/wallet/coverage-details/HomeCoverageDetails.tsx::#22c55e': 3,
     'components/wallet/policy-detail/PolicyHead.tsx::#111111': 1,
