@@ -68,11 +68,14 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
                 {/* Pricing funnel — every LoB page routes to /pricing from the body, not only the nav */}
                 <section className="border-t border-neutral-200 bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
                     <div className="mx-auto max-w-[760px]">
-                        <h2 className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white">
+                        {/* A <p>, not an h2: this band repeats on all 16 branch pages,
+                            and as a heading it gave every one the same outline entry
+                            (SEO review 2026-10 B2). */}
+                        <p className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white">
                             {isAgentAudience
                                 ? t("Πλήρης ανάλυση κάθε ασφαλιστηρίου με το Family.", "Full analysis of every policy with Family.")
                                 : t("Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 3 policies. Upgrade whenever you need it.")}
-                        </h2>
+                        </p>
                         <p className="mb-8 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-400">
                             {isAgentAudience
                                 ? AGENT_FUNNEL_PLANS

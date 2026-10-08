@@ -40,7 +40,7 @@ Companions: [code review](public-site-and-design-system-2026-10.md),
 
 ## A. Broken / risky (fix before investing in content)
 
-**Status 2026-10-08:** S1–S4 fixed on branch `fix/seo-s1-s4` (S5 awaits the owner's root-layout decision). Guards: advice-verb pattern + probe (`voice-guards`), `proxy-app-segments`, `llms-txt`, `marketing-samples-no-headings`.
+**Status 2026-10-08:** C2 (legalName/ΓΕΜΗ/vatID), C4 (logo label) and B2 (pricing band demoted; FAQ heading names its branch) fixed on `fix/seo-entity-and-headings`. S1–S4 fixed on branch `fix/seo-s1-s4` (S5 awaits the owner's root-layout decision). Guards: advice-verb pattern + probe (`voice-guards`), `proxy-app-segments`, `llms-txt`, `marketing-samples-no-headings`.
 
 | # | Finding | Evidence | Fix |
 |---|---|---|---|

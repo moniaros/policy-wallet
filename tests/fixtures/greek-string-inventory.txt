@@ -22,7 +22,7 @@
 # bundle entries: 4290
 # inline entries: 5020 across 236 files
 # ternary entries: 292 across 45 files
-# call entries: 1128 across 85 files
+# call entries: 1131 across 85 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -10485,8 +10485,8 @@ call	components/landing/LoBPageShell.tsx	"Δείτε όλα τα πλάνα στ
 call	components/landing/LoBPageShell.tsx	"Δείτε όλα τα πλάνα στη σελίδα τιμών."
 call	components/landing/LoBPageShell.tsx	"Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε."
 call	components/landing/LoBPageShell.tsx	"Πλήρης ανάλυση κάθε ασφαλιστηρίου με το Family."
-call	components/landing/LobFaq.tsx	"Αυτά που ρωτούν οι περισσότεροι."
 call	components/landing/LobFaq.tsx	"Διαβάστε περισσότερα"
+call	components/landing/LobFaq.tsx	"Συχνές ερωτήσεις"
 call	components/landing/LobFaq.tsx	"Σχετικοί οδηγοί και όροι"
 call	components/landing/PartnerPerksSection.tsx	"Οι παροχές προσφέρονται από τρίτους συνεργάτες και ενδέχεται να αλλάξουν."
 call	components/landing/PartnerPerksSection.tsx	"Περισσότερα από ένα πορτοφόλι"
@@ -10533,6 +10533,7 @@ call	components/landing/ProductCategoryExplorer.tsx	"Η ίδια ανάλυση 
 call	components/landing/ProductCategoryExplorer.tsx	"Τη βλέπετε τώρα"
 call	components/landing/ProductCategoryExplorer.tsx	"Τρέχουσα κατηγορία"
 call	components/landing/PublicMegaFooter.tsx	"Email για ενημερώσεις"
+call	components/landing/PublicMegaFooter.tsx	"PolicyWallet — αρχική"
 call	components/landing/PublicMegaFooter.tsx	"Έγινε. Θα σας στέλνουμε πρακτικές συμβουλές, όχι διαφημίσεις."
 call	components/landing/PublicMegaFooter.tsx	"Όροι χρήσης"
 call	components/landing/PublicMegaFooter.tsx	"Όροι"
@@ -10678,6 +10679,8 @@ call	components/onboarding/agent/LicenseVerificationStep.tsx	"Συνέχεια"
 call	components/onboarding/agent/LicenseVerificationStep.tsx	"Το έγγραφο δεν υποβλήθηκε. Δοκιμάστε ξανά ή επιλέξτε «Παράλειψη προς το παρόν»."
 call	components/onboarding/agent/LicenseVerificationStep.tsx	"Το έγγραφο δεν υποβλήθηκε. Δοκιμάστε ξανά ή επιλέξτε «Παράλειψη προς το παρόν»."
 call	components/onboarding/agent/LicenseVerificationStep.tsx	"Υποβάλετε την άδειά σας για έλεγχο."
+call	components/public/PublicHeader.tsx	"PolicyWallet — αρχική"
+call	components/public/PublicHeader.tsx	"PolicyWallet — αρχική"
 call	components/public/PublicHeader.tsx	"Άνοιγμα μενού"
 call	components/public/PublicHeader.tsx	"Γλώσσα"
 call	components/public/PublicHeader.tsx	"Γλώσσα"
