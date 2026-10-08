@@ -66,7 +66,7 @@ export function WorldClassLanding({
                 }}
             />
 
-            <LandingHeader locale={locale} showPerksLink={partnerOffers.length > 0} />
+            <LandingHeader locale={locale} />
 
             {/* The floating header ends at 72px, so pt-20 clears it with room to
                 spare. The old pt-24 left 24px of nothing on phones — cheap to

@@ -115,8 +115,6 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
@@ -133,17 +131,13 @@
 }
 
 :root {
-  --brand-bg-canvas: #f8fafc;
-  --brand-bg-soft: #ffffff;
   --brand-text-primary: #0F172A;
   --brand-text-muted: #64748b;
   --brand-surface-card: #ffffff;
   --brand-surface-elevated: #f9fafb;
   --brand-border-subtle: rgba(0, 0, 0, 0.08);
-  --brand-border-strong: rgba(0, 0, 0, 0.15);
   --brand-accent-primary: #29685B;
   --brand-accent-cta: #29685B;
-  --brand-accent-trust: #143B33;
 
   /* ── ACCENT AND CONTROL COLOUR, BY SURFACE ────────────────────────────────
      One role, two values, because the surface changes what is legible.
@@ -291,10 +285,8 @@
 
   --pw-primary: #29685B;
   --pw-primary-hover: #1C4E44;
-  --pw-bg-dark: #000000;
   --pw-bg-light: #ffffff;
   --pw-surface-dark: #111111;
-  --pw-surface-light: #f9fafb;
   --pw-text-primary-dark: #ffffff;
   --pw-text-primary-light: #0F172A;
   /* Same correction as --muted-foreground: slate-500 measured 3.25:1 on the
@@ -315,8 +307,6 @@
   --pw-border-control: rgba(0, 0, 0, 0.45);
   --pw-radius-button: 9999px;
   --pw-radius-card: 16px;
-  --pw-shadow-card: 0 16px 48px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.04);
-  --pw-shadow-card-hover: 0 24px 64px rgba(0, 0, 0, 0.09), 0 0 0 1px rgba(15, 23, 42, 0.04);
 
   --background: #ffffff;
   --foreground: #0f172a;
@@ -336,8 +326,6 @@
   --card-foreground: #0f172a;
 
   /* Popover */
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
 
   /* Muted */
   --muted: #f1f5f9;
@@ -371,18 +359,14 @@
 }
 
 .dark {
-  --brand-bg-canvas: #000000;
-  --brand-bg-soft: #111111;
   --brand-text-primary: #ffffff;
   --brand-text-muted: #bdbdbd;
   --brand-surface-card: #111111;
   --brand-surface-elevated: #1a1a1a;
   --brand-border-subtle: rgba(255, 255, 255, 0.14);
-  --brand-border-strong: rgba(255, 255, 255, 0.25);
   /* Dark mode: mint accents with dark text on fills */
   --brand-accent-primary: #89D9B2;
   --brand-accent-cta: #89D9B2;
-  --brand-accent-trust: #89D9B2;
 
   --background: #000000;
   --foreground: #f8fafc;
@@ -402,8 +386,6 @@
   --card-foreground: #f8fafc;
 
   /* Popover */
-  --popover: #0f172a;
-  --popover-foreground: #f8fafc;
 
   /* Muted */
   --muted: #1e293b;
@@ -655,12 +637,8 @@ pre {
      own note exempts a boundary that is not the only indicator of the
      control. Painting a 45%-black edge on exactly those cards made two cards
      in a rail of six look like a different product; the reader read the
-     inconsistency, not the affordance. `.pw-control-boundary` stays as the
-     opt-in for a control whose boundary IS its only cue (an icon-only tile). */
-  .pw-control-boundary {
-    border-color: var(--pw-border-control);
-  }
-
+     inconsistency, not the affordance. (The `.pw-control-boundary` opt-in
+     that survived this had no caller by 2026-10 and was removed.) */
 
   .pw-pill {
     @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest;
@@ -1177,35 +1155,6 @@ pre {
     animation: rs-mark 420ms cubic-bezier(0.16, 1, 0.3, 1) 520ms both;
   }
 
-  .animate-blob {
-    animation: blob 7s infinite;
-  }
-
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-
-  .animation-delay-4000 {
-    animation-delay: 4s;
-  }
-}
-
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
 }
 
 /* ─── Mobile control floor — deliberately UNLAYERED ────────────────────────────
