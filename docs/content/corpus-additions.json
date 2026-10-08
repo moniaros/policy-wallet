@@ -87,5 +87,13 @@
   "call:components/landing/grafi/WhoItIsFor.tsx::Για όσους έχουν ασφαλιστήρια και για όσους τα διαχειρίζονται: δείτε τι κάνει το PolicyWallet για τον καθένα.",
   "call:components/landing/LobFaq.tsx::Συχνές ερωτήσεις",
   "call:components/landing/PublicMegaFooter.tsx::PolicyWallet — αρχική",
-  "call:components/public/PublicHeader.tsx::PolicyWallet — αρχική"
+  "call:components/public/PublicHeader.tsx::PolicyWallet — αρχική",
+  "call:components/landing/PublicMegaFooter.tsx::Προϊόν",
+  "call:components/landing/PublicMegaFooter.tsx::Κατηγορίες",
+  "call:components/landing/PublicMegaFooter.tsx::Μάθετε",
+  "call:components/landing/PublicMegaFooter.tsx::Μεθοδολογία",
+  "call:components/landing/PublicMegaFooter.tsx::Τι άλλαξε",
+  "call:components/landing/PublicMegaFooter.tsx::Κατάσταση υπηρεσίας",
+  "call:components/landing/PublicMegaFooter.tsx::Όλες οι κατηγορίες",
+  "call:components/landing/PublicMegaFooter.tsx::Έλεγχος αναγκών"
 ]
