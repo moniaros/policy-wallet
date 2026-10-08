@@ -89,6 +89,10 @@ Two parallel systems sharing one `.dark` class:
 | DA8 | Page docs are Feb-2026 generator output: widths 1200/800px vs real containers 680/900/1240/1400 (`globals.css:68-71`); `branding.md:30` says "Navy/Grey" on a green brand; `agent-rise.md` has no route. | |
 | DA9 | `globals.css:799` comment cites token `status-critical-fg`, which exists only as a name in `DESIGN.md`. | |
 
+**Resolution (2026-10-08, branch `fix/design-da1-da2`):**
+- DA1 fixed: the legacy token is now `--pw-surface-sunken` (its 3 recipes, all with dark overrides, unchanged); Grafí's `#E7F1EC` reaches the Grafí call sites. Rendered on a prod build: `/auth/signin` sunken = rgb(231,241,236), `.pw-soft-button` still rgb(237,241,245). Guard: `tests/unit/css-token-namespaces-disjoint.test.ts` (red on the old CSS).
+- DA2 fixed: `BrandActionButton` primary text is `text-primary-foreground` (dark `#1A2420` on mint = 9.59:1, light white on `#29685B` = 6.51:1, computed), and `rounded-full` per the pill rule. Not rendered — both callers are behind auth.
+
 ### B. System debt
 - **Docs vs runtime values:** muted text MASTER `#64748B` vs runtime `#5b6a7a` (`globals.css:346`);
   warning text `#B45309` vs `#92400E` (`:236`); success bg `#DCEBDA` vs `#ECFDF5` (`:229`);
