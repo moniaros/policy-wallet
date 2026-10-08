@@ -1,7 +1,9 @@
 # STATUS
 
 ## Current phase
-**Released and verified in production — 2026-10-02.** [PR #386](https://github.com/moniaros/policy-wallet/pull/386) plus deployment fixes; application commit `f3315f12`. [CI passed](https://github.com/moniaros/policy-wallet/actions/runs/37017380421), [deployment passed](https://github.com/moniaros/policy-wallet/actions/runs/37018702624), Vercel **Ready** on `www.policywallet.gr`. [Evidence and decisions](audits/prevention-production-release-2026-10-02.md).
+**Public-site language labelling released — 2026-10-08.** [PR #387](https://github.com/moniaros/policy-wallet/pull/387) → `6b71fe38`, CI + Vercel deploy green. Fixes A2–A5 (+ A1 partial) of [the public-site & design-system review](audits/public-site-and-design-system-2026-10.md). Verified live: `/en/*` sends `Content-Language: en`; `/solutions/partners` 308 → `/en/solutions/partners`; ΕΛ/EN toggles land on real pages; with `localStorage.language=en`, `/`, `/trust`, `/product/health`, `/solutions/synergates` render `lang="el"` (Playwright). Kilo review failed (no credits).
+
+Previous release (2026-10-02, prevention, `f3315f12`): [evidence](audits/prevention-production-release-2026-10-02.md).
 
 ## Done
 - Simplified policyholder home/intake/navigation, policy/recommendation context and notification history; unsupported health scores retired. External action references hidden; policy-document provenance retained.
@@ -24,8 +26,8 @@ Actual two-PDF provider benchmark still awaits its separate transmission authori
 3. **Medium — UI/UX backlog:** targeted local/mobile and live smoke checks do not certify complete accessibility.
 
 ## Next 3 actions
-1. Complete the separately authorized PDF benchmark before enabling advanced personalization.
-2. Restore the missing money-path test credentials and review existing dependency advisories.
-3. Continue the separate B2B/content-assurance and wider accessibility backlog from recorded findings.
+1. OWNER: pick the design-system direction (Grafí vs legacy) and the A1 full fix (per-locale root layouts = full reloads between site sections) — see the review doc, Next steps §1–2.
+2. Mechanical design fixes (review §3): DA2 `BrandActionButton` dark contrast 1.66:1, DA1 duplicate `--surface-sunken`, non-flipping `primary-soft` tokens.
+3. Complete the separately authorized PDF benchmark before enabling advanced personalization; restore money-path test credentials.
 
 Before future commits/pushes: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit/build and relevant journeys. All applicable checks passed for this release.
