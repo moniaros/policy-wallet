@@ -33,8 +33,8 @@ export function ComparisonBand({ locale }: { locale: MarketingLocale }) {
                     className="mt-g-3 max-w-[26ch] text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary"
                 >
                     {t(
-                        "Ποιος σας λέει την αλήθεια για τις καλύψεις σας;",
-                        "Who tells you the truth about your cover?",
+                        "Πώς βρίσκετε τις πληροφορίες που χρειάζεστε;",
+                        "How do you find the information you need?",
                     )}
                 </h2>
 

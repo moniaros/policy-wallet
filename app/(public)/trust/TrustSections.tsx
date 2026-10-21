@@ -84,8 +84,8 @@ const SECTIONS: Section[] = [
                 en: "That is not a marketing promise: it is a clause in our contract with you (Terms of Service, §3), so it binds us legally.",
             },
             {
-                el: "Η μόνη εξαίρεση είναι όποια δημιουργείτε εσείς. Αν συνδέσετε τον δικό σας ασφαλιστή, βλέπει ακριβώς όσα του δώσατε — και του τα αφαιρείτε όποτε θέλετε.",
-                en: "The only exception is the one you create. If you connect your own advisor, they see exactly what you granted them — and you can take it back whenever you want.",
+                el: "Μπορείτε να δώσετε πρόσβαση στον ασφαλιστή σας και να τη διακόψετε. Οι τεχνικοί πάροχοι που χρειάζονται για τη λειτουργία της υπηρεσίας και τυχόν νόμιμες γνωστοποιήσεις εξηγούνται στην πολιτική απορρήτου.",
+                en: "You can grant access to your adviser and end it. Technical providers needed to run the service and any legally required disclosures are explained in the Privacy Policy.",
             },
             {
                 el: "Δεν παίρνουμε προμήθεια από ασφαλιστικές εταιρείες. Πληρωνόμαστε μόνο από συνδρομές, άρα δεν κερδίζουμε τίποτα από το τι λέει η ανάλυσή σας.",
@@ -122,8 +122,8 @@ const SECTIONS: Section[] = [
                 en: "Analysis starts only after you give explicit consent. Without it, the document never leaves for a model provider.",
             },
             {
-                el: "Οι όροι επεξεργασίας των παρόχων AI δεν επιτρέπουν τη χρήση των δεδομένων σας για εκπαίδευση των μοντέλων τους.",
-                en: "The AI providers' data-processing terms do not permit your data to be used to train their models.",
+                el: "Για την ανάλυση μπορεί να σταλεί ολόκληρο το έγγραφο σε πάροχο τεχνητής νοημοσύνης, ακόμη και εκτός ΕΕ. Η χρήση και η τήρησή του διέπονται από τους όρους του παρόχου· δείτε την πολιτική απορρήτου και τον κατάλογο παρόχων.",
+                en: "Analysis may send the entire document to an AI provider, including outside the EU. Its use and retention are governed by the provider's terms; see the Privacy Policy and provider list.",
             },
             {
                 el: "Η τεχνητή νοημοσύνη διαβάζει το έγγραφο και το εξηγεί. Δεν αποφασίζει αυτή ποια κενά κάλυψης έχετε: αυτό το κρίνουν κανόνες που ελέγχουν τα δεδομένα του ασφαλιστηρίου σας, και κάθε εύρημα καταγράφει ποιος κανόνας το βρήκε και τι διάβασε.",
@@ -168,8 +168,8 @@ const SECTIONS: Section[] = [
                 en: "A few things are not in that copy and are provided on request: payment-method details, session and security records, the history of who viewed your data, usage metering, and the free-text notes your advisor wrote about you. Their structured assessment of you is included.",
             },
             {
-                el: "Τη διαγραφή τη ζητάτε από τον λογαριασμό σας· την εκτελεί άνθρωπος και ολοκληρώνεται το αργότερο εντός ενός μήνα. Ό,τι μας υποχρεώνει ο νόμος να κρατήσουμε — για παράδειγμα τιμολόγια για πέντε χρόνια — παραμένει σε ανωνυμοποιημένη μορφή.",
-                en: "Deletion you ask for with one click; a person carries it out and it completes within one month at the latest. Anything the law requires us to keep — invoices for five years, for example — remains in anonymized form.",
+                el: "Μπορείτε να ζητήσετε διαγραφή από τον λογαριασμό σας. Απαντάμε συνήθως μέσα σε έναν μήνα· αν χρειάζεται νόμιμη παράταση, σας εξηγούμε γιατί. Στοιχεία που πρέπει να κρατήσουμε, όπως φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.",
+                en: "You can request deletion from your account. We normally respond within one month and explain any lawful extension. Records we must retain, such as tax documents, are not erased before the retention obligation ends.",
             },
         ],
     },
@@ -252,7 +252,7 @@ export function TrustSections({ locale }: { locale: Locale }) {
                                 {t(locale, "Όροι χρήσης", "Terms of service")}
                             </Link>
                             <Link className="underline" href={l("/subprocessors")}>
-                                {t(locale, "Υπο-εκτελούντες επεξεργασίας", "Subprocessors")}
+                                {t(locale, "Εταιρείες που επεξεργάζονται στοιχεία", "Subprocessors")}
                             </Link>
                             <Link className="underline" href={l("/platform")}>
                                 {t(locale, "Πώς δουλεύει η ανάλυση", "How the analysis works")}

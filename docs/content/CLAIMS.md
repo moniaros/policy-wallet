@@ -50,3 +50,5 @@ carries ΕΑΕΕ, ΑΑΔΕ and the Bank of Greece, none tied to the coefficients
 rate apparatus comes out. That is an editorial call on a genuinely useful guide, so C8 is
 **re-raised for the owner** rather than half-applied. Status unchanged: **needs source**.
 
+
+**C8 closed — 2026-10-21:** Under the owner’s explicit request to correct public legal/factual content, removed the unsupported earthquake price/rate table and market ranges. Retained only a clearly hypothetical deductible calculation. See `docs/audits/public-language-legal-2026-10-21.md`.

@@ -21,7 +21,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Κυβερνοεπίθεση: τι καλύπτει η ασφάλειά σας;", "Ransomware, downtime, liability: what covers you?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε τι καλύπτεται αν κλειδώσουν τα δεδομένα σας, μέχρι ποιο ποσό, και πόσο πληρώνεστε για κάθε μέρα που η δουλειά σταματά.", "See what is covered if your data is locked, up to what amount, and how much you are paid for every day the business stops.")}
+                        {t("Δείτε τι αναφέρει το ασφαλιστήριο για κλοπή δεδομένων, κλείδωμα αρχείων και διακοπή της δουλειάς. Ελέγξτε τα ποσά, τις εξαιρέσεις και τους χρόνους αναμονής.", "See what the policy says about data theft, locked files and business interruption. Check amounts, exclusions and waiting periods.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -42,14 +42,14 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                             {t("Αν γίνει κυβερνοεπίθεση, ξέρετε τι καλύπτεται;", "If an attack hits, do you already know what applies?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Σε περίπτωση παραβίασης, ο χρόνος είναι χρήμα. Το PolicyWallet κρατά τα στοιχεία της ομάδας άμεσης επέμβασης πάντα διαθέσιμα.", "In a breach, time is money. PolicyWallet keeps the details of your incident response team always at hand.")}
+                            {t("Κρατήστε πρόχειρα τα στοιχεία επικοινωνίας που αναφέρει το ασφαλιστήριο για βοήθεια σε κυβερνοεπίθεση.", "Keep the policy's contact details for cyber incident support at hand.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κάλυψη για ψηφιακό εκβιασμό", "Ransomware cover")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε τι ακριβώς πληρώνει το ασφαλιστήριο σε εκβιασμό ή απώλεια δεδομένων.", "We show you exactly what the policy pays in extortion or data loss.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε αν αναφέρεται κάλυψη για ψηφιακό εκβιασμό και ποιους όρους έχει. Η αναφορά ποσού δεν εγγυάται ότι μια πληρωμή λύτρων επιτρέπεται ή αποζημιώνεται.", "Check whether cyber extortion cover is listed and on what terms. A stated limit does not guarantee that a ransom payment is permitted or reimbursed.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">

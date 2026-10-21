@@ -81,8 +81,8 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
         <BrowserChrome
             url={`${PRODUCT_DISPLAY_HOST}/agent/clients`}
             label={t(
-                "Παράδειγμα: μία οθόνη με τους πελάτες σας — ποιος έχει ενεργή ασφάλιση, ποιανού λήγει σύντομα και ποιος έχει κενό κάλυψης.",
-                "Example: one screen with your clients — who is active, whose cover runs out soon, and who has a gap."
+                "Παράδειγμα λίστας πελατών: ενεργά ασφαλιστήρια, ημερομηνίες λήξης και σημεία που χρειάζονται έλεγχο.",
+                "Example client list: active policies, expiry dates and points to review."
             )}
         >
             <div className="p-5">

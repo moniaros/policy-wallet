@@ -11,7 +11,7 @@ import type { Bilingual } from "@/lib/marketing/positioning"
 export const BROKER_BAND = {
     kicker: { el: "Για ασφαλιστές", en: "For agents" },
     heading: {
-        el: "Το χαρτοφυλάκιό σας, διαβασμένο.",
+        el: "Τα ασφαλιστήρια των πελατών σας, οργανωμένα.",
         en: "Your book of business, read.",
     },
     lead: {

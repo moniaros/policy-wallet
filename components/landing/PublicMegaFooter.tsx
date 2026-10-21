@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { CookieSettingsButton } from "@/components/compliance/CookieSettingsButton"
 import { FormEvent, useMemo, useState } from "react"
 import { ArrowRight, Facebook, Instagram, Linkedin, Mail, ShieldCheck, Twitter, type LucideIcon } from "lucide-react"
 import { LEGAL_ENTITY } from "@/lib/legal/entity-placeholders"
@@ -189,8 +190,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         </Link>
                         <p className="mt-4 max-w-[320px] text-body leading-relaxed text-neutral-600 dark:text-slate-300">
                             {t(
-                                "Η ζωή σας αλλάζει και τα ρίσκα σας μαζί της. Σας λέμε αν η ασφάλισή σας κράτησε τον ρυθμό. Δεν πουλάμε ασφάλειες.",
-                                "Your life changes and your risks change with it. We tell you whether your insurance kept up. We do not sell insurance."
+                                "Συγκεντρώστε τα ασφαλιστήριά σας και καταλάβετε τι γράφουν. Βρείτε τι χρειάζεται να ρωτήσετε τον ασφαλιστή σας. Δεν πουλάμε ασφάλειες.",
+                                "Bring your policies together and understand what they say. Find what to ask your adviser. We do not sell insurance."
                             )}
                         </p>
                     </div>
@@ -328,6 +329,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         <Link href={l("/terms")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
                             {t("Όροι", "Terms")}
                         </Link>
+                        <CookieSettingsButton language={locale} />
                         <Link href={l("/cookies")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
                             {t("Cookies", "Cookies")}
                         </Link>
@@ -339,7 +341,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         </Link>
                         <span className="inline-flex items-center gap-1.5 text-primary dark:text-brand-accent">
                             <ShieldCheck className="h-4 w-4" />
-                            {t("GDPR & AES-256", "GDPR & AES-256")}
+                            {t("Προστασία δεδομένων", "Data protection")}
                         </span>
                     </div>
                 </div>

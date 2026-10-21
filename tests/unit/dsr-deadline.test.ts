@@ -48,6 +48,8 @@ describe('DSR deadline follows the calendar, not a 30-day approximation', () => 
 
     it('measures the same window the privacy policy publishes', () => {
         const legal = readFileSync('lib/legal/legal-content.ts', 'utf-8')
-        expect(legal).toMatch(/within one month at the latest, as provided by Article 12 GDPR/)
+        expect(legal).toMatch(/normally within one month/);
+        expect(legal).toMatch(/inform you within the first month/);
+        expect(legal).toMatch(/up to two additional months/)
     })
 })

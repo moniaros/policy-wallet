@@ -18,10 +18,10 @@ export default function GroupPensionProductPage({ locale }: { locale: "el" | "en
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Εισφορές, εργοδοτική συμμετοχή, φόροι: όλα μετρημένα.", "Contributions, employer match, taxes: all accounted for.")}
+                        {t("Τα χρήματα που βάζετε εσείς και ο εργοδότης σας.", "The money you and your employer contribute.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε πόσα έχουν μαζευτεί, πόσα βάζει η εταιρεία και ποιο ποσό μπορείτε να δηλώσετε στη φορολογική σας δήλωση.", "See how much has built up, how much the company adds, and what amount you can put on your tax return.")}
+                        {t("Δείτε τις εισφορές και το ποσό που αναφέρουν τα έγγραφα του προγράμματος. Για τη φορολογική δήλωση χρειάζεται επιβεβαίωση από τον λογιστή σας.", "See contributions and the amount stated in your plan documents. Confirm tax-return treatment with your accountant.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -48,8 +48,8 @@ export default function GroupPensionProductPage({ locale }: { locale: "el" | "en
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Φορολογικές ελαφρύνσεις", "Tax relief")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Έχετε έτοιμα τα στοιχεία για την εφορία. Δείτε ποιες εκπτώσεις φόρου δικαιούστε από τα ομαδικά προγράμματα.", "Have the figures ready for the tax office. See which tax deductions your group plans entitle you to.")}</p>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Στοιχεία για τον λογιστή σας", "Information for your accountant")}</h3>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Συγκεντρώστε τις βεβαιώσεις εισφορών. Το PolicyWallet δεν υπολογίζει φορολογική έκπτωση ούτε επιβεβαιώνει δικαίωμα απαλλαγής.", "Collect your contribution statements. PolicyWallet does not calculate tax relief or confirm eligibility for an exemption.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -80,8 +80,8 @@ export default function GroupPensionProductPage({ locale }: { locale: "el" | "en
                                 <TrendingUp className="w-5 h-5 text-[#29685B] dark:text-brand-accent" />
                             </div>
                             <div className="p-4 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-lg text-sm border border-slate-200 dark:border-white/10">
-                                <p className="font-bold flex items-center gap-2 mb-2"><PieChart className="w-4 h-4" /> {t("Εκπίπτει από τον φόρο (2025)", "Tax-deductible (2025)")}</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">{t("3.600 € για δήλωση", "€3,600 to declare")}</p>
+                                <p className="font-bold flex items-center gap-2 mb-2"><PieChart className="w-4 h-4" /> {t("Παράδειγμα ετήσιων εισφορών", "Example annual contributions")}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">{t("3.600 € σε εισφορές", "€3,600 in contributions")}</p>
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,7 @@ export default function GroupPensionProductPage({ locale }: { locale: "el" | "en
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Δείτε τι χτίζει το ομαδικό σας πρόγραμμα.", "See what your group plan is building.")}
+                    {t("Καταλάβετε τους όρους του ομαδικού σας προγράμματος.", "See what your group plan is building.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το ομαδικό συνταξιοδοτικό", "Upload your group pension plan")}

@@ -110,7 +110,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Δεκαετίες αποταμίευσης αξίζουν λίγα λεπτά ανάλυσης.", "Decades of saving deserve a few minutes of analysis.")}
+                    {t("Καταλάβετε το πρόγραμμα πριν πάρετε μια απόφαση.", "Decades of saving deserve a few minutes of analysis.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Αναλύστε το πρόγραμμά σας", "Analyze your plan")}

@@ -49,7 +49,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Ποσό κάλυψης και έξοδα της οικογένειας", "Cover against what you owe")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Ένα κεφάλαιο που ορίστηκε όταν το στεγαστικό ήταν στην αρχή του μπορεί σήμερα να μην καλύπτει ούτε το υπόλοιπο του δανείου.", "A sum insured set when your mortgage was new may no longer cover even the remaining loan balance today.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Οι ανάγκες της οικογένειας και το υπόλοιπο του δανείου αλλάζουν. Συζητήστε με τον ασφαλιστή σας αν το ποσό του ασφαλιστηρίου ανταποκρίνεται στη σημερινή σας κατάσταση.", "Family needs and loan balances change. Discuss with your adviser whether the policy amount suits your current circumstances.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -63,7 +63,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Δικαιούχοι με μία ματιά", "Who gets paid, at a glance")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Ποιος εισπράττει, με ποια σειρά και υπό ποιους όρους — καταγεγραμμένα καθαρά, όχι θαμμένα στη σελίδα 14.", "Who receives the benefit, in what order and under which terms — recorded clearly, not buried on page 14.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε ποιος ορίζεται να λάβει το ποσό της ασφάλισης και με ποιες προϋποθέσεις.", "Who receives the benefit, in what order and under which terms — recorded clearly, not buried on page 14.")}</p>
                                 </div>
                             </li>
                         </ul>
@@ -111,7 +111,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Δώστε στην οικογένειά σας απαντήσεις, όχι ερωτηματικά.", "Give your family answers, not question marks.")}
+                    {t("Βρείτε τι προβλέπει η ασφάλεια ζωής για την οικογένειά σας.", "Give your family answers, not question marks.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το ασφαλιστήριο ζωής σας", "Upload your life policy")}

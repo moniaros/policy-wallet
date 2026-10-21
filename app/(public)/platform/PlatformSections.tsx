@@ -62,7 +62,7 @@ const STEPS: { n: string; title: { el: string; en: string }; body: { el: string;
     {
         n: "02",
         title: {
-            el: "Κανόνες ελέγχουν τα δεδομένα",
+            el: "Ελέγχουμε τα στοιχεία με συγκεκριμένους κανόνες",
             en: "Rules check that data",
         },
         body: {
@@ -88,8 +88,8 @@ const STEPS: { n: string; title: { el: string; en: string }; body: { el: string;
             en: "“Unknown” does not mean “not covered”",
         },
         body: {
-            el: "Αν το έγγραφο δεν λέει τίποτα για μια κάλυψη, δεν συμπεραίνουμε ότι λείπει: η σιωπή δεν είναι απόδειξη απουσίας και ένα εύρημα που στηρίζεται σε σιωπή είναι λάθος που κοστίζει. Όπου ένας κανόνας ελέγχει αν κάτι έχει καταγραφεί, το εύρημα το λέει ακριβώς έτσι — «δεν έχει καταγραφεί», όχι «δεν καλύπτεστε».",
-            en: "If the document says nothing about a cover, we do not conclude it is missing: silence is not evidence of absence, and a finding built on silence is the expensive kind of wrong. Where a rule checks whether something was recorded at all, the finding says exactly that — “not recorded”, never “not covered”.",
+            el: "Αν δεν βρίσκουμε μια πληροφορία, το λέμε. Αυτό δεν σημαίνει ότι η κάλυψη λείπει. Για παράδειγμα, «δεν βρέθηκε ο δικαιούχος» σημαίνει ότι χρειάζεται έλεγχος στο έγγραφο.",
+            en: "If we cannot find information, we say so. That does not mean cover is missing. For example, a missing beneficiary entry means the document needs to be checked.",
         },
     },
 ]
@@ -105,7 +105,7 @@ export function PlatformSections({ locale }: { locale: Locale }) {
                     <h1 className="mt-3 text-display font-semibold text-balance text-[#0F172A] dark:text-white">
                         {t(
                             locale,
-                            "Γιατί να εμπιστευτείτε την απάντηση",
+                            "Πώς μπορείτε να ελέγξετε την απάντηση",
                             "Why the answer is worth trusting"
                         )}
                     </h1>
@@ -146,7 +146,7 @@ export function PlatformSections({ locale }: { locale: Locale }) {
                 <section className="mx-auto max-w-form px-4 pb-16">
                     <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 dark:border-white/10 dark:bg-white/5">
                         <h2 className="text-h4 font-semibold text-[#0F172A] dark:text-white">
-                            {t(locale, "Τι δεν κάνει αυτό", "What this does not do")}
+                            {t(locale, "Ποια είναι τα όρια της ανάλυσης", "What this does not do")}
                         </h2>
                         <p className="mt-3 text-body leading-relaxed text-[#334155] dark:text-slate-200">
                             {t(

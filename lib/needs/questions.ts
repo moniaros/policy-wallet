@@ -144,7 +144,7 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
         id: "family",
         title: { el: "Η οικογένειά σας", en: "Your family" },
         intro: {
-            el: "Ποιος βασίζεται στο εισόδημά σας — αυτό αλλάζει ποιες καλύψεις έχουν νόημα.",
+            el: "Μια λίστα με ερωτήσεις για τα ασφαλιστήριά σας.",
             en: "Who depends on your income — this changes which covers make sense.",
         },
         questions: [
@@ -178,7 +178,7 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
         id: "moving",
         title: { el: "Πώς μετακινείστε", en: "How you get around" },
         intro: {
-            el: "Οχήματα και σκάφη έχουν υποχρεωτικές καλύψεις — και προαιρετικές που οι περισσότεροι δεν ξέρουν ότι δεν έχουν.",
+            el: "Οι όροι δεν είναι πάντα εύκολοι. Οι απαντήσεις σας βοηθούν να οργανώσετε όσα θέλετε να ρωτήσετε.",
             en: "Vehicles and boats have compulsory covers — and optional ones most people do not know they lack.",
         },
         questions: [
@@ -245,7 +245,7 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
         id: "life",
         title: { el: "Η υπόλοιπη ζωή σας", en: "The rest of your life" },
         intro: {
-            el: "Τα υπόλοιπα που δημιουργούν κίνδυνο. Διαλέξτε όσα ισχύουν — αν δεν ισχύει κανένα, προχωρήστε.",
+            el: "Μερικές ακόμη ερωτήσεις για την καθημερινότητά σας.",
             en: "The rest of what creates risk. Pick any that apply — if none do, carry on.",
         },
         questions: [
@@ -279,7 +279,7 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
             {
                 id: "cyber",
                 kind: "single",
-                prompt: { el: "Πόσο ζείτε online;", en: "How much of your life is online?" },
+                prompt: { el: "Πόσο συχνά χρησιμοποιείτε το διαδίκτυο;", en: "How much of your life is online?" },
                 hint: {
                     el: "Τραπεζικές συναλλαγές, αγορές και προσωπικά δεδομένα στο κινητό.",
                     en: "Banking, shopping and personal data on your phone.",
@@ -296,8 +296,8 @@ export const NEEDS_STEPS: readonly NeedsStep[] = [
         id: "held",
         title: { el: "Τι έχετε ήδη", en: "What you already hold" },
         intro: {
-            el: "Για να μη σας πούμε ότι σας λείπει κάτι που ήδη έχετε — ακόμη κι αν δεν το πήρατε από εμάς.",
-            en: "So we do not tell you something is missing when you already have it — even if you did not get it from us.",
+            el: "Μπορείτε να ανεβάσετε ασφαλιστήρια από διαφορετικές ασφαλιστικές εταιρείες. Δεν πουλάμε ασφάλειες.",
+            en: "You can upload policies from different insurance companies. We do not sell insurance.",
         },
         questions: [
             {

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { CookieSettingsButton } from "@/components/compliance/CookieSettingsButton"
 import {
     LEGAL_CONTENT_VERSION,
     LEGAL_DOC_META,
@@ -84,6 +85,7 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                     </div>
 
                     <div className="prose prose-stone max-w-none text-stone-700 dark:prose-invert dark:text-slate-300">
+                        {documentKind === "cookies" && <CookieSettingsButton language={language} />}
                         {document.intro.map((paragraph, index) => (
                             <p key={`intro-${index}`}>{paragraph}</p>
                         ))}

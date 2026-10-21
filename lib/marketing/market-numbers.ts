@@ -30,19 +30,19 @@ export const MARKET_NUMBERS: readonly MarketNumber[] = [
         id: "eda-2024",
         value: "+6,24%",
         label: {
-            el: "αύξηση ασφαλίστρων υγείας το 2024 (ΕΔΑ)",
-            en: "health premium increase in 2024 (EDA index)",
+            el: "Δείκτης μακροχρόνιων ασφαλίσεων υγείας, 2024",
+            en: "Long-term health insurance index, 2024",
         },
         caveat: {
-            el: "Με την ηλικιακή επίδραση· χωρίς αυτήν, +1,25%.",
-            en: "Including the age effect; excluding it, +1.25%.",
+            el: "Με την ηλικία: +6,24%. Χωρίς την ηλικία: +1,25%. Δεν είναι αύξηση κάθε ασφαλιστηρίου.",
+            en: "Including age: +6.24%. Excluding age: +1.25%. Not the increase for every policy.",
         },
         source: {
             name: {
-                el: "ΕΛΣΤΑΤ, Ετήσιος Δείκτης Ασφαλίστρων υγείας 2024",
-                en: "ELSTAT, Annual Health Premium Index 2024",
+                el: "ΕΛΣΤΑΤ, Δείκτης Αναπροσαρμογής Μακροχρόνιων Ασφαλίσεων Υγείας 2024",
+                en: "ELSTAT, Long-term Health Insurance Adjustment Index 2024",
             },
-            url: "https://www.statistics.gr/el/statistics/-/publication/DKT58/-",
+            url: "https://www.statistics.gr/documents/20181/cd813286-0dc3-612f-c399-302179805452",
             dated: "29.07.2026",
         },
     },
@@ -54,8 +54,8 @@ export const MARKET_NUMBERS: readonly MarketNumber[] = [
             en: "ENFIA discount for insured homes",
         },
         caveat: {
-            el: "Για ασφάλιση σεισμού, πυρκαγιάς και πλημμύρας, αξία έως €500.000 — 10% άνω αυτής. Από το 2025.",
-            en: "For earthquake, fire and flood cover, value up to €500,000 — 10% above. From 2025.",
+            el: "Για τον ΕΝΦΙΑ 2026, υπό προϋποθέσεις. Το ποσοστό εξαρτάται από την αξία της κατοικίας και τη διάρκεια ασφάλισης το 2025.",
+            en: "For ENFIA 2026, subject to conditions. The rate depends on the home's taxable value and insurance duration in 2025.",
         },
         source: {
             name: {

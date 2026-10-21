@@ -41,8 +41,8 @@ export function ProductCategoryExplorer({
                         </h2>
                         <p className="mt-4 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                             {t(
-                                "Η ίδια ανάλυση ισχύει για κάθε ασφαλιστήριο που έχετε.",
-                                "The same analysis applies to every policy you have."
+                                "Δείτε πώς διαβάζουμε τα έγγραφα κάθε κατηγορίας.",
+                                "See how we read documents in each category."
                             )}
                         </p>
                     </div>

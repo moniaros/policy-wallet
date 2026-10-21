@@ -18,10 +18,10 @@ export default function GroupHealthProductPage({ locale }: { locale: "el" | "en"
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Ομαδικό και ατομικό: μία εικόνα, χωρίς διπλοπληρωμές.", "Group and personal cover: one picture, no double-paying.")}
+                        {t("Τι καλύπτει η δουλειά σας και τι το ατομικό σας ασφαλιστήριο;", "What does your employer's plan cover, and what does your own policy add?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε τι σας δίνει το ομαδικό της δουλειάς σας, τι προσθέτει το ατομικό σας, και — με το Family — τι πληρώνετε δύο φορές χωρίς να το ξέρετε.", "See what your workplace group plan gives you, what your personal policy adds, and — with Family — what you are paying for twice without knowing.")}
+                        {t("Βάλτε δίπλα τις παροχές των δύο προγραμμάτων. Μπορεί να καλύπτουν κοινά έξοδα ή να συμπληρώνουν το ένα το άλλο.", "View the benefits of both plans together. They may cover common expenses or complement one another.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -39,7 +39,7 @@ export default function GroupHealthProductPage({ locale }: { locale: "el" | "en"
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Πληρώνετε διπλά για τις ίδιες καλύψεις;", "Are you double-paying for the same coverage?")}
+                            {t("Πώς λειτουργούν τα δύο ασφαλιστήρια μαζί;", "How do the two policies work together?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
                             {t("Δύο ασφαλιστήρια μπορεί να καλύπτουν το ίδιο έξοδο με διαφορετικούς όρους. Δείτε τι πληρώνει το καθένα και συζητήστε με τον ασφαλιστή σας αν το ένα συμπληρώνει το άλλο.", "Two policies may cover the same expense under different terms. Check what each pays and discuss with your insurance advisor whether one complements the other.")}

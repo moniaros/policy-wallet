@@ -46,7 +46,7 @@ describe("legal content parity", () => {
         expect(el.terms.title).toBe("Όροι Χρήσης")
         expect(el.privacy.title).toBe("Πολιτική Απορρήτου")
         expect(el.cookies.title).toBe("Πολιτική Cookies")
-        expect(el.subprocessors.title).toBe("Υπο-εκτελούντες Επεξεργασίας")
+        expect(el.subprocessors.title).toBe("Εταιρείες που επεξεργάζονται δεδομένα")
     })
 
     it("lists every subprocessor in both languages", () => {

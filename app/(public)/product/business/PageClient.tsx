@@ -37,8 +37,8 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
             icon: TimerOff,
             titleEl: "Διακοπή Εργασιών",
             titleEn: "Business Interruption",
-            descEl: "Αν μια ζημιά κλείσει την επιχείρηση για εβδομάδες, ποιος πληρώνει τα πάγια; Το σκέλος που λείπει συχνότερα.",
-            descEn: "If damage shuts you down for weeks, who pays the fixed costs? The section most often missing.",
+            descEl: "Δείτε αν προβλέπεται πληρωμή εξόδων ή απώλειας κερδών όταν μια καλυπτόμενη ζημιά διακόψει τη δουλειά.",
+            descEn: "Check whether expenses or lost profit are covered when an insured loss interrupts your business.",
         },
         {
             icon: Scale,
@@ -51,8 +51,8 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
             icon: HardHat,
             titleEl: "Ευθύνη Εργοδότη",
             titleEn: "Employer Liability",
-            descEl: "Η ευθύνη σας απέναντι στο προσωπικό για εργατικό ατύχημα — κρίσιμη για κάθε επιχείρηση με εργαζόμενους.",
-            descEn: "Your liability to staff for workplace accidents — critical for any business with employees.",
+            descEl: "Δείτε αν καλύπτεται η ευθύνη του εργοδότη για εργατικό ατύχημα και με ποιες προϋποθέσεις.",
+            descEn: "Check whether the employer's liability for a workplace accident is covered and on what terms.",
         },
     ]
 
@@ -115,7 +115,7 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Η επιχείρησή σας δεν χωράει «μάλλον καλυπτόμαστε».", "Your business has no room for “we're probably covered”.")}
+                    {t("Οι καλύψεις της επιχείρησής σας, συγκεντρωμένες.", "Your business has no room for “we're probably covered”.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Δείτε τις καλύψεις σας", "Map your coverage")}

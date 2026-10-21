@@ -26,12 +26,12 @@ export default function CompanyPage() {
                     {/* Category kicker — the company page opens by naming the
                         category we created; the H1 is its human decode. */}
                     <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-tight md:text-display">
-                        {t("Είμαστε με το μέρος σας. Μόνο.", "We are on your side. Only yours.")}
+                        {t("Οι ασφάλειές σας, με απλά λόγια.", "Your insurance, in plain language.")}
                     </h1>
                     <p className="mx-auto max-w-2xl text-lead leading-relaxed text-[#475569] dark:text-slate-300 md:text-title">
                         {t(
-                            "Φτιάξαμε το PolicyWallet για να ξέρετε επιτέλους τι σας καλύπτει η ασφάλειά σας — και τι όχι.",
-                            "We built PolicyWallet so that you finally know what your insurance covers you for — and what it does not."
+                            "Φτιάξαμε το PolicyWallet για να βρίσκετε εύκολα τι γράφουν τα ασφαλιστήριά σας και τι χρειάζεται να ρωτήσετε.",
+                            "We built PolicyWallet to help you find what your policies say and what you need to ask."
                         )}
                     </p>
                 </section>
@@ -49,8 +49,8 @@ export default function CompanyPage() {
                         <ul className="space-y-3">
                             {[
                                 {
-                                    el: "Δεν είμαστε ασφαλιστική εταιρεία και δεν πουλάμε ασφαλιστικά προϊόντα — είμαστε το ουδέτερο εργαλείο του ασφαλισμένου.",
-                                    en: "We are not an insurance company and we do not sell insurance products — we are the policyholder's neutral tool.",
+                                    el: "Δεν είμαστε ασφαλιστική εταιρεία και δεν πουλάμε ασφάλειες. Σας βοηθάμε να οργανώνετε και να καταλαβαίνετε τα ασφαλιστήριά σας.",
+                                    en: "We are not an insurance company and do not sell insurance. We help you organise and understand your policies.",
                                 },
                                 {
                                     el: "Διαβάζουμε ασφαλιστήρια από κάθε ασφαλιστική εταιρεία: αυτοκίνητο, κατοικία, υγεία, ομαδικά, κυβερνοασφάλεια και κατοικίδια.",
@@ -61,8 +61,8 @@ export default function CompanyPage() {
                                     en: "We work for policyholders, insurance agents and agencies — in Greek and English.",
                                 },
                                 {
-                                    el: "Τα δεδομένα σας φυλάσσονται κρυπτογραφημένα σε διακομιστές μέσα στην Ευρώπη — κατεβάζετε αντίγραφο όποτε θέλετε και ζητάτε διαγραφή, που ολοκληρώνεται εντός ενός μήνα.",
-                                    en: "Your data is kept encrypted on servers inside Europe — download a copy whenever you want, and ask for deletion, which we complete within one month.",
+                                    el: "Τα αρχεία σας αποθηκεύονται κρυπτογραφημένα στην ΕΕ. Ορισμένοι τεχνικοί πάροχοι μπορεί να επεξεργάζονται στοιχεία εκτός ΕΕ. Μπορείτε να ζητήσετε αντίγραφο ή διαγραφή· στην πολιτική απορρήτου εξηγούμε τη διαδικασία.",
+                                    en: "Your files are stored encrypted in the EU. Some technical providers may process data outside the EU. You can request a copy or deletion; our Privacy Policy explains the process.",
                                 },
                             ].map((item) => (
                                 <li key={item.en} className="flex items-start gap-3 text-body-lg leading-relaxed text-[#0F172A] dark:text-white">
@@ -83,8 +83,8 @@ export default function CompanyPage() {
                             </h3>
                             <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Τα αρχεία σας είναι κρυπτογραφημένα και μένουν σε διακομιστές μέσα στην Ευρώπη. Τα διαγράφετε όποτε θέλετε.",
-                                    "Your files are encrypted and stay on servers inside Europe. You can delete them whenever you want."
+                                    "Περιορίζουμε την πρόσβαση στα αρχεία σας και τα αποθηκεύουμε κρυπτογραφημένα. Στην πολιτική απορρήτου εξηγούμε ποιος χρησιμοποιεί τα στοιχεία σας και γιατί.",
+                                    "We restrict access to your files and store them encrypted. Our Privacy Policy explains who uses your data and why."
                                 )}
                             </p>
                         </article>
@@ -92,7 +92,7 @@ export default function CompanyPage() {
                         <article className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-10">
                             <Globe className="mb-6 h-8 w-8 text-[#0F172A] dark:text-white" />
                             <h3 className="mb-3 text-h3 font-semibold tracking-tight">
-                                {t("Καμία κρυφή ατζέντα", "No hidden agenda")}
+                                {t("Ξέρετε πώς λειτουργούμε", "Know how we work")}
                             </h3>
                             <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
@@ -124,14 +124,14 @@ export default function CompanyPage() {
                     <div className="space-y-5 text-lead leading-[1.75] text-[#334155] dark:text-slate-300">
                         <p>
                             {t(
-                                "Όσοι έχουν ιδιωτική ασφάλιση στην Ελλάδα σπάνια ξέρουν τι ακριβώς καλύπτει το ασφαλιστήριό τους. Οι όροι είναι μακροσκελείς, οι εξαιρέσεις κρυμμένες και η σύγκριση σχεδόν αδύνατη για έναν μη ειδικό.",
-                                "People with private insurance in Greece rarely know what their policy actually covers. Terms run long, exclusions stay hidden, and comparison is nearly impossible for a non-expert."
+                                "Οι ασφαλιστικοί όροι μπορεί να είναι δύσκολοι. Για να βρείτε μια απάντηση, συχνά χρειάζεται να διαβάσετε πολλές σελίδες. Θέλουμε να σας βοηθήσουμε να ξεκινήσετε από τα βασικά.",
+                                "Insurance terms can be difficult. Finding an answer often means reading many pages. We want to help you start with the essentials."
                             )}
                         </p>
                         <p>
                             {t(
-                                "Το PolicyWallet φτιάχνεται στην Ελλάδα, για την ελληνική αγορά, από ανθρώπους με εμπειρία στο λογισμικό και στις χρηματοοικονομικές υπηρεσίες. Φτιάχνουμε το εργαλείο που θα θέλαμε να έχουμε εμείς ως ασφαλισμένοι: κάτι που διαβάζει τα ασφαλιστήρια για εσάς, εξηγεί τι λένε και σας ειδοποιεί πριν μείνετε ακάλυπτοι.",
-                                "PolicyWallet is built in Greece, for the Greek market, by people with a background in software and financial services. We are building the tool we wish we had as policyholders. Something that reads the policies for you, explains what they say, and warns you before you are left uncovered."
+                                "Το PolicyWallet φτιάχνεται στην Ελλάδα για ανθρώπους και επιχειρήσεις που έχουν ασφαλιστήρια. Συγκεντρώνει τα έγγραφα, εξηγεί τι αναφέρουν και βοηθά να παρακολουθείτε τις ημερομηνίες τους.",
+                                "PolicyWallet is built in Greece for people and businesses with insurance policies. It brings documents together, explains what they say and helps you track their dates."
                             )}
                         </p>
                         <p>
