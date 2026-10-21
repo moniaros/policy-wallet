@@ -26,7 +26,7 @@ const state = process.env.PLAYWRIGHT_STORAGE_STATE;
       const onError = e => errors.push(e.message);
       page.on('pageerror', onError);
       try {
-        const response = await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 });
+        const response = await page.goto(base + route, { waitUntil: 'domcontentloaded', timeout: 60000 });
         const reject = page.getByRole('button', { name: /^(Μόνο απαραίτητα|Necessary Only)$/i });
         if (await reject.isVisible()) await reject.click();
         await page.evaluate(() => document.fonts.ready);
@@ -34,8 +34,10 @@ const state = process.env.PLAYWRIGHT_STORAGE_STATE;
         const row = { route, width, status: response.status(), ...box, errors };
         if (row.status !== 200 || box.width > width + 1 || box.h1 !== 1 || !box.text || errors.length) failures.push(row);
         results.push(row);
+        fs.writeFileSync(path.join(out, "progress.json"), JSON.stringify({ cases: results.length, failures }, null, 2));
+        if (results.length % 24 === 0) console.log("Checked", results.length, "cases; failures", failures.length);
         if (shots.has(route)) await page.screenshot({ path: path.join(out, route.replaceAll('/', '_') + '-' + width + '.png'), fullPage: true });
-      } catch (error) { failures.push({ route, width, error: error.message }); }
+      } catch (error) { failures.push({ route, width, error: error.message }); console.log('Failed', route, width, error.message); }
       page.off('pageerror', onError);
     }
     console.log('Public route sweep complete', width, paths.length);
@@ -44,7 +46,7 @@ const state = process.env.PLAYWRIGHT_STORAGE_STATE;
   const consentResults = [];
   for (const route of ['/', '/cookies', '/en/cookies']) {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(base + route, { waitUntil: 'networkidle' });
+    await page.goto(base + route, { waitUntil: 'domcontentloaded' });
     const before = (await context.cookies()).find(c => c.name === 'pw_cookie_consent')?.value;
     const button = page.getByRole('button', { name: /^(Ρυθμίσεις cookies|Cookie settings)$/i }).first();
     await button.click();
@@ -60,11 +62,11 @@ const state = process.env.PLAYWRIGHT_STORAGE_STATE;
     consentResults.push({ route, openedWithoutConsentChange: true, rejectionPersisted: true, accessibility: axe.violations.map(v => ({ id: v.id, impact: v.impact, nodes: v.nodes.map(n => ({ target: n.target, summary: n.failureSummary })) })) });
   }
   // Actual legal content and sources, not just HTTP success.
-  await page.goto(base + '/terms', { waitUntil: 'networkidle' });
+  await page.goto(base + '/terms', { waitUntil: 'domcontentloaded' });
   assert.match(await page.locator('main').innerText(), /14 ημερολογιακές ημέρες από τη σύναψη/);
   assert.match(await page.locator('main').innerText(), /προηγούμενο ρητό αίτημά σας/);
   assert.match(await page.locator('main').innerText(), /GR-GA-2026\.10\.21/);
-  await page.goto(base + '/product/property', { waitUntil: 'networkidle' });
+  await page.goto(base + '/product/property', { waitUntil: 'domcontentloaded' });
   assert.match(await page.locator('main').innerText(), /2026/);
   const report = { base, checkedAt: new Date().toISOString(), routes: paths.length, cases: results.length, failures, consentResults, results };
   fs.writeFileSync(path.join(out, 'verification.json'), JSON.stringify(report, null, 2));
