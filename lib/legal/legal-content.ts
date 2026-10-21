@@ -292,7 +292,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "recipients",
                     title: "6. Αποδέκτες και εκτελούντες την επεξεργασία",
                     paragraphs: [
-                        "Χρησιμοποιούμε περιορισμένο αριθμό τεχνικών παρόχων (υπο-εκτελούντων) για τη φιλοξενία, τη βάση δεδομένων, τις πληρωμές, την αποστολή email και την ανάλυση AI. Όλοι δεσμεύονται με συμβάσεις επεξεργασίας δεδομένων κατά το άρθρο 28 GDPR και επεξεργάζονται μόνο ό,τι απαιτείται για τον ρόλο τους.",
+                        "Χρησιμοποιούμε περιορισμένο αριθμό τεχνικών παρόχων (υπο-εκτελούντων) για τη φιλοξενία, τη βάση δεδομένων, τις πληρωμές, την αποστολή email και την ανάλυση AI. Το άρθρο 28 του GDPR απαιτεί κατάλληλη σύμβαση όταν ένας πάροχος επεξεργάζεται δεδομένα για λογαριασμό μας. Οι όροι της συγκεκριμένης υπηρεσίας περιγράφουν τις υποχρεώσεις του παρόχου· μπορείτε να ζητήσετε πληροφορίες στο dpo@policywallet.gr.",
                         "Ο πλήρης κατάλογος — με τον ρόλο, τα δεδομένα και την τοποθεσία επεξεργασίας κάθε παρόχου — δημοσιεύεται και ενημερώνεται στη σελίδα των υπο-εκτελούντων.",
                         "Ο ασφαλιστής βλέπει στοιχεία σύμφωνα με τη σχέση και τα δικαιώματα πρόσβασης στην πλατφόρμα. Μπορεί επίσης να έχει ανεβάσει ο ίδιος έγγραφα για λογαριασμό σας. Μπορείτε να ανακαλέσετε πρόσβαση που παραχωρήσατε. Αν θεωρείτε ότι μια πρόσβαση δεν δικαιολογείται, επικοινωνήστε μαζί μας.",
                     ],
@@ -303,7 +303,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "7. Πού αποθηκεύονται τα δεδομένα — διαβιβάσεις εκτός ΕΟΧ",
                     paragraphs: [
                         "Η κύρια υποδομή μας βρίσκεται στην Ευρωπαϊκή Ένωση: η βάση δεδομένων, η αυθεντικοποίηση και τα αρχεία σας φιλοξενούνται σε υποδομή Supabase στην περιφέρεια eu-west-3 (Παρίσι, Γαλλία).",
-                        "Ορισμένοι πάροχοι — ιδίως οι πάροχοι AI, η Stripe και η Vercel — ενδέχεται να επεξεργάζονται δεδομένα εκτός Ευρωπαϊκού Οικονομικού Χώρου, κυρίως στις ΗΠΑ. Οι διαβιβάσεις αυτές καλύπτονται από απόφαση επάρκειας (EU-U.S. Data Privacy Framework) ή/και από τις Τυποποιημένες Συμβατικές Ρήτρες της Ευρωπαϊκής Επιτροπής.",
+                        "Ορισμένοι πάροχοι — ιδίως οι πάροχοι AI, η Stripe και η Vercel — ενδέχεται να επεξεργάζονται δεδομένα εκτός Ευρωπαϊκού Οικονομικού Χώρου, κυρίως στις ΗΠΑ. Για μια τέτοια διαβίβαση απαιτείται νόμιμος μηχανισμός, όπως εφαρμοστέα απόφαση επάρκειας ή οι Τυποποιημένες Συμβατικές Ρήτρες της Ευρωπαϊκής Επιτροπής. Ζητήστε στο dpo@policywallet.gr τα στοιχεία για τον συγκεκριμένο πάροχο και αντίγραφο των σχετικών εγγυήσεων.",
                     ],
                 },
                 {
@@ -777,7 +777,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "recipients",
                     title: "6. Recipients and processors",
                     paragraphs: [
-                        "We use a limited number of technical providers (subprocessors) for hosting, the database, payments, email delivery and AI analysis. All are bound by data processing agreements under Article 28 GDPR and process only what their role requires.",
+                        "We use a limited number of technical providers (subprocessors) for hosting, the database, payments, email delivery and AI analysis. Article 28 GDPR requires an appropriate contract when a provider processes data on our behalf. The specific service terms describe the provider’s obligations; you can request information at dpo@policywallet.gr.",
                         "The full list — with each provider's role, data and processing location — is published and kept up to date on the subprocessors page.",
                         "An adviser sees information according to the relationship and access permissions in the platform. They may also have uploaded documents on your behalf. You can revoke access you granted. Contact us if you believe access is unjustified.",
                     ],
@@ -788,7 +788,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "7. Where data is stored — transfers outside the EEA",
                     paragraphs: [
                         "Our primary infrastructure is located in the European Union: the database, authentication and your files are hosted on Supabase infrastructure in the eu-west-3 region (Paris, France).",
-                        "Some providers — notably the AI providers, Stripe and Vercel — may process data outside the European Economic Area, mainly in the United States. These transfers are covered by an adequacy decision (EU-U.S. Data Privacy Framework) and/or the European Commission's Standard Contractual Clauses.",
+                        "Some providers — notably the AI providers, Stripe and Vercel — may process data outside the European Economic Area, mainly in the United States. Such a transfer requires a lawful mechanism, such as an applicable adequacy decision or the European Commission’s Standard Contractual Clauses. Request the details for a particular provider and a copy of the relevant safeguards at dpo@policywallet.gr.",
                     ],
                 },
                 {
