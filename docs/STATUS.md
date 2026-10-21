@@ -1,19 +1,20 @@
 # Status
 
 ## Current phase
-Five homepage presentation extensions implemented — 21 October 2026. Local checks green; exact preview and production release in progress.
+Five homepage presentation extensions shipped — 21 October 2026. PR #408; production application `95c8670a`.
 
 ## Done
 - Added actual app previews for policyholders/agents, an enlarged reading demo, four photographic category links, guide/glossary cards and three trust explanations.
-- Preserved forest/mint branding, light video hero, four-step section, bilingual reviewed facts and auth/payment restrictions.
-- API auth (116 routes), lint, i18n/UTF-8, strict types, 7,874 tests and build passed. Dev: 88 migrations, none pending; no DB/catalogue writes.
-- Seven responsive/language/theme cases passed; zero axe findings across the five sections; no-JS fallback and 22 destinations verified.
+- Preserved forest/mint branding, light video hero, four-step section, reviewed bilingual facts and auth/payment restrictions. Independent visual review: PASS.
+- API auth, lint, i18n/UTF-8, types, 7,874 tests and build passed. Dev/prod: 88 migrations, none pending; no DB/catalogue changes.
+- Exact preview and live: seven responsive/language/theme cases, 35 axe scans per environment, no findings; 22 destinations, no-JS fallback, keyboard/replay, signup handoff and live video loop verified.
+- Production CI 39647092968 and deploy 39648473964 succeeded. Vercel `dpl_HYmFCK1UwbyAR5cSd8vqvDMD6pi9` Ready.
 
 ## In progress
-- Independent visual review, exact preview, CI and production verification.
+- No remaining implementation work in this homepage release.
 
 ## Blocked
-- No design release blocker. Paid checkout remains restricted pending statutory online withdrawal.
+- No design release blocker. Paid checkout remains restricted pending statutory online withdrawal. Optional Kilo review lacked credits; CI payment journey skipped without its E2E database secret.
 
 ## Top risks ranked
 1. Online withdrawal needs declaration, confirmation and durable receipt before paid consumer checkout.
@@ -21,8 +22,8 @@ Five homepage presentation extensions implemented — 21 October 2026. Local che
 3. Existing production session-pool configuration remains an infrastructure follow-up.
 
 ## Next 3 actions
-1. Complete exact preview, independent review and CI.
-2. Deploy and verify live responsive layouts, interactions and destinations.
-3. Complete withdrawal and operational/legal follow-ups before paid checkout.
+1. Complete the consumer withdrawal flow before enabling payments.
+2. Resolve provider/retention evidence and protected deletion copy.
+3. Address production pool configuration and provision payment-journey test infrastructure.
 
 Evidence: [five homepage extensions](audits/homepage-five-panels-2026-10-21.md), [four steps](audits/homepage-steps-2026-10-21.md).

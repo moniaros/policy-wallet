@@ -1,0 +1,54 @@
+[
+  {
+    "width": 1440,
+    "boxes": [
+      {
+        "id": "insurance-categories",
+        "x": 0,
+        "y": 3922.875,
+        "width": 1440,
+        "height": 900.34375
+      },
+      {
+        "id": "learn",
+        "x": 0,
+        "y": 4823.21875,
+        "width": 1440,
+        "height": 925.53125
+      },
+      {
+        "id": "difference",
+        "x": 0,
+        "y": 5748.75,
+        "width": 1440,
+        "height": 1050.1875
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "boxes": [
+      {
+        "id": "insurance-categories",
+        "x": 0,
+        "y": 7049.109375,
+        "width": 390,
+        "height": 2401.46875
+      },
+      {
+        "id": "learn",
+        "x": 0,
+        "y": 9450.578125,
+        "width": 390,
+        "height": 1292.984375
+      },
+      {
+        "id": "difference",
+        "x": 0,
+        "y": 10743.5625,
+        "width": 390,
+        "height": 1608.359375
+      }
+    ]
+  }
+]
