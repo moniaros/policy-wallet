@@ -32,6 +32,17 @@ test('reviewed question survives failure, retries once, and its reminder can be 
         await page.waitForURL(/\/collaboration\/threads\//)
         threadId = decodeURIComponent(new URL(page.url()).pathname.split('/').at(-1)!)
         await expect(page.getByText(submitted.initialMessage, { exact: true })).toBeVisible({ timeout: 20000 })
+        for (const width of [320, 390, 430]) {
+            await page.setViewportSize({ width, height: 844 })
+            const controls = page.getByRole('heading', { name: submitted.subject, exact: true }).locator('..').getByRole('button')
+            await expect(controls).toHaveCount(3)
+            const boxes = await controls.evaluateAll(elements => elements.map(element => {
+                const box = element.getBoundingClientRect()
+                return { label: element.textContent, x: box.x, right: box.right, width: box.width, height: box.height, clipped: element.scrollWidth > element.clientWidth + 1 }
+            }))
+            expect(boxes.every(box => !box.clipped && box.x >= 0 && box.right <= width && box.height >= 44), JSON.stringify({ width, boxes })).toBe(true)
+        }
+        await page.setViewportSize({ width: 390, height: 844 })
         const retry = await page.request.post('/api/v1/collaboration/threads', { data: submitted })
         expect(retry.ok()).toBeTruthy(); expect((await retry.json()).data.thread.id).toBe(threadId)
         expect((await page.request.post('/api/v1/collaboration/threads', { data: { ...submitted, initialMessage: 'Changed content' } })).status()).toBe(409)

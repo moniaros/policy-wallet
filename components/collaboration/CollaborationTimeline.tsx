@@ -399,12 +399,12 @@ export function CollaborationTimeline({
                         <p className="text-sm text-muted-foreground">{t.collaboration.timeline.selectThread}</p>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-2">
+                            <div className="flex flex-col items-start gap-2">
                                 <h4 className="text-sm font-bold text-foreground">{selected.subject}</h4>
-                                <div className="flex gap-2">
-                                    <button onClick={() => runMutation(() => patchThreadStatus("open"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-neutral-300 disabled:opacity-50 dark:border-neutral-600">{t.collaboration.timeline.statusOpen}</button>
-                                    <button onClick={() => runMutation(() => patchThreadStatus("resolved"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-primary text-primary disabled:opacity-50 dark:text-mint">{t.collaboration.timeline.statusResolve}</button>
-                                    <button onClick={() => runMutation(() => patchThreadStatus("closed"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-neutral-400 disabled:opacity-50">{t.collaboration.timeline.statusClose}</button>
+                                <div className="flex w-full flex-wrap gap-2">
+                                    <button onClick={() => runMutation(() => patchThreadStatus("open"))} disabled={busy} className="min-h-11 shrink-0 whitespace-nowrap text-xs px-2 py-1 rounded border border-neutral-300 disabled:opacity-50 dark:border-neutral-600">{t.collaboration.timeline.statusOpen}</button>
+                                    <button onClick={() => runMutation(() => patchThreadStatus("resolved"))} disabled={busy} className="min-h-11 shrink-0 whitespace-nowrap text-xs px-2 py-1 rounded border border-primary text-primary disabled:opacity-50 dark:text-mint">{t.collaboration.timeline.statusResolve}</button>
+                                    <button onClick={() => runMutation(() => patchThreadStatus("closed"))} disabled={busy} className="min-h-11 shrink-0 whitespace-nowrap text-xs px-2 py-1 rounded border border-neutral-400 disabled:opacity-50">{t.collaboration.timeline.statusClose}</button>
                                 </div>
                             </div>
 
