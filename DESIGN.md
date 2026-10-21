@@ -127,11 +127,11 @@ components:
   public-button-inverse-hover:
     backgroundColor: "{colors.grafi-mint}"
   public-hero-submit:
-    backgroundColor: "{colors.grafi-mint}"
-    textColor: "{colors.grafi-ink}"
+    backgroundColor: "{colors.trust-forest}"
+    textColor: "{colors.paper}"
     rounded: "{rounded.subcard}"
   public-hero-submit-hover:
-    backgroundColor: "{colors.paper}"
+    backgroundColor: "{colors.ledger-green}"
   button-primary:
     backgroundColor: "{colors.ledger-green}"
     textColor: "{colors.paper}"
@@ -220,8 +220,9 @@ supersede historical marketing prescriptions for pill actions, fixed heading siz
 decorative eyebrows, imagery and theme-dependent brand panels. Sample disclosures
 and functional status labels remain visible; decorative kickers do not return.
 
-The public header, homepage hero and auth companion panel keep their forest ground
-and white copy in both themes. Existing Grafí mint and ink complement those panels;
+The public header and auth companion panel keep their forest ground
+and white copy in both themes. The homepage hero keeps a light ivory scrim over
+full-bleed video with dark forest copy in both themes. Existing Grafí mint and ink complement those panels;
 they are not new global palette roles. Reading surfaces and the auth form continue
 to resolve semantic theme tokens. Public action corners are 12px; authenticated
 pills and selection controls retain their existing geometry.
@@ -264,7 +265,7 @@ A deep, desaturated green doing trust work on a slate-neutral canvas, with a min
 ### Public/auth complementary colours
 - **Grafí Mint** (`grafi-mint`): the existing `--g-green-200` primitive from `app/grafi.css`, reused for the homepage submit action and public-header inverse-action hover. It is distinct from Signal Mint's dark-mode action role.
 - **Grafí Ink** (`grafi-ink`): the existing `--g-green-800` primitive, reused as foreground on the homepage's white and mint form controls.
-- **Trust Forest** remains fixed on the public header, homepage hero and auth companion panel, paired with white text in both themes. The global Trust Forest dark-mode shift described above does not apply to these presentation surfaces.
+- **Trust Forest** remains fixed on the public header and auth companion panel, paired with white text in both themes. The global Trust Forest dark-mode shift described above does not apply to these presentation surfaces.
 
 **The Fixed Forest Panel Rule.** A public/auth forest panel keeps its light foregrounds and fixed dark background together across themes; its form or reading neighbour may still use semantic theme tokens.
 
@@ -340,7 +341,7 @@ The severity **tone** of a finding becomes a colour in exactly one file (`compon
 ### Public/auth composition
 The shared full-width public header is 80px tall, becoming 72px below 1024px. The homepage begins directly below it; other public main content leaves another 48px of breathing room, or 32px below 1024px. Focusable content has scroll clearance from the header.
 
-The homepage joins equal forest-copy and edge-to-edge lifestyle-film columns at 1024px, with a 620px minimum desktop composition height. Copy has a 720px maximum width and responsive 24–64px horizontal padding. Below 1024px the image follows the action, occupies its own 16:10 box, and keeps its absolutely positioned child within that reserved area. The neutral reading proof uses existing page width, 24px/48px gutters and 56px/80px section spacing.
+The homepage layers heading and signup over a full-width lifestyle film at every viewport width. A light ivory scrim protects dark forest copy. Desktop reserves a 680px minimum composition within a 1440px content measure; copy occupies 58% with responsive 24–64px horizontal padding. Below 1024px, a vertical scrim and 220px top breathing room expose the film above the copy while keeping it behind the entire hero. Bottom padding reserves space for the video control. The neutral reading proof uses existing page width, 24px/48px gutters and 56px/80px section spacing.
 
 Authentication uses a 55:45 desktop split with a 440px form measure and a sticky companion panel occupying the viewport height. The photo sits above a concise forest explanation. Below 1024px only the form column remains; utility pages without a companion use the available page width. This composition does not alter the authenticated shell described below.
 
@@ -441,7 +442,7 @@ Borders are hairlines. A coloured border thicker than 1px on a card, list item o
 - **Top bar (desktop):** 64px, Paper at 95% with blur, hairline below; the search field, the bell with its badge, the account menu opening downward.
 - **Tab bar (phone):** a floating ink pill — five 44px icon-only tabs on Ink with 6px padding and a soft offset shadow, the active tab a Paper disc. Names live in `aria-label`; the badge keeps its «9+» saturation. The agent's fifth slot is a button that opens the drawer.
 - **Settings rail:** the same active grammar — bar, weight, tint — on a 250px column beside the section cards; on a phone the sections become a single card of chip rows.
-- **Marketing:** a full-width forest header, 80px desktop / 72px mobile, with the wordmark, localized links, theme control and audience-aware signup. Public actions use 12px corners. The homepage combines a forest text column and a silent, controllable lifestyle film with a still-image fallback; decorative images have no visible AI-generation caption, per the owner. Auth uses a form-first white/raised surface and a desktop photograph/forest companion panel. These overrides are scoped to public/auth; app pills and app navigation remain unchanged.
+- **Marketing:** a full-width forest header, 80px desktop / 72px mobile, with the wordmark, localized links, theme control and audience-aware signup. Public actions use 12px corners. The homepage layers dark forest text over a light-scrimmed, full-width, silent lifestyle film with a still-image fallback; decorative images have no visible AI-generation caption, per the owner. Auth uses a form-first white/raised surface and a desktop photograph/forest companion panel. These overrides are scoped to public/auth; app pills and app navigation remain unchanged.
 
 ### Signature: the facts row and the honest empty state
 The system's most distinctive component is not decorative. The page's headline is a row of verifiable counts — «12 ασφαλιστήρια · 3 λήγουν σύντομα · 2 δεν έχουν αναλυθεί» — set as fact cells inside one heading, so the reader gets the wallet's state as a sentence they can check against their own folder. Under a list of findings, the same idea becomes the count bar. And where data is missing, the product says what is missing, why, and what would fill it — rather than showing a zero, a placeholder chart, or a skeleton that never resolves. This is the same doctrine as the anti-reference: an unverifiable number is worse than an absent one, and a verifiable one is worth a whole ring.

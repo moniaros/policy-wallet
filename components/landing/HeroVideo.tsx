@@ -76,7 +76,7 @@ export function HeroVideo({ locale }: { locale: MarketingLocale }) {
                 alt={copy.videoPosterAlt}
                 fill
                 priority
-                sizes="(min-width: 1024px) 50vw, 100vw"
+                sizes="100vw"
                 className="object-cover object-center"
             />
             {enabled && !failed && (
