@@ -1,4 +1,6 @@
 import Link from "next/link"
+import { HomeCategoryCards } from "./HomeCategoryCards"
+import { HomeLearning } from "./HomeLearning"
 import { ReadingProof } from "./ReadingProof"
 import { ArrowRight } from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
@@ -29,7 +31,7 @@ interface WorldClassLandingProps {
 
 /**
  * The homepage: document reading, how it works, audiences, independence,
- * pricing and questions, followed by one closing action. Whether sign-ups are
+ * insurance categories, pricing, learning and questions, then one closing action. Whether sign-ups are
  * open is said only on the signup page — never on the public site (owner, 2026-10-08).
  */
 export function WorldClassLanding({
@@ -53,6 +55,8 @@ export function WorldClassLanding({
                 <ReadingProof locale={locale} />
                 <HowItWorks locale={locale} />
                 <WhoItIsFor locale={locale} />
+                <HomeCategoryCards locale={locale} />
+                <HomeLearning locale={locale} />
                 <WhyDifferent locale={locale} />
                 <PartnerPerksSection offers={partnerOffers} isGreek={isGreek} />
                 <PricingPreview locale={locale} plans={pricingPlans} />
