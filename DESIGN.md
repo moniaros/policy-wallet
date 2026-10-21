@@ -218,7 +218,8 @@ The public and authentication additions below describe the built presentation in
 any authenticated policyholder, agent or admin rule. Within those boundaries they
 supersede historical marketing prescriptions for pill actions, fixed heading sizes,
 decorative eyebrows, imagery and theme-dependent brand panels. Sample disclosures
-and functional status labels remain visible; decorative kickers do not return.
+and functional status labels remain visible; the homepage four-step section has the
+owner-approved outlined section label documented below. Other decorative kickers do not return.
 
 The public header and auth companion panel keep their forest ground
 and white copy in both themes. The homepage hero keeps a light ivory scrim over
@@ -312,6 +313,10 @@ The severity **tone** of a finding becomes a colour in exactly one file (`compon
 - **Auth display** uses `typography.auth-display` inside the shared form column, with balanced lines. This scoped fluid scale leaves the authenticated type ladder unchanged.
 - Section titles retain the existing type ladder; descriptive copy and controls retain their current functional sizes. A 12px action corner is geometry, not a 12px text prescription.
 
+The homepage four-step section is a bounded exception: its centered sentence-case
+heading scales from 2rem to 3.5rem, with 1.5rem card titles (700 weight), a 1rem
+outlined label and 1rem descriptions. It retains Inter and Greek-first measures.
+
 ### Hierarchy
 - **Display** (600, 3.5rem/56px, 1.05): hero only. One per page, never below the fold. In the app the one display number is the phone lead of the overview row (the home and the wallet); everything else stays inside 12–32px.
 - **Headline** (600, 2.75rem/44px, 1.12): marketing page titles and major section heads.
@@ -342,6 +347,11 @@ The severity **tone** of a finding becomes a colour in exactly one file (`compon
 The shared full-width public header is 80px tall, becoming 72px below 1024px. The homepage begins directly below it; other public main content leaves another 48px of breathing room, or 32px below 1024px. Focusable content has scroll clearance from the header.
 
 The homepage layers heading and signup over a full-width lifestyle film at every viewport width. A light ivory scrim protects dark forest copy. Desktop reserves a 680px minimum composition within a 1440px content measure; copy occupies 58% with responsive 24–64px horizontal padding. Below 1024px, a vertical scrim and 220px top breathing room expose the film above the copy while keeping it behind the entire hero. Bottom padding reserves space for the video control. The neutral reading proof uses existing page width, 24px/48px gutters and 56px/80px section spacing.
+
+The homepage four-step section uses a 1440px container with fluid 24–56px gutters
+and 64–104px vertical spacing. Its ordered grid has four columns from 1200px, two
+from 600px and one below 600px; numbered descriptions sit beneath each card. These
+section-specific breakpoints do not change the app shell.
 
 Authentication uses a 55:45 desktop split with a 440px form measure and a sticky companion panel occupying the viewport height. The photo sits above a concise forest explanation. Below 1024px only the form column remains; utility pages without a companion use the available page width. This composition does not alter the authenticated shell described below.
 
@@ -386,6 +396,10 @@ In dark mode shadows are invisible, so the same job is done by a 1px inner ring 
 **Public/auth scope:** public primary/secondary and inverse action recipes, the homepage email submit, and auth submit controls use the existing subcard radius (12px). Auth fields use the same corner, at least 52px high; submit controls are at least 48px high. Selection controls keep their state-specific geometry. The fully round action rule below remains the authenticated rule.
 
 
+The homepage four-step cards retain 16px corners, with circular 44px link targets
+and 36px number markers. The 2px corners on extraction bars and 4px paper corners
+belong to the abstract illustrations, not to the component-radius scale.
+
 A soft, fully-resolved geometry with one deliberate extreme: buttons, pills and segmented controls are **fully round** (`9999px`), while surfaces are gently curved and step down one notch per plane.
 
 - **Cards, menus and modals' little siblings:** 16px.
@@ -403,6 +417,21 @@ Borders are hairlines. A coloured border thicker than 1px on a card, list item o
 - **Homepage capture:** white input, mint submit and dark Grafí ink foregrounds. The submit turns white on hover. Labels remain visible or programmatically associated; the sample reading below retains explicit sample identification.
 - **Auth fields:** semantic base fill on the raised form surface, clear labels, inline validation and existing focus treatments. OAuth, passkeys and recovery remain functional controls rather than decorative examples.
 - **Photography:** the same policy-review asset supplies the homepage and desktop auth context. It has descriptive or empty alt text according to context, no visible AI-generation caption, and provenance retained in its asset sidecar. Decorative image treatment does not remove sample disclosures from illustrative policy data.
+
+### Homepage four-step section
+A fixed Trust Forest band, white illustrated cards and pale mint accents remain
+identical in both themes, following the owner’s Bitpanda composition reference
+without adopting its commercial claims. The centered outlined label and headline
+introduce four operations: upload, reading, explanation and renewal monitoring.
+The existing light video hero and reviewed step descriptions remain in place.
+
+Illustrations depict operations, never fabricated customer facts or functional
+controls; they are hidden from assistive technology while the ordered text carries
+the meaning. Each card has one real, labelled arrow link: signup or the existing
+reading/approach anchor. Mint actions turn forest on hover and expose a visible
+focus outline; cards remain flat. Sources: `components/landing/grafi/HowItWorks.tsx`,
+its CSS module and `lib/i18n/how-it-works.ts`. This is a scoped component recipe,
+not a new site-wide visual system.
 
 ### Buttons
 - **Shape:** fully round (`9999px`), with `12px 20px` padding and a 44px floor on mobile.
@@ -470,7 +499,7 @@ The prevention extension keeps a benefit's name, owning policy, evidence state a
 
 ### Don't:
 - **Don't** inherit public/auth presentation exceptions into authenticated controls, palette roles or type scales.
-- **Don't** add decorative kickers or visible AI-generation captions to the public/auth presentation; retain visible identification of illustrative policy data.
+- **Don't** add decorative kickers beyond the approved four-step section label, or visible AI-generation captions to the public/auth presentation; retain visible identification of illustrative policy data.
 - **Don't** ship a score, a grade, a progress ring or a percentage the reader cannot verify. This is the binding anti-reference.
 - **Don't** introduce `emerald-*`, `teal-*` or a second green. There is one brand green and one dark-mode transposition of it.
 - **Don't** use amber for anything but a gap or a warning, or blue for anything but info and AI.
