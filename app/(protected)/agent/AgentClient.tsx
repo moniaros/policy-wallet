@@ -16,6 +16,7 @@ import { CardHead } from "@/components/dashboard/home/CardHead"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DocumentRequestRespond, DocumentRequestCard } from "@/components/collaboration/DocumentRequestFlow"
 import { ProposalView, type ProposalDeclineData } from "@/components/collaboration/ProposalCard"
+import { AdvisorDraft } from "@/components/collaboration/AdvisorDraft"
 import { AgentInbox } from "@/components/collaboration/AgentInbox"
 import type { DocumentRequestData, ProposalData } from "@/components/collaboration/types"
 
@@ -43,6 +44,9 @@ export interface SharedPolicyLedgerItem {
 }
 
 interface AgentClientProps {
+    canSendDraft?: boolean
+    draftSubject?: string
+    initialTab?: "overview" | "messages"
     policies: Policy[]
     user: {
         id: string
@@ -350,6 +354,9 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
 }
 
 export function AgentClient({
+    canSendDraft = false,
+    draftSubject,
+    initialTab = "overview",
     policies,
     user,
     agent,
@@ -359,7 +366,7 @@ export function AgentClient({
 }: AgentClientProps) {
     const { language } = useLanguage()
     const router = useRouter()
-    const [activeTab, setActiveTab] = useState<Tab>("overview")
+    const [activeTab, setActiveTab] = useState<Tab>(initialTab)
     const TAB_IDS: Tab[] = ["overview", "messages", "documents", "proposals"]
     const { tabProps, panelProps } = useTabs(TAB_IDS, activeTab, setActiveTab)
     const [documentRequests, setDocumentRequests] = useState<DocumentRequestData[]>([])
@@ -645,12 +652,15 @@ export function AgentClient({
                 )}
 
                 {activeTab === "messages" && relationshipId && (
+                    <div className="space-y-6">
+                    <AdvisorDraft canSend={canSendDraft} key={draftSubject ?? 'new'} subject={draftSubject} relationshipId={relationshipId} recipient={agent?.name ?? ''} />
                     <AgentInbox
                         relationshipId={relationshipId}
                         onSelectThread={(threadId) => {
                             router.push(`/collaboration/threads/${threadId}`)
                         }}
                     />
+                    </div>
                 )}
 
                 {activeTab === "documents" && (

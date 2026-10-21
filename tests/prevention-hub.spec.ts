@@ -21,7 +21,7 @@ test.afterAll(async () => {
     if (policyId) await db.policy.deleteMany({ where: { id: policyId, ownerUserId: ownerId, policyNumber: 'E2E-CROSS-LINE-BENEFIT' } })
     await db.$disconnect()
 })
-for (const width of [320, 390, 1280]) {
+for (const width of [320, 390, 430, 1280]) {
     test(`cross-line benefit and optional disclosure fit ${width}px`, async ({ page }, info) => {
         await page.setViewportSize({ width, height: 900 }); await page.goto('/wellness'); await dismissCookieBanner(page)
         await expect(page.getByRole('heading', { name: 'Πρόληψη & παροχές', exact: true })).toBeVisible()
@@ -29,7 +29,7 @@ for (const width of [320, 390, 1280]) {
         await expect(card).toContainText('Έκπτωση · όχι δωρεάν υπηρεσία')
         await card.locator('summary').filter({ hasText: 'Όροι και προέλευση' }).click()
         await expect(card).toContainText('Σελίδα 2'); await expect(card).toContainText('Δεν επιβεβαιώνει δικαίωμα χρήσης')
-        await expect(card.getByText('Οδηγός', { exact: true })).toBeVisible()
+        await expect(card.locator('details').getByText('Οδηγός', { exact: true })).toBeVisible()
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
         await page.getByRole('button', { name: 'Ανά ασφαλιστήριο', exact: true }).click()
         await expect(page.getByRole('button', { name: 'Ανά ασφαλιστήριο', exact: true })).toHaveAttribute('aria-pressed', 'true')

@@ -1,5 +1,6 @@
 "use client"
 
+import { formatExtractedAmount } from "@/lib/i18n/amount-format"
 import { formatCurrency } from "@/lib/i18n/format"
 import { getTranslations } from "@/lib/i18n"
 import type { AcordData } from "@/types/domain"
@@ -120,7 +121,7 @@ export function StructuredCoverageTable({ acordData, language }: Props) {
                                     ))}
                                 </dl>
                             ) : coverage.limit ? (
-                                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">{coverage.limit}</p>
+                                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">{formatExtractedAmount(coverage.limit, language)}</p>
                             ) : null}
 
                             {deductibles.length > 0 ? (

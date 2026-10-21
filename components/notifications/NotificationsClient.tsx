@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
+import { currentReminders } from "@/lib/notifications/task-reminders"
+import { policyholderFlowCopy } from "@/lib/i18n/policyholder-flow"
 import { mergeHistoryPages } from "@/lib/notifications/history-pages"
 import { BellRing, CheckCheck, ChevronRight, Settings2 } from "lucide-react"
 import { toast } from "sonner"
@@ -107,6 +109,8 @@ interface NotificationsClientProps {
             has_in_app?: boolean
             delivery_channel?: string | null
             action_href?: string | null
+            reminder_key?: string | null
+            reminder_active?: boolean
             event_type: string
             subject: string | null
             message: string | null
@@ -153,6 +157,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
     // The policyholder nav calls this page «Υπενθυμίσεις» (story rebuild,
     // 2026-09-07) and the page title follows the menu; agents and admins keep
     // «Ειδοποιήσεις». The server decides per role and passes the word down.
+    const flow = policyholderFlowCopy(language)
     const pageTitle = title ?? t.notifications.pageTitle
     const locale = language || userLanguage || "en"
     const isGreek = locale === "el"
@@ -187,7 +192,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
         finally { setLoadingHistory(false) }
     }
     const unreadCount = useMemo(
-        () => historyItems.filter((e) => !readIds.has(e.event_id)).length,
+        () => currentReminders(historyItems).filter((e) => e.unread && !readIds.has(e.event_id)).length,
         [historyItems, readIds]
     )
 
@@ -233,7 +238,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
     // the same formatter the rest of the app uses.
     const lang = isGreek ? "el" : "en"
     const groups: Array<{ key: string; heading: string; items: typeof historyItems }> = []
-    for (const event of historyItems) {
+    for (const event of deliveries ? historyItems : currentReminders(historyItems)) {
         const createdAtDate = new Date(event.created_at)
         const valid = !Number.isNaN(createdAtDate.getTime())
         const key = valid ? formatDate(createdAtDate, lang) : event.created_at
@@ -293,6 +298,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
                     <button type="button" className="pw-soft-button" aria-pressed={!deliveries} disabled={loadingHistory} onClick={() => void loadHistory(false)}>{t.policyholderExperience.inbox}</button>
                     <button type="button" className="pw-soft-button" aria-pressed={deliveries} disabled={loadingHistory} onClick={() => void loadHistory(true)}>{t.policyholderExperience.deliveries}</button>
                 </div>
+                {!deliveries && <p className="mb-4 text-sm text-muted-foreground">{flow.remindersGrouped}</p>}
                 {deliveries && <p className="mb-4 text-sm text-muted-foreground">{t.policyholderExperience.deliveryHint}</p>}
                 {historyItems.length === 0 ? (
                     <section id="history" aria-label={pageTitle} className="pw-card pw-pad-roomy text-center">
@@ -363,7 +369,7 @@ export function NotificationsClient({ initialData, userLanguage = "en", title }:
                                                         />
                                                         {/* No channel chip. One row is one EVENT; which
                                                             pipe delivered it is not customer-facing. */}
-                                                        {event.action_href && <Link href={event.action_href} className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-primary dark:text-mint">{t.policyholderExperience.openConversations}</Link>}
+                                                        {event.action_href && <Link href={event.action_href} className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-primary dark:text-mint">{event.event_type === "collaboration_action_overdue" ? flow.openTask : flow.openMessages}</Link>}
                                                         {event.related_policy_id && (
                                                             <Link
                                                                 href={`/wallet/${event.related_policy_id}`}

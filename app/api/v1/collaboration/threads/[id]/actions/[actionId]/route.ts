@@ -5,6 +5,7 @@ import { collaborationService } from "@/lib/services/collaboration.service"
 
 const patchActionSchema = z.object({
     status: z.enum(["pending", "in_progress", "done", "cancelled"]),
+    dueDate: z.string().datetime().refine(value => new Date(value).getTime() > Date.now(), "Future date required").optional(),
 })
 
 export async function PATCH(
@@ -28,7 +29,8 @@ export async function PATCH(
             auth.dbUser.roles,
             id,
             actionId,
-            parsed.data.status
+            parsed.data.status,
+            parsed.data.dueDate ? new Date(parsed.data.dueDate) : undefined
         )
         return createApiResponse({ action })
     } catch (error: any) {

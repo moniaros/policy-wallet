@@ -216,7 +216,13 @@ export function normalizeRenewalHistory(acord: unknown): RenewalHistoryEntry[] {
 /** Conditions the claims flow must surface: filing deadlines and notification duties. */
 export function deriveClaimDeadlines(conditions: NotableCondition[]): NotableCondition[] {
     return conditions.filter(
-        (c) => c.conditionType === "claim_deadline" || c.conditionType === "notification_obligation"
+        (c) => {
+            if (c.conditionType !== "claim_deadline" && c.conditionType !== "notification_obligation") return false
+            // Legacy extraction can misclassify contract rights as claim deadlines.
+            // Keep them in the full conditions list, never in incident guidance.
+            const text = `${c.summary.el} ${c.summary.en} ${c.value ?? ''} ${c.deadline ?? ''}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+            return !/υπαναχωρ|εναντιωσ|ακυρωσ|withdraw|cooling.?off|cancell|objection/.test(text)
+        }
     )
 }
 

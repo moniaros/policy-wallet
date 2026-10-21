@@ -1,5 +1,7 @@
 "use client"
 
+import { formatDate } from "@/lib/i18n/format"
+import { policyholderFlowCopy } from "@/lib/i18n/policyholder-flow"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { FileText, MessageSquare, FileUp, Lock } from "lucide-react"
@@ -26,7 +28,7 @@ type Thread = {
     _count?: { messages: number; actions: number }
 }
 
-type ThreadDetail = Thread & {
+export type ThreadDetail = Thread & {
     participants: Array<{ id: string; role: string; user: { id: string; name: string | null; email: string } }>
     messages: Array<{
         id: string
@@ -59,6 +61,7 @@ interface CollaborationTimelineProps {
     relationshipId?: string | null
     viewerRole: ViewerRole
     compact?: boolean
+    initialThread?: ThreadDetail
     initialThreadId?: string | null
 }
 
@@ -77,12 +80,13 @@ export function CollaborationTimeline({
     relationshipId,
     viewerRole,
     compact = false,
+    initialThread,
     initialThreadId = null,
 }: CollaborationTimelineProps) {
     const { t, language } = useLanguage()
     const [threads, setThreads] = useState<Thread[]>([])
     const [selectedId, setSelectedId] = useState<string | null>(initialThreadId)
-    const [selected, setSelected] = useState<ThreadDetail | null>(null)
+    const [selected, setSelected] = useState<ThreadDetail | null>(initialThread ?? null)
     const [loading, setLoading] = useState(false)
     const [threadSubject, setThreadSubject] = useState("")
     const [threadCategory, setThreadCategory] = useState("general")
@@ -266,12 +270,12 @@ export function CollaborationTimeline({
         await loadThreads()
     }
 
-    async function patchActionStatus(actionId: string, status: "pending" | "in_progress" | "done" | "cancelled") {
+    async function patchActionStatus(actionId: string, status: "pending" | "in_progress" | "done" | "cancelled", dueDate?: string) {
         if (!selectedId) return
         const res = await fetch(`/api/v1/collaboration/threads/${selectedId}/actions/${actionId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status }),
+            body: JSON.stringify({ status, dueDate }),
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
@@ -300,6 +304,9 @@ export function CollaborationTimeline({
     useEffect(() => {
         if (selectedId) loadThreadDetail(selectedId)
     }, [selectedId])
+    useEffect(() => {
+        if (selected && window.location.hash.startsWith('#action-')) document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView({ block: 'center' })
+    }, [selected])
 
     return (
         <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-sm">
@@ -525,15 +532,18 @@ export function CollaborationTimeline({
                                 <p className="text-xs font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">{t.collaboration.timeline.actions}</p>
                                 <div className="space-y-2 mb-3">
                                     {selected.actions.map((item) => (
-                                        <div key={item.id} className="flex items-center justify-between gap-2 border border-neutral-200 dark:border-neutral-700 rounded p-2">
+                                        <div key={item.id} id={`action-${item.id}`} className="scroll-mt-24 flex flex-wrap items-center justify-between gap-2 border border-neutral-200 dark:border-neutral-700 rounded p-2">
                                             <div>
                                                 <p className="text-sm font-semibold text-foreground">{item.title}</p>
                                                 <p className="text-xs text-neutral-500 dark:text-neutral-400">{t.collaboration.timeline.assignee}: {displayPersonName(item.assignee.name) || item.assignee.email}</p>
+                                                {item.dueDate && <p className="mt-1 text-xs text-muted-foreground">{t.common.dueDate}: {formatDate(item.dueDate, language)}</p>}
                                             </div>
+                                            {['pending', 'in_progress'].includes(item.status) && <button type="button" className="pw-soft-button" disabled={busy} onClick={() => runMutation(() => patchActionStatus(item.id, 'pending', new Date(Date.now() + 7 * 86400000).toISOString()))}>{policyholderFlowCopy(language).snooze}</button>}
                                             <select
                                                 aria-label={t.collaboration.timeline.selectActionStatus}
                                                 value={item.status}
-                                                onChange={(e) => patchActionStatus(item.id, e.target.value as any)}
+                                                disabled={busy}
+                                                onChange={(e) => runMutation(() => patchActionStatus(item.id, e.target.value as any))}
                                                 className="pw-input pw-input-sm"
                                             >
                                                 <option value="pending">{actionStatusLabel("pending")[language]}</option>
