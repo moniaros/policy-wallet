@@ -1,0 +1,661 @@
+{
+  "base": "https://www.policywallet.gr",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "route": "/",
+      "theme": "light",
+      "evidence": [
+        {
+          "id": "reading-demo",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "solutions",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/auth/signup?role=policyholder&source=landing_audience",
+            "/solutions/agents"
+          ],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "insurance-categories",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/product/motor",
+            "/product/property",
+            "/product/health",
+            "/product/business",
+            "/product"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 331
+            },
+            {
+              "loaded": true,
+              "width": 331
+            },
+            {
+              "loaded": true,
+              "width": 331
+            },
+            {
+              "loaded": true,
+              "width": 331
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "learn",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/guides",
+            "/lexiko"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 691
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "difference",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/trust#documents",
+            "/trust#ai",
+            "/privacy",
+            "/trust",
+            "/compare"
+          ],
+          "images": [],
+          "violations": []
+        }
+      ],
+      "errors": [],
+      "keyboard": true
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "route": "/",
+      "theme": "light",
+      "evidence": [
+        {
+          "id": "reading-demo",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "solutions",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/auth/signup?role=policyholder&source=landing_audience",
+            "/solutions/agents"
+          ],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "insurance-categories",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/product/motor",
+            "/product/property",
+            "/product/health",
+            "/product/business",
+            "/product"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 460
+            },
+            {
+              "loaded": true,
+              "width": 460
+            },
+            {
+              "loaded": true,
+              "width": 460
+            },
+            {
+              "loaded": true,
+              "width": 460
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "learn",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/guides",
+            "/lexiko"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 491
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "difference",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/trust#documents",
+            "/trust#ai",
+            "/privacy",
+            "/trust",
+            "/compare"
+          ],
+          "images": [],
+          "violations": []
+        }
+      ],
+      "errors": [],
+      "keyboard": true
+    },
+    {
+      "name": "tablet-small",
+      "width": 768,
+      "route": "/",
+      "theme": "light",
+      "evidence": [
+        {
+          "id": "reading-demo",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "solutions",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/auth/signup?role=policyholder&source=landing_audience",
+            "/solutions/agents"
+          ],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "insurance-categories",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/product/motor",
+            "/product/property",
+            "/product/health",
+            "/product/business",
+            "/product"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 345
+            },
+            {
+              "loaded": true,
+              "width": 345
+            },
+            {
+              "loaded": true,
+              "width": 345
+            },
+            {
+              "loaded": true,
+              "width": 345
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "learn",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/guides",
+            "/lexiko"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 368
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "difference",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/trust#documents",
+            "/trust#ai",
+            "/privacy",
+            "/trust",
+            "/compare"
+          ],
+          "images": [],
+          "violations": []
+        }
+      ],
+      "errors": [],
+      "keyboard": true
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "route": "/",
+      "theme": "light",
+      "evidence": [
+        {
+          "id": "reading-demo",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "solutions",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/auth/signup?role=policyholder&source=landing_audience",
+            "/solutions/agents"
+          ],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "insurance-categories",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/product/motor",
+            "/product/property",
+            "/product/health",
+            "/product/business",
+            "/product"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 342
+            },
+            {
+              "loaded": true,
+              "width": 342
+            },
+            {
+              "loaded": true,
+              "width": 342
+            },
+            {
+              "loaded": true,
+              "width": 342
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "learn",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/guides",
+            "/lexiko"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 390
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "difference",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/trust#documents",
+            "/trust#ai",
+            "/privacy",
+            "/trust",
+            "/compare"
+          ],
+          "images": [],
+          "violations": []
+        }
+      ],
+      "errors": [],
+      "keyboard": true
+    },
+    {
+      "name": "small",
+      "width": 320,
+      "route": "/",
+      "theme": "light",
+      "evidence": [
+        {
+          "id": "reading-demo",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "solutions",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/auth/signup?role=policyholder&source=landing_audience",
+            "/solutions/agents"
+          ],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "insurance-categories",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/product/motor",
+            "/product/property",
+            "/product/health",
+            "/product/business",
+            "/product"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 272
+            },
+            {
+              "loaded": true,
+              "width": 272
+            },
+            {
+              "loaded": true,
+              "width": 272
+            },
+            {
+              "loaded": true,
+              "width": 272
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "learn",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/guides",
+            "/lexiko"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 320
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "difference",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/trust#documents",
+            "/trust#ai",
+            "/privacy",
+            "/trust",
+            "/compare"
+          ],
+          "images": [],
+          "violations": []
+        }
+      ],
+      "errors": [],
+      "keyboard": true
+    },
+    {
+      "name": "english",
+      "width": 320,
+      "route": "/en",
+      "theme": "light",
+      "evidence": [
+        {
+          "id": "reading-demo",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "solutions",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/auth/signup?role=policyholder&source=landing_audience&lang=en",
+            "/en/solutions/agents"
+          ],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "insurance-categories",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/en/product/motor",
+            "/en/product/property",
+            "/en/product/health",
+            "/en/product/business",
+            "/en/product"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 272
+            },
+            {
+              "loaded": true,
+              "width": 272
+            },
+            {
+              "loaded": true,
+              "width": 272
+            },
+            {
+              "loaded": true,
+              "width": 272
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "learn",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/en/guides",
+            "/en/lexiko"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 320
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "difference",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/en/trust#documents",
+            "/en/trust#ai",
+            "/en/privacy",
+            "/en/trust",
+            "/en/compare"
+          ],
+          "images": [],
+          "violations": []
+        }
+      ],
+      "errors": [],
+      "keyboard": true
+    },
+    {
+      "name": "dark",
+      "width": 1440,
+      "route": "/en",
+      "theme": "dark",
+      "evidence": [
+        {
+          "id": "reading-demo",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "solutions",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/auth/signup?role=policyholder&source=landing_audience&lang=en",
+            "/en/solutions/agents"
+          ],
+          "images": [],
+          "violations": []
+        },
+        {
+          "id": "insurance-categories",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/en/product/motor",
+            "/en/product/property",
+            "/en/product/health",
+            "/en/product/business",
+            "/en/product"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 331
+            },
+            {
+              "loaded": true,
+              "width": 331
+            },
+            {
+              "loaded": true,
+              "width": 331
+            },
+            {
+              "loaded": true,
+              "width": 331
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "learn",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/en/guides",
+            "/en/lexiko"
+          ],
+          "images": [
+            {
+              "loaded": true,
+              "width": 691
+            }
+          ],
+          "violations": []
+        },
+        {
+          "id": "difference",
+          "pageOverflow": false,
+          "clipped": [],
+          "links": [
+            "/en/trust#documents",
+            "/en/trust#ai",
+            "/en/privacy",
+            "/en/trust",
+            "/en/compare"
+          ],
+          "images": [],
+          "violations": []
+        }
+      ],
+      "errors": [],
+      "keyboard": true
+    }
+  ],
+  "noJs": true,
+  "normalMotionReplay": true,
+  "destinations": [
+    "/product/motor",
+    "/product/property",
+    "/product/health",
+    "/product/business",
+    "/product",
+    "/guides",
+    "/lexiko",
+    "/trust#documents",
+    "/trust#ai",
+    "/privacy",
+    "/solutions/agents",
+    "/en/product/motor",
+    "/en/product/property",
+    "/en/product/health",
+    "/en/product/business",
+    "/en/product",
+    "/en/guides",
+    "/en/lexiko",
+    "/en/trust#documents",
+    "/en/trust#ai",
+    "/en/privacy",
+    "/en/solutions/agents"
+  ]
+}
