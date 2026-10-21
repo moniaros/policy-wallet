@@ -26,38 +26,38 @@ import { CATEGORY_NAME, COMPARISON_COLUMNS, COMPARISON_ROWS, PRIMARY_ACTION, pic
  */
 export const NOT_CONFUSABLES: readonly { q: Bilingual; a: Bilingual }[] = [
     {
-        q: { el: "Portal ασφαλιστικής εταιρείας;", en: "An insurer's portal?" },
+        q: { el: "Εφαρμογή ασφαλιστικής εταιρείας;", en: "An insurer's portal?" },
         a: {
-            el: "Όχι. Ένα portal σάς δείχνει μόνο τα ασφαλιστήρια μίας εταιρείας. Εμείς διαβάζουμε όλα σας τα ασφαλιστήρια, από όποια εταιρεία κι αν είναι — και δεν μας πληρώνει καμία.",
-            en: "No. An insurer's portal shows you one company's policies only. We read all your policies, from any company — and no company pays us.",
+            el: "Μια εφαρμογή ασφαλιστικής συνήθως δείχνει τα ασφαλιστήρια που έχετε σε εκείνη. Στο PolicyWallet συγκεντρώνετε έγγραφα από διαφορετικές εταιρείες.",
+            en: "An insurer's app usually shows the policies you hold with that insurer. PolicyWallet brings together documents from different companies.",
         },
     },
     {
         q: { el: "Ιστότοπος σύγκρισης τιμών;", en: "A price-comparison site?" },
         a: {
-            el: "Όχι. Τα site συγκρίσεων πουλάνε νέα ασφαλιστήρια με προμήθεια. Εμείς δεν πουλάμε κανένα ασφαλιστήριο — αναλύουμε αυτά που ήδη έχετε.",
-            en: "No. Comparison sites sell new policies on commission. We sell no policies — we analyze the ones you already own.",
+            el: "Οι ιστοσελίδες σύγκρισης βοηθούν να συγκρίνετε προσφορές. Το PolicyWallet εξηγεί τα ασφαλιστήρια που ήδη έχετε και δεν πουλά νέα ασφάλιση.",
+            en: "Comparison websites help you compare offers. PolicyWallet explains policies you already hold and does not sell new insurance.",
         },
     },
     {
         q: { el: "Εφαρμογή αποθήκευσης εγγράφων;", en: "A document-storage app?" },
         a: {
-            el: "Όχι. Η αποθήκευση είναι το πρώτο λεπτό, όχι το προϊόν. Το προϊόν είναι η απάντηση: πού είστε καλυμμένοι και πού όχι.",
-            en: "No. Storage is the first minute, not the product. The product is the answer: where you are covered and where you are not.",
+            el: "Αποθηκεύετε τα έγγραφα και βλέπετε μια εξήγηση των καλύψεων, των ποσών και των ημερομηνιών που αναφέρουν.",
+            en: "Store your documents and see an explanation of the cover, amounts and dates they describe.",
         },
     },
     {
         q: { el: "Ψηφιακό πορτοφόλι;", en: "A digital wallet?" },
         a: {
-            el: "Όχι — παρά το όνομά μας. Δεν κρατάμε κάρτες, χρήματα ή πληρωμές. Κρατάμε τη συνολική εικόνα του ρίσκου σας, διαβασμένη από τα ίδια σας τα ασφαλιστήρια.",
-            en: "No — despite our name. We hold no cards, money, or payments. We hold the full picture of your risk, read from your own policies.",
+            el: "Δεν φυλάσσουμε χρήματα και δεν κάνουμε πληρωμές για λογαριασμό σας. Το «πορτοφόλι» εδώ είναι ο χώρος όπου οργανώνετε τα ασφαλιστήριά σας.",
+            en: "We do not hold money or make payments on your behalf. Here, your wallet is the place where you organise your insurance policies.",
         },
     },
     {
-        q: { el: "CRM για ασφαλιστικά γραφεία;", en: "A CRM for insurance agencies?" },
+        q: { el: "Εργαλείο διαχείρισης πελατών για ασφαλιστές;", en: "A CRM for insurance agencies?" },
         a: {
-            el: "Όχι. Είμαστε το εργαλείο του ασφαλισμένου. Οι ασφαλιστές που δουλεύουν μαζί μας βλέπουν το πορτοφόλι ενός πελάτη μόνο αν εκείνος επιλέξει να το μοιραστεί.",
-            en: "No. We are the policyholder's tool. Agents who work with us see a client's own wallet only if the client chooses to share it.",
+            el: "Υπάρχει χώρος για εσάς και εργαλεία για ασφαλιστές. Οι ασφαλιστές βλέπουν έγγραφα που διαχειρίζονται για πελάτες ή που τους κοινοποιείτε, ανάλογα με τη σχέση και τα δικαιώματά τους.",
+            en: "There is a space for you and tools for advisers. Advisers see documents they manage for clients or that you share, depending on their relationship and permissions.",
         },
     },
 ]
@@ -67,8 +67,8 @@ export const CATEGORY_ANSWER: { q: Bilingual; a: (locale: MarketingLocale) => st
     q: { el: "Τι είναι τότε το PolicyWallet;", en: "What is PolicyWallet then?" },
     a: (locale) =>
         locale === "el"
-            ? `Είμαστε κάτι που δεν υπήρχε: η ${CATEGORY_NAME.el}. Διαβάζουμε τις ασφάλειές σας και σας λέμε αν είστε καλυμμένοι.`
-            : `We are something that did not exist: the ${CATEGORY_NAME.en}. We read your insurance and tell you if you are covered.`,
+            ? `Το PolicyWallet είναι μια ${CATEGORY_NAME.el}. Συγκεντρώνετε τα έγγραφά σας και καταλαβαίνετε πιο εύκολα τι αναφέρουν.`
+            : `PolicyWallet is an ${CATEGORY_NAME.en}. Bring your documents together and understand more easily what they say.`,
 }
 
 export function CompareSections({ locale }: { locale: MarketingLocale }) {
@@ -84,8 +84,8 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                     </h1>
                     <p className="mx-auto max-w-[640px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                         {t(
-                            "Καλή ερώτηση. Να η απάντηση, χωρίς ωραιοποιήσεις: ο ασφαλιστής σας κάνει πολλά καλά. Απλώς πληρώνεται από την εταιρεία που σας πουλάει το ασφαλιστήριο.",
-                            "Fair question. Here is the honest answer: your agent does a lot of things well. They are just paid by the company that sells you the policy.",
+                            "Ο ασφαλιστής σας μπορεί να εξηγήσει τους όρους και να σας συμβουλεύσει. Το PolicyWallet σάς βοηθά να έχετε τα έγγραφα και τις ερωτήσεις σας έτοιμα για αυτή τη συζήτηση.",
+                            "Your insurance adviser can explain the terms and give advice. PolicyWallet helps you have your documents and questions ready for that conversation.",
                         )}
                     </p>
                 </div>
@@ -203,14 +203,14 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                         id="compare-honest-heading"
                         className="mb-8 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white"
                     >
-                        {t("Και τώρα το δίκαιο μέρος", "Now the fair part")}
+                        {t("Πώς συνεργάζεστε με τον ασφαλιστή σας", "Now the fair part")}
                     </h2>
 
                     <div className="space-y-6 text-lead leading-[1.7] text-[#334155] dark:text-slate-300">
                         <p>
                             {t(
-                                "Ένας καλός ασφαλιστής αξίζει πολλά. Ξέρει την αγορά, σηκώνει το τηλέφωνο όταν έχετε ζημιά και έχει δει εκατοντάδες περιπτώσεις σαν τη δική σας. Δεν προσπαθούμε να τον αντικαταστήσουμε.",
-                                "A good agent is worth a lot. They know the market, they pick up the phone when you have a claim, and they have seen hundreds of cases like yours. We are not trying to replace them.",
+                                "Ο ασφαλιστής σας γνωρίζει τις επιλογές της αγοράς και μπορεί να σας καθοδηγήσει όταν χρειάζεται να δηλώσετε ζημιά ή να αλλάξετε κάλυψη.",
+                                "Your insurance adviser knows the market and can guide you when you need to report a loss or change cover.",
                             )}
                         </p>
                         <p>
@@ -235,7 +235,7 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                             href={l("/solutions/agents")}
                             className="inline-flex min-h-11 items-center gap-1.5 text-body-lg font-semibold text-[#0F172A] underline-offset-4 hover:underline dark:text-white"
                         >
-                            {t("Είμαι ασφαλιστής — δείξτε μου", "I am an agent — show me")}
+                            {t("Εργαλεία για ασφαλιστές", "I am an agent — show me")}
                             <ArrowRight aria-hidden className="h-4 w-4" />
                         </Link>
                     </div>
@@ -256,8 +256,8 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                     </h2>
                     <p className="mb-10 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                         {t(
-                            "Πέντε πράγματα με τα οποία μας μπερδεύουν — και γιατί είμαστε κάτι άλλο.",
-                            "Five things we get mistaken for — and why we are something else.",
+                            "Δείτε πώς σας βοηθά και πού σταματά ο ρόλος του.",
+                            "See how it helps and where its role ends.",
                         )}
                     </p>
 

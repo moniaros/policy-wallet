@@ -18,8 +18,8 @@ export const AGENT_FAQS: { q: { el: string; en: string }; a: { el: string; en: s
             en: "Is PolicyWallet a CRM for insurance agencies?",
         },
         a: {
-            el: "Όχι. Είναι πλατφόρμα προσωπικής ανάλυσης ρίσκου: το πορτοφόλι ανήκει στον ασφαλισμένο και εσείς το βλέπετε μόνο αν εκείνος επιλέξει να το μοιραστεί. Δεν διαχειριζόμαστε το πελατολόγιό σας — διαβάζουμε τα ασφαλιστήρια των πελατών σας και σας δείχνουμε τι λέει το καθένα.",
-            en: "No. It is a personal risk intelligence platform: the wallet belongs to the policyholder, and you see it only if they choose to share it. We do not manage your book — we read your clients' policies and show you what each one says.",
+            el: "Προσφέρει εργαλεία οργάνωσης πελατών και ανάγνωσης ασφαλιστηρίων. Η πρόσβαση στα έγγραφα περιορίζεται από τον ρόλο, τη σχέση με τον πελάτη και τις άδειες μέσα στην εφαρμογή.",
+            en: "It provides tools for organising clients and reading policies. Document access is limited by role, the client relationship and permissions in the app.",
         },
     },
     {
@@ -28,8 +28,8 @@ export const AGENT_FAQS: { q: { el: string; en: string }; a: { el: string; en: s
             en: "Who can see my client's data?",
         },
         a: {
-            el: "Μόνο ό,τι μοιράζεται ο πελάτης, και μόνο όσο το επιτρέπει. Την πρόσβαση τη δίνει και την ανακαλεί ο ίδιος, όποτε θέλει. Δεν πουλάμε δεδομένα και δεν τα χρησιμοποιούμε για διαφημιστική κατάρτιση προφίλ.",
-            en: "Only what the client shares, and only for as long as they allow it. They grant access and can revoke it themselves at any time. We do not sell data and do not use it for advertising profiles.",
+            el: "Η πρόσβαση ελέγχεται από τον ρόλο, τη σχέση με τον πελάτη και τις άδειες που έχουν δοθεί. Οι τεχνικοί πάροχοι περιγράφονται στην Πολιτική Απορρήτου. Δεν πουλάμε προσωπικά δεδομένα.",
+            en: "Access is controlled by role, the client relationship and granted permissions. Technical providers are described in the Privacy Policy. We do not sell personal data.",
         },
     },
     {

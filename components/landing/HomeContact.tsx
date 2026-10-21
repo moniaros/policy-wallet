@@ -61,7 +61,7 @@ export function HomeContact({ locale }: { locale: "el" | "en" }) {
             }
             setSent(true)
         } catch {
-            setError(t("Δεν φύγατε online. Ελέγξτε τη σύνδεσή σας.", "You went offline. Check your connection."))
+            setError(t("Το μήνυμα δεν στάλθηκε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο.", "You went offline. Check your connection."))
         } finally {
             setSending(false)
         }

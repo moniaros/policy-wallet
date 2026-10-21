@@ -98,7 +98,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             en: "Plans for individuals",
         },
         subtitle: {
-            el: "Από απλή οργάνωση ασφαλιστηρίων μέχρι πλήρη ανάλυση κάλυψης: κενά, λήξεις, απαντήσεις.",
+            el: "Διαλέξτε τις λειτουργίες που χρειάζεστε: οργάνωση, ανάλυση εγγράφων και υπενθυμίσεις.",
             en: "From simple policy organization to full coverage analysis: gaps, expiry dates, answers.",
         },
         plans: [
@@ -115,7 +115,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
                 features: [
                     { label: { el: "3 ασφαλιστήρια", en: "3 policies" }, included: true, highlight: true },
-                    { label: { el: "Πλήρης ανάλυση AI σε κάθε ασφαλιστήριο", en: "Full AI analysis on every policy" }, included: true, highlight: true },
+                    { label: { el: "Ανάλυση εγγράφων, εντός του ορίου του πλάνου", en: "Document analysis within the plan's allowance" }, included: true, highlight: true },
                     { label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
                     { label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
                     { label: { el: "Υπενθυμίσεις ανανέωσης", en: "Renewal reminders" }, included: false },
@@ -139,7 +139,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
                 features: [
                     { label: { el: "Έως 10 ασφαλιστήρια", en: "Up to 10 policies" }, included: true, highlight: true },
-                    { label: { el: "Πλήρης ανάλυση AI σε κάθε ασφαλιστήριο", en: "Full AI analysis on every policy" }, included: true },
+                    { label: { el: "Ανάλυση εγγράφων, εντός του ορίου του πλάνου", en: "Document analysis within the plan's allowance" }, included: true },
                     { label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
                     { label: { el: "Υπενθυμίσεις ανανέωσης (email)", en: "Renewal reminders (email)" }, included: true },
                     { label: { el: "Ανάλυση από πολλές ασφαλιστικές", en: "Multi-insurer insights" }, included: true },
@@ -246,8 +246,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "How much does PolicyWallet cost?",
                 },
                 answer: {
-                    el: "Το δωρεάν πλάνο καλύπτει τρία ασφαλιστήρια, με πλήρη ανάλυση, και δεν ζητά κάρτα. Το Plus κοστίζει €39 τον χρόνο (ή €4.99 τον μήνα) για 10 ασφαλιστήρια, και το Family €79 τον χρόνο (ή €8.99 τον μήνα) για 25. Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο. Όλες οι τιμές περιλαμβάνουν ΦΠΑ.",
-                    en: "The free plan covers three policies, with full analysis, and needs no card. Plus is €39 a year (or €4.99 a month) for 10 policies, and Family €79 a year (or €8.99 a month) for 25. Analyses are unlimited on every plan. All prices include VAT.",
+                    el: "Το δωρεάν πλάνο περιλαμβάνει έως 3 ασφαλιστήρια και δεν ζητά κάρτα. Οι τιμές, οι λειτουργίες και τα όρια επεξεργασίας των πληρωμένων πλάνων εμφανίζονται στους πίνακες αυτής της σελίδας. Η τελική χρέωση επιβεβαιώνεται πριν από την αγορά.",
+                    en: "The free plan includes up to 3 policies and requires no card. Paid plan prices, features and processing limits are shown in this page's tables. The final charge is confirmed before purchase.",
                 },
             },
             {
@@ -266,8 +266,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "Is there a yearly discount?",
                 },
                 answer: {
-                    el: "Ναι. Με την ετήσια χρέωση πληρώνετε περίπου 10 μήνες αντί για 12.",
-                    en: "Yes. On yearly billing you pay for roughly 10 months instead of 12.",
+                    el: "Αν υπάρχει όφελος με την ετήσια χρέωση, εμφανίζεται στη σύγκριση τιμών. Δείτε το συνολικό ετήσιο ποσό και συγκρίνετέ το με 12 μηνιαίες χρεώσεις του ίδιου πλάνου.",
+                    en: "Any benefit from annual billing is shown in the price comparison. Compare the total annual amount with 12 monthly payments for the same plan.",
                 },
             },
             {
@@ -466,8 +466,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "Is PolicyWallet a CRM for insurance agencies?",
                 },
                 answer: {
-                    el: "Όχι. Είναι πλατφόρμα προσωπικής ανάλυσης ρίσκου: το πορτοφόλι ανήκει στον ασφαλισμένο και εσείς το βλέπετε μόνο αν εκείνος επιλέξει να το μοιραστεί. Δεν διαχειριζόμαστε το πελατολόγιό σας — διαβάζουμε τα ασφαλιστήρια των πελατών σας και σας δείχνουμε τι λέει το καθένα.",
-                    en: "No. It is a personal risk intelligence platform: the wallet belongs to the policyholder, and you see it only if they choose to share it. We do not manage your book — we read your clients' policies and show you what each one says.",
+                    el: "Είναι εργαλείο οργάνωσης πελατών και ασφαλιστηρίων. Σας βοηθά να βρίσκετε έγγραφα, ανανεώσεις και σημεία για έλεγχο. Η πρόσβαση στα στοιχεία εξαρτάται από τον ρόλο, τη σχέση με τον πελάτη και τα δικαιώματα που ισχύουν.",
+                    en: "It is a tool for organising clients and policies. It helps you find documents, renewals and points to review. Access depends on your role, client relationship and permissions.",
                 },
             },
             {

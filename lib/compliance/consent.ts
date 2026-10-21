@@ -130,3 +130,6 @@ export function emitConsentChanged(categories: ConsentCategories) {
     if (typeof window === "undefined") return
     window.dispatchEvent(new CustomEvent<ConsentCategories>(CONSENT_CHANGED_EVENT, { detail: categories }))
 }
+
+/** Reopen the existing consent sheet without changing the current consent. */
+export const COOKIE_PREFERENCES_EVENT = "pw:cookie-preferences"

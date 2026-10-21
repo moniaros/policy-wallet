@@ -22,29 +22,29 @@ export function ClearLimits({ locale }: { locale: MarketingLocale }) {
         {
             title: t("Δεν είμαστε ο σύμβουλός σας", "We are not your adviser"),
             body: t(
-                "Σας λέμε τι γράφει το ασφαλιστήριό σας και τι λείπει από αυτό. Δεν είναι ρυθμιζόμενη ασφαλιστική συμβουλή, και δεν αντικαθιστά τον ασφαλιστή σας — τον κάνει πιο χρήσιμο, γιατί πηγαίνετε ξέροντας τι να ρωτήσετε.",
-                "We tell you what your policy says and what is missing from it. That is not regulated insurance advice, and it does not replace your agent — it makes them more useful, because you arrive knowing what to ask.",
+                "Εξηγούμε τι αναφέρουν τα έγγραφά σας και σημειώνουμε όσα χρειάζονται έλεγχο. Για το αν μια ασφάλιση ταιριάζει στις ανάγκες σας, μιλήστε με τον ασφαλιστή σας.",
+                "We explain what your documents say and flag points to check. Speak to your insurance adviser about whether cover suits your needs.",
             ),
         },
         {
             title: t("Διαβάζουμε μόνο ό,τι είναι γραμμένο", "We only read what is written"),
             body: t(
-                "Αν κάτι σας το υποσχέθηκαν προφορικά αλλά δεν μπήκε στο ασφαλιστήριο, δεν μπορούμε να το δούμε — και δεν θα το δει ούτε η ασφαλιστική την ώρα της αποζημίωσης.",
-                "If something was promised to you verbally but never made it into the contract, we cannot see it — and neither will the insurer at the moment of a claim.",
+                "Η ανάλυση βασίζεται στα έγγραφα που ανεβάζετε. Αν υπάρχει διαφορετική συμφωνία ή μεταγενέστερη αλλαγή, ζητήστε γραπτή επιβεβαίωση από την ασφαλιστική σας.",
+                "The analysis uses the documents you upload. If there is another agreement or a later change, ask your insurer for written confirmation.",
             ),
         },
         {
-            title: t("Δεν στέλνουμε τα δεδομένα σας πουθενά", "We send your data nowhere"),
+            title: t("Ελέγχετε την κοινοποίηση των στοιχείων σας", "You control how you share your information"),
             body: t(
-                "Καμία ασφαλιστική δεν βλέπει τι ανεβάσατε. Κανένας ασφαλιστής δεν βλέπει το πορτοφόλι σας αν δεν του δώσετε εσείς πρόσβαση, και μπορείτε να την πάρετε πίσω όποτε θέλετε.",
-                "No insurance company sees what you uploaded. No agent sees your file unless you give them access, and you can take it back whenever you want.",
+                "Επιλέγετε τι μοιράζεστε με τον ασφαλιστή σας. Τεχνικοί πάροχοι επεξεργάζονται στοιχεία για να λειτουργεί η υπηρεσία, όπως εξηγούμε στην Πολιτική Απορρήτου.",
+                "You choose what to share with your adviser. Technical providers process data to operate the service, as explained in our Privacy Policy.",
             ),
         },
         {
             title: t("Δεν σας βαθμολογούμε στα τυφλά", "We do not grade you blind"),
             body: t(
-                "Όταν δεν ξέρουμε κάτι, το λέμε αντί να το μαντέψουμε. Ένας κίνδυνος που εξαρτάται από στοιχεία που δεν μας έχετε δώσει μένει «χρειάζεται έλεγχος» — δεν γίνεται κενό που δεν επιβεβαιώσαμε ποτέ.",
-                "When we do not know something, we say so instead of guessing. A risk that depends on facts you have not given us stays “needs review” — it does not become a gap we never confirmed.",
+                "Όταν λείπει μια πληροφορία, αυτό δεν σημαίνει ότι λείπει και η κάλυψη. Το αποτέλεσμα χρειάζεται έλεγχο μαζί με το ασφαλιστήριο.",
+                "Missing information does not mean missing cover. Check the result against the policy.",
             ),
         },
     ]

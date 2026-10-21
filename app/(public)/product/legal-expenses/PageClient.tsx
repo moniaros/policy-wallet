@@ -48,7 +48,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
         {
             titleEl: "Ποσά κάτω από το ελάχιστο όριο",
             titleEn: "Amounts below the minimum threshold",
-            descEl: "Πολλά προγράμματα ορίζουν ελάχιστο ποσό για να καλυφθεί μια διαφωνία και ανώτατο όριο εξόδων ανά υπόθεση. Τα ψιλά γράμματα εδώ κρίνουν τα πάντα.",
+            descEl: "Ελέγξτε αν υπάρχει ελάχιστο ποσό διαφοράς και μέχρι πόσα έξοδα καλύπτει το πρόγραμμα για κάθε υπόθεση.",
             descEn: "Many plans set a minimum dispute value and a per-case cost cap. The fine print here decides everything.",
         },
     ]
@@ -63,7 +63,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                         {t("«Έχω νομική προστασία.» Ξέρετε, όμως, για τι;", "“I have legal cover.” But do you know for what?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Η νομική προστασία πληρώνει δικηγόρους, δικαστικά έξοδα και πραγματογνώμονες — αλλά μόνο για τις κατηγορίες διαφορών που γράφει το ασφαλιστήριο. Δείτε τις δικές σας, όχι τις υποθετικές.", "Legal expenses insurance pays for lawyers, court costs and expert witnesses — but only for the dispute categories written in your policy. See yours, not the hypothetical ones.")}
+                        {t("Η νομική προστασία μπορεί να καλύπτει αμοιβές δικηγόρων και άλλα έξοδα για συγκεκριμένες υποθέσεις. Δείτε ποιες περιλαμβάνει το δικό σας ασφαλιστήριο.", "Legal expenses insurance may cover lawyers' fees and other costs for specified disputes. Check which ones your policy includes.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -91,7 +91,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                     <div className="grid gap-8 lg:grid-cols-2">
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
                             <h3 className="text-body font-bold text-[#166534] dark:text-brand-accent uppercase tracking-wider mb-6">
-                                {t("Συνήθως καλύπτεται", "Typically covered")}
+                                {t("Ενδεικτικές καλύψεις", "Examples of cover")}
                             </h3>
                             <ul className="space-y-6">
                                 {typicallyCovered.map((item) => (
@@ -129,7 +129,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                     </div>
 
                     <p className="mt-10 max-w-[820px] text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                        {t("Στείλτε μας το ασφαλιστήριό σας. Θα δείτε δύο καθαρές στήλες: τι καλύπτεται και τι όχι. Με τα όρια, τις αναμονές και τα ελάχιστα ποσά, σε απλά ελληνικά.", "Send us your policy. You will see two clear columns: what is covered and what is not. With the limits, the waiting periods and the minimum amounts, in plain words.")}
+                        {t("Ανεβάστε το ασφαλιστήριο και δείτε τις κατηγορίες υποθέσεων, τα όρια και τις περιόδους αναμονής που αναφέρει.", "Upload the policy to see the types of dispute, limits and waiting periods it describes.")}
                     </p>
                 </div>
             </section>

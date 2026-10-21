@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { getCookieBannerCopy } from "@/components/compliance/cookie-banner-copy"
 import {
     CONSENT_COOKIE_NAME,
+    COOKIE_PREFERENCES_EVENT,
     DEFAULT_CATEGORIES,
     DEFAULT_COOKIE_MAX_AGE_SECONDS,
     LEGAL_POLICY_VERSIONS,
@@ -74,6 +75,17 @@ function CookieConsentBannerInner() {
         if (existingConsent.categories) {
             setCategories(existingConsent.categories)
         }
+    }, [])
+
+    useEffect(() => {
+        const openPreferences = () => {
+            setCategories(readConsentFromDocument()?.categories ?? DEFAULT_CATEGORIES)
+            setExpanded(true)
+            setVisible(true)
+            requestAnimationFrame(() => bannerRef.current?.querySelector<HTMLButtonElement>("button")?.focus())
+        }
+        window.addEventListener(COOKIE_PREFERENCES_EVENT, openPreferences)
+        return () => window.removeEventListener(COOKIE_PREFERENCES_EVENT, openPreferences)
     }, [])
 
     /**

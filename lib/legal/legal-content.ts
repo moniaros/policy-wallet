@@ -44,24 +44,21 @@ type LegalContent = {
     subprocessors: LegalDocument
 }
 
-export const LEGAL_CONTENT_VERSION = "GR-GA-2026.03"
-export const LEGAL_LAST_UPDATED = "March 2, 2026"
+export const LEGAL_CONTENT_VERSION = "GR-GA-2026.10.21"
+export const LEGAL_LAST_UPDATED = "October 21, 2026"
 
 /**
- * Per-document header-meta overrides: each legal document carries its own
- * revision + ISO date, which the renderer formats per locale. The shared
- * LEGAL_CONTENT_VERSION above is deliberately NOT bumped when a document's
- * text changes — it is what every terms/privacy consent row is stamped with
- * (lib/compliance/consent.ts), so moving it would rewrite the meaning of
- * already-recorded consents.
+ * Current displayed revision and version for future terms/privacy consent rows.
+ * Existing rows retain their recorded version; no historical consent is rewritten.
+ * Prior text is archived in docs/archive/legal-content-before-2026-10-21.ts.txt.
  */
 export const LEGAL_DOC_META: Partial<
     Record<LegalDocumentKind, { version: string; lastUpdatedIso: string }>
 > = {
-    terms: { version: "GR-GA-2026.09.2", lastUpdatedIso: "2026-09-06" },
-    privacy: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-20" },
-    cookies: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
-    subprocessors: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
+    terms: { version: "GR-GA-2026.10.21", lastUpdatedIso: "2026-10-21" },
+    privacy: { version: "GR-GA-2026.10.21", lastUpdatedIso: "2026-10-21" },
+    cookies: { version: "GR-GA-2026.10.21", lastUpdatedIso: "2026-10-21" },
+    subprocessors: { version: "GR-GA-2026.10.21", lastUpdatedIso: "2026-10-21" },
 }
 
 const EL = LEGAL_ENTITY.el
@@ -77,13 +74,13 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
             openTerms: "Όροι Χρήσης",
             openPrivacy: "Πολιτική Απορρήτου",
             openCookies: "Πολιτική Cookies",
-            openSubprocessors: "Υπο-εκτελούντες Επεξεργασίας",
+            openSubprocessors: "Εταιρείες που επεξεργάζονται δεδομένα",
         },
         terms: {
             title: "Όροι Χρήσης",
             intro: [
-                "Οι παρόντες Όροι Χρήσης διέπουν τη χρήση της πλατφόρμας PolicyWallet από ιδιώτες ασφαλισμένους, ασφαλιστικούς διαμεσολαβητές και επισκέπτες. Διαβάστε τους προσεκτικά πριν δημιουργήσετε λογαριασμό — η δημιουργία λογαριασμού ή η χρήση οποιασδήποτε λειτουργίας σημαίνει ότι τους αποδέχεστε.",
-                "Αν δεν συμφωνείτε με τους όρους, μη χρησιμοποιείτε την υπηρεσία.",
+                "Οι όροι αυτοί εξηγούν πώς χρησιμοποιείτε το PolicyWallet, τι προσφέρει η υπηρεσία και ποια δικαιώματα και υποχρεώσεις έχετε. Αφορούν επισκέπτες, ιδιώτες και ασφαλιστές. Κατά την εγγραφή σας ζητάμε να τους διαβάσετε και να τους αποδεχθείτε.",
+                "These terms explain how to use PolicyWallet, what the service offers and your rights and responsibilities. They cover visitors, individuals and insurance professionals. We ask you to read and accept them when registering.",
             ],
             sections: [
                 {
@@ -96,19 +93,19 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "service_scope",
-                    title: "2. Τι είναι — και τι δεν είναι — το PolicyWallet",
+                    title: "2. Τι προσφέρει το PolicyWallet",
                     paragraphs: [
                         "Το PolicyWallet είναι εργαλείο οργάνωσης και πληροφόρησης: αποθηκεύετε τα ασφαλιστήριά σας σε ένα μέρος, τα αναλύετε με τεχνητή νοημοσύνη, βλέπετε καλύψεις, πιθανά κενά κάλυψης και υπενθυμίσεις ανανέωσης, και — εφόσον το επιλέξετε — μοιράζεστε στοιχεία με τον ασφαλιστικό σας διαμεσολαβητή.",
-                        "Το PolicyWallet ΔΕΝ είναι ασφαλιστική επιχείρηση και ΔΕΝ ασκεί διανομή ασφαλιστικών προϊόντων: δεν παρέχει ασφαλιστικές συμβουλές, δεν προτείνει ούτε προωθεί συγκεκριμένα ασφαλιστικά προϊόντα και δεν διαμεσολαβεί στη σύναψη ή τη διαχείριση ασφαλιστικών συμβάσεων κατά την έννοια της Οδηγίας (ΕΕ) 2016/97 (IDD) και του ν. 4583/2018.",
+                        "Το PolicyWallet δεν είναι ασφαλιστική εταιρεία. Δεν εκδίδει ασφαλιστήρια, δεν πουλά ασφάλιση και δεν εισπράττει ασφάλιστρα. Οργανώνει τα έγγραφα που ανεβάζετε και εξηγεί τις πληροφορίες τους. Για εξατομικευμένη ασφαλιστική συμβουλή, απευθυνθείτε σε αδειοδοτημένο ασφαλιστικό διαμεσολαβητή.",
                         "Οι πληροφορίες που εμφανίζει η πλατφόρμα δεν υποκαθιστούν το ασφαλιστήριό σας ούτε τη συμβουλή αδειοδοτημένου διαμεσολαβητή ή της ασφαλιστικής σας εταιρείας.",
                     ],
                 },
                 {
                     id: "data_neutrality",
-                    title: "3. Δέσμευση ουδετερότητας: πού ΔΕΝ πηγαίνουν τα δεδομένα σας",
+                    title: "3. Πώς χρησιμοποιούμε και κοινοποιούμε τα στοιχεία σας",
                     paragraphs: [
-                        "Δεν πουλάμε, δεν μοιραζόμαστε και δεν διαβιβάζουμε δεδομένα ασφαλισμένων ή χαρτοφυλακίου σε ασφαλιστικές εταιρείες, τράπεζες ή τρίτα ασφαλιστικά πρακτορεία. Η δέσμευση αυτή αποτελεί συμβατικό όρο και όχι απλή διαβεβαίωση μάρκετινγκ.",
-                        "Η μόνη εξαίρεση είναι όσα επιλέγετε εσείς: αν συνδέσετε ρητά τον δικό σας διαμεσολαβητή, βλέπει ακριβώς ό,τι του παραχωρήσατε και μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.",
+                        "Δεν πουλάμε προσωπικά δεδομένα σε ασφαλιστικές εταιρείες, τράπεζες ή άλλους τρίτους. Χρησιμοποιούμε τεχνικούς παρόχους για να λειτουργεί η υπηρεσία, όπως εξηγείται στην Πολιτική Απορρήτου και στον κατάλογο παρόχων.",
+                        "Η κοινοποίηση σε ασφαλιστή γίνεται με τα δικαιώματα πρόσβασης που ισχύουν στην πλατφόρμα. Μπορείτε να ανακαλέσετε την πρόσβαση που παραχωρήσατε. Στοιχεία μπορεί επίσης να γνωστοποιηθούν όταν υπάρχει σχετική νόμιμη υποχρέωση.",
                         "Δεν λαμβάνουμε προμήθεια από ασφαλιστικές εταιρείες. Το εισόδημά μας προέρχεται αποκλειστικά από τις συνδρομές των χρηστών, ώστε να μην έχουμε οικονομικό όφελος από το περιεχόμενο της ανάλυσης που σας παρουσιάζουμε.",
                     ],
                 },
@@ -117,15 +114,15 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "4. Λογαριασμοί και ρόλοι",
                     paragraphs: [
                         "Η υπηρεσία απευθύνεται σε ενήλικες. Κατά την εγγραφή οφείλετε να δίνετε ακριβή στοιχεία και να τα διατηρείτε ενημερωμένα.",
-                        "Είστε υπεύθυνοι για την προστασία των διαπιστευτηρίων σας και οφείλετε να μας ενημερώνετε άμεσα για κάθε μη εξουσιοδοτημένη χρήση του λογαριασμού σας.",
-                        "Η πλατφόρμα υποστηρίζει διακριτούς ρόλους (ασφαλισμένος, διαμεσολαβητής, διαχειριστής). Οι διαμεσολαβητές αποκτούν πρόσβαση σε στοιχεία πελατών αποκλειστικά μέσω ρητής συγκατάθεσης του πελάτη μέσα στην πλατφόρμα, την οποία ο πελάτης μπορεί να ανακαλέσει οποτεδήποτε.",
+                        "Κρατήστε ασφαλή τον κωδικό και τα στοιχεία σύνδεσής σας. Αν υποψιάζεστε ότι κάποιος μπήκε χωρίς άδεια, ενημερώστε μας αμέσως.",
+                        "Υπάρχουν διαφορετικοί ρόλοι: ασφαλισμένος, ασφαλιστής και διαχειριστής. Η πρόσβαση εξαρτάται από τον ρόλο, τη σχέση με τον πελάτη και τα δικαιώματα για κάθε έγγραφο. Ένας ασφαλιστής μπορεί να διαχειρίζεται και έγγραφα που ανέβασε για πελάτη του, εφόσον έχει το νόμιμο δικαίωμα και η σχέση παραμένει ενεργή στην πλατφόρμα.",
                     ],
                 },
                 {
                     id: "subscriptions",
                     title: "5. Συνδρομές, χρεώσεις, ανανέωση και ακύρωση",
                     paragraphs: [
-                        "Η βασική χρήση είναι δωρεάν για έως τρία (3) συμβόλαια. Στο δωρεάν πλάνο ο αριθμός των αναλύσεων εγγράφων δεν περιορίζεται, αλλά κάθε ανάλυση καταναλώνει από τη μηνιαία δυνατότητα επεξεργασίας του πλάνου (150.000 μονάδες επεξεργασίας ανά ημερολογιακό μήνα)· οι διαδραστικές ερωτήσεις προς τον βοηθό δεν περιλαμβάνονται στο δωρεάν πλάνο. Τα πληρωμένα πλάνα για ιδιώτες και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται στη σελίδα τιμολόγησης και επιβεβαιώνεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
+                        "Το δωρεάν πλάνο περιλαμβάνει έως τρία (3) ασφαλιστήρια. Κάθε ανάλυση χρησιμοποιεί μέρος του μηνιαίου ορίου επεξεργασίας του πλάνου· οι ερωτήσεις προς τον βοηθό δεν περιλαμβάνονται στο δωρεάν πλάνο. Στη σελίδα τιμών εμφανίζονται οι τρέχουσες δυνατότητες, τα όρια και οι χρεώσεις. Πριν από αγορά επιβεβαιώνετε την τελική τιμή, την περίοδο χρέωσης και τον ΦΠΑ όπου εφαρμόζεται. Οι πληρωμές συνδρομών γίνονται μέσω Stripe.",
                         "Οι συνδρομές ανανεώνονται αυτόματα στο τέλος κάθε περιόδου χρέωσης (μηνιαίας ή ετήσιας) μέχρι να τις ακυρώσετε.",
                         "Μπορείτε να ακυρώσετε οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας. Η ακύρωση ισχύει από το τέλος της τρέχουσας περιόδου χρέωσης — μέχρι τότε διατηρείτε πλήρη πρόσβαση στο πλάνο σας. Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.",
                         "Αν αλλάξουν οι τιμές των πλάνων, θα ενημερωθείτε εκ των προτέρων και η νέα τιμή θα ισχύσει από την επόμενη περίοδο χρέωσης.",
@@ -133,28 +130,28 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "withdrawal",
-                    title: "6. Δικαίωμα υπαναχώρησης (καταναλωτές)",
+                    title: "6. Υπαναχώρηση: αν αλλάξετε γνώμη για τη συνδρομή",
                     paragraphs: [
-                        "Αν είστε καταναλωτής, έχετε δικαίωμα να υπαναχωρήσετε από τη συνδρομή σας εντός 14 ημερολογιακών ημερών από την έναρξή της, χωρίς αιτιολογία, σύμφωνα με τον ν. 2251/1994 και την Οδηγία 2011/83/ΕΕ.",
-                        "Ξεκινώντας συνδρομή, ζητάτε την άμεση παροχή της ψηφιακής υπηρεσίας εντός της περιόδου υπαναχώρησης και συναινείτε στην άμεση εκτέλεση της σύμβασης. Αν υπαναχωρήσετε εντός των 14 ημερών, θα σας επιστραφεί το τίμημα μειωμένο αναλογικά κατά το μέρος της υπηρεσίας που είχε ήδη παρασχεθεί μέχρι τη δήλωση υπαναχώρησης.",
-                        "Για να ασκήσετε το δικαίωμα, στείλτε σχετική δήλωση στο info@policywallet.gr πριν από τη λήξη της προθεσμίας των 14 ημερών.",
+                        "Αν αγοράζετε ως καταναλωτής, μπορείτε να υπαναχωρήσετε χωρίς αιτιολογία μέσα σε 14 ημερολογιακές ημέρες από τη σύναψη της σύμβασης συνδρομής. Η υπαναχώρηση είναι διαφορετική από την απλή ακύρωση της επόμενης ανανέωσης. Ισχύουν ο ν. 2251/1994 και η Οδηγία 2011/83/ΕΕ, όπως έχουν τροποποιηθεί.",
+                        "Η αγορά συνδρομής δεν θεωρείται από μόνη της αίτημα να αρχίσει η υπηρεσία πριν λήξει η προθεσμία υπαναχώρησης. Αναλογική χρέωση για υπηρεσία που ήδη παρασχέθηκε μπορεί να ζητηθεί μόνο όταν πληρούνται οι νόμιμες προϋποθέσεις, όπως προηγούμενο ρητό αίτημά σας και η απαιτούμενη ενημέρωση. Η έναρξη χρήσης δεν καταργεί αυτόματα το δικαίωμά σας.",
+                        "Μπορείτε να δηλώσετε ξεκάθαρα ότι υπαναχωρείτε, στέλνοντας email στο info@policywallet.gr πριν λήξει η προθεσμία. Γράψτε το όνομά σας και τα στοιχεία της συνδρομής ώστε να την εντοπίσουμε. Δεν χρειάζεται να αιτιολογήσετε την απόφαση. Η επιστροφή χρημάτων γίνεται χωρίς αδικαιολόγητη καθυστέρηση και, όπου προβλέπεται, μέσα σε 14 ημέρες από την ενημέρωσή μας, με την επιφύλαξη τυχόν νόμιμης αναλογικής χρέωσης.",
                     ],
                 },
                 {
                     id: "acceptable_use",
                     title: "7. Αποδεκτή χρήση",
                     paragraphs: [
-                        "Ανεβάζετε μόνο έγγραφα που σας ανήκουν ή που έχετε νόμιμο δικαίωμα να διαχειρίζεστε — για τους διαμεσολαβητές, μόνο έγγραφα πελατών που έχουν συναινέσει μέσω της πλατφόρμας.",
+                        "Ανεβάζετε μόνο έγγραφα που σας ανήκουν ή που έχετε νόμιμο δικαίωμα να χρησιμοποιείτε. Αν ενεργείτε για άλλον, πρέπει να έχετε την κατάλληλη εξουσιοδότηση και νομική βάση, ιδίως όταν το έγγραφο περιέχει στοιχεία υγείας.",
                         "Απαγορεύεται: η χρήση της υπηρεσίας για παράνομο σκοπό· το ανέβασμα κακόβουλων αρχείων· η μαζική εξαγωγή δεδομένων (scraping) και η κακόβουλη αυτοματοποίηση· οι απόπειρες παράκαμψης των μηχανισμών ασφάλειας ή των ορίων χρήσης· και η καταχώριση προσωπικών δεδομένων τρίτων χωρίς νόμιμη βάση.",
                         "Σε περίπτωση παραβίασης μπορούμε να αναστείλουμε ή να τερματίσουμε την πρόσβασή σας, με προηγούμενη ειδοποίηση όπου αυτό είναι εφικτό.",
                     ],
                 },
                 {
                     id: "ai_disclaimer",
-                    title: "8. Αναλύσεις τεχνητής νοημοσύνης — αποποίηση",
+                    title: "8. Ανάλυση με τεχνητή νοημοσύνη και τα όριά της",
                     paragraphs: [
-                        "Οι αναλύσεις συμβολαίων, ο εντοπισμός κενών κάλυψης και οι σχετικές επισημάνσεις παράγονται από μοντέλα τεχνητής νοημοσύνης. Είναι αποκλειστικά πληροφοριακές, ενδέχεται να περιέχουν ανακρίβειες ή παραλείψεις και δεν αποτελούν ασφαλιστική, νομική ή χρηματοοικονομική συμβουλή.",
-                        "Πριν από κάθε απόφαση με ασφαλιστικές ή οικονομικές συνέπειες — όπως αλλαγή, ακύρωση ή αγορά κάλυψης — επιβεβαιώστε τα στοιχεία με το πρωτότυπο ασφαλιστήριο, την ασφαλιστική σας εταιρεία ή αδειοδοτημένο διαμεσολαβητή. Την ίδια υπενθύμιση εμφανίζουμε και μέσα στην εφαρμογή: η τεχνητή νοημοσύνη μπορεί να κάνει λάθη.",
+                        "Η τεχνητή νοημοσύνη διαβάζει και εξηγεί πληροφορίες των εγγράφων. Προκαθορισμένοι κανόνες ελέγχουν συγκεκριμένα στοιχεία και παράγουν ευρήματα για έλεγχο. Μπορεί να υπάρχουν λάθη ή παραλείψεις. Η απουσία ευρήματος δεν αποδεικνύει πλήρη κάλυψη. Τα αποτελέσματα είναι ενημερωτικά και δεν αποτελούν ασφαλιστική, νομική ή φορολογική συμβουλή.",
+                        "AI reads and explains document information. Predefined rules check specific data and produce findings for review. Errors or omissions may occur. An absence of findings does not prove complete cover. Results are informational and are not insurance, legal or tax advice.",
                     ],
                 },
                 {
@@ -178,7 +175,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "11. Περιορισμός ευθύνης",
                     paragraphs: [
                         "Η υπηρεσία παρέχεται «ως έχει» και «ως διατίθεται», στον βαθμό που το επιτρέπει η ισχύουσα νομοθεσία.",
-                        "Δεν ευθυνόμαστε για αποφάσεις που λαμβάνετε με βάση τα πληροφοριακά αποτελέσματα της πλατφόρμας (βλ. ενότητα 7), ούτε για έμμεσες ή παρεπόμενες ζημίες από τη χρήση της, στον βαθμό που ο περιορισμός αυτός επιτρέπεται από τον νόμο.",
+                        "Τα αποτελέσματα της ενότητας 8 είναι ενημερωτικά και χρειάζονται επιβεβαίωση πριν από απόφαση. Τυχόν περιορισμός ευθύνης ισχύει μόνο στον βαθμό που επιτρέπεται από τον νόμο και δεν καταργεί υποχρεωτικά δικαιώματα καταναλωτή ή ευθύνη που δεν μπορεί νόμιμα να αποκλειστεί.",
                         `Η συνολική ευθύνη του παρόχου από ή σε σχέση με τους παρόντες όρους περιορίζεται σε ${EL.liabilityCap}.`,
                         "Κανένας όρος δεν αποκλείει ούτε περιορίζει την ευθύνη μας για απάτη, δόλο, βαριά αμέλεια, θάνατο ή σωματική βλάβη, καθώς και για κάθε ευθύνη ή δικαίωμα καταναλωτή που, κατά το ελληνικό ή το ενωσιακό δίκαιο, δεν επιδέχεται συμβατικό αποκλεισμό ή περιορισμό.",
                     ],
@@ -187,8 +184,8 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "termination",
                     title: "12. Καταγγελία και διαγραφή λογαριασμού",
                     paragraphs: [
-                        "Μπορείτε να διαγράψετε τον λογαριασμό σας οποτεδήποτε μέσα από την εφαρμογή. Τυχόν ενεργή συνδρομή παραμένει σε ισχύ μέχρι το τέλος της τρέχουσας περιόδου χρέωσης, σύμφωνα με την ενότητα 4.",
-                        "Μπορούμε να αναστείλουμε ή να τερματίσουμε την πρόσβαση σε περίπτωση σοβαρής ή επανειλημμένης παραβίασης των όρων. Μετά τον τερματισμό, τα δεδομένα σας αντιμετωπίζονται σύμφωνα με την Πολιτική Απορρήτου.",
+                        "Μπορείτε να ζητήσετε διαγραφή λογαριασμού μέσα από την εφαρμογή. Κατά τη διαδικασία διαγραφής ακυρώνονται οι ενεργές συνδρομές για να σταματήσουν οι χρεώσεις. Η διαγραφή λογαριασμού και η ακύρωση της επόμενης ανανέωσης είναι διαφορετικές ενέργειες. Τυχόν δικαίωμα επιστροφής χρημάτων εξετάζεται σύμφωνα με τον νόμο και την ενότητα 6.",
+                        "You can request account deletion through the application. Active subscriptions are cancelled during the erasure process to stop billing. Deleting an account and cancelling the next renewal are different actions. Any refund entitlement is assessed under the law and section 6.",
                     ],
                 },
                 {
@@ -278,7 +275,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "no_automated_decisions",
                     title: "4. Τι δεν κάνουμε",
                     paragraphs: [
-                        "Δεν πωλούμε προσωπικά δεδομένα σε τρίτους και δεν τα χρησιμοποιούμε για διαφημιστικό profiling.",
+                        "Δεν πουλάμε προσωπικά δεδομένα και δεν τα χρησιμοποιούμε για να δημιουργούμε διαφημιστικό προφίλ σας.",
                         "Δεν λαμβάνουμε αποφάσεις αποκλειστικά με αυτοματοποιημένα μέσα που παράγουν έννομα αποτελέσματα για εσάς, κατά την έννοια του άρθρου 22 GDPR — οι αναλύσεις της πλατφόρμας είναι πληροφοριακές.",
                     ],
                 },
@@ -287,7 +284,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "5. Ανάλυση με τεχνητή νοημοσύνη",
                     paragraphs: [
                         "Η ανάλυση συμβολαίων εκτελείται μόνο εφόσον δώσετε ρητή συγκατάθεση μέσα στην εφαρμογή, με ξεχωριστή, καταγεγραμμένη ενέργεια. Μπορείτε να την ανακαλέσετε οποτεδήποτε· η ανάκληση σταματά μελλοντικές αναλύσεις και δεν επηρεάζει την αποθήκευση των εγγράφων σας.",
-                        "Για την ανάλυση, το περιεχόμενο του συμβολαίου διαβιβάζεται σε πάροχο μοντέλων τεχνητής νοημοσύνης που ενεργεί ως εκτελών την επεξεργασία για λογαριασμό μας: κατά κύριο λόγο στην Google (μοντέλα Gemini), με τις Anthropic και OpenAI διαθέσιμες ως εναλλακτικούς παρόχους. Οι όροι επεξεργασίας δεδομένων (API data processing terms) των παρόχων δεν επιτρέπουν τη χρήση των δεδομένων σας για εκπαίδευση των μοντέλων τους.",
+                        "Για την ανάλυση, το έγγραφο ή το περιεχόμενό του αποστέλλεται σε πάροχο τεχνητής νοημοσύνης. Η εφαρμογή υποστηρίζει Google Gemini, Anthropic και OpenAI· ο πάροχος εξαρτάται από τη ρύθμιση της υπηρεσίας. Οι κανόνες χρήσης, διατήρησης και επεξεργασίας περιγράφονται στους όρους των αντίστοιχων υπηρεσιών API. Δείτε και τον κατάλογο παρόχων.",
                         "Τα αποτελέσματα της ανάλυσης είναι πληροφοριακά, ενδέχεται να περιέχουν σφάλματα και δεν αποτελούν ασφαλιστική συμβουλή — δείτε αναλυτικά τους Όρους Χρήσης.",
                     ],
                 },
@@ -297,7 +294,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     paragraphs: [
                         "Χρησιμοποιούμε περιορισμένο αριθμό τεχνικών παρόχων (υπο-εκτελούντων) για τη φιλοξενία, τη βάση δεδομένων, τις πληρωμές, την αποστολή email και την ανάλυση AI. Όλοι δεσμεύονται με συμβάσεις επεξεργασίας δεδομένων κατά το άρθρο 28 GDPR και επεξεργάζονται μόνο ό,τι απαιτείται για τον ρόλο τους.",
                         "Ο πλήρης κατάλογος — με τον ρόλο, τα δεδομένα και την τοποθεσία επεξεργασίας κάθε παρόχου — δημοσιεύεται και ενημερώνεται στη σελίδα των υπο-εκτελούντων.",
-                        "Αν συνδεθείτε με ασφαλιστικό διαμεσολαβητή μέσω της πλατφόρμας, αυτός αποκτά πρόσβαση μόνο στα στοιχεία που καλύπτει η συγκατάθεσή σας. Μπορείτε να την ανακαλέσετε οποτεδήποτε από τον λογαριασμό σας — η ανάκληση καταγράφεται και ισχύει άμεσα.",
+                        "Ο ασφαλιστής βλέπει στοιχεία σύμφωνα με τη σχέση και τα δικαιώματα πρόσβασης στην πλατφόρμα. Μπορεί επίσης να έχει ανεβάσει ο ίδιος έγγραφα για λογαριασμό σας. Μπορείτε να ανακαλέσετε πρόσβαση που παραχωρήσατε. Αν θεωρείτε ότι μια πρόσβαση δεν δικαιολογείται, επικοινωνήστε μαζί μας.",
                     ],
                     link: { href: "/subprocessors", label: "Κατάλογος υπο-εκτελούντων επεξεργασίας" },
                 },
@@ -328,7 +325,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                             ],
                             [
                                 "Παραστατικά και στοιχεία χρεώσεων",
-                                "5 έτη μετά τη λήξη του οικείου φορολογικού έτους (φορολογική νομοθεσία)",
+                                "Τουλάχιστον 5 έτη από τη λήξη του σχετικού φορολογικού έτους, ή περισσότερο όπου το απαιτεί η φορολογική νομοθεσία. Η διαγραφή λογαριασμού δεν καταργεί την υποχρέωση τήρησης νόμιμων παραστατικών.",
                             ],
                             [
                                 "Αρχεία συγκαταθέσεων και αιτημάτων GDPR",
@@ -351,9 +348,9 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "gdpr_rights",
                     title: "9. Τα δικαιώματά σας και πώς τα ασκείτε",
                     paragraphs: [
-                        "Έχετε δικαίωμα πρόσβασης, διόρθωσης, διαγραφής, περιορισμού της επεξεργασίας, φορητότητας και εναντίωσης, καθώς και δικαίωμα να ανακαλέσετε οποιαδήποτε συγκατάθεση — χωρίς η ανάκληση να επηρεάζει τη νομιμότητα της προηγούμενης επεξεργασίας.",
+                        "Μπορείτε να ζητήσετε πρόσβαση ή αντίγραφο των στοιχείων σας, διόρθωση, διαγραφή ή περιορισμό της χρήσης τους. Μπορείτε επίσης να εναντιωθείτε σε ορισμένες χρήσεις και, όπου ισχύει, να λάβετε τα δεδομένα σας σε μορφή που μεταφέρεται σε άλλη υπηρεσία. Τα δικαιώματα έχουν τις προϋποθέσεις και τις εξαιρέσεις του GDPR. Μπορείτε να ανακαλέσετε συγκατάθεση χωρίς να αλλάζει η νομιμότητα της επεξεργασίας που είχε ήδη γίνει.",
                         "Μέσα από την εφαρμογή: μπορείτε να υποβάλετε αίτημα εξαγωγής των δεδομένων σας (πλήρες αντίγραφο σε μηχαναγνώσιμη μορφή) και αίτημα διαγραφής λογαριασμού. Κάθε αίτημα διεκπεραιώνεται μέσω εσωτερικής διαδικασίας GDPR με πλήρες ιστορικό ενεργειών.",
-                        `Με email: στο ${EL.dpoEmail} ή στο info@policywallet.gr. Απαντάμε το αργότερο εντός ενός μηνός, όπως προβλέπει το άρθρο 12 GDPR.`,
+                        `Με email: στο ${EL.dpoEmail} ή στο info@policywallet.gr. Σας απαντάμε χωρίς αδικαιολόγητη καθυστέρηση, κανονικά μέσα σε έναν μήνα. Αν χρειάζεται παράταση λόγω πολυπλοκότητας ή αριθμού αιτημάτων, σας ενημερώνουμε μέσα στον πρώτο μήνα για τον λόγο και την παράταση, έως δύο ακόμη μήνες.`,
                         "Αν θεωρείτε ότι η επεξεργασία παραβιάζει τη νομοθεσία, έχετε δικαίωμα να υποβάλετε καταγγελία στην Αρχή Προστασίας Δεδομένων Προσωπικού Χαρακτήρα (ΑΠΔΠΧ), Κηφισίας 1-3, 115 23 Αθήνα — www.dpa.gr.",
                     ],
                 },
@@ -362,14 +359,14 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "10. Ασφάλεια",
                     paragraphs: [
                         "Τα δεδομένα κρυπτογραφούνται κατά τη μεταφορά (TLS) και κατά την αποθήκευση. Η πρόσβαση στα συστήματα περιορίζεται βάσει ρόλου και καταγράφεται, ενώ εφαρμόζονται όρια ρυθμού αιτημάτων και λοιπά τεχνικά και οργανωτικά μέτρα.",
-                        "Κανένα σύστημα δεν είναι απολύτως ασφαλές. Αν συμβεί περιστατικό παραβίασης που ενδέχεται να σας θίξει, θα ενημερώσουμε εσάς και την ΑΠΔΠΧ σύμφωνα με τα άρθρα 33 και 34 GDPR.",
+                        "Κανένα σύστημα δεν είναι απολύτως ασφαλές. Αν παραβιαστούν προσωπικά δεδομένα, ενημερώνουμε την αρμόδια Αρχή όπου απαιτείται, χωρίς αδικαιολόγητη καθυστέρηση και, αν είναι εφικτό, μέσα σε 72 ώρες από τη γνώση του περιστατικού. Αν υπάρχει υψηλός κίνδυνος για εσάς, σας ενημερώνουμε χωρίς αδικαιολόγητη καθυστέρηση, σύμφωνα με τα άρθρα 33–34 GDPR και τις εξαιρέσεις τους.",
                     ],
                 },
                 {
                     id: "cookies_summary",
                     title: "11. Cookies",
                     paragraphs: [
-                        "Χρησιμοποιούμε cookies απολύτως απαραίτητα για τη λειτουργία της πλατφόρμας (σύνδεση, αποθήκευση των προτιμήσεων συγκατάθεσης). Cookies ανάλυσης ή marketing ενεργοποιούνται μόνο αν τα αποδεχθείτε από το σχετικό banner.",
+                        "Χρησιμοποιούμε cookies απολύτως απαραίτητα για τη λειτουργία της πλατφόρμας (σύνδεση, αποθήκευση των προτιμήσεων συγκατάθεσης). Cookies για στατιστικά χρήσης ενεργοποιούνται μόνο αν τα αποδεχθείτε στις ρυθμίσεις cookies.",
                     ],
                     link: { href: "/cookies", label: "Δείτε αναλυτικά την Πολιτική Cookies" },
                 },
@@ -433,13 +430,13 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "analytics_marketing",
-                    title: "3. Cookies ανάλυσης και marketing",
+                    title: "3. Cookies για στατιστικά χρήσης και διαφήμιση",
                     paragraphs: [
                         "Για συγκεντρωτικά στατιστικά χρήσης χρησιμοποιούμε το Google Analytics 4, ώστε να κατανοούμε ποιες σελίδες αξιοποιούνται και πού δυσκολεύονται οι χρήστες. Το Google Analytics τοποθετεί τα cookies _ga και _ga_<αναγνωριστικό container>, με τυπική διάρκεια έως 2 έτη σύμφωνα με τις προεπιλογές του Google Analytics 4.",
-                        "Τα cookies αυτά τοποθετούνται αποκλειστικά αφού αποδεχθείτε την κατηγορία «Ανάλυση» στο banner συγκατάθεσης. Πριν από τη συγκατάθεσή σας δεν φορτώνεται καθόλου ο κώδικας του Google Analytics και δεν αποστέλλεται κανένα δεδομένο στη Google.",
-                        "Η υπηρεσία είναι ρυθμισμένη με ανωνυμοποίηση διεύθυνσης IP (anonymize_ip) και με απενεργοποιημένα τα Google Signals (allow_google_signals: false), ώστε να μην πραγματοποιείται διαφημιστική στόχευση ή δημιουργία προφίλ μεταξύ συσκευών.",
-                        "Δεν χρησιμοποιούμε cookies marketing ή διαφημιστικής στόχευσης τρίτων. Η κατηγορία «Marketing» παραμένει στο banner ώστε, αν προστεθούν στο μέλλον, να ενεργοποιηθούν μόνο με τη δική σας συγκατάθεση και αφού πρώτα ενημερωθεί η παρούσα σελίδα.",
-                        "Μπορείτε να ανακαλέσετε τη συγκατάθεσή σας οποιαδήποτε στιγμή, διαγράφοντας το cookie pw_cookie_consent από το πρόγραμμα περιήγησής σας ώστε να επανεμφανιστεί το banner και να επιλέξετε εκ νέου. Με την ανάκληση σταματά η αποστολή δεδομένων στο Google Analytics και τα cookies _ga διαγράφονται.",
+                        "Το Google Analytics ενεργοποιείται μόνο αν αποδεχθείτε την κατηγορία «Ανάλυση» στη φόρμα επιλογών cookies. Πριν από αυτό δεν φορτώνουμε τον κώδικα Analytics και δεν στέλνουμε συμβάντα σε αυτή την υπηρεσία.",
+                        "Σύμφωνα με την Google, το Google Analytics δεν καταγράφει ούτε αποθηκεύει διευθύνσεις IP. Αυτό δεν σημαίνει ότι όλα τα δεδομένα χρήσης είναι ανώνυμα. Στον κώδικα της εφαρμογής τα Google Signals και η εξατομίκευση διαφημίσεων είναι απενεργοποιημένα.",
+                        "Δεν χρησιμοποιούμε cookies marketing ή διαφημιστικής στόχευσης τρίτων. Αν προστεθούν στο μέλλον, θα ενημερώσουμε πρώτα αυτή τη σελίδα και θα ζητήσουμε νέα, συγκεκριμένη συγκατάθεση πριν ενεργοποιηθούν.",
+                        "Μπορείτε να αλλάξετε ή να ανακαλέσετε την επιλογή σας από τις «Ρυθμίσεις cookies». Όταν απορρίπτετε την ανάλυση, σταματά η αποστολή συμβάντων Analytics από την εφαρμογή και διαγράφονται τα σχετικά cookies που μπορεί να διαγράψει ο ιστότοπος.",
                         "Η Google ενεργεί ως εκτελούσα την επεξεργασία για λογαριασμό μας· οι τυχόν διαβιβάσεις εκτός ΕΟΧ καλύπτονται από τις εγγυήσεις που περιγράφονται στη σελίδα Υπο-εκτελούντων Επεξεργασίας.",
                     ],
                     link: { href: "/subprocessors", label: "Δείτε τον κατάλογο υπο-εκτελούντων" },
@@ -449,21 +446,21 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "4. Πώς διαχειρίζεστε τα cookies",
                     paragraphs: [
                         "Κατά την πρώτη επίσκεψη επιλέγετε από το banner αν αποδέχεστε όλα τα cookies, μόνο τα απαραίτητα, ή προσαρμοσμένες προτιμήσεις ανά κατηγορία. Η επιλογή σας καταγράφεται με την έκδοση της πολιτικής που ίσχυε τη στιγμή της συγκατάθεσης.",
-                        "Για να αλλάξετε γνώμη, διαγράψτε το cookie pw_cookie_consent από τις ρυθμίσεις του προγράμματος περιήγησής σας — το banner θα εμφανιστεί ξανά στην επόμενη επίσκεψη. Μπορείτε επίσης να αποκλείσετε cookies συνολικά από το πρόγραμμα περιήγησης· σημειώστε ότι χωρίς τα απολύτως απαραίτητα cookies η σύνδεση στην πλατφόρμα δεν λειτουργεί.",
+                        "Ανοίξτε τις «Ρυθμίσεις cookies» για να αλλάξετε επιλογές, χωρίς να χρειάζεται να διαγράψετε cookies μόνοι σας. Μπορείτε επίσης να τα ελέγξετε από το πρόγραμμα περιήγησης. Αν αποκλείσετε τα απαραίτητα cookies σύνδεσης, ο λογαριασμός σας μπορεί να μην λειτουργεί σωστά.",
                     ],
                     link: { href: "/privacy", label: "Δείτε και την Πολιτική Απορρήτου" },
                 },
             ],
         },
         subprocessors: {
-            title: "Υπο-εκτελούντες Επεξεργασίας",
+            title: "Εταιρείες που επεξεργάζονται δεδομένα",
             intro: [
-                "Για να λειτουργεί το PolicyWallet, χρειαζόμαστε ορισμένες εταιρείες που μας παρέχουν τεχνικές υπηρεσίες. Χρησιμοποιούν προσωπικά δεδομένα για λογαριασμό μας και ονομάζονται «υπο-εκτελούντες την επεξεργασία». Εδώ βλέπετε ποιες είναι, τι κάνουν, ποια στοιχεία χρησιμοποιούν και σε ποια χώρα.",
+                "Χρησιμοποιούμε εξωτερικές εταιρείες για αποθήκευση, πληρωμές, email και άλλες τεχνικές υπηρεσίες. Παρακάτω εξηγούμε τι κάνει κάθε πάροχος και ποια στοιχεία μπορεί να χρησιμοποιεί. Ο ακριβής ρόλος κάθε εταιρείας καθορίζεται και από την αντίστοιχη σύμβαση επεξεργασίας.",
             ],
             sections: [
                 {
                     id: "subprocessor_list",
-                    title: "1. Κατάλογος υπο-εκτελούντων",
+                    title: "1. Τεχνικοί πάροχοι",
                     paragraphs: [
                         "Ισχύει κατά την ημερομηνία τελευταίας ενημέρωσης που αναγράφεται στην κορυφή της σελίδας:",
                     ],
@@ -515,7 +512,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                             [
                                 "Google (Google Analytics)",
                                 "Στατιστικά χρήσης",
-                                "Συγκεντρωτικά συμβάντα χρήσης με ανωνυμοποιημένη διεύθυνση IP — μόνο εφόσον αποδεχθείτε την κατηγορία «Ανάλυση»",
+                                "Συμβάντα χρήσης, στοιχεία συσκευής και αναγνωριστικά cookies — μόνο αν αποδεχθείτε την κατηγορία «Ανάλυση»",
                                 "ΕΕ/ΗΠΑ",
                             ],
                             [
@@ -539,7 +536,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     paragraphs: [
                         "Κάθε υπο-εκτελών δεσμεύεται με σύμβαση επεξεργασίας δεδομένων κατά το άρθρο 28 GDPR και επεξεργάζεται μόνο τα δεδομένα που απαιτούνται για τον ρόλο του.",
                         "Για παρόχους που επεξεργάζονται δεδομένα εκτός Ευρωπαϊκού Οικονομικού Χώρου, οι διαβιβάσεις καλύπτονται από το EU-U.S. Data Privacy Framework ή/και τις Τυποποιημένες Συμβατικές Ρήτρες της Ευρωπαϊκής Επιτροπής.",
-                        "Οι όροι επεξεργασίας δεδομένων των παρόχων AI δεν επιτρέπουν τη χρήση των δεδομένων σας για εκπαίδευση των μοντέλων τους.",
+                        "Για τους παρόχους τεχνητής νοημοσύνης ισχύουν οι όροι της συγκεκριμένης υπηρεσίας API, οι οποίοι περιγράφουν τη χρήση και τη διατήρηση δεδομένων. Οι όροι μιας δωρεάν εφαρμογής συνομιλίας δεν ταυτίζονται απαραίτητα με τους όρους της επαγγελματικής υπηρεσίας API.",
                     ],
                 },
                 {
@@ -584,7 +581,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "2. What PolicyWallet is — and what it is not",
                     paragraphs: [
                         "PolicyWallet is an organization and information tool: you store your insurance policies in one place, analyze them with artificial intelligence, see coverages, potential coverage gaps and renewal reminders, and — if you choose to — share information with your insurance intermediary.",
-                        "PolicyWallet is NOT an insurance undertaking and does NOT carry out insurance distribution: it does not provide insurance advice, does not recommend or promote specific insurance products, and does not mediate in the conclusion or administration of insurance contracts within the meaning of Directive (EU) 2016/97 (IDD) and Greek Law 4583/2018.",
+                        "PolicyWallet is not an insurance company. It does not issue policies, sell insurance or collect insurance premiums. It organises uploaded documents and explains their information. Consult a licensed insurance intermediary for personalised insurance advice.",
                         "The information displayed by the platform does not replace your policy document or the advice of a licensed intermediary or your insurer.",
                     ],
                 },
@@ -592,8 +589,8 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "data_neutrality",
                     title: "3. Neutrality commitment: where your data does NOT go",
                     paragraphs: [
-                        "We do not sell, share, or transfer policyholder or portfolio data to insurers, banks, or third-party agencies. This commitment is a contractual term, not a marketing assurance.",
-                        "The only exception is the one you create yourself: if you explicitly connect your own intermediary, they see exactly what you granted them, and you can revoke that access at any time.",
+                        "We do not sell personal data to insurers, banks or other third parties. We use technical providers to operate the service, as explained in the Privacy Policy and provider list.",
+                        "Sharing with an insurance adviser is governed by the platform's access permissions. You can revoke access you granted. Data may also be disclosed where legally required.",
                         "We receive no commission from insurance companies. Our revenue comes solely from user subscriptions, so we have no financial interest in what the analysis we show you says.",
                     ],
                 },
@@ -603,14 +600,14 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     paragraphs: [
                         "The service is intended for adults. When registering you must provide accurate information and keep it up to date.",
                         "You are responsible for safeguarding your credentials and must promptly notify us of any unauthorized use of your account.",
-                        "The platform supports distinct roles (policyholder, intermediary, administrator). Intermediaries gain access to client information exclusively through the client's explicit in-platform consent, which the client may revoke at any time.",
+                        "Roles include policyholder, adviser and administrator. Access depends on the role, client relationship and permissions for each document. An adviser may also manage documents uploaded for a client where legally authorised and the platform relationship has not ended.",
                     ],
                 },
                 {
                     id: "subscriptions",
                     title: "5. Subscriptions, billing, renewal and cancellation",
                     paragraphs: [
-                        "Basic use is free for up to three (3) policies. On the free plan the number of document analyses is not capped, but each analysis draws on the plan's monthly processing allowance (150,000 processing units per calendar month); interactive questions to the assistant are not included on the free plan. Paid plans for individuals and intermediary plans are billed through the payment provider Stripe, at the price shown on the pricing page and confirmed before you complete the purchase, including VAT where applicable.",
+                        "The free plan includes up to three (3) policies. Each analysis uses part of the plan's monthly processing allowance; assistant questions are not included in the free plan. The pricing page shows current features, limits and charges. Before purchasing, you confirm the final price, billing period and VAT where applicable. Subscription payments are processed through Stripe.",
                         "Subscriptions renew automatically at the end of each billing period (monthly or annual) until you cancel.",
                         "You can cancel at any time from your account settings. Cancellation takes effect at the end of the current billing period — until then you keep full access to your plan. You will not be charged for subsequent periods after cancelling.",
                         "If plan prices change, you will be notified in advance and the new price will apply from your next billing period.",
@@ -620,16 +617,16 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "withdrawal",
                     title: "6. Right of withdrawal (consumers)",
                     paragraphs: [
-                        "If you are a consumer, you have the right to withdraw from your subscription within 14 calendar days of its start, without giving any reason, under Greek Law 2251/1994 and Directive 2011/83/EU.",
-                        "By starting a subscription, you request immediate performance of the digital service within the withdrawal period and consent to the immediate execution of the contract. If you withdraw within the 14 days, you will be refunded the price reduced proportionally by the part of the service already provided up to your withdrawal notice.",
-                        "To exercise this right, send a withdrawal statement to info@policywallet.gr before the 14-day period expires.",
+                        "If you purchase as a consumer, you may withdraw without giving a reason within 14 calendar days of concluding the subscription contract. Withdrawal is different from cancelling the next renewal. Greek Law 2251/1994 and Directive 2011/83/EU, as amended, apply.",
+                        "Purchasing a subscription is not by itself a request to start the service before the withdrawal period ends. A proportional charge for service already provided may be requested only where statutory conditions are met, including your prior express request and the required information. Starting to use the service does not automatically remove your right.",
+                        "You can clearly state that you wish to withdraw by emailing info@policywallet.gr before the deadline. Include your name and subscription details so we can identify it. No reason is required. Refunds are made without undue delay and, where applicable, within 14 days of notifying us, subject to any lawful proportional charge.",
                     ],
                 },
                 {
                     id: "acceptable_use",
                     title: "7. Acceptable use",
                     paragraphs: [
-                        "Upload only documents that belong to you or that you are lawfully entitled to manage — for intermediaries, only documents of clients who have consented through the platform.",
+                        "Upload only documents you own or are legally entitled to use. If acting for someone else, you must have appropriate authorisation and a legal basis, especially where the document contains health information.",
                         "The following are prohibited: using the service for any unlawful purpose; uploading malicious files; scraping and abusive automation; attempting to circumvent security mechanisms or usage limits; and entering third parties' personal data without a lawful basis.",
                         "In case of violation we may suspend or terminate your access, with prior notice where feasible.",
                     ],
@@ -663,7 +660,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "11. Limitation of liability",
                     paragraphs: [
                         "The service is provided “as is” and “as available”, to the maximum extent permitted by applicable law.",
-                        "We are not liable for decisions you make based on the platform's informational outputs (see section 7), nor for indirect or consequential damages arising from its use, to the extent such limitation is permitted by law.",
+                        "The results in section 8 are informational and need confirmation before a decision. Any limitation of liability applies only as permitted by law and does not remove mandatory consumer rights or liability that cannot lawfully be excluded.",
                         `The provider's total liability arising out of or in connection with these terms is limited to ${EN.liabilityCap}.`,
                         "Nothing in these terms excludes or limits our liability for fraud, wilful misconduct, gross negligence, death or personal injury, or any liability or consumer right that cannot be excluded or limited by contract under Greek or EU law.",
                     ],
@@ -772,7 +769,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "5. AI analysis",
                     paragraphs: [
                         "Policy analysis runs only after you give explicit consent inside the app, through a separate, recorded action. You can revoke it at any time; revocation stops future analyses and does not affect the storage of your documents.",
-                        "For the analysis, the policy content is transmitted to an AI model provider acting as a processor on our behalf: primarily Google (Gemini models), with Anthropic and OpenAI available as alternate providers. The providers' API data-processing terms do not permit the use of your data to train their models.",
+                        "For analysis, the document or its contents are sent to an AI provider. The application supports Google Gemini, Anthropic and OpenAI; the provider depends on the service configuration. Use, retention and processing rules are described in the terms of the respective API services. See the provider list as well.",
                         "Analysis results are informational, may contain errors, and do not constitute insurance advice — see the Terms of Service for details.",
                     ],
                 },
@@ -782,7 +779,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     paragraphs: [
                         "We use a limited number of technical providers (subprocessors) for hosting, the database, payments, email delivery and AI analysis. All are bound by data processing agreements under Article 28 GDPR and process only what their role requires.",
                         "The full list — with each provider's role, data and processing location — is published and kept up to date on the subprocessors page.",
-                        "If you connect with an insurance intermediary through the platform, they gain access only to the information covered by your consent. You can revoke it at any time from your account — the revocation is recorded and takes effect immediately.",
+                        "An adviser sees information according to the relationship and access permissions in the platform. They may also have uploaded documents on your behalf. You can revoke access you granted. Contact us if you believe access is unjustified.",
                     ],
                     link: { href: "/subprocessors", label: "Subprocessors list" },
                 },
@@ -813,7 +810,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                             ],
                             [
                                 "Invoices and billing records",
-                                "5 years after the end of the relevant tax year (tax legislation)",
+                                "At least 5 years from the end of the relevant tax year, or longer where tax law requires. Account deletion does not remove the obligation to retain statutory accounting records.",
                             ],
                             [
                                 "Records of consents and GDPR requests",
@@ -830,9 +827,9 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "gdpr_rights",
                     title: "9. Your rights and how to exercise them",
                     paragraphs: [
-                        "You have the right of access, rectification, erasure, restriction of processing, portability and objection, as well as the right to withdraw any consent — without the withdrawal affecting the lawfulness of prior processing.",
+                        "You can request access or a copy of your data, correction, deletion or restriction of its use. You can also object to certain uses and, where applicable, receive data in a format transferable to another service. Rights are subject to GDPR conditions and exceptions. You may withdraw consent without affecting the lawfulness of earlier processing.",
                         "From within the app: you can submit a data export request (a full copy in machine-readable form) and an account deletion request. Every request is handled through an internal GDPR workflow with a full action history.",
-                        `By email: at ${EN.dpoEmail} or info@policywallet.gr. We respond within one month at the latest, as provided by Article 12 GDPR.`,
+                        `By email: at ${EN.dpoEmail} or info@policywallet.gr. We respond without undue delay, normally within one month. If complexity or the number of requests requires an extension, we inform you within the first month of the reason and extension, up to two additional months.`,
                         "If you believe the processing violates the law, you have the right to lodge a complaint with the Hellenic Data Protection Authority (HDPA), Kifisias 1-3, 115 23 Athens, Greece — www.dpa.gr.",
                     ],
                 },
@@ -841,7 +838,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "10. Security",
                     paragraphs: [
                         "Data is encrypted in transit (TLS) and at rest. System access is role-restricted and logged, and request rate limits and other technical and organizational measures are applied.",
-                        "No system is absolutely secure. If a breach incident likely to affect you occurs, we will notify you and the HDPA in accordance with Articles 33 and 34 GDPR.",
+                        "No system is completely secure. For a personal data breach, we notify the competent authority where required, without undue delay and, where feasible, within 72 hours of becoming aware of it. If there is a high risk to you, we inform you without undue delay, in accordance with GDPR Articles 33–34 and their exceptions.",
                     ],
                 },
                 {
@@ -915,10 +912,10 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "3. Analytics and marketing cookies",
                     paragraphs: [
                         "We use Google Analytics 4 to produce aggregate usage statistics, so that we can understand which pages are used and where users run into difficulty. Google Analytics sets the _ga and _ga_<container-id> cookies, with a typical lifetime of up to 2 years under the Google Analytics 4 defaults.",
-                        "These cookies are set only after you accept the “Analytics” category in the consent banner. Before you consent, the Google Analytics code is not loaded at all and no data is sent to Google.",
-                        "The service is configured with IP anonymisation (anonymize_ip) and with Google Signals disabled (allow_google_signals: false), so no advertising targeting or cross-device profiling takes place.",
-                        "We do not use third-party marketing or advertising-targeting cookies. The “Marketing” category remains in the banner so that, if such cookies are added in the future, they are activated only with your consent and after this page is updated first.",
-                        "You can withdraw your consent at any time by deleting the pw_cookie_consent cookie in your browser, which brings the banner back so you can choose again. On withdrawal we stop sending data to Google Analytics and the _ga cookies are deleted.",
+                        "Google Analytics is enabled only if you accept the Analytics category in the cookie choices. Before that, we do not load Analytics code or send events to that service.",
+                        "According to Google, Google Analytics does not log or store IP addresses. This does not mean all usage data is anonymous. Google Signals and advertising personalisation are disabled in the application code.",
+                        "We do not use third-party marketing or advertising-targeting cookies. If these are added in the future, we will first update this page and request new, specific consent before activating them.",
+                        "You can change or withdraw your choice through Cookie settings. When you reject analytics, the application stops sending Analytics events and deletes related cookies that the website can remove.",
                         "Google acts as a processor on our behalf; any transfers outside the EEA are covered by the safeguards described on our Subprocessors page.",
                     ],
                     link: { href: "/subprocessors", label: "See the subprocessors list" },
@@ -928,7 +925,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "4. Managing cookies",
                     paragraphs: [
                         "On your first visit you choose via the banner whether to accept all cookies, only the necessary ones, or custom preferences per category. Your choice is recorded together with the policy version in force at the time of consent.",
-                        "To change your mind, delete the pw_cookie_consent cookie in your browser settings — the banner will reappear on your next visit. You can also block cookies entirely in your browser; note that without the strictly necessary cookies, signing in to the platform will not work.",
+                        "Open Cookie settings to change your choices without manually deleting cookies. You can also control them through your browser. Blocking essential sign-in cookies may prevent your account from working correctly.",
                     ],
                     link: { href: "/privacy", label: "See also the Privacy Policy" },
                 },
@@ -937,7 +934,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
         subprocessors: {
             title: "Subprocessors",
             intro: [
-                "To operate PolicyWallet we work with a limited number of technical providers that process personal data on our behalf (subprocessors). This page lists who they are, what role they play, what data they touch, and where they process it.",
+                "We use external companies for storage, payments, email and other technical services. Below we explain what each provider does and which data it may use. Each company's exact role also depends on the applicable processing agreement.",
             ],
             sections: [
                 {
@@ -994,7 +991,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                             [
                                 "Google (Google Analytics)",
                                 "Usage analytics",
-                                "Aggregate usage events with IP anonymisation — only if you accept the “Analytics” category",
+                                "Usage events, device information and cookie identifiers — only if you accept the Analytics category",
                                 "EU/US",
                             ],
                             [
@@ -1018,7 +1015,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     paragraphs: [
                         "Every subprocessor is bound by a data processing agreement under Article 28 GDPR and processes only the data its role requires.",
                         "For providers processing data outside the European Economic Area, transfers are covered by the EU-U.S. Data Privacy Framework and/or the European Commission's Standard Contractual Clauses.",
-                        "The AI providers' data-processing terms do not permit the use of your data to train their models.",
+                        "AI providers are governed by the terms of the specific API service, which describe data use and retention. The terms of a free chat application are not necessarily the same as those of a commercial API service.",
                     ],
                 },
                 {

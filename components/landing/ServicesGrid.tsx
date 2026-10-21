@@ -18,13 +18,13 @@ interface ServicesGridProps {
 const services = [
     {
         Icon: ScanSearch,
-        titleEl: "Τι δεν καλύπτεστε;",
-        titleEn: "What are you not covered for?",
+        titleEl: "Τι χρειάζεται έλεγχο;",
+        titleEn: "What needs checking?",
         // Gap detection is Plus-only — the tier is named, same rule as the
         // advisor-sharing card below.
-        descEl: "Βρίσκουμε τι λείπει από την κάλυψή σας πριν το χρειαστείτε — με το πλάνο Family. Διαβάζουμε κάθε σελίδα για εσάς.",
-        descEn: "We find what your cover is missing before you need it — on the Family plan. We read every page for you.",
-        benefitEl: "Το μαθαίνετε σήμερα, όχι μετά",
+        descEl: "Με το Family, δείτε σημεία που χρειάζονται προσοχή στα έγγραφά σας. Επιβεβαιώστε τα με το ασφαλιστήριο και τον ασφαλιστή σας.",
+        descEn: "With Family, see points that need attention in your documents. Confirm them against the policy and with your adviser.",
+        benefitEl: "Προετοιμαστείτε για τη συζήτηση",
         benefitEn: "You find out today, not later",
         wide: true,
     },
@@ -32,8 +32,8 @@ const services = [
         Icon: FolderOpen,
         titleEl: "Τι ακριβώς έχετε;",
         titleEn: "What exactly do you have?",
-        descEl: "Όλες οι ασφάλειές σας μαζεύονται σε ένα μέρος. Αρκεί να στείλετε ένα αρχείο ή μια φωτογραφία.",
-        descEn: "All your insurance ends up in one place. Just send a file or a photo.",
+        descEl: "Ανεβάστε τα έγγραφά σας και κρατήστε τα ασφαλιστήρια από διαφορετικές εταιρείες σε ένα μέρος.",
+        descEn: "Upload your documents and keep policies from different insurers in one place.",
         benefitEl: "Τέλος τα χαρτιά στο συρτάρι",
         benefitEn: "No more papers in a drawer",
         wide: true,
@@ -46,8 +46,8 @@ const services = [
         // reminders and re-analysis findings — not price-change feeds.
         descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
         descEn: "We warn you before something runs out — from the Plus plan — and when we find something new in your documents, with Family.",
-        benefitEl: "Δεν σας πιάνει ποτέ απροετοίμαστους",
-        benefitEn: "It never catches you out",
+        benefitEl: "Έχετε τις ημερομηνίες μπροστά σας",
+        benefitEn: "Keep track of the dates",
         wide: false,
     },
     {
@@ -55,8 +55,8 @@ const services = [
         titleEl: "Τι σημαίνει αυτό;",
         titleEn: "What does this mean?",
         // Policy Q&A is Plus-only — same naming rule.
-        descEl: "Ρωτήστε με απλά λόγια. Απαντάμε από το ίδιο σας το ασφαλιστήριο, όχι από γενικές πληροφορίες — με το πλάνο Family.",
-        descEn: "Ask in plain words. We answer from your own policy, not from general information — on the Family plan.",
+        descEl: "Με το Family, κάντε ερωτήσεις για το ασφαλιστήριό σας και δείτε απαντήσεις που βασίζονται στο έγγραφο. Ελέγξτε τις σημαντικές πληροφορίες στο πρωτότυπο.",
+        descEn: "With Family, ask about your policy and see answers based on the document. Check important information in the original.",
         benefitEl: "Καταλαβαίνετε τι υπογράψατε",
         benefitEn: "You understand what you signed",
         wide: false,

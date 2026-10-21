@@ -13,8 +13,8 @@ export const PRODUCT_STEPS = [
         icon: Upload,
         titleEl: "Στείλτε τα ασφαλιστήριά σας",
         titleEn: "Send us your policies",
-        descEl: "Βγάλτε φωτογραφία ή στείλτε το PDF. Βρίσκουμε μόνοι μας όλα τα σημαντικά σημεία.",
-        descEn: "Take a photo or send the PDF. We find every important point ourselves.",
+        descEl: "Ανεβάστε ένα ευανάγνωστο PDF ή φωτογραφία ασφαλιστηρίου. Διαβάζουμε τα στοιχεία που μπορούμε να αναγνωρίσουμε.",
+        descEn: "Upload a legible policy PDF or photo. We read the information we can identify.",
     },
     {
         n: "02",
@@ -23,8 +23,8 @@ export const PRODUCT_STEPS = [
         titleEn: "We read them for you",
         // Gap detection is Family-gated; duplicate detection runs on every plan (D1 amended 2026-08-30) — the step names the plan.
         // This text also ships verbatim inside the HowTo JSON-LD.
-        descEl: "Σας εξηγούμε τι καλύπτει και τι όχι, σε γλώσσα που καταλαβαίνετε, και εντοπίζουμε τις διπλές καλύψεις που ίσως πληρώνετε — και, με το Family, τα κενά της κάλυψής σας",
-        descEn: "We explain what is covered and what is not, in words you actually understand, and we find the cover you may be paying for twice — and, with Family, the gaps in your protection",
+        descEl: "Σας εξηγούμε τις καλύψεις και τους όρους που διαβάστηκαν. Δείτε πιθανές κοινές καλύψεις και, με το Family, σημεία που χρειάζονται έλεγχο.",
+        descEn: "We explain the cover and terms that were read. See possible overlapping cover and, with Family, points that need checking.",
     },
     {
         n: "03",
@@ -54,10 +54,10 @@ export const PRODUCT_STATS = [
         // thing in Greek.
         // Minutes, not seconds — the one speed claim the whole site makes
         // (SPEED_CLAIM in lib/marketing/positioning.ts).
-        valueEl: "Λίγα λεπτά",
-        valueEn: "A few minutes",
-        labelEl: "για να διαβαστούν τρία ασφαλιστήρια",
-        labelEn: "to read three policies",
+        valueEl: "Συγκεντρωμένα",
+        valueEn: "In one place",
+        labelEl: "τα βασικά στοιχεία των ασφαλιστηρίων σας",
+        labelEn: "key details from your policies",
     },
     {
         valueEl: `${PUBLIC_COUNTS.insurerCommissions.value}`,
@@ -71,8 +71,8 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Πού φυλάσσονται τα έγγραφά μου;",
         qEn: "Where are my documents kept?",
-        aEl: "Σε κρυπτογραφημένους διακομιστές μέσα στην Ευρωπαϊκή Ένωση. Δεν τα δείχνουμε ποτέ σε κανέναν χωρίς τη ρητή σας άδεια, δεν χρησιμοποιούνται για την εκπαίδευση μοντέλων AI, και τα διαγράφετε όποτε θέλετε.",
-        aEn: "On encrypted servers inside the European Union. We never show them to anyone without your explicit permission, they are not used to train AI models, and you can delete them whenever you want.",
+        aEl: "Τα αρχεία αποθηκεύονται κρυπτογραφημένα στην ΕΕ. Για την ανάλυση, με τη συγκατάθεσή σας, το έγγραφο στέλνεται σε πάροχο τεχνητής νοημοσύνης που μπορεί να το επεξεργαστεί εκτός ΕΕ. Δείτε την Πολιτική Απορρήτου για πρόσβαση, αντίγραφο και διαγραφή.",
+        aEn: "Files are stored encrypted in the EU. With your consent, analysis sends the document to an AI provider that may process it outside the EU. See the Privacy Policy for access, copies and deletion.",
     },
     {
         qEl: "Δουλεύει με όλες τις ασφαλιστικές εταιρείες;",
@@ -89,7 +89,7 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Μπορώ να το δοκιμάσω δωρεάν;",
         qEn: "Can I try it for free?",
-        aEl: "Ναι. Στείλτε έως 3 ασφαλιστήρια και πάρτε την πλήρη ανάλυση, χωρίς πιστωτική κάρτα και χωρίς δέσμευση.",
-        aEn: "Yes. Send us up to 3 policies and get the full analysis, with no credit card and no commitment.",
+        aEl: "Ναι. Ο δωρεάν λογαριασμός χωρά έως 3 ασφαλιστήρια, χωρίς κάρτα. Η ανάλυση έχει μηνιαίο όριο χρήσης. Οι πρόσθετες λειτουργίες περιγράφονται στη σελίδα με τα πλάνα.",
+        aEn: "Yes. The free account holds up to 3 policies without a payment card. Analysis has a monthly usage allowance. Additional features are listed on the plans page.",
     },
 ] as const

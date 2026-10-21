@@ -27,29 +27,29 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
         {
             title: ["Συγκατάθεση πρώτα", "Consent-first ingestion"],
             body: [
-                "Ο πελάτης ανεβάζει το έγγραφο ή δίνει άδεια για αυτό. Δίνει τη συγκατάθεσή του για κάθε έγγραφο και μπορεί να την πάρει πίσω. Χωρίς αυτήν, το έγγραφο δεν διαβάζεται ούτε κοινοποιείται.",
-                "The customer uploads or authorises; every document carries its own revocable consent. Without it, nothing is read and nothing is shared.",
+                "Πριν σταλεί έγγραφο για ανάλυση με τεχνητή νοημοσύνη, η εφαρμογή ελέγχει τη σχετική συγκατάθεση. Η πρόσβαση συνεργατών ελέγχεται ξεχωριστά.",
+                "Before sending a document for AI analysis, the application checks the relevant consent. Partner access is checked separately.",
             ],
         },
         {
             title: ["Κατανόηση καλύψεων", "Coverage understanding"],
             body: [
-                "Κάθε ασφαλιστήριο, από όποιον κι αν εκδόθηκε, γίνεται δομημένα δεδομένα: καλύψεις, όρια, απαλλαγές, εξαιρέσεις, περίοδοι αναμονής — με παραπομπή στο ίδιο το έγγραφο.",
-                "Every policy, whoever issued it, becomes structured data: covers, limits, deductibles, exclusions, waiting periods — anchored to the document itself.",
+                "Η εφαρμογή διαβάζει το έγγραφο και οργανώνει τις πληροφορίες του: τι καλύπτεται, έως ποιο ποσό, τι πληρώνει ο ασφαλισμένος και ποιες εξαιρέσεις αναφέρονται.",
+                "The application reads the document and organises its information: cover, limits, the policyholder's share and stated exclusions.",
             ],
         },
         {
             title: ["Εντοπισμός κενών", "Gap detection"],
             body: [
-                "Ντετερμινιστικοί κανόνες — όχι κρίση μοντέλου — εντοπίζουν τι λείπει. Το αποτέλεσμα διατυπώνεται ως ερωτήσεις για τον σύμβουλο, ποτέ ως σύσταση προϊόντος.",
-                "Deterministic rules — not model judgement — surface what is missing. The output is phrased as questions for the adviser, never as a product recommendation.",
+                "Προκαθορισμένοι έλεγχοι αναζητούν συγκεκριμένα στοιχεία στο έγγραφο. Η τεχνητή νοημοσύνη βοηθά στην ανάγνωση και στην εξήγηση. Τα αποτελέσματα χρειάζονται επαγγελματική αξιολόγηση.",
+                "Predefined checks look for specific information in the document. AI helps read and explain it. Results require professional assessment.",
             ],
         },
         {
             title: ["Ενσωμάτωση", "Embedded where you work"],
             body: [
-                "Στην εφαρμογή σας ή στα εργαλεία των συμβούλων σας, με τα δικαιώματα πρόσβασης να ακολουθούν πάντα τη συγκατάθεση του πελάτη.",
-                "In your app or your advisers' tools, with access rights always following the customer's consent.",
+                "Συζητήστε μαζί μας πώς μπορεί να ενταχθεί η υπηρεσία στα εργαλεία σας. Η πρόσβαση εξαρτάται από τον ρόλο, τη σχέση με τον πελάτη και τα δικαιώματα κάθε χρήστη.",
+                "Discuss with us how the service could fit into your tools. Access depends on each user's role, client relationship and permissions.",
             ],
         },
     ]
@@ -65,22 +65,22 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
         {
             title: ["GDPR — άρθρο 9", "GDPR — Article 9"],
             body: [
-                "Τα στοιχεία υγείας χρειάζονται ιδιαίτερη προστασία. Για να αναλυθούν, κάθε πρόσωπο δίνει ξεχωριστή, ρητή συγκατάθεση για κάθε έγγραφο. Μπορεί να την πάρει πίσω. Κρατάμε αρχείο της συγκατάθεσης, ώστε να μπορεί να ελεγχθεί.",
-                "Health data is special-category: analysis runs only on explicit, separate, revocable consent, per person and per document. Consent state is auditable.",
+                "Τα στοιχεία υγείας χρειάζονται ιδιαίτερη προστασία και κατάλληλη νομική βάση. Η εφαρμογή καταγράφει τη συγκατάθεση για ανάλυση με τεχνητή νοημοσύνη. Ο φορέας που διαχειρίζεται στοιχεία άλλων προσώπων οφείλει να εξασφαλίζει ότι έχει δικαίωμα να τα χρησιμοποιεί.",
+                "Health information needs special protection and an appropriate legal basis. The application records consent for AI analysis. An organisation handling other people's data must establish its right to use it.",
             ],
         },
         {
             title: ["AI Act — οριοθέτηση", "AI Act — scoping"],
             body: [
-                "Η τεχνητή νοημοσύνη χρησιμοποιείται για κατανόηση εγγράφων, με προέλευση για κάθε εξαγόμενο στοιχείο. Τεκμηρίωση μοντέλων και επεξεργασίας διαθέσιμη για τη δική σας αξιολόγηση.",
-                "AI is used for document understanding, with provenance for every extracted fact. Model and processing documentation is available for your own assessment.",
+                "Η τεχνητή νοημοσύνη βοηθά στην ανάγνωση και εξήγηση εγγράφων. Τα αποτελέσματα μπορεί να έχουν λάθη. Η αξιολόγηση των υποχρεώσεων κάθε συνεργάτη εξαρτάται από τον τρόπο που χρησιμοποιεί την υπηρεσία.",
+                "AI helps read and explain documents. Results may contain errors. Each partner's obligations depend on how they use the service.",
             ],
         },
         {
-            title: ["DORA — ετοιμότητα ελέγχου", "DORA — assessment readiness"],
+            title: ["DORA — αξιολόγηση τεχνικού παρόχου", "DORA — assessing a technical provider"],
             body: [
-                "Υλικό για την αξιολόγηση τρίτων παρόχων ΤΠΕ: κατάλογος υποεπεξεργαστών, αποθήκευση στην ΕΕ, διαδικασία συμβάντων.",
-                "Material for your ICT third-party assessment: subprocessor register, EU storage, incident process.",
+                "Δείτε τους τεχνικούς παρόχους και τις πληροφορίες απορρήτου. Για πρόσθετα στοιχεία που χρειάζεται ο έλεγχός σας, επικοινωνήστε μαζί μας.",
+                "Review our technical providers and privacy information. Contact us for additional information needed for your assessment.",
             ],
         },
     ]
@@ -124,8 +124,8 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
                     </p>
                     <p className="mx-auto mt-g-4 max-w-[62ch] text-g-body-sm text-fg-secondary">
                         {t(
-                            "Γι' αυτό τα δεδομένα είναι αξιόπιστα: η ίδια ανάλυση για κάθε ασφαλιστήριο σημαίνει εικόνα χωρίς μεροληψία καναλιού.",
-                            "That is why the data is trustworthy: the same analysis for every policy means a picture with no channel bias.",
+                            "Δεν λαμβάνουμε προμήθεια για πωλήσεις ασφαλιστηρίων. Αυτό δεν αποκλείει λάθη στην ανάλυση: ελέγχετε πάντοτε το αποτέλεσμα με το πρωτότυπο έγγραφο.",
+                            "We receive no commission on insurance sales. This does not rule out analysis errors: always check results against the original document.",
                         )}
                     </p>
                 </div>
@@ -151,8 +151,8 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
                         ))}
                     </div>
                     <p className="mt-g-6 text-g-caption text-fg-secondary">
-                        {t("Αποθήκευση κρυπτογραφημένη στην ΕΕ. Η ανάλυση AI μπορεί να εμπλέκει παρόχους εκτός ΕΕ με εγκεκριμένες δικλείδες. Κανένας πάροχος δεν εκπαιδεύει μοντέλα στα έγγραφα πελατών. ",
-                           "Storage is encrypted in the EU. AI analysis may involve providers outside the EU under approved safeguards. No provider trains models on customer documents. ")}
+                        {t("Τα αρχεία αποθηκεύονται κρυπτογραφημένα στην ΕΕ. Για την ανάλυση και τη λειτουργία της υπηρεσίας χρησιμοποιούνται και πάροχοι που μπορεί να επεξεργάζονται στοιχεία εκτός ΕΕ. ",
+                           "Files are stored encrypted in the EU. Analysis and service operation also use providers that may process data outside the EU. ")}
                         <Link href={localizeHref("/subprocessors", locale)} className="underline underline-offset-4">
                             {t("Κατάλογος υποεπεξεργαστών →", "Subprocessor register →")}
                         </Link>

@@ -21,7 +21,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Αυτοκίνητο, μηχανή, οδική βοήθεια: μία καθαρή εικόνα.", "Car, motorbike, roadside assistance: one clear picture.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε τι θα πλήρωνε το ασφαλιστήριο, τι περιλαμβάνει η οδική βοήθεια και πότε λήγει.", "See what the policy would pay, what your roadside assistance includes, and when it runs out.")}
+                        {t("Δείτε τις καλύψεις, τα όρια, την οδική βοήθεια και την ημερομηνία λήξης που γράφει το ασφαλιστήριο.", "See the cover, limits, roadside assistance and expiry date stated in the policy.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -39,24 +39,24 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Η κάλυψη ακολουθεί ακόμη την αξία του οχήματός σας;", "Does your cover still match your vehicle's value?")}
+                            {t("Ποιο ποσό αναφέρει η ασφάλεια του οχήματός σας;", "What amount does your vehicle policy state?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Το ασφαλιστήριο το διαβάζουμε εμείς και σας δείχνουμε τι θα πλήρωνε. Αν φτάνει για το αυτοκίνητό σας σήμερα, το βλέπετε με μια ματιά.", "We read the policy and show you what it would pay. You can see at a glance whether that is enough for your car today.")}
+                            {t("Σας δείχνουμε τα ποσά και τους όρους που αναφέρει το έγγραφο. Δεν υπολογίζουμε την τρέχουσα αξία του οχήματος ούτε την τελική αποζημίωση.", "We show the amounts and terms stated in the document. We do not calculate the vehicle's current value or the final claim payment.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Αποζημίωση και αξία", "Payout vs value")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Σας δείχνουμε την αποζημίωση που προβλέπει το ασφαλιστήριο — συγκρίνετέ τη με το τι αξίζει σήμερα το αυτοκίνητό σας.", "We show you the payout the policy provides — compare it with what your car is worth today.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Βρείτε το ποσό ασφάλισης και τον τρόπο υπολογισμού της αποζημίωσης. Επιβεβαιώστε με την εταιρεία τι ισχύει για το δικό σας όχημα.", "Find the insured amount and how compensation is calculated. Confirm with the insurer what applies to your vehicle.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κενά οδικής βοήθειας", "Roadside assistance gaps")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Στο πλάνο Family, βρίσκουμε παροχές που λείπουν ή πληρώνονται δύο φορές — πριν μείνετε στον δρόμο.", "On the Family plan, we find benefits that are missing or paid for twice — before you are left stranded.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Με το Family, δείτε σημεία που χρειάζονται έλεγχο στην οδική βοήθεια. Μια κοινή παροχή σε δύο ασφαλιστήρια δεν σημαίνει από μόνη της περιττό κόστος.", "With Family, see roadside-assistance details that need checking. A shared benefit in two policies does not by itself mean wasted cost.")}</p>
                                 </div>
                             </li>
                         </ul>
@@ -71,7 +71,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A] dark:text-white">{t("35.000 €", "€35,000")}</div>
-                                <p className="text-body-sm text-[#166534] dark:text-brand-accent font-medium">{t("Πλήρης κάλυψη", "Fully covered")}</p>
+                                <p className="text-body-sm text-[#166534] dark:text-brand-accent font-medium">{t("Ποσό ασφάλισης", "Insured amount")}</p>
                             </div>
                         </div>
                         <div className="space-y-4">
@@ -79,7 +79,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                                 "value match %" would imply market-price data
                                 the product does not have. */}
                             <div className="flex justify-between text-sm">
-                                <span className="text-[#475569] dark:text-slate-300">{t("Απαλλαγή", "Deductible")}</span>
+                                <span className="text-[#475569] dark:text-slate-300">{t("Ποσό που πληρώνετε εσείς", "Deductible")}</span>
                                 <span className="font-medium">{t("500 €", "€500")}</span>
                             </div>
                             <div className="mt-6 flex items-center justify-between bg-[#F0FDF4] dark:bg-[#29685B]/15 text-[#166534] dark:text-brand-accent p-4 rounded-lg border border-[#29685B]/20">
@@ -110,7 +110,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Μοτοσικλέτα", "Motorbike")}</h3>
                             <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t("Το ασφαλιστήριο της μοτοσικλέτας αναλύεται όπως και του αυτοκινήτου: αστική ευθύνη, ίδιες ζημιές, εξαιρέσεις — και κοινές ημερομηνίες ανανέωσης σε ένα ημερολόγιο.", "Your motorbike policy is analyzed just like your car's: liability, own damage, exclusions — with all renewal dates in one calendar.")}
+                                {t("Δείτε τις καλύψεις για ζημιές σε άλλους και στη δική σας μηχανή, τι δεν καλύπτεται και πότε λήγει το ασφαλιστήριο.", "Your motorbike policy is analyzed just like your car's: liability, own damage, exclusions — with all renewal dates in one calendar.")}
                             </p>
                         </div>
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
@@ -119,7 +119,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Οδική βοήθεια", "Roadside assistance")}</h3>
                             <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t("Ξεχωριστό ασφαλιστήριο ή παροχή μέσα στο υπάρχον; Με το Family, δείτε αν πληρώνετε δύο φορές για επιτόπου επισκευή και μεταφορά σε συνεργείο — ή αν δεν την έχετε καθόλου.", "Standalone contract or a benefit inside your motor policy? With Family, see if you're paying twice for on-the-spot repair and towing — or don't have it at all.")}
+                                {t("Δείτε αν η οδική βοήθεια είναι ξεχωριστή ή μέρος του ασφαλιστηρίου οχήματος. Ελέγξτε πού ισχύει και αν περιλαμβάνει επισκευή ή μεταφορά σε συνεργείο.", "Check whether roadside assistance is separate or part of the vehicle policy, where it applies and whether it includes repairs or towing.")}
                             </p>
                         </div>
                     </div>
@@ -133,7 +133,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Δείτε αν η κάλυψη φτάνει για το όχημά σας σήμερα.", "See whether your cover is still enough for your vehicle today.")}
+                    {t("Γνωρίστε τους όρους της ασφάλειας του οχήματός σας.", "Understand the terms of your vehicle insurance.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το ασφαλιστήριο του οχήματος", "Upload your motor policy")}

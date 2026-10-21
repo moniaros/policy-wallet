@@ -51,6 +51,18 @@ beforeEach(() => {
 })
 
 describe('POST /api/contact', () => {
+    it('does not subscribe an enquiry to marketing, even when a newsletter list is configured', async () => {
+        vi.stubEnv('BREVO_LIST_ID_NEWSLETTER', '123')
+        try {
+            const response = await contactPOST(postRequest('http://localhost/api/contact', VALID_CONTACT))
+            expect(response.status).toBe(200)
+            expect(createBrevoContact).toHaveBeenCalledOnce()
+            expect(vi.mocked(createBrevoContact).mock.calls[0][0]).not.toHaveProperty('listIds')
+        } finally {
+            vi.unstubAllEnvs()
+        }
+    })
+
     it('persists the submission and alerts the admin', async () => {
         const response = await contactPOST(postRequest('http://localhost/api/contact', VALID_CONTACT))
         const payload = await response.json()

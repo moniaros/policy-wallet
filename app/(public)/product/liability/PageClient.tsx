@@ -16,22 +16,22 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             icon: Droplets,
             titleEl: "Η μπανιέρα πλημμύρισε τον κάτω όροφο",
             titleEn: "The bathtub flooded the flat below",
-            descEl: "Ως ένοικος ή ιδιοκτήτης, η ζημιά στο διαμέρισμα του γείτονα είναι δική σας υποχρέωση. Η οικογενειακή αστική ευθύνη την αναλαμβάνει.",
-            descEn: "As a tenant or owner, the damage to your neighbor's flat is your obligation. Family liability cover takes it on.",
+            descEl: "Αν προκληθεί ζημιά στον γείτονα, εξετάζεται ποιος ευθύνεται και τι την προκάλεσε. Ελέγξτε αν το ασφαλιστήριο καλύπτει τέτοια ευθύνη.",
+            descEn: "If your neighbour's property is damaged, responsibility depends on who caused it and the circumstances. Check whether the policy covers that liability.",
         },
         {
             icon: Dog,
             titleEl: "Ο σκύλος σας δάγκωσε περαστικό",
             titleEn: "Your dog bit a passerby",
-            descEl: "Ιατρικά έξοδα και αξίωση αποζημίωσης βαραίνουν τον ιδιοκτήτη του ζώου. Ελέγξτε αν το ασφαλιστήριό σας καλύπτει κατοικίδια — δεν το κάνουν όλα.",
-            descEn: "Medical costs and a compensation claim land on the animal's owner. Check whether your policy covers pets — not all of them do.",
+            descEl: "Ο κάτοχος ζώου μπορεί να ευθύνεται για ζημιά που προκάλεσε το ζώο. Ελέγξτε αν το ασφαλιστήριο περιλαμβάνει αυτή την ευθύνη και με ποιους όρους.",
+            descEn: "An animal's keeper may be liable for damage caused by the animal. Check whether the policy covers that liability and on what terms.",
         },
         {
             icon: Bike,
             titleEl: "Το παιδί έσπασε τζαμαρία με το ποδήλατο",
             titleEn: "Your child broke a glass pane with their bike",
-            descEl: "Για πράξεις ανήλικων παιδιών ευθύνονται οι γονείς. Η κάλυψη αστικής ευθύνης οικογένειας απαντά σε αυτές ακριβώς τις στιγμές.",
-            descEn: "Parents are liable for their minor children's actions. Family liability cover exists for exactly these moments.",
+            descEl: "Η ευθύνη για ζημιά που προκάλεσε παιδί εξαρτάται από την ηλικία, την εποπτεία και τα περιστατικά. Η ασφάλιση καλύπτει μόνο όσα προβλέπουν οι όροι της.",
+            descEn: "Liability for damage caused by a child depends on age, supervision and the circumstances. Insurance covers only what its terms provide.",
         },
     ]
 
@@ -45,7 +45,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                         {t("Όταν η ζημιά είναι σε ξένη περιουσία, ποιος πληρώνει;", "When the damage is to someone else's property, who pays?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Η αστική ευθύνη καλύπτει ζημιές που προκαλείτε εσείς, το παιδί ή ο σκύλος σας σε τρίτους. Συχνά, όμως, υπάρχει ήδη μέσα στο ασφαλιστήριο κατοικίας σας — και την ξαναγοράζετε χωρίς να το ξέρετε.", "Liability cover pays for damage you, your child or your dog cause to others. But it often already sits inside your home policy — and you buy it again without knowing.")}
+                        {t("Η αστική ευθύνη αφορά την υποχρέωση να αποζημιώσετε άλλον για ζημιά. Η σχετική ασφάλιση μπορεί να υπάρχει ήδη στο ασφαλιστήριο κατοικίας, με συγκεκριμένα όρια και εξαιρέσεις.", "Civil liability is the obligation to compensate someone else for damage. Cover may already be included in your home policy, subject to limits and exclusions.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -66,7 +66,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                             {t("Τρεις καθημερινές στιγμές που γίνονται λογαριασμός.", "Three everyday moments that turn into a bill.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Καμία δεν είναι σπάνια και καμία δεν προαναγγέλλεται. Δείτε αν το ασφαλιστήριό σας απαντά σε καθεμία — με τα όρια και τις εξαιρέσεις της.", "None of them is rare and none announces itself. See whether your policy answers each one — with its limits and exclusions.")}
+                            {t("Παραδείγματα για να ξέρετε τι να αναζητήσετε στους όρους. Δεν αποτελούν απόφαση για το ποιος ευθύνεται ή αν θα πληρωθεί μια ζημιά.", "Examples to help you know what to look for in the terms. They do not determine liability or whether a claim will be paid.")}
                         </p>
                     </div>
 
@@ -95,10 +95,10 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                             {t("Πριν την αγοράσετε, δείτε αν την έχετε ήδη.", "Before you buy it, see if you already own it.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-6">
-                            {t("Πολλά ασφαλιστήρια κατοικίας περιλαμβάνουν αστική ευθύνη ως ενσωματωμένη κάλυψη — αγορασμένη μαζί με την πυρκαγιά και ξεχασμένη από την πρώτη μέρα. Όταν ανεβάζετε τα ασφαλιστήριά σας, η ανάλυση διαβάζει κάθε κάλυψη ξεχωριστά και, στο πλάνο Family, δείχνει πού η ίδια προστασία εμφανίζεται δύο φορές.", "Many home policies include liability as a bundled cover — bought together with the fire section and forgotten since day one. When you upload your policies, the analysis reads every cover separately and, on the Family plan, shows where the same protection appears twice.")}
+                            {t("Ελέγξτε αν το ασφαλιστήριο κατοικίας περιλαμβάνει αστική ευθύνη. Με το Family μπορείτε να δείτε πιθανές κοινές καλύψεις· ο ασφαλιστής σας θα εξηγήσει αν συμπληρώνουν η μία την άλλη.", "Check whether your home policy includes liability cover. Family can show possible overlaps; your adviser can explain whether the policies complement one another.")}
                         </p>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Αν λείπει, το βλέπετε κι αυτό: το κενό εμφανίζεται δίπλα στα υπόλοιπα, με τα όρια που ισχύουν σήμερα.", "And if it's missing, you see that too: the gap appears next to everything else, with the limits that apply today.")}
+                            {t("Αν ένας διαθέσιμος έλεγχος εντοπίσει σχετικό σημείο, το εμφανίζουμε για επιβεβαίωση. Αν δεν εμφανιστεί κάτι, δεν σημαίνει ότι η κάλυψη είναι πλήρης.", "If an available check identifies a relevant point, we show it for confirmation. No finding does not mean cover is complete.")}
                         </p>
                     </div>
 

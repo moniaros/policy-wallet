@@ -56,8 +56,8 @@ export function pick(value: Bilingual, locale: MarketingLocale): string {
  * and lets the label do its work where it is being looked up rather than read.
  */
 export const CATEGORY_NAME: Bilingual = {
-    el: "Πλατφόρμα προσωπικής ανάλυσης ρίσκου",
-    en: "Personal Risk Intelligence Platform",
+    el: "Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων",
+    en: "A platform for organising and understanding insurance policies",
 }
 
 /**
@@ -66,14 +66,14 @@ export const CATEGORY_NAME: Bilingual = {
  * (footer identity line) and anywhere the plain claim carries alone.
  */
 export const CATEGORY: Bilingual = {
-    el: "Δεν αξιολογούμε ασφαλιστήρια. Αξιολογούμε την προστασία σας.",
+    el: "Συγκεντρώνουμε τα ασφαλιστήριά σας και εξηγούμε τι γράφουν.",
     // OQ5, decided 2026-08-30: the English mirrors the Greek PROMISE. It had
     // been "AI Personal Risk Intelligence" — a category label, i.e. a different
     // claim — violating this module's own rule that en carries identical
     // meaning. The label still does its SEO work via CATEGORY_NAME; this
     // constant also feeds the JSON-LD `slogan` and both OG alt paths, so the
     // mismatch was living in structured data too.
-    en: "We do not rate policies. We rate your protection.",
+    en: "We bring your policies together and explain what they say.",
 }
 
 /**
@@ -88,16 +88,16 @@ export const STORY: Record<"changed" | "matters" | "helps" | "next", Bilingual> 
         en: "Your life changes.",
     },
     matters: {
-        el: "Μαζί της αλλάζουν και τα ρίσκα σας. Η ασφάλισή σας, όμως, έμεινε εκεί που την αφήσατε.",
-        en: "Your risks change with it. Your insurance stayed where you left it.",
+        el: "Μια αλλαγή στη ζωή σας είναι καλή αφορμή να ξαναδείτε την ασφάλισή σας.",
+        en: "A change in your life is a good reason to review your insurance.",
     },
     helps: {
-        el: "Το PolicyWallet διαβάζει τα ασφαλιστήριά σας και σας λέει αν είστε ακόμη προστατευμένοι.",
-        en: "PolicyWallet reads your insurance and tells you whether you are still protected.",
+        el: "Βρείτε τι αναφέρουν τα ασφαλιστήριά σας και τι χρειάζεται να ρωτήσετε τον ασφαλιστή σας.",
+        en: "Find what your policies say and what you need to ask your adviser.",
     },
     next: {
-        el: "Στείλτε ένα ασφαλιστήριο και δείτε την απάντηση σήμερα.",
-        en: "Send us one policy and see the answer today.",
+        el: "Ανεβάστε το ασφαλιστήριό σας και ξεκινήστε από τα βασικά.",
+        en: "Upload your policy and start with the essentials.",
     },
 }
 
@@ -146,16 +146,16 @@ export const LIFE_CHANGE_EFFECTS: readonly {
     {
         change: { el: "Πήρατε δάνειο", en: "You took out a loan" },
         effect: {
-            el: "Το δάνειο μένει, ακόμη κι αν εσείς λείψετε.",
-            en: "The loan stays, even if you are gone.",
+            el: "Ελέγξτε ποιο πρόσωπο και ποιο ποσό αφορά η ασφάλιση του δανείου.",
+            en: "Check which person and amount the loan insurance covers.",
         },
         href: "/product/life",
     },
     {
         change: { el: "Αλλάξατε δουλειά", en: "You changed jobs" },
         effect: {
-            el: "Μαζί με τη δουλειά άλλαξαν και οι παροχές σας.",
-            en: "Your benefits changed with the job.",
+            el: "Ελέγξτε αν έχετε νέες παροχές ή αν σταμάτησαν παλιές.",
+            en: "Check whether new benefits are available or previous ones have ended.",
         },
         href: "/product/group-health",
     },
@@ -187,8 +187,8 @@ export const PROMISE: { lead: Bilingual; accent: Bilingual } = {
     // approved repositioning (docs/marketing/03-COPY-pass1 §1.2). The storage
     // line demotes to HERO_SUBHEAD below, and the rotating headline is gone:
     // one visitor, one value proposition, one <h1>.
-    lead: { el: "Μάθετε τι πραγματικά", en: "Know what your policies" },
-    accent: { el: "καλύπτουν τα ασφαλιστήριά σας.", en: "actually cover." },
+    lead: { el: "Καταλάβετε εύκολα", en: "Know what your policies" },
+    accent: { el: "τι γράφουν τα ασφαλιστήριά σας.", en: "actually cover." },
 }
 
 /** The hero email-capture CTA — same single-source rule as PRIMARY_ACTION. */
@@ -199,8 +199,8 @@ export const HERO_EMAIL_CTA: Bilingual = {
 
 /** The demoted feature line — the old slide-1 headline, now the fixed sub-head. */
 export const HERO_SUBHEAD: Bilingual = {
-    el: "Όλα τα ασφαλιστήρια, από όλες τις εταιρείες, σε ένα σημείο — τα διαβάζουμε και σας τα εξηγούμε σε απλά ελληνικά.",
-    en: "Every policy, from every company, in one place — read and explained in plain language.",
+    el: "Συγκεντρώστε τα ασφαλιστήριά σας από διαφορετικές εταιρείες. Δείτε τις καλύψεις, τα ποσά και τις ημερομηνίες τους με απλά λόγια.",
+    en: "Bring together policies from different insurers. See their cover, amounts and dates in plain language.",
 }
 
 
@@ -218,8 +218,8 @@ export const HERO_SUBHEAD: Bilingual = {
  * standalone and embedded.
  */
 export const NEUTRALITY_STATEMENT: Bilingual = {
-    el: "Καμία ασφαλιστική και καμία τράπεζα δεν μας πληρώνει για να σας προτείνουμε κάτι. Δεν παίρνουμε προμήθεια. Η ανάλυση είναι ίδια για κάθε ασφαλιστήριο, όποιος κι αν το εξέδωσε — και τίποτα από όσα ανεβάζετε δεν κοινοποιείται χωρίς τη δική σας ξεχωριστή συγκατάθεση. Μπορείτε να την πάρετε πίσω.",
-    en: "No insurer and no bank pays us to recommend anything. We take no commission. The analysis is the same for every policy, whoever issued it — and nothing you upload is shared without your separate, revocable consent.",
+    el: "Εσείς επιλέγετε τι μοιράζεστε με τον ασφαλιστή σας. Η Πολιτική Απορρήτου εξηγεί πώς χρησιμοποιούμε τα στοιχεία σας για να λειτουργεί η υπηρεσία.",
+    en: "You choose what to share with your adviser. Our Privacy Policy explains how we use your data to operate the service.",
 }
 
 export const DIFFERENTIATORS: readonly { title: Bilingual; body: Bilingual }[] = [
@@ -253,8 +253,8 @@ export const DIFFERENTIATORS: readonly { title: Bilingual; body: Bilingual }[] =
             en: "We do not sell your data",
         },
         body: {
-            el: "Τα ασφαλιστήριά σας είναι δικά σας. Κανείς άλλος δεν τα βλέπει — ούτε ασφαλιστική, ούτε τράπεζα — παρά μόνο αν το επιλέξετε εσείς, ξεχωριστά για κάθε έγγραφο.",
-            en: "Your policies are yours. Nobody else sees them — not an insurer, not a bank — unless you choose it, separately for each document.",
+            el: "Τα δεδομένα σας, με σαφείς κανόνες πρόσβασης.",
+            en: "Your data, with clear access rules.",
         },
     },
 ]
@@ -265,7 +265,7 @@ export const DIFFERENTIATORS: readonly { title: Bilingual; body: Bilingual }[] =
  */
 export const TRUST_FACTS: readonly { label: Bilingual; detail: Bilingual }[] = [
     {
-        label: { el: "Κρυπτογράφηση AES-256", en: "AES-256 encryption" },
+        label: { el: "Κρυπτογραφημένη αποθήκευση", en: "AES-256 encryption" },
         detail: {
             el: "Τα αρχεία σας αποθηκεύονται κρυπτογραφημένα.",
             en: "Your files are stored encrypted.",
@@ -278,8 +278,8 @@ export const TRUST_FACTS: readonly { label: Bilingual; detail: Bilingual }[] = [
         // policy contradicts is worse than no fact at all.
         label: { el: "Αποθήκευση στην ΕΕ", en: "Storage in the EU" },
         detail: {
-            el: "Τα αρχεία σας αποθηκεύονται κρυπτογραφημένα στην Ευρώπη. Η ανάλυση AI γίνεται μόνο με τη συγκατάθεσή σας — και κανένας πάροχος δεν εκπαιδεύει μοντέλα στα έγγραφά σας.",
-            en: "Your files are stored encrypted in Europe. AI analysis runs only with your consent — and no provider trains models on your documents.",
+            el: "Τα αρχεία αποθηκεύονται στην ΕΕ. Η ανάλυση και άλλες τεχνικές υπηρεσίες μπορεί να περιλαμβάνουν επεξεργασία εκτός ΕΕ. Δείτε τους παρόχους και την Πολιτική Απορρήτου.",
+            en: "Files are stored in the EU. Analysis and other technical services may involve processing outside the EU. See our providers and Privacy Policy.",
         },
     },
     {
@@ -295,17 +295,17 @@ export const TRUST_FACTS: readonly { label: Bilingual; detail: Bilingual }[] = [
             // "full" — invoices are kept 5 years for tax law, consent records
             // as proof of consent. The in-product copy has said all of this
             // accurately for months; this line had not.
-            el: "Κατεβάζετε αντίγραφο όποτε θέλετε. Ζητάτε διαγραφή και την ολοκληρώνουμε εντός ενός μήνα.",
-            en: "Download a copy whenever you want. Ask for deletion and we complete it within one month.",
+            el: "Μπορείτε να ζητήσετε αντίγραφο ή διαγραφή των στοιχείων σας. Η Πολιτική Απορρήτου εξηγεί τη διαδικασία και όσα πρέπει να διατηρηθούν βάσει νόμου.",
+            en: "You can request a copy or deletion of your data. Our Privacy Policy explains the process and records that must be retained by law.",
         },
     },
     {
         // States the privacy default, which is true on every plan. Sharing
         // with an advisor is a paid feature, so it is not promised here.
-        label: { el: "Μόνο εσείς τα βλέπετε", en: "Only you see your policies" },
+        label: { el: "Ελεγχόμενη πρόσβαση", en: "Controlled access" },
         detail: {
-            el: "Κανείς άλλος δεν έχει πρόσβαση, εκτός αν το επιλέξετε εσείς.",
-            en: "Nobody else has access unless you choose it.",
+            el: "Η πρόσβαση εξαρτάται από τον ρόλο και τα δικαιώματα κάθε χρήστη. Επιλέγετε τι κοινοποιείτε στον ασφαλιστή σας και μπορείτε να ανακαλέσετε την πρόσβαση που δώσατε.",
+            en: "Access depends on each user's role and permissions. You choose what to share with your adviser and can revoke access you granted.",
         },
     },
 ]
@@ -317,7 +317,7 @@ export const TRUST_FACTS: readonly { label: Bilingual; detail: Bilingual }[] = [
 export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
     {
         title: {
-            el: "Η ζωή αλλάζει. Το ασφαλιστήριο μένει ίδιο.",
+            el: "Όταν αλλάζει η ζωή, ξαναδείτε την ασφάλισή σας.",
             en: "Life changes. The policy stays the same.",
         },
         body: {
@@ -327,22 +327,22 @@ export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
     },
     {
         title: {
-            el: "Το κενό φαίνεται μόνο όταν είναι αργά.",
+            el: "Δείτε τους όρους πριν τους χρειαστείτε.",
             en: "A gap only shows up when it is too late.",
         },
         body: {
-            el: "Μαθαίνετε τι δεν καλύπτει τη μέρα που ζητάτε αποζημίωση. Εκείνη τη μέρα δεν διορθώνεται.",
-            en: "You find out what it does not cover on the day you make a claim. On that day it cannot be fixed.",
+            el: "Βρείτε τι καλύπτεται, τι εξαιρείται και τι χρειάζεται επιβεβαίωση από τον ασφαλιστή σας.",
+            en: "Find what is covered, what is excluded and what needs confirmation from your adviser.",
         },
     },
     {
         title: {
-            el: "Ίσως πληρώνετε δύο φορές για το ίδιο.",
-            en: "You may be paying twice for the same thing.",
+            el: "Έχετε παρόμοιες καλύψεις σε δύο ασφαλιστήρια;",
+            en: "Do you have similar cover in two policies?",
         },
         body: {
-            el: "Δύο ασφαλιστήρια μπορεί να καλύπτουν το ίδιο πράγμα. Εσείς πληρώνετε και τα δύο.",
-            en: "Two policies can cover the same thing. You pay for both of them.",
+            el: "Δύο καλύψεις μπορεί να συμπληρώνουν η μία την άλλη. Δείτε τους όρους και συζητήστε τους με τον ασφαλιστή σας πριν ακυρώσετε κάτι.",
+            en: "Two covers may complement each other. Check the terms with your adviser before cancelling anything.",
         },
     },
 ]
@@ -369,8 +369,8 @@ export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
  * is three policies with full analysis — stated once, here.
  */
 export const CTA_REASSURANCE: Bilingual = {
-    el: "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
-    en: "Free for 3 policies. No card. Delete everything whenever you want.",
+    el: "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Αναβάθμιση όποτε τη χρειαστείτε.",
+    en: "Free for 3 policies. No card required. Upgrade when you need to.",
 }
 
 /**
@@ -454,12 +454,12 @@ export const COMPARISON_COLUMNS: readonly {
     {
         key: "advisor",
         label: { el: "Ο ασφαλιστής σας", en: "Your insurance agent" },
-        note: { el: "Ξέρει πολλά, αλλά πληρώνεται με προμήθεια.", en: "Knows a lot, but is paid on commission." },
+        note: { el: "Σας εξηγεί τις επιλογές και σας συμβουλεύει.", en: "Explains your options and advises you." },
     },
     {
         key: "policywallet",
         label: { el: "PolicyWallet", en: "PolicyWallet" },
-        note: { el: "Πληρωνόμαστε μόνο από εσάς.", en: "We are paid only by you." },
+        note: { el: "Έσοδα από συνδρομές.", en: "Revenue from subscriptions." },
     },
 ]
 
@@ -488,14 +488,14 @@ export const COMPARISON_ROWS: readonly {
         // Gap & duplicate detection is a Family feature — these two
         // rows use the "plus" verdict so the cell never over-promises to a
         // Free reader (same honesty rule as the renewal row below).
-        job: { el: "Σας δείχνει τι ΔΕΝ καλύπτεται", en: "Shows you what is NOT covered" },
+        job: { el: "Βοηθά να βρείτε τι εξαιρείται", en: "Shows you what is NOT covered" },
         folder: "no",
         insurer: "no",
         advisor: "partial",
         policywallet: "family",
     },
     {
-        job: { el: "Βρίσκει αν πληρώνετε δύο φορές", en: "Finds if you are paying twice" },
+        job: { el: "Εντοπίζει πιθανές κοινές καλύψεις", en: "Finds if you are paying twice" },
         folder: "no",
         insurer: "no",
         advisor: "partial",

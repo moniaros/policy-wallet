@@ -96,17 +96,17 @@ const SLIDES: Slide[] = [
             ),
         lead: (locale) =>
             locale === "el"
-                ? "Αρκεί να στείλετε ένα αρχείο ή μια φωτογραφία. Τα μαζεύουμε, τα διαβάζουμε και ξέρετε πάντα τι καλύπτει το καθένα και πότε λήγει."
-                : "Just send a file or a photo. We gather them, read them, and you always know what each one covers and when it runs out.",
+                ? "Ανεβάστε το έγγραφό σας. Βρείτε τις καλύψεις, τα ποσά και τις ημερομηνίες που αναφέρει, χωρίς να ψάχνετε σε διαφορετικούς φακέλους."
+                : "Upload your document. Find the cover, amounts and dates it lists without searching through different folders.",
     },
     {
         id: "duplicates",
-        dot: { el: "Διπλές καλύψεις και κενά", en: "Duplicates and gaps" },
+        dot: { el: "Καλύψεις που αξίζει να ελέγξετε", en: "Cover worth reviewing" },
         headline: (locale) =>
             locale === "el" ? (
                 <>
-                    Ούτε περισσότερα, ούτε λιγότερα{" "}
-                    <span className="text-brand-accent">από όσα χρειάζεστε.</span>
+                                         Δείτε τι αναφέρουν{" "}
+                    <span className="text-brand-accent">τα ασφαλιστήριά σας.</span>
                 </>
             ) : (
                 <>
@@ -119,17 +119,17 @@ const SLIDES: Slide[] = [
         // hero and then paywalled is the one thing a first visit cannot afford.
         lead: (locale) =>
             locale === "el"
-                ? "Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και ασφαλιστικά κενά που δεν ξέρατε ότι έχετε ή δεν είχατε όταν κάνατε το ασφαλιστήριό σας — με το Family."
-                : "Spot cover you are paying for twice, and gaps you did not know you had — with Family.",
+                ? "Με το Family, δείτε πιθανά κενά και παρόμοιες καλύψεις σε διαφορετικά ασφαλιστήρια. Συζητήστε τα με τον ασφαλιστή σας πριν αλλάξετε κάτι: δύο καλύψεις μπορεί να συμπληρώνουν η μία την άλλη."
+                : "With Family, review potential gaps and similar cover in different policies. Discuss them with your adviser before making changes: two covers may complement each other.",
     },
     {
         id: "hidden-benefits",
-        dot: { el: "Κρυμμένες παροχές", en: "Hidden benefits" },
+        dot: { el: "Παροχές που ίσως δεν γνωρίζετε", en: "Hidden benefits" },
         headline: (locale) =>
             locale === "el" ? (
                 <>
                     Βρείτε τις παροχές που{" "}
-                    <span className="text-brand-accent">κρύβονται στα μικρά γράμματα.</span>
+                    <span className="text-brand-accent">περιλαμβάνονται στους όρους.</span>
                 </>
             ) : (
                 <>

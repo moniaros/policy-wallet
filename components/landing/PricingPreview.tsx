@@ -73,14 +73,14 @@ export function PricingPreview({
                         className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white"
                     >
                         {t(
-                            "Μία συνδρομή, όλα τα ασφαλιστήριά σας διαβασμένα.",
-                            "One subscription, every policy of yours read.",
+                            "Τα ασφαλιστήριά σας, σε ένα μέρος.",
+                            "Your policies, in one place.",
                         )}
                     </h2>
                     <p className="mx-auto max-w-[560px] text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
                         {t(
-                            "Πλήρης ανάλυση, κενά κάλυψης και υπενθυμίσεις πριν λήξει κάτι. Καμία κρυφή χρέωση, ακυρώνετε όποτε θέλετε.",
-                            "Full analysis, coverage gaps and reminders before something runs out. No hidden charges, cancel whenever you want.",
+                            "Διαλέξτε πλάνο με τις λειτουργίες που χρειάζεστε: οργάνωση εγγράφων, ανάλυση και υπενθυμίσεις. Δείτε τι περιλαμβάνει το καθένα πριν επιλέξετε.",
+                            "Choose a plan with the features you need: document organisation, analysis and reminders. Check what each includes before choosing.",
                         )}
                     </p>
                 </div>

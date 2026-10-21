@@ -5,8 +5,8 @@ import { getLegalContent } from '@/lib/legal/legal-content'
 
 /**
  * The Terms grant a statutory right: withdraw within 14 calendar days of the
- * subscription starting and the price is refunded, reduced pro rata for the part
- * already provided (ν. 2251/1994, Directive 2011/83/EU).
+ * contract conclusion, with any proportional charge subject to the statutory
+ * conditions, including a prior express request for early service (ν. 2251/1994, Directive 2011/83/EU).
  *
  * The in-product cancellation dialog said, flatly, «δεν γίνεται μερική
  * επιστροφή χρημάτων για το υπόλοιπο διάστημα» / "there is no partial refund for
@@ -20,9 +20,9 @@ describe('the cancellation dialog does not deny the withdrawal right', () => {
 
     it('the Terms do grant it', () => {
         const terms = JSON.stringify(getLegalContent('el'))
-        expect(terms).toMatch(/δικαίωμα να υπαναχωρήσετε/)
-        expect(terms).toMatch(/14 ημερολογιακών ημερών/)
-        expect(terms).toMatch(/μειωμένο αναλογικά/)
+        expect(terms).toMatch(/μπορείτε να υπαναχωρήσετε χωρίς αιτιολογία/)
+        expect(terms).toMatch(/14 ημερολογιακές ημέρες από τη σύναψη/)
+        expect(terms).toMatch(/μόνο όταν πληρούνται οι νόμιμες προϋποθέσεις/)
     })
 
     it('no longer states categorically that no partial refund exists', () => {
@@ -30,13 +30,13 @@ describe('the cancellation dialog does not deny the withdrawal right', () => {
         expect(enBody).not.toMatch(/there is no partial refund for the remaining time/i)
     })
 
-    it('names the 14-day right and the pro-rata refund', () => {
+    it('names the consumer 14-day right and conditions for a proportional charge', () => {
         expect(elBody).toMatch(/14 ημερών/)
         expect(elBody).toMatch(/δικαίωμα υπαναχώρησης/)
-        expect(elBody).toMatch(/αναλογική επιστροφή/)
+        expect(elBody).toMatch(/αναλογική χρέωση επιτρέπεται μόνο με τις νόμιμες προϋποθέσεις/)
         expect(enBody).toMatch(/14 days/)
         expect(enBody).toMatch(/right of withdrawal/i)
-        expect(enBody).toMatch(/pro-rata refund/i)
+        expect(enBody).toMatch(/proportional charge requires the legal conditions/i)
     })
 
     it('still tells the truth about what cancelling alone does', () => {

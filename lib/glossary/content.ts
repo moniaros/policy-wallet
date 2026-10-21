@@ -60,11 +60,11 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Το ασφαλιστήριο δεν είναι διαφημιστικό φυλλάδιο· είναι το κείμενο που μετράει την ώρα της αποζημίωσης. Οι πιο σημαντικές πληροφορίες σπάνια βρίσκονται στην πρώτη σελίδα: οι εξαιρέσεις, οι απαλλαγές και οι προθεσμίες δήλωσης ζημιάς κρύβονται συνήθως στους γενικούς και ειδικούς όρους.",
+                el: "Διαβάστε μαζί τον πίνακα καλύψεων, τους γενικούς και ειδικούς όρους και τις μεταγενέστερες αλλαγές. Έτσι βλέπετε τις καλύψεις, τις εξαιρέσεις και τις υποχρεώσεις σας.",
                 en: "A policy is not a brochure; it is the text that counts when you make a claim. The most important information is rarely on the first page: exclusions, deductibles and claim deadlines usually sit in the general and special terms.",
             },
             {
-                el: "Ένα τυπικό ασφαλιστήριο έχει τον πίνακα καλύψεων (τι καλύπτεται και μέχρι ποιο ποσό), τους όρους (πώς και πότε ισχύει η κάλυψη) και τα στοιχεία του ασφαλιστηρίου (αριθμός, διάρκεια, ασφάλιστρο). Το να τα διαβάσετε μία φορά με την ησυχία σας κοστίζει λιγότερο από το να τα ανακαλύψετε μετά από ζημιά.",
+                el: "Στον πίνακα θα βρείτε καλύψεις και ποσά. Στους όρους θα βρείτε πότε ισχύουν και τι δεν καλύπτεται. Στα στοιχεία του ασφαλιστηρίου θα βρείτε αριθμό, διάρκεια και κόστος.",
                 en: "A typical policy has the schedule of cover (what is covered and up to what amount), the terms (how and when cover applies) and the contract details (number, duration, premium). Reading them once, calmly, costs less than discovering them after a loss.",
             },
         ],
@@ -114,12 +114,12 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "What is insurance coverage (kalypsi)?",
         },
         metaDescription: {
-            el: "Κάλυψη είναι ο κίνδυνος που αναλαμβάνει να πληρώσει το ασφαλιστήριο, με τα όρια και τις προϋποθέσεις που γράφει. Δείτε πώς να βρείτε τις καλύψεις στο ασφαλιστήριό σας.",
+            el: "Κάλυψη είναι η παροχή που αναλαμβάνει η ασφαλιστική, σύμφωνα με τους όρους της σύμβασης. Μάθετε πού βρίσκετε τις καλύψεις και τους περιορισμούς τους.",
             en: "Coverage is the risk your policy undertakes to pay for, within the limits and conditions it states. See how to find the covers in your own policy.",
         },
         shortDefinition: {
-            el: "Κάλυψη είναι ο συγκεκριμένος κίνδυνος που το ασφαλιστήριο αναλαμβάνει να πληρώσει — πυρκαγιά, νοσηλεία, αστική ευθύνη — με τα όρια, τις απαλλαγές και τις προϋποθέσεις που ορίζει το ίδιο το ασφαλιστήριο. Ό,τι δεν αναφέρεται ως κάλυψη, ή αναφέρεται ως εξαίρεση, δεν πληρώνεται.",
-            en: "A coverage is the specific risk your policy undertakes to pay for — fire, hospitalisation, liability — within the limits, deductibles and conditions the contract itself sets. Whatever is not named as a cover, or is named as an exclusion, is not paid.",
+            el: "Κάλυψη είναι αυτό που αναλαμβάνει η ασφαλιστική: για παράδειγμα, έξοδα νοσηλείας, ζημιά από πυρκαγιά ή μια υπηρεσία βοήθειας. Οι όροι ορίζουν πότε ισχύει, μέχρι ποιο ποσό και με ποιες εξαιρέσεις. Η απουσία μιας λέξης από έναν πίνακα δεν αρκεί μόνη της για να κριθεί αν καλύπτεται ένα περιστατικό.",
+            en: "Cover is what the insurer undertakes to provide, such as hospital expenses, fire damage or assistance. The terms define when it applies, its limits and exclusions. The absence of a word from a schedule is not enough by itself to decide whether an event is covered.",
         },
         body: [
             {
@@ -142,8 +142,8 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "If something is not mentioned at all, is it covered?",
                 },
                 answer: {
-                    el: "Κατά κανόνα όχι: στα περισσότερα ασφαλιστήρια πληρώνονται μόνο οι κατονομασμένοι κίνδυνοι. Αν δεν είστε βέβαιοι, είναι ακριβώς η ερώτηση που αξίζει να κάνετε γραπτώς στον ασφαλιστή σας.",
-                    en: "As a rule, no: most policies pay only the named risks. If you are unsure, that is exactly the question worth putting to your insurer in writing.",
+                    el: "Δεν μπορεί να κριθεί μόνο από την απουσία μιας λέξης. Μερικά ασφαλιστήρια απαριθμούν όσα καλύπτουν, ενώ άλλα περιγράφουν ευρύτερη κάλυψη με εξαιρέσεις. Διαβάστε το σύνολο των όρων και ζητήστε γραπτή επιβεβαίωση.",
+                    en: "The absence of a word is not enough to decide. Some policies list covered risks; others describe broader cover with exclusions. Read the full terms and ask for written confirmation.",
                 },
             },
             {
@@ -177,13 +177,13 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "A deductible is the amount you pay on each claim before the insurer starts paying. See how it affects your premium and your payout.",
         },
         shortDefinition: {
-            el: "Απαλλαγή (ή ίδια κράτηση) είναι το ποσό που επιβαρύνεστε εσείς σε κάθε ζημιά, πριν αρχίσει να πληρώνει η ασφαλιστική εταιρεία. Αν η απαλλαγή είναι 300 € και η ζημιά 1.000 €, λαμβάνετε 700 €. Όσο μεγαλύτερη η απαλλαγή, τόσο χαμηλότερο συνήθως το ασφάλιστρο — και το αντίστροφο.",
-            en: "A deductible (apallagi) is the amount you bear on each claim before the insurer starts paying. If the deductible is €300 and the loss is €1,000, you receive €700. The higher the deductible, the lower the premium usually is — and vice versa.",
+            el: "Απαλλαγή είναι το μέρος μιας καλυπτόμενης ζημιάς που πληρώνετε εσείς. Μπορεί να είναι σταθερό ποσό ή ποσοστό. Παράδειγμα: από καλυπτόμενη ζημιά 1.000 €, με απαλλαγή 300 €, απομένουν 700 € για την ασφαλιστική, αν δεν υπάρχουν άλλοι περιορισμοί.",
+            en: "The deductible is the part of a covered loss you pay. It can be a fixed amount or a percentage. For example, a €1,000 covered loss with a €300 deductible leaves €700 for the insurer if no other restrictions apply.",
         },
         body: [
             {
-                el: "Η απαλλαγή είναι ο πιο συνηθισμένος λόγος που δύο ασφαλιστήρια με «ίδια κάλυψη» κοστίζουν διαφορετικά. Μεταφέρει μέρος του μικρού ρίσκου σε εσάς, ώστε η ασφαλιστική να χρεώνει χαμηλότερο ασφάλιστρο. Είναι λογική επιλογή αν μπορείτε να απορροφήσετε μια μικρή ζημιά μόνοι σας.",
-                en: "The deductible is the most common reason two policies with the “same cover” cost differently. It shifts part of the small risk onto you, so the insurer charges a lower premium. It is a sensible choice if you can absorb a small loss yourself.",
+                el: "Για να συγκρίνετε ασφαλιστήρια, δείτε μαζί το ασφάλιστρο και την απαλλαγή. Χαμηλότερη τιμή μπορεί να συνοδεύεται από μεγαλύτερη δική σας επιβάρυνση σε ζημιά.",
+                en: "To compare policies, look at both the premium and the deductible. A lower price may come with a larger share of a claim for you to pay.",
             },
             {
                 el: "Πολλά ασφαλιστήρια έχουν διαφορετική απαλλαγή ανά κάλυψη — άλλη για θραύση κρυστάλλων, άλλη για φυσικά φαινόμενα. Το «έχω μικτή» δεν σας λέει πόσα θα πληρώσετε· η απαλλαγή σας το λέει.",
@@ -201,8 +201,8 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Is a high or low deductible better?",
                 },
                 answer: {
-                    el: "Μεγαλύτερη απαλλαγή σημαίνει χαμηλότερο ασφάλιστρο αλλά μεγαλύτερη δική σας επιβάρυνση σε ζημιά. Εξαρτάται από το πόσο μπορείτε να καλύψετε μόνοι σας.",
-                    en: "A higher deductible means a lower premium but a bigger cost to you at claim time. It depends on how much you can cover yourself.",
+                    el: "Δεν υπάρχει ίδια απάντηση για όλους. Συγκρίνετε τη διαφορά στο ασφάλιστρο με το ποσό που θα μπορούσατε να πληρώσετε σε ζημιά και συζητήστε τις επιλογές με τον ασφαλιστή σας.",
+                    en: "There is no single answer for everyone. Compare the premium difference with the amount you could pay towards a claim and discuss the options with your adviser.",
                 },
             },
             {
@@ -234,8 +234,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "What is an insurance exclusion (exairesi)?",
         },
         metaDescription: {
-            el: "Εξαίρεση είναι κάθε περίπτωση που το ασφαλιστήριο ρητά δεν καλύπτει. Είναι ο πιο συχνός λόγος απόρριψης αποζημίωσης — δείτε πού να τις βρείτε στο ασφαλιστήριό σας.",
-            en: "An exclusion is any case the policy expressly does not cover. It is the most common reason a claim is denied — see where to find exclusions in your policy.",
+            el: "Εξαίρεση είναι μια περίπτωση που οι όροι δεν καλύπτουν. Μάθετε πού βρίσκονται οι γενικές και οι ειδικές εξαιρέσεις στο δικό σας ασφαλιστήριο.",
+            en: "An exclusion is a situation the terms do not cover. Learn where to find general and specific exclusions in your own policy.",
         },
         shortDefinition: {
             el: "Εξαίρεση είναι κάτι που το ασφαλιστήριο λέει ότι δεν καλύπτει. Μπορεί να αφορά ένα γεγονός, μια αιτία ή ένα αντικείμενο. Για παράδειγμα, μπορεί να καλύπτεται μια ζημιά γενικά, αλλά όχι όταν συμβεί για έναν λόγο που αναφέρεται στις εξαιρέσεις.",
@@ -243,8 +243,8 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Οι περισσότερες διαφωνίες σε αποζημιώσεις ξεκινούν από μια εξαίρεση που κανείς δεν είχε διαβάσει. Τυπικά παραδείγματα: ζημιές από πρόθεση ή βαριά αμέλεια, φθορά λόγω παλαιότητας, μη δηλωμένη χρήση, πόλεμος ή πανδημία. Δεν είναι «ψιλά γράμματα για να σας παγιδεύσουν»· είναι ο τρόπος που ορίζεται η τιμή του κινδύνου.",
-                en: "Most claim disputes start from an exclusion nobody had read. Typical examples: intentional or grossly negligent damage, wear and tear, undeclared use, war or pandemic. They are not “fine print to trap you”; they are how the price of the risk is defined.",
+                el: "Μια εξαίρεση μπορεί να αφορά την αιτία της ζημιάς, τη χρήση ενός αντικειμένου ή μια συγκεκριμένη πάθηση. Οι διατυπώσεις διαφέρουν. Ελέγξτε τι ακριβώς εξαιρεί το δικό σας ασφαλιστήριο.",
+                en: "An exclusion may concern the cause of damage, an item's use or a particular condition. Wording varies. Check exactly what your policy excludes.",
             },
             {
                 el: "Υπάρχουν γενικές εξαιρέσεις (ισχύουν σε όλο το ασφαλιστήριο) και ειδικές εξαιρέσεις (ανά κάλυψη). Το να ξέρετε τις εξαιρέσεις σας από πριν σημαίνει ότι κάνετε τις σωστές ερωτήσεις στον ασφαλιστή σας πριν συμβεί κάτι, όχι μετά.",
@@ -296,8 +296,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "The sum insured is the maximum the insurer can pay. See why, if it is wrong, it leads to underinsurance and a reduced payout.",
         },
         shortDefinition: {
-            el: "Ασφαλισμένο κεφάλαιο είναι το ανώτατο ποσό που μπορεί να καταβάλει η ασφαλιστική για μια κάλυψη. Στην κατοικία αντιστοιχεί στο κόστος ανακατασκευής, όχι στην εμπορική αξία· στη ζωή είναι το ποσό που λαμβάνουν οι δικαιούχοι. Αν οριστεί χαμηλότερα από την πραγματική αξία, η αποζημίωση μειώνεται αναλογικά.",
-            en: "The sum insured is the maximum the insurer can pay for a cover. For a home it corresponds to the rebuild cost, not the market value; for life it is the amount the beneficiaries receive. If set below the real value, the payout is reduced proportionally.",
+            el: "Ασφαλισμένο κεφάλαιο είναι το ποσό που αναγράφεται για μια κάλυψη. Δεν σημαίνει αυτόματη πληρωμή ολόκληρου του ποσού. Η αποζημίωση εξαρτάται από το περιστατικό, τους όρους και τα επιμέρους όρια. Στην ασφάλιση περιουσίας, χαμηλό ποσό μπορεί να οδηγήσει σε υπασφάλιση.",
+            en: "The sum insured is the amount specified for a cover. It does not mean the whole amount is paid automatically. Payment depends on the event, terms and sublimits. In property insurance, a low amount may lead to underinsurance.",
         },
         body: [
             {
@@ -305,8 +305,8 @@ export const glossaryTerms: GlossaryTerm[] = [
                 en: "The sum insured is the most misunderstood number in a policy. For a home, many confuse it with market or tax value — but insurance pays to rebuild the home, not to buy the land. The right figure is the rebuild cost.",
             },
             {
-                el: "Ένα λάθος ασφαλισμένο κεφάλαιο κοστίζει με δύο τρόπους: αν είναι πολύ χαμηλό, υπασφαλίζεστε και η αποζημίωση κόβεται· αν είναι πολύ υψηλό, πληρώνετε ασφάλιστρο για κάλυψη που δεν θα λάβετε ποτέ.",
-                en: "A wrong sum insured costs you two ways: if it is too low you are underinsured and the payout is cut; if it is too high you pay premium for cover you will never receive.",
+                el: "Ελέγξτε ποια αξία ζητούν οι όροι να ασφαλίσετε. Πολύ χαμηλό ποσό μπορεί να μειώσει την αποζημίωση. Υψηλότερο ποσό δεν σημαίνει απαραίτητα μεγαλύτερη πληρωμή από την πραγματική ζημιά.",
+                en: "Check which value the terms require you to insure. A low amount may reduce compensation. A higher amount does not necessarily mean payment above the actual loss.",
             },
         ],
         howToCheck: {
@@ -340,8 +340,8 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "What if the sum insured is too low?",
                 },
                 answer: {
-                    el: "Υπασφαλίζεστε: σε ζημιά, η αποζημίωση μειώνεται αναλογικά με το ποσοστό της υπασφάλισης.",
-                    en: "You are underinsured: in a claim, the payout is reduced in proportion to the underinsurance.",
+                    el: "Αν εφαρμόζεται αναλογικός κανόνας, μπορεί να μειωθεί η αποζημίωση. Υπάρχουν και καλύψεις με διαφορετικούς όρους, όπως κάλυψη σε πρώτο κίνδυνο. Ελέγξτε τι ισχύει για τη συγκεκριμένη κάλυψη.",
+                    en: "If an average clause applies, compensation may be reduced. Some covers have different terms, such as first-loss cover. Check the rules for the specific cover.",
                 },
             },
         ],
@@ -368,7 +368,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Το ασφάλιστρο είναι το πιο ορατό νούμερο και γι' αυτό το πιο παραπλανητικό. Το φθηνότερο ασφάλιστρο μπορεί να σημαίνει μεγαλύτερη απαλλαγή, χαμηλότερο ασφαλισμένο κεφάλαιο ή περισσότερες εξαιρέσεις. Η σύγκριση μόνο στην τιμή είναι σαν να συγκρίνετε δύο αυτοκίνητα μόνο στο βάρος τους.",
+                el: "Μην συγκρίνετε μόνο την τιμή. Δύο ασφαλιστήρια μπορεί να διαφέρουν στα ποσά που πληρώνουν, στις εξαιρέσεις και στο μέρος της ζημιάς που πληρώνετε εσείς.",
                 en: "The premium is the most visible number and therefore the most misleading. The cheapest premium may mean a higher deductible, a lower sum insured or more exclusions. Comparing on price alone is like comparing two cars only by their weight.",
             },
         ],
@@ -493,8 +493,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "What is a beneficiary in life insurance?",
         },
         metaDescription: {
-            el: "Δικαιούχος είναι το πρόσωπο που λαμβάνει το ασφαλισμένο κεφάλαιο. Ξεπερασμένος δικαιούχος είναι από τα πιο συχνά λάθη — δείτε πώς να τον ελέγξετε.",
-            en: "A beneficiary is the person who receives the sum insured. An outdated beneficiary is a common mistake — see how to check yours.",
+            el: "Δικαιούχος είναι όποιος δικαιούται να λάβει την παροχή μιας ασφάλισης ζωής. Δείτε πού αναφέρεται και πώς ελέγχετε αν η δήλωση χρειάζεται ενημέρωση.",
+            en: "A beneficiary is the person entitled to receive a life insurance benefit. See where they are named and how to check whether the designation needs updating.",
         },
         shortDefinition: {
             el: "Δικαιούχος είναι το πρόσωπο ή τα πρόσωπα που ορίζετε να λάβουν το ασφαλισμένο κεφάλαιο μιας ασφάλισης ζωής όταν επέλθει ο ασφαλισμένος κίνδυνος. Η δήλωση δικαιούχου δεν ενημερώνεται αυτόματα με τις αλλαγές ζωής — γάμος, διαζύγιο ή γέννηση παιδιού δεν αλλάζουν από μόνα τους ποιος θα πληρωθεί.",
@@ -502,8 +502,8 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Ο ξεπερασμένος δικαιούχος είναι ένα από τα πιο συχνά και πιο επώδυνα λάθη στην ασφάλιση ζωής. Ένα ασφαλιστήριο που ανοίχτηκε πριν από έναν γάμο ή ένα παιδί μπορεί να πληρώνει ακόμη τον λάθος άνθρωπο. Η διόρθωση είναι απλή — μια δήλωση στην εταιρεία — αλλά κανείς δεν τη θυμάται αν δεν το ελέγξει.",
-                en: "An outdated beneficiary is one of the most common and most painful mistakes in life insurance. A policy opened before a marriage or a child may still pay the wrong person. The fix is simple — a declaration to the insurer — but nobody remembers it unless they check.",
+                el: "Μετά από αλλαγή στην οικογένειά σας, ελέγξτε ποιος αναφέρεται ως δικαιούχος. Αν θέλετε αλλαγή, ζητήστε από την εταιρεία τη διαδικασία και επιβεβαίωση όταν ολοκληρωθεί.",
+                en: "After a family change, check who is named as beneficiary. If you want a change, ask the insurer for the process and confirmation when it is completed.",
             },
         ],
         howToCheck: {
@@ -703,8 +703,8 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Why is my surrender value less than what I paid?",
                 },
                 answer: {
-                    el: "Τα πρώτα χρόνια βαραίνουν έξοδα και ποινές πρόωρης διακοπής. Η αξία εξαγοράς βελτιώνεται όσο περνούν τα χρόνια.",
-                    en: "The early years carry charges and early-termination penalties. The surrender value improves as the years pass.",
+                    el: "Το ποσό εξαρτάται από τους όρους, τις χρεώσεις και, όπου υπάρχει επένδυση, την αξία της. Δεν είναι εγγυημένο ότι αυξάνεται κάθε χρόνο. Ζητήστε την τρέχουσα αξία εξαγοράς πριν αποφασίσετε.",
+                    en: "The amount depends on the terms, charges and, where invested, the investment value. It is not guaranteed to rise every year. Ask for the current surrender value before deciding.",
                 },
             },
         ],
@@ -787,8 +787,8 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         body: [
             {
-                el: "Η συμμετοχή μπερδεύεται συχνά με την απαλλαγή, αλλά είναι διαφορετική: η απαλλαγή είναι ένα σταθερό ποσό που πληρώνετε πρώτοι σε κάθε ζημιά, ενώ η συμμετοχή είναι ένα ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Δύο ασφαλιστήρια που «καλύπτουν νοσηλεία» μπορεί να σας κοστίσουν πολύ διαφορετικά αν το ένα έχει συμμετοχή 10% και το άλλο 30%. Ορισμένα προγράμματα έχουν και ανώτατο όριο ετήσιας συμμετοχής, πάνω από το οποίο ο ασφαλιστής καλύπτει το 100%.",
-                en: "Co-payment is often confused with a deductible, but it is different: a deductible is a fixed amount you pay first on each claim, while a co-payment is a percentage of the cost you share with the insurer. Two policies that both “cover hospitalisation” can cost you very differently if one has a 10% co-payment and the other 30%. Some plans also cap your annual co-payment, above which the insurer covers 100%.",
+                el: "Η συμμετοχή είναι συνήθως ποσοστό των καλυπτόμενων εξόδων. Η απαλλαγή μπορεί να είναι ποσό ή ποσοστό με ξεχωριστό τρόπο υπολογισμού. Ένα πρόγραμμα μπορεί να περιλαμβάνει και τα δύο. Ελέγξτε με ποια σειρά εφαρμόζονται.",
+                en: "A co-payment is usually a percentage of covered expenses. A deductible can be an amount or percentage with its own calculation. A programme may have both. Check the order in which they apply.",
             },
         ],
         howToCheck: {
@@ -802,8 +802,8 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "What is the difference between a co-payment and a deductible?",
                 },
                 answer: {
-                    el: "Η απαλλαγή είναι σταθερό ποσό που πληρώνετε πρώτοι· η συμμετοχή είναι ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Ένα ασφαλιστήριο μπορεί να έχει και τα δύο.",
-                    en: "A deductible is a fixed amount you pay first; a co-payment is a percentage of the cost you share with the insurer. A policy can have both.",
+                    el: "Η συμμετοχή είναι συνήθως ποσοστό των εξόδων. Η απαλλαγή μπορεί να είναι ποσό ή ποσοστό και να ισχύει ανά περιστατικό ή έτος. Οι όροι εξηγούν πώς συνδυάζονται.",
+                    en: "A co-payment is usually a percentage of expenses. A deductible can be an amount or percentage and apply per event or year. The terms explain how they combine.",
                 },
             },
             {
@@ -979,7 +979,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                     en: "Why is my payout smaller than my loss?",
                 },
                 answer: {
-                    el: "Συνήθως λόγω απαλλαγής, συμμετοχής, ορίων ή υποασφάλισης, ή επειδή η κάλυψη αποτιμά την τρέχουσα και όχι την καινούρια αξία. Οι όροι του ασφαλιστηρίου σας εξηγούν τη βάση.",
+                    el: "Μπορεί να οφείλεται σε απαλλαγή, συμμετοχή, ανώτατο όριο, υπασφάλιση ή στον τρόπο υπολογισμού της αξίας. Ζητήστε γραπτή εξήγηση του υπολογισμού από την ασφαλιστική.",
                     en: "Usually because of a deductible, co-payment, limits or underinsurance, or because the cover values the current rather than the new price. Your policy terms explain the basis.",
                 },
             },

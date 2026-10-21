@@ -77,8 +77,8 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
             title: { el: "Περιεχόμενο & ευθύνη ενοικιαστή", en: "Contents & tenant liability" },
             because: { el: "Είπατε ότι μένετε σε νοικιασμένο σπίτι.", en: "You said you live in a rented home." },
             check: {
-                el: "Το ασφαλιστήριο του ιδιοκτήτη καλύπτει το κτίριο, όχι τα πράγματά σας ούτε τη ζημιά που μπορεί να προκαλέσετε.",
-                en: "The landlord's policy covers the building, not your belongings and not damage you cause.",
+                el: "Η ασφάλιση του ιδιοκτήτη δεν καλύπτει απαραίτητα τα δικά σας πράγματα ή τη δική σας ευθύνη. Ελέγξτε τι αναφέρει το ασφαλιστήριο.",
+                en: "The owner's insurance does not necessarily cover your belongings or your liability. Check what the policy says.",
             },
         })
     }
@@ -94,8 +94,8 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
                     ? { el: "Είπατε ότι υπάρχει ένα εξαρτώμενο άτομο.", en: "You said there is one dependent." }
                     : { el: "Είπατε ότι υπάρχουν περισσότερα από ένα εξαρτώμενα άτομα.", en: "You said there is more than one dependent." },
             check: {
-                el: "Δείτε αν υπάρχει κάλυψη ζωής και ποιος είναι ο δικαιούχος — ο δικαιούχος είναι το πεδίο που μένει πιο συχνά ξεπερασμένο.",
-                en: "Check whether life cover exists and who the beneficiary is — the beneficiary is the field most often left out of date.",
+                el: "Ελέγξτε ποιος αναφέρεται ως δικαιούχος: δηλαδή ποιος θα λάβει την παροχή, αν συμβεί το γεγονός που καλύπτεται.",
+                en: "Check who is named as beneficiary: the person who receives the benefit if the insured event occurs.",
             },
         })
     }
@@ -179,8 +179,8 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
             title: { el: "Διαχείριση πολυκατοικίας", en: "Managing a block of flats" },
             because: { el: "Είπατε ότι είστε διαχειριστής πολυκατοικίας.", en: "You said you manage a block of flats." },
             check: {
-                el: "Ο ρόλος είναι άμισθος αλλά η ευθύνη για τους κοινόχρηστους χώρους — ασανσέρ, κλιμακοστάσιο, σωληνώσεις — είναι προσωπική. Δείτε αν υπάρχει κάλυψη στο όνομα της πολυκατοικίας.",
-                en: "The role is unpaid but liability for the common areas — lift, stairwell, pipework — is personal. Check whether cover exists in the building's name.",
+                el: "Ελέγξτε τις καλύψεις των κοινόχρηστων χώρων και τι προβλέπεται για την ευθύνη της διαχείρισης. Η ευθύνη εξαρτάται από το περιστατικό.",
+                en: "Check cover for shared areas and the building management's liability. Liability depends on the circumstances.",
             },
         })
     }
@@ -193,8 +193,8 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
             title: { el: "Ταξίδι", en: "Travel" },
             because: { el: "Είπατε ότι ταξιδεύετε συχνά.", en: "You said you travel often." },
             check: {
-                el: "Αν ταξιδεύετε πολλές φορές τον χρόνο, το ετήσιο ασφαλιστήριο συνήθως κοστίζει λιγότερο από τρία μεμονωμένα. Δείτε επίσης τι ισχύει για ιατρικά έξοδα στο εξωτερικό.",
-                en: "If you travel several times a year, an annual policy usually costs less than three single trips. Also check what applies to medical costs abroad.",
+                el: "Αν ταξιδεύετε συχνά, συγκρίνετε τους όρους και το κόστος μιας ετήσιας ασφάλισης με την ασφάλιση ανά ταξίδι.",
+                en: "If you travel often, compare the terms and cost of annual insurance with cover for each trip.",
             },
         })
     }
@@ -221,8 +221,8 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
             title: { el: "Κατοικίδιο", en: "Pet" },
             because: { el: "Είπατε ότι έχετε κατοικίδιο.", en: "You said you have a pet." },
             check: {
-                el: "Από το 2021 η αστική ευθύνη για σκύλους είναι υποχρεωτική στην Ελλάδα. Δείτε αν την έχετε.",
-                en: "Since 2021 third-party liability for dogs is compulsory in Greece. Check whether you have it.",
+                el: "Ο ιδιοκτήτης ή ανάδοχος μπορεί να ευθύνεται για ζημιές που προκαλεί το ζώο, σύμφωνα με τον νόμο. Αυτό δεν σημαίνει γενική υποχρέωση αγοράς ασφάλισης για κάθε σκύλο. Ελέγξτε αν έχετε σχετική κάλυψη και με ποιους όρους.",
+                en: "An owner or foster carer may be liable under the law for damage caused by the animal. This does not mean every dog is subject to a general insurance-purchase requirement. Check whether you have relevant cover and on what terms.",
             },
         })
     }
@@ -264,8 +264,8 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
             title: { el: "Δραστηριότητες υψηλού κινδύνου", en: "High-risk activities" },
             because: { el: "Δηλώσατε δραστηριότητες που πολλά ασφαλιστήρια εξαιρούν.", en: "You named activities that many policies exclude." },
             check: {
-                el: "Ψάξτε τη λέξη «εξαιρέσεις» στο ασφαλιστήριο ζωής και υγείας σας. Αν η δραστηριότητά σας αναφέρεται εκεί ονομαστικά, τότε εξαιρείται όσο την κάνετε.",
-                en: "Look for the word “exclusions” in your life and health policies. If your activity is named there, it is excluded for as long as you do it.",
+                el: "Ορισμένες δραστηριότητες μπορεί να εξαιρούνται ή να χρειάζονται πρόσθετη κάλυψη. Ελέγξτε τους όρους πριν συμμετάσχετε.",
+                en: "Some activities may be excluded or require additional cover. Check the terms before taking part.",
             },
         })
     }
@@ -278,8 +278,8 @@ export function needsOutcome(a: NeedsAnswers): NeedsItem[] {
             title: { el: "Ψηφιακή ζωή", en: "Digital life" },
             because: { el: "Είπατε ότι σχεδόν τα πάντα περνούν από το κινητό σας.", en: "You said almost everything runs through your phone." },
             check: {
-                el: "Δείτε αν κάποιο από τα ασφαλιστήριά σας καλύπτει απάτη σε ηλεκτρονική συναλλαγή — τα περισσότερα οικογενειακά ασφαλιστήρια δεν την αναφέρουν καθόλου.",
-                en: "Check whether any of your policies covers fraud on an online transaction — most household policies do not mention it at all.",
+                el: "Ελέγξτε αν το ασφαλιστήριό σας περιλαμβάνει περιστατικά στο διαδίκτυο και ποιες ακριβώς υπηρεσίες προσφέρει.",
+                en: "Check whether your policy includes online incidents and exactly which services it offers.",
             },
         })
     }

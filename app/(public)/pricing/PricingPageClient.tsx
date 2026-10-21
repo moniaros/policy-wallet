@@ -114,8 +114,8 @@ export default function PricingPage({
             en: "Save",
         },
         cancelAnytime: {
-            el: "Σταματάτε όποτε θέλετε",
-            en: "Stop whenever you want",
+            el: "Ακύρωση ανανέωσης όποτε θέλετε",
+            en: "Cancel renewal at any time",
         },
         noHiddenFees: {
             el: "Καμία κρυφή χρέωση",
@@ -129,7 +129,7 @@ export default function PricingPage({
         getStarted: { el: "Ξεκινήστε", en: "Get started" },
         viewAccount: { el: "Διαχείριση λογαριασμού", en: "Manage account" },
         choosePlan: { el: "Επιλογή πλάνου", en: "Choose plan" },
-        contactSales: { el: "Επικοινωνία πωλήσεων", en: "Contact sales" },
+        contactSales: { el: "Ρωτήστε για τα πλάνα", en: "Contact sales" },
     } as const
 
     // supabase-js is ~47 KB gzip and is only needed to resolve the session-aware

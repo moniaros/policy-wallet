@@ -99,7 +99,7 @@ describe("Goal 7 — the three pages exist in both languages, are registered and
         const { MethodologySections } = await import("@/app/(public)/methodology/MethodologySections")
         const { container } = render(<MethodologySections locale="el" />)
         const text = container.textContent || ""
-        expect(text).toContain("Πώς αποφασίζεται ένα εύρημα")
+        expect(text).toContain("Πώς βρίσκουμε σημεία που χρειάζονται έλεγχο")
         expect(text).not.toMatch(/How a finding is decided/)
     })
 })

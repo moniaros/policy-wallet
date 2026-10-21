@@ -37,10 +37,10 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                         id="why-now-heading"
                         className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white"
                     >
-                        {t("Το πρόβλημα δεν είναι να μην έχετε ασφάλιση.", "The problem is not having no insurance.")}
+                        {t("Έχετε ασφαλιστήριο.", "You have a policy.")}
                         <br className="hidden sm:block" />{" "}
                         <span className="text-primary dark:text-brand-accent">
-                            {t("Είναι να νομίζετε ότι έχετε.", "It is thinking you have it.")}
+                            {t("Ξέρετε τι γράφει;", "Do you know what it says?")}
                         </span>
                     </h2>
                 </div>

@@ -27,8 +27,9 @@ describe('legal text does not name prices it cannot guarantee', () => {
     })
 
     it('still tells the reader where the authoritative price is', () => {
-        expect(legal).toMatch(/price shown on the pricing page and confirmed before you complete the purchase/)
-        expect(legal).toMatch(/τιμή που εμφανίζεται στη σελίδα τιμολόγησης και επιβεβαιώνεται/)
+        expect(legal).toMatch(/pricing page shows current features, limits and charges/);
+        expect(legal).toMatch(/Before purchasing, you confirm the final price/)
+        expect(legal).toMatch(/Πριν από αγορά επιβεβαιώνετε την τελική τιμή/)
     })
 
     it('keeps the rest of the billing clause intact', () => {

@@ -87,8 +87,8 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
                                     : t("Δείτε όλα τα πλάνα στη σελίδα τιμών.", "See every plan on the pricing page.")
                                 : FUNNEL_PLANS
                                   ? t(
-                                        `${FUNNEL_PLANS.starter.displayName} ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/μήνα, ${FUNNEL_PLANS.plus.displayName} ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/μήνα με πλήρη ανάλυση AI. Ακύρωση όποτε θέλετε.`,
-                                        `${FUNNEL_PLANS.starter.displayName} at ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/month, ${FUNNEL_PLANS.plus.displayName} at ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/month with full AI analysis. Cancel anytime.`
+                                        `${FUNNEL_PLANS.starter.displayName} ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/μήνα, ${FUNNEL_PLANS.plus.displayName} ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/μήνα, ανάλογα με το πλάνο. Ακύρωση όποτε θέλετε.`,
+                                        `${FUNNEL_PLANS.starter.displayName} at ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/month, ${FUNNEL_PLANS.plus.displayName} at ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/month, depending on your plan. Cancel anytime.`
                                     )
                                   : t("Δείτε όλα τα πλάνα στη σελίδα τιμών.", "See every plan on the pricing page.")}
                         </p>

@@ -40,8 +40,8 @@ export default function AgentSolutionsPage() {
                         </h1>
                         <p className="max-w-[760px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Στέλνετε τα ασφαλιστήρια των πελατών σας. Βλέπετε ποιος έχει κενό, ποιος λήγει σύντομα και πού υπάρχει ευκαιρία — πριν σας το ζητήσει κανείς. Είναι η ίδια ανεξάρτητη ανάλυση ρίσκου που εμπιστεύεται ο ασφαλισμένος — σε όλο το χαρτοφυλάκιό σας.",
-                                "You send your clients' policies. You see who has a gap, whose cover runs out soon, and where there is an opening — before anyone asks you. It is the same independent risk analysis the policyholder trusts — across your whole book."
+                                "Οργανώστε τα ασφαλιστήρια των πελατών σας. Δείτε λήξεις, ερωτήσεις και σημεία που χρειάζονται έλεγχο, σύμφωνα με τα δικαιώματα πρόσβασής σας.",
+                                "Organise your clients' policies. See expiry dates, questions and points to check, according to your access rights."
                             )}
                         </p>
 
@@ -152,7 +152,7 @@ export default function AgentSolutionsPage() {
                                 {t("Το διαβάζουμε", "We read it")}
                             </h3>
                             <p className="text-body text-[#475569] dark:text-slate-300">
-                                {t("Δείχνουμε τι εντόπισαν οι κανόνες και ποιος πελάτης χρειάζεται προσοχή πρώτος.", "We show what the rules found and which client needs your attention first.")}
+                                {t("Βλέπετε τα αποτελέσματα των διαθέσιμων ελέγχων και τα στοιχεία στα οποία βασίστηκαν.", "See the results of available checks and the information behind them.")}
                             </p>
                         </div>
 
@@ -201,7 +201,7 @@ export default function AgentSolutionsPage() {
                         </p>
                         <ul className="space-y-4">
                             {[
-                                t("Κάθε ασφαλιστήριο διαβασμένο σε λίγα λεπτά", "Every policy read in minutes"),
+                                t("Τα βασικά στοιχεία κάθε ασφαλιστηρίου συγκεντρωμένα", "Key details from each policy in one place"),
                                 t(
                                     `${productCategories.length} ασφαλιστικοί κλάδοι, κάθε ελληνική ασφαλιστική`,
                                     `${productCategories.length} lines of insurance, every Greek insurer`,
@@ -210,7 +210,7 @@ export default function AgentSolutionsPage() {
                                 // specialty schedules into the advisor's book — measured
                                 // against real Greek policy wordings, not aspirational.
                                 t(
-                                    "Και εξειδικευμένοι κλάδοι: μεταφορές, σκάφη, πληρώματα πλοίων, χρήματα, εμπιστοσύνη υπαλλήλων",
+                                    "Και ειδικά είδη ασφάλισης: μεταφορές, σκάφη, πληρώματα, χρήματα και ζημιές από παράνομες πράξεις υπαλλήλων",
                                     "Specialty lines too: cargo, marine hull, ships' crews, money, fidelity",
                                 ),
                                 t("Δεδομένα πελατών σε διακομιστές στην ΕΕ, κρυπτογραφημένα", "Client data on servers in the EU, encrypted"),
