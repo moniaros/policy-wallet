@@ -2775,7 +2775,6 @@ export const el = {
             lifeEventBody: 'Νέο σπίτι, παιδί, νέα δουλειά — οι αλλαγές της ζωής μετακινούν την προστασία σας. Πείτε μας και θα την επανεκτιμήσουμε.',
             lifeEventCta: 'Δηλώστε μια αλλαγή',
             freePlanPolicies: 'Ασφαλιστήρια στο δωρεάν πλάνο',
-            freePlanHint: 'Το Plus έχει χώρο για έως 10 ασφαλιστήρια, το Pro απεριόριστα.',
             helpTitle: 'Βοήθεια και υποστήριξη',
             helpOpen: 'Άνοιγμα κέντρου βοήθειας',
             quickUploadAria: 'Γρήγορη μεταφόρτωση',
@@ -3740,7 +3739,6 @@ export const el = {
             updatePayment: 'Ενημέρωση μεθόδου πληρωμής'
         },
         featuredGuides: 'Επιλεγμένα σεμινάρια',
-        instantSupport: 'Άμεση υποστήριξη',
         browseLibrary: 'Βιβλιοθήκη',
         startLearning: 'Έναρξη εκμάθησης',
         liveStatus: 'Κατάσταση',

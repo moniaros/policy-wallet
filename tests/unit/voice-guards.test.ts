@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { POSITIONING_BANNED, SUPPORT_BANNED } from '../measure/content-02-patterns'
+import { POSITIONING_BANNED, SUPPORT_BANNED, IN_APP_SUPPORT_BANNED, REMINDER_PLUS, REMINDER_PLUS_EXEMPT } from '../measure/content-02-patterns'
 
 /**
  * PW-VOICE-01 — the §7 guards, in one file so their universe is stated once.
@@ -296,7 +296,14 @@ function walkAll(dir: string, exts: RegExp): string[] {
         return statSync(p).isDirectory() ? walkAll(p, exts) : exts.test(name) ? [p] : []
     })
 }
-const PUBLIC_CODE = [...PUBLIC_DIRS.flatMap((d) => walkAll(d, /\.tsx?$/)), ...PUBLIC_FILES.filter(existsSync)]
+// lib/i18n/*.ts modules that PUBLIC code imports (how-it-works, presentation, homepage-panels, …) are public marketing copy.
+// The el/en bundles under lib/i18n/translations and the app's own modules (prevention, …) are the app's: the in-app arms scan those.
+const PUBLIC_NON_I18N = [...PUBLIC_DIRS.flatMap((d) => walkAll(d, /\.tsx?$/)), ...PUBLIC_FILES.filter(existsSync)]
+const PUBLIC_I18N = readdirSync('lib/i18n').filter((n) => /\.tsx?$/.test(n)).map((n) => join('lib/i18n', n)).filter((f) => {
+    const mod = f.replace(/\.tsx?$/, '').replace(/\\/g, '/')
+    return PUBLIC_NON_I18N.some((g) => readFileSync(g, 'utf-8').includes(`@/${mod}"`))
+})
+const PUBLIC_CODE = [...PUBLIC_NON_I18N, ...PUBLIC_I18N]
 const PUBLIC_STATIC = walkAll('public', /\.(svg|json|txt|webmanifest)$/)
 function positioningOffenders(path: string, text: string): string[] {
     return text.split('\n').flatMap((line, i) => (POSITIONING_BANNED.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
@@ -387,10 +394,9 @@ describe('PW-CONTENT-02 support lint — email only, no phone, chat, hours or «
  * and the /product page contradicted its own /pricing. Same public universe as above.
  * Probe: tests/fixtures/guard-probes/voice-reminder-attribution.ts.txt.
  */
-const REMINDER_PLUS = /(υπενθυμ|ειδοποι|θυμίζ|remind|alert|warn)[^.\n]{0,90}(από το πλάνο Plus|από το Plus|from the Plus plan|from Plus)|(Οι υπενθυμίσεις|[Rr]enewal reminders)[^.\n]{0,40}(Plus)\b/i
 function reminderOffenders(path: string, text: string): string[] {
-    // a line that names the real rung (30 / 90 days) is an accurate attribution of the longer ladder, not the false one
-    return text.split('\n').flatMap((line, i) => (REMINDER_PLUS.test(line) && !/\b(30|90)\b/.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
+    // a line that says "earlier" / names the 90-day rung attributes only the longer ladder to Plus — that part is true
+    return text.split('\n').flatMap((line, i) => (REMINDER_PLUS.test(line) && !REMINDER_PLUS_EXEMPT.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
 }
 describe('PW-CONTENT-02 plan-attribution lint — reminders are not a Plus-only feature', () => {
     it('no public prose attributes a renewal reminder to Plus', () => {
@@ -409,5 +415,23 @@ describe('PW-CONTENT-02 plan-attribution lint — reminders are not a Plus-only 
             try { n += reminderOffenders(f, code(execFileSync('git', ['show', `0111618a:${f}`], { encoding: 'utf-8' }))).length } catch { return }
         }
         expect(n).toBeGreaterThanOrEqual(11)
+    })
+})
+
+
+/**
+ * The support lint also covers the IN-APP and EMAIL surfaces (owner: "public routes, in-app, and in
+ * email templates"). Enumerated from the tree: the el/en bundles, help and plan copy, the account and
+ * monetization components, the protected routes' plan screens, and every email template.
+ * An insurer helpline printed from a policy is not in this universe (wallet / lib/insurance).
+ */
+const IN_APP_SUPPORT_DIRS = ['lib/i18n/translations', 'lib/email', 'lib/monetization', 'components/account', 'components/monetization', 'components/settings', 'app/(protected)/upgrade', 'app/(protected)/account', 'app/(protected)/agent/pricing', 'app/(protected)/help']
+const IN_APP_SUPPORT_FILES = ['lib/help-content.ts', 'lib/subscription-copy.ts']
+describe('PW-CONTENT-02 support lint — in-app and email surfaces', () => {
+    const files = [...IN_APP_SUPPORT_DIRS.flatMap((d) => walkAll(d, /\.tsx?$/)), ...IN_APP_SUPPORT_FILES.filter(existsSync)]
+    it('the universe is non-trivial', () => expect(files.length).toBeGreaterThan(40))
+    it('no in-app string or email template promises phone/chat/hours/dedicated support', () => {
+        const bad = files.flatMap((f) => code(readFileSync(f, 'utf-8')).split('\n').flatMap((line, i) => (IN_APP_SUPPORT_BANNED.test(line) ? [`${f}:${i + 1}  ${line.trim().slice(0, 110)}`] : [])))
+        expect(bad, `in-app/email support claims = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
     })
 })

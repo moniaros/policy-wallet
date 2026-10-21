@@ -61,10 +61,6 @@ export const subscriptionCopy = {
             el: 'Όριο ασφαλιστηρίων',
             en: 'Policy limit'
         },
-        unlimitedPolicies: {
-            el: 'Απεριόριστα ασφαλιστήρια',
-            en: 'Unlimited policies'
-        },
         basicAI: {
             el: 'Βασική σύνοψη ασφαλιστηρίου από το AI',
             en: 'Basic AI policy summary'
@@ -109,9 +105,15 @@ export const subscriptionCopy = {
             el: 'Συνεργασία με σύμβουλο',
             en: 'Agent collaboration'
         },
-        digitalWallet: {
-            el: 'Ψηφιακό πορτοφόλι',
-            en: 'Digital wallet integration'
+        // Every plan gets one reminder email 30 days ahead; the 90 → 3 day ladder is
+        // Plus and Family (lib/renewals/milestones.ts, renewal.service.ts).
+        reminderEmail30: {
+            el: 'Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)',
+            en: 'Renewal reminder 30 days ahead (email)'
+        },
+        reminderLadder: {
+            el: 'Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)',
+            en: 'Renewal reminders from 90 to 3 days ahead (email)'
         },
     },
 

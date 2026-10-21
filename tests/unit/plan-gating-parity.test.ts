@@ -147,13 +147,26 @@ const TIER_OF_KEY: Record<string, PlanTier | AgentTier> = {
 
 /** A label that states a capability but is deliberately not tied to one enforced field. Each needs a reason. */
 const UNTAGGED_OK: Record<string, string> = {
-    'Βασική εικόνα πελατών': 'ungated agent client view (STEP0 §2.3 E33)',
-    'Όλοι οι πελάτες σε μία οθόνη': 'ungated agent portfolio screen (STEP0 §2.3 E33)',
-    'Λίστα με ό,τι λήγει': 'agent expiry list; STEP0 §2.3 E33 verified, no single entitlement field',
-    'Προτάσεις επιπλέον κάλυψης ανά πελάτη': 'the crossSellIntelligence feature as worded on the Agent Pro card; verified STEP0 E34',
     'Υποστήριξη μέσω email': 'support is email only, on every plan (owner decision 2026-10-22); no entitlement field',
 }
 
+/**
+ * The words a label must contain to carry a given claim tag. Without this the guard trusted the
+ * author's tag: relabel the `basicSummary` line «Πλήρης ανάλυση AI» and it stayed green (review I4).
+ */
+const plain = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+/** Written accent-free and lower-case: labels are compared through `plain()`. */
+const KEYWORDS: Record<ClaimKey, RegExp> = {
+    policies: /ασφαλιστηρ|polic/, basicSummary: /συνοψη|summary/, deepAnalysis: /αναλυση ai|ai analysis/,
+    gapDetection: /κενων|gap/, duplicateDetection: /διπλων|duplicate/, renewalEmail30: /υπενθυμιση|reminder/,
+    renewalLadder: /υπενθυμισεις|reminders/, interactiveQA: /ερωτησεις|q&a/, reportExport: /αναφορας|report/,
+    advisorCollaboration: /συμβουλο|advisor/, multiInsurerInsights: /ασφαλιστικες|insurers/, exclusions: /εξαιρεσ|exclusion/,
+    renewalDate: /ανανεωσης|renewal/, 'agent.clients': /πελατ|client/, 'agent.analysesPerMonth': /αναλυσεις|analyses/,
+    'agent.bulkImportRows': /μαζι|εισαγωγη|γραμμες|import|rows|at once/, 'agent.teamMembers': /ομαδα|team|μελη/,
+    'agent.questionnaireTemplates': /ερωτηματολογια|questionnaire/, 'agent.renewalAutomation': /ανανεωσης|renewal/,
+    'agent.priorityQueue': /πρωτες|first|ουρα|queue|προτεραιοτητα/, 'agent.commissionTracking': /προμηθειων|commission/,
+    'agent.crossSellIntelligence': /καλυψης|cover/, 'agent.expiryList': /ληγει|running out|ληξ/, 'agent.clientScreen': /πελατ|client/,
+}
 const claimText = (v: ClaimValue) => String(v)
 const hasNumber = (text: string, n: number) => new RegExp(`(?<![\\d.,])${n}(?![\\d.,])`).test(text)
 const UNLIMITED = /Απεριόριστ|Unlimited/i
@@ -170,6 +183,7 @@ function claimOffenders(audience: Audience): string[] {
                 if (!(f.label.el in UNTAGGED_OK)) bad.push(`${where}: claim:null needs an UNTAGGED_OK reason`)
                 continue
             }
+            if (!KEYWORDS[f.claim].test(plain(f.label.el)) || !KEYWORDS[f.claim].test(plain(f.label.en))) bad.push(`${where}: the label does not say what the \`${f.claim}\` tag claims`)
             const v = planClaim(f.claim as never, tier as never)
             if (v === UNSTATED) bad.push(`${where}: the plan's ${f.claim} is not stated for this tier — the line must go`)
             else if (typeof v === 'boolean') { if (f.included !== v) bad.push(`${where}: renders included=${f.included}, code says ${claimText(v)} (${f.claim})`) }
@@ -181,6 +195,7 @@ function claimOffenders(audience: Audience): string[] {
         const where = `row «${row.name.el}»`
         if (row.claim === undefined) { bad.push(`${where}: no \`claim\` tag`); continue }
         if (row.claim === null) { if (!(row.name.el in UNTAGGED_OK)) bad.push(`${where}: claim:null needs an UNTAGGED_OK reason`); continue }
+        if (!KEYWORDS[row.claim].test(plain(row.name.el)) || !KEYWORDS[row.claim].test(plain(row.name.en))) bad.push(`${where}: the row name does not say what the \`${row.claim}\` tag claims`)
         for (const [key, cell] of Object.entries(row.values)) {
             const tier = TIER_OF_KEY[key]
             const v = planClaim(row.claim as never, tier as never)
@@ -209,6 +224,7 @@ describe('PW-CONTENT-02 — every public capability claim equals what the code e
         expect(agent).toMatch(/agent-agency: renders «Απεριόριστες Unlimited», code says 400/)
         expect(ph).toMatch(/card free «Πλήρης ανάλυση AI»: renders included=true, code says false/)
         expect(ph).toMatch(/no `claim` tag/)
+        expect(ph).toMatch(/the label does not say what the `basicSummary` tag claims/)
     })
 
     it('every claim key a page uses is a real key (an agent key on an agent plan, a B2C key on a B2C plan)', () => {
@@ -224,7 +240,7 @@ describe('PW-CONTENT-02 — every public capability claim equals what the code e
 /** In-app strings (A1): a promise nothing grants. Enumerated from the filesystem, not from two known files. */
 const IN_APP_ROOTS = ['app', 'components', 'lib']
 // In-app promises of full analysis below Family, or of unlimited analyses, that the code does not grant (review I7).
-const IN_APP_BANNED = /πρώτη πλήρης ανάλυση είναι δωρεάν|first full analysis is free|Full AI analysis is a Plus feature|διαθέσιμη σε Plus\/Pro|available on Plus\/Pro|Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο|Analyses are unlimited on every plan|3 ασφαλιστήρια με πλήρη ανάλυση|3 policies with the full AI analysis|Απεριόριστες αναλύσεις|Unlimited (document |AI )?analyses|Απεριόριστες AI αναλύσεις|δεν περιλαμβάνει αναλύσεις AI|\d+M tokens\/(μήνα|month)|Αποκλειστική υποστήριξη|Dedicated support|upgrade or downgrade|υποβαθμίσετε|δυνατότητα του Plus|περιλαμβάνονται στο Plus|προτεραιότητα υποστήριξης|[Pp]riority support|with Plus or Pro/i
+const IN_APP_BANNED = /πρώτη πλήρης ανάλυση είναι δωρεάν|first full analysis is free|Full AI analysis is a Plus feature|διαθέσιμη σε Plus\/Pro|available on Plus\/Pro|Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο|Analyses are unlimited on every plan|3 ασφαλιστήρια με πλήρη ανάλυση|3 policies with the full AI analysis|Απεριόριστες αναλύσεις|Unlimited (document |AI )?analyses|Απεριόριστες AI αναλύσεις|δεν περιλαμβάνει αναλύσεις AI|\d+M tokens\/(μήνα|month)|Αποκλειστική υποστήριξη|Dedicated support|upgrade or downgrade|υποβαθμίσετε|δυνατότητα του Plus|περιλαμβάνονται στο Plus|προτεραιότητα υποστήριξης|[Pp]riority support|Υποστήριξη προτεραιότητας|with Plus or Pro|Απεριόριστα ασφαλιστήρια(?! στο πορτοφόλι)|Unlimited policies(?! in your wallet)|Digital wallet integration|ουρά ανάλυσης \(Plus\)|analysis queue \(Plus\)/i
 function inAppFiles(dir: string): string[] {
     if (!existsSync(dir)) return []
     return readdirSync(dir).flatMap((name) => {

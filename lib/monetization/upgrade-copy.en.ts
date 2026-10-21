@@ -153,7 +153,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         benefits: [
             "Monthly tokens that renew automatically",
             "Option to buy extra packs",
-            "Priority analysis queue (Plus)",
+            "Priority analysis queue (Family)",
             "Full usage control from your account",
         ],
         trust: TRUST,

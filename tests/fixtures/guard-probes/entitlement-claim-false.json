@@ -11,7 +11,8 @@
     "plans": [
       { "key": "free", "features": [
         { "claim": "deepAnalysis", "label": { "el": "Πλήρης ανάλυση AI", "en": "Full AI analysis" }, "included": true },
-        { "label": { "el": "Μια δυνατότητα χωρίς ετικέτα", "en": "A capability with no claim tag" }, "included": true }
+        { "label": { "el": "Μια δυνατότητα χωρίς ετικέτα", "en": "A capability with no claim tag" }, "included": true },
+        { "claim": "basicSummary", "label": { "el": "Πλήρης ανάλυση AI", "en": "Full AI analysis" }, "included": true }
       ] }
     ],
     "comparisonRows": []

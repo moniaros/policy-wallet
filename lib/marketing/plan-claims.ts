@@ -42,6 +42,8 @@ export type AgentClaimKey =
     | "agent.priorityQueue"
     | "agent.commissionTracking"
     | "agent.crossSellIntelligence"
+    | "agent.expiryList"
+    | "agent.clientScreen"
 
 export type ClaimKey = B2cClaimKey | AgentClaimKey
 
@@ -86,6 +88,11 @@ export function planClaim(key: ClaimKey, tier: PlanTier | AgentTier): ClaimValue
                 return l.commissionTracking
             case "agent.crossSellIntelligence":
                 return l.crossSellIntelligence
+            // /renewals (the list of what is expiring) and the client screen have no
+            // entitlement check for any agent tier (renewals/page.tsx, getAgentRenewals).
+            case "agent.expiryList":
+            case "agent.clientScreen":
+                return true
         }
     }
     const l = DEFAULT_ENTITLEMENT_LIMITS[tier as PlanTier]

@@ -126,7 +126,10 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     },
     advanced_renewal_reminders: {
         featureKey: "advanced_renewal_reminders",
-        requiredPlan: "pro",
+        // The full 90…3-day ladder is the `notifications` entitlement, true on Plus and
+        // Family (renewal.service.ts `ownerHasFullReminders`); this display gate said
+        // `pro`, so Free users were told Family was needed (PW-CONTENT-02 review I2).
+        requiredPlan: "plus",
         upgradeReason: "notifications_disabled",
         lockedViewedEvent: "feature_locked_viewed",
     },

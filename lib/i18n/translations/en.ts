@@ -2723,7 +2723,6 @@ export const en: TranslationKeys = {
             lifeEventBody: 'A new home, a child, a new job — life changes move your protection. Tell us, and we will reassess it.',
             lifeEventCta: 'Declare a change',
             freePlanPolicies: 'Policies on the free plan',
-            freePlanHint: 'Plus fits up to 10 policies, Pro is unlimited.',
             helpTitle: 'Help and support',
             helpOpen: 'Open Help Center',
             quickUploadAria: 'Quick upload',
@@ -3683,7 +3682,6 @@ export const en: TranslationKeys = {
             updatePayment: 'Updating your payment method'
         },
         featuredGuides: 'Featured Tutorials',
-        instantSupport: 'Instant Support',
         browseLibrary: 'Browse Library',
         startLearning: 'Start Learning',
         liveStatus: 'Live Status',

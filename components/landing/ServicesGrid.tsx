@@ -20,7 +20,7 @@ const services = [
         Icon: ScanSearch,
         titleEl: "Τι χρειάζεται έλεγχο;",
         titleEn: "What needs checking?",
-        // Gap detection is Plus-only — the tier is named, same rule as the
+        // Gap findings are Family — the tier is named, same rule as the
         // advisor-sharing card below.
         descEl: "Με το Family, δείτε σημεία που χρειάζονται προσοχή στα έγγραφά σας. Επιβεβαιώστε τα με το ασφαλιστήριο και τον ασφαλιστή σας.",
         descEn: "With Family, see points that need attention in your documents. Confirm them against the policy and with your adviser.",
@@ -54,7 +54,7 @@ const services = [
         Icon: MessageCircle,
         titleEl: "Τι σημαίνει αυτό;",
         titleEn: "What does this mean?",
-        // Policy Q&A is Plus-only — same naming rule.
+        // Policy Q&A is Family — same naming rule.
         descEl: "Με το Family, κάντε ερωτήσεις για το ασφαλιστήριό σας και δείτε απαντήσεις που βασίζονται στο έγγραφο. Ελέγξτε τις σημαντικές πληροφορίες στο πρωτότυπο.",
         descEn: "With Family, ask about your policy and see answers based on the document. Check important information in the original.",
         benefitEl: "Καταλαβαίνετε τι υπογράψατε",

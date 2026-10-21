@@ -200,3 +200,15 @@ Measurement harness: `tests/measure/metrics.ts` gains `textBlocks` and `duplicat
 
 Final state: `vitest --run tests/unit` **701 files / 7,895 tests green**; `tsc`, `lint`, `lint:i18n-changed`, `lint:utf8`, `lint:encoding`, `audit:api-auth`, `verify:migrations` pass; production build passes; final measurement on the last build: M-X1 max 1, M-P rendered 0, no non-200 route. Lighthouse numbers were taken one fix round earlier (copy-only changes since).
 
+
+### 8b. Fresh-session reviews (owner round 2026-10-22, brief item 5)
+
+The reviewer is started with no access to this session's notes, is told the owner's decisions in the prompt, and is forbidden to read RESULT/COPY/STEP0/evidence/DECISIONS/HALTS. Each pass found the same CLASS in a wider area, so the guards were widened by class, not by line.
+
+| Pass | Commit reviewed | Result | What it found → what changed |
+|---|---|---|---|
+| 1 | `0111618a` | CRITICAL 1 / IMPORTANT 5 / MINOR 6 | Reminders attributed «από το Plus» on `/product` steps (+ HowTo JSON-LD), guides, glossary → reworded everywhere; plan-attribution lint (probe, red on the reviewed commit). Greek in-app forms missed by the guard, a comparison-row probe that could not fail, help-centre "paid plans get full analysis / priority support", the agent upgrade-success body → all fixed. |
+| 2 | `b7a8ea5d` | CRITICAL 3 / IMPORTANT 5 / MINOR 7 | Homepage diagram «Υπενθυμίσεις με Plus» (`lib/i18n/how-it-works.ts`); `/upgrade` sold Family as "unlimited policies", Free as "no email notifications" and a "digital wallet" that does not exist (`PricingComparison.tsx`); `/pricing` said Agent Free has no expiring list but every agent has `/renewals`. → all fixed; the table rows are now claim-tagged (`agent.expiryList`, `agent.clientScreen`), `/upgrade` counts come from `DEFAULT_ENTITLEMENT_LIMITS`, `advanced_renewal_reminders` display gate follows the enforced ladder (`plus`), priority queue is Family in upgrade copy, the help article's advisor-sharing line says Family, the help ladder lists the 3-day rung, dead false keys deleted. **Guard changes (red on `b7a8ea5d`, `evidence/guards-round3-b7a8ea5d-RED.txt`):** a label must say what its claim tag says (relabelling `basicSummary` as «Πλήρης ανάλυση AI» now fails); public `lib/i18n/*.ts` modules that public code imports are in the public universe; the support lint also covers in-app strings and every email template; the reminder rule also catches «με Plus». |
+| 3 | `see below` | | |
+
+Open product question surfaced by pass 2, queued (not decided here): the advisor-share API route creates a grant with no `agentCollaboration` check while the UI and the collaboration actions gate it to Family (QUEUE `SHARE-ROUTE-ENTITLEMENT-GAP`). Public and help copy say Family, matching the UI.

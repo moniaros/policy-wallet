@@ -168,7 +168,7 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         benefits: [
             "Μηνιαία tokens που ανανεώνονται αυτόματα",
             "Δυνατότητα αγοράς επιπλέον πακέτων",
-            "Προτεραιότητα στην ουρά ανάλυσης (Plus)",
+            "Προτεραιότητα στην ουρά ανάλυσης (Family)",
             "Πλήρης έλεγχος χρήσης από τον λογαριασμό σας",
         ],
         trust: TRUST,

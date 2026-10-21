@@ -6,6 +6,7 @@ import { Check, X, Star, Shield, Zap } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 import { usePlanFacts } from '@/components/monetization/PlanFactsProvider'
 import { formatEur } from '@/lib/pricing/pricing-view-model'
+import { DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { trackJourneyEvent } from '@/lib/journey/funnel'
 
@@ -43,6 +44,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
     const { tierPricing, freePolicyLimit, plusPolicyLimit } = usePlanFacts()
     const starterFacts = tierPricing('plus')
     const plusFacts = tierPricing('pro')
+    // The Family ceiling comes from the same entitlement source as the other two (it said ∞).
+    const proPolicyLimit = DEFAULT_ENTITLEMENT_LIMITS.pro.policies
     const asCount = (limit: number | null) => (limit == null ? '∞' : String(limit))
     const bothLangs = (value: string) => ({ el: value, en: value })
 
@@ -73,12 +76,12 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 { name: copy.features.basicAI[language], included: true },
                 { name: copy.features.documentStorage[language], included: true },
                 { name: copy.features.advancedAI[language], included: false },
-                { name: copy.features.emailNotifications[language], included: false },
+                { name: copy.features.reminderEmail30[language], included: true },
             ]
         },
         {
-            // "Starter" (code key `plus`): organizer tier — more policies + basic
-            // reminders, NO deep AI (that unlocks at Plus / code `pro`).
+            // Plus (code key `plus`): more policies + the full reminder ladder, NO deep
+            // AI (that is Family, code key `pro`).
             id: 'ph-plus',
             ...copy.tiers.plus,
             price: bothLangs(formatEur(starterFacts.monthlyEur)),
@@ -89,7 +92,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             features: [
                 { name: copy.features.policyLimit[language].replace('{count}', asCount(plusPolicyLimit)), included: true },
                 { name: copy.features.documentStorage[language], included: true },
-                { name: copy.features.emailNotifications[language], included: true },
+                { name: copy.features.reminderLadder[language], included: true },
                 { name: copy.features.basicInsights[language], included: true },
                 { name: copy.features.advancedAI[language], included: false },
                 { name: copy.features.interactiveQA[language], included: false },
@@ -111,21 +114,23 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             // as the recommendation.
             popular: true,
             features: [
-                { name: copy.features.unlimitedPolicies[language], included: true },
+                { name: copy.features.policyLimit[language].replace('{count}', asCount(proPolicyLimit)), included: true },
+                { name: copy.features.advancedAI[language], included: true },
+                { name: copy.features.interactiveQA[language], included: true },
+                { name: copy.features.reminderLadder[language], included: true },
                 { name: copy.features.advancedAnalytics[language], included: true },
-                { name: copy.features.prioritySupport[language], included: true },
                 { name: copy.features.agentCollaboration[language], included: true },
-                { name: copy.features.digitalWallet[language], included: true },
             ]
         }
     ]
 
     const comparisonFeatures = [
-        { name: copy.features.policyLimitLabel[language], free: asCount(freePolicyLimit), plus: asCount(plusPolicyLimit), pro: "∞" },
+        { name: copy.features.policyLimitLabel[language], free: asCount(freePolicyLimit), plus: asCount(plusPolicyLimit), pro: asCount(proPolicyLimit) },
         { name: copy.features.advancedAI[language], free: false, plus: false, pro: true },
         { name: copy.features.automaticGapDetection[language], free: false, plus: false, pro: true },
         { name: copy.features.interactiveQA[language], free: false, plus: false, pro: true },
-        { name: copy.features.digitalWallet[language], free: false, plus: false, pro: true },
+        { name: copy.features.reminderEmail30[language], free: true, plus: true, pro: true },
+        { name: copy.features.reminderLadder[language], free: false, plus: true, pro: true },
         { name: copy.features.prioritySupport[language], free: true, plus: true, pro: true },
         { name: copy.features.advancedAnalytics[language], free: false, plus: false, pro: true },
         { name: copy.features.agentCollaboration[language], free: false, plus: false, pro: true },

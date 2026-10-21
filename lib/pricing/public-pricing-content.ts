@@ -350,7 +350,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     // «5 AI αναλύσεις / μήνα» removed 2026-10-21: the 150,000-token
                     // budget can refuse a run at zero usage (run-preflight.ts), so
                     // the count is not a promise this plan keeps (plan-claims.ts).
-                    { claim: null, label: { el: "Βασική εικόνα πελατών", en: "Basic client view" }, included: true },
+                    { claim: "agent.clientScreen", label: { el: "Βασική εικόνα πελατών", en: "Basic client view" }, included: true },
                     { claim: "agent.bulkImportRows", label: { el: "Προσθήκη έως 10 πελατών μαζί", en: "Bulk import up to 10 clients" }, included: true },
                     { claim: "agent.renewalAutomation", label: { el: "Αυτοματισμοί ανανέωσης", en: "Renewal automation" }, included: false },
                 ],
@@ -374,8 +374,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     // Same plain register as the comparison rows below — the
                     // cards used to say "Portfolio dashboard" / "Renewal
                     // pipeline" in English inside the Greek column.
-                    { claim: null, label: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" }, included: true, highlight: true },
-                    { claim: null, label: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" }, included: true },
+                    { claim: "agent.clientScreen", label: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" }, included: true, highlight: true },
+                    { claim: "agent.expiryList", label: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" }, included: true },
                     { claim: "agent.bulkImportRows", label: { el: "Προσθήκη έως 100 πελατών μαζί", en: "Bulk import up to 100 clients" }, included: true },
                     { claim: "agent.questionnaireTemplates", label: { el: "Ερωτηματολόγια πελατών (5 πρότυπα)", en: "Client questionnaires (5 templates)" }, included: true },
                 ],
@@ -438,7 +438,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
-                claim: null,
+                claim: "agent.clientScreen",
                 name: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" },
                 values: {
                     "agent-free": true,
@@ -464,11 +464,11 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
-                claim: null,
+                claim: "agent.expiryList",
                 category: { el: "Καθημερινή δουλειά", en: "Day-to-day work" },
                 name: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" },
                 values: {
-                    "agent-free": false,
+                    "agent-free": true,
                     "agent-starter": true,
                     "agent-pro": true,
                     "agent-agency": true,

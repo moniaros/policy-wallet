@@ -14,7 +14,7 @@ the claims that *do* exist (149 non-composed numeric statements, 144 distinct).
 | # | Claim (as worded) | Where | Source of truth | Status |
 |---|---|---|---|---|
 | C1 | free plan: 3 ασφαλιστήρια, χωρίς κάρτα | pricing, product FAQ, CTA reassurance, help | `DEFAULT_ENTITLEMENT_LIMITS.free.policies` — pinned by `cta-reassurance-single-source`, `help-content-factual` | sourced |
-| C2 | Plus: έως 10 ασφαλιστήρια · Pro: απεριόριστα | `dashboard.home.freePlanHint`, settings | plan entitlements (`lib/subscription-entitlements.ts`) | sourced — verify the Plus figure against the live plan row in Round 1 |
+| C2 | Plus: έως 10 ασφαλιστήρια · Family: έως 25 (the old «Pro: απεριόριστα» was false and its dead key `dashboard.home.freePlanHint` is deleted, PW-CONTENT-02) | `dashboard.home.freePlanHint`, settings | plan entitlements (`lib/subscription-entitlements.ts`) | sourced — verify the Plus figure against the live plan row in Round 1 |
 | C3 | reminders 90 / 60 / 30 / 15 / 7 / 3 ημέρες πριν τη λήξη (Plus και Family) — ο Free παίρνει ένα email 30 ημέρες πριν (`lib/renewals/milestones.ts`, `renewal.service.ts`; PW-CONTENT-02) | dashboard, renewals, help, digest | notification registry windows — pinned by `help-content-factual` (`/90, 60, 30, 15 (and\|και) 7/`) | sourced |
 | C4 | 50 κανόνες σε 14 κλάδους | /methodology, home | `PUBLIC_COUNTS` (catalogue-derived) — literal fails the build | sourced |
 | C5 | έως 10 αρχεία με μία κίνηση · έως 100 πελάτες στο Agent Starter | /solutions/agents | bulk-upload limit constant · agent entitlements | sourced — cite the constants by name in Round 1 |

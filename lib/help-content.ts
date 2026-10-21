@@ -100,7 +100,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Support',
-                    text: 'Support is by email, on every plan. For questions about your coverage, the Family plan also lets you ask the AI directly on a policy page; on any plan you can share the policy with your insurance advisor and review it together.',
+                    text: 'Support is by email, on every plan. For questions about your coverage, the Family plan also lets you ask the AI directly on a policy page and share the policy with your insurance advisor to review it together.',
                 }
             ]
         },
@@ -137,7 +137,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     heading: 'Notification types',
                     text: 'We send notifications for critical events to keep you protected.',
                     list: [
-                        'Renewal reminders — 30 days before expiry on the free plan; at 90, 60, 30, 15 and 7 days on paid plans',
+                        'Renewal reminders — 30 days before expiry on the free plan; at 90, 60, 30, 15, 7 and 3 days on paid plans',
                         'Payment confirmations',
                         'Security alerts (new device logins)',
                         'AI Analysis results'
@@ -292,7 +292,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Υποστήριξη',
-                    text: 'Η υποστήριξη γίνεται μέσω email, σε όλα τα πλάνα. Για ερωτήσεις σχετικά με την κάλυψή σας, το Family σάς επιτρέπει να ρωτάτε απευθείας την AI στη σελίδα του ασφαλιστηρίου· σε κάθε πλάνο μπορείτε να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο και να το εξετάσετε μαζί του.',
+                    text: 'Η υποστήριξη γίνεται μέσω email, σε όλα τα πλάνα. Για ερωτήσεις σχετικά με την κάλυψή σας, το Family σάς επιτρέπει να ρωτάτε απευθείας την AI στη σελίδα του ασφαλιστηρίου και να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο, για να το εξετάσετε μαζί του.',
                 }
             ]
         },
@@ -329,7 +329,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     heading: 'Τύποι Ειδοποιήσεων',
                     text: 'Στέλνουμε ειδοποιήσεις για κρίσιμα γεγονότα για να σας κρατάμε προστατευμένους.',
                     list: [
-                        'Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15 και 7 ημέρες στα πληρωμένα πλάνα',
+                        'Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15, 7 και 3 ημέρες στα πληρωμένα πλάνα',
                         'Επιβεβαιώσεις πληρωμής',
                         'Ειδοποιήσεις ασφαλείας (συνδέσεις από νέες συσκευές)',
                         'Αποτελέσματα Ανάλυσης AI'

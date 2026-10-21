@@ -124,8 +124,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
             "Όλες οι ασφάλειές σας — αυτοκίνητο, σπίτι, υγεία — σε μία οθόνη",
             "All your insurance — car, home, health — on one screen",
         ),
-        // Reminders start on the Plus plan (Free shows only the date), so the
-        // benefit names the plan instead of promising it to everyone.
+        // Every plan gets one reminder email 30 days ahead; the longer ladder is
+        // Plus and Family — the benefit says so instead of attributing it to Plus.
         t(
             "Υπενθύμιση πριν λήξουν τα ασφαλιστήριά σας· νωρίτερα με το Plus",
             "A reminder before your policies expire; earlier with Plus",

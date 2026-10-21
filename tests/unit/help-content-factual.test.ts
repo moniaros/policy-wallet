@@ -46,7 +46,7 @@ describe('help center states only facts the product actually implements', () => 
 
     it('states the real renewal-reminder ladder, not the invented 30/14/3', () => {
         expect(HELP).not.toMatch(/30, 14,? (and|και) 3/)
-        expect(HELP).toMatch(/90, 60, 30, 15 (and|και) 7/)
+        expect(HELP).toMatch(/90, 60, 30, 15, 7 (and|και) 3/)
     })
 
     it('does not promise a 10–30 second analysis (it queues; takes minutes)', () => {
