@@ -1,0 +1,365 @@
+{
+  "base": "https://policy-wallet-cnostdi7n-moniaros-projects.vercel.app",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "route": "/",
+      "theme": "light",
+      "background": "rgb(20, 59, 51)",
+      "columns": 4,
+      "pageOverflow": false,
+      "clipped": [],
+      "boxes": [
+        {
+          "x": 56,
+          "y": 297.15625,
+          "width": 314,
+          "height": 591.953125
+        },
+        {
+          "x": 394,
+          "y": 297.15625,
+          "width": 314,
+          "height": 591.953125
+        },
+        {
+          "x": 732,
+          "y": 297.15625,
+          "width": 314,
+          "height": 591.953125
+        },
+        {
+          "x": 1070,
+          "y": 297.15625,
+          "width": 314,
+          "height": 591.953125
+        }
+      ],
+      "hrefs": [
+        "/auth/signup?role=policyholder&source=landing_how_it_works",
+        "#reading-demo",
+        "#difference",
+        "/auth/signup?role=policyholder&source=landing_how_it_works"
+      ],
+      "accessibility": [],
+      "keyboard": true,
+      "anchorDestinations": true
+    },
+    {
+      "name": "desktop-narrow",
+      "width": 1280,
+      "route": "/",
+      "theme": "light",
+      "background": "rgb(20, 59, 51)",
+      "columns": 4,
+      "pageOverflow": false,
+      "clipped": [],
+      "boxes": [
+        {
+          "x": 51.1875,
+          "y": 282.90625,
+          "width": 276.40625,
+          "height": 618.34375
+        },
+        {
+          "x": 351.59375,
+          "y": 282.90625,
+          "width": 276.40625,
+          "height": 618.34375
+        },
+        {
+          "x": 652,
+          "y": 282.90625,
+          "width": 276.40625,
+          "height": 618.34375
+        },
+        {
+          "x": 952.40625,
+          "y": 282.90625,
+          "width": 276.40625,
+          "height": 618.34375
+        }
+      ],
+      "hrefs": [
+        "/auth/signup?role=policyholder&source=landing_how_it_works",
+        "#reading-demo",
+        "#difference",
+        "/auth/signup?role=policyholder&source=landing_how_it_works"
+      ],
+      "accessibility": [],
+      "keyboard": true,
+      "anchorDestinations": true
+    },
+    {
+      "name": "tablet",
+      "width": 1024,
+      "route": "/",
+      "theme": "light",
+      "background": "rgb(20, 59, 51)",
+      "columns": 2,
+      "pageOverflow": false,
+      "clipped": [],
+      "boxes": [
+        {
+          "x": 72,
+          "y": 59.484375,
+          "width": 428,
+          "height": 507.171875
+        },
+        {
+          "x": 524,
+          "y": 59.484375,
+          "width": 428,
+          "height": 507.171875
+        },
+        {
+          "x": 72,
+          "y": 606.65625,
+          "width": 428,
+          "height": 507.171875
+        },
+        {
+          "x": 524,
+          "y": 606.65625,
+          "width": 428,
+          "height": 507.171875
+        }
+      ],
+      "hrefs": [
+        "/auth/signup?role=policyholder&source=landing_how_it_works",
+        "#reading-demo",
+        "#difference",
+        "/auth/signup?role=policyholder&source=landing_how_it_works"
+      ],
+      "accessibility": [],
+      "keyboard": true,
+      "anchorDestinations": true
+    },
+    {
+      "name": "tablet-small",
+      "width": 768,
+      "route": "/",
+      "theme": "light",
+      "background": "rgb(20, 59, 51)",
+      "columns": 2,
+      "pageOverflow": false,
+      "clipped": [],
+      "boxes": [
+        {
+          "x": 30.71875,
+          "y": 26.828125,
+          "width": 341.28125,
+          "height": 533.5625
+        },
+        {
+          "x": 396,
+          "y": 26.828125,
+          "width": 341.28125,
+          "height": 533.5625
+        },
+        {
+          "x": 30.71875,
+          "y": 600.390625,
+          "width": 341.28125,
+          "height": 533.5625
+        },
+        {
+          "x": 396,
+          "y": 600.390625,
+          "width": 341.28125,
+          "height": 533.5625
+        }
+      ],
+      "hrefs": [
+        "/auth/signup?role=policyholder&source=landing_how_it_works",
+        "#reading-demo",
+        "#difference",
+        "/auth/signup?role=policyholder&source=landing_how_it_works"
+      ],
+      "accessibility": [],
+      "keyboard": true,
+      "anchorDestinations": true
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "route": "/",
+      "theme": "light",
+      "background": "rgb(20, 59, 51)",
+      "columns": 1,
+      "pageOverflow": false,
+      "clipped": [],
+      "boxes": [
+        {
+          "x": 24,
+          "y": -442.953125,
+          "width": 342,
+          "height": 497.5625
+        },
+        {
+          "x": 24,
+          "y": 94.609375,
+          "width": 342,
+          "height": 497.5625
+        },
+        {
+          "x": 24,
+          "y": 632.171875,
+          "width": 342,
+          "height": 444.78125
+        },
+        {
+          "x": 24,
+          "y": 1116.953125,
+          "width": 342,
+          "height": 497.5625
+        }
+      ],
+      "hrefs": [
+        "/auth/signup?role=policyholder&source=landing_how_it_works",
+        "#reading-demo",
+        "#difference",
+        "/auth/signup?role=policyholder&source=landing_how_it_works"
+      ],
+      "accessibility": [],
+      "keyboard": true,
+      "anchorDestinations": true
+    },
+    {
+      "name": "small",
+      "width": 320,
+      "route": "/",
+      "theme": "light",
+      "background": "rgb(20, 59, 51)",
+      "columns": 1,
+      "pageOverflow": false,
+      "clipped": [],
+      "boxes": [
+        {
+          "x": 24,
+          "y": -515.703125,
+          "width": 272,
+          "height": 536.890625
+        },
+        {
+          "x": 24,
+          "y": 61.1875,
+          "width": 272,
+          "height": 497.5625
+        },
+        {
+          "x": 24,
+          "y": 598.75,
+          "width": 272,
+          "height": 497.5625
+        },
+        {
+          "x": 24,
+          "y": 1136.3125,
+          "width": 272,
+          "height": 550.34375
+        }
+      ],
+      "hrefs": [
+        "/auth/signup?role=policyholder&source=landing_how_it_works",
+        "#reading-demo",
+        "#difference",
+        "/auth/signup?role=policyholder&source=landing_how_it_works"
+      ],
+      "accessibility": [],
+      "keyboard": true,
+      "anchorDestinations": true
+    },
+    {
+      "name": "english",
+      "width": 320,
+      "route": "/en",
+      "theme": "light",
+      "background": "rgb(20, 59, 51)",
+      "columns": 1,
+      "pageOverflow": false,
+      "clipped": [],
+      "boxes": [
+        {
+          "x": 24,
+          "y": -487.828125,
+          "width": 272,
+          "height": 497.5625
+        },
+        {
+          "x": 24,
+          "y": 49.734375,
+          "width": 272,
+          "height": 497.5625
+        },
+        {
+          "x": 24,
+          "y": 587.296875,
+          "width": 272,
+          "height": 471.171875
+        },
+        {
+          "x": 24,
+          "y": 1098.46875,
+          "width": 272,
+          "height": 523.953125
+        }
+      ],
+      "hrefs": [
+        "/auth/signup?role=policyholder&source=landing_how_it_works&lang=en",
+        "#reading-demo",
+        "#difference",
+        "/auth/signup?role=policyholder&source=landing_how_it_works&lang=en"
+      ],
+      "accessibility": [],
+      "keyboard": true,
+      "anchorDestinations": true
+    },
+    {
+      "name": "dark",
+      "width": 1440,
+      "route": "/en",
+      "theme": "dark",
+      "background": "rgb(20, 59, 51)",
+      "columns": 4,
+      "pageOverflow": false,
+      "clipped": [],
+      "boxes": [
+        {
+          "x": 56,
+          "y": 310.53125,
+          "width": 314,
+          "height": 565.5625
+        },
+        {
+          "x": 394,
+          "y": 310.53125,
+          "width": 314,
+          "height": 565.5625
+        },
+        {
+          "x": 732,
+          "y": 310.53125,
+          "width": 314,
+          "height": 565.5625
+        },
+        {
+          "x": 1070,
+          "y": 310.53125,
+          "width": 314,
+          "height": 565.5625
+        }
+      ],
+      "hrefs": [
+        "/auth/signup?role=policyholder&source=landing_how_it_works&lang=en",
+        "#reading-demo",
+        "#difference",
+        "/auth/signup?role=policyholder&source=landing_how_it_works&lang=en"
+      ],
+      "accessibility": [],
+      "keyboard": true,
+      "anchorDestinations": true
+    }
+  ]
+}
