@@ -14,4 +14,16 @@ No new correctness or security defect found. No database, authentication, pricin
 - Impeccable layout scan: no findings. A test-script lint finding for the browser global was fixed using window.getComputedStyle; lint then passed. No UI repair was needed after the screenshot review.
 
 ## Release
-Pending protected preview and production verification. Preview uses the established nonfunctional placeholder configuration for this public-only check; no local database credentials are uploaded and that artifact is not promoted to production.
+[PR #402](https://github.com/moniaros/policy-wallet/pull/402), candidate `ed2d0830584090c18df642f98617dd36295ffeda`. All seven cases and two clean hero axe scans passed on protected preview `policy-wallet-kx8c4pd7m-moniaros-projects.vercel.app`, deployment `dpl_BsKRDXiwz6mYQWArkSsr3a92pA7T`. Preview uses the established nonfunctional placeholder configuration for this public-only check; no local database credentials were uploaded and that artifact is not promoted to production. Production release verification is recorded below.
+
+The CI security job passed with advisory npm-audit/outdated-dependency annotations; no dependencies changed in this patch. The Money Path job skips its browser journey without the E2E database secret, so this release does not claim paid-checkout verification.
+
+## Merge gate
+PR CI [39596354597](https://github.com/moniaros/policy-wallet/actions/runs/39596354597) passed. PR #402 merged as `b9d611ab1bd863e6dd24331cae6cadcba4b280e2`; the application diff from the verified preview candidate is empty. Production CI 39597941664 passed as the deployment gate. Temporary preview access-cookie files were removed after verification.
+
+## Production — verified
+Production CI [39597941664](https://github.com/moniaros/policy-wallet/actions/runs/39597941664) and deployment [39599461265](https://github.com/moniaros/policy-wallet/actions/runs/39599461265) succeeded for `b9d611ab1bd863e6dd24331cae6cadcba4b280e2`. Vercel `dpl_5MBjtrQUYvxj7eDqTvE37HT3f95R` is READY, target production, at `policy-wallet-a7ypop7xa-moniaros-projects.vercel.app`, serving https://www.policywallet.gr.
+
+All seven real-browser cases passed on production with a normal process exit. The measured media box equals the full hero box on desktop, mobile and English 320px, including static fallback modes. Both hero axe scans were clear; desktop/mobile production captures were inspected together and match the approved light composition. Pause/resume, offscreen/hidden playback, explicit pause persistence, reduced-motion changes, no-video-download preferences and failed-media fallback all passed.
+
+Production's schema gate measured 88 applied migrations, none pending, three prevention tables with RLS, 34 columns and five cascade foreign keys. No database write was needed. The existing POOLED_DATABASE_URL/session-pool warning and registration pause remain separate operational follow-ups. Root-checkout work was preserved. The final follow-up contains documentation/evidence only and does not alter the verified application.

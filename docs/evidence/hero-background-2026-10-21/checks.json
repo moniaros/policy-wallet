@@ -1,0 +1,40 @@
+{
+  "candidate": "ed2d0830584090c18df642f98617dd36295ffeda",
+  "local": {
+    "node": "24.21.0",
+    "apiAuthRoutes": 116,
+    "lint": "passed",
+    "types": "passed",
+    "i18n": "passed",
+    "utf8": "passed",
+    "migrations": 88,
+    "unitFiles": 700,
+    "unitTests": 7873,
+    "productionBuild": "passed",
+    "browserCases": 7,
+    "heroAxeViolations": 0,
+    "darkThemeSignupHandoff": [
+      "el 768px",
+      "en 390px"
+    ]
+  },
+  "preview": {
+    "url": "https://policy-wallet-kx8c4pd7m-moniaros-projects.vercel.app",
+    "deployment": "dpl_BsKRDXiwz6mYQWArkSsr3a92pA7T",
+    "browserCases": 7,
+    "heroAxeViolations": 0,
+    "configuration": "nonfunctional placeholders; public-only verification"
+  },
+  "production": {
+    "commit": "b9d611ab1bd863e6dd24331cae6cadcba4b280e2",
+    "ci": 39597941664,
+    "deployRun": 39599461265,
+    "deployment": "dpl_5MBjtrQUYvxj7eDqTvE37HT3f95R",
+    "url": "https://www.policywallet.gr",
+    "readyState": "READY",
+    "browserCases": 7,
+    "heroAxeViolations": 0,
+    "migrationsApplied": 88,
+    "migrationsPending": 0
+  }
+}
