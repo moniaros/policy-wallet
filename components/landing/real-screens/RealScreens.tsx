@@ -413,7 +413,7 @@ export function DashboardScreen({ locale }: { locale: ScreenLocale }) {
 }
 
 /** The wallet: the overview row and the policy cards, as the wallet renders them on a phone. */
-export function WalletScreen({ locale }: { locale: ScreenLocale }) {
+export function WalletScreen({ locale, showSummary = true }: { locale: ScreenLocale; showSummary?: boolean }) {
     const tr = (el: string, en: string) => (locale === "el" ? el : en)
     const policy = (id: string, insurer: string, lob: Policy["lineOfBusiness"], days: number, number: string): Policy => ({
         id,
@@ -438,7 +438,7 @@ export function WalletScreen({ locale }: { locale: ScreenLocale }) {
     ]
     return (
         <div>
-            <StatusSummary headingAs="p" activeCount={2} expiringCount={1} attentionCount={0} totalPolicies={3} totalPremium={1284} />
+            {showSummary && <StatusSummary headingAs="p" activeCount={2} expiringCount={1} attentionCount={0} totalPolicies={3} totalPremium={1284} />}
             <div className="space-y-3">
                 {policies.map((p) => (
                     <PolicyCard key={p.id} policy={p} onView={() => {}} />

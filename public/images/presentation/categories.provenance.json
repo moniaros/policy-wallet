@@ -1,0 +1,38 @@
+{
+  "provider": "Higgsfield",
+  "purpose": "Homepage lifestyle category photography; illustrative, no customer endorsement",
+  "jobs": [
+    {
+      "index": 0,
+      "job_id": "17b69436-ba3d-40b6-8fe2-7a89d28b06ae",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3JQKpSe62LiSr9J3kCo9KOo6g8H/hf_20261021_171809_17b69436-ba3d-40b6-8fe2-7a89d28b06ae.png"
+    },
+    {
+      "index": 1,
+      "job_id": "d4ded6b1-f9ee-4f6a-bb76-6a689ae5a74e",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3JQKpSe62LiSr9J3kCo9KOo6g8H/hf_20261021_171810_d4ded6b1-f9ee-4f6a-bb76-6a689ae5a74e.png"
+    },
+    {
+      "index": 2,
+      "job_id": "26e7047c-5384-424d-8e12-16bffc9d0ff9",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3JQKpSe62LiSr9J3kCo9KOo6g8H/hf_20261021_171809_26e7047c-5384-424d-8e12-16bffc9d0ff9.png"
+    },
+    {
+      "index": 3,
+      "job_id": "e3c680c3-963a-4c57-a102-eb53a6dae6d5",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3JQKpSe62LiSr9J3kCo9KOo6g8H/hf_20261021_171811_e3c680c3-963a-4c57-a102-eb53a6dae6d5.png"
+    }
+  ]
+}

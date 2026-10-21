@@ -1,9 +1,12 @@
 "use client"
 
+import { ArrowRight } from "lucide-react"
+import styles from "./reading-demo.module.css"
 import { useEffect, useRef, useState } from "react"
 import { READING_DEMO_STRINGS, READING_DEMO_TABS } from "@/lib/marketing/reading-demo"
 import { pick, type MarketingLocale } from "@/lib/marketing/positioning"
 import { STATE_LABELS, StatusChip } from "./primitives"
+import { presentationCopy } from "@/lib/i18n/presentation"
 import { cn } from "@/lib/utils"
 
 /**
@@ -23,10 +26,10 @@ import { cn } from "@/lib/utils"
  * results are static content, so select-on-focus costs nothing), Home/End
  * jump. Focus stays on the tablist; the sweep is decorative and inert.
  */
-export function ReadingDemo({ locale, className }: { locale: MarketingLocale; className?: string }) {
+export function ReadingDemo({ locale, className, presentation = false }: { locale: MarketingLocale; className?: string; presentation?: boolean }) {
     const [active, setActive] = useState(0)
     const [run, setRun] = useState(0)
-    const [done, setDone] = useState(false)
+    const [done, setDone] = useState(true)
     const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
     const reduced = useRef(false)
 
@@ -37,7 +40,7 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
     }, [])
 
     useEffect(() => {
-        if (reduced.current) {
+        if (reduced.current || run === 0) {
             setDone(true)
             return
         }
@@ -64,12 +67,12 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
     }
 
     return (
-        <div className={cn("rounded-g-lg border border-border-subtle bg-surface-raised p-g-5 sm:p-g-6", className)}>
+        <div className={cn(presentation ? styles.demo : "rounded-g-lg border border-border-subtle bg-surface-raised p-g-5 sm:p-g-6", className)}>
             <div
                 role="tablist"
                 aria-label={pick(S.tablistLabel, locale)}
                 onKeyDown={onKeyDown}
-                className="flex flex-wrap gap-g-2"
+                className={cn("flex flex-wrap gap-g-2", presentation && styles.tabs)}
             >
                 {READING_DEMO_TABS.map((t, i) => (
                     <button
@@ -98,16 +101,17 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
                 role="tabpanel"
                 id={`rdemo-panel-${tab.id}`}
                 aria-labelledby={`rdemo-tab-${tab.id}`}
-                className="mt-g-5 grid gap-g-5 md:grid-cols-2"
+                className={cn("mt-g-5 grid gap-7 lg:grid-cols-2", presentation && styles.stage)}
             >
                 {/* The sample document, with the sweep passing over it. */}
-                <div className="relative overflow-hidden rounded-g-md border border-border-subtle bg-surface-sunken p-g-5">
-                    <p className="text-g-label font-semibold uppercase tracking-[0.1em] text-fg-secondary">
+                <div className={cn(presentation ? styles.document : "relative overflow-hidden rounded-g-md border border-border-subtle bg-surface-sunken p-g-5")}>
+                    <p className={cn("text-g-label font-semibold text-fg-secondary", presentation && styles.stamp)}>
                         {pick(S.stamp, locale)}
                     </p>
+                    <h3 className="mt-4 text-lg font-semibold text-fg-primary">{presentationCopy[locale].demoDocument}</h3>
                     <ul className="mt-g-4 space-y-g-3">
                         {tab.docLines.map((line, i) => (
-                            <li key={i} className="truncate font-mono text-g-caption text-fg-secondary">
+                            <li key={i} className="text-base leading-relaxed text-fg-secondary">
                                 {pick(line, locale)}
                             </li>
                         ))}
@@ -117,8 +121,10 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
                     )}
                 </div>
 
+                {presentation && <span className={styles.connector} aria-hidden="true"><ArrowRight size={28} /></span>}
                 {/* Findings. aria-live announces completion; rows stagger in. */}
-                <div aria-live="polite">
+                <div aria-live="polite" className={cn("min-h-[310px]", presentation && styles.results)}>
+                    <h3 className="mb-5 text-lg font-semibold text-fg-primary">{presentationCopy[locale].demoExplanation}</h3>
                     {done ? (
                         <>
                             <p className="sr-only">{pick(S.doneAnnouncement, locale)}</p>
@@ -126,10 +132,10 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
                                 {tab.results.map((r, i) => (
                                     <li
                                         key={i}
-                                        className="g-row-in flex items-start gap-g-3"
+                                        className="g-row-in grid gap-2 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-3"
                                         style={{ animationDelay: `${Math.min(i, 3) * 70}ms` }}
                                     >
-                                        <StatusChip state={r.state} className="flex-none">
+                                        <StatusChip state={r.state} className="w-fit">
                                             {pick(STATE_LABELS[r.state], locale)}
                                         </StatusChip>
                                         <span className="text-g-body-sm text-fg-primary">{pick(r.text, locale)}</span>

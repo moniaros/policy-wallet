@@ -51,41 +51,41 @@ export const landingContent: LandingContentModel = {
                 id: "step-upload",
                 title: { el: "Ανεβάστε το ασφαλιστήριό σας", en: "Upload your policy" },
                 description: {
-                    el: "PDF ή φωτογραφία, από οποιαδήποτε ασφαλιστική. Δεν χρειάζεται να το διαβάσετε.",
-                    en: "A PDF or a photo, from any insurance company. You do not need to read it.",
+                    el: "Ανεβάστε ευανάγνωστο έγγραφο. Κρατήστε το πρωτότυπο για να ελέγχετε τις πληροφορίες της ανάλυσης.",
+                    en: "Upload a readable document. Keep the original to check information in the analysis.",
                 },
-                emphasis: { el: "Δεν χρειάζεται", en: "You do not need" },
+                emphasis: { el: "Κρατήστε το πρωτότυπο", en: "Keep the original" },
             },
             {
                 id: "step-read",
                 title: { el: "Το διαβάζουμε για εσάς", en: "We read it for you" },
                 description: {
-                    el: "Βρίσκουμε τι καλύπτει, τι δεν καλύπτει και πότε λήγει.",
-                    en: "We find what it covers, what it does not cover, and when it runs out.",
+                    el: "Η εφαρμογή οργανώνει τις πληροφορίες που διαβάζει: καλύψεις, ποσά, ημερομηνίες και εξαιρέσεις.",
+                    en: "The application organises the information it reads: cover, amounts, dates and exclusions.",
                 },
             },
             {
                 id: "step-act",
-                title: { el: "Σας δείχνουμε την αλήθεια", en: "We show you the truth" },
+                title: { el: "Σας εξηγούμε τι αναφέρει", en: "We explain what it says" },
                 description: {
                     // Baseline verdict only — "fix first" is a Plus output and
                     // this text also ships inside the home HowTo JSON-LD.
-                    el: "Σας εξηγούμε με απλά λόγια τι καλύπτουν τα ασφαλιστήριά σας και τι μπορεί να σας λείπει.",
-                    en: "We explain in plain words what your policies cover and what may be missing.",
+                    el: "Δείτε σημεία που χρειάζονται έλεγχο και συζήτηση με τον ασφαλιστή σας.",
+                    en: "See points that need checking and discussion with your adviser.",
                 },
-                emphasis: { el: "τι μπορεί να σας λείπει", en: "what may be missing" },
+                emphasis: { el: "χρειάζονται έλεγχο", en: "need checking" },
             },
             {
                 // §6 asks four steps. The fourth is the one that keeps being
                 // true after day one: renewal reminders and change tracking
                 // are live capabilities, so the step promises exactly them.
                 id: "step-monitor",
-                title: { el: "Μένετε πάντα ενημερωμένοι", en: "You always stay informed" },
+                title: { el: "Παρακολουθείτε τις ημερομηνίες", en: "Keep track of dates" },
                 description: {
-                    el: "Σας ειδοποιούμε πριν από κάθε λήξη — και όταν έρθει το νέο ασφαλιστήριο, βλέπετε τι άλλαξε.",
-                    en: "We remind you before every expiry — and when the new policy arrives, you see what changed.",
+                    el: "Δείτε πότε λήγουν τα ασφαλιστήριά σας. Με το Plus λαμβάνετε υπενθυμίσεις και βλέπετε τι άλλαξε όταν ανεβάζετε την ανανέωση.",
+                    en: "See when your policies expire. With Plus, receive reminders and see what changed when you upload a renewal.",
                 },
-                emphasis: { el: "βλέπετε τι άλλαξε", en: "you see what changed" },
+                emphasis: { el: "βλέπετε τι άλλαξε", en: "see what changed" },
             },
         ],
         closing: {
@@ -119,24 +119,24 @@ export const landingContent: LandingContentModel = {
                     // institution pays for an embedded deployment. The claims
                     // that survive every scenario: no commission, identical
                     // analysis whoever issued the policy.
-                    el: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία, δεν πουλάμε ασφαλιστήρια και δεν παίρνουμε προμήθεια από καμία εταιρεία. Η ανάλυση είναι ίδια για κάθε ασφαλιστήριο, όποιος κι αν το εξέδωσε — η απάντηση που παίρνετε δεν έχει λόγο να είναι μεροληπτική.",
-                    en: "No. We are not an insurance company, we sell no policies, and we take no commission from any company. The analysis is the same for every policy, whoever issued it — the answer you get has no reason to be biased.",
+                    el: "Δεν πουλάμε ασφαλιστήρια και δεν λαμβάνουμε προμήθεια από την πώλησή τους. Τα έσοδά μας προέρχονται από συνδρομές.",
+                    en: "We do not sell insurance policies or receive commission from their sale. Our revenue comes from subscriptions.",
                 },
             },
             {
                 id: "faq-data-security",
                 question: { el: "Είναι ασφαλή τα δεδομένα μου;", en: "Is my data safe?" },
                 answer: {
-                    el: "Ναι. Τα αρχεία σας αποθηκεύονται κρυπτογραφημένα σε διακομιστές μέσα στην Ευρωπαϊκή Ένωση, και τα έγγραφά σας δεν χρησιμοποιούνται για την εκπαίδευση μοντέλων AI. Μπορείτε να ζητήσετε αντίγραφο ή πλήρη διαγραφή όποτε θέλετε.",
-                    en: "Yes. Your files are stored encrypted on servers inside the European Union, and your documents are not used to train AI models. You can ask for a copy or a full deletion whenever you want.",
+                    el: "Τα έγγραφα αποθηκεύονται κρυπτογραφημένα στην ΕΕ. Για ανάλυση με τεχνητή νοημοσύνη ζητάμε συγκατάθεση. Ορισμένοι τεχνικοί πάροχοι μπορεί να επεξεργάζονται στοιχεία εκτός ΕΕ· δείτε την Πολιτική Απορρήτου και τον κατάλογο παρόχων.",
+                    en: "Documents are stored encrypted in the EU. We ask for consent for AI analysis. Some technical providers may process data outside the EU; see our Privacy Policy and provider list.",
                 },
             },
             {
                 id: "faq-carriers-visibility",
                 question: { el: "Μπορεί η ασφαλιστική μου να δει τα δεδομένα μου;", en: "Can my insurance company see my data?" },
                 answer: {
-                    el: "Όχι. Κανείς δεν βλέπει τα ασφαλιστήριά σας εκτός αν εσείς επιλέξετε ρητά να τα μοιραστείτε — για παράδειγμα με τον ασφαλιστή σας. Την άδεια τη δίνετε και την παίρνετε πίσω εσείς.",
-                    en: "No. Nobody sees your policies unless you explicitly choose to share them — with your own agent, for example. You give that permission and you can take it back.",
+                    el: "Επιλέγετε τι μοιράζεστε με τον ασφαλιστή σας. Η υπηρεσία χρησιμοποιεί και τεχνικούς παρόχους για αποθήκευση, ανάλυση και λειτουργία. Η Πολιτική Απορρήτου εξηγεί ποιος χρησιμοποιεί ποια στοιχεία.",
+                    en: "You choose what to share with your adviser. The service also uses technical providers for storage, analysis and operation. Our Privacy Policy explains who uses which data.",
                 },
             },
             {
@@ -154,8 +154,8 @@ export const landingContent: LandingContentModel = {
                 id: "faq-cost",
                 question: { el: "Πόσο κοστίζει;", en: "How much does it cost?" },
                 answer: {
-                    el: "Ξεκινάτε δωρεάν με 3 ασφαλιστήρια και πλήρη ανάλυση AI, χωρίς πιστωτική κάρτα. Τα πληρωμένα πλάνα ξεκινούν από €39 τον χρόνο και τα ακυρώνετε όποτε θέλετε.",
-                    en: "You start free with 3 policies and full AI analysis, with no credit card. Paid plans start at €39 a year and you can cancel whenever you want.",
+                    el: "Το δωρεάν πλάνο περιλαμβάνει έως 3 ασφαλιστήρια, με μηνιαίο όριο επεξεργασίας. Οι λειτουργίες και τα όρια διαφέρουν ανά πλάνο. Δείτε τις τρέχουσες τιμές και τι περιλαμβάνει κάθε επιλογή στη σελίδα τιμών.",
+                    en: "The free plan includes up to 3 policies, with a monthly processing allowance. Features and limits vary by plan. See current prices and what each option includes on the pricing page.",
                 },
             },
             {
@@ -169,8 +169,8 @@ export const landingContent: LandingContentModel = {
                 // the same capability to Plus. It also ships inside FAQPage
                 // JSON-LD, so an unqualified version travels further than the page.
                 answer: {
-                    el: "Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε όποτε θέλετε — με το πλάνο Family.",
-                    en: "You do not need one. PolicyWallet works completely on its own. If you later want to work with an agent, you can connect one with a single click — on the Family plan.",
+                    el: "Μπορείτε να οργανώνετε και να διαβάζετε τα έγγραφά σας χωρίς να συνδέσετε ασφαλιστή. Για συμβουλή σχετικά με την ασφάλισή σας, απευθυνθείτε σε αδειοδοτημένο επαγγελματία.",
+                    en: "You can organise and read your documents without connecting an adviser. For advice about your insurance, consult a licensed professional.",
                 },
             },
             {
@@ -179,8 +179,8 @@ export const landingContent: LandingContentModel = {
                 // grammatical genders depending on the page.
                 question: { el: "Πόσο σωστή είναι η ανάλυση του AI;", en: "How accurate is the AI analysis?" },
                 answer: {
-                    el: "Παίρνετε γρήγορη, πρακτική εικόνα για το τι καλύπτεται και τι όχι. Δεν αντικαθιστά τους όρους του ασφαλιστηρίου ούτε τον ασφαλιστή σας — σας δείχνουμε τι αξίζει να ελέγξετε και αποφασίζετε εσείς.",
-                    en: "You get a fast, practical picture of what you are covered for and what you are not. It does not replace the policy terms or your agent — we show you what is worth checking, and you decide.",
+                    el: "Η τεχνητή νοημοσύνη μπορεί να κάνει λάθη ή να παραλείψει πληροφορίες. Ελέγχετε τα ποσά, τις εξαιρέσεις και τις σημαντικές αποφάσεις με το πρωτότυπο ασφαλιστήριο και τον ασφαλιστή σας.",
+                    en: "AI can make mistakes or miss information. Check amounts, exclusions and important decisions against the original policy and with your adviser.",
                 },
             },
         ],
@@ -191,7 +191,7 @@ export const landingContent: LandingContentModel = {
             path: "/",
             title: "Τι πραγματικά καλύπτουν τα ασφαλιστήριά σας | PolicyWallet",
             description:
-                "Ανεβάστε κάθε ασφαλιστήριο, από κάθε εταιρεία. Η ανάλυση εξηγεί καλύψεις, εξαιρέσεις και κενά σε απλά ελληνικά — χωρίς πώληση, χωρίς προμήθεια.",
+                "Οργανώστε τα ασφαλιστήριά σας, διαβάστε τους όρους σε απλή γλώσσα και δείτε τι χρειάζεται έλεγχο. Οι λειτουργίες διαφέρουν ανά πλάνο.",
             keywords: [
                 "έλεγχος ασφάλισης",
                 "κενά κάλυψης",
@@ -201,16 +201,16 @@ export const landingContent: LandingContentModel = {
             ],
             ogTitle: "Τι πραγματικά καλύπτουν τα ασφαλιστήριά σας | PolicyWallet",
             ogDescription:
-                "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι και πού όχι — και, με το Family, ποια κενά βρέθηκαν και τι να ρωτήσετε τον ασφαλιστή σας.",
+                "Δείτε τι γράφει κάθε ασφαλιστήριο.",
             twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",
-            twitterDescription: "Δεν πουλάμε ασφάλειες. Σας λέμε σε τι δεν καλύπτεστε.",
+            twitterDescription: "Ένα μέρος για τα έγγραφα, τις καλύψεις και τις ημερομηνίες σας.",
         },
         en: {
             locale: "en",
             path: "/en",
             title: "Know what your policies actually cover | PolicyWallet",
             description:
-                "Upload every policy, from every insurer. The analysis explains cover, exclusions and gaps in plain language — nothing sold, no commission taken.",
+                "Organise your policies, read terms in plain language and see what needs checking. Features vary by plan.",
             keywords: [
                 "insurance check",
                 "coverage gaps",

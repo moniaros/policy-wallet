@@ -64,15 +64,15 @@ export function ProductSections({ language }: { language: Language }) {
 
                     <h1 className="mb-6 inline-flex min-h-[24px] items-center text-h1 font-semibold leading-[1.02] tracking-[-0.03em] text-[#0F172A] dark:text-white md:text-display text-balance">
                         {t(
-                            "Κάθε ασφάλειά σας, διαβασμένη για εσάς.",
+                            "Καταλάβετε τι γράφει κάθε ασφαλιστήριό σας.",
                             "Every policy you own, read for you."
                         )}
                     </h1>
 
                     <p className="mx-auto mb-10 max-w-[640px] text-lead leading-[1.55] text-[#475569] dark:text-slate-300 md:text-title">
                         {t(
-                            "Δεν πουλάμε ασφάλειες — σας λέμε αν είστε καλυμμένοι. Δείτε τι καλύπτει κάθε ασφαλιστήριο και τι δεν καλύπτει.",
-                            "We do not sell insurance — we tell you if you are covered. See what every policy covers and what it does not."
+                            "Δεν πουλάμε ασφάλειες. Σας βοηθάμε να βρείτε τις καλύψεις, τα όρια και τις εξαιρέσεις που αναφέρουν τα έγγραφά σας.",
+                            "We do not sell insurance. We help you find the cover, limits and exclusions described in your documents."
                         )}
                     </p>
 
@@ -111,8 +111,8 @@ export function ProductSections({ language }: { language: Language }) {
                         className="mx-auto max-w-[560px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white focus:outline-none lg:text-h1"
                     >
                         {t(
-                            "Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων.",
-                            "From PDF to a clear picture, without reading the fine print."
+                            "Ξεκινήστε από μια απλή εξήγηση του εγγράφου σας.",
+                            "Start with a plain-language explanation of your document."
                         )}
                     </h2>
                     {/* The mechanism, named on the page and not only in the
@@ -123,8 +123,8 @@ export function ProductSections({ language }: { language: Language }) {
                         its limit, and linking to the page that explains it. */}
                     <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">
                         {t(
-                            "Το έγγραφό σας το διαβάζει τεχνητή νοημοσύνη και το μεταφράζει σε δεδομένα. Ποια κενά κάλυψης έχετε το κρίνουν κανόνες, όχι το μοντέλο.",
-                            "Artificial intelligence reads your document and turns it into data. Which coverage gaps you have is decided by rules, not by the model."
+                            "Η τεχνητή νοημοσύνη διαβάζει το έγγραφο. Έπειτα, συγκεκριμένοι κανόνες ελέγχουν τα στοιχεία που διαβάστηκαν. Τα αποτελέσματα μπορεί να χρειάζονται επιβεβαίωση.",
+                            "AI reads the document. Defined rules then check the extracted information. Results may need confirmation."
                         )}{" "}
                         <Link href={localizeHref("/platform", language)} className="underline">
                             {t("Δείτε πώς ακριβώς", "See exactly how")}
@@ -141,20 +141,20 @@ export function ProductSections({ language }: { language: Language }) {
                     <div>
                         <h2 className="mb-6 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1 text-balance">
                             {t(
-                                "Καθαρές απαντήσεις, χωρίς να διαβάσετε ούτε μία σελίδα.",
-                                "Clear answers, without reading a single page."
+                                "Βρείτε πιο εύκολα τα σημεία που σας ενδιαφέρουν.",
+                                "Find the details that matter to you more easily."
                             )}
                         </h2>
                         <p className="mb-8 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Σας λέμε τι πληρώνετε δύο φορές — σε κάθε πλάνο — και, με το Family, τι λείπει από την κάλυψή σας και τι να ρωτήσετε τον ασφαλιστή σας.",
-                                "We tell you what you are paying for twice — on every plan — and, with Family, what your cover is missing and what to ask your insurance agent."
+                                "Δείτε πιθανές κοινές καλύψεις σε περισσότερα ασφαλιστήρια. Με το Family, βλέπετε και σημεία που εντόπισαν οι διαθέσιμοι έλεγχοι, για να τα συζητήσετε με τον ασφαλιστή σας.",
+                                "See possible overlapping cover across policies. With Family, also see findings from available checks to discuss with your adviser."
                             )}
                         </p>
                         <ul className="space-y-3">
                             {[
-                                t("Διαβάζουμε κάθε ασφαλιστήριο σε λίγα λεπτά", "We read every policy in minutes"),
-                                t("Βρίσκουμε διπλές καλύψεις σε κάθε πλάνο — και κενά κάλυψης με το Family", "We find doubled-up cover on every plan — and coverage gaps with Family"),
+                                t("Συγκεντρώνουμε τα βασικά στοιχεία του ασφαλιστηρίου", "We bring together the key details in your policy"),
+                                t("Πιθανές κοινές καλύψεις σε κάθε πλάνο· επιπλέον έλεγχοι με το Family", "Possible overlapping cover on every plan; additional checks with Family"),
                                 t("Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus", "We warn you before something runs out — from the Plus plan"),
                                 // `agentCollaboration` is false on free AND on
                                 // Starter, true only on pro — the plan displayed
@@ -376,7 +376,7 @@ export function ProductSections({ language }: { language: Language }) {
                 <div className="mx-auto max-w-[860px] text-center">
                     <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white [overflow-wrap:anywhere] md:text-h1 lg:text-display">
                         {t(
-                            "Στείλτε ένα ασφαλιστήριο και δείτε τι βρίσκουμε.",
+                            "Ανεβάστε ένα ασφαλιστήριο για να ξεκινήσετε.",
                             "Send us a policy and see what we find."
                         )}
                     </h2>

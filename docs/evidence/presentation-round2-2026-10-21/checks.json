@@ -1,0 +1,249 @@
+{
+  "revision": "99313285e57fc91622c6a3bd53844458130c585e",
+  "local": {
+    "unitFiles": 700,
+    "unitTests": 7873,
+    "publicRouteTests": 77,
+    "publicPresentationScenarios": 12,
+    "authScenarios": 11,
+    "publicAxeScans": 4,
+    "authAxeScans": 11,
+    "axeViolations": 0,
+    "apiRoutes": 116,
+    "devMigrations": 88,
+    "build": "passed",
+    "lint": "passed",
+    "types": "passed",
+    "i18n": "passed",
+    "utf8": "passed",
+    "mobileMenu": {
+      "opens": true,
+      "escapeCloses": true,
+      "focusRestored": true
+    }
+  },
+  "review": {
+    "disposition": "ship",
+    "photoContainment": "resolved",
+    "designPersistence": "resolved"
+  },
+  "limits": [
+    "Vercel analytics scripts are stubbed only by the local public route test harness; deployed runs use real scripts.",
+    "No paid checkout or hardware passkey assertion is claimed."
+  ],
+  "preview": {
+    "url": "https://policy-wallet-o1lw32r3s-moniaros-projects.vercel.app",
+    "deployment": "dpl_5ksaN8tyJU4hMjdmPcx2sehkVCn3",
+    "sourceRevision": "99313285e57fc91622c6a3bd53844458130c585e",
+    "publicAssertions": 77,
+    "presentationScenarios": 12,
+    "authScenarios": 11,
+    "integratedPolicyholderTests": 12,
+    "axeViolations": 0,
+    "toolbarException": "Only the injected vercel.live feedback.js CSP warning was excluded in a temporary preview-only test copy. Application CSP and error assertions were preserved.",
+    "runnerTeardown": "The 77 public assertions and 12 presentation scenarios completed with no failures. Chromium shutdown did not exit and those two runner processes were interrupted after result files were written. The 11 auth scenarios and 12 policyholder tests exited normally."
+  },
+  "productionMerge": "c4df0efe051723db9a6ffc4a24379004a4964f0b",
+  "applicationMatch": "git diff 99313285 e34bfae6 -- . :!docs was empty; git diff e34bfae6 c4df0efe -- . :!docs was empty",
+  "production": {
+    "url": "https://www.policywallet.gr",
+    "revision": "c4df0efe051723db9a6ffc4a24379004a4964f0b",
+    "ciRun": 39586111020,
+    "ci": "success",
+    "deployRun": 39587498258,
+    "deploy": "success",
+    "deployment": "dpl_2htTLzAoCpM4BnRzPQqizeKg8swf",
+    "deploymentUrl": "https://policy-wallet-hlv93cwnw-moniaros-projects.vercel.app",
+    "schema": {
+      "appliedMigrations": 88,
+      "pending": [],
+      "verifiedPreventionTables": 3,
+      "columns": 34,
+      "cascadeForeignKeys": 5
+    },
+    "public": [
+      {
+        "route": "/",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/en",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/pricing",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/en/pricing",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/solutions/agents",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/en/solutions/agents",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/product/motor",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/trust",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/guides",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/privacy",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      },
+      {
+        "route": "/terms",
+        "status": 200,
+        "h1": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ]
+      }
+    ],
+    "auth": [
+      {
+        "route": "/auth/signin",
+        "status": 200,
+        "url": "https://www.policywallet.gr/auth/signin",
+        "title": "Καλώς ήρθατε πίσω",
+        "authShell": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ],
+        "emptyValidation": true
+      },
+      {
+        "route": "/auth/signin?lang=en",
+        "status": 200,
+        "url": "https://www.policywallet.gr/auth/signin?lang=en",
+        "title": "Welcome back",
+        "authShell": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ],
+        "emptyValidation": true
+      },
+      {
+        "route": "/auth/signup?role=policyholder&email=presentation%40example.com",
+        "status": 200,
+        "url": "https://www.policywallet.gr/auth/signup/policyholder?email=presentation%40example.com",
+        "title": "Οι νέες εγγραφές είναι προσωρινά κλειστές.",
+        "authShell": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ],
+        "registrationPaused": true
+      },
+      {
+        "route": "/auth/signup?role=agent&lang=en",
+        "status": 200,
+        "url": "https://www.policywallet.gr/auth/signup/agent?lang=en",
+        "title": "New registrations are paused.",
+        "authShell": 1,
+        "widths": [
+          320,
+          390,
+          1440
+        ],
+        "registrationPaused": true
+      }
+    ],
+    "interactions": {
+      "menuFocusRestored": true,
+      "photoLoaded": true,
+      "photoContained": true,
+      "captionCount": 0,
+      "keyboardDemo": true,
+      "emailHandoff": true,
+      "productionPause": "Οι νέες εγγραφές είναι προσωρινά κλειστές.",
+      "annualBilling": true,
+      "audienceSwitch": true,
+      "walletRequiresSignIn": true,
+      "errors": []
+    },
+    "limits": [
+      "Production registrations remain paused by the existing configuration; signup form functionality and email prefill were verified on the protected development preview.",
+      "The optional production screenshot attempt timed out in browser capture; responsive DOM checks and live interaction assertions completed. Local/preview visual captures remain the design evidence.",
+      "Production build reports POOLED_DATABASE_URL absent and session-mode fallback. Existing infrastructure risk; this presentation release does not alter database credentials."
+    ]
+  }
+}

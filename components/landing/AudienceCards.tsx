@@ -127,13 +127,13 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
         // Reminders start on the Plus plan (Free shows only the date), so the
         // benefit names the plan instead of promising it to everyone.
         t(
-            "Υπενθύμιση πριν λήξει κάτι, για να μη μείνετε ακάλυπτοι — από το πλάνο Plus",
-            "A reminder before something runs out, so you are never left uncovered — from the Plus plan",
+            "Υπενθυμίσεις πριν λήξουν τα ασφαλιστήριά σας — από το πλάνο Plus",
+            "Reminders before your policies expire — from the Plus plan",
         ),
         // Gap detection is a Family feature — same honesty rule.
         t(
-            "Βρίσκουμε κενά που ίσως δεν είδε ούτε ο σύμβουλός σας — με το Family",
-            "We find gaps even your own advisor may have missed — with Family",
+            "Σημεία που χρειάζονται έλεγχο στα ασφαλιστήριά σας — με το Family",
+            "Points to review in your policies — with Family",
         ),
     ]
 
@@ -151,8 +151,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     </h3>
                     <p className="mt-g-4 max-w-[56ch] text-g-body-lg text-fg-secondary">
                         {t(
-                            "Τέλος το ψάξιμο στα συρτάρια. Όλα τα ασφαλιστήριά σας, πάντα ενημερωμένα.",
-                            "No more digging through drawers. All your policies, always up to date.",
+                            "Βρείτε τα ασφαλιστήριά σας σε ένα μέρος. Προσθέστε το νέο έγγραφο όταν αλλάξει ή ανανεωθεί η ασφάλιση.",
+                            "Find your policies in one place. Add the new document when your insurance changes or renews.",
                         )}
                     </p>
                     <BenefitList items={benefits} />
@@ -207,12 +207,12 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
             "All your clients on one screen — who is running out, who has a gap",
         ),
         t(
-            "Προτάσεις για το τι λείπει σε κάθε πελάτη, βγαλμένες από τα ίδια του τα ασφαλιστήρια",
-            "Suggestions for what each client is missing, taken from their own policies",
+            "Σημεία για συζήτηση με κάθε πελάτη, με βάση τα ασφαλιστήριά του",
+            "Points to discuss with each client, based on their policies",
         ),
         t(
-            `Στέλνετε έως ${PUBLIC_COUNTS.batchUploadMaxFiles.value} αρχεία μαζί και τα διαβάζουμε όλα σε λίγα λεπτά`,
-            `Send up to ${PUBLIC_COUNTS.batchUploadMaxFiles.value} files at once and we read every one of them in minutes`,
+            `Στέλνετε έως ${PUBLIC_COUNTS.batchUploadMaxFiles.value} αρχεία μαζί για ανάγνωση και οργάνωση`,
+            `Send up to ${PUBLIC_COUNTS.batchUploadMaxFiles.value} files together for reading and organisation`,
         ),
     ]
 
@@ -230,8 +230,8 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     </h3>
                     <p className="mt-g-4 max-w-[56ch] text-g-body-lg text-fg-secondary">
                         {t(
-                            "Συγκεντρώστε τις καλύψεις του πελάτη σε μία ενιαία εικόνα, εντοπίστε κενά και επικαλύψεις και κατανοήστε τι πραγματικά χρειάζεται.",
-                            "Bring your client's coverage into one complete view, identify gaps and overlaps, and understand what they actually need.",
+                            "Δείτε μαζί τα ασφαλιστήρια κάθε πελάτη, τις ημερομηνίες τους και τα σημεία που χρειάζονται τη δική σας αξιολόγηση.",
+                            "See each client's policies, dates and points requiring your professional assessment together.",
                         )}
                     </p>
                     <BenefitList items={benefits} />

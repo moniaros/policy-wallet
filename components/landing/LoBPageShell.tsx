@@ -1,3 +1,4 @@
+import { presentationCopy } from "@/lib/i18n/presentation"
 import React from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -60,7 +61,7 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
 
     return (
         <div className={`min-h-screen bg-white text-neutral-900 selection:bg-brand-green/20 selection:text-neutral-900 dark:bg-slate-950 dark:text-white`}>
-            <PublicHeader locale={locale} />
+            <PublicHeader locale={locale} audience={audience} />
 
             <main id={SKIP_LINK_TARGET_ID} tabIndex={-1} className="pt-28 lg:pt-36">
                 {children}
@@ -73,7 +74,7 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
                             (SEO review 2026-10 B2). */}
                         <p className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white">
                             {isAgentAudience
-                                ? t("Πλήρης ανάλυση κάθε ασφαλιστηρίου με το Family.", "Full analysis of every policy with Family.")
+                                ? presentationCopy[locale].agentClosing
                                 : t("Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 3 policies. Upgrade whenever you need it.")}
                         </p>
                         <p className="mb-8 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-400">
@@ -86,8 +87,8 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
                                     : t("Δείτε όλα τα πλάνα στη σελίδα τιμών.", "See every plan on the pricing page.")
                                 : FUNNEL_PLANS
                                   ? t(
-                                        `${FUNNEL_PLANS.starter.displayName} ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/μήνα, ${FUNNEL_PLANS.plus.displayName} ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/μήνα με πλήρη ανάλυση AI. Ακύρωση όποτε θέλετε.`,
-                                        `${FUNNEL_PLANS.starter.displayName} at ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/month, ${FUNNEL_PLANS.plus.displayName} at ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/month with full AI analysis. Cancel anytime.`
+                                        `${FUNNEL_PLANS.starter.displayName} ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/μήνα, ${FUNNEL_PLANS.plus.displayName} ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/μήνα, ανάλογα με το πλάνο. Ακύρωση όποτε θέλετε.`,
+                                        `${FUNNEL_PLANS.starter.displayName} at ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/month, ${FUNNEL_PLANS.plus.displayName} at ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/month, depending on your plan. Cancel anytime.`
                                     )
                                   : t("Δείτε όλα τα πλάνα στη σελίδα τιμών.", "See every plan on the pricing page.")}
                         </p>

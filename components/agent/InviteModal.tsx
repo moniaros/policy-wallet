@@ -86,7 +86,7 @@ export function InviteModal({
                                 per-option state — selection was conveyed by border
                                 colour alone (WCAG 1.4.1). */}
                             <span id="invite-scope-label" className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3 block pl-2">{t.invite.contextLabel}</span>
-                            <div role="group" aria-labelledby="invite-scope-label" className="grid grid-cols-2 gap-4">
+                            <div role="group" aria-labelledby="invite-scope-label" className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <button
                                     type="button"
                                     aria-pressed={scope === 'upload_only'}
@@ -97,7 +97,7 @@ export function InviteModal({
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
                                     <h3 className="text-sm font-black text-foreground tracking-tight mb-1">{t.invite.uploadOnly}</h3>
-                                    <p className="text-kicker text-neutral-500 dark:text-neutral-400 font-medium leading-tight">{t.invite.uploadDesc}</p>
+                                    <p className="text-sm text-neutral-600 dark:text-neutral-300 font-medium leading-relaxed">{t.invite.uploadDesc}</p>
                                 </button>
 
                                 <button
@@ -110,7 +110,7 @@ export function InviteModal({
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
                                     <h3 className="text-sm font-black text-foreground tracking-tight mb-1">{t.invite.fullPortfolio}</h3>
-                                    <p className="text-kicker text-neutral-500 dark:text-neutral-400 font-medium leading-tight text-balance">{t.invite.portfolioDesc}</p>
+                                    <p className="text-sm text-neutral-600 dark:text-neutral-300 font-medium leading-relaxed text-balance">{t.invite.portfolioDesc}</p>
                                 </button>
                             </div>
                         </div>

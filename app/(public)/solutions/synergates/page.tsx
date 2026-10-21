@@ -5,7 +5,7 @@ import { PartnersSections } from "@/components/landing/PartnersSections"
 export const metadata: Metadata = {
     title: "PolicyWallet για θεσμικούς συνεργάτες",
     description:
-        "Κατανόηση καλύψεων με συγκατάθεση, ενσωματωμένη στα κανάλιά σας. Πρώιμη διάθεση.",
+        "Εργαλεία για να εξηγείτε ασφαλιστήρια μέσα από τις δικές σας υπηρεσίες. Η διάθεση βρίσκεται σε αρχικό στάδιο.",
     robots: { index: false, follow: false },
 }
 

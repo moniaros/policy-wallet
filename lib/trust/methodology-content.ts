@@ -31,7 +31,7 @@ export function methodologySections(lang: Language): MethodologySection[] {
             // decideGapsForPolicy (lib/gap-detection.ts) evaluates GapDefinition.detectionLogic against AcordData;
             // the AI contract has no isDetected and no severity field (CLAUDE.md, «Rules decide a coverage gap»).
             id: "who-decides",
-            title: { el: "Ποιος αποφασίζει ότι υπάρχει κενό", en: "Who decides that a gap exists" },
+            title: { el: "Πώς προκύπτουν τα σημεία για έλεγχο;", en: "Who decides that a gap exists" },
             body: [
                 {
                     el: "Κάθε έλεγχος απαντά μια συγκεκριμένη ερώτηση. Για παράδειγμα: «Το έγγραφο λέει ότι δεν καλύπτεται ο σεισμός;» ή «Γράφει ποιος παίρνει την αποζημίωση;». Οι απαντήσεις προκύπτουν από κανόνες που έχουμε ορίσει, όχι από γνώμη της τεχνητής νοημοσύνης. Ο ίδιος έλεγχος στα ίδια στοιχεία δίνει το ίδιο αποτέλεσμα.",
@@ -77,8 +77,8 @@ export function methodologySections(lang: Language): MethodologySection[] {
                     en: "Every rule reads fields the extractor actually fills for its line, declares its inputs up front, and ships with two test documents: one that fires it and one where it correctly stays quiet. Without those, a rule does not enter the catalogue.",
                 },
                 {
-                    el: "Οι έλεγχοι που ρωτούν «καταγράφεται αυτό;» ενεργοποιούνται από τη σιωπή του εγγράφου και λένε πάντα «δεν καταγράφεται», ποτέ «δεν καλύπτεται». Οι έλεγχοι κάλυψης ενεργοποιούνται μόνο όταν το έγγραφο δηλώνει ρητά ότι κάτι δεν καλύπτεται. Ό,τι δεν διαβάστηκε μένει «δεν μπόρεσε να ελεγχθεί».",
-                    en: "Checks that ask “is this recorded?” fire on the document's silence and always say “not recorded”, never “not covered”. Coverage checks fire only when the document explicitly says something is not covered. Whatever was not read stays “could not be checked”.",
+                    el: "Κάθε έλεγχος αναζητά συγκεκριμένα στοιχεία στο έγγραφο, όπως μια ρητή εξαίρεση ή διαφορά μεταξύ ποσών. Όταν μια πληροφορία δεν καταγράφεται, αυτό αναφέρεται ως έλλειψη πληροφορίας, όχι ως βεβαιότητα ότι δεν υπάρχει κάλυψη.",
+                    en: "Each check looks for specific information in the document, such as an explicit exclusion or a difference between amounts. When information is not recorded, it is described as missing information, not proof that cover is absent.",
                 },
             ],
         },

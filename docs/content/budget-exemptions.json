@@ -83,5 +83,320 @@
     "locator": "call:app/(public)/product/travel/PageClient.tsx",
     "text": "Αποσκευές και επιστροφή στην Ελλάδα",
     "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/boat/PageClient.tsx",
+    "text": "Βοήθεια στη θάλασσα και ανάσυρση σκάφους",
+    "reason": "2026-10-21 public presentation: unchanged existing heading. Removing the decorative category label makes the fuzzy budget matcher pair this heading with that shorter deleted label. No copy growth; desktop/mobile route sweep verifies layout."
+  },
+  {
+    "locator": "call:app/(public)/product/business/PageClient.tsx",
+    "text": "Τι καλύπτει η ασφάλεια της επιχείρησής σας;",
+    "reason": "2026-10-21 public presentation: unchanged existing heading. Removing the decorative category label makes the fuzzy budget matcher pair this heading with that shorter deleted label. No copy growth; desktop/mobile route sweep verifies layout."
+  },
+  {
+    "locator": "call:app/(public)/product/cyber/PageClient.tsx",
+    "text": "Κυβερνοεπίθεση: τι καλύπτει η ασφάλειά σας;",
+    "reason": "2026-10-21 public presentation: unchanged existing heading. Removing the decorative category label makes the fuzzy budget matcher pair this heading with that shorter deleted label. No copy growth; desktop/mobile route sweep verifies layout."
+  },
+  {
+    "locator": "bundle:billing.cancelConfirmBody",
+    "text": "Η αυτόματη ανανέωση θα σταματήσει. Διατηρείτε την πρόσβαση στο τρέχον πρόγραμμα μέχρι το τέλος της περιόδου που έχετε ήδη πληρώσει. Η ακύρωση από μόνη της δεν επιστρέφει χρήματα για το υπόλοιπο διάστημα — ως καταναλωτής έχετε δικαίωμα υπαναχώρησης εντός 14 ημερών από τη σύναψη της σύμβασης. Τυχόν αναλογική χρέωση επιτρέπεται μόνο με τις νόμιμες προϋποθέσεις, όπως προηγούμενο ρητό αίτημά σας για άμεση έναρξη (Όροι, §6). Στείλτε μας email στο info@policywallet.gr.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "bundle:compliance.cookieBanner.description",
+    "text": "Τα απαραίτητα cookies βοηθούν να λειτουργεί η υπηρεσία. Αν συμφωνήσετε, χρησιμοποιούμε και cookies για να βλέπουμε πώς χρησιμοποιείται.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:app/(public)/company/CompanyPageClient.tsx",
+    "text": "Τα αρχεία σας αποθηκεύονται κρυπτογραφημένα στην ΕΕ. Ορισμένοι τεχνικοί πάροχοι μπορεί να επεξεργάζονται στοιχεία εκτός ΕΕ. Μπορείτε να ζητήσετε αντίγραφο ή διαγραφή· στην πολιτική απορρήτου εξηγούμε τη διαδικασία.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:app/(public)/compare/CompareSections.tsx",
+    "text": "Εργαλείο διαχείρισης πελατών για ασφαλιστές;",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:app/(public)/compare/CompareSections.tsx",
+    "text": "Υπάρχει χώρος για εσάς και εργαλεία για ασφαλιστές. Οι ασφαλιστές βλέπουν έγγραφα που διαχειρίζονται για πελάτες ή που τους κοινοποιείτε, ανάλογα με τη σχέση και τα δικαιώματά τους.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:app/(public)/platform/PlatformSections.tsx",
+    "text": "Ελέγχουμε τα στοιχεία με συγκεκριμένους κανόνες",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:app/(public)/pricing/PricingPageClient.tsx",
+    "text": "Ακύρωση ανανέωσης όποτε θέλετε",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:components/landing/HeroSlides.tsx",
+    "text": "Καλύψεις που αξίζει να ελέγξετε",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:components/landing/HeroSlides.tsx",
+    "text": "Παροχές που ίσως δεν γνωρίζετε",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/glossary/content.ts",
+    "text": "Η συμμετοχή είναι συνήθως ποσοστό των καλυπτόμενων εξόδων. Η απαλλαγή μπορεί να είναι ποσό ή ποσοστό με ξεχωριστό τρόπο υπολογισμού. Ένα πρόγραμμα μπορεί να περιλαμβάνει και τα δύο. Ελέγξτε με ποια σειρά εφαρμόζονται.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/glossary/content.ts",
+    "text": "Όχι. Το ασφάλιστρο είναι το ποσό που πληρώνετε για την ασφάλιση. Το ασφαλιζόμενο κεφάλαιο είναι το ποσό που αναγράφεται για την κάλυψη. Η αποζημίωση εξαρτάται και από τους όρους, τις απαλλαγές και τα επιμέρους όρια· δεν είναι αυτόματη καταβολή ολόκληρου του κεφαλαίου.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/guides/content.ts",
+    "text": "Η μείωση ΕΝΦΙΑ είναι ένα στοιχείο του κόστους. Ελέγξτε επίσης τι καλύπτει η ασφάλιση, έως ποιο ποσό και τι θα πληρώνατε εσείς σε ζημιά. Η επιλογή εξαρτάται από την κατοικία και τις ανάγκες σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/guides/content.ts",
+    "text": "Πόση είναι η μείωση για τον ΕΝΦΙΑ 2026;",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/guides/content.ts",
+    "text": "Αν δεν χρησιμοποιείτε το όχημα, η νόμιμη ακινησία πρέπει να έχει δηλωθεί. Το ότι μένει σε ιδιωτικό χώρο δεν αρκεί από μόνο του. Η υποχρέωση δασικής πυρκαγιάς και πλημμύρας εξετάζεται χωριστά και ισχύει και σε διοικητική ακινησία.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/guides/content.ts",
+    "text": "Ναι. Η υποχρέωση αστικής ευθύνης συνδέεται με το καθεστώς κυκλοφορίας του οχήματος. Η νόμιμη ακινησία είναι διαφορετική περίπτωση. Ωστόσο, η υποχρέωση κάλυψης δασικής πυρκαγιάς και πλημμύρας ισχύει και για οχήματα σε διοικητική ακινησία, με τις εξαιρέσεις του νόμου.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/guides/content.ts",
+    "text": "Μπορείτε να εξετάσετε αλλαγή εταιρείας. Ελέγξτε την προθεσμία μη ανανέωσης, την έναρξη της νέας κάλυψης και τυχόν νέες εξαιρέσεις ή περιόδους αναμονής. Μην θεωρείτε δεδομένο ότι η αλλαγή δεν έχει κόστος.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/guides/content.ts",
+    "text": "Ελέγξτε αν δέχεται έγγραφα από τις εταιρείες σας, αν βρίσκετε εύκολα τα στοιχεία και αν οι λειτουργίες του ταιριάζουν σε όσα χρειάζεστε. Για συμβουλή σχετικά με τις καλύψεις, μιλήστε με τον ασφαλιστή σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/guides/content.ts",
+    "text": "Τι επηρεάζει την τιμή της ασφάλισης σεισμού, ποια στοιχεία χρειάζεται μια προσφορά και πώς ελέγχετε την απαλλαγή και τις προϋποθέσεις μείωσης ΕΝΦΙΑ.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/landing/content.ts",
+    "text": "Δείτε πότε λήγουν τα ασφαλιστήριά σας. Με το Plus λαμβάνετε υπενθυμίσεις και βλέπετε τι άλλαξε όταν ανεβάζετε την ανανέωση.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/landing/content.ts",
+    "text": "χρειάζονται έλεγχο",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/landing/content.ts",
+    "text": "Η τεχνητή νοημοσύνη μπορεί να κάνει λάθη ή να παραλείψει πληροφορίες. Ελέγχετε τα ποσά, τις εξαιρέσεις και τις σημαντικές αποφάσεις με το πρωτότυπο ασφαλιστήριο και τον ασφαλιστή σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/market-numbers.ts",
+    "text": "ΕΛΣΤΑΤ, Δείκτης Αναπροσαρμογής Μακροχρόνιων Ασφαλίσεων Υγείας 2024",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/market-numbers.ts",
+    "text": "Με την ηλικία: +6,24%. Χωρίς την ηλικία: +1,25%. Δεν είναι αύξηση κάθε ασφαλιστηρίου.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/market-numbers.ts",
+    "text": "Για τον ΕΝΦΙΑ 2026, υπό προϋποθέσεις. Το ποσοστό εξαρτάται από την αξία της κατοικίας και τη διάρκεια ασφάλισης το 2025.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/positioning.ts",
+    "text": "Δύο καλύψεις μπορεί να συμπληρώνουν η μία την άλλη. Δείτε τους όρους και συζητήστε τους με τον ασφαλιστή σας πριν ακυρώσετε κάτι.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/positioning.ts",
+    "text": "Συγκεντρώστε τα ασφαλιστήριά σας από διαφορετικές εταιρείες. Δείτε τις καλύψεις, τα ποσά και τις ημερομηνίες τους με απλά λόγια.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/positioning.ts",
+    "text": "Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/positioning.ts",
+    "text": "Κρυπτογραφημένη αποθήκευση",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/positioning.ts",
+    "text": "Δείτε τι γράφει το ασφαλιστήριό σας. Κρατήστε τις ερωτήσεις για τον ασφαλιστή σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/marketing/positioning.ts",
+    "text": "Βρείτε τι καλύπτεται, τι εξαιρείται και τι χρειάζεται επιβεβαίωση από τον ασφαλιστή σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/needs/outcome.ts",
+    "text": "Η ασφάλιση του ιδιοκτήτη δεν καλύπτει απαραίτητα τα δικά σας πράγματα ή τη δική σας ευθύνη. Ελέγξτε τι αναφέρει το ασφαλιστήριο.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/product/lob-faqs.ts",
+    "text": "Για τον ΕΝΦΙΑ 2026 χρειάζεται ασφάλιση το 2025 για σεισμό, πυρκαγιά και πλημμύρα, με το απαιτούμενο ποσό και διάρκεια τουλάχιστον τριών μηνών. Η μείωση είναι έως 20% ή 10%, ανάλογα με τη φορολογητέα αξία και τη διάρκεια. Απαιτείται αίτηση στην ΑΑΔΕ.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/product/lob-faqs.ts",
+    "text": "Υπασφάλιση σημαίνει ότι το ποσό ασφάλισης είναι μικρότερο από την αξία που πρέπει να ασφαλιστεί. Αν εφαρμόζεται αναλογικός κανόνας, μπορεί να μειωθεί και η αποζημίωση για μερική ζημιά. Ελέγξτε τυχόν εξαίρεση από τον κανόνα στους όρους σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/product/lob-faqs.ts",
+    "text": "Η απευθείας πληρωμή σημαίνει ότι, υπό προϋποθέσεις, η ασφαλιστική πληρώνει το νοσοκομείο. Δεν σημαίνει ότι δεν έχετε δικά σας έξοδα. Ελέγξτε το δίκτυο νοσοκομείων, την έγκριση και τη συμμετοχή σας πριν από προγραμματισμένη νοσηλεία.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/product/lob-faqs.ts",
+    "text": "Η φορολογική μεταχείριση εξαρτάται από το πρόγραμμα, τις εισφορές και την περίπτωσή σας. Το PolicyWallet οργανώνει όσα γράφει το έγγραφο· δεν υπολογίζει τη φορολογική σας δήλωση. Επιβεβαιώστε τα με τον λογιστή σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/company/CompanyPageClient.tsx",
+    "text": "Φτιάξαμε το PolicyWallet για να βρίσκετε εύκολα τι γράφουν τα ασφαλιστήριά σας και τι χρειάζεται να ρωτήσετε.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/company/CompanyPageClient.tsx",
+    "text": "Περιορίζουμε την πρόσβαση στα αρχεία σας και τα αποθηκεύουμε κρυπτογραφημένα. Στην πολιτική απορρήτου εξηγούμε ποιος χρησιμοποιεί τα στοιχεία σας και γιατί.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/compare/CompareSections.tsx",
+    "text": "Πώς συνεργάζεστε με τον ασφαλιστή σας",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/ProductSections.tsx",
+    "text": "Η τεχνητή νοημοσύνη διαβάζει το έγγραφο. Έπειτα, συγκεκριμένοι κανόνες ελέγχουν τα στοιχεία που διαβάστηκαν. Τα αποτελέσματα μπορεί να χρειάζονται επιβεβαίωση.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/boat/PageClient.tsx",
+    "text": "Τι καλύπτει η ασφάλεια του σκάφους σας;",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/cyber/PageClient.tsx",
+    "text": "Δείτε τι αναφέρει το ασφαλιστήριο για κλοπή δεδομένων, κλείδωμα αρχείων και διακοπή της δουλειάς. Ελέγξτε τα ποσά, τις εξαιρέσεις και τους χρόνους αναμονής.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/group-pension/PageClient.tsx",
+    "text": "Δείτε τις εισφορές και το ποσό που αναφέρουν τα έγγραφα του προγράμματος. Για τη φορολογική δήλωση χρειάζεται επιβεβαίωση από τον λογιστή σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/group-pension/PageClient.tsx",
+    "text": "Καταλάβετε τους όρους του ομαδικού σας προγράμματος.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/health/PageClient.tsx",
+    "text": "Ελέγξτε αν προβλέπεται απευθείας πληρωμή στο νοσοκομείο. Επιβεβαιώστε με την ασφαλιστική το νοσοκομείο και τυχόν έγκριση που χρειάζεται πριν από τη νοσηλεία.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/life/PageClient.tsx",
+    "text": "Βρείτε τι προβλέπει η ασφάλεια ζωής για την οικογένειά σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/life/PageClient.tsx",
+    "text": "Οι ανάγκες της οικογένειας και το υπόλοιπο του δανείου αλλάζουν. Συζητήστε με τον ασφαλιστή σας αν το ποσό του ασφαλιστηρίου ανταποκρίνεται στη σημερινή σας κατάσταση.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/motor/PageClient.tsx",
+    "text": "Δείτε τις καλύψεις, τα όρια, την οδική βοήθεια και την ημερομηνία λήξης που γράφει το ασφαλιστήριο.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/motor/PageClient.tsx",
+    "text": "Σας δείχνουμε τα ποσά και τους όρους που αναφέρει το έγγραφο. Δεν υπολογίζουμε την τρέχουσα αξία του οχήματος ούτε την τελική αποζημίωση.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/motor/PageClient.tsx",
+    "text": "Με το Family, δείτε σημεία που χρειάζονται έλεγχο στην οδική βοήθεια. Μια κοινή παροχή σε δύο ασφαλιστήρια δεν σημαίνει από μόνη της περιττό κόστος.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/pet/PageClient.tsx",
+    "text": "Βρείτε ποιες παθήσεις εξαιρούνται και ποιες προϋποθέσεις αναφέρει το έγγραφο. Αν κάτι δεν διαβάστηκε καθαρά, ελέγξτε το στο ασφαλιστήριο.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/property/PageClient.tsx",
+    "text": "Απαιτούνται τουλάχιστον τρεις μήνες ασφάλισης μέσα στο προηγούμενο έτος. Για μικρότερη διάρκεια από ένα έτος, η μείωση είναι αναλογική.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/property/PageClient.tsx",
+    "text": "Για τον ΕΝΦΙΑ 2026: μείωση 20% για κατοικία φορολογητέας αξίας έως 500.000 € και 10% πάνω από αυτό το ποσό, εφόσον πληρούνται οι όροι της ΑΑΔΕ και υπήρχε πλήρης ετήσια ασφάλιση το 2025.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/property/PageClient.tsx",
+    "text": "Χρειάζονται μαζί οι καλύψεις σεισμού, πυρκαγιάς και πλημμύρας. Μπορούν να προκύπτουν από περισσότερα ασφαλιστήρια, εφόσον πληρούνται οι προϋποθέσεις της ΑΑΔΕ.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/property/PageClient.tsx",
+    "text": "Με το Family, συγκρίνουμε σχετικά ποσά όταν αναφέρονται στο ίδιο το έγγραφο. Δεν εκτιμούμε ανεξάρτητα πόσο κοστίζει να ξαναχτιστεί το σπίτι σας.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/property/PageClient.tsx",
+    "text": "Εντοπίστε αν αναφέρονται σεισμός, πυρκαγιά και πλημμύρα. Η ΑΑΔΕ ελέγχει αν δικαιούστε μείωση ΕΝΦΙΑ, μαζί με τη διάρκεια και το ποσό ασφάλισης.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/product/travel/PageClient.tsx",
+    "text": "Ελέγξτε την ταξιδιωτική ασφάλεια πριν φύγετε.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:app/(public)/solutions/agents/AgentsSolutionPageClient.tsx",
+    "text": "Τα βασικά στοιχεία κάθε ασφαλιστηρίου συγκεντρωμένα",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:components/landing/HomeContact.tsx",
+    "text": "Το μήνυμα δεν στάλθηκε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:components/landing/PricingPreview.tsx",
+    "text": "Διαλέξτε πλάνο με τις λειτουργίες που χρειάζεστε: οργάνωση εγγράφων, ανάλυση και υπενθυμίσεις. Δείτε τι περιλαμβάνει το καθένα πριν επιλέξετε.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "call:components/landing/PublicMegaFooter.tsx",
+    "text": "Συγκεντρώστε τα ασφαλιστήριά σας και καταλάβετε τι γράφουν. Βρείτε τι χρειάζεται να ρωτήσετε τον ασφαλιστή σας. Δεν πουλάμε ασφάλειες.",
+    "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
   }
 ]

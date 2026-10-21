@@ -71,11 +71,11 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product",
         // Leads with the answer the visitor gets, not with storage — "wallet"
         // and "upload PDFs" framing sold the filing cabinet, not the check.
-        title: "Έλεγχος ασφάλισης με AI: καλύψεις και κενά",
+        title: "Τα ασφαλιστήριά σας, με απλά λόγια",
         // "Free basic summary" — the meta must not fuse Plus-only outputs
         // (gaps, fix-first) with the free offer in one extractable span.
         description:
-            "Στείλτε το ασφαλιστήριό σας και δείτε σε λίγα λεπτά τι καλύπτει και τι όχι, σε απλά ελληνικά. Δωρεάν πλήρης ανάλυση για 3 ασφαλιστήρια, χωρίς κάρτα.",
+            "Οργανώστε τα ασφαλιστήριά σας και διαβάστε τις καλύψεις, τα ποσά και τις ημερομηνίες τους σε απλά ελληνικά. Δωρεάν πλάνο για έως 3 ασφαλιστήρια.",
         keywords: [
             "έλεγχος ασφάλισης",
             "ανάλυση ασφαλιστηρίου AI",
@@ -86,21 +86,21 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         en: {
             title: "AI insurance check: coverages and gaps",
             description:
-                "Send us your insurance policy and see in minutes what it covers and what it does not, in plain words. Free full analysis for 3 policies, no card needed.",
+                "Organise policies from different insurers and read their cover, amounts and dates in plain language. Start with a free plan for up to 3 policies.",
             breadcrumb: "Product",
         },
     },
     pricing: {
         path: "/pricing",
-        title: "Τιμές: Δωρεάν, Plus €39, Family €79/χρόνο",
+        title: "Τιμές και δυνατότητες συνδρομών PolicyWallet",
         description:
-            "Καθαρές τιμές: δωρεάν για 3 ασφαλιστήρια με πλήρη ανάλυση AI, Plus €39/χρόνο για 10, Family €79/χρόνο για 25. Απεριόριστες αναλύσεις, ακύρωση όποτε θέλετε.",
+            "Συγκρίνετε το δωρεάν και τα πληρωμένα πλάνα: αριθμό ασφαλιστηρίων, δυνατότητες και όρια επεξεργασίας. Δείτε τις τρέχουσες τιμές πριν επιλέξετε.",
         keywords: ["τιμές PolicyWallet", "συνδρομή PolicyWallet"],
         breadcrumb: "Τιμές",
         en: {
-            title: "Pricing: Free, Plus €39/year, Family €79/year",
+            title: "PolicyWallet subscription prices and features",
             description:
-                "Clear pricing: a free plan for 3 policies with full AI analysis, Plus at €39/year for 10 and Family at €79/year for 25. Unlimited analyses, cancel anytime.",
+                "Compare free and paid PolicyWallet plans, including policy limits, features and processing allowances. Check the current prices before choosing.",
             breadcrumb: "Pricing",
         },
     },
@@ -145,12 +145,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/company",
         title: "Η αποστολή μας: καθαρές απαντήσεις",
         description:
-            "Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια. Διαβάζουμε τα ασφαλιστήριά σας και σας λέμε πού είστε καλυμμένοι και πού όχι. Δείτε γιατί το φτιάξαμε.",
+            "Δεν πουλάμε ασφάλειες. Σας βοηθάμε να οργανώνετε τα ασφαλιστήριά σας, να καταλαβαίνετε τους όρους και να ετοιμάζετε τις ερωτήσεις για τον ασφαλιστή σας.",
         breadcrumb: "Εταιρεία",
         en: {
             title: "Our mission: clear answers",
             description:
-                "We do not sell insurance and we take no commission. We read your insurance and tell you where you are covered and where you are not. See why we built it.",
+                "We help you organise insurance policies, understand what the documents say and prepare questions for your adviser. Learn why we built PolicyWallet.",
             breadcrumb: "Company",
         },
     },
@@ -172,13 +172,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/solutions/agents",
         title: "Λογισμικό με AI για ασφαλιστικούς πράκτορες",
         description:
-            "Όλοι οι πελάτες σας σε μία οθόνη: ανάλυση κενών με AI, υπενθυμίσεις λήξεων και αναφορές με το δικό σας όνομα, για ασφαλιστές και ασφαλιστικά γραφεία.",
+            "Οργανώστε πελάτες και ασφαλιστήρια, βρείτε ημερομηνίες ανανέωσης και ετοιμάστε αναφορές. Εργαλεία για την καθημερινή δουλειά ασφαλιστών και γραφείων.",
         keywords: ["λογισμικό ασφαλιστικού πράκτορα", "CRM ασφαλιστών"],
         breadcrumb: "Για ασφαλιστές",
         en: {
             title: "AI software for insurance agents",
             description:
-                "All your clients on one screen: AI coverage-gap analysis, renewal reminders and reports with your own name — for insurance agents and agencies.",
+                "Organise clients and policies, find renewal dates and prepare reports. Explore tools for the everyday work of insurance advisers and their agencies.",
             breadcrumb: "For Agents",
         },
     },
@@ -188,13 +188,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         // No "market value tracking": the product has no price feed (see the
         // catalog comment) — the meta promises exactly what the page delivers.
         description:
-            "Δείτε τι θα πλήρωνε το ασφαλιστήριο του αυτοκινήτου σας σε ολική ζημιά, τι περιλαμβάνει η οδική βοήθεια και πού υπάρχουν κενά. Η AI το διαβάζει σε λίγα λεπτά.",
+            "Βρείτε τις καλύψεις, τα ποσά, τη συμμετοχή σας σε ζημιά και τους όρους της οδικής βοήθειας στο ασφαλιστήριο οχήματος. Δείτε τι χρειάζεται να ελέγξετε.",
         keywords: ["ασφάλεια αυτοκινήτου", "καλύψεις ασφάλειας αυτοκινήτου"],
         breadcrumb: "Αυτοκίνητο",
         en: {
             title: "Car insurance in Greece: AI coverage analysis",
             description:
-                "See what your car policy would pay on a total loss, what your roadside assistance includes, and where the gaps are. AI reads your policy in minutes.",
+                "Find cover, limits, your share of a claim and roadside assistance terms in your vehicle policy. See which points to check with your insurance adviser.",
             breadcrumb: "Motor",
         },
     },
@@ -202,13 +202,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/property",
         title: "Ασφάλεια κατοικίας: κάλυψη και έκπτωση ΕΝΦΙΑ",
         description:
-            "Σεισμός, πυρκαγιά, πλημμύρα: τι γράφει ο πίνακας καλύψεων και αν το ασφαλιστήριό σας πληροί τα κριτήρια της έκπτωσης ΕΝΦΙΑ. Με τον πλήρη οδηγό.",
+            "Δείτε τι γράφει το ασφαλιστήριο για σεισμό, πυρκαγιά και πλημμύρα. Διαβάστε τις προϋποθέσεις της ΑΑΔΕ για τη μείωση ΕΝΦΙΑ και τι χρειάζεται στην αίτηση.",
         keywords: ["ασφάλεια κατοικίας", "έκπτωση ΕΝΦΙΑ ασφάλιση", "υπασφάλιση"],
         breadcrumb: "Κατοικία",
         en: {
             title: "Home insurance: gaps, ENFIA, rebuild cost",
             description:
-                "Check whether your home is underinsured, if you qualify for Greece's ENFIA tax discount (earthquake-fire-flood) and if your rebuild cost is current.",
+                "See what your home policy says about earthquake, fire and flood. Read AADE requirements for the ENFIA reduction and what to check before applying.",
             breadcrumb: "Property",
         },
     },
@@ -231,7 +231,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     },
     "product-cyber": {
         path: "/product/cyber",
-        title: "Κυβερνοασφάλεια: ransomware, διακοπή εργασιών",
+        title: "Ασφάλιση για κινδύνους στο διαδίκτυο",
         description:
             "Καλύψεις για ransomware, παραβιάσεις δεδομένων και διακοπή επιχειρηματικής λειτουργίας. Δείτε τι περιλαμβάνει η κυβερνοασφάλισή σας και πού έχετε κενά.",
         keywords: ["κυβερνοασφάλεια", "ασφάλιση cyber"],
@@ -261,15 +261,15 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/group-pension",
         // "Projections" was removed from the page (no projection capability
         // exists) — the meta must promise only what the page keeps.
-        title: "Ομαδική σύνταξη: εισφορές και φοροαπαλλαγές",
+        title: "Ομαδική σύνταξη: εισφορές και όροι",
         description:
-            "Παρακολουθήστε το ομαδικό συνταξιοδοτικό σας πρόγραμμα: εισφορές, εργοδοτική συμμετοχή και φορολογικά οφέλη, όλα σε μία καθαρή εικόνα με απλά λόγια.",
+            "Βρείτε τις εισφορές σας, τη συμμετοχή του εργοδότη και τους όρους του ομαδικού συνταξιοδοτικού προγράμματος. Για τη φορολογία, ρωτήστε τον λογιστή σας.",
         keywords: ["ομαδικό συνταξιοδοτικό πρόγραμμα", "φοροαπαλλαγή σύνταξης"],
         breadcrumb: "Ομαδική Σύνταξη",
         en: {
-            title: "Group pension: contributions and tax benefits",
+            title: "Group pensions: contributions and terms",
             description:
-                "Track your employer pension plan: contributions, employer match and tax advantages, all of it in one clear picture written in plain language.",
+                "Find your contributions, the employer contribution and the terms of your group pension programme. Learn what to ask your accountant about tax treatment.",
             breadcrumb: "Group Pension",
         },
     },
@@ -291,13 +291,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/life",
         title: "Ασφάλεια ζωής: προστασία οικογένειας, δανείου",
         description:
-            "Παροχή θανάτου, μόνιμη αναπηρία, σοβαρές ασθένειες και προστασία στεγαστικού. Η AI διαβάζει το ασφαλιστήριο ζωής σας και δείχνει τι λείπει για τους δικούς σας.",
+            "Δείτε ποιος ασφαλίζεται, ποιος λαμβάνει την παροχή και ποια ποσά και γεγονότα αναφέρει το ασφαλιστήριο ζωής. Προετοιμάστε τις ερωτήσεις για τον ασφαλιστή σας.",
         keywords: ["ασφάλεια ζωής", "προστασία στεγαστικού δανείου", "κάλυψη σοβαρών ασθενειών"],
         breadcrumb: "Ζωή",
         en: {
             title: "Life insurance: family & mortgage protection",
             description:
-                "Death benefit, permanent disability, serious illness and mortgage protection. The AI reads your life policy and shows what is missing for your family.",
+                "See who is insured, who receives the benefit and which amounts and events your life policy specifies. Prepare your questions for your insurance adviser.",
             breadcrumb: "Life",
         },
     },
@@ -319,13 +319,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/pension",
         title: "Συνταξιοδοτικό πρόγραμμα: εισφορές και όροι",
         description:
-            "Εισφορές, επιλογές ωρίμανσης (εφάπαξ ή σύνταξη) και όροι εξαγοράς σε απλά ελληνικά. Η AI αναλύει το αποταμιευτικό σας πρόγραμμα και εντοπίζει τα κενά.",
+            "Δείτε εισφορές, επιλογές πληρωμής στη λήξη και τι προβλέπεται αν σταματήσετε νωρίτερα το αποταμιευτικό πρόγραμμα. Καταλάβετε τους όρους πριν αποφασίσετε.",
         keywords: ["συνταξιοδοτικό πρόγραμμα", "αποταμιευτικό πρόγραμμα", "ιδιωτική σύνταξη"],
         breadcrumb: "Σύνταξη & Αποταμίευση",
         en: {
             title: "Pension plans: contributions and terms",
             description:
-                "Contributions, maturity options (lump sum or annuity) and surrender terms in plain language. AI analyzes your savings plan and finds the gaps.",
+                "See contributions, payment options at maturity and what happens if you end your savings programme early. Understand the terms before making a decision.",
             breadcrumb: "Pension & Savings",
         },
     },
@@ -375,13 +375,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/liability",
         title: "Αστική ευθύνη: η κάλυψη που ίσως έχετε ήδη",
         description:
-            "Ζημιές σε τρίτους από εσάς, το παιδί ή τον σκύλο σας. Η αστική ευθύνη συχνά υπάρχει ήδη μέσα στο ασφαλιστήριο κατοικίας — δείτε το πριν την ξαναπληρώσετε.",
+            "Δείτε αν το ασφαλιστήριο περιλαμβάνει ευθύνη για ζημιές σε άλλους, ποια πρόσωπα αφορά και ποιες εξαιρέσεις ισχύουν. Μάθετε πού να ψάξετε στους όρους.",
         keywords: ["αστική ευθύνη", "ασφάλεια αστικής ευθύνης", "οικογενειακή αστική ευθύνη"],
         breadcrumb: "Αστική Ευθύνη",
         en: {
             title: "Personal liability: cover you may own",
             description:
-                "Damage to third parties caused by you, your child or your dog. Liability cover often already sits inside your home policy — check before paying for it twice.",
+                "Check whether your policy covers liability for damage to others, who it includes and which exclusions apply. Learn where to look in your policy terms.",
             breadcrumb: "Liability",
         },
     },
@@ -452,12 +452,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         // States the rights you can exercise, not a self-graded compliance
         // verdict — same rule as TRUST_FACTS in lib/marketing/positioning.ts.
         description:
-            "Πώς συλλέγουμε, αποθηκεύουμε και προστατεύουμε τα δεδομένα σας: κρυπτογράφηση, διακομιστές στην Ευρώπη και δικαιώματα GDPR — αντίγραφο ή διαγραφή όποτε θέλετε.",
+            "Μάθετε ποια στοιχεία χρησιμοποιούμε, ποιος έχει πρόσβαση και πού γίνεται επεξεργασία. Δείτε πώς ζητάτε αντίγραφο, διόρθωση ή διαγραφή των δεδομένων σας.",
         breadcrumb: "Πολιτική Απορρήτου",
         en: {
             title: "Privacy Policy",
             description:
-                "How PolicyWallet collects, stores and protects your data: encryption, European servers and your GDPR rights — ask for a copy or a deletion at any time.",
+                "Learn what data we use, who can access it and where it is processed. See how to request a copy, correction or deletion of your personal information.",
             breadcrumb: "Privacy Policy",
         },
     },
@@ -537,12 +537,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/platform",
         title: "Πώς δουλεύει η ανάλυση",
         description:
-            "Το ασφαλιστήριο γίνεται δομημένα δεδομένα, κανόνες αποφασίζουν ποια κενά κάλυψης υπάρχουν και η τεχνητή νοημοσύνη τα εξηγεί, με αυτή τη σειρά.",
+            "Η εφαρμογή διαβάζει το έγγραφο, ελέγχει συγκεκριμένα στοιχεία με προκαθορισμένους κανόνες και εξηγεί τα αποτελέσματα. Δείτε τα όρια της ανάλυσης.",
         breadcrumb: "Πώς δουλεύει",
         en: {
             title: "How the analysis works",
             description:
-                "Your policy becomes structured data, rules decide which coverage gaps exist, and the AI explains them, in that order, with every rule recorded.",
+                "The application reads the document, checks specific information using predefined rules and explains the results. See the limits of the analysis.",
             breadcrumb: "How it works",
         },
     },

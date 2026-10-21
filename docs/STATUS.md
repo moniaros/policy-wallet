@@ -1,29 +1,29 @@
-# STATUS
+# Status
 
 ## Current phase
-**Policyholder action-flow improvements shipped — 2026-10-21.** [PR #396](https://github.com/moniaros/policy-wallet/pull/396), production code `ecc83eda`; [implementation and release evidence](audits/policyholder-action-flow-2026-10-21.md). Parallel presentation-review context is preserved in [the archive](archive/status-before-policyholder-implementation-2026-10-21.md).
+Five homepage presentation extensions shipped — 21 October 2026. PR #408; production application `95c8670a`.
 
 ## Done
-- **Correctness:** neutral empty states; claim deadlines separated from withdrawal rights; unsupported phone/legal and income/price assertions removed; yes/no values no longer appear as amounts.
-- **Task completion:** editable advisor question, exact recipient, atomic/idempotent send and unchanged policy grants; direct reminder destinations, current-subject grouping/counts, snooze and completion with delivery history retained. Private notes excluded from inbox previews.
-- **UI/UX:** current-first home and renewal-document prompt, direct benefit entry, historical-benefit disclosure, contact links, grouped optional actions, collapsed life changes/habits, consistent Actions label and readable mobile thread controls.
-- **Dev + preview:** all guardrails, 697 unit files / 7,861 tests and build passed. Protected exact-revision preview: 12 Playwright checks passed (authentication + 11 journeys), without retries; 320/390/430/1280 px, EL/EN, keyboard, saved progress and full advisor/reminder flow. Dev fixture cleanup verified by counts: all zero.
-- **Production:** CI and deployment passed; `www.policywallet.gr` points to `dpl_39x1pK78zUzJSaNkhDNhMqVEAYMG`. Actual schema queries verified 88 migrations, no pending changes, 3 prevention tables with RLS, 34 columns and 5 cascading foreign keys. Live authenticated home, benefits, advisor draft, reminders/history/exact action and income explanation checked; browser returned to home. No errors returned in the sampled deployment runtime logs.
+- Added actual app previews for policyholders/agents, an enlarged reading demo, four photographic category links, guide/glossary cards and three trust explanations.
+- Preserved forest/mint branding, light video hero, four-step section, reviewed bilingual facts and auth/payment restrictions. Independent visual review: PASS.
+- API auth, lint, i18n/UTF-8, types, 7,874 tests and build passed. Dev/prod: 88 migrations, none pending; no DB/catalogue changes.
+- Exact preview and live: seven responsive/language/theme cases, 35 axe scans per environment, no findings; 22 destinations, no-JS fallback, keyboard/replay, signup handoff and live video loop verified.
+- Production CI 39647092968 and deploy 39648473964 succeeded. Vercel `dpl_HYmFCK1UwbyAR5cSd8vqvDMD6pi9` Ready.
 
 ## In progress
-None for this release. No schema, catalogue or pricing changes; unrelated local work remains outside the release.
+- No remaining implementation work in this homepage release.
 
 ## Blocked
-No release blocker. External Kilo review lacked credits; CI money-path journey was explicitly skipped without its E2E secret. Neither is represented as executed testing. Real-mailbox delivery and the prior PDF benchmark remain unverified by this UI release.
+- No design release blocker. Paid checkout remains restricted pending statutory online withdrawal. Optional Kilo review lacked credits; CI payment journey skipped without its E2E database secret.
 
 ## Top risks ranked
-1. **Medium — verification scope:** in-app persistence is tested; email arrival and real-PDF accuracy are separate checks.
-2. **Medium — dev infrastructure:** existing Redis `evalsha` ACL failure falls back to local memory; production configuration was not changed. Preview session-pool exhaustion was fixed with its dev transaction-pool configuration.
-3. **Low — future product work:** employer/group-cover profile modelling, evidence-backed natural-language search and parallel presentation findings are separate increments.
+1. Online withdrawal needs declaration, confirmation and durable receipt before paid consumer checkout.
+2. Provider/retention evidence, protected deletion copy and regulatory perimeter remain separate follow-ups.
+3. Existing production session-pool configuration remains an infrastructure follow-up.
 
 ## Next 3 actions
-1. Review the shipped home → benefit → advisor/action experience in the embedded browser.
-2. Repair the existing dev Redis ACL and exercise real provider delivery separately.
-3. Resume the PDF benchmark and remaining product increments with their own acceptance evidence.
+1. Complete the consumer withdrawal flow before enabling payments.
+2. Resolve provider/retention evidence and protected deletion copy.
+3. Address production pool configuration and provision payment-journey test infrastructure.
 
-Release guardrails passed: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit/build and relevant journeys.
+Evidence: [five homepage extensions](audits/homepage-five-panels-2026-10-21.md), [four steps](audits/homepage-steps-2026-10-21.md).

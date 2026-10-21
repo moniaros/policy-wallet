@@ -13,7 +13,7 @@ export async function generateMetadata({ searchParams }: CookiesPageProps): Prom
 }
 
 type CookiesPageProps = {
-    searchParams?: Promise<{ lang?: string }> | { lang?: string }
+    searchParams?: Promise<{ lang?: string }>
 }
 
 async function resolveSearchParams(searchParams: CookiesPageProps["searchParams"]) {

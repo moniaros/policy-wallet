@@ -17,11 +17,8 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ζώα συντροφιάς", "Pets")}
-                    </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Οι εξαιρέσεις του κατοικιδίου σας, στο φως.", "Your pet policy's exclusions, out in the open.")}
+                        {t("Τι καλύπτει η ασφάλεια του κατοικιδίου σας;", "Your pet policy's exclusions, out in the open.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Δείτε ποιες παθήσεις εξαιρεί το ασφαλιστήριό σας, ποια είναι τα ετήσια όριά του και αν καλύπτεται η λεϊσμανίαση — πριν το χρειαστείτε.", "See which conditions your policy excludes, what its yearly limits are, and whether leishmaniasis is covered — before you need it.")}
@@ -69,7 +66,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                             {t("Τι εξαιρεί η ασφάλεια του κατοικιδίου σας;", "What does your pet insurance exclude?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Οι ασφάλειες κατοικιδίων έχουν πολλές εξαιρέσεις. Τις βγάζουμε όλες στο φως, με τα ονόματα των παθήσεων.", "Pet insurance has many exclusions. We bring them all to light, with the names of the conditions.")}
+                            {t("Βρείτε ποιες παθήσεις εξαιρούνται και ποιες προϋποθέσεις αναφέρει το έγγραφο. Αν κάτι δεν διαβάστηκε καθαρά, ελέγξτε το στο ασφαλιστήριο.", "Find excluded conditions and requirements in the document. If something was not read clearly, check it in the policy.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">

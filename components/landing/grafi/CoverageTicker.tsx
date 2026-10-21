@@ -41,7 +41,7 @@ export function CoverageTicker({ locale }: { locale: MarketingLocale }) {
     )
 
     return (
-        <section aria-label={t("Κλάδοι ασφάλισης που διαβάζουμε", "Insurance lines we read")}>
+        <section aria-label={t("Κατηγορίες ασφαλιστηρίων", "Insurance lines we read")}>
             <div className="g-ticker relative overflow-hidden py-g-5">
                 <div className="g-ticker-track flex w-max">
                     {items(false)}

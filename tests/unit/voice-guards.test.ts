@@ -166,8 +166,17 @@ describe('voice guards (PW-VOICE-01 §7)', () => {
  * by arm:locator#n, so a rewrite is compared with the exact string it replaced.
  */
 /** Similarity on character trigrams — inflection-tolerant, which a word set is not («προεπισκόπηση» ≠ «προεπισκόπησης»). */
+const trigramCache = new Map<string, Set<string>>()
 function similarity(a: string, b: string): number {
-    const g = (t: string) => { const s = t.toLowerCase().replace(/\s+/g, ' '); const out = new Set<string>(); for (let i = 0; i + 3 <= s.length; i++) out.add(s.slice(i, i + 3)); return out }
+    const g = (t: string) => {
+        const cached = trigramCache.get(t)
+        if (cached) return cached
+        const s = t.toLowerCase().replace(/\s+/g, ' ')
+        const out = new Set<string>()
+        for (let i = 0; i + 3 <= s.length; i++) out.add(s.slice(i, i + 3))
+        trigramCache.set(t, out)
+        return out
+    }
     const A = g(a), B = g(b)
     if (A.size === 0 || B.size === 0) return 0
     let inter = 0

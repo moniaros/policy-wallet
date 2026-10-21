@@ -1,31 +1,21 @@
 import Link from "next/link"
+import styles from "./how-it-works.module.css"
+import { howItWorksCopy } from "@/lib/i18n/how-it-works"
 import type { ReactNode } from "react"
-import { ArrowRight, BellRing, FileText, Heart, Search, ShieldCheck, type LucideIcon } from "lucide-react"
+import { ArrowRight, BellRing, FileText, Search, ShieldCheck, Upload, CalendarDays, MessageCircle, type LucideIcon } from "lucide-react"
 import { LandingCtaLink } from "@/components/landing/LandingCtaLink"
 import { landingContent } from "@/lib/landing/content"
 import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 import { authHref, localizeHref } from "@/lib/seo/locale-links"
-import { BrushUnderline, Eyebrow, ReadingDemo } from "@/src/design-system"
 import type { LandingLocale, LocalizedText } from "@/types/landing-content"
 
 /**
- * How it works (§6): the four numbered steps from `lib/landing/content` —
- * the SAME rows the HowTo JSON-LD emits, so the page and the structured data
- * cannot drift — followed by the closing line and the ReadingDemo, which
- * demonstrates step two on a stamped sample rather than asserting it.
- *
- * Each row: a numbered icon tile, the title, the description with ONE phrase
- * in bold brand-green (`emphasis`, a verbatim substring of the description;
- * the JSON-LD carries the plain sentence), and a 44px arrow that goes
- * somewhere real — the signup for the two steps that happen inside the
- * product, the on-page evidence for the two we can show here. An arrow with
- * nowhere to go is a false affordance, so every step id needs an entry in
- * STEP_TARGETS; the guard test fails on a step without one.
- *
- * Server component; the only client island is the tracked signup link.
- * Semantic tokens only — dark mode comes from the token layer.
+ * A forest section with four white, illustrated cards, following the owner's
+ * Bitpanda reference. Greek remains sentence case in the existing brand face.
+ * The diagrams explain operations, not customer results or invented app screens.
+ * Titles/descriptions and HowTo structured data retain their shared source.
+ * Each card has one real destination; the diagram itself is never interactive.
  */
-
 const STEP_ICONS: Record<string, LucideIcon> = {
     "step-upload": FileText,
     "step-read": Search,
@@ -52,11 +42,44 @@ const STEP_TARGETS: Record<string, StepTarget> = {
     "step-monitor": { kind: "signup" },
 }
 
-const ARROW_CLASS =
-    "flex size-11 shrink-0 items-center justify-center rounded-g-pill bg-state-covered-fill text-fg-brand " +
-    "transition-colors duration-200 [transition-timing-function:var(--ease-out-g)] " +
-    "hover:bg-action-primary-bg hover:text-fg-on-brand " +
-    "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-border-focus"
+const ARROW_CLASS = styles.action
+
+function StepVisual({ id, locale }: { id: string; locale: LandingLocale }) {
+    const copy = howItWorksCopy[locale]
+    const Icon = STEP_ICONS[id] ?? FileText
+    return (
+        <div className={`${styles.visual} ${styles[id]}`} aria-hidden="true">
+            {!STEP_TARGETS[id] && <Icon aria-hidden="true" />}
+            {id === "step-upload" && <>
+                <div className={styles.paper}>
+                    <FileText className={styles.documentIcon} strokeWidth={1.3} />
+                    <span className={styles.paperTitle}>{copy.document}</span>
+                    <span className={styles.fileType}>PDF</span>
+                    <div className={styles.lines}><i /><i /><i /></div>
+                </div>
+                <span className={styles.uploadBadge}><Upload strokeWidth={1.7} /></span>
+            </>}
+            {id === "step-read" && <div className={styles.reading}>
+                <div className={styles.readingHeading}><FileText size={22} /><span>{copy.document}</span></div>
+                {[copy.cover, copy.amounts, copy.dates, copy.exclusions].map((label, i) => <div className={styles.readingRow} key={label}>
+                    <span>{label}</span><span className={styles.extractedLine} style={{ width: `${46 - i * 6}%` }} />
+                </div>)}
+                <div className={styles.readingFoot}><Search size={19} /><span>{copy.reading}</span></div>
+            </div>}
+            {id === "step-act" && <div className={styles.explanation}>
+                <span className={styles.explanationIcon}><MessageCircle strokeWidth={1.4} /></span>
+                <p>{copy.understand}</p>
+                <div className={styles.reviewRow}><Search size={20} /><span>{copy.review}</span></div>
+                <div className={styles.reviewRow}><MessageCircle size={20} /><span>{copy.adviser}</span></div>
+            </div>}
+            {id === "step-monitor" && <div className={styles.calendar}>
+                <div className={styles.calendarHeading}><CalendarDays size={22} /><span>{copy.expiry}</span></div>
+                <div className={styles.calendarGrid}>{Array.from({ length: 28 }, (_, i) => <span key={i} className={i === 17 ? styles.calendarMarked : undefined}>{i === 17 && <BellRing size={18} />}</span>)}</div>
+                <div className={styles.reminder}><BellRing size={18} /><span>{copy.reminders}</span></div>
+            </div>}
+        </div>
+    )
+}
 
 /** Wraps the first occurrence of `phrase` in bold brand-green; plain text if absent. */
 function renderEmphasis(text: string, phrase: string | undefined): ReactNode {
@@ -66,7 +89,7 @@ function renderEmphasis(text: string, phrase: string | undefined): ReactNode {
     return (
         <>
             {text.slice(0, at)}
-            <strong className="font-semibold text-fg-brand">{phrase}</strong>
+            <strong className="font-semibold">{phrase}</strong>
             {text.slice(at + phrase.length)}
         </>
     )
@@ -74,59 +97,37 @@ function renderEmphasis(text: string, phrase: string | undefined): ReactNode {
 
 export function HowItWorks({ locale }: { locale: LandingLocale }) {
     const t = (el: string, en: string) => (locale === "el" ? el : en)
-    const { title, steps, closing } = landingContent.howItWorks
+    const { steps } = landingContent.howItWorks
 
     return (
         <section
             id="how-it-works"
             aria-labelledby="how-it-works-heading"
-            className="scroll-mt-28 lg:scroll-mt-36 [padding-block:var(--space-section)]"
+            className={styles.section}
         >
-            <div className="mx-auto max-w-[1180px] px-g-6 md:px-g-8">
-                <header className="mx-auto max-w-[56ch] text-center">
-                    <Eyebrow>{pick(title, locale)}</Eyebrow>
+            <div className={styles.container}>
+                <header className={styles.heading}>
+                    <p className={styles.label}>{pick(landingContent.howItWorks.title, locale)}</p>
                     <h2
                         id="how-it-works-heading"
-                        className="mt-g-3 text-balance text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary"
+                        className={styles.title}
                     >
                         {t("Τέσσερα ", "Four ")}
-                        <BrushUnderline>{t("απλά", "simple")}</BrushUnderline>
+                        {t("απλά", "simple")}
                         {t(" βήματα.", " steps.")}
                     </h2>
                 </header>
 
-                <ol className="mx-auto mt-g-12 max-w-[880px] divide-y divide-border-subtle">
+                <ol className={styles.steps}>
                     {steps.map((step, index) => {
-                        const Icon = STEP_ICONS[step.id] ?? FileText
                         const target = STEP_TARGETS[step.id]
                         const stepTitle = pick(step.title, locale)
                         return (
-                            <li
-                                key={step.id}
-                                className="grid grid-cols-[auto_1fr_auto] items-center gap-g-4 py-g-6 sm:gap-g-8 sm:py-g-8"
-                            >
-                                <span className="relative flex size-16 shrink-0 items-center justify-center rounded-g-lg bg-state-covered-fill sm:size-20">
-                                    <Icon aria-hidden className="size-7 text-fg-brand sm:size-9" strokeWidth={1.75} />
-                                    {/* The <ol> already conveys position; the badge is the visual. */}
-                                    <span
-                                        aria-hidden="true"
-                                        className="absolute -left-2 -top-2 flex size-7 items-center justify-center rounded-g-pill bg-action-primary-bg text-sm font-bold text-fg-on-brand"
-                                        style={{ fontVariantNumeric: "tabular-nums lining-nums" }}
-                                    >
-                                        {index + 1}
-                                    </span>
-                                </span>
-
-                                <div className="min-w-0">
-                                    <h3 className="text-g-display-md font-bold text-fg-primary">{stepTitle}</h3>
-                                    <p className="mt-g-2 max-w-[56ch] text-g-body-lg text-fg-secondary">
-                                        {renderEmphasis(
-                                            pick(step.description, locale),
-                                            step.emphasis ? pick(step.emphasis, locale) : undefined,
-                                        )}
-                                    </p>
-                                </div>
-
+                            <li key={step.id} id={step.id} className={styles.step}>
+                                <div className={styles.card}>
+                                    <StepVisual id={step.id} locale={locale} />
+                                    <div className={styles.cardFooter}>
+                                        <h3>{stepTitle}</h3>
                                 {target?.kind === "signup" && (
                                     <LandingCtaLink
                                         href={authHref(
@@ -150,27 +151,17 @@ export function HowItWorks({ locale }: { locale: LandingLocale }) {
                                         <ArrowRight aria-hidden className="size-5" />
                                     </Link>
                                 )}
+                                    </div>
+                                </div>
+                                <div className={styles.caption}>
+                                    <span aria-hidden="true" className={styles.number}>{index + 1}</span>
+                                    <p>{renderEmphasis(pick(step.description, locale), step.emphasis ? pick(step.emphasis, locale) : undefined)}</p>
+                                </div>
                             </li>
                         )
                     })}
                 </ol>
 
-                <p className="mx-auto mt-g-10 flex w-fit max-w-full items-center gap-g-3 rounded-g-pill bg-surface-wash py-g-2 pl-g-2 pr-g-6 text-g-body text-fg-primary">
-                    <span
-                        aria-hidden="true"
-                        className="flex size-9 shrink-0 items-center justify-center rounded-g-pill bg-action-primary-bg text-fg-on-brand"
-                    >
-                        <Heart className="size-4" fill="currentColor" />
-                    </span>
-                    <span>
-                        <strong className="font-semibold">{pick(closing.lead, locale)}</strong>{" "}
-                        {pick(closing.rest, locale)}
-                    </span>
-                </p>
-
-                {/* §6: the four steps PLUS the ReadingDemo — «το διαβάζουμε για
-                    εσάς» demonstrated on a stamped sample rather than asserted.
-                    Step two's arrow lands here. */}
             </div>
         </section>
     )

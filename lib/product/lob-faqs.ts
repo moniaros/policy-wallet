@@ -24,8 +24,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Είναι υποχρεωτική η ασφάλεια αυτοκινήτου στην Ελλάδα;", en: "Is car insurance compulsory in Greece?" },
             a: {
-                el: "Ναι. Κάθε όχημα με άδεια κυκλοφορίας πρέπει να έχει τουλάχιστον ασφάλεια αστικής ευθύνης, που πληρώνει τις ζημιές που προκαλείτε σε άλλους. Οι υπόλοιπες καλύψεις, όπως μικτή ή οδική βοήθεια, είναι προαιρετικές.",
-                en: "Yes. Every vehicle with active registration must carry at least third-party liability insurance, which pays for the damage you cause to others. Everything else, like own-damage cover or roadside assistance, is optional.",
+                el: "Η αστική ευθύνη καλύπτει ζημιές που προκαλεί το όχημα σε άλλους. Από 1 Ιουνίου 2025 προβλέπεται επίσης ασφάλιση του ίδιου του οχήματος για δασική πυρκαγιά και πλημμύρα, με τις νόμιμες εξαιρέσεις. Άλλες καλύψεις εξαρτώνται από το πακέτο σας.",
+                en: "Third-party liability covers damage the vehicle causes to others. Since 1 June 2025, insurance of the vehicle itself against forest fire and flood is also required, subject to statutory exceptions. Other cover depends on your package.",
             },
         },
         {
@@ -47,15 +47,15 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς παίρνω έκπτωση ΕΝΦΙΑ με ασφάλιση κατοικίας;", en: "How do I get the ENFIA discount with home insurance?" },
             a: {
-                el: "Ασφαλίζοντας την κατοικία για σεισμό, πυρκαγιά και πλημμύρα — και τα τρία μαζί — για ολόκληρο το έτος. Η έκπτωση φτάνει έως 20% και ελέγχεται από την ΑΑΔΕ.",
-                en: "By insuring the home for earthquake, fire and flood — all three together — for the full year. The discount reaches up to 20% and is checked by AADE.",
+                el: "Για τον ΕΝΦΙΑ 2026 χρειάζεται ασφάλιση το 2025 για σεισμό, πυρκαγιά και πλημμύρα, με το απαιτούμενο ποσό και διάρκεια τουλάχιστον τριών μηνών. Η μείωση είναι έως 20% ή 10%, ανάλογα με τη φορολογητέα αξία και τη διάρκεια. Απαιτείται αίτηση στην ΑΑΔΕ.",
+                en: "For ENFIA 2026, insurance in 2025 must cover earthquake, fire and flood, meet the required amount and last at least three months. The reduction is up to 20% or 10%, depending on taxable value and duration. An AADE application is required.",
             },
         },
         {
             q: { el: "Τι σημαίνει υπασφάλιση κατοικίας;", en: "What does home underinsurance mean?" },
             a: {
-                el: "Ότι δηλώσατε κεφάλαιο μικρότερο από το κόστος ανακατασκευής. Τότε κάθε αποζημίωση μειώνεται αναλογικά — ακόμη και για μικρή ζημιά παίρνετε λιγότερα.",
-                en: "It means the sum you declared is lower than the rebuild cost. Every payout is then reduced proportionally — even for a small loss, you receive less.",
+                el: "Υπασφάλιση σημαίνει ότι το ποσό ασφάλισης είναι μικρότερο από την αξία που πρέπει να ασφαλιστεί. Αν εφαρμόζεται αναλογικός κανόνας, μπορεί να μειωθεί και η αποζημίωση για μερική ζημιά. Ελέγξτε τυχόν εξαίρεση από τον κανόνα στους όρους σας.",
+                en: "Underinsurance means the insured amount is below the value that needs to be insured. If the average clause applies, even a partial claim may be reduced. Check your terms for any waiver of that clause.",
             },
         },
         {
@@ -77,8 +77,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς ξέρω αν το νοσοκομείο χρεώνει απευθείας την ασφαλιστική;", en: "How do I know whether the hospital bills the insurer directly?" },
             a: {
-                el: "Από τον πίνακα συμβεβλημένων νοσοκομείων του ασφαλιστηρίου σας. Στα συμβεβλημένα πληρώνει η εταιρεία απευθείας· αλλού πληρώνετε εσείς και ζητάτε αποζημίωση μετά.",
-                en: "From your policy's list of partner hospitals. At partner hospitals the insurer pays directly; elsewhere you pay first and claim the money back afterwards.",
+                el: "Η απευθείας πληρωμή σημαίνει ότι, υπό προϋποθέσεις, η ασφαλιστική πληρώνει το νοσοκομείο. Δεν σημαίνει ότι δεν έχετε δικά σας έξοδα. Ελέγξτε το δίκτυο νοσοκομείων, την έγκριση και τη συμμετοχή σας πριν από προγραμματισμένη νοσηλεία.",
+                en: "Direct billing means the insurer pays the hospital, subject to conditions. It does not mean you have no expenses. Check the hospital network, approval requirements and your share before planned treatment.",
             },
         },
         {
@@ -130,8 +130,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με την αστική ευθύνη;", en: "How does PolicyWallet help with liability cover?" },
             a: {
-                el: "Διαβάζουμε κάθε κάλυψη ξεχωριστά και σας δείχνουμε πού εμφανίζεται η αστική ευθύνη — και, στο πλάνο Family, αν την πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "We read every cover separately and show you where liability appears — and, on the Family plan, whether you are paying for it twice. We do not sell insurance and take no commission.",
+                el: "Διαβάζουμε τις καλύψεις του εγγράφου και συγκεντρώνουμε τα σημεία που χρειάζονται έλεγχο. Παρόμοιες καλύψεις δεν σημαίνουν αυτόματα περιττό κόστος.",
+                en: "We read the document's cover and bring together points to check. Similar cover does not automatically mean unnecessary cost.",
             },
         },
     ],
@@ -176,8 +176,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με το ομαδικό υγείας;", en: "How does PolicyWallet help with group health?" },
             a: {
-                el: "Βάζουμε το ομαδικό και το ατομικό σας δίπλα-δίπλα, ώστε να δείτε τι σας δίνει το καθένα — και, στο πλάνο Family, τι πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "We put your group and personal policies side by side, so you can see what each one gives you — and, on the Family plan, what you are paying for twice. We do not sell insurance and take no commission.",
+                el: "Δείτε τι αναφέρουν η ομαδική και η ατομική σας ασφάλιση. Επιβεβαιώστε με τον ασφαλιστή σας πώς συνδυάζονται, πριν αλλάξετε κάποια κάλυψη.",
+                en: "See what your group and individual insurance say. Confirm with your adviser how they work together before changing any cover.",
             },
         },
     ],
@@ -222,8 +222,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Εκπίπτουν από τον φόρο οι εισφορές στο ομαδικό συνταξιοδοτικό;", en: "Are group pension contributions tax-deductible?" },
             a: {
-                el: "Συχνά ναι — ανάλογα με το πρόγραμμα και την ισχύουσα νομοθεσία. Δείτε τι προβλέπει το δικό σας: σας δείχνουμε το ποσό που αναφέρουν τα έγγραφά του για τη δήλωσή σας.",
-                en: "Often yes — depending on the plan and current law. See what yours provides: we show you the amount its documents state for your tax return.",
+                el: "Η φορολογική μεταχείριση εξαρτάται από το πρόγραμμα, τις εισφορές και την περίπτωσή σας. Το PolicyWallet οργανώνει όσα γράφει το έγγραφο· δεν υπολογίζει τη φορολογική σας δήλωση. Επιβεβαιώστε τα με τον λογιστή σας.",
+                en: "Tax treatment depends on the programme, contributions and your circumstances. PolicyWallet organises what the document says; it does not calculate your tax return. Confirm with your accountant.",
             },
         },
         {
@@ -358,10 +358,10 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
             },
         },
         {
-            q: { el: "Ποιο σκέλος λείπει συχνότερα από τις μικρές επιχειρήσεις;", en: "Which section is most often missing for small businesses?" },
+            q: { el: "Τι είναι η κάλυψη διακοπής εργασιών;", en: "What is business interruption cover?" },
             a: {
-                el: "Η διακοπή εργασιών. Αν μια ζημιά κλείσει την επιχείρηση για εβδομάδες, τα πάγια συνεχίζουν να τρέχουν — και χωρίς αυτό το σκέλος τα πληρώνετε εσείς.",
-                en: "Business interruption. If damage shuts the business for weeks, the fixed costs keep running — and without this section, you pay them yourself.",
+                el: "Μπορεί να καλύπτει ορισμένες οικονομικές απώλειες όταν η επιχείρηση σταματήσει λόγω περιστατικού που προβλέπουν οι όροι. Ελέγξτε την αιτία, το διάστημα και τον τρόπο υπολογισμού της παροχής.",
+                en: "It may cover certain financial losses when the business stops because of an event specified in the terms. Check the trigger, period and method of calculating the benefit.",
             },
         },
         {

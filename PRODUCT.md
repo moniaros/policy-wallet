@@ -77,13 +77,21 @@ hours; GDPR export and deletion request/withdraw; consent history; Stripe subscr
 and a customer portal; RevenueCat reconciliation for store purchases; admin DSR queue,
 agent verification, and reference-data management.
 
-Commercial model: policyholder tiers `free` / `plus` (displayed **"Starter"**) / `pro`
-(displayed **"PolicyWallet Plus"**); advisor tiers `agent_free` / `agent_starter` /
-`agent_pro` / `agency`. **All deep AI is gated to the top policyholder tier** — free and
-Starter include zero AI analyses; the monthly token budget is the limit that actually
-binds. Plans are admin-editable rows, not constants.
+Commercial model (code verified 2026-10-21): policyholder tier keys `free` / `plus` /
+`pro` use the fallback display names **Free / Plus / Family**; advisor tier keys remain
+`agent_free` / `agent_starter` / `agent_pro` / `agency`. The current policyholder
+fallbacks include AI analysis across tiers; policy capacity and feature entitlements
+vary by plan. Do not restate the retired “zero AI on Free/Starter” rule.
+`lib/pricing/plan-defaults.ts` defines the seeded fallback; `lib/pricing/plan-catalog.ts`
+merges live admin-editable plan rows, and `resolveAgentEntitlements` /
+`resolveUserEntitlements` determine access. Public prices/features must use the live pricing
+view model. A quoted fallback is not a measurement of the production catalogue.
 
-Does not exist — do not imply otherwise: MFA/2FA, passkeys, a per-device session list,
+Passkey registration, management and sign-in exist in `app/api/auth/passkeys/**` and
+the corresponding sign-in/security UI. Their existence does not establish that a
+particular account has enrolled a passkey.
+
+Does not exist — do not imply otherwise: MFA/2FA, a per-device session list,
 in-app plan downgrade, server-persisted theme, per-user AI preferences, SMS delivery, or
 any insurer partnership or integration.
 

@@ -138,7 +138,7 @@ function SignUpForm({ fixedRole, registrationsOpen }: SignUpProps) {
         formState: { errors },
     } = useForm<SignupFormValues>({
         resolver: zodResolver(schema),
-        defaultValues: { fullName: "", email: "", password: "", termsAccepted: false },
+        defaultValues: { fullName: "", email: searchParams.get("email")?.trim().slice(0, 254) || "", password: "", termsAccepted: false },
         // Inline, on blur, never on keystroke (brief §2.4).
         mode: "onBlur",
         reValidateMode: "onBlur",

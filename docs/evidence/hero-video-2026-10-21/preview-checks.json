@@ -1,0 +1,87 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "mode": "play",
+    "posterLoaded": true,
+    "video": {
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "width": 1280,
+      "height": 720
+    },
+    "pauseResumeAndOffscreen": true,
+    "simulatedHiddenTab": true,
+    "accessibility": [],
+    "dynamicReducedMotion": true,
+    "errors": []
+  },
+  {
+    "name": "mobile",
+    "width": 390,
+    "mode": "play",
+    "posterLoaded": true,
+    "video": {
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "width": 1280,
+      "height": 720
+    },
+    "pauseResumeAndOffscreen": true,
+    "simulatedHiddenTab": true,
+    "accessibility": [],
+    "dynamicReducedMotion": true,
+    "errors": []
+  },
+  {
+    "name": "english-small",
+    "width": 320,
+    "mode": "play",
+    "posterLoaded": true,
+    "video": {
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "width": 1280,
+      "height": 720
+    },
+    "pauseResumeAndOffscreen": true,
+    "simulatedHiddenTab": true,
+    "dynamicReducedMotion": true,
+    "errors": []
+  },
+  {
+    "name": "reduced-motion",
+    "width": 390,
+    "mode": "reduce",
+    "posterLoaded": true,
+    "noVideoDownload": true,
+    "errors": []
+  },
+  {
+    "name": "save-data",
+    "width": 390,
+    "mode": "save",
+    "posterLoaded": true,
+    "noVideoDownload": true,
+    "errors": []
+  },
+  {
+    "name": "video-failure",
+    "width": 1440,
+    "mode": "failure",
+    "posterLoaded": true,
+    "noVideoDownload": false,
+    "errors": []
+  },
+  {
+    "name": "no-javascript",
+    "width": 390,
+    "mode": "nojs",
+    "posterLoaded": true,
+    "noVideoDownload": true,
+    "errors": []
+  }
+]

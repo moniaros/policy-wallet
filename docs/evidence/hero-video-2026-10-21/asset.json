@@ -1,0 +1,35 @@
+{
+  "provider": "Higgsfield",
+  "model": "kling3_0",
+  "jobId": "6710f42b-95ba-4629-8d43-a6bffcb0b848",
+  "createdAt": "2026-10-21",
+  "source": "https://d8j0ntlcm91z4.cloudfront.net/user_3JQKpSe62LiSr9J3kCo9KOo6g8H/hf_20261021_110545_6710f42b-95ba-4629-8d43-a6bffcb0b848.mp4",
+  "params": {
+    "model": "kling3_0",
+    "duration": 15,
+    "aspect_ratio": "16:9",
+    "mode": "pro",
+    "sound": "off",
+    "count": 1,
+    "prompt": "Create a premium photorealistic 15-second silent lifestyle brand film for PolicyWallet, a Greek insurance-document app. Exactly FIVE distinct 3-second shots, clean editorial cuts at 3, 6, 9 and 12 seconds. The look is a sophisticated European financial-services website hero: authentic people, natural delighted smiles and quiet confidence, subtle handheld-stable camera drift, warm Mediterranean daylight, rich forest-green accents, ivory linen, natural wood, olive foliage. Cohesive exposure and warm neutral colour grade throughout. No speaking, no captions, no titles, no logos, no visible text, no charts, no numerical or insurance coverage claims. Phones/tablets visible only from oblique angles, screens indistinct and never a legible invented interface. Do not make a collage: each shot fills the entire 16:9 frame. Keep all important faces and activity within the central 60 percent for responsive cropping. SHOT 1 0-3s: Greek/Mediterranean parents and two children aged roughly six and nine relaxing together at a sunny modern home terrace, parent finishes checking a phone and looks up, family exchanges a joyful natural smile, olive trees in background. SHOT 2 3-6s: a smiling adult couple with a friendly golden retriever in a leafy neighbourhood park, one adult puts their phone in their pocket and strokes the dog's head, dog anatomically natural and calm. SHOT 3 6-9s: happy female car driver in her thirties beside a safely parked unbranded contemporary car, checks her phone while the vehicle is stationary, then pockets it and smiles to her partner; no using a phone while driving, no car motion. SHOT 4 9-12s: two cheerful office colleagues at a bright tasteful contemporary Athens workspace, one closes a laptop after reviewing something, both share a relieved genuine smile, subtle green stationery and natural oak desks. SHOT 5 12-15s: professional female insurance agent and male colleague in a warm modern agency, reviewing a tablet together with a happy adult client, natural smiles and confident friendly eye contact, forest-green folder and linen clothes. They convey ease after organizing policy information, never a testimonial or a promise that insurance guarantees safety. Consistent beautiful but believable real people, accurate hands, natural skin texture, no exaggerated acting, no morphing faces, no artificial plastic skin, no fast camera moves, no lens flares, no watermarks. Finish with a warm calm composition so looping to the family feels natural."
+  },
+  "deliverable": {
+    "path": "public/videos/hero-lifestyle.mp4",
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "durationSeconds": 15.041667,
+    "bytes": 1629821,
+    "audio": false
+  },
+  "poster": "public/images/presentation/hero-lifestyle-poster.jpg",
+  "scenes": [
+    "Family with children",
+    "People with a dog",
+    "Driver and passenger in a parked car",
+    "Office colleagues",
+    "Insurance agents and client"
+  ],
+  "usage": "Illustrative lifestyle background, not customer testimonials or coverage evidence",
+  "sha256": "cf68abe5b9e7b1833e31107f0b97f6d498bd173d7ed9e68be769041320ce01fe"
+}

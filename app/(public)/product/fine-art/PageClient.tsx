@@ -28,14 +28,11 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ασφάλιση έργων τέχνης και πολύτιμων αντικειμένων", "Fine art & valuables insurance")}
-                    </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Ό,τι δεν αντικαθίσταται, ασφαλίζεται με όνομα και αξία.", "What can't be replaced is insured by name and value.")}
+                        {t("Πώς ασφαλίζονται τα έργα τέχνης και τα πολύτιμα αντικείμενά σας;", "What can't be replaced is insured by name and value.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Τα έργα τέχνης και τα τιμαλφή ασφαλίζονται ανά αντικείμενο, σε συμφωνημένη αξία — και η κάλυψη συχνά εξαρτάται από όρους ασφαλείας που πρέπει να τηρούνται. Εμείς διαβάζουμε το ασφαλιστήριό σας και σας δείχνουμε την κατάσταση αντικειμένων, τις αξίες και τους όρους της.", "Artworks and valuables are insured item by item, at agreed values — and the cover often rests on security conditions that have to be kept. We read your policy and show you the schedule of items, the values and its conditions.")}
+                        {t("Δείτε ποια αντικείμενα αναφέρει το ασφαλιστήριο, με ποια αξία και ποιους όρους φύλαξης. Οι καλύψεις διαφέρουν ανά πρόγραμμα.", "Check which items the policy lists, their values and storage requirements. Cover varies by plan.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -53,10 +50,10 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Μια συλλογή δεν είναι ένα ποσό — είναι μια λίστα.", "A collection is not one amount — it's a list.")}
+                            {t("Δείτε ποια αντικείμενα περιλαμβάνονται.", "A collection is not one amount — it's a list.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Το ασφαλιστήριο έργων τέχνης γράφει κάθε αντικείμενο χωριστά, με τη δική του αξία, και δένει την κάλυψη με όρους για τον χώρο φύλαξης. Εμείς τα χωρίζουμε σε καθαρές κάρτες — αντικείμενα, αξίες, όροι.", "A fine art policy lists each piece separately, at its own value, and ties the cover to conditions about where it is kept. We split it into clean cards — items, values, conditions.")}
+                            {t("Ένα ασφαλιστήριο μπορεί να έχει λίστα αντικειμένων ή συνολικά όρια. Σας βοηθάμε να βρείτε τι προβλέπει το δικό σας.", "A policy may list individual items or set overall limits. We help you find what yours provides.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
@@ -77,7 +74,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Προαιρετικές καλύψεις", "Optional covers")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Ο σεισμός συχνά προσφέρεται προαιρετικά — και «κατά παντός κινδύνου» δεν τον περιλαμβάνει αν δεν επιλέχθηκε. Δείχνουμε τι έχει ενεργοποιηθεί και τι όχι.", "Earthquake is often offered as optional — and \"all risks\" does not include it unless it was taken. We show what has been activated and what has not.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Η φράση «κατά παντός κινδύνου» δεν σημαίνει ότι καλύπτονται τα πάντα. Ελέγξτε αν περιλαμβάνονται σεισμός και άλλοι κίνδυνοι, μαζί με τις εξαιρέσεις.", "All-risks cover does not mean every event is covered. Check whether earthquake and other risks are included, along with exclusions.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -124,7 +121,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Η συλλογή σας, με τους όρους της στο φως.", "Your collection, with its conditions in the light.")}
+                    {t("Τα πολύτιμα αντικείμενά σας και οι όροι ασφάλισής τους.", "Your collection, with its conditions in the light.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το ασφαλιστήριο", "Upload your policy")}

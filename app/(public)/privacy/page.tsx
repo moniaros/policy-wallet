@@ -13,7 +13,7 @@ export async function generateMetadata({ searchParams }: PrivacyPageProps): Prom
 }
 
 type PrivacyPageProps = {
-    searchParams?: Promise<{ lang?: string }> | { lang?: string }
+    searchParams?: Promise<{ lang?: string }>
 }
 
 async function resolveSearchParams(searchParams: PrivacyPageProps["searchParams"]) {

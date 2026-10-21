@@ -1,7 +1,8 @@
 "use client"
 
+import { presentationCopy } from "@/lib/i18n/presentation"
 import Link from "next/link"
-import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react"
+import { ArrowRight, CheckCircle2 } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
@@ -31,27 +32,20 @@ export default function AgentSolutionsPage() {
         <LoBPageShell activeNav="none" locale={language} audience="agent">
             <section className="px-6 pb-20 lg:px-12">
                 <div className="mx-auto max-w-page">
-                    <div className="mb-14 text-center">
-                        <p className="mb-3 text-caption font-semibold uppercase tracking-[0.18em] text-[#29685B] dark:text-brand-accent">
-                            {/* The category name precedes the audience signal:
-                                the H1 below is verbatim the broker-CRM promise,
-                                so the kicker must say what this actually is. */}
-                            {t(
-                                "Πλατφόρμα προσωπικής ανάλυσης ρίσκου — για ασφαλιστές",
-                                "Personal Risk Intelligence Platform — for insurance agents"
-                            )}
-                        </p>
-                        <h1 className="mx-auto mb-6 max-w-[920px] text-h1 font-semibold leading-[1.05] tracking-[-0.035em] text-[#0F172A] dark:text-white lg:text-display text-balance">
+                    <div className="mb-16 grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]"
+                    >
+                        <div>
+                        <h1 className="mb-6 max-w-[920px] text-h1 font-semibold leading-[1.05] tracking-[-0.035em] text-[#0F172A] dark:text-white lg:text-display text-balance">
                             {t("Όλοι οι πελάτες σας σε μία οθόνη.", "All your clients on one screen.")}
                         </h1>
-                        <p className="mx-auto max-w-[760px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                        <p className="max-w-[760px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Στέλνετε τα ασφαλιστήρια των πελατών σας. Βλέπετε ποιος έχει κενό, ποιος λήγει σύντομα και πού υπάρχει ευκαιρία — πριν σας το ζητήσει κανείς. Είναι η ίδια ανεξάρτητη ανάλυση ρίσκου που εμπιστεύεται ο ασφαλισμένος — σε όλο το χαρτοφυλάκιό σας.",
-                                "You send your clients' policies. You see who has a gap, whose cover runs out soon, and where there is an opening — before anyone asks you. It is the same independent risk analysis the policyholder trusts — across your whole book."
+                                "Οργανώστε τα ασφαλιστήρια των πελατών σας. Δείτε λήξεις, ερωτήσεις και σημεία που χρειάζονται έλεγχο, σύμφωνα με τα δικαιώματα πρόσβασής σας.",
+                                "Organise your clients' policies. See expiry dates, questions and points to check, according to your access rights."
                             )}
                         </p>
 
-                        <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                        <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row">
                             <Link href={authHref("/auth/signup?role=agent", language)} className="pw-primary-button pw-btn-lg">
                                 {t("Ξεκινήστε δωρεάν", "Start free")}
                                 <ArrowRight aria-hidden className="h-4 w-4" />
@@ -63,46 +57,32 @@ export default function AgentSolutionsPage() {
                                 {t("Δείτε τα πλάνα ασφαλιστών", "See agent plans")}
                             </Link>
                         </div>
+                        </div>
+                        <div className="rounded-2xl bg-primary-soft p-5 sm:p-8">
+                            <ClientPortfolioDashboardWidget isGreek={isGreek} />
+                            <p className="mt-3 text-sm leading-relaxed text-foreground">{presentationCopy[language].professionalSample}</p>
+                        </div>
                     </div>
 
-                    {/* The four cards below are h3s. Without this h2 the page
+                    {/* The three demonstrations below are h3s. Without this h2 the page
                         outline jumped h1 → h3, so a screen-reader user
                         navigating by heading could not tell what they belong to. */}
                     <h2 className="mb-8 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-[#0F172A] dark:text-white text-balance">
                         {t("Τι κάνει για εσάς", "What it does for you")}
                     </h2>
 
-                    <div className="grid gap-6 md:grid-cols-2">
-                        <article className="overflow-hidden rounded-[14px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                            <div className="border-b border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-4">
-                                <ClientPortfolioDashboardWidget isGreek={isGreek} />
-                            </div>
-                            <div className="p-6">
-                                <h3 className="mb-2 text-h3 font-semibold leading-tight text-[#0F172A] dark:text-white">
-                                    {t("Όλοι οι πελάτες σε μία οθόνη", "Every client on one screen")}
-                                </h3>
-                                <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                                    {t(
-                                        "Ποιος λήγει, τι εκκρεμεί και πού υπάρχει ευκαιρία — όλα σε ένα σημείο.",
-                                        "Who is running out, what is pending, and where there is an opening — all in one place."
-                                    )}
-                                </p>
-                            </div>
-                        </article>
-
+                    <div className="grid gap-6 lg:grid-cols-3">
                         <article className="overflow-hidden rounded-[14px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
                             <div className="border-b border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-4">
                                 <GapAnalysisWidget isGreek={isGreek} />
+                            <p className="mt-3 text-sm leading-relaxed text-foreground">{presentationCopy[language].professionalSample}</p>
                             </div>
                             <div className="p-6">
                                 <h3 className="mb-2 text-h3 font-semibold leading-tight text-[#0F172A] dark:text-white">
                                     {t("Ελέγχουμε κάθε ασφαλιστήριο με κανόνες", "We check every policy against rules")}
                                 </h3>
                                 <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                                    {t(
-                                        "Διαβάζουμε κάθε ασφαλιστήριο, βρίσκουμε τι λείπει και σας λέμε τι να κάνετε μετά.",
-                                        "We read every policy, find what is missing, and tell you what to do next."
-                                    )}
+                                    {presentationCopy[language === "en" ? "en" : "el"].agentReading}
                                 </p>
                             </div>
                         </article>
@@ -110,6 +90,7 @@ export default function AgentSolutionsPage() {
                         <article className="overflow-hidden rounded-[14px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
                             <div className="border-b border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-4">
                                 <RenewalReminderWidget isGreek={isGreek} />
+                            <p className="mt-3 text-sm leading-relaxed text-foreground">{presentationCopy[language].professionalSample}</p>
                             </div>
                             <div className="p-6">
                                 <h3 className="mb-2 text-h3 font-semibold leading-tight text-[#0F172A] dark:text-white">
@@ -130,6 +111,7 @@ export default function AgentSolutionsPage() {
                         <article className="overflow-hidden rounded-[14px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
                             <div className="border-b border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-4">
                                 <BrandedReportWidget isGreek={isGreek} />
+                            <p className="mt-3 text-sm leading-relaxed text-foreground">{presentationCopy[language].professionalSample}</p>
                             </div>
                             <div className="p-6">
                                 <h3 className="mb-2 text-h3 font-semibold leading-tight text-[#0F172A] dark:text-white">
@@ -170,7 +152,7 @@ export default function AgentSolutionsPage() {
                                 {t("Το διαβάζουμε", "We read it")}
                             </h3>
                             <p className="text-body text-[#475569] dark:text-slate-300">
-                                {t("Δείχνουμε τι εντόπισαν οι κανόνες και ποιος πελάτης χρειάζεται προσοχή πρώτος.", "We show what the rules found and which client needs your attention first.")}
+                                {t("Βλέπετε τα αποτελέσματα των διαθέσιμων ελέγχων και τα στοιχεία στα οποία βασίστηκαν.", "See the results of available checks and the information behind them.")}
                             </p>
                         </div>
 
@@ -190,10 +172,6 @@ export default function AgentSolutionsPage() {
             <section className="px-6 py-20 lg:px-12 lg:py-28">
                 <div className="mx-auto grid max-w-[1040px] gap-6 lg:grid-cols-[1.35fr_1fr]">
                     <div className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-8">
-                        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 px-3 py-1 text-caption font-semibold uppercase tracking-widest text-[#0F172A] dark:text-white">
-                            <Sparkles className="h-3.5 w-3.5 text-[#29685B] dark:text-brand-accent" />
-                            {t("Τιμές για ασφαλιστές", "Pricing for agents")}
-                        </div>
                         <h3 className="mb-3 text-h2 font-semibold leading-tight text-[#0F172A] dark:text-white">
                             {t("Για ασφαλιστικά γραφεία με ομάδα", "For agencies with a team")}
                         </h3>
@@ -218,12 +196,12 @@ export default function AgentSolutionsPage() {
 
                     {/* Verifiable-fact tile — no invented testimonials (EU consumer-law risk). */}
                     <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
-                        <p className="mb-5 text-caption font-semibold uppercase tracking-[0.15em] text-[#29685B] dark:text-brand-accent">
+                        <p className="mb-5 text-lg font-semibold text-[#29685B] dark:text-brand-accent">
                             {t("Τι παίρνετε από την πρώτη μέρα", "What you get from day one")}
                         </p>
                         <ul className="space-y-4">
                             {[
-                                t("Κάθε ασφαλιστήριο διαβασμένο σε λίγα λεπτά", "Every policy read in minutes"),
+                                t("Τα βασικά στοιχεία κάθε ασφαλιστηρίου συγκεντρωμένα", "Key details from each policy in one place"),
                                 t(
                                     `${productCategories.length} ασφαλιστικοί κλάδοι, κάθε ελληνική ασφαλιστική`,
                                     `${productCategories.length} lines of insurance, every Greek insurer`,
@@ -232,7 +210,7 @@ export default function AgentSolutionsPage() {
                                 // specialty schedules into the advisor's book — measured
                                 // against real Greek policy wordings, not aspirational.
                                 t(
-                                    "Και εξειδικευμένοι κλάδοι: μεταφορές, σκάφη, πληρώματα πλοίων, χρήματα, εμπιστοσύνη υπαλλήλων",
+                                    "Και ειδικά είδη ασφάλισης: μεταφορές, σκάφη, πληρώματα, χρήματα και ζημιές από παράνομες πράξεις υπαλλήλων",
                                     "Specialty lines too: cargo, marine hull, ships' crews, money, fidelity",
                                 ),
                                 t("Δεδομένα πελατών σε διακομιστές στην ΕΕ, κρυπτογραφημένα", "Client data on servers in the EU, encrypted"),
@@ -247,10 +225,6 @@ export default function AgentSolutionsPage() {
                 </div>
 
                 <div className="mx-auto mt-12 max-w-[1040px] rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center">
-                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#ECFDF5] dark:bg-[#29685B]/15 px-3 py-1 text-caption font-semibold uppercase tracking-[0.15em] text-[#166534] dark:text-brand-accent">
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        {t("Ξεκινήστε σήμερα", "Start today")}
-                    </div>
                     <h3 className="mb-4 text-h2 font-semibold leading-tight tracking-[-0.03em] text-[#0F172A] dark:text-white">
                         {t("Δοκιμάστε το με έναν πελάτη.", "Try it with one client.")}
                     </h3>

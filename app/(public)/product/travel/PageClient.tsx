@@ -17,14 +17,11 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ταξιδιωτική ασφάλεια", "Travel insurance")}
-                    </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Διαβάστε το ασφαλιστήριο πριν το check-in.", "Read the policy before you check in.")}
+                        {t("Ελέγξτε την ταξιδιωτική ασφάλεια πριν φύγετε.", "Read the policy before you check in.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Η ταξιδιωτική ασφάλεια αγοράζεται σε δύο κλικ μαζί με το εισιτήριο — και συνήθως κανείς δεν βλέπει τα όρια, τις εξαιρέσεις ή την απαλλαγή — το ποσό που πληρώνετε εσείς. Σας τα δείχνουμε πριν φύγετε, όχι στο ταμείο ενός νοσοκομείου στο εξωτερικό.", "Travel cover is bought in two clicks with the ticket — and usually nobody looks at the limits, the exclusions or the deductible — the amount that stays with you. We show them to you before you leave, not at the cashier's desk of a hospital abroad.")}
+                        {t("Πριν ταξιδέψετε, δείτε τα ποσά κάλυψης, τις εξαιρέσεις και τι πληρώνετε εσείς. Κρατήστε μαζί σας τα τηλέφωνα βοήθειας που γράφει το ασφαλιστήριο.", "Before travelling, check coverage limits, exclusions and your share of costs. Keep the policy's assistance numbers with you.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -45,7 +42,7 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                             {t("Τρία πράγματα που ελέγχουμε πριν πετάξετε.", "Three things we check before you fly.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Ανεβάζετε το PDF της ταξιδιωτικής σας και σε λίγα λεπτά βλέπετε τι ισχύει για ιατρικά έκτακτα, ακύρωση και αποσκευές — σε απλά ελληνικά.", "Upload your travel policy PDF and see in minutes what applies to medical emergencies, cancellation and luggage — in plain language.")}
+                            {t("Ανεβάστε το PDF και δείτε τι αναφέρει για επείγοντα ιατρικά έξοδα, ακύρωση ταξιδιού και αποσκευές. Ισχύουν οι όροι του δικού σας προγράμματος.", "Upload the PDF to see what it says about emergency medical costs, cancellation and baggage. Your own plan's terms apply.")}
                         </p>
                     </div>
 

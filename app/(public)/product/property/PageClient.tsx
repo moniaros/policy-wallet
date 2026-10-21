@@ -19,14 +19,11 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ακίνητα", "Property")}
-                    </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Το σπίτι σας, ασφαλισμένο στη σωστή αξία.", "Your home, insured at the right value.")}
+                        {t("Τι προβλέπει η ασφάλεια του σπιτιού σας;", "What does your home policy provide?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε τι κεφάλαιο δηλώνει το ασφαλιστήριό σας, τι καλύπτεται σε σεισμό ή πλημμύρα, και αν έχετε την τριάδα για την έκπτωση ΕΝΦΙΑ.", "See what sum insured your policy states, what is covered in an earthquake or a flood, and whether you hold the trio for the ENFIA discount.")}
+                        {t("Δείτε για ποιο ποσό είναι ασφαλισμένο το σπίτι και αν αναφέρονται σεισμός, πυρκαγιά και πλημμύρα. Η μείωση ΕΝΦΙΑ έχει και άλλες προϋποθέσεις.", "See the insured amount and whether earthquake, fire and flood are listed. ENFIA relief also has other conditions.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -72,24 +69,24 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
 
                     <div>
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Είναι το σπίτι σας πραγματικά ασφαλισμένο;", "Is your home actually covered?")}
+                            {t("Βρείτε τις βασικές καλύψεις της κατοικίας σας.", "Find the main cover in your home policy.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Διαβάζουμε κάθε κρίσιμο όρο της ασφάλισης κατοικίας και σας λέμε αν το σπίτι σας (και η τσέπη σας) είναι πραγματικά καλυμμένα.", "We read every critical term of your home policy and tell you whether your home (and your wallet) are truly covered.")}
+                            {t("Σας βοηθάμε να βρείτε τα ποσά, τις εξαιρέσεις και τις υποχρεώσεις που αναφέρει το ασφαλιστήριο. Για την επάρκεια της κάλυψης χρειάζεται συζήτηση με τον ασφαλιστή σας.", "We help you find the amounts, exclusions and obligations stated in the policy. Discuss whether the cover is adequate with your adviser.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Έλεγχος κόστους ανακατασκευής", "Rebuild cost check")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Με το Family, δείτε αν το ποσό ασφάλισης φτάνει ακόμη για να ξαναχτιστεί το σπίτι σας — πριν πληρώσει λιγότερα η ασφαλιστική.", "With Family, see whether the sum insured is still enough to rebuild your home — before the insurer pays out less.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Με το Family, συγκρίνουμε σχετικά ποσά όταν αναφέρονται στο ίδιο το έγγραφο. Δεν εκτιμούμε ανεξάρτητα πόσο κοστίζει να ξαναχτιστεί το σπίτι σας.", "With Family, we compare relevant amounts when the document itself states them. We do not independently estimate the cost of rebuilding your home.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Έκπτωση ΕΝΦΙΑ (Ελλάδα)", "ENFIA tax discount (GR)")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Ελέγχουμε αν έχετε την τριάδα Σεισμού-Πυρκαγιάς-Πλημμύρας που χρειάζεται για την έκπτωση ΕΝΦΙΑ έως 20%.", "We check whether you have the earthquake-fire-flood trio needed for the ENFIA discount of up to 20%.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Εντοπίστε αν αναφέρονται σεισμός, πυρκαγιά και πλημμύρα. Η ΑΑΔΕ ελέγχει αν δικαιούστε μείωση ΕΝΦΙΑ, μαζί με τη διάρκεια και το ποσό ασφάλισης.", "Find whether earthquake, fire and flood are listed. AADE checks eligibility for ENFIA relief, including the insurance period and amount.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
@@ -120,10 +117,10 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                         return (
                             <>
                                 <ul className="space-y-4 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
-                                    <li>{t("Έκπτωση 20% για κατοικίες με φορολογητέα αξία έως €500.000 — 10% πάνω από αυτήν. Ισχύει από το 2025.", "A 20% discount for homes with taxable value up to €500,000 — 10% above that. In force from 2025.")}</li>
-                                    <li>{t("Χρειάζονται και οι τρεις κίνδυνοι στο ίδιο ασφαλιστήριο: σεισμός, πυρκαγιά και πλημμύρα.", "All three perils must be on the same policy: earthquake, fire and flood.")}</li>
+                                    <li>{t("Για τον ΕΝΦΙΑ 2026: μείωση 20% για κατοικία φορολογητέας αξίας έως 500.000 € και 10% πάνω από αυτό το ποσό, εφόσον πληρούνται οι όροι της ΑΑΔΕ και υπήρχε πλήρης ετήσια ασφάλιση το 2025.", "For ENFIA 2026: 20% relief for a home with a taxable value up to €500,000 and 10% above that, subject to AADE's conditions and a full year of qualifying insurance in 2025.")}</li>
+                                    <li>{t("Χρειάζονται μαζί οι καλύψεις σεισμού, πυρκαγιάς και πλημμύρας. Μπορούν να προκύπτουν από περισσότερα ασφαλιστήρια, εφόσον πληρούνται οι προϋποθέσεις της ΑΑΔΕ.", "Earthquake, fire and flood cover must apply together. They may be provided by more than one policy, subject to AADE's conditions.")}</li>
                                     <li>{t("Το ποσό ασφάλισης πρέπει να καλύπτει την αξία ανακατασκευής του κτιρίου. Ελέγξτε την ελάχιστη αξία ανά τετραγωνικό στις οδηγίες της ΑΑΔΕ για το έτος της αίτησής σας.", "The insured amount must cover the building’s rebuild value. Check AADE’s minimum value per square metre for your application year.")}</li>
-                                    <li>{t("Ελάχιστη διάρκεια ασφάλισης: τρεις μήνες μέσα στο έτος, με αναλογική έκπτωση.", "Minimum insured period: three months in the year, with the discount pro-rated.")}</li>
+                                    <li>{t("Απαιτούνται τουλάχιστον τρεις μήνες ασφάλισης μέσα στο προηγούμενο έτος. Για μικρότερη διάρκεια από ένα έτος, η μείωση είναι αναλογική.", "At least three months of insurance in the preceding year are required. For less than a full year, relief is proportional.")}</li>
                                 </ul>
                                 <p className="mt-6 text-body-sm text-[#5B6A7A] dark:text-slate-400">
                                     {t("Πηγή: ", "Source: ")}
@@ -159,7 +156,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Μάθετε αν το σπίτι σας είναι ασφαλισμένο στη σωστή αξία.", "Find out whether your home is insured at the right value.")}
+                    {t("Δείτε τι γράφει η ασφάλεια της κατοικίας σας.", "See what your home policy says.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το ασφαλιστήριο κατοικίας", "Upload your home policy")}

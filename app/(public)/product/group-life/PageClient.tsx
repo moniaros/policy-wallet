@@ -17,8 +17,8 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             current: true,
             titleEl: "Ομαδική Ζωή",
             titleEn: "Group Life",
-            descEl: "Εφάπαξ κεφάλαιο στην οικογένεια του εργαζομένου σε περίπτωση θανάτου ή μόνιμης ανικανότητας. Η παροχή που κανείς δεν θέλει να χρειαστεί — και που μετράει περισσότερο απ' όλες όταν χρειαστεί.",
-            descEn: "A lump-sum benefit to an employee's family in case of death or permanent disability. The benefit nobody wants to need — and the one that matters most when it is needed.",
+            descEl: "Πρόγραμμα που μπορεί να προβλέπει ποσό για θάνατο ή ανικανότητα εργαζομένου. Οι δικαιούχοι και οι προϋποθέσεις ορίζονται στους όρους.",
+            descEn: "A plan that may pay a benefit for an employee's death or disability. Beneficiaries and conditions are defined in its terms.",
         },
         {
             icon: Users,
@@ -46,14 +46,11 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ομαδική ζωή", "Group life")}
-                    </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
-                        {t("Η παροχή που κανείς δεν διαβάζει. Εμείς τη διαβάζουμε.", "The benefit nobody reads. We read it.")}
+                        {t("Τι προβλέπει η ομαδική ασφάλεια ζωής της δουλειάς σας;", "The benefit nobody reads. We read it.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Η ομαδική ασφάλιση ζωής δίνει σε κάθε εργαζόμενο κεφάλαιο ζωής και ανικανότητας με έξοδα εργοδότη. Οργανώστε το συμβόλαιο, δείτε ποιος καλύπτεται και με πόσα — χωρίς να ψάχνετε πίνακες σε PDF.", "Group life insurance gives every employee life and disability capital at the employer's expense. Organize the policy and see who is covered and for how much — without digging through PDF tables.")}
+                        {t("Δείτε ποιοι εργαζόμενοι καλύπτονται, ποια ποσά προβλέπονται και σε ποιες περιπτώσεις. Οι εισφορές και οι παροχές εξαρτώνται από το πρόγραμμα του εργοδότη.", "See which employees are covered, the stated amounts and the circumstances covered. Contributions and benefits depend on the employer's plan.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -74,10 +71,10 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
                         <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
-                            {t("Το ένα τρίτο του πακέτου παροχών που ξεχνιέται.", "The forgotten third of the benefits package.")}
+                            {t("Ζωή, υγεία και σύνταξη: διαφορετικές παροχές.", "Life, health and pension: different benefits.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Υγεία, σύνταξη, ζωή: τα ομαδικά προγράμματα συνήθως έρχονται πακέτο, αλλά μόνο τα δύο πρώτα συζητιούνται. Δείτε και τα τρία μαζί, ανά εργαζόμενο.", "Health, pension, life: group plans usually arrive as a package, but only the first two get discussed. See all three together, per employee.")}
+                            {t("Ο εργοδότης μπορεί να προσφέρει ένα ή περισσότερα ομαδικά προγράμματα. Κάθε πρόγραμμα έχει δικούς του όρους και δικαιούχους.", "An employer may offer one or more group plans. Each has its own terms and beneficiaries.")}
                         </p>
                     </div>
 
@@ -122,7 +119,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                             {t("Για υπεύθυνους προσωπικού και επιχειρηματίες", "For HR and business owners")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Ανεβάστε το ομαδικό συμβόλαιο και δείτε τις παροχές του χαρτογραφημένες: κεφάλαια ανά εργαζόμενο, συμπληρωματικές καλύψεις, ημερομηνία ανανέωσης. Όταν έρθει η στιγμή της διαπραγμάτευσης, ξέρετε τι ακριβώς πληρώνετε.", "Upload the group policy and see its benefits mapped: capital per employee, supplementary covers, renewal date. When negotiation time comes, you know exactly what you are paying for.")}
+                            {t("Ανεβάστε το ομαδικό ασφαλιστήριο και δείτε τις παροχές, τα ποσά και την ημερομηνία ανανέωσης. Επιβεβαιώστε τυχόν αλλαγές προσωπικού με την ασφαλιστική εταιρεία.", "Upload the group policy to see benefits, amounts and the renewal date. Confirm any staff changes with the insurer.")}
                         </p>
                     </div>
                     <div>
@@ -130,7 +127,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                             {t("Για εργαζομένους", "For employees")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Η ομαδική ασφάλεια ζωής της δουλειάς σας μετράει. Αν το ατομικό σας συμβόλαιο την αγνοεί, ίσως πληρώνετε δύο φορές για το ίδιο. Ή ίσως στηρίζεστε σε λιγότερα χρήματα απ' όσα νομίζετε.", "The group life cover from your job counts. If your personal policy ignores it, you may be paying twice for the same thing. Or leaning on less money than you think.")}
+                            {t("Δείτε τι προβλέπει το πρόγραμμα της δουλειάς σας και τι το ατομικό σας. Δύο ασφαλιστήρια ζωής δεν σημαίνουν απαραίτητα άχρηστη διπλή κάλυψη: μπορεί να προβλέπουν διαφορετικές ή πρόσθετες παροχές.", "Check your employer's plan alongside your individual policy. Two life policies are not necessarily wasteful duplicates: they may provide different or additional benefits.")}
                         </p>
                     </div>
                 </div>
@@ -143,7 +140,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Μια παροχή που κανείς δεν διαβάζει αξίζει να τη βλέπουν όλοι.", "A benefit nobody reads deserves to be seen by everyone.")}
+                    {t("Γνωρίστε τις παροχές που σας προσφέρει η δουλειά σας.", "A benefit nobody reads deserves to be seen by everyone.")}
                 </h2>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">

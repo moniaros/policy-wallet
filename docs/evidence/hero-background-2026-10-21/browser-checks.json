@@ -1,0 +1,241 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "mode": "play",
+    "posterLoaded": true,
+    "layout": {
+      "hero": {
+        "x": 0,
+        "y": 80,
+        "width": 1440,
+        "height": 680
+      },
+      "media": {
+        "x": 0,
+        "y": 80,
+        "width": 1440,
+        "height": 680
+      },
+      "heading": {
+        "x": 57.59375,
+        "y": 184,
+        "width": 720,
+        "height": 209.90625
+      },
+      "background": "rgb(247, 250, 248)",
+      "foreground": "rgb(20, 59, 51)"
+    },
+    "video": {
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "width": 1280,
+      "height": 720
+    },
+    "pauseResumeAndOffscreen": true,
+    "simulatedHiddenTab": true,
+    "accessibility": [],
+    "dynamicReducedMotion": true,
+    "errors": []
+  },
+  {
+    "name": "mobile",
+    "width": 390,
+    "mode": "play",
+    "posterLoaded": true,
+    "layout": {
+      "hero": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 828
+      },
+      "media": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 828
+      },
+      "heading": {
+        "x": 24,
+        "y": 296.4375,
+        "width": 342,
+        "height": 152.0625
+      },
+      "background": "rgb(247, 250, 248)",
+      "foreground": "rgb(20, 59, 51)"
+    },
+    "video": {
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "width": 1280,
+      "height": 720
+    },
+    "pauseResumeAndOffscreen": true,
+    "simulatedHiddenTab": true,
+    "accessibility": [],
+    "dynamicReducedMotion": true,
+    "errors": []
+  },
+  {
+    "name": "english-small",
+    "width": 320,
+    "mode": "play",
+    "posterLoaded": true,
+    "layout": {
+      "hero": {
+        "x": 0,
+        "y": 72,
+        "width": 320,
+        "height": 828
+      },
+      "media": {
+        "x": 0,
+        "y": 72,
+        "width": 320,
+        "height": 828
+      },
+      "heading": {
+        "x": 24,
+        "y": 359.5,
+        "width": 272,
+        "height": 114.046875
+      },
+      "background": "rgb(247, 250, 248)",
+      "foreground": "rgb(20, 59, 51)"
+    },
+    "video": {
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "width": 1280,
+      "height": 720
+    },
+    "pauseResumeAndOffscreen": true,
+    "simulatedHiddenTab": true,
+    "dynamicReducedMotion": true,
+    "errors": []
+  },
+  {
+    "name": "reduced-motion",
+    "width": 390,
+    "mode": "reduce",
+    "posterLoaded": true,
+    "layout": {
+      "hero": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 828
+      },
+      "media": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 828
+      },
+      "heading": {
+        "x": 24,
+        "y": 296.4375,
+        "width": 342,
+        "height": 152.0625
+      },
+      "background": "rgb(247, 250, 248)",
+      "foreground": "rgb(20, 59, 51)"
+    },
+    "noVideoDownload": true,
+    "errors": []
+  },
+  {
+    "name": "save-data",
+    "width": 390,
+    "mode": "save",
+    "posterLoaded": true,
+    "layout": {
+      "hero": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 828
+      },
+      "media": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 828
+      },
+      "heading": {
+        "x": 24,
+        "y": 296.4375,
+        "width": 342,
+        "height": 152.0625
+      },
+      "background": "rgb(247, 250, 248)",
+      "foreground": "rgb(20, 59, 51)"
+    },
+    "noVideoDownload": true,
+    "errors": []
+  },
+  {
+    "name": "video-failure",
+    "width": 1440,
+    "mode": "failure",
+    "posterLoaded": true,
+    "layout": {
+      "hero": {
+        "x": 0,
+        "y": 80,
+        "width": 1440,
+        "height": 680
+      },
+      "media": {
+        "x": 0,
+        "y": 80,
+        "width": 1440,
+        "height": 680
+      },
+      "heading": {
+        "x": 57.59375,
+        "y": 184,
+        "width": 720,
+        "height": 209.90625
+      },
+      "background": "rgb(247, 250, 248)",
+      "foreground": "rgb(20, 59, 51)"
+    },
+    "noVideoDownload": false,
+    "errors": []
+  },
+  {
+    "name": "no-javascript",
+    "width": 390,
+    "mode": "nojs",
+    "posterLoaded": true,
+    "layout": {
+      "hero": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 828
+      },
+      "media": {
+        "x": 0,
+        "y": 72,
+        "width": 390,
+        "height": 828
+      },
+      "heading": {
+        "x": 24,
+        "y": 296.4375,
+        "width": 342,
+        "height": 152.0625
+      },
+      "background": "rgb(247, 250, 248)",
+      "foreground": "rgb(20, 59, 51)"
+    },
+    "noVideoDownload": true,
+    "errors": []
+  }
+]

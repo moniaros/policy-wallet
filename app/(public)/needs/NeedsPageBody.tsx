@@ -41,8 +41,8 @@ export function NeedsPageBody({ locale }: { locale: "el" | "en" }) {
                     </h1>
                     <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                         {t(
-                            "Δεν χρειάζεται λογαριασμό, ούτε να ανεβάσετε ασφαλιστήριο. Απαντήστε ό,τι ξέρετε απ' έξω και θα σας πούμε ποια σημεία έχουν σημασία για κάποιον στη δική σας κατάσταση — και τι ακριβώς να κοιτάξετε.",
-                            "No account, no document to upload. Answer what you know off the top of your head and we will tell you which points matter for someone in your situation — and exactly what to look for.",
+                            "Δεν χρειάζεται λογαριασμός ή ασφαλιστήριο. Απαντήστε σε λίγες ερωτήσεις για την καθημερινότητά σας. Θα δείτε μια λίστα με θέματα που μπορείτε να ελέγξετε, όχι πρόταση αγοράς ασφάλισης.",
+                            "No account or policy is needed. Answer a few questions about everyday life to see topics you can check, not a recommendation to buy insurance.",
                         )}
                     </p>
                 </div>

@@ -1,5 +1,8 @@
+import { presentationCopy } from "@/lib/i18n/presentation"
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import styles from "./homepage-panels.module.css"
+import { homepagePanelsCopy } from "@/lib/i18n/homepage-panels"
+import { FileLock2, FileSearch, KeyRound, ArrowRight } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { Verdict } from "@/components/landing/ComparisonVerdict"
 import {
@@ -11,27 +14,8 @@ import {
 } from "@/lib/marketing/positioning"
 
 /**
- * The neutrality story — the single strongest thing PolicyWallet can say, and
- * the answer to "why should I use this instead of just asking my agent?".
- *
- * It used to live in the third paragraph of /company, where almost nobody
- * reads it. It now runs directly under the homepage hero.
- *
- * **It used to assert that story three times and prove it zero times.** The
- * three DIFFERENTIATORS shipped as three same-size cards of icon-plus-heading-
- * plus-text — the page's default container, used here for the one section that
- * least deserved a default. Meanwhile /compare already held the artifact that
- * makes the claim checkable: four columns naming the alternatives a Greek
- * household actually has, and a last row where the folder in the drawer beats
- * both professionals because it earns nothing from its answer. That table was
- * reachable only from a footer link.
- *
- * So the claims stay — they are the negation triad, and nothing else on the
- * site says them — but they lead the section as three plain lines instead of
- * three cards, and the evidence carries the body. Three rows here, all six on
- * /compare.
- *
- * Server component: static markup, no JS shipped.
+ * Trust in three concrete explanations, followed by the existing independence
+ * comparison. Server-rendered; the native details control works without JS.
  */
 
 /**
@@ -46,33 +30,57 @@ const HOMEPAGE_ROW_INDICES = [2, 3, 5] as const
 
 export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
     const t = (el: string, en: string) => (locale === "el" ? el : en)
+    const copy = homepagePanelsCopy[locale]
+    const trustPoints = [
+        { Icon: FileLock2, title: copy.trustDocuments, body: copy.trustDocumentsBody, link: copy.trustDocumentsLink, href: "/trust#documents" },
+        { Icon: FileSearch, title: copy.trustAnalysis, body: copy.trustAnalysisBody, link: copy.trustAnalysisLink, href: "/trust#ai" },
+        { Icon: KeyRound, title: copy.trustAccess, body: copy.trustAccessBody, link: copy.trustAccessLink, href: "/privacy" },
+    ]
     const rows = HOMEPAGE_ROW_INDICES.map((i) => COMPARISON_ROWS[i])
 
     return (
         <section
             id="difference"
             aria-labelledby="difference-heading"
-            className="scroll-mt-28 border-y border-neutral-200 bg-neutral-50 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
+            className={styles.section}
         >
             <div className="mx-auto max-w-page">
                 <div className="mb-10 max-w-[640px]">
                     <h2
                         id="difference-heading"
-                        className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white"
+                        className={styles.heading}
                     >
                         {t(
                             "Κανείς δεν μας πληρώνει για να σας πούμε κάτι συγκεκριμένο.",
                             "Nobody pays us to tell you a particular thing.",
                         )}
                     </h2>
-                    <p className="text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
-                        {t(
-                            "Γι' αυτό η απάντηση που παίρνετε είναι απλώς η αλήθεια για την κάλυψή σας.",
-                            "That is why the answer you get is simply the truth about your cover.",
-                        )}
+                    <p className="mt-6 text-lead leading-relaxed text-fg-secondary">
+                        {presentationCopy[locale].independence}
                     </p>
                 </div>
 
+                <div className={styles.trustPoints}>
+                    {trustPoints.map(({ Icon, title, body, link, href }) => <article key={href} className={styles.trustPoint}>
+                        <Icon className={styles.trustIcon} strokeWidth={1.3} aria-hidden="true" />
+                        <h3>{title}</h3><p>{body}</p>
+                        <Link href={localizeHref(href, locale)}>{link}<ArrowRight size={18} aria-hidden="true" /></Link>
+                    </article>)}
+                </div>
+
+                {/* The evidence. `pw-stacked-table` is the system's own answer
+                    to a wide table on a phone: below 1024px each row becomes a
+                    labelled block, so there is no horizontal scroller and no
+                    column falls off the screen.
+
+                    The card chrome is therefore `lg:`-only. Below 1024px the
+                    primitive gives every row its own `rounded-2xl border`, so a
+                    wrapper card here would put cards inside a card — the exact
+                    nesting the craft floor bans. Above it the rows are plain
+                    table rows again and the white ground is what separates the
+                    table from the tinted section behind it. */}
+                <details className="group">
+                    <summary className="mb-6 cursor-pointer py-3 text-lg font-semibold text-fg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">{presentationCopy[locale].compareLabel}</summary>
                 {/* The three claims, as claims. No card, no icon tile — the
                     proof is directly below them and does not need decorating. */}
                 <ul className="mb-10 grid gap-x-8 gap-y-4 sm:grid-cols-3">
@@ -88,17 +96,6 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                     ))}
                 </ul>
 
-                {/* The evidence. `pw-stacked-table` is the system's own answer
-                    to a wide table on a phone: below 1024px each row becomes a
-                    labelled block, so there is no horizontal scroller and no
-                    column falls off the screen.
-
-                    The card chrome is therefore `lg:`-only. Below 1024px the
-                    primitive gives every row its own `rounded-2xl border`, so a
-                    wrapper card here would put cards inside a card — the exact
-                    nesting the craft floor bans. Above it the rows are plain
-                    table rows again and the white ground is what separates the
-                    table from the tinted section behind it. */}
                 <div className="lg:rounded-2xl lg:border lg:border-neutral-200 lg:bg-white lg:p-6 lg:dark:border-slate-800 lg:dark:bg-slate-950">
                     <table className="pw-stacked-table w-full border-collapse text-left">
                         <caption className="sr-only">
@@ -150,7 +147,9 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                     </table>
                 </div>
 
-                <div className="mt-6">
+                </details>
+                <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2">
+                    <Link href={localizeHref("/trust", locale)} className="inline-flex min-h-11 items-center text-body-lg font-semibold text-fg-brand underline-offset-4 hover:underline">{presentationCopy[locale].trustLink}</Link>
                     <Link
                         href={localizeHref("/compare", locale)}
                         className="inline-flex min-h-11 items-center gap-1.5 text-body-lg font-semibold text-neutral-900 underline-offset-4 hover:underline dark:text-white"

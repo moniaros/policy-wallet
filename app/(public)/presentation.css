@@ -1,0 +1,40 @@
+/* Shared public presentation. Existing product tokens remain the source of colour. */
+.pw-public { --public-header-height: 80px; }
+.pw-public-header { background: var(--brand-trust-forest, #143B33); color: white; }
+.pw-public-header-inner { height: var(--public-header-height, 80px); }
+.pw-public-header .pw-public-products > button { color: inherit; }
+.pw-public-header :is(a,button):focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.pw-public-header :is(.pw-primary-button-inverse) { background: white; color: #143B33; }
+.pw-public-header :is(.pw-primary-button-inverse):hover { background: #CFE4DC; }
+.pw-public-header [aria-label="Toggle theme"], .pw-public-header [aria-label="Εναλλαγή θέματος"] { color: white; background: transparent; }
+.pw-public main#main-content { padding-top: calc(var(--public-header-height) + 48px); }
+.pw-public .pw-home main#main-content { padding-top: var(--public-header-height); }
+.pw-public :is(a,button,input,select,textarea,summary,[tabindex]) { scroll-margin-top: calc(var(--public-header-height) + 24px); scroll-margin-bottom: 24px; }
+.pw-public h1 { font-size: clamp(2.2rem, 4.5vw, 4.5rem); line-height: 1.08; letter-spacing: -.035em; text-wrap: balance; }
+.pw-public h2 { text-wrap: balance; }
+.pw-public :is(.pw-primary-button,.pw-secondary-button,.pw-primary-button-inverse,.pw-secondary-button-inverse) { border-radius: 12px; }
+/* The film fills the hero; a light scrim protects dark brand copy in every shot. */
+.pw-public-hero { position: relative; isolation: isolate; background: #F7FAF8; color: #143B33; }
+.pw-public-hero::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(90deg, rgba(247,250,248,.98) 0%, rgba(247,250,248,.96) 36%, rgba(247,250,248,.88) 54%, rgba(247,250,248,.2) 78%, rgba(247,250,248,.08) 100%); }
+.pw-public-hero-grid { display: grid; align-items: center; max-width: 1440px; margin-inline: auto; min-height: 680px; }
+.pw-public-hero-copy { position: relative; z-index: 2; width: 58%; padding: 64px clamp(24px,4vw,64px); }
+.pw-public-hero-media { position: absolute; inset: 0; }
+.pw-public-hero input { color: #10312B; background: white; }
+.pw-public-hero button[type="submit"] { background: #143B33; color: white; }
+.pw-public-hero button[type="submit"]:hover { background: #29685B; }
+.pw-public-hero form { color: #10312B; }
+@media (max-width: 1023px) {
+  .pw-public { --public-header-height: 72px; }
+  .pw-public-hero-grid { min-height: calc(100svh - var(--public-header-height)); align-items: end; }
+  .pw-public-hero-copy { width: 100%; padding: 220px 24px 88px; }
+  .pw-public-hero::after { background: linear-gradient(180deg, rgba(247,250,248,.12) 0%, rgba(247,250,248,.86) 28%, rgba(247,250,248,.96) 48%, #F7FAF8 100%); }
+  .pw-public main#main-content { padding-top: calc(var(--public-header-height) + 32px); }
+}
+
+.pw-public-hero button[type="submit"] { border-radius: 12px; }
+
+.pw-hero-film { position: absolute; inset: 0; overflow: hidden; }
+.pw-hero-film-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.pw-hero-film-control { position: absolute; z-index: 3; right: 24px; bottom: 24px; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #143B33; color: white; }
+.pw-hero-film-control:hover { background: #1C4E44; }
+.pw-hero-film-control:focus-visible { outline: 2px solid #143B33; outline-offset: 4px; }

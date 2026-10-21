@@ -19,14 +19,11 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-brand-accent px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ζωή & υγεία", "Life & health")}
-                    </span>
                     <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
                         {t("Ποια έξοδα υγείας πληρώνει η ασφάλειά σας;", "Hospital cover, networks, out-of-pocket — in plain language.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε πόσα θα πληρώσετε από την τσέπη σας στη χειρότερη περίπτωση, ποια νοσοκομεία είναι συμβεβλημένα και πού μένετε ακάλυπτοι.", "See how much you would pay yourself in the worst case, which hospitals bill your insurer directly, and where you are left uncovered.")}
+                        {t("Δείτε τα ποσά και τις προϋποθέσεις που αναφέρει το ασφαλιστήριο υγείας. Πριν από νοσηλεία, επιβεβαιώστε με την εταιρεία τι καλύπτεται και τι πληρώνετε εσείς.", "See the amounts and conditions stated in your health policy. Before hospital treatment, confirm coverage and your share with the insurer.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -47,21 +44,21 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                             {t("Τι καλύπτει το ασφαλιστήριο υγείας σας;", "What does your health policy cover?")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
-                            {t("Μεταφράζουμε τα ψιλά γράμματα των ασφαλιστηρίων υγείας σε καθαρή εικόνα: τι καλύπτεται, μέχρι πού, με πόση δική σας συμμετοχή. Δεν χρειάζεται πια να μαντεύετε τι καλύπτεται.", "We translate the fine print of health policies into a clear picture: what is covered, up to how much, with how much you pay yourself. No more guessing what is covered.")}
+                            {t("Σας βοηθάμε να βρείτε τι καλύπτεται, μέχρι ποιο ποσό και ποιο μέρος των εξόδων πληρώνετε εσείς. Αν λείπει μια πληροφορία, χρειάζεται έλεγχος στο ασφαλιστήριο.", "We help you find what is covered, the limit and your share of expenses. Missing information needs to be checked in the policy.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Πληρώνει η ασφαλιστική το νοσοκομείο απευθείας;", "Does the insurer pay the hospital directly?")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Βλέπετε με μια ματιά αν το νοσοκομείο σας χρεώνει απευθείας την ασφαλιστική. Τέλος τα τηλέφωνα την ώρα της ανάγκης.", "See at a glance whether your hospital bills the insurer directly. No more phone calls in the moment of need.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Ελέγξτε αν προβλέπεται απευθείας πληρωμή στο νοσοκομείο. Επιβεβαιώστε με την ασφαλιστική το νοσοκομείο και τυχόν έγκριση που χρειάζεται πριν από τη νοσηλεία.", "Check whether direct hospital payment is provided. Confirm the hospital and any required pre-authorisation with the insurer before treatment.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Μέγιστο ποσό δικής σας συμμετοχής", "Most you pay yourself")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε καθαρά το ανώτατο ποσό που μπορεί να πληρώσετε μόνοι σας μέσα στη χρονιά, ώστε να ξέρετε τι να υπολογίσετε.", "See clearly the most you could pay yourself in a year, so you know what to plan for.")}</p>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Το μέρος των εξόδων που πληρώνετε εσείς", "Your share of covered expenses")}</h3>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Η απαλλαγή και η συμμετοχή αφορούν καλυπτόμενα έξοδα. Έξοδα που εξαιρούνται ή ξεπερνούν τα όρια μπορεί να τα πληρώσετε επιπλέον.", "Deductibles and co-payments apply to covered expenses. Excluded expenses or amounts above the limits may cost you extra.")}</p>
                                 </div>
                             </li>
                         </ul>
@@ -81,7 +78,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                         </div>
                         <div className="space-y-6">
                             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex justify-between items-center border border-blue-100 dark:border-blue-800/40">
-                                <div className="font-medium text-blue-900 dark:text-blue-200 text-sm">{t("Μέγιστη δική σας συμμετοχή: 1.500 €", "Most you pay yourself: €1,500")}</div>
+                                <div className="font-medium text-blue-900 dark:text-blue-200 text-sm">{t("Απαλλαγή στο παράδειγμα: 1.500 €", "Example deductible: €1,500")}</div>
                             </div>
                             <div className="p-4 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-lg text-sm border border-slate-200 dark:border-white/10">
                                 <p className="font-bold flex items-center gap-2 mb-2"><Activity className="w-4 h-4" /> {t("Νοσοκομεία που συνεργάζονται με την ασφαλιστική", "Partner hospital networks")}</p>
@@ -109,8 +106,8 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                             <>
                                 <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300 mb-6">
                                     {t(
-                                        `Το 2024 τα ασφάλιστρα υγείας αυξήθηκαν κατά μέσο όρο ${eda.value} με την ηλικιακή επίδραση — και κατά +1,25% χωρίς αυτήν. Είναι ο επίσημος Ετήσιος Δείκτης Ασφαλίστρων της ΕΛΣΤΑΤ, όχι εκτίμηση.`,
-                                        `In 2024 health premiums rose by ${eda.value} on average including the age effect — and by +1.25% without it. That is ELSTAT's official Annual Premium Index, not an estimate.`,
+                                        `Το 2024 τα ασφάλιστρα υγείας αυξήθηκαν κατά μέσο όρο ${eda.value} μαζί με την επίδραση της ηλικίας και κατά +1,25% χωρίς αυτήν, σύμφωνα με τον δείκτη της ΕΛΣΤΑΤ για μακροχρόνιες ασφαλίσεις υγείας. Δεν είναι η αύξηση κάθε ασφαλιστηρίου.`,
+                                        `In 2024 health premiums rose by ${eda.value} including the effect of age, and by +1.25% without it, according to ELSTAT's index for long-term health insurance. This is not the increase for every policy.`,
                                     )}
                                 </p>
                                 <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300 mb-4">
@@ -163,7 +160,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
             {/* CTA */}
             <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
-                    {t("Μάθετε τι πληρώνει το ασφαλιστήριο υγείας σας.", "Know what your health policy pays.")}
+                    {t("Δείτε τους όρους της ασφάλειας υγείας σας.", "Know what your health policy pays.")}
                 </h2>
                 <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το ασφαλιστήριο υγείας", "Upload your health policy")}

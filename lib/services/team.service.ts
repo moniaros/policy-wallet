@@ -24,11 +24,14 @@ export interface TeamMember {
     customerCount: number
     pipelineValue: number
     wonValue: number
+    revenueVisible: boolean
 }
 
 export interface TeamOverview {
     tenantId: string
     tenantName: string
+    viewerRole: TeamRole
+    revenueScope: "team" | "own"
     members: TeamMember[]
     stats: {
         totalMembers: number
@@ -518,6 +521,7 @@ export async function getTeamOverview(userId: string): Promise<TeamOverview | nu
                 photoUrl: m.user.image || undefined,
                 joinedAt: m.joinedAt?.toISOString() || null,
                 customerCount,
+                revenueVisible: viewerSeesRevenue || m.userId === userId,
                 pipelineValue: viewerSeesRevenue || m.userId === userId ? pipelineValue : 0,
                 wonValue: viewerSeesRevenue || m.userId === userId ? wonValue : 0,
             }
@@ -536,6 +540,8 @@ export async function getTeamOverview(userId: string): Promise<TeamOverview | nu
     return {
         tenantId: membership.tenantId,
         tenantName: membership.tenant.name,
+        viewerRole: membership.role as TeamRole,
+        revenueScope: viewerSeesRevenue ? "team" : "own",
         members: memberStats,
         stats: {
             totalMembers: members.length,

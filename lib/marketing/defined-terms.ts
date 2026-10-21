@@ -29,7 +29,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
         glossarySlug: "kalypsi",
         term: { el: "κάλυψη", en: "coverage" },
         definition: {
-            el: "Ο κίνδυνος που το ασφαλιστήριο αναλαμβάνει να πληρώσει — με τα όρια και τις προϋποθέσεις που γράφει, όχι με όσα υποθέτετε.",
+            el: "Οι περιπτώσεις στις οποίες η ασφαλιστική πληρώνει ή προσφέρει μια υπηρεσία, σύμφωνα με τους όρους.",
             en: "The risk the policy undertakes to pay for — with the limits and conditions it states, not the ones you assume.",
         },
     },
@@ -38,7 +38,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
         glossarySlug: "exairesi",
         term: { el: "εξαίρεση", en: "exclusion" },
         definition: {
-            el: "Ό,τι το ασφαλιστήριο ρητά δεν πληρώνει. Συνήθως βρίσκεται στα ψιλά γράμματα — και είναι ο λόγος που δύο «ίδιες» καλύψεις διαφέρουν.",
+            el: "Οι περιπτώσεις που δεν καλύπτει το ασφαλιστήριο.",
             en: "What the policy explicitly does not pay. Usually in the small print — and the reason two 'identical' covers differ.",
         },
     },
@@ -47,7 +47,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
         glossarySlug: "apallagi",
         term: { el: "απαλλαγή", en: "deductible" },
         definition: {
-            el: "Το ποσό της ζημιάς που πληρώνετε εσείς πριν πληρώσει η εταιρεία. Μικρότερο ασφάλιστρο σημαίνει συχνά μεγαλύτερη απαλλαγή.",
+            el: "Το μέρος μιας καλυπτόμενης ζημιάς που πληρώνετε εσείς. Μπορεί να είναι ποσό ή ποσοστό.",
             en: "The part of a loss you pay before the insurer pays. A lower premium often means a higher deductible.",
         },
     },
@@ -56,7 +56,7 @@ export const DEFINED_TERMS: readonly DefinedTerm[] = [
         glossarySlug: "chronos-anamonis",
         term: { el: "περίοδος αναμονής", en: "waiting period" },
         definition: {
-            el: "Το διάστημα μετά την έναρξη στο οποίο μια κάλυψη δεν ισχύει ακόμη. Στην υγεία μπορεί να φτάνει μήνες ή και χρόνια για συγκεκριμένες παθήσεις.",
+            el: "Το διάστημα που πρέπει να περάσει από την έναρξη της ασφάλισης για να ισχύσει μια συγκεκριμένη κάλυψη.",
             en: "The time after inception during which a cover does not yet apply. In health it can run to months, or years for specific conditions.",
         },
     },

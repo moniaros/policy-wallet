@@ -166,14 +166,13 @@ export async function POST(req: Request) {
     // before), runs AFTER the row is persisted, and is awaited only so a
     // failure is logged rather than dangling. A Brevo outage cannot lose the
     // message or fail the submission — the row is already in form_submissions.
-    const contactListId = Number(process.env.BREVO_LIST_ID_NEWSLETTER)
+    // A contact enquiry is not consent to receive a newsletter.
     await createBrevoContact({
         email: submission.email,
         attributes: {
             FIRSTNAME: submission.name,
             SOURCE: "contact_form",
         },
-        listIds: Number.isFinite(contactListId) && contactListId > 0 ? [contactListId] : undefined,
         updateEnabled: true,
     }).catch((error) => {
         Sentry.captureException(error, {
