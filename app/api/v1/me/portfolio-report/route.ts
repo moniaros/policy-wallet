@@ -20,7 +20,7 @@ export const GET = withApiGuard(
     async ({ auth }) => {
         const user = auth!.dbUser
         const allowed = await canUserUseFeature(user.id, "savingsReportExport")
-        if (!allowed && !user.roles?.includes("admin")) return createApiError("FORBIDDEN", "Portfolio export is available on Pro plans.", 403)
+        if (!allowed && !user.roles?.includes("admin")) return createApiError("FORBIDDEN", "Portfolio export is available on the Family plan.", 403)
         const language = resolveUserLanguage(user.preferredLanguage)
         const copy = getTranslations(language).wallet.portfolioReport
         const policies = await db.policy.findMany({

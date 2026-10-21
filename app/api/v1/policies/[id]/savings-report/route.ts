@@ -41,7 +41,7 @@ export const GET = withApiGuard(
         if (!allowed && !authResult.dbUser.roles?.includes("admin")) {
             return createApiError(
                 "FORBIDDEN",
-                "Savings report export is available on Pro plans.",
+                "Savings report export is available on the Family plan.",
                 403
             )
         }

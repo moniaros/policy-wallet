@@ -7,3 +7,9 @@ export const probe = {
     live: "Υποστήριξη 24/7 και ώρες λειτουργίας 9-5",
     placeholder: "+30 XXX XXX XXXX",
 }
+export const probe2 = {
+    hours: "Οι ειδικοί μας είναι διαθέσιμοι Δευτέρα έως Παρασκευή, 9:00 π.μ. έως 6:00 μ.μ. (EET)",
+    en: "Available Monday to Friday, 9:00 AM to 6:00 PM",
+    call: "Call us any time",
+    expert: "Contact Expert",
+}

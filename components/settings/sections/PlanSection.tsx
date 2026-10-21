@@ -251,29 +251,22 @@ export function PlanSection({ data }: { data: PlanData }) {
                         }
                     />
 
-                    {/* The count of analyses this month — never "unlimited": no B2C plan
-                        meters analyses per month, and what binds is the policy cap (and,
-                        on Family, an internal processing budget). A plan WITH a monthly
-                        analysis limit shows used / limit. (PW-CONTENT-02) */}
-                    <SettingRow
-                        label={copy.analyses}
-                        value={
-                            data.usage.analysesLimit === null
-                                ? formatCount(data.usage.analysesThisMonth)
-                                : `${formatCount(data.usage.analysesThisMonth)} / ${formatCount(data.usage.analysesLimit)}`
-                        }
-                        hint={copy.analysesUsed}
-                    />
-
-                    {/* The token budget is the limit that actually binds on the AI
-                        tier — "unlimited analyses" is true, and this is what runs
-                        out first. Tiers with no allowance are not shown a meter
-                        that could only ever read zero of zero. */}
-                    {data.usage.hasAiBudget && (
-                        <p className="text-caption leading-snug text-muted-foreground">
-                            {copy.aiBudgetExhausted}
-                        </p>
+                    {/* The count of analyses this month — shown only where it can be non-zero:
+                        a plan with a monthly analysis limit (used / limit) or one that runs the
+                        deep analysis (Family). On Free/Plus the row could only ever read 0 and
+                        would imply an allowance. Never "unlimited". (PW-CONTENT-02) */}
+                    {(data.usage.analysesLimit !== null || data.usage.hasAiBudget) && (
+                        <SettingRow
+                            label={copy.analyses}
+                            value={
+                                data.usage.analysesLimit === null
+                                    ? formatCount(data.usage.analysesThisMonth)
+                                    : `${formatCount(data.usage.analysesThisMonth)} / ${formatCount(data.usage.analysesLimit)}`
+                            }
+                            hint={copy.analysesUsed}
+                        />
                     )}
+
                 </div>
             </SettingsSection>
 

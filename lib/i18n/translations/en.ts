@@ -928,7 +928,7 @@ export const en: TranslationKeys = {
             claimsDisclaimer: 'General guidance, not legal advice — your insurer\'s process may differ.',
             // Agent section
             agentSectionTitle: 'Advisor notes & collaboration',
-            agentLockedHint: 'Collaboration with your advisor is available on Plus and Pro.',
+            agentLockedHint: 'Collaboration with your advisor is available on Family.',
             // Renewal data extracted from the policy or tracked by the reminder cron
             renewalDateLabel: 'Renewal date',
             premiumLabel: 'Premium',
@@ -3389,7 +3389,6 @@ export const en: TranslationKeys = {
             analyses: 'Policy analyses',
             policiesUnlimited: 'Unlimited',
             analysesUsed: 'used this month',
-            aiBudgetExhausted: 'Once it runs out, new analyses wait until next month. You can also add more allowance.',
         },
 
         security: {
@@ -3619,10 +3618,7 @@ export const en: TranslationKeys = {
         visitDocs: 'Visit Docs',
         communityChat: 'Advisor collaboration',
         communityDesc: 'Share policies with your advisor and review your covers and next steps together.',
-        joinDiscord: 'Join Discord',
         stillNeedHelp: 'Still need assistance?',
-        expertDesc: 'Our insurance experts are available Monday through Friday, 9:00 AM to 6:00 PM (EET) to assist you with policy-specific questions.',
-        contactExpert: 'Contact Expert',
         searchPlaceholder: 'Search for articles, guides, or help topics...',
         todayTitle: 'What do you need to do today?',
         todaySubtitle: 'Get instant guidance on uploading policies, understanding coverage, and collaborating with your advisor.',

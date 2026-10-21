@@ -73,7 +73,7 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         // month. Neither is true: they never had any and none are coming. Someone
         // waiting for a reset would wait forever.
         body: "Οι ερωτήσεις AI για τα ασφαλιστήριά σας περιλαμβάνονται στα επί πληρωμή πλάνα. Αναβαθμίστε για να ρωτάτε ελεύθερα για καλύψεις, όρια και εξαιρέσεις.",
-        primaryCta: "Συνέχεια με απεριόριστες ερωτήσεις",
+        primaryCta: "Συνέχεια με τις ερωτήσεις",
         secondaryCta: "Όχι τώρα",
         benefits: [
             "Ερωτήσεις για καλύψεις, όρια και εξαιρέσεις",
@@ -138,7 +138,6 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         benefits: [
             "Ειδοποιήσεις email πριν από κάθε λήξη",
             "Πολλαπλές υπενθυμίσεις ανά ασφαλιστήριο",
-            "Λίστα ελέγχου πριν την ανανέωση",
             "Ποτέ ξανά χαμένη ανανέωση",
         ],
         trust: TRUST,

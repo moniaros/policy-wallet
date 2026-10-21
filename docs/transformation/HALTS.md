@@ -1104,3 +1104,15 @@ All PUBLIC support contact points use `info@policywallet.gr` (`siteConfig.contac
 | `noreply@policywallet.gr` | sender default, `lib/email/email-service.ts:47` | kept: a From address |
 
 The optional phone field on the /contact form and the phone row on that page were removed with `siteConfig.contactPhone` / `NEXT_PUBLIC_CONTACT_PHONE`; the POST `/api/contact` schema still accepts an optional `phone` (unused, back-compatible).
+
+## H-027 — Published agent analysis counts (50 / 150 / 400) may not be reachable under the token gate · OPEN
+
+date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 3) · blocks: nothing in the build; **needs Eli + production data**
+
+`/pricing` and `/agent/pricing` state 50 / 150 / 400 analyses a month for Agent Starter / Pro / Agency (`aiAnalysesPerMonth`). The orchestrator also gates every run on the monthly token budget: `lib/token-tracking.ts:398` allows a run only while `used + estimate <= limit`, and the estimate for a document run is about 142k–154k tokens (`token-budget-estimator.ts`). With the code-default budgets (1.6M / 4.5M / 12M) the full count is reachable only if the average RECORDED usage per run stays under roughly 29–30k tokens; the estimator's own extraction step is 85k. For Agent Free the same arithmetic made the count unstatable, so the count was removed there (`plan-claims.ts`, `UNSTATED`). I could not measure real per-run usage (no production `policy_analysis_steps`), so this is a bound, not a finding of falsehood.
+
+**Ask:** paste, for production, the agent plan rows' `monthly_token_budget` and the 30-day distribution of `tokens_used` per completed run (or approve removing the counts for the paid agent tiers the way Agent Free was handled). Until then the counts are published as the entitlement field states them.
+
+## Notes from the same review, not decided here
+- The in-app `TokenUsageCard` («Χρήση tokens AI», «Μηνιαία χρήση X / Y») is still shown on `/account` for Family, and `upgrade-copy` names «Εξαντλήθηκαν τα AI tokens του μήνα». `plan-defaults.ts` says the token budget "must never be shown, named, or implied in any UI". The card also sells the token top-up, so removing it is a product decision, not a copy fix: **ask whether to hide the meter** (H-020 wording only removed the cap SENTENCE from /account).
+- In-app prices still render «€4.99» (`formatEur`) while the public site renders «4,99 €»: queued as a formatting follow-up (authenticated surfaces were out of the A4 scope).

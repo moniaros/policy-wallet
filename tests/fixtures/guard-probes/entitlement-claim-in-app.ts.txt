@@ -9,3 +9,4 @@ agency: ["Unlimited AI analyses", "Largest AI budget (25M tokens/month)", "Dedic
 faqAnswer: 'Yes, you can upgrade or downgrade at any time.',
 analysisBlockedUpgradeTitle: 'Η πλήρης ανάλυση AI είναι δυνατότητα του Plus',
 hint: 'Τα πληρωμένα πλάνα περιλαμβάνουν προτεραιότητα υποστήριξης μέσω email.',
+collab: 'Η συνεργασία με τον σύμβουλό σας είναι διαθέσιμη στα Plus και Pro.',

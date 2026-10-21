@@ -19,8 +19,8 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 4278
-# inline entries: 5005 across 242 files
+# bundle entries: 4274
+# inline entries: 5003 across 242 files
 # ternary entries: 286 across 45 files
 # call entries: 1082 across 82 files
 
@@ -1642,14 +1642,11 @@ bundle	help.categories.policyManagement	"Ασφαλιστήρια"
 bundle	help.clearFilters	"Καθαρισμός φίλτρων"
 bundle	help.communityChat	"Συνεργασία με σύμβουλο"
 bundle	help.communityDesc	"Μοιραστείτε ασφαλιστήρια με τον σύμβουλό σας και εξετάστε μαζί τις καλύψεις και τα επόμενα βήματα."
-bundle	help.contactExpert	"Επικοινωνία με ειδικό"
 bundle	help.dictionaryDesc	"Απλές, δίγλωσσες εξηγήσεις για κάθε ασφαλιστικό όρο — απαλλαγή, εξαίρεση, ανανέωση, εκπνοή και πολλά ακόμη."
 bundle	help.dictionaryTitle	"Λεξικό ασφαλιστικών όρων"
 bundle	help.emailDesc	"Επικοινωνήστε με την ομάδα υποστήριξής μας για τυχόν τεχνικά προβλήματα."
 bundle	help.emailSupport	"Υποστήριξη μέσω Email"
-bundle	help.expertDesc	"Οι ειδικοί μας στις ασφάλειες είναι διαθέσιμοι Δευτέρα έως Παρασκευή, 9:00 π.μ. έως 6:00 μ.μ. (EET)."
 bundle	help.featuredGuides	"Επιλεγμένα σεμινάρια"
-bundle	help.joinDiscord	"Σύνδεση στο Discord"
 bundle	help.knowledgeBase	"Βάση γνώσης"
 bundle	help.knowledgeDesc	"Περιηγηθείτε στα άρθρα και τα σεμινάριά μας για γρήγορες απαντήσεις."
 bundle	help.liveStatus	"Κατάσταση"
@@ -2890,7 +2887,6 @@ bundle	settings.nuclearDeletion	"Διαγραφή λογαριασμού"
 bundle	settings.nuclearDesc	"Με το αίτημά σας ξεκινά η διαδικασία διαγραφής (GDPR, άρθρο 17): θα εξεταστεί και θα ολοκληρωθεί το αργότερο εντός ενός μηνός. Διαγράφονται τα ασφαλιστήρια, τα έγγραφα και τα προσωπικά σας δεδομένα· ό,τι επιβάλλει ο νόμος να διατηρηθεί (π.χ. παραστατικά για 5 έτη) διατηρείται ανωνυμοποιημένο."
 bundle	settings.pageSubtitle	"Ο λογαριασμός, η συνδρομή, οι ειδοποιήσεις και τα δεδομένα σας — όλα σε ένα σημείο."
 bundle	settings.pageTitle	"Ρυθμίσεις"
-bundle	settings.plan.aiBudgetExhausted	"Μόλις εξαντληθεί, οι νέες αναλύσεις περιμένουν μέχρι τον επόμενο μήνα. Μπορείτε επίσης να προσθέσετε επιπλέον όριο."
 bundle	settings.plan.analyses	"Αναλύσεις ασφαλιστηρίων"
 bundle	settings.plan.analysesUsed	"χρησιμοποιήθηκαν αυτόν τον μήνα"
 bundle	settings.plan.billingDesc	"Τα τιμολόγια και η κάρτα σας φυλάσσονται στη σελίδα χρέωσης του παρόχου πληρωμών, όχι εδώ."
@@ -3644,7 +3640,7 @@ bundle	wallet.policyDetailsPage.addDocumentNote	"Το έγγραφο αποθη�
 bundle	wallet.policyDetailsPage.addDocumentStored	"Αποθηκεύτηκε στον φάκελο του ασφαλιστηρίου — δεν αναλύθηκε ως ασφαλιστήριο."
 bundle	wallet.policyDetailsPage.addDocumentTitle	"Προσθήκη εγγράφου"
 bundle	wallet.policyDetailsPage.addDocumentUploading	"Αποθήκευση εγγράφου…"
-bundle	wallet.policyDetailsPage.agentLockedHint	"Η συνεργασία με τον σύμβουλό σας είναι διαθέσιμη στα Plus και Pro."
+bundle	wallet.policyDetailsPage.agentLockedHint	"Η συνεργασία με τον σύμβουλό σας είναι διαθέσιμη στο Family."
 bundle	wallet.policyDetailsPage.agentSectionTitle	"Σημειώσεις συμβούλου & συνεργασία"
 bundle	wallet.policyDetailsPage.analysisBlockedConsentHint	"Η ανάλυση δεν απέτυχε — χρειάζεται πρώτα η ρητή συγκατάθεση του κατόχου για επεξεργασία των εγγράφων από AI. Δώστε τη συγκατάθεση και ξεκινήστε ξανά την ανάλυση."
 bundle	wallet.policyDetailsPage.analysisBlockedConsentTitle	"Εκκρεμεί συγκατάθεση για επεξεργασία AI"
@@ -4396,7 +4392,7 @@ inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Κάτι πήγε �
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Μετάβαση σε ασφαλή πληρωμή..."
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Πρακτορείο"
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "Βασικό CRM", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Ροή εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Επώνυμα emails", "Μαζική εισαγωγή (100 γραμμές)", "Ανάλυση χαρτοφυλακίου", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Ροή εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Μαζική εισαγωγή (100 γραμμές)", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "150 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", "Προτεραιότητα στην ανάλυση", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & σύμβουλοι", "400 αναλύσεις AI τον μήνα", "Απεριόριστη μαζική εισαγωγή", "Υποστήριξη μέσω email", "Όλα τα Pro χαρακτηριστικά", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	{ title: "Πλάνα συμβούλων", subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.", free: "Δωρεάν", month: "/μήνα", currentPlan: "Τρέχον πλάνο", upgrade: "Αναβάθμιση", getStarted: "Ξεκινήστε", contact: "Επικοινωνία", popular: "Δημοφιλέστερο", backToDashboard: "Πίσω στην αρχική", vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.", vatIncluded: "με ΦΠΑ", recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.", }
@@ -4820,9 +4816,7 @@ inline	components/monetization/CarriedPlanCard.tsx	"Δεν ήταν δυνατή
 inline	components/monetization/CarriedPlanCard.tsx	"Ενεργοποίηση {plan}"
 inline	components/monetization/CarriedPlanCard.tsx	"Κατά την εγγραφή διαλέξατε το {plan}. Ενεργοποιήστε το για πλήρη ανάλυση AI, περισσότερα ασφαλιστήρια και υπενθυμίσεις."
 inline	components/monetization/CarriedPlanCard.tsx	"Το πλάνο που επέλεξες σε περιμένει"
-inline	components/monetization/PremiumInsightCards.tsx	"Ανάλυση ασφαλιστηρίων από διαφορετικές ασφαλιστικές"
 inline	components/monetization/PremiumInsightCards.tsx	"Διαθέσιμα με το Family"
-inline	components/monetization/PremiumInsightCards.tsx	"Ενέργειες πριν την ανανέωση"
 inline	components/monetization/PremiumInsightCards.tsx	"Ερωτήσεις στο AI"
 inline	components/monetization/PremiumInsightCards.tsx	"Η βασική σας σύνοψη είναι έτοιμη. Δείτε τι προσθέτει η πλήρης ανάλυση AI."
 inline	components/monetization/PremiumInsightCards.tsx	"Οδηγός προετοιμασίας ζημιάς"

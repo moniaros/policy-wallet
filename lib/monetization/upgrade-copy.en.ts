@@ -58,7 +58,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         // See the note in upgrade-copy.el.ts: there is no free allowance and no
         // monthly reset, so "used your free questions for this month" is wrong twice.
         body: "AI questions about your policies are included in the paid plans. Upgrade to ask freely about coverages, limits and exclusions.",
-        primaryCta: "Continue with unlimited questions",
+        primaryCta: "Continue with questions",
         secondaryCta: "Not now",
         benefits: [
             "Questions about coverages, limits and exclusions",
@@ -123,7 +123,6 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         benefits: [
             "Email alerts before every expiry",
             "Multiple reminders per policy",
-            "Pre-renewal checklist",
             "Never miss a renewal again",
         ],
         trust: TRUST,

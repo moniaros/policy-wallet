@@ -380,9 +380,9 @@ describe('PW-CONTENT-02 support lint — email only, no phone, chat, hours or «
         ]
         expect(bad, `support claims PolicyWallet does not offer = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
     })
-    it('probe — each line of the probe turns it red (6 lines)', () => {
+    it('probe — each line of the probe turns it red (10 lines)', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/voice-support-claim.ts.txt', 'utf-8')
-        expect(supportOffenders('probe', code(probe)).length).toBe(6)
+        expect(supportOffenders('probe', code(probe)).length).toBe(10)
     })
 })
 
@@ -403,18 +403,9 @@ describe('PW-CONTENT-02 plan-attribution lint — reminders are not a Plus-only 
         const bad = PUBLIC_CODE.flatMap((f) => reminderOffenders(f, code(readFileSync(f, 'utf-8'))))
         expect(bad, `reminder attributed to the wrong plan = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
     })
-    it('probe — each probe line turns it red (4 lines)', () => {
+    it('probe — each probe line turns it red (6 lines, both word orders)', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/voice-reminder-attribution.ts.txt', 'utf-8')
-        expect(reminderOffenders('probe', code(probe)).length).toBe(4)
-    })
-    it('red on the reviewed commit: the detector finds the eleven live hits in 0111618a', () => {
-        // Evidence that the lint would have failed the shipped text (git history is not a fixture).
-        const { execFileSync } = require('node:child_process') as typeof import('node:child_process')
-        let n = 0
-        for (const f of ['app/(public)/product/marketing-content.ts', 'lib/guides/content.ts', 'lib/glossary/content.ts']) {
-            try { n += reminderOffenders(f, code(execFileSync('git', ['show', `0111618a:${f}`], { encoding: 'utf-8' }))).length } catch { return }
-        }
-        expect(n).toBeGreaterThanOrEqual(11)
+        expect(reminderOffenders('probe', code(probe)).length).toBe(6)
     })
 })
 

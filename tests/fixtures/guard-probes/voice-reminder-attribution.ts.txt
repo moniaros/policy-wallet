@@ -5,3 +5,7 @@ export const probe = [
     "Renewal reminders are available from Plus.",
     "Οι υπενθυμίσεις ανανέωσης προσφέρονται από το Plus.",
 ]
+export const probe2 = [
+    "Δείτε πότε λήγουν τα ασφαλιστήριά σας. Με το Plus λαμβάνετε υπενθυμίσεις και βλέπετε τι άλλαξε.",
+    "See when your policies expire. With Plus, receive reminders and see what changed.",
+]
