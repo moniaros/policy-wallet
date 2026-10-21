@@ -8,6 +8,9 @@ import type { RecentNotification } from "@/lib/notifications/watcher"
 import { resolveStoredNotification } from "@/lib/notifications/stored-content"
 import { policyLabel, scrubRenderableText } from "@/lib/wallet/policy-identity"
 import { groupNotificationEventRows } from "@/lib/notifications/event-grouping"
+import { reminderSubjectKey } from "@/lib/notifications/task-reminders"
+import { collaborationDestination } from "@/lib/notifications/collaboration-destination"
+import { notificationActionPath } from "@/lib/notifications/links"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
 export async function getNotificationData(input: { before?: string; deliveries?: boolean } = {}) {
@@ -42,7 +45,7 @@ export async function getNotificationData(input: { before?: string; deliveries?:
 
     // 3. Fetch Policies (for filtering)
     const policies = await db.policy.findMany({
-        where: { ownerUserId: userId },
+        where: { ownerUserId: userId, status: { not: "deleted" } },
         select: {
             id: true,
             policyNumber: true,
@@ -56,7 +59,7 @@ export async function getNotificationData(input: { before?: string; deliveries?:
 
     // 4. Fetch Customer Relationships (if agent)
     const customerRelationships = await db.customerRelationship.findMany({
-        where: { agentUserId: userId, status: { not: "terminated" } },
+        where: { agentUserId: userId, status: { notIn: ["inactive", "terminated"] } },
         include: {
             customer: {
                 select: { name: true }
@@ -110,6 +113,14 @@ export async function getNotificationData(input: { before?: string; deliveries?:
     // defect this page can fail loudly about; the customer's history must
     // render, minus the tokens.
     const readerLang = uiUser.preferred_language === "el" ? "el" as const : "en" as const
+    // Stored legacy object ids refer to actions/messages, not customer relationships.
+    // Resolve their destination and authorize the thread using the shared service.
+    const destinations = new Map<string, Awaited<ReturnType<typeof collaborationDestination>>>()
+    for (const g of eventGroups) {
+        const e = g.representative
+        const key = reminderSubjectKey(e.eventType, e.relatedObjectId)
+        if (key && !destinations.has(key)) destinations.set(key, await collaborationDestination(userId, user.roles, e.eventType, e.relatedObjectId!))
+    }
     const uiEvents = eventGroups.map(g => {
         const e = g.representative
         const raw = resolveStoredNotification(e.eventType, e.title, e.message, readerLang)
@@ -122,7 +133,9 @@ export async function getNotificationData(input: { before?: string; deliveries?:
         event_key: e.dedupeKey || e.id,
         has_in_app: g.hasInAppArm,
         delivery_channel: options.deliveries && !e.dedupeKey ? e.channel : null,
-        action_href: e.eventType.startsWith("collaboration_") && !user.roles.includes("agent") && !user.roles.includes("admin") ? "/agent" : null,
+        action_href: destinations.get(reminderSubjectKey(e.eventType, e.relatedObjectId) ?? "")?.href ?? (e.relatedObjectType === "thread" ? notificationActionPath(e.relatedObjectType, e.relatedObjectId) : null),
+        reminder_active: destinations.get(reminderSubjectKey(e.eventType, e.relatedObjectId) ?? "")?.active,
+        reminder_key: reminderSubjectKey(e.eventType, e.relatedObjectId),
         user_id: e.userId,
         event_type: e.eventType,
         event_category: 'system_confirmation' as 'system_confirmation' | 'reminder' | 'intelligence' | 'agent_action',
@@ -131,10 +144,10 @@ export async function getNotificationData(input: { before?: string; deliveries?:
         message: presented.message,
         related_policy_id: (e.relatedObjectId && e.relatedObjectType === 'policy' ? e.relatedObjectId : null) as string | null,
         related_policy_name: null as string | null,
-        related_customer_relationship_id: (e.relatedObjectId && e.relatedObjectType === 'customer' ? e.relatedObjectId : null) as string | null,
+        related_customer_relationship_id: (e.relatedObjectId && e.relatedObjectType === 'customer' && !e.eventType.startsWith('collaboration_') ? e.relatedObjectId : null) as string | null,
         related_customer_name: null as string | null,
         sent_at: e.sentAt?.toISOString() || null,
-        unread: g.unread,
+        unread: g.unread && e.status === "sent",
         created_at: e.createdAt.toISOString()
     })})
 
@@ -254,9 +267,12 @@ export async function markNotificationRead(notificationId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
+    if (!z.string().min(1).max(200).safeParse(notificationId).success) return { error: "Invalid notification" }
+    const subject = await db.notificationEvent.findFirst({ where: { id: notificationId, userId: authResult.dbUser.id, channel: "in_app" }, select: { eventType: true, relatedObjectId: true, createdAt: true } })
+    const grouped = subject && reminderSubjectKey(subject.eventType, subject.relatedObjectId)
     await db.notificationEvent.updateMany({
         where: {
-            id: notificationId,
+            ...(grouped ? { eventType: subject.eventType, relatedObjectId: subject.relatedObjectId, createdAt: { lte: subject.createdAt } } : { id: notificationId }),
             userId: authResult.dbUser.id,
             // Read state lives on the in-app arm only (schema: readAt is
             // "meaningful on in_app rows only"), and the grouped list hands

@@ -1,4 +1,6 @@
 "use client"
+import { HashDisclosure } from '@/components/ui/HashDisclosure'
+import { policyholderFlowCopy } from '@/lib/i18n/policyholder-flow'
 import { useId, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -64,7 +66,7 @@ function ProgressControls({ item, progress, window, personalized }: { item: Prev
     </details>
 }
 function ItemCard({ item, policy, progress, window, personalized, uses, today }: { item: PreventionItem; policy: PreventionPolicy; progress?: ProgressView; window: Props['window']; personalized: boolean; uses: BenefitUseView[]; today: string }) {
-    const { t, language } = useLanguage(); const copy = t.prevention
+    const { t, language } = useLanguage(); const copy = t.prevention; const flow = policyholderFlowCopy(language)
     const locale = language === 'en' ? 'en' : 'el'
     const label = item.title[locale] || copy.benefit
     const page = item.source?.verifiedPage ?? item.source?.page
@@ -88,7 +90,12 @@ function ItemCard({ item, policy, progress, window, personalized, uses, today }:
         {stale && <p className="mt-2 text-sm text-amber-800 dark:text-amber-300">{copy.changed}</p>}
         {item.kind === 'benefit' && <>
             <p className="mt-3 text-sm font-medium">{copy.cost[item.costType ?? 'not_stated']}</p>
-            <p className="mt-2 text-caption text-muted-foreground">{copy.ask}</p>
+            <dl className="mt-4 grid gap-3 text-sm">
+                {([['beneficiaries', flow.beneficiary], ['frequency', flow.frequency], ['procedure', flow.procedure]] as const).map(([key, title]) => <div key={key}><dt className="font-medium">{title}</dt><dd className="mt-1 text-muted-foreground">{item.terms.find(term => term.key === key)?.value || flow.unknown}</dd></div>)}
+            </dl>
+                    {(item.contactPhone || item.contactUrl) && <div><p className="text-caption text-muted-foreground">{copy.contact}</p>{item.contactPhone && (/^[+\d\s().-]{3,30}$/.test(item.contactPhone) ? <a className="inline-flex min-h-11 items-center underline" href={`tel:${item.contactPhone.replace(/[^+\d]/g, '')}`}>{item.contactPhone}</a> : <p className="break-words">{item.contactPhone}</p>)}{item.contactUrl && <a href={item.contactUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{copy.external}</a>}</div>}
+            <p className="mt-4 text-sm font-medium">{flow.question}</p><p className="mt-1 text-sm text-muted-foreground">{flow.benefitQuestion}</p>
+            {!historical && <Link className="pw-primary-button mt-3 inline-flex" href={`/agent?benefit=${encodeURIComponent(item.id)}`}>{flow.draftTitle}</Link>}
             {item.activationUnconfirmed && <p className="mt-2 text-caption text-muted-foreground">{copy.activationUnknown}</p>}
             {!!item.issues?.length && <details className="mt-3"><summary className="cursor-pointer py-2 text-sm font-semibold">{copy.confirm}</summary><ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-muted-foreground">{item.issues.map(issue => <li key={issue}>{copy.issues[issue]}</li>)}</ul></details>}
             <details className="mt-3"><summary className="cursor-pointer py-2 text-sm font-semibold">{copy.terms}</summary>
@@ -101,7 +108,7 @@ function ItemCard({ item, policy, progress, window, personalized, uses, today }:
                     <dl className="space-y-1 text-caption text-muted-foreground">{item.extractedAt && <div><dt className="inline">{copy.extracted}: </dt><dd className="inline">{formatDate(item.extractedAt, locale)}</dd></div>}{item.runId && <div><dt className="inline">{copy.run}: </dt><dd className="inline break-all">{item.runId}</dd></div>}{item.documentId && <div><dt className="inline">{copy.document}: </dt><dd className="inline break-all"><a href={`/api/v1/policies/${encodeURIComponent(policy.id)}/documents/${encodeURIComponent(item.documentId)}${page ? `#page=${page}` : ''}`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{copy.openDocument}</a></dd></div>}</dl>
                     {(!item.documentId || (!item.runId && !item.extractedAt)) && <p className="text-caption text-muted-foreground">{copy.sourceUnknown}</p>}
                     {item.healthRelated && <p className="text-muted-foreground">{copy.medical}</p>}
-                    {(item.contactPhone || item.contactUrl) && <div><p className="text-caption text-muted-foreground">{copy.contact}</p>{item.contactPhone && <p className="break-words">{item.contactPhone}</p>}{item.contactUrl && <a href={item.contactUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{copy.external}</a>}</div>}
+
                 </div>
             </details>
             <Link href={`/wallet/${policy.id}#documents`} className="pw-soft-button mt-3 inline-flex">{copy.inspect}<ArrowUpRight className="ml-1 size-4" aria-hidden="true" /></Link>
@@ -111,7 +118,7 @@ function ItemCard({ item, policy, progress, window, personalized, uses, today }:
     </article>
 }
 function HabitCheckIn({ checkin }: { checkin: Props['checkin'] }) {
-    const { t, language } = useLanguage(); const copy = t.prevention
+    const { t, language } = useLanguage(); const copy = t.prevention; const flow = policyholderFlowCopy(language)
     const [answers, setAnswers] = useState<Record<string, unknown>>(checkin?.answers ?? {})
     const [consent, setConsent] = useState(false); const [pending, start] = useTransition()
     const set = (key: string, value: unknown) => setAnswers(old => { const next = { ...old }; if (value === '') delete next[key]; else next[key] = value; return next })
@@ -130,16 +137,22 @@ function HabitCheckIn({ checkin }: { checkin: Props['checkin'] }) {
     </details>
 }
 export function PreventionHubClient({ policies, actions, progress, checkin, window, shares, nudgePushOn, personalized, uses, today, legacyUsageUnknown }: Props) {
-    const { t, language } = useLanguage(); const copy = t.prevention
+    const { t, language } = useLanguage(); const copy = t.prevention; const flow = policyholderFlowCopy(language)
     const locale = language === 'en' ? 'en' : 'el'
     const [view, setView] = useState<'domain' | 'policy'>('domain'); const [domain, setDomain] = useState('all')
     const [pending, start] = useTransition()
     const progressById = new Map(progress.map(p => [p.itemKey, p]))
-    const allItems = policies.flatMap(p => p.items)
+    const historyItems = policies.flatMap(p => p.items).filter(i => i.state === "historical")
+    const allItems = policies.flatMap(p => p.items).filter(i => i.state !== "historical")
     const visible = (item: PreventionItem) => domain === 'all' || item.domains.includes(domain as any)
     const domains = AREA_ORDER.filter(d => policies.some(p => p.domains.includes(d)))
     const recommendation = personalized ? chooseNextStep([...allItems, ...actions].filter(i => view === 'policy' || visible(i)), progress, uses) : null
     const next = personalized ? recommendation?.item : [...allItems.filter(i => i.state !== 'historical'), ...actions].filter(i => view === 'policy' || visible(i)).find(i => { const p = progressById.get(i.id); return (p?.sourceVersion && p.sourceVersion !== i.sourceVersion) || !['done','dismissed','later'].includes(p?.status ?? '') })
+    const actionGroups = new Map<string, PreventionItem[]>()
+    for (const item of actions.filter(i => view === 'policy' || visible(i))) {
+        const key = `${item.kind}:${item.title.en}`
+        actionGroups.set(key, [...(actionGroups.get(key) ?? []), item])
+    }
     const policyMap = new Map(policies.map(p => [p.id, p]))
     const render = (item: PreventionItem) => <ItemCard key={item.id} item={item} policy={policyMap.get(item.policyId)!} progress={progressById.get(item.id)} window={window} personalized={personalized} uses={uses} today={today} />
     return <PageContainer width="reading" className="space-y-8 py-6 lg:py-10">
@@ -160,11 +173,13 @@ export function PreventionHubClient({ policies, actions, progress, checkin, wind
                         return <section key={d}><h3 className="mb-3 text-sm font-semibold">{AREAS[d].label[locale]}</h3><div className="space-y-3">{items.map(render)}</div></section>
                     })}
 
-                    <div className="space-y-2">{policies.filter(p => p.items.length === 0 && (domain === 'all' || p.domains.includes(domain as any))).map(p => <div key={p.id} className="border-t border-border py-3"><Link className="text-sm font-semibold underline underline-offset-4" href={`/wallet/${p.id}`}>{p.label}</Link><p className="mt-1 text-caption text-muted-foreground">{p.sourceChanged ? copy.changed : copy.none}</p></div>)}</div>
-                </> : policies.map(p => <section key={p.id}><h3 className="mb-1 text-sm font-semibold">{p.label}</h3><p className="mb-3 text-caption text-muted-foreground">{p.domains.map(d => AREAS[d].label[locale]).join(' · ')}</p>{p.items.length ? <div className="space-y-3">{p.items.map(render)}</div> : <div className="pw-card pw-pad"><p className="text-sm text-muted-foreground">{p.sourceChanged ? copy.changed : copy.none}</p><Link href={`/wallet/${p.id}`} className="pw-soft-button mt-3 inline-flex">{copy.inspect}</Link></div>}</section>)}</div>
+                    <div className="space-y-2">{policies.filter(p => !p.historical && p.items.length === 0 && (domain === 'all' || p.domains.includes(domain as any))).map(p => <div key={p.id} className="border-t border-border py-3"><Link className="text-sm font-semibold underline underline-offset-4" href={`/wallet/${p.id}`}>{p.label}</Link><p className="mt-1 text-caption text-muted-foreground">{p.sourceChanged ? copy.changed : copy.none}</p></div>)}</div>
+                </> : policies.filter(p => !p.historical).map(p => <section key={p.id}><h3 className="mb-1 text-sm font-semibold">{p.label}</h3><p className="mb-3 text-caption text-muted-foreground">{p.domains.map(d => AREAS[d].label[locale]).join(' · ')}</p>{p.items.length ? <div className="space-y-3">{p.items.map(render)}</div> : <div className="pw-card pw-pad"><p className="text-sm text-muted-foreground">{p.sourceChanged ? copy.changed : copy.none}</p><Link href={`/wallet/${p.id}`} className="pw-soft-button mt-3 inline-flex">{copy.inspect}</Link></div>}</section>)}</div>
+                {!allItems.length && <p className="mt-4 text-sm text-muted-foreground">{flow.noCurrentBenefits}</p>}
+                {!!historyItems.length && <div className="mt-6"><HashDisclosure id="historical-benefits" summary={`${flow.history} (${historyItems.length})`}><div className="space-y-3">{historyItems.filter(i => view === 'policy' || visible(i)).map(render)}</div></HashDisclosure></div>}
             </>}
         </section>
-        <section aria-labelledby="habits-heading"><h2 id="habits-heading" className="text-title font-semibold">{copy.habits}</h2><p className="mt-2 text-sm text-muted-foreground">{copy.habitsNote}</p><div className="mt-4 space-y-3">{actions.filter(i => view === 'policy' || visible(i)).map(render)}</div>{actions.length === 0 && <p className="mt-3 text-sm text-muted-foreground">{copy.noActions}</p>}</section>
+        <HashDisclosure id="optional-actions" summary={flow.optionalSteps}><section aria-labelledby="habits-heading"><h2 id="habits-heading" className="text-title font-semibold">{copy.habits}</h2><p className="mt-2 text-sm text-muted-foreground">{copy.habitsNote}</p><div className="mt-4 space-y-3">{[...actionGroups.values()].map((items, index) => items.length === 1 ? render(items[0]) : <HashDisclosure key={items[0].id} id={`action-group-${index}`} summary={`${items[0].title[locale]} (${items.length})`}><div className="space-y-3">{items.map(render)}</div></HashDisclosure>)}</div>{actions.length === 0 && <p className="mt-3 text-sm text-muted-foreground">{copy.noActions}</p>}</section></HashDisclosure>
         <HabitCheckIn key={checkin?.createdAt ?? 'empty'} checkin={checkin} />
         <details className="border-t border-border pt-5"><summary className="cursor-pointer text-sm font-semibold">{copy.privacy}</summary><p className="mt-3 text-sm text-muted-foreground">{copy.retired}</p>{nudgePushOn !== null && <label className="mt-4 flex items-start gap-2 text-sm"><input type="checkbox" className="mt-1 size-4 shrink-0" checked={nudgePushOn} disabled={pending} onChange={e => { const on = e.target.checked; start(async () => { try { await setDailyNudgeOptIn(on); toast.success(copy.recorded) } catch { toast.error(copy.failed) } }) }} /><span>{copy.healthReminders}<span className="mt-1 block text-caption text-muted-foreground">{copy.healthRemindersNote}</span></span></label>}<div className="mt-4 flex flex-wrap gap-2"><Link href="/account/privacy" className="pw-soft-button">{copy.export}</Link><button type="button" className="pw-soft-button" disabled={pending} onClick={() => { if (globalThis.confirm(copy.eraseConfirm)) start(async () => { try { await deletePreventionData(); toast.success(copy.deleted) } catch { toast.error(copy.failed) } }) }}>{copy.erase}</button></div>
             {shares.length > 0 && <div className="mt-4"><p className="text-sm font-semibold">{copy.shares}</p>{shares.map((s, index) => <button key={s.id} type="button" className="pw-soft-button mt-2 mr-2" disabled={pending} onClick={() => start(async () => { const res = await revokeHealthShare(s.id); if ('error' in res) toast.error(copy.failed); else toast.success(copy.recorded) })}>{copy.revoke} {index + 1}</button>)}</div>}

@@ -82,18 +82,6 @@ const LAW_4223_2013_ART_3_7Z: ProvenanceEntry = Object.freeze({
     reviewedAt: "2026-09-06",
 })
 
-/** Π.Δ. 237/1986 (κωδ. ν. 489/1976), άρθρο 9 παρ. 1 — δήλωση κάθε ατυχήματος στον ασφαλιστή εντός οκτώ εργάσιμων ημερών. */
-const PD_237_1986_ART_9: ProvenanceEntry = Object.freeze({
-    provenance: "legislative",
-    citation: Object.freeze({
-        el: "Π.Δ. 237/1986, άρθρο 9 παρ. 1 (δήλωση ατυχήματος στον ασφαλιστή εντός 8 εργάσιμων ημερών)",
-        en: "Presidential Decree 237/1986, Article 9(1) (an accident must be declared to the insurer within 8 working days)",
-        url: "https://www.karagiannislawfirm.gr/nomika/emporiko-dikaio/1389-asfalia-autokinitou-65704",
-    }),
-    reviewedBy: REVIEWED_BY_G2,
-    reviewedAt: "2026-09-06",
-})
-
 /** Market practice, named public source: Εθνική Ασφαλιστική «Ασφάλεια Υγείας» — θέση νοσηλείας as the programme's defining choice. */
 const MARKET_HOSPITAL_CLASS: ProvenanceEntry = Object.freeze({
     provenance: "market",
@@ -136,7 +124,7 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     no_own_damage_cover: UNDER_REVIEW,
     no_glass_breakage_cover: UNDER_REVIEW,
     no_roadside_assistance: UNDER_REVIEW,
-    missing_accident_declaration_phone: PD_237_1986_ART_9,
+    missing_accident_declaration_phone: UNDER_REVIEW,
     green_card_expiring: UNDER_REVIEW,
     insured_value_above_declared: LAW_2496_1997_ART_17,
     // spec v2 Phase 2 (2026-09-23) — unclassified until an underwriter reads them
@@ -149,7 +137,7 @@ export const GAP_PROVENANCE: Readonly<Record<string, ProvenanceEntry>> = Object.
     // motorbike
     moto_no_own_damage_cover: UNDER_REVIEW,
     moto_no_roadside_assistance: UNDER_REVIEW,
-    moto_missing_accident_declaration_phone: PD_237_1986_ART_9,
+    moto_missing_accident_declaration_phone: UNDER_REVIEW,
     moto_green_card_expiring: UNDER_REVIEW,
     // home
     no_earthquake_cover: UNDER_REVIEW,

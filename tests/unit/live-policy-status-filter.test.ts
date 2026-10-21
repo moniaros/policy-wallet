@@ -356,12 +356,6 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "Timeline renders the portfolio's HISTORY — a since-cancelled policy is still a " +
             "past event, and excluding it would falsify the record.",
     },
-    "app/(protected)/notifications/actions.ts": {
-        count: 1,
-        reason:
-            "Resolves policy labels for the notification HISTORY list — a notification about " +
-            "a since-cancelled policy still needs its label resolvable.",
-    },
     "app/api/v1/collaboration/proposals/route.ts": {
         count: 1,
         reason:

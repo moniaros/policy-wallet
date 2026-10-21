@@ -4,7 +4,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
-import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
+import { CollaborationTimeline, type ThreadDetail } from "@/components/collaboration/CollaborationTimeline"
 import { ThreadActionPanel } from "@/components/collaboration/ThreadActionPanel"
 import { collaborationService } from "@/lib/services/collaboration.service"
 import type { DocumentRequestData, ProposalData } from "@/components/collaboration/types"
@@ -115,6 +115,16 @@ export default async function CollaborationThreadPage({
                 relationshipId={thread.relationshipId}
                 viewerRole={viewerRole}
                 initialThreadId={thread.id}
+                initialThread={{
+                    id: thread.id, relationshipId: thread.relationshipId, policyId: thread.policyId,
+                    subject: thread.subject, category: thread.category, status: thread.status,
+                    priority: thread.priority as ThreadDetail['priority'],
+                    createdByUserId: thread.createdByUserId, assignedToUserId: thread.assignedToUserId,
+                    createdAt: thread.createdAt.toISOString(), lastActivityAt: thread.lastActivityAt.toISOString(),
+                    participants: thread.participants.map(p => ({ id: p.id, role: p.role, user: p.user })),
+                    messages: thread.messages.map(m => ({ id: m.id, body: m.body, messageType: m.messageType, isPrivate: m.isPrivate, createdAt: m.createdAt.toISOString(), sender: m.sender })),
+                    actions: thread.actions.map(a => ({ id: a.id, title: a.title, description: a.description, status: a.status, dueDate: a.dueDate?.toISOString() ?? null, assignee: a.assignee })),
+                }}
             />
         </div>
     )

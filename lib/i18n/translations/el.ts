@@ -235,7 +235,7 @@ export const el = {
         skipToContent: 'Μετάβαση στο περιεχόμενο',
         primaryNavigation: 'Κύρια πλοήγηση',
         bottomNavigation: 'Γρήγορη πλοήγηση',
-        recommendations: 'Συστάσεις',
+        recommendations: 'Ενέργειες',
         reminders: 'Υπενθυμίσεις',
         profile: 'Προφίλ',
     },
@@ -876,7 +876,7 @@ export const el = {
             },
             // Perks & benefits
             perksTitle: 'Παροχές & προνόμια',
-            perksSubtitle: 'Έξτρα που περιλαμβάνονται ήδη στο ασφαλιστήριο — οι περισσότεροι δεν τα αξιοποιούν ποτέ.',
+            perksSubtitle: 'Παροχές που αναφέρονται στο έγγραφο και οι όροι αξιοποίησής τους.',
             usageLimitLabel: 'Χρήση',
             callServiceCta: 'Κλήση υπηρεσίας',
             visitSiteCta: 'Άνοιγμα συνδέσμου',
@@ -905,7 +905,7 @@ export const el = {
             claimStep4Desc: 'Οι εκπρόθεσμες δηλώσεις μπορεί να απορριφθούν — δηλώστε εντός της προθεσμίας που ορίζει το ασφαλιστήριό σας.',
             claimNoDeadlines: 'Δεν εντοπίστηκαν συγκεκριμένες προθεσμίες — ελέγξτε τους όρους ή ρωτήστε το AI.',
             claimWhatYouNeedTitle: 'Τι θα χρειαστείτε',
-            claimDeadlinesTitle: 'Προθεσμίες από το ασφαλιστήριό σας',
+            claimDeadlinesTitle: 'Προθεσμίες αναγγελίας ζημιάς',
             claimNeedHelp: 'Δεν είστε σίγουροι για κάτι;',
             // Per-branch editorial guide (lib/insurance/content)
             guideTitle: 'Οδηγός για αυτόν τον κλάδο',
@@ -1841,7 +1841,7 @@ export const el = {
     // states what the page SHOWS — never a verdict about how protected the
     // reader is (absence of a detected problem is not evidence of no problem).
     recommendationsPage: {
-        title: 'Συστάσεις',
+        title: 'Ενέργειες',
         subtitle: 'Τι μπορείτε να κάνετε για να ενισχύσετε την προστασία σας — με βάση τα ασφαλιστήριά σας και όσα μας έχετε πει.',
         allProtection: 'Δείτε όλη την προστασία σας',
         unavailable: 'Δεν μπορέσαμε να φορτώσουμε τις προτάσεις σας αυτή τη στιγμή. Δοκιμάστε ξανά σε λίγο.',
@@ -2504,7 +2504,7 @@ export const el = {
         runAnalysis: 'Κατανόηση ασφαλιστηρίου',
         freeTrialAvailable: 'Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.',
         analyzing: 'Ανάλυση...',
-        noGaps: 'Δεν εντοπίστηκαν ασφαλιστικά κενά με βάση όσα γνωρίζουμε. Εκτελέστε ανάλυση για πληρέστερο έλεγχο κάλυψης.',
+        noGaps: 'Δεν υπάρχουν καταγεγραμμένα ευρήματα στα στοιχεία που έχουμε. Αυτό δεν σημαίνει ότι έχει ελεγχθεί το σύνολο των καλύψεων.',
         gapCheckIncomplete: 'Ο έλεγχος κενών δεν ολοκληρώθηκε',
         gapCheckIncompleteHint: 'Το βήμα εντοπισμού κενών απέτυχε κατά την ανάλυση. Επαναλάβετε τα ελλείποντα τμήματα για έλεγχο κάλυψης.',
         translationIncomplete: 'Η μετάφραση δεν ολοκληρώθηκε',

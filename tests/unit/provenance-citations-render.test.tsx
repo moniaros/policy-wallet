@@ -70,9 +70,9 @@ describe("F5 — the map: classified means cited", () => {
         }
         const classified = entries.filter(([, e]) => isClassified(e.provenance)).map(([s]) => s)
         expect(classified.sort()).toEqual([
-            "insured_value_above_declared", "insured_value_below_rebuild_cost", "missing_accident_declaration_phone",
+            "insured_value_above_declared", "insured_value_below_rebuild_cost",
             "missing_enfia_components", "missing_hospital_class", "missing_microchip_number",
-            "moto_missing_accident_declaration_phone", "no_direct_billing",
+            "no_direct_billing",
         ])
         expect(entries.filter(([, e]) => e.provenance === "market").map(([s]) => s).sort()).toEqual(["missing_hospital_class", "no_direct_billing"])
     })
@@ -81,7 +81,7 @@ describe("F5 — the map: classified means cited", () => {
         // The findings page said «3 υπό αξιολόγηση» over a policy whose home tally said «1 Νομοθετική απαίτηση» (F5 evidence run 1).
         // EVERY classified slug, plus one under review — never a fixed list that a new classification can outgrow.
         const everyClassified = Object.entries(GAP_PROVENANCE).filter(([, e]) => isClassified(e.provenance)).map(([s]) => s)
-        expect(everyClassified.length).toBeGreaterThanOrEqual(8)
+        expect(everyClassified.length).toBeGreaterThanOrEqual(6)
         for (const authored of [...everyClassified, "no_fire_cover"]) {
             const kebab = normalizeGapSlug(authored)
             expect(kebab).not.toBe(authored)

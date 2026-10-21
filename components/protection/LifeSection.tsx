@@ -1,3 +1,5 @@
+import { HashDisclosure } from "@/components/ui/HashDisclosure"
+import { policyholderFlowCopy } from "@/lib/i18n/policyholder-flow"
 import type { ComponentProps } from "react"
 import { ChevronDown, Compass } from "lucide-react"
 
@@ -33,9 +35,9 @@ export function LifeSection({
                 </h2>
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{copy.lead}</p>
             </div>
-            <div id="life-events" className="scroll-mt-20">
+            <HashDisclosure id="life-events" summary={policyholderFlowCopy(language).lifeChange}>
                 <LifeEventsPanel options={lifeEvents.options} recent={lifeEvents.recent} language={language} />
-            </div>
+            </HashDisclosure>
             {/* The full profile is a long form. It opens on demand — progressive
                 disclosure (Goal 11): the first capture rendered it expanded and
                 it was two screens of inputs on every visit. The summary IS the
@@ -43,21 +45,10 @@ export function LifeSection({
                 card sits inside a card. A fragment link to #risk-profile-wizard
                 (the risk lens's next action) opens the disclosure in the browser. */}
             {wizard.show && (
-                <details id="risk-profile-wizard" className="group/wizard scroll-mt-20">
-                    <summary className="pw-card pw-pad flex min-h-11 cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden">
-                        <span className="pw-card-chip" aria-hidden="true">
-                            <Compass className="h-4 w-4" strokeWidth={1.75} />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                            <span className="block text-sm font-semibold text-foreground">{copy.fullProfile.title}</span>
-                            <span className="mt-0.5 block text-caption leading-relaxed text-muted-foreground">{copy.fullProfile.lead}</span>
-                        </span>
-                        <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open/wizard:rotate-180" aria-hidden="true" />
-                    </summary>
-                    <div className="mt-4">
-                        <RiskProfileWizard initialData={wizard.initialData} language={language} />
-                    </div>
-                </details>
+                <HashDisclosure id="risk-profile-wizard" summary={copy.fullProfile.title}>
+                    <p className="mb-4 text-sm text-muted-foreground">{copy.fullProfile.lead}</p>
+                    <RiskProfileWizard initialData={wizard.initialData} language={language} />
+                </HashDisclosure>
             )}
         </section>
     )

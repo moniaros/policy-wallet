@@ -20,9 +20,9 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 4290
-# inline entries: 5020 across 236 files
-# ternary entries: 292 across 45 files
-# call entries: 1131 across 85 files
+# inline entries: 5019 across 237 files
+# ternary entries: 286 across 45 files
+# call entries: 1129 across 85 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -527,7 +527,7 @@ bundle	analysis.gapCheckIncomplete	"Ο έλεγχος κενών δεν ολοκ
 bundle	analysis.gapCheckIncompleteHint	"Το βήμα εντοπισμού κενών απέτυχε κατά την ανάλυση. Επαναλάβετε τα ελλείποντα τμήματα για έλεγχο κάλυψης."
 bundle	analysis.gapDetected	"Εντοπίστηκε ασφαλιστικό κενό"
 bundle	analysis.issues	" ζητήματα."
-bundle	analysis.noGaps	"Δεν εντοπίστηκαν ασφαλιστικά κενά με βάση όσα γνωρίζουμε. Εκτελέστε ανάλυση για πληρέστερο έλεγχο κάλυψης."
+bundle	analysis.noGaps	"Δεν υπάρχουν καταγεγραμμένα ευρήματα στα στοιχεία που έχουμε. Αυτό δεν σημαίνει ότι έχει ελεγχθεί το σύνολο των καλύψεων."
 bundle	analysis.recommendation	"Πρόταση κάλυψης"
 bundle	analysis.report.areas.abroad	"Κάλυψη εξωτερικού"
 bundle	analysis.report.areas.general	"Γενική κάλυψη"
@@ -1806,7 +1806,7 @@ bundle	nav.profile	"Προφίλ"
 bundle	nav.protection	"Καλύψεις & κενά"
 bundle	nav.protectionShort	"Καλύψεις"
 bundle	nav.questionnaires	"Ερωτηματολόγια"
-bundle	nav.recommendations	"Συστάσεις"
+bundle	nav.recommendations	"Ενέργειες"
 bundle	nav.reminders	"Υπενθυμίσεις"
 bundle	nav.renewals	"Ανανεώσεις"
 bundle	nav.searchNoResults	"Δεν βρέθηκε ασφαλιστήριο με αυτά τα στοιχεία."
@@ -2778,7 +2778,7 @@ bundle	provenance.underReviewLink	"Δείτε τα ευρήματα υπό αξ�
 bundle	provenance.underReviewSummaryOmitted	"Τα ευρήματα υπό αξιολόγηση δεν περιλαμβάνονται σε αυτή τη σύνοψη — τα βλέπετε σε κάθε ασφαλιστήριο."
 bundle	recommendationsPage.allProtection	"Δείτε όλη την προστασία σας"
 bundle	recommendationsPage.subtitle	"Τι μπορείτε να κάνετε για να ενισχύσετε την προστασία σας — με βάση τα ασφαλιστήριά σας και όσα μας έχετε πει."
-bundle	recommendationsPage.title	"Συστάσεις"
+bundle	recommendationsPage.title	"Ενέργειες"
 bundle	recommendationsPage.unavailable	"Δεν μπορέσαμε να φορτώσουμε τις προτάσεις σας αυτή τη στιγμή. Δοκιμάστε ξανά σε λίγο."
 bundle	recordStatus.awaitingConfirmation	"Προς επιβεβαίωση"
 bundle	recordStatus.confirmed	"Επιβεβαιωμένο"
@@ -3708,7 +3708,7 @@ bundle	wallet.policyDetailsPage.briefTitle	"Το ασφαλιστήριο εν �
 bundle	wallet.policyDetailsPage.callServiceCta	"Κλήση υπηρεσίας"
 bundle	wallet.policyDetailsPage.claimAskAgentCta	"Ρωτήστε τον σύμβουλό μου"
 bundle	wallet.policyDetailsPage.claimAskAiCta	"Ρωτήστε το AI για ζημιές"
-bundle	wallet.policyDetailsPage.claimDeadlinesTitle	"Προθεσμίες από το ασφαλιστήριό σας"
+bundle	wallet.policyDetailsPage.claimDeadlinesTitle	"Προθεσμίες αναγγελίας ζημιάς"
 bundle	wallet.policyDetailsPage.claimFindAgentCta	"Βρείτε σύμβουλο"
 bundle	wallet.policyDetailsPage.claimNeedHelp	"Δεν είστε σίγουροι για κάτι;"
 bundle	wallet.policyDetailsPage.claimNoDeadlines	"Δεν εντοπίστηκαν συγκεκριμένες προθεσμίες — ελέγξτε τους όρους ή ρωτήστε το AI."
@@ -3839,7 +3839,7 @@ bundle	wallet.policyDetailsPage.perkTypes.loyalty_bonus	"Πρόγραμμα επ
 bundle	wallet.policyDetailsPage.perkTypes.prevention	"Πρόληψη"
 bundle	wallet.policyDetailsPage.perksSourceLink	"Δείτε πού αναγράφονται στο ασφαλιστήριο"
 bundle	wallet.policyDetailsPage.perksSourceMissing	"Οι παροχές προέρχονται από το ασφαλιστήριό σας, αλλά δεν έχουμε αποθηκευμένο έγγραφο για να σας το δείξουμε."
-bundle	wallet.policyDetailsPage.perksSubtitle	"Έξτρα που περιλαμβάνονται ήδη στο ασφαλιστήριο — οι περισσότεροι δεν τα αξιοποιούν ποτέ."
+bundle	wallet.policyDetailsPage.perksSubtitle	"Παροχές που αναφέρονται στο έγγραφο και οι όροι αξιοποίησής τους."
 bundle	wallet.policyDetailsPage.perksTitle	"Παροχές & προνόμια"
 bundle	wallet.policyDetailsPage.premiumFrequency.annual	"Ετήσια"
 bundle	wallet.policyDetailsPage.premiumFrequency.monthly	"Μηνιαία"
@@ -4922,7 +4922,6 @@ inline	lib/gaps/provenance.ts	"Εθνική Ασφαλιστική, «Ασφάλ
 inline	lib/gaps/provenance.ts	"Ν. 2496/1997, άρθρο 17 (υπασφάλιση – υπερασφάλιση)"
 inline	lib/gaps/provenance.ts	"Ν. 4223/2013, άρθρο 3 παρ. 7Ζ (μείωση ΕΝΦΙΑ για κατοικίες ασφαλισμένες για σεισμό, πυρκαγιά και πλημμύρα)"
 inline	lib/gaps/provenance.ts	"Ν. 4830/2021, άρθρο 9 παρ. 1 περ. β΄ (σήμανση και καταγραφή στο ΕΜΖΣ)"
-inline	lib/gaps/provenance.ts	"Π.Δ. 237/1986, άρθρο 9 παρ. 1 (δήλωση ατυχήματος στον ασφαλιστή εντός 8 εργάσιμων ημερών)"
 inline	lib/glossary/content.ts	"Ένα ασφαλιστήριο έχει ημερομηνία λήξης. Αν ανανεωθεί, η κάλυψη συνεχίζεται· αν δεν ανανεωθεί, εκπνέει και μένετε χωρίς κάλυψη από εκείνο το σημείο. Γι' αυτό η ανανέωση δεν είναι διαδικαστική λεπτομέρεια: είναι το σημείο όπου κρίνεται αν παραμένετε ασφαλισμένος."
 inline	lib/glossary/content.ts	"Ένα λάθος ασφαλισμένο κεφάλαιο κοστίζει με δύο τρόπους: αν είναι πολύ χαμηλό, υπασφαλίζεστε και η αποζημίωση κόβεται· αν είναι πολύ υψηλό, πληρώνετε ασφάλιστρο για κάλυψη που δεν θα λάβετε ποτέ."
 inline	lib/glossary/content.ts	"Ένα τυπικό ασφαλιστήριο έχει τον πίνακα καλύψεων (τι καλύπτεται και μέχρι ποιο ποσό), τους όρους (πώς και πότε ισχύει η κάλυψη) και τα στοιχεία του ασφαλιστηρίου (αριθμός, διάρκεια, ασφάλιστρο). Το να τα διαβάσετε μία φορά με την ησυχία σας κοστίζει λιγότερο από το να τα ανακαλύψετε μετά από ζημιά."
@@ -5914,6 +5913,7 @@ inline	lib/i18n/agent-review.ts	{ feedbackChanged: 'Αποθηκεύστε τη�
 inline	lib/i18n/agent-workspace.ts	{ findingsAwaiting: '{count} ευρήματα χρειάζονται έλεγχο πηγής', reviewFindings: 'Έλεγχος ευρημάτων', openTask: 'Άνοιγμα εργασίας', ownTask: 'Δική σας εργασία', noDeadline: 'Χωρίς προθεσμία', portfolioFacts: 'Εικόνα ελέγχου', detectedCustomers: 'Πελάτες με ανιχνευμένα κενά', recordedPolicies: 'Πελάτες με ασφαλιστήρια', pendingFindings: 'Πελάτες με ευρήματα υπό έλεγχο', visibleScope: 'Με βάση τα ορατά ασφαλιστήρια. Μηδενικά ευρήματα δεν σημαίνουν πλήρη κάλυψη.', title: 'Πελάτες που χρειάζονται έλεγχο', scope: 'Πελάτες με ενεργή σχέση διαχείρισης, μαζί με όσους περιμένουν αποδοχή πρόσκλησης. Εμφανίζονται μόνο τα στοιχεία στα οποία έχετε πρόσβαση.', assessed: 'Ελέγχθηκαν σε αυτή τη σελίδα', total: 'Πελάτες στο χαρτοφυλάκιο', failed: 'Δεν ολοκληρώθηκε ο έλεγχος', unknown: 'Χρειάζονται περισσότερα στοιχεία', empty: 'Δεν υπάρχουν πελάτες σε αυτή τη σελίδα.', previous: 'Προηγούμενη σελίδα', next: 'Επόμενη σελίδα', order: 'Προτεραιότητα ελέγχου μέσα στην τρέχουσα σελίδα. Οι μετρήσεις αφορούν μόνο τους πελάτες που ελέγχθηκαν εδώ.', review: 'Έλεγχος πελάτη', failedHelp: 'Ορισμένοι έλεγχοι απέτυχαν. Οι πελάτες αυτοί δεν περιλαμβάνονται στις μετρήσεις. Δοκιμάστε ξανά.', batch: 'Μεταφόρτωση ασφαλιστηρίων', batchHelp: 'Επιλέξτε πολλά έγγραφα. Ελέγξτε τον πελάτη και τα στοιχεία για κάθε αρχείο πριν την αποθήκευση.', nextFile: 'Επόμενο έγγραφο', skipFile: 'Παράλειψη για τώρα', remaining: 'Έγγραφα που απομένουν', saved: 'Αποθηκεύτηκαν', queueNotice: 'Τα αρχεία που δεν έχουν αποθηκευτεί παραμένουν μόνο σε αυτή τη συνεδρία. Τα αποθηκευμένα έγγραφα διατηρούνται όταν κλείσετε το παράθυρο.', retry: 'Επανάληψη', reviewOnly: 'Η AI προτείνει· ελέγξτε την πηγή πριν επιβεβαιώσετε ή κοινοποιήσετε.', }
 inline	lib/i18n/format.ts	'el-GR'
 inline	lib/i18n/index.ts	el
+inline	lib/i18n/policyholder-flow.ts	{ draftTitle: 'Ερώτηση προς τον σύμβουλό σας', subject: 'Θέμα', message: 'Η ερώτησή σας', draftBody: 'Θα ήθελα να διευκρινίσουμε το εξής: {subject}. Τι γνωρίζουμε από τα στοιχεία μου και τι χρειάζεται επιβεβαίωση;', newSubject: 'Ερώτηση για την ασφάλισή μου', send: 'Αποστολή ερώτησης', sending: 'Αποστολή…', reviewSharing: 'Θέλω να στείλω το παραπάνω κείμενο στον/στην {name}. Δεν επισυνάπτονται ασφαλιστήρια και δεν αλλάζει η πρόσβαση στα έγγραφά μου.', snooze: 'Υπενθύμιση σε μία εβδομάδα', planRequired: 'Η αποστολή μηνυμάτων δεν περιλαμβάνεται στο τρέχον πλάνο. Μπορείτε να κρατήσετε ή να αντιγράψετε το προσχέδιο.', plan: 'Δείτε το πλάνο σας', sendFailed: 'Η αποστολή δεν επιβεβαιώθηκε. Το κείμενό σας διατηρήθηκε· δοκιμάστε ξανά.', expiredTitle: 'Έχετε ανανεωτήριο;', expiredBody: 'Σε {count} ασφαλιστήρια έχει περάσει η καταγεγραμμένη ημερομηνία λήξης. Ελέγξτε αν λείπει η ανανέωση.', expiredAction: 'Έλεγχος ανανέωσης', currentBenefits: 'Παροχές τρεχουσών περιόδων', history: 'Ιστορικές παροχές', noCurrentBenefits: 'Δεν έχει εντοπιστεί παροχή από τρέχον ασφαλιστήριο. Μπορείτε να ελέγξετε τα έγγραφα ή τις ιστορικές παροχές.', useBenefit: 'Πώς αξιοποιείται', beneficiary: 'Ποιον αφορά', frequency: 'Πόσο συχνά', procedure: 'Διαδικασία και δικαιολογητικά', unknown: 'Δεν αναφέρεται με σαφήνεια στην ανάλυση.', question: 'Ερώτηση για τη χρήση της παροχής', benefitQuestion: 'Ποιοι είναι οι δικαιούχοι, ποιο είναι το κόστος και ποια διαδικασία ισχύει για αυτή την παροχή;', lifeChange: 'Άλλαξε κάτι στη ζωή σας;', optionalSteps: 'Προαιρετικές μικρές ενέργειες', remindersGrouped: 'Οι επαναλήψεις της ίδιας εκκρεμότητας συγκεντρώνονται εδώ. Όλες οι προηγούμενες αποστολές παραμένουν στο ιστορικό.', openTask: 'Άνοιγμα ενέργειας', openMessages: 'Άνοιγμα συζητήσεων', analysisState: 'Ανάγνωση AI · τα στοιχεία χρειάζονται έλεγχο', }
 inline	lib/i18n/role-copy.ts	{ shell: { agentSection: "Πρακτορείο", agentProfile: "Προφίλ Συμβούλου", closeMenu: "Κλείσιμο μενού", theme: "Θέμα εμφάνισης", roleViewingAs: (roleLabel: string) => `Προβολή ως ${roleLabel}`, roleViewingAsLabel: "Προβολή ως", }, defaults: { userName: "Χρήστης", policyholderName: "Ασφαλισμένος", agentName: "Ασφαλιστικός Σύμβουλος", agentCompany: "Ασφαλιστικό Γραφείο", vehicle: "Όχημα", property: "Ακίνητο", loadingError: "Σφάλμα φόρτωσης λογαριασμού.", }, tasks: { completed: "Η εργασία ολοκληρώθηκε.", updateFailed: "Η ενημέρωση της εργασίας απέτυχε.", updateError: "Παρουσιάστηκε σφάλμα κατά την ενημέρωση της εργασίας.", assignedBy: "Ανάθεση από", viewDetails: "Προβολή λεπτομερειών", updating: "Ενημέρωση...", }, agentSettings: { title: "Προφίλ γραφείου", subtitle: "Τα στοιχεία του πρακτορείου σας και οι προμήθειες ανά κλάδο.", agencyProfile: "Προφίλ γραφείου", status: "Κατάσταση", pending: "Σε αξιολόγηση", verifiedLabel: "Επιβεβαιωμένος", rejectedLabel: "Δεν εγκρίθηκε", verifiedDescription: "Τα επαγγελματικά σας στοιχεία έχουν επιβεβαιωθεί.", underReviewDescription: "Το προφίλ σας αξιολογείται από την ομάδα κανονιστικής συμμόρφωσης.", rejectedDescription: "Η ομάδα κανονιστικής συμμόρφωσης δεν ενέκρινε τα στοιχεία σας. Επικοινωνήστε μαζί μας για τα επόμενα βήματα.", agencyName: "Επωνυμία πρακτορείου", agencyNamePlaceholder: "π.χ. Alpha Insurance Advisors", licenseNumber: "Αριθμός άδειας", licenseNumberPlaceholder: "π.χ. LIC-12345678", saveChanges: "Αποθήκευση αλλαγών", saving: "Αποθήκευση...", commissionRatesTitle: "Ποσοστά προμήθειας", commissionRatesDesc: "Ορίστε το ποσοστό σας ανά κλάδο ασφάλισης. Χρησιμοποιείται στον υπολογισμό των προμηθειών σας.", saveCommissions: "Αποθήκευση προμηθειών", subscription: "Το πρόγραμμά σας", customers: "Πελάτες", aiAnalysesPerMonth: "Αναλύσεις AI ανά μήνα", upgradePlan: "Δείτε τα προγράμματα", personalSettingsTitle: "Ο προσωπικός σας λογαριασμός", personalSettingsDesc: "Το όνομα, το email, ο κωδικός και τα δεδομένα σας βρίσκονται στις ρυθμίσεις λογαριασμού.", personalSettingsCta: "Ρυθμίσεις λογαριασμού", dangerZone: "Διαγραφή λογαριασμού", dangerDescription: "Η διαγραφή του λογαριασμού σας γίνεται από τις ρυθμίσεις απορρήτου, όπου εξηγείται ακριβώς τι διαγράφεται και τι διατηρείται.", deactivateAccount: "Απόρρητο και δεδομένα", updatedSuccess: "Το προφίλ ενημερώθηκε επιτυχώς.", updatedError: "Δεν ήταν δυνατή η ενημέρωση του προφίλ.", }, agentDashboard: { workspace: "Χώρος Εργασίας", brandAgent: "Σύμβουλος", briefing: "Η σημερινή σας ενημέρωση. Έχετε", // The relative clause inflects with the count — «που χρειάζεται» at // one, «που χρειάζονται» beyond (count-copy-agreement.test.ts). itemsAttention: (n: number) => n === 1 ? "1 στοιχείο που χρειάζεται προσοχή." : `${n} στοιχεία που χρειάζονται προσοχή.`, totalClients: "Σύνολο Πελατών", activePolicies: "Ενεργά ασφαλιστήρια", pendingActions: "Εκκρεμείς Ενέργειες", conversionRate: "Ρυθμός Μετατροπής", clientStatus: "Κατάσταση Πελατών", liveFeed: "Ζωντανή Ροή", viewAll: "Προβολή Όλων", online: "Συνδεδεμένος", across: "σε", clients: "πελάτες", requiresAttention: "Χρειάζεται προσοχή", inviteAcceptance: "Αποδοχή πρόσκλησης", thisWeek: "αυτή την εβδομάδα", critical: "Κρίσιμο", high: "Υψηλό", medium: "Μεσαίο", noClientsYet: "Δεν υπάρχουν πελάτες ακόμη", due: "Προθεσμία", feedItems: [ { name: "Μαρία Κ.", action: "ανέβασε ασφαλιστήριο αυτοκινήτου", time: "2 λεπτά πριν", color: "blue" }, { name: "Γιάννης Δ.", action: "εντοπίστηκε νέο κενό κάλυψης", time: "1 ώρα πριν", color: "purple" }, { name: "Σταύρος Λ.", action: "αποδέχθηκε πρόσκληση συνεργασίας", time: "3 ώρες πριν", color: "emerald" }, ], dashboardTitle: "Πίνακας Συμβούλου", dashboardSubtitle: "Καλώς ήρθατε ξανά. Επισκόπηση ημέρας.", recentActivity: "Πρόσφατη Δραστηριότητα", allCaughtUpSubtext: "Δεν υπάρχουν εκκρεμότητες αυτή τη στιγμή. Συνεχίστε έτσι.", }, customerList: { searchPlaceholder: "Αναζήτηση πελατών...", all: "Όλοι", activated: "Ενεργοί", invited: "Προσκεκλημένοι", inactive: "Ανενεργοί", selectedOne: "πελάτης επιλεγμένος", selectedMany: "πελάτες επιλεγμένοι", sendEmail: "Αποστολή email", export: "Εξαγωγή", emptyTitle: "Δεν βρέθηκαν πελάτες", emptySubtitle: "Δοκιμάστε να προσαρμόσετε φίλτρα ή λέξεις αναζήτησης.", addClient: "Προσθήκη Πελάτη", tableClient: "Πελάτης", tableContact: "Επικοινωνία", tableStatus: "Κατάσταση", tablePolicies: "Ασφαλιστήρια", tableLastActivity: "Τελευταία Δραστηριότητα", never: "Ποτέ", today: "Σήμερα", yesterday: "Χθες", daysAgo: (n: number) => `${n}η πριν`, opportunitiesOne: "ευκαιρία", opportunitiesMany: "ευκαιρίες", policies: "ασφαλιστήρια", openOpportunityOne: "ανοικτή ευκαιρία", openOpportunityMany: "ανοικτές ευκαιρίες", profile: "Προφίλ", zeroHeadline: "Χτίστε το πελατολόγιό σας", zeroBenefit: "Προσθέστε τον πρώτο σας πελάτη και δείτε καλύψεις, κενά και ανανεώσεις σε ένα ταμπλό.", zeroCta: "Προσθήκη πρώτου πελάτη", zeroTrust: "Τα δεδομένα πελατών μένουν ιδιωτικά — πρόσβαση μόνο με σχέση ή άδεια", zeroPreviewLabel: "Παράδειγμα", zeroExampleName1: "Μαρία Κ.", zeroExampleMeta1: "3 ασφαλιστήρια · 1 κενό κάλυψης", zeroExampleName2: "Νίκος Δ.", zeroExampleMeta2: "2 ασφαλιστήρια · ανανέωση σε 45 ημέρες", invitedEmptyTitle: "Καμία εκκρεμής πρόσκληση", invitedEmptySubtitle: "Οι προσκλήσεις ενεργοποιούν τους πελάτες σας — και το προφίλ σας γίνεται ο σύμβουλός τους στο app.", invitedEmptyCta: "Αποστολή πρόσκλησης", tableNextRenewal: "Επόμενη Ανανέωση", tableGaps: "Κενά", underReview: "υπό αξιολόγηση", tableConsent: "Συναίνεση AI", tableAction: "Προτεινόμενη Ενέργεια", consentGranted: "Ενεργή", consentAttested: "Βεβαίωση ασφαλιστή", consentNone: "Εκκρεμεί", actionResendInvite: "Επαναποστολή πρόσκλησης", actionAddFirstPolicy: "Προσθήκη πρώτου ασφαλιστηρίου", actionRequestConsent: "Αίτημα συναίνεσης AI", actionReviewRenewal: "Έλεγχος ανανέωσης", actionDiscussGaps: "Συζήτηση κενών κάλυψης", actionRunAnalysis: "Εκκρεμεί ανάλυση", actionCheckIn: "Επικοινωνία επανασύνδεσης", actionAllGood: "Καμία εκκρεμότητα", }, agentKpis: { heading: "Δείκτες βιβλίου", totalClients: "Σύνολο πελατών", expiringClients: "Πελάτες με ανανέωση σε 30 ημέρες", gapClients: "Με κενά κάλυψης", pendingInvites: "Εκκρεμείς προσκλήσεις", policiesThisMonth: "Ασφαλιστήρια αυτόν τον μήνα", followUps: "Προτεινόμενες επανεπαφές", pipeline: "Εκτίμηση ευκαιριών", }, walletDashboard: { checkExpirations: "Ελέγξτε λήξεις και πιθανά κενά κάλυψης.", coverageUpToDate: "Η κάλυψή σας είναι ενημερωμένη.", allPoliciesActive: "Όλα τα ασφαλιστήρια είναι ενεργά", clearFilters: "Καθαρισμός φίλτρων", addDetailsManually: "Χειροκίνητη προσθήκη", uploadDocument: "Μεταφόρτωση εγγράφου", batchUpload: "Μαζική μεταφόρτωση", addPolicyAria: "Προσθήκη ασφαλιστηρίου", addFirstPolicy: "Προσθήκη ασφαλιστηρίου", policiesCount: (n: number) => `${n} ασφαλιστήρια`, viewList: "Προβολή Λίστας", viewCard: "Προβολή Κάρτας", agentChat: "Συνεργασία", upgrade: "Αναβάθμιση", missingCoverages: "Πιθανά κενά κάλυψης:", viewAllRecommendations: "Δείτε όλες τις προτάσεις →", healthTitle: "Ασφάλιση Υγείας", healthDescription: "Προστατέψτε την υγεία της οικογένειάς σας από απρόβλεπτα ιατρικά έξοδα.", homeTitle: "Ασφάλιση Κατοικίας", homeDescription: "Προστατέψτε την περιουσία σας από ζημιές, φυσικά φαινόμενα και κλοπή.", lifeTitle: "Ασφάλιση Ζωής", lifeDescription: "Εξασφαλίστε οικονομική στήριξη για τα αγαπημένα σας πρόσωπα.", petTitle: "Ασφάλιση Κατοικιδίου", petDescription: "Προστασία για κτηνιατρικά έξοδα και περίθαλψη κατοικιδίου.", yearlyFootprint: "Ετήσιο σύνολο ασφαλίστρων", emptyWalletTitle: "Δεν υπάρχουν ασφαλιστήρια ακόμη", emptyWalletDescription: "Προσθέστε το πρώτο σας ασφαλιστήριο για να ξεκινήσετε.", expires: "Λήγει", policyCountLabel: "ασφαλιστήρια", subtitle: "Τα ασφαλιστήριά σας σε μία καθαρή εικόνα.", }, auth: { createAccountTitle: "Δημιουργία λογαριασμού", createAccountSubtitle: "Λογαριασμός και πρώτο ασφαλιστήριο σε λίγα βήματα.", fullNamePlaceholder: "Όνομα Επώνυμο", emailPlaceholder: "name@example.com", passwordPlaceholder: "********", licensePlaceholder: "ΑΣ-12345", agencyPlaceholder: "Επωνυμία πρακτορείου", termsAndConditions: "Όρους Χρήσης", privacyPolicy: "Πολιτική Απορρήτου", joinAs: "Εγγραφή ως", switchAgent: "Είμαι ασφαλιστικός σύμβουλος", switchPolicyholder: "Συνέχεια ως ασφαλισμένος", alreadyHaveAccount: "Έχετε ήδη λογαριασμό;", noAccount: "Δεν έχετε λογαριασμό;", forgotPassword: "Ξέχασα τον κωδικό", signInSubtitle: "Συνδεθείτε για να διαχειριστείτε το ασφαλιστικό σας πορτοφόλι.", resendVerification: "Επανάληψη αποστολής email επιβεβαίωσης", resendSent: "Το email επιβεβαίωσης εστάλη.", checkInbox: "Ελέγξτε τα εισερχόμενα. Δεν το βρήκατε;", unverified: "Το email σας δεν έχει επιβεβαιωθεί ακόμη.", orContinueWith: "Ή συνεχίστε με", }, }
 inline	lib/insurance/clause-sets.ts	'Έκπλυση από το κατάστρωμα'
 inline	lib/insurance/clause-sets.ts	'Ανατροπή ή εκτροχιασμός'
@@ -7791,7 +7791,7 @@ inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριο λήγει
 inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριο προστέθηκε στο πορτοφόλι σας."
 inline	lib/notifications/registry.ts	"Ένα ασφαλιστήριό σας ενημερώθηκε"
 inline	lib/notifications/registry.ts	"Ένα μέλος της οικογένειας βλέπει πλέον τα ασφαλιστήρια που δεν έχετε κρατήσει ιδιωτικά."
-inline	lib/notifications/registry.ts	"Ένα μήνυμα περιμένει την απάντησή σας εδώ και μέρες."
+inline	lib/notifications/registry.ts	"Ένα μήνυμα στη συζήτησή σας παραμένει χωρίς απάντηση."
 inline	lib/notifications/registry.ts	"Ένα νέο έγγραφο προστέθηκε σε ασφαλιστήριό σας από τον σύμβουλό σας. Το ασφαλιστήριο επανεξετάζεται."
 inline	lib/notifications/registry.ts	"Ένα πιθανό κενό στην κάλυψή σας χρειάζεται τη ματιά σας."
 inline	lib/notifications/registry.ts	"Ένα προνόμιο λήγει σύντομα"
@@ -7801,7 +7801,6 @@ inline	lib/notifications/registry.ts	"Ένας κίνδυνος στην εικ�
 inline	lib/notifications/registry.ts	"Ένας πελάτης σας έχει ανανέωση που πλησιάζει."
 inline	lib/notifications/registry.ts	"Ένας πελάτης σας κοινοποίησε την εικόνα υγείας του."
 inline	lib/notifications/registry.ts	"Ένας περιοδικός έλεγχος της κάλυψής σας είναι έτοιμος να ξεκινήσει."
-inline	lib/notifications/registry.ts	"Έχετε αδιάβαστο μήνυμα"
 inline	lib/notifications/registry.ts	"Έχετε νέο μήνυμα στη συνεργασία σας."
 inline	lib/notifications/registry.ts	"Ώρα για έλεγχο της κάλυψής σας"
 inline	lib/notifications/registry.ts	"Αίτημα συγκατάθεσης για ανάλυση"
@@ -7875,6 +7874,7 @@ inline	lib/notifications/registry.ts	"Κερδίσατε ένα νέο επίτ�
 inline	lib/notifications/registry.ts	"Κοινοποίηση εικόνας υγείας"
 inline	lib/notifications/registry.ts	"Λάβαμε την αξιολόγησή σας"
 inline	lib/notifications/registry.ts	"Λάβαμε την αξιολόγηση του άρθρου"
+inline	lib/notifications/registry.ts	"Μήνυμα χωρίς απάντηση"
 inline	lib/notifications/registry.ts	"Με βάση όσα ξέρουμε για τη ζωή σας και τα ασφαλιστήριά σας."
 inline	lib/notifications/registry.ts	"Μια ανατεθειμένη ενέργεια πέρασε την προθεσμία της."
 inline	lib/notifications/registry.ts	"Μια εκκρεμότητα ανανέωσης έκλεισε. Δείτε το αποτέλεσμα."
@@ -8353,9 +8353,9 @@ inline	lib/services/churn-prevention.service.ts	"Σας στείλαμε ένα 
 inline	lib/services/churn-prevention.service.ts	subjectEl
 inline	lib/services/collaboration-reminders.service.ts	"Εκπρόθεσμη ενέργεια"
 inline	lib/services/collaboration-reminders.service.ts	"Καθημερινή σύνοψη"
-inline	lib/services/collaboration-reminders.service.ts	"Μη αναγνωσμένο μήνυμα"
+inline	lib/services/collaboration-reminders.service.ts	"Μήνυμα χωρίς απάντηση"
 inline	lib/services/collaboration-reminders.service.ts	`Έχετε ${unresolved} ${threadsEl} και ${overdue} ${actionsEl}.`
-inline	lib/services/collaboration-reminders.service.ts	`Έχετε ένα μη αναγνωσμένο μήνυμα από ${senderName}.`
+inline	lib/services/collaboration-reminders.service.ts	`Έχετε ένα μήνυμα χωρίς απάντηση από ${senderName}.`
 inline	lib/services/collaboration-reminders.service.ts	`Η ενέργεια «${action.title}» είναι εκπρόθεσμη στη συζήτηση «${action.thread.subject}».`
 inline	lib/services/collaboration.service.ts	"Νέα ενέργεια"
 inline	lib/services/collaboration.service.ts	"Νέα συζήτηση"
@@ -8597,7 +8597,6 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Ένα υποθηκευμένο 
 inline	lib/services/gap-engine/risk-catalog.ts	"Ένα χρονολογημένο πρωτόκολλο παράδοσης με φωτογραφίες, και ισχύοντα πιστοποιητικά ηλεκτρολογικής και εγκατάστασης αερίου, αποτρέπουν διαφορές και σας υπερασπίζονται όταν ενοικιαστής ισχυριστεί ότι η κατάσταση του κτιρίου προκάλεσε τραυματισμό."
 inline	lib/services/gap-engine/risk-catalog.ts	"Ένας εργαζόμενος που τραυματίζεται στην εργασία μπορεί να στραφεί εναντίον σας για το μέρος της ζημιάς που δεν καλύπτει ο ΕΦΚΑ. Η αξίωση αυτή βαρύνει προσωπικά τον εργοδότη και δεν καλύπτεται εξ ορισμού από γενικό ασφαλιστήριο επιχείρησης."
 inline	lib/services/gap-engine/risk-catalog.ts	"Ένας σοβαρός τραυματισμός φέρνει έξοδα θεραπείας και απουσία από την εργασία ακριβώς τη στιγμή που τα άλλα ασφαλιστήριά σας ενδέχεται να απορρίψουν την αξίωση."
-inline	lib/services/gap-engine/risk-catalog.ts	"Έξι μήνες εξόδων σε απόθεμα καλύπτουν τις περισσότερες απουσίες εξ ολοκλήρου, και σας επιτρέπουν να επιλέξετε μεγαλύτερη περίοδο αναμονής — που είναι αυτό που κάνει την κάλυψη προσιτή."
 inline	lib/services/gap-engine/risk-catalog.ts	"Έχετε μαζί σας την ΕΚΑΑ για ταξίδια εντός ΕΕ"
 inline	lib/services/gap-engine/risk-catalog.ts	"Ή ένα πρόγραμμα μόνο νοσοκομειακής περίθαλψης, αν το κύριο ζητούμενο είναι η ταχύτητα χειρουργείου και όχι η εξωνοσοκομειακή πρόσβαση."
 inline	lib/services/gap-engine/risk-catalog.ts	"Όλοι το αντιμετωπίζουν· το πόσο σας αφορά εξαρτάται από το πόσο θα μπορούσατε να περιμένετε."
@@ -8640,6 +8639,7 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Για δραστηριότητ�
 inline	lib/services/gap-engine/risk-catalog.ts	"Για δόλιες συναλλαγές, αποκατάσταση ταυτότητας και, όπου συντρέχει, εκβίαση. Περιορισμένη αγορά στην Ελλάδα — συγκρίνετε προσεκτικά."
 inline	lib/services/gap-engine/risk-catalog.ts	"Διαβάστε την εξαίρεση που ήδη σας αφορά"
 inline	lib/services/gap-engine/risk-catalog.ts	"Διαδικτυακή απάτη και παραβίαση λογαριασμού"
+inline	lib/services/gap-engine/risk-catalog.ts	"Διαθέσιμο απόθεμα"
 inline	lib/services/gap-engine/risk-catalog.ts	"Διακοπή της επιχείρησης μετά από ζημιά"
 inline	lib/services/gap-engine/risk-catalog.ts	"Διαπιστώστε τι δικαιούστε ήδη"
 inline	lib/services/gap-engine/risk-catalog.ts	"Διαρκή έξοδα χρόνιας πάθησης"
@@ -8668,6 +8668,7 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Η ασφάλιση διακοπ
 inline	lib/services/gap-engine/risk-catalog.ts	"Η ασφάλιση ιδίων ζημιών καλύπτει το ίδιο το σκάφος· ελέγξτε αν περιλαμβάνει και την υποχρεωτική αστική ευθύνη προς τρίτους, που πωλείται χωριστά."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η ασφάλιση προσωπικών ατυχημάτων καλύπτει μόνο θάνατο από ατύχημα — όχι από ασθένεια, που είναι η συχνότερη αιτία."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η δεύτερη κατοικία δεν καλύπτεται από το ασφαλιστήριο της πρώτης, και τα περισσότερα ελληνικά ασφαλιστήρια κατοικίας περιορίζουν ή ακυρώνουν την κάλυψη όταν ένα ακίνητο μείνει ακατοίκητο για 30–60 συνεχόμενες ημέρες — η κανονική κατάσταση μιας εξοχικής κατοικίας. Ελέγξτε τον όρο μη κατοίκησης χωριστά για κάθε ακίνητο."
+inline	lib/services/gap-engine/risk-catalog.ts	"Η επίπτωση εξαρτάται από τις αποδοχές, τα έξοδα και όσα καλύπτουν ήδη οι παροχές σας."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η επείγουσα κτηνιατρική περίθαλψη πληρώνεται από την τσέπη, και κατά το ελληνικό δίκαιο ο ιδιοκτήτης ευθύνεται για τραυματισμούς ή ζημιές που προκαλεί το ζώο του σε τρίτους."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η ζημιά στα υπάρχοντά σας και η ευθύνη για ζημιές σε ξένη περιουσία είναι διαφορετικά θέματα. Η ενοικίαση από μόνη της δεν δείχνει αν ασφαλίζεται κάποιο από τα δύο· χρειάζεται έλεγχος των σχετικών όρων."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η θέση συνήθως εναλλάσσεται και συχνά αναλαμβάνεται από επαγγελματική εταιρεία διαχείρισης. Η παράδοσή της μεταφέρει μαζί και την προσωπική έκθεση."
@@ -8708,11 +8709,11 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Μεταφέρετε ό,τι μ�
 inline	lib/services/gap-engine/risk-catalog.ts	"Μηνιαίο επίδομα μετά από περίοδο αναμονής που επιλέγετε ώστε να ταιριάζει με τις αποταμιεύσεις σας."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μια αμφισβητούμενη υπόθεση ακινήτου κοστίζει συνήθως αρκετές χιλιάδες ευρώ σε αμοιβές πριν από οποιαδήποτε απόφαση."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μια αξίωση για σοβαρό εργατικό ατύχημα μπορεί να ξεπεράσει το ετήσιο κέρδος μιας μικρής επιχείρησης."
+inline	lib/services/gap-engine/risk-catalog.ts	"Μια απουσία από την εργασία μπορεί να επηρεάσει τις αποδοχές σας. Το αποτέλεσμα εξαρτάται από τους όρους εργασίας, τυχόν αναρρωτική άδεια ή επιδόματα και την υπάρχουσα ασφάλιση, μαζί με ομαδικές παροχές εργοδότη."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μια εγγύηση και σαφείς υποχρεώσεις επισκευών μεταφέρουν μέρος της έκθεσης συμβατικά. Δεν καλύπτουν όμως το κτίριο ούτε την απώλεια μισθωμάτων."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μια ιδιωτική επίσκεψη σε ειδικό κοστίζει πολύ λιγότερο από ένα ετήσιο ασφάλιστρο. Για κάποιον που σπάνια τη χρειάζεται, η πληρωμή κατά περίπτωση είναι η φθηνότερη απάντηση και αξίζει να λέγεται ευθέως."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μια κάμερα και μια συμπληρωμένη φιλική δήλωση επιλύουν τις περισσότερες αμφισβητούμενες αξιώσεις πριν φτάσουν σε δικηγόρο. Κοστίζει σχεδόν τίποτα και αποτρέπει τη διαφορά αντί να τη χρηματοδοτεί."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μια καταγραφή των υπαρχόντων σας και του κόστους αντικατάστασης βοηθά στη συζήτηση με τον ασφαλιστή σας για τις ζημιές που θα μπορούσατε να καλύψετε από αποταμιεύσεις."
-inline	lib/services/gap-engine/risk-catalog.ts	"Μια μακρά απουσία από την εργασία θα χρηματοδοτούνταν από αποταμιεύσεις μέχρι να μπορέσετε να εργαστείτε ξανά."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μια τεκμηριωμένη εκτίμηση κινδύνου, καταγεγραμμένη εκπαίδευση και τηρούμενο βιβλίο ατυχημάτων μειώνουν και τη συχνότητα των τραυματισμών και το μέγεθος της αξίωσης όταν συμβεί — και η απουσία τους είναι που καθιστά έναν εργοδότη αδύνατο να υπερασπιστεί."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μια χρόνια πάθηση συνεπάγεται επαναλαμβανόμενα έξοδα — παρακολούθηση, επισκέψεις σε ειδικούς, συμμετοχή σε φάρμακα — και αυξάνει την πιθανότητα νοσηλείας για κάτι σχετικό."
 inline	lib/services/gap-engine/risk-catalog.ts	"Μόνο τα έξοδα υπεράσπισης φτάνουν συχνά πενταψήφια ποσά ακόμη και όταν η αξίωση τελικά απορρίπτεται."
@@ -8749,7 +8750,9 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Πρόκειται για από
 inline	lib/services/gap-engine/risk-catalog.ts	"Πρόληψη και καταγραφή"
 inline	lib/services/gap-engine/risk-catalog.ts	"Πυρκαγιά, πλημμύρα ή διάρρηξη σε επαγγελματικό χώρο καταστρέφει εμπορεύματα και εξοπλισμό, και στη συνέχεια σταματά τη λειτουργία όσο διαρκούν οι επισκευές. Η περίοδος διακοπής είναι συνήθως η μεγαλύτερη ζημιά και καλύπτεται ξεχωριστά από την υλική βλάβη."
 inline	lib/services/gap-engine/risk-catalog.ts	"Ρωτήστε τον ασφαλιστή σας αν το σχετικό ασφαλιστήριο περιλαμβάνει περιεχόμενο και ευθύνη ενοικιαστή, καθώς και ποια όρια και εξαιρέσεις ισχύουν."
+inline	lib/services/gap-engine/risk-catalog.ts	"Ρωτήστε τον εργοδότη ή τον αρμόδιο φορέα ποιες παροχές ισχύουν, το ποσό, τη διάρκεια και τις προϋποθέσεις τους. Ο σύμβουλός σας μπορεί να τις εξετάσει μαζί με τα ατομικά ασφαλιστήρια."
 inline	lib/services/gap-engine/risk-catalog.ts	"Στατικός έλεγχος παλαιότερης οικοδομής, λειτουργικός ανιχνευτής καπνού και συντηρημένη ηλεκτρική εγκατάσταση μειώνουν και την πιθανότητα και το μέγεθος μιας ζημιάς — και αρκετά από αυτά δίνουν έκπτωση ασφαλίστρου."
+inline	lib/services/gap-engine/risk-catalog.ts	"Συγκρίνετε τα βασικά σας έξοδα με το διαθέσιμο απόθεμα. Ρωτήστε τον σύμβουλό σας πώς μια περίοδος αναμονής επηρεάζει τον χρόνο μέχρι την έναρξη παροχής."
 inline	lib/services/gap-engine/risk-catalog.ts	"Συνήθως διαθέσιμη ως πρόσθετη κάλυψη στο ασφαλιστήριο οχήματος που ήδη έχετε, με κλάσμα του κόστους αυτοτελούς ασφαλιστηρίου."
 inline	lib/services/gap-engine/risk-catalog.ts	"Συνήθως μήνες αναμονής παρά οικονομική ζημιά — το κόστος είναι η καθυστέρηση και η ιδιωτική πληρωμή από την τσέπη για μία επέμβαση."
 inline	lib/services/gap-engine/risk-catalog.ts	"Συνήθως συνάπτεται μαζί με τη γενική αστική ευθύνη επιχείρησης, με το όριο να ακολουθεί τη μισθοδοσία και όχι τον αριθμό εργαζομένων."
@@ -8783,7 +8786,6 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Υποχρεωτική για κ
 inline	lib/services/gap-engine/risk-catalog.ts	"Υποχρεωτική για σκάφη αναψυχής στην Ελλάδα — η λιμενική αρχή μπορεί να αρνηθεί τον απόπλου χωρίς αυτήν. Προσθέστε κάλυψη σκάφους, ναυαγιαίρεσης και ανέλκυσης βάσει της αξίας του."
 inline	lib/services/gap-engine/risk-catalog.ts	"Φυλάξτε και καταγράψτε τα σωστά"
 inline	lib/services/gap-engine/risk-catalog.ts	"Χρέος που μένει πίσω"
-inline	lib/services/gap-engine/risk-catalog.ts	"Χτίστε πρώτα το απόθεμα"
 inline	lib/services/gap-engine/risk-catalog.ts	"Χωρίς το εισόδημά σας, το νοικοκυριό θα κάλυπτε τα έξοδα διαβίωσης μόνο από αποταμιεύσεις. Πείτε μας το εισόδημά σας και μπορούμε να υπολογίσουμε το έλλειμμα."
 inline	lib/services/gap-engine/risk-catalog.ts	"Χώρος, περιεχόμενο και εμπορεύματα, με περίοδο αποζημίωσης ορισμένη βάσει του ρεαλιστικού χρόνου επαναλειτουργίας — όχι έναν προεπιλεγμένο δωδεκάμηνο."
 inline	lib/services/gap-engine/risk-catalog.ts	"Ως διαχειριστής πολυκατοικίας μπορεί να ευθύνεστε προσωπικά για τραυματισμό ή ζημιά που προκύπτει από τους κοινόχρηστους χώρους — πτώση σε βρεγμένο κλιμακοστάσιο, βλάβη ανελκυστήρα, διάρρηξη σωλήνα που πλημμυρίζει διαμέρισμα. Η απαίτηση στρέφεται κατά του προσώπου που κατέχει τη θέση, όχι κατά του κτιρίου."
@@ -8807,7 +8809,6 @@ inline	lib/services/gap-engine/risk-catalog.ts	"συμβουλευτικές υ�
 inline	lib/services/gap-engine/risk-catalog.ts	"φαρμακευτική άσκηση"
 inline	lib/services/gap-engine/risk-catalog.ts	`${eur(outstandingDebt(ctx), "el")} θα βάραιναν την κληρονομιά σας.`
 inline	lib/services/gap-engine/risk-catalog.ts	`${n} ${plural(n, "άτομο εξαρτάται", "άτομα εξαρτώνται")} από το εισόδημά σας, και αυτή τη στιγμή ${ctx.employmentStatus === "self_employed" ? "είστε ελεύθερος επαγγελματίας" : "εργάζεστε"}.`
-inline	lib/services/gap-engine/risk-catalog.ts	`Έξι μήνες αδυναμίας εργασίας θα σας κόστιζαν περίπου ${eur(sixMonths, "el")} εισοδήματος.`
 inline	lib/services/gap-engine/risk-catalog.ts	`Έχετε ${parts.map((p) => p[1]).join(" και ")} σε υπόλοιπο.`
 inline	lib/services/gap-engine/risk-catalog.ts	`Έχετε δηλώσει ${eur(ctx.valuablesValue, "el")} σε τιμαλφή. Πρόκειται για δηλωμένη αξία, όχι για εκτίμηση ζημιάς ή ασφαλιστικής αποζημίωσης.`
 inline	lib/services/gap-engine/risk-catalog.ts	`Έχετε δηλώσει τακτική ενασχόληση με ${activityLabels(ctx, "el")}.`
@@ -8824,8 +8825,6 @@ inline	lib/services/gap-engine/risk-catalog.ts	`Οι περισσότερες ε
 inline	lib/services/gap-engine/risk-catalog.ts	`Το δηλωμένο οδηγικό σας ιστορικό (${ctx.drivingRecord === "accidents" ? "προηγούμενα ατυχήματα" : "σοβαρές παραβάσεις"}) υποδεικνύει αυξημένη πιθανότητα αμφισβητούμενης αξίωσης.`
 inline	lib/services/gap-engine/risk-catalog.ts	`Το εισόδημά σας προέρχεται ${ctx.employmentStatus === "self_employed" ? "από ελεύθερο επάγγελμα" : "από μισθωτή εργασία"}.${runwayEl}`
 inline	lib/services/gap-engine/risk-catalog.ts	`Χαρακτηρίσατε τη διαδικτυακή οικονομική σας έκθεση ως ${ctx.cyberExposure === "high" ? "υψηλή" : "μέτρια"}.`
-inline	lib/services/gap-engine/risk-catalog.ts	ctx.employmentStatus === "self_employed" ? "Ασθένεια ή τραυματισμός που σας σταματά από την εργασία σταματά την τιμολόγησή σας την ίδια μέρα. Η κάλυψη του ΕΦΚΑ για ελεύθερους επαγγελματίες ξεκινά μετά από περίοδο αναμονής και καταβάλλει κλάσμα ενός εργασιακού εισοδήματος." : "Ασθένεια ή τραυματισμός που σας σταματά από την εργασία εξαντλεί τελικά την αναρρωτική άδεια. Μετά, το επίδομα αντικαθιστά κλάσμα του μισθού σας ενώ τα έξοδά σας παραμένουν ίδια."
-inline	lib/services/gap-engine/risk-catalog.ts	ctx.employmentStatus === "self_employed" ? "Το επίδομα ασθενείας ΕΦΚΑ για ελεύθερους επαγγελματίες ξεκινά μετά από περίοδο αναμονής. Γνωρίζοντας το ακριβές κενό ξέρετε πόση κάλυψη χρειάζεστε." : "Η συμβατική αναρρωτική άδεια μαζί με το επίδομα ΕΦΚΑ καλύπτει τις πρώτες εβδομάδες για τους περισσότερους μισθωτούς. Το κενό ξεκινά εκεί που σταματούν."
 inline	lib/services/gap-engine/risk-catalog.ts	ctx.ownsBusiness ? "Έχετε επιχείρηση, οπότε αξιώσεις από τη δραστηριότητά της μπορούν να σας φτάσουν." : "Είστε ελεύθερος επαγγελματίας, οπότε οι αξιώσεις από την εργασία σας φτάνουν σε εσάς προσωπικά."
 inline	lib/services/gap-engine/risk-catalog.ts	ctx.propertiesOwned > 1 ? `Σας ανήκουν ${ctx.propertiesOwned} ακίνητα.` : "Σας ανήκει η κατοικία στην οποία μένετε."
 inline	lib/services/gap-engine/risk-catalog.ts	ctx.rentsOutProperty ? "Εκμισθώνετε ακίνητο σε ενοικιαστές, από όπου ξεκινούν οι περισσότερες ιδιωτικές διαφορές ακινήτων." : `Σας ανήκουν ${ctx.propertiesOwned} ακίνητα, γεγονός που αυξάνει την πιθανότητα διαφοράς ορίων, εργασιών ή κοινοχρήστων.`
@@ -9472,6 +9471,7 @@ ternary	lib/errors/i18n.ts	`Πάρα πολλά αιτήματα. Παρακαλ
 ternary	lib/gaps/findings-provenance.ts	"άγνωστη ημερομηνία"
 ternary	lib/glossary/hints.ts	"Περισσότερα"
 ternary	lib/i18n/amount-format.ts	'Απεριόριστο'
+ternary	lib/i18n/amount-format.ts	'Δεν έχει καταγραφεί ποσό'
 ternary	lib/i18n/amount-format.ts	'Μεταβλητό'
 ternary	lib/i18n/role-copy.ts	"1 στοιχείο που χρειάζεται προσοχή."
 ternary	lib/i18n/role-copy.ts	`${n} στοιχεία που χρειάζονται προσοχή.`
@@ -9505,19 +9505,12 @@ ternary	lib/services/gap-engine/profile-gap-rules.ts	"ιδιοκτήτης ακ�
 ternary	lib/services/gap-engine/recommendation-generator.ts	`Ελέγξτε το ασφαλιστήριο ${insurer} για αυτό το κενό κάλυψης.`
 ternary	lib/services/gap-engine/recommendation-generator.ts	`Ελέγξτε το ασφαλιστήριό σας για αυτό το κενό κάλυψης.`
 ternary	lib/services/gap-engine/risk-catalog.ts	" και "
-ternary	lib/services/gap-engine/risk-catalog.ts	"Contractual sick pay plus ΕΦΚΑ benefit covers the first weeks for most employees. The gap starts where they stop."
-ternary	lib/services/gap-engine/risk-catalog.ts	"Illness or injury that stops you working stops your invoicing the same day. Self-employed cover from ΕΦΚΑ begins only after a waiting period and pays a fraction of a working income."
 ternary	lib/services/gap-engine/risk-catalog.ts	"Ένας πελάτης που ισχυρίζεται ότι η εργασία σας του προκάλεσε ζημιά σας ενάγει προσωπικά. Τα έξοδα υπεράσπισης τρέχουν πολύ πριν κριθεί η ευθύνη."
 ternary	lib/services/gap-engine/risk-catalog.ts	"Έχετε επιχείρηση, οπότε αξιώσεις από τη δραστηριότητά της μπορούν να σας φτάσουν."
-ternary	lib/services/gap-engine/risk-catalog.ts	"Ασθένεια ή τραυματισμός που σας σταματά από την εργασία εξαντλεί τελικά την αναρρωτική άδεια. Μετά, το επίδομα αντικαθιστά κλάσμα του μισθού σας ενώ τα έξοδά σας παραμένουν ίδια."
-ternary	lib/services/gap-engine/risk-catalog.ts	"Ασθένεια ή τραυματισμός που σας σταματά από την εργασία σταματά την τιμολόγησή σας την ίδια μέρα. Η κάλυψη του ΕΦΚΑ για ελεύθερους επαγγελματίες ξεκινά μετά από περίοδο αναμονής και καταβάλλει κλάσμα ενός εργασιακού εισοδήματος."
-ternary	lib/services/gap-engine/risk-catalog.ts	"ΕΦΚΑ sickness benefit for the self-employed starts after a waiting period. Knowing the exact gap is what tells you how much cover to buy."
 ternary	lib/services/gap-engine/risk-catalog.ts	"Είστε ελεύθερος επαγγελματίας, οπότε οι αξιώσεις από την εργασία σας φτάνουν σε εσάς προσωπικά."
 ternary	lib/services/gap-engine/risk-catalog.ts	"Εκμισθώνετε ακίνητο σε ενοικιαστές, από όπου ξεκινούν οι περισσότερες ιδιωτικές διαφορές ακινήτων."
-ternary	lib/services/gap-engine/risk-catalog.ts	"Η συμβατική αναρρωτική άδεια μαζί με το επίδομα ΕΦΚΑ καλύπτει τις πρώτες εβδομάδες για τους περισσότερους μισθωτούς. Το κενό ξεκινά εκεί που σταματούν."
 ternary	lib/services/gap-engine/risk-catalog.ts	"Μας δηλώσατε ότι έχετε κατοικίδια."
 ternary	lib/services/gap-engine/risk-catalog.ts	"Σας ανήκει η κατοικία στην οποία μένετε."
-ternary	lib/services/gap-engine/risk-catalog.ts	"Το επίδομα ασθενείας ΕΦΚΑ για ελεύθερους επαγγελματίες ξεκινά μετά από περίοδο αναμονής. Γνωρίζοντας το ακριβές κενό ξέρετε πόση κάλυψη χρειάζεστε."
 ternary	lib/services/gap-engine/risk-catalog.ts	"από ελεύθερο επάγγελμα"
 ternary	lib/services/gap-engine/risk-catalog.ts	"από μισθωτή εργασία"
 ternary	lib/services/gap-engine/risk-catalog.ts	"είστε ελεύθερος επαγγελματίας"
@@ -10192,7 +10185,6 @@ call	components/coverage/LifeEventsPanel.tsx	"Τι άλλαξε στη ζωή σ
 call	components/coverage/LifeEventsPanel.tsx	"Το έχετε ήδη καταγράψει"
 call	components/coverage/LifeEventsPanel.tsx	"Το έχετε ήδη καταγράψει"
 call	components/coverage/LifeEventsPanel.tsx	"Φίλτρο κατηγορίας"
-call	components/coverage/RecommendationCards.tsx	"/έτος"
 call	components/coverage/RecommendationCards.tsx	"Άμεσα"
 call	components/coverage/RecommendationCards.tsx	"Όσο πληρέστερο το προφίλ και τα ασφαλιστήριά σας, τόσο πιο εύστοχες οι προτάσεις της AI."
 call	components/coverage/RecommendationCards.tsx	"Αποτυχία απόρριψης"
@@ -10202,10 +10194,10 @@ call	components/coverage/RecommendationCards.tsx	"Αύξηση κάλυψης κ
 call	components/coverage/RecommendationCards.tsx	"Γιατί το βλέπετε"
 call	components/coverage/RecommendationCards.tsx	"Γιατί τώρα"
 call	components/coverage/RecommendationCards.tsx	"Δείτε το στο χρονολόγιο"
+call	components/coverage/RecommendationCards.tsx	"Δεν υπάρχουν ανοιχτές ενέργειες"
 call	components/coverage/RecommendationCards.tsx	"Δεν υπάρχουν προτάσεις αυτή τη στιγμή. Ανανεώστε την ανάλυση για επανέλεγχο."
 call	components/coverage/RecommendationCards.tsx	"Εμφάνιση λιγότερων"
 call	components/coverage/RecommendationCards.tsx	"Ενδεικτική επιλογή στην αγορά"
-call	components/coverage/RecommendationCards.tsx	"Ενδεικτικό εύρος ασφαλίστρου"
 call	components/coverage/RecommendationCards.tsx	"Ενημερωτικές προτάσεις — όχι ασφαλιστική συμβουλή"
 call	components/coverage/RecommendationCards.tsx	"Εντός εβδομάδων"
 call	components/coverage/RecommendationCards.tsx	"Εντός μηνών"
@@ -10233,7 +10225,6 @@ call	components/coverage/RecommendationCards.tsx	"Σε τι βασιζόμαστ
 call	components/coverage/RecommendationCards.tsx	"Συμπλήρωση προφίλ κινδύνου"
 call	components/coverage/RecommendationCards.tsx	"Τι κερδίζετε"
 call	components/coverage/RecommendationCards.tsx	"Υψηλή βεβαιότητα"
-call	components/coverage/RecommendationCards.tsx	"Φαίνεστε καλά καλυμμένος/η"
 call	components/coverage/RecommendationCards.tsx	"Χαμηλή βεβαιότητα"
 call	components/coverage/RiskGraphPanel.tsx	" στη ζωή σας — "
 call	components/coverage/RiskGraphPanel.tsx	"Άγνωστο"

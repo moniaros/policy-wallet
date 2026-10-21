@@ -163,7 +163,9 @@ export function resolveStoredNotification(
     storedMessage: string | null | undefined,
     language: "el" | "en"
 ): { title: string; message: string; sanitized: boolean } {
-    const presented = presentStoredNotification(eventType, storedTitle, storedMessage)
+    // There is no per-message read receipt. Legacy follow-ups cannot claim unread status.
+    const canonical = eventType === 'collaboration_unread_followup' ? getEventDefinition(eventType)?.copy : undefined
+    const presented = canonical ? { ...canonical, sanitized: true } : presentStoredNotification(eventType, storedTitle, storedMessage)
     return {
         title: presented.title[language],
         message: presented.message[language],

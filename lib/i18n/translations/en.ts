@@ -238,7 +238,7 @@ export const en: TranslationKeys = {
         skipToContent: 'Skip to content',
         primaryNavigation: 'Primary navigation',
         bottomNavigation: 'Quick navigation',
-        recommendations: 'Recommendations',
+        recommendations: 'Actions',
         reminders: 'Reminders',
         profile: 'Profile',
     },
@@ -868,7 +868,7 @@ export const en: TranslationKeys = {
             },
             // Perks & benefits
             perksTitle: 'Perks & benefits',
-            perksSubtitle: 'Extras already included in this policy — most people never use them.',
+            perksSubtitle: 'Benefits mentioned in the document and their conditions of use.',
             usageLimitLabel: 'Usage',
             callServiceCta: 'Call service',
             visitSiteCta: 'Open link',
@@ -897,7 +897,7 @@ export const en: TranslationKeys = {
             claimStep4Desc: 'Late claims can be rejected, so act within any notification window your policy sets.',
             claimNoDeadlines: 'No specific deadlines were detected — check your policy terms or ask the AI.',
             claimWhatYouNeedTitle: 'What you will need',
-            claimDeadlinesTitle: 'Deadlines from your policy',
+            claimDeadlinesTitle: 'Claim notification deadlines in the document',
             claimNeedHelp: 'Not sure about something?',
             // Per-branch editorial guide (lib/insurance/content)
             guideTitle: 'Guide to this branch',
@@ -1819,7 +1819,7 @@ export const en: TranslationKeys = {
     // «Η προστασία μου» — the §4.2 consolidated protection surface (/protection).
     // Two lenses over one portfolio: by line of business, by risk.
     recommendationsPage: {
-        title: 'Recommendations',
+        title: 'Actions',
         subtitle: 'What you can do to strengthen your protection — based on your policies and what you have told us.',
         allProtection: 'See all of your protection',
         unavailable: 'We could not load your recommendations right now. Please try again shortly.',
@@ -2470,7 +2470,7 @@ export const en: TranslationKeys = {
         runAnalysis: 'Understand this policy',
         freeTrialAvailable: 'Your first full analysis is free — try it on this policy.',
         analyzing: 'Analyzing...',
-        noGaps: 'No gaps found based on what we know so far. Run an analysis for a fuller coverage check.',
+        noGaps: 'No findings are recorded in what we hold. This does not establish that all coverage has been checked.',
         gapCheckIncomplete: 'Gap check did not complete',
         gapCheckIncompleteHint: 'The gap detection step failed during analysis. Retry missing parts to check your coverage.',
         translationIncomplete: 'Translation incomplete',

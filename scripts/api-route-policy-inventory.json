@@ -813,8 +813,8 @@
           "profile": "none"
         },
         "validation": {
-          "required": false,
-          "profile": "optional"
+          "required": true,
+          "profile": "zod"
         }
       }
     },
@@ -891,8 +891,8 @@
           "profile": "none"
         },
         "validation": {
-          "required": false,
-          "profile": "optional"
+          "required": true,
+          "profile": "zod"
         }
       }
     },

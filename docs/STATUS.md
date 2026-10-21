@@ -1,43 +1,28 @@
 # STATUS
 
 ## Current phase
-**Public site: language, design fixes, funnel and audiences live — 2026-10-08.** All verified on `www.policywallet.gr` after deploy `4e22d582`:
-- [#387](https://github.com/moniaros/policy-wallet/pull/387) the URL decides the language (A2–A5, A1 partial: `Content-Language: en`).
-- [#388](https://github.com/moniaros/policy-wallet/pull/388) DA1 Grafí sunken surface (live `rgb(231,241,236)`), DA2 dark CTA contrast 9.59:1.
-- [#389](https://github.com/moniaros/policy-wallet/pull/389) deploys skip Vercel's build cache — #388 had shipped the OLD CSS chunk under a green deploy.
-- [#390](https://github.com/moniaros/policy-wallet/pull/390) owner decision: the public site never announces closed sign-ups (signup page only); homepage shows both audiences in full; top-level «Για ασφαλιστές»; desktop nav from 1280px.
-- [#391](https://github.com/moniaros/policy-wallet/pull/391) SEO S1–S4 (deploy `766d73af`): no "what to fix first" in the entity sentence; unknown paths 404 (app paths still sign-in); `/llms.txt` live (107 links); homepage el/en down to 9 real H2s.
-- [#392](https://github.com/moniaros/policy-wallet/pull/392) SEO C2/C4/B2 (deploy `ccd2c520`): Organization JSON-LD carries legalName/ΓΕΜΗ/vatID; logo aria-label; branch FAQ headings name their branch, pricing band no longer an h2.
-- [#393](https://github.com/moniaros/policy-wallet/pull/393) design step 3a: dead components (PlanGate, ProcessingHUD, TrustStrip, ScoreRing), `showPerksLink`, 8 unused tokens, `.pw-control-boundary`, blob keyframes removed — served CSS verified clean.
-- [#394](https://github.com/moniaros/policy-wallet/pull/394) design step 3b (deploy `110f34e4`): 150× `dark:text-[#A7F3D0]` → `dark:text-brand-accent`; `primary-soft`/`primary-tint` flip under `.dark` so 154 `dark:bg-primary/15` twins are gone. 370 computed-colour samples (8 pages × light/dark) identical on production vs the pre-refactor baseline.
-- [#395](https://github.com/moniaros/policy-wallet/pull/395) footer as four columns (Προϊόν · Κατηγορίες · Μάθετε · Εταιρεία), legal row complete; /methodology, /changelog, /status now linked. Verified live at 1280/390.
-Reviews: [code](audits/public-site-and-design-system-2026-10.md) · [product design](audits/public-site-design-review-2026-10.md) · [SEO/GEO/AEO](audits/public-site-seo-geo-aeo-2026-10.md). Kilo review fails on every PR (no credits).
-
-Previous release (2026-10-02, prevention, `f3315f12`): [evidence](audits/prevention-production-release-2026-10-02.md).
+**Policyholder action-flow implementation — 2026-10-21.** Dev journeys verified; preview and production promotion in progress. [Implementation and evidence](audits/policyholder-action-flow-2026-10-21.md). Parallel presentation-review context is preserved in [the archive](archive/status-before-policyholder-implementation-2026-10-21.md).
 
 ## Done
-- Simplified policyholder home/intake/navigation, policy/recommendation context and notification history; unsupported health scores retired. External action references hidden; policy-document provenance retained.
-- All-branch prevention hub active in production (`PREVENTION_HUB_ENABLED=1`). Original/renewal composition and advanced personalization shipped behind `PREVENTION_PERSONALIZATION_ENABLED=0` pending real-PDF evaluation.
-- Dev and prod both queried: 88 matching migrations, zero pending, three prevention tables with RLS, 34 columns and five cascading FKs. Prod applied only the two dev-verified additive migrations.
-- Fixed deployment credential scope by running schema verification inside Vercel, and fixed the SQL guard's false rejection of cascading FKs using exact reviewed-content hashes. Both failed attempts stopped before production writes; regression/probe tests added.
-- Guardrails, build and 7,827 unit tests / 688 files passed. Earlier 16 relevant dev browser cases passed together without retries, including mobile, persistence and English/keyboard.
-- Live authenticated checks passed for prevention/both views/no external action links/no active health score, dashboard, intake, recommendations and notification tabs. Live health: database connected, API operational. Production prevention tab retained for review.
-- Owner waived preview for this release; no dev secret transfer or tool-approval changes. Two old dev-only phantom migrations/dead objects removed after private backup; production received no destructive cleanup. `output/` artifacts preserved.
+- **Correctness:** neutral empty states; claim deadlines separated from withdrawal rights; unsupported phone/legal and income/price assertions removed; yes/no values no longer appear as amounts.
+- **Task completion:** reviewed advisor draft, exact recipient, atomic message creation, idempotent retry, unchanged policy grants; direct reminder destinations, current-subject grouping/counts, snooze and completion with delivery history retained. Private notes excluded from inbox previews.
+- **UI/UX:** current-first home and renewal-document prompt, direct current-benefit entry, historical-benefit disclosure, usable contact links, common action grouping, collapsed life changes/habits, consistent Actions label and working anchors.
+- Dev: 88 migrations up to date; no schema/catalogue/price changes. 697 unit files / 7,861 tests green. 11 home/intake/benefit journeys plus the complete advisor→reminder→completion journey passed; 320/390/430/1280 px, EL/EN, keyboard and persisted progress covered. Type/API/lint/i18n/UTF-8 checks passed; final build/release checks recorded in the audit.
 
 ## In progress
-No remaining work for this production rollout. Broader B2B/content-assurance and UI/UX work remain separate backlogs.
+Publish an isolated preview of this branch, verify real outcomes, then merge NEW-UI and verify production. Keep unrelated local AGENTS/CLAUDE, presentation and pricing-review work outside this release.
 
 ## Blocked
-Actual two-PDF provider benchmark still awaits its separate transmission authorization; advanced personalization stays off. Money-path CI journey was skipped for missing test credentials; Kilo review lacked credits. Neither is represented as completed.
+No implementation blocker. Real-mailbox delivery, the prior PDF benchmark and persona extensions (employer-cover profile modelling / evidence-backed natural-language search) are separate work, not certified by this UI release. Dev Redis reports an existing `evalsha` ACL failure and falls back to local memory; infrastructure configuration was not changed.
 
 ## Top risks ranked
-1. **High — correctness:** real model accuracy, latency and cost remain unmeasured. Nineteen local PDFs / 592 pages and reference spans are not model-accuracy evidence.
-2. **Medium — correctness:** conditional eligibility, missing periods and incomplete amendments require clarification; entitlement/payment confirmation is not inferred.
-3. **Medium — UI/UX backlog:** targeted local/mobile and live smoke checks do not certify complete accessibility.
+1. **High — release:** promotion is not complete until preview outcomes and the deployed production revision are verified.
+2. **Medium — verification scope:** in-app message persistence is tested; outbound email delivery and real-PDF accuracy are not.
+3. **Medium — existing debt:** parallel public/professional presentation findings and dev rate-limit infrastructure remain outside this change.
 
 ## Next 3 actions
-1. OWNER (everything left needs a decision): design-system direction (Grafí vs legacy) — MASTER DA3–DA9 wait on it; A1/S5 full fix (per-locale root layouts); entity sentence C1 («ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου» vs the concrete «διαβάζει τα ασφαλιστήριά σας…»); rename «Προϊόντα» (the footer already says «Κατηγορίες», the pages' own word); homepage 7-section spine.
-2. SEO next (needs copy approval or a person): B1 keyword-bearing H1s on the 16 branch pages, C3 named reviewer on guides — then content (AEO FAQs, B2B use-case pages) once real query data exists.
-3. Complete the separately authorized PDF benchmark before enabling advanced personalization; restore money-path test credentials.
+1. Finish final staged guardrails/build and publish the exact commit as a preview.
+2. Verify preview outcomes, merge/deploy NEW-UI, and inspect production home, benefits and reminders.
+3. Record release evidence and pursue remaining product extensions as a separate increment.
 
-Before future commits/pushes: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit/build and relevant journeys. All applicable checks passed for this release.
+Before commit/push: `audit:api-auth`, `lint`, `type-check`, `verify:migrations`, `lint:i18n-changed`, `lint:utf8`, unit/build and relevant journeys. No production data mutation is required for this release.

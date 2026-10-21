@@ -30,6 +30,7 @@ async function notifyReminder(params: {
     title: { el: string; en: string }
     message: { el: string; en: string }
     relatedObjectId: string
+    dedupeKey?: string
 }) {
     await sendNotification({
         userId: params.userId,
@@ -37,8 +38,9 @@ async function notifyReminder(params: {
         title: params.title,
         message: params.message,
         channels: ["email", "in_app"],
-        relatedObjectType: "customer",
+        relatedObjectType: params.eventType === "collaboration_action_overdue" ? "collaboration_action" : params.eventType === "collaboration_unread_followup" ? "collaboration_message" : undefined,
         relatedObjectId: params.relatedObjectId,
+        dedupeKey: params.dedupeKey,
     })
 }
 
@@ -55,9 +57,11 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
     const staleMessages = await db.collaborationMessage.findMany({
         where: {
             messageType: "comment",
+            isPrivate: false,
             createdAt: { lte: twoHoursAgo },
             thread: {
                 status: { in: ["open", "waiting_agent", "waiting_policyholder"] },
+                relationship: { status: { notIn: ['inactive', 'terminated'] } },
             },
         },
         include: {
@@ -81,7 +85,6 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
             where: {
                 userId: recipientId,
                 eventType: "collaboration_unread_followup",
-                relatedObjectType: "customer",
                 relatedObjectId: message.id,
             },
             select: { id: true },
@@ -92,6 +95,7 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
             where: {
                 threadId: message.threadId,
                 senderUserId: recipientId,
+                isPrivate: false,
                 createdAt: { gt: message.createdAt },
             },
             select: { id: true },
@@ -102,21 +106,23 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
         await notifyReminder({
             userId: recipientId,
             eventType: "collaboration_unread_followup",
-            title: { el: "Μη αναγνωσμένο μήνυμα", en: "Unread message" },
+            title: { el: "Μήνυμα χωρίς απάντηση", en: "Message awaiting a reply" },
             message: {
-                el: `Έχετε ένα μη αναγνωσμένο μήνυμα από ${senderName}.`,
-                en: `You have an unread message from ${senderName}.`,
+                el: `Έχετε ένα μήνυμα χωρίς απάντηση από ${senderName}.`,
+                en: `You have a message awaiting a reply from ${senderName}.`,
             },
             relatedObjectId: message.id,
+            dedupeKey: `collaboration:reply:${message.id}:${recipientId}`,
         })
         unreadFollowupsSent += 1
     }
 
-    // 2) Overdue action reminders (once daily)
+    // 2) One overdue reminder per due date; changing the due date permits a new reminder.
     const overdueActions = await db.collaborationAction.findMany({
         where: {
             status: { in: ["pending", "in_progress"] },
             dueDate: { lt: now },
+            thread: { status: { in: ['open', 'waiting_agent', 'waiting_policyholder'] }, relationship: { status: { notIn: ['inactive', 'terminated'] } } },
         },
         include: {
             assignee: { select: { id: true, name: true, email: true } },
@@ -130,9 +136,8 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
             where: {
                 userId: action.assigneeUserId,
                 eventType: "collaboration_action_overdue",
-                relatedObjectType: "customer",
                 relatedObjectId: action.id,
-                createdAt: { gte: todayStart },
+                createdAt: { gte: action.dueDate! },
             },
             select: { id: true },
         })
@@ -147,6 +152,7 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
                 en: `Action "${action.title}" is overdue in thread "${action.thread.subject}".`,
             },
             relatedObjectId: action.id,
+            dedupeKey: `collaboration:overdue:${action.id}:${action.dueDate!.toISOString()}`,
         })
         overdueActionRemindersSent += 1
     }
@@ -169,9 +175,13 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
         })
         if (digestSentToday) continue
 
+        const latestDigest = await db.notificationEvent.findFirst({ where: { userId: p.userId, eventType: 'collaboration_daily_digest', status: 'sent' }, orderBy: { createdAt: 'desc' }, select: { createdAt: true } })
+        const changed = !latestDigest || await db.collaborationThread.findFirst({ where: { participants: { some: { userId: p.userId } }, lastActivityAt: { gt: latestDigest.createdAt }, relationship: { status: { notIn: ['inactive', 'terminated'] } } }, select: { id: true } })
+        if (!changed) continue
         const unresolved = await db.collaborationThread.count({
             where: {
                 participants: { some: { userId: p.userId } },
+                relationship: { status: { notIn: ['inactive', 'terminated'] } },
                 status: { in: ["open", "waiting_agent", "waiting_policyholder"] },
             },
         })
@@ -180,6 +190,7 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
                 assigneeUserId: p.userId,
                 status: { in: ["pending", "in_progress"] },
                 dueDate: { lt: now },
+                thread: { status: { in: ["open", "waiting_agent", "waiting_policyholder"] }, relationship: { status: { notIn: ["inactive", "terminated"] } } },
             },
         })
         if (unresolved === 0 && overdue === 0) continue
@@ -195,6 +206,7 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
                 en: `You have ${unresolved} unresolved thread(s) and ${overdue} overdue action(s).`,
             },
             relatedObjectId: p.userId,
+            dedupeKey: `collaboration:digest:${p.userId}:${todayStart.toISOString()}`,
         })
         dailyDigestsSent += 1
     }
