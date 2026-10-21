@@ -184,6 +184,16 @@ components:
 
 # Design System: PolicyWallet
 
+## Public presentation boundary — 2026-10-21
+
+The approved public implementation is recorded in
+[docs/design/public-presentation-2026-10.md](docs/design/public-presentation-2026-10.md).
+For the homepage, pricing introduction and professional hero, that surface contract
+supersedes the historical marketing-eyebrow prescriptions below. Use readable headings,
+visible sample disclosures and functional status labels; do not introduce decorative
+kickers. Forest/mint, Inter and existing semantic actions are retained. This public
+composition change does not replace the authenticated policyholder design contract.
+
 ## Overview
 
 **Creative North Star: "The Plain-Spoken Auditor"**
@@ -267,11 +277,11 @@ The severity **tone** of a finding becomes a colour in exactly one file (`compon
 - **Body** (400, 0.875rem/14px, 1.6): default UI body.
 - **Body long** (400, 1rem/16px, 1.65): marketing and long-form prose. Target a 65–75ch measure.
 - **Caption** (500–600, 0.75rem/12px, 1.5): the app's label. Field labels, table headers, card meta, the words of a fact cell, secondary lines — sentence-case, Reading Slate. This is the **smallest functional size**.
-- **Label** (700, 0.625rem/10px, 0.24em tracking, uppercase): the marketing eyebrow. Not used on the signed-in surfaces; below caption, `micro` (11px) and `label` (10px) are decorative or dense-table only.
+- **Label** (700, 0.625rem/10px, 0.24em tracking, uppercase): a historical marketing label, retired on the refreshed public surfaces. Not used on the signed-in surfaces; below caption, `micro` (11px) and `label` (10px) are decorative or dense-table only.
 
 ### Named Rules
 
-**The Twelve-Px Floor Rule.** Nothing a reader must act on is set below 12px. 11px and 10px exist for dense table meta and marketing eyebrows — never for a sentence, a control label, or a price.
+**The Twelve-Px Floor Rule.** Nothing a reader must act on is set below 12px. 11px and 10px exist only for nonessential legacy metadata, not new marketing headings — never for a sentence, a control label, or a price.
 
 **The Words Over The Number Rule.** A number in the app is a fact cell: its caption above, the metric below, a qualifying caption beneath when the total leaves something out. The DOM order stays «count words» so a screen reader hears the sentence; only the visual order flips.
 
@@ -363,7 +373,7 @@ Borders are hairlines. A coloured border thicker than 1px on a card, list item o
 - **State pills:** fully round, semantic tint and text, caption size, 600 weight, the state as a WORD — «Χρειάζεται προσοχή», «Χωρίς ασφαλιστήριο», «Υψηλή προτεραιότητα». Never restyled with brand green; never colour alone.
 - **Segmented control:** `.pw-segmented` / `.pw-segment` — a fully-round App Sunken track with 4px padding; segments are 40px pills in caption 600, the active one Paper with a hairline shadow, the idle ones Reading Slate. The recipe reads the active state from `aria-current`, `aria-pressed` or `aria-selected`, so a segment cannot look active without saying so. Below 1024px the track disappears and the active segment is an ink pill — the reference's period switch. It replaces the filled green tab and the black filter chip wherever a view is being switched rather than an action taken.
 - **Icon chip:** the 36px Rule square (10px) carrying a branch or section glyph — on every card head, every list row, every menu item. Status never tints it; the pill beside it carries status.
-- **Marketing pills:** fully round, hairline border, Reading Slate label text at 10px uppercase with 0.24em tracking — the public site's eyebrow, not the app's.
+- **Marketing pills:** fully round, hairline border, Reading Slate label text at 10px uppercase with 0.24em tracking — legacy only; do not use this as a new public heading treatment.
 
 ### Navigation
 - **App shell:** a fixed sidebar at `lg+` that becomes a focus-trapped drawer below it. Three sentence-case caption group titles; each row 44px, 12px radius, medium weight in Reading Slate. The active row is a 3px Ledger Green bar at the sidebar's edge, semibold Ink, on Green Soft at 8% — bar plus weight plus tint, never colour alone. Badges saturate at «9+» everywhere they appear. A quiet help panel on Hush sits at the foot.

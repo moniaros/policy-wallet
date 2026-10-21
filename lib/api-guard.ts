@@ -3,7 +3,7 @@ import { type ApiAuthResult, type AppRole, requireApiUser } from "@/lib/api-auth
 import { rateLimit } from "@/lib/rate-limit"
 import type { ZodType } from "zod"
 
-type NextRouteContext = { params?: Promise<Record<string, unknown>> | Record<string, unknown> }
+type NextRouteContext = { params: Promise<Record<string, unknown>> }
 
 type WebhookVerifier<TContext> = (args: {
     req: Request

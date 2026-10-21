@@ -1,3 +1,4 @@
+import { presentationCopy } from "@/lib/i18n/presentation"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
@@ -66,10 +67,7 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                         )}
                     </h2>
                     <p className="text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
-                        {t(
-                            "Γι' αυτό η απάντηση που παίρνετε είναι απλώς η αλήθεια για την κάλυψή σας.",
-                            "That is why the answer you get is simply the truth about your cover.",
-                        )}
+                        {presentationCopy[locale].independence}
                     </p>
                 </div>
 
@@ -99,6 +97,8 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                     nesting the craft floor bans. Above it the rows are plain
                     table rows again and the white ground is what separates the
                     table from the tinted section behind it. */}
+                <details className="group">
+                    <summary className="mb-6 cursor-pointer py-3 text-lg font-semibold text-fg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">{presentationCopy[locale].compareLabel}</summary>
                 <div className="lg:rounded-2xl lg:border lg:border-neutral-200 lg:bg-white lg:p-6 lg:dark:border-slate-800 lg:dark:bg-slate-950">
                     <table className="pw-stacked-table w-full border-collapse text-left">
                         <caption className="sr-only">
@@ -150,7 +150,9 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                     </table>
                 </div>
 
-                <div className="mt-6">
+                </details>
+                <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2">
+                    <Link href={localizeHref("/trust", locale)} className="inline-flex min-h-11 items-center text-body-lg font-semibold text-fg-brand underline-offset-4 hover:underline">{presentationCopy[locale].trustLink}</Link>
                     <Link
                         href={localizeHref("/compare", locale)}
                         className="inline-flex min-h-11 items-center gap-1.5 text-body-lg font-semibold text-neutral-900 underline-offset-4 hover:underline dark:text-white"

@@ -95,5 +95,8 @@
   "call:components/landing/PublicMegaFooter.tsx::Τι άλλαξε",
   "call:components/landing/PublicMegaFooter.tsx::Κατάσταση υπηρεσίας",
   "call:components/landing/PublicMegaFooter.tsx::Όλες οι κατηγορίες",
-  "call:components/landing/PublicMegaFooter.tsx::Έλεγχος αναγκών"
+  "call:components/landing/PublicMegaFooter.tsx::Έλεγχος αναγκών",
+  "inline:lib/landing/content.ts::Σας εξηγούμε τι αναφέρει",
+  "inline:lib/marketing/reading-demo.ts::Αναμονή 12 μηνών. Οι πλήρεις όροι χρειάζονται έλεγχο στο άρθρο 9.",
+  "inline:lib/marketing/reading-demo.ts::Αναφέρεται αστική ευθύνη για σωματικές βλάβες και υλικές ζημιές."
 ]

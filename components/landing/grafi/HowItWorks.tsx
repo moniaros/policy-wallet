@@ -1,11 +1,10 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { ArrowRight, BellRing, FileText, Heart, Search, ShieldCheck, type LucideIcon } from "lucide-react"
+import { ArrowRight, BellRing, FileText, Search, ShieldCheck, type LucideIcon } from "lucide-react"
 import { LandingCtaLink } from "@/components/landing/LandingCtaLink"
 import { landingContent } from "@/lib/landing/content"
 import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 import { authHref, localizeHref } from "@/lib/seo/locale-links"
-import { BrushUnderline, Eyebrow, ReadingDemo } from "@/src/design-system"
 import type { LandingLocale, LocalizedText } from "@/types/landing-content"
 
 /**
@@ -74,7 +73,7 @@ function renderEmphasis(text: string, phrase: string | undefined): ReactNode {
 
 export function HowItWorks({ locale }: { locale: LandingLocale }) {
     const t = (el: string, en: string) => (locale === "el" ? el : en)
-    const { title, steps, closing } = landingContent.howItWorks
+    const { steps } = landingContent.howItWorks
 
     return (
         <section
@@ -84,18 +83,17 @@ export function HowItWorks({ locale }: { locale: LandingLocale }) {
         >
             <div className="mx-auto max-w-[1180px] px-g-6 md:px-g-8">
                 <header className="mx-auto max-w-[56ch] text-center">
-                    <Eyebrow>{pick(title, locale)}</Eyebrow>
                     <h2
                         id="how-it-works-heading"
                         className="mt-g-3 text-balance text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary"
                     >
                         {t("Τέσσερα ", "Four ")}
-                        <BrushUnderline>{t("απλά", "simple")}</BrushUnderline>
+                        {t("απλά", "simple")}
                         {t(" βήματα.", " steps.")}
                     </h2>
                 </header>
 
-                <ol className="mx-auto mt-g-12 max-w-[880px] divide-y divide-border-subtle">
+                <ol className="mt-10 grid gap-x-12 gap-y-4 md:grid-cols-2">
                     {steps.map((step, index) => {
                         const Icon = STEP_ICONS[step.id] ?? FileText
                         const target = STEP_TARGETS[step.id]
@@ -103,22 +101,12 @@ export function HowItWorks({ locale }: { locale: LandingLocale }) {
                         return (
                             <li
                                 key={step.id}
-                                className="grid grid-cols-[auto_1fr_auto] items-center gap-g-4 py-g-6 sm:gap-g-8 sm:py-g-8"
+                                className="grid grid-cols-[1fr_auto] items-start gap-4 border-t border-border-subtle py-6"
                             >
-                                <span className="relative flex size-16 shrink-0 items-center justify-center rounded-g-lg bg-state-covered-fill sm:size-20">
-                                    <Icon aria-hidden className="size-7 text-fg-brand sm:size-9" strokeWidth={1.75} />
-                                    {/* The <ol> already conveys position; the badge is the visual. */}
-                                    <span
-                                        aria-hidden="true"
-                                        className="absolute -left-2 -top-2 flex size-7 items-center justify-center rounded-g-pill bg-action-primary-bg text-sm font-bold text-fg-on-brand"
-                                        style={{ fontVariantNumeric: "tabular-nums lining-nums" }}
-                                    >
-                                        {index + 1}
-                                    </span>
-                                </span>
 
                                 <div className="min-w-0">
-                                    <h3 className="text-g-display-md font-bold text-fg-primary">{stepTitle}</h3>
+                                    <p aria-hidden className="mb-3 text-lg font-semibold text-fg-brand">{String(index + 1).padStart(2, "0")}</p>
+                                    <h3 className="text-2xl font-semibold text-fg-primary">{stepTitle}</h3>
                                     <p className="mt-g-2 max-w-[56ch] text-g-body-lg text-fg-secondary">
                                         {renderEmphasis(
                                             pick(step.description, locale),
@@ -155,22 +143,6 @@ export function HowItWorks({ locale }: { locale: LandingLocale }) {
                     })}
                 </ol>
 
-                <p className="mx-auto mt-g-10 flex w-fit max-w-full items-center gap-g-3 rounded-g-pill bg-surface-wash py-g-2 pl-g-2 pr-g-6 text-g-body text-fg-primary">
-                    <span
-                        aria-hidden="true"
-                        className="flex size-9 shrink-0 items-center justify-center rounded-g-pill bg-action-primary-bg text-fg-on-brand"
-                    >
-                        <Heart className="size-4" fill="currentColor" />
-                    </span>
-                    <span>
-                        <strong className="font-semibold">{pick(closing.lead, locale)}</strong>{" "}
-                        {pick(closing.rest, locale)}
-                    </span>
-                </p>
-
-                {/* §6: the four steps PLUS the ReadingDemo — «το διαβάζουμε για
-                    εσάς» demonstrated on a stamped sample rather than asserted.
-                    Step two's arrow lands here. */}
             </div>
         </section>
     )

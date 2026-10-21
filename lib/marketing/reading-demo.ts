@@ -40,7 +40,7 @@ export const READING_DEMO_TABS: readonly ReadingDemoTab[] = [
             { state: "covered", text: { el: "Νοσοκομειακή περίθαλψη: έως €500.000 τον χρόνο.", en: "Inpatient care: up to €500,000 a year." } },
             { state: "gap", text: { el: "Η εξωνοσοκομειακή περίθαλψη εξαιρείται — ερώτηση για τον ασφαλιστή σας.", en: "Outpatient care is excluded — a question for your insurer." } },
             { state: "review", text: { el: "Η απαλλαγή παραπέμπει σε πίνακα που δεν επισυνάπτεται. Χρειάζεται έλεγχο.", en: "The deductible points to a table that is not attached. Needs review." } },
-            { state: "covered", text: { el: "Περίοδος αναμονής 12 μηνών: καταγράφηκε, με ημερομηνία λήξης της.", en: "12-month waiting period: recorded, with its end date." } },
+            { state: "review", text: { el: "Αναμονή 12 μηνών. Οι πλήρεις όροι χρειάζονται έλεγχο στο άρθρο 9.", en: "A 12-month waiting period. Review the full terms in article 9." } },
         ],
     },
     {
@@ -69,7 +69,7 @@ export const READING_DEMO_TABS: readonly ReadingDemoTab[] = [
             { el: "Οδική βοήθεια: βλ. συνημμένο παράρτημα…", en: "Roadside assistance: see attached annex…" },
         ],
         results: [
-            { state: "covered", text: { el: "Αστική ευθύνη: σε ισχύ, με τα υποχρεωτικά όρια.", en: "Third-party liability: in force, at the statutory limits." } },
+            { state: "covered", text: { el: "Αναφέρεται αστική ευθύνη για σωματικές βλάβες και υλικές ζημιές.", en: "Third-party liability for bodily injury and property damage is listed." } },
             { state: "covered", text: { el: "Ίδιες ζημιές: καλύπτονται, με απαλλαγή €500.", en: "Own damage: covered, with a €500 deductible." } },
             { state: "gap", text: { el: "Η θραύση κρυστάλλων εξαιρείται — ερώτηση για τον ασφαλιστή σας.", en: "Glass breakage is excluded — a question for your insurer." } },
             { state: "review", text: { el: "Η οδική βοήθεια παραπέμπει σε παράρτημα που λείπει. Χρειάζεται έλεγχο.", en: "Roadside assistance points to a missing annex. Needs review." } },

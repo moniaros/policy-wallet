@@ -17,6 +17,7 @@ import {
 
 interface PublicHeaderProps {
     locale: "el" | "en"
+    audience?: "policyholder" | "agent"
     /** Appended as `?source=<ctaSource>` to CTAs for attribution (optional). */
     ctaSource?: string
     /** Fired when the primary CTA is clicked (landing analytics, optional). */
@@ -31,7 +32,7 @@ interface PublicHeaderProps {
  * works on the homepage (no LanguageContext) and inside the app shell alike.
  */
 
-export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHeaderProps) {
+export function PublicHeader({ locale, audience = "policyholder", ctaSource, onPrimaryCtaClick }: PublicHeaderProps) {
     const isGreek = locale === "el"
     const elActive = isGreek
     const enActive = !isGreek
@@ -53,8 +54,9 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
     // authHref, not localizeHref: there is no /en/auth mirror, so the locale
     // rides as ?lang= and the auth tree pins itself to it. Without this the
     // English header dropped a visitor into a Greek signup form.
+    const signupHref = audience === "agent" ? "/auth/signup?role=agent" : PRIMARY_CTA.href
     const primaryHref = authHref(
-        ctaSource ? `${PRIMARY_CTA.href}&source=${ctaSource}` : PRIMARY_CTA.href,
+        ctaSource ? `${signupHref}&source=${ctaSource}` : signupHref,
         locale
     )
     const secondaryHref = authHref(

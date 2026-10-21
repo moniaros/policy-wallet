@@ -13,7 +13,7 @@ export async function generateMetadata({ searchParams }: TermsPageProps): Promis
 }
 
 type TermsPageProps = {
-    searchParams?: Promise<{ lang?: string }> | { lang?: string }
+    searchParams?: Promise<{ lang?: string }>
 }
 
 async function resolveSearchParams(searchParams: TermsPageProps["searchParams"]) {

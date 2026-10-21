@@ -1,66 +1,32 @@
-import { Heart, ShieldCheck } from "lucide-react"
-import { AudienceCards } from "@/components/landing/AudienceCards"
-import { BrushUnderline, Eyebrow } from "@/src/design-system"
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
+import { presentationCopy } from "@/lib/i18n/presentation"
+import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
+import { authHref, localizeHref } from "@/lib/seo/locale-links"
 import type { LandingLocale } from "@/types/landing-content"
 
-/**
- * «Για ποιον» (§6): both roles, side by side in weight. Header + AudienceCards
- * (two stamped role cards, no switch) + the one line both roles share.
- * Sits directly under HOW IT WORKS: once a visitor knows what happens to a
- * policy, the next question is whether this is for them.
- *
- * Keeps `#solutions` / `#solutions-heading` — the anchor the nav and the
- * secondary CTAs already point at.
- */
 export function WhoItIsFor({ locale }: { locale: LandingLocale }) {
-    const isGreek = locale === "el"
-    const t = (el: string, en: string) => (isGreek ? el : en)
-
+    const copy = presentationCopy[locale]
     return (
-        <section
-            id="solutions"
-            aria-labelledby="solutions-heading"
-            className="scroll-mt-28 lg:scroll-mt-36 [padding-block:var(--space-section)]"
-        >
-            <div className="mx-auto max-w-[1180px] px-g-6 md:px-g-8">
-                <header className="mx-auto max-w-[56ch] text-center">
-                    <Eyebrow>{t("Για ποιον", "Who it is for")}</Eyebrow>
-                    <h2
-                        id="solutions-heading"
-                        className="mt-g-3 text-balance text-g-display-lg font-bold tracking-[-0.01em] text-fg-primary"
-                    >
-                        {t("Για εσάς. ", "For you. ")}
-                        <BrushUnderline>{t("Ξεκάθαρα.", "Clearly.")}</BrushUnderline>
-                    </h2>
-                    <p className="mt-g-4 text-g-body-lg text-fg-secondary">
-                        {t(
-                            "Για όσους έχουν ασφαλιστήρια και για όσους τα διαχειρίζονται: δείτε τι κάνει το PolicyWallet για τον καθένα.",
-                            "For people who hold policies and for the agents who look after them: see what PolicyWallet does for each.",
-                        )}
-                    </p>
-                </header>
-
-                <div className="mt-g-10">
-                    <AudienceCards isGreek={isGreek} />
+        <section id="solutions" aria-labelledby="solutions-heading" className="scroll-mt-28 bg-surface-wash px-6 py-16 lg:px-12 lg:py-20">
+            <div className="mx-auto max-w-page">
+                <h2 id="solutions-heading" className="max-w-2xl text-balance text-h2 font-semibold leading-tight tracking-tight text-fg-primary lg:text-h1">{copy.audiencesHeading}</h2>
+                <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-16">
+                    <article className="border-t border-border-strong pt-6">
+                        <h3 className="text-2xl font-semibold text-fg-primary">{copy.individualTitle}</h3>
+                        <p className="mt-4 max-w-[48ch] text-lg leading-relaxed text-fg-secondary">{copy.individualBody}</p>
+                        <Link href={authHref("/auth/signup?role=policyholder&source=landing_audience", locale)} className="pw-primary-button mt-6">
+                            {pick(PRIMARY_ACTION, locale)}<ArrowRight aria-hidden className="size-4" />
+                        </Link>
+                    </article>
+                    <article className="border-t border-border-strong pt-6">
+                        <h3 className="text-2xl font-semibold text-fg-primary">{copy.professionalTitle}</h3>
+                        <p className="mt-4 max-w-[48ch] text-lg leading-relaxed text-fg-secondary">{copy.professionalBody}</p>
+                        <Link href={localizeHref("/solutions/agents", locale)} className="pw-secondary-button mt-6">
+                            {copy.professionalLink}<ArrowRight aria-hidden className="size-4" />
+                        </Link>
+                    </article>
                 </div>
-
-                <p className="mx-auto mt-g-8 flex max-w-[880px] flex-col items-center gap-g-4 rounded-g-lg border border-border-subtle bg-surface-raised px-g-5 py-g-4 text-center sm:flex-row sm:text-left">
-                    <span
-                        aria-hidden="true"
-                        className="flex size-12 shrink-0 items-center justify-center rounded-g-pill bg-state-covered-fill text-fg-brand"
-                    >
-                        <ShieldCheck className="size-6" />
-                    </span>
-                    <span className="text-g-body-lg text-fg-primary">
-                        <strong className="font-semibold">
-                            {t("Είτε ιδιώτης είτε ασφαλιστής, ο στόχος είναι ο ίδιος:", "Whether you are insured or you insure others, the goal is the same:")}
-                        </strong>{" "}
-                        <span className="font-semibold text-fg-brand">
-                            {t("σωστή κάλυψη, τη σωστή στιγμή.", "the right cover, at the right time.")}
-                        </span>
-                    </span>
-                    <Heart aria-hidden="true" className="hidden size-6 shrink-0 text-fg-brand sm:ml-auto sm:block" />
-                </p>
             </div>
         </section>
     )

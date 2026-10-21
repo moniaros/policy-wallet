@@ -1,5 +1,5 @@
-import { SearchQuestions } from "@/components/landing/SearchQuestions"
 import Link from "next/link"
+import { ReadingProof } from "./ReadingProof"
 import { ArrowRight } from "lucide-react"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import type { LandingLocale } from "@/types/landing-content"
@@ -7,10 +7,7 @@ import { LandingHeader } from "@/components/landing/LandingHeader"
 import { LandingCtaLink } from "@/components/landing/LandingCtaLink"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { WhyDifferent } from "@/components/landing/WhyDifferent"
-import { HomeContact } from "@/components/landing/HomeContact"
 import { GrafiHero } from "@/components/landing/GrafiHero"
-import { CoverageTicker } from "@/components/landing/grafi/CoverageTicker"
-import { AnswerBlock } from "@/components/landing/grafi/AnswerBlock"
 import { HowItWorks } from "@/components/landing/grafi/HowItWorks"
 import { WhoItIsFor } from "@/components/landing/grafi/WhoItIsFor"
 import { PricingPreview } from "@/components/landing/PricingPreview"
@@ -72,54 +69,18 @@ export function WorldClassLanding({
                 spare. The old pt-24 left 24px of nothing on phones — cheap to
                 give back now that the first screen has to hold an interaction. */}
             <main id="main-content" tabIndex={-1} className="pt-20 sm:pt-24">
-                {/* ── 1. HERO — Grafí. One fixed promise as the H1, the storage line as
-                    the sub-head, product visible immediately. The rotating headline is
-                    gone (see GrafiHero's docblock). */}
                 <GrafiHero locale={locale} />
-
-                {/* ── 2. COVERAGE-LINES TICKER (§6) — every line we read,
-                    straight from the taxonomy-joined catalogue. */}
-                <CoverageTicker locale={locale} />
-
-                {/* ── 5. THE ANSWER BLOCK (§6) — one extractable paragraph
-                    plus the four defined terms it leans on. */}
-                <AnswerBlock locale={locale} />
-                <SearchQuestions locale={locale} />
-
-                {/* ── 6. HOW IT WORKS (§6) — four numbered steps with per-step
-                    arrows, the closing line, and the ReadingDemo, on Grafí. Copy
-                    comes from lib/landing/content (also the HowTo JSON-LD). */}
+                <ReadingProof locale={locale} />
                 <HowItWorks locale={locale} />
-
-                {/* ── 7. WHO IT IS FOR (§6) — the role switch, right after the
-                    steps: once a visitor knows what happens to a policy, the
-                    next question is whether this is for them. */}
                 <WhoItIsFor locale={locale} />
-                    
-                {/* ── 5b. OUR APPROACH ─────────────────────────────── */}
                 <WhyDifferent locale={locale} />
-
-                {/* ── 7b. PARTNER PERKS (renders only with live partners) ── */}
                 <PartnerPerksSection offers={partnerOffers} isGreek={isGreek} />
-
-                {/* ── 9. PRICE ────────────────────────────────────── */}
                 <PricingPreview locale={locale} plans={pricingPlans} />
-
-                {/* ── 9c. CONTACT ──────────────────────────────────── */}
-                <HomeContact locale={locale} />
-
-              {/* ── 8. QUESTIONS ─────────────────────────────────── */}
                 <HomeFaq locale={locale} />
-
-  {/* ── 10. WHAT TO DO NEXT ──────────────────────────── */}
                 <section className="px-6 pb-24 lg:px-12">
-                    <div className="relative mx-auto max-w-page overflow-hidden rounded-2xl bg-neutral-900 px-6 py-20 text-center sm:px-8 lg:py-28">
-                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(41,104,91,0.30),transparent)]" />
+                    <div className="relative mx-auto max-w-page overflow-hidden rounded-2xl bg-brand-green px-6 py-16 text-center sm:px-8 lg:py-28">
 
                         <div className="relative">
-                            <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-mint">
-                                PolicyWallet
-                            </p>
                             <h2 className="mb-4 text-h2 leading-tight font-semibold tracking-[-0.03em] text-balance text-white lg:text-h1">
                                 {pick(FINAL_ACTION_HEADING, locale)}
                             </h2>

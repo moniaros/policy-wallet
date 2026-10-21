@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { READING_DEMO_STRINGS, READING_DEMO_TABS } from "@/lib/marketing/reading-demo"
 import { pick, type MarketingLocale } from "@/lib/marketing/positioning"
 import { STATE_LABELS, StatusChip } from "./primitives"
+import { presentationCopy } from "@/lib/i18n/presentation"
 import { cn } from "@/lib/utils"
 
 /**
@@ -26,7 +27,7 @@ import { cn } from "@/lib/utils"
 export function ReadingDemo({ locale, className }: { locale: MarketingLocale; className?: string }) {
     const [active, setActive] = useState(0)
     const [run, setRun] = useState(0)
-    const [done, setDone] = useState(false)
+    const [done, setDone] = useState(true)
     const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
     const reduced = useRef(false)
 
@@ -37,7 +38,7 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
     }, [])
 
     useEffect(() => {
-        if (reduced.current) {
+        if (reduced.current || run === 0) {
             setDone(true)
             return
         }
@@ -98,16 +99,17 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
                 role="tabpanel"
                 id={`rdemo-panel-${tab.id}`}
                 aria-labelledby={`rdemo-tab-${tab.id}`}
-                className="mt-g-5 grid gap-g-5 md:grid-cols-2"
+                className="mt-g-5 grid gap-7 lg:grid-cols-2"
             >
                 {/* The sample document, with the sweep passing over it. */}
                 <div className="relative overflow-hidden rounded-g-md border border-border-subtle bg-surface-sunken p-g-5">
                     <p className="text-g-label font-semibold uppercase tracking-[0.1em] text-fg-secondary">
                         {pick(S.stamp, locale)}
                     </p>
+                    <h3 className="mt-4 text-lg font-semibold text-fg-primary">{presentationCopy[locale].demoDocument}</h3>
                     <ul className="mt-g-4 space-y-g-3">
                         {tab.docLines.map((line, i) => (
-                            <li key={i} className="truncate font-mono text-g-caption text-fg-secondary">
+                            <li key={i} className="text-base leading-relaxed text-fg-secondary">
                                 {pick(line, locale)}
                             </li>
                         ))}
@@ -118,7 +120,8 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
                 </div>
 
                 {/* Findings. aria-live announces completion; rows stagger in. */}
-                <div aria-live="polite">
+                <div aria-live="polite" className="min-h-[310px]">
+                    <h3 className="mb-5 text-lg font-semibold text-fg-primary">{presentationCopy[locale].demoExplanation}</h3>
                     {done ? (
                         <>
                             <p className="sr-only">{pick(S.doneAnnouncement, locale)}</p>
@@ -126,10 +129,10 @@ export function ReadingDemo({ locale, className }: { locale: MarketingLocale; cl
                                 {tab.results.map((r, i) => (
                                     <li
                                         key={i}
-                                        className="g-row-in flex items-start gap-g-3"
+                                        className="g-row-in grid gap-2 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-3"
                                         style={{ animationDelay: `${Math.min(i, 3) * 70}ms` }}
                                     >
-                                        <StatusChip state={r.state} className="flex-none">
+                                        <StatusChip state={r.state} className="w-fit">
                                             {pick(STATE_LABELS[r.state], locale)}
                                         </StatusChip>
                                         <span className="text-g-body-sm text-fg-primary">{pick(r.text, locale)}</span>

@@ -1,12 +1,13 @@
 "use client"
 
+import Link from "next/link"
+import { teamCopy as copy } from "@/lib/i18n/team"
 import { useId, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { branchLabel } from "@/lib/insurance/taxonomy"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { CardHead } from "@/components/dashboard/home/CardHead"
 import { StatGrid, StatTile } from "@/components/ui/StatTile"
-import { toast } from "sonner"
 import {
     Users, UserPlus, Crown, Shield, User, ArrowRightLeft,
     TrendingUp, Euro, Briefcase, Building2, MoreVertical,
@@ -21,106 +22,6 @@ import {
 } from "./actions"
 import { resolveLocale } from "@/lib/i18n/format"
 
-const copy = {
-    en: {
-        kicker: "AGENCY",
-        title: "Team Management",
-        subtitle: "Manage your agency team, assign customers, and track performance.",
-        noTeam: "No Agency Created",
-        noTeamDesc: "Create an agency to invite team members, share customers, and track pipeline across your brokerage.",
-        createAgency: "Create Agency",
-        agencyName: "Agency Name",
-        website: "Website",
-        phone: "Phone",
-        address: "Address",
-        taxId: "ΑΦΜ",
-        members: "Team Members",
-        invite: "Invite Member",
-        email: "Email address",
-        role: "Role",
-        owner: "Owner",
-        manager: "Manager",
-        member: "Member",
-        invited: "Invited",
-        active: "Active",
-        suspended: "Suspended",
-        customers: "Customers",
-        pipeline: "Pipeline",
-        won: "Won",
-        remove: "Remove",
-        changeRole: "Change Role",
-        actionFailed: "That didn't go through. Please try again.",
-        teamStats: "Team Overview",
-        totalMembers: "Total Members",
-        totalCustomers: "Total Customers",
-        totalPipeline: "Pipeline Value",
-        totalWon: "Won Revenue",
-        sharedPipeline: "Shared Pipeline",
-        agent: "Advisor",
-        customer: "Customer",
-        sortLabel: "Sort",
-        defaultOrder: "Default order",
-        status: "Status",
-        value: "Value",
-        lob: "LoB",
-        noOpps: "No opportunities in the pipeline yet.",
-        noOppsDesc: "Opportunities appear here as your team logs cross-sell and coverage prospects for shared clients.",
-        transfer: "Transfer",
-        transferCustomer: "Transfer Customer",
-        transferTo: "Transfer to",
-        cancel: "Cancel",
-        confirm: "Confirm",
-    },
-    el: {
-        kicker: "ΠΡΑΚΤΟΡΕΙΟ",
-        title: "Διαχείριση ομάδας",
-        subtitle: "Διαχειριστείτε την ομάδα σας, αναθέστε πελάτες και παρακολουθήστε την απόδοση.",
-        noTeam: "Δεν έχει δημιουργηθεί πρακτορείο",
-        noTeamDesc: "Δημιουργήστε ένα πρακτορείο για να προσκαλέσετε μέλη, να μοιραστείτε πελάτες και να παρακολουθείτε τη ροή εργασίας.",
-        createAgency: "Δημιουργία πρακτορείου",
-        agencyName: "Όνομα πρακτορείου",
-        website: "Ιστοσελίδα",
-        phone: "Τηλέφωνο",
-        address: "Διεύθυνση",
-        taxId: "ΑΦΜ",
-        members: "Μέλη ομάδας",
-        invite: "Πρόσκληση μέλους",
-        email: "Διεύθυνση email",
-        role: "Ρόλος",
-        owner: "Ιδιοκτήτης",
-        manager: "Διαχειριστής",
-        member: "Μέλος",
-        invited: "Προσκεκλημένο",
-        active: "Ενεργό",
-        suspended: "Αναστολή",
-        customers: "Πελάτες",
-        pipeline: "Ροή",
-        won: "Κερδ.",
-        remove: "Αφαίρεση",
-        changeRole: "Αλλαγή ρόλου",
-        actionFailed: "Η ενέργεια δεν ολοκληρώθηκε. Δοκιμάστε ξανά.",
-        teamStats: "Επισκόπηση ομάδας",
-        totalMembers: "Σύνολο μελών",
-        totalCustomers: "Σύνολο πελατών",
-        totalPipeline: "Αξία ροής",
-        totalWon: "Κερδισμένα έσοδα",
-        sharedPipeline: "Κοινή ροή",
-        agent: "Σύμβουλος",
-        customer: "Πελάτης",
-        sortLabel: "Ταξινόμηση",
-        defaultOrder: "Προεπιλεγμένη σειρά",
-        status: "Κατάσταση",
-        value: "Αξία",
-        lob: "Κλάδος",
-        noOpps: "Δεν υπάρχουν ευκαιρίες ακόμα.",
-        noOppsDesc: "Οι ευκαιρίες εμφανίζονται εδώ καθώς η ομάδα σας καταγράφει προοπτικές πώλησης και κάλυψης για κοινούς πελάτες.",
-        transfer: "Μεταφορά",
-        transferCustomer: "Μεταφορά πελάτη",
-        transferTo: "Μεταφορά σε",
-        cancel: "Ακύρωση",
-        confirm: "Επιβεβαίωση",
-    },
-}
 
 interface PipelineItem {
     id: string
@@ -139,6 +40,7 @@ interface PipelineItem {
 interface Props {
     team: TeamOverview | null
     pipeline: PipelineItem[]
+    canCreateAgency?: boolean
 }
 
 type TeamSortKey = "customer" | "agent" | "lob" | "status" | "value"
@@ -147,7 +49,7 @@ type TeamSortKey = "customer" | "agent" | "lob" | "status" | "value"
 // no CSS uppercase (Greek capitals drop the tonos).
 const pill = "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-caption font-semibold"
 
-export function TeamClient({ team, pipeline }: Props) {
+export function TeamClient({ team, pipeline, canCreateAgency = false }: Props) {
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
 
@@ -160,7 +62,7 @@ export function TeamClient({ team, pipeline }: Props) {
         }).format(n)
 
     if (!team) {
-        return <CreateAgencyView t={t} />
+        return <CreateAgencyView t={t} canCreate={canCreateAgency} />
     }
 
 
@@ -171,8 +73,9 @@ export function TeamClient({ team, pipeline }: Props) {
                     the heading carries its own weight, and CSS uppercase strips
                     the tonos off Greek. */}
                 <div className="min-w-0">
-                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{t.title}</h1>
+                    <h1 className="text-h3 font-semibold tracking-tight text-foreground">{team.tenantName}</h1>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.subtitle}</p>
+                    <p className="mt-2 text-sm text-muted-foreground">{t.role}: {t[team.viewerRole]}</p>
                 </div>
 
                 {/* Four fact tiles on the shared StatTile — the accent tints the
@@ -181,8 +84,8 @@ export function TeamClient({ team, pipeline }: Props) {
                 <StatGrid>
                     <StatTile icon={Users} label={t.totalMembers} value={team.stats.totalMembers} accent="brand" />
                     <StatTile icon={Briefcase} label={t.totalCustomers} value={team.stats.totalCustomers} />
-                    <StatTile icon={TrendingUp} label={t.totalPipeline} value={fmt(team.stats.totalPipeline)} />
-                    <StatTile icon={Euro} label={t.totalWon} value={fmt(team.stats.totalWon)} accent="positive" />
+                    <StatTile icon={TrendingUp} label={team.revenueScope === "own" ? t.ownPipeline : t.totalPipeline} value={fmt(team.stats.totalPipeline)} />
+                    <StatTile icon={Euro} label={team.revenueScope === "own" ? t.ownWon : t.totalWon} value={fmt(team.stats.totalWon)} accent="positive" />
                 </StatGrid>
 
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -215,17 +118,23 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
     // Which member row has a role change / removal in flight. Both are
     // destructive server actions with no optimistic UI, so without this the
     // menu sat inert after the click and a second click fired them twice.
+    const [memberError, setMemberError] = useState("")
     const [memberBusy, setMemberBusy] = useState<string | null>(null)
 
     /** Runs a member mutation with a busy guard and a surfaced failure. */
-    const runMemberAction = async (userId: string, action: () => Promise<unknown>) => {
+    const runMemberAction = async (userId: string, action: () => Promise<{ error?: string; success?: boolean }>) => {
         if (memberBusy) return
         setMemberBusy(userId)
+        setMemberError("")
         try {
-            await action()
+            const result = await action()
+            if (result.error) {
+                setMemberError(t.actionFailed)
+                return
+            }
             setMenuOpen(null)
         } catch {
-            toast.error(t.actionFailed)
+            setMemberError(t.actionFailed)
         } finally {
             setMemberBusy(null)
         }
@@ -235,13 +144,18 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
         if (!inviteEmail) return
         setInviteLoading(true)
         setInviteError("")
-        const result = await inviteMemberAction(inviteEmail, inviteRole)
-        setInviteLoading(false)
-        if (result.error) {
-            setInviteError(result.error)
-        } else {
-            setInviteEmail("")
-            setShowInvite(false)
+        try {
+            const result = await inviteMemberAction(inviteEmail, inviteRole)
+            if (result.error) {
+                setInviteError(result.error === "UPGRADE_REQUIRED" ? t.upgradeRequired : t.actionFailed)
+            } else {
+                setInviteEmail("")
+                setShowInvite(false)
+            }
+        } catch {
+            setInviteError(t.actionFailed)
+        } finally {
+            setInviteLoading(false)
         }
     }
 
@@ -277,7 +191,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                 title={t.members}
                 id={headingId}
                 meta={
-                    <button
+                    team.viewerRole !== "member" ? <button
                         type="button"
                         onClick={() => setShowInvite(!showInvite)}
                         aria-expanded={showInvite}
@@ -285,9 +199,11 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                     >
                         <UserPlus className="h-4 w-4" aria-hidden="true" />
                         {t.invite}
-                    </button>
+                    </button> : undefined
                 }
             />
+
+            {memberError && <p role="alert" className="mt-3 text-sm text-status-danger">{memberError}</p>}
 
             {/* Invite form — a sub-card inside the card. */}
             {showInvite && (
@@ -307,7 +223,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         className="pw-input pw-input-sm"
                     >
                         <option value="member">{t.member}</option>
-                        <option value="manager">{t.manager}</option>
+                        {team.viewerRole === "owner" && <option value="manager">{t.manager}</option>}
                     </select>
                     {inviteError && (
                         <p role="alert" className="flex items-center gap-1 text-caption font-semibold text-status-danger">
@@ -358,11 +274,11 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                                     {m.customerCount} {t.customers}
                                 </span>
                                 <span className="font-semibold tabular-nums text-foreground">
-                                    {fmt(m.wonValue)}
+                                    {m.revenueVisible ? fmt(m.wonValue) : t.hiddenRevenue}
                                 </span>
                             </div>
                         </div>
-                        {m.role !== "owner" && (
+                        {m.role !== "owner" && (team.viewerRole === "owner" || (team.viewerRole === "manager" && m.role === "member")) && (
                             <button
                                 type="button"
                                 onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)}
@@ -378,7 +294,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                             to state rather than resting on a card. */}
                         {menuOpen === m.id && (
                             <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-2xl border border-border bg-card p-1 shadow-xl">
-                                <button
+                                {team.viewerRole === "owner" && <button
                                     type="button"
                                     onClick={() =>
                                         runMemberAction(m.userId, () =>
@@ -397,7 +313,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                                         <ArrowRightLeft className="h-4 w-4" aria-hidden="true" />
                                     )}
                                     {t.changeRole}
-                                </button>
+                                </button>}
                                 <button
                                     type="button"
                                     onClick={() => runMemberAction(m.userId, () => removeMemberAction(m.userId))}
@@ -459,7 +375,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
             <div className={isEmpty ? undefined : "pw-pad pb-0"}>
                 <CardHead
                     icon={TrendingUp}
-                    title={t.sharedPipeline}
+                    title={team.revenueScope === "own" ? t.ownPipelineTitle : t.sharedPipeline}
                     id={headingId}
                     meta={isEmpty ? undefined : <span className="tabular-nums">{pipeline.length}</span>}
                 />
@@ -532,7 +448,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
     )
 }
 
-function CreateAgencyView({ t }: { t: typeof copy.en }) {
+function CreateAgencyView({ t, canCreate }: { t: typeof copy.en; canCreate: boolean }) {
     const [name, setName] = useState("")
     const [website, setWebsite] = useState("")
     const [phone, setPhone] = useState("")
@@ -545,9 +461,14 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
         if (!name.trim()) return
         setLoading(true)
         setError("")
-        const result = await createAgencyAction({ name, website, phone, address, taxId })
-        setLoading(false)
-        if (result.error) setError(result.error)
+        try {
+            const result = await createAgencyAction({ name, website, phone, address, taxId })
+            if (result.error) setError(result.error === "UPGRADE_REQUIRED" ? t.upgradeRequired : t.actionFailed)
+        } catch {
+            setError(t.actionFailed)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -568,7 +489,8 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                         {t.noTeamDesc}
                     </p>
 
-                    <div className="mt-8 space-y-3 text-left">
+                    {!canCreate && <div className="mt-6 space-y-3"><p className="text-sm text-muted-foreground">{t.creationRequirement}</p><Link className="pw-primary-button" href="/agent/pricing">{t.viewPlans}</Link></div>}
+                    {canCreate && <div className="mt-8 space-y-3 text-left">
                         <div>
                             <label htmlFor="team-name" className="mb-1.5 block text-caption font-medium text-muted-foreground">{t.agencyName} *</label>
                             <input id="team-name"
@@ -576,7 +498,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 className="pw-input"
-                                placeholder="Ασφαλιστικό Πρακτορείο..."
+                                placeholder={t.agencyName}
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
@@ -621,7 +543,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                 className="pw-input"
                             />
                         </div>
-                    </div>
+                    </div>}
 
                     {error && (
                         <p role="alert" className="mt-4 flex items-center justify-center gap-1 text-caption font-semibold text-status-danger">
@@ -629,7 +551,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                         </p>
                     )}
 
-                    <button
+                    {canCreate && <button
                         type="button"
                         onClick={handleCreate}
                         disabled={loading || !name.trim()}
@@ -637,7 +559,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                         className="pw-primary-button mt-6 w-full"
                     >
                         {loading ? "..." : t.createAgency}
-                    </button>
+                    </button>}
                 </section>
             </div>
         </div>
