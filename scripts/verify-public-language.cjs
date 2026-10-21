@@ -1,4 +1,4 @@
-/* global process, console, document, window, innerWidth, location */
+/* global process, console, document, innerWidth, URL */
 const { chromium } = require('playwright');
 const { default: AxeBuilder } = require('@axe-core/playwright');
 const fs = require('node:fs');
