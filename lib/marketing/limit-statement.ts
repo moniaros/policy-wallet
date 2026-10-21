@@ -38,8 +38,11 @@ export const FREE_UP_TO: Bilingual = {
  * records excepted. Replaces «Διαγράφετε τα πάντα όποτε θέλετε» /
  * "Delete everything whenever you want", which promised an unconditional
  * self-service erase that the retained-records policy does not give.
- * Wording approved by the owner 2026-10-22: it mirrors /trust
- * (app/(public)/trust/TrustSections.tsx, the deletion paragraph) word for word.
+ * Wording approved by the owner 2026-10-22 (the reviewer's draft). Its second
+ * sentence reuses /trust's retained-records wording («δεν διαγράφονται πριν λήξει
+ * η σχετική υποχρέωση»); it is a SHORTER statement than the /trust paragraph, not a
+ * copy of it. tests/unit/cta-reassurance-single-source.test.ts pins that the key
+ * phrase appears in both places, so the two cannot drift apart silently.
  */
 export const DELETION_ON_REQUEST: Bilingual = {
     el: "Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας. Όσα πρέπει να κρατήσουμε, όπως τα φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.",

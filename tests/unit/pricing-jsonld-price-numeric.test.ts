@@ -32,7 +32,7 @@ function sourceOffenders(path: string, text: string): string[] {
     const bad: string[] = []
     if (!/pricing\.monthly\.value/.test(text)) bad.push(`${path}: offer price does not come from pricing.monthly.value`)
     text.split('\n').forEach((line, i) => {
-        if (/\bprice\s*:/.test(line) && /\.replace\(|parseFloat|parseInt|Number\(|\.amount/.test(line)) bad.push(`${path}:${i + 1}  ${line.trim()}`)
+        if (/\bprice\s*:/.test(line) && /\.replace\(|parseFloat|parseInt|Number\(|String\(|\.amount/.test(line)) bad.push(`${path}:${i + 1}  ${line.trim()}`)
     })
     return bad
 }

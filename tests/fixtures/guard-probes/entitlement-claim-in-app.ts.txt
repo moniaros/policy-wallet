@@ -6,4 +6,6 @@ analysis: {
 analysesUnlimited: 'Απεριόριστες αναλύσεις εγγράφων με AI',
 noPaidFeatures: 'Το δωρεάν πρόγραμμα δεν περιλαμβάνει αναλύσεις AI.',
 agency: ["Unlimited AI analyses", "Largest AI budget (25M tokens/month)", "Dedicated support"],
-// downgrade probe: 'Yes, you can upgrade or downgrade at any time.'
+faqAnswer: 'Yes, you can upgrade or downgrade at any time.',
+analysisBlockedUpgradeTitle: 'Η πλήρης ανάλυση AI είναι δυνατότητα του Plus',
+hint: 'Τα πληρωμένα πλάνα περιλαμβάνουν προτεραιότητα υποστήριξης μέσω email.',

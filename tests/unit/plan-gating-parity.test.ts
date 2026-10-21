@@ -147,7 +147,6 @@ const TIER_OF_KEY: Record<string, PlanTier | AgentTier> = {
 
 /** A label that states a capability but is deliberately not tied to one enforced field. Each needs a reason. */
 const UNTAGGED_OK: Record<string, string> = {
-    'Ημερομηνία ανανέωσης': 'the renewal date is shown for every policy whose end date was read (STEP0 §2.3 E-row T); no limit field',
     'Βασική εικόνα πελατών': 'ungated agent client view (STEP0 §2.3 E33)',
     'Όλοι οι πελάτες σε μία οθόνη': 'ungated agent portfolio screen (STEP0 §2.3 E33)',
     'Λίστα με ό,τι λήγει': 'agent expiry list; STEP0 §2.3 E33 verified, no single entitlement field',
@@ -225,7 +224,7 @@ describe('PW-CONTENT-02 — every public capability claim equals what the code e
 /** In-app strings (A1): a promise nothing grants. Enumerated from the filesystem, not from two known files. */
 const IN_APP_ROOTS = ['app', 'components', 'lib']
 // In-app promises of full analysis below Family, or of unlimited analyses, that the code does not grant (review I7).
-const IN_APP_BANNED = /πρώτη πλήρης ανάλυση είναι δωρεάν|first full analysis is free|Full AI analysis is a Plus feature|διαθέσιμη σε Plus\/Pro|available on Plus\/Pro|Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο|Analyses are unlimited on every plan|3 ασφαλιστήρια με πλήρη ανάλυση|3 policies with the full AI analysis|Απεριόριστες αναλύσεις|Unlimited (document |AI )?analyses|Απεριόριστες AI αναλύσεις|δεν περιλαμβάνει αναλύσεις AI|\d+M tokens\/(μήνα|month)|Αποκλειστική υποστήριξη|Dedicated support|upgrade or downgrade|υποβαθμίσετε/i
+const IN_APP_BANNED = /πρώτη πλήρης ανάλυση είναι δωρεάν|first full analysis is free|Full AI analysis is a Plus feature|διαθέσιμη σε Plus\/Pro|available on Plus\/Pro|Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο|Analyses are unlimited on every plan|3 ασφαλιστήρια με πλήρη ανάλυση|3 policies with the full AI analysis|Απεριόριστες αναλύσεις|Unlimited (document |AI )?analyses|Απεριόριστες AI αναλύσεις|δεν περιλαμβάνει αναλύσεις AI|\d+M tokens\/(μήνα|month)|Αποκλειστική υποστήριξη|Dedicated support|upgrade or downgrade|υποβαθμίσετε|δυνατότητα του Plus|περιλαμβάνονται στο Plus|προτεραιότητα υποστήριξης|[Pp]riority support|with Plus or Pro/i
 function inAppFiles(dir: string): string[] {
     if (!existsSync(dir)) return []
     return readdirSync(dir).flatMap((name) => {
@@ -246,9 +245,11 @@ describe('PW-CONTENT-02 A1 — no in-app string promises a free full analysis (H
         const bad = inAppOffenders(files)
         expect(bad, `an unbacked promise is back:\n${bad.join('\n')}`).toEqual([])
     })
-    it('probe: the detector turns red on the removed string', () => {
+    it('probe: the detector turns red on every probe line — Greek forms included', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/entitlement-claim-in-app.ts.txt', 'utf-8')
-        expect(inAppOffenders([{ path: 'probe', text: probe }]).length).toBeGreaterThan(0)
+        const found = inAppOffenders([{ path: 'probe', text: probe }]).join('\n')
+        for (const needle of ['Η πρώτη πλήρης ανάλυση είναι δωρεάν', 'Απεριόριστες αναλύσεις εγγράφων', 'δεν περιλαμβάνει αναλύσεις AI', 'Unlimited AI analyses', 'tokens/month', 'Dedicated support', 'upgrade or downgrade', 'δυνατότητα του Plus', 'προτεραιότητα υποστήριξης'])
+            expect(found, `the in-app guard must catch «${needle}»`).toContain(needle)
     })
 })
 
@@ -265,20 +266,26 @@ import { RENEWAL_MILESTONES } from '@/lib/renewals/milestones'
 import { readFileSync as readSrc } from 'node:fs'
 
 const PROSE_ROWS = new Set(['See all your policies together', 'Explains what they say in plain words'])
+type CmpRow = { claim: ClaimKey | null; job: { en: string }; policywallet: string }
+function comparisonOffenders(rows: CmpRow[]): string[] {
+    const bad: string[] = []
+    for (const row of rows) {
+        if (row.claim === null) { if (!PROSE_ROWS.has(row.job.en)) bad.push(`«${row.job.en}»: claim:null needs a PROSE_ROWS reason`); continue }
+        const on = (['free', 'plus', 'pro'] as const).map((t) => planClaim(row.claim as never, t as never) === true)
+        const expected = on.every(Boolean) ? 'yes' : on.slice(0, 2).every((v) => !v) && on[2] ? 'family' : 'MIXED'
+        if (row.policywallet !== expected) bad.push(`«${row.job.en}»: renders «${row.policywallet}», code says ${expected} (${row.claim})`)
+    }
+    return bad
+}
 describe('PW-CONTENT-02 — comparison rows equal the enforced entitlement', () => {
     it('every claim-tagged row\'s PolicyWallet verdict matches planClaim on free / plus / pro', () => {
-        const bad: string[] = []
-        for (const row of COMPARISON_ROWS) {
-            if (row.claim === null) { if (!PROSE_ROWS.has(row.job.en)) bad.push(`«${row.job.en}»: claim:null needs a PROSE_ROWS reason`); continue }
-            const on = (['free', 'plus', 'pro'] as const).map((t) => planClaim(row.claim as never, t as never) === true)
-            const expected = on.every(Boolean) ? 'yes' : on.slice(0, 2).every((v) => !v) && on[2] ? 'family' : 'MIXED'
-            if (row.policywallet !== expected) bad.push(`«${row.job.en}»: renders «${row.policywallet}», code says ${expected} (${row.claim})`)
-        }
+        const bad = comparisonOffenders(COMPARISON_ROWS as never)
         expect(bad, bad.join('\n')).toEqual([])
     })
-    it('probe — a Family-only cell on an ungated capability is caught', () => {
-        const on = (['free', 'plus', 'pro'] as const).map((t) => planClaim('exclusions', t as never) === true)
-        expect(on.every(Boolean) ? 'yes' : 'family', 'exclusions are on every plan, so a «family» cell would be red').toBe('yes')
+    it('probe — a «family» cell on an ungated capability is caught by the SAME detector', () => {
+        const bad = comparisonOffenders([{ claim: 'exclusions', job: { en: 'probe: exclusions shown only with Family' }, policywallet: 'family' }])
+        expect(bad.join('\n')).toMatch(/renders «family», code says yes \(exclusions\)/)
+        expect(comparisonOffenders([{ claim: 'gapDetection', job: { en: 'probe: gaps for everyone' }, policywallet: 'yes' }]).join('\n')).toMatch(/code says family \(gapDetection\)/)
     })
 })
 

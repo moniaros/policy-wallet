@@ -15,13 +15,10 @@ import { join } from "node:path"
 
 import { duplicateBlocks, settle, textBlocks, truncationFailures } from "./metrics"
 import { PRODUCT_CATEGORY_SLUGS } from "./content-02-routes"
+import { POSITIONING_BANNED as BANNED, SUPPORT_BANNED } from "./content-02-patterns"
 
 const PHASE = process.env.CONTENT02_PHASE || "after"
 const DIR = join(process.cwd(), "docs", "series", "PW-CONTENT-02", "evidence")
-const BANNED = /έλεγχο[ςυ] ρίσκου|ανάλυσης? ρίσκου|(σας λέμε|δείτε|δείχνει|δείχνουμε)\s+(αν|πού)\s+είστε\s+καλυμμένοι|[Αα]ξιολογούμε την προστασία|risk intelligence|risk check|(tell|show)s?\s+(you\s+)?(if|where)\s+you\s+are\s+covered|what you are not covered for|ανεξάρτητ\S*\s+(έλεγχ|ανάλυσ)\S*|independent (risk|analysis|personal)/i
-
-// Support is email only (owner decision 2026-10-22): no phone, hours, chat or «dedicated» support in rendered text.
-const SUPPORT_BANNED = /Αποκλειστική υποστήριξη|Dedicated support|τηλεφωνικ\S* υποστήριξη|phone support|ώρες λειτουργίας|ώρες που απαντάμε|When we answer|24\/7|Δευτέρα\s*[–-]\s*Παρασκευή|Monday\s*[–-]\s*Friday|live chat/i
 
 const BASE_ROUTES = ["/", "/pricing", "/product", "/compare", "/solutions/agents", ...PRODUCT_CATEGORY_SLUGS.map((c) => `/product/${c}`)]
 const ROUTES = [...BASE_ROUTES, ...BASE_ROUTES.map((r) => (r === "/" ? "/en" : `/en${r}`))]

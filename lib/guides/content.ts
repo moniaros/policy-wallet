@@ -585,12 +585,11 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε χωρίς χρόνο να αποφασίσετε με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των ασφαλιστηρίων σας σε ένα σημείο και — από το πλάνο Plus — σας ειδοποιεί εγκαίρως, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
-                        // The Greek says «από το πλάνο Plus»; the English had
-                        // dropped it, so it promised renewal alerts on a page
-                        // whose CTA is "Start free with one policy". Free has
-                        // notifications off — reminders begin at Starter.
-                        en: "Thirty days before expiry. That leaves time to request quotes, negotiate, and avoid being locked into an automatic renewal on worse terms. PolicyWallet tracks the expiry dates of all your policies and — from the Plus plan — alerts you in time, with a ready coverage summary so you can compare quotes on equal footing.",
+                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε χωρίς χρόνο να αποφασίσετε με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των ασφαλιστηρίων σας σε ένα σημείο και σας στέλνει υπενθύμιση πριν τη λήξη, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
+                        // Every plan gets a renewal reminder (30 days ahead, email);
+                        // the longer ladder is Plus and Family — so neither
+                        // language attributes the reminder to a plan (PW-CONTENT-02).
+                        en: "Thirty days before expiry. That leaves time to request quotes, negotiate, and avoid being locked into an automatic renewal on worse terms. PolicyWallet tracks the expiry dates of all your policies and sends you a reminder before expiry, with a ready coverage summary so you can compare quotes on equal footing.",
                     },
                 ],
             },
@@ -2223,8 +2222,8 @@ export const guides: Guide[] = [
                     en: "Can I pay my premium inside PolicyWallet?",
                 },
                 answer: {
-                    el: "Όχι. Το PolicyWallet δεν εισπράττει ασφάλιστρα και δεν είναι ίδρυμα πληρωμών. Η πληρωμή γίνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή σας· η εφαρμογή σάς θυμίζει πόσο και πότε — από το πλάνο Plus.",
-                    en: "No. PolicyWallet does not collect premiums and is not a payment institution. Payment happens with your insurer or intermediary; the app reminds you how much and when — from the Plus plan.",
+                    el: "Όχι. Το PolicyWallet δεν εισπράττει ασφάλιστρα και δεν είναι ίδρυμα πληρωμών. Η πληρωμή γίνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή σας· η εφαρμογή σάς θυμίζει πότε λήγει το ασφαλιστήριο.",
+                    en: "No. PolicyWallet does not collect premiums and is not a payment institution. Payment happens with your insurer or intermediary; the app reminds you when a policy ends.",
                 },
             },
             {
@@ -2397,8 +2396,8 @@ export const guides: Guide[] = [
                         en: "You upload the PDF or a photo of each policy, from any insurer, and the AI reads it. Instead of one more file in a folder, you get plain-language answers on what is covered, what is excluded, what the limits and deductibles are, and which dates matter.",
                     },
                     {
-                        el: "Με το Family, βλέπετε ευρήματα προς έλεγχο, κάνετε ερωτήσεις για τα έγγραφα και μοιράζεστε στοιχεία με ασφαλιστή. Οι υπενθυμίσεις ανανέωσης προσφέρονται από το Plus. Δείτε τις ακριβείς δυνατότητες κάθε πλάνου στη σελίδα τιμών.",
-                        en: "With Family, you can review findings, ask questions about documents and share information with an adviser. Renewal reminders are available from Plus. See each plan's exact features on the pricing page.",
+                        el: "Με το Family, βλέπετε ευρήματα προς έλεγχο, κάνετε ερωτήσεις για τα έγγραφα και μοιράζεστε στοιχεία με ασφαλιστή. Η υπενθύμιση ανανέωσης 30 ημέρες πριν ισχύει σε όλα τα πλάνα· οι υπενθυμίσεις από 90 ημέρες πριν προσφέρονται από το Plus. Δείτε τις ακριβείς δυνατότητες κάθε πλάνου στη σελίδα τιμών.",
+                        en: "With Family, you can review findings, ask questions about documents and share information with an adviser. The 30-day renewal reminder applies on every plan; reminders from 90 days ahead are available from Plus. See each plan's exact features on the pricing page.",
                     },
                 ],
             },

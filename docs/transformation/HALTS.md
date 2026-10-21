@@ -1061,7 +1061,7 @@ Decisions are in `docs/transformation/DECISIONS.md` (PW-CONTENT-02 round 2). Sta
 
 date: 2026-10-22 · raised_by: PW-CONTENT-02 · blocks: nothing in the build; **needs Eli**
 
-Owner instruction: *do not change any no-commission claim.* None was changed in wording (two nearby FUNDING claims, «Πληρωνόμαστε μόνο από …», were removed earlier under H-022). Whether any partner referral earns PolicyWallet money (`partner_referrals`) is unconfirmed; if it does, every line below is false. File:line references (el and en twins listed together; generated from the tree 2026-10-22):
+Owner instruction: *do not change any no-commission claim.* None was changed in wording (two nearby FUNDING claims, «Πληρωνόμαστε μόνο από …», were removed earlier under H-022). Whether any partner referral earns PolicyWallet money (`partner_referrals`) is unconfirmed; if it does, every line below is false. File:line references (el and en twins listed together; regenerated from the tree at the last commit of 2026-10-22):
 
 - `app/(public)/company/CompanyPageClient.tsx`: 139, 140
 - `app/(public)/product/marketing-content.ts`: 87, 88
@@ -1069,7 +1069,7 @@ Owner instruction: *do not change any no-commission claim.* None was changed in 
 - `app/(public)/trust/TrustSections.tsx`: 91, 92
 - `components/landing/PartnersSections.tsx`: 127, 128
 - `lib/glossary/content.ts`: 1242, 1243
-- `lib/guides/content.ts`: 1899, 1900, 2173, 2174, 2246
+- `lib/guides/content.ts`: 1898, 1899, 2172, 2173, 2245
 - `lib/landing/content.ts`: 123, 124
 - `lib/legal/legal-content.ts`: 109, 594
 - `lib/marketing/positioning.ts`: 258, 259, 266, 267
@@ -1082,11 +1082,10 @@ Related FUNDING-adjacent claims («Τα έσοδά μας προέρχονται
 - `app/(public)/company/CompanyPageClient.tsx`: 139, 140
 - `app/(public)/trust/TrustSections.tsx`: 91, 92
 - `components/landing/WhyDifferent.tsx`: 54, 55
-- `lib/guides/content.ts`: 2174
+- `lib/guides/content.ts`: 2173
 - `lib/landing/content.ts`: 123, 124
 - `lib/legal/legal-content.ts`: 594
 - `lib/marketing/positioning.ts`: 484
-
 
 **Ask:** confirm "no commission, revenue from subscriptions only" is true today, or tell me which claims to remove.
 

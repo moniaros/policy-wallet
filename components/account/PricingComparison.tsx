@@ -126,7 +126,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
         { name: copy.features.automaticGapDetection[language], free: false, plus: false, pro: true },
         { name: copy.features.interactiveQA[language], free: false, plus: false, pro: true },
         { name: copy.features.digitalWallet[language], free: false, plus: false, pro: true },
-        { name: copy.features.prioritySupport[language], free: false, plus: false, pro: true },
+        { name: copy.features.prioritySupport[language], free: true, plus: true, pro: true },
         { name: copy.features.advancedAnalytics[language], free: false, plus: false, pro: true },
         { name: copy.features.agentCollaboration[language], free: false, plus: false, pro: true },
     ]

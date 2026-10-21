@@ -86,21 +86,21 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         'premium-features': {
             id: 'premium-features',
             title: 'Understanding Paid Plan Benefits',
-            subtitle: 'Unlock full AI analysis and more policy storage with the paid plans.',
+            subtitle: 'See what each paid plan adds: more policy storage, and the full AI analysis on Family.',
             readTime: '5 min',
             category: 'Features',
             sections: [
                 {
                     heading: 'AI Gap Analysis',
-                    text: 'The core benefit of the paid plans is the deep-dive analysis. Our AI doesn\'t just read your policy; it understands it. It compares your coverage against standard industry benchmarks to find "Gaps" - risks you are exposed to but not covered for.',
+                    text: 'The full AI analysis is on the Family plan. It reads each policy against the checks we have written for its type of insurance and lists findings to review with your insurance advisor.',
                 },
                 {
                     heading: 'More Policy Storage',
                     text: 'The free plan includes 3 policies with a basic summary. Plus allows up to 10 and Family up to 25 — including past/expired policies for historical review.',
                 },
                 {
-                    heading: 'Priority Support',
-                    text: 'Paid plans include priority support by email. For questions about your coverage, you can also ask the AI directly on any policy page, or share the policy with your insurance advisor and review it together.',
+                    heading: 'Support',
+                    text: 'Support is by email, on every plan. For questions about your coverage, the Family plan also lets you ask the AI directly on a policy page; on any plan you can share the policy with your insurance advisor and review it together.',
                 }
             ]
         },
@@ -278,21 +278,21 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         'premium-features': {
             id: 'premium-features',
             title: 'Κατανόηση των προνομίων των πληρωμένων πλάνων',
-            subtitle: 'Αποκτήστε την πλήρη ανάλυση AI και περισσότερο χώρο ασφαλιστηρίων με τα πληρωμένα πλάνα.',
+            subtitle: 'Δείτε τι προσθέτει κάθε πληρωμένο πλάνο: περισσότερος χώρος ασφαλιστηρίων και, με το Family, η πλήρης ανάλυση AI.',
             readTime: '5 λεπτά',
             category: 'Δυνατότητες',
             sections: [
                 {
                     heading: 'Ανάλυση Κενών με AI',
-                    text: 'Το βασικό πλεονέκτημα των πληρωμένων πλάνων είναι η εις βάθος ανάλυση. Η AI μας δεν διαβάζει απλώς το ασφαλιστήριό σας. Το κατανοεί. Συγκρίνει την κάλυψή σας με τα πρότυπα της αγοράς για να βρει "Κενά" - κινδύνους στους οποίους είστε εκτεθειμένοι αλλά όχι καλυμμένοι.',
+                    text: 'Η πλήρης ανάλυση AI είναι στο πλάνο Family. Διαβάζει κάθε ασφαλιστήριο με βάση τους ελέγχους που έχουμε γράψει για τον κλάδο του και σας δείχνει ευρήματα για να τα δείτε με τον ασφαλιστή σας.',
                 },
                 {
                     heading: 'Περισσότερος χώρος ασφαλιστηρίων',
                     text: 'Το δωρεάν πλάνο περιλαμβάνει 3 ασφαλιστήρια με βασική σύνοψη. Το Plus επιτρέπει έως 10 και το Family έως 25 — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο.',
                 },
                 {
-                    heading: 'Προτεραιότητα Υποστήριξης',
-                    text: 'Τα πληρωμένα πλάνα περιλαμβάνουν προτεραιότητα υποστήριξης μέσω email. Για ερωτήσεις σχετικά με την κάλυψή σας, μπορείτε επίσης να ρωτήσετε απευθείας την AI στη σελίδα κάθε ασφαλιστηρίου, ή να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο και να το εξετάσετε μαζί του.',
+                    heading: 'Υποστήριξη',
+                    text: 'Η υποστήριξη γίνεται μέσω email, σε όλα τα πλάνα. Για ερωτήσεις σχετικά με την κάλυψή σας, το Family σάς επιτρέπει να ρωτάτε απευθείας την AI στη σελίδα του ασφαλιστηρίου· σε κάθε πλάνο μπορείτε να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο και να το εξετάσετε μαζί του.',
                 }
             ]
         },

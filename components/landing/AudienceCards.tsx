@@ -127,8 +127,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
         // Reminders start on the Plus plan (Free shows only the date), so the
         // benefit names the plan instead of promising it to everyone.
         t(
-            "Υπενθυμίσεις πριν λήξουν τα ασφαλιστήριά σας — από το πλάνο Plus",
-            "Reminders before your policies expire — from the Plus plan",
+            "Υπενθύμιση πριν λήξουν τα ασφαλιστήριά σας· νωρίτερα με το Plus",
+            "A reminder before your policies expire; earlier with Plus",
         ),
         // Gap detection is a Family feature — same honesty rule.
         t(

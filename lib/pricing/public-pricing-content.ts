@@ -131,7 +131,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { claim: "policies", label: { el: "3 ασφαλιστήρια", en: "3 policies" }, included: true, highlight: true },
                     { claim: "basicSummary", label: { el: "Βασική σύνοψη ασφαλιστηρίου", en: "Basic policy summary" }, included: true, highlight: true },
                     { claim: "duplicateDetection", label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
-                    { claim: null, label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
+                    { claim: "renewalDate", label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
                     // Free DOES get the 30-day email (renewal.service.ts). This
                     // line said ✗ «Υπενθυμίσεις ανανέωσης» until 2026-10-21.
                     { claim: "renewalEmail30", label: { el: "Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)", en: "Renewal reminder 30 days ahead (email)" }, included: true },

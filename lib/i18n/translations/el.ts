@@ -661,7 +661,6 @@ export const el = {
             reanalyzeToSeeCoverageHint: 'Τα ειδικά στοιχεία κάλυψης εμφανίζονται μετά από νέα ανάλυση AI',
             analyzingDocument: 'Ανάλυση του εγγράφου σας',
             analyzingHint: 'Τα στοιχεία του ασφαλιστηρίου θα εμφανιστούν αυτόματα μόλις ολοκληρωθεί η εξαγωγή AI.',
-            upgradeHint: 'Με αναβάθμιση: συνεργασία με σύμβουλο, πλήρεις αναλύσεις και απεριόριστες ερωτήσεις AI.',
             // Redesigned detail page — section navigation
             onThisPage: 'Σε αυτή τη σελίδα',
             navSummary: 'Σύνοψη',

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { POSITIONING_BANNED, SUPPORT_BANNED } from '../measure/content-02-patterns'
 
 /**
  * PW-VOICE-01 — the §7 guards, in one file so their universe is stated once.
@@ -297,7 +298,6 @@ function walkAll(dir: string, exts: RegExp): string[] {
 }
 const PUBLIC_CODE = [...PUBLIC_DIRS.flatMap((d) => walkAll(d, /\.tsx?$/)), ...PUBLIC_FILES.filter(existsSync)]
 const PUBLIC_STATIC = walkAll('public', /\.(svg|json|txt|webmanifest)$/)
-const POSITIONING_BANNED = /έλεγχο[ςυ] ρίσκου|ανάλυσης? ρίσκου|(αν|πού)\s+είστε\s+καλυμμένοι|[Αα]ξιολογούμε|τι κενά έχουν|risk intelligence|risk check|(tell|show)s?\s+(you\s+)?(if|where)\s+you\s+are\s+covered|you are not covered for|ανεξάρτητ\S*\s+(έλεγχ|ανάλυσ)\S*|independent (risk|analysis|personal)/i
 function positioningOffenders(path: string, text: string): string[] {
     return text.split('\n').flatMap((line, i) => (POSITIONING_BANNED.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
 }
@@ -361,7 +361,6 @@ describe('PW-CONTENT-02 locale number format — Greek «35.000 €», English �
  * this universe (lib/insurance, lib/insurers, the wallet).
  * Probe: tests/fixtures/guard-probes/voice-support-claim.ts.txt.
  */
-const SUPPORT_BANNED = /Αποκλειστική υποστήριξη|Dedicated support|τηλεφωνικ\S* υποστήριξη|phone support|ώρες λειτουργίας|ώρες που απαντάμε|When we answer|24\/7|\+30[\s\d()-]*[\dX]{3}[\s-]?[\dX]{3}|\b2\d{2}[\s-]?\d{3}[\s-]?\d{4}\b|Δευτέρα\s*[–-]\s*Παρασκευή|Monday\s*[–-]\s*Friday|live chat|ζωντανή υποστήριξη/i
 function supportOffenders(path: string, text: string): string[] {
     // A phone-number INPUT (type="tel", e.g. the sign-in field's format hint) is the visitor's own number, not a support promise.
     return text.split('\n').flatMap((line, i) => (SUPPORT_BANNED.test(line) && !/type="tel"/.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
@@ -377,5 +376,38 @@ describe('PW-CONTENT-02 support lint — email only, no phone, chat, hours or «
     it('probe — each line of the probe turns it red (6 lines)', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/voice-support-claim.ts.txt', 'utf-8')
         expect(supportOffenders('probe', code(probe)).length).toBe(6)
+    })
+})
+
+/**
+ * PW-CONTENT-02 (fresh adversarial review, CRITICAL C1) — a renewal reminder is not a Plus
+ * feature. Every plan receives the 30-day email (`BASIC_MILESTONES`, renewal.service.ts);
+ * only the longer 90…3-day ladder is Plus and Family. Public PROSE (product steps, guides,
+ * glossary) said «από το πλάνο Plus» on eleven lines the pricing-content guard cannot see,
+ * and the /product page contradicted its own /pricing. Same public universe as above.
+ * Probe: tests/fixtures/guard-probes/voice-reminder-attribution.ts.txt.
+ */
+const REMINDER_PLUS = /(υπενθυμ|ειδοποι|θυμίζ|remind|alert|warn)[^.\n]{0,90}(από το πλάνο Plus|από το Plus|from the Plus plan|from Plus)|(Οι υπενθυμίσεις|[Rr]enewal reminders)[^.\n]{0,40}(Plus)\b/i
+function reminderOffenders(path: string, text: string): string[] {
+    // a line that names the real rung (30 / 90 days) is an accurate attribution of the longer ladder, not the false one
+    return text.split('\n').flatMap((line, i) => (REMINDER_PLUS.test(line) && !/\b(30|90)\b/.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
+}
+describe('PW-CONTENT-02 plan-attribution lint — reminders are not a Plus-only feature', () => {
+    it('no public prose attributes a renewal reminder to Plus', () => {
+        const bad = PUBLIC_CODE.flatMap((f) => reminderOffenders(f, code(readFileSync(f, 'utf-8'))))
+        expect(bad, `reminder attributed to the wrong plan = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
+    })
+    it('probe — each probe line turns it red (4 lines)', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/voice-reminder-attribution.ts.txt', 'utf-8')
+        expect(reminderOffenders('probe', code(probe)).length).toBe(4)
+    })
+    it('red on the reviewed commit: the detector finds the eleven live hits in 0111618a', () => {
+        // Evidence that the lint would have failed the shipped text (git history is not a fixture).
+        const { execFileSync } = require('node:child_process') as typeof import('node:child_process')
+        let n = 0
+        for (const f of ['app/(public)/product/marketing-content.ts', 'lib/guides/content.ts', 'lib/glossary/content.ts']) {
+            try { n += reminderOffenders(f, code(execFileSync('git', ['show', `0111618a:${f}`], { encoding: 'utf-8' }))).length } catch { return }
+        }
+        expect(n).toBeGreaterThanOrEqual(11)
     })
 })

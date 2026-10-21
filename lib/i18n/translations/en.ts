@@ -659,7 +659,6 @@ export const en: TranslationKeys = {
             reanalyzeToSeeCoverageHint: 'Type-specific coverage details will appear after a new AI analysis',
             analyzingDocument: 'Analyzing your document',
             analyzingHint: 'Policy details will appear automatically once AI extraction completes.',
-            upgradeHint: 'Unlock advisor collaboration, advanced analytics, and unlimited AI questions with Plus or Pro.',
             // Redesigned detail page — section navigation
             onThisPage: 'On this page',
             navSummary: 'Summary',

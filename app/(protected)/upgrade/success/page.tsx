@@ -27,8 +27,8 @@ const COPY = {
         en: "Your plan is active. You now have more policies and, with Family, full analysis and AI questions.",
     },
     agentBody: {
-        el: "Το πλάνο συμβούλου είναι ενεργό. Έχετε πλέον περισσότερους πελάτες, πλήρη ροή εσόδων και προτεραιότητα στην ανάλυση AI.",
-        en: "Your agent plan is active. You unlocked more customers, the full revenue pipeline and priority AI analysis.",
+        el: "Το πλάνο συμβούλου είναι ενεργό. Έχετε πλέον περισσότερους πελάτες και περισσότερες αναλύσεις AI τον μήνα.",
+        en: "Your agent plan is active. You now have more customers and more AI analyses each month.",
     },
     pendingTitle: { el: "Η πληρωμή επεξεργάζεται", en: "Payment processing" },
     pendingBody: {

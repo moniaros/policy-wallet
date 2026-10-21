@@ -1,0 +1,7 @@
+// PW-CONTENT-02 probe — a reminder attributed to the wrong plan. Every plan gets the 30-day email; only the longer ladder is Plus/Family.
+export const probe = [
+    "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus — και όταν βρούμε κάτι νέο.",
+    "The app reminds you how much and when — from the Plus plan.",
+    "Renewal reminders are available from Plus.",
+    "Οι υπενθυμίσεις ανανέωσης προσφέρονται από το Plus.",
+]

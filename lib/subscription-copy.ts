@@ -98,8 +98,8 @@ export const subscriptionCopy = {
             en: 'Interactive AI Q&A'
         },
         prioritySupport: {
-            el: 'Υποστήριξη προτεραιότητας',
-            en: 'Priority support'
+            el: 'Υποστήριξη μέσω email',
+            en: 'Support by email'
         },
         advancedAnalytics: {
             el: 'Αναλυτικά στοιχεία',
