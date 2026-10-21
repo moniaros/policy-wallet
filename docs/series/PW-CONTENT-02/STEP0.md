@@ -4,7 +4,7 @@ Approved: 2026-10-21 — Eli, with amendments A1–A5 and decisions H-019..H-024
 
 **Amendments (binding; override §3 where they conflict)**
 - **A1.** Add build item 1b: remove the in-app string «Η πρώτη πλήρης ανάλυση είναι δωρεάν» (`el.ts:2505`, unbacked by code). Extend the entitlement-claim guard to cover in-app strings, not just public routes. Do NOT implement the free-analysis grant.
-- **A2.** Replace the English "Delete everything whenever you want" on /product with Greek copy consistent with /trust (deletion on request; legally retained records excepted). Mark it for DPO review in COPY.md.
+- **A2.** Replace the English "Delete everything whenever you want" on /product with Greek copy consistent with /trust (deletion on request; legally retained records excepted). Mark it for DPO review in COPY.md. *(Superseded 2026-10-22: no DPO sign-off is required for any item in this series; Eli approved the /trust-mirroring wording — DECISIONS PW-C02-D3/D4.)*
 - **A3.** Prices stay numeric until render. JSON-LD offers use a numeric price and priceCurrency EUR. Add a guard: JSON-LD price parses as a number and equals plan config.
 - **A4.** Include the category-rename grammar fixes (/compare, footers) and standardise euro amounts to el-GR "35.000 €".
 - **A5.** Delete the comparison-table row «Δεν κερδίζει τίποτα από την απάντηση» entirely. No replacement wording (supersedes build item 5 and E-row wording work; the `homepage-comparison-excerpt` test must be updated to the new last row).

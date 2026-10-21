@@ -1,18 +1,20 @@
 # PW-CONTENT-02 — RESULT
 
 Date: 2026-10-21 · branch `pw-customer` · baselines from HEAD `87e877df` (HEAD built and measured in a worktree).
-Approved scope: `STEP0.md` header (decisions H-019..H-024, amendments A1–A5). **Not merged, not deployed**.
+Approved scope: `STEP0.md` header (decisions H-019..H-024, amendments A1–A5) plus the owner round of 2026-10-22 (DECISIONS.md PW-C02-D1..D9). **Not merged, not deployed.**
+
+> **MERGE BLOCKER — H-021 is OPEN.** Production `plans.entitlements` have not been read. Every "0 false" below is verified against the dev plan rows and the code defaults (`DEFAULT_ENTITLEMENT_LIMITS` / `DEFAULT_AGENT_ENTITLEMENT_LIMITS`), which were equal to each other on 2026-10-21, **not against production**. The entitlement guard is not verified against production until Eli pastes the production rows. Do not merge `pw-customer` into `NEW-UI` before that.
 
 ## 1. Acceptance criteria
 
 | Criterion | Before (HEAD) | After | Evidence |
 |---|---|---|---|
-| Entitlement table: every public claim → code → true; zero false | 12 F / 13 A of 38 (STEP0 §2.3) | **0 F** in the pricing content, enforced by the guard (95 cards and table cells below); remaining A rows listed in §3 | §2 table; `guard1-entitlement-RED.txt` |
+| Entitlement table: every public claim → code → true; zero false | 12 F / 13 A of 38 (STEP0 §2.3) | **0 F** in the pricing content, enforced by the guard (95 cards and table cells below); the 4 formerly ambiguous rows are all resolved (§3); **against dev rows and code defaults, not production (H-021)** | §2 table; `guard1-entitlement-RED.txt` |
 | Positioning variants outside the chosen one: 0 hits in public routes + metadata | **22** static hits (M-P), **19** rendered hits (title/meta/OG/JSON-LD/body, 34 routes) | **0** static, **0** rendered | `guards2-5-HEAD-RED.txt`; `measure-before/after.json` |
 | Duplicate blocks ≥80 chars across `/product/*` ≤1 per block | 17 distinct blocks × 17 pages = **289** occurrences, max 17 (el and en alike) | **0** repeated, max **1** | `measure-before/after.json` (M-X1). The two blocks that still repeated on 17 pages (the pricing funnel band and the cookie banner) are now `data-shell`, excluded like the footer; the first "after" run, before that markup, showed exactly those two at 17. |
 | Zero hand-formatted prices/numbers in public routes | **12** literals (M-F) | **0** (editorial prose in guides/glossary included: Greek «€200.000» → «200.000 €») | `guards2-5-HEAD-RED.txt` |
 | Lighthouse SEO + accessibility on `/`, `/pricing`, `/product` no lower than baseline | 100 / 100 | 100 / 100 (median of 3, mobile and desktop, 18 runs per side, production build on localhost) | `lighthouse.json` |
-| COPY.md: every changed `el` string `ok` or signed off by Eli | — | 50 `ok`, **10 `eli`**, **3 `dpo`** — NOT all signed off | `COPY.md` |
+| COPY.md: every changed `el` string `ok` or signed off by Eli | — | 52 `ok` + 4 `approved` by Eli (the 3 deletion-line rows and «Υποστήριξη μέσω email»); **14 `eli` rows still wait for sign-off** (9 from round 1, 5 from round 2); no row needs the DPO (owner decision) — NOT all signed off | `COPY.md` |
 
 The same-surface duplicate-block count (the transformation doc's definition) reads **0 before and 0 after**: it cannot see this defect, as STEP0 predicted. The defect was cross-page; M-X1 is the new metric (recorded in DECISIONS.md).
 Truncation failures (transformation §5.2) 320/390/430: before 150/130/144 → after 140/130/146; run-to-run jitter is ±2, and the selector diff shows no new truncating element, only the renamed heading «Τι κάνει το καθένα» (its derived count 6→5).
@@ -123,7 +125,11 @@ Truncation failures (transformation §5.2) 320/390/430: before 150/130/144 → a
 
 Fixed: E5 (Free/Plus ✗), E6 (split; «απεριόριστες» removed), E7 (Plus line removed), E10 (Free ✓ 30-day email), E11 (split), E12 (removed), E17, E18, E19 (also the /pricing meta, found by the widened guard), E20, E21, E23, E24, E25 (exclusions «Ναι», H-023), E26 (EN), E27 («πάντα» removed), E28, E29, E30 (Agent Free count unstated), E31, E32, E37 (funding claim removed), E3 (limit wording removed). **New finding, fixed:** E36 — the agents page promised reminder sending «από το Agent Starter»; the only send action is batch renewal automation (Pro+, `renewals/actions.ts:291`), so it now says Agent Pro.
 True, untouched: E1, E4, E8, E9, E13, E14, E16, E22, E33, E34, E38.
-**Still ambiguous / not resolved (4):** E2 (the «3 ασφαλιστήρια» cap counts expired policies — true in number, unexplained in meaning), E15 (Stripe Customer Portal downgrade — H-024, unanswered), E35 («Αποκλειστική υποστήριξη» — H-024, unanswered), E7-Family («Ανάλυση από πολλές ασφαλιστικές» is gated `pro`, but STEP0 found no distinct capability behind it — kept on the Family card as a claim the gate declares, flagged).
+**The 4 rows that were ambiguous — all resolved (2026-10-22):**
+- **E2** («3 ασφαλιστήρια» counts expired policies): resolved as TRUE as worded — the cap counts every stored policy of any status (`lib/subscription-limits.ts:39-56`), the claim says "policies", and the in-app help already says "including past/expired policies". No public wording changed.
+- **E15** (Stripe portal downgrade): **claim removed.** Test mode has 0 portal configurations (`GET /v1/billing_portal/configurations` → 0) and there is no in-app downgrade flow; /pricing and the in-app FAQ now say only "upgrade". Reinstating is QUEUE `STRIPE-PORTAL-PLAN-SWITCHING`.
+- **E35** («Αποκλειστική υποστήριξη»): **replaced** by «Υποστήριξη μέσω email» everywhere (support is email only); hours, phone and phone field removed (PW-C02-D2).
+- **E7-Family** («Ανάλυση από πολλές ασφαλιστικές»): **already absent** — the Family card was rewritten in round 1 without it (an earlier version of this file wrongly said it stayed). The only remaining mention is the in-app locked upsell card (`PremiumInsightCards.tsx:39`), which names a capability with no implementation behind it; listed in §7.
 
 ## 4. Guards, each shown failing first (this session)
 
@@ -140,7 +146,7 @@ Full suite: `vitest --run tests/unit` 701 files green (7,895 tests after the rev
 ## 5. What changed (by build item)
 
 1. **Entitlement truth** — `public-pricing-content.ts` re-tagged and corrected; `lib/marketing/plan-claims.ts` (new). **1b** in-app «Η πρώτη πλήρης ανάλυση είναι δωρεάν» removed (card block + both bundle keys); the grant is **not** implemented (PW-ENTITLE-01 stub in QUEUE.md).
-2. **One limit statement** — `lib/marketing/limit-statement.ts` (new): `FREE_PLAN_LIMIT` (read from the entitlement source) and `DELETION_ON_REQUEST`. No analysis limit is published (H-020). A2: /product's English "Delete everything whenever you want" and the sign-up form's Greek twin now read the /trust-consistent line; **marked `dpo` in COPY.md.**
+2. **One limit statement** — `lib/marketing/limit-statement.ts` (new): `FREE_PLAN_LIMIT` (read from the entitlement source) and `DELETION_ON_REQUEST`. No analysis limit is published (H-020). A2: /product's English "Delete everything whenever you want" and the sign-up form's Greek twin now read the line that mirrors /trust word for word (approved by Eli 2026-10-22, DECISIONS PW-C02-D4).
 3. **One positioning line** — `CATEGORY_NAME` plus a lower-case `CATEGORY_NAME_INLINE` (the rename shipped «η Πλατφόρμα…» and "an A platform…"); site definition, root meta, root `<title>`, manifest, OG card, home Twitter/OG/keywords, /compare and agents FAQ, guides; `public/brand/og-template.svg` deleted.
 4. **Demo cards** — /product card shows the homepage reading demo's «review» line («Για έλεγχο»), not a verdict; catalogue descriptions for life, travel, business, pet, property, motor rewritten as document readings.
 5. **Agent row** — A5: «Δεν κερδίζει τίποτα από την απάντηση» deleted outright; the homepage excerpt is now rows [2, 3] and its test was rewritten to say so.
@@ -153,20 +159,20 @@ Measurement harness: `tests/measure/metrics.ts` gains `textBlocks` and `duplicat
 ## 6. DECISIONS TAKEN under standing authority
 
 - **Local `PREVENTION_PERSONALIZATION_ENABLED` aligned `1 → 0`** in `.env.local` (gitignored) to match production before baselines (H-021).
-- **Production credentials:** I ran `vercel env pull --environment=production` once to read that single flag (value `0`; file deleted at once); a second pull was blocked by the permission classifier and I did not retry. Production plan rows were **not** read: live `/pricing` prices (4,99 / 39 / 8,99 / 79 / 29 / 199) equal the dev rows and code defaults; production `entitlements` JSON remains unverified (H-021 residue).
+- **Production credentials:** (superseded 2026-10-22: `Bash(vercel env pull*)` is now in `.claude/settings.json` `permissions.deny`; never again.) I ran `vercel env pull --environment=production` once to read that single flag (value `0`; file deleted at once); a second pull was blocked by the permission classifier and I did not retry. Production plan rows were **not** read: live `/pricing` prices (4,99 / 39 / 8,99 / 79 / 29 / 199) equal the dev rows and code defaults; production `entitlements` JSON remains unverified (H-021 residue).
 - **`data-shell`** on the pricing funnel band and the cookie banner (measurement exclusion, stated above).
 - **Deferred, deliberately:** (a) deleting the dead verdict components (`PolicyWalletWidget`, `AudienceCards`, `HeroSlides`, …): eight tests pin them and nothing renders them; no acceptance criterion needs it. (b) Making the funnel band read the live catalogue: 28 call sites across client components; it formats from `DEFAULT_PLAN_FACTS` through `formatPlanPrice`, and an `/admin/plans` price edit would still not reach it. (c) Editorial dates («Λήγει 15 Ιουν») left as written; A4 covered euro amounts only.
 - Editorial prose in `lib/guides` and `lib/glossary` is **inside** the number guard (not exempted): the 3 mixed Greek conventions there were converted.
 - `budget-exemptions.json` gained 5 reasoned entries and `corpus-additions.json` 7 reviewed strings; `greek-string-inventory.txt` was regenerated and its diff read line by line.
 
-## 7. Open — needs Eli (none of these block the code)
+## 7. Open — for Eli
 
-1. COPY.md: **10 `eli`** rows (home step 4, home EN share text, the two reminder labels, business and pet descriptions, two «Στέλνετε» FAQ verbs, the /product card, EN footer) and **3 `dpo`** (the deletion line, /product final CTA, sign-up under-CTA). The reviewer's note: the deletion line drifts from /trust («βάσει νόμου» may not cover agent-authored records, token ledgers, admin-access logs kept 5 years).
-2. «Τα ασφαλιστήριά σας, με απλά λόγια» is now the root title, OG headline, home Twitter title and EN /product title: confirm H-022 means the category name only, not taglines.
-3. H-024 operational facts (Stripe portal downgrade, support hours, «Αποκλειστική υποστήριξη», Schengen €30.000 source), H-022 item 3 (does any partner referral earn money?) — unanswered, left flagged and unchanged.
-4. Authenticated surfaces still carrying claims this series does not own: `/account` «Απεριόριστες αναλύσεις εγγράφων με AI» and «Μηνιαίο όριο επεξεργασίας AI», `/agent/pricing` «Απεριόριστες AI αναλύσεις» for Agency (cap is 400), the in-app Plus lock on «Ανάλυση ... από διαφορετικές ασφαλιστικές», stale comment `plan-defaults.ts` «Free now includes full analysis».
-5. Production `plans.entitlements` read (H-021): run the SELECT from HALTS.md H-021 once.
-6. Not merged or deployed. CLAUDE.md asks for journey outcomes on a preview deployment before a production merge; nothing was pushed.
+1. **H-021 (MERGE BLOCKER):** paste the production `plans` rows (`SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;`). Until then the guard is unverified against production. `vercel env pull` is now denied in `.claude/settings.json`; I will ask for any production value instead.
+2. **H-025:** confirm every public "no commission" / "revenue from subscriptions only" claim (file:line list in HALTS.md) — none was changed; all are false if a partner referral earns money.
+3. COPY.md: the 14 remaining `eli` rows (round 1: home step 4, home EN share text, the two reminder labels, pet description, two «Στέλνετε» FAQ verbs, the /product card, EN footer; round 2: the contact label, the /contact meta, the upgrade FAQ, the Schengen FAQ, the /account row).
+4. In-app claims still outside this series: the dashboard's locked upsell card «Ανάλυση ασφαλιστηρίων από διαφορετικές ασφαλιστικές» (`PremiumInsightCards.tsx:39`, no implementation), stale comment `plan-defaults.ts` «Free now includes full analysis».
+5. Deferred to QUEUE.md (each with references there): dead verdict components + 8 pinning tests; prices from plan config in the band and agents page; hand-typed dates and k/M amounts; the unreachable Free upsell slot (→ PW-ENTITLE-01); Stripe portal plan switching. Also: the optional `phone` on `/api/contact` is accepted but unused.
+6. Not merged or deployed. CLAUDE.md asks for journey outcomes on a preview deployment before a production merge.
 
 ## 8. Adversarial review
 
@@ -186,7 +192,7 @@ Measurement harness: `tests/measure/metrics.ts` gains `textBlocks` and `duplicat
 | I7 in-app strings beyond one phrase | **Partly fixed**: help article (3 places), `InsightCard`, blocked-analysis title/hint (el+en), orchestrator failure message, upgrade-success copy, Agency «Απεριόριστες AI αναλύσεις» → 400. Guard list widened to those phrases. **Still open (in-app, listed in §7):** `/account` «Απεριόριστες αναλύσεις εγγράφων με AI» and «Μηνιαίο όριο επεξεργασίας AI», the agent pricing page's «25M tokens» line, the Plus lock on «Ανάλυση από διαφορετικές ασφαλιστικές» |
 | I9 positioning lint narrowed | **Widened back** (`(αν\|πού) είστε καλυμμένοι`, `Αξιολογούμε`, `you are not covered for`). The dead verdict components are still not deleted (below) |
 | I10 hand-rolled severity words on /solutions/agents | **Fixed**: the demo shows one neutral word, «Για έλεγχο», in one colour |
-| I11 COPY rows still `eli` | C-35 (business «και ποια όχι») **fixed** per the reviewer; the other 9 `eli` and 3 `dpo` rows remain for Eli/DPO. Note: `corpus-additions.json` lists «Για έλεγχο» (/product, agents demo) as reviewed because the reviewer agent reviewed it; C-50 is still `eli` |
+| I11 COPY rows still `eli` | C-35 (business «και ποια όχι») **fixed** per the reviewer; the other 9 `eli` rows remain for Eli; the 3 deletion-line rows are approved (the DPO flag was dropped by owner decision). Note: `corpus-additions.json` lists «Για έλεγχο» (/product, agents demo) as reviewed because the reviewer agent reviewed it; C-50 is still `eli` |
 | I5 band and agents page read `DEFAULT_PLAN_FACTS` | **Not done, recorded** (§6): an `/admin/plans` price edit reaches /pricing but not these ~20 pages |
 | I8 dates, `€2.5M`/`€500k` | **Not done, recorded**: A4 covered euro amounts; the date and k/M arm of STEP0 §3.5 was not built |
 | I9 dead components | **Not done, recorded** (§6) |

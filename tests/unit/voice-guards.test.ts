@@ -351,3 +351,31 @@ describe('PW-CONTENT-02 locale number format — Greek «35.000 €», English �
         expect(found).toMatch(/English literal with Greek grouping/)
     })
 })
+
+/**
+ * PW-CONTENT-02 (owner decision 2026-10-22) — support is EMAIL ONLY. There is no phone
+ * support, no chat and no service hours, so a public route may not promise any of them:
+ * a «dedicated» tier, a phone line or placeholder, an answering-hours window, "24/7".
+ * Same universe as the positioning lint above. Insurer helplines inside policy content
+ * (a claims number the document prints) are not a PolicyWallet promise and live outside
+ * this universe (lib/insurance, lib/insurers, the wallet).
+ * Probe: tests/fixtures/guard-probes/voice-support-claim.ts.txt.
+ */
+const SUPPORT_BANNED = /Αποκλειστική υποστήριξη|Dedicated support|τηλεφωνικ\S* υποστήριξη|phone support|ώρες λειτουργίας|ώρες που απαντάμε|When we answer|24\/7|\+30[\s\d()-]*[\dX]{3}[\s-]?[\dX]{3}|\b2\d{2}[\s-]?\d{3}[\s-]?\d{4}\b|Δευτέρα\s*[–-]\s*Παρασκευή|Monday\s*[–-]\s*Friday|live chat|ζωντανή υποστήριξη/i
+function supportOffenders(path: string, text: string): string[] {
+    // A phone-number INPUT (type="tel", e.g. the sign-in field's format hint) is the visitor's own number, not a support promise.
+    return text.split('\n').flatMap((line, i) => (SUPPORT_BANNED.test(line) && !/type="tel"/.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
+}
+describe('PW-CONTENT-02 support lint — email only, no phone, chat, hours or «dedicated»', () => {
+    it('no public route, metadata or static asset promises phone/chat/hours support', () => {
+        const bad = [
+            ...PUBLIC_CODE.flatMap((f) => supportOffenders(f, code(readFileSync(f, 'utf-8')))),
+            ...PUBLIC_STATIC.flatMap((f) => supportOffenders(f, readFileSync(f, 'utf-8'))),
+        ]
+        expect(bad, `support claims PolicyWallet does not offer = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
+    })
+    it('probe — each line of the probe turns it red (6 lines)', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/voice-support-claim.ts.txt', 'utf-8')
+        expect(supportOffenders('probe', code(probe)).length).toBe(6)
+    })
+})

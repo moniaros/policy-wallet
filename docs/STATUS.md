@@ -9,19 +9,19 @@ PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-cus
 - Six new/extended guards, each shown red first. Adversarial review round: 4 CRITICAL + 11 IMPORTANT, fixed or recorded. 701 test files / 7,895 tests, lint, i18n, utf8, types, migrations, build pass. Lighthouse 100/100 unchanged.
 
 ## In progress
-- Awaiting Eli: 10 COPY rows, 3 DPO rows (the deletion line), H-024 operational facts.
+- Awaiting Eli: 14 COPY rows; H-021 production plan rows (MERGE BLOCKER); H-025 no-commission confirmation. Support is email only; no DPO sign-off is required.
 
 ## Blocked
 - Production `plans.entitlements` not read (no credential): H-021 residue. Paid checkout still restricted.
 
 ## Top risks ranked
 1. **Broken / insecure (gates launch):** in-app claims outside this series still say «Απεριόριστες αναλύσεις» / monthly cap (`/account`, agent pricing); the Free upsell slot in `AnalysisCard` is unreachable; ~20 pages quote prices from code defaults, not the live catalogue.
-2. Deletion line wording vs retained records needs DPO sign-off before it stays on /product and sign-up.
+2. H-021 (production entitlements unread) is a MERGE BLOCKER; H-025 (no-commission claims) awaits confirmation.
 3. Online withdrawal still needed before paid consumer checkout.
 **UI/UX (does not gate):** dead verdict components still importable; demo dates/k-M amounts hand-typed.
 
 ## Next 3 actions
-1. Eli/DPO sign-off on COPY.md; answer H-024 and H-022 item 3.
+1. Eli: paste production plan rows (H-021); confirm no-commission claims (H-025); sign off the 14 COPY rows.
 2. Preview-journey check, then merge `pw-customer` → NEW-UI (CI auto-deploys).
 3. Open PW-ENTITLE-01 with acceptance criteria; clean the in-app «unlimited» strings.
 

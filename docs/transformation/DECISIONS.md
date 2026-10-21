@@ -1393,3 +1393,35 @@ No replacement wording. Closes build item 5 and A7 (funding-claim wording) for t
 
 ## PW-C02-A3/A4 — Numbers
 Prices are numbers in the model and formatted at render (el-GR «4,99 €», «35.000 €»); JSON-LD offers carry a numeric `price` and `priceCurrency: "EUR"`.
+
+
+---
+
+# PW-CONTENT-02 — owner round 2026-10-22 (Eli)
+
+## PW-C02-D1 — H-022: tagline approved
+«Τα ασφαλιστήριά σας, με απλά λόγια» is approved for the root `<title>`, the OG headline and the home Twitter title (the EN /product title follows). H-022's "one positioning line" governs the category name; this is a tagline.
+
+## PW-C02-D2 — Support is email only
+There is no phone support, no chat and no service hours. «Αποκλειστική υποστήριξη» is removed everywhere; a plan line that needs a support entry reads «Υποστήριξη μέσω email». Every support-hours claim, phone number and phone placeholder for PolicyWallet is removed from public routes, the app and the email templates; all public contact points use `info@policywallet.gr` (`siteConfig.contactEmail`). The positioning lint gained a support arm (banned: «Αποκλειστική υποστήριξη», «τηλεφωνική υποστήριξη», «ώρες λειτουργίας», «24/7», phone-number patterns, answering-hours windows), shown red first. Insurer helplines printed in policy content and the visitor's own phone-number inputs are not PolicyWallet promises and are out of its universe.
+
+## PW-C02-D3 — DPO sign-off is not required for any item in this series
+Every "DPO sign-off pending" flag is removed from COPY.md, HALTS.md and the status/deploy notes. Reversible: restore the flag on a string if a reviewer asks.
+
+## PW-C02-D4 — Deletion line
+The /trust-mirroring draft ships on /product and the sign-up form: «Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας. Όσα πρέπει να κρατήσουμε, όπως τα φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.» Rows C-01, C-A2, C-55 are approved by Eli in COPY.md.
+
+## PW-C02-D5 — Schengen €30.000 stays, with a source
+Regulation (EC) No 810/2009 (Visa Code), Article 15(3): «The minimum coverage shall be EUR 30 000.» (OJ L 243, 15.9.2009, p. 1; read from the official EUR-Lex HTML 2026-10-22; the owner named Article 15, the sentence is in paragraph 3). Wording is limited to the minimum medical cover for the visa application. CLAIMS C18.
+
+## PW-C02-D6 — Stripe portal downgrade claim removed
+Checked in test mode with the local dev test key: `GET /v1/billing_portal/configurations` returned 0 configurations, so the portal cannot offer plan switching, and the app has no in-app downgrade flow. «αναβαθμίσετε ή να υποβαθμίσετε» becomes «αναβαθμίσετε» on /pricing and in the in-app FAQ. Reinstating the claim is a QUEUE item (portal configuration with plan switching).
+
+## PW-C02-D7 — No-commission claims untouched; open halt H-025
+No no-commission wording was changed in this round. All public claims are listed with file:line in HALTS.md H-025 for Eli to confirm.
+
+## PW-C02-D8 — H-021 stays OPEN and is a merge blocker
+Production `plans.entitlements` have not been read; the guard is not verified against production. `vercel env pull` is denied in `.claude/settings.json`.
+
+## PW-C02-D9 — Scope extension: in-app «unlimited»/monthly-cap strings (same class as A1/H-020)
+/account no longer says «Απεριόριστες αναλύσεις» (the analyses row shows the count used; the unlimited feature line, `noPaidFeatures` and the unused `aiBudget*` keys are gone); the AI processing budget card and its «εξαντληθεί … μέχρι τον επόμενο μήνα» line show only where the budget binds (`canRunDeepAnalysis`, i.e. Family). /agent/pricing lists the enforced counts (Free: none stated, Pro 150, Agency 400), no token budget, fallback prices 29 / 79 / 199. The in-app arm of the entitlement-claim guard is widened and a new guard compares /agent/pricing with `planClaim` and `DEFAULT_PLAN_FACTS`.

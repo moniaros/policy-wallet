@@ -152,7 +152,7 @@ const UNTAGGED_OK: Record<string, string> = {
     'Όλοι οι πελάτες σε μία οθόνη': 'ungated agent portfolio screen (STEP0 §2.3 E33)',
     'Λίστα με ό,τι λήγει': 'agent expiry list; STEP0 §2.3 E33 verified, no single entitlement field',
     'Προτάσεις επιπλέον κάλυψης ανά πελάτη': 'the crossSellIntelligence feature as worded on the Agent Pro card; verified STEP0 E34',
-    'Αποκλειστική υποστήριξη': 'OPERATIONAL, no code — flagged H-024, left unchanged and unverified by the owner',
+    'Υποστήριξη μέσω email': 'support is email only, on every plan (owner decision 2026-10-22); no entitlement field',
 }
 
 const claimText = (v: ClaimValue) => String(v)
@@ -225,7 +225,7 @@ describe('PW-CONTENT-02 — every public capability claim equals what the code e
 /** In-app strings (A1): a promise nothing grants. Enumerated from the filesystem, not from two known files. */
 const IN_APP_ROOTS = ['app', 'components', 'lib']
 // In-app promises of full analysis below Family, or of unlimited analyses, that the code does not grant (review I7).
-const IN_APP_BANNED = /πρώτη πλήρης ανάλυση είναι δωρεάν|first full analysis is free|Full AI analysis is a Plus feature|διαθέσιμη σε Plus\/Pro|available on Plus\/Pro|Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο|Analyses are unlimited on every plan|3 ασφαλιστήρια με πλήρη ανάλυση|3 policies with the full AI analysis/i
+const IN_APP_BANNED = /πρώτη πλήρης ανάλυση είναι δωρεάν|first full analysis is free|Full AI analysis is a Plus feature|διαθέσιμη σε Plus\/Pro|available on Plus\/Pro|Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο|Analyses are unlimited on every plan|3 ασφαλιστήρια με πλήρη ανάλυση|3 policies with the full AI analysis|Απεριόριστες αναλύσεις|Unlimited (document |AI )?analyses|Απεριόριστες AI αναλύσεις|δεν περιλαμβάνει αναλύσεις AI|\d+M tokens\/(μήνα|month)|Αποκλειστική υποστήριξη|Dedicated support|upgrade or downgrade|υποβαθμίσετε/i
 function inAppFiles(dir: string): string[] {
     if (!existsSync(dir)) return []
     return readdirSync(dir).flatMap((name) => {
@@ -236,7 +236,8 @@ function inAppFiles(dir: string): string[] {
     })
 }
 function inAppOffenders(files: { path: string; text: string }[]): string[] {
-    return files.flatMap((f) => f.text.split('\n').flatMap((line, i) => (IN_APP_BANNED.test(line) ? [`${f.path}:${i + 1}  ${line.trim().slice(0, 100)}`] : [])))
+    const strip = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, '')).replace(/^[ \t]*\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, (m) => m.replace(/[^\n]/g, ''))
+    return files.flatMap((f) => strip(f.text).split('\n').flatMap((line, i) => (IN_APP_BANNED.test(line) ? [`${f.path}:${i + 1}  ${line.trim().slice(0, 100)}`] : [])))
 }
 
 describe('PW-CONTENT-02 A1 — no in-app string promises a free full analysis (H-019: Family only until PW-ENTITLE-01)', () => {
@@ -296,5 +297,32 @@ describe('PW-CONTENT-02 review I6 — the reminder cadence in copy equals RENEWA
         const src = readSrc('lib/landing/content.ts', 'utf-8')
         expect(src).toMatch(new RegExp(`από ${max} ημέρες`))
         expect(src).toMatch(new RegExp(`from ${max} days`))
+    })
+})
+
+
+/**
+ * PW-CONTENT-02 scope extension (owner, 2026-10-22) — the in-app agent pricing page
+ * (/agent/pricing) carries its OWN feature list and its own price fallbacks. Its
+ * analysis counts and prices must equal the entitlement source and the plan defaults
+ * (it said 200 for Pro against an enforced 150, listed an internal token budget, and
+ * fell back to 19.99 / 49.99 / 99.99 against 29 / 79 / 199).
+ */
+import { DEFAULT_PLAN_FACTS } from '@/lib/pricing/plan-defaults'
+describe('PW-CONTENT-02 — /agent/pricing equals the enforced entitlements', () => {
+    const src = readFileSync('app/(protected)/agent/pricing/AgentPricingClient.tsx', 'utf-8')
+    const blocks = src.split(/\n {4}\{\n {8}id: "/).slice(1)
+    const T: Record<string, AgentTier> = { 'agent-free': 'agent_free', 'agent-starter': 'agent_starter', 'agent-pro': 'agent_pro', 'agent-agency': 'agency' }
+    it('the page defines the four agent plans', () => expect(blocks.map((b) => b.split('"')[0]).sort()).toEqual(Object.keys(T).sort()))
+    it.each(Object.keys(T))('%s: analysis count, customers and fallback price match', (id) => {
+        const block = blocks.find((b) => b.startsWith(id + '"'))!
+        const tier = T[id]
+        const analyses = [...block.matchAll(/(\d+)\s+(?:AI\s+)?(?:analyses|αναλύσεις)/gi)].map((m) => Number(m[1]))
+        const expected = planClaim('agent.analysesPerMonth', tier)
+        if (expected === UNSTATED) expect(analyses, `${id}: the count is not stated for this plan`).toEqual([])
+        else if (expected !== null) expect(new Set(analyses), `${id}: enforced ${expected}`).toEqual(new Set([expected]))
+        const price = Number(block.match(/priceEur: ([\d.]+)/)![1])
+        const fact = DEFAULT_PLAN_FACTS.find((p) => p.id === id)!
+        expect(price, `${id} fallback price`).toBe(fact.monthlyEur)
     })
 })

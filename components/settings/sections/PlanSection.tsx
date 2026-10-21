@@ -75,7 +75,6 @@ export function PlanSection({ data }: { data: PlanData }) {
         else if (limits.policies === 1) lines.push(copy.features.policiesOne)
         else lines.push(`${formatCount(limits.policies)} ${copy.features.policiesMany}`)
 
-        if (limits.aiAnalysisPerMonth === null) lines.push(copy.features.analysesUnlimited)
         if (limits.notifications) lines.push(copy.features.notifications)
 
         for (const key of Object.keys(FEATURE_ORDER) as FeatureKey[]) {
@@ -242,7 +241,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                         label={copy.storedPolicies}
                         used={data.usage.policiesStored}
                         limit={data.usage.policiesLimit}
-                        unlimitedLabel={copy.analysesUnlimited}
+                        unlimitedLabel={copy.policiesUnlimited}
                         hint={
                             data.usage.policiesLimit === null
                                 ? undefined
@@ -252,20 +251,19 @@ export function PlanSection({ data }: { data: PlanData }) {
                         }
                     />
 
-                    {data.usage.analysesLimit === null ? (
-                        <SettingRow
-                            label={copy.analyses}
-                            value={copy.analysesUnlimited}
-                            hint={`${formatCount(data.usage.analysesThisMonth)} ${copy.analysesUsed}`}
-                        />
-                    ) : (
-                        <SettingRow
-                            label={copy.analyses}
-                            value={copy.noPaidFeatures}
-                            muted
-                            hint={data.upgradeTarget ? copy.upgradeHint : undefined}
-                        />
-                    )}
+                    {/* The count of analyses this month — never "unlimited": no B2C plan
+                        meters analyses per month, and what binds is the policy cap (and,
+                        on Family, an internal processing budget). A plan WITH a monthly
+                        analysis limit shows used / limit. (PW-CONTENT-02) */}
+                    <SettingRow
+                        label={copy.analyses}
+                        value={
+                            data.usage.analysesLimit === null
+                                ? formatCount(data.usage.analysesThisMonth)
+                                : `${formatCount(data.usage.analysesThisMonth)} / ${formatCount(data.usage.analysesLimit)}`
+                        }
+                        hint={copy.analysesUsed}
+                    />
 
                     {/* The token budget is the limit that actually binds on the AI
                         tier — "unlimited analyses" is true, and this is what runs

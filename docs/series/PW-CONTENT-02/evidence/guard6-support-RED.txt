@@ -1,0 +1,50 @@
+(node:23895) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:23897) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/voice-guards.test.ts (16 tests | 1 failed) 1761ms
+     × no public route, metadata or static asset promises phone/chat/hours support 13ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/voice-guards.test.ts > PW-CONTENT-02 support lint — email only, no phone, chat, hours or «dedicated» > no public route, metadata or static asset promises phone/chat/hours support
+AssertionError: support claims PolicyWallet does not offer = 6:
+app/(public)/contact/ContactPageClient.tsx:102  hoursLabel: { el: "Ώρες που απαντάμε", en: "When we answer" },
+app/(public)/contact/ContactPageClient.tsx:103  hoursValue: { el: "Δευτέρα – Παρασκευή, 09:00 – 18:00", en: "Monday – Friday, 09:00 – 18:00" },
+app/auth/signin/page.tsx:377  <input id="signin-phone" ref={identifierRef} type="tel" autoComplete="username" required value={phone} onChang
+lib/seo/marketing-pages.ts:164  description: `Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Απαντάμε Δευτέρα–Παρασκευή 09:00–18:
+lib/seo/marketing-pages.ts:168  description: `Send us a message about support, pricing or partnerships. We reply Monday–Friday 09:00–18:00 at 
+lib/pricing/public-pricing-content.ts:416  { claim: null, label: { el: "Αποκλειστική υποστήριξη", en: "Dedicated support" }, included: true },: expected [ …(6) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "app/(public)/contact/ContactPageClient.tsx:102  hoursLabel: { el: \"Ώρες που απαντάμε\", en: \"When we answer\" },",
++   "app/(public)/contact/ContactPageClient.tsx:103  hoursValue: { el: \"Δευτέρα – Παρασκευή, 09:00 – 18:00\", en: \"Monday – Friday, 09:00 – 18:00\" },",
++   "app/auth/signin/page.tsx:377  <input id=\"signin-phone\" ref={identifierRef} type=\"tel\" autoComplete=\"username\" required value={phone} onChang",
++   "lib/seo/marketing-pages.ts:164  description: `Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Απαντάμε Δευτέρα–Παρασκευή 09:00–18:",
++   "lib/seo/marketing-pages.ts:168  description: `Send us a message about support, pricing or partnerships. We reply Monday–Friday 09:00–18:00 at ",
++   "lib/pricing/public-pricing-content.ts:416  { claim: null, label: { el: \"Αποκλειστική υποστήριξη\", en: \"Dedicated support\" }, included: true },",
++ ]
+
+ ❯ tests/unit/voice-guards.test.ts:374:103
+    372|             ...PUBLIC_STATIC.flatMap((f) => supportOffenders(f, readFi…
+    373|         ]
+    374|         expect(bad, `support claims PolicyWallet does not offer = ${ba…
+       |                                                                                                       ^
+    375|     })
+    376|     it('probe — each line of the probe turns it red (6 lines)', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  00:19:29
+   Duration  2.45s (transform 32ms, setup 150ms, import 104ms, tests 1.76s, environment 372ms)
+

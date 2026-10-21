@@ -2,7 +2,7 @@
   "summary": {
     "phase": "after",
     "base": "http://localhost:3100",
-    "measuredAt": "2026-10-21T21:09:35.759Z",
+    "measuredAt": "2026-10-21T21:35:43.999Z",
     "mX1": {
       "el": {
         "routes": 17,
@@ -19,6 +19,7 @@
         "sample": []
       }
     },
+    "mS_renderedSupportHits": 0,
     "mP_renderedHits": 0,
     "sameSurfaceDuplicateBlocksTotal": 0,
     "truncationTotals": [
@@ -74,6 +75,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [
         {
           "price": "0",
@@ -145,6 +147,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [
         {
           "name": "Δωρεάν",
@@ -191,6 +194,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Τα ασφαλιστήριά σας, με απλά λόγια | PolicyWallet",
       "blockCount": 24
@@ -225,6 +229,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Σύγκριση με τις άλλες επιλογές | PolicyWallet",
       "blockCount": 11
@@ -276,6 +281,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Λογισμικό με AI για ασφαλιστικούς πράκτορες | PolicyWallet",
       "blockCount": 16
@@ -304,6 +310,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλεια σκάφους: αστική ευθύνη στη θάλασσα | PolicyWallet",
       "blockCount": 8
@@ -332,6 +339,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλεια επιχείρησης: πολυκάλυψη για ΜμΕ | PolicyWallet",
       "blockCount": 11
@@ -360,6 +368,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλιση για κινδύνους στο διαδίκτυο | PolicyWallet",
       "blockCount": 7
@@ -388,6 +397,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλεια έργων τέχνης: συμφωνημένη αξία | PolicyWallet",
       "blockCount": 9
@@ -416,6 +426,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ομαδική ασφάλιση υγείας για επιχειρήσεις | PolicyWallet",
       "blockCount": 7
@@ -444,6 +455,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ομαδική ασφάλιση ζωής για το προσωπικό | PolicyWallet",
       "blockCount": 10
@@ -472,6 +484,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ομαδική σύνταξη: εισφορές και όροι | PolicyWallet",
       "blockCount": 8
@@ -500,6 +513,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλεια υγείας: τι καλύπτει το ασφαλιστήριο | PolicyWallet",
       "blockCount": 10
@@ -528,6 +542,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Νομική προστασία: τι καλύπτει πραγματικά | PolicyWallet",
       "blockCount": 12
@@ -558,6 +573,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Αστική ευθύνη: η κάλυψη που ίσως έχετε ήδη | PolicyWallet",
       "blockCount": 10
@@ -590,6 +606,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλεια ζωής: προστασία οικογένειας, δανείου | PolicyWallet",
       "blockCount": 7
@@ -618,6 +635,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλεια αυτοκινήτου: ανάλυση καλύψεων με AI | PolicyWallet",
       "blockCount": 10
@@ -646,6 +664,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Συνταξιοδοτικό πρόγραμμα: εισφορές και όροι | PolicyWallet",
       "blockCount": 8
@@ -674,6 +693,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλεια κατοικιδίων για σκύλους και γάτες | PolicyWallet",
       "blockCount": 7
@@ -707,6 +727,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ασφάλεια κατοικίας: κάλυψη και έκπτωση ΕΝΦΙΑ | PolicyWallet",
       "blockCount": 12
@@ -735,6 +756,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Ταξιδιωτική ασφάλεια: Σένγκεν και ακυρώσεις | PolicyWallet",
       "blockCount": 8
@@ -775,6 +797,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [
         {
           "price": "0",
@@ -846,6 +869,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [
         {
           "name": "Free",
@@ -890,6 +914,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Your policies, in plain language | PolicyWallet",
       "blockCount": 22
@@ -924,6 +949,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "How PolicyWallet compares | PolicyWallet",
       "blockCount": 11
@@ -965,6 +991,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "AI software for insurance agents | PolicyWallet",
       "blockCount": 12
@@ -993,6 +1020,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Boat insurance: liability in Greek waters | PolicyWallet",
       "blockCount": 8
@@ -1021,6 +1049,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Business insurance: multi-cover for SMEs | PolicyWallet",
       "blockCount": 10
@@ -1052,6 +1081,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Cyber insurance: ransomware, interruption | PolicyWallet",
       "blockCount": 6
@@ -1080,6 +1110,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Fine art insurance: agreed values & terms | PolicyWallet",
       "blockCount": 9
@@ -1108,6 +1139,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Group health insurance for businesses | PolicyWallet",
       "blockCount": 6
@@ -1136,6 +1168,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Group life insurance for your team | PolicyWallet",
       "blockCount": 10
@@ -1164,6 +1197,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Group pensions: contributions and terms | PolicyWallet",
       "blockCount": 8
@@ -1192,6 +1226,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Health insurance: what your policy covers | PolicyWallet",
       "blockCount": 10
@@ -1220,6 +1255,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Legal expenses insurance, made clear | PolicyWallet",
       "blockCount": 12
@@ -1248,6 +1284,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Personal liability: cover you may own | PolicyWallet",
       "blockCount": 10
@@ -1276,6 +1313,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Life insurance: family & mortgage protection | PolicyWallet",
       "blockCount": 8
@@ -1304,6 +1342,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Car insurance in Greece: AI coverage analysis | PolicyWallet",
       "blockCount": 10
@@ -1332,6 +1371,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Pension plans: contributions and terms | PolicyWallet",
       "blockCount": 8
@@ -1360,6 +1400,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Pet insurance for dogs and cats in Greece | PolicyWallet",
       "blockCount": 6
@@ -1388,6 +1429,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Home insurance: gaps, ENFIA, rebuild cost | PolicyWallet",
       "blockCount": 12
@@ -1416,6 +1458,7 @@
         ]
       },
       "positioningHits": [],
+      "supportHits": [],
       "jsonLdPrices": [],
       "title": "Travel insurance: Schengen and cancellations | PolicyWallet",
       "blockCount": 8

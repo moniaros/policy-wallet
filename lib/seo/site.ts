@@ -80,8 +80,9 @@ export const siteConfig = {
     // publicly on /contact and in JSON-LD, and is not a mailbox we control.
     contactEmail: "info@policywallet.gr",
     careersEmail: "careers@policywallet.gr",
+    // No phone: support is email only (owner decision 2026-10-22). `contactPhone` was
+    // removed with its env var, so no page, JSON-LD node or placeholder can show one.
     /** Real values only — placeholders are never rendered. */
-    contactPhone: envOrUndefined(process.env.NEXT_PUBLIC_CONTACT_PHONE),
     address: {
         streetAddress: envOrUndefined(process.env.NEXT_PUBLIC_CONTACT_STREET),
         addressLocality: envOrUndefined(process.env.NEXT_PUBLIC_CONTACT_CITY),

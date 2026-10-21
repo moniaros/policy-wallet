@@ -2,3 +2,8 @@
 analysis: {
     freeTrialAvailable: 'Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.',
 }
+// PW-CONTENT-02 scope extension probes (in-app plan screens):
+analysesUnlimited: 'Απεριόριστες αναλύσεις εγγράφων με AI',
+noPaidFeatures: 'Το δωρεάν πρόγραμμα δεν περιλαμβάνει αναλύσεις AI.',
+agency: ["Unlimited AI analyses", "Largest AI budget (25M tokens/month)", "Dedicated support"],
+// downgrade probe: 'Yes, you can upgrade or downgrade at any time.'

@@ -290,12 +290,16 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             },
             {
                 question: {
-                    el: "Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή;",
-                    en: "Can I change plans anytime?",
+                    el: "Μπορώ να αναβαθμίσω το πλάνο μου;",
+                    en: "Can I upgrade my plan?",
                 },
                 answer: {
-                    el: "Ναι, μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε οποτεδήποτε από τις ρυθμίσεις λογαριασμού.",
-                    en: "Yes, you can upgrade or downgrade at any time from account settings.",
+                    // The «downgrade at any time» half is REMOVED (2026-10-22): the Stripe
+                    // customer portal has no configuration in test mode (0 of 0), the app has
+                    // no in-app downgrade flow, and the claim rested on the portal only.
+                    // Reinstate when a portal configuration with plan switching exists (QUEUE.md).
+                    el: "Ναι, μπορείτε να αναβαθμίσετε το πλάνο σας οποτεδήποτε από τις ρυθμίσεις λογαριασμού.",
+                    en: "Yes, you can upgrade your plan at any time from account settings.",
                 },
             },
             {
@@ -413,7 +417,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { claim: "agent.analysesPerMonth", label: { el: "400 αναλύσεις τον μήνα", en: "400 analyses a month" }, included: true, highlight: true },
                     { claim: "agent.teamMembers", label: { el: "Απεριόριστη ομάδα", en: "Unlimited team members" }, included: true },
                     { claim: "agent.bulkImportRows", label: { el: "Απεριόριστη μαζική εισαγωγή πελατών", en: "Unlimited client import" }, included: true },
-                    { claim: null, label: { el: "Αποκλειστική υποστήριξη", en: "Dedicated support" }, included: true },
+                    { claim: null, label: { el: "Υποστήριξη μέσω email", en: "Support by email" }, included: true },
                 ],
             },
         ],

@@ -67,6 +67,9 @@
     ],
     "additionalDirectories": [
       "c:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet\\app\\api\\v1\\recommendations"
+    ],
+    "deny": [
+      "Bash(vercel env pull*)"
     ]
   }
 }

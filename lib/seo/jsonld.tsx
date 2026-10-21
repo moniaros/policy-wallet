@@ -47,9 +47,6 @@ export function organizationJsonLd(locale: "el" | "en" = "el") {
         email: siteConfig.contactEmail,
         availableLanguage: ["el", "en"],
     }
-    if (siteConfig.contactPhone) {
-        contactPoint.telephone = siteConfig.contactPhone
-    }
 
     const organization: Record<string, unknown> = {
         "@context": "https://schema.org",

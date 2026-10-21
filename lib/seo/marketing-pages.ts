@@ -161,11 +161,11 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         // The mailbox must match the one shown on the page and in the
         // Organization JSON-LD — a SERP snippet advertising a dead inbox is a
         // support black hole.
-        description: `Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00 στο ${siteConfig.contactEmail}. Θα χαρούμε να βοηθήσουμε.`,
+        description: `Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Η υποστήριξη γίνεται μέσω email, στο ${siteConfig.contactEmail}. Θα χαρούμε να βοηθήσουμε.`,
         breadcrumb: "Επικοινωνία",
         en: {
             title: "Contact us: support and partnerships",
-            description: `Send us a message about support, pricing or partnerships. We reply Monday–Friday 09:00–18:00 at ${siteConfig.contactEmail}. We will be happy to help.`,
+            description: `Send us a message about support, pricing or partnerships. Support is by email, at ${siteConfig.contactEmail}. We will be happy to help you with anything.`,
             breadcrumb: "Contact",
         },
     },

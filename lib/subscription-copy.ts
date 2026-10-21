@@ -251,12 +251,12 @@ export const subscriptionCopy = {
     faq: [
         {
             question: {
-                el: 'Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή;',
-                en: 'Can I change plans anytime?'
+                el: 'Μπορώ να αναβαθμίσω το πλάνο μου;',
+                en: 'Can I upgrade my plan?'
             },
             answer: {
-                el: 'Ναι, μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε το πλάνο σας ανά πάσα στιγμή. Οι αλλαγές θα εφαρμοστούν αμέσως.',
-                en: 'Yes, you can upgrade or downgrade your plan at any time. Changes will be applied immediately.'
+                el: 'Ναι, μπορείτε να αναβαθμίσετε το πλάνο σας οποτεδήποτε.',
+                en: 'Yes, you can upgrade your plan at any time.'
             },
         },
         {

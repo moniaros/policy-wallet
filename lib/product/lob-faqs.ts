@@ -262,8 +262,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πόση ιατρική κάλυψη χρειάζεται για βίζα Σένγκεν;", en: "How much medical cover does a Schengen visa need?" },
             a: {
-                el: "Τουλάχιστον 30.000 € ταξιδιωτικής ιατρικής κάλυψης, σε ισχύ για όλη τη διάρκεια της παραμονής. Είναι απαίτηση της αίτησης για τη βίζα.",
-                en: "At least €30,000 of travel medical cover, valid for the whole stay. It is a requirement of the visa application.",
+                el: "Για την αίτηση βίζας Σένγκεν, η ελάχιστη ταξιδιωτική ιατρική κάλυψη είναι 30.000 € (κανονισμός ΕΚ 810/2009, άρθρο 15).",
+                en: "For a Schengen visa application, the minimum travel medical cover is €30,000 (Regulation (EC) 810/2009, Article 15).",
             },
         },
         {

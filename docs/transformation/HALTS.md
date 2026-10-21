@@ -1046,3 +1046,62 @@ Stripe note, so the series' halt clause isn't re-raised: Stripe holds no entitle
 - **H-022 answer:** positioning = «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». All other variants removed from public routes and metadata (including «ανεξάρτητος έλεγχος ρίσκου» keywords: the SEO trade is accepted). Agent row deleted (A5), so the funding-vs-commission wording question is moot for it; `faqs.ts:41` «πληρωνόμαστε μόνο από συνδρομές» is still a retired funding claim and is removed in build. Partner-referral revenue question (item 3) remains OPEN and unanswered; the existing «Έσοδα από συνδρομές» claims are untouched.
 - **H-023 answer:** copy reflects code. The code shows exclusions on every plan, so the /compare cell is corrected to match. Gating exclusions is a packaging change deferred to H3.
 - **H-024 answer:** boat-liability sentence removed until the specific article of ν. 4926/2022 (ΦΕΚ Α' 82/20.4.2022) is cited from the official text and the sentence rewritten to the law's actual scope. Operational facts (Stripe portal downgrade, support hours 09:00–18:00, Agency «Αποκλειστική υποστήριξη», Schengen €30.000 source) were not answered: **left flagged, not changed, not asserted as verified.**
+
+
+## PW-CONTENT-02 — owner round 2026-10-22 (Eli)
+
+Decisions are in `docs/transformation/DECISIONS.md` (PW-CONTENT-02 round 2). Status of the six halts:
+
+- **H-019** closed. **H-020** closed. **H-023** closed.
+- **H-021 — OPEN, MERGE BLOCKER.** Production `plans.entitlements` have not been read. The entitlement-claim guard is verified against dev rows = code defaults ONLY, not against production. Eli to paste the production rows (`SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;`); until then nothing here claims the public site matches production entitlements. Standing rule from the owner: never `vercel env pull` again (denied in `.claude/settings.json`); ask for any production value.
+- **H-022** — tagline «Τα ασφαλιστήριά σας, με απλά λόγια» APPROVED for root title, OG headline and home Twitter title. Item 3 (partner-referral revenue) stays unconfirmed: see **H-025**.
+- **H-024** — resolved or removed item by item: Schengen €30.000 kept and sourced (Regulation (EC) 810/2009, Art. 15(3), CLAIMS C18); support is **email only** (no phone, no hours, no «Αποκλειστική υποστήριξη» — removed everywhere); Stripe portal downgrade claim REMOVED (the portal has no configuration in test mode, 0 of 0, and the app has no in-app downgrade flow); the boat sentence stays removed until the cited article of ν. 4926/2022.
+
+## H-025 — Public "no commission" claims: confirm they are true before they stay · OPEN
+
+date: 2026-10-22 · raised_by: PW-CONTENT-02 · blocks: nothing in the build; **needs Eli**
+
+Owner instruction: *do not change any no-commission claim.* None was changed in wording (two nearby FUNDING claims, «Πληρωνόμαστε μόνο από …», were removed earlier under H-022). Whether any partner referral earns PolicyWallet money (`partner_referrals`) is unconfirmed; if it does, every line below is false. File:line references (el and en twins listed together; generated from the tree 2026-10-22):
+
+- `app/(public)/company/CompanyPageClient.tsx`: 139, 140
+- `app/(public)/product/marketing-content.ts`: 87, 88
+- `app/(public)/solutions/agents/faqs.ts`: 41, 42
+- `app/(public)/trust/TrustSections.tsx`: 91, 92
+- `components/landing/PartnersSections.tsx`: 127, 128
+- `lib/glossary/content.ts`: 1242, 1243
+- `lib/guides/content.ts`: 1899, 1900, 2173, 2174, 2246
+- `lib/landing/content.ts`: 123, 124
+- `lib/legal/legal-content.ts`: 109, 594
+- `lib/marketing/positioning.ts`: 258, 259, 266, 267
+- `lib/product/lob-faqs.ts`: 42, 43, 65, 66, 88, 89, 111, 112, 157, 158, 203, 204, 233, 234, 256, 257, 279, 280, 302, 303, 322, 323, 368, 369, 391, 392
+- `lib/seo/og-card.tsx`: 24, 29
+- `lib/seo/site.ts`: 70, 71
+
+Related FUNDING-adjacent claims («Τα έσοδά μας προέρχονται από συνδρομές», «Nobody pays us…», compare note «Έσοδα από συνδρομές») — also false if referrals earn money; not changed:
+
+- `app/(public)/company/CompanyPageClient.tsx`: 139, 140
+- `app/(public)/trust/TrustSections.tsx`: 91, 92
+- `components/landing/WhyDifferent.tsx`: 54, 55
+- `lib/guides/content.ts`: 2174
+- `lib/landing/content.ts`: 123, 124
+- `lib/legal/legal-content.ts`: 594
+- `lib/marketing/positioning.ts`: 484
+
+
+**Ask:** confirm "no commission, revenue from subscriptions only" is true today, or tell me which claims to remove.
+
+## H-026 — Contact addresses found across the site · resolved in code, listed for the record
+
+date: 2026-10-22 · raised_by: PW-CONTENT-02
+
+All PUBLIC support contact points use `info@policywallet.gr` (`siteConfig.contactEmail`, `lib/seo/site.ts:81`: /contact, Organization JSON-LD, the Help CTA, email footers and the agent emails). Other addresses found:
+
+| Address | Where | Disposition |
+|---|---|---|
+| `support@policywallet.gr` | `lib/push/web-push.ts` (default VAPID subject), `.env.example`, `scripts/generate-vapid-keys.mjs` | **changed to `info@policywallet.gr`** — a second support address no one reads |
+| `support@policywallet.com` | a comment in `lib/email/templates/agent-emails.ts:4` and `tests/unit/contact-surface-integrity.test.ts` (both describe the removed dead mailbox) | no live use; `contact-surface-integrity` bans any `policywallet.com` in source |
+| `dpo@policywallet.gr` | privacy/DSR copy: `lib/legal/legal-content.ts`, `lib/legal/entity-placeholders.ts`, `lib/i18n/translations/{el,en}.ts`, `lib/email/templates/dsr-emails.ts`, `lib/compliance/ropa-report.ts` | kept: a data-protection contact is a different function from support, not a second support address. Say if you want it merged. |
+| `careers@policywallet.gr` | `/company` (`siteConfig.careersEmail`) | kept: recruiting, not support |
+| `noreply@policywallet.gr` | sender default, `lib/email/email-service.ts:47` | kept: a From address |
+
+The optional phone field on the /contact form and the phone row on that page were removed with `siteConfig.contactPhone` / `NEXT_PUBLIC_CONTACT_PHONE`; the POST `/api/contact` schema still accepts an optional `phone` (unused, back-compatible).

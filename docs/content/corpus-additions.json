@@ -252,5 +252,7 @@
   "inline:lib/landing/content.ts::Το δωρεάν πλάνο περιλαμβάνει έως 3 ασφαλιστήρια. Οι λειτουργίες διαφέρουν ανά πλάνο. Δείτε τις τρέχουσες τιμές και τι περιλαμβάνει κάθε επιλογή στη σελίδα τιμών.",
   "inline:lib/guides/content.ts::Οι τιμές διαφέρουν ανά υπηρεσία. Το PolicyWallet διαθέτει δωρεάν πλάνο για ${FREE_UP_TO.el}. Δείτε τις τρέχουσες τιμές, τις λειτουργίες και τα όρια στη σελίδα τιμών.",
   "inline:lib/landing/content.ts::Το δωρεάν πλάνο περιλαμβάνει ${FREE_UP_TO.el}. Οι λειτουργίες διαφέρουν ανά πλάνο. Δείτε τις τρέχουσες τιμές και τι περιλαμβάνει κάθε επιλογή στη σελίδα τιμών.",
-  "call:components/landing/AgentWidgets.tsx::Για έλεγχο"
+  "call:components/landing/AgentWidgets.tsx::Για έλεγχο",
+  "inline:app/(public)/contact/ContactPageClient.tsx::Υποστήριξη μέσω email",
+  "inline:app/(public)/contact/ContactPageClient.tsx::Υποστήριξη"
 ]

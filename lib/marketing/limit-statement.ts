@@ -38,9 +38,10 @@ export const FREE_UP_TO: Bilingual = {
  * records excepted. Replaces «Διαγράφετε τα πάντα όποτε θέλετε» /
  * "Delete everything whenever you want", which promised an unconditional
  * self-service erase that the retained-records policy does not give.
- * FOR DPO REVIEW — see docs/series/PW-CONTENT-02/COPY.md (C-A2).
+ * Wording approved by the owner 2026-10-22: it mirrors /trust
+ * (app/(public)/trust/TrustSections.tsx, the deletion paragraph) word for word.
  */
 export const DELETION_ON_REQUEST: Bilingual = {
-    el: "Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας, εκτός από όσα πρέπει να κρατήσουμε βάσει νόμου.",
-    en: "You can ask us to delete your data, except records we must keep by law.",
+    el: "Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας. Όσα πρέπει να κρατήσουμε, όπως τα φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.",
+    en: "You can ask us to delete your data. Records we must keep, such as tax documents, are not erased before that obligation ends.",
 }

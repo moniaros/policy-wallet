@@ -52,3 +52,5 @@ rate apparatus comes out. That is an editorial call on a genuinely useful guide,
 
 
 **C8 closed — 2026-10-21:** Under the owner’s explicit request to correct public legal/factual content, removed the unsupported earthquake price/rate table and market ranges. Retained only a clearly hypothetical deductible calculation. See `docs/audits/public-language-legal-2026-10-21.md`.
+
+| C18 | Schengen visa application: ελάχιστη ταξιδιωτική ιατρική κάλυψη 30.000 € | `/product/travel` (FAQ + JSON-LD, page copy), guides, glossary | **Regulation (EC) No 810/2009 (Visa Code), Article 15(3):** «The minimum coverage shall be EUR 30 000.» OJ L 243, 15.9.2009, p. 1 — EUR-Lex CELEX 32009R0810, read from the official HTML 2026-10-22 (owner supplied the article; the sentence is in paragraph 3). Scope: applicants for a uniform visa; wording is limited to «minimum medical cover for the visa application». | sourced |

@@ -19,8 +19,8 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 4289
-# inline entries: 5008 across 242 files
+# bundle entries: 4281
+# inline entries: 5005 across 242 files
 # ternary entries: 286 across 45 files
 # call entries: 1082 across 82 files
 
@@ -444,8 +444,6 @@ bundle	agentPages.policyDetail.contract	"Ασφαλιστήριο"
 bundle	agentPages.policyDetail.contractInsurer	"Ασφαλιστική εταιρεία"
 bundle	agentPages.policyDetail.coverageHighlights	"Κύρια σημεία κάλυψης"
 bundle	agentPages.policyDetail.deductible	"Απαλλαγή"
-bundle	agentPages.policyDetail.directSupport	"Άμεση υποστήριξη"
-bundle	agentPages.policyDetail.directSupportDesc	"Εξυπηρέτηση 24/7 μέσω του ασφαλιστή."
 bundle	agentPages.policyDetail.documents	"Έγγραφα"
 bundle	agentPages.policyDetail.edit	"Επεξεργασία"
 bundle	agentPages.policyDetail.ends	"Λήξη"
@@ -2894,11 +2892,8 @@ bundle	settings.nuclearDeletion	"Διαγραφή λογαριασμού"
 bundle	settings.nuclearDesc	"Με το αίτημά σας ξεκινά η διαδικασία διαγραφής (GDPR, άρθρο 17): θα εξεταστεί και θα ολοκληρωθεί το αργότερο εντός ενός μηνός. Διαγράφονται τα ασφαλιστήρια, τα έγγραφα και τα προσωπικά σας δεδομένα· ό,τι επιβάλλει ο νόμος να διατηρηθεί (π.χ. παραστατικά για 5 έτη) διατηρείται ανωνυμοποιημένο."
 bundle	settings.pageSubtitle	"Ο λογαριασμός, η συνδρομή, οι ειδοποιήσεις και τα δεδομένα σας — όλα σε ένα σημείο."
 bundle	settings.pageTitle	"Ρυθμίσεις"
-bundle	settings.plan.aiBudget	"Μηνιαίο όριο επεξεργασίας AI"
-bundle	settings.plan.aiBudgetDesc	"Κάθε ανάλυση και κάθε ερώτηση καταναλώνει ένα μέρος του."
 bundle	settings.plan.aiBudgetExhausted	"Μόλις εξαντληθεί, οι νέες αναλύσεις περιμένουν μέχρι τον επόμενο μήνα. Μπορείτε επίσης να προσθέσετε επιπλέον όριο."
 bundle	settings.plan.analyses	"Αναλύσεις ασφαλιστηρίων"
-bundle	settings.plan.analysesUnlimited	"Απεριόριστες"
 bundle	settings.plan.analysesUsed	"χρησιμοποιήθηκαν αυτόν τον μήνα"
 bundle	settings.plan.billingDesc	"Τα τιμολόγια και η κάρτα σας φυλάσσονται στη σελίδα χρέωσης του παρόχου πληρωμών, όχι εδώ."
 bundle	settings.plan.billingTitle	"Χρέωση και τιμολόγια"
@@ -2913,7 +2908,6 @@ bundle	settings.plan.endedOnNote	"Το πρόγραμμα δεν είναι πλ
 bundle	settings.plan.endsOnNote	"Δεν θα χρεωθείτε ξανά. Διατηρείτε την πρόσβαση μέχρι τότε."
 bundle	settings.plan.features.advancedAnalytics	"Συνεχής παρακολούθηση της προστασίας σας"
 bundle	settings.plan.features.agentCollaboration	"Συνεργασία με τον ασφαλιστικό σας σύμβουλο"
-bundle	settings.plan.features.analysesUnlimited	"Απεριόριστες αναλύσεις εγγράφων με AI"
 bundle	settings.plan.features.analysisComparison	"Σύγκριση με προηγούμενες αναλύσεις"
 bundle	settings.plan.features.interactiveQA	"Ερωτήσεις με απαντήσεις μέσα από τα ασφαλιστήριά σας"
 bundle	settings.plan.features.notifications	"Υπενθυμίσεις ανανέωσης και λήξης"
@@ -2927,10 +2921,10 @@ bundle	settings.plan.free	"Δωρεάν"
 bundle	settings.plan.freeForever	"Χωρίς χρέωση και χωρίς ημερομηνία λήξης."
 bundle	settings.plan.includedPastTitle	"Τι περιλάμβανε"
 bundle	settings.plan.includedTitle	"Τι περιλαμβάνει"
-bundle	settings.plan.noPaidFeatures	"Το δωρεάν πρόγραμμα δεν περιλαμβάνει αναλύσεις AI."
 bundle	settings.plan.openPortal	"Άνοιγμα σελίδας χρέωσης"
 bundle	settings.plan.perMonth	"τον μήνα"
 bundle	settings.plan.perYear	"τον χρόνο"
+bundle	settings.plan.policiesUnlimited	"Απεριόριστα"
 bundle	settings.plan.portalFailed	"Δεν ήταν δυνατό το άνοιγμα της σελίδας χρέωσης. Δοκιμάστε ξανά."
 bundle	settings.plan.portalUnavailable	"Δεν έχετε κάνει ακόμη πληρωμή, οπότε δεν υπάρχουν τιμολόγια ή αποθηκευμένη κάρτα."
 bundle	settings.plan.storeManaged	"Η συνδρομή σας χρεώνεται μέσω του καταστήματος εφαρμογών. Οι αλλαγές και η ακύρωση γίνονται από τις ρυθμίσεις συνδρομών της συσκευής σας."
@@ -3489,7 +3483,6 @@ bundle	wallet.detailSheet.share	"Κοινοποίηση στον σύμβουλ�
 bundle	wallet.detectedGaps	"Εντοπισμένα κενά"
 bundle	wallet.digitalCard	"Ψηφιακή κάρτα"
 bundle	wallet.digitalCardDesc	"Αποκτήστε την ψηφιακή κάρτα ασφάλισης"
-bundle	wallet.directSupport	"Άμεση υποστήριξη"
 bundle	wallet.documentFormatImage	"Εικόνα"
 bundle	wallet.documentFormatOther	"Αρχείο"
 bundle	wallet.documentFormatPdf	"Έγγραφο PDF"
@@ -3514,7 +3507,6 @@ bundle	wallet.editPolicyForm.title	"Επεξεργασία ασφαλιστηρ�
 bundle	wallet.editPolicyForm.updateFailed	"Η ενημέρωση ασφαλιστηρίου απέτυχε"
 bundle	wallet.editPolicyForm.updateSuccess	"Το ασφαλιστήριο ενημερώθηκε επιτυχώς"
 bundle	wallet.effectiveDate	"Ημερομηνία ισχύος"
-bundle	wallet.emergencyAssistance	"24/7 βοήθεια έκτακτης ανάγκης μέσω της ασφαλιστικής."
 bundle	wallet.emptyState.benefit	"Ανεβάστε ένα PDF και η AI εξάγει καλύψεις, κενά και ημερομηνίες ανανέωσης."
 bundle	wallet.emptyState.cta	"Προσθήκη ασφαλιστηρίου"
 bundle	wallet.emptyState.ctaPrimary	"Προσθήκη πρώτου ασφαλιστηρίου"
@@ -4406,10 +4398,10 @@ inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Δωρεάν"
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Κάτι πήγε στραβά."
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Μετάβαση σε ασφαλή πληρωμή..."
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Πρακτορείο"
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "5 AI αναλύσεις/μήνα", "Βασικό CRM", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "Βασικό CRM", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Ροή εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Επώνυμα emails", "Μαζική εισαγωγή (100 γραμμές)", "Ανάλυση χαρτοφυλακίου", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "200 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", "Προτεραιότητα στην ανάλυση", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & σύμβουλοι", "400 αναλύσεις AI τον μήνα", "Απεριόριστη μαζική εισαγωγή", "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)", "Αποκλειστική υποστήριξη", "Όλα τα Pro χαρακτηριστικά", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "150 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", "Προτεραιότητα στην ανάλυση", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & σύμβουλοι", "400 αναλύσεις AI τον μήνα", "Απεριόριστη μαζική εισαγωγή", "Υποστήριξη μέσω email", "Όλα τα Pro χαρακτηριστικά", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	{ title: "Πλάνα συμβούλων", subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.", free: "Δωρεάν", month: "/μήνα", currentPlan: "Τρέχον πλάνο", upgrade: "Αναβάθμιση", getStarted: "Ξεκινήστε", contact: "Επικοινωνία", popular: "Δημοφιλέστερο", backToDashboard: "Πίσω στην αρχική", vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.", vatIncluded: "με ΦΠΑ", recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.", }
 inline	app/(protected)/agent/relationship-actions.ts	"Η συνεργασία τερματίστηκε"
 inline	app/(protected)/agent/relationship-actions.ts	`${actorName || "Ο πελάτης"} τερμάτισε τη συνεργασία. Δεν έχετε πλέον πρόσβαση στα ασφαλιστήριά του.`
@@ -4529,15 +4521,12 @@ inline	app/(public)/compare/CompareSections.tsx	"Τι είναι τότε το P
 inline	app/(public)/compare/CompareSections.tsx	"Υπάρχει χώρος για εσάς και εργαλεία για ασφαλιστές. Οι ασφαλιστές βλέπουν έγγραφα που διαχειρίζονται για πελάτες ή που τους κοινοποιείτε, ανάλογα με τη σχέση και τα δικαιώματά τους."
 inline	app/(public)/compare/CompareSections.tsx	"Ψηφιακό πορτοφόλι;"
 inline	app/(public)/contact/ContactPageClient.tsx	"Email"
-inline	app/(public)/contact/ContactPageClient.tsx	"Ώρες που απαντάμε"
 inline	app/(public)/contact/ContactPageClient.tsx	"Αυτό το email δεν φαίνεται σωστό."
-inline	app/(public)/contact/ContactPageClient.tsx	"Αυτό το τηλέφωνο δεν φαίνεται σωστό."
 inline	app/(public)/contact/ContactPageClient.tsx	"Γενική ερώτηση"
 inline	app/(public)/contact/ContactPageClient.tsx	"Γράψτε λίγο περισσότερα — τουλάχιστον 20 χαρακτήρες."
 inline	app/(public)/contact/ContactPageClient.tsx	"Γράψτε μας το μήνυμά σας."
 inline	app/(public)/contact/ContactPageClient.tsx	"Γράψτε το email σας."
 inline	app/(public)/contact/ContactPageClient.tsx	"Γράψτε το όνομά σας."
-inline	app/(public)/contact/ContactPageClient.tsx	"Δευτέρα – Παρασκευή, 09:00 – 18:00"
 inline	app/(public)/contact/ContactPageClient.tsx	"Διαλέξτε θέμα"
 inline	app/(public)/contact/ContactPageClient.tsx	"Διαλέξτε θέμα."
 inline	app/(public)/contact/ContactPageClient.tsx	"Διεύθυνση"
@@ -4553,12 +4542,12 @@ inline	app/(public)/contact/ContactPageClient.tsx	"Στείλτε το μήνυ�
 inline	app/(public)/contact/ContactPageClient.tsx	"Συμπληρώστε τη φόρμα και θα σας απαντήσουμε. Διαβάζουμε κάθε μήνυμα."
 inline	app/(public)/contact/ContactPageClient.tsx	"Συνεργασία"
 inline	app/(public)/contact/ContactPageClient.tsx	"Τεχνική υποστήριξη"
-inline	app/(public)/contact/ContactPageClient.tsx	"Τηλέφωνο (προαιρετικό)"
-inline	app/(public)/contact/ContactPageClient.tsx	"Τηλέφωνο"
 inline	app/(public)/contact/ContactPageClient.tsx	"Τιμές και πλάνα"
 inline	app/(public)/contact/ContactPageClient.tsx	"Το μήνυμά σας στάλθηκε. Θα σας απαντήσουμε σύντομα."
 inline	app/(public)/contact/ContactPageClient.tsx	"Το μήνυμα δεν στάλθηκε. Δοκιμάστε ξανά."
 inline	app/(public)/contact/ContactPageClient.tsx	"Το όνομα πρέπει να έχει τουλάχιστον 2 γράμματα."
+inline	app/(public)/contact/ContactPageClient.tsx	"Υποστήριξη μέσω email"
+inline	app/(public)/contact/ContactPageClient.tsx	"Υποστήριξη"
 inline	app/(public)/en/guides/[slug]/page.tsx	path
 inline	app/(public)/en/lexiko/[term]/page.tsx	path
 inline	app/(public)/guides/[slug]/page.tsx	path
@@ -7502,7 +7491,7 @@ inline	lib/marketing/interactive-copy.ts	"Παράδειγμα για να δε�
 inline	lib/marketing/interactive-copy.ts	"Τι χρειάζεται προσοχή"
 inline	lib/marketing/interactive-copy.ts	"Το έγγραφο"
 inline	lib/marketing/interactive-copy.ts	"π.χ. κατοικία, απαλλαγή, ανανέωση"
-inline	lib/marketing/limit-statement.ts	"Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας, εκτός από όσα πρέπει να κρατήσουμε βάσει νόμου."
+inline	lib/marketing/limit-statement.ts	"Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας. Όσα πρέπει να κρατήσουμε, όπως τα φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση."
 inline	lib/marketing/limit-statement.ts	`Δωρεάν για ${FREE_POLICIES} ασφαλιστήρια`
 inline	lib/marketing/limit-statement.ts	`έως ${FREE_POLICIES} ασφαλιστήρια`
 inline	lib/marketing/market-numbers.ts	"Για τον ΕΝΦΙΑ 2026, υπό προϋποθέσεις. Το ποσοστό εξαρτάται από την αξία της κατοικίας και τη διάρκεια ασφάλισης το 2025."
@@ -8043,7 +8032,6 @@ inline	lib/pricing/public-pricing-content.ts	"Απεριόριστη μαζικ�
 inline	lib/pricing/public-pricing-content.ts	"Απεριόριστη ομάδα"
 inline	lib/pricing/public-pricing-content.ts	"Απεριόριστοι πελάτες"
 inline	lib/pricing/public-pricing-content.ts	"Απεριόριστοι"
-inline	lib/pricing/public-pricing-content.ts	"Αποκλειστική υποστήριξη"
 inline	lib/pricing/public-pricing-content.ts	"Αριθμός ασφαλιστηρίων"
 inline	lib/pricing/public-pricing-content.ts	"Αυτοματισμοί ανανέωσης"
 inline	lib/pricing/public-pricing-content.ts	"Βασική εικόνα πελατών"
@@ -8083,10 +8071,10 @@ inline	lib/pricing/public-pricing-content.ts	"Καθημερινή δουλει�
 inline	lib/pricing/public-pricing-content.ts	"Λίστα με ό,τι λήγει"
 inline	lib/pricing/public-pricing-content.ts	"Λίστα με ό,τι λήγει"
 inline	lib/pricing/public-pricing-content.ts	"Μέλη ομάδας"
-inline	lib/pricing/public-pricing-content.ts	"Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή;"
+inline	lib/pricing/public-pricing-content.ts	"Μπορώ να αναβαθμίσω το πλάνο μου;"
 inline	lib/pricing/public-pricing-content.ts	"Μπορώ να διαχειρίζομαι πολλούς πελάτες;"
 inline	lib/pricing/public-pricing-content.ts	"Μπορώ να προσκαλέσω πελάτες να βλέπουν τα ασφαλιστήριά τους;"
-inline	lib/pricing/public-pricing-content.ts	"Ναι, μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε οποτεδήποτε από τις ρυθμίσεις λογαριασμού."
+inline	lib/pricing/public-pricing-content.ts	"Ναι, μπορείτε να αναβαθμίσετε το πλάνο σας οποτεδήποτε από τις ρυθμίσεις λογαριασμού."
 inline	lib/pricing/public-pricing-content.ts	"Ναι, στα μεγαλύτερα πλάνα. Κάθε μέλος της ομάδας βλέπει μόνο ό,τι του αναλογεί."
 inline	lib/pricing/public-pricing-content.ts	"Ναι. Μοιράζεστε ασφαλιστήρια και αναφορές με τον πελάτη μέσα από την ίδια οθόνη."
 inline	lib/pricing/public-pricing-content.ts	"Ναι. Τα πλάνα για ασφαλιστές σας δίνουν όλους τους πελάτες σας σε ένα σημείο. Κάθε πλάνο έχει το δικό του όριο πελατών."
@@ -8118,6 +8106,7 @@ inline	lib/pricing/public-pricing-content.ts	"Υπενθυμίσεις αναν�
 inline	lib/pricing/public-pricing-content.ts	"Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)"
 inline	lib/pricing/public-pricing-content.ts	"Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)"
 inline	lib/pricing/public-pricing-content.ts	"Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)"
+inline	lib/pricing/public-pricing-content.ts	"Υποστήριξη μέσω email"
 inline	lib/pricing/public-pricing-content.ts	"Υποστηρίζεται ομαδική συνεργασία στο γραφείο;"
 inline	lib/pricing/public-pricing-content.ts	"Χαρακτηριστικό"
 inline	lib/pricing/public-pricing-content.ts	"Χαρτοφυλάκιο πελατών"
@@ -8139,6 +8128,7 @@ inline	lib/product/lob-faqs.ts	"Αποζημίωση για τα έσοδα πο
 inline	lib/product/lob-faqs.ts	"Αρκετό ώστε να καλύψει όσα θα άφηνε πίσω η απώλεια του εισοδήματός σας: υπόλοιπο δανείου, έξοδα οικογένειας, σπουδές. Το σωστό ποσό είναι προσωπικό — γι' αυτό αξίζει να το βάλετε δίπλα στις πραγματικές σας υποχρεώσεις."
 inline	lib/product/lob-faqs.ts	"Ασφάλιση που παρέχει ο εργοδότης και προβλέπει ένα ποσό σε περίπτωση θανάτου ή αδυναμίας για εργασία, σύμφωνα με τους όρους της. Είναι διαφορετική από την ομαδική ασφάλιση υγείας ή σύνταξης."
 inline	lib/product/lob-faqs.ts	"Βγάζουμε τις εξαιρέσεις στο φως, με τα ονόματα των παθήσεων, και σας δείχνουμε τα ετήσια όρια — πριν σας δώσει ο κτηνίατρος τον λογαριασμό. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια."
+inline	lib/product/lob-faqs.ts	"Για την αίτηση βίζας Σένγκεν, η ελάχιστη ταξιδιωτική ιατρική κάλυψη είναι 30.000 € (κανονισμός ΕΚ 810/2009, άρθρο 15)."
 inline	lib/product/lob-faqs.ts	"Για τον ΕΝΦΙΑ 2026 χρειάζεται ασφάλιση το 2025 για σεισμό, πυρκαγιά και πλημμύρα, με το απαιτούμενο ποσό και διάρκεια τουλάχιστον τριών μηνών. Η μείωση είναι έως 20% ή 10%, ανάλογα με τη φορολογητέα αξία και τη διάρκεια. Απαιτείται αίτηση στην ΑΑΔΕ."
 inline	lib/product/lob-faqs.ts	"Δείτε τι αναφέρουν η ομαδική και η ατομική σας ασφάλιση. Επιβεβαιώστε με τον ασφαλιστή σας πώς συνδυάζονται, πριν αλλάξετε κάποια κάλυψη."
 inline	lib/product/lob-faqs.ts	"Δεν αρκεί η ασφάλεια περιεχομένου για τα έργα τέχνης;"
@@ -8230,7 +8220,6 @@ inline	lib/product/lob-faqs.ts	"Τι σημαίνει «συμφωνημένη �
 inline	lib/product/lob-faqs.ts	"Τι σημαίνει υπασφάλιση κατοικίας;"
 inline	lib/product/lob-faqs.ts	"Τι χάνω αν σταματήσω νωρίς ένα αποταμιευτικό πρόγραμμα;"
 inline	lib/product/lob-faqs.ts	"Το ποσό των εξόδων που πληρώνετε εσείς πριν αρχίσει να πληρώνει η ασφαλιστική. Όσο μεγαλύτερη η απαλλαγή, τόσο χαμηλότερο συνήθως το ασφάλιστρο."
-inline	lib/product/lob-faqs.ts	"Τουλάχιστον 30.000 € ταξιδιωτικής ιατρικής κάλυψης, σε ισχύ για όλη τη διάρκεια της παραμονής. Είναι απαίτηση της αίτησης για τη βίζα."
 inline	lib/product/lob-faqs.ts	"Τρία πράγματα: την αποζημίωση που προβλέπει σε ολική ζημιά, αν περιλαμβάνεται οδική βοήθεια, και την απαλλαγή — το ποσό που πληρώνετε εσείς σε κάθε ζημιά."
 inline	lib/product/lob-faqs.ts	"Υπασφάλιση σημαίνει ότι το ποσό ασφάλισης είναι μικρότερο από την αξία που πρέπει να ασφαλιστεί. Αν εφαρμόζεται αναλογικός κανόνας, μπορεί να μειωθεί και η αποζημίωση για μερική ζημιά. Ελέγξτε τυχόν εξαίρεση από τον κανόνα στους όρους σας."
 inline	lib/product/lob-faqs.ts	"Χαρτογραφούμε το πολυασφαλιστήριό σας ανά σκέλος — με τα όρια και τις απαλλαγές του καθενός — ώστε να δείτε τι έχετε αγοράσει και τι λείπει. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια."
@@ -9240,10 +9229,10 @@ inline	lib/subscription-copy.ts	'Λήψη PDF'
 inline	lib/subscription-copy.ts	'Μέθοδος Πληρωμής'
 inline	lib/subscription-copy.ts	'Μέχρι {count} ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Μηνιαία'
-inline	lib/subscription-copy.ts	'Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή;'
 inline	lib/subscription-copy.ts	'Μπορώ να αναβαθμίσω αργότερα;'
+inline	lib/subscription-copy.ts	'Μπορώ να αναβαθμίσω το πλάνο μου;'
 inline	lib/subscription-copy.ts	'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση.'
-inline	lib/subscription-copy.ts	'Ναι, μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε το πλάνο σας ανά πάσα στιγμή. Οι αλλαγές θα εφαρμοστούν αμέσως.'
+inline	lib/subscription-copy.ts	'Ναι, μπορείτε να αναβαθμίσετε το πλάνο σας οποτεδήποτε.'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Family'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Plus'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Δωρεάν'

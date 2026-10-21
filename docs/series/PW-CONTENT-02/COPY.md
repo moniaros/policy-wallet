@@ -6,7 +6,7 @@ Greek strings the two diffs miss (`app/layout.tsx`, `public/manifest.json`, `mar
 Rules applied: CLAUDE.md PW-VOICE-01, `docs/content/LEXICON.md`, `docs/content/CLAIMS.md`, `docs/content/HALTS.md`
 (no open voice halt covers any string below), STEP0 A1–A5 and H-019..H-024.
 
-Status: `ok` (ship as written) · `eli` (needs Eli's sign-off; the cell gives the reason and the proposed text) · `dpo` (needs DPO review, not approved here).
+Status: `ok` (ship as written) · `eli` (needs Eli's sign-off; the cell gives the reason and the proposed text) · `approved` (signed off by Eli, 2026-10-22). No row needs DPO sign-off: the owner decided on 2026-10-22 that DPO review is not required for any item in this series.
 Only `+` strings are reviewed. `-` lines are removals and get no row (A1 `freeTrialAvailable`, A5 comparison row, the boat FAQ, `πληρωνόμαστε μόνο από συνδρομές`, the old verdict demo).
 Where one string occurs more than once in a file, it gets one row with the count (×N).
 
@@ -18,7 +18,7 @@ Where one string occurs more than once in a file, it gets one row with the count
 
 | Id | Surface (file) | Old | New | Status |
 |---|---|---|---|---|
-| C-01 | `DELETION_ON_REQUEST`, rendered in the /product final CTA (C-A2) and the signup under-CTA (C-55) | «Διαγράφετε τα πάντα όποτε θέλετε» / "Delete everything whenever you want" | «Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας, εκτός από όσα πρέπει να κρατήσουμε βάσει νόμου.» / "You can ask us to delete your data, except records we must keep by law." | **dpo**. Legal-adjacent; not approved here. EN = EL in meaning. See the "DELETION_ON_REQUEST vs /trust" section for the three points the DPO needs to rule on and a /trust-mirroring alternative. |
+| C-01 | `DELETION_ON_REQUEST`, rendered in the /product final CTA (C-A2) and the signup under-CTA (C-55) | «Διαγράφετε τα πάντα όποτε θέλετε» / "Delete everything whenever you want" | «Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας. Όσα πρέπει να κρατήσουμε, όπως τα φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.» / "You can ask us to delete your data. Records we must keep, such as tax documents, are not erased before that obligation ends." | **approved** by Eli 2026-10-22: the reviewer's draft that mirrors /trust word for word (TrustSections.tsx deletion paragraph). |
 | C-02 | `FREE_PLAN_LIMIT` (composes into C-04, C-37, C-38, C-53, C-55, C-56, C-A2) | «Δωρεάν για 3 ασφαλιστήρια» (typed in four places) | «Δωρεάν για ${FREE_POLICIES} ασφαλιστήρια» / "Free for ${FREE_POLICIES} policies" | ok. CLAIMS C1, read from `DEFAULT_ENTITLEMENT_LIMITS.free.policies`. |
 
 ## lib/marketing/positioning.ts
@@ -85,7 +85,7 @@ Where one string occurs more than once in a file, it gets one row with the count
 | C-32 | travel `descEl` | «…και αν τα όρια αρκούν για βίζα…» | «Δείτε τι καλύπτει το ταξιδιωτικό σας ασφαλιστήριο και ποια όρια αναφέρει, πριν φύγετε και όχι στο ταμείο του νοσοκομείου.» / EN equivalent | ok. The unsourced visa claim is gone. EN adds "foreign" (hospital), which isn't a capability. |
 | C-33 | boat `headlineEl` | «Υποχρεωτική αστική ευθύνη και κάλυψη σκάφους & μηχανής.» | «Αστική ευθύνη και κάλυψη σκάφους & μηχανής.» / "Liability plus hull & machinery coverage." | ok. H-024. |
 | C-34 | boat `descEl` | «Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα. Δείτε τι άλλο…» | «Δείτε τι καλύπτει το ασφαλιστήριο του σκάφους σας πριν λύσετε κάβους.» / EN equivalent | ok. H-024. |
-| C-35 | business `descEl` | «…Δείτε ποια έχετε και ποια λείπουν, σε μία εικόνα.» | «Το πολυασφαλιστήριο της επιχείρησής σας έχει πολλά σκέλη. Δείτε ποια αναφέρει το ασφαλιστήριο και ποια όχι, σε μία εικόνα.» / "…See which ones the policy lists and which it does not, at a glance." | **eli**. «και ποια όχι» still promises a list of **absent** sections. That needs a reference list of possible sections, and no authored rule provides one (STEP0 A13: no business-section rule). It also reads a section the extractor didn't capture as "not listed", which is LEXICON #15 / "unknown is not absence". **Proposed:** «Το πολυασφαλιστήριο της επιχείρησής σας έχει πολλά σκέλη. Δείτε ποια αναφέρει το ασφαλιστήριο, σε μία εικόνα.» / "A business multi-risk policy has many sections. See which ones the policy lists, at a glance." |
+| C-35 | business `descEl` | «…Δείτε ποια έχετε και ποια λείπουν, σε μία εικόνα.» | «Το πολυασφαλιστήριο της επιχείρησής σας έχει πολλά σκέλη. Δείτε ποια αναφέρει το ασφαλιστήριο και ποια όχι, σε μία εικόνα.» / "…See which ones the policy lists and which it does not, at a glance." | **ok** (2026-10-22): the «και ποια όχι» clause was removed per the adversarial review — now «Δείτε ποια σκέλη αναφέρει το ασφαλιστήριο, σε μία εικόνα.» |
 | C-36 | pet `descEl` | «Ξέρετε ακριβώς τι καλύπτεται και τι δεν καλύπτεται…» | «Δείτε τι αναφέρει το ασφαλιστήριο ότι καλύπτεται και τι εξαιρείται, πριν ο κτηνίατρος σας δώσει τον λογαριασμό.» / EN equivalent | **eli**. Register and grammar. «τι αναφέρει… ότι καλύπτεται» is clumsy. «ο κτηνίατρος σας δώσει» puts the clitic where it reads as «ο κτηνίατρός σας» ("your vet") on first pass (this was already in the old copy). Meaning is fine and EN = EL. **Proposed:** «Δείτε τι γράφει το ασφαλιστήριο για καλύψεις και εξαιρέσεις, πριν σας δώσει ο κτηνίατρος τον λογαριασμό.» / "See what the policy says about cover and exclusions, before the vet hands you the bill." |
 
 ## lib/product/lob-faqs.ts
@@ -129,9 +129,9 @@ Where one string occurs more than once in a file, it gets one row with the count
 | C-51 | demo card `aria-label` | «…και μια επισήμανση ότι το σπίτι είναι ασφαλισμένο για λιγότερα…» | «Παράδειγμα: τρία ασφαλιστήρια με τις ημερομηνίες λήξης τους, και ένα σημείο που χρειάζεται έλεγχο στο ασφαλιστήριο κατοικίας.» | ok. EN = EL. |
 | C-52 | /product feature bullet | «Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus» | «Υπενθύμιση πριν λήξει κάτι· πιο νωρίς με το Plus» / "A reminder before something runs out; earlier with Plus" | ok. Fixes E21 (Free gets the 30-day email) and follows the pattern of the sibling bullet. 48 characters in a `text-body-lg` list item; wraps, no clip. |
 | C-53 | /product hero reassurance | «Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα.» (typed) | «${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα.» (renders the same) | ok |
-| C-A2 | /product final CTA (`ProductSections.tsx:384-387`) | EL `CTA_REASSURANCE` / EN "Free for 3 policies. No card. Delete everything whenever you want." | «${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα. ${DELETION_ON_REQUEST.el}» → «Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας, εκτός από όσα πρέπει να κρατήσουμε βάσει νόμου.» / EN twin | **dpo**. Amendment A2. The EN-only false promise is gone and EN = EL now. The deletion sentence is C-01, for the DPO. 136 characters in `text-lead` within `max-w-[540px]`; wraps to about 5 lines at 320, no clip. |
+| C-A2 | /product final CTA (`ProductSections.tsx:384-387`) | EL `CTA_REASSURANCE` / EN "Free for 3 policies. No card. Delete everything whenever you want." | «${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα. ${DELETION_ON_REQUEST.el}» → «Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας. Όσα πρέπει να κρατήσουμε, όπως τα φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.» / EN twin | **approved** by Eli 2026-10-22 (deletion sentence = C-01). |
 | C-54 | /product/fine-art demo meta | «Συνολική αξία €28.000 · Σε ισχύ» | «Συνολική αξία 28.000 € · Σε ισχύ» | ok. Format only. |
-| C-55 | signup under-CTA (`SignupForm.tsx`) | «Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.» | «${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα. ${DELETION_ON_REQUEST.el}» | **dpo**. Same sentence as C-01, placed at the point of sign-up (consent context, cf. GDPR audit C6). |
+| C-55 | signup under-CTA (`SignupForm.tsx`) | «Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.» | «${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα. ${DELETION_ON_REQUEST.el}» | **approved** by Eli 2026-10-22 (deletion sentence = C-01). |
 | C-56 | LoB pre-footer band, 16 product pages and others (`LoBPageShell.tsx`) | «Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.» (typed) · prices via `formatEur` («€29») | «${FREE_PLAN_LIMIT.el}. Αναβάθμιση όποτε τη χρειαστείτε.» · prices via `formatPlanPrice` («29 €/μήνα») | ok |
 | C-57 | Footer identity line, every public page (`PublicMegaFooter.tsx:292`) | «PolicyWallet — η Πλατφόρμα…» / "PolicyWallet — the A platform…" | «PolicyWallet — πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων.» / "PolicyWallet — platform for organising and understanding insurance policies." | **eli** (EN only, minor). The Greek is a correct article-free apposition. The English drops the article and reads like a typo. **Proposed** EN composition: `PolicyWallet — a ${CATEGORY_NAME_INLINE.en}.` The constant itself must stay article-free for /compare's "is a …". EL ok. |
 | C-58 | /compare «Τι είναι τότε το PolicyWallet;» | «Το PolicyWallet είναι μια Πλατφόρμα…» / "…is an A platform…" | «Το PolicyWallet είναι μια πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων. Συγκεντρώνετε τα έγγραφά σας…» / "PolicyWallet is a platform for …" | ok. A4 grammar fix. |
@@ -155,22 +155,11 @@ The rest of the untouched public EN wasn't swept, so 2 is a floor, not a full ce
 
 ---
 
-## DELETION_ON_REQUEST vs /trust — FOR DPO REVIEW (not approved by this reviewer)
+## Approvals recorded 2026-10-22 (Eli)
 
-/trust (`app/(public)/trust/TrustSections.tsx:171`):
-> «Μπορείτε να ζητήσετε διαγραφή από τον λογαριασμό σας. Απαντάμε συνήθως μέσα σε έναν μήνα· αν χρειάζεται νόμιμη παράταση, σας εξηγούμε γιατί. Στοιχεία που πρέπει να κρατήσουμε, όπως φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.»
-
-New line (`lib/marketing/limit-statement.ts`):
-> «Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας, εκτός από όσα πρέπει να κρατήσουμε βάσει νόμου.»
-
-They agree in substance: deletion is on request, not self-service and immediate, and retained records are an exception. The unconditional «Διαγράφετε τα πάντα» is gone from all public code (grep: 0 hits outside this module's comment). Three points for the DPO:
-
-1. **Temporal vs permanent exception.** /trust says retained records are not erased *before the obligation ends*. The new line reads as a standing exclusion («εκτός από όσα…»), with no end.
-2. **"By law" may be narrower than what is actually retained.** The owner-decided retained set (`docs/audits/gdpr-deletion-erasure-2026-07.md` §decisions; memory note `gdpr-dsr-system`) includes invoices (tax law, 5 years), consent rows without ip/ua, DSR request rows, token/credit ledgers, and agent-authored B2B records about an erased customer, which survive "under the agent's own professional-retention basis" (decision 1). /trust also states admin-access logs are kept five years (`:150`). Not all of these rest on a statutory duty. «βάσει νόμου» may therefore under-describe the exception; /trust's «Στοιχεία που πρέπει να κρατήσουμε, όπως φορολογικά παραστατικά» avoids naming the legal basis.
-3. **Placement.** It now sits inside sales reassurance under two CTAs, including the sign-up form, beside «Χωρίς κάρτα». The DPO should confirm a legal statement belongs there, or whether a link to /trust is better.
-
-Text that mirrors /trust word for word, offered for the DPO's consideration only:
-«Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας. Όσα πρέπει να κρατήσουμε, όπως τα φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.» / "You can ask us to delete your data. Records we must keep, such as tax documents, are not erased before that obligation ends."
+- **Deletion line** (C-01, C-A2, C-55): the draft that mirrors /trust word for word. The reviewer's three DPO points (temporal vs permanent exception, "by law" vs the actual retained set, placement) are closed by that choice: the sentence no longer names a legal basis and keeps /trust's «δεν διαγράφονται πριν λήξει η σχετική υποχρέωση».
+- **Tagline** «Τα ασφαλιστήριά σας, με απλά λόγια» as the root `<title>`, OG headline and home Twitter title (C-08, C-11, C-12) is approved; the EN /product title (C-14) follows it.
+- **DPO sign-off is not required for any item in this series** (owner decision, DECISIONS.md PW-C02-D3).
 
 ---
 
@@ -179,3 +168,19 @@ Text that mirrors /trust word for word, offered for the DPO's consideration only
 - **Tagline vs H-022.** «Τα ασφαλιστήριά σας, με απλά λόγια» now carries the root `<title>` (C-12), the OG headline (C-08), the home `twitterTitle` (C-11) and the EN /product title (C-14). It's a descriptive tagline rather than a category name, and it was already the EL /product title before this series. I read H-022 ("one positioning line") as governing the category label, so I marked these `ok`. If you meant H-022 to cover taglines too, these four become `eli`, and the replacement is «PolicyWallet — Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων».
 - **Formatting.** Demo amounts (C-39..C-46, C-54) and guide prose (C-47) are hand-typed in the correct el-GR form («500.000 €»), not passed through `formatCurrency`. The new number guard accepts correct literals, so this meets A4 but not STEP0 §3.3's "sample values as numbers". Plan prices (C-28, C-56, C-59) do go through the shared formatter.
 - **Out of scope, seen in passing (unchanged strings, not rows):** the /product demo card header «Οι ασφάλειές σας» (LEXICON #1 wants «ασφαλιστήρια»); its green/amber status dots beside «Ασφάλεια Αυτοκινήτου» / «Ατομική Υγεία» are colour-coded states with no words. The agent table's «—» for Agent Free analyses/month doesn't say whether the plan runs any analysis.
+
+---
+
+## Round 2 — strings changed 2026-10-22 (owner instruction round)
+
+Wording the owner dictated is `approved`; wording I drafted is `eli` (not reviewed by `greek-copy-reviewer`).
+
+| Id | Surface | Old | New | Status |
+|---|---|---|---|---|
+| R2-1 | Agency feature line (`public-pricing-content.ts`; `/agent/pricing`) | «Αποκλειστική υποστήριξη» / "Dedicated support" | «Υποστήριξη μέσω email» / "Support by email" | **approved** (dictated) |
+| R2-2 | /contact aside | «Ώρες που απαντάμε» + «Δευτέρα – Παρασκευή, 09:00 – 18:00»; phone row | label «Υποστήριξη», value «Υποστήριξη μέσω email»; phone row and the optional phone field in the form removed | **eli** (label «Υποστήριξη» is mine; the value is dictated) |
+| R2-3 | /contact meta description (`marketing-pages.ts`) | «Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00 στο …» | «Η υποστήριξη γίνεται μέσω email, στο info@policywallet.gr. Θα χαρούμε να βοηθήσουμε.» (147–144 chars, inside the 140–160 budget) | **eli** |
+| R2-4 | /pricing FAQ + in-app FAQ (`subscription-copy.ts`) | «Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή; … αναβαθμίσετε ή να υποβαθμίσετε» | «Μπορώ να αναβαθμίσω το πλάνο μου; Ναι, μπορείτε να αναβαθμίσετε το πλάνο σας οποτεδήποτε από τις ρυθμίσεις λογαριασμού.» (Stripe portal has no configuration in test mode; no in-app downgrade) | **eli** |
+| R2-5 | /product/travel FAQ (`lob-faqs.ts`) | «Τουλάχιστον 30.000 € … Είναι απαίτηση της αίτησης για τη βίζα.» | «Για την αίτηση βίζας Σένγκεν, η ελάχιστη ταξιδιωτική ιατρική κάλυψη είναι 30.000 € (κανονισμός ΕΚ 810/2009, άρθρο 15).» Source: Regulation (EC) 810/2009, Art. 15(3), CLAIMS C18 | **eli** (scope kept to the visa application, per the instruction) |
+| R2-6 | /account usage row | «Αναλύσεις ασφαλιστηρίων: Απεριόριστες» / «Το δωρεάν πρόγραμμα δεν περιλαμβάνει αναλύσεις AI.» | the count used this month (never «unlimited»); the budget card and its «εξαντληθεί … μέχρι τον επόμενο μήνα» line only where the processing budget binds (Family) | **eli** |
+| R2-7 | /agent/pricing lists | «5 AI αναλύσεις/μήνα» (Free), «200» (Pro), «25M tokens/μήνα» (Agency) | Free line removed; Pro «150 AI αναλύσεις/μήνα»; token line removed; fallback prices 29 / 79 / 199 | **ok** (numbers from `planClaim`) |

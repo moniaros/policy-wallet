@@ -421,7 +421,6 @@ export const en: TranslationKeys = {
         deductible: "Deductible",
         coverageLimit: "Coverage Limit",
         vehicle: "Vehicle",
-        directSupport: "Direct Support",
         contract: "Policy",
         /**
          * What the document IS, when the classifier told us. Distinct from the
@@ -441,7 +440,6 @@ export const en: TranslationKeys = {
         documentFormatPdf: "PDF document",
         documentFormatImage: "Image",
         documentFormatOther: "File",
-        emergencyAssistance: "24/7 emergency assistance via insurer.",
         analysisSubtitle: "Clear explanation of your coverage",
         runAnalysisDesc: 'Click "Understand Policy" to see what is covered',
         askAiTitle: "Ask AI About Your Policy",
@@ -3363,7 +3361,6 @@ export const en: TranslationKeys = {
                 policiesOne: '1 policy in your wallet',
                 policiesMany: 'policies in your wallet',
                 policiesUnlimited: 'Unlimited policies in your wallet',
-                analysesUnlimited: 'Unlimited AI document analyses',
                 interactiveQA: 'Ask questions and get answers from your policies',
                 portfolioGapView: 'A single view of every gap in your cover',
                 agentCollaboration: 'Work together with your insurance advisor',
@@ -3392,12 +3389,9 @@ export const en: TranslationKeys = {
             storedPoliciesHint: 'When it is full, you can remove a policy or move to a larger plan.',
             storedPoliciesOver: 'You are over the plan limit. Remove policies or upgrade to add new ones.',
             analyses: 'Policy analyses',
-            analysesUnlimited: 'Unlimited',
+            policiesUnlimited: 'Unlimited',
             analysesUsed: 'used this month',
-            aiBudget: 'Monthly AI processing allowance',
-            aiBudgetDesc: 'Every analysis and every question uses part of it.',
             aiBudgetExhausted: 'Once it runs out, new analyses wait until next month. You can also add more allowance.',
-            noPaidFeatures: 'The free plan does not include AI analyses.',
         },
 
         security: {
@@ -4275,8 +4269,6 @@ export const en: TranslationKeys = {
             managedByYou: 'Managed by you',
             annualPremium: 'Annual Premium',
             coverageHighlights: 'Coverage Highlights',
-            directSupport: 'Direct Support',
-            directSupportDesc: '24/7 assistance via insurer.',
             summary: 'Summary',
             noSummary: 'No summary provided for this policy. Run AI analysis below.',
             aiInsights: 'AI Policy Insights',

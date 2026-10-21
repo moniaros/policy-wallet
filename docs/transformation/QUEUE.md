@@ -1825,3 +1825,14 @@ and the 0.5 discontinuity record.
 Opened 2026-10-21 from PW-CONTENT-02 decision H-019. No acceptance criteria written yet; do not start until they are.
 Intended policy (owner): Free = 1 lifetime full analysis; Plus and Family = full analysis on all policies.
 Touches (to be scoped): `lib/monetization/feature-gates.ts:93`, orchestrator `:640-655`, `users.trial_analysis_used_at` (nothing writes it), `plan-defaults.ts`, the `plan-gating-parity` guard, public pricing copy (which will then CHANGE with the code, never before it — catalogue coupling).
+
+
+---
+
+## Deferred out of PW-CONTENT-02 (owner, 2026-10-22) — each `todo`, no acceptance criteria written yet
+
+- **CLEAN-DEAD-VERDICT-COMPONENTS** — delete `components/landing/{PolicyWalletWidget,AudienceCards,WhyNow,ProductStage,HeroSlides,ServicesGrid,TrustBadges}.tsx` and `RealScreens` dashboard screens (verdict chips «Εντάξει»), plus the 8 tests that pin them (`clamped-text-reachability`, `design-token-debt`, `marketing-mock-honesty`, `marketing-content-contracts`, `audience-cards`, `hero-slides-rotation-regression`, `marketing-registration-state`, `marketing-samples-no-headings`). Nothing renders them. Reference: RESULT.md §6; adversarial review I9.
+- **PRICES-FROM-PLAN-CONFIG** — the pricing funnel band (`components/landing/LoBPageShell.tsx`, ~20 pages) and the agents page (`app/(public)/solutions/agents/AgentsSolutionPageClient.tsx:17,187`) read `DEFAULT_PLAN_FACTS`; an `/admin/plans` price edit reaches /pricing but not them. Needs the catalogue passed to 28 call sites (client components). Review I5.
+- **DEMO-DATES-AND-AMOUNTS** — hand-typed dates and k/M amounts in the demos: `app/(public)/product/ProductSections.tsx:211-228` («Λήγει 15 Ιουν»), `app/(public)/product/motor/PageClient.tsx:70`, `cyber/PageClient.tsx:73,79` («2,5 εκατ. €»/"€2.5M", "€500k"), `health/PageClient.tsx:75`. STEP0 §3.5 date arm of the number guard was never built. Review I8.
+- **FREE-UPSELL-SLOT-ANALYSISCARD** — `app/(protected)/wallet/[id]/AnalysisCard.tsx:~740`: after the false free-trial line was removed, the remaining `trialAnalysisAvailable === false` upsell branch is unreachable because nothing writes `users.trial_analysis_used_at` (`wallet/[id]/page.tsx:152`). Link: **PW-ENTITLE-01** (the free lifetime full analysis); decide the slot there. Review M1.
+- **STRIPE-PORTAL-PLAN-SWITCHING** — create a Stripe customer-portal configuration with plan switching (test, then live), then reinstate «υποβαθμίσετε» on /pricing and `lib/subscription-copy.ts` (PW-C02-D6).

@@ -27,14 +27,12 @@ const AGENT_PLANS = [
         features: {
             en: [
                 "10 customers",
-                "5 AI analyses/month",
                 "Basic CRM",
                 "Manual opportunity tracking",
                 "Collaboration threads",
             ],
             el: [
                 "10 πελάτες",
-                "5 AI αναλύσεις/μήνα",
                 "Βασικό CRM",
                 "Χειροκίνητη διαχείριση ευκαιριών",
                 "Νήματα συνεργασίας",
@@ -45,7 +43,7 @@ const AGENT_PLANS = [
         id: "agent-starter",
         tier: "agent_starter",
         icon: Zap,
-        priceEur: 19.99,
+        priceEur: 29,
         popular: true,
         features: {
             en: [
@@ -74,11 +72,11 @@ const AGENT_PLANS = [
         id: "agent-pro",
         tier: "agent_pro",
         icon: Crown,
-        priceEur: 49.99,
+        priceEur: 79,
         features: {
             en: [
                 "500 customers",
-                "200 AI analyses/month",
+                "150 AI analyses/month",
                 "Full pipeline + commission tracking",
                 "Renewal automation",
                 "Unlimited questionnaires",
@@ -88,7 +86,7 @@ const AGENT_PLANS = [
             ],
             el: [
                 "500 πελάτες",
-                "200 AI αναλύσεις/μήνα",
+                "150 AI αναλύσεις/μήνα",
                 "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας",
                 "Αυτοματοποίηση ανανεώσεων",
                 "Απεριόριστα ερωτηματολόγια",
@@ -102,22 +100,20 @@ const AGENT_PLANS = [
         id: "agent-agency",
         tier: "agency",
         icon: Building2,
-        priceEur: 99.99,
+        priceEur: 199,
         features: {
             en: [
                 "Unlimited customers & agents",
                 "400 AI analyses a month",
                 "Unlimited bulk import",
-                "Largest AI budget (25M tokens/month)",
-                "Dedicated support",
+                "Support by email",
                 "All Pro features included",
             ],
             el: [
                 "Απεριόριστοι πελάτες & σύμβουλοι",
                 "400 αναλύσεις AI τον μήνα",
                 "Απεριόριστη μαζική εισαγωγή",
-                "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)",
-                "Αποκλειστική υποστήριξη",
+                "Υποστήριξη μέσω email",
                 "Όλα τα Pro χαρακτηριστικά",
             ],
         },

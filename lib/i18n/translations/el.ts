@@ -418,7 +418,6 @@ export const el = {
         deductible: 'Απαλλαγή',
         coverageLimit: 'Όριο κάλυψης',
         vehicle: 'Όχημα',
-        directSupport: 'Άμεση υποστήριξη',
         contract: 'Ασφαλιστήριο',
         /**
          * What the document IS, when the classifier told us. Distinct from the
@@ -438,7 +437,6 @@ export const el = {
         documentFormatPdf: 'Έγγραφο PDF',
         documentFormatImage: 'Εικόνα',
         documentFormatOther: 'Αρχείο',
-        emergencyAssistance: '24/7 βοήθεια έκτακτης ανάγκης μέσω της ασφαλιστικής.',
         analysisSubtitle: 'Σαφής επεξήγηση της κάλυψής σας',
         runAnalysisDesc: 'Κάντε κλικ στο "Κατανόηση" για να δείτε τι καλύπτεται',
         askAiTitle: 'Ρωτήστε το AI για το Ασφαλιστήριο',
@@ -3420,7 +3418,6 @@ export const el = {
                 policiesOne: '1 ασφαλιστήριο στο πορτοφόλι σας',
                 policiesMany: 'ασφαλιστήρια στο πορτοφόλι σας',
                 policiesUnlimited: 'Απεριόριστα ασφαλιστήρια στο πορτοφόλι σας',
-                analysesUnlimited: 'Απεριόριστες αναλύσεις εγγράφων με AI',
                 interactiveQA: 'Ερωτήσεις με απαντήσεις μέσα από τα ασφαλιστήριά σας',
                 portfolioGapView: 'Συνολική εικόνα των κενών κάλυψης',
                 agentCollaboration: 'Συνεργασία με τον ασφαλιστικό σας σύμβουλο',
@@ -3449,12 +3446,9 @@ export const el = {
             storedPoliciesHint: 'Όταν γεμίσει, μπορείτε να αφαιρέσετε ένα ασφαλιστήριο ή να αναβαθμίσετε το πρόγραμμά σας.',
             storedPoliciesOver: 'Έχετε ξεπεράσει το όριο του προγράμματος. Αφαιρέστε ασφαλιστήρια ή αναβαθμίστε για να προσθέσετε νέα.',
             analyses: 'Αναλύσεις ασφαλιστηρίων',
-            analysesUnlimited: 'Απεριόριστες',
+            policiesUnlimited: 'Απεριόριστα',
             analysesUsed: 'χρησιμοποιήθηκαν αυτόν τον μήνα',
-            aiBudget: 'Μηνιαίο όριο επεξεργασίας AI',
-            aiBudgetDesc: 'Κάθε ανάλυση και κάθε ερώτηση καταναλώνει ένα μέρος του.',
             aiBudgetExhausted: 'Μόλις εξαντληθεί, οι νέες αναλύσεις περιμένουν μέχρι τον επόμενο μήνα. Μπορείτε επίσης να προσθέσετε επιπλέον όριο.',
-            noPaidFeatures: 'Το δωρεάν πρόγραμμα δεν περιλαμβάνει αναλύσεις AI.',
         },
 
         security: {
@@ -4332,8 +4326,6 @@ export const el = {
             managedByYou: 'Διαχειριζόμενο από εσάς',
             annualPremium: 'Ετήσιο ασφάλιστρο',
             coverageHighlights: 'Κύρια σημεία κάλυψης',
-            directSupport: 'Άμεση υποστήριξη',
-            directSupportDesc: 'Εξυπηρέτηση 24/7 μέσω του ασφαλιστή.',
             summary: 'Περίληψη',
             noSummary: 'Δεν υπάρχει περίληψη για αυτό το ασφαλιστήριο. Εκτελέστε ανάλυση AI παρακάτω.',
             aiInsights: 'Πληροφορίες AI για το Ασφαλιστήριο',
