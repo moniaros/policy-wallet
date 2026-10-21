@@ -1,0 +1,20 @@
+.demo { margin-top: 40px; }
+.tabs { margin-bottom: 28px; }
+.tabs button { min-height: 48px; font-size: 1rem; }
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr); gap: 28px; align-items: center; }
+.document { position: relative; overflow: hidden; align-self: stretch; padding: 32px; border: 1px solid #BFD4CC; border-radius: 16px; background: #FFFFFF; color: #10312B; }
+.document h3 { font-size: 1.5rem; line-height: 1.3; color: inherit; }
+.document .stamp { color: #4A6660; font-size: .75rem; line-height: 1.5; letter-spacing: .04em; }
+.document ul { margin-top: 28px; }
+.document li { margin-top: 0; padding-block: 18px; border-top: 1px solid #D9E5E0; font-size: 1.125rem; line-height: 1.65; color: inherit; }
+.connector { display: flex; justify-content: center; align-items: center; width: 48px; height: 48px; border-radius: 50%; background: #143B33; color: #FFFFFF; }
+.results { padding-block: 20px; }
+.results h3 { font-size: 1.5rem; line-height: 1.3; margin-bottom: 28px; }
+.results li { padding-block: 14px; margin-top: 0; border-bottom: 1px solid var(--border-subtle); }
+.results li > span:last-child { font-size: 1.125rem; line-height: 1.65; }
+@media (max-width: 1023px) {
+    .stage { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    .connector { justify-self: center; transform: rotate(90deg); }
+    .results { min-height: 0; padding: 0; }
+}
+@media (max-width: 599px) { .document { padding: 24px; } }

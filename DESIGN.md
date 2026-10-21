@@ -317,6 +317,12 @@ The homepage four-step section is a bounded exception: its centered sentence-cas
 heading scales from 2rem to 3.5rem, with 1.5rem card titles (700 weight), a 1rem
 outlined label and 1rem descriptions. It retains Inter and Greek-first measures.
 
+The five-part homepage extension shares balanced section headings (2–3.5rem,
+700 weight, 1.12 leading). Public introductions, audience descriptions, learning
+copy and the expanded reading demo intentionally retain the existing 18px body
+role with 1.65 leading; a detector advisory is not a reason to collapse this into
+the denser app body role. Category and trust explanations use 16px prose.
+
 ### Hierarchy
 - **Display** (600, 3.5rem/56px, 1.05): hero only. One per page, never below the fold. In the app the one display number is the phone lead of the overview row (the home and the wallet); everything else stays inside 12–32px.
 - **Headline** (600, 2.75rem/44px, 1.12): marketing page titles and major section heads.
@@ -352,6 +358,12 @@ The homepage four-step section uses a 1440px container with fluid 24–56px gutt
 and 64–104px vertical spacing. Its ordered grid has four columns from 1200px, two
 from 600px and one below 600px; numbered descriptions sit beneath each card. These
 section-specific breakpoints do not change the app shell.
+
+The homepage extension uses the existing 1240px page measure, 24px gutters and
+64–104px vertical spacing. Audience and learning pairs, and the three trust
+columns, stack below 768px. Category links use four columns from 1200px, two from
+600px and one below 600px. The expanded document-to-explanation demo stacks below
+1024px; its connecting arrow turns downward. These are public section recipes.
 
 Authentication uses a 55:45 desktop split with a 440px form measure and a sticky companion panel occupying the viewport height. The photo sits above a concise forest explanation. Below 1024px only the form column remains; utility pages without a companion use the available page width. This composition does not alter the authenticated shell described below.
 
@@ -432,6 +444,37 @@ reading/approach anchor. Mint actions turn forest on hover and expose a visible
 focus outline; cards remain flat. Sources: `components/landing/grafi/HowItWorks.tsx`,
 its CSS module and `lib/i18n/how-it-works.ts`. This is a scoped component recipe,
 not a new site-wide visual system.
+
+### Homepage evidence and discovery extension — 2026-10-21
+These five built patterns extend the established forest/mint presentation while
+keeping the light video hero and four-step band intact:
+
+- **Audience panels:** a pale green policyholder panel and forest advisor panel
+  pair audience copy with actual application components on fictional fixtures.
+  Framed excerpts are 300px high, with a visible fictional-data caption outside
+  the crop. The wallet excerpt omits its summary so policy cards remain visible.
+  Preview code loads near the viewport; a labelled fallback occupies its place.
+- **Reading demonstration:** an enlarged, permanently labelled sample document
+  on white leads to plain-language findings through a forest arrow. Existing
+  sample tabs, keyboard selection, replay, status labels and reduced-motion
+  behavior remain; the demonstration is illustrative, not a live analysis.
+- **Category links:** motor, home, health and business use photographic 4:3
+  images above titles, short descriptions and a bottom-aligned link cue. Each
+  entire flat, rounded card links to its existing localized product page.
+- **Learning pair:** a photographic guide card and mint glossary composition
+  link to the existing guides and dictionary. The glossary’s large words are
+  decorative; the card heading and description supply the accessible meaning.
+- **Trust explanations:** document handling, AI analysis and access each get a
+  plain ruled column, outline icon and factual explanation linking to details.
+  The existing independence comparison stays available in a native disclosure.
+
+Cards use the existing 16px corners. Category and learning links underline their
+heading on hover, expose a focus outline and move the arrow slightly; reduced
+motion removes its transition. Bilingual copy and existing payment/auth limits
+remain authoritative. Sources: `components/landing/homepage-panels.module.css`,
+its audience/category/learning/trust components, and
+`src/design-system/reading-demo.tsx` with its presentation stylesheet. This
+extension adds no global tokens and does not replace the signed-in design system.
 
 ### Buttons
 - **Shape:** fully round (`9999px`), with `12px 20px` padding and a 44px floor on mobile.
