@@ -916,7 +916,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                         "According to Google, Google Analytics does not log or store IP addresses. This does not mean all usage data is anonymous. Google Signals and advertising personalisation are disabled in the application code.",
                         "We do not use third-party marketing or advertising-targeting cookies. If these are added in the future, we will first update this page and request new, specific consent before activating them.",
                         "You can change or withdraw your choice through Cookie settings. When you reject analytics, the application stops sending Analytics events and deletes related cookies that the website can remove.",
-                        "Google acts as a processor on our behalf; any transfers outside the EEA are covered by the safeguards described on our Subprocessors page.",
+                        "For Google’s role and processing outside the European Economic Area, see the service terms and provider page. You can request information about the relevant safeguards at dpo@policywallet.gr.",
                     ],
                     link: { href: "/subprocessors", label: "See the subprocessors list" },
                 },
