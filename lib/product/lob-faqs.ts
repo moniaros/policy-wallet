@@ -1,5 +1,6 @@
 import type { ProductCategoryId } from "@/lib/product/catalog"
 import type { Bilingual } from "@/lib/marketing/positioning"
+import { FREE_PLAN_LIMIT } from "@/lib/marketing/limit-statement"
 
 /**
  * Per-branch FAQ blocks for the 15 product pages (AEO).
@@ -38,8 +39,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλεια αυτοκινήτου;", en: "How does PolicyWallet help with car insurance?" },
             a: {
-                el: "Στέλνετε το ασφαλιστήριο και το διαβάζουμε για εσάς: τι καλύπτει, τι όχι, πότε λήγει. Δωρεάν για 3 ασφαλιστήρια, χωρίς κάρτα. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "You send us the policy and we read it for you: what it covers, what it does not, and when it runs out. Free for 3 policies, no card. We do not sell insurance and take no commission.",
+                el: `Στέλνετε το ασφαλιστήριο και το διαβάζουμε για εσάς: τι καλύπτει, τι όχι, πότε λήγει. ${FREE_PLAN_LIMIT.el}, χωρίς κάρτα. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.`,
+                en: `You send us the policy and we read it for you: what it covers, what it does not, and when it runs out. ${FREE_PLAN_LIMIT.en}, no card. We do not sell insurance and take no commission.`,
             },
         },
     ],
@@ -304,13 +305,10 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         },
     ],
     boat: [
-        {
-            q: { el: "Είναι υποχρεωτική η ασφάλεια σκάφους στην Ελλάδα;", en: "Is boat insurance compulsory in Greece?" },
-            a: {
-                el: "Η αστική ευθύνη είναι υποχρεωτική για τα σκάφη αναψυχής στα ελληνικά ύδατα. Η κάλυψη του ίδιου του σκάφους και της μηχανής είναι προαιρετική.",
-                en: "Liability cover is compulsory for pleasure craft in Greek waters. Cover for the boat itself and its engine is optional.",
-            },
-        },
+        // «Είναι υποχρεωτική η ασφάλεια σκάφους στην Ελλάδα;» is REMOVED with its
+        // answer (PW-CONTENT-02 H-024): no official source was found for the
+        // unqualified sentence. Reinstate with the specific article of ν. 4926/2022
+        // (ΦΕΚ Α' 82/20.4.2022), worded to its actual scope.
         {
             q: { el: "Τι να ελέγξω στο ασφαλιστήριο του σκάφους μου;", en: "What should I check in my boat policy?" },
             a: {
@@ -344,8 +342,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλιση έργων τέχνης;", en: "How does PolicyWallet help with fine art insurance?" },
             a: {
-                el: "Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απαλλαγή και τους όρους ασφαλείας — όπως τον συναγερμό που το ασφαλιστήριο απαιτεί — καθώς και αν προαιρετικές καλύψεις όπως ο σεισμός έχουν επιλεγεί. Δωρεάν για 3 ασφαλιστήρια, χωρίς κάρτα.",
-                en: "You send us the policy and we read the schedule of items, the values, the deductible and the security conditions — like the alarm the policy requires — plus whether optional covers such as earthquake were taken. Free for 3 policies, no card.",
+                el: `Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απαλλαγή και τους όρους ασφαλείας — όπως τον συναγερμό που το ασφαλιστήριο απαιτεί — καθώς και αν προαιρετικές καλύψεις όπως ο σεισμός έχουν επιλεγεί. ${FREE_PLAN_LIMIT.el}, χωρίς κάρτα.`,
+                en: `You send us the policy and we read the schedule of items, the values, the deductible and the security conditions — like the alarm the policy requires — plus whether optional covers such as earthquake were taken. ${FREE_PLAN_LIMIT.en}, no card.`,
             },
         },
     ],

@@ -1,0 +1,45 @@
+(node:54127) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:54130) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/pricing-jsonld-price-numeric.test.ts (3 tests | 1 failed) 23ms
+     × source arm — no pricing page parses a formatted price back into a number 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/pricing-jsonld-price-numeric.test.ts > pricing JSON-LD price is a number and equals the plan config (A3) > source arm — no pricing page parses a formatted price back into a number
+AssertionError: app/(public)/en/pricing/page.tsx: offer price does not come from pricing.monthly.value
+app/(public)/en/pricing/page.tsx:45  price: plan.pricing.monthly.amount.replace(/[^0-9.]/g, ""),
+app/(public)/pricing/page.tsx: offer price does not come from pricing.monthly.value
+app/(public)/pricing/page.tsx:52  price: plan.pricing.monthly.amount.replace(/[^0-9.]/g, ""),: expected [ …(4) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "app/(public)/en/pricing/page.tsx: offer price does not come from pricing.monthly.value",
++   "app/(public)/en/pricing/page.tsx:45  price: plan.pricing.monthly.amount.replace(/[^0-9.]/g, \"\"),",
++   "app/(public)/pricing/page.tsx: offer price does not come from pricing.monthly.value",
++   "app/(public)/pricing/page.tsx:52  price: plan.pricing.monthly.amount.replace(/[^0-9.]/g, \"\"),",
++ ]
+
+ ❯ tests/unit/pricing-jsonld-price-numeric.test.ts:45:37
+     43|         expect(all.length, 'the guard must see the pricing pages').toB…
+     44|         const bad = all.flatMap((f) => sourceOffenders(f.p, f.t))
+     45|         expect(bad, bad.join('\n')).toEqual([])
+       |                                     ^
+     46|     })
+     47|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  23:15:10
+   Duration  738ms (transform 93ms, setup 137ms, import 188ms, tests 23ms, environment 329ms)
+

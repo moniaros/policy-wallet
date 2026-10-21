@@ -96,7 +96,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'More Policy Storage',
-                    text: 'The free plan includes 3 policies with the full AI analysis. Plus allows up to 10 and Family up to 25 — including past/expired policies for historical review. Analyses are unlimited on every plan.',
+                    text: 'The free plan includes 3 policies with a basic summary. Plus allows up to 10 and Family up to 25 — including past/expired policies for historical review.',
                 },
                 {
                     heading: 'Priority Support',
@@ -288,7 +288,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Περισσότερος χώρος ασφαλιστηρίων',
-                    text: 'Το δωρεάν πλάνο περιλαμβάνει 3 ασφαλιστήρια με πλήρη ανάλυση AI. Το Plus επιτρέπει έως 10 και το Family έως 25 — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο. Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο.',
+                    text: 'Το δωρεάν πλάνο περιλαμβάνει 3 ασφαλιστήρια με βασική σύνοψη. Το Plus επιτρέπει έως 10 και το Family έως 25 — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο.',
                 },
                 {
                     heading: 'Προτεραιότητα Υποστήριξης',

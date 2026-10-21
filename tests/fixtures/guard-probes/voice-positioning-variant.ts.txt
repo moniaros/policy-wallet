@@ -1,0 +1,7 @@
+// PW-CONTENT-02 probe — retired positioning variants on a public route. The positioning lint must flag every line.
+export const probe = {
+    definition: "Το PolicyWallet είναι η ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου.",
+    meta: "Ανεξάρτητος έλεγχος ρίσκου με AI: δείτε πού είστε καλυμμένοι και πού έχετε κενά.",
+    og: "We tell you where you are covered. An independent risk check.",
+    headline: "Σας λέμε αν είστε καλυμμένοι.",
+}

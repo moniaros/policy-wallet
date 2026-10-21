@@ -1,6 +1,7 @@
 import type { LandingContentModel } from "@/types/landing-content"
 import { siteConfig } from "@/lib/seo/site"
 import { productCategories } from "@/lib/product/catalog"
+import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 /**
  * Homepage content model.
@@ -82,8 +83,8 @@ export const landingContent: LandingContentModel = {
                 id: "step-monitor",
                 title: { el: "Παρακολουθείτε τις ημερομηνίες", en: "Keep track of dates" },
                 description: {
-                    el: "Δείτε πότε λήγουν τα ασφαλιστήριά σας. Με το Plus λαμβάνετε υπενθυμίσεις και βλέπετε τι άλλαξε όταν ανεβάζετε την ανανέωση.",
-                    en: "See when your policies expire. With Plus, receive reminders and see what changed when you upload a renewal.",
+                    el: "Δείτε πότε λήγουν τα ασφαλιστήριά σας και πάρτε υπενθύμιση πριν λήξουν· με το Plus, από 90 ημέρες πριν. Όταν ανεβάζετε την ανανέωση, βλέπετε τι άλλαξε.",
+                    en: "See when your policies expire and get a reminder before they do; with Plus, from 90 days ahead. When you upload a renewal, you see what changed.",
                 },
                 emphasis: { el: "βλέπετε τι άλλαξε", en: "see what changed" },
             },
@@ -154,8 +155,8 @@ export const landingContent: LandingContentModel = {
                 id: "faq-cost",
                 question: { el: "Πόσο κοστίζει;", en: "How much does it cost?" },
                 answer: {
-                    el: "Το δωρεάν πλάνο περιλαμβάνει έως 3 ασφαλιστήρια, με μηνιαίο όριο επεξεργασίας. Οι λειτουργίες και τα όρια διαφέρουν ανά πλάνο. Δείτε τις τρέχουσες τιμές και τι περιλαμβάνει κάθε επιλογή στη σελίδα τιμών.",
-                    en: "The free plan includes up to 3 policies, with a monthly processing allowance. Features and limits vary by plan. See current prices and what each option includes on the pricing page.",
+                    el: `Το δωρεάν πλάνο περιλαμβάνει ${FREE_UP_TO.el}. Οι λειτουργίες διαφέρουν ανά πλάνο. Δείτε τις τρέχουσες τιμές και τι περιλαμβάνει κάθε επιλογή στη σελίδα τιμών.`,
+                    en: `The free plan includes ${FREE_UP_TO.en}. Features vary by plan. See current prices and what each option includes on the pricing page.`,
                 },
             },
             {
@@ -196,13 +197,13 @@ export const landingContent: LandingContentModel = {
                 "έλεγχος ασφάλισης",
                 "κενά κάλυψης",
                 "ανάλυση ασφαλιστηρίου AI",
-                "ανεξάρτητος έλεγχος ρίσκου",
+                "οργάνωση ασφαλιστηρίων",
                 "PolicyWallet",
             ],
             ogTitle: "Τι πραγματικά καλύπτουν τα ασφαλιστήριά σας | PolicyWallet",
             ogDescription:
                 "Δείτε τι γράφει κάθε ασφαλιστήριο.",
-            twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",
+            twitterTitle: "PolicyWallet | Τα ασφαλιστήριά σας, με απλά λόγια",
             twitterDescription: "Ένα μέρος για τα έγγραφα, τις καλύψεις και τις ημερομηνίες σας.",
         },
         en: {
@@ -215,14 +216,14 @@ export const landingContent: LandingContentModel = {
                 "insurance check",
                 "coverage gaps",
                 "AI policy analysis",
-                "independent risk check",
+                "insurance policy organiser",
                 "PolicyWallet",
             ],
             ogTitle: "Know what your policies actually cover | PolicyWallet",
             ogDescription:
-                "We read your insurance and tell you where you are covered and where you are not — and, with Family, which gaps were found and what to ask your insurance agent.",
-            twitterTitle: "PolicyWallet | An independent risk check",
-            twitterDescription: "We do not sell insurance. We tell you what you are not covered for.",
+                "See what each policy says.",
+            twitterTitle: "PolicyWallet | Your policies, in plain language",
+            twitterDescription: "A place for your policy documents, covers and dates.",
         },
     },
 }

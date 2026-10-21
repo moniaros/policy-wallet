@@ -1,5 +1,6 @@
 import { Bell, Sparkles, Upload } from "lucide-react"
 import { PUBLIC_COUNTS } from "@/lib/marketing/public-counts"
+import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 /**
  * Product-page marketing copy, shared between the client page (rendering)
@@ -83,13 +84,13 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Πουλάτε ασφάλειες;",
         qEn: "Do you sell insurance?",
-        aEl: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία και δεν παίρνουμε προμήθεια από καμία. Πληρωνόμαστε μόνο από τη δική σας συνδρομή.",
-        aEn: "No. We are not an insurance company and we take no commission from any of them. We are paid only by your subscription.",
+        aEl: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία και δεν παίρνουμε προμήθεια από καμία.",
+        aEn: "No. We are not an insurance company and we take no commission from any of them.",
     },
     {
         qEl: "Μπορώ να το δοκιμάσω δωρεάν;",
         qEn: "Can I try it for free?",
-        aEl: "Ναι. Ο δωρεάν λογαριασμός χωρά έως 3 ασφαλιστήρια, χωρίς κάρτα. Η ανάλυση έχει μηνιαίο όριο χρήσης. Οι πρόσθετες λειτουργίες περιγράφονται στη σελίδα με τα πλάνα.",
-        aEn: "Yes. The free account holds up to 3 policies without a payment card. Analysis has a monthly usage allowance. Additional features are listed on the plans page.",
+        aEl: `Ναι. Ο δωρεάν λογαριασμός χωρά ${FREE_UP_TO.el}, χωρίς κάρτα. Οι πρόσθετες λειτουργίες περιγράφονται στη σελίδα με τα πλάνα.`,
+        aEn: `Yes. The free account holds ${FREE_UP_TO.en} without a payment card. Additional features are listed on the plans page.`,
     },
 ] as const

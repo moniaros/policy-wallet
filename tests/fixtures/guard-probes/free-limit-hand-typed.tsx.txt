@@ -1,0 +1,3 @@
+// PW-CONTENT-02 probe — the free-plan limit typed by hand instead of read from FREE_PLAN_LIMIT.
+// A fourth copy is a fourth chance for one page to promise a count the code does not enforce.
+<p>{t("Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα.", "Free for 3 policies. No card.")}</p>

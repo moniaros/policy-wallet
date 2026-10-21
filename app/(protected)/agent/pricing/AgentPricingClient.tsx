@@ -106,7 +106,7 @@ const AGENT_PLANS = [
         features: {
             en: [
                 "Unlimited customers & agents",
-                "Unlimited AI analyses",
+                "400 AI analyses a month",
                 "Unlimited bulk import",
                 "Largest AI budget (25M tokens/month)",
                 "Dedicated support",
@@ -114,7 +114,7 @@ const AGENT_PLANS = [
             ],
             el: [
                 "Απεριόριστοι πελάτες & σύμβουλοι",
-                "Απεριόριστες AI αναλύσεις",
+                "400 αναλύσεις AI τον μήνα",
                 "Απεριόριστη μαζική εισαγωγή",
                 "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)",
                 "Αποκλειστική υποστήριξη",

@@ -975,3 +975,74 @@ date: 2026-10-21 · raised_by: step0-investigator · blocks: `lib/assets/asset-s
 The spec (retained by D-034) says one expired policy on a car with two live ones "must not render the car as live, and must not render it as expired either". The series asks for «καλύπτεται έως 14/3» per asset. STEP0 §3.5 reconciles them as a **summary with its denominator** — «Σε ισχύ έως 14/3 · 2 από 3 ασφαλιστήρια», `in_force` only on a *readable* end date, every nested policy keeping its own status and link.
 
 **Ask:** approve that reading, so the spec's §2.4 is amended to "a group has no lifecycle of its own; it may state the dated facts of its members with the denominator visible", or reject it and the strip shows per-policy chips instead of a per-asset word.
+
+---
+
+# PW-CUSTOMER · PW-CONTENT-02 — Step 0 halts (2026-10-21)
+
+Raised by `step0-investigator` for `docs/series/PW-CONTENT-02/STEP0.md`. Run-plan decision ids (`docs/series/00-RUN-PLAN.md` §4) are given where one applies. Build item 1 proceeds without these: it only REMOVES claims that are false against enforced code (D1, copy follows code). New wording waits.
+
+## H-019 — CLOSED 2026-10-21: public copy reflects enforced code (full analysis = Family only). Four written sources disagree about who gets the full analysis · **run-plan H3**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: the wording of PW-CONTENT-02 item 1; the in-app free-trial line (out of series scope)
+
+1. **H-009, CLOSED 2026-08-25** (this file, line 638): "deep analysis sits on **both** paid tiers".
+2. **Code** enforces **Family only**: `lib/monetization/feature-gates.ts:93` (`requiredPlan: "pro"`), orchestrator `:640-655` blocks Free and Plus with `free_tier_ai_locked`. The comment there admits the two decisions disagree.
+3. **Run plan H3** says a "depth-based paywall (one free lifetime full analysis)" was already agreed. **Nothing implements it**: nothing writes `users.trial_analysis_used_at`.
+4. **Live in-app copy** already promises (3) to every Free user on every policy: `el.ts:2505` «Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.», rendered at `AnalysisCard.tsx:737-746`, confirmed in `docs/evidence/policy-detail-mobile/data/free/free-motor-active-390.json`. The run is then refused.
+
+Public /pricing meanwhile marks «Πλήρης ανάλυση AI» ✓ on Free, Plus and Family (`public-pricing-content.ts:196-202`).
+
+**Ask:** name the enforced rule. Until answered, PW-CONTENT-02 sets the public table to what the code enforces today (Free ✗, Plus ✗, Family ✓). The in-app trial line is a broken claim on an authenticated surface and needs its own fix (honour it or remove it). It's flagged here, not fixed by this series.
+
+## H-020 — CLOSED 2026-10-21: publish NO analysis limit. «Απεριόριστες αναλύσεις» vs «μηνιαίο όριο επεξεργασίας»: no monthly analysis number exists to publish · **run-plan H3**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: Build item 2 (the one shared limit sentence)
+
+`aiAnalysisPerMonth` is null on every B2C tier. Free and Plus are limited by the policy cap (3/10) and a 30-uploads/day spend cap (`extract/route.ts:239-251`). Family deep runs are gated by a 1,500,000-token monthly budget. A run is estimated at 142,800–151,200 tokens (1–8 active rules, `token-budget-estimator.ts`), so the analysis count varies with actual usage. `plan-defaults.ts:85-87` says the token budget "must never be shown, named, or implied", yet `/account` shows it (`el.ts:3455-3457`).
+
+**Ask:** which sentence is true and publishable? (a) policy cap only, plus «έως 30 αρχεία την ημέρα» as a fair-use line (recommended; both are enforced numbers); (b) an approximate count of full analyses for Family (an estimate, so it needs a `docs/content/CLAIMS.md` row and wording that says so); (c) no limit sentence for Free/Plus at all. Whichever you pick also decides whether the in-app «Μηνιαίο όριο επεξεργασίας AI» stays.
+
+## H-021 — CLOSED 2026-10-21 (partial evidence, see answer): production is the source of truth. Dev and production differ on the claim being fixed; confirm production's values
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: the baseline for E18 / M-E
+
+`PREVENTION_PERSONALIZATION_ENABLED` decides whether Free/Plus extraction draws the monthly token budget (`policy-analysis-orchestrator.service.ts:408-415`). Local `.env.local` = `1`; production = `0` per `docs/audits/prevention-production-release-2026-10-02.md:63`. So dev shows a Free monthly limit that production, as recorded, doesn't have. Production `plans` rows were last read 2026-09-06 (BL-01). Dev rows equal the code defaults exactly.
+
+**Ask:** (1) confirm the current production value of `PREVENTION_PERSONALIZATION_ENABLED`; (2) paste a read-only `SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;` from production under this halt. If either differs from dev, measurements run with the production values (fixture F8).
+
+## H-022 — CLOSED 2026-10-21: positioning = «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». Positioning default, the agent row, and funding vs commission · **run-plan H3 (packaging language)**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: Build items 3 and 5 wording
+
+1. **Positioning.** `CATEGORY_NAME` moved today (`27cea6cb`) to «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων», but `siteConfig.definition` (JSON-LD, FAQ, /company, llms.txt), the root meta, the OG image headline «Σας λέμε αν είστε καλυμμένοι.», `twitter:title`, `manifest.json` and SEO keywords still say «ανάλυσης ρίσκου / έλεγχος ρίσκου / αν είστε καλυμμένοι». Confirm the default line. Removing «ανεξάρτητος έλεγχος ρίσκου» from keywords is an SEO trade. Approve it or say which keyword survives.
+2. **Agent row.** The series suggests «δεν πληρωνόμαστε από ασφαλιστικές». That is a FUNDING claim. The repo retired funding claims on purpose because one "becomes false the day an institution pays for an embedded deployment" (`positioning.ts:242-245`, `lib/landing/content.ts:117-121`), and `/solutions/synergates` sells to institutions. The surviving claim is the commission one («δεν παίρνουμε προμήθεια»). Which does the row use? (`app/(public)/solutions/agents/faqs.ts:41` already says «πληρωνόμαστε μόνο από συνδρομές» against that rule.)
+3. **Revenue.** `partner_referrals` records referral use per vendor. Does any partner referral earn PolicyWallet money? If yes, «Τα έσοδά μας προέρχονται από συνδρομές» (`content.ts:122`) and the compare note «Έσοδα από συνδρομές» are false.
+
+## H-023 — CLOSED 2026-10-21: copy reflects code (exclusions are shown on every plan). Are exclusions meant to be Family-only? The code shows them on every plan · **run-plan H3**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: the /compare row «Βοηθά να βρείτε τι εξαιρείται»
+
+Upload-time extraction stores `acordData.exclusions` for every tier, and `ExclusionsCard` renders it with no gate (`PolicyDetailsClientView.tsx:370-374, 1042`). /compare says PolicyWallet does this «Ναι, με το Family» (`positioning.ts:487-496`); its English twin says "Shows you what is NOT covered", which is gap detection, a different claim. H3 asks "whether exclusions and gaps stay Family-only", but exclusions aren't Family-only today.
+
+**Ask:** is the public cell wrong (→ «Ναι», split the EN into the gap row), or do you intend to gate exclusions (a product change outside this series)? Under D1 the cell becomes «Ναι» unless you say otherwise.
+
+## H-024 — CLOSED 2026-10-21 for the boat sentence (removed); operational facts stay FLAGGED. Operational and legal facts no source in the repo can settle
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: rows E15, E35 and two category claims; nothing else
+
+- /pricing FAQ «μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε οποτεδήποτε από τις ρυθμίσεις λογαριασμού». Downgrade runs through the Stripe Customer Portal (`account/actions.ts:80`). Does the production portal configuration allow plan switching?
+- /contact «Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00» (`marketing-pages.ts:163`) and Agency «Αποκλειστική υποστήριξη». Are both operationally true?
+- `/product/boat` «Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα.» Step 0 found **no official source**. Secondary sources (nextdeal.gr, insurancedaily.gr, accessed 2026-10-21) tie the duty to vessel type and length (Law 4256/2014; Ministerial Decision 3131/1999). Supply an official source for a `CLAIMS.md` row, or the sentence is qualified or removed.
+- Travel «Τουλάχιστον 30.000 €» Schengen minimum (`lib/product/lob-faqs.ts:264`) has no `CLAIMS.md` row. Supply the source or accept removal.
+
+Stripe note, so the series' halt clause isn't re-raised: Stripe holds no entitlements. Checkout builds `price_data` from the plan row (`lib/billing.ts:96-116`). The deprecated `scripts/setup-billing-catalog.ts` carries stale prices that nothing reads. No code-vs-Stripe entitlement contradiction exists in the repo.
+
+## PW-CONTENT-02 — answers (2026-10-21, Eli; recorded in DECISIONS.md)
+
+- **H-019 answer:** public copy reflects enforced code (full analysis = Family only; Free ✗, Plus ✗). Intended future policy: Free = 1 lifetime full analysis; Plus and Family = full analysis on all policies. Opened as **PW-ENTITLE-01** (stub in QUEUE.md). Not implemented here. The in-app Free line is removed (amendment A1), not honoured.
+- **H-020 answer:** publish no analysis limit. «μηνιαίο όριο επεξεργασίας» and any monthly-cap wording leave B2C copy. The policy cap («3 ασφαλιστήρια») stays: it is an enforced number, not an analysis limit.
+- **H-021 answer:** production is the source of truth. Evidence taken this session: Vercel production env `PREVENTION_PERSONALIZATION_ENABLED` = `0` (read via `vercel env pull`, file deleted). Live `/pricing` (policywallet.gr, 2026-10-21) renders €4.99 / €39 / €8.99 / €79 / €29 / €199, equal to dev rows and code defaults. **Production `plans.entitlements` were NOT read** (the credential pull was blocked by the permission classifier; no prod DB credential in session): E-row verdicts use dev rows = code defaults. Local `.env.local` aligned to `0` before baselines.
+- **H-022 answer:** positioning = «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». All other variants removed from public routes and metadata (including «ανεξάρτητος έλεγχος ρίσκου» keywords: the SEO trade is accepted). Agent row deleted (A5), so the funding-vs-commission wording question is moot for it; `faqs.ts:41` «πληρωνόμαστε μόνο από συνδρομές» is still a retired funding claim and is removed in build. Partner-referral revenue question (item 3) remains OPEN and unanswered; the existing «Έσοδα από συνδρομές» claims are untouched.
+- **H-023 answer:** copy reflects code. The code shows exclusions on every plan, so the /compare cell is corrected to match. Gating exclusions is a packaging change deferred to H3.
+- **H-024 answer:** boat-liability sentence removed until the specific article of ν. 4926/2022 (ΦΕΚ Α' 82/20.4.2022) is cited from the official text and the sentence rewritten to the law's actual scope. Operational facts (Stripe portal downgrade, support hours 09:00–18:00, Agency «Αποκλειστική υποστήριξη», Schengen €30.000 source) were not answered: **left flagged, not changed, not asserted as verified.**

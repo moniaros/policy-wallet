@@ -1363,3 +1363,33 @@ holds the same tree.
 
 The other 137 stale capture files across 9 surfaces are recorded, derivable as bounds, and not
 actionable: none is a ceiling baseline and none lands within 1 of one.
+
+---
+
+# PW-CONTENT-02 — decisions at Step 0 approval (2026-10-21, Eli)
+
+Source: `docs/series/PW-CONTENT-02/STEP0.md` (approved with amendments A1–A5). Each decision closes the HALTS.md entry of the same id.
+
+## PW-C02-H019 — Public copy reflects enforced code; future entitlement policy is a separate series
+Full analysis = Family only, today. Intended future policy (NOT implemented here): Free = one lifetime full analysis; Plus and Family = full analysis on all policies. Supersedes the written disagreement between H-009 ("both paid tiers"), `feature-gates.ts:93`, and the run-plan H3. Opens **PW-ENTITLE-01** (stub in QUEUE.md). The in-app line «Η πρώτη πλήρης ανάλυση είναι δωρεάν» is removed (A1) because no code grants it.
+
+## PW-C02-H020 — No analysis limit is published
+No monthly analysis count exists to publish (`aiAnalysisPerMonth` null on every B2C tier). «μηνιαίο όριο επεξεργασίας» and monthly-cap wording are removed from B2C copy. The enforced policy cap stays. `limitStatement` therefore states the policy cap only.
+
+## PW-C02-H021 — Production is the source of truth for baselines
+`PREVENTION_PERSONALIZATION_ENABLED` is `0` in Vercel production (read 2026-10-21); local `.env.local` was `1` and is aligned to `0` before baselines. Live /pricing prices equal dev rows. Production `plans.entitlements` not read (no credential; pull blocked by classifier): residual risk recorded, verdicts rest on dev rows = code defaults.
+
+## PW-C02-H022 — One positioning line
+«Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». Every other variant is removed from public routes and metadata, including the «ανεξάρτητος έλεγχος ρίσκου» keywords (SEO trade accepted) and the OG headline «Σας λέμε αν είστε καλυμμένοι.».
+
+## PW-C02-H023 — Exclusions: copy follows code
+Exclusions render on every plan, so /compare no longer says «Ναι, με το Family» for them. Any packaging change is deferred to H3.
+
+## PW-C02-H024 — Boat-liability sentence removed pending an official citation
+Reinstate only after the specific article of ν. 4926/2022 (ΦΕΚ Α' 82/20.4.2022) is cited from the official text and the sentence matches the law's actual scope. Operational facts (Stripe portal, support hours, «Αποκλειστική υποστήριξη», Schengen minimum) remain flagged and unchanged.
+
+## PW-C02-A5 — The «Δεν κερδίζει τίποτα από την απάντηση» row is deleted
+No replacement wording. Closes build item 5 and A7 (funding-claim wording) for that row.
+
+## PW-C02-A3/A4 — Numbers
+Prices are numbers in the model and formatted at render (el-GR «4,99 €», «35.000 €»); JSON-LD offers carry a numeric `price` and `priceCurrency: "EUR"`.

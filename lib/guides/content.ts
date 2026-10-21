@@ -11,6 +11,7 @@
  * - Factual claims that depend on legislation point readers to the official
  *   source (AADE, EAEE, Bank of Greece) instead of asserting volatile details.
  */
+import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 export type LocalizedString = { el: string; en: string }
 
@@ -319,7 +320,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Παράδειγμα: ένα σπίτι κοστίζει €200.000 να ξαναχτιστεί, αλλά είναι ασφαλισμένο για €100.000, δηλαδή για το μισό ποσό. Αν εφαρμόζεται ο αναλογικός κανόνας, μια ζημιά €20.000 μπορεί να δώσει αποζημίωση €10.000, πριν από άλλες αφαιρέσεις. Αυτό λέγεται υπασφάλιση. Ελέγξτε αν ο κανόνας ισχύει στη δική σας κάλυψη και συζητήστε το ποσό με τον ασφαλιστή σας.",
+                        el: "Παράδειγμα: ένα σπίτι κοστίζει 200.000 € να ξαναχτιστεί, αλλά είναι ασφαλισμένο για 100.000 €, δηλαδή για το μισό ποσό. Αν εφαρμόζεται ο αναλογικός κανόνας, μια ζημιά 20.000 € μπορεί να δώσει αποζημίωση 10.000 €, πριν από άλλες αφαιρέσεις. Αυτό λέγεται υπασφάλιση. Ελέγξτε αν ο κανόνας ισχύει στη δική σας κάλυψη και συζητήστε το ποσό με τον ασφαλιστή σας.",
                         en: "Example: a home costs €200,000 to rebuild but is insured for €100,000, half that amount. If the average clause applies, a €20,000 loss may result in a €10,000 payout before other deductions. This is underinsurance. Check whether the clause applies to your cover and discuss the insured amount with your insurance advisor.",
                     },
                 ],
@@ -1972,8 +1973,8 @@ export const guides: Guide[] = [
                     en: "How much does a policy-management platform cost?",
                 },
                 answer: {
-                    el: "Οι τιμές διαφέρουν ανά υπηρεσία. Το PolicyWallet διαθέτει δωρεάν πλάνο για έως 3 ασφαλιστήρια. Δείτε τις τρέχουσες τιμές, τις λειτουργίες και τα όρια στη σελίδα τιμών.",
-                    en: "Prices vary by service. PolicyWallet has a free plan for up to 3 policies. See current prices, features and limits on the pricing page.",
+                    el: `Οι τιμές διαφέρουν ανά υπηρεσία. Το PolicyWallet διαθέτει δωρεάν πλάνο για ${FREE_UP_TO.el}. Δείτε τις τρέχουσες τιμές, τις λειτουργίες και τα όρια στη σελίδα τιμών.`,
+                    en: `Prices vary by service. PolicyWallet has a free plan for ${FREE_UP_TO.en}. See current prices, features and limits on the pricing page.`,
                 },
             },
             {
@@ -2376,8 +2377,8 @@ export const guides: Guide[] = [
                         en: "Not file status, but something that in practice goes missing far more often: your own data, at the moment you need it. In the first hours after an incident the question is not how the claim is progressing — it is what you must do right now so you do not forfeit your right to be paid.",
                     },
                     {
-                        el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας ασφαλιστήριο: η προθεσμία δήλωσης και οι υποχρεώσεις ειδοποίησης όπως τις αναφέρει το έγγραφό σας, ο αριθμός ασφαλιστηρίου, και το τηλέφωνο του σωστού κλάδου — γραμμή δήλωσης ατυχήματος για το αυτοκίνητο, τεχνική βοήθεια για την κατοικία, κέντρο συντονισμού για την υγεία. Όταν το τηλέφωνο δεν υπάρχει στο έγγραφο, το λέει ευθέως αντί να επινοήσει έναν αριθμό. Αυτή είναι η διαφορά μιας πλατφόρμας προσωπικής ανάλυσης ρίσκου από μια απλή αποθήκη εγγράφων: δεν σας δίνει απλώς το αρχείο — σας δίνει το τι σημαίνει.",
-                        en: "In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadline and reporting obligations exactly as your document states them, your policy number, and the right claims line — the accident-declaration line for motor, technical assistance for home, the coordination centre for health. Where the number is not in the document, it says so plainly rather than inventing one. That is the difference between a personal risk intelligence platform and a plain document store: it does not just hand you the file — it hands you what the file means.",
+                        el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας ασφαλιστήριο: η προθεσμία δήλωσης και οι υποχρεώσεις ειδοποίησης όπως τις αναφέρει το έγγραφό σας, ο αριθμός ασφαλιστηρίου, και το τηλέφωνο του σωστού κλάδου — γραμμή δήλωσης ατυχήματος για το αυτοκίνητο, τεχνική βοήθεια για την κατοικία, κέντρο συντονισμού για την υγεία. Όταν το τηλέφωνο δεν υπάρχει στο έγγραφο, το λέει ευθέως αντί να επινοήσει έναν αριθμό. Αυτή είναι η διαφορά μιας πλατφόρμας οργάνωσης και κατανόησης ασφαλιστηρίων από μια απλή αποθήκη εγγράφων: δεν σας δίνει απλώς το αρχείο — σας δίνει το τι σημαίνει.",
+                        en: "In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadline and reporting obligations exactly as your document states them, your policy number, and the right claims line — the accident-declaration line for motor, technical assistance for home, the coordination centre for health. Where the number is not in the document, it says so plainly rather than inventing one. That is the difference between a platform for organising and understanding insurance policies and a plain document store: it does not just hand you the file — it hands you what the file means.",
                     },
                     {
                         el: "Δείτε τις υποχρεώσεις ειδοποίησης και ενημερώστε έγκαιρα την ασφαλιστική. Η συνέπεια καθυστέρησης εξαρτάται από τον νόμο, τους όρους και τα περιστατικά· δεν σημαίνει αυτόματα απώλεια κάθε δικαιώματος αποζημίωσης.",

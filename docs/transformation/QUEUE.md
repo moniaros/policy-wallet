@@ -1818,3 +1818,10 @@ estimation.
 `page.evaluate`. Acceptance #1 is therefore largely satisfied; this item should **verify** it rather
 than redo it, and own the parts goal2 did not: the historical re-derivation, the ceiling restatement,
 and the 0.5 discontinuity record.
+
+---
+
+## PW-ENTITLE-01 — Entitlement policy: who gets the full analysis · `todo` (STUB, not started)
+Opened 2026-10-21 from PW-CONTENT-02 decision H-019. No acceptance criteria written yet; do not start until they are.
+Intended policy (owner): Free = 1 lifetime full analysis; Plus and Family = full analysis on all policies.
+Touches (to be scoped): `lib/monetization/feature-gates.ts:93`, orchestrator `:640-655`, `users.trial_analysis_used_at` (nothing writes it), `plan-defaults.ts`, the `plan-gating-parity` guard, public pricing copy (which will then CHANGE with the code, never before it — catalogue coupling).

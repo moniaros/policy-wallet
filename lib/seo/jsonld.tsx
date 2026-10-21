@@ -212,7 +212,8 @@ export function breadcrumbEnJsonLd(keys: MarketingPageKey[]) {
 
 export type PricingOfferInput = {
     name: string
-    price: string
+    /** A NUMBER (euros), never a locale-formatted string: «4,99 €» parsed back would read 499. */
+    price: number
     priceCurrency?: string
     description?: string
 }

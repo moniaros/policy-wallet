@@ -398,5 +398,30 @@
     "locator": "call:components/landing/PublicMegaFooter.tsx",
     "text": "Συγκεντρώστε τα ασφαλιστήριά σας και καταλάβετε τι γράφουν. Βρείτε τι χρειάζεται να ρωτήσετε τον ασφαλιστή σας. Δεν πουλάμε ασφάλειες.",
     "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/landing/content.ts",
+    "text": "Δείτε πότε λήγουν τα ασφαλιστήριά σας και πάρτε υπενθύμιση π",
+    "reason": "PW-CONTENT-02 H-019/E20: the step now states which plan sends which reminder (every plan: one 30-day email; Plus: from 90 days). The 91-char original attributed an ungated feature to Plus. Reviewed by greek-copy-reviewer (COPY.md C-10)."
+  },
+  {
+    "locator": "inline:lib/pricing/pricing-view-model.ts",
+    "text": "Εξοικονομείτε ~${formatPlanPrice(saved",
+    "reason": "PW-CONTENT-02 A4: not a copy change — the template shape now formats the amount through formatPlanPrice instead of typing «~€N»; rendered text is «Εξοικονομείτε ~19 €»."
+  },
+  {
+    "locator": "inline:lib/pricing/public-pricing-content.ts",
+    "text": "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)",
+    "reason": "PW-CONTENT-02 E10/E11: the plan comparison must name the schedule to be a true claim (90/60/30/15/7/3 days, `lib/renewals/milestones.ts`); the old 22–30 char labels said ✗ for Free and merged reminders with report export. 55 chars wraps to 2–3 lines in cards and scrolls in the table; reviewed (COPY.md C-20/C-21)."
+  },
+  {
+    "locator": "inline:lib/seo/site.ts",
+    "text": "Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων: διαβάζουμε",
+    "reason": "PW-CONTENT-02 H-022: root meta description now states the single positioning line; it is a search snippet, not a laid-out slot."
+  },
+  {
+    "locator": "call:components/landing/ProductCategoryExplorer.tsx",
+    "text": "Δείτε πώς διαβάζουμε τα έγγραφα κάθε κατηγορίας.",
+    "reason": "PW-CONTENT-02 item 7: positional re-key, not a rewrite — the intro sentence is unchanged; the card-link strings that held its slot (#n) were removed when the cross-links became titles-only."
   }
 ]

@@ -42,8 +42,8 @@ describe('buildPublicPricingContent', () => {
         )
         const built = buildPublicPricingContent(catalog, CAN_CHARGE)
         const pro = built.policyholder.plans.find((p) => p.checkoutPlanId === 'ph-pro')!
-        expect(pro.pricing.monthly.amount).toBe('€8.99')
-        expect(pro.pricing.annual?.amount).toBe('€89')
+        expect(pro.pricing.monthly.value).toBe(8.99)
+        expect(pro.pricing.annual?.value).toBe(89)
     })
 
     it('a changed price replaces the hand-written savings prose with computed savings', () => {
@@ -54,7 +54,7 @@ describe('buildPublicPricingContent', () => {
         const pro = built.policyholder.plans.find((p) => p.checkoutPlanId === 'ph-pro')!
         // 8.99×12 − 89 = 18.88 → ~€19
         expect(pro.pricing.annual?.savings.en).toBe('Save ~€19')
-        expect(pro.pricing.annual?.savings.el).toContain('~€19')
+        expect(pro.pricing.annual?.savings.el).toMatch(/~19\s€/)
     })
 
     it('unchanged prices keep the template savings prose verbatim', () => {
@@ -80,6 +80,6 @@ describe('buildPublicPricingContent', () => {
         const catalog = synthetic().filter((p) => p.id !== 'agent-agency')
         const built = buildPublicPricingContent(catalog, CAN_CHARGE)
         const agency = built.agent.plans.find((p) => p.key === 'agent-agency')!
-        expect(agency.pricing.monthly.amount).toBe('€199')
+        expect(agency.pricing.monthly.value).toBe(199)
     })
 })

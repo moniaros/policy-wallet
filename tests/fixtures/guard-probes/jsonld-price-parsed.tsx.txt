@@ -1,0 +1,8 @@
+// PW-CONTENT-02 A3 probe — the pricing JSON-LD offer built by parsing a formatted string back.
+// With a Greek price string «4,99 €» this reads 499. The guard must flag it.
+softwareApplicationJsonLd(
+    plans.map((plan) => ({
+        name: plan.name.el,
+        price: plan.pricing.monthly.amount.replace(/[^0-9.]/g, ""),
+    }))
+)

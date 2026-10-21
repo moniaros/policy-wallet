@@ -1,0 +1,1424 @@
+{
+  "summary": {
+    "phase": "after",
+    "base": "http://localhost:3100",
+    "measuredAt": "2026-10-21T21:09:35.759Z",
+    "mX1": {
+      "el": {
+        "routes": 17,
+        "distinctRepeatedBlocks": 0,
+        "totalOccurrences": 0,
+        "maxOccurrencesOfOneBlock": 1,
+        "sample": []
+      },
+      "en": {
+        "routes": 17,
+        "distinctRepeatedBlocks": 0,
+        "totalOccurrences": 0,
+        "maxOccurrencesOfOneBlock": 1,
+        "sample": []
+      }
+    },
+    "mP_renderedHits": 0,
+    "sameSurfaceDuplicateBlocksTotal": 0,
+    "truncationTotals": [
+      {
+        "width": 320,
+        "failures": 140
+      },
+      {
+        "width": 390,
+        "failures": 130
+      },
+      {
+        "width": 430,
+        "failures": 146
+      }
+    ],
+    "non200": []
+  },
+  "routes": [
+    {
+      "route": "/",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 6,
+        "390": 6,
+        "430": 6
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Το email σας»",
+          "p.sr-only «Η ανάλυση του δείγματος ολοκληρώθηκε — 4»",
+          "caption.sr-only «Τι σας δίνει κάθε επιλογή: ο φάκελος στο»",
+          "thead «Τι θέλετε να ξέρετεΟ φάκελος στο συρτάρι»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Το email σας»",
+          "p.sr-only «Η ανάλυση του δείγματος ολοκληρώθηκε — 4»",
+          "caption.sr-only «Τι σας δίνει κάθε επιλογή: ο φάκελος στο»",
+          "thead «Τι θέλετε να ξέρετεΟ φάκελος στο συρτάρι»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Το email σας»",
+          "p.sr-only «Η ανάλυση του δείγματος ολοκληρώθηκε — 4»",
+          "caption.sr-only «Τι σας δίνει κάθε επιλογή: ο φάκελος στο»",
+          "thead «Τι θέλετε να ξέρετεΟ φάκελος στο συρτάρι»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [
+        {
+          "price": "0",
+          "priceCurrency": "EUR"
+        }
+      ],
+      "title": "Τι πραγματικά καλύπτουν τα ασφαλιστήριά σας | PolicyWallet",
+      "blockCount": 26
+    },
+    {
+      "route": "/pricing",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 5,
+        "390": 15,
+        "430": 24
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "h2.sr-only.text-h3 «Πλάνα για ιδιώτες»",
+          "button.relative.inline-flex «Ετήσια χρέωσηΈκπτωση»",
+          "caption.sr-only «Τι περιλαμβάνει κάθε πλάνο του PolicyWal»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "h2.sr-only.text-h3 «Πλάνα για ιδιώτες»",
+          "div.pw-pricing-selector «Μηνιαία χρέωσηΕτήσια χρέωσηΈκπτωση»",
+          "button.relative.inline-flex «Ετήσια χρέωσηΈκπτωση»",
+          "caption.sr-only «Τι περιλαμβάνει κάθε πλάνο του PolicyWal»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "h2.sr-only.text-h3 «Πλάνα για ιδιώτες»",
+          "div.pw-pricing-selector «Μηνιαία χρέωσηΕτήσια χρέωσηΈκπτωση»",
+          "button.relative.inline-flex «Ετήσια χρέωσηΈκπτωση»",
+          "caption.sr-only «Τι περιλαμβάνει κάθε πλάνο του PolicyWal»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Ναι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "span.sr-only «Όχι»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [
+        {
+          "name": "Δωρεάν",
+          "price": 0,
+          "priceCurrency": "EUR"
+        },
+        {
+          "name": "Plus",
+          "price": 4.99,
+          "priceCurrency": "EUR"
+        },
+        {
+          "name": "Family",
+          "price": 8.99,
+          "priceCurrency": "EUR"
+        }
+      ],
+      "title": "Τιμές και δυνατότητες συνδρομών PolicyWallet | PolicyWallet",
+      "blockCount": 5
+    },
+    {
+      "route": "/product",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 4,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "p.truncate.text-body «Ασφάλεια Αυτοκινήτου»",
+          "p.truncate.text-body «Ασφάλεια Κατοικίας»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Τα ασφαλιστήριά σας, με απλά λόγια | PolicyWallet",
+      "blockCount": 24
+    },
+    {
+      "route": "/compare",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 4,
+        "390": 4,
+        "430": 4
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.mx-auto.max-w-page «Τι κάνει το καθένα5 πράγματα που θέλετε »",
+          "caption.sr-only «Σύγκριση: τι σας δίνει ο φάκελος στο συρ»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.mx-auto.max-w-page «Τι κάνει το καθένα5 πράγματα που θέλετε »",
+          "caption.sr-only «Σύγκριση: τι σας δίνει ο φάκελος στο συρ»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.mx-auto.max-w-page «Τι κάνει το καθένα5 πράγματα που θέλετε »",
+          "caption.sr-only «Σύγκριση: τι σας δίνει ο φάκελος στο συρ»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Σύγκριση με τις άλλες επιλογές | PolicyWallet",
+      "blockCount": 11
+    },
+    {
+      "route": "/solutions/agents",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 18,
+        "390": 6,
+        "430": 5
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/clients»",
+          "span.truncate.text-caption «Πελάτης Β»",
+          "span.truncate.text-caption «Πελάτης Δ»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/gap-scan»",
+          "div.mb-4.flex «Έλεγχος κενώνΕλέγχουμε: Πελάτης ΑΕλέγχου»",
+          "div.flex.items-center «Ελέγχουμε…»",
+          "span.text-micro.font-semibold «Ελέγχουμε…»",
+          "div.mb-2.flex «Διαβάζουμε τα ασφαλιστήρια88%»",
+          "span.text-micro.font-bold «88%»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/renewals»",
+          "p.truncate.text-caption «Πελάτης Α»",
+          "p.truncate.text-caption «Πελάτης Β»",
+          "p.truncate.text-caption «Πελάτης Γ»",
+          "p.truncate.text-caption «Πελάτης Δ»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/reports»",
+          "div.rounded.bg-white/10 «01/04/2026»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/clients»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/gap-scan»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/renewals»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/reports»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/clients»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/gap-scan»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/renewals»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Λογισμικό με AI για ασφαλιστικούς πράκτορες | PolicyWallet",
+      "blockCount": 16
+    },
+    {
+      "route": "/product/boat",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλεια σκάφους: αστική ευθύνη στη θάλασσα | PolicyWallet",
+      "blockCount": 8
+    },
+    {
+      "route": "/product/business",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλεια επιχείρησης: πολυκάλυψη για ΜμΕ | PolicyWallet",
+      "blockCount": 11
+    },
+    {
+      "route": "/product/cyber",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλιση για κινδύνους στο διαδίκτυο | PolicyWallet",
+      "blockCount": 7
+    },
+    {
+      "route": "/product/fine-art",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλεια έργων τέχνης: συμφωνημένη αξία | PolicyWallet",
+      "blockCount": 9
+    },
+    {
+      "route": "/product/group-health",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ομαδική ασφάλιση υγείας για επιχειρήσεις | PolicyWallet",
+      "blockCount": 7
+    },
+    {
+      "route": "/product/group-life",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ομαδική ασφάλιση ζωής για το προσωπικό | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/product/group-pension",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ομαδική σύνταξη: εισφορές και όροι | PolicyWallet",
+      "blockCount": 8
+    },
+    {
+      "route": "/product/health",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλεια υγείας: τι καλύπτει το ασφαλιστήριο | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/product/legal-expenses",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Νομική προστασία: τι καλύπτει πραγματικά | PolicyWallet",
+      "blockCount": 12
+    },
+    {
+      "route": "/product/liability",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 4,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.flex.justify-between «Ζημιές από κατοικίδιοΔεν καλύπτεται»",
+          "span.font-medium.text-slate-700 «Δεν καλύπτεται»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Αστική ευθύνη: η κάλυψη που ίσως έχετε ήδη | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/product/life",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 6,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.space-y-5 «Κάλυψη σε σχέση με το υπόλοιπο του δανεί»",
+          "div «Κάλυψη σε σχέση με το υπόλοιπο του δανεί»",
+          "div.flex.justify-between «Κάλυψη σε σχέση με το υπόλοιπο του δανεί»",
+          "span.font-medium.text-amber-700 «Βρέθηκε κενό»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλεια ζωής: προστασία οικογένειας, δανείου | PolicyWallet",
+      "blockCount": 7
+    },
+    {
+      "route": "/product/motor",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλεια αυτοκινήτου: ανάλυση καλύψεων με AI | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/product/pension",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Συνταξιοδοτικό πρόγραμμα: εισφορές και όροι | PolicyWallet",
+      "blockCount": 8
+    },
+    {
+      "route": "/product/pet",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλεια κατοικιδίων για σκύλους και γάτες | PolicyWallet",
+      "blockCount": 7
+    },
+    {
+      "route": "/product/property",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 7,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "div.space-y-6 «Κόστος ανακατασκευήςΥπασφαλισμένο κατά 1»",
+          "div «Κόστος ανακατασκευήςΥπασφαλισμένο κατά 1»",
+          "div.flex.justify-between «Κόστος ανακατασκευήςΥπασφαλισμένο κατά 1»",
+          "span.text-[#475569].dark:text-slate-300 «Κόστος ανακατασκευής»",
+          "span.font-medium.text-amber-700 «Υπασφαλισμένο κατά 15%»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ασφάλεια κατοικίας: κάλυψη και έκπτωση ΕΝΦΙΑ | PolicyWallet",
+      "blockCount": 12
+    },
+    {
+      "route": "/product/travel",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Μετάβαση στο περιεχόμενο»",
+          "label.sr-only «Email για ενημερώσεις»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Ταξιδιωτική ασφάλεια: Σένγκεν και ακυρώσεις | PolicyWallet",
+      "blockCount": 8
+    },
+    {
+      "route": "/en",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 6,
+        "390": 6,
+        "430": 6
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Your email»",
+          "p.sr-only «Sample analysis complete — 4 findings.»",
+          "caption.sr-only «What each option gives you: the folder i»",
+          "thead «What you want to knowThe folder in the d»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Your email»",
+          "p.sr-only «Sample analysis complete — 4 findings.»",
+          "caption.sr-only «What each option gives you: the folder i»",
+          "thead «What you want to knowThe folder in the d»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Your email»",
+          "p.sr-only «Sample analysis complete — 4 findings.»",
+          "caption.sr-only «What each option gives you: the folder i»",
+          "thead «What you want to knowThe folder in the d»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [
+        {
+          "price": "0",
+          "priceCurrency": "EUR"
+        }
+      ],
+      "title": "Know what your policies actually cover | PolicyWallet",
+      "blockCount": 23
+    },
+    {
+      "route": "/en/pricing",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 5,
+        "390": 15,
+        "430": 24
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "h2.sr-only.text-h3 «Plans for individuals»",
+          "button.relative.inline-flex «Yearly billingSave»",
+          "caption.sr-only «What each PolicyWallet plan includes.»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "h2.sr-only.text-h3 «Plans for individuals»",
+          "div.pw-pricing-selector «Monthly billingYearly billingSave»",
+          "button.relative.inline-flex «Yearly billingSave»",
+          "caption.sr-only «What each PolicyWallet plan includes.»",
+          "span.sr-only «Yes»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «Yes»",
+          "span.sr-only «Yes»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "h2.sr-only.text-h3 «Plans for individuals»",
+          "div.pw-pricing-selector «Monthly billingYearly billingSave»",
+          "button.relative.inline-flex «Yearly billingSave»",
+          "caption.sr-only «What each PolicyWallet plan includes.»",
+          "span.sr-only «Yes»",
+          "span.sr-only «Yes»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «Yes»",
+          "span.sr-only «Yes»",
+          "span.sr-only «Yes»",
+          "span.sr-only «Yes»",
+          "span.sr-only «No»",
+          "span.sr-only «Yes»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "span.sr-only «No»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [
+        {
+          "name": "Free",
+          "price": 0,
+          "priceCurrency": "EUR"
+        },
+        {
+          "name": "Plus",
+          "price": 4.99,
+          "priceCurrency": "EUR"
+        },
+        {
+          "name": "Family",
+          "price": 8.99,
+          "priceCurrency": "EUR"
+        }
+      ],
+      "title": "PolicyWallet subscription prices and features | PolicyWallet",
+      "blockCount": 3
+    },
+    {
+      "route": "/en/product",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Your policies, in plain language | PolicyWallet",
+      "blockCount": 22
+    },
+    {
+      "route": "/en/compare",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 4,
+        "390": 4,
+        "430": 4
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "div.mx-auto.max-w-page «What each one does5 things you want to k»",
+          "caption.sr-only «Comparison: what the folder in the drawe»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "div.mx-auto.max-w-page «What each one does5 things you want to k»",
+          "caption.sr-only «Comparison: what the folder in the drawe»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "div.mx-auto.max-w-page «What each one does5 things you want to k»",
+          "caption.sr-only «Comparison: what the folder in the drawe»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "How PolicyWallet compares | PolicyWallet",
+      "blockCount": 11
+    },
+    {
+      "route": "/en/solutions/agents",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 8,
+        "390": 6,
+        "430": 5
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/clients»",
+          "span.truncate.text-caption «Client B»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/gap-scan»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/renewals»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/reports»",
+          "div.rounded.bg-white/10 «01/04/2026»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/clients»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/gap-scan»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/renewals»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/reports»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/clients»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/gap-scan»",
+          "div.ml-3.min-w-0 «app.policywallet.gr/agent/renewals»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "AI software for insurance agents | PolicyWallet",
+      "blockCount": 12
+    },
+    {
+      "route": "/en/product/boat",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Boat insurance: liability in Greek waters | PolicyWallet",
+      "blockCount": 8
+    },
+    {
+      "route": "/en/product/business",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Business insurance: multi-cover for SMEs | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/en/product/cyber",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 5,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "div.flex.items-center «Business cyber coverActive€2.5MTotal lim»",
+          "div.text-right «€2.5MTotal limit»",
+          "div.text-title.font-medium «€2.5M»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Cyber insurance: ransomware, interruption | PolicyWallet",
+      "blockCount": 6
+    },
+    {
+      "route": "/en/product/fine-art",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Fine art insurance: agreed values & terms | PolicyWallet",
+      "blockCount": 9
+    },
+    {
+      "route": "/en/product/group-health",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Group health insurance for businesses | PolicyWallet",
+      "blockCount": 6
+    },
+    {
+      "route": "/en/product/group-life",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Group life insurance for your team | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/en/product/group-pension",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Group pensions: contributions and terms | PolicyWallet",
+      "blockCount": 8
+    },
+    {
+      "route": "/en/product/health",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Health insurance: what your policy covers | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/en/product/legal-expenses",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Legal expenses insurance, made clear | PolicyWallet",
+      "blockCount": 12
+    },
+    {
+      "route": "/en/product/liability",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Personal liability: cover you may own | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/en/product/life",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Life insurance: family & mortgage protection | PolicyWallet",
+      "blockCount": 8
+    },
+    {
+      "route": "/en/product/motor",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Car insurance in Greece: AI coverage analysis | PolicyWallet",
+      "blockCount": 10
+    },
+    {
+      "route": "/en/product/pension",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Pension plans: contributions and terms | PolicyWallet",
+      "blockCount": 8
+    },
+    {
+      "route": "/en/product/pet",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Pet insurance for dogs and cats in Greece | PolicyWallet",
+      "blockCount": 6
+    },
+    {
+      "route": "/en/product/property",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Home insurance: gaps, ENFIA, rebuild cost | PolicyWallet",
+      "blockCount": 12
+    },
+    {
+      "route": "/en/product/travel",
+      "status": 200,
+      "sameSurfaceDuplicateBlocks": 0,
+      "truncation": {
+        "320": 2,
+        "390": 2,
+        "430": 2
+      },
+      "truncationSamples": {
+        "320": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "390": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ],
+        "430": [
+          "a.sr-only.rounded-lg «Skip to content»",
+          "label.sr-only «Newsletter email»"
+        ]
+      },
+      "positioningHits": [],
+      "jsonLdPrices": [],
+      "title": "Travel insurance: Schengen and cancellations | PolicyWallet",
+      "blockCount": 8
+    }
+  ]
+}

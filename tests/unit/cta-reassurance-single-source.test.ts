@@ -88,3 +88,43 @@ export const CTA_REASSURANCE_SHORT = { el: "…", en: "…" }
         expect(STALE_PROMISE.test('<p>{CTA_REASSURANCE[locale]}</p>')).toBe(false)
     })
 })
+
+/**
+ * PW-CONTENT-02 item 2 — the free plan's limit is stated by ONE module.
+ *
+ * `CTA_REASSURANCE` was the single reassurance constant, yet «Δωρεάν για 3
+ * ασφαλιστήρια» was ALSO typed by hand in /product (twice, one with an English
+ * twin that promised unconditional deletion), the LoB pricing band, two FAQ
+ * answers and the signup form — the guard above only matched the retired
+ * one-policy wording, so every one of those passed. This arm enumerates
+ * app/, components/ and lib/ and bans the current wording typed anywhere but
+ * `lib/marketing/limit-statement.ts`, which reads the number from the
+ * entitlement source. H-020: no monthly-cap wording either.
+ * Probe: tests/fixtures/guard-probes/free-limit-hand-typed.tsx.txt.
+ */
+// The free count is read from the entitlement source, so a typed «έως 3» / «τρία» / "up to three" is found whatever the wording.
+const FREE_N = DEFAULT_ENTITLEMENT_LIMITS.free.policies
+const HAND_TYPED_LIMIT = new RegExp(`Δωρεάν για \\d+ ασφαλιστήρι|Free for \\d+ polic|(?:έως|για|up to|for|με)\\s+(?:${FREE_N}|τρία|τρεις|three)\\s+(?:ασφαλιστήρι|polic)|μηνια[ίι]ο όριο (?:επεξεργασίας|χρήσης)|monthly usage allowance|μηνια[ίι]ο όριο επεξεργασίας|όρι[αο] επεξεργασίας|monthly (processing )?(allowance|limit)|processing (limits?|allowances?)`, "i")
+const stripComments = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, "")).replace(/^[ \t]*\/\/.*$/gm, "")
+
+describe("the free-plan limit is typed once, in lib/marketing/limit-statement.ts", () => {
+    it("no source file hand-types it (nor a monthly-cap phrase)", () => {
+        // The authenticated app (translations, protected routes) and the Terms
+        // (lib/legal — out of this series) are separate backlogs: the in-app
+        // «Μηνιαίο όριο επεξεργασίας AI» label is listed in RESULT.md as open.
+        const offenders = globSync("{app,components,lib}/**/*.{ts,tsx}", {
+            ignore: ["**/node_modules/**", "lib/marketing/limit-statement.ts", "lib/legal/**", "lib/i18n/translations/**", "app/(protected)/**", "components/admin/**"],
+        })
+            .flatMap((f) =>
+                stripComments(readFileSync(f, "utf-8"))
+                    .split("\n")
+                    .flatMap((line, i) => (HAND_TYPED_LIMIT.test(line) ? [`${f}:${i + 1}  ${line.trim().slice(0, 90)}`] : []))
+            )
+        expect(offenders, "a free-limit promise is hand-typed; import FREE_PLAN_LIMIT:\n" + offenders.join("\n")).toEqual([])
+    })
+
+    it("probe — the hand-typed shape turns the arm red", () => {
+        const probe = readFileSync("tests/fixtures/guard-probes/free-limit-hand-typed.tsx.txt", "utf-8")
+        expect(HAND_TYPED_LIMIT.test(stripComments(probe))).toBe(true)
+    })
+})

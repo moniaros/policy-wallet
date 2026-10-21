@@ -1084,6 +1084,47 @@ export async function repeatedStrings(page: Page): Promise<{ text: string; count
 }
 
 /**
+ * The ≥80-character text blocks a page renders, whitespace-collapsed, as the
+ * OWN text of a visible element. Shared by `duplicateBlocks` (one surface) and
+ * the cross-page metric M-X1 (PW-CONTENT-02), so the two can never disagree on
+ * what a "block" is. With `excludeShell`, anything inside header / footer / nav /
+ * [data-shell] is dropped — the site chrome repeats on every page by design.
+ */
+export async function textBlocks(page: Page, options: { excludeShell?: boolean } = {}): Promise<string[]> {
+    return page.evaluate((excludeShell) => {
+        const out: string[] = []
+        document.querySelectorAll<HTMLElement>("body *").forEach((el) => {
+            const cs = getComputedStyle(el)
+            if (cs.display === "none" || cs.visibility === "hidden") return
+            const r = el.getBoundingClientRect()
+            if (r.width === 0 || r.height === 0) return
+            if (excludeShell && el.closest("header, footer, nav, [data-shell]")) return
+            const own = Array.from(el.childNodes)
+                .filter((x) => x.nodeType === 3)
+                .map((x) => (x.textContent || "").trim())
+                .join(" ")
+                .replace(/\s+/g, " ")
+                .trim()
+            if (own.length >= 80) out.push(own)
+        })
+        return out
+    }, options.excludeShell === true)
+}
+
+/**
+ * Duplicate-block count — docs/build/policywallet-transformation-multiagent.md
+ * §5.2, verbatim: "Text blocks of ≥80 characters rendered more than once on one
+ * surface." Returns one entry per repeated block.
+ */
+export async function duplicateBlocks(page: Page): Promise<{ text: string; count: number }[]> {
+    const counts = new Map<string, number>()
+    for (const block of await textBlocks(page)) counts.set(block, (counts.get(block) || 0) + 1)
+    return Array.from(counts.entries())
+        .filter(([, n]) => n > 1)
+        .map(([text, count]) => ({ text: text.slice(0, 80), count }))
+}
+
+/**
  * PURE — internal-identifier / placeholder-content leak detector (D5,
  * invariant 3): a string that must never reach a customer. Deliberately
  * narrow so it cannot cry wolf: fixture-shaped identifiers, raw UUIDs/cuids,

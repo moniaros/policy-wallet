@@ -264,3 +264,90 @@ describe('length-budget-guard and new-string-guard', () => {
         expect(r.unreviewedNew, `new strings not reviewed in docs/content/corpus-additions.json:\n${r.unreviewedNew.slice(0, 20).join('\n')}`).toEqual([])
     })
 })
+
+/**
+ * PW-CONTENT-02 — the two PUBLIC-SITE guards that the corpus-wide arms above cannot be.
+ *
+ * Universe: every file of the public marketing surface, ENUMERATED from the tree
+ * (not a list of known files): app/(public), app/auth, components/landing|public|pricing,
+ * src/design-system, lib/marketing|landing|product|seo|guides|glossary, the public pricing
+ * content, the root layout, /llms.txt, and every static asset under public/ that carries
+ * text (manifest.json, *.svg, *.txt, *.json). A retired positioning line survived 2026-10-21
+ * in a static SVG that nothing referenced and in a PWA manifest no source scan reaches.
+ *
+ *  - POSITIONING LINT (H-022): one positioning line,
+ *    «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». The risk-intelligence / risk-check /
+ *    «αν είστε καλυμμένοι» family is a verdict claim about the user's protection and is banned.
+ *    Probe: tests/fixtures/guard-probes/voice-positioning-variant.ts.txt.
+ *  - LOCALE NUMBER FORMAT (A4): Greek money reads «35.000 €»; English reads «€35,000».
+ *    A Greek literal with a prefixed «€», an English literal with Greek grouping, and the
+ *    in-app `formatEur` on a public route are all findings. The corpus arm above only caught
+ *    English thousands separators inside Greek text — so «€4.99» in Greek passed.
+ *    Probe: tests/fixtures/guard-probes/voice-number-literal.tsx.txt.
+ */
+const PUBLIC_DIRS = ['app/(public)', 'app/auth', 'components/landing', 'components/public', 'components/pricing', 'src/design-system', 'lib/marketing', 'lib/landing', 'lib/product', 'lib/seo', 'lib/guides', 'lib/glossary']
+const PUBLIC_FILES = ['lib/pricing/public-pricing-content.ts', 'lib/pricing/pricing-view-model.ts', 'app/layout.tsx', 'app/llms.txt/route.ts']
+function walkAll(dir: string, exts: RegExp): string[] {
+    if (!existsSync(dir)) return []
+    return readdirSync(dir).flatMap((name) => {
+        const p = join(dir, name)
+        if (EXCLUDE.test(p + '/')) return []
+        return statSync(p).isDirectory() ? walkAll(p, exts) : exts.test(name) ? [p] : []
+    })
+}
+const PUBLIC_CODE = [...PUBLIC_DIRS.flatMap((d) => walkAll(d, /\.tsx?$/)), ...PUBLIC_FILES.filter(existsSync)]
+const PUBLIC_STATIC = walkAll('public', /\.(svg|json|txt|webmanifest)$/)
+const POSITIONING_BANNED = /έλεγχο[ςυ] ρίσκου|ανάλυσης? ρίσκου|(αν|πού)\s+είστε\s+καλυμμένοι|[Αα]ξιολογούμε|τι κενά έχουν|risk intelligence|risk check|(tell|show)s?\s+(you\s+)?(if|where)\s+you\s+are\s+covered|you are not covered for|ανεξάρτητ\S*\s+(έλεγχ|ανάλυσ)\S*|independent (risk|analysis|personal)/i
+function positioningOffenders(path: string, text: string): string[] {
+    return text.split('\n').flatMap((line, i) => (POSITIONING_BANNED.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
+}
+function stringLiterals(src: string): string[] {
+    return src.match(/"(?:\\.|[^"\\\n])*"|`(?:\\.|[^`\\])*`|'(?:\\.|[^'\\\n])*'/g) || []
+}
+const greekShare = (s: string) => {
+    const letters = s.match(/[A-Za-zͰ-Ͽἀ-῿]/g) || []
+    return letters.length ? (s.match(/[Ͱ-Ͽἀ-῿]/g) || []).length / letters.length : 0
+}
+function numberOffenders(path: string, text: string): string[] {
+    const bad: string[] = []
+    if (!path.endsWith('pricing-view-model.ts') && /\bformatEur\b/.test(text)) bad.push(`${path}  imports the in-app formatEur — public prices go through formatPlanPrice`)
+    for (const lit of stringLiterals(text)) {
+        const greek = greekShare(lit) >= 0.5
+        if (greek && /€\s?\d/.test(lit)) bad.push(`${path}  Greek literal with prefixed €: ${lit.slice(0, 80)}`)
+        // a literal with no letters at all (a table cell: "40.000 €") is language-neutral — only prose is classified
+        if (!greek && /[A-Za-z]/.test(lit) && /€\s?\d{1,3}\.\d{3}(?!\d)|\d{1,3}\.\d{3}\s?€/.test(lit)) bad.push(`${path}  English literal with Greek grouping: ${lit.slice(0, 80)}`)
+    }
+    return bad
+}
+
+describe('PW-CONTENT-02 positioning lint — one line, no protection-verdict variants (H-022)', () => {
+    it('the public universe is large enough to mean something', () => {
+        expect(PUBLIC_CODE.length).toBeGreaterThan(150)
+        expect(PUBLIC_STATIC.some((f) => f.endsWith('manifest.json'))).toBe(true)
+    })
+    it('no retired positioning variant on a public route, in metadata, or in a static asset', () => {
+        const bad = [
+            ...PUBLIC_CODE.flatMap((f) => positioningOffenders(f, code(readFileSync(f, 'utf-8')))),
+            ...PUBLIC_STATIC.flatMap((f) => positioningOffenders(f, readFileSync(f, 'utf-8'))),
+        ]
+        expect(bad, `positioning-variant hits (metric M-P) = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
+    })
+    it('probe — the retired variants turn it red (4 lines)', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/voice-positioning-variant.ts.txt', 'utf-8')
+        expect(positioningOffenders('probe', code(probe)).length).toBe(4)
+    })
+})
+
+describe('PW-CONTENT-02 locale number format — Greek «35.000 €», English «€35,000» (A4)', () => {
+    it('no public source mis-formats money (metric M-F)', () => {
+        const bad = PUBLIC_CODE.flatMap((f) => numberOffenders(f, code(readFileSync(f, 'utf-8'))))
+        expect(bad, `hand-formatted money literals = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
+    })
+    it('probe — a prefixed Greek euro, Greek grouping in English, and formatEur all turn it red', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/voice-number-literal.tsx.txt', 'utf-8')
+        const found = numberOffenders('probe', code(probe)).join('\n')
+        expect(found).toMatch(/imports the in-app formatEur/)
+        expect(found).toMatch(/Greek literal with prefixed €/)
+        expect(found).toMatch(/English literal with Greek grouping/)
+    })
+})

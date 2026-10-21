@@ -1,4 +1,6 @@
+import type { ClaimKey } from "@/lib/marketing/plan-claims"
 import type { CheckoutBlockReason } from "@/lib/pricing/stripe-mode"
+import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 export type PricingAudience = "policyholder" | "agent"
 export type BillingPeriod = "monthly" | "annual"
@@ -9,6 +11,12 @@ export interface LocalizedText {
 }
 
 export interface PublicPricingFeature {
+    /**
+     * The enforced capability this line states (`lib/marketing/plan-claims.ts`).
+     * REQUIRED — `null` is a deliberate «not tied to one entitlement field» and
+     * must be listed with a reason in tests/unit/plan-gating-parity.test.ts.
+     */
+    claim: ClaimKey | null
     label: LocalizedText
     included: boolean
     highlight?: boolean
@@ -23,12 +31,16 @@ export interface PublicPricingPlan {
     isHighlighted?: boolean
     isContactPlan?: boolean
     pricing: {
+        // The PRICE is a number until the moment it is rendered (PW-CONTENT-02
+        // A3). It used to be the string "€4.99", which the pricing JSON-LD parsed
+        // back with a regex; formatting it «4,99 €» would have made the offer
+        // read 499. Render through `formatPlanPrice` (lib/pricing/format-plan-price.ts).
         monthly: {
-            amount: string
+            value: number
             period: LocalizedText
         }
         annual?: {
-            amount: string
+            value: number
             period: LocalizedText
             savings: LocalizedText
         }
@@ -45,6 +57,8 @@ export interface PublicPricingPlan {
 }
 
 export interface PublicPricingComparisonRow {
+    /** See `PublicPricingFeature.claim`. */
+    claim: ClaimKey | null
     category?: LocalizedText
     name: LocalizedText
     /**
@@ -99,7 +113,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
         },
         subtitle: {
             el: "Διαλέξτε τις λειτουργίες που χρειάζεστε: οργάνωση, ανάλυση εγγράφων και υπενθυμίσεις.",
-            en: "From simple policy organization to full coverage analysis: gaps, expiry dates, answers.",
+            en: "Choose the features you need: organisation, document analysis and reminders.",
         },
         plans: [
             {
@@ -109,16 +123,18 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 description: { el: "Για να ξεκινήσετε", en: "To get you started" },
                 pricing: {
                     monthly: {
-                        amount: "€0",
+                        value: 0,
                         period: { el: "/μήνα", en: "/month" },
                     },
                 },
                 features: [
-                    { label: { el: "3 ασφαλιστήρια", en: "3 policies" }, included: true, highlight: true },
-                    { label: { el: "Ανάλυση εγγράφων, εντός του ορίου του πλάνου", en: "Document analysis within the plan's allowance" }, included: true, highlight: true },
-                    { label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
-                    { label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
-                    { label: { el: "Υπενθυμίσεις ανανέωσης", en: "Renewal reminders" }, included: false },
+                    { claim: "policies", label: { el: "3 ασφαλιστήρια", en: "3 policies" }, included: true, highlight: true },
+                    { claim: "basicSummary", label: { el: "Βασική σύνοψη ασφαλιστηρίου", en: "Basic policy summary" }, included: true, highlight: true },
+                    { claim: "duplicateDetection", label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
+                    { claim: null, label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
+                    // Free DOES get the 30-day email (renewal.service.ts). This
+                    // line said ✗ «Υπενθυμίσεις ανανέωσης» until 2026-10-21.
+                    { claim: "renewalEmail30", label: { el: "Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)", en: "Renewal reminder 30 days ahead (email)" }, included: true },
                 ],
             },
             {
@@ -128,21 +144,20 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 description: { el: "Για όλα τα δικά σας ασφαλιστήρια", en: "For everything in your own name" },
                 pricing: {
                     monthly: {
-                        amount: "€4.99",
+                        value: 4.99,
                         period: { el: "/μήνα", en: "/month" },
                     },
                     annual: {
-                        amount: "€39",
+                        value: 39,
                         period: { el: "/έτος", en: "/year" },
                         savings: { el: "Εξοικονομείτε 4 μήνες", en: "Save 4 months" },
                     },
                 },
                 features: [
-                    { label: { el: "Έως 10 ασφαλιστήρια", en: "Up to 10 policies" }, included: true, highlight: true },
-                    { label: { el: "Ανάλυση εγγράφων, εντός του ορίου του πλάνου", en: "Document analysis within the plan's allowance" }, included: true },
-                    { label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
-                    { label: { el: "Υπενθυμίσεις ανανέωσης (email)", en: "Renewal reminders (email)" }, included: true },
-                    { label: { el: "Ανάλυση από πολλές ασφαλιστικές", en: "Multi-insurer insights" }, included: true },
+                    { claim: "policies", label: { el: "Έως 10 ασφαλιστήρια", en: "Up to 10 policies" }, included: true, highlight: true },
+                    { claim: "basicSummary", label: { el: "Βασική σύνοψη ασφαλιστηρίου", en: "Basic policy summary" }, included: true },
+                    { claim: "duplicateDetection", label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
+                    { claim: "renewalLadder", label: { el: "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)", en: "Renewal reminders from 90 to 3 days ahead (email)" }, included: true },
                 ],
             },
             {
@@ -154,21 +169,23 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 isHighlighted: true,
                 pricing: {
                     monthly: {
-                        amount: "€8.99",
+                        value: 8.99,
                         period: { el: "/μήνα", en: "/month" },
                     },
                     annual: {
-                        amount: "€79",
+                        value: 79,
                         period: { el: "/έτος", en: "/year" },
                         savings: { el: "Εξοικονομείτε 3 μήνες", en: "Save 3 months" },
                     },
                 },
                 features: [
-                    { label: { el: "Έως 25 ασφαλιστήρια", en: "Up to 25 policies" }, included: true, highlight: true },
-                    { label: { el: "Πλήρης ανάλυση AI & απεριόριστες ερωτήσεις", en: "Full AI analysis & unlimited Q&A" }, included: true, highlight: true },
-                    { label: { el: "Εντοπισμός κενών & διπλών καλύψεων", en: "Gap & duplicate-coverage detection" }, included: true },
-                    { label: { el: "Ανάλυση από πολλές ασφαλιστικές", en: "Multi-insurer insights" }, included: true },
-                    { label: { el: "Υπενθυμίσεις, οδηγός ζημιάς & εξαγωγή αναφοράς", en: "Smart reminders, claim guide & report export" }, included: true },
+                    { claim: "policies", label: { el: "Έως 25 ασφαλιστήρια", en: "Up to 25 policies" }, included: true, highlight: true },
+                    { claim: "deepAnalysis", label: { el: "Πλήρης ανάλυση AI", en: "Full AI analysis" }, included: true, highlight: true },
+                    { claim: "interactiveQA", label: { el: "Ερωτήσεις στην τεχνητή νοημοσύνη", en: "Interactive AI Q&A" }, included: true },
+                    { claim: "gapDetection", label: { el: "Εντοπισμός κενών κάλυψης", en: "Coverage-gap detection" }, included: true },
+                    { claim: "duplicateDetection", label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
+                    { claim: "renewalLadder", label: { el: "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)", en: "Renewal reminders from 90 to 3 days ahead (email)" }, included: true },
+                    { claim: "reportExport", label: { el: "Εξαγωγή αναφοράς", en: "Report export" }, included: true },
                 ],
             },
         ],
@@ -178,6 +195,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
         },
         comparisonRows: [
             {
+                claim: "policies",
                 category: { el: "Όρια χρήσης", en: "Usage limits" },
                 name: { el: "Αριθμός ασφαλιστηρίων", en: "Number of policies" },
                 // Capacity ladder, pricing v2. These MUST equal
@@ -189,19 +207,24 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 values: { free: "3", plus: "10", pro: "25" },
             },
             {
+                claim: "basicSummary",
                 name: { el: "Βασική σύνοψη ασφαλιστηρίου", en: "Basic policy summary" },
                 values: { free: true, plus: true, pro: true },
             },
             {
+                claim: "deepAnalysis",
                 category: { el: "AI & ειδοποιήσεις", en: "AI & notifications" },
                 name: { el: "Πλήρης ανάλυση AI", en: "Full AI analysis" },
-                // `aiAnalysisPerMonth` is null (uncapped) on free, plus AND pro
-                // — see plan-defaults.ts. The free plan card above and the
-                // pricing FAQ below both say the analysis is included on every
-                // plan; this row said the opposite until 2026-08-26.
-                values: { free: true, plus: true, pro: true },
+                // The deep analysis (clarity, gaps, translation) runs for Family
+                // only: canRunDeepAnalysis → FEATURE_GATES.full_ai_policy_analysis.
+                // This row said ✓ on all three until 2026-10-21 (PW-CONTENT-02,
+                // decision H-019: public copy reflects enforced code). The
+                // intended future policy lives in PW-ENTITLE-01; this row moves
+                // WITH that code, never before it.
+                values: { free: false, plus: false, pro: true },
             },
             {
+                claim: "interactiveQA",
                 name: { el: "Ερωτήσεις στην τεχνητή νοημοσύνη", en: "Interactive AI Q&A" },
                 values: { free: false, plus: false, pro: true },
             },
@@ -211,22 +234,37 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 // combined row forces one of them to lie. Gap detection is the
                 // enforced Family gate; duplicate detection runs on every plan,
                 // bounded only by the plan's policy ceiling.
+                claim: "gapDetection",
                 name: { el: "Εντοπισμός κενών κάλυψης", en: "Coverage-gap detection" },
                 values: { free: false, plus: false, pro: true },
             },
             {
+                claim: "duplicateDetection",
                 name: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" },
                 values: { free: true, plus: true, pro: true },
             },
             {
-                name: { el: "Υπενθυμίσεις ανανέωσης (email)", en: "Renewal reminders (email)" },
+                // Split in two (PW-CONTENT-02): every plan gets the 30-day email,
+                // the 90→3-day ladder is Plus and Family. One row said ✗ for Free.
+                claim: "renewalEmail30",
+                name: { el: "Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)", en: "Renewal reminder 30 days ahead (email)" },
+                values: { free: true, plus: true, pro: true },
+            },
+            {
+                claim: "renewalLadder",
+                name: { el: "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)", en: "Renewal reminders from 90 to 3 days ahead (email)" },
                 values: { free: false, plus: true, pro: true },
             },
             {
-                name: { el: "Υπενθυμίσεις & εξαγωγή αναφοράς", en: "Smart reminders & report export" },
+                // Split from the old «Υπενθυμίσεις & εξαγωγή αναφοράς» row: a
+                // combined row forces one half to lie (reminders: Plus = Family;
+                // export: Family only).
+                claim: "reportExport",
+                name: { el: "Εξαγωγή αναφοράς", en: "Report export" },
                 values: { free: false, plus: false, pro: true },
             },
             {
+                claim: "advisorCollaboration",
                 category: { el: "Συνεργασία", en: "Collaboration" },
                 name: { el: "Συνεργασία με σύμβουλο", en: "Advisor collaboration" },
                 values: { free: false, plus: false, pro: true },
@@ -246,8 +284,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "How much does PolicyWallet cost?",
                 },
                 answer: {
-                    el: "Το δωρεάν πλάνο περιλαμβάνει έως 3 ασφαλιστήρια και δεν ζητά κάρτα. Οι τιμές, οι λειτουργίες και τα όρια επεξεργασίας των πληρωμένων πλάνων εμφανίζονται στους πίνακες αυτής της σελίδας. Η τελική χρέωση επιβεβαιώνεται πριν από την αγορά.",
-                    en: "The free plan includes up to 3 policies and requires no card. Paid plan prices, features and processing limits are shown in this page's tables. The final charge is confirmed before purchase.",
+                    el: `Το δωρεάν πλάνο περιλαμβάνει ${FREE_UP_TO.el} και δεν ζητά κάρτα. Οι τιμές και οι λειτουργίες των πληρωμένων πλάνων εμφανίζονται στους πίνακες αυτής της σελίδας. Η τελική χρέωση επιβεβαιώνεται πριν από την αγορά.`,
+                    en: `The free plan includes ${FREE_UP_TO.en} and requires no card. Paid plan prices and features are shown in this page's tables. The final charge is confirmed before purchase.`,
                 },
             },
             {
@@ -288,8 +326,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             en: "Plans for agents & agencies",
         },
         subtitle: {
-            el: "Σχεδιασμένα για χαρτοφυλάκιο πολλών πελατών, ανανεώσεις και συνεργασία ομάδας — με την ίδια ανεξάρτητη ανάλυση ρίσκου ανά πελάτη. Ο πελάτης ελέγχει τι μοιράζεται.",
-            en: "Built for a many-client portfolio, renewals, and team collaboration — with the same independent risk analysis for every client. The client controls what is shared.",
+            el: "Σχεδιασμένα για χαρτοφυλάκιο πολλών πελατών, ανανεώσεις και συνεργασία ομάδας. Ο πελάτης ελέγχει τι μοιράζεται.",
+            en: "Built for a many-client portfolio, renewals, and team collaboration. The client controls what is shared.",
         },
         plans: [
             {
@@ -299,16 +337,18 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 description: { el: "Για να το δοκιμάσετε", en: "To try it out" },
                 pricing: {
                     monthly: {
-                        amount: "€0",
+                        value: 0,
                         period: { el: "/μήνα", en: "/month" },
                     },
                 },
                 features: [
-                    { label: { el: "10 πελάτες", en: "10 clients" }, included: true },
-                    { label: { el: "5 AI αναλύσεις / μήνα", en: "5 AI analyses / month" }, included: true },
-                    { label: { el: "Βασική εικόνα πελατών", en: "Basic client view" }, included: true },
-                    { label: { el: "Προσθήκη πολλών πελατών μαζί", en: "Bulk import" }, included: false },
-                    { label: { el: "Αυτοματισμοί ανανέωσης", en: "Renewal automation" }, included: false },
+                    { claim: "agent.clients", label: { el: "10 πελάτες", en: "10 clients" }, included: true },
+                    // «5 AI αναλύσεις / μήνα» removed 2026-10-21: the 150,000-token
+                    // budget can refuse a run at zero usage (run-preflight.ts), so
+                    // the count is not a promise this plan keeps (plan-claims.ts).
+                    { claim: null, label: { el: "Βασική εικόνα πελατών", en: "Basic client view" }, included: true },
+                    { claim: "agent.bulkImportRows", label: { el: "Προσθήκη έως 10 πελατών μαζί", en: "Bulk import up to 10 clients" }, included: true },
+                    { claim: "agent.renewalAutomation", label: { el: "Αυτοματισμοί ανανέωσης", en: "Renewal automation" }, included: false },
                 ],
             },
             {
@@ -320,20 +360,20 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 isHighlighted: true,
                 pricing: {
                     monthly: {
-                        amount: "€29",
+                        value: 29,
                         period: { el: "/μήνα", en: "/month" },
                     },
                 },
                 features: [
-                    { label: { el: "100 πελάτες", en: "100 clients" }, included: true, highlight: true },
-                    { label: { el: "50 αναλύσεις τον μήνα", en: "50 analyses a month" }, included: true, highlight: true },
+                    { claim: "agent.clients", label: { el: "100 πελάτες", en: "100 clients" }, included: true, highlight: true },
+                    { claim: "agent.analysesPerMonth", label: { el: "50 αναλύσεις τον μήνα", en: "50 analyses a month" }, included: true, highlight: true },
                     // Same plain register as the comparison rows below — the
                     // cards used to say "Portfolio dashboard" / "Renewal
                     // pipeline" in English inside the Greek column.
-                    { label: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" }, included: true, highlight: true },
-                    { label: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" }, included: true },
-                    { label: { el: "Προσθήκη έως 100 πελατών μαζί", en: "Bulk import up to 100 clients" }, included: true },
-                    { label: { el: "Ερωτηματολόγια πελατών (5 πρότυπα)", en: "Client questionnaires (5 templates)" }, included: true },
+                    { claim: null, label: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" }, included: true, highlight: true },
+                    { claim: null, label: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" }, included: true },
+                    { claim: "agent.bulkImportRows", label: { el: "Προσθήκη έως 100 πελατών μαζί", en: "Bulk import up to 100 clients" }, included: true },
+                    { claim: "agent.questionnaireTemplates", label: { el: "Ερωτηματολόγια πελατών (5 πρότυπα)", en: "Client questionnaires (5 templates)" }, included: true },
                 ],
             },
             {
@@ -343,17 +383,17 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 description: { el: "Για ομάδες παραγωγής", en: "For sales teams" },
                 pricing: {
                     monthly: {
-                        amount: "€79",
+                        value: 79,
                         period: { el: "/μήνα", en: "/month" },
                     },
                 },
                 features: [
-                    { label: { el: "500 πελάτες", en: "500 clients" }, included: true, highlight: true },
-                    { label: { el: "150 αναλύσεις τον μήνα", en: "150 analyses a month" }, included: true, highlight: true },
-                    { label: { el: "Ομάδα έως 3 ασφαλιστές", en: "A team of up to 3 agents" }, included: true },
-                    { label: { el: "Προτάσεις επιπλέον κάλυψης ανά πελάτη", en: "Extra-cover suggestions per client" }, included: true },
-                    { label: { el: "Οι αναλύσεις σας τρέχουν πρώτες", en: "Your analyses run first" }, included: true },
-                    { label: { el: "Παρακολούθηση προμηθειών", en: "Commission tracking" }, included: true },
+                    { claim: "agent.clients", label: { el: "500 πελάτες", en: "500 clients" }, included: true, highlight: true },
+                    { claim: "agent.analysesPerMonth", label: { el: "150 αναλύσεις τον μήνα", en: "150 analyses a month" }, included: true, highlight: true },
+                    { claim: "agent.teamMembers", label: { el: "Ομάδα έως 3 ασφαλιστές", en: "A team of up to 3 agents" }, included: true },
+                    { claim: "agent.crossSellIntelligence", label: { el: "Προτάσεις επιπλέον κάλυψης ανά πελάτη", en: "Extra-cover suggestions per client" }, included: true },
+                    { claim: "agent.priorityQueue", label: { el: "Οι αναλύσεις σας τρέχουν πρώτες", en: "Your analyses run first" }, included: true },
+                    { claim: "agent.commissionTracking", label: { el: "Παρακολούθηση προμηθειών", en: "Commission tracking" }, included: true },
                 ],
             },
             {
@@ -364,16 +404,16 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 isContactPlan: true,
                 pricing: {
                     monthly: {
-                        amount: "€199",
+                        value: 199,
                         period: { el: "/μήνα", en: "/month" },
                     },
                 },
                 features: [
-                    { label: { el: "Απεριόριστοι πελάτες", en: "Unlimited clients" }, included: true, highlight: true },
-                    { label: { el: "400 αναλύσεις τον μήνα", en: "400 analyses a month" }, included: true, highlight: true },
-                    { label: { el: "Απεριόριστη ομάδα", en: "Unlimited team members" }, included: true },
-                    { label: { el: "Απεριόριστη μαζική εισαγωγή πελατών", en: "Unlimited client import" }, included: true },
-                    { label: { el: "Αποκλειστική υποστήριξη", en: "Dedicated support" }, included: true },
+                    { claim: "agent.clients", label: { el: "Απεριόριστοι πελάτες", en: "Unlimited clients" }, included: true, highlight: true },
+                    { claim: "agent.analysesPerMonth", label: { el: "400 αναλύσεις τον μήνα", en: "400 analyses a month" }, included: true, highlight: true },
+                    { claim: "agent.teamMembers", label: { el: "Απεριόριστη ομάδα", en: "Unlimited team members" }, included: true },
+                    { claim: "agent.bulkImportRows", label: { el: "Απεριόριστη μαζική εισαγωγή πελατών", en: "Unlimited client import" }, included: true },
+                    { claim: null, label: { el: "Αποκλειστική υποστήριξη", en: "Dedicated support" }, included: true },
                 ],
             },
         ],
@@ -383,6 +423,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
         },
         comparisonRows: [
             {
+                claim: "agent.clients",
                 category: { el: "Χαρτοφυλάκιο πελατών", en: "Client portfolio" },
                 name: { el: "Πελάτες", en: "Clients" },
                 values: {
@@ -393,6 +434,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
+                claim: null,
                 name: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" },
                 values: {
                     "agent-free": true,
@@ -405,15 +447,20 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 // The metered core of the agent product: an agent paying for a
                 // plan has to be able to see how many policies it will read.
                 // Figures are DEFAULT_ENTITLEMENT_LIMITS (plan-defaults.ts).
+                // Pro and Agency read 150 / 400, the same as their cards (this
+                // table said 200 / «Απεριόριστες» until 2026-10-21). Agent Free
+                // is «—»: its count is not a promise the plan keeps.
+                claim: "agent.analysesPerMonth",
                 name: { el: "Αναλύσεις AI ανά μήνα", en: "AI analyses per month" },
                 values: {
-                    "agent-free": "5",
+                    "agent-free": "—",
                     "agent-starter": "50",
-                    "agent-pro": "200",
-                    "agent-agency": { el: "Απεριόριστες", en: "Unlimited" },
+                    "agent-pro": "150",
+                    "agent-agency": "400",
                 },
             },
             {
+                claim: null,
                 category: { el: "Καθημερινή δουλειά", en: "Day-to-day work" },
                 name: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" },
                 values: {
@@ -424,15 +471,18 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
-                name: { el: "Μαζική αποστολή ασφαλιστηρίων", en: "Send many policies at once" },
+                // It imports CLIENT rows, not policies; Agent Free gets 10.
+                claim: "agent.bulkImportRows",
+                name: { el: "Προσθήκη πολλών πελατών μαζί", en: "Add many clients at once" },
                 values: {
-                    "agent-free": false,
+                    "agent-free": { el: "10 γραμμές", en: "10 rows" },
                     "agent-starter": { el: "100 γραμμές", en: "100 rows" },
                     "agent-pro": { el: "500 γραμμές", en: "500 rows" },
                     "agent-agency": { el: "Απεριόριστες", en: "Unlimited" },
                 },
             },
             {
+                claim: "agent.questionnaireTemplates",
                 name: { el: "Ερωτηματολόγια πελατών", en: "Client questionnaires" },
                 values: {
                     "agent-free": false,
@@ -442,6 +492,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
+                claim: "agent.teamMembers",
                 category: { el: "Η ομάδα σας", en: "Your team" },
                 name: { el: "Μέλη ομάδας", en: "Team members" },
                 values: {

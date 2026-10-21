@@ -1,29 +1,28 @@
 # Status
 
 ## Current phase
-Five homepage presentation extensions shipped — 21 October 2026. PR #408; production application `95c8670a`.
+PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, uncommitted-to-NEW-UI — 22 October 2026. Not merged, not deployed.
 
 ## Done
-- Added actual app previews for policyholders/agents, an enlarged reading demo, four photographic category links, guide/glossary cards and three trust explanations.
-- Preserved forest/mint branding, light video hero, four-step section, reviewed bilingual facts and auth/payment restrictions. Independent visual review: PASS.
-- API auth, lint, i18n/UTF-8, types, 7,874 tests and build passed. Dev/prod: 88 migrations, none pending; no DB/catalogue changes.
-- Exact preview and live: seven responsive/language/theme cases, 35 axe scans per environment, no findings; 22 destinations, no-JS fallback, keyboard/replay, signup handoff and live video loop verified.
-- Production CI 39647092968 and deploy 39648473964 succeeded. Vercel `dpl_HYmFCK1UwbyAR5cSd8vqvDMD6pi9` Ready.
+- Public claims equal enforced code: 12 false entitlement claims removed (Free/Plus «Πλήρης ανάλυση AI», Agent Pro «200», Free reminders, …), tagged with `planClaim` and guarded. In-app «πρώτη πλήρης ανάλυση είναι δωρεάν» removed (no grant built; PW-ENTITLE-01 stub queued).
+- One positioning line, one free-limit statement, no published analysis limit, prices numeric until render, JSON-LD numeric. Rendered positioning variants 19 → 0; cross-page duplicate blocks 289 → 0.
+- Six new/extended guards, each shown red first. Adversarial review round: 4 CRITICAL + 11 IMPORTANT, fixed or recorded. 701 test files / 7,895 tests, lint, i18n, utf8, types, migrations, build pass. Lighthouse 100/100 unchanged.
 
 ## In progress
-- No remaining implementation work in this homepage release.
+- Awaiting Eli: 10 COPY rows, 3 DPO rows (the deletion line), H-024 operational facts.
 
 ## Blocked
-- No design release blocker. Paid checkout remains restricted pending statutory online withdrawal. Optional Kilo review lacked credits; CI payment journey skipped without its E2E database secret.
+- Production `plans.entitlements` not read (no credential): H-021 residue. Paid checkout still restricted.
 
 ## Top risks ranked
-1. Online withdrawal needs declaration, confirmation and durable receipt before paid consumer checkout.
-2. Provider/retention evidence, protected deletion copy and regulatory perimeter remain separate follow-ups.
-3. Existing production session-pool configuration remains an infrastructure follow-up.
+1. **Broken / insecure (gates launch):** in-app claims outside this series still say «Απεριόριστες αναλύσεις» / monthly cap (`/account`, agent pricing); the Free upsell slot in `AnalysisCard` is unreachable; ~20 pages quote prices from code defaults, not the live catalogue.
+2. Deletion line wording vs retained records needs DPO sign-off before it stays on /product and sign-up.
+3. Online withdrawal still needed before paid consumer checkout.
+**UI/UX (does not gate):** dead verdict components still importable; demo dates/k-M amounts hand-typed.
 
 ## Next 3 actions
-1. Complete the consumer withdrawal flow before enabling payments.
-2. Resolve provider/retention evidence and protected deletion copy.
-3. Address production pool configuration and provision payment-journey test infrastructure.
+1. Eli/DPO sign-off on COPY.md; answer H-024 and H-022 item 3.
+2. Preview-journey check, then merge `pw-customer` → NEW-UI (CI auto-deploys).
+3. Open PW-ENTITLE-01 with acceptance criteria; clean the in-app «unlimited» strings.
 
-Evidence: [five homepage extensions](audits/homepage-five-panels-2026-10-21.md), [four steps](audits/homepage-steps-2026-10-21.md).
+Evidence: `docs/series/PW-CONTENT-02/RESULT.md`.

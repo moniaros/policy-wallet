@@ -1,0 +1,12 @@
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/unit/cta-reassurance-single-source.test.ts > the free-plan limit is typed once, in lib/marketing/limit-statement.ts > no source file hand-types it (nor a monthly-cap phrase)
+app/(public)/product/marketing-content.ts:92  aEl: "Ναι. Ο δωρεάν λογαριασμός χωρά έως 3 ασφαλιστήρια, χωρίς κάρτα. Η ανάλυση έχει μηνια
+app/(public)/product/marketing-content.ts:93  aEn: "Yes. The free account holds up to 3 policies without a payment card. Analysis has a 
+app/(public)/guides/[slug]/GuideArticleClient.tsx:265  "Ξεκινήστε δωρεάν με τρία ασφαλιστήρια, χωρίς κάρτα — τα διαβάζουμε και σας δείχνουμε τι κ
++   "app/(public)/product/marketing-content.ts:92  aEl: \"Ναι. Ο δωρεάν λογαριασμός χωρά έως 3 ασφαλιστήρια, χωρίς κάρτα. Η ανάλυση έχει μηνια",
++   "app/(public)/product/marketing-content.ts:93  aEn: \"Yes. The free account holds up to 3 policies without a payment card. Analysis has a ",
++   "app/(public)/guides/[slug]/GuideArticleClient.tsx:265  \"Ξεκινήστε δωρεάν με τρία ασφαλιστήρια, χωρίς κάρτα — τα διαβάζουμε και σας δείχνουμε τι κ",
+ FAIL  tests/unit/voice-guards.test.ts > PW-CONTENT-02 positioning lint — one line, no protection-verdict variants (H-022) > no retired positioning variant on a public route, in metadata, or in a static asset
+app/(public)/guides/[slug]/GuideArticleClient.tsx:265  "Ξεκινήστε δωρεάν με τρία ασφαλιστήρια, χωρίς κάρτα — τα διαβάζουμε και σας δείχνουμε τι καλύπτουν και τι κενά
++   "app/(public)/guides/[slug]/GuideArticleClient.tsx:265  \"Ξεκινήστε δωρεάν με τρία ασφαλιστήρια, χωρίς κάρτα — τα διαβάζουμε και σας δείχνουμε τι καλύπτουν και τι κενά",
+ FAIL  tests/unit/voice-guards.test.ts > PW-CONTENT-02 locale number format — Greek «35.000 €», English «€35,000» (A4) > no public source mis-formats money (metric M-F)

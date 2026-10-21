@@ -23,8 +23,8 @@ import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 const COPY = {
     title: { el: "Η αναβάθμιση ολοκληρώθηκε", en: "Upgrade complete" },
     body: {
-        el: "Το πλάνο σας είναι ενεργό. Έχετε πλέον πλήρη ανάλυση, περισσότερα ασφαλιστήρια και απεριόριστες ερωτήσεις AI.",
-        en: "Your plan is active. You unlocked full analysis, more policies and unlimited AI questions.",
+        el: "Το πλάνο σας είναι ενεργό. Έχετε πλέον περισσότερα ασφαλιστήρια και, με το Family, πλήρη ανάλυση και ερωτήσεις AI.",
+        en: "Your plan is active. You now have more policies and, with Family, full analysis and AI questions.",
     },
     agentBody: {
         el: "Το πλάνο συμβούλου είναι ενεργό. Έχετε πλέον περισσότερους πελάτες, πλήρη ροή εσόδων και προτεραιότητα στην ανάλυση AI.",

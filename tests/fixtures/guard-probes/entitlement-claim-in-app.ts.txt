@@ -1,0 +1,4 @@
+// PW-CONTENT-02 A1 probe — the string removed from the bundle. The in-app guard must flag it.
+analysis: {
+    freeTrialAvailable: 'Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.',
+}

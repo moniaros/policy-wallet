@@ -14,6 +14,7 @@
  */
 
 import type { CatalogPlan } from "@/lib/pricing/plan-catalog"
+import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
 import { publicCheckoutAvailability, type CheckoutAvailability } from "@/lib/pricing/stripe-mode"
 import {
     publicPricingContent,
@@ -28,10 +29,6 @@ export function formatEur(value: number): string {
     return `€${Number.isInteger(value) ? value : value.toFixed(2)}`
 }
 
-function parseEur(amount: string): number {
-    return Number(amount.replace(/[^0-9.]/g, ""))
-}
-
 /** Template plans without a checkoutPlanId still map to a catalog row. */
 const PLAN_ID_BY_TEMPLATE_KEY: Record<string, string> = {
     free: "ph-free",
@@ -41,7 +38,7 @@ const PLAN_ID_BY_TEMPLATE_KEY: Record<string, string> = {
 function computedSavings(cat: CatalogPlan): LocalizedText | null {
     const saved = Math.round(cat.monthlyEur * 12 - cat.effectiveAnnualEur)
     if (saved <= 0) return null
-    return { el: `Εξοικονομείτε ~€${saved}`, en: `Save ~€${saved}` }
+    return { el: `Εξοικονομείτε ~${formatPlanPrice(saved, "el")}`, en: `Save ~${formatPlanPrice(saved, "en")}` }
 }
 
 /**
@@ -64,17 +61,17 @@ function buildPlan(plan: PublicPricingPlan, cat: CatalogPlan | undefined): Publi
     if (!cat) return plan // no catalog row — render the template as-is (fallback)
     if (!cat.isPublic) return null
 
-    const monthlyUnchanged = parseEur(plan.pricing.monthly.amount) === cat.monthlyEur
-    const monthly = { ...plan.pricing.monthly, amount: formatEur(cat.monthlyEur) }
+    const monthlyUnchanged = plan.pricing.monthly.value === cat.monthlyEur
+    const monthly = { ...plan.pricing.monthly, value: cat.monthlyEur }
 
     let annual = plan.pricing.annual
     if (annual) {
-        const annualUnchanged = parseEur(annual.amount) === cat.effectiveAnnualEur
+        const annualUnchanged = annual.value === cat.effectiveAnnualEur
         const savings =
             monthlyUnchanged && annualUnchanged
                 ? annual.savings
                 : (computedSavings(cat) ?? annual.savings)
-        annual = { ...annual, amount: formatEur(cat.effectiveAnnualEur), savings }
+        annual = { ...annual, value: cat.effectiveAnnualEur, savings }
     }
 
     return { ...plan, pricing: { monthly, ...(annual ? { annual } : {}) } }

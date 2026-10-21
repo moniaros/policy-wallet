@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { ArrowRight, Check } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
+import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
 import type { PublicPricingPlan } from "@/lib/pricing/public-pricing-content"
 import type { MarketingLocale } from "@/lib/marketing/positioning"
 import { PlanRecommender } from "@/src/design-system/plan-recommender"
@@ -46,11 +47,7 @@ export function PricingPreview({
     // `pro`, where `plus` is the plan displayed as "Starter" and `pro` is the
     // one displayed as "Family". Sorting on those names would be a
     // trap for whoever edits this next.
-    const amountOf = (plan: PublicPricingPlan) => {
-        const digits = plan.pricing.monthly.amount.replace(/[^\d.,]/g, "").replace(",", ".")
-        const value = Number.parseFloat(digits)
-        return Number.isFinite(value) ? value : 0
-    }
+    const amountOf = (plan: PublicPricingPlan) => plan.pricing.monthly.value
     const bookable = plans.filter((plan) => !plan.isContactPlan)
     const freePlan = bookable.find((plan) => amountOf(plan) === 0)
     const paidPlans = bookable.filter((plan) => amountOf(plan) > 0).sort((a, b) => amountOf(a) - amountOf(b))
@@ -150,7 +147,7 @@ export function PricingPreview({
 
                                 <p className="mb-1 flex items-baseline gap-1">
                                     <span className="text-h2 font-bold tracking-tight text-neutral-900 dark:text-white">
-                                        {priceOf(plan).amount}
+                                        {formatPlanPrice(priceOf(plan).value, locale)}
                                     </span>
                                     <span className="text-body text-muted-foreground dark:text-slate-400">
                                         {pick(priceOf(plan).period)}

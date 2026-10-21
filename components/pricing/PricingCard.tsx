@@ -2,6 +2,7 @@
 
 import React from "react"
 import { Check, Sparkles, X } from "lucide-react"
+import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
 import type {
     BillingPeriod,
     LocalizedText,
@@ -72,7 +73,7 @@ export function PricingCard({
 
             <div className="mb-8 text-center">
                 <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-bold text-slate-900 dark:text-white">{pricing.amount}</span>
+                    <span className="text-5xl font-bold text-slate-900 dark:text-white">{formatPlanPrice(pricing.value, language)}</span>
                     <span className="text-lg text-slate-600 dark:text-slate-400">{pricing.period[language]}</span>
                 </div>
                 {displayAnnual && plan.pricing.annual?.savings && (

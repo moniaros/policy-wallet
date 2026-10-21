@@ -190,8 +190,11 @@ function CookieConsentBannerInner() {
         // was swallowing clicks: measured at 1280px, `elementFromPoint` over the
         // wallet's "Add policy" button returned this div, not the button. The
         // button looked perfectly clickable and did nothing.
+        // data-shell: fixed site chrome, identical on every route — excluded from
+        // the duplicate-block metrics the way the footer is (PW-CONTENT-02, M-X1).
         <div
             ref={bannerRef}
+            data-shell
             className="pointer-events-none fixed inset-x-0 bottom-0 z-[120] p-4 md:p-6"
         >
             {/* max-h + scroll: with preferences expanded on a 320x568 phone the

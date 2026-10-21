@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { Verdict } from "@/components/landing/ComparisonVerdict"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
-import { CATEGORY_NAME, COMPARISON_COLUMNS, COMPARISON_ROWS, PRIMARY_ACTION, pick, type Bilingual, type ComparisonVerdict, type MarketingLocale } from "@/lib/marketing/positioning"
+import { CATEGORY_NAME_INLINE, COMPARISON_COLUMNS, COMPARISON_ROWS, PRIMARY_ACTION, pick, type Bilingual, type ComparisonVerdict, type MarketingLocale } from "@/lib/marketing/positioning"
 
 /**
  * /compare — the honest answer to "why not just ask my agent?".
@@ -67,8 +67,8 @@ export const CATEGORY_ANSWER: { q: Bilingual; a: (locale: MarketingLocale) => st
     q: { el: "Τι είναι τότε το PolicyWallet;", en: "What is PolicyWallet then?" },
     a: (locale) =>
         locale === "el"
-            ? `Το PolicyWallet είναι μια ${CATEGORY_NAME.el}. Συγκεντρώνετε τα έγγραφά σας και καταλαβαίνετε πιο εύκολα τι αναφέρουν.`
-            : `PolicyWallet is an ${CATEGORY_NAME.en}. Bring your documents together and understand more easily what they say.`,
+            ? `Το PolicyWallet είναι μια ${CATEGORY_NAME_INLINE.el}. Συγκεντρώνετε τα έγγραφά σας και καταλαβαίνετε πιο εύκολα τι αναφέρουν.`
+            : `PolicyWallet is a ${CATEGORY_NAME_INLINE.en}. Bring your documents together and understand more easily what they say.`,
 }
 
 export function CompareSections({ locale }: { locale: MarketingLocale }) {

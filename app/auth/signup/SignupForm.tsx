@@ -21,6 +21,7 @@ import { TermsCheckbox } from "@/components/auth/TermsCheckbox"
 import { FormError } from "@/components/auth/FormError"
 import { RoleSwitchLink } from "@/components/auth/RoleSwitchLink"
 import { liveProvidersFor } from "@/lib/auth/social-providers"
+import { DELETION_ON_REQUEST, FREE_PLAN_LIMIT } from "@/lib/marketing/limit-statement"
 
 /**
  * The two signup screens (brief §2.4/§2.5), on the split AuthShell:
@@ -179,8 +180,8 @@ function SignUpForm({ fixedRole, registrationsOpen }: SignUpProps) {
                       "You upload your policies and I tell you what they cover, what they do not, and when they run out.",
                   ),
                   underCta: t(
-                      "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
-                      "Free for 3 policies. No card. Delete everything whenever you want.",
+                      `${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα. ${DELETION_ON_REQUEST.el}`,
+                      `${FREE_PLAN_LIMIT.en}. No card. ${DELETION_ON_REQUEST.en}`,
                   ),
               }
             : {
