@@ -112,12 +112,12 @@ export function getUpgradeMessage(reason: string, language: "el" | "en" = "el") 
             en: "You reached your plan's policy limit. Upgrade for more capacity.",
         },
         feature_locked: {
-            el: "Αυτό είναι χαρακτηριστικό επί πληρωμή πλάνου. Αναβαθμίστε για πρόσβαση.",
-            en: "This feature is available on paid plans. Upgrade to unlock access.",
+            el: "Αυτό το χαρακτηριστικό δεν περιλαμβάνεται στο πλάνο σας. Δείτε τα πλάνα για να δείτε ποιο το περιλαμβάνει.",
+            en: "This feature is not included in your plan. See the plans to find which one includes it.",
         },
         notifications_disabled: {
-            el: "Οι ειδοποιήσεις email είναι διαθέσιμες σε επί πληρωμή πλάνα.",
-            en: "Email notifications are available on paid plans.",
+            el: "Οι υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν είναι διαθέσιμες στα πλάνα Plus και Family.",
+            en: "Renewal reminders from 90 to 3 days ahead are available on the Plus and Family plans.",
         },
     }
 

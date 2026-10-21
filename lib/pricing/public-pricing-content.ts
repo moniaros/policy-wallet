@@ -396,7 +396,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { claim: "agent.analysesPerMonth", label: { el: "150 αναλύσεις τον μήνα", en: "150 analyses a month" }, included: true, highlight: true },
                     { claim: "agent.teamMembers", label: { el: "Ομάδα έως 3 ασφαλιστές", en: "A team of up to 3 agents" }, included: true },
                     { claim: "agent.crossSellIntelligence", label: { el: "Προτάσεις επιπλέον κάλυψης ανά πελάτη", en: "Extra-cover suggestions per client" }, included: true },
-                    { claim: "agent.priorityQueue", label: { el: "Οι αναλύσεις σας τρέχουν πρώτες", en: "Your analyses run first" }, included: true },
+                    // «Οι αναλύσεις σας τρέχουν πρώτες» removed: the orchestrator stores a run `priority` but
+                    // nothing reads it (QStash publishes each run unordered), so the claim had no behaviour behind it.
                     { claim: "agent.commissionTracking", label: { el: "Παρακολούθηση προμηθειών", en: "Commission tracking" }, included: true },
                 ],
             },

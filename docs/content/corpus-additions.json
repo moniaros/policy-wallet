@@ -256,5 +256,6 @@
   "inline:app/(public)/contact/ContactPageClient.tsx::Υποστήριξη μέσω email",
   "inline:app/(public)/contact/ContactPageClient.tsx::Υποστήριξη",
   "inline:lib/subscription-copy.ts::Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)",
-  "inline:lib/subscription-copy.ts::Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)"
+  "inline:lib/subscription-copy.ts::Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)",
+  "call:components/landing/PolicyWalletWidget.tsx::Τα ασφαλιστήριά σας με μια ματιά"
 ]

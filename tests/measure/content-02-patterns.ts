@@ -7,7 +7,7 @@
 
 /** Retired positioning variants: any claim that PolicyWallet rules on the user's own protection. */
 export const POSITIONING_BANNED =
-    /έλεγχο[ςυ] ρίσκου|ανάλυσης? ρίσκου|(αν|πού|πόσο)\s+(είστε\s+)?καλυμμένοι|Είστε καλυμμένοι|(Δείτε|δείτε) αν είστε (προστατευμένοι|ασφαλισμένοι)|Σας λέμε (τι|αν|πού)|We tell you (what|if|where)|[Αα]ξιολογούμε|τι κενά έχουν|risk intelligence|risk check|risk score|(tell|show)s?\s+(you\s+)?(if|where)\s+you\s+are\s+covered|you are not covered for|ανεξάρτητ\S*\s+(έλεγχ|ανάλυσ)\S*|independent (risk|analysis|personal)/i
+    /έλεγχο[ςυ] ρίσκου|ανάλυσης? ρίσκου|(αν|πού|πόσο)\s+(είστε\s+)?καλυμμένοι|Είστε καλυμμένοι|εικόνα ρίσκου|risk picture|(Δείτε|δείτε) αν είστε (προστατευμένοι|ασφαλισμένοι)|Σας λέμε (τι|αν|πού)|We tell you (what|if|where)|[Αα]ξιολογούμε|τι κενά έχουν|risk intelligence|risk check|risk score|(tell|show)s?\s+(you\s+)?(if|where)\s+you\s+are\s+covered|you are not covered for|ανεξάρτητ\S*\s+(έλεγχ|ανάλυσ)\S*|independent (risk|analysis|personal)/i
 
 /** Support is EMAIL ONLY: no phone, chat, hours or «dedicated» support promised. */
 export const SUPPORT_BANNED =

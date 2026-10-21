@@ -17,7 +17,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
             "Up to 10 policies (Plus) or up to 25 (Family)",
             "Full AI analysis for every policy (Family)",
             "One view across all your insurers",
-            "Smart renewal reminders",
+            "More renewal reminders (Plus)",
         ],
         trust: TRUST,
         successMessage: "Upgrade complete. You can now add all your policies.",
@@ -45,8 +45,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         secondaryCta: "Not now",
         benefits: [
             "Full explanation of each gap with evidence",
-            "Prioritized by severity",
-            "Avoid duplicate coverage",
+            "Findings to discuss with your insurance adviser",
             "Concrete next steps",
         ],
         trust: TRUST,
@@ -57,7 +56,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         headline: "Keep asking the AI",
         // See the note in upgrade-copy.el.ts: there is no free allowance and no
         // monthly reset, so "used your free questions for this month" is wrong twice.
-        body: "AI questions about your policies are included in the paid plans. Upgrade to ask freely about coverages, limits and exclusions.",
+        body: "AI questions about your policies are included in the Family plan. Upgrade to ask freely about coverages, limits and exclusions.",
         primaryCta: "Continue with questions",
         secondaryCta: "Not now",
         benefits: [
@@ -116,17 +115,18 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         successCta: "Download report",
     },
     advanced_renewal_reminders: {
-        headline: "Smart renewal reminders",
-        body: "Don't wait for the expiry date to go looking for your policy. Unlock smart renewal reminders.",
-        primaryCta: "Enable smart reminders",
+        headline: "More renewal reminders",
+        body: "On every plan you get one reminder 30 days before expiry. With Plus you get reminders from 90 to 3 days ahead.",
+        primaryCta: "See Plus",
         secondaryCta: "Not now",
         benefits: [
-            "Email alerts before every expiry",
-            "Multiple reminders per policy",
+            "Reminders at 90, 60, 30, 15, 7 and 3 days before expiry",
+            "An email before every expiry",
+            "The 30-day reminder stays on every plan",
             "Never miss a renewal again",
         ],
         trust: TRUST,
-        successMessage: "Upgrade complete. Smart reminders are active.",
+        successMessage: "Upgrade complete. The full renewal reminders are active.",
         successCta: "Set up reminders",
     },
     pdf_preview: {
@@ -152,7 +152,6 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         benefits: [
             "Monthly tokens that renew automatically",
             "Option to buy extra packs",
-            "Priority analysis queue (Family)",
             "Full usage control from your account",
         ],
         trust: TRUST,

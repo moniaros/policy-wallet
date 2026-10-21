@@ -29,7 +29,7 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
             "Έως 10 ασφαλιστήρια (Plus) ή έως 25 (Family)",
             "Πλήρης ανάλυση AI για κάθε ασφαλιστήριο (Family)",
             "Συνολική εικόνα από όλες τις ασφαλιστικές",
-            "Υπενθυμίσεις ανανέωσης",
+            "Περισσότερες υπενθυμίσεις ανανέωσης (Plus)",
         ],
         trust: TRUST,
         successMessage: "Η αναβάθμιση ολοκληρώθηκε. Μπορείτε τώρα να προσθέσετε όλα σας τα ασφαλιστήρια.",
@@ -57,8 +57,7 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         secondaryCta: "Όχι τώρα",
         benefits: [
             "Πλήρης εξήγηση κάθε κενού με τεκμηρίωση",
-            "Προτεραιοποίηση ανά σοβαρότητα",
-            "Απόφυγε διπλές καλύψεις",
+            "Ευρήματα για να τα συζητήσετε με τον ασφαλιστή σας",
             "Συγκεκριμένα επόμενα βήματα",
         ],
         trust: TRUST,
@@ -72,7 +71,7 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         // claims the reader had questions and used them, and that more arrive next
         // month. Neither is true: they never had any and none are coming. Someone
         // waiting for a reset would wait forever.
-        body: "Οι ερωτήσεις AI για τα ασφαλιστήριά σας περιλαμβάνονται στα επί πληρωμή πλάνα. Αναβαθμίστε για να ρωτάτε ελεύθερα για καλύψεις, όρια και εξαιρέσεις.",
+        body: "Οι ερωτήσεις AI για τα ασφαλιστήριά σας περιλαμβάνονται στο πλάνο Family. Αναβαθμίστε για να ρωτάτε ελεύθερα για καλύψεις, όρια και εξαιρέσεις.",
         primaryCta: "Συνέχεια με τις ερωτήσεις",
         secondaryCta: "Όχι τώρα",
         benefits: [
@@ -131,17 +130,18 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         successCta: "Κατεβάστε την αναφορά",
     },
     advanced_renewal_reminders: {
-        headline: "Υπενθυμίσεις ανανέωσης",
-        body: "Μην περιμένετε τη λήξη για να ψάξετε το ασφαλιστήριό σας. Ενεργοποιήστε τις υπενθυμίσεις ανανέωσης.",
-        primaryCta: "Ενεργοποίηση υπενθυμίσεων",
+        headline: "Περισσότερες υπενθυμίσεις ανανέωσης",
+        body: "Σε όλα τα πλάνα λαμβάνετε μία υπενθύμιση 30 ημέρες πριν τη λήξη. Με το Plus λαμβάνετε υπενθυμίσεις από 90 έως 3 ημέρες πριν.",
+        primaryCta: "Δείτε το Plus",
         secondaryCta: "Όχι τώρα",
         benefits: [
-            "Ειδοποιήσεις email πριν από κάθε λήξη",
-            "Πολλαπλές υπενθυμίσεις ανά ασφαλιστήριο",
+            "Υπενθυμίσεις στις 90, 60, 30, 15, 7 και 3 ημέρες πριν τη λήξη",
+            "Email πριν από κάθε λήξη",
+            "Η υπενθύμιση 30 ημέρες πριν παραμένει σε όλα τα πλάνα",
             "Ποτέ ξανά χαμένη ανανέωση",
         ],
         trust: TRUST,
-        successMessage: "Η αναβάθμιση ολοκληρώθηκε. Οι υπενθυμίσεις ανανέωσης είναι ενεργές.",
+        successMessage: "Η αναβάθμιση ολοκληρώθηκε. Οι πλήρεις υπενθυμίσεις ανανέωσης είναι ενεργές.",
         successCta: "Ρύθμιση υπενθυμίσεων",
     },
     pdf_preview: {
@@ -167,7 +167,6 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         benefits: [
             "Μηνιαία tokens που ανανεώνονται αυτόματα",
             "Δυνατότητα αγοράς επιπλέον πακέτων",
-            "Προτεραιότητα στην ουρά ανάλυσης (Family)",
             "Πλήρης έλεγχος χρήσης από τον λογαριασμό σας",
         ],
         trust: TRUST,

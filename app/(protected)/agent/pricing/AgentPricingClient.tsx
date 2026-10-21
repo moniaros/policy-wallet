@@ -78,7 +78,6 @@ const AGENT_PLANS = [
                 "Unlimited questionnaires",
                 "Team (3 agents)",
                 "Cross-sell intelligence",
-                "Priority analysis queue",
             ],
             el: [
                 "500 πελάτες",
@@ -88,7 +87,6 @@ const AGENT_PLANS = [
                 "Απεριόριστα ερωτηματολόγια",
                 "Ομάδα (3 σύμβουλοι)",
                 "Ευκαιρίες πώλησης",
-                "Προτεραιότητα στην ανάλυση",
             ],
         },
     },

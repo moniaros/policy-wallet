@@ -799,8 +799,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
         },
         applies: (ctx) => ctx.ownsBoat,
         riskExplanation: () => ({
-            en: "Third-party liability cover is compulsory for recreational craft in Greece, and the harbour authority can refuse to release a vessel without it. Beyond liability, salvage and wreck removal are frequently the largest costs after an incident and are commonly excluded unless specifically insured.",
-            el: "Η ασφάλιση αστικής ευθύνης είναι υποχρεωτική για τα σκάφη αναψυχής στην Ελλάδα, και η λιμενική αρχή μπορεί να αρνηθεί τον απόπλου χωρίς αυτήν. Πέρα από την ευθύνη, η ναυαγιαίρεση και η ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν και συνήθως εξαιρούνται αν δεν ασφαλιστούν ρητά.",
+            en: "Third-party liability cover pays for damage your boat causes to others. Beyond liability, salvage and wreck removal are frequently the largest costs after an incident and are commonly excluded unless specifically insured.",
+            el: "Η αστική ευθύνη καλύπτει ζημιές που προκαλεί το σκάφος σας σε τρίτους. Πέρα από την ευθύνη, η ναυαγιαίρεση και η ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν και συνήθως εξαιρούνται αν δεν ασφαλιστούν ρητά.",
         }),
         whyItApplies: () => ({
             en: "You told us you own a boat.",
@@ -823,8 +823,8 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 kind: "transfer",
                 label: { en: "Marine third-party liability", el: "Ασφάλιση αστικής ευθύνης σκάφους" },
                 detail: {
-                    en: "Compulsory for recreational craft in Greece — the harbour authority can refuse to release a vessel without it. Add hull, salvage and wreck removal against the vessel's value.",
-                    el: "Υποχρεωτική για σκάφη αναψυχής στην Ελλάδα — η λιμενική αρχή μπορεί να αρνηθεί τον απόπλου χωρίς αυτήν. Προσθέστε κάλυψη σκάφους, ναυαγιαίρεσης και ανέλκυσης βάσει της αξίας του.",
+                    en: "Covers damage your boat causes to others. Add hull, salvage and wreck removal against the vessel's value.",
+                    el: "Καλύπτει ζημιές που προκαλεί το σκάφος σας σε τρίτους. Προσθέστε κάλυψη σκάφους, ναυαγιαίρεσης και ανέλκυσης βάσει της αξίας του.",
                 },
                 line: "boat",
             },

@@ -423,5 +423,15 @@
     "locator": "call:components/landing/ProductCategoryExplorer.tsx",
     "text": "Δείτε πώς διαβάζουμε τα έγγραφα κάθε κατηγορίας.",
     "reason": "PW-CONTENT-02 item 7: positional re-key, not a rewrite — the intro sentence is unchanged; the card-link strings that held its slot (#n) were removed when the cross-links became titles-only."
+  },
+  {
+    "locator": "inline:lib/subscription-limits.ts",
+    "text": "Αυτό το χαρακτηριστικό δεν περιλαμβάνεται στο πλάνο σας.",
+    "reason": "PW-CONTENT-02 review: «επί πληρωμή πλάνου» told a Plus buyer a Family-only feature was in their reach; the replacement names the problem (not in your plan) and the remedy (see the plans). A neutral generic error line, not a layout slot."
+  },
+  {
+    "locator": "inline:lib/subscription-limits.ts",
+    "text": "Οι υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν",
+    "reason": "PW-CONTENT-02 review: «Οι ειδοποιήσεις email είναι διαθέσιμες σε επί πληρωμή πλάνα» was false for Free (it gets the 30-day email); the line now names the rung range and the two plans that have it."
   }
 ]

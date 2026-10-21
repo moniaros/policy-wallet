@@ -105,7 +105,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <div className="mb-4 flex items-center justify-between gap-3">
                             <div className="min-w-0">
                                 <p className="text-body-sm font-semibold text-neutral-900 dark:text-white">
-                                    {t("Η εικόνα ρίσκου σας", "Your risk picture")}
+                                    {t("Τα ασφαλιστήριά σας με μια ματιά", "Your policies at a glance")}
                                 </p>
                                 <p className="text-micro text-muted-foreground dark:text-slate-400">
                                     {t("3 ασφαλιστήρια, 1 κενό", "3 policies, 1 gap")}

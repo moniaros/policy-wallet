@@ -41,7 +41,6 @@ const FEATURE_ORDER = {
     agentCollaboration: 4,
     analysisComparison: 5,
     savingsReportExport: 6,
-    priorityQueue: 7,
 } as const
 
 export function PlanSection({ data }: { data: PlanData }) {
@@ -235,7 +234,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                 )}
             </SettingsSection>
 
-            <SettingsSection icon={Gauge} title={copy.usageTitle} description={data.usage.analysesLimit !== null || data.usage.hasAiBudget ? copy.usageResets : undefined}>
+            <SettingsSection icon={Gauge} title={copy.usageTitle}>
                 <div className="space-y-5">
                     <UsageMeter
                         label={copy.storedPolicies}

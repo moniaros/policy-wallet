@@ -19,8 +19,8 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 4274
-# inline entries: 5002 across 242 files
+# bundle entries: 4273
+# inline entries: 5001 across 242 files
 # ternary entries: 286 across 45 files
 # call entries: 1082 across 82 files
 
@@ -2909,7 +2909,6 @@ bundle	settings.plan.features.policiesMany	"ασφαλιστήρια στο πο
 bundle	settings.plan.features.policiesOne	"1 ασφαλιστήριο στο πορτοφόλι σας"
 bundle	settings.plan.features.policiesUnlimited	"Απεριόριστα ασφαλιστήρια στο πορτοφόλι σας"
 bundle	settings.plan.features.portfolioGapView	"Συνολική εικόνα των κενών κάλυψης"
-bundle	settings.plan.features.priorityQueue	"Προτεραιότητα στην ουρά ανάλυσης"
 bundle	settings.plan.features.savingsReportExport	"Εξαγωγή αναφοράς σε PDF"
 bundle	settings.plan.free	"Δωρεάν"
 bundle	settings.plan.freeForever	"Χωρίς χρέωση και χωρίς ημερομηνία λήξης."
@@ -3535,7 +3534,7 @@ bundle	wallet.errors.shareFailed	"Η κοινοποίηση ασφαλιστηρ
 bundle	wallet.errors.tokenLimit	"Έχετε φτάσει το όριο AI tokens. Αναβαθμίστε ή αγοράστε credits για συνέχεια."
 bundle	wallet.errors.unauthorized	"Δεν έχετε εξουσιοδότηση για αυτή την ενέργεια."
 bundle	wallet.errors.updateFailed	"Η ενημέρωση ασφαλιστηρίου απέτυχε."
-bundle	wallet.errors.upgradeRequired	"Οι λειτουργίες AI είναι διαθέσιμες στα επί πληρωμή πλάνα. Αναβαθμίστε για να συνεχίσετε."
+bundle	wallet.errors.upgradeRequired	"Η πλήρης ανάλυση AI είναι διαθέσιμη στο πλάνο Family. Αναβαθμίστε για να συνεχίσετε."
 bundle	wallet.expirationDate	"Ημερομηνία λήξης"
 bundle	wallet.expiresDate	"Λήγει στις"
 bundle	wallet.expiresIn	"Λήγει σε"
@@ -4118,7 +4117,7 @@ bundle	wellness.benefit.actionCallInsurerNote	"επιβεβαιωμένο τηλ
 bundle	wellness.benefit.actionCallNote	"όπως καταγράφεται στο ασφαλιστήριο"
 bundle	wellness.benefit.actionTerms	"Δείτε τι γράφει το ασφαλιστήριο"
 bundle	wellness.benefit.addPolicy	"Προσθήκη ασφαλιστηρίου"
-bundle	wellness.benefit.askNeedsPlan	"Η επικοινωνία με τον ασφαλιστή μέσα από την εφαρμογή είναι διαθέσιμη στα συνδρομητικά πλάνα."
+bundle	wellness.benefit.askNeedsPlan	"Η επικοινωνία με τον ασφαλιστή μέσα από την εφαρμογή είναι διαθέσιμη στο πλάνο Family."
 bundle	wellness.benefit.askSent	"Η ερώτησή σας στάλθηκε στον ασφαλιστή σας."
 bundle	wellness.benefit.conditionsKnown	"Όπως καταγράφεται: {limits}."
 bundle	wellness.benefit.conditionsUnknown	"Συχνότητα, όρια και προϋποθέσεις: χρειάζεται επιβεβαίωση."
@@ -4393,7 +4392,7 @@ inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Μετάβαση σ
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Πρακτορείο"
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "Βασική εικόνα πελατών", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Ροή εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Μαζική εισαγωγή (100 γραμμές)", ]
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "150 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", "Προτεραιότητα στην ανάλυση", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "150 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & σύμβουλοι", "400 αναλύσεις AI τον μήνα", "Απεριόριστη μαζική εισαγωγή", "Υποστήριξη μέσω email", "Όλα τα Pro χαρακτηριστικά", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	{ title: "Πλάνα συμβούλων", subtitle: "Επιλέξτε το πλάνο που ταιριάζει στο πρακτορείο σας. Αναβαθμίστε ανά πάσα στιγμή.", free: "Δωρεάν", month: "/μήνα", currentPlan: "Τρέχον πλάνο", upgrade: "Αναβάθμιση", getStarted: "Ξεκινήστε", contact: "Επικοινωνία", popular: "Δημοφιλέστερο", backToDashboard: "Πίσω στην αρχική", vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.", vatIncluded: "με ΦΠΑ", recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.", }
 inline	app/(protected)/agent/relationship-actions.ts	"Η συνεργασία τερματίστηκε"
@@ -6088,7 +6087,7 @@ inline	lib/insurance/content/boat.ts	'Ενημερώστε τον ασφαλισ
 inline	lib/insurance/content/boat.ts	'Εντοπίζουμε τις αναφορές σε κάλυψη σκάφους, αστική ευθύνη, ναυαγιαίρεση, όρια πλόων και περιόδους παροπλισμού — με τη διατύπωση του ασφαλιστηρίου, χωρίς δικές μας συμπληρώσετε.'
 inline	lib/insurance/content/boat.ts	'Επιβαίνοντες χωρίς μνεία'
 inline	lib/insurance/content/boat.ts	'Η ανέλκυση ναυαγίου μπορεί να κοστίσει περισσότερο από το ίδιο το σκάφος και συχνά επιβάλλεται από τη λιμενική αρχή — δεν είναι επιλογή του ιδιοκτήτη.'
-inline	lib/insurance/content/boat.ts	'Η ασφάλιση αστικής ευθύνης είναι υποχρεωτική για τα σκάφη αναψυχής στα ελληνικά ύδατα — χωρίς αυτήν ο απόπλους είναι ήδη παράβαση, ανεξάρτητα από ζημιά.'
+inline	lib/insurance/content/boat.ts	'Η αστική ευθύνη καλύπτει ζημιές σε τρίτους από το σκάφος σας. Δείτε τα όρια του ασφαλιστηρίου σας και ποιες περιπτώσεις εξαιρούνται.'
 inline	lib/insurance/content/boat.ts	'Η υποχρέωση απομάκρυνσης ναυαγίου βαρύνει τον ιδιοκτήτη. Αν δεν εντοπίζεται σχετική κάλυψη, το κόστος μένει εξ ολοκλήρου σε αυτόν.'
 inline	lib/insurance/content/boat.ts	'Ημερομηνίες ισχύος και όρους ανανέωσης, καθώς και τυχόν προϋποθέσεις για κυβερνήτη ή πλήρωμα, εφόσον αναφέρονται.'
 inline	lib/insurance/content/boat.ts	'Καλύπτεται η ανέλκυση σε περίπτωση βύθισης;'
@@ -8068,7 +8067,6 @@ inline	lib/pricing/public-pricing-content.ts	"Ναι, μπορείτε να αν
 inline	lib/pricing/public-pricing-content.ts	"Ναι, στα μεγαλύτερα πλάνα. Κάθε μέλος της ομάδας βλέπει μόνο ό,τι του αναλογεί."
 inline	lib/pricing/public-pricing-content.ts	"Ναι. Μοιράζεστε ασφαλιστήρια και αναφορές με τον πελάτη μέσα από την ίδια οθόνη."
 inline	lib/pricing/public-pricing-content.ts	"Ναι. Τα πλάνα για ασφαλιστές σας δίνουν όλους τους πελάτες σας σε ένα σημείο. Κάθε πλάνο έχει το δικό του όριο πελατών."
-inline	lib/pricing/public-pricing-content.ts	"Οι αναλύσεις σας τρέχουν πρώτες"
 inline	lib/pricing/public-pricing-content.ts	"Ομάδα έως 3 ασφαλιστές"
 inline	lib/pricing/public-pricing-content.ts	"Παρακολούθηση προμηθειών"
 inline	lib/pricing/public-pricing-content.ts	"Πελάτες"
@@ -8629,8 +8627,8 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Ευθύνη για τους κ�
 inline	lib/services/gap-engine/risk-catalog.ts	"Ζημιά σε ιδιόκτητο ακίνητο"
 inline	lib/services/gap-engine/risk-catalog.ts	"Η Ελλάδα είναι από τις πιο σεισμογενείς χώρες της Ευρώπης. Η πυρκαγιά, ο σεισμός και η πλημμύρα καλύπτονται συνήθως ξεχωριστά, και ένα ασφαλιστήριο μπορεί να εξαιρεί ακριβώς αυτό που θεωρούσατε δεδομένο."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η απάτη με εξουσιοδοτημένη μεταφορά — όπου παρασύρεστε να κάνετε εσείς το έμβασμα — γενικά δεν επιστρέφεται από την τράπεζα, σε αντίθεση με την απάτη με κάρτα."
+inline	lib/services/gap-engine/risk-catalog.ts	"Η αστική ευθύνη καλύπτει ζημιές που προκαλεί το σκάφος σας σε τρίτους. Πέρα από την ευθύνη, η ναυαγιαίρεση και η ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν και συνήθως εξαιρούνται αν δεν ασφαλιστούν ρητά."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η ασφάλιση αστικής ευθύνης είναι υποχρεωτική για κάθε όχημα σε κυκλοφορία στην Ελλάδα. Η ανασφάλιστη οδήγηση επιφέρει αφαίρεση πινακίδων και πρόστιμα, και σας αφήνει προσωπικά υπεύθυνο για σωματικές βλάβες ή ζημιές που προκαλείτε."
-inline	lib/services/gap-engine/risk-catalog.ts	"Η ασφάλιση αστικής ευθύνης είναι υποχρεωτική για τα σκάφη αναψυχής στην Ελλάδα, και η λιμενική αρχή μπορεί να αρνηθεί τον απόπλου χωρίς αυτήν. Πέρα από την ευθύνη, η ναυαγιαίρεση και η ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν και συνήθως εξαιρούνται αν δεν ασφαλιστούν ρητά."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η ασφάλιση διακοπής εργασιών κοστολογείται βάσει της περιόδου αποζημίωσης. Ένα ταμειακό απόθεμα που καλύπτει τον πρώτο μήνα σας επιτρέπει να αγοράσετε μικρότερη και φθηνότερη."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η ασφάλιση ιδίων ζημιών καλύπτει το ίδιο το σκάφος· ελέγξτε αν περιλαμβάνει και την υποχρεωτική αστική ευθύνη προς τρίτους, που πωλείται χωριστά."
 inline	lib/services/gap-engine/risk-catalog.ts	"Η ασφάλιση προσωπικών ατυχημάτων καλύπτει μόνο θάνατο από ατύχημα — όχι από ασθένεια, που είναι η συχνότερη αιτία."
@@ -8655,6 +8653,7 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Ιδιωτική ασφάλισ�
 inline	lib/services/gap-engine/risk-catalog.ts	"Ιδιωτικό συνταξιοδοτικό"
 inline	lib/services/gap-engine/risk-catalog.ts	"Κάλυψη κατονομαζόμενων αντικειμένων"
 inline	lib/services/gap-engine/risk-catalog.ts	"Κάντε τα γεγονότα αδιαμφισβήτητα"
+inline	lib/services/gap-engine/risk-catalog.ts	"Καλύπτει ζημιές που προκαλεί το σκάφος σας σε τρίτους. Προσθέστε κάλυψη σκάφους, ναυαγιαίρεσης και ανέλκυσης βάσει της αξίας του."
 inline	lib/services/gap-engine/risk-catalog.ts	"Καλύπτει το εκμισθωμένο ακίνητο, την απώλεια μισθωμάτων όσο είναι ακατοίκητο, και την αστική ευθύνη ιδιοκτήτη — τίποτα από τα οποία δεν περιλαμβάνουν οι όροι ιδιοκατοίκησης."
 inline	lib/services/gap-engine/risk-catalog.ts	"Καταβάλλει σταθερό ημερήσιο ποσό ανεξαρτήτως αιτίας, και είναι συνήθως εφικτό εκεί όπου η πλήρης ιατρική κάλυψη δεν είναι. Η πλήρης ασφάλιση υγείας παραμένει άξια κοστολόγησης για παθήσεις άσχετες με τη δηλωθείσα."
 inline	lib/services/gap-engine/risk-catalog.ts	"Καταγραφή κόστους αντικατάστασης"
@@ -8750,7 +8749,6 @@ inline	lib/services/gap-engine/risk-catalog.ts	"Τραυματισμός εργ�
 inline	lib/services/gap-engine/risk-catalog.ts	"Υπάρχοντα και ευθύνη ως ενοικιαστής"
 inline	lib/services/gap-engine/risk-catalog.ts	"Υπολογισμένη στην αξία ανακατασκευής, όχι στην εμπορική αξία, με κάλυψη πυρκαγιάς, σεισμού και πλημμύρας."
 inline	lib/services/gap-engine/risk-catalog.ts	"Υποχρεωτική για κάθε όχημα σε κυκλοφορία στην Ελλάδα. Δεν είναι θέμα κρίσης — δεν υπάρχει νόμιμη εναλλακτική όσο το όχημα κυκλοφορεί."
-inline	lib/services/gap-engine/risk-catalog.ts	"Υποχρεωτική για σκάφη αναψυχής στην Ελλάδα — η λιμενική αρχή μπορεί να αρνηθεί τον απόπλου χωρίς αυτήν. Προσθέστε κάλυψη σκάφους, ναυαγιαίρεσης και ανέλκυσης βάσει της αξίας του."
 inline	lib/services/gap-engine/risk-catalog.ts	"Φυλάξτε και καταγράψτε τα σωστά"
 inline	lib/services/gap-engine/risk-catalog.ts	"Χρέος που μένει πίσω"
 inline	lib/services/gap-engine/risk-catalog.ts	"Χωρίς το εισόδημά σας, το νοικοκυριό θα κάλυπτε τα έξοδα διαβίωσης μόνο από αποταμιεύσεις. Πείτε μας το εισόδημά σας και μπορούμε να υπολογίσουμε το έλλειμμα."
@@ -8823,7 +8821,7 @@ inline	lib/services/life-events/registry.ts	"Εντός ΕΕ η ΕΚΑΑ καλ�
 inline	lib/services/life-events/registry.ts	"Εξόφληση στεγαστικού δανείου"
 inline	lib/services/life-events/registry.ts	"Εργασία"
 inline	lib/services/life-events/registry.ts	"Η αξίωση εργαζομένου για ό,τι δεν καλύπτει ο ΕΦΚΑ βαρύνει προσωπικά εσάς ως εργοδότη, και ένα γενικό ασφαλιστήριο επιχείρησης δεν την καλύπτει εξ ορισμού."
-inline	lib/services/life-events/registry.ts	"Η αστική ευθύνη είναι υποχρεωτική για σκάφη αναψυχής, και η ναυαγιαίρεση με την ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν."
+inline	lib/services/life-events/registry.ts	"Η αστική ευθύνη καλύπτει ζημιές που προκαλεί το σκάφος σας σε τρίτους, και η ναυαγιαίρεση με την ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν."
 inline	lib/services/life-events/registry.ts	"Η αστική ευθύνη οχήματος προστατεύει τους άλλους, όχι τον αναβάτη — η έκθεση σε τραυματισμό είναι αυτό που συνήθως μένει ακάλυπτο."
 inline	lib/services/life-events/registry.ts	"Η ασφάλιση αστικής ευθύνης είναι υποχρεωτική για κάθε όχημα σε κυκλοφορία στην Ελλάδα — η κάλυψη πρέπει να υπάρχει πριν κινηθεί το όχημα."
 inline	lib/services/life-events/registry.ts	"Η ενημέρωση των δικαιούχων είναι η πιο συχνά παραλειπόμενη ενέργεια μετά από διαζύγιο — ασφαλιστήρια πληρώνουν τακτικά πρώην συζύγους χρόνια μετά, επειδή κανείς δεν άλλαξε τον ορισμό."
@@ -9255,8 +9253,8 @@ inline	lib/subscription-copy.ts	'€4.99'
 inline	lib/subscription-copy.ts	'€79'
 inline	lib/subscription-copy.ts	'€8.99'
 inline	lib/subscription-limits.ts	"Έχετε φτάσει το όριο ασφαλιστηρίων του πλάνου σας. Αναβαθμίστε για περισσότερα."
-inline	lib/subscription-limits.ts	"Αυτό είναι χαρακτηριστικό επί πληρωμή πλάνου. Αναβαθμίστε για πρόσβαση."
-inline	lib/subscription-limits.ts	"Οι ειδοποιήσεις email είναι διαθέσιμες σε επί πληρωμή πλάνα."
+inline	lib/subscription-limits.ts	"Αυτό το χαρακτηριστικό δεν περιλαμβάνεται στο πλάνο σας. Δείτε τα πλάνα για να δείτε ποιο το περιλαμβάνει."
+inline	lib/subscription-limits.ts	"Οι υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν είναι διαθέσιμες στα πλάνα Plus και Family."
 inline	lib/trust/methodology-content.ts	"Αν δεν βρέθηκε κάτι, αυτό δεν σημαίνει ότι όλα είναι καλυμμένα. Σας λέμε αν λείπουν στοιχεία από μια παλιά ανάλυση, αν δεν υπάρχουν έλεγχοι για το είδος ασφάλισης ή αν προστέθηκαν νέοι έλεγχοι από τότε."
 inline	lib/trust/methodology-content.ts	"Αν προσθέσουμε νέους ελέγχους, τα παλιά αποτελέσματα δεν αλλάζουν μόνα τους. Βλέπετε μήνυμα ότι υπάρχουν νεότεροι έλεγχοι. Εσείς επιλέγετε αν θα κάνετε νέα ανάλυση."
 inline	lib/trust/methodology-content.ts	"Δεν δίνουμε βαθμολογία προστασίας, ούτε δείκτη από το εκατό, ούτε χρώμα σοβαρότητας. Ένας αριθμός από ένα σύνολο εμφανίζεται μόνο με τον παρονομαστή του και το τι μετρήθηκε."
@@ -9668,6 +9666,7 @@ call	app/(public)/product/ProductSections.tsx	"Συχνές ερωτήσεις"
 call	app/(public)/product/ProductSections.tsx	"Υπενθύμιση πριν λήξει κάτι· πιο νωρίς με το Plus"
 call	app/(public)/product/boat/PageClient.tsx	"- Ανέλκυση ναυαγίου — δείτε τον όρο 7.2"
 call	app/(public)/product/boat/PageClient.tsx	"Ανεβάστε το ασφαλιστήριο του σκάφους"
+call	app/(public)/product/boat/PageClient.tsx	"Αστική ευθύνη"
 call	app/(public)/product/boat/PageClient.tsx	"Αστική ευθύνη: ενεργή"
 call	app/(public)/product/boat/PageClient.tsx	"Βοήθεια στη θάλασσα και ανάσυρση σκάφους"
 call	app/(public)/product/boat/PageClient.tsx	"Δείτε ποιες ζημιές αναφέρει το ασφαλιστήριο του σκάφους, ποια ποσά προβλέπει και με ποιες προϋποθέσεις. Η πληρωμή μιας ζημιάς κρίνεται από τους όρους και τα πραγματικά περιστατικά."
@@ -9685,7 +9684,6 @@ call	app/(public)/product/boat/PageClient.tsx	"Σκάφος & Μηχανή"
 call	app/(public)/product/boat/PageClient.tsx	"Σκάφος & μηχανή: καλύπτονται"
 call	app/(public)/product/boat/PageClient.tsx	"Τι καλύπτει η ασφάλεια του σκάφους σας;"
 call	app/(public)/product/boat/PageClient.tsx	"Το ασφαλιστήριο πάντα μαζί σας"
-call	app/(public)/product/boat/PageClient.tsx	"Υποχρεωτική αστική ευθύνη"
 call	app/(public)/product/business/PageClient.tsx	"Ένα πρόγραμμα για μικρές επιχειρήσεις μπορεί να συνδυάζει πολλές καλύψεις: κτίριο, εξοπλισμό, εμπορεύματα, έξοδα αν σταματήσει η δουλειά και ζημιές σε άλλους. Δείτε ποιες περιλαμβάνει το δικό σας."
 call	app/(public)/product/business/PageClient.tsx	"Ανεβάστε το ασφαλιστήριο της επιχείρησης. Δείτε τι καλύπτει κάθε κατηγορία, μέχρι ποιο ποσό και ποιο μέρος της ζημιάς πληρώνετε εσείς."
 call	app/(public)/product/business/PageClient.tsx	"Δείτε τις καλύψεις σας"
@@ -10429,7 +10427,6 @@ call	components/landing/PolicyWalletWidget.tsx	"Βρήκαμε ένα κενό"
 call	components/landing/PolicyWalletWidget.tsx	"Εντάξει"
 call	components/landing/PolicyWalletWidget.tsx	"Εντάξει"
 call	components/landing/PolicyWalletWidget.tsx	"Η ανάλυση ολοκληρώθηκε"
-call	components/landing/PolicyWalletWidget.tsx	"Η εικόνα ρίσκου σας"
 call	components/landing/PolicyWalletWidget.tsx	"Καλυμμένο"
 call	components/landing/PolicyWalletWidget.tsx	"Καλυμμένο"
 call	components/landing/PolicyWalletWidget.tsx	"Κενό"
@@ -10438,6 +10435,7 @@ call	components/landing/PolicyWalletWidget.tsx	"Λείπει κάλυψη πλη
 call	components/landing/PolicyWalletWidget.tsx	"Παράδειγμα αποτελέσματος με το Family."
 call	components/landing/PolicyWalletWidget.tsx	"Παράδειγμα αποτελέσματος με το Family: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το ασφαλιστήριο λήγει σε 14 μέρες."
 call	components/landing/PolicyWalletWidget.tsx	"Σπίτι"
+call	components/landing/PolicyWalletWidget.tsx	"Τα ασφαλιστήριά σας με μια ματιά"
 call	components/landing/PolicyWalletWidget.tsx	"Το σπίτι σας δεν καλύπτεται για πλημμύρα."
 call	components/landing/PolicyWalletWidget.tsx	"Υγεία"
 call	components/landing/PricingPreview.tsx	"Δείτε όλα τα πλάνα"

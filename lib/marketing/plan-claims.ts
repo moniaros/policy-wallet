@@ -39,7 +39,6 @@ export type AgentClaimKey =
     | "agent.teamMembers"
     | "agent.questionnaireTemplates"
     | "agent.renewalAutomation"
-    | "agent.priorityQueue"
     | "agent.commissionTracking"
     | "agent.crossSellIntelligence"
     | "agent.expiryList"
@@ -82,8 +81,6 @@ export function planClaim(key: ClaimKey, tier: PlanTier | AgentTier): ClaimValue
                 return l.questionnaireTemplates
             case "agent.renewalAutomation":
                 return l.renewalAutomation
-            case "agent.priorityQueue":
-                return l.priorityQueue
             case "agent.commissionTracking":
                 return l.commissionTracking
             case "agent.crossSellIntelligence":
