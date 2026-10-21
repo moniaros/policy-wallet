@@ -1,29 +1,30 @@
 # Status
 
 ## Current phase
-Public Greek plain-language and legal-content correction — 21 October 2026. Candidate verification and release underway.
+Public Greek plain-language and legal-content correction shipped — 21 October 2026. [PR #404](https://github.com/moniaros/policy-wallet/pull/404); production application `c2c2d29c`.
 
 ## Done
-- Reviewed all public surfaces, 15 guides, glossary and four legal documents; 432 initial Greek rewrites plus verification corrections, with English factual counterparts.
-- Corrected ENFIA, motor/letting requirements, payout/coverage promises, withdrawal and privacy wording against official sources. Removed unsupported earthquake prices.
-- Contact enquiries no longer join the newsletter list. Public cookie settings reopen from footer/policy; opening does not change consent.
-- New legal revision applies to future terms/privacy consents; previous text archived, historical records unchanged. Existing light video hero retained.
-- 7,874 unit tests, TypeScript, lint/i18n/UTF-8/encoding, API inventory, production build and 88-migration dev verification passed.
+- Reviewed all public surfaces, 15 guides, glossary and four legal documents; 432 initial Greek rewrites plus final corrections, with English factual counterparts.
+- Corrected ENFIA, motor/letting requirements, coverage/payout promises, withdrawal and privacy wording using official sources. Removed unsupported earthquake prices.
+- Contact enquiries no longer join the newsletter list. Cookie settings reopen from public footer/policy without changing consent merely on opening.
+- Legal revision `GR-GA-2026.10.21` applies to future terms/privacy consents; previous text archived, historical records unchanged. Light video hero retained.
+- 7,874 tests and guardrails/build passed. All 144 public routes at 320/1440px passed locally, on preview and live; live cookie, hero and four anonymous auth checks passed.
+- Production CI 39609829330 and deploy 39611226649 succeeded. Dev/prod schema checks: 88 migrations, none pending; no DB/catalogue writes.
 
 ## In progress
-- Full public mobile/desktop browser sweep, protected preview, CI and production release.
+- Protected application presentation and its remaining privacy-dialog copy are a separate tranche.
 
 ## Blocked
-- No editorial release blocker. Paid consumer checkout must remain disabled until the statutory online withdrawal flow is implemented and verified.
+- No public-copy release blocker. Complete statutory online withdrawal before enabling consumer paid checkout; existing sandbox restriction and registration pause remain.
 
 ## Top risks ranked
-1. New online withdrawal function is an operational gap; email/renewal cancellation does not complete it.
-2. Provider DPAs/settings, international transfers and insurance-distribution perimeter require operational/qualified legal evidence.
-3. Existing production registration pause and session-pool configuration remain separate follow-ups.
+1. Online withdrawal needs a complete declaration/confirmation/receipt workflow.
+2. Provider account/transfer evidence, retention/deletion messaging and insurance-distribution perimeter require operational/qualified legal review.
+3. Existing production session-pool configuration remains an infrastructure follow-up.
 
 ## Next 3 actions
-1. Verify the candidate on preview, deploy through CI and check live public journeys.
-2. Implement and test online withdrawal before enabling consumer paid checkout.
-3. Obtain provider-account and regulatory-perimeter evidence; continue protected-app presentation separately.
+1. Implement and verify online withdrawal before consumer paid checkout is enabled.
+2. Verify provider/retention evidence and align protected deletion dialogs with the public policy.
+3. Continue protected-app presentation and obtain the regulatory-perimeter assessment.
 
-Evidence: [public language/legal audit](audits/public-language-legal-2026-10-21.md).
+Evidence and limits: [public language/legal audit](audits/public-language-legal-2026-10-21.md).
