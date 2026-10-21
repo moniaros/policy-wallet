@@ -909,3 +909,69 @@ indistinguishable from an oversight, which is why this is a halt rather than a b
 **No test pins "consent is checked before the request body is read."** The ordering in
 `extract/route.ts` is correct today and held only by a comment at `:124`. A guard that enumerates
 every path reaching a provider — rather than the two currently known — would have caught this one.
+
+---
+
+# PW-CUSTOMER · PW-ASSET-01 — Step 0 halts (2026-10-21)
+
+Raised by `step0-investigator` for `docs/series/PW-ASSET-01/STEP0.md`. Run-plan decision ids (`docs/series/00-RUN-PLAN.md` §4) are given where one applies. Build does not start until each is answered in place.
+
+## H-012 — Approve the `insured_assets` migration shape, after a production profile nobody here can run · **run-plan H4**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: **the whole PW-ASSET-01 build**
+
+The migration (three tables: `insured_assets`, `policy_insured_assets`, `asset_match_suggestions`; nothing on `policies` or `gap_instances`; ENABLE-RLS-no-policies like `wallet_memberships`; fully reversible by DROP) is written in STEP0.md §3.1 and **not applied**.
+
+What could not be done: production was not reachable from the Step 0 session (no prod credential in `.env`; MCP-only writes per memory). The dev profile (STEP0 §2.9) shows ≤ 10 vehicle assets and **zero** ambiguous matches, so dev proves nothing about the backfill's hard cases. D-034 recorded two production wallets (3 and 1 policies) in Aug 2026.
+
+**Ask:** (1) run the read-only profile SELECTs from STEP0 §2.9 against prod and paste the output under this halt; (2) approve or amend the SQL. If prod holds a row the backfill cannot place deterministically (two policies, same owner, same plate modulo separators — a *prompt* case with nobody online to answer), say whether the backfill may leave it **unlinked** (recommended; reversible) or must wait.
+
+## H-013 — This series reopens the asset reframe that D-034 deferred; its reopen trigger has not fired
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: nothing technically; **blocks the record**
+
+D-034 (2026-08-26) deferred the asset-first wallet and set a trigger — `duplicate-identity-row > 0` on a real-user capture on a line with an identifier. The dev database has 0 duplicate plate groups and 0 duplicate address groups; no capture in the repo records the trigger firing. PW-ASSET-01 reopens the reframe on the 21 Oct customer assessment (Dislike 4 / ask 2), which is a legitimate product reason but a different one.
+
+**Ask:** add a DECISIONS.md entry that supersedes D-034 on product grounds, so a later reader does not find a live decision and a live series that contradict each other. One sentence is enough.
+
+## H-014 — "An RLS test suite … run as every role" cannot be red: there are no RLS policies anywhere, by design
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: **the acceptance criterion and the security review's brief**
+
+Verified: ten tables carry `ENABLE ROW LEVEL SECURITY`; **zero** `CREATE POLICY` statements exist in any migration; dev `pg_policies` for `public` = 0; every RLS table is owned by `postgres`, which is the role the app connects as, and RLS does not apply to the owner without `FORCE`. `anon`/`authenticated` have no schema USAGE and PostgREST exposes only `graphql_public` (`docs/audits/prod-default-privileges-not-revocable.md`). No `supabase.from(<table>)` read exists in `app/` or `lib/`.
+
+So authorization is enforced in code — `computePolicyAccess`, the single-path guard, the HTTP cross-tenant spec — and a per-role RLS suite would pass vacuously.
+
+**Ask:** replace the criterion with one of: (a) *"the new tables carry the same ENABLE-RLS posture; `policy-authorization-single-path` enumerates the new server actions; `cross-tenant-authorization.spec.ts` gains the asset routes and proves denial over HTTP for a stranger agent and a stranger policyholder"* (recommended; what can actually go red); or (b) write real per-role policies for the three new tables and run them as `authenticated` — which would be the first such policies in the schema and would protect a path nothing uses. The security reviewer's brief should name which.
+
+## H-015 — The Greek noun for "the thing you insure", and status words that agree with it
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: **every customer-facing string in the series**
+
+`LEXICON.md` has no row for this concept. The repo already uses «περιουσιακό στοιχείο» (`el.ts:467` `newAsset`, `RiskGraphPanel.tsx:135`) — accurate, long, and wrong for a dog or a person. The customer thinks «το Yaris», «το σπίτι», «ο Μαξ». Existing status words are neuter for «το ασφαλιστήριο» (`el.ts:2444-2456`); «ΛΗΓΜΕΝΟ» beside «η κατοικία» is ungrammatical.
+
+**Ask:** (1) the section/heading noun — candidates: «Τα πράγματά σας» (plain), «Αντικείμενα», «Περιουσιακά στοιχεία» (formal), or per-type headings only («Οχήματα», «Κατοικίες», «Κατοικίδια») with no umbrella noun; (2) whether asset status renders as a **verb phrase** that needs no agreement («Σε ισχύ έως 14/3», «Έληξε στις …», «Δεν διαβάστηκε η λήξη») — recommended; (3) the prompt copy «Ανήκει στο {label};» with Ναι / Όχι, άλλο / Νέο. One LEXICON row results.
+
+## H-016 — Person-type assets: owner-created only, never extracted, never auto-matched · **run-plan H5; extends H-010**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: the `person` and `business` values of `insured_assets.type`
+
+The extraction carries **no insured-person field** (H-010, open; D-035 established `insured.name` is the policyholder read off the document). Grouping health and life policies "by person" would therefore have to guess, and a wrong guess puts someone's health policy under another person's name — Art. 9 data misattributed. The dev profile has 2 of 45 rows with an insured name.
+
+**Ask:** confirm the design's choice — `person` and `business` assets exist only when the owner creates them and assigns policies by hand (`origin='owner'`, `match_source='owner_assigned'`); the matcher never proposes them; health/life/pension/cyber/business/other policies stay «Χωρίς αντικείμενο» until the owner acts. If you instead want extraction of an insured-person name, that is H-010's schema change and needs its lawful basis stated first.
+
+## H-017 — Do plan limits or pricing move from policies to assets? · **run-plan H3**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: nothing in the build; **blocks the data model only if the answer is yes**
+
+`subscription-entitlements.ts:253-286` meters `maxPoliciesPerCustomer`; nothing meters assets. The run plan lists "whether pricing moves from policy count to assets" under H3. If it does, `asset.count` becomes a billable quantity and needs the same canonical-row discipline as `monthly_token_usage`.
+
+**Ask:** confirm **no entitlement or price reads asset counts in PW-ASSET-01** (recommended — reversible, and the plans table is a publication channel). If yes later, it is its own series.
+
+## H-018 — Item 5's "status per asset" contradicts ASSET-REFRAME-SPEC §2.4 "a group has no lifecycle"
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: `lib/assets/asset-status.ts`
+
+The spec (retained by D-034) says one expired policy on a car with two live ones "must not render the car as live, and must not render it as expired either". The series asks for «καλύπτεται έως 14/3» per asset. STEP0 §3.5 reconciles them as a **summary with its denominator** — «Σε ισχύ έως 14/3 · 2 από 3 ασφαλιστήρια», `in_force` only on a *readable* end date, every nested policy keeping its own status and link.
+
+**Ask:** approve that reading, so the spec's §2.4 is amended to "a group has no lifecycle of its own; it may state the dated facts of its members with the denominator visible", or reject it and the strip shows per-policy chips instead of a per-asset word.
