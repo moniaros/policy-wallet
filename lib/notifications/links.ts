@@ -26,6 +26,8 @@ export type LinkableObjectType =
     | "customer"
     | "questionnaire"
     | "thread"
+    | "collaboration_action"
+    | "collaboration_message"
     | "recommendation"
     | "renewal"
     | "opportunity"
@@ -44,6 +46,8 @@ export const LINKABLE_OBJECT_TYPES: LinkableObjectType[] = [
     "customer",
     "questionnaire",
     "thread",
+    "collaboration_action",
+    "collaboration_message",
     "prevention",
     "recommendation",
     "renewal",
@@ -66,6 +70,10 @@ export function notificationActionPath(
             return `/wallet/${relatedObjectId}`
         case "customer":
             return `/customers/${relatedObjectId}`
+        case "collaboration_action":
+            return `/collaboration/reminders/action/${encodeURIComponent(relatedObjectId)}`
+        case "collaboration_message":
+            return `/collaboration/reminders/message/${encodeURIComponent(relatedObjectId)}`
         case "thread":
             return `/collaboration/threads/${relatedObjectId}`
         case "questionnaire":

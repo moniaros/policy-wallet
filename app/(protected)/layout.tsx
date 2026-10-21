@@ -1,3 +1,4 @@
+import { countCurrentUnreadNotifications } from "@/lib/notifications/current-unread"
 export const runtime = 'nodejs'
 
 import { getAuthenticatedUser, getIsPayingUser, emailVerificationRequired } from "@/lib/auth-helpers"
@@ -53,9 +54,7 @@ export default async function ProtectedLayout({
     // On production that read 141 against a true count of 8. The `analytics`
     // channel is excluded by the same filter: the conversion mirror shares this
     // table and its rows were being counted too.
-    const unreadNotificationCount = await db.notificationEvent.count({
-        where: { userId: dbUser.id, channel: "in_app", status: "sent", readAt: null }
-    })
+    const unreadNotificationCount = await countCurrentUnreadNotifications(dbUser.id, dbUser.roles)
 
     // Construct navigation based on roles.
     //

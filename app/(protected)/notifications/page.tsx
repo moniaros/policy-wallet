@@ -47,6 +47,12 @@ export default async function NotificationsPage() {
                 // that never reads it is data the HTML does not need.
                 history: data.history.map(e => ({
                     event_id: e.event_id,
+                    event_key: e.event_key,
+                    has_in_app: e.has_in_app,
+                    delivery_channel: e.delivery_channel,
+                    action_href: e.action_href,
+                    reminder_key: e.reminder_key,
+                    reminder_active: e.reminder_active,
                     event_type: e.event_type,
                     subject: e.subject,
                     message: e.message,
@@ -55,6 +61,7 @@ export default async function NotificationsPage() {
                     related_policy_id: e.related_policy_id,
                     related_policy_name: e.related_policy_name,
                 })),
+                nextCursor: data.nextCursor,
             }}
             userLanguage={resolveUserLanguage(dbUser.preferredLanguage)}
             title={title}

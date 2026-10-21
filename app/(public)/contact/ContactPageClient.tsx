@@ -222,9 +222,6 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
             <section className="px-6 pb-20 md:px-12">
                 <div className="mx-auto max-w-page">
                     <div className="mb-10">
-                        <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-brand-accent">
-                            {t("kicker")}
-                        </p>
                         <h1 className="mb-4 text-h1 leading-[1.05] font-semibold tracking-[-0.03em] text-[#0F172A] md:text-display dark:text-white">
                             {t("title")}
                         </h1>

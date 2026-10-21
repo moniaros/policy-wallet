@@ -1,53 +1,22 @@
-# Public presentation direction — 21 October 2026
-
-User approval: “Proceed with the plan. Fix the correctness issues first, then start with the public website presentation using Bitpanda as inspiration, keeping our branding and using Higgsfield where it adds value.” Standing authority delegates reversible design choices and disallows a mid-run approval checkpoint. The approved audit is the composition brief; no additional concept tournament or generated page mockups were used. Working desktop/mobile renders are the review artifact.
+# Public and authentication presentation — 21 October 2026
 
 ## Direction contract
-Mode: Persuade. Preserve PolicyWallet forest #29685B, mint #89D9B2, Inter including Greek and existing action/status semantics. Borrow Bitpanda’s confident scale, early proof and alternating section rhythm. Visitors first understand the offer and start signup, then inspect an illustrative document and its explanation. A restrained Greek-home photo establishes a human setting; it is labelled illustrative/AI and makes no testimonial claim. Core proof remains semantic interactive HTML. Preserve uncertainty and the distinction between platform explanation and licensed advice. Both audiences remain visible. Pricing gives controls and plan names/prices before reassurance. Working apps retain their existing visual identity.
+Mode: Persuade for public pages; Operate for authentication; Read for guides and legal pages. The user requested a further round closer to Bitpanda, retaining PolicyWallet branding, integration with current work and production deployment. They explicitly removed the visible AI-generation caption. This continues the approved direction; working desktop/mobile renders are the review artifact, not a new concept selection.
 
-## Ingredient inventory
-| Ingredient | Medium | Decision |
-|---|---|---|
-| Navigation and primary action | Shared PublicHeader / EmailCapture HTML | Preserve controls, focus, localization and source/role query parameters |
-| Hero type | Existing Inter and semantic tokens | Large readable Greek; no font replacement; headline separate from photograph |
-| Hero photography | Higgsfield job e73df4b2-a8bb-49e1-a0c4-d39a3e8f3f35 | Inspected 1168×880 source; WebP ~94 KB; 4:3 desktop/mobile; never upsample source |
-| Document-to-explanation proof | ReadingDemo semantic HTML, authored illustrative source | Three keyboard tabs; sample and limitations remain visible; source precedes explanation on mobile |
-| Section rhythm | Existing forest/neutral/surface tokens and CSS | Forest proof/close, neutral steps, tinted audience section, compact pricing and native FAQ |
-| Audience paths | Two visible HTML articles | Consumer and professional context, one link each; no repeated phone mockups |
-| Comparison | Native details + semantic table | Optional detail; full comparison and trust pages linked |
-| Professional hero | Existing authored HTML client widget | Explicit sample; no invented customer testimony |
-| Motion/video | Accepted omission | Static editorial image; demo replay respects reduced motion; no background video |
+Preserve forest #29685B and deep forest #143B33, mint, Inter with Greek support, real product behavior and existing action/status meaning. Borrow full-width navigation, large photographic composition, clear type hierarchy and broad colour fields. Never copy financial-platform claims. Decorative photography has descriptive or empty alt text, no visible generation label; exact provenance stays in the asset sidecar. Illustrative policy/client data still needs visible sample identification.
 
-## Verification and boundary
-Evidence: docs/evidence/public-presentation-2026-10-21/. The detector returned no findings on the five primary changed public targets. Screenshot/browser review and an independent finish review assess the built result. This is the initial public presentation slice plus correctness fixes; a comprehensive authenticated app redesign is subsequent work. No change to payment catalog, Stripe, database schema or production data is part of this implementation.
+## Built grammar
+- Every public route inherits the isolated `.pw-public` boundary from `app/(public)/layout.tsx`. Its stylesheet never selects authenticated app content.
+- Shared forest header spans the viewport, 80px desktop and 72px below 1024px; localized navigation, audience-specific signup, theme control and focus-trapped mobile menu remain functional. No floating pill or glass treatment.
+- Public H1 uses Inter, clamp(2.2rem,4.5vw,4.5rem), 1.08 line-height and -.035em tracking. Decorative category labels above primary headings are removed. Content, breadcrumbs and meaningful sample/status labels remain.
+- Homepage hero splits into equal forest-copy and edge-to-edge photo columns at 1024px. It is one full-width composition. On mobile, the photo follows signup and reserves its own 16:10 box; its child never exceeds that box. The inspected Higgsfield source is 1168×880, delivered as ~94KB WebP with responsive Next image sizes.
+- Neutral reading proof follows the forest hero. Its semantic HTML tabs preserve arrows/Home/End and reduced-motion behavior. Audience paths, compact live pricing, native FAQ and closing forest action remain.
+- Public primary/secondary actions use 12px corners; selection controls keep their own state grammar. Existing content widths and 24px/48px gutters remain.
+- Auth uses the existing AuthShell: raised-surface form column, 440px measure, clear field labels and 52px fields, 12px submit controls. Desktop adds a sticky photograph with a short forest product explanation and trust link. Below 1024px the form stands alone. Utility screens without a companion panel use the full width. Greek/English, OAuth, passkeys, phone/email login, role choice, validation and password recovery retain their behavior.
+- No background video: static photography supplies the human context without distracting from reading or form completion. No additional asset generation was needed.
 
-## Recorded implementation grammar
+## Truth and integration boundary
+The first correctness pass remains included: audience-aware public signup links, agent permission/revenue presentation, failed-action handling, accurate partial-export copy, sample reading corrections and Next route/page types. Policyholder action-flow release #396 is integrated. This round is a shared public/auth presentation system, not a redesign of each authenticated workflow. No schema, plan catalog, Stripe or production-data write is required.
 
-The public work preserves global `.pw-*` actions and the existing Grafí semantic
-namespace imported by `app/globals.css` from `app/grafi.css`. They are complementary
-recipes, not equivalent aliases. The fixed forest section ground uses explicit white
-text; theme-aware primary actions flip to mint with dark text. No new palette or status
-meaning is introduced.
-
-Inter remains the Greek/English face. The homepage headline has a local fluid
-`clamp(2.25rem,4.2vw,3.75rem)` treatment, weight 700, line-height 1.08 and a 19ch measure.
-It does not replace a global type token. Main public content uses the existing 1240px
-ceiling, 24px mobile and 48px desktop padding; pricing retains 1280px. At 1024px the
-homepage and reading example become two columns. Audience paths split at 768px.
-The 4:3 photograph follows signup on mobile; source precedes explanation in the demo.
-
-Photography and the professional example surround use 16px corners. The existing
-demo retains 22px outer and 14px source-panel corners; actions remain pills. Broad
-colour fields, whitespace and rules carry hierarchy. Existing widget elevation is not
-a new global recipe. The professional feature section has three equally composed,
-visibly labelled demonstrations after its hero; no duplicate text-only portfolio card.
-
-Three real reading tabs support arrows, Home/End and roving focus. Completed sample
-content is present initially, including without JavaScript. Replay announces completion
-and respects reduced motion. Comparison uses a native disclosure and semantic table;
-pricing controls expose selection through `aria-pressed`. No background video or new
-entrance choreography is added. Decorative heading kickers were removed from the
-changed homepage/professional compositions; genuine sample and status labels remain.
-
-This documentation records local implementation and evidence, not a production launch.
-Global policyholder layout and unrelated app contracts remain outside this boundary.
+## Evidence
+First-round evidence remains in `docs/evidence/public-presentation-2026-10-21/`; this round is in `docs/evidence/presentation-round2-2026-10-21/`. Release status, exact preview/production revisions and verification are recorded in STATUS and the implementation audit. The independent reviewer requested the mobile media-height correction and this documentation refresh; both are addressed before release.

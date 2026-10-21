@@ -1,63 +1,27 @@
 "use client"
 
-import { PolicyStrip, BrokerScanPanel } from "@/src/design-system"
+import Link from "next/link"
+import { localizeHref } from "@/lib/seo/locale-links"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { TRUST_FACTS, pick } from "@/lib/marketing/positioning"
+import { presentationCopy } from "@/lib/i18n/presentation"
 
-/**
- * The right column of the split auth shell (brief §2.5): shows what the
- * product DOES — never an outcome promise, never a user count, never a form
- * field. Samples are stamped as samples; statuses speak the three-state
- * vocabulary. On-brand fill behind it comes from AuthShell; text here uses
- * `fg-on-brand`, cards flip back to raised surfaces.
- */
+/** Product explanation beside authentication; no invented policy or assurance states. */
 export function TrustPanel({ variant }: { variant: "policyholder" | "agent" }) {
     const { language } = useLanguage()
-    const locale: "el" | "en" = language === "en" ? "en" : "el"
-    const t = (el: string, en: string) => (locale === "el" ? el : en)
-
-    if (variant === "agent") {
-        return (
-            <div className="w-full max-w-[460px] text-fg-on-brand">
-                <p className="text-g-body-lg font-semibold">
-                    {t(
-                        "Το χαρτοφυλάκιο ανήκει στον ασφαλισμένο. Βλέπετε μόνο ό,τι σας κοινοποιεί, και μπορεί να το ανακαλέσει.",
-                        "The wallet belongs to the policyholder. You see only what they share with you — and they can revoke it.",
-                    )}
-                </p>
-                <div className="mt-g-6">
-                    <BrokerScanPanel locale={locale} />
-                </div>
-            </div>
-        )
-    }
-
+    const locale = language === "en" ? "en" : "el"
+    const copy = presentationCopy[locale]
     return (
-        <div className="w-full max-w-[460px] text-fg-on-brand">
-            <p className="text-g-body-lg font-semibold">
-                {t("Δεν αξιολογούμε ασφαλιστήρια. Αξιολογούμε την προστασία σας.", "We do not grade policies. We map your protection.")}
+        <div className="w-full max-w-[520px] text-white">
+            <h2 className="text-3xl font-semibold leading-tight tracking-tight">
+                {variant === "agent" ? copy.professionalTitle : copy.individualTitle}
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-white/90">
+                {variant === "agent" ? copy.professionalBody : copy.individualBody}
             </p>
-            <div className="mt-g-6 rounded-g-lg bg-surface-raised p-g-5 text-fg-primary">
-                <p className="text-g-label font-semibold uppercase tracking-[0.1em] text-fg-secondary">
-                    {t("Δείγμα — όχι πραγματικό ασφαλιστήριο", "Sample — not a real policy")}
-                </p>
-                <PolicyStrip
-                    className="mt-g-3"
-                    items={[
-                        { name: t("Αυτοκίνητο", "Car"), state: "covered" },
-                        { name: t("Κατοικία", "Home"), state: "gap" },
-                        { name: t("Υγεία", "Health"), state: "review" },
-                    ]}
-                />
-            </div>
-            <ul className="mt-g-6 flex flex-col gap-g-4">
-                {TRUST_FACTS.map((fact) => (
-                    <li key={fact.label.el}>
-                        <p className="font-semibold">{pick(fact.label, locale)}</p>
-                        <p className="mt-g-1 text-g-body-sm opacity-90">{pick(fact.detail, locale)}</p>
-                    </li>
-                ))}
-            </ul>
+            <Link href={localizeHref("/trust", locale)} className="mt-6 inline-flex min-h-11 items-center font-semibold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">
+                {copy.trustLink}
+            </Link>
         </div>
     )
 }

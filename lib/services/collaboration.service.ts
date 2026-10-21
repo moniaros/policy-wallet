@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 import { getPolicyAccess } from "@/lib/policy-access"
 import { ENDED_RELATIONSHIP_STATUSES, getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import { db } from "@/lib/db"
@@ -7,6 +8,8 @@ type AppRole = "admin" | "agent" | "policyholder"
 
 type CreateThreadInput = {
     relationshipId: string
+    initialMessage?: string
+    requestId?: string
     policyId?: string | null
     subject: string
     category?: "coverage_gap" | "document_request" | "renewal" | "questionnaire" | "general"
@@ -111,6 +114,7 @@ export class CollaborationService {
                     },
                 },
                 messages: {
+                    where: { isPrivate: false },
                     select: {
                         body: true,
                         createdAt: true,
@@ -176,7 +180,7 @@ export class CollaborationService {
             where: { id: input.relationshipId },
         })
         if (!relationship) throw new Error("Relationship not found")
-        if (relationship.status === "terminated") throw new Error("Relationship terminated")
+        if (ENDED_RELATIONSHIP_STATUSES.includes(relationship.status as any)) throw new Error("Relationship terminated")
         // An agent cannot open a thread at someone who never accepted the
         // relationship — agents create relationships unilaterally by typing an
         // email, and a thread makes the platform a message channel to any
@@ -224,8 +228,20 @@ export class CollaborationService {
                 ? input.assignedToUserId
                 : counterparty
 
+        // A caller-generated request id makes retries of the reviewed draft idempotent.
+        // It is namespaced by the authenticated sender, never by a supplied user id.
+        const requestThreadId = input.requestId ? `draft-${createHash("sha256").update(`${userId}:${input.requestId}`).digest("hex")}` : undefined
+        if (requestThreadId) {
+            const existing = await db.collaborationThread.findUnique({ where: { id: requestThreadId }, include: { messages: { where: { messageType: "comment" }, orderBy: { createdAt: "asc" }, take: 1 } } })
+            if (existing) {
+                if (existing.createdByUserId !== userId || existing.relationshipId !== input.relationshipId) throw new Error("Forbidden")
+                if (existing.subject !== input.subject || (existing.policyId ?? null) !== (input.policyId ?? null) || (existing.messages[0]?.body ?? null) !== (input.initialMessage ?? null)) throw new Error("Request content changed")
+                return existing
+            }
+        }
         const thread = await db.collaborationThread.create({
             data: {
+                ...(requestThreadId ? { id: requestThreadId } : {}),
                 relationshipId: input.relationshipId,
                 policyId: input.policyId || null,
                 subject: input.subject,
@@ -246,24 +262,30 @@ export class CollaborationService {
                 messages: {
                     create: {
                         senderUserId: userId,
-                        messageType: "system_event",
-                        body: "Thread created",
-                        metadata: { source: "thread_create" },
+                        messageType: input.initialMessage ? "comment" : "system_event",
+                        body: input.initialMessage || "Thread created",
+                        metadata: { source: input.initialMessage ? "reviewed_draft" : "thread_create" },
                     },
                 },
             },
             include: {
                 relationship: true,
             },
+        }).catch(async (error: { code?: string }) => {
+            if (error.code !== 'P2002' || !requestThreadId) throw error
+            const existing = await db.collaborationThread.findUnique({ where: { id: requestThreadId }, include: { relationship: true, messages: { where: { messageType: 'comment' }, orderBy: { createdAt: 'asc' }, take: 1 } } })
+            if (!existing || existing.createdByUserId !== userId || existing.relationshipId !== input.relationshipId || existing.subject !== input.subject || (existing.policyId ?? null) !== (input.policyId ?? null) || (existing.messages[0]?.body ?? null) !== (input.initialMessage ?? null)) throw new Error('Request content changed')
+            return existing
         })
 
         if (assignedToUserId) {
             await this.notifyCollabParticipant({
                 recipientId: assignedToUserId,
                 eventType: "collaboration_thread_assigned",
+                dedupeKey: requestThreadId ? `${requestThreadId}:assigned` : undefined,
                 title: { el: "Νέα συζήτηση", en: "New conversation" },
                 message: thread.subject,
-                relatedObjectId: thread.relationshipId,
+                relatedObjectId: thread.id,
             })
         }
 
@@ -364,7 +386,7 @@ export class CollaborationService {
                 eventType: "collaboration_message",
                 title: { el: "Νέο μήνυμα", en: "New message" },
                 message: body.slice(0, 140),
-                relatedObjectId: thread.relationshipId,
+                relatedObjectId: thread.id,
             })
         }
 
@@ -410,7 +432,7 @@ export class CollaborationService {
             eventType: "collaboration_action_assigned",
             title: { el: "Νέα ενέργεια", en: "New action" },
             message: input.title,
-            relatedObjectId: thread.relationshipId,
+            relatedObjectId: thread.id,
         })
 
         return action
@@ -426,6 +448,7 @@ export class CollaborationService {
      */
     private async notifyCollabParticipant(params: {
         recipientId: string
+        dedupeKey?: string
         eventType: string
         title: { el: string; en: string }
         message: string
@@ -433,18 +456,19 @@ export class CollaborationService {
     }) {
         await sendNotification({
             userId: params.recipientId,
+            dedupeKey: params.dedupeKey,
             eventType: params.eventType,
             title: params.title,
             // User-typed content quoted back — there is no translation of a
             // human's own words, so both arms carry the same text.
             message: { el: params.message, en: params.message },
             channels: ["email", "in_app"],
-            relatedObjectType: "customer",
+            relatedObjectType: "thread",
             relatedObjectId: params.relatedObjectId,
         })
     }
 
-    async updateActionStatus(userId: string, rolesRaw: string, threadId: string, actionId: string, status: string) {
+    async updateActionStatus(userId: string, rolesRaw: string, threadId: string, actionId: string, status: string, dueDate?: Date) {
         const thread = await this.assertThreadAccess(userId, rolesRaw, threadId)
         if (!thread) throw new Error("Forbidden")
 
@@ -459,6 +483,7 @@ export class CollaborationService {
             data: {
                 status,
                 completedAt: status === "done" ? new Date() : null,
+                ...(dueDate ? { dueDate } : {}),
             },
         })
 
@@ -478,6 +503,12 @@ export class CollaborationService {
             },
         })
 
+        if (status === "done" || status === "cancelled" || dueDate) {
+            await db.notificationEvent.updateMany({
+                where: { eventType: "collaboration_action_overdue", relatedObjectId: actionId, status: "sent", channel: "in_app" },
+                data: { status: "expired" },
+            })
+        }
         return updated
     }
 

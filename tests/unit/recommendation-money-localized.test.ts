@@ -18,9 +18,9 @@ describe('RecommendationCards localises money via the shared formatter', () => {
         expect(SRC).not.toMatch(/€\{/)
     })
 
-    it('formats the product premium range and omits unsubstantiated branch estimates', () => {
-        expect(SRC).toContain('formatCurrency(rec.matchedProduct.premiumRangeLow')
-        expect(SRC).toContain('formatCurrency(rec.matchedProduct.premiumRangeHigh')
+    it('omits indicative product prices and unsubstantiated branch estimates', () => {
+        expect(SRC).not.toContain('rec.matchedProduct.premiumRangeLow')
+        expect(SRC).not.toContain('rec.matchedProduct.premiumRangeHigh')
         expect(SRC).not.toContain('formatCurrency(rec.estimatedCostEur')
     })
 })

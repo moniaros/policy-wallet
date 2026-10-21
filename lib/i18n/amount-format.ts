@@ -12,6 +12,8 @@ export function formatExtractedAmount(
 ): string {
     const text = String(raw ?? '').trim()
     if (!text) return ''
+    // A yes/no extraction confirms no amount or limit.
+    if (/^(ναι|όχι|οχι|yes|no|true|false)$/i.test(text)) return lang === 'el' ? 'Δεν έχει καταγραφεί ποσό' : 'No amount recorded'
 
     if (/^(varies|variable)$/i.test(text)) {
         return lang === 'el' ? 'Μεταβλητό' : 'Varies'

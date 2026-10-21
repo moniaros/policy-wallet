@@ -25,9 +25,6 @@ export default function CompanyPage() {
                 <section className="mx-auto mb-16 max-w-4xl px-6 text-center lg:px-12">
                     {/* Category kicker — the company page opens by naming the
                         category we created; the H1 is its human decode. */}
-                    <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-brand-accent">
-                        {t(CATEGORY_NAME.el, CATEGORY_NAME.en)}
-                    </p>
                     <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-tight md:text-display">
                         {t("Είμαστε με το μέρος σας. Μόνο.", "We are on your side. Only yours.")}
                     </h1>

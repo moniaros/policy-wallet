@@ -8,6 +8,8 @@ colors:
   signal-mint-deep: "#7de8ba"
   mint-edge: "#A7F3D0"
   trust-forest: "#143B33"
+  grafi-mint: "#CFE4DC"
+  grafi-ink: "#10312B"
   green-soft: "#DCEBDA"
   green-tint: "#F0FDF4"
   green-wash: "#ECFDF5"
@@ -32,6 +34,16 @@ colors:
   status-info-bg: "#EFF6FF"
   status-info-fg: "#1E40AF"
 typography:
+  public-display:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "clamp(2.2rem, 4.5vw, 4.5rem)"
+    lineHeight: 1.08
+    letterSpacing: "-0.035em"
+  auth-display:
+    fontFamily: "Inter, system-ui, sans-serif"
+    fontSize: "clamp(2rem, 3vw, 2.8rem)"
+    lineHeight: 1.12
+    letterSpacing: "-0.03em"
   display:
     fontFamily: "Inter, system-ui, sans-serif"
     fontSize: "3.5rem"
@@ -107,6 +119,19 @@ spacing:
   roomy: "32px"
   section: "80px"
 components:
+  public-button-inverse:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.trust-forest}"
+    rounded: "{rounded.subcard}"
+    padding: "12px 20px"
+  public-button-inverse-hover:
+    backgroundColor: "{colors.grafi-mint}"
+  public-hero-submit:
+    backgroundColor: "{colors.grafi-mint}"
+    textColor: "{colors.grafi-ink}"
+    rounded: "{rounded.subcard}"
+  public-hero-submit-hover:
+    backgroundColor: "{colors.paper}"
   button-primary:
     backgroundColor: "{colors.ledger-green}"
     textColor: "{colors.paper}"
@@ -188,11 +213,18 @@ components:
 
 The approved public implementation is recorded in
 [docs/design/public-presentation-2026-10.md](docs/design/public-presentation-2026-10.md).
-For the homepage, pricing introduction and professional hero, that surface contract
-supersedes the historical marketing-eyebrow prescriptions below. Use readable headings,
-visible sample disclosures and functional status labels; do not introduce decorative
-kickers. Forest/mint, Inter and existing semantic actions are retained. This public
-composition change does not replace the authenticated policyholder design contract.
+The public and authentication additions below describe the built presentation in
+`app/(public)/presentation.css` and `app/auth/presentation.css`; they do not replace
+any authenticated policyholder, agent or admin rule. Within those boundaries they
+supersede historical marketing prescriptions for pill actions, fixed heading sizes,
+decorative eyebrows, imagery and theme-dependent brand panels. Sample disclosures
+and functional status labels remain visible; decorative kickers do not return.
+
+The public header, homepage hero and auth companion panel keep their forest ground
+and white copy in both themes. Existing Grafí mint and ink complement those panels;
+they are not new global palette roles. Reading surfaces and the auth form continue
+to resolve semantic theme tokens. Public action corners are 12px; authenticated
+pills and selection controls retain their existing geometry.
 
 ## Overview
 
@@ -214,7 +246,7 @@ The signed-in app (2026-09-03, "Direction A") is that doctrine in operate mode: 
 - A single typeface carrying a twelve-step size ladder and four weights
 - Greek-first typography; English must occupy the same space, not a looser paraphrase
 - Amber means "gap" and nothing else; blue is reserved for info and AI
-- No imagery is currently part of the system — an open decision, not a principle
+- Public/auth photography supplies human context; the authenticated system remains document-led
 
 ## Colors
 
@@ -228,6 +260,13 @@ A deep, desaturated green doing trust work on a slate-neutral canvas, with a min
 ### Secondary
 - **Trust Forest** (`#143B33`): the deepest green, for high-commitment surfaces and the trust register. Shifts to `#173330` in dark mode.
 - **CTA Dark** (`#1A2420`): a near-black green used for full-bleed closing bands. Deliberately identical in both themes — these panels are always dark by design.
+
+### Public/auth complementary colours
+- **Grafí Mint** (`grafi-mint`): the existing `--g-green-200` primitive from `app/grafi.css`, reused for the homepage submit action and public-header inverse-action hover. It is distinct from Signal Mint's dark-mode action role.
+- **Grafí Ink** (`grafi-ink`): the existing `--g-green-800` primitive, reused as foreground on the homepage's white and mint form controls.
+- **Trust Forest** remains fixed on the public header, homepage hero and auth companion panel, paired with white text in both themes. The global Trust Forest dark-mode shift described above does not apply to these presentation surfaces.
+
+**The Fixed Forest Panel Rule.** A public/auth forest panel keeps its light foregrounds and fixed dark background together across themes; its form or reading neighbour may still use semantic theme tokens.
 
 ### Tertiary
 - **Green Soft** (`#DCEBDA`), **Green Tint** (`#F0FDF4`) and **Green Wash** (`#ECFDF5`): the tinted surfaces behind positive states, the AI chip and highlighted rows, lightest last. In the app, Green Soft at 8% is also the active navigation row's ground.
@@ -267,6 +306,11 @@ The severity **tone** of a finding becomes a colour in exactly one file (`compon
 
 **Character:** One typeface, worked hard. Hierarchy comes from a twelve-step size ladder and four weights (400/500/600/700) rather than from contrast between families. Headings tighten as they grow — leading runs 1.05 at display and opens to 1.65 for long-form body — so large type reads as composed rather than airy. Inside the app the whole hierarchy lives between 12px and 32px: a page title, a card title one step above body, a number one step above that, and captions doing all the labelling.
 
+### Public/auth heading roles
+- **Public display** uses `typography.public-display` for every public H1. The homepage uses bold weight; the public stylesheet preserves each other page's authored weight. Headings balance their lines, and the homepage measure is 19ch.
+- **Auth display** uses `typography.auth-display` inside the shared form column, with balanced lines. This scoped fluid scale leaves the authenticated type ladder unchanged.
+- Section titles retain the existing type ladder; descriptive copy and controls retain their current functional sizes. A 12px action corner is geometry, not a 12px text prescription.
+
 ### Hierarchy
 - **Display** (600, 3.5rem/56px, 1.05): hero only. One per page, never below the fold. In the app the one display number is the phone lead of the overview row (the home and the wallet); everything else stays inside 12–32px.
 - **Headline** (600, 2.75rem/44px, 1.12): marketing page titles and major section heads.
@@ -292,6 +336,14 @@ The severity **tone** of a finding becomes a colour in exactly one file (`compon
 **The Greek Sets The Measure Rule.** Greek is the authoritative language and runs longer than English. Size every line, button and column against the Greek string; if it only fits in English, it does not fit. And never capitalise Greek with CSS: `text-transform` strips the tonos («Εχουν» for «Έχουν»), so sentence case is set in the string, not the stylesheet.
 
 ## Layout
+
+### Public/auth composition
+The shared full-width public header is 80px tall, becoming 72px below 1024px. The homepage begins directly below it; other public main content leaves another 48px of breathing room, or 32px below 1024px. Focusable content has scroll clearance from the header.
+
+The homepage joins equal forest-copy and edge-to-edge photo columns at 1024px, with a 620px minimum desktop composition height. Copy has a 720px maximum width and responsive 24–64px horizontal padding. Below 1024px the image follows the action, occupies its own 16:10 box, and keeps its absolutely positioned child within that reserved area. The neutral reading proof uses existing page width, 24px/48px gutters and 56px/80px section spacing.
+
+Authentication uses a 55:45 desktop split with a 440px form measure and a sticky companion panel occupying the viewport height. The photo sits above a concise forest explanation. Below 1024px only the form column remains; utility pages without a companion use the available page width. This composition does not alter the authenticated shell described below.
+
 
 One page-width primitive with four ceilings and a single gutter that never changes: `px-4 sm:px-6 lg:px-8` at every width. Ceilings are **reading** (680px, legal and article prose), **form** (900px, single-column flows), **page** (1240px, standard content) and **page-wide** (1400px, dense dashboards that genuinely need the room). The app uses them by surface: the dashboard and wallet at page-wide, the policy page at 768px opening to 1024px, protection at 896px, settings at page with a 250px section rail.
 
@@ -330,6 +382,9 @@ In dark mode shadows are invisible, so the same job is done by a 1px inner ring 
 
 ## Shapes
 
+**Public/auth scope:** public primary/secondary and inverse action recipes, the homepage email submit, and auth submit controls use the existing subcard radius (12px). Auth fields use the same corner, at least 52px high; submit controls are at least 48px high. Selection controls keep their state-specific geometry. The fully round action rule below remains the authenticated rule.
+
+
 A soft, fully-resolved geometry with one deliberate extreme: buttons, pills and segmented controls are **fully round** (`9999px`), while surfaces are gently curved and step down one notch per plane.
 
 - **Cards, menus and modals' little siblings:** 16px.
@@ -341,6 +396,12 @@ A soft, fully-resolved geometry with one deliberate extreme: buttons, pills and 
 Borders are hairlines. A coloured border thicker than 1px on a card, list item or callout is not part of this language; the coloured *side bar* on a finding card was retired for the same reason. The one bar the system keeps is the navigation's active mark — 3px, brand green, at the edge of the row.
 
 ## Components
+
+### Public/auth presentation
+- **Public header:** full-width fixed forest, white links, an inverse white signup action and mint hover. Focus uses a visible current-colour outline; mobile navigation retains its focus trap and focus return.
+- **Homepage capture:** white input, mint submit and dark Grafí ink foregrounds. The submit turns white on hover. Labels remain visible or programmatically associated; the sample reading below retains explicit sample identification.
+- **Auth fields:** semantic base fill on the raised form surface, clear labels, inline validation and existing focus treatments. OAuth, passkeys and recovery remain functional controls rather than decorative examples.
+- **Photography:** the same policy-review asset supplies the homepage and desktop auth context. It has descriptive or empty alt text according to context, no visible AI-generation caption, and provenance retained in its asset sidecar. Decorative image treatment does not remove sample disclosures from illustrative policy data.
 
 ### Buttons
 - **Shape:** fully round (`9999px`), with `12px 20px` padding and a 44px floor on mobile.
@@ -380,7 +441,7 @@ Borders are hairlines. A coloured border thicker than 1px on a card, list item o
 - **Top bar (desktop):** 64px, Paper at 95% with blur, hairline below; the search field, the bell with its badge, the account menu opening downward.
 - **Tab bar (phone):** a floating ink pill — five 44px icon-only tabs on Ink with 6px padding and a soft offset shadow, the active tab a Paper disc. Names live in `aria-label`; the badge keeps its «9+» saturation. The agent's fifth slot is a button that opens the drawer.
 - **Settings rail:** the same active grammar — bar, weight, tint — on a 250px column beside the section cards; on a phone the sections become a single card of chip rows.
-- **Marketing:** a floating pill header with the wordmark, section links, a Greek/English toggle and one primary action.
+- **Marketing:** a full-width forest header, 80px desktop / 72px mobile, with the wordmark, localized links, theme control and audience-aware signup. Public actions use 12px corners. The homepage combines a forest text column and edge-to-edge photo; decorative images have no visible AI-generation caption, per the owner. Auth uses a form-first white/raised surface and a desktop photograph/forest companion panel. These overrides are scoped to public/auth; app pills and app navigation remain unchanged.
 
 ### Signature: the facts row and the honest empty state
 The system's most distinctive component is not decorative. The page's headline is a row of verifiable counts — «12 ασφαλιστήρια · 3 λήγουν σύντομα · 2 δεν έχουν αναλυθεί» — set as fact cells inside one heading, so the reader gets the wallet's state as a sentence they can check against their own folder. Under a list of findings, the same idea becomes the count bar. And where data is missing, the product says what is missing, why, and what would fill it — rather than showing a zero, a placeholder chart, or a skeleton that never resolves. This is the same doctrine as the anti-reference: an unverifiable number is worse than an absent one, and a verifiable one is worth a whole ring.
@@ -394,6 +455,8 @@ The prevention extension keeps a benefit's name, owning policy, evidence state a
 ## Do's and Don'ts
 
 ### Do:
+- **Do** keep public/auth forest panels fixed across themes while allowing neighbouring reading and form surfaces to use semantic theme tokens.
+- **Do** use the documented public/auth fluid heading roles and 12px action corners only within those boundaries.
 - **Do** read colour from `--primary` / `--foreground` / `--border` so dark mode resolves itself. A hardcoded hex cannot flip.
 - **Do** pair a brand fill with `--primary-foreground`, never with a hardcoded `text-white`.
 - **Do** open every app card with the card head — chip, sentence-case title, meta right — and put anything nested inside it on a sub-card.
@@ -405,6 +468,8 @@ The prevention extension keeps a benefit's name, owning policy, evidence state a
 - **Do** switch views with a segmented control and take actions with a pill; the two shapes tell the reader which is which.
 
 ### Don't:
+- **Don't** inherit public/auth presentation exceptions into authenticated controls, palette roles or type scales.
+- **Don't** add decorative kickers or visible AI-generation captions to the public/auth presentation; retain visible identification of illustrative policy data.
 - **Don't** ship a score, a grade, a progress ring or a percentage the reader cannot verify. This is the binding anti-reference.
 - **Don't** introduce `emerald-*`, `teal-*` or a second green. There is one brand green and one dark-mode transposition of it.
 - **Don't** use amber for anything but a gap or a warning, or blue for anything but info and AI.

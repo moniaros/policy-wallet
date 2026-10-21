@@ -83,5 +83,20 @@
     "locator": "call:app/(public)/product/travel/PageClient.tsx",
     "text": "Αποσκευές και επιστροφή στην Ελλάδα",
     "reason": "Owner-requested plain-language review (2026-09-20): replaces insurance jargon or abbreviations with an explicit explanation. Reviewed in docs/audits/plain-language-2026-09-20.md; public routes verified at 320px without overflow."
+  },
+  {
+    "locator": "call:app/(public)/product/boat/PageClient.tsx",
+    "text": "Βοήθεια στη θάλασσα και ανάσυρση σκάφους",
+    "reason": "2026-10-21 public presentation: unchanged existing heading. Removing the decorative category label makes the fuzzy budget matcher pair this heading with that shorter deleted label. No copy growth; desktop/mobile route sweep verifies layout."
+  },
+  {
+    "locator": "call:app/(public)/product/business/PageClient.tsx",
+    "text": "Τι καλύπτει η ασφάλεια της επιχείρησής σας;",
+    "reason": "2026-10-21 public presentation: unchanged existing heading. Removing the decorative category label makes the fuzzy budget matcher pair this heading with that shorter deleted label. No copy growth; desktop/mobile route sweep verifies layout."
+  },
+  {
+    "locator": "call:app/(public)/product/cyber/PageClient.tsx",
+    "text": "Κυβερνοεπίθεση: τι καλύπτει η ασφάλειά σας;",
+    "reason": "2026-10-21 public presentation: unchanged existing heading. Removing the decorative category label makes the fuzzy budget matcher pair this heading with that shorter deleted label. No copy growth; desktop/mobile route sweep verifies layout."
   }
 ]

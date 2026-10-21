@@ -65,18 +65,11 @@ export function PublicHeader({ locale, audience = "policyholder", ctaSource, onP
     )
 
     const [open, setOpen] = useState(false)
-    const [scrolled, setScrolled] = useState(false)
     const menuId = useId()
     const triggerRef = useRef<HTMLButtonElement | null>(null)
     const closeRef = useRef<HTMLButtonElement | null>(null)
     const dialogRef = useRef<HTMLDivElement | null>(null)
 
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 24)
-        onScroll()
-        window.addEventListener("scroll", onScroll, { passive: true })
-        return () => window.removeEventListener("scroll", onScroll)
-    }, [])
 
     // One way to close, so the two paths cannot drift apart again. Escape used
     // to call setOpen(false) on its own and skip the focus restore the Close
@@ -132,30 +125,26 @@ export function PublicHeader({ locale, audience = "policyholder", ctaSource, onP
             </a>
 
             {/* ── DESKTOP / TABLET NAV ─────────────────────────────── */}
-            <header className="fixed left-4 right-4 top-4 z-50">
+            <header className="pw-public-header fixed inset-x-0 top-0 z-50">
                 <div
-                    className={`mx-auto flex h-14 max-w-page-wide items-center justify-between rounded-full border px-6 backdrop-blur-xl transition-all duration-300 ${
-                        scrolled
-                            ? "border-gray-200/60 bg-white/90 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/90"
-                            : "border-gray-200/50 bg-white/80 shadow-sm dark:border-slate-800/50 dark:bg-slate-900/80"
-                    }`}
+                    className="pw-public-header-inner mx-auto flex max-w-page-wide items-center justify-between gap-6 px-6 lg:px-12"
                 >
                     <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight" aria-label={t("PolicyWallet — αρχική", "PolicyWallet — home")}>
-                        <span className="text-[#0F172A] dark:text-white">Policy</span>
-                        <span className="text-[#5B6A7A] dark:text-slate-400">Wallet</span>
+                        <span className="text-white">Policy</span>
+                        <span className="text-white/80">Wallet</span>
                     </Link>
 
-                    <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 whitespace-nowrap text-body font-medium text-[#475569] xl:flex dark:text-slate-300">
+                    <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 whitespace-nowrap text-body font-medium text-white/90 xl:flex">
                         {PUBLIC_NAV_ITEMS.map((item) =>
                             item.kind === "dropdown" ? (
-                                <SolutionsDropdown key={item.key} language={locale} />
+                                <SolutionsDropdown key={item.key} language={locale} className="pw-public-products" />
                             ) : (
                                 <Link
                                     key={item.key}
                                     href={l(item.href)}
                                     aria-current={isActive(item.href) ? "page" : undefined}
-                                    className={`inline-flex min-h-11 items-center transition-colors duration-150 hover:text-[#0F172A] dark:hover:text-white ${
-                                        isActive(item.href) ? "text-[#0F172A] dark:text-white" : ""
+                                    className={`inline-flex min-h-11 items-center transition-colors duration-150 hover:text-white ${
+                                        isActive(item.href) ? "text-white" : ""
                                     }`}
                                 >
                                     {item.label[locale]}
@@ -169,7 +158,7 @@ export function PublicHeader({ locale, audience = "policyholder", ctaSource, onP
                             <Link
                                 href={elPath}
                                 aria-current={isGreek ? "true" : undefined}
-                                className={`inline-flex min-h-11 items-center px-1 text-body-sm font-semibold transition-colors ${elActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"}`}
+                                className={`inline-flex min-h-11 items-center px-1 text-body-sm font-semibold transition-colors ${elActive ? "text-white" : "text-white/80 hover:text-white"}`}
                             >
                                 ΕΛ
                             </Link>
@@ -184,7 +173,7 @@ export function PublicHeader({ locale, audience = "policyholder", ctaSource, onP
                             <Link
                                 href={enPath}
                                 aria-current={!isGreek ? "true" : undefined}
-                                className={`inline-flex min-h-11 items-center px-1 text-body-sm font-semibold transition-colors ${enActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"}`}
+                                className={`inline-flex min-h-11 items-center px-1 text-body-sm font-semibold transition-colors ${enActive ? "text-white" : "text-white/80 hover:text-white"}`}
                             >
                                 EN
                             </Link>
@@ -196,11 +185,11 @@ export function PublicHeader({ locale, audience = "policyholder", ctaSource, onP
                         <ThemeToggle ariaLabel={t("Εναλλαγή θέματος", "Toggle theme")} />
                         <Link
                             href={secondaryHref}
-                            className="inline-flex min-h-11 items-center text-body font-medium text-[#0F172A] transition-colors hover:text-[#29685B] dark:text-white"
+                            className="inline-flex min-h-11 items-center text-body font-medium text-white transition-colors hover:text-white/80 dark:text-white"
                         >
                             {SECONDARY_CTA.label[locale]}
                         </Link>
-                        <Link href={primaryHref} onClick={onPrimaryCtaClick} className="pw-primary-button pw-btn-sm">
+                        <Link href={primaryHref} onClick={onPrimaryCtaClick} className="pw-primary-button-inverse pw-btn-sm">
                             {PRIMARY_CTA.label[locale]}
                         </Link>
                     </div>
@@ -208,7 +197,7 @@ export function PublicHeader({ locale, audience = "policyholder", ctaSource, onP
                     <button
                         ref={triggerRef}
                         type="button"
-                        className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full text-[#0F172A] transition-colors hover:bg-gray-100 xl:hidden dark:text-white dark:hover:bg-slate-800"
+                        className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 xl:hidden"
                         onClick={() => setOpen(true)}
                         aria-label={t("Άνοιγμα μενού", "Open menu")}
                         aria-expanded={open}

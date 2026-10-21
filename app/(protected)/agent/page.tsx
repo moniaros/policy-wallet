@@ -7,12 +7,18 @@ import { AgentClient } from "./AgentClient"
 import type { Policy } from "@/components/wallet/types"
 import { redirect } from "next/navigation"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
-import { canAgentUseFeature } from "@/lib/subscription-entitlements"
+import { parseRoles } from "@/lib/api-auth"
+import { canAgentUseFeature, resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { isAgentVerified } from "@/lib/agent/verification"
+import { resolvePreventionPolicy } from "@/lib/prevention/benefits"
+import { getGapEngineSnapshot } from "@/lib/services/gap-engine"
 import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 
-export default async function AgentPage() {
+export default async function AgentPage({ searchParams }: { searchParams: Promise<{ recommendation?: string; benefit?: string; tab?: string }> }) {
+    const query = await searchParams
     const { dbUser } = await getAuthenticatedUser()
+    const roles = parseRoles(dbUser.roles)
+    const canSendDraft = roles.includes("admin") || (roles.includes("agent") ? await canAgentUseFeature(dbUser.id, "collaborationThreads") : (await resolveUserEntitlements(dbUser.id)).limits.agentCollaboration)
     const roleCopy = getRoleCopy(resolveUserLanguage(dbUser.preferredLanguage))
 
     // Fetch policies for navigation context
@@ -38,7 +44,7 @@ export default async function AgentPage() {
             policyholderUserId: dbUser.id,
             status: { notIn: ['inactive', 'terminated'] }
         },
-        orderBy: { lastInteractionAt: 'desc' },
+        orderBy: [{ lastInteractionAt: { sort: 'desc', nulls: 'last' } }, { createdAt: 'desc' }],
         include: {
             // The portal card reads five account fields and the profile — never the
             // adviser's whole row (A-01b).
@@ -154,8 +160,19 @@ export default async function AgentPage() {
         acordData: p.acordData
     }))
 
+    const recommendation = typeof query.recommendation === 'string' && query.recommendation.length <= 200
+        ? (await getGapEngineSnapshot(dbUser.id)).recommendations.find(r => r.id === query.recommendation)
+        : undefined
+    const benefit = typeof query.benefit === 'string' && query.benefit.length <= 300
+        ? policies.filter(p => p.status !== 'deleted').flatMap(p => resolvePreventionPolicy(p).items).find(i => i.id === query.benefit && i.state !== 'historical')
+        : undefined
+    const draftSubject = recommendation?.title[resolveUserLanguage(dbUser.preferredLanguage)] ?? benefit?.title[resolveUserLanguage(dbUser.preferredLanguage)]
+
     return (
         <AgentClient
+            canSendDraft={canSendDraft}
+            draftSubject={draftSubject}
+            initialTab={query.tab === "messages" || draftSubject ? "messages" : "overview"}
             policies={mappedPolicies}
             user={user}
             agent={agent}

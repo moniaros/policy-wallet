@@ -13,6 +13,8 @@ const listQuerySchema = z.object({
 })
 
 const createThreadSchema = z.object({
+    initialMessage: z.string().trim().min(1).max(5000).optional(),
+    requestId: z.string().uuid().optional(),
     relationshipId: z.string().min(1),
     policyId: z.string().min(1).optional().nullable(),
     subject: z.string().min(3).max(180),
@@ -67,6 +69,7 @@ export async function POST(req: Request) {
         const thread = await collaborationService.createThread(auth.dbUser.id, auth.dbUser.roles, parsed.data)
         return createApiResponse({ thread })
     } catch (error: any) {
+        if (error?.message === "Request content changed") return createApiError("VALIDATION_ERROR", "Request id already used for different content", 409)
         if (error?.message === "Forbidden") return createApiError("FORBIDDEN", "Forbidden", 403)
         if (error?.message === "Relationship not found") return createApiError("NOT_FOUND", "Relationship not found", 404)
         // Deliberate policy denials, not server errors — no String(error) leak.

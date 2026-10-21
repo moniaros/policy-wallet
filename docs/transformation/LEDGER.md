@@ -792,3 +792,9 @@ Coverage is now checked rather than asserted: `tests/unit/ledger-covers-every-su
 derives the route universe from `app/(protected)` and resolves B2C-versus-staff through
 `resolveRouteOwner` in `proxy.ts`. Its known-gap list holds one entry,
 `/collaboration/threads/[id]`, and may only shrink.
+
+## Authenticated reminder destination — `/collaboration/reminders/[kind]/[id]`
+
+| Capability | Destination | Preservation and checks |
+|---|---|---|
+| Open an action/message from any notification channel | `/collaboration/reminders/[kind]/[id]` → authorized thread and action anchor | Session, assigned action/shared message, then shared thread/policy authorization. Ended access yields 404; completed tasks retain an accessible history. No document sharing or grants. |

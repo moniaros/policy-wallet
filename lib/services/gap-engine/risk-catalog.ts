@@ -396,15 +396,9 @@ export const RISK_CATALOG: RiskDefinition[] = [
             el: "Αδυναμία εργασίας για μήνες",
         },
         applies: (ctx) => isEarning(ctx),
-        riskExplanation: (ctx) => ({
-            en:
-                ctx.employmentStatus === "self_employed"
-                    ? "Illness or injury that stops you working stops your invoicing the same day. Self-employed cover from ΕΦΚΑ begins only after a waiting period and pays a fraction of a working income."
-                    : "Illness or injury that stops you working eventually exhausts paid sick leave. After that, statutory benefit replaces a fraction of your salary while your outgoings stay the same.",
-            el:
-                ctx.employmentStatus === "self_employed"
-                    ? "Ασθένεια ή τραυματισμός που σας σταματά από την εργασία σταματά την τιμολόγησή σας την ίδια μέρα. Η κάλυψη του ΕΦΚΑ για ελεύθερους επαγγελματίες ξεκινά μετά από περίοδο αναμονής και καταβάλλει κλάσμα ενός εργασιακού εισοδήματος."
-                    : "Ασθένεια ή τραυματισμός που σας σταματά από την εργασία εξαντλεί τελικά την αναρρωτική άδεια. Μετά, το επίδομα αντικαθιστά κλάσμα του μισθού σας ενώ τα έξοδά σας παραμένουν ίδια.",
+        riskExplanation: () => ({
+            en: "An absence from work may affect your earnings. The outcome depends on your employment terms, any sick pay or benefits, and existing insurance, including employer cover.",
+            el: "Μια απουσία από την εργασία μπορεί να επηρεάσει τις αποδοχές σας. Το αποτέλεσμα εξαρτάται από τους όρους εργασίας, τυχόν αναρρωτική άδεια ή επιδόματα και την υπάρχουσα ασφάλιση, μαζί με ομαδικές παροχές εργοδότη.",
         }),
         whyItApplies: (ctx) => {
             const runway = savingsRunwayMonths(ctx)
@@ -422,38 +416,25 @@ export const RISK_CATALOG: RiskDefinition[] = [
                 el: `Το εισόδημά σας προέρχεται ${ctx.employmentStatus === "self_employed" ? "από ελεύθερο επάγγελμα" : "από μισθωτή εργασία"}.${runwayEl}`,
             }
         },
-        expectedImpact: (ctx) => {
-            if (ctx.annualIncome && ctx.annualIncome > 0) {
-                const sixMonths = ctx.annualIncome / 2
-                return {
-                    en: `Six months unable to work would cost you around ${eur(sixMonths, "en")} of income.`,
-                    el: `Έξι μήνες αδυναμίας εργασίας θα σας κόστιζαν περίπου ${eur(sixMonths, "el")} εισοδήματος.`,
-                }
-            }
-            return {
-                en: "A long absence from work would have to be funded from savings until you could earn again.",
-                el: "Μια μακρά απουσία από την εργασία θα χρηματοδοτούνταν από αποταμιεύσεις μέχρι να μπορέσετε να εργαστείτε ξανά.",
-            }
-        },
+        expectedImpact: () => ({
+            en: "The effect depends on your earnings, expenses and what your existing benefits cover.",
+            el: "Η επίπτωση εξαρτάται από τις αποδοχές, τα έξοδα και όσα καλύπτουν ήδη οι παροχές σας.",
+        }),
         mitigations: (ctx) => [
             {
                 kind: "retain",
-                label: { en: "Build the buffer first", el: "Χτίστε πρώτα το απόθεμα" },
+                label: { en: "Review your available reserve", el: "Διαθέσιμο απόθεμα" },
                 detail: {
-                    en: "Six months of expenses in reserve covers most absences outright, and it lets you choose a longer deferred period — which is what makes cover affordable.",
-                    el: "Έξι μήνες εξόδων σε απόθεμα καλύπτουν τις περισσότερες απουσίες εξ ολοκλήρου, και σας επιτρέπουν να επιλέξετε μεγαλύτερη περίοδο αναμονής — που είναι αυτό που κάνει την κάλυψη προσιτή.",
+                    en: "Compare your essential expenses with your available reserve. Ask your advisor how any waiting period would affect the time before a benefit could start.",
+                    el: "Συγκρίνετε τα βασικά σας έξοδα με το διαθέσιμο απόθεμα. Ρωτήστε τον σύμβουλό σας πώς μια περίοδος αναμονής επηρεάζει τον χρόνο μέχρι την έναρξη παροχής.",
                 },
             },
             {
                 kind: "reduce",
                 label: { en: "Establish what you are already entitled to", el: "Διαπιστώστε τι δικαιούστε ήδη" },
                 detail: {
-                    en: ctx.employmentStatus === "self_employed"
-                        ? "ΕΦΚΑ sickness benefit for the self-employed starts after a waiting period. Knowing the exact gap is what tells you how much cover to buy."
-                        : "Contractual sick pay plus ΕΦΚΑ benefit covers the first weeks for most employees. The gap starts where they stop.",
-                    el: ctx.employmentStatus === "self_employed"
-                        ? "Το επίδομα ασθενείας ΕΦΚΑ για ελεύθερους επαγγελματίες ξεκινά μετά από περίοδο αναμονής. Γνωρίζοντας το ακριβές κενό ξέρετε πόση κάλυψη χρειάζεστε."
-                        : "Η συμβατική αναρρωτική άδεια μαζί με το επίδομα ΕΦΚΑ καλύπτει τις πρώτες εβδομάδες για τους περισσότερους μισθωτούς. Το κενό ξεκινά εκεί που σταματούν.",
+                    en: "Ask your employer or the relevant provider which benefits apply, their amount, duration and conditions. Your advisor can review these alongside your individual policies.",
+                    el: "Ρωτήστε τον εργοδότη ή τον αρμόδιο φορέα ποιες παροχές ισχύουν, το ποσό, τη διάρκεια και τις προϋποθέσεις τους. Ο σύμβουλός σας μπορεί να τις εξετάσει μαζί με τα ατομικά ασφαλιστήρια.",
                 },
             },
             {

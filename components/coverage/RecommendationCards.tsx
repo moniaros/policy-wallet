@@ -218,7 +218,7 @@ export function RecommendationCards({
         // Three honest empty states — never "preparing" indefinitely:
         //  • no policies → add one;
         //  • profile incomplete → complete it (recommendations sharpen);
-        //  • otherwise → the user is genuinely well covered right now.
+        //  • otherwise → no open recommendations; this is not a coverage verdict.
         const wellCovered = hasPolicies && !profileIncomplete
         return (
             <EmptyState
@@ -228,7 +228,7 @@ export function RecommendationCards({
                         ? t("Προσθέστε το πρώτο σας ασφαλιστήριο", "Add your first policy")
                         : profileIncomplete
                             ? t("Οι προτάσεις σας ετοιμάζονται", "Your recommendations are on the way")
-                            : t("Φαίνεστε καλά καλυμμένος/η", "You look well covered")
+                            : t("Δεν υπάρχουν ανοιχτές ενέργειες", "No open actions")
                 }
                 description={
                     !hasPolicies
@@ -243,10 +243,7 @@ export function RecommendationCards({
                         : profileIncomplete
                             ? {
                                   label: t("Συμπλήρωση προφίλ κινδύνου", "Complete your risk profile"),
-                                  onClick: () =>
-                                      document
-                                          .getElementById("risk-profile-wizard")
-                                          ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                                  href: "/protection#risk-profile-wizard",
                               }
                             : { label: t("Επιστροφή στο πορτοφόλι", "Back to wallet"), href: "/wallet" }
                 }
@@ -606,14 +603,6 @@ export function RecommendationCards({
                                                     <p className="text-xs font-semibold text-foreground">
                                                         {rec.matchedProduct.name[lang] || rec.matchedProduct.name.en}
                                                     </p>
-                                                    {rec.matchedProduct.premiumRangeLow != null && rec.matchedProduct.premiumRangeHigh != null && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {t("Ενδεικτικό εύρος ασφαλίστρου", "Typical premium range")}:{" "}
-                                                            <span className="font-medium text-primary dark:text-mint">
-                                                                {formatCurrency(rec.matchedProduct.premiumRangeLow, lang, { decimals: 0 })}–{formatCurrency(rec.matchedProduct.premiumRangeHigh, lang, { decimals: 0 })}{t("/έτος", "/yr")}
-                                                            </span>
-                                                        </p>
-                                                    )}
                                                     {rec.matchedProduct.keyBenefits && rec.matchedProduct.keyBenefits.length > 0 && (
                                                         <ul className="text-micro text-muted-foreground space-y-0.5">
                                                             {rec.matchedProduct.keyBenefits.slice(0, 3).map((b, i) => (
@@ -656,7 +645,7 @@ export function RecommendationCards({
 
                                         {!isAgentCard && (
                                             <Link
-                                                href="/agent"
+                                                href={`/agent?recommendation=${encodeURIComponent(rec.id)}`}
                                                 className="pw-inline-action inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                                             >
                                                 <MessageCircle className="inline-flex min-h-[24px] items-center h-3 w-3" />

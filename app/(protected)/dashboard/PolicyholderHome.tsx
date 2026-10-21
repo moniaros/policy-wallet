@@ -14,9 +14,11 @@
  */
 export const runtime = 'nodejs'
 
+import { resolvePreventionPolicy } from "@/lib/prevention/benefits"
+import { policyholderFlowCopy } from "@/lib/i18n/policyholder-flow"
 import Link from "next/link"
 import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
-import { displayInsurerName, policyLabel } from "@/lib/wallet/policy-identity"
+import { displayInsurerName, policyLabel, policyRowIdentity } from "@/lib/wallet/policy-identity"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -170,7 +172,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 policyholderUserId: dbUser.id,
                 status: { notIn: ["inactive", "terminated"] },
             },
-            orderBy: { lastInteractionAt: "desc" },
+            orderBy: [{ lastInteractionAt: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }],
             // Only the two fields the greeting renders — a bare include carried the
             // adviser's whole account row (A-01b).
             include: { agent: { select: { name: true, email: true } } },
@@ -947,12 +949,20 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     // recommendations, then a renewal inside 30 days, then the rest of the
     // wallet. Null on an empty wallet, where the hero's invitation is the one
     // primary and a second ask would be one too many.
+    const flow = policyholderFlowCopy(lang)
+    const endedPolicies = policies.filter(p => resolvePolicyLifecycle(p, now).status === 'expired')
+    const endedIds = new Set(policies.filter(p => ["expired", "cancelled"].includes(resolvePolicyLifecycle(p, now).status)).map(p => p.id))
+    const currentBenefit = policies.flatMap(p => resolvePreventionPolicy(p, now).items).find(i => i.state !== "historical")
+    const previewPolicies = [...policies].sort((a, b) => Number(endedIds.has(a.id)) - Number(endedIds.has(b.id)))
     const firstOpenSetup = planStepViews.find((step) => step.state === "open") ?? null
     const howItWorks = { label: home.nextStepHow, href: "/help" }
     const nearestRenewal = renewalItems.find((item) => item.days <= 30)
     const nextStep: NextStepView | null = !hasPolicies ? null : nearestRenewal ? {
         id: "renewal", title: experience.renewalTitle, body: nearestRenewal.titleLabel,
         cta: experience.renewalAction, href: `/wallet/${nearestRenewal.id}#dates`, how: null,
+    } : endedPolicies.length ? {
+        id: "renewal", title: flow.expiredTitle, body: flow.expiredBody.replace('{count}', String(endedPolicies.length)),
+        cta: flow.expiredAction, href: `/wallet/${endedPolicies[0].id}#dates`, how: null,
     } : firstOpenSetup ? {
         id: firstOpenSetup.id, title: home.nextStepTitle, body: firstOpenSetup.description ?? "",
         cta: firstOpenSetup.title, href: firstOpenSetup.href, how: howItWorks,
@@ -1036,13 +1046,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             </div>
                             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{experience.policiesLead}</p>
                             <ul className="mt-4 divide-y divide-border">
-                                {policies.slice(0, 3).map((policy) => {
+                                {previewPolicies.slice(0, 3).map((policy) => {
                                     const status = getPolicyStatusView(policy, t, now)
+                                    const identity = policyRowIdentity(policy)
                                     return <li key={policy.id}>
                                     <Link href={`/wallet/${policy.id}`} className="group block rounded-lg py-4 focus-visible:outline-2 focus-visible:outline-primary">
-                                        <p className="text-sm font-semibold text-foreground">{policyLabel(policy, t.wallet.policyDetails)}</p>
+                                        <p className="text-sm font-semibold text-foreground">{normalizeBranch(policy.lineOfBusiness).label[lang]}{identity.value && identity.kind !== 'number' ? ` · ${identity.value}` : ''}</p>
+                                        <p className="mt-1 text-caption text-muted-foreground">{policyLabel(policy, t.wallet.policyDetails)}</p>
                                         <span className={`mt-2 inline-flex rounded-full px-2 py-1 text-caption font-semibold ${status.pillClass}`}>{status.label}</span>
-                                        <p className="mt-2 text-caption text-muted-foreground">{policy.lastAnalyzedAt ? experience.analysisAvailable : experience.analysisPending}</p>
+                                        <p className="mt-2 text-caption text-muted-foreground">{policy.lastAnalyzedAt ? flow.analysisState : experience.analysisPending}</p>
                                         <span className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-primary dark:text-mint group-hover:underline">{experience.policyDetails}</span>
                                     </Link>
                                 </li>})}
@@ -1122,9 +1134,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 }}
                             />
 </div>
-                            {checkupNudge ? <CheckupNudgeCard {...checkupNudge} /> : <Link href="/wellness#benefit" className="block rounded-xl bg-primary-soft p-5 text-primary dark:bg-primary/10 dark:text-mint">
+                            {checkupNudge ? <CheckupNudgeCard {...checkupNudge} /> : <Link href={currentBenefit ? `/wellness#${currentBenefit.id}` : "/wellness#benefit"} className="block rounded-xl bg-primary-soft p-5 text-primary dark:bg-primary/10 dark:text-mint">
                                 <h3 className="text-base font-semibold">{experience.benefits}</h3>
-                                <p className="mt-2 text-sm leading-relaxed">{experience.benefitsLead}</p>
+                                <p className="mt-2 text-sm leading-relaxed">{currentBenefit ? currentBenefit.title[lang] : experience.benefitsLead}</p>
+                                {currentBenefit && <p className="mt-2 text-caption">{t.prevention[currentBenefit.state]}</p>}
                                 <span className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold">{experience.benefitsAction}</span>
                             </Link>}
                         </section>

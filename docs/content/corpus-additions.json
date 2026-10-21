@@ -98,5 +98,16 @@
   "call:components/landing/PublicMegaFooter.tsx::Έλεγχος αναγκών",
   "inline:lib/landing/content.ts::Σας εξηγούμε τι αναφέρει",
   "inline:lib/marketing/reading-demo.ts::Αναμονή 12 μηνών. Οι πλήρεις όροι χρειάζονται έλεγχο στο άρθρο 9.",
-  "inline:lib/marketing/reading-demo.ts::Αναφέρεται αστική ευθύνη για σωματικές βλάβες και υλικές ζημιές."
+  "inline:lib/marketing/reading-demo.ts::Αναφέρεται αστική ευθύνη για σωματικές βλάβες και υλικές ζημιές.",
+  "bundle:analysis.noGaps::Δεν υπάρχουν καταγεγραμμένα ευρήματα στα στοιχεία που έχουμε. Αυτό δεν σημαίνει ότι έχει ελεγχθεί το σύνολο των καλύψεων.",
+  "bundle:nav.recommendations::Ενέργειες",
+  "bundle:recommendationsPage.title::Ενέργειες",
+  "bundle:wallet.policyDetailsPage.perksSubtitle::Παροχές που αναφέρονται στο έγγραφο και οι όροι αξιοποίησής τους.",
+  "inline:lib/notifications/registry.ts::Μήνυμα χωρίς απάντηση",
+  "inline:lib/services/collaboration-reminders.service.ts::Μήνυμα χωρίς απάντηση",
+  "inline:lib/services/gap-engine/risk-catalog.ts::Η επίπτωση εξαρτάται από τις αποδοχές, τα έξοδα και όσα καλύπτουν ήδη οι παροχές σας.",
+  "inline:lib/services/gap-engine/risk-catalog.ts::Ρωτήστε τον εργοδότη ή τον αρμόδιο φορέα ποιες παροχές ισχύουν, το ποσό, τη διάρκεια και τις προϋποθέσεις τους. Ο σύμβουλός σας μπορεί να τις εξετάσει μαζί με τα ατομικά ασφαλιστήρια.",
+  "inline:lib/services/gap-engine/risk-catalog.ts::Συγκρίνετε τα βασικά σας έξοδα με το διαθέσιμο απόθεμα. Ρωτήστε τον σύμβουλό σας πώς μια περίοδος αναμονής επηρεάζει τον χρόνο μέχρι την έναρξη παροχής.",
+  "ternary:lib/i18n/amount-format.ts::Δεν έχει καταγραφεί ποσό",
+  "call:components/coverage/RecommendationCards.tsx::Δεν υπάρχουν ανοιχτές ενέργειες"
 ]

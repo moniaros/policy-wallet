@@ -1186,12 +1186,12 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
     },
 
     collaboration_unread_followup: {
-        businessEvent: "A message went unread long enough to chase",
+        businessEvent: "A shared message has no subsequent reply",
         copy: {
-            title: { el: "Έχετε αδιάβαστο μήνυμα", en: "You have an unread message" },
-            message: { el: "Ένα μήνυμα περιμένει την απάντησή σας εδώ και μέρες.", en: "A message has been waiting for your reply for days." },
+            title: { el: "Μήνυμα χωρίς απάντηση", en: "Message awaiting a reply" },
+            message: { el: "Ένα μήνυμα στη συζήτησή σας παραμένει χωρίς απάντηση.", en: "A message in your conversation is awaiting a reply." },
         },
-        triggerCondition: "collaboration-reminders cron finds an unread message past the follow-up window",
+        triggerCondition: "collaboration-reminders cron finds a shared message without a reply after two hours",
         category: "advisory",
         priority: "normal",
         channels: EMAIL_LED,
@@ -1212,7 +1212,7 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
             title: { el: "Καθημερινή σύνοψη", en: "Daily digest" },
             message: { el: "Η σύνοψη της ημέρας από τις συνεργασίες σας.", en: "The day's summary from your collaborations." },
         },
-        triggerCondition: "collaboration-reminders cron, once daily per participant with activity",
+        triggerCondition: "collaboration-reminders cron, at most once daily and only after new activity",
         category: "advisory",
         priority: "low",
         channels: EMAIL_LED,
