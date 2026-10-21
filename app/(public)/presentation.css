@@ -1,0 +1,33 @@
+/* Shared public presentation. Existing product tokens remain the source of colour. */
+.pw-public { --public-header-height: 80px; }
+.pw-public-header { background: var(--brand-trust-forest, #143B33); color: white; }
+.pw-public-header-inner { height: var(--public-header-height, 80px); }
+.pw-public-header .pw-public-products > button { color: inherit; }
+.pw-public-header :is(a,button):focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.pw-public-header :is(.pw-primary-button-inverse) { background: white; color: #143B33; }
+.pw-public-header :is(.pw-primary-button-inverse):hover { background: #CFE4DC; }
+.pw-public-header [aria-label="Toggle theme"], .pw-public-header [aria-label="Εναλλαγή θέματος"] { color: white; background: transparent; }
+.pw-public main#main-content { padding-top: calc(var(--public-header-height) + 48px); }
+.pw-public .pw-home main#main-content { padding-top: var(--public-header-height); }
+.pw-public :is(a,button,input,select,textarea,summary,[tabindex]) { scroll-margin-top: calc(var(--public-header-height) + 24px); scroll-margin-bottom: 24px; }
+.pw-public h1 { font-size: clamp(2.2rem, 4.5vw, 4.5rem); line-height: 1.08; letter-spacing: -.035em; text-wrap: balance; }
+.pw-public h2 { text-wrap: balance; }
+.pw-public :is(.pw-primary-button,.pw-secondary-button,.pw-primary-button-inverse,.pw-secondary-button-inverse) { border-radius: 12px; }
+.pw-public-hero { background: #143B33; color: white; }
+.pw-public-hero-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); min-height: 620px; }
+.pw-public-hero-copy { width: 100%; max-width: 720px; justify-self: end; align-self: center; padding: 64px clamp(24px,4vw,64px); }
+.pw-public-hero-media { min-width: 0; position: relative; }
+.pw-public-hero-media > div { position: absolute; inset: 0; }
+.pw-public-hero input { color: #10312B; background: white; }
+.pw-public-hero button[type="submit"] { background: #CFE4DC; color: #10312B; }
+.pw-public-hero button[type="submit"]:hover { background: white; }
+.pw-public-hero form { color: #10312B; }
+@media (max-width: 1023px) {
+  .pw-public { --public-header-height: 72px; }
+  .pw-public-hero-grid { grid-template-columns: minmax(0,1fr); min-height: auto; }
+  .pw-public-hero-copy { max-width: none; padding: 40px 24px 32px; }
+  .pw-public-hero-media { aspect-ratio: 16 / 10; }
+  .pw-public main#main-content { padding-top: calc(var(--public-header-height) + 32px); }
+}
+
+.pw-public-hero button[type="submit"] { border-radius: 12px; }

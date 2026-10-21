@@ -32,6 +32,15 @@ const englishRoutes = [
 /** Routes that redirect by design — asserted separately, not swept. */
 const redirectRoutes = ["/for-agents", "/landing"]
 
+// Vercel injects these scripts at the edge; a local `next start` has no such
+// endpoints. Stub only these two assets on loopback. Preview/prod stay real.
+test.beforeEach(async ({ page, baseURL }) => {
+    if (baseURL && ["localhost", "127.0.0.1"].includes(new URL(baseURL).hostname)) {
+        await page.route(/\/_vercel\/(?:insights|speed-insights)\/script\.js$/, route =>
+            route.fulfill({ status: 200, contentType: "application/javascript", body: "" }))
+    }
+})
+
 const CONSOLE_ERROR_ALLOWLIST = [
     /Download the React DevTools/i,
     // Next dev overlay/HMR chatter is not a product defect.

@@ -66,7 +66,7 @@ export const landingContent: LandingContentModel = {
             },
             {
                 id: "step-act",
-                title: { el: "Σας δείχνουμε την αλήθεια", en: "We show you the truth" },
+                title: { el: "Σας εξηγούμε τι αναφέρει", en: "We explain what it says" },
                 description: {
                     // Baseline verdict only — "fix first" is a Plus output and
                     // this text also ships inside the home HowTo JSON-LD.

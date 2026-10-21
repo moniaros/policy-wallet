@@ -1,0 +1,156 @@
+[
+  {
+    "name": "home-el-desktop",
+    "width": 1440,
+    "dark": false,
+    "height": 6941,
+    "overflow": false,
+    "errors": [],
+    "keyboardDemo": true,
+    "exampleAnchor": true,
+    "accessibility": []
+  },
+  {
+    "name": "home-el-mobile",
+    "width": 390,
+    "dark": false,
+    "height": 11405,
+    "overflow": false,
+    "errors": [],
+    "keyboardDemo": true,
+    "exampleAnchor": true
+  },
+  {
+    "name": "home-en-dark",
+    "width": 390,
+    "dark": true,
+    "height": 10823,
+    "overflow": false,
+    "errors": [],
+    "keyboardDemo": true,
+    "exampleAnchor": true,
+    "accessibility": []
+  },
+  {
+    "name": "home-el-320",
+    "width": 320,
+    "dark": false,
+    "height": 12739,
+    "overflow": false,
+    "errors": [],
+    "keyboardDemo": true,
+    "exampleAnchor": true
+  },
+  {
+    "name": "home-en-430",
+    "width": 430,
+    "dark": false,
+    "height": 10443,
+    "overflow": false,
+    "errors": [],
+    "keyboardDemo": true,
+    "exampleAnchor": true
+  },
+  {
+    "name": "home-el-tablet",
+    "width": 768,
+    "dark": false,
+    "height": 8831,
+    "overflow": false,
+    "errors": [],
+    "keyboardDemo": true,
+    "exampleAnchor": true
+  },
+  {
+    "name": "pricing-el-desktop",
+    "width": 1440,
+    "dark": false,
+    "height": 3694,
+    "overflow": false,
+    "errors": [],
+    "planNames": [
+      "Δωρεάν",
+      "Plus",
+      "Family",
+      "Agent Free",
+      "Agent Starter",
+      "Agent Pro",
+      "Agency"
+    ],
+    "billingAndAudience": true,
+    "firstPlan": {
+      "x": 113,
+      "y": 485.296875,
+      "width": 339.328125,
+      "height": 32
+    },
+    "accessibility": []
+  },
+  {
+    "name": "pricing-el-mobile",
+    "width": 390,
+    "dark": false,
+    "height": 6903,
+    "overflow": false,
+    "errors": [],
+    "planNames": [
+      "Δωρεάν",
+      "Plus",
+      "Family",
+      "Agent Free",
+      "Agent Starter",
+      "Agent Pro",
+      "Agency"
+    ],
+    "billingAndAudience": true
+  },
+  {
+    "name": "pricing-en-dark",
+    "width": 320,
+    "dark": true,
+    "height": 7022,
+    "overflow": false,
+    "errors": [],
+    "planNames": [
+      "Free",
+      "Plus",
+      "Family",
+      "Agent Free",
+      "Agent Starter",
+      "Agent Pro",
+      "Agency"
+    ],
+    "billingAndAudience": true
+  },
+  {
+    "name": "agent-el-desktop",
+    "width": 1440,
+    "dark": false,
+    "height": 5393,
+    "overflow": false,
+    "errors": [],
+    "visibleSampleLabels": true,
+    "agentSignupRoles": true
+  },
+  {
+    "name": "agent-el-mobile",
+    "width": 390,
+    "dark": false,
+    "height": 10957,
+    "overflow": false,
+    "errors": [],
+    "visibleSampleLabels": true,
+    "agentSignupRoles": true,
+    "accessibility": []
+  },
+  {
+    "name": "agent-en-dark",
+    "width": 390,
+    "dark": true,
+    "height": 10225,
+    "overflow": false,
+    "errors": [],
+    "visibleSampleLabels": true,
+    "agentSignupRoles": true
+  }
+]

@@ -13,7 +13,7 @@ export async function generateMetadata({ searchParams }: SubprocessorsPageProps)
 }
 
 type SubprocessorsPageProps = {
-    searchParams?: Promise<{ lang?: string }> | { lang?: string }
+    searchParams?: Promise<{ lang?: string }>
 }
 
 async function resolveSearchParams(searchParams: SubprocessorsPageProps["searchParams"]) {

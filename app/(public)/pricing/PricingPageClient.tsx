@@ -1,5 +1,6 @@
 "use client"
 
+import { presentationCopy } from "@/lib/i18n/presentation"
 import "@/components/landing/product-stage.css"
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
@@ -83,10 +84,7 @@ export default function PricingPage({
         // Leads with the decode: a price-shopper should read WHAT they are
         // buying before HOW the meter works, otherwise the page reads as a
         // storage quota ladder rather than the category.
-        subtitle: {
-            el: "Δεν πουλάμε ασφάλειες — σας λέμε αν είστε καλυμμένοι. Ξεκινάτε δωρεάν, αλλάζετε ή σταματάτε όποτε θέλετε.",
-            en: "We do not sell insurance — we tell you if you are covered. Start free, change or stop whenever you want.",
-        },
+        subtitle: { el: presentationCopy.el.pricingIntro, en: presentationCopy.en.pricingIntro },
         audiencePolicyholder: {
             el: "Ιδιώτες",
             en: "Individuals",
@@ -234,15 +232,15 @@ export default function PricingPage({
 
     return (
         <div className="min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:bg-slate-950 dark:text-white">
-            <PublicHeader locale={language} ctaSource="public_pricing_nav" />
+            <PublicHeader audience={audience} locale={language} ctaSource="public_pricing_nav" />
 
             <main id="main-content" tabIndex={-1}>
-            <section className="px-4 pb-12 pt-28 sm:px-6 lg:px-8 lg:pt-36">
+            <section className="px-4 pb-5 pt-24 sm:px-6 lg:px-8 lg:pt-28">
                 <div className="mx-auto max-w-7xl text-center">
                     <h1 className="mb-4 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] lg:text-display dark:text-white">
                         {labels.heading[language]}
                     </h1>
-                    <p className="mx-auto mb-12 max-w-3xl text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                    <p className="mx-auto mb-6 max-w-3xl text-body leading-relaxed text-[#475569] dark:text-slate-300">
                         {labels.subtitle[language]}
                     </p>
 
@@ -252,7 +250,7 @@ export default function PricingPage({
                         money is decided, and this toggle swaps the entire body
                         of the page beneath it. `aria-pressed` states it, and the
                         group names what is being chosen. */}
-                    <div className="mb-10 flex justify-center">
+                    <div className="mb-5 flex justify-center">
                         <div
                             role="group"
                             aria-label={labels.audienceGroup[language]}
@@ -291,8 +289,8 @@ export default function PricingPage({
                         tier existed only after client-side interaction. */}
                     {AUDIENCES.map((aud) => (
                         <div key={aud} hidden={audience !== aud}>
-                            <h2 className="mb-3 text-h3 font-semibold tracking-tight text-[#0F172A] dark:text-white">{pricingContent[aud].heading[language]}</h2>
-                            <p className="mx-auto mb-6 max-w-3xl text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                            <h2 className="sr-only text-h3 font-semibold tracking-tight text-[#0F172A] dark:text-white">{pricingContent[aud].heading[language]}</h2>
+                            <p className="mx-auto mb-6 max-w-3xl text-body leading-relaxed text-[#475569] dark:text-slate-300">
                                 {pricingContent[aud].subtitle[language]}
                             </p>
 
@@ -309,7 +307,7 @@ export default function PricingPage({
                                 activePromotions("agent", stripeMode).map((promo) => (
                                     <div
                                         key={promo.code}
-                                        className="mx-auto mb-12 max-w-2xl rounded-2xl border border-[#29685B]/30 bg-[#29685B]/5 px-5 py-4 dark:border-[#A7F3D0]/25 dark:bg-[#A7F3D0]/5"
+                                        className="mx-auto mb-6 max-w-2xl rounded-2xl border border-[#29685B]/30 bg-[#29685B]/5 px-5 py-4 dark:border-[#A7F3D0]/25 dark:bg-[#A7F3D0]/5"
                                     >
                                         <p className="text-body text-[#0F172A] dark:text-white">
                                             <span className="font-semibold">−{promo.percentOff}%</span>{" "}
@@ -338,7 +336,7 @@ export default function PricingPage({
                         only cue that €79 is a yearly figure rather than a
                         tenfold monthly increase was which pill happened to be
                         green. */}
-                    <div className="mb-12 flex justify-center">
+                    <div className="mb-5 flex justify-center">
                         <div
                             role="group"
                             aria-label={labels.billingGroup[language]}
@@ -377,27 +375,14 @@ export default function PricingPage({
                         </div>
                     </div>
 
-                    <div className="mb-12 flex flex-wrap items-center justify-center gap-6 text-body text-[#475569] dark:text-slate-400">
-                        <div className="flex items-center gap-2">
-                            <Shield className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
-                            <span>{labels.secure[language]}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <CreditCard className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
-                            <span>{labels.noHiddenFees[language]}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Lock className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
-                            <span>{labels.cancelAnytime[language]}</span>
-                        </div>
-                    </div>
+
                 </div>
             </section>
 
             {AUDIENCES.map((aud) => (
                 <section key={aud} hidden={audience !== aud} className="px-4 pb-20 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-7xl">
-                        <div className={`grid grid-cols-1 gap-8 ${pricingContent[aud].plans.length === 4 ? "lg:grid-cols-2 2xl:grid-cols-4" : "md:grid-cols-3"}`}>
+                        <div className={`grid grid-cols-1 gap-8 ${pricingContent[aud].plans.length === 4 ? "md:grid-cols-2 xl:grid-cols-4" : "md:grid-cols-3"}`}>
                             {pricingContent[aud].plans.map((plan) => (
                                 <PricingCard
                                     key={plan.key}
@@ -418,6 +403,20 @@ export default function PricingPage({
                 </section>
             ))}
 
+                    <div className="mb-10 px-6 flex flex-wrap items-center justify-center gap-6 text-body text-[#475569] dark:text-slate-400">
+                        <div className="flex items-center gap-2">
+                            <Shield className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
+                            <span>{labels.secure[language]}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <CreditCard className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
+                            <span>{labels.noHiddenFees[language]}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Lock className="h-5 w-5 text-[#29685B] dark:text-brand-accent" />
+                            <span>{labels.cancelAnytime[language]}</span>
+                        </div>
+                    </div>
             {/* Partner benefits — renders only with live partners (honesty rule). */}
             <PartnerPerksSection offers={partnerOffers} isGreek={language === "el"} id="partner-perks" />
 

@@ -365,7 +365,7 @@ export default function SignInPage() {
                                 <label htmlFor="signin-email" className="mb-g-2 block text-sm font-semibold text-fg-primary">Email</label>
                                 <div className="relative">
                                     <Mail className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
-                                    <input id="signin-email" ref={identifierRef} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-11`} placeholder="name@example.com" />
+                                    <input id="signin-email" ref={identifierRef} type="email" autoComplete="username" autoCapitalize="none" spellCheck={false} required value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-11`} placeholder="name@example.com" />
                                 </div>
                                 <FormError id="signin-identifier-error">{fieldErrors.identifier ? copy.fieldRequired : null}</FormError>
                             </div>
@@ -374,7 +374,7 @@ export default function SignInPage() {
                                 <label htmlFor="signin-phone" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.phonePlaceholder}</label>
                                 <div className="relative">
                                     <Phone className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
-                                    <input id="signin-phone" ref={identifierRef} type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-11`} placeholder="+30 69X XXX XXXX" />
+                                    <input id="signin-phone" ref={identifierRef} type="tel" autoComplete="username" required value={phone} onChange={(e) => setPhone(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-11`} placeholder="+30 69X XXX XXXX" />
                                 </div>
                                 <FormError id="signin-identifier-error">{fieldErrors.identifier ? copy.fieldRequired : null}</FormError>
                             </div>
@@ -385,7 +385,7 @@ export default function SignInPage() {
                             <label htmlFor="signin-password" className="mb-g-2 block text-sm font-semibold text-fg-primary">{copy.passwordLabel}</label>
                             <div className="relative">
                                 <Lock className="pointer-events-none absolute left-4 top-4 size-4 text-fg-secondary" />
-                                <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={fieldErrors.password || undefined} aria-describedby={fieldErrors.password ? "signin-password-error" : undefined} placeholder="••••••••" className={`${inputBase} pl-11`} />
+                                <input id="signin-password" ref={pwdRef} type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={fieldErrors.password || undefined} aria-describedby={fieldErrors.password ? "signin-password-error" : undefined} placeholder="••••••••" className={`${inputBase} pl-11`} />
                             </div>
                             <FormError id="signin-password-error">{fieldErrors.password ? copy.fieldRequired : null}</FormError>
                         </div>

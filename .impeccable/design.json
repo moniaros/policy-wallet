@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-21T10:22:54.368152+00:00",
+  "title": "Design System: PolicyWallet",
+  "extensions": {
+    "colorMeta": {
+      "grafi-mint": {
+        "role": "secondary",
+        "displayName": "Grafí Mint — existing public/auth complement",
+        "tonalRamp": [
+          "#0C231F",
+          "#10312B",
+          "#1E4F45",
+          "#29685B",
+          "#3E8C79",
+          "#8FCBB9",
+          "#CFE4DC",
+          "#F4F8F6"
+        ]
+      },
+      "grafi-ink": {
+        "role": "neutral",
+        "displayName": "Grafí Ink — existing public/auth foreground",
+        "tonalRamp": [
+          "#0C231F",
+          "#10312B",
+          "#1E4F45",
+          "#29685B",
+          "#3E8C79",
+          "#8FCBB9",
+          "#CFE4DC",
+          "#F4F8F6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "public-display": {
+        "displayName": "Public display",
+        "purpose": "Public H1 within the public presentation boundary only."
+      },
+      "auth-display": {
+        "displayName": "Auth display",
+        "purpose": "H1 within the shared authentication form only."
+      }
+    },
+    "breakpoints": [
+      {
+        "name": "public-auth-split",
+        "value": "1024px"
+      }
+    ],
+    "motion": [
+      {
+        "name": "grafi-action",
+        "value": "200ms cubic-bezier(.2,.7,.2,1)",
+        "purpose": "Existing Grafí action transition retained by homepage capture; active press scales to .985."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Public header signup",
+      "kind": "button",
+      "description": "Inverse public action on the fixed forest header.",
+      "html": "<div class=\"ds-forest\"><button class=\"ds-signup\">Δημιουργία λογαριασμού</button></div>",
+      "css": ".ds-forest{background:#143B33;padding:24px}.ds-signup{font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:600;border:0;border-radius:12px;background:white;color:#143B33;padding:12px 20px;transition:background-color 150ms}.ds-signup:hover{background:#CFE4DC}.ds-signup:focus-visible{outline:2px solid currentColor;outline-offset:4px;}",
+      "refersTo": "public-button-inverse"
+    },
+    {
+      "name": "Homepage submit",
+      "kind": "button",
+      "description": "Mint action inside the homepage email capture.",
+      "html": "<button class=\"ds-capture\">Ξεκινήστε</button>",
+      "css": ".ds-capture{font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:600;border:0;border-radius:12px;background:#CFE4DC;color:#10312B;padding:12px 24px;min-height:44px;transition:background-color 200ms,border-color 200ms,transform 200ms;transition-timing-function:var(--ease-out-g,cubic-bezier(.2,.7,.2,1))}.ds-capture:hover{background:white}.ds-capture:focus-visible{outline:3px solid var(--border-focus,#3E8C79);outline-offset:3px}.ds-capture:active{transform:scale(.985)}.ds-capture:disabled{opacity:.5;pointer-events:none}",
+      "refersTo": "public-hero-submit"
+    },
+    {
+      "name": "Public secondary action",
+      "kind": "button",
+      "description": "Existing secondary recipe with the public corner override.",
+      "html": "<button class=\"ds-secondary\">Μάθετε περισσότερα</button>",
+      "css": ".ds-secondary{font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:600;padding:12px 20px;border-radius:12px;background:transparent;color:var(--foreground,#0f172a);border:1px solid var(--pw-border-control,#e2e8f0);transition:background-color 150ms}.ds-secondary:focus-visible{outline:2px solid var(--primary,#29685B);outline-offset:2px}",
+      "refersTo": "button-secondary"
+    },
+    {
+      "name": "Auth field",
+      "kind": "input",
+      "description": "Shared authentication geometry; the real form supplies its validation and label.",
+      "html": "<label class=\"ds-label\" for=\"ds-email\">Email</label><input class=\"ds-field\" id=\"ds-email\" type=\"email\" autocomplete=\"email\" />",
+      "css": ".ds-label{display:block;font-family:Inter,system-ui,sans-serif;font-size:14px;margin-bottom:8px;color:var(--fg-primary,#10312B)}.ds-field{font-family:Inter,system-ui,sans-serif;font-size:16px;min-height:52px;border-radius:12px;padding:0 16px;background:var(--surface-base,#F4F8F6);color:var(--fg-primary,#10312B);border:1px solid var(--border-strong,#BFD4CC)}.ds-field:focus-visible{outline:3px solid var(--border-focus,#3E8C79);outline-offset:3px}"
+    },
+    {
+      "name": "Public navigation",
+      "kind": "nav",
+      "description": "Fixed forest and light foregrounds across themes.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Public\"><a href=\"#\">PolicyWallet</a><a href=\"#\">Τιμές</a><a href=\"#\">Σύνδεση</a></nav>",
+      "css": ".ds-nav{font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;gap:24px;min-height:80px;padding:0 24px;background:#143B33;color:white}.ds-nav a{color:inherit;text-decoration:none;padding:12px 0}.ds-nav a:hover{text-decoration:underline}.ds-nav a:focus-visible{outline:2px solid currentColor;outline-offset:4px;}@media(max-width:1023px){.ds-nav{min-height:72px}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Plain-Spoken Auditor",
+    "overview": "PolicyWallet reads a document you already own and tells you what it actually says. It sells no insurance and takes no commission, so it has no stake in the answer — and the design exists to make that legible. The auditor's register is methodical and unglamorous: every element earns its place by carrying information, and restraint reads as rigour rather than as taste. Nothing here decorates.\n\nThe character is **calm authority, never clinical**. The visitor often arrives anxious, sometimes faintly ashamed of not understanding what they bought. The system reassures by being unhurried — generous spacing, soft geometry, a single quiet green — rather than by being chummy. Warmth lives in the green and in the room around things, not in exclamation.\n\nThe binding anti-reference is **the fintech dashboard**: two-digit grades, progress rings, gradient KPI tiles, percentage scores. This has already been fought once in this codebase — the marketing product mock removed its \"Protection Score: 84%\" on the grounds that *a stranger cannot check any of those numbers*, so it read as decoration rather than evidence. That judgment is now doctrine. A number appears only when the reader can verify it.\n\nThe signed-in app (2026-09-03, \"Direction A\") is that doctrine in operate mode: a flat cool-slate canvas holding white cards, whose only depth device is a slightly darker rectangle *inside* a card. Every card opens with the same head — a 36px tinted square, a sentence-case title, meta on the right — and every number the app shows is a **count with its words** (a fact cell), never a grade. Where a finance dashboard would put a score, this one puts a segmented bar of finding counts under the sentence that qualifies them.",
+    "keyCharacteristics": [
+      "One deep green, used sparingly, doing all the persuading",
+      "Flat surfaces separated by hairline rules, never by resting shadow",
+      "Three grey planes in the app — canvas, card, sunken sub-card — and no fourth",
+      "One card anatomy repeated: chip · title · meta, then rows or fact cells",
+      "A single typeface carrying a twelve-step size ladder and four weights",
+      "Greek-first typography; English must occupy the same space, not a looser paraphrase",
+      "Amber means \"gap\" and nothing else; blue is reserved for info and AI",
+      "Public/auth photography supplies human context; the authenticated system remains document-led"
+    ],
+    "rules": [
+      {
+        "name": "The Fixed Forest Panel Rule",
+        "body": "A public/auth forest panel keeps its light foregrounds and fixed dark background together across themes; its form or reading neighbour may still use semantic theme tokens.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Voice Rule",
+        "body": "Ledger Green is the only accent that speaks for the product. It appears on primary actions, focus, and active state — nowhere else. Its rarity is what makes a green button mean something. On an app screen that is one primary button; a list whose every row carries a green block has lost the voice.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Planes Rule",
+        "body": "The app has exactly three greys: canvas under cards, white card, sunken sub-card inside the card. Depth inside a card is a darker rectangle, never a border and never a card inside a card. A fourth plane is a new system colour and needs a decision.",
+        "section": "colors"
+      },
+      {
+        "name": "The Amber Means Gap Rule",
+        "body": "Amber is warning status only. It never becomes a brand colour, a highlight, or a decorative tint. On this product a gap in cover is the thing the reader is here to find; giving that colour a second job blunts the only alarm the system has. A zero in amber is an alarm about nothing — colour a count only when it counts something.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mint Is Not A Second Brand Rule",
+        "body": "Signal Mint exists because Ledger Green is illegible on black. Never place them side by side as a two-colour palette, and never hardcode `#29685B` where `--primary` would do — a hardcoded green cannot flip, and a mint fill under hardcoded white text fails contrast.",
+        "section": "colors"
+      },
+      {
+        "name": "The Blue Is Borrowed Rule",
+        "body": "Blue belongs to info and AI surfaces only. It is not a brand accent and must never carry a call to action.",
+        "section": "colors"
+      },
+      {
+        "name": "The Twelve-Px Floor Rule",
+        "body": "Nothing a reader must act on is set below 12px. 11px and 10px exist only for nonessential legacy metadata, not new marketing headings — never for a sentence, a control label, or a price.",
+        "section": "typography"
+      },
+      {
+        "name": "The Words Over The Number Rule",
+        "body": "A number in the app is a fact cell: its caption above, the metric below, a qualifying caption beneath when the total leaves something out. The DOM order stays «count words» so a screen reader hears the sentence; only the visual order flips.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Arbitrary Size Rule",
+        "body": "Type sizes come from the ladder. `text-[Npx]` is a build failure, enforced by unit test.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight Ceiling Rule",
+        "body": "`font-bold` (700) is the ceiling; inside cards prefer `font-semibold` (600). `font-black` (900) is off the ladder entirely.",
+        "section": "typography"
+      },
+      {
+        "name": "The Greek Sets The Measure Rule",
+        "body": "Greek is the authoritative language and runs longer than English. Size every line, button and column against the Greek string; if it only fits in English, it does not fit. And never capitalise Greek with CSS: `text-transform` strips the tonos («Εχουν» for «Έχουν»), so sentence case is set in the string, not the stylesheet.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "A surface at rest has `box-shadow: none`. If a card needs a shadow to be findable, the problem is its border or the ground beneath it.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Sunken-Not-Raised Rule",
+        "body": "Anything nested inside a card is set *into* it as a sub-card, never lifted out of it with a shadow or fenced with a border. Only overlays and the floating action float.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Offset-And-Blur Rule",
+        "body": "Any shadow that ships carries both an offset and a soft blur. A zero-offset coloured halo is decoration, not depth.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep public/auth forest panels fixed across themes while allowing neighbouring reading and form surfaces to use semantic theme tokens.",
+      "**Do** use the documented public/auth fluid heading roles and 12px action corners only within those boundaries.",
+      "**Do** read colour from `--primary` / `--foreground` / `--border` so dark mode resolves itself. A hardcoded hex cannot flip.",
+      "**Do** pair a brand fill with `--primary-foreground`, never with a hardcoded `text-white`.",
+      "**Do** open every app card with the card head — chip, sentence-case title, meta right — and put anything nested inside it on a sub-card.",
+      "**Do** keep surfaces flat at rest and let shadow answer to state.",
+      "**Do** size every string against the Greek, then confirm English fits the same space.",
+      "**Do** use the type ladder and the three-step density scale; both are enforced by unit tests.",
+      "**Do** state a limit as a fact the reader can check (\"1 policy\", \"resets 1 September\"), not as a grade — and set it as a fact cell, words over number.",
+      "**Do** give status colour a second, non-colour cue — an icon or a word — so meaning never rests on hue alone.",
+      "**Do** switch views with a segmented control and take actions with a pill; the two shapes tell the reader which is which."
+    ],
+    "donts": [
+      "**Don't** inherit public/auth presentation exceptions into authenticated controls, palette roles or type scales.",
+      "**Don't** add decorative kickers or visible AI-generation captions to the public/auth presentation; retain visible identification of illustrative policy data.",
+      "**Don't** ship a score, a grade, a progress ring or a percentage the reader cannot verify. This is the binding anti-reference.",
+      "**Don't** introduce `emerald-*`, `teal-*` or a second green. There is one brand green and one dark-mode transposition of it.",
+      "**Don't** use amber for anything but a gap or a warning, or blue for anything but info and AI.",
+      "**Don't** put a resting shadow on a card, a coloured border or side bar on a callout, or a card inside a card.",
+      "**Don't** put a green button on every row. One primary per screen; the rest are soft pills.",
+      "**Don't** set functional text below 12px, use `font-black`, write an arbitrary `text-[Npx]`, or uppercase Greek with CSS.",
+      "**Don't** render a control for a capability the product does not have. An absent control is honest; a dead one is not.",
+      "**Don't** add a second implementation of a control that already exists — one switch, one page-width primitive, one language toggle, one confirm dialog, one card head."
+    ]
+  }
+}

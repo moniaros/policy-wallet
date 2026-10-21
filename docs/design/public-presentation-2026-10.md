@@ -1,0 +1,22 @@
+# Public and authentication presentation — 21 October 2026
+
+## Direction contract
+Mode: Persuade for public pages; Operate for authentication; Read for guides and legal pages. The user requested a further round closer to Bitpanda, retaining PolicyWallet branding, integration with current work and production deployment. They explicitly removed the visible AI-generation caption. This continues the approved direction; working desktop/mobile renders are the review artifact, not a new concept selection.
+
+Preserve forest #29685B and deep forest #143B33, mint, Inter with Greek support, real product behavior and existing action/status meaning. Borrow full-width navigation, large photographic composition, clear type hierarchy and broad colour fields. Never copy financial-platform claims. Decorative photography has descriptive or empty alt text, no visible generation label; exact provenance stays in the asset sidecar. Illustrative policy/client data still needs visible sample identification.
+
+## Built grammar
+- Every public route inherits the isolated `.pw-public` boundary from `app/(public)/layout.tsx`. Its stylesheet never selects authenticated app content.
+- Shared forest header spans the viewport, 80px desktop and 72px below 1024px; localized navigation, audience-specific signup, theme control and focus-trapped mobile menu remain functional. No floating pill or glass treatment.
+- Public H1 uses Inter, clamp(2.2rem,4.5vw,4.5rem), 1.08 line-height and -.035em tracking. Decorative category labels above primary headings are removed. Content, breadcrumbs and meaningful sample/status labels remain.
+- Homepage hero splits into equal forest-copy and edge-to-edge photo columns at 1024px. It is one full-width composition. On mobile, the photo follows signup and reserves its own 16:10 box; its child never exceeds that box. The inspected Higgsfield source is 1168×880, delivered as ~94KB WebP with responsive Next image sizes.
+- Neutral reading proof follows the forest hero. Its semantic HTML tabs preserve arrows/Home/End and reduced-motion behavior. Audience paths, compact live pricing, native FAQ and closing forest action remain.
+- Public primary/secondary actions use 12px corners; selection controls keep their own state grammar. Existing content widths and 24px/48px gutters remain.
+- Auth uses the existing AuthShell: raised-surface form column, 440px measure, clear field labels and 52px fields, 12px submit controls. Desktop adds a sticky photograph with a short forest product explanation and trust link. Below 1024px the form stands alone. Utility screens without a companion panel use the full width. Greek/English, OAuth, passkeys, phone/email login, role choice, validation and password recovery retain their behavior.
+- No background video: static photography supplies the human context without distracting from reading or form completion. No additional asset generation was needed.
+
+## Truth and integration boundary
+The first correctness pass remains included: audience-aware public signup links, agent permission/revenue presentation, failed-action handling, accurate partial-export copy, sample reading corrections and Next route/page types. Policyholder action-flow release #396 is integrated. This round is a shared public/auth presentation system, not a redesign of each authenticated workflow. No schema, plan catalog, Stripe or production-data write is required.
+
+## Evidence
+First-round evidence remains in `docs/evidence/public-presentation-2026-10-21/`; this round is in `docs/evidence/presentation-round2-2026-10-21/`. Release status, exact preview/production revisions and verification are recorded in STATUS and the implementation audit. The independent reviewer requested the mobile media-height correction and this documentation refresh; both are addressed before release.

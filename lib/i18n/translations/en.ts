@@ -3581,7 +3581,7 @@ export const en: TranslationKeys = {
         deletionCancelSuccess: 'Your deletion request has been withdrawn.',
         deletionCancelInFlight: 'The request has already been approved and cannot be withdrawn here. Please contact dpo@policywallet.gr.',
         myDataTitle: 'My data',
-        myDataDesc: 'Download a complete copy of your data as JSON (GDPR, Articles 15 & 20): profile, policies, consents, billing history.',
+        myDataDesc: 'Export your profile, policies, consents and billing history as JSON. This does not include all data. Request any additional records you need.',
         exportData: 'Download my data',
         exportPreparing: 'Preparing...',
         exportReady: 'Your data copy is ready — the download is starting.',

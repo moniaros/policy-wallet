@@ -89,9 +89,6 @@ export function PartnersSections({ locale }: { locale: MarketingLocale }) {
         <LoBPageShell activeNav="none" locale={locale}>
             <section className="px-g-6 md:px-g-8">
                 <div className="mx-auto max-w-[820px] text-center">
-                    <p className="text-g-label font-semibold uppercase tracking-[0.1em] text-fg-brand">
-                        {t("Για τράπεζες και θεσμικούς συνεργάτες — πρώιμη διάθεση", "For banks and institutional partners — early access")}
-                    </p>
                     <h1 className="mt-g-4 text-g-display-xl font-extrabold tracking-[-0.024em] text-fg-primary text-balance">
                         {t("Εξηγήστε τις καλύψεις μέσα από τη δική σας υπηρεσία.", "Explain coverage within your own service.")}
                     </h1>
