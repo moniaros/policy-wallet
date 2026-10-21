@@ -1,27 +1,28 @@
 # Status
 
 ## Current phase
-Public and authentication presentation refinement shipped on 21 October 2026, integrated with policyholder release #396.
+Hero lifestyle video prepared on 21 October 2026; preview and production promotion in progress. Public/auth presentation release #397 remains live.
 
 ## Done
-- PR #397 deployed as `c4df0efe`: forest public navigation, photographic hero, shared public typography, auth forms and utility screens; visible AI-image caption removed.
-- Correctness: signup email handoff, mobile photo containment, previous agency/team fixes retained.
-- 7,873 unit tests; guardrails/build; preview 77 public assertions, 12 presentation scenarios, 11 auth scenarios and 12 policyholder tests passed.
-- Production CI 39586111020 and deploy 39587498258 succeeded. Live 11 public + 4 auth routes at 320/390/1440px and key interactions passed. Production schema gate: 88 migrations, none pending.
+- Higgsfield five-scene film: family, pets, parked-car driver, office workers, agents/client.
+- Silent 15.04s / 720p hero MP4 compressed to 1.63 MB; first-scene poster; EL/EN pause/play.
+- Reduced-motion/data-saving fallback, offscreen/hidden pause, persistent user pause and failed-media fallback.
+- 7,873 unit tests, guardrails, build and seven browser scenarios passed; two hero axe scans clear.
 
 ## In progress
-- Broader protected policyholder/agent/agency presentation work remains a subsequent tranche.
+- Verify the exact video candidate on a deployment preview, then promote and check production.
 
 ## Blocked
-- No release blocker. Existing production registration pause retained; signup form tested on preview.
+- None for the video release. Existing production registration pause retained.
 
 ## Top risks ranked
-1. Infrastructure: production build warns of session-pool fallback without POOLED_DATABASE_URL; capacity review remains.
-2. Coverage: paid checkout and hardware passkeys were not exercised; optional Kilo review unavailable (credits).
+1. Existing production session-pool fallback warning remains an infrastructure follow-up.
+2. Browser autoplay policies vary; poster and explicit play control cover refusal.
+3. Paid checkout/hardware passkeys remain outside this presentation verification.
 
 ## Next 3 actions
-1. Apply the presentation direction to remaining protected agent/agency surfaces.
-2. Continue policyholder presentation refinement without changing its identity.
-3. Resolve the production pooling warning and independently verify payment/passkey journeys.
+1. Complete preview video verification.
+2. Deploy the verified candidate and check live playback/fallback.
+3. Resume the remaining protected-app presentation work.
 
-Evidence: [implementation audit](audits/public-presentation-implementation-2026-10-21.md).
+Evidence: [hero video audit](audits/hero-video-2026-10-21.md).

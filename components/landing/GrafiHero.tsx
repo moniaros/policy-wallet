@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import { HeroVideo } from "./HeroVideo"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowDown } from "lucide-react"
@@ -35,9 +35,7 @@ export function GrafiHero({ locale }: { locale: MarketingLocale }) {
                     </div>
                 </div>
                 <div className="pw-public-hero-media">
-                    <div className="relative h-full">
-                        <Image src="/images/presentation/policy-review.webp" alt={copy.photoAlt} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover object-[65%_center]" />
-                    </div>
+                    <HeroVideo locale={locale} />
                 </div>
             </div>
         </section>
