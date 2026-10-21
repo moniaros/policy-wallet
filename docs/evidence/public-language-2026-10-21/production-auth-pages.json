@@ -1,0 +1,42 @@
+[
+  {
+    "route": "/auth/signin",
+    "lang": "el",
+    "status": 200,
+    "width": 390,
+    "scrollWidth": 390,
+    "heading": "Καλώς ήρθατε πίσω",
+    "bodyText": 229,
+    "errors": []
+  },
+  {
+    "route": "/auth/signup",
+    "lang": "el",
+    "status": 200,
+    "width": 390,
+    "scrollWidth": 390,
+    "heading": "Οι νέες εγγραφές είναι προσωρινά κλειστές.",
+    "bodyText": 280,
+    "errors": []
+  },
+  {
+    "route": "/auth/signin",
+    "lang": "en",
+    "status": 200,
+    "width": 390,
+    "scrollWidth": 390,
+    "heading": "Καλώς ήρθατε πίσω",
+    "bodyText": 229,
+    "errors": []
+  },
+  {
+    "route": "/auth/signup",
+    "lang": "en",
+    "status": 200,
+    "width": 390,
+    "scrollWidth": 390,
+    "heading": "New registrations are paused.",
+    "bodyText": 233,
+    "errors": []
+  }
+]

@@ -1,0 +1,2621 @@
+{
+  "base": "https://www.policywallet.gr",
+  "checkedAt": "2026-10-21T13:56:06.800Z",
+  "routes": 144,
+  "cases": 288,
+  "failures": [],
+  "consentResults": [
+    {
+      "route": "/",
+      "openedWithoutConsentChange": true,
+      "rejectionPersisted": true,
+      "accessibility": []
+    },
+    {
+      "route": "/cookies",
+      "openedWithoutConsentChange": true,
+      "rejectionPersisted": true,
+      "accessibility": []
+    },
+    {
+      "route": "/en/cookies",
+      "openedWithoutConsentChange": true,
+      "rejectionPersisted": true,
+      "accessibility": []
+    }
+  ],
+  "results": [
+    {
+      "route": "/",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5537,
+      "errors": []
+    },
+    {
+      "route": "/en",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 4978,
+      "errors": []
+    },
+    {
+      "route": "/product",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6374,
+      "errors": []
+    },
+    {
+      "route": "/en/product",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5934,
+      "errors": []
+    },
+    {
+      "route": "/pricing",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 4285,
+      "errors": []
+    },
+    {
+      "route": "/en/pricing",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3801,
+      "errors": []
+    },
+    {
+      "route": "/needs",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 800,
+      "errors": []
+    },
+    {
+      "route": "/en/needs",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 750,
+      "errors": []
+    },
+    {
+      "route": "/compare",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2798,
+      "errors": []
+    },
+    {
+      "route": "/en/compare",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2576,
+      "errors": []
+    },
+    {
+      "route": "/company",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2386,
+      "errors": []
+    },
+    {
+      "route": "/en/company",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2083,
+      "errors": []
+    },
+    {
+      "route": "/contact",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 494,
+      "errors": []
+    },
+    {
+      "route": "/en/contact",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 465,
+      "errors": []
+    },
+    {
+      "route": "/solutions/agents",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 4181,
+      "errors": []
+    },
+    {
+      "route": "/en/solutions/agents",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3780,
+      "errors": []
+    },
+    {
+      "route": "/product/motor",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6830,
+      "errors": []
+    },
+    {
+      "route": "/en/product/motor",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6429,
+      "errors": []
+    },
+    {
+      "route": "/product/property",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7846,
+      "errors": []
+    },
+    {
+      "route": "/en/product/property",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7236,
+      "errors": []
+    },
+    {
+      "route": "/product/health",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7515,
+      "errors": []
+    },
+    {
+      "route": "/en/product/health",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6953,
+      "errors": []
+    },
+    {
+      "route": "/product/cyber",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6317,
+      "errors": []
+    },
+    {
+      "route": "/en/product/cyber",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5838,
+      "errors": []
+    },
+    {
+      "route": "/product/group-health",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6053,
+      "errors": []
+    },
+    {
+      "route": "/en/product/group-health",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5729,
+      "errors": []
+    },
+    {
+      "route": "/product/group-pension",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6893,
+      "errors": []
+    },
+    {
+      "route": "/en/product/group-pension",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6360,
+      "errors": []
+    },
+    {
+      "route": "/product/pet",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6174,
+      "errors": []
+    },
+    {
+      "route": "/en/product/pet",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5821,
+      "errors": []
+    },
+    {
+      "route": "/product/life",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6543,
+      "errors": []
+    },
+    {
+      "route": "/en/product/life",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6158,
+      "errors": []
+    },
+    {
+      "route": "/product/travel",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6303,
+      "errors": []
+    },
+    {
+      "route": "/en/product/travel",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5818,
+      "errors": []
+    },
+    {
+      "route": "/product/pension",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6545,
+      "errors": []
+    },
+    {
+      "route": "/en/product/pension",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6261,
+      "errors": []
+    },
+    {
+      "route": "/product/boat",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6584,
+      "errors": []
+    },
+    {
+      "route": "/en/product/boat",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6121,
+      "errors": []
+    },
+    {
+      "route": "/product/fine-art",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7027,
+      "errors": []
+    },
+    {
+      "route": "/en/product/fine-art",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6508,
+      "errors": []
+    },
+    {
+      "route": "/product/business",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6500,
+      "errors": []
+    },
+    {
+      "route": "/en/product/business",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6201,
+      "errors": []
+    },
+    {
+      "route": "/product/liability",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6729,
+      "errors": []
+    },
+    {
+      "route": "/en/product/liability",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6243,
+      "errors": []
+    },
+    {
+      "route": "/product/legal-expenses",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6730,
+      "errors": []
+    },
+    {
+      "route": "/en/product/legal-expenses",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6405,
+      "errors": []
+    },
+    {
+      "route": "/product/group-life",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6629,
+      "errors": []
+    },
+    {
+      "route": "/en/product/group-life",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6075,
+      "errors": []
+    },
+    {
+      "route": "/guides",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 8712,
+      "errors": []
+    },
+    {
+      "route": "/en/guides",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7708,
+      "errors": []
+    },
+    {
+      "route": "/lexiko",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7642,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7494,
+      "errors": []
+    },
+    {
+      "route": "/privacy",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 8694,
+      "errors": []
+    },
+    {
+      "route": "/en/privacy",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7733,
+      "errors": []
+    },
+    {
+      "route": "/terms",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 9234,
+      "errors": []
+    },
+    {
+      "route": "/en/terms",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7934,
+      "errors": []
+    },
+    {
+      "route": "/cookies",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3444,
+      "errors": []
+    },
+    {
+      "route": "/en/cookies",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2963,
+      "errors": []
+    },
+    {
+      "route": "/methodology",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3488,
+      "errors": []
+    },
+    {
+      "route": "/en/methodology",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3504,
+      "errors": []
+    },
+    {
+      "route": "/changelog",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2263,
+      "errors": []
+    },
+    {
+      "route": "/en/changelog",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2140,
+      "errors": []
+    },
+    {
+      "route": "/status",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 949,
+      "errors": []
+    },
+    {
+      "route": "/en/status",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 814,
+      "errors": []
+    },
+    {
+      "route": "/trust",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3560,
+      "errors": []
+    },
+    {
+      "route": "/en/trust",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3174,
+      "errors": []
+    },
+    {
+      "route": "/platform",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1467,
+      "errors": []
+    },
+    {
+      "route": "/en/platform",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1525,
+      "errors": []
+    },
+    {
+      "route": "/subprocessors",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2774,
+      "errors": []
+    },
+    {
+      "route": "/en/subprocessors",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2393,
+      "errors": []
+    },
+    {
+      "route": "/guides/ekptosi-enfia-asfalisi-katoikias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3796,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/ekptosi-enfia-asfalisi-katoikias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3312,
+      "errors": []
+    },
+    {
+      "route": "/guides/kena-kalypsis-ti-einai-pos-ta-vriskete",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3673,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/kena-kalypsis-ti-einai-pos-ta-vriskete",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3125,
+      "errors": []
+    },
+    {
+      "route": "/guides/checklist-ananeosis-asfalistiriou",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3369,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/checklist-ananeosis-asfalistiriou",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2917,
+      "errors": []
+    },
+    {
+      "route": "/guides/ti-kalyptei-i-asfaleia-aytokinitou",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 4751,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/ti-kalyptei-i-asfaleia-aytokinitou",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 4394,
+      "errors": []
+    },
+    {
+      "route": "/guides/apallagi-asfaleia-ygeias-pos-leitourgei",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3437,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/apallagi-asfaleia-ygeias-pos-leitourgei",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3122,
+      "errors": []
+    },
+    {
+      "route": "/guides/poso-kostizei-i-asfalisi-seismou",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3608,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/poso-kostizei-i-asfalisi-seismou",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3238,
+      "errors": []
+    },
+    {
+      "route": "/guides/asfaleia-katoikidiou-ti-exaireitai",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3531,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/asfaleia-katoikidiou-ti-exaireitai",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3036,
+      "errors": []
+    },
+    {
+      "route": "/guides/omadiko-symvolaio-ergasias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3571,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/omadiko-symvolaio-ergasias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 3170,
+      "errors": []
+    },
+    {
+      "route": "/guides/prostimo-anasfalistou-oximatos",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6339,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/prostimo-anasfalistou-oximatos",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5859,
+      "errors": []
+    },
+    {
+      "route": "/guides/diaxeirisi-asfalistirion-se-ena-simeio",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 6330,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/diaxeirisi-asfalistirion-se-ena-simeio",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5395,
+      "errors": []
+    },
+    {
+      "route": "/guides/pliromi-asfalistron-psifiaka",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 4892,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/pliromi-asfalistron-psifiaka",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 4345,
+      "errors": []
+    },
+    {
+      "route": "/guides/efarmoges-asfalistirion-apozimioseis",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 5459,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/efarmoges-asfalistirion-apozimioseis",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 4805,
+      "errors": []
+    },
+    {
+      "route": "/guides/analogikos-kanonas-ypasfalisi-katoikias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7462,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/analogikos-kanonas-ypasfalisi-katoikias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7204,
+      "errors": []
+    },
+    {
+      "route": "/guides/vraxychronia-misthosi-asfalisi-katoikias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7426,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/vraxychronia-misthosi-asfalisi-katoikias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7061,
+      "errors": []
+    },
+    {
+      "route": "/guides/elga-apozimiosi-kai-pragmatiko-kostos",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7272,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/elga-apozimiosi-kai-pragmatiko-kostos",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 7257,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/asfalistirio",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1821,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/asfalistirio",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1902,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/kalypsi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2013,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/kalypsi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1870,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/apallagi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1771,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/apallagi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1660,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/exairesi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1722,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/exairesi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1639,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/asfalismeno-kefalaio",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2410,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/asfalismeno-kefalaio",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2073,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/asfalistro",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1389,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/asfalistro",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1372,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/ypasfalisi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1632,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/ypasfalisi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1602,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/chronos-anamonis",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1587,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/chronos-anamonis",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1531,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/dikaiouchos",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1426,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/dikaiouchos",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1383,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/odiki-voitheia",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1639,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/odiki-voitheia",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1579,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/mikti-asfaleia",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1596,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/mikti-asfaleia",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1590,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/prasini-karta",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1733,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/prasini-karta",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1611,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/exagora",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1648,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/exagora",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1534,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/ypoorio",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1829,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/ypoorio",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1778,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/symmetochi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1758,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/symmetochi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1714,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/ananeosi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2281,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/ananeosi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2079,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/ekpnoi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2337,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/ekpnoi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2118,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/apozimiosi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2217,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/apozimiosi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2110,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/axia-antikatastasis",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1931,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/axia-antikatastasis",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1766,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/prostheti-praxi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1832,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/prostheti-praxi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1682,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/akyrosi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2006,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/akyrosi",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 1925,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/skor-prostasias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2902,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/skor-prostasias",
+      "width": 320,
+      "status": 200,
+      "viewport": 320,
+      "h1": 1,
+      "text": 2703,
+      "errors": []
+    },
+    {
+      "route": "/",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5537,
+      "errors": []
+    },
+    {
+      "route": "/en",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 4978,
+      "errors": []
+    },
+    {
+      "route": "/product",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6374,
+      "errors": []
+    },
+    {
+      "route": "/en/product",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5934,
+      "errors": []
+    },
+    {
+      "route": "/pricing",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 4285,
+      "errors": []
+    },
+    {
+      "route": "/en/pricing",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3801,
+      "errors": []
+    },
+    {
+      "route": "/needs",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 800,
+      "errors": []
+    },
+    {
+      "route": "/en/needs",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 750,
+      "errors": []
+    },
+    {
+      "route": "/compare",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2798,
+      "errors": []
+    },
+    {
+      "route": "/en/compare",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2576,
+      "errors": []
+    },
+    {
+      "route": "/company",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2386,
+      "errors": []
+    },
+    {
+      "route": "/en/company",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2083,
+      "errors": []
+    },
+    {
+      "route": "/contact",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 494,
+      "errors": []
+    },
+    {
+      "route": "/en/contact",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 465,
+      "errors": []
+    },
+    {
+      "route": "/solutions/agents",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 4181,
+      "errors": []
+    },
+    {
+      "route": "/en/solutions/agents",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3780,
+      "errors": []
+    },
+    {
+      "route": "/product/motor",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6830,
+      "errors": []
+    },
+    {
+      "route": "/en/product/motor",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6429,
+      "errors": []
+    },
+    {
+      "route": "/product/property",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7846,
+      "errors": []
+    },
+    {
+      "route": "/en/product/property",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7236,
+      "errors": []
+    },
+    {
+      "route": "/product/health",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7515,
+      "errors": []
+    },
+    {
+      "route": "/en/product/health",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6953,
+      "errors": []
+    },
+    {
+      "route": "/product/cyber",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6317,
+      "errors": []
+    },
+    {
+      "route": "/en/product/cyber",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5838,
+      "errors": []
+    },
+    {
+      "route": "/product/group-health",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6053,
+      "errors": []
+    },
+    {
+      "route": "/en/product/group-health",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5729,
+      "errors": []
+    },
+    {
+      "route": "/product/group-pension",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6893,
+      "errors": []
+    },
+    {
+      "route": "/en/product/group-pension",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6360,
+      "errors": []
+    },
+    {
+      "route": "/product/pet",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6174,
+      "errors": []
+    },
+    {
+      "route": "/en/product/pet",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5821,
+      "errors": []
+    },
+    {
+      "route": "/product/life",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6543,
+      "errors": []
+    },
+    {
+      "route": "/en/product/life",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6158,
+      "errors": []
+    },
+    {
+      "route": "/product/travel",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6303,
+      "errors": []
+    },
+    {
+      "route": "/en/product/travel",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5818,
+      "errors": []
+    },
+    {
+      "route": "/product/pension",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6545,
+      "errors": []
+    },
+    {
+      "route": "/en/product/pension",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6261,
+      "errors": []
+    },
+    {
+      "route": "/product/boat",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6584,
+      "errors": []
+    },
+    {
+      "route": "/en/product/boat",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6121,
+      "errors": []
+    },
+    {
+      "route": "/product/fine-art",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7027,
+      "errors": []
+    },
+    {
+      "route": "/en/product/fine-art",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6508,
+      "errors": []
+    },
+    {
+      "route": "/product/business",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6500,
+      "errors": []
+    },
+    {
+      "route": "/en/product/business",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6201,
+      "errors": []
+    },
+    {
+      "route": "/product/liability",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6729,
+      "errors": []
+    },
+    {
+      "route": "/en/product/liability",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6243,
+      "errors": []
+    },
+    {
+      "route": "/product/legal-expenses",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6730,
+      "errors": []
+    },
+    {
+      "route": "/en/product/legal-expenses",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6405,
+      "errors": []
+    },
+    {
+      "route": "/product/group-life",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6629,
+      "errors": []
+    },
+    {
+      "route": "/en/product/group-life",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6075,
+      "errors": []
+    },
+    {
+      "route": "/guides",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 8712,
+      "errors": []
+    },
+    {
+      "route": "/en/guides",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7708,
+      "errors": []
+    },
+    {
+      "route": "/lexiko",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7642,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7494,
+      "errors": []
+    },
+    {
+      "route": "/privacy",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 8694,
+      "errors": []
+    },
+    {
+      "route": "/en/privacy",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7733,
+      "errors": []
+    },
+    {
+      "route": "/terms",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 9234,
+      "errors": []
+    },
+    {
+      "route": "/en/terms",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7934,
+      "errors": []
+    },
+    {
+      "route": "/cookies",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3444,
+      "errors": []
+    },
+    {
+      "route": "/en/cookies",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2963,
+      "errors": []
+    },
+    {
+      "route": "/methodology",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3488,
+      "errors": []
+    },
+    {
+      "route": "/en/methodology",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3504,
+      "errors": []
+    },
+    {
+      "route": "/changelog",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2263,
+      "errors": []
+    },
+    {
+      "route": "/en/changelog",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2140,
+      "errors": []
+    },
+    {
+      "route": "/status",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 949,
+      "errors": []
+    },
+    {
+      "route": "/en/status",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 814,
+      "errors": []
+    },
+    {
+      "route": "/trust",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3560,
+      "errors": []
+    },
+    {
+      "route": "/en/trust",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3174,
+      "errors": []
+    },
+    {
+      "route": "/platform",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1467,
+      "errors": []
+    },
+    {
+      "route": "/en/platform",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1525,
+      "errors": []
+    },
+    {
+      "route": "/subprocessors",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2774,
+      "errors": []
+    },
+    {
+      "route": "/en/subprocessors",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2393,
+      "errors": []
+    },
+    {
+      "route": "/guides/ekptosi-enfia-asfalisi-katoikias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3796,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/ekptosi-enfia-asfalisi-katoikias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3312,
+      "errors": []
+    },
+    {
+      "route": "/guides/kena-kalypsis-ti-einai-pos-ta-vriskete",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3673,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/kena-kalypsis-ti-einai-pos-ta-vriskete",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3125,
+      "errors": []
+    },
+    {
+      "route": "/guides/checklist-ananeosis-asfalistiriou",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3369,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/checklist-ananeosis-asfalistiriou",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2917,
+      "errors": []
+    },
+    {
+      "route": "/guides/ti-kalyptei-i-asfaleia-aytokinitou",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 4751,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/ti-kalyptei-i-asfaleia-aytokinitou",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 4394,
+      "errors": []
+    },
+    {
+      "route": "/guides/apallagi-asfaleia-ygeias-pos-leitourgei",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3437,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/apallagi-asfaleia-ygeias-pos-leitourgei",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3122,
+      "errors": []
+    },
+    {
+      "route": "/guides/poso-kostizei-i-asfalisi-seismou",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3608,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/poso-kostizei-i-asfalisi-seismou",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3238,
+      "errors": []
+    },
+    {
+      "route": "/guides/asfaleia-katoikidiou-ti-exaireitai",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3531,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/asfaleia-katoikidiou-ti-exaireitai",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3036,
+      "errors": []
+    },
+    {
+      "route": "/guides/omadiko-symvolaio-ergasias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3571,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/omadiko-symvolaio-ergasias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 3170,
+      "errors": []
+    },
+    {
+      "route": "/guides/prostimo-anasfalistou-oximatos",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6339,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/prostimo-anasfalistou-oximatos",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5859,
+      "errors": []
+    },
+    {
+      "route": "/guides/diaxeirisi-asfalistirion-se-ena-simeio",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 6330,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/diaxeirisi-asfalistirion-se-ena-simeio",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5395,
+      "errors": []
+    },
+    {
+      "route": "/guides/pliromi-asfalistron-psifiaka",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 4892,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/pliromi-asfalistron-psifiaka",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 4345,
+      "errors": []
+    },
+    {
+      "route": "/guides/efarmoges-asfalistirion-apozimioseis",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 5459,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/efarmoges-asfalistirion-apozimioseis",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 4805,
+      "errors": []
+    },
+    {
+      "route": "/guides/analogikos-kanonas-ypasfalisi-katoikias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7462,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/analogikos-kanonas-ypasfalisi-katoikias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7204,
+      "errors": []
+    },
+    {
+      "route": "/guides/vraxychronia-misthosi-asfalisi-katoikias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7426,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/vraxychronia-misthosi-asfalisi-katoikias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7061,
+      "errors": []
+    },
+    {
+      "route": "/guides/elga-apozimiosi-kai-pragmatiko-kostos",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7272,
+      "errors": []
+    },
+    {
+      "route": "/en/guides/elga-apozimiosi-kai-pragmatiko-kostos",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 7257,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/asfalistirio",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1821,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/asfalistirio",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1902,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/kalypsi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2013,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/kalypsi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1870,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/apallagi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1771,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/apallagi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1660,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/exairesi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1722,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/exairesi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1639,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/asfalismeno-kefalaio",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2410,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/asfalismeno-kefalaio",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2073,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/asfalistro",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1389,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/asfalistro",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1372,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/ypasfalisi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1632,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/ypasfalisi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1602,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/chronos-anamonis",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1587,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/chronos-anamonis",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1531,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/dikaiouchos",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1426,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/dikaiouchos",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1383,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/odiki-voitheia",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1639,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/odiki-voitheia",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1579,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/mikti-asfaleia",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1596,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/mikti-asfaleia",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1590,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/prasini-karta",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1733,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/prasini-karta",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1611,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/exagora",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1648,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/exagora",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1534,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/ypoorio",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1829,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/ypoorio",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1778,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/symmetochi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1758,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/symmetochi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1714,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/ananeosi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2281,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/ananeosi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2079,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/ekpnoi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2337,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/ekpnoi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2118,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/apozimiosi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2217,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/apozimiosi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2110,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/axia-antikatastasis",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1931,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/axia-antikatastasis",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1766,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/prostheti-praxi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1832,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/prostheti-praxi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1682,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/akyrosi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2006,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/akyrosi",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 1925,
+      "errors": []
+    },
+    {
+      "route": "/lexiko/skor-prostasias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2902,
+      "errors": []
+    },
+    {
+      "route": "/en/lexiko/skor-prostasias",
+      "width": 1440,
+      "status": 200,
+      "viewport": 1440,
+      "h1": 1,
+      "text": 2703,
+      "errors": []
+    }
+  ]
+}
