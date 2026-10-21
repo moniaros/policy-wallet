@@ -1,0 +1,201 @@
+{
+  "url": "https://www.policywallet.gr",
+  "revision": "c4df0efe051723db9a6ffc4a24379004a4964f0b",
+  "ciRun": 39586111020,
+  "ci": "success",
+  "deployRun": 39587498258,
+  "deploy": "success",
+  "deployment": "dpl_2htTLzAoCpM4BnRzPQqizeKg8swf",
+  "deploymentUrl": "https://policy-wallet-hlv93cwnw-moniaros-projects.vercel.app",
+  "schema": {
+    "appliedMigrations": 88,
+    "pending": [],
+    "verifiedPreventionTables": 3,
+    "columns": 34,
+    "cascadeForeignKeys": 5
+  },
+  "public": [
+    {
+      "route": "/",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/en",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/pricing",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/en/pricing",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/solutions/agents",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/en/solutions/agents",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/product/motor",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/trust",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/guides",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/privacy",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    },
+    {
+      "route": "/terms",
+      "status": 200,
+      "h1": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ]
+    }
+  ],
+  "auth": [
+    {
+      "route": "/auth/signin",
+      "status": 200,
+      "url": "https://www.policywallet.gr/auth/signin",
+      "title": "Καλώς ήρθατε πίσω",
+      "authShell": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ],
+      "emptyValidation": true
+    },
+    {
+      "route": "/auth/signin?lang=en",
+      "status": 200,
+      "url": "https://www.policywallet.gr/auth/signin?lang=en",
+      "title": "Welcome back",
+      "authShell": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ],
+      "emptyValidation": true
+    },
+    {
+      "route": "/auth/signup?role=policyholder&email=presentation%40example.com",
+      "status": 200,
+      "url": "https://www.policywallet.gr/auth/signup/policyholder?email=presentation%40example.com",
+      "title": "Οι νέες εγγραφές είναι προσωρινά κλειστές.",
+      "authShell": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ],
+      "registrationPaused": true
+    },
+    {
+      "route": "/auth/signup?role=agent&lang=en",
+      "status": 200,
+      "url": "https://www.policywallet.gr/auth/signup/agent?lang=en",
+      "title": "New registrations are paused.",
+      "authShell": 1,
+      "widths": [
+        320,
+        390,
+        1440
+      ],
+      "registrationPaused": true
+    }
+  ],
+  "interactions": {
+    "menuFocusRestored": true,
+    "photoLoaded": true,
+    "photoContained": true,
+    "captionCount": 0,
+    "keyboardDemo": true,
+    "emailHandoff": true,
+    "productionPause": "Οι νέες εγγραφές είναι προσωρινά κλειστές.",
+    "annualBilling": true,
+    "audienceSwitch": true,
+    "walletRequiresSignIn": true,
+    "errors": []
+  },
+  "limits": [
+    "Production registrations remain paused by the existing configuration; signup form functionality and email prefill were verified on the protected development preview.",
+    "The optional production screenshot attempt timed out in browser capture; responsive DOM checks and live interaction assertions completed. Local/preview visual captures remain the design evidence.",
+    "Production build reports POOLED_DATABASE_URL absent and session-mode fallback. Existing infrastructure risk; this presentation release does not alter database credentials."
+  ]
+}
