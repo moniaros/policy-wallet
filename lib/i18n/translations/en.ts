@@ -912,7 +912,7 @@ export const en: TranslationKeys = {
             actionsCall: 'Call',
             actionsShowAll: 'Show all',
             actionsShowLess: 'Show less',
-            actionsLocked: 'Pro',
+            actionsLocked: 'Family',
             actionsWorking: 'Sending…',
             actionsAgentSent: 'Your request was sent to your advisor.',
             actionsAgentFailed: 'The request could not be sent. Please try again.',

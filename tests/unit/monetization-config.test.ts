@@ -163,7 +163,6 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
             'advanced_gap_detection',
             'unlimited_ai_questions',
             'multi_insurer_insights',
-            'claims_preparation_assistant',
             // family_portfolio was removed — a Pro-gated promise with full sales
             // copy that nothing implemented and nothing could reach.
             // duplicate_coverage_detection was removed 2026-08-30 the other way

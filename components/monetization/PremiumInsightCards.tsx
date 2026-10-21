@@ -34,7 +34,8 @@ const CARDS: { featureKey: FeatureKey; title: { el: string; en: string }; Icon: 
     { featureKey: "full_ai_policy_analysis", title: { el: "Πλήρης AI ανάλυση", en: "Full AI analysis" }, Icon: Sparkles },
     { featureKey: "advanced_gap_detection", title: { el: "Πιθανά κενά κάλυψης", en: "Possible coverage gaps" }, Icon: ShieldAlert },
     { featureKey: "unlimited_ai_questions", title: { el: "Ερωτήσεις στο AI", en: "Ask the AI" }, Icon: MessageCircleQuestion },
-    { featureKey: "claims_preparation_assistant", title: { el: "Οδηγός προετοιμασίας ζημιάς", en: "Claim preparation guide" }, Icon: FileText },
+    // «Οδηγός προετοιμασίας ζημιάς» was removed too: the claims guide (ClaimsGuidanceCard) renders
+    // for every plan, and `claims_preparation_assistant` has no enforcement site (review pass 4).
     // «Ενέργειες πριν την ανανέωση» (reminders) is a PLUS capability and was removed from this
     // Family grid; «Ανάλυση από διαφορετικές ασφαλιστικές» had no implementation behind it
     // (PW-CONTENT-02 reviews). Every card here must require exactly the heading tier.

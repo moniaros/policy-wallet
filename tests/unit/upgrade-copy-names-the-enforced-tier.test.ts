@@ -89,7 +89,7 @@ describe('the post-parse card grid names the tier its own cards require', () => 
 
     it('every card in the grid resolves in the gate registry', () => {
         const cardKeys = [...src.matchAll(/featureKey:\s*"(\w+)"/g)].map((m) => m[1] as FeatureKey)
-        expect(cardKeys.length).toBeGreaterThanOrEqual(4)
+        expect(cardKeys.length).toBeGreaterThanOrEqual(3)
         for (const k of cardKeys) expect(FEATURE_GATES[k], `${k} not in FEATURE_GATES`).toBeDefined()
     })
 

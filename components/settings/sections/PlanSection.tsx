@@ -235,7 +235,7 @@ export function PlanSection({ data }: { data: PlanData }) {
                 )}
             </SettingsSection>
 
-            <SettingsSection icon={Gauge} title={copy.usageTitle} description={copy.usageResets}>
+            <SettingsSection icon={Gauge} title={copy.usageTitle} description={data.usage.analysesLimit !== null || data.usage.hasAiBudget ? copy.usageResets : undefined}>
                 <div className="space-y-5">
                     <UsageMeter
                         label={copy.storedPolicies}

@@ -23,7 +23,6 @@ export type FeatureKey =
     | "advanced_renewal_reminders"
     | "pdf_preview"
     | "token_topup"
-    | "claims_preparation_assistant"
     | "partner_offers"
     | "protection_monitoring"
 
@@ -63,6 +62,10 @@ export interface FeatureGate {
  * The copy was unreachable, so it was never shown — but a single
  * `<UpgradePrompt featureKey="family_portfolio">` would have rendered a paid
  * promise for a feature that does not exist. Removed rather than left loaded.
+ *
+ * `claims_preparation_assistant` was removed 2026-10-22 the same way: the claims guide
+ * (ClaimsGuidanceCard) renders for EVERY plan, the `pro` declaration had no enforcement site, and an
+ * upsell card sold it as a Family feature (PW-CONTENT-02 review, pass 4).
  *
  * `duplicate_coverage_detection` sat here from then until 2026-08-30 with the
  * note that whether it should be gated "is a pricing decision, not a cleanup".
@@ -143,12 +146,6 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
         featureKey: "token_topup",
         requiredPlan: "plus",
         upgradeReason: "token_limit",
-        lockedViewedEvent: "feature_locked_viewed",
-    },
-    claims_preparation_assistant: {
-        featureKey: "claims_preparation_assistant",
-        requiredPlan: "pro",
-        upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",
     },
     // Partner-benefits program: the full active catalog unlocks at Plus (code

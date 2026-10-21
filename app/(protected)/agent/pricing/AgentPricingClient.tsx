@@ -27,13 +27,13 @@ const AGENT_PLANS = [
         features: {
             en: [
                 "10 customers",
-                "Basic CRM",
+                "Basic client view",
                 "Manual opportunity tracking",
                 "Collaboration threads",
             ],
             el: [
                 "10 πελάτες",
-                "Βασικό CRM",
+                "Βασική εικόνα πελατών",
                 "Χειροκίνητη διαχείριση ευκαιριών",
                 "Νήματα συνεργασίας",
             ],

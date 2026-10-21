@@ -96,6 +96,10 @@ describe('the pricing page states the enforced truth — gap gate, duplicate non
         expect(gapRow!.values).toEqual({ free: false, plus: false, pro: true })
     })
 
+    it('the claims-guide paywall stays deleted — the guide is on every plan (PW-CONTENT-02)', () => {
+        expect('claims_preparation_assistant' in FEATURE_GATES, 'claims_preparation_assistant returned: ClaimsGuidanceCard renders for every plan').toBe(false)
+    })
+
     it('the deleted paywall declaration stays deleted', () => {
         expect(
             'duplicate_coverage_detection' in FEATURE_GATES,
@@ -167,6 +171,20 @@ const KEYWORDS: Record<ClaimKey, RegExp> = {
     'agent.priorityQueue': /πρωτες|first|ουρα|queue|προτεραιοτητα/, 'agent.commissionTracking': /προμηθειων|commission/,
     'agent.crossSellIntelligence': /καλυψης|cover/, 'agent.expiryList': /ληγει|running out|ληξ/, 'agent.clientScreen': /πελατ|client/,
 }
+/**
+ * Claims that are TRUE ON EVERY PLAN cannot be checked by comparing a rendered flag with planClaim()
+ * (a false line tagged with one of them stays true). So each may carry ONLY its own label, anchored:
+ * relabel a Free-card line «Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν» as `renewalDate` and it fails.
+ */
+const EXACT_LABELS: Partial<Record<ClaimKey, RegExp>> = {
+    basicSummary: /^(βασικη συνοψη ασφαλιστηριου|basic policy summary)$/,
+    duplicateDetection: /^(εντοπισμος διπλων καλυψεων|duplicate-cover detection)$/,
+    renewalEmail30: /^(υπενθυμιση ανανεωσης 30 ημερες πριν \(email\)|renewal reminder 30 days ahead \(email\))$/,
+    renewalDate: /^(ημερομηνια ανανεωσης|renewal date)$/,
+    'agent.expiryList': /^(λιστα με ο,τι ληγει|a list of what is running out)$/,
+    'agent.clientScreen': /^(βασικη εικονα πελατων|ολοι οι πελατες σε μια οθονη|basic client view|every client on one screen)$/,
+}
+const labelIsExact = (key: ClaimKey, text: string) => !EXACT_LABELS[key] || EXACT_LABELS[key]!.test(plain(text))
 const claimText = (v: ClaimValue) => String(v)
 const hasNumber = (text: string, n: number) => new RegExp(`(?<![\\d.,])${n}(?![\\d.,])`).test(text)
 const UNLIMITED = /Απεριόριστ|Unlimited/i
@@ -183,6 +201,7 @@ function claimOffenders(audience: Audience): string[] {
                 if (!(f.label.el in UNTAGGED_OK)) bad.push(`${where}: claim:null needs an UNTAGGED_OK reason`)
                 continue
             }
+            if (!labelIsExact(f.claim, f.label.el) || !labelIsExact(f.claim, f.label.en)) bad.push(`${where}: an always-true claim (${f.claim}) may carry only its own label`)
             if (!KEYWORDS[f.claim].test(plain(f.label.el)) || !KEYWORDS[f.claim].test(plain(f.label.en))) bad.push(`${where}: the label does not say what the \`${f.claim}\` tag claims`)
             const v = planClaim(f.claim as never, tier as never)
             if (v === UNSTATED) bad.push(`${where}: the plan's ${f.claim} is not stated for this tier — the line must go`)
@@ -195,6 +214,7 @@ function claimOffenders(audience: Audience): string[] {
         const where = `row «${row.name.el}»`
         if (row.claim === undefined) { bad.push(`${where}: no \`claim\` tag`); continue }
         if (row.claim === null) { if (!(row.name.el in UNTAGGED_OK)) bad.push(`${where}: claim:null needs an UNTAGGED_OK reason`); continue }
+        if (!labelIsExact(row.claim, row.name.el) || !labelIsExact(row.claim, row.name.en)) bad.push(`${where}: an always-true claim (${row.claim}) may carry only its own label`)
         if (!KEYWORDS[row.claim].test(plain(row.name.el)) || !KEYWORDS[row.claim].test(plain(row.name.en))) bad.push(`${where}: the row name does not say what the \`${row.claim}\` tag claims`)
         for (const [key, cell] of Object.entries(row.values)) {
             const tier = TIER_OF_KEY[key]
@@ -225,6 +245,8 @@ describe('PW-CONTENT-02 — every public capability claim equals what the code e
         expect(ph).toMatch(/card free «Πλήρης ανάλυση AI»: renders included=true, code says false/)
         expect(ph).toMatch(/no `claim` tag/)
         expect(ph).toMatch(/the label does not say what the `basicSummary` tag claims/)
+        expect(ph).toMatch(/always-true claim \(renewalDate\) may carry only its own label/)
+        expect(agent).toMatch(/always-true claim \(agent.clientScreen\) may carry only its own label/)
     })
 
     it('every claim key a page uses is a real key (an agent key on an agent plan, a B2C key on a B2C plan)', () => {
@@ -240,7 +262,7 @@ describe('PW-CONTENT-02 — every public capability claim equals what the code e
 /** In-app strings (A1): a promise nothing grants. Enumerated from the filesystem, not from two known files. */
 const IN_APP_ROOTS = ['app', 'components', 'lib']
 // In-app promises of full analysis below Family, or of unlimited analyses, that the code does not grant (review I7).
-const IN_APP_BANNED = /πρώτη πλήρης ανάλυση είναι δωρεάν|first full analysis is free|Full AI analysis is a Plus feature|διαθέσιμη σε Plus\/Pro|available on Plus\/Pro|Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο|Analyses are unlimited on every plan|3 ασφαλιστήρια με πλήρη ανάλυση|3 policies with the full AI analysis|Απεριόριστες αναλύσεις|Unlimited (document |AI )?analyses|Απεριόριστες AI αναλύσεις|δεν περιλαμβάνει αναλύσεις AI|\d+M tokens\/(μήνα|month)|Αποκλειστική υποστήριξη|Dedicated support|upgrade or downgrade|υποβαθμίσετε|δυνατότητα του Plus|περιλαμβάνονται στο Plus|προτεραιότητα υποστήριξης|[Pp]riority support|Υποστήριξη προτεραιότητας|with Plus or Pro|Απεριόριστα ασφαλιστήρια(?! στο πορτοφόλι)|Unlimited policies(?! in your wallet)|Digital wallet integration|Branded emails|Επώνυμα emails|Portfolio gap view(?! is available on the Family)|available on Plus and Pro|διαθέσιμη στα Plus και Pro|(Savings report export|Portfolio export) is available on Pro plans|(ανάλυση AI|AI analysis)[^.\n]{0,30}(σε όλα τα πλάνα|on every plan)|Pre-renewal checklist|Λίστα ελέγχου πριν την ανανέωση|ουρά ανάλυσης \(Plus\)|analysis queue \(Plus\)/i
+const IN_APP_BANNED = /πρώτη πλήρης ανάλυση είναι δωρεάν|first full analysis is free|Full AI analysis is a Plus feature|διαθέσιμη σε Plus\/Pro|available on Plus\/Pro|Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο|Analyses are unlimited on every plan|3 ασφαλιστήρια με πλήρη ανάλυση|3 policies with the full AI analysis|Απεριόριστες αναλύσεις|Unlimited (document |AI )?analyses|Απεριόριστες AI αναλύσεις|δεν περιλαμβάνει αναλύσεις AI|\d+M tokens\/(μήνα|month)|Αποκλειστική υποστήριξη|Dedicated support|upgrade or downgrade|υποβαθμίσετε|δυνατότητα του Plus|περιλαμβάνονται στο Plus|προτεραιότητα υποστήριξης|[Pp]riority support|Υποστήριξη προτεραιότητας|with Plus or Pro|Απεριόριστα ασφαλιστήρια(?! στο πορτοφόλι)|Unlimited policies(?! in your wallet)|Digital wallet integration|Branded emails|Επώνυμα emails|Portfolio gap view(?! is available on the Family)|available on Plus and Pro|διαθέσιμη στα Plus και Pro|(Savings report export|Portfolio export) is available on Pro plans|(ανάλυση AI|AI analysis)[^.\n]{0,30}(σε όλα τα πλάνα|on every plan)|Pre-renewal checklist|Λίστα ελέγχου πριν την ανανέωση|(πλήρης ανάλυση|ανάλυση κενών|full (ai )?analysis|gap (detection|analysis)|gaps?)[^.\n]{0,60}(είναι δυνατότητα του|περιλαμβάν\S* στο|διαθέσιμη (με το|στο)|is a|unlocks (on|with)|included (in|on))\s+Plus\b|ουρά ανάλυσης \(Plus\)|analysis queue \(Plus\)/i
 function inAppFiles(dir: string): string[] {
     if (!existsSync(dir)) return []
     return readdirSync(dir).flatMap((name) => {
@@ -264,7 +286,7 @@ describe('PW-CONTENT-02 A1 — no in-app string promises a free full analysis (H
     it('probe: the detector turns red on every probe line — Greek forms included', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/entitlement-claim-in-app.ts.txt', 'utf-8')
         const found = inAppOffenders([{ path: 'probe', text: probe }]).join('\n')
-        for (const needle of ['Η πρώτη πλήρης ανάλυση είναι δωρεάν', 'Απεριόριστες αναλύσεις εγγράφων', 'δεν περιλαμβάνει αναλύσεις AI', 'Unlimited AI analyses', 'tokens/month', 'Dedicated support', 'upgrade or downgrade', 'δυνατότητα του Plus', 'προτεραιότητα υποστήριξης'])
+        for (const needle of ['Η πρώτη πλήρης ανάλυση είναι δωρεάν', 'Απεριόριστες αναλύσεις εγγράφων', 'δεν περιλαμβάνει αναλύσεις AI', 'Unlimited AI analyses', 'tokens/month', 'Dedicated support', 'upgrade or downgrade', 'δυνατότητα του Plus', 'προτεραιότητα υποστήριξης', 'Απεριόριστα ασφαλιστήρια', 'Digital wallet integration', 'Υποστήριξη προτεραιότητας', 'analysis queue (Plus)', 'διαθέσιμη στα Plus και Pro', 'περιλαμβάνεται στο Plus', 'is a Plus feature', 'διαθέσιμη με το Plus', 'unlocks on Plus'])
             expect(found, `the in-app guard must catch «${needle}»`).toContain(needle)
     })
 })
@@ -344,6 +366,9 @@ describe('PW-CONTENT-02 — /agent/pricing equals the enforced entitlements', ()
         const expected = planClaim('agent.analysesPerMonth', tier)
         if (expected === UNSTATED) expect(analyses, `${id}: the count is not stated for this plan`).toEqual([])
         else if (expected !== null) expect(new Set(analyses), `${id}: enforced ${expected}`).toEqual(new Set([expected]))
+        const customers = [...block.matchAll(/(\d+)\s+(?:customers|πελάτες)/gi)].map((m) => Number(m[1]))
+        const wantCustomers = planClaim('agent.clients', tier)
+        if (wantCustomers !== null) expect(new Set(customers), `${id}: enforced ${wantCustomers} customers`).toEqual(new Set([wantCustomers]))
         const price = Number(block.match(/priceEur: ([\d.]+)/)![1])
         const fact = DEFAULT_PLAN_FACTS.find((p) => p.id === id)!
         expect(price, `${id} fallback price`).toBe(fact.monthlyEur)

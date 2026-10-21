@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 4274
-# inline entries: 5003 across 242 files
+# inline entries: 5002 across 242 files
 # ternary entries: 286 across 45 files
 # call entries: 1082 across 82 files
 
@@ -3622,7 +3622,7 @@ bundle	wallet.policyDetailsPage.actionsAgentFailed	"Δεν ήταν δυνατή
 bundle	wallet.policyDetailsPage.actionsAgentSent	"Το αίτημα στάλθηκε στον σύμβουλό σας."
 bundle	wallet.policyDetailsPage.actionsAnsweredHeading	"Από το ασφαλιστήριό σας"
 bundle	wallet.policyDetailsPage.actionsCall	"Κλήση"
-bundle	wallet.policyDetailsPage.actionsLocked	"Pro"
+bundle	wallet.policyDetailsPage.actionsLocked	"Family"
 bundle	wallet.policyDetailsPage.actionsNoAgent	"Δεν έχετε συνδεδεμένο σύμβουλο αυτή τη στιγμή."
 bundle	wallet.policyDetailsPage.actionsShowAll	"Δείτε όλα"
 bundle	wallet.policyDetailsPage.actionsShowLess	"Δείτε λιγότερα"
@@ -4391,7 +4391,7 @@ inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Δωρεάν"
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Κάτι πήγε στραβά."
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Μετάβαση σε ασφαλή πληρωμή..."
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Πρακτορείο"
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "Βασικό CRM", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "Βασική εικόνα πελατών", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Ροή εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Μαζική εισαγωγή (100 γραμμές)", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "150 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", "Προτεραιότητα στην ανάλυση", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & σύμβουλοι", "400 αναλύσεις AI τον μήνα", "Απεριόριστη μαζική εισαγωγή", "Υποστήριξη μέσω email", "Όλα τα Pro χαρακτηριστικά", ]
@@ -4819,7 +4819,6 @@ inline	components/monetization/CarriedPlanCard.tsx	"Το πλάνο που επ�
 inline	components/monetization/PremiumInsightCards.tsx	"Διαθέσιμα με το Family"
 inline	components/monetization/PremiumInsightCards.tsx	"Ερωτήσεις στο AI"
 inline	components/monetization/PremiumInsightCards.tsx	"Η βασική σας σύνοψη είναι έτοιμη. Δείτε τι προσθέτει η πλήρης ανάλυση AI."
-inline	components/monetization/PremiumInsightCards.tsx	"Οδηγός προετοιμασίας ζημιάς"
 inline	components/monetization/PremiumInsightCards.tsx	"Πιθανά κενά κάλυψης"
 inline	components/monetization/PremiumInsightCards.tsx	"Πλήρης AI ανάλυση"
 inline	components/monetization/UpgradeModal.tsx	"/έτος"

@@ -159,21 +159,6 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         successMessage: "Upgrade complete. Your AI tokens have been renewed.",
         successCta: "Continue to analysis",
     },
-    claims_preparation_assistant: {
-        headline: "Claim preparation guide",
-        body: "If you ever need to file a claim, unlock a step-by-step guide based on your policy: what to prepare, deadlines and who to notify.",
-        primaryCta: "Open claim guide",
-        secondaryCta: "Not now",
-        benefits: [
-            "Step-by-step of what the claim needs",
-            "Deadlines and contact details from your policy",
-            "List of documents usually requested",
-            "Ask your insurer or advisor anytime",
-        ],
-        trust: TRUST,
-        successMessage: "Upgrade complete. The claim preparation guide is available.",
-        successCta: "Open guide",
-    },
     partner_offers: {
         headline: "Partner benefits with Family",
         body: "Family includes benefits from selected partners — prevention services and discounts worth more than the subscription itself.",

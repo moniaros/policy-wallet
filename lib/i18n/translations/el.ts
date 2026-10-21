@@ -920,7 +920,7 @@ export const el = {
             actionsCall: 'Κλήση',
             actionsShowAll: 'Δείτε όλα',
             actionsShowLess: 'Δείτε λιγότερα',
-            actionsLocked: 'Pro',
+            actionsLocked: 'Family',
             actionsWorking: 'Γίνεται αποστολή…',
             actionsAgentSent: 'Το αίτημα στάλθηκε στον σύμβουλό σας.',
             actionsAgentFailed: 'Δεν ήταν δυνατή η αποστολή του αιτήματος. Δοκιμάστε ξανά.',
