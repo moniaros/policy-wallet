@@ -1,0 +1,58 @@
+{
+  "candidate": "136692a2df69381d3c41891fcb873b41d93441b2",
+  "merge": "2236dfdd423e1ccd0c7473f8c9dfa7845baceaea",
+  "local": {
+    "unitFiles": 700,
+    "unitTests": 7873,
+    "apiInventory": 116,
+    "migrations": 88,
+    "lint": "passed",
+    "types": "passed",
+    "i18n": "passed",
+    "utf8": "passed",
+    "build": "passed",
+    "browserCases": 7,
+    "heroAxeScans": 2,
+    "axeViolations": 0
+  },
+  "asset": {
+    "bytes": 1629821,
+    "sha256Matches": true,
+    "fastStart": true,
+    "audio": false,
+    "decode": "passed",
+    "blackIntervals": 0
+  },
+  "preview": {
+    "url": "https://policy-wallet-faj16aofy-moniaros-projects.vercel.app",
+    "deployment": "dpl_7HtH8p92EzhLHuA616sbhtj9rgJh",
+    "browserCases": 7,
+    "heroAxeScans": 2,
+    "axeViolations": 0,
+    "databaseAccess": false,
+    "configuration": "Nonfunctional placeholder DB/Supabase/auth values; public-hero scope only."
+  },
+  "prCI": {
+    "run": 39590946171,
+    "conclusion": "success"
+  },
+  "productionCI": {
+    "run": 39592337773,
+    "conclusion": "success"
+  },
+  "productionDeploy": {
+    "run": 39593746229,
+    "conclusion": "success",
+    "deployment": "dpl_7jYVGPihVhWbe9EeknoWPiy3dQoS",
+    "url": "https://www.policywallet.gr",
+    "deploymentUrl": "https://policy-wallet-e7cj5neme-moniaros-projects.vercel.app",
+    "revision": "2236dfdd423e1ccd0c7473f8c9dfa7845baceaea",
+    "browserCases": 7,
+    "heroAxeScans": 2,
+    "axeViolations": 0,
+    "assetHashMatches": true,
+    "loopObserved": true,
+    "migrationsApplied": 88,
+    "pendingMigrations": []
+  }
+}

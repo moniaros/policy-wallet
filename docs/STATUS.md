@@ -1,28 +1,28 @@
 # Status
 
 ## Current phase
-Hero lifestyle video prepared on 21 October 2026; preview and production promotion in progress. Public/auth presentation release #397 remains live.
+Hero lifestyle video shipped — 21 October 2026. [PR #400](https://github.com/moniaros/policy-wallet/pull/400), production application `2236dfdd`.
 
 ## Done
-- Higgsfield five-scene film: family, pets, parked-car driver, office workers, agents/client.
-- Silent 15.04s / 720p hero MP4 compressed to 1.63 MB; first-scene poster; EL/EN pause/play.
-- Reduced-motion/data-saving fallback, offscreen/hidden pause, persistent user pause and failed-media fallback.
-- 7,873 unit tests, guardrails, build and seven browser scenarios passed; two hero axe scans clear.
+- Five-scene Higgsfield film: family with children, pets, parked-car driver, office colleagues, insurance agents/client.
+- Silent 15.04s / 720p MP4, 1.63 MB; first-scene poster; EL/EN pause/play. No visible generation caption.
+- Reduced-motion/data-saving and media-error fallbacks; offscreen/hidden pause; explicit user pause persists.
+- 7,873 unit tests, required guardrails and builds passed. Seven cases passed locally, on protected preview and live; two hero axe scans clear per environment.
+- Production CI 39592337773 and deploy 39593746229 succeeded. Live asset hash matches; end-to-start looping verified. Production schema gate: 88 migrations, none pending.
 
 ## In progress
-- Verify the exact video candidate on a deployment preview, then promote and check production.
+- Remaining protected policyholder/agent/agency presentation improvements are a subsequent tranche.
 
 ## Blocked
-- None for the video release. Existing production registration pause retained.
+- No video-release blocker. Existing production registration pause retained. Optional Kilo review unavailable (credits).
 
 ## Top risks ranked
-1. Existing production session-pool fallback warning remains an infrastructure follow-up.
-2. Browser autoplay policies vary; poster and explicit play control cover refusal.
-3. Paid checkout/hardware passkeys remain outside this presentation verification.
+1. Existing production session-pool fallback without POOLED_DATABASE_URL needs an infrastructure review.
+2. Paid checkout and hardware passkeys remain outside this presentation verification.
 
 ## Next 3 actions
-1. Complete preview video verification.
-2. Deploy the verified candidate and check live playback/fallback.
-3. Resume the remaining protected-app presentation work.
+1. Continue the presentation direction across protected agent/agency pages.
+2. Refine protected policyholder pages while preserving their identity.
+3. Resolve the pool warning and verify payment/passkey journeys independently.
 
 Evidence: [hero video audit](audits/hero-video-2026-10-21.md).
