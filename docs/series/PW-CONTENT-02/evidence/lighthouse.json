@@ -63,5 +63,37 @@
    "seo_median": 100,
    "accessibility_median": 100
   }
+ },
+ "final_tree_after_review_loop": {
+  "/ desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/ mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/pricing desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/pricing mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/product desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/product mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  }
  }
 }

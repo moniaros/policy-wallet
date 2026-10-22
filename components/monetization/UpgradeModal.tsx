@@ -35,7 +35,8 @@ const MODAL_COPY = {
     perMonth: { el: "/μήνα", en: "/month" },
     perYear: { el: "/έτος", en: "/year" },
     savings: { el: "2 μήνες δωρεάν", en: "2 months free" },
-    trial: { el: "14 ημέρες δωρεάν δοκιμή", en: "14-day free trial" },
+    // {days} = the plan row's `trial_days` (what createCheckoutSession passes to Stripe), never a literal.
+    trial: { el: "{days} ημέρες δωρεάν δοκιμή", en: "{days}-day free trial" },
     currentPlan: { el: "Τρέχον πλάνο", en: "Current plan" },
     recommendedTag: { el: "Προτείνεται · Πιο δημοφιλές · Καλύτερη αξία", en: "Recommended · Most popular · Best value" },
     // The TIER NAME is not written here. It used to be — «Plus» for code key
@@ -256,7 +257,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                 </button>
                 {PLUS.trialDays > 0 && (
                     <p className="mt-1.5 text-center text-xs font-semibold text-primary dark:text-mint">
-                        {pick(MODAL_COPY.trial, language)}
+                        {pick(MODAL_COPY.trial, language).replace("{days}", String(PLUS.trialDays))}
                     </p>
                 )}
 

@@ -128,7 +128,7 @@ export const subscriptionCopy = {
         // `{days}` is the plan row's `trial_days` (what createCheckoutSession passes to Stripe), never a literal.
         badge: { el: '{days} ΗΜΕΡΕΣ ΔΩΡΕΑΝ', en: '{days}-DAY FREE TRIAL' },
         cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ {days} ΗΜΕΡΩΝ', en: 'START {days}-DAY FREE TRIAL' },
-        startCta: { el: 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών', en: 'Start 14-Day Free Trial' },
+        startCta: { el: 'Ξεκινήστε δωρεάν δοκιμή {days} ημερών', en: 'Start {days}-Day Free Trial' },
     },
 
     // Call-to-Action Buttons

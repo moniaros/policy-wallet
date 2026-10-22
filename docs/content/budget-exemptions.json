@@ -468,5 +468,10 @@
     "locator": "inline:lib/subscription-copy.ts",
     "text": "ΔΩΡΕΑΝ ΔΟΚΙΜΗ {days} ΗΜΕΡΩΝ",
     "reason": "PW-CONTENT-02 review pass 8: the trial length is read from the plan row (`trial_days`, what checkout passes to Stripe) instead of a typed 14; `{days}` is a 6-character placeholder replaced by 1-2 digits at render, so the rendered string is not longer."
+  },
+  {
+    "locator": "inline:components/monetization/UpgradeModal.tsx",
+    "text": "{days} ημέρες δωρεάν δοκιμή",
+    "reason": "PW-CONTENT-02 review pass 9: the trial length is read from the plan row (`trial_days`); `{days}` is a placeholder replaced by 1-2 digits at render, so the rendered string is not longer."
   }
 ]

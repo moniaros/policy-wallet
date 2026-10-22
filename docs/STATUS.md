@@ -1,7 +1,7 @@
 # Status
 
 ## Current phase
-PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, uncommitted-to-NEW-UI — 22 October 2026. Not merged, not deployed.
+PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer` — 22 October 2026. Nine fresh adversarial reviews; pass 9 printed CRITICAL: 0. NOT merged, NOT deployed: H-021 (production plan rows) is a merge blocker.
 
 ## Done
 - Public claims equal enforced code: 12 false entitlement claims removed (Free/Plus «Πλήρης ανάλυση AI», Agent Pro «200», Free reminders, …), tagged with `planClaim` and guarded. In-app «πρώτη πλήρης ανάλυση είναι δωρεάν» removed (no grant built; PW-ENTITLE-01 stub queued).

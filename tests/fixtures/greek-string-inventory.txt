@@ -4822,8 +4822,8 @@ inline	components/monetization/PremiumInsightCards.tsx	"Πιθανά κενά κ
 inline	components/monetization/PremiumInsightCards.tsx	"Πλήρης AI ανάλυση"
 inline	components/monetization/UpgradeModal.tsx	"/έτος"
 inline	components/monetization/UpgradeModal.tsx	"/μήνα"
-inline	components/monetization/UpgradeModal.tsx	"14 ημέρες δωρεάν δοκιμή"
 inline	components/monetization/UpgradeModal.tsx	"2 μήνες δωρεάν"
+inline	components/monetization/UpgradeModal.tsx	"{days} ημέρες δωρεάν δοκιμή"
 inline	components/monetization/UpgradeModal.tsx	"Όχι τώρα"
 inline	components/monetization/UpgradeModal.tsx	"Ετήσια"
 inline	components/monetization/UpgradeModal.tsx	"Η μετάβαση στην πληρωμή απέτυχε. Δοκιμάστε ξανά."
@@ -9223,7 +9223,7 @@ inline	lib/subscription-copy.ts	'Ναι, μπορείτε να αναβαθμί�
 inline	lib/subscription-copy.ts	'Ξεκινήστε Family'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Plus'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Δωρεάν'
-inline	lib/subscription-copy.ts	'Ξεκινήστε δωρεάν δοκιμή 14 ημερών'
+inline	lib/subscription-copy.ts	'Ξεκινήστε δωρεάν δοκιμή {days} ημερών'
 inline	lib/subscription-copy.ts	'Ξεκινήστε δωρεάν και αναβαθμίστε όποτε είστε έτοιμοι'
 inline	lib/subscription-copy.ts	'Οι πληρωμές γίνονται εξ ολοκλήρου μέσα στο Stripe, πιστοποιημένο κατά PCI DSS Level 1. Τα στοιχεία της κάρτας σας δεν περνούν ποτέ από τους δικούς μας διακομιστές και δεν τα αποθηκεύουμε.'
 inline	lib/subscription-copy.ts	'ΠΕΡΙΜΕΝΕΤΕ...'
