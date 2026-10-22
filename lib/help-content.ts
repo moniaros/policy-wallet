@@ -197,7 +197,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
             sections: [
                 {
                     heading: 'Open the billing page',
-                    text: 'Go to Settings -> Plan -> "Open billing page". The button appears once you have made a payment. It opens Stripe\'s secure billing page.',
+                    text: 'Go to Settings -> Plan & billing -> "Open billing page". The button appears once your subscription has started. It opens Stripe\'s secure billing page.',
                 },
                 {
                     heading: 'Update your card there',
@@ -375,7 +375,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
             sections: [
                 {
                     heading: 'Ανοίξτε τη σελίδα χρέωσης',
-                    text: 'Μεταβείτε στις Ρυθμίσεις -> Πλάνο -> "Άνοιγμα σελίδας χρέωσης". Το κουμπί εμφανίζεται μόλις κάνετε την πρώτη πληρωμή. Ανοίγει την ασφαλή σελίδα χρέωσης της Stripe.',
+                    text: 'Μεταβείτε στις Ρυθμίσεις -> Συνδρομή και χρέωση -> "Άνοιγμα σελίδας χρέωσης". Το κουμπί εμφανίζεται μόλις ξεκινήσει η συνδρομή σας. Ανοίγει την ασφαλή σελίδα χρέωσης της Stripe.',
                 },
                 {
                     heading: 'Ενημερώστε την κάρτα εκεί',

@@ -86,8 +86,8 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
                             {isAgentAudience
                                 ? AGENT_FUNNEL_PLANS
                                     ? t(
-                                          `${AGENT_FUNNEL_PLANS.starter.displayName} ${formatPlanPrice(AGENT_FUNNEL_PLANS.starter.monthlyEur, "el")}/μήνα, ${AGENT_FUNNEL_PLANS.pro.displayName} ${formatPlanPrice(AGENT_FUNNEL_PLANS.pro.monthlyEur, "el")}/μήνα για ομάδες. ${CANCEL_ANYTIME.el}.`,
-                                          `${AGENT_FUNNEL_PLANS.starter.displayName} at ${formatPlanPrice(AGENT_FUNNEL_PLANS.starter.monthlyEur, "en")}/month, ${AGENT_FUNNEL_PLANS.pro.displayName} at ${formatPlanPrice(AGENT_FUNNEL_PLANS.pro.monthlyEur, "en")}/month for teams. ${CANCEL_ANYTIME.en}.`
+                                          `${AGENT_FUNNEL_PLANS.starter.displayName} ${formatPlanPrice(AGENT_FUNNEL_PLANS.starter.monthlyEur, "el")}/μήνα, ${AGENT_FUNNEL_PLANS.pro.displayName} ${formatPlanPrice(AGENT_FUNNEL_PLANS.pro.monthlyEur, "el")}/μήνα για ομάδες.`,
+                                          `${AGENT_FUNNEL_PLANS.starter.displayName} at ${formatPlanPrice(AGENT_FUNNEL_PLANS.starter.monthlyEur, "en")}/month, ${AGENT_FUNNEL_PLANS.pro.displayName} at ${formatPlanPrice(AGENT_FUNNEL_PLANS.pro.monthlyEur, "en")}/month for teams.`
                                       )
                                     : t("Δείτε όλα τα πλάνα στη σελίδα τιμών.", "See every plan on the pricing page.")
                                 : FUNNEL_PLANS

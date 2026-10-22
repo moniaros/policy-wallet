@@ -1,6 +1,5 @@
 "use client"
 
-import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -131,7 +130,7 @@ const copy = {
         backToDashboard: "Back to Dashboard",
         vatNote: "Prices include 24% Greek VAT — the amount shown is exactly what you're charged.",
         vatIncluded: "incl. VAT",
-        recurringNote: `Paid plans are monthly subscriptions that auto-renew. ${CANCEL_ANYTIME.en} (cancel from your account).`,
+        recurringNote: "Paid plans are monthly subscriptions that auto-renew.",
     },
     el: {
         title: "Πλάνα συμβούλων",
@@ -146,7 +145,7 @@ const copy = {
         backToDashboard: "Πίσω στην αρχική",
         vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.",
         vatIncluded: "με ΦΠΑ",
-        recurringNote: `Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. ${CANCEL_ANYTIME.el} (η ακύρωση γίνεται από τον λογαριασμό σας).`,
+        recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα.",
     },
 }
 

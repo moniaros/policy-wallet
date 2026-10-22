@@ -4,3 +4,6 @@ export const B = "Every plan gets one reminder email 30 days before expiry"
 export const C = "Υπενθυμίσεις στις 90, 60, 30, 15, 7 και 3 ημέρες πριν τη λήξη"
 export const D = "We email you before something runs out — 30 days ahead on every plan"
 export const E = <p>Η υπενθύμιση ανανέωσης 30 ημέρες πριν ισχύει σε όλα τα πλάνα</p>
+export const F = "Προσθέστε ασφαλιστήρια και θα σας ειδοποιούμε 90 ημέρες πριν από κάθε ανανέωση."
+export const G = "Add policies and we will alert you 90 days before every renewal."
+export const H = "Μπορώ να έχω υπενθύμιση; Ναι, 30 ημέρες πριν τη λήξη."

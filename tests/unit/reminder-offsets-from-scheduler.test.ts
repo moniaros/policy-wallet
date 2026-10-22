@@ -15,13 +15,14 @@ const ROOTS = ['app', 'components', 'lib']
 const EXCLUDED: Array<[RegExp, string]> = [
     [/^lib\/renewals\//, 'the constants and the composing module'],
     [/^lib\/services\/renewal\.service\.ts$/, 'the scheduler itself (internal strings and comments)'],
-    [/^app\/\(protected\)\/renewals\//, 'the AGENT expiry list window — a different feature with its own constant'],
+    [/^app\/\(protected\)\/renewals\//, 'the AGENT expiry list window (types 90 = the cron window literal, renewal.service.ts:115): queued as AGENT-LIST-WINDOW-CONSTANT'],
     [/^lib\/legal\//, 'retention periods in the privacy notice, not reminder offsets'],
     [/^app\/api\//, 'API handlers'],
     [/^lib\/notifications\//, 'notification registry/internal copy (own guards)'],
 ]
 
-const REMIND = /υπενθυμ|υπενθύμ|reminder|ειδοποιούμε με email|email you before|we email/i
+// The CLASS: any promise to tell the customer something before a date (reminder, alert, notify, email).
+const REMIND = /υπενθυμ|υπενθύμ|reminder|ειδοποι|alert|notif|email you|we email|we will email|στέλνουμε email|email πριν/i
 const RUNG = /(?<![\d.,])(90|60|30|15|7|3)(?![\d.,])/
 const LITERAL = /(["'`])(?:(?!\1)[^\n\\]|\\.)*[ \t](?:(?!\1)[^\n\\]|\\.)*\1/g
 
@@ -43,7 +44,7 @@ export function typedOffsets(src: string): string[] {
         .map((s) => s.slice(1, -1))
         // template interpolations are composed values: remove them before looking for a typed number
         .map((t) => t.replace(/\$\{[^}]*\}/g, ' '))
-        .filter((t) => !/[{};=]|=>|\)\s*\{/.test(t))
+        .filter((t) => !/[{}]|=>| = /.test(t))
     const jsx = [...code.matchAll(/>([^<>{}\n]*[A-Za-zΑ-Ωα-ω][^<>{}\n]*)</g)].map((m) => m[1])
     return [...quoted, ...jsx].filter((t) => REMIND.test(t) && RUNG.test(t))
 }
@@ -59,7 +60,7 @@ describe('reminder offsets are composed from the scheduler constants (PW-C02-D16
     it('probe: every probe line is flagged on its own', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/reminder-offset-typed.ts.txt', 'utf-8')
         const lines = probe.split('\n').filter((l) => l.startsWith('export const'))
-        expect(lines.length).toBe(5)
+        expect(lines.length).toBe(8)
         for (const line of lines) expect(typedOffsets(line).length, line).toBeGreaterThanOrEqual(1)
     })
 
@@ -67,7 +68,7 @@ describe('reminder offsets are composed from the scheduler constants (PW-C02-D16
         expect(LADDER_RANGE.en).toBe(`from ${Math.max(...RENEWAL_MILESTONES)} to ${Math.min(...RENEWAL_MILESTONES)} days ahead`)
         expect(LADDER_LIST.en).toContain(RENEWAL_MILESTONES.join(', ').replace(/, (\d+)$/, ' and $1'))
         expect(BASIC_WHEN.en).toContain(String(Math.max(...BASIC_MILESTONES)))
-        expect(LADDER_LABEL.el).toContain('από 90 έως 3')
-        expect(BASIC_REMINDER_LABEL.el).toContain('έως 30 ημέρες')
+        expect(LADDER_LABEL.el).toContain(`από ${Math.max(...RENEWAL_MILESTONES)} έως ${Math.min(...RENEWAL_MILESTONES)}`)
+        expect(BASIC_REMINDER_LABEL.el).toContain(`έως ${Math.max(...BASIC_MILESTONES)} ημέρες`)
     })
 })
