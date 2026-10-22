@@ -22,7 +22,7 @@ const EXCLUDED: Array<[RegExp, string]> = [
 ]
 
 // The CLASS: any promise to tell the customer something before a date (reminder, alert, notify, email).
-const REMIND = /υπενθυμ|υπενθύμ|reminder|ειδοποι|alert|notif|email you|we email|we will email|στέλνουμε email|email πριν/i
+const REMIND = /υπενθυμ|υπενθύμ|remind|ειδοποι|ενημερώσ|θα λάβετε|alert|notif|let you know|email you|we email|we will email|στέλνουμε email|email πριν/i
 const RUNG = /(?<![\d.,])(90|60|30|15|7|3)(?![\d.,])/
 const LITERAL = /(["'`])(?:(?!\1)[^\n\\]|\\.)*[ \t](?:(?!\1)[^\n\\]|\\.)*\1/g
 
@@ -43,7 +43,7 @@ export function typedOffsets(src: string): string[] {
     const quoted = (code.match(LITERAL) ?? [])
         .map((s) => s.slice(1, -1))
         // template interpolations are composed values: remove them before looking for a typed number
-        .map((t) => t.replace(/\$\{[^}]*\}/g, ' '))
+        .map((t) => t.replace(/\$\{[^}]*\}/g, ' ').replace(/\{\w+\}/g, ' '))
         .filter((t) => !/[{}]|=>| = /.test(t))
     const jsx = [...code.matchAll(/>([^<>{}\n]*[A-Za-zΑ-Ωα-ω][^<>{}\n]*)</g)].map((m) => m[1])
     return [...quoted, ...jsx].filter((t) => REMIND.test(t) && RUNG.test(t))

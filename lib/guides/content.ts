@@ -587,8 +587,8 @@ export const guides: Guide[] = [
                 paragraphs: [
                     {
                         el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε χωρίς χρόνο να αποφασίσετε με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των ασφαλιστηρίων σας σε ένα σημείο και σας στέλνει υπενθύμιση πριν τη λήξη, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
-                        // Every plan gets a renewal reminder (30 days ahead, email);
-                        // the longer ladder is Plus and Family — so neither
+                        // Every plan gets one renewal reminder email once the policy is within 30
+                        // days (lib/renewals/reminder-copy.ts); the longer ladder is Plus and Family — so neither
                         // language attributes the reminder to a plan (PW-CONTENT-02).
                         en: "Thirty days before expiry. That leaves time to request quotes, negotiate, and avoid being locked into an automatic renewal on worse terms. PolicyWallet tracks the expiry dates of all your policies and sends you a reminder before expiry, with a ready coverage summary so you can compare quotes on equal footing.",
                     },

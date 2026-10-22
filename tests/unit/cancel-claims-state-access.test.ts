@@ -21,9 +21,9 @@ const EXCLUDED = [
 ]
 
 // The CLASS: a cancel/stop verb or noun within a few words of a time qualifier, in either language.
-const CANCEL_CLAIM = /(ακ[υύ]ρ\S*|σταματάτε|cancel\w*)[^.\n]{0,40}(όποτε|οποτεδήποτε|ανά πάσα στιγμή|any ?time|at any time|whenever)/i
+const CANCEL_CLAIM = /(ακ[υύ]ρ\S*|σταματάτε|διακόψ\S*|cancel\w*)[^.\n]{0,40}(όποτε|οποτεδήποτε|ανά πάσα στιγμή|any ?time|at any time|whenever)/i
 const CONSEQUENCE = /έως το τέλος|μέχρι το τέλος|τέλος της τρέχουσας περιόδου|until the end|to the end of|end of the current billing period/i
-const DOWNGRADE_CLAIM = /υποβαθμίσετε|υποβάθμιση (πλάνου|συνδρομής)|υποβάθμι\S*[^.\n]{0,25}πλάν|downgrad\w*|switch to a (smaller|cheaper|lower)|αλλάξετε (το )?πλάνο|μετάβαση σε μικρότερο πλάνο|move (down )?to a (smaller|cheaper|lower) plan/i
+const DOWNGRADE_CLAIM = /υποβαθμίσετε|υποβάθμιση (πλάνου|προγράμματος|συνδρομής)|υποβάθμι\S*[^.\n]{0,25}(πλάν|πρόγραμμ)|downgrad\w*|(αλλάξετε|αλλαγή) (το )?(πλάνο|πρόγραμμα)|change (your )?plan|switch plans?|switch to a (smaller|cheaper|lower)|αλλάξετε (το )?πλάνο|μετάβαση σε μικρότερο πλάνο|move (down )?to a (smaller|cheaper|lower) plan/i
 
 const LITERAL = /(["'`])(?:(?!\1)[^\n\\]|\\.)*[ \t](?:(?!\1)[^\n\\]|\\.)*\1/g
 
@@ -44,7 +44,7 @@ function stripComments(src: string): string {
 function sentences(src: string): string[] {
     const code = stripComments(src)
     // template interpolations are composed values (the shared statement): remove them before reading the sentence
-    const quoted = (code.match(LITERAL) ?? []).map((s) => s.slice(1, -1).replace(/\$\{[^}]*\}/g, ' ')).filter((t) => !/[{}]|=>| = /.test(t))
+    const quoted = (code.match(LITERAL) ?? []).map((s) => s.slice(1, -1).replace(/\$\{[^}]*\}/g, ' ').replace(/\{\w+\}/g, ' ')).filter((t) => !/[{}]|=>| = /.test(t))
     const jsx = [...code.matchAll(/>([^<>{}\n]*[A-Za-zΑ-Ωα-ω][^<>{}\n]*)</g)].map((m) => m[1])
     return [...quoted, ...jsx]
 }
