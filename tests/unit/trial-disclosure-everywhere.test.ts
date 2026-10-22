@@ -84,7 +84,8 @@ describe('every surface that sells Family discloses the trial (PW-C02-D10)', () 
             'components/monetization/UpgradeModal.tsx',
             'components/monetization/CarriedPlanCard.tsx',
         ]) {
-            expect(readFileSync(f, 'utf-8'), `${f} sells Family and must render trialDisclosure`).toMatch(DISCLOSES)
+            // The CALL, outside comments: an import line or a comment is not a disclosure.
+            expect(stripComments(readFileSync(f, 'utf-8')), `${f} sells Family and must call trialDisclosure(`).toMatch(/\btrialDisclosure\(/)
         }
     })
 

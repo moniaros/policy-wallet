@@ -5,3 +5,6 @@ export const C = `Μηνιαία tokens που ανανεώνονται αυτό
 export const D = `Used ${n} tokens this month`
 export const E = "Buy credits to continue"
 export const F = () => <p>Your remaining tokens</p>
+export const G = "Αγοράστε πιστώσεις για να συνεχίσετε"
+export const H = () => <p>Διαθέσιμες πιστώσεις</p>
+export const I = "Credit Balance: 20 credits"

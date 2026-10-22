@@ -50,7 +50,8 @@ export interface PublicPricingPlan {
         annual?: {
             value: number
             period: LocalizedText
-            savings: LocalizedText
+            /** Absent when annual is no cheaper than twelve monthly payments: nothing is claimed. */
+            savings: LocalizedText | null
         }
     }
     features: PublicPricingFeature[]

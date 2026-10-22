@@ -15,7 +15,6 @@
 
 import type { CatalogPlan } from "@/lib/pricing/plan-catalog"
 import { annualSavingsLabel } from "@/lib/pricing/annual-savings"
-import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
 import { publicCheckoutAvailability, type CheckoutAvailability } from "@/lib/pricing/stripe-mode"
 import {
     publicPricingContent,
@@ -66,10 +65,9 @@ function buildPlan(plan: PublicPricingPlan, cat: CatalogPlan | undefined): Publi
     let annual = plan.pricing.annual
     if (annual) {
         const annualUnchanged = annual.value === cat.effectiveAnnualEur
-        const savings =
-            monthlyUnchanged && annualUnchanged
-                ? annual.savings
-                : (computedSavings(cat) ?? annual.savings)
+        // Computed from the LIVE prices only. When annual is no cheaper there is no saving to state, and
+        // the template's default-derived label must not stand in for it (review pass 11, C1).
+        const savings = monthlyUnchanged && annualUnchanged ? annual.savings : computedSavings(cat)
         annual = { ...annual, value: cat.effectiveAnnualEur, savings }
     }
 

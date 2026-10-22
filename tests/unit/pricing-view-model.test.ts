@@ -62,8 +62,19 @@ describe('buildPublicPricingContent', () => {
         const built = buildPublicPricingContent(catalog, CAN_CHARGE)
         const pro = built.policyholder.plans.find((p) => p.checkoutPlanId === 'ph-pro')!
         // 8.99×12 − 89 = 18.88 → ~€19
-        expect(pro.pricing.annual?.savings.en).toBe('Save ~€19 a year')
-        expect(pro.pricing.annual?.savings.el).toMatch(/~19\s€ τον χρόνο/)
+        expect(pro.pricing.annual?.savings?.en).toBe('Save ~€19 a year')
+        expect(pro.pricing.annual?.savings?.el).toMatch(/~19\s€ τον χρόνο/)
+    })
+
+    it('an annual price that is no cheaper states NO saving, never the template default (review pass 11, C1)', () => {
+        const catalog = synthetic().map((p) =>
+            p.id === 'ph-pro' ? { ...p, effectiveAnnualEur: 110 } : p.id === 'ph-plus' ? { ...p, effectiveAnnualEur: 59.88 } : p
+        )
+        const built = buildPublicPricingContent(catalog, CAN_CHARGE)
+        for (const id of ['ph-pro', 'ph-plus']) {
+            const plan = built.policyholder.plans.find((p) => p.checkoutPlanId === id)!
+            expect(plan.pricing.annual?.savings, id).toBeNull()
+        }
     })
 
     it('unchanged prices keep the template savings prose verbatim', () => {

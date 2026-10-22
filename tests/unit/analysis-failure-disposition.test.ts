@@ -147,9 +147,8 @@ describe('INFORM — the run never started', () => {
         const [sent] = messages()
         expect(sent.message.el).toContain('όριο ανάλυσης')
         expect(sent.message.el).toContain('αποθηκευμένο')
-        // No internal code and no raw provider text leaking through. ("credits"
-        // and "AI" are the product's established Greek-UI terms — see
-        // lib/i18n/translations/el.ts — so Latin characters as such are fine.)
+        // No internal code and no raw provider text leaking through. ("AI" is the product's
+        // established Greek-UI term, so Latin characters as such are fine; "credits" is not.)
         expect(sent.message.el).not.toContain('TOKEN_LIMIT_BLOCKED')
         expect(sent.message.el).not.toMatch(/insufficient|Token budget|blocked/i)
     })

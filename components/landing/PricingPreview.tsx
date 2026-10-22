@@ -155,7 +155,7 @@ export function PricingPreview({
                                     </span>
                                 </p>
                                 <p className="mb-4 min-h-5 text-body-sm text-neutral-500 dark:text-slate-400">
-                                    {billing === "annual" && plan.pricing.annual
+                                    {billing === "annual" && plan.pricing.annual?.savings
                                         ? pick(plan.pricing.annual.savings)
                                         : "\u00a0"}
                                 </p>

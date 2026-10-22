@@ -30,7 +30,7 @@ interface PlanTier {
     annual?: {
         price: Record<string, string>
         period: Record<string, string>
-        savings: Record<string, string>
+        savings: Record<string, string> | null
     }
     icon: any
     features: Array<{ name: string; included: boolean }>
@@ -89,7 +89,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             ...copy.tiers.plus,
             price: bothLangs(formatEur(starterFacts.monthlyEur)),
             annual: copy.tiers.plus.annual
-                ? { ...copy.tiers.plus.annual, price: bothLangs(formatEur(starterFacts.annualEur)), savings: annualSavingsLabel(starterFacts.monthlyEur, starterFacts.annualEur) ?? copy.tiers.plus.annual.savings }
+                ? { ...copy.tiers.plus.annual, price: bothLangs(formatEur(starterFacts.annualEur)), savings: annualSavingsLabel(starterFacts.monthlyEur, starterFacts.annualEur) }
                 : undefined,
             icon: Zap,
             features: [
@@ -106,7 +106,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             ...copy.tiers.pro,
             price: bothLangs(formatEur(plusFacts.monthlyEur)),
             annual: copy.tiers.pro.annual
-                ? { ...copy.tiers.pro.annual, price: bothLangs(formatEur(plusFacts.annualEur)), savings: annualSavingsLabel(plusFacts.monthlyEur, plusFacts.annualEur) ?? copy.tiers.pro.annual.savings }
+                ? { ...copy.tiers.pro.annual, price: bothLangs(formatEur(plusFacts.annualEur)), savings: annualSavingsLabel(plusFacts.monthlyEur, plusFacts.annualEur) }
                 : undefined,
             icon: Star,
             // The highlighted tier must be the one that actually carries the

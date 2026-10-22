@@ -30,12 +30,17 @@ const EXCLUDED = [
     /^lib\/services\/push\.service\.ts$/, // OAuth/device push tokens
 ]
 // Fragments allowed in otherwise-guarded files, each with the reason (queue item named).
-const ALLOW_FRAGMENTS: Array<[RegExp, string]> = [
-    [/Credit Balance|Credits do not expire|you earn credits|πιστώσεις|Υπόλοιπο πιστώσεων/i, 'dead referral copy: components/account/Referrals.tsx is not mounted (QUEUE REFERRAL-CREDITS-COPY)'],
+// Scoped to the one file that holds them: a fragment allowed in the translation bundles is NOT allowed anywhere else.
+const ALLOW_FRAGMENTS: Array<{ file: RegExp; fragment: RegExp; reason: string }> = [
+    {
+        file: /^lib\/i18n\/translations\/(el|en)\.ts$/,
+        fragment: /Credit Balance|Credits do not expire|you earn credits|κερδίζετε πιστώσεις|Υπόλοιπο πιστώσεων|Οι πιστώσεις δεν λήγουν/i,
+        reason: 'dead referral copy: components/account/Referrals.tsx is not mounted (QUEUE REFERRAL-CREDITS-COPY)',
+    },
 ]
 // Reason-annotated exceptions: [path, why].
 const ALLOW: Array<[RegExp, string]> = [
-    [/^lib\/notifications\/registry\.ts$/, 'admin-granted balance notifications («Προστέθηκαν credits»); a grant is not a token meter; decide with TOKEN-TOPUP-UI-REMOVED'],
+    [/^lib\/notifications\/registry\.ts$/, 'planned-only notification events (lib/notifications/registry.ts status "planned", no emitter): «Προστέθηκαν credits» cannot reach a customer today. If one goes live this entry must go (decide with TOKEN-TOPUP-UI-REMOVED)'],
     [/^lib\/token-/, 'internal metering module; strings are log/error text for staff'],
     [/^lib\/billing\/token-packages\.ts$/, 'internal package catalogue, no UI string'],
     [/^lib\/billing\.ts$/, 'Stripe-side product name of the token top-up; listed in HALTS.md (H-029) for the owner'],
@@ -63,7 +68,7 @@ function stripComments(src: string): string {
 // The internal unit and the money that used to buy it: a customer reads neither.
 const WORD = /\btokens?\b|\bcredits?\b|πιστώσε/i
 
-export function tokenStrings(src: string): string[] {
+export function tokenStrings(src: string, path = ''): string[] {
     const code = stripComments(src)
     // Quoted literals (template interpolations are removed first, so `Used ${n} tokens` is read as text).
     // A rendered sentence has no code punctuation in it; a mis-paired quote span does.
@@ -73,7 +78,7 @@ export function tokenStrings(src: string): string[] {
     })
     // JSX text nodes: <p>Your remaining tokens</p>
     const jsx = [...code.matchAll(/>([^<>{}\n]*[A-Za-zΑ-Ωα-ω][^<>{}\n]*)</g)].map((m) => m[1]).filter((t) => WORD.test(t))
-    return [...quoted, ...jsx].filter((t) => !ALLOW_FRAGMENTS.some(([re]) => re.test(t)))
+    return [...quoted, ...jsx].filter((t) => !ALLOW_FRAGMENTS.some((a) => a.file.test(path) && a.fragment.test(t)))
 }
 
 describe('no customer-facing string names tokens (H-027)', () => {
@@ -82,13 +87,13 @@ describe('no customer-facing string names tokens (H-027)', () => {
             (f) => !EXCLUDED.some((re) => re.test(f)) && !ALLOW.some(([re]) => re.test(f)),
         )
         expect(files.length).toBeGreaterThan(400)
-        const bad = files.flatMap((f) => tokenStrings(readFileSync(f, 'utf-8')).map((s) => `${f}: ${s.slice(0, 90)}`))
+        const bad = files.flatMap((f) => tokenStrings(readFileSync(f, 'utf-8'), f).map((s) => `${f}: ${s.slice(0, 90)}`))
         expect(bad).toEqual([])
     })
 
     it('probe: the pattern turns red on token copy', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/token-copy.ts.txt', 'utf-8')
-        expect(tokenStrings(probe).length).toBeGreaterThanOrEqual(6)
+        expect(tokenStrings(probe).length).toBeGreaterThanOrEqual(9)
     })
 
     it('the token meter component is not mounted on a customer surface', () => {
