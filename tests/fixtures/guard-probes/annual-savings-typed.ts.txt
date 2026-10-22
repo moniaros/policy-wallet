@@ -2,3 +2,6 @@
 export const A = { el: "2 μήνες δωρεάν", en: "2 months free" }
 export const B = { el: "Εξοικονομείτε 4 μήνες", en: "Save 4 months" }
 export const C = { el: "περίπου 10 μήνες αντί για 12", en: "about 10 months instead of 12" }
+export const D = <span>-20%</span>
+export const E = { annualSavings: { el: "Έκπτωση", en: "Save" } }
+export const F = "Ναι — το Plus κοστίζει 39 €/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση."

@@ -168,9 +168,6 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             }`}
                     >
                         {copy.billing.annual[language]}
-                        <span className="absolute -top-3 -right-3 bg-primary text-primary-foreground text-kicker font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
-                            -20%
-                        </span>
                     </button>
 
                     {/* Animated Background */}

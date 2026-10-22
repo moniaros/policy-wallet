@@ -34,7 +34,9 @@ const EXCLUDED = [
 const ALLOW_FRAGMENTS: Array<{ file: RegExp; fragment: RegExp; reason: string }> = [
     {
         file: /^lib\/i18n\/translations\/(el|en)\.ts$/,
-        fragment: /Credit Balance|Credits do not expire|you earn credits|κερδίζετε πιστώσεις|Υπόλοιπο πιστώσεων|Οι πιστώσεις δεν λήγουν/i,
+        // The six EXACT strings of the dead referral block (el.ts:3325-3332, en.ts:3268-3275), anchored:
+        // a new sentence in the bundle that merely contains one of these words is still caught.
+        fragment: /^['"`](Share PolicyWallet with friends or customers\. When they upgrade to a paid plan, you earn credits for AI analyses\.|Credit Balance|"You helped someone — here is the value back\. Credits do not expire\."|Μοιραστείτε το PolicyWallet με φίλους ή πελάτες\. Όταν αναβαθμίσουν σε πληρωμένο πλάνο, κερδίζετε πιστώσεις για AI αναλύσεις\.|Υπόλοιπο πιστώσεων|"Βοηθήσατε κάποιον — εδώ είναι η αξία πίσω\. Οι πιστώσεις δεν λήγουν\.")['"`]$/,
         reason: 'dead referral copy: components/account/Referrals.tsx is not mounted (QUEUE REFERRAL-CREDITS-COPY)',
     },
 ]

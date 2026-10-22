@@ -150,7 +150,7 @@ describe('INFORM — the run never started', () => {
         // No internal code and no raw provider text leaking through. ("AI" is the product's
         // established Greek-UI term, so Latin characters as such are fine; "credits" is not.)
         expect(sent.message.el).not.toContain('TOKEN_LIMIT_BLOCKED')
-        expect(sent.message.el).not.toMatch(/insufficient|Token budget|blocked/i)
+        expect(sent.message.el).not.toMatch(/insufficient|Token budget|blocked|credits/i)
     })
 
     it('keeps a consent-blocked upload and asks for consent in Greek', async () => {

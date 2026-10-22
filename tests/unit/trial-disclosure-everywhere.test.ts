@@ -40,6 +40,11 @@ function stripComments(src: string): string {
     return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1')
 }
 
+/** The delegated arm's predicate: a CALL outside comments (an import or a comment is not one). */
+export function callsDisclosure(src: string): boolean {
+    return /\btrialDisclosure\(/.test(stripComments(src))
+}
+
 export function sellsWithoutDisclosure(path: string, src: string): boolean {
     const code = stripComments(src)
     return STARTS_CHECKOUT.test(code) && !DISCLOSES.test(code) && !(path in EXEMPT)
@@ -57,6 +62,12 @@ describe('every surface that sells Family discloses the trial (PW-C02-D10)', () 
         const agents = DEFAULT_PLAN_FACTS.filter((p) => p.planType === 'agent')
         expect(agents.length).toBe(4)
         for (const a of agents) expect(a.trialDays, a.tierKey).toBe(0)
+    })
+
+    it('probe: the delegated arm rejects an import-only file and a comment-only file', () => {
+        expect(callsDisclosure("import { trialDisclosure } from '@/lib/pricing/trial-disclosure'\nexport const x = 1")).toBe(false)
+        expect(callsDisclosure('// calls trialDisclosure(...)\nexport const x = 1')).toBe(false)
+        expect(callsDisclosure('const t = trialDisclosure(14, 8.99, "monthly")')).toBe(true)
     })
 
     it('a mention in a comment does not count as a disclosure', () => {
@@ -85,7 +96,7 @@ describe('every surface that sells Family discloses the trial (PW-C02-D10)', () 
             'components/monetization/CarriedPlanCard.tsx',
         ]) {
             // The CALL, outside comments: an import line or a comment is not a disclosure.
-            expect(stripComments(readFileSync(f, 'utf-8')), `${f} sells Family and must call trialDisclosure(`).toMatch(/\btrialDisclosure\(/)
+            expect(callsDisclosure(readFileSync(f, 'utf-8')), `${f} sells Family and must call trialDisclosure(`).toBe(true)
         }
     })
 

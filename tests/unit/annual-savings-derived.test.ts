@@ -23,6 +23,9 @@ const TYPED_SAVING = [
     /annualSavingsMonths/, // a stored month count is the same defect as a typed one
     /Εξοικονομ(είτε|ήστε)\s+~?\d+\s*€/i, // a typed euro saving
     /Save\s+~?€\s?\d+/i,
+    />\s*-\s?\d+\s?%\s*</, // a typed percentage chip on an annual toggle
+    /annualSavings\s*:\s*\{\s*el:\s*"Έκπτωση"/, // an unconditional «Έκπτωση» chip
+    /με έκπτωση σε σχέση με τη μηνιαία/i, // an unconditional discount statement beside live prices
 ]
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -55,7 +58,7 @@ describe('annual savings are derived from prices, never typed (H-021)', () => {
 
     it('probe: the pattern turns red on a typed saving', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/annual-savings-typed.ts.txt', 'utf-8')
-        expect(findings(probe).length).toBeGreaterThanOrEqual(3)
+        expect(findings(probe).length).toBeGreaterThanOrEqual(6)
     })
 
     it('the label is computed from the numbers and states the real policyholder saving', () => {

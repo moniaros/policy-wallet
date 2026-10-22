@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 4273
-# inline entries: 4996 across 242 files
+# inline entries: 4995 across 242 files
 # ternary entries: 286 across 45 files
 # call entries: 1082 across 82 files
 
@@ -4555,7 +4555,6 @@ inline	app/(public)/platform/PlatformSections.tsx	"Κάθε εταιρεία γ�
 inline	app/(public)/platform/PlatformSections.tsx	"Κάθε κενό κάλυψης προκύπτει από συγκεκριμένο έλεγχο στα στοιχεία του ασφαλιστηρίου σας. Κρατάμε ποιος έλεγχος το βρήκε και σε ποια στοιχεία στηρίχτηκε. Έτσι μπορείτε να ζητήσετε να ελεγχθεί ή να διορθωθεί."
 inline	app/(public)/platform/PlatformSections.tsx	"Οι κανόνες βρίσκουν τα σημεία που χρειάζονται έλεγχο. Η τεχνητή νοημοσύνη τα εξηγεί με απλά λόγια. Δεν προσθέτει δικά της κενά κάλυψης και δεν αποφασίζει πόσο σοβαρά είναι."
 inline	app/(public)/platform/PlatformSections.tsx	"Τι γίνεται αν το ασφαλιστήριο δεν αναφέρει κάτι;"
-inline	app/(public)/pricing/PricingPageClient.tsx	"Έκπτωση"
 inline	app/(public)/pricing/PricingPageClient.tsx	"Έως τις"
 inline	app/(public)/pricing/PricingPageClient.tsx	"Ακύρωση ανανέωσης όποτε θέλετε"
 inline	app/(public)/pricing/PricingPageClient.tsx	"Ασφαλής πληρωμή μέσω Stripe"
@@ -9214,7 +9213,7 @@ inline	lib/subscription-copy.ts	'Μέχρι {count} ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Μηνιαία'
 inline	lib/subscription-copy.ts	'Μπορώ να αναβαθμίσω αργότερα;'
 inline	lib/subscription-copy.ts	'Μπορώ να αναβαθμίσω το πλάνο μου;'
-inline	lib/subscription-copy.ts	'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση.'
+inline	lib/subscription-copy.ts	'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος.'
 inline	lib/subscription-copy.ts	'Ναι, μπορείτε να αναβαθμίσετε το πλάνο σας οποτεδήποτε.'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Family'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Plus'

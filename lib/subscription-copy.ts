@@ -296,8 +296,8 @@ export const subscriptionCopy = {
             // {starterAnnual}/{plusAnnual} are interpolated at render time from
             // the live plan catalog (PricingComparison) — never hardcode € here.
             answer: {
-                el: 'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση.',
-                en: 'Yes — Plus is {starterAnnual}/year and Family is {plusAnnual}/year, both discounted versus paying monthly.'
+                el: 'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος.',
+                en: 'Yes — Plus is {starterAnnual}/year and Family is {plusAnnual}/year.'
             },
         },
         {
