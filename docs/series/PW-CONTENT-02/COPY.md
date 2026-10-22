@@ -203,3 +203,14 @@ Not reviewed by `greek-copy-reviewer`; all are drafted by me and wait for Eli (`
 | R3-8 | /solutions/agents | branded reports named «από το Agent Pro» | **eli** |
 | R3-9 | demo cards (/product/life, /product/property, PolicyWalletWidget) | «Λείπει κάλυψη…» / «Βρήκαμε ένα κενό» → «Δεν αναφέρεται στο δείγμα» / «Για έλεγχο» | **eli** |
 | R3-10 | API/limit messages, bundles | «Plus and Pro» / «paid plans» for Family capabilities → «πλάνο Family»; «Essential or Professional» (plans that do not exist) removed | **eli** |
+
+
+## Round 4 — 2026-10-22 (H-021 production rows, trial disclosure, tokens)
+
+| Id | Surface (file) | Old | New | Status |
+|---|---|---|---|---|
+| R4-1 | Family trial sentence — /pricing card, home pricing preview, UpgradeModal, /upgrade, carried-plan card, sign-up confirmation page, Stripe hosted checkout (`lib/pricing/trial-disclosure.ts`) | «{days} ημέρες δωρεάν δοκιμή» (modal and /upgrade only; nothing on /pricing, nothing on checkout) | «Δωρεάν δοκιμή {days} ημερών. Μετά χρεώνεται {price} τον μήνα, εκτός αν ακυρώσετε πριν λήξει.» (annual: «τον χρόνο») / "Free {days}-day trial. Then {price} a month is charged, unless you cancel before it ends." | approved (owner-dictated 2026-10-22) |
+| R4-2 | Annual saving label — /pricing, home preview, /upgrade (`lib/pricing/annual-savings.ts`) and the UpgradeModal CTA lines | «Εξοικονομείτε 4 μήνες» / «Εξοικονομείτε 3 μήνες» / «2 μήνες δωρεάν» (typed) | «Εξοικονομείτε ~21 € τον χρόνο» (Plus) / «~29 €» (Family), computed from the two prices / "Save ~€21 a year" | **eli** (wording is mine; the amount is computed) |
+| R4-3 | Monthly-limit messages: `token_topup` upgrade copy, `tokenLimit` ×2, `blockedTokenLimitHint` (el/en) | «Εξαντλήθηκαν τα AI tokens του μήνα … αγοράστε credits», «Συνέχεια με περισσότερα tokens» | «Έχετε φτάσει το μηνιαίο όριο ανάλυσης του πλάνου σας. Το όριο ανανεώνεται κάθε μήνα.»; CTA «Δείτε τα πλάνα» | **eli** (states that the limit renews monthly: true of `billingMonth()` usage rows; confirm) |
+| R4-4 | Agent Free «5 αναλύσεις τον μήνα» — /pricing card, comparison table cell «5», /agent/pricing | «—» / absent | «5 αναλύσεις τον μήνα» | approved (owner: published caps 5/50/150/400) |
+| R4-5 | /upgrade/success purchase line (`tokensBody`) | «Τα επιπλέον tokens προστέθηκαν στον λογαριασμό σας …» | «Η αγορά καταχωρήθηκε στον λογαριασμό σας και είναι άμεσα διαθέσιμη.» | **eli** (wording only) |

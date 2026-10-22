@@ -74,7 +74,11 @@ function buildPlan(plan: PublicPricingPlan, cat: CatalogPlan | undefined): Publi
         annual = { ...annual, value: cat.effectiveAnnualEur, savings }
     }
 
-    return { ...plan, pricing: { monthly, ...(annual ? { annual } : {}) } }
+    return {
+        ...plan,
+        ...(cat.trialDays > 0 ? { trialDays: cat.trialDays } : {}),
+        pricing: { monthly, ...(annual ? { annual } : {}) },
+    }
 }
 
 /**

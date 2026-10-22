@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 4273
-# inline entries: 5001 across 242 files
+# inline entries: 4998 across 243 files
 # ternary entries: 286 across 45 files
 # call entries: 1082 across 82 files
 
@@ -518,7 +518,7 @@ bundle	analysis.errors.extractionEmpty	"Το έγγραφο διαβάστηκε
 bundle	analysis.errors.generic	"Η ανάλυση απέτυχε. Δοκιμάστε ξανά."
 bundle	analysis.errors.schema	"Υπήρξε θέμα δομής απόκρισης AI. Δοκιμάστε ξανά."
 bundle	analysis.errors.timeout	"Η ανάλυση άργησε περισσότερο από το αναμενόμενο. Δοκιμάστε ξανά σε λίγο."
-bundle	analysis.errors.tokenLimit	"Η ανάλυση διακόπηκε επειδή εξαντλήθηκε το όριο AI tokens. Αναβαθμίστε ή αγοράστε credits για συνέχεια."
+bundle	analysis.errors.tokenLimit	"Η ανάλυση διακόπηκε επειδή εξαντλήθηκε το μηνιαίο όριο ανάλυσης. Το όριο ανανεώνεται κάθε μήνα."
 bundle	analysis.errors.unavailable	"Η υπηρεσία AI δεν είναι προσωρινά διαθέσιμη. Δοκιμάστε ξανά σύντομα."
 bundle	analysis.gapCheckIncomplete	"Ο έλεγχος κενών δεν ολοκληρώθηκε"
 bundle	analysis.gapCheckIncompleteHint	"Το βήμα εντοπισμού κενών απέτυχε κατά την ανάλυση. Επαναλάβετε τα ελλείποντα τμήματα για έλεγχο κάλυψης."
@@ -3531,7 +3531,7 @@ bundle	wallet.errors.questionTooLong	"Η ερώτηση είναι πολύ με
 bundle	wallet.errors.rateLimited	"Στέλνετε ερωτήσεις πολύ γρήγορα. Περιμένετε λίγο και δοκιμάστε ξανά."
 bundle	wallet.errors.revokeFailed	"Η ανάκληση πρόσβασης απέτυχε."
 bundle	wallet.errors.shareFailed	"Η κοινοποίηση ασφαλιστηρίου απέτυχε."
-bundle	wallet.errors.tokenLimit	"Έχετε φτάσει το όριο AI tokens. Αναβαθμίστε ή αγοράστε credits για συνέχεια."
+bundle	wallet.errors.tokenLimit	"Έχετε φτάσει το μηνιαίο όριο ανάλυσης. Το όριο ανανεώνεται κάθε μήνα."
 bundle	wallet.errors.unauthorized	"Δεν έχετε εξουσιοδότηση για αυτή την ενέργεια."
 bundle	wallet.errors.updateFailed	"Η ενημέρωση ασφαλιστηρίου απέτυχε."
 bundle	wallet.errors.upgradeRequired	"Η πλήρης ανάλυση AI είναι διαθέσιμη στο πλάνο Family. Αναβαθμίστε για να συνεχίσετε."
@@ -3962,7 +3962,7 @@ bundle	wallet.review.blockedExtractionEmptyHint	"Το έγγραφό σας απ
 bundle	wallet.review.blockedNotPermitted	"Δεν έχετε δικαίωμα ανάλυσης σε αυτό το ασφαλιστήριο"
 bundle	wallet.review.blockedNotPermittedHint	"Ζητήστε δικαίωμα επεξεργασίας από τον κάτοχο του ασφαλιστηρίου."
 bundle	wallet.review.blockedTokenLimit	"Δεν ξεκίνησε: εξαντλήθηκε το διαθέσιμο όριο AI"
-bundle	wallet.review.blockedTokenLimitHint	"Το έγγραφό σας αποθηκεύτηκε. Αναβαθμίστε το πρόγραμμά σας ή αγοράστε credits και δοκιμάστε ξανά την ανάλυση."
+bundle	wallet.review.blockedTokenLimitHint	"Το έγγραφό σας αποθηκεύτηκε. Το μηνιαίο όριο ανάλυσης ανανεώνεται κάθε μήνα· δοκιμάστε ξανά την ανάλυση τότε."
 bundle	wallet.review.conditionsTitle	"Σημαντικοί όροι"
 bundle	wallet.review.confidenceHigh	"Υψηλή βεβαιότητα"
 bundle	wallet.review.confidenceInvalidated	"Απαιτεί επιβεβαίωση"
@@ -4390,7 +4390,7 @@ inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Δωρεάν"
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Κάτι πήγε στραβά."
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Μετάβαση σε ασφαλή πληρωμή..."
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	"Πρακτορείο"
-inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "Βασική εικόνα πελατών", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
+inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "10 πελάτες", "5 αναλύσεις τον μήνα", "Βασική εικόνα πελατών", "Χειροκίνητη διαχείριση ευκαιριών", "Νήματα συνεργασίας", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "100 πελάτες", "50 AI αναλύσεις/μήνα", "Ροή εσόδων με αξίες", "Ειδοποιήσεις ανανέωσης", "5 πρότυπα ερωτηματολογίων", "Μαζική εισαγωγή (100 γραμμές)", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "500 πελάτες", "150 AI αναλύσεις/μήνα", "Πλήρης ροή εσόδων + παρακολούθηση προμήθειας", "Αυτοματοποίηση ανανεώσεων", "Απεριόριστα ερωτηματολόγια", "Ομάδα (3 σύμβουλοι)", "Ευκαιρίες πώλησης", ]
 inline	app/(protected)/agent/pricing/AgentPricingClient.tsx	[ "Απεριόριστοι πελάτες & σύμβουλοι", "400 αναλύσεις AI τον μήνα", "Απεριόριστη μαζική εισαγωγή", "Υποστήριξη μέσω email", "Όλα τα Pro χαρακτηριστικά", ]
@@ -4454,6 +4454,7 @@ inline	app/(protected)/upgrade/page.tsx	'Κάτι πήγε στραβά. Δοκ�
 inline	app/(protected)/upgrade/page.tsx	'Μετάβαση σε ασφαλή πληρωμή...'
 inline	app/(protected)/upgrade/success/page.tsx	"Όλα τα κενά κάλυψης του ασφαλιστηρίου σας είναι πλέον ορατά, μαζί με τις πλήρεις εξηγήσεις και προτάσεις."
 inline	app/(protected)/upgrade/success/page.tsx	"Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή"
+inline	app/(protected)/upgrade/success/page.tsx	"Η αγορά καταχωρήθηκε στον λογαριασμό σας και είναι άμεσα διαθέσιμη."
 inline	app/(protected)/upgrade/success/page.tsx	"Η αγορά ολοκληρώθηκε"
 inline	app/(protected)/upgrade/success/page.tsx	"Η αναβάθμιση ολοκληρώθηκε"
 inline	app/(protected)/upgrade/success/page.tsx	"Η αναφορά είναι διαθέσιμη"
@@ -4461,7 +4462,6 @@ inline	app/(protected)/upgrade/success/page.tsx	"Η πληρωμή επεξερ�
 inline	app/(protected)/upgrade/success/page.tsx	"Η συνδρομή σας ενεργοποιείται. Αν δεν εμφανιστεί σε λίγα λεπτά, επικοινωνήστε μαζί μας."
 inline	app/(protected)/upgrade/success/page.tsx	"Μετάβαση στο πορτοφόλι"
 inline	app/(protected)/upgrade/success/page.tsx	"Συνέχεια"
-inline	app/(protected)/upgrade/success/page.tsx	"Τα επιπλέον tokens προστέθηκαν στον λογαριασμό σας και είναι άμεσα διαθέσιμα."
 inline	app/(protected)/upgrade/success/page.tsx	"Το πλάνο σας είναι ενεργό. Έχετε πλέον περισσότερα ασφαλιστήρια και, με το Family, πλήρη ανάλυση και ερωτήσεις AI."
 inline	app/(protected)/upgrade/success/page.tsx	"Το πλάνο συμβούλου είναι ενεργό. Έχετε πλέον περισσότερους πελάτες και περισσότερες αναλύσεις AI τον μήνα."
 inline	app/(protected)/wallet/actions.ts	"Ένα ασφαλιστήριο διαγράφηκε"
@@ -4661,7 +4661,6 @@ inline	components/account/BillingHistory.tsx	'Απέτυχε'
 inline	components/account/BillingHistory.tsx	'Εκκρεμεί'
 inline	components/account/BillingHistory.tsx	'Πληρώθηκε'
 inline	components/account/PricingComparison.tsx	value
-inline	components/account/TokenUsageCard.tsx	{ title: "Χρήση tokens AI", monthlyUsage: "Μηνιαία χρήση", extraTokens: "Επιπλέον tokens", buyExtra: "Αγορά επιπλέον tokens", freeTierNote: "Αναβαθμίστε για αγορά επιπλέον tokens", mostPopular: "Πιο δημοφιλές", cancel: "Ακύρωση", remaining: "διαθέσιμα", used: "χρησιμοποιήθηκαν", purchaseFailed: "Σφάλμα κατά την αγορά. Δοκιμάστε ξανά.", }
 inline	components/admin/TokenAnalyticsDashboard.tsx	'Ανά λειτουργία'
 inline	components/admin/TokenAnalyticsDashboard.tsx	'Ανά πλάνο'
 inline	components/admin/TokenAnalyticsDashboard.tsx	'Ανάλυση χρήσης Tokens'
@@ -4822,8 +4821,6 @@ inline	components/monetization/PremiumInsightCards.tsx	"Πιθανά κενά κ
 inline	components/monetization/PremiumInsightCards.tsx	"Πλήρης AI ανάλυση"
 inline	components/monetization/UpgradeModal.tsx	"/έτος"
 inline	components/monetization/UpgradeModal.tsx	"/μήνα"
-inline	components/monetization/UpgradeModal.tsx	"2 μήνες δωρεάν"
-inline	components/monetization/UpgradeModal.tsx	"{days} ημέρες δωρεάν δοκιμή"
 inline	components/monetization/UpgradeModal.tsx	"Όχι τώρα"
 inline	components/monetization/UpgradeModal.tsx	"Ετήσια"
 inline	components/monetization/UpgradeModal.tsx	"Η μετάβαση στην πληρωμή απέτυχε. Δοκιμάστε ξανά."
@@ -7981,6 +7978,7 @@ inline	lib/prevention/catalogue.ts	'Πρόσθετη ασφάλεια σε έν�
 inline	lib/prevention/catalogue.ts	'Χώρος για λίγη κίνηση'
 inline	lib/prevention/reminders.ts	'Ζητήσατε μια υπενθύμιση. Δείτε την επιλογή σας στην ενότητα Πρόληψη & παροχές.'
 inline	lib/prevention/reminders.ts	'Το μικρό βήμα που επιλέξατε'
+inline	lib/pricing/annual-savings.ts	`Εξοικονομείτε ~${formatPlanPrice(saved, "el")} τον χρόνο`
 inline	lib/pricing/pricing-view-model.ts	`Εξοικονομείτε ~${formatPlanPrice(saved, "el")}`
 inline	lib/pricing/public-pricing-content.ts	"/έτος"
 inline	lib/pricing/public-pricing-content.ts	"/έτος"
@@ -7998,6 +7996,7 @@ inline	lib/pricing/public-pricing-content.ts	"100 πελάτες"
 inline	lib/pricing/public-pricing-content.ts	"150 αναλύσεις τον μήνα"
 inline	lib/pricing/public-pricing-content.ts	"3 ασφαλιστήρια"
 inline	lib/pricing/public-pricing-content.ts	"400 αναλύσεις τον μήνα"
+inline	lib/pricing/public-pricing-content.ts	"5 αναλύσεις τον μήνα"
 inline	lib/pricing/public-pricing-content.ts	"50 αναλύσεις τον μήνα"
 inline	lib/pricing/public-pricing-content.ts	"500 γραμμές"
 inline	lib/pricing/public-pricing-content.ts	"500 πελάτες"
@@ -8048,8 +8047,6 @@ inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός κενών κ
 inline	lib/pricing/public-pricing-content.ts	"Εντοπισμός κενών κάλυψης"
 inline	lib/pricing/public-pricing-content.ts	"Εξαγωγή αναφοράς"
 inline	lib/pricing/public-pricing-content.ts	"Εξαγωγή αναφοράς"
-inline	lib/pricing/public-pricing-content.ts	"Εξοικονομείτε 3 μήνες"
-inline	lib/pricing/public-pricing-content.ts	"Εξοικονομείτε 4 μήνες"
 inline	lib/pricing/public-pricing-content.ts	"Ερωτήσεις στην τεχνητή νοημοσύνη"
 inline	lib/pricing/public-pricing-content.ts	"Ερωτήσεις στην τεχνητή νοημοσύνη"
 inline	lib/pricing/public-pricing-content.ts	"Ερωτηματολόγια πελατών (5 πρότυπα)"
@@ -8099,6 +8096,8 @@ inline	lib/pricing/public-pricing-content.ts	"Υποστηρίζεται ομα�
 inline	lib/pricing/public-pricing-content.ts	"Χαρακτηριστικό"
 inline	lib/pricing/public-pricing-content.ts	"Χαρτοφυλάκιο πελατών"
 inline	lib/pricing/public-pricing-content.ts	`Το δωρεάν πλάνο περιλαμβάνει ${FREE_UP_TO.el} και δεν ζητά κάρτα. Οι τιμές και οι λειτουργίες των πληρωμένων πλάνων εμφανίζονται στους πίνακες αυτής της σελίδας. Η τελική χρέωση επιβεβαιώνεται πριν από την αγορά.`
+inline	lib/pricing/trial-disclosure.ts	`Δωρεάν δοκιμή ${trialDays} ημερών. Μετά χρεώνεται ${el} τον μήνα, εκτός αν ακυρώσετε πριν λήξει.`
+inline	lib/pricing/trial-disclosure.ts	`Δωρεάν δοκιμή ${trialDays} ημερών. Μετά χρεώνεται ${el} τον χρόνο, εκτός αν ακυρώσετε πριν λήξει.`
 inline	lib/product/lob-faqs.ts	"Ό,τι προβλέπουν οι επιλογές ωρίμανσης του ασφαλιστηρίου σας: ένα ποσό μία φορά, μηνιαίο εισόδημα, ή συνδυασμό. Δείτε τις δικές σας επιλογές πριν πλησιάσει η ημερομηνία."
 inline	lib/product/lob-faqs.ts	"Όρος: Απαλλαγή"
 inline	lib/product/lob-faqs.ts	"Όρος: Ασφαλισμένο κεφάλαιο"
@@ -9199,8 +9198,6 @@ inline	lib/subscription-copy.ts	'Δωρεάν'
 inline	lib/subscription-copy.ts	'Είναι ασφαλής η πληρωμή;'
 inline	lib/subscription-copy.ts	'Ειδοποιήσεις email'
 inline	lib/subscription-copy.ts	'Ενημέρωση Πληρωμής'
-inline	lib/subscription-copy.ts	'Εξοικονομήστε 3 μήνες'
-inline	lib/subscription-copy.ts	'Εξοικονομήστε 4 μήνες'
 inline	lib/subscription-copy.ts	'Επανενεργοποίηση'
 inline	lib/subscription-copy.ts	'Επιλέξτε το Πλάνο που σας Ταιριάζει'
 inline	lib/subscription-copy.ts	'Επόμενη χρέωση: {date}'

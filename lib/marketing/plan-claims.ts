@@ -66,13 +66,11 @@ export function planClaim(key: ClaimKey, tier: PlanTier | AgentTier): ClaimValue
             case "agent.clients":
                 return l.maxCustomers
             case "agent.analysesPerMonth":
-                // Agent Free is configured for 5 analyses a month, but its
-                // 150,000-token budget sits at the per-run estimate
-                // (run-preflight.ts): a run can be refused at zero usage,
-                // depending on the active rule count of the branch. The number
-                // is therefore not a promise the plan can keep, and is not
-                // stated for that plan.
-                return tier === "agent_free" ? UNSTATED : l.aiAnalysesPerMonth
+                // 5 / 50 / 150 / 400 are the published agent caps (owner decision,
+                // 2026-10-22, H-027). Whether Agent Free's token budget can honour
+                // its 5 is open (H-027, merge blocker) and is settled by resizing
+                // the budget, not by hiding the cap.
+                return l.aiAnalysesPerMonth
             case "agent.bulkImportRows":
                 return l.bulkImportLimit
             case "agent.teamMembers":

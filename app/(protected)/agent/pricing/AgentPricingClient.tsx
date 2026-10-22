@@ -27,12 +27,14 @@ const AGENT_PLANS = [
         features: {
             en: [
                 "10 customers",
+                "5 analyses a month",
                 "Basic client view",
                 "Manual opportunity tracking",
                 "Collaboration threads",
             ],
             el: [
                 "10 πελάτες",
+                "5 αναλύσεις τον μήνα",
                 "Βασική εικόνα πελατών",
                 "Χειροκίνητη διαχείριση ευκαιριών",
                 "Νήματα συνεργασίας",

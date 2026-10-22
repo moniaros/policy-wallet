@@ -146,16 +146,16 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
     },
     token_topup: {
         headline: "Continue your AI analyses",
-        body: "This month's AI tokens are used up. Upgrade your plan or add tokens to continue.",
-        primaryCta: "Continue with more tokens",
+        body: "You have reached your plan's monthly analysis limit. The limit renews every month.",
+        primaryCta: "See the plans",
         secondaryCta: "Not now",
         benefits: [
-            "Monthly tokens that renew automatically",
-            "Option to buy extra packs",
-            "Full usage control from your account",
+            "A larger monthly analysis limit on higher plans",
+            "The limit renews every month",
+            "Your policies stay saved",
         ],
         trust: TRUST,
-        successMessage: "Upgrade complete. Your AI tokens have been renewed.",
+        successMessage: "Upgrade complete. You can continue the analysis.",
         successCta: "Continue to analysis",
     },
     partner_offers: {

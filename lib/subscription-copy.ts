@@ -4,6 +4,8 @@
  * Following PolicyWallet branding guidelines
  */
 
+import { annualSavingsLabel } from '@/lib/pricing/annual-savings'
+
 export const subscriptionCopy = {
     // Pricing Tiers
     tiers: {
@@ -29,7 +31,7 @@ export const subscriptionCopy = {
             annual: {
                 price: { el: '€39', en: '€39' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε 4 μήνες', en: 'Save 4 months' },
+                savings: annualSavingsLabel(4.99, 39)!,
             },
         },
         pro: {
@@ -45,7 +47,7 @@ export const subscriptionCopy = {
             annual: {
                 price: { el: '€79', en: '€79' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε 3 μήνες', en: 'Save 3 months' },
+                savings: annualSavingsLabel(8.99, 79)!,
             },
         },
     },

@@ -3,18 +3,18 @@
 Date: 2026-10-21 · branch `pw-customer` · baselines from HEAD `87e877df` (HEAD built and measured in a worktree).
 Approved scope: `STEP0.md` header (decisions H-019..H-024, amendments A1–A5) plus the owner round of 2026-10-22 (DECISIONS.md PW-C02-D1..D9). **Not merged, not deployed.**
 
-> **MERGE BLOCKER — H-021 is OPEN.** Production `plans.entitlements` have not been read. Every "0 false" below is verified against the dev plan rows and the code defaults (`DEFAULT_ENTITLEMENT_LIMITS` / `DEFAULT_AGENT_ENTITLEMENT_LIMITS`), which were equal to each other on 2026-10-21, **not against production**. The entitlement guard is not verified against production until Eli pastes the production rows. Do not merge `pw-customer` into `NEW-UI` before that.
+> **H-021 is CLOSED (2026-10-22).** The owner read the production `plans` rows; `tests/unit/plan-defaults-match-production-rows.test.ts` compares them field by field with the code defaults the claim guard derives from (9 comparisons, all equal). The guard is therefore verified against production as of that date. **Merge blockers now: H-027** (token budgets vs the published 5/50/150/400 — needs the owner's production query), **H-025** (no-commission claims unconfirmed), **COPY.md sign-off**, and the live-mode cancel path + Stripe trial-reminder checks on the GO checklist (`docs/series/PW-CONTENT-02/GO-CHECKLIST.md`).
 
 ## 1. Acceptance criteria
 
 | Criterion | Before (HEAD) | After | Evidence |
 |---|---|---|---|
-| Entitlement table: every public claim → code → true; zero false | 12 F / 13 A of 38 (STEP0 §2.3) | **0 F** in the pricing content, enforced by the guard (95 cards and table cells below); the 4 formerly ambiguous rows are all resolved (§3); **against dev rows and code defaults, not production (H-021)** | §2 table; `guard1-entitlement-RED.txt` |
+| Entitlement table: every public claim → code → true; zero false | 12 F / 13 A of 38 (STEP0 §2.3) | **0 F** in the pricing content, enforced by the guard (95 cards and table cells below); the 4 formerly ambiguous rows are all resolved (§3); verified against the production plan rows read 2026-10-22 (H-021 closed) | §2 table; `guard1-entitlement-RED.txt` |
 | Positioning variants outside the chosen one: 0 hits in public routes + metadata | **22** static hits (M-P), **19** rendered hits (title/meta/OG/JSON-LD/body, 34 routes) | **0** static, **0** rendered | `guards2-5-HEAD-RED.txt`; `measure-before/after.json` |
 | Duplicate blocks ≥80 chars across `/product/*` ≤1 per block | 17 distinct blocks × 17 pages = **289** occurrences, max 17 (el and en alike) | **0** repeated, max **1** | `measure-before/after.json` (M-X1). The two blocks that still repeated on 17 pages (the pricing funnel band and the cookie banner) are now `data-shell`, excluded like the footer; the first "after" run, before that markup, showed exactly those two at 17. |
 | Zero hand-formatted prices/numbers in public routes | **12** literals (M-F) | **0** (editorial prose in guides/glossary included: Greek «€200.000» → «200.000 €») | `guards2-5-HEAD-RED.txt` |
 | Lighthouse SEO + accessibility on `/`, `/pricing`, `/product` no lower than baseline | 100 / 100 | 100 / 100 (median of 3, mobile and desktop, 18 runs per side, production build on localhost) | `lighthouse.json` |
-| COPY.md: every changed `el` string `ok` or signed off by Eli | — | 52 `ok` + 4 `approved` by Eli (the 3 deletion-line rows and «Υποστήριξη μέσω email»); **24 `eli` rows still wait for sign-off** (9 round 1, 5 round 2, 10 round 3 — the review loop's rewordings); no row needs the DPO (owner decision) — NOT all signed off | `COPY.md` |
+| COPY.md: every changed `el` string `ok` or signed off by Eli | — | 52 `ok` + 4 `approved` by Eli (the 3 deletion-line rows and «Υποστήριξη μέσω email»); **27 `eli` rows still wait for sign-off** (9 round 1, 5 round 2, 10 round 3 — the review loop's rewordings; 3 added in round 4); no row needs the DPO (owner decision) — NOT all signed off | `COPY.md` |
 
 The same-surface duplicate-block count (the transformation doc's definition) reads **0 before and 0 after**: it cannot see this defect, as STEP0 predicted. The defect was cross-page; M-X1 is the new metric (recorded in DECISIONS.md).
 Truncation failures (transformation §5.2) 320/390/430: before 150/130/144 → after 140/130/146; run-to-run jitter is ±2, and the selector diff shows no new truncating element, only the renamed heading «Τι κάνει το καθένα» (its derived count 6→5).
@@ -165,9 +165,21 @@ Measurement harness: `tests/measure/metrics.ts` gains `textBlocks` and `duplicat
 - Editorial prose in `lib/guides` and `lib/glossary` is **inside** the number guard (not exempted): the 3 mixed Greek conventions there were converted.
 - `budget-exemptions.json` gained 5 reasoned entries and `corpus-additions.json` 7 reviewed strings; `greek-string-inventory.txt` was regenerated and its diff read line by line.
 
+## 6b. Round 3 (2026-10-22) — production rows, trial, tokens, annual saving
+
+| Item | Before | After | Evidence |
+|---|---|---|---|
+| H-021 production rows | guard checked against dev rows = code defaults | 9/9 field comparisons equal to the owner-read production rows | `tests/fixtures/production-plan-rows-2026-10-22.json`; `plan-defaults-match-production-rows.test.ts` |
+| Agent published analyses | Agent Free «—» | 5 / 50 / 150 / 400 on /pricing (cards + table) and /agent/pricing, derived by `planClaim` | `plan-gating-parity.test.ts` arms |
+| Annual saving | «2 μήνες δωρεάν», «Εξοικονομείτε 4/3 μήνες» typed (Plus really saves 4.2 months, Family 3.2; the modal's «2 months free» was false for both) | computed from the prices (`annual-savings.ts`); 3 files with typed strings → 0 | `evidence/h021-annual-savings-guard-red.txt` (3 offenders), green after |
+| Token budget "unlimited" | n/a | trace: ENFORCED for Family (`policy-analysis-orchestrator.service.ts:708`); no policyholder copy says unlimited (guard `IN_APP_BANNED`) | DECISIONS D13 |
+| Customer-facing token copy | `TokenUsageCard` (meter + extra-token purchase), 13 strings naming tokens/credits | meter removed, strings reworded to the monthly analysis limit; 0 in the guarded universe | `evidence/h027-token-copy-guard-red.txt` (20 offenders → 0) |
+| Trial disclosure on Family | /pricing: none; checkout: none; modal and /upgrade: length only | sentence with length, price and the way out on 6 surfaces + Stripe hosted checkout; 7 undisclosed sellers → 0 | `evidence/d10-trial-disclosure-guard-red.txt` |
+| Cancellation | claims unverified | traced: in-app cancel works in test mode; portal does not; claims listed | HALTS H-030 |
+
 ## 7. Open — for Eli
 
-1. **H-021 (MERGE BLOCKER):** paste the production `plans` rows (`SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;`). Until then the guard is unverified against production. `vercel env pull` is now denied in `.claude/settings.json`; I will ask for any production value instead.
+1. ~~H-021~~ closed 2026-10-22 (production rows read). Historic text: paste the production `plans` rows (`SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;`). Until then the guard is unverified against production. `vercel env pull` is now denied in `.claude/settings.json`; I will ask for any production value instead.
 2. **H-025:** confirm every public "no commission" / "revenue from subscriptions only" claim (file:line list in HALTS.md) — none was changed; all are false if a partner referral earns money.
 3. COPY.md: the 24 remaining `eli` rows (round 3 groups the review loop's rewordings by surface) (round 1: home step 4, home EN share text, the two reminder labels, pet description, two «Στέλνετε» FAQ verbs, the /product card, EN footer; round 2: the contact label, the /contact meta, the upgrade FAQ, the Schengen FAQ, the /account row).
 4. In-app claims still outside this series: the dashboard's locked upsell card «Ανάλυση ασφαλιστηρίων από διαφορετικές ασφαλιστικές» (`PremiumInsightCards.tsx:39`, no implementation), stale comment `plan-defaults.ts` «Free now includes full analysis».

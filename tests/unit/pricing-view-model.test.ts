@@ -33,7 +33,16 @@ describe('formatEur', () => {
 describe('buildPublicPricingContent', () => {
     it('over the default catalog it reproduces the template EXACTLY (zero copy drift)', () => {
         const built = buildPublicPricingContent(synthetic(), CAN_CHARGE)
-        expect(built).toEqual(publicPricingContent)
+        // `trialDays` is the one field the view model ADDS: the plan row's trial length (PW-C02-D10),
+        // set only where the row has a trial. Everything else is the template, untouched.
+        const withoutTrial = JSON.parse(JSON.stringify(built), (k, v) => (k === 'trialDays' ? undefined : v))
+        expect(withoutTrial).toEqual(publicPricingContent)
+        const trialByPlan = Object.fromEntries(
+            built.policyholder.plans.map((p) => [p.checkoutPlanId ?? p.key, p.trialDays]),
+        )
+        expect(trialByPlan['ph-pro']).toBe(14)
+        expect(trialByPlan['ph-plus']).toBeUndefined()
+        expect(trialByPlan['free']).toBeUndefined()
     })
 
     it('an admin price edit reaches the card amounts', () => {

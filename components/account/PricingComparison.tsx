@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Check, X, Star, Shield, Zap } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 import { usePlanFacts } from '@/components/monetization/PlanFactsProvider'
+import { trialDisclosure } from '@/lib/pricing/trial-disclosure'
 import { formatEur } from '@/lib/pricing/pricing-view-model'
 import { DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -265,6 +266,11 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                     </div>
                                 ))}
                             </div>
+
+                            {tier.id === 'ph-pro' && (() => {
+                                const trial = trialDisclosure(proTrialDays, billingPeriod === 'annual' ? plusFacts.annualEur : plusFacts.monthlyEur, billingPeriod)
+                                return trial ? <p className="mb-3 text-center text-xs text-muted-foreground">{trial[language]}</p> : null
+                            })()}
 
                             <button
                                 onClick={() => selectPlan(tier.id)}

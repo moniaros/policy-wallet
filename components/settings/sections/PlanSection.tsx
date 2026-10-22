@@ -9,7 +9,6 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
 import { SettingRow } from "@/components/settings/SettingRow"
 import { UsageMeter } from "@/components/monetization/UsageMeter"
-import { TokenUsageCard } from "@/components/account/TokenUsageCard"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { Alert } from "@/components/ui/Alert"
 import {
@@ -268,10 +267,6 @@ export function PlanSection({ data }: { data: PlanData }) {
 
                 </div>
             </SettingsSection>
-
-            {/* Own card: it loads its own live balance and sells the top-up the
-                line above refers to. */}
-            {data.usage.hasAiBudget && <TokenUsageCard />}
 
             <SettingsSection icon={Receipt} title={copy.billingTitle} description={copy.billingDesc}>
                 {storeManaged ? (

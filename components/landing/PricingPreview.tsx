@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowRight, Check } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
+import { trialDisclosure } from "@/lib/pricing/trial-disclosure"
 import type { PublicPricingPlan } from "@/lib/pricing/public-pricing-content"
 import type { MarketingLocale } from "@/lib/marketing/positioning"
 import { PlanRecommender } from "@/src/design-system/plan-recommender"
@@ -158,6 +159,11 @@ export function PricingPreview({
                                         ? pick(plan.pricing.annual.savings)
                                         : "\u00a0"}
                                 </p>
+                                {trialDisclosure(plan.trialDays ?? 0, priceOf(plan).value, billing === "annual" && plan.pricing.annual ? "annual" : "monthly") && (
+                                    <p className="mb-4 text-body-sm text-neutral-600 dark:text-slate-300">
+                                        {pick(trialDisclosure(plan.trialDays ?? 0, priceOf(plan).value, billing === "annual" && plan.pricing.annual ? "annual" : "monthly")!)}
+                                    </p>
+                                )}
 
                                 <p className="mb-4 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                     {pick(plan.description)}

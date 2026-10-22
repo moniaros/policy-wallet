@@ -15,6 +15,8 @@ import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { getUpgradeCopy } from "@/lib/monetization"
 import { planTierName } from "@/lib/subscription-copy"
 import { BillingTrustBox } from "./BillingTrustBox"
+import { usePlanFacts } from "./PlanFactsProvider"
+import { trialDisclosure } from "@/lib/pricing/trial-disclosure"
 
 const DISMISS_KEY = "pw-carried-plan-dismissed"
 
@@ -62,6 +64,10 @@ export function CarriedPlanCard({ planId, billingPeriod, className = "" }: Carri
     const viewedRef = useRef(false)
 
     const tier = PLAN_TIER[planId]
+    // The trial this plan carries (PW-C02-D10): length from the plan row, price of the period that will be charged.
+    const { tierPricing } = usePlanFacts()
+    const facts = tier ? tierPricing(tier) : null
+    const trial = facts ? trialDisclosure(facts.trialDays, billingPeriod === "annual" ? facts.annualEur : facts.monthlyEur, billingPeriod) : null
     const planLabel = tier ? planTierName(tier, language) : planId
 
     useEffect(() => {
@@ -149,6 +155,9 @@ export function CarriedPlanCard({ planId, billingPeriod, className = "" }: Carri
                         </p>
                     </div>
                 </div>
+                {trial && (
+                    <p className="mt-2 text-xs font-semibold text-primary dark:text-mint">{pick(trial, language)}</p>
+                )}
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                     <button
                         type="button"

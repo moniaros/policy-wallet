@@ -16,7 +16,6 @@ const PROPER = new Set(['Tokens', 'Token', 'PolicyWallet', 'AI', 'PDF', 'Πορ�
 const FILES = [
     'components/coverage/RecommendationCards.tsx',
     'components/coverage/RiskProfileWizard.tsx',
-    'components/account/TokenUsageCard.tsx',
 ]
 
 function titleCaseGreek(src: string): string[] {

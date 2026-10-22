@@ -43,8 +43,8 @@ const COPY = {
     },
     tokensTitle: { el: "Η αγορά ολοκληρώθηκε", en: "Purchase complete" },
     tokensBody: {
-        el: "Τα επιπλέον tokens προστέθηκαν στον λογαριασμό σας και είναι άμεσα διαθέσιμα.",
-        en: "Your extra tokens were added to your account and are available immediately.",
+        el: "Η αγορά καταχωρήθηκε στον λογαριασμό σας και είναι άμεσα διαθέσιμη.",
+        en: "Your purchase was added to your account and is available immediately.",
     },
     reportTitle: { el: "Η αναφορά είναι διαθέσιμη", en: "Report unlocked" },
     reportBody: {

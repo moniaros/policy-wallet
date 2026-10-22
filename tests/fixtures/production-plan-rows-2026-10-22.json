@@ -1,0 +1,14 @@
+{
+  "_source": "Production plans table, read by the owner (Eli) on 2026-10-22 and pasted into the PW-CONTENT-02 round-3 brief. Authoritative. null = unlimited. Re-read production and update this file when a plan row changes.",
+  "policyholder": {
+    "free": { "display": "Free", "monthlyEur": 0, "annualEur": null, "policies": 3, "notifications": false, "interactiveQA": false, "questionsPerDay": 0, "portfolioGapView": false, "gapAnalysisPerDay": 0, "agentCollaboration": false, "savingsReportExport": false, "aiAnalysisPerMonth": null, "monthlyTokenBudget": 150000, "trialDays": 0 },
+    "plus": { "display": "Plus", "monthlyEur": 4.99, "annualEur": 39, "policies": 10, "notifications": true, "interactiveQA": false, "questionsPerDay": 0, "portfolioGapView": false, "gapAnalysisPerDay": 0, "agentCollaboration": false, "savingsReportExport": false, "aiAnalysisPerMonth": null, "monthlyTokenBudget": 600000, "trialDays": 0 },
+    "pro": { "display": "Family", "monthlyEur": 8.99, "annualEur": 79, "policies": 25, "notifications": true, "interactiveQA": true, "questionsPerDay": null, "portfolioGapView": true, "gapAnalysisPerDay": null, "agentCollaboration": true, "savingsReportExport": true, "aiAnalysisPerMonth": null, "monthlyTokenBudget": 1500000, "trialDays": 14 }
+  },
+  "agent": {
+    "agent_free": { "display": "Agent Free", "monthlyEur": 0, "annualEur": null, "maxCustomers": 10, "aiAnalysesPerMonth": 5, "teamMembers": 1, "renewalAutomation": false, "brandedReport": false, "brandedPortal": false, "maxPoliciesPerCustomer": 5 },
+    "agent_starter": { "display": "Agent Starter", "monthlyEur": 29, "annualEur": 290, "maxCustomers": 100, "aiAnalysesPerMonth": 50, "teamMembers": 1, "renewalAutomation": false, "brandedReport": false, "brandedPortal": true, "maxPoliciesPerCustomer": 20 },
+    "agent_pro": { "display": "Agent Pro", "monthlyEur": 79, "annualEur": 790, "maxCustomers": 500, "aiAnalysesPerMonth": 150, "teamMembers": 3, "renewalAutomation": true, "brandedReport": true, "brandedPortal": true, "maxPoliciesPerCustomer": null },
+    "agency": { "display": "Agency", "monthlyEur": 199, "annualEur": 1990, "maxCustomers": null, "aiAnalysesPerMonth": 400, "teamMembers": null, "renewalAutomation": true, "brandedReport": true, "brandedPortal": true, "maxPoliciesPerCustomer": null }
+  }
+}

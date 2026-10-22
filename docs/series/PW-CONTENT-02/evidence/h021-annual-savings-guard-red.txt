@@ -1,0 +1,41 @@
+(node:91187) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:91189) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/annual-savings-derived.test.ts (3 tests | 1 failed) 245ms
+     × no source file types a month-count saving 235ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/annual-savings-derived.test.ts > annual savings are derived from prices, never typed (H-021) > no source file types a month-count saving
+AssertionError: typed annual saving in: components/monetization/UpgradeModal.tsx, lib/pricing/public-pricing-content.ts, lib/subscription-copy.ts: expected [ …(3) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "components/monetization/UpgradeModal.tsx",
++   "lib/pricing/public-pricing-content.ts",
++   "lib/subscription-copy.ts",
++ ]
+
+ ❯ tests/unit/annual-savings-derived.test.ts:50:78
+     48|         expect(files.length).toBeGreaterThan(500)
+     49|         const offenders = files.filter((f) => findings(readFileSync(f,…
+     50|         expect(offenders, `typed annual saving in: ${offenders.join(',…
+       |                                                                              ^
+     51|     })
+     52|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  11:13:59
+   Duration  836ms (transform 31ms, setup 148ms, import 14ms, tests 245ms, environment 363ms)
+

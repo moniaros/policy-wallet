@@ -8,6 +8,7 @@ import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { logger } from "@/lib/logger"
 import { getSiteOrigin } from "@/lib/seo/site"
 import { TRIAL_DAYS_BY_PLAN } from "@/lib/billing/trial-plans"
+import { trialDisclosure } from "@/lib/pricing/trial-disclosure"
 import { vatInclusiveBreakdown, type VATBreakdown } from "@/lib/billing/vat"
 // Only same-origin app paths may be used as post-checkout return targets —
 // shared open-redirect guard (re-exported for existing callers).
@@ -114,6 +115,12 @@ export async function createCheckoutSession(
         ],
         mode: "subscription",
         subscription_data: trialDays ? { trial_period_days: trialDays } : undefined,
+        // The hosted checkout states the trial, what follows it and the way out, in both languages
+        // (PW-C02-D10). Length and price are the row's, the same values the session charges.
+        custom_text: (() => {
+            const d = trialDisclosure(trialDays ?? 0, periodPrice, isAnnual ? "annual" : "monthly")
+            return d ? { submit: { message: `${d.el}\n${d.en}` } } : undefined
+        })(),
         // Promotion codes are a B2B-only lever (ENDOFSUMMER26 and its
         // successors). Enabling the field on B2C too would put a "have a
         // promo code?" box on consumer checkout with nothing valid to type
@@ -572,7 +579,7 @@ export async function handleSubscriptionSuccess(
             adminUserId: userId,
             adminEmail: 'system',
             actionType: 'SUBSCRIPTION_CREATED',
-            description: `Subscription started for plan ${plan.name}`,
+            description: `Subscription started for plan ${plan.displayName}`,
         }
     })
 

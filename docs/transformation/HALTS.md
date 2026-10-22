@@ -1053,7 +1053,7 @@ Stripe note, so the series' halt clause isn't re-raised: Stripe holds no entitle
 Decisions are in `docs/transformation/DECISIONS.md` (PW-CONTENT-02 round 2). Status of the six halts:
 
 - **H-019** closed. **H-020** closed. **H-023** closed.
-- **H-021 — OPEN, MERGE BLOCKER.** Production `plans.entitlements` have not been read. The entitlement-claim guard is verified against dev rows = code defaults ONLY, not against production. Eli to paste the production rows (`SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;`); until then nothing here claims the public site matches production entitlements. Standing rule from the owner: never `vercel env pull` again (denied in `.claude/settings.json`); ask for any production value.
+- **H-021 — CLOSED 2026-10-22 (PW-C02-D13); was: OPEN, MERGE BLOCKER.** The owner read the production rows; the guard now passes against them (see the section below). Historic text:  Production `plans.entitlements` have not been read. The entitlement-claim guard is verified against dev rows = code defaults ONLY, not against production. Eli to paste the production rows (`SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;`); until then nothing here claims the public site matches production entitlements. Standing rule from the owner: never `vercel env pull` again (denied in `.claude/settings.json`); ask for any production value.
 - **H-022** — tagline «Τα ασφαλιστήριά σας, με απλά λόγια» APPROVED for root title, OG headline and home Twitter title. Item 3 (partner-referral revenue) stays unconfirmed: see **H-025**.
 - **H-024** — resolved or removed item by item: Schengen €30.000 kept and sourced (Regulation (EC) 810/2009, Art. 15(3), CLAIMS C18); support is **email only** (no phone, no hours, no «Αποκλειστική υποστήριξη» — removed everywhere); Stripe portal downgrade claim REMOVED (the portal has no configuration in test mode, 0 of 0, and the app has no in-app downgrade flow); the boat sentence stays removed until the cited article of ν. 4926/2022.
 
@@ -1105,7 +1105,7 @@ All PUBLIC support contact points use `info@policywallet.gr` (`siteConfig.contac
 
 The optional phone field on the /contact form and the phone row on that page were removed with `siteConfig.contactPhone` / `NEXT_PUBLIC_CONTACT_PHONE`; the POST `/api/contact` schema still accepts an optional `phone` (unused, back-compatible).
 
-## H-027 — Published agent analysis counts (50 / 150 / 400) may not be reachable under the token gate · OPEN
+## H-027 — Published agent analysis counts (5 / 50 / 150 / 400) may not be reachable under the token gate · OPEN, MERGE BLOCKER (owner, 2026-10-22)
 
 date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 3) · blocks: nothing in the build; **needs Eli + production data**
 
@@ -1121,7 +1121,7 @@ date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 3) · blocks: no
 
 The unsourced sentence «Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα» is removed from every PUBLIC surface and from the policyholder-facing boat copy found by the reviews (`lib/insurance/content/boat.ts`, `risk-catalog.ts` explanation and detail, `life-events/registry.ts`). It still underlies the in-app **domain model**, which treats a marine third-party-liability policy as "the compulsory cover": `lib/insurance/taxonomy.ts:172-179` (a code comment cites ν. 4926/2022 and ΓΚΛ 20), `lib/insurance/content/boat-tpl.ts:44,87`, `risk-catalog.ts:84,791`, `lib/needs/questions.ts:182`, `translations` `why:` strings (`el.ts:2227`, `en.ts:2201`). Rewording those is a product/legal decision about how the engine frames boat cover, not a copy fix: **Ask:** cite the article of ν. 4926/2022 from the official text (then the model can stay and the public sentence can return, worded to its actual scope), or tell me to neutralise the remaining strings.
 
-## H-028 — The LIVE checkout grants the free trial to every checkout, including lapsed subscribers · OPEN (owner decision)
+## H-028 — The LIVE checkout grants the free trial to every checkout, including lapsed subscribers · CLOSED 2026-10-22 for copy (PW-C02-D10); code fix queued as PW-ENTITLE-01 item 1
 
 date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 8) · blocks: nothing in the build
 
@@ -1130,3 +1130,37 @@ date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 8) · blocks: no
 
 ## H-027 addendum (2026-10-22, pass 8)
 B2C in-app copy that names the AI token budget, besides the `TokenUsageCard`: `lib/monetization/upgrade-copy.{el,en}.ts` `token_topup` («Εξαντλήθηκαν τα AI tokens του μήνα», «Μηνιαία tokens που ανανεώνονται αυτόματα»), `lib/i18n/translations/el.ts` (~1335, 1377, 2594: «όριο AI tokens», «αγοράστε credits»), `app/api/v1/tokens/purchase/route.ts`. Reached from `AnalysisCard` on `TOKEN_LIMIT_BLOCKED`. They are one feature with the meter and its top-up; hiding or rewording them is the same owner decision as H-027.
+
+
+## PW-CONTENT-02 — owner round 3 (2026-10-22)
+
+### H-027 — status
+Owner decision: the published agent caps ARE the analysis counts (5 / 50 / 150 / 400); tokens are an internal unit. Done: Agent Free's 5 is published again; the token meter and all customer-facing token copy are gone (guard `no-token-copy-customer-facing.test.ts`). **Still OPEN and a merge blocker** until the owner runs `docs/series/PW-CONTENT-02/evidence/h027-token-per-analysis-prod.sql` (read-only) on production and resizes `monthlyTokenBudget` in /admin/plans. Local arithmetic, for orientation only (not production data): a deep run estimates 142,800–151,200 tokens (`token-budget-estimator.ts`); Agent Free's 150,000 budget therefore cannot be guaranteed to allow even one run at the high estimate, let alone 5.
+
+### H-029 — Stripe-side and plan-row names to review (listed for the owner; none changed)
+- The Family plan row is named «Pro» (`tier_key pro`, `display_name Family`). No customer-facing in-app or email string uses «Pro» for it (checked: translations, `subscription-copy`, `monetization`, `email`, guides, help). Where the row name still surfaces: `app/api/v1/me/subscription/route.ts:34-35` (`name: plan.name`, beside a correct `display_name`; fallback «PRO» at `:42-43`), the admin plan list, and the activity-log line (now `displayName`, `lib/billing.ts:575`).
+- Stripe product names created by code: `plan.displayName` → «Family» (`lib/billing.ts:102`); description «PolicyWallet monthly|annual subscription» (`:103`); token top-up «PolicyWallet AI tokens — {label}» (`:179`, a customer-visible Stripe/receipt name that says «tokens»; see QUEUE TOKEN-TOPUP-UI-REMOVED); report unlock «PolicyWallet — Πλήρης αναφορά κενών κάλυψης» (`:282`).
+- Not in the live path: `scripts/setup-billing-catalog.ts:42-43` would create «PolicyWallet Pro» at 7.99/79 and «ph-plus» at 2.99/29 (stale); the deprecated `app/api/stripe/checkout/route.ts:36-41` reads Stripe price ids from `STRIPE_PREMIUM_PRICE_ID` / `STRIPE_PLUS_PRICE_ID` (product names live in the Stripe dashboard, unverified).
+- Owner: check the Stripe dashboard product list and receipts for «Pro» / «PolicyWallet Pro».
+
+### H-030 — Cancellation: trace and every claim (no claim changed; not merge-blocking because a working path exists)
+**Test-mode trace.** (1) In-app cancel works without a portal configuration: `PlanSection.tsx:329-359` shows «Διακοπή αυτόματης ανανέωσης» → confirm → `cancelSubscription` (`app/(protected)/account/actions.ts:92-135`) sets `cancel_at_period_end` on the Stripe subscription, then `autoRenew:false`. (2) `customer.subscription.updated` mirrors it (`lib/services/billing/stripe-lifecycle.ts:56-65`). (3) At period end `customer.subscription.deleted` marks the row `expired` and the user resumes on Free (`:200-220`). (4) The billing portal (`createBillingPortalSession`, `account/actions.ts:71-90`; `/api/v1/billing/portal`) needs a Stripe portal configuration; test mode has 0 (inferred from this series' earlier check), so it fails with the «portalFailed» toast. (5) There is NO immediate downgrade to Free. (6) Cancelling during a trial holds until trial end (no charge); no surface states it. Not verified: the webhook endpoint registration on the test and live Stripe accounts.
+**Owner to verify in live mode:** the portal configuration exists and the cancel path completes; this is on the GO checklist.
+**Claims (file:line, current text):**
+- `lib/subscription-copy.ts:327-330` «Ακύρωση ανά πάσα στιγμή» / "Cancel anytime" (used by /upgrade, `upgrade/page.tsx:98,168`)
+- `app/(protected)/upgrade/success/page.tsx:41-42` «Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή»
+- `lib/monetization/upgrade-copy.el.ts:20` / `.en.ts:8` (`TRUST`) «… Ακύρωση ανά πάσα στιγμή · Χωρίς κρυφές χρεώσεις» / "Cancel anytime · No hidden fees"
+- `app/(public)/pricing/PricingPageClient.tsx:116-118,417` «Ακύρωση ανανέωσης όποτε θέλετε» / "Cancel renewal at any time"
+- `components/landing/LoBPageShell.tsx:88-95` four strings ending «Ακύρωση όποτε θέλετε.» / "Cancel anytime." (agent and policyholder, el and en)
+- `lib/subscription-copy.ts:268-275` and `lib/pricing/public-pricing-content.ts:317-324` «Τι γίνεται αν ακυρώσω;» → access kept until the end of the paid period
+- `lib/legal/legal-content.ts:127` (el) / `:612` (en) terms §5: «Μπορείτε να ακυρώσετε οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας … Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.»
+- `lib/legal/legal-content.ts:187` (el): account deletion cancels active subscriptions; `:672` (en): the active subscription «remains in force until the end of the current billing period, in accordance with section 4» — **the two language versions disagree and the section number is wrong (subscriptions are §5)**; flagged for legal review, not changed.
+- `app/(protected)/agent/pricing/AgentPricingClient.tsx:133,148` «Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας» / "Cancel anytime from your account"
+- In-app cancel flow copy (describes the working path): `el.ts:3297-3300,3432-3433`, `en.ts:3240-3243,3375-3376`; `subscription-copy.ts:241-244` `cancelSuccess`; `account/actions.ts:124` (error text pointing to «την πύλη χρεώσεων»).
+- The new trial sentence (PW-C02-D10) also says «εκτός αν ακυρώσετε πριν λήξει».
+
+### H-031 — Annual billing: verified, no halt needed
+`createCheckoutSession` ignores `plans.stripe_price_id`; it builds an inline Stripe price from the plan row: monthly = `price`, annual = `annual_price` (fallback `DEFAULT_ANNUAL_PRICE_BY_PLAN`, 39 / 79), `recurring.interval = "year"` (`lib/billing.ts:65-75,96-111`). The toggle reaches it as `billingPeriod` in the request body (`app/api/v1/billing/checkout/route.ts:11,36-37`). So annual checkout charges the annual price (39 € / 79 €). The annual checkout also grants the trial (`:90,116`). Not verified: a live Stripe session (no Stripe access this session).
+
+### H-032 — No subscription-start email; no trial-ending webhook
+There is no confirmation email at subscription start (`handleSubscriptionSuccess`, `lib/billing.ts:569-580`, writes an admin activity row only), and `customer.subscription.trial_will_end` is not handled (`stripe-lifecycle.ts:19-24`). The sign-up "confirmation" is a page (`app/auth/signup/confirmation/page.tsx`), and it now carries the trial sentence. Owner: enable Stripe's trial-ending reminder email (GO checklist); an app-side confirmation email is queued as PW-ENTITLE-01-adjacent work (QUEUE: SUBSCRIPTION-START-EMAIL).

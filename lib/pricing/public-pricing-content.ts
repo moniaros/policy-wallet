@@ -1,6 +1,7 @@
 import type { ClaimKey } from "@/lib/marketing/plan-claims"
 import type { CheckoutBlockReason } from "@/lib/pricing/stripe-mode"
 import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
+import { annualSavingsLabel } from "@/lib/pricing/annual-savings"
 
 export type PricingAudience = "policyholder" | "agent"
 export type BillingPeriod = "monthly" | "annual"
@@ -30,6 +31,8 @@ export interface PublicPricingPlan {
     badge?: LocalizedText
     isHighlighted?: boolean
     isContactPlan?: boolean
+    /** The plan row's `trial_days`, set by the view model; >0 means the sentence from trial-disclosure.ts is shown. */
+    trialDays?: number
     pricing: {
         // The PRICE is a number until the moment it is rendered (PW-CONTENT-02
         // A3). It used to be the string "€4.99", which the pricing JSON-LD parsed
@@ -150,7 +153,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     annual: {
                         value: 39,
                         period: { el: "/έτος", en: "/year" },
-                        savings: { el: "Εξοικονομείτε 4 μήνες", en: "Save 4 months" },
+                        savings: annualSavingsLabel(4.99, 39)!,
                     },
                 },
                 features: [
@@ -175,7 +178,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     annual: {
                         value: 79,
                         period: { el: "/έτος", en: "/year" },
-                        savings: { el: "Εξοικονομείτε 3 μήνες", en: "Save 3 months" },
+                        savings: annualSavingsLabel(8.99, 79)!,
                     },
                 },
                 features: [
@@ -347,9 +350,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
                 features: [
                     { claim: "agent.clients", label: { el: "10 πελάτες", en: "10 clients" }, included: true },
-                    // «5 AI αναλύσεις / μήνα» removed 2026-10-21: the 150,000-token
-                    // budget can refuse a run at zero usage (run-preflight.ts), so
-                    // the count is not a promise this plan keeps (plan-claims.ts).
+                    { claim: "agent.analysesPerMonth", label: { el: "5 αναλύσεις τον μήνα", en: "5 analyses a month" }, included: true },
                     { claim: "agent.clientScreen", label: { el: "Βασική εικόνα πελατών", en: "Basic client view" }, included: true },
                     { claim: "agent.bulkImportRows", label: { el: "Προσθήκη έως 10 πελατών μαζί", en: "Bulk import up to 10 clients" }, included: true },
                     { claim: "agent.renewalAutomation", label: { el: "Αυτοματισμοί ανανέωσης", en: "Renewal automation" }, included: false },
@@ -453,12 +454,11 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 // plan has to be able to see how many policies it will read.
                 // Figures are DEFAULT_ENTITLEMENT_LIMITS (plan-defaults.ts).
                 // Pro and Agency read 150 / 400, the same as their cards (this
-                // table said 200 / «Απεριόριστες» until 2026-10-21). Agent Free
-                // is «—»: its count is not a promise the plan keeps.
+                // table said 200 / «Απεριόριστες» until 2026-10-21). Agent Free is 5.
                 claim: "agent.analysesPerMonth",
                 name: { el: "Αναλύσεις AI ανά μήνα", en: "AI analyses per month" },
                 values: {
-                    "agent-free": "—",
+                    "agent-free": "5",
                     "agent-starter": "50",
                     "agent-pro": "150",
                     "agent-agency": "400",
