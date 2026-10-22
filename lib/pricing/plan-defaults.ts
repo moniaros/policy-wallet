@@ -154,7 +154,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
     // AGENT_INDEPENDENT_VERIFICATION=1, so each agent run reserves R_max (151,200: the 8-rule branch,
     // token-budget-estimator.ts) PLUS a second extraction (102,000, independent-verification.ts) = 253,200:
     //   agent_free 5 → 1,266,000 → 1,700,000 · agent_starter 50 → 12,660,000 → 16,800,000
-    //   agent_pro 150 → 37,980,000 → 50,000,000 · agency 400 → 101,280,000 → 134,000,000   (+~10 %+)
+    //   agent_pro 150 → 37,980,000 → 50,000,000 · agency 400 → 101,280,000 → 134,000,000   (+34 % / 33 % / 32 % / 32 % headroom over the estimate)
     // tests/unit/budget-reaches-published-count.test.ts enforces it. These are ESTIMATE-based and are to be
     // replaced by MEASURED budgets before GA: ((N−1)·A_p95 + R)·1.1 (QUEUE BUDGET-MEASURE, a GA blocker).
     // (Earlier: a 500,000-token free agent drew 3.3× a free consumer; the free tier's job is to

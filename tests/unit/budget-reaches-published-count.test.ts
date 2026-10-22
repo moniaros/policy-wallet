@@ -22,6 +22,10 @@ import type { AgentTier } from '@/types/subscription-entitlements'
  * extraction (independent-verification.ts: 102,000), i.e. R_agent = R + 102,000; and Family's budget is
  * analyses for a full wallet (25 policies × R) PLUS an allowance for interactive Q&A (100 questions × the
  * 15,000 headroom the Q&A gate asks for, wallet/actions.ts:1778).
+ * NOT covered by this rule (QUEUE AGENT-BUDGET-OTHER-DRAWS / BUDGET-MEASURE): the scan-time / upload-time
+ * extraction (agent/actions.ts:1501, api/policies/extract/route.ts:293) is RECORDED against the same monthly row
+ * (not budget-gated), about 102,000 per document when the run cannot reuse the scan cache; MEDIC, the review
+ * workspace, agent Q&A and batch translation likewise. The rule sizes the analyses; measurement sizes the month.
  */
 const TIERS = Object.keys(DEFAULT_AGENT_ENTITLEMENT_LIMITS) as AgentTier[]
 // The second extraction an agent run reserves when AGENT_INDEPENDENT_VERIFICATION=1 (production). The constant is

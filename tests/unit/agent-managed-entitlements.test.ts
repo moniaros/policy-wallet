@@ -144,7 +144,7 @@ describe('canUserUseTokens — agent budget branch', () => {
         vi.mocked(db.user.findUnique).mockResolvedValue({ roles: 'agent' } as any)
         mockAgentPlan(null)
         vi.mocked(db.monthlyTokenUsage.findUnique).mockResolvedValue({
-            // exactly the plan's budget: derived, not typed (the budget moved 150,000 → 850,000 in round 5)
+            // exactly the plan's budget: derived, not typed (the budget moved 150,000 → 850,000 → 1,700,000 in rounds 5–6)
             totalTokens: BigInt(DEFAULT_AGENT_ENTITLEMENT_LIMITS.agent_free.monthlyTokenBudget as number),
             reservedTokens: BigInt(0),
         } as any)

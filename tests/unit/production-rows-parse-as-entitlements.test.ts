@@ -12,8 +12,12 @@ import { DEFAULT_AGENT_ENTITLEMENT_LIMITS, DEFAULT_ENTITLEMENT_LIMITS } from '@/
  * production rows committed for H-021 (tests/fixtures/production-plan-rows-2026-10-22.json), lays them over the
  * canonical shape and requires: the strict schema accepts it; the resolver returns the ROW's values (proved with
  * a sentinel no default carries), not the fallback; and an out-of-range value would fall back (probe).
- * Limit of the proof: the fixture holds the fields the owner listed, not the raw `plans.entitlements` blob, so an
- * extra unknown key in the real blob (the schema is strict) cannot be excluded from the repo.
+ * Limits of the proof: (a) the fixture holds the fields the owner listed, not the raw `plans.entitlements` blob, so
+ * fields absent from it (advancedAnalytics, analysisComparison, priorityQueue; collaborationThreads, questionnaireTemplates,
+ * crossSellIntelligence, …) are taken from the code defaults, and an extra unknown key in the real blob (the schema is
+ * strict) cannot be excluded from the repo; (b) every call passes `tierKey`, so name routing (normalizeTier(plan.name)) is
+ * not exercised; (c) it proves the resolver, not resolveUserEntitlements' live-subscription query (a parsing Family
+ * row still resolves to free if the subscription row is not live).
  */
 const prod = JSON.parse(readFileSync('tests/fixtures/production-plan-rows-2026-10-22.json', 'utf-8'))
 const SENTINEL = 123_456_789

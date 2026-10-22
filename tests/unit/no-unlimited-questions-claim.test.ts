@@ -16,8 +16,8 @@ const EXCLUDED = [/^app\/api-docs\//, /^lib\/admin\//, /^app\/\(protected\)\/adm
 
 // questionnaires (ερωτηματολόγια) are an agent feature, not Q&A; a word must not swallow the full stop after it
 const QUESTION = '(ερωτ(?!ηματολ)[^\\s.,;]*|question(?!naire)\\w*|q&a)'
-const UNBOUNDED = '(απεριόρ[^\\s.,;]*|unlimited|χωρίς όριο|no limit|ελεύθερα|freely|anything|οτιδήποτε|any number of|όσες θέλετε)'
-const CLAIM = new RegExp(`${UNBOUNDED}[^.\\n]{0,40}${QUESTION}|${QUESTION}[^.\\n]{0,40}${UNBOUNDED}|ask ${UNBOUNDED}|ρωτ[^\\s.,;]* ${UNBOUNDED}|ρωτάτε ${UNBOUNDED}`, 'i')
+const UNBOUNDED = '(απεριόρ[^\\s.,;]*|unlimited|χωρίς όριο|no limit|ελεύθερα|freely|anything|οτιδήποτε|any number of|όσες θέλετε|όσες ερωτήσεις|as many|as often|whenever|όποτε|ό,τι θέλετε|οσεσδήποτε)'
+const CLAIM = new RegExp(`${UNBOUNDED}[^.\\n]{0,40}${QUESTION}|${QUESTION}[^.\\n]{0,40}${UNBOUNDED}|ask (the (AI|assistant) )?${UNBOUNDED}|ρωτ[^\\s.,;]* ${UNBOUNDED}|ρωτάτε ${UNBOUNDED}`, 'i')
 const LITERAL = /(["'`])(?:(?!\1)[^\n\\]|\\.)*[ \t](?:(?!\1)[^\n\\]|\\.)*\1/g
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -50,7 +50,7 @@ describe('no customer-facing string promises unbounded Q&A', () => {
     it('probe: every probe line is flagged on its own', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/unlimited-questions.ts.txt', 'utf-8')
         const lines = probe.split('\n').filter((l) => l.startsWith('export const'))
-        expect(lines.length).toBe(7)
+        expect(lines.length).toBe(11)
         for (const line of lines) expect(unboundedQuestionClaims(line).length, line).toBeGreaterThanOrEqual(1)
     })
 
