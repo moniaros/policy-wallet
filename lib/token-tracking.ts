@@ -24,8 +24,8 @@ export { formatTokens, formatCost, TOKEN_COSTS, type AIModel, type OperationType
 // guards only). Deep AI is Family only (code key `pro`); parse/extraction is the one AI op Free
 // and Plus run, and it is not token-gated at all (upload-time extraction calls neither
 // canUserUseTokens nor reserveTokens; the policy-count cap and a 30-a-day spend cap bound it). The figures below are the OLD fallback table; the live budgets
-// are the plan rows' (production 2026-10-22: free 150,000, plus 600,000, pro/Family 1,500,000 —
-// tests/fixtures/production-plan-rows-2026-10-22.json). The budget resets on the SERVER'S calendar
+// are the plan rows' (production: free 150,000, plus 600,000; pro/Family and the agent plans carry the INTERIM
+// budgets of round 6 — tests/fixtures/production-plan-rows-2026-10-22.json, QUEUE BUDGET-MEASURE). The budget resets on the SERVER'S calendar
 // month (billingMonth below), not on the subscription period.
 //
 // These are now the CODE FALLBACK of the admin-managed plan catalog: the live

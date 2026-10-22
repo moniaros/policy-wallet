@@ -1,0 +1,8 @@
+// Probe for tests/unit/no-unlimited-questions-claim.test.ts — each line promises questions without a bound.
+export const A = "Απεριόριστες ερωτήσεις στο AI"
+export const B = "Unlimited questions about your policies"
+export const C = "Αναβαθμίστε για να ρωτάτε ελεύθερα για καλύψεις και εξαιρέσεις"
+export const D = "Upgrade to ask freely about coverages, limits and exclusions"
+export const E = "Ask anything about your policy..."
+export const F = "Ρωτήστε οτιδήποτε για το ασφαλιστήριο..."
+export const G = "Ερωτήσεις χωρίς όριο για κάθε ασφαλιστήριο"

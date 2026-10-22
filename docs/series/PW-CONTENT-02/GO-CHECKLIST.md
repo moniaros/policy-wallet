@@ -25,9 +25,9 @@ Who acts is in brackets.
 - [ ] **Stripe trial-ending reminder email on.**
 - [ ] **Brevo:** `BREVO_API_KEY` present in production, sender domain authenticated (SPF/DKIM), the IP-allowlist 401 (Sentry POLICYWALLET-3) closed; **renewal cron enabled with run history** (`/api/v1/jobs/renewal-check`, `job_runs`/`notification_events` rows, `JobSchedule` and `automation.paused` not pausing it).
 - [ ] **`PREVENTION_PERSONALIZATION_ENABLED=0` in production** (at 1, Free's 150,000 budget binds the basic path).
-- [ ] **Agent budgets set in /admin/plans** to agent_free 850,000 · agent_starter 8,400,000 · agent_pro 25,000,000 · agency 67,000,000 (rule: budget ≥ published count × 151,200; `tests/unit/budget-reaches-published-count.test.ts`; update `tests/fixtures/production-plan-rows-2026-10-22.json` after the save). Family waits for the H-027 query.
-- [ ] **`AGENT_INDEPENDENT_VERIFICATION` is 0 in production** (or the budgets are re-sized): at 1, every agent deep run also reserves 102,000 and records a second extraction's actual tokens (`policy-analysis-orchestrator.service.ts:1602-1612`, `independent-verification.ts:51-52`), so Agent Free honours about 3 runs, not 5. `AGENT_VERIFICATION_PROVIDER=openai` is pre-filled in `.env.example:180`.
-- [ ] **Terms §5 for agents:** approve `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md` (then the edit + a bump of `LEGAL_CONTENT_VERSION` AND the four `LEGAL_DOC_META` versions, `lib/legal/legal-content.ts:58-61`, which the legal pages display) — nothing applied yet.
+- [ ] **INTERIM budgets set in /admin/plans** [Eli] (round 6): Family `pro` 5,700,000; agent_free 1,700,000 · agent_starter 16,800,000 · agent_pro 50,000,000 · agency 134,000,000 (rule: `tests/unit/budget-reaches-published-count.test.ts`; update `tests/fixtures/production-plan-rows-2026-10-22.json` after the save). **Measured budgets before GA: QUEUE BUDGET-MEASURE is a GA blocker.**
+- [ ] **`AGENT_INDEPENDENT_VERIFICATION=1` in production** (the owner's stated value; the interim agent budgets are sized for it — at 0 they are about 2× too large, which is harmless; leaving it at 1 with the round-5 budgets would NOT honour the published counts). Why it matters: at 1, every agent deep run also reserves 102,000 and records a second extraction's actual tokens (`policy-analysis-orchestrator.service.ts:1602-1612`, `independent-verification.ts:51-52`), so Agent Free honours about 3 runs, not 5. `AGENT_VERIFICATION_PROVIDER=openai` is pre-filled in `.env.example:180`.
+- [x] **Terms §5 for agents:** APPLIED in round 6 (approved by Eli). Historic line: approve `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md` (then the edit + a bump of `LEGAL_CONTENT_VERSION` AND the four `LEGAL_DOC_META` versions, `lib/legal/legal-content.ts:58-61`, which the legal pages display) — nothing applied yet.
 
 ## Pre-deploy
 - [ ] CI green on the PR: `audit:api-auth`, `lint`, `lint:i18n-changed`, `lint:utf8`, `type-check`, unit tests, production build (run locally on `a5d673d7`: guardrails pass, unit suite green).
@@ -53,3 +53,7 @@ Who acts is in brackets.
 - Stripe Checkout creation errors (`custom_text` is the only new session field): `createCheckoutSession` failures in Sentry → revert immediately.
 - The Family card shows a trial sentence on a plan with no trial, or a wrong price/length (the sentence is read from the plan row).
 - Console errors on `/pricing` or `/account` in the owner's session.
+
+## GA blockers recorded by round 6 (not merge blockers)
+- [ ] BUDGET-MEASURE: measured token budgets replace the interim ones (QUEUE, under PW-ENTITLE-01).
+- [ ] H-035: Terms §12 Greek/English mismatch — separate legal commit (drafted in HALTS.md).

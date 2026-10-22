@@ -1198,3 +1198,20 @@ Other conditions on a reminder: policy status not in the non-live set, a resolva
 
 ### H-030 residue — Terms §5 for agents (PW-C02-D20)
 Drafted, not applied: `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md`. Version bump: `LEGAL_CONTENT_VERSION` is shared by Terms and Privacy; existing accounts are not re-prompted (no consumer compares versions). Awaiting the owner's approval of the text.
+
+
+## PW-CONTENT-02 — owner round 6 (2026-10-22)
+
+### H-035 — Terms §12: the Greek and English versions disagree · OPEN · **GA BLOCKER** (not a merge blocker for this series; pre-existing)
+Rule (owner): **the Greek text governs**; the fix ships as a separate legal commit, NOT applied here. What is wrong today (`lib/legal/legal-content.ts`):
+1. The GREEK §12 (`:187-193`) contains an English paragraph (`:191`), a leaked `en` string.
+2. The ENGLISH §12 (`:673-678`) says «Any active subscription remains in force until the end of the current billing period, in accordance with section 4» — the Greek says account deletion CANCELS the active subscriptions, and subscriptions are §5, not §4.
+3. The ENGLISH §12 has a suspension sentence («serious or repeated violation») and a data-handling sentence that the Greek §12 does not have; the suspension rule is in §7 of both versions with different wording (Greek `:149` «Σε περίπτωση παραβίασης…», English `:635` "In case of violation…").
+**Drafted fix (old → new)**
+- Greek §12, paragraph 2 (`:191`) — OLD: «You can request account deletion through the application. Active subscriptions are cancelled during the erasure process to stop billing. Deleting an account and cancelling the next renewal are different actions. Any refund entitlement is assessed under the law and section 6.» → NEW: **delete the paragraph** (paragraph 1, the Greek text, already says it).
+- English §12, paragraph 1 (`:676`) — OLD: «You can delete your account at any time from within the app. Any active subscription remains in force until the end of the current billing period, in accordance with section 4.» → NEW (the leaked paragraph above, which is the faithful translation of the Greek): «You can request account deletion through the application. Active subscriptions are cancelled during the erasure process to stop billing. Deleting an account and cancelling the next renewal are different actions. Any refund entitlement is assessed under the law and section 6.»
+- English §12, paragraph 2 (`:677`) — OLD: «We may suspend or terminate access in case of serious or repeated violation of these terms. After termination, your data is handled in accordance with the Privacy Policy.» → NEW: delete the first sentence (§7 already covers suspension, in the Greek wording); the second sentence («After termination, your data is handled in accordance with the Privacy Policy.») has no Greek counterpart: **legal decides** whether to add «Μετά τον τερματισμό, τα δεδομένα σας διαχειρίζονται σύμφωνα με την Πολιτική Απορρήτου.» to the Greek §12 or drop it.
+Then bump `LEGAL_CONTENT_VERSION` and the four `LEGAL_DOC_META` literals together (a legal-content parity test already pins el/en paragraph counts per section; it must be updated in the same commit). Account deletion's effect on subscriptions should also be checked against `lib/services/gdpr-erasure.service.ts` before the text is fixed.
+
+### H-027 — status after round 6 (PW-C02-D21)
+INTERIM budgets, set by the owner in /admin/plans: Family 5,700,000 (25 × 151,200 × 1.1 for analyses ≈ 4,158,000 + 1,500,000 for ~100 questions at the 15,000 unit); agents 1,700,000 / 16,800,000 / 50,000,000 / 134,000,000 because production runs `AGENT_INDEPENDENT_VERIFICATION=1` (each agent run reserves a second extraction of 102,000: R_agent = 253,200). Defaults, fixture and guard aligned (red first). They are ESTIMATE-based. **BUDGET-MEASURE (QUEUE) is a GA blocker**: measure actual tokens per analysis (all branches, verification on) and per question on fixtures, then replace the interim budgets with ((N−1)·A_p95 + R)·1.1. The production SQL stays a cross-check only (no users, sample too small).

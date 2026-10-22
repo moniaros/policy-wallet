@@ -1,5 +1,5 @@
 {
-  "_source": "Production plans table, read by the owner (Eli) on 2026-10-22 and pasted into the PW-CONTENT-02 round-3 brief. Authoritative EXCEPT the agent monthlyTokenBudget values, which the owner set in /admin/plans in round 5 and which were typed here to match the code defaults (see _agent_budgets_note): re-read production and confirm. null = unlimited.",
+  "_source": "Production plans table, read by the owner (Eli) on 2026-10-22 and pasted into the PW-CONTENT-02 round-3 brief. Authoritative EXCEPT the INTERIM monthlyTokenBudget values for pro (Family) and the four agent plans, which the owner set in /admin/plans in round 6 (AGENT_INDEPENDENT_VERIFICATION=1; Family = analyses + Q&A) and which were typed here to match the code defaults (see _budgets_note): re-read production and confirm. null = unlimited.",
   "policyholder": {
     "free": {
       "display": "Free",
@@ -46,7 +46,7 @@
       "agentCollaboration": true,
       "savingsReportExport": true,
       "aiAnalysisPerMonth": null,
-      "monthlyTokenBudget": 1500000,
+      "monthlyTokenBudget": 5700000,
       "trialDays": 14
     }
   },
@@ -62,7 +62,7 @@
       "brandedReport": false,
       "brandedPortal": false,
       "maxPoliciesPerCustomer": 5,
-      "monthlyTokenBudget": 850000
+      "monthlyTokenBudget": 1700000
     },
     "agent_starter": {
       "display": "Agent Starter",
@@ -75,7 +75,7 @@
       "brandedReport": false,
       "brandedPortal": true,
       "maxPoliciesPerCustomer": 20,
-      "monthlyTokenBudget": 8400000
+      "monthlyTokenBudget": 16800000
     },
     "agent_pro": {
       "display": "Agent Pro",
@@ -88,7 +88,7 @@
       "brandedReport": true,
       "brandedPortal": true,
       "maxPoliciesPerCustomer": null,
-      "monthlyTokenBudget": 25000000
+      "monthlyTokenBudget": 50000000
     },
     "agency": {
       "display": "Agency",
@@ -101,8 +101,8 @@
       "brandedReport": true,
       "brandedPortal": true,
       "maxPoliciesPerCustomer": null,
-      "monthlyTokenBudget": 67000000
+      "monthlyTokenBudget": 134000000
     }
   },
-  "_agent_budgets_note": "agent monthlyTokenBudget: set by the owner in /admin/plans on 2026-10-22 (round 5, H-027 rule): N x 151,200 + ~10%. Confirm against the production rows after the save."
+  "_budgets_note": "INTERIM budgets (owner, round 6): pro 5,700,000; agent_free 1,700,000; agent_starter 16,800,000; agent_pro 50,000,000; agency 134,000,000. To be replaced by measured budgets before GA (QUEUE BUDGET-MEASURE)."
 }

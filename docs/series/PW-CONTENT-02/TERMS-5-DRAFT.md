@@ -1,4 +1,6 @@
-# Terms §5 — draft for the owner's approval (NOT applied)
+# Terms §5 — APPROVED by the owner and APPLIED in round 6 (2026-10-22); versions bumped to GR-GA-2026.10.22
+
+_(historic draft text below)_
 
 Decision (owner, round 5): agents are promised in-app cancel they do not have. Amend Terms §5 so that
 **agent subscriptions are cancelled by email to info@policywallet.gr, effective at the end of the paid period**.

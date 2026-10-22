@@ -445,7 +445,7 @@ export const en: TranslationKeys = {
         askAiTitle: "Ask AI About Your Policy",
         askAiSubtitle: "Get instant answers to your questions",
         tryAsking: "Try asking:",
-        askAiPlaceholder: "Ask anything about your policy...",
+        askAiPlaceholder: "Ask about your policy...",
         aiFootnote: "AI responses are based on your policy document and may not be 100% accurate",
         qaFreeRemainingOne: "free question available",
         qaFreeRemainingMany: "free questions available",

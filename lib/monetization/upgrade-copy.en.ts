@@ -58,7 +58,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         headline: "Keep asking the AI",
         // See the note in upgrade-copy.el.ts: there is no free allowance and no
         // monthly reset, so "used your free questions for this month" is wrong twice.
-        body: "AI questions about your policies are included in the Family plan. Upgrade to ask freely about coverages, limits and exclusions.",
+        body: "AI questions about your policies are included in the Family plan. Upgrade to ask about coverages, limits and exclusions.",
         primaryCta: "Continue with questions",
         secondaryCta: "Not now",
         benefits: [

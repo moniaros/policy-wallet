@@ -73,7 +73,7 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         // claims the reader had questions and used them, and that more arrive next
         // month. Neither is true: they never had any and none are coming. Someone
         // waiting for a reset would wait forever.
-        body: "Οι ερωτήσεις AI για τα ασφαλιστήριά σας περιλαμβάνονται στο πλάνο Family. Αναβαθμίστε για να ρωτάτε ελεύθερα για καλύψεις, όρια και εξαιρέσεις.",
+        body: "Οι ερωτήσεις AI για τα ασφαλιστήριά σας περιλαμβάνονται στο πλάνο Family. Αναβαθμίστε για να ρωτάτε για καλύψεις, όρια και εξαιρέσεις.",
         primaryCta: "Συνέχεια με τις ερωτήσεις",
         secondaryCta: "Όχι τώρα",
         benefits: [

@@ -1467,3 +1467,18 @@ Agent budgets (set by the owner in /admin/plans; code defaults aligned in `lib/p
 
 ## PW-C02-D20 — Terms §5 for agents: cancel by email — DRAFTED, NOT APPLIED
 Owner decision: agent subscriptions are cancelled by email to info@policywallet.gr, effective at the end of the paid period. Old and new text, and what a version bump triggers, are in `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md`; `lib/legal/legal-content.ts` is untouched until the owner has seen it. In-app agent cancel control queued (AGENT-CANCEL-PATH).
+
+
+# PW-CONTENT-02 — owner round 6 (2026-10-22, Eli)
+
+## PW-C02-D21 — Interim token budgets; BUDGET-MEASURE is a GA blocker
+Family 5,700,000 = 25 policies × 151,200 × 1.1 (analyses) + 1,500,000 (≈100 questions at the 15,000 unit). Agents 1,700,000 / 16,800,000 / 50,000,000 / 134,000,000 because `AGENT_INDEPENDENT_VERIFICATION=1` in production (R_agent = 151,200 + 102,000 = 253,200; needs 1,266,000 / 12,660,000 / 37,980,000 / 101,280,000). Defaults, fixture and `budget-reaches-published-count.test.ts` aligned; extended to Family and to the verification reservation, red first (`evidence/d21-interim-budgets-guard-red.txt`: 4 agent plans and Family below the rule). Replacement by measured budgets ((N−1)·A_p95 + R)·1.1 is QUEUE BUDGET-MEASURE, a GA blocker. Not changed: Free 150,000 and Plus 600,000 (they never reach the gate).
+
+## PW-C02-D22 — No copy promises unbounded Q&A
+Q&A is bounded by the shared budget (gate `wallet/actions.ts:1778`) until QA-BUDGET-SPLIT. Found and removed (guard `no-unlimited-questions-claim.test.ts`, red first, 4 strings): «ρωτάτε ελεύθερα» / "ask freely" in the Family upsell (`upgrade-copy.el.ts:76`, `.en.ts:61`) and the placeholders «Ρωτήστε οτιδήποτε…» / "Ask anything…" (`translations/el.ts:445`, `en.ts:448`). No copy states «απεριόριστες ερωτήσεις» / "unlimited questions"; `questionsPerDay: null` is never rendered as a count (`plan-claims.ts` does not read it). The identifier `unlimited_ai_questions` is never rendered (queued rename).
+
+## PW-C02-D23 — Flag R verified in code: the production rows parse
+`tests/unit/production-rows-parse-as-entitlements.test.ts` lays every listed field of the committed production rows over the canonical shape; the strict `EntitlementLimitsSchema` / `AgentEntitlementLimitsSchema` accept all 8 rows, and `resolveB2cPlanLimits` / `resolveAgentPlanLimits` (now exported) return the ROW's values (proved with a sentinel no default carries), not the code fallback; a malformed row would fall back silently (probe). Limit: the fixture holds the owner's field list, not the raw `plans.entitlements` blob, so an extra unknown key in the real blob (the schema is strict) cannot be excluded from the repo.
+
+## PW-C02-D24 — Terms §5 applied; versions bumped together; §12 opened as a GA blocker
+TERMS-5-DRAFT.md approved and applied (`lib/legal/legal-content.ts`: policyholder subscriptions cancel in-app; agent subscriptions by email to info@policywallet.gr, both effective at the end of the paid period). `LEGAL_CONTENT_VERSION` and the four `LEGAL_DOC_META` versions → `GR-GA-2026.10.22` (dates 2026-10-22), prior text archived (`docs/archive/legal-content-before-2026-10-22.ts.txt`). No re-consent flow (TERMS-RECONSENT stays queued): existing accounts keep their recorded version. Terms §12 EN/GR mismatch → H-035, GA blocker, drafted fix for a separate legal commit.
