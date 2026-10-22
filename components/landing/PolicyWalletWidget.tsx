@@ -71,8 +71,8 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
     // gap is a Family job, and this mock sits beside a free-tier
     // promise.
     const alternative = t(
-        "Παράδειγμα αποτελέσματος με το Family: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το ασφαλιστήριο λήγει σε 14 μέρες.",
-        "Example result with Family: car and health are covered, while the home is missing flood cover and that policy runs out in 14 days.",
+        "Παράδειγμα αποτελέσματος με το Family: το αυτοκίνητο και η υγεία αναφέρουν καλύψεις, ενώ το ασφαλιστήριο του σπιτιού δεν αναφέρει πλημμύρα και λήγει σε 14 μέρες.",
+        "Example result with Family: car and health list their covers, while the home policy does not list flood and runs out in 14 days.",
     )
 
     // Entrance transitions are cosmetic. Everything is readable at rest, so

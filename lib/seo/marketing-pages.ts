@@ -234,13 +234,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/cyber",
         title: "Ασφάλιση για κινδύνους στο διαδίκτυο",
         description:
-            "Καλύψεις για ransomware, παραβιάσεις δεδομένων και διακοπή επιχειρηματικής λειτουργίας. Δείτε τι περιλαμβάνει η κυβερνοασφάλισή σας και πού έχετε κενά.",
+            "Καλύψεις για ransomware, παραβιάσεις δεδομένων και διακοπή επιχειρηματικής λειτουργίας. Δείτε τι περιλαμβάνει η κυβερνοασφάλισή σας και τι εξαιρεί.",
         keywords: ["κυβερνοασφάλεια", "ασφάλιση cyber"],
         breadcrumb: "Κυβερνοασφάλεια",
         en: {
             title: "Cyber insurance: ransomware, interruption",
             description:
-                "Coverage for ransomware, data breaches and business interruption. See exactly what your cyber policy includes, what it excludes and where your gaps are.",
+                "Coverage for ransomware, data breaches and business interruption. See exactly what your cyber policy includes and what it excludes, in plain language.",
             breadcrumb: "Cyber",
         },
     },
@@ -362,13 +362,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/business",
         title: "Ασφάλεια επιχείρησης: πολυκάλυψη για ΜμΕ",
         description:
-            "Στέγη, εξοπλισμός, εμπορεύματα, διακοπή εργασιών και αστική ευθύνη σε μία εικόνα. Η AI χαρτογραφεί τα ασφαλιστήρια της επιχείρησής σας και δείχνει τα κενά.",
+            "Στέγη, εξοπλισμός, εμπορεύματα, διακοπή εργασιών και αστική ευθύνη σε μία εικόνα. Η AI διαβάζει τα ασφαλιστήρια της επιχείρησής σας και δείχνει τι αναφέρουν.",
         keywords: ["ασφάλεια επιχείρησης", "πολυασφαλιστήριο επιχείρησης", "ασφάλιση καταστήματος"],
         breadcrumb: "Επιχείρηση",
         en: {
             title: "Business insurance: multi-cover for SMEs",
             description:
-                "Premises, equipment, stock, business interruption and liability in one picture. AI maps your company's policies and shows where the gaps are.",
+                "Premises, equipment, stock, business interruption and liability in one picture. AI reads your company's policies and shows what they say, in plain language.",
             breadcrumb: "Business",
         },
     },

@@ -126,7 +126,7 @@ export async function emitRiskEvents(input: RiskEventInput): Promise<void> {
                 ? { el: "Χάθηκε κάλυψη σε έναν κίνδυνο", en: "Cover lost on a risk" }
                 : closed > 0
                   ? { el: "Ένας κίνδυνος έκλεισε", en: "A risk closed" }
-                  : { el: "Άλλαξε η εικόνα κινδύνου σας", en: "Your risk picture changed" }
+                  : { el: "Άλλαξε η κατάσταση ενός κινδύνου", en: "A risk changed status" }
 
         await emit({
             event: "risk_level_changed",

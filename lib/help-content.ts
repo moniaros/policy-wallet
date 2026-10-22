@@ -139,8 +139,6 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     text: 'We send notifications for critical events to keep you protected.',
                     list: [
                         'Renewal reminders — 30 days before expiry on the free plan; at 90, 60, 30, 15, 7 and 3 days on paid plans',
-                        'Payment confirmations',
-                        'Security alerts (new device logins)',
                         'AI Analysis results'
                     ]
                 },
@@ -331,8 +329,6 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     text: 'Στέλνουμε ειδοποιήσεις για κρίσιμα γεγονότα για να σας κρατάμε προστατευμένους.',
                     list: [
                         'Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15, 7 και 3 ημέρες στα πληρωμένα πλάνα',
-                        'Επιβεβαιώσεις πληρωμής',
-                        'Ειδοποιήσεις ασφαλείας (συνδέσεις από νέες συσκευές)',
                         'Αποτελέσματα Ανάλυσης AI'
                     ]
                 },

@@ -182,7 +182,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                         </AppScreen>
                         <p className="mt-g-3 flex flex-wrap items-center gap-g-2 text-sm text-fg-primary">
                             <MiniChip state="gap">{pick(STATE_LABELS.gap, locale)}</MiniChip>
-                            {t("Κατοικία: λείπει η κάλυψη σεισμού", "Home: earthquake cover is missing")}
+                            {t("Κατοικία: ο σεισμός δεν αναφέρεται στο δείγμα", "Home: earthquake is not listed in the sample")}
                         </p>
                     </PhoneSample>
                     {/* Names the plan: finding the gap is a Family job, and this

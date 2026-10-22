@@ -25,3 +25,6 @@ boatProbe: "Third-party liability cover is compulsory for recreational craft in 
 reattr1: "AI questions about your policies are included with Plus.",
 reattr2: "Οι ερωτήσεις AI περιλαμβάνονται με το Plus.",
 reattr3: "Η εξαγωγή αναφοράς είναι διαθέσιμη στο Plus.",
+reattr4: "Plus includes the full AI analysis.",
+reattr5: "Με το Plus έχετε πλήρη ανάλυση AI.",
+queueProbe: "Priority analysis queue",

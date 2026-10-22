@@ -286,7 +286,7 @@ describe('length-budget-guard and new-string-guard', () => {
  *    English thousands separators inside Greek text — so «€4.99» in Greek passed.
  *    Probe: tests/fixtures/guard-probes/voice-number-literal.tsx.txt.
  */
-const PUBLIC_DIRS = ['app/(public)', 'app/auth', 'components/landing', 'components/public', 'components/pricing', 'src/design-system', 'lib/marketing', 'lib/landing', 'lib/product', 'lib/seo', 'lib/guides', 'lib/glossary']
+const PUBLIC_DIRS = ['app/(public)', 'app/auth', 'components/landing', 'components/public', 'components/pricing', 'src/design-system', 'lib/marketing', 'lib/landing', 'lib/product', 'lib/seo', 'lib/guides', 'lib/glossary', 'lib/email', 'lib/notifications']
 const PUBLIC_FILES = ['lib/pricing/public-pricing-content.ts', 'lib/pricing/pricing-view-model.ts', 'app/layout.tsx', 'app/llms.txt/route.ts']
 function walkAll(dir: string, exts: RegExp): string[] {
     if (!existsSync(dir)) return []
@@ -339,9 +339,9 @@ describe('PW-CONTENT-02 positioning lint — one line, no protection-verdict var
         ]
         expect(bad, `positioning-variant hits (metric M-P) = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
     })
-    it('probe — the retired variants turn it red (9 lines)', () => {
+    it('probe — the retired variants turn it red (14 lines)', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/voice-positioning-variant.ts.txt', 'utf-8')
-        expect(positioningOffenders('probe', code(probe)).length).toBe(9)
+        expect(positioningOffenders('probe', code(probe)).length).toBe(14)
     })
 })
 
@@ -380,9 +380,9 @@ describe('PW-CONTENT-02 support lint — email only, no phone, chat, hours or «
         ]
         expect(bad, `support claims PolicyWallet does not offer = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
     })
-    it('probe — each line of the probe turns it red (13 lines)', () => {
+    it('probe — each line of the probe turns it red (15 lines)', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/voice-support-claim.ts.txt', 'utf-8')
-        expect(supportOffenders('probe', code(probe)).length).toBe(13)
+        expect(supportOffenders('probe', code(probe)).length).toBe(15)
     })
 })
 

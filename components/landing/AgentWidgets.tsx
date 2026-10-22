@@ -194,7 +194,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
             textColor: "text-status-info",
             bg: "bg-status-info-tint",
             border: "border-status-info/40",
-            label: t("Κατοικία — λείπει σεισμική κάλυψη", "Home — missing earthquake cover"),
+            label: t("Κατοικία — ο σεισμός δεν αναφέρεται στο δείγμα", "Home — earthquake is not listed in the sample"),
             delay: 1800,
         },
         {

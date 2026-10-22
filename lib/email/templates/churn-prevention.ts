@@ -40,8 +40,8 @@ export function getChurnDay7Email(data: ChurnPreventionEmailData): { subject: st
             : "We haven't seen you in a while, but your insurance cover doesn't stop."
         }</p>
         ${!hasFindings ? `<p>${isGreek
-            ? 'Δεν εντοπίσαμε κάτι που να απαιτεί ενέργεια αυτή τη στιγμή — αξίζει όμως μια ματιά στο χαρτοφυλάκιό σας.'
-            : 'We found nothing that needs action right now — but your portfolio is worth a look.'
+            ? 'Δεν έχουμε κάτι νέο να σας δείξουμε — αξίζει όμως μια ματιά στις ημερομηνίες λήξης των ασφαλιστηρίων σας.'
+            : 'We have nothing new to show you — but your policies\' expiry dates are worth a look.'
         }</p>` : ''}
 
         ${expiringPolicies > 0 ? `

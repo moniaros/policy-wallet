@@ -81,7 +81,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
                                     <span className="text-[#475569] dark:text-slate-300">{t("Κάλυψη σε σχέση με το υπόλοιπο του δανείου", "Cover against what is left on the mortgage")}</span>
-                                    <span className="font-medium text-amber-700 dark:text-amber-300">{t("Βρέθηκε κενό", "Gap found")}</span>
+                                    <span className="font-medium text-amber-700 dark:text-amber-300">{t("Για έλεγχο", "To check")}</span>
                                 </div>
                                 <div className="w-full bg-gray-100 dark:bg-white/10 h-2 rounded-full">
                                     <div className="bg-amber-500 w-[72%] h-2 rounded-full" />

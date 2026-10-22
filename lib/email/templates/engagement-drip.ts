@@ -62,7 +62,7 @@ export function getDay3Email(language: 'el' | 'en', name?: string): { subject: s
         <ul>
             <li>${isGreek ? '1. Ανεβάστε ένα PDF ή βγάλτε φωτογραφία' : '1. Upload a PDF or take a photo'}</li>
             <li>${isGreek ? '2. Η AI διαβάζει και αναλύει το ασφαλιστήριο' : '2. AI reads and analyzes the policy'}</li>
-            <li>${isGreek ? '3. Λαμβάνετε ρεπορτ κάλυψης σε λεπτά' : '3. Get a coverage report in minutes'}</li>
+            <li>${isGreek ? '3. Δείτε τι αναφέρει το ασφαλιστήριο, σε λίγα λεπτά' : '3. See what the policy says, in a few minutes'}</li>
         </ul>
         <a href="${APP_URL}/wallet/add" class="button">${isGreek ? 'Ανεβάστε τώρα' : 'Upload Now'}</a>
         <div class="divider"></div>
@@ -144,8 +144,8 @@ export function getDay7Email(
         const analysisNote = nothingAnalysed
             ? `
             <p>${isGreek
-                ? 'Τα ασφαλιστήριά σας δεν έχουν αναλυθεί ακόμη, οπότε δεν γνωρίζουμε αν υπάρχουν κενά κάλυψης. Ξεκινήστε την ανάλυση από τον πίνακα ελέγχου.'
-                : 'Your policies have not been analysed yet, so we do not know whether there are coverage gaps. Start the analysis from your dashboard.'
+                ? 'Τα ασφαλιστήριά σας δεν έχουν αναλυθεί ακόμη, οπότε δεν γνωρίζουμε αν υπάρχουν κενά κάλυψης.'
+                : 'Your policies have not been analysed yet, so we do not know whether there are coverage gaps.'
             }</p>
         `
             : !fullyAnalysed

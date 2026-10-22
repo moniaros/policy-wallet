@@ -332,8 +332,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των ασφαλιστηρίων και η AI διαβάζει καλύψεις και εξαιρέσεις και επισημαίνει τα κενά σε απλά ελληνικά — και, στο πλάνο Family, τα διασταυρώνει μεταξύ τους και εντοπίζει τα κενά και τις επικαλύψεις.",
-                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions — and, on the Family plan, cross-checks them and flags gaps and overlaps in plain language.",
+                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των ασφαλιστηρίων και η AI διαβάζει καλύψεις και εξαιρέσεις σε απλά ελληνικά, και δείχνει πιθανές επικαλύψεις· στο πλάνο Family τα διασταυρώνει και εντοπίζει και τα κενά.",
+                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions in plain language and shows possible overlaps; on the Family plan it also cross-checks them and flags gaps.",
                     },
                 ],
             },
@@ -1891,8 +1891,8 @@ export const guides: Guide[] = [
                         en: "Upload your policies and the application organises the information it reads: cover, exclusions, amounts and dates. The explanation helps you read them but must be checked against the original.",
                     },
                     {
-                        el: "Με το Family, δείτε ευρήματα από τους ελέγχους στα έγγραφά σας, όπως ρητές εξαιρέσεις ή διαφορές μεταξύ ποσών. Αν δύο ασφαλιστήρια έχουν παρόμοιες καλύψεις, ρωτήστε πώς συνδυάζονται· δεν είναι αυτόματα διπλή χρέωση για το ίδιο αποτέλεσμα.",
-                        en: "With Family, review findings from checks on your documents, such as explicit exclusions or differences between amounts. If two policies have similar cover, ask how they work together; it is not automatically double payment for the same result.",
+                        el: "Δείτε τις ρητές εξαιρέσεις του εγγράφου σας· με το Family δείτε και ευρήματα από τους ελέγχους, όπως διαφορές μεταξύ ποσών. Αν δύο ασφαλιστήρια έχουν παρόμοιες καλύψεις, ρωτήστε πώς συνδυάζονται· δεν είναι αυτόματα διπλή χρέωση για το ίδιο αποτέλεσμα.",
+                        en: "See the explicit exclusions in your document; with Family also review findings from checks, such as differences between amounts. If two policies have similar cover, ask how they work together; it is not automatically double payment for the same result.",
                     },
                     {
                         el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, και — με το πλάνο Family — ερωτήσεις στην AI για ένα συγκεκριμένο ασφαλιστήριο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",

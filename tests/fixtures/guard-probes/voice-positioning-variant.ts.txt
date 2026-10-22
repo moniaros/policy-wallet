@@ -12,3 +12,10 @@ export const probe2 = [
     "A personal risk analysis platform",
     "Ελέγχουμε την προστασία σας",
 ]
+export const probe3 = [
+    "Λείπει σεισμική κάλυψη",
+    "Το σπίτι σας δεν έχει κάλυψη πλημμύρας",
+    "Βρήκαμε κενό κάλυψης",
+    "See exactly what your policy excludes and where your gaps are.",
+    "Your risk picture changed",
+]
