@@ -2925,7 +2925,7 @@ bundle	settings.plan.storedPolicies	"Ασφαλιστήρια στο πορτο�
 bundle	settings.plan.storedPoliciesHint	"Όταν γεμίσει, μπορείτε να αφαιρέσετε ένα ασφαλιστήριο ή να αναβαθμίσετε το πρόγραμμά σας."
 bundle	settings.plan.storedPoliciesOver	"Έχετε ξεπεράσει το όριο του προγράμματος. Αφαιρέστε ασφαλιστήρια ή αναβαθμίστε για να προσθέσετε νέα."
 bundle	settings.plan.switchToAnnual	"Αλλαγή σε ετήσια χρέωση"
-bundle	settings.plan.switchToAnnualDesc	"Η ετήσια χρέωση κοστίζει λιγότερο από δώδεκα μηνιαίες."
+bundle	settings.plan.switchToAnnualDesc	"Πληρώνετε μία φορά τον χρόνο αντί για κάθε μήνα."
 bundle	settings.plan.upgradeAddsTitle	"Τι προσθέτει το"
 bundle	settings.plan.upgradeCta	"Δείτε τα προγράμματα"
 bundle	settings.plan.upgradeHint	"Συγκρίνετε τι προσθέτει κάθε πρόγραμμα πριν αποφασίσετε."
@@ -9213,7 +9213,6 @@ inline	lib/subscription-copy.ts	'Μέχρι {count} ασφαλιστήρια'
 inline	lib/subscription-copy.ts	'Μηνιαία'
 inline	lib/subscription-copy.ts	'Μπορώ να αναβαθμίσω αργότερα;'
 inline	lib/subscription-copy.ts	'Μπορώ να αναβαθμίσω το πλάνο μου;'
-inline	lib/subscription-copy.ts	'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος.'
 inline	lib/subscription-copy.ts	'Ναι, μπορείτε να αναβαθμίσετε το πλάνο σας οποτεδήποτε.'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Family'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Plus'
@@ -9225,15 +9224,16 @@ inline	lib/subscription-copy.ts	'Πλήρης ανάλυση AI'
 inline	lib/subscription-copy.ts	'Ποιες μέθοδοι πληρωμής δέχεστε;'
 inline	lib/subscription-copy.ts	'Προβολή Τιμολογίων'
 inline	lib/subscription-copy.ts	'Πρόσβαση μέχρι: {date}'
+inline	lib/subscription-copy.ts	'Πόσο κοστίζει η ετήσια συνδρομή;'
 inline	lib/subscription-copy.ts	'Συνδρομή & Χρεώσεις'
 inline	lib/subscription-copy.ts	'Συνεργασία με σύμβουλο'
 inline	lib/subscription-copy.ts	'Συχνές Ερωτήσεις'
 inline	lib/subscription-copy.ts	'Σύγκριση Χαρακτηριστικών'
 inline	lib/subscription-copy.ts	'Τα δεδομένα σας προστατεύονται'
 inline	lib/subscription-copy.ts	'Τι συμβαίνει αν ακυρώσω;'
+inline	lib/subscription-copy.ts	'Το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος. Πληρώνετε μία φορά τον χρόνο αντί για κάθε μήνα.'
 inline	lib/subscription-copy.ts	'Τρέχον Πλάνο'
 inline	lib/subscription-copy.ts	'Τρέχον Πλάνο'
-inline	lib/subscription-copy.ts	'Υπάρχει έκπτωση για ετήσια συνδρομή;'
 inline	lib/subscription-copy.ts	'Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)'
 inline	lib/subscription-copy.ts	'Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)'
 inline	lib/subscription-copy.ts	'Υποστήριξη μέσω email'

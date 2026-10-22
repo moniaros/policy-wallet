@@ -290,14 +290,14 @@ export const subscriptionCopy = {
         },
         {
             question: {
-                el: 'Υπάρχει έκπτωση για ετήσια συνδρομή;',
-                en: 'Is there a discount for annual subscription?'
+                el: 'Πόσο κοστίζει η ετήσια συνδρομή;',
+                en: 'How much is an annual subscription?'
             },
             // {starterAnnual}/{plusAnnual} are interpolated at render time from
             // the live plan catalog (PricingComparison) — never hardcode € here.
             answer: {
-                el: 'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος.',
-                en: 'Yes — Plus is {starterAnnual}/year and Family is {plusAnnual}/year.'
+                el: 'Το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος. Πληρώνετε μία φορά τον χρόνο αντί για κάθε μήνα.',
+                en: 'Plus is {starterAnnual}/year and Family is {plusAnnual}/year. You pay once a year instead of every month.'
             },
         },
         {

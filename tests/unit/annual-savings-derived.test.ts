@@ -25,7 +25,11 @@ const TYPED_SAVING = [
     /Save\s+~?€\s?\d+/i,
     />\s*-\s?\d+\s?%\s*</, // a typed percentage chip on an annual toggle
     /annualSavings\s*:\s*\{\s*el:\s*"Έκπτωση"/, // an unconditional «Έκπτωση» chip
-    /με έκπτωση σε σχέση με τη μηνιαία/i, // an unconditional discount statement beside live prices
+    /με έκπτωση (σε σχέση με|έναντι)[^"'`\n]{0,20}μηνια/i, // an unconditional discount statement beside live prices
+    /discounted (versus|vs\.?|compared to) (paying )?monthly/i,
+    /κοστίζει λιγότερο από (δώδεκα|12) μηνια/i,
+    /costs less than (twelve|12) monthly/i,
+    /(Ναι|Yes)\s*[—-]\s*(υπάρχει έκπτωση|there is a discount)/i,
 ]
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -58,7 +62,11 @@ describe('annual savings are derived from prices, never typed (H-021)', () => {
 
     it('probe: the pattern turns red on a typed saving', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/annual-savings-typed.ts.txt', 'utf-8')
-        expect(findings(probe).length).toBeGreaterThanOrEqual(6)
+        // EVERY non-comment probe line must trip at least one pattern on its own: deleting a pattern
+        // (or a probe line) cannot leave this green by the others' count.
+        const lines = probe.split('\n').filter((l) => l.startsWith('export const'))
+        expect(lines.length).toBeGreaterThanOrEqual(9)
+        for (const line of lines) expect(findings(line).length, line).toBeGreaterThanOrEqual(1)
     })
 
     it('the label is computed from the numbers and states the real policyholder saving', () => {

@@ -264,5 +264,6 @@
   "call:components/landing/PolicyWalletWidget.tsx::Για έλεγχο",
   "inline:lib/guides/content.ts::Δηλώστε έγκαιρα τις αλλαγές χρήσης και κρατήστε την απάντηση της ασφαλιστικής. Αν υπάρχει διαφωνία για τις συνέπειες μιας παράλειψης, χρειάζεται εξέταση της σύμβασης και των περιστατικών.",
   "ternary:lib/email/templates/engagement-drip.ts::3. Δείτε τι αναφέρει το ασφαλιστήριο, σε λίγα λεπτά",
-  "call:app/(public)/product/life/PageClient.tsx::Για έλεγχο"
+  "call:app/(public)/product/life/PageClient.tsx::Για έλεγχο",
+  "bundle:settings.plan.switchToAnnualDesc::Πληρώνετε μία φορά τον χρόνο αντί για κάθε μήνα."
 ]

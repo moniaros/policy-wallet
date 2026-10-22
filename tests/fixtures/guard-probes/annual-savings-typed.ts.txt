@@ -5,3 +5,6 @@ export const C = { el: "περίπου 10 μήνες αντί για 12", en: "a
 export const D = <span>-20%</span>
 export const E = { annualSavings: { el: "Έκπτωση", en: "Save" } }
 export const F = "Ναι — το Plus κοστίζει 39 €/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση."
+export const G = "Annual billing costs less than twelve monthly payments."
+export const H = "Η ετήσια χρέωση κοστίζει λιγότερο από δώδεκα μηνιαίες."
+export const I = "Plus is 39 €/year, both discounted versus paying monthly."

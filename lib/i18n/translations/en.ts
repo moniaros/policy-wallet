@@ -3371,7 +3371,7 @@ export const en: TranslationKeys = {
             upgradeCta: 'See the plans',
             upgradeHint: 'Compare what each plan adds before you decide.',
             switchToAnnual: 'Switch to annual billing',
-            switchToAnnualDesc: 'Annual billing costs less than twelve monthly payments.',
+            switchToAnnualDesc: 'You pay once a year instead of every month.',
             cancelCta: 'Stop auto-renewal',
             cancelDesc: 'You keep access until the end of the period you have already paid for. There is no partial refund.',
             billingTitle: 'Billing and invoices',

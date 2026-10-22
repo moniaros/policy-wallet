@@ -47,7 +47,7 @@ export function callsDisclosure(src: string): boolean {
 
 export function sellsWithoutDisclosure(path: string, src: string): boolean {
     const code = stripComments(src)
-    return STARTS_CHECKOUT.test(code) && !DISCLOSES.test(code) && !(path in EXEMPT)
+    return STARTS_CHECKOUT.test(code) && !callsDisclosure(src) && !(path in EXEMPT)
 }
 
 describe('every surface that sells Family discloses the trial (PW-C02-D10)', () => {
