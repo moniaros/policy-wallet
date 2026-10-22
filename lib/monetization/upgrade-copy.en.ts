@@ -2,10 +2,12 @@
  * English conversion copy — mirror of upgrade-copy.el.ts (keys parity-tested).
  */
 
+import { BASIC_WHEN, LADDER_LIST, LADDER_RANGE } from "@/lib/renewals/reminder-copy"
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import type { FeatureKey } from "./feature-gates"
 import type { UpgradeTriggerCopy } from "./upgrade-copy.el"
 
-const TRUST = "Secure payment with Stripe · Cancel anytime · No hidden fees"
+const TRUST = `Secure payment with Stripe · ${CANCEL_ANYTIME.en} · No hidden fees`
 
 export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
     policy_upload_limit: {
@@ -116,13 +118,13 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
     },
     advanced_renewal_reminders: {
         headline: "More renewal reminders",
-        body: "On every plan you get one reminder 30 days before expiry. With Plus you get reminders from 90 to 3 days ahead.",
+        body: `On every plan you get one reminder ${BASIC_WHEN.en}. On Plus and Family you get reminders ${LADDER_RANGE.en}.`,
         primaryCta: "See Plus",
         secondaryCta: "Not now",
         benefits: [
-            "Reminders at 90, 60, 30, 15, 7 and 3 days before expiry",
+            `Reminders ${LADDER_LIST.en}`,
             "An email before every expiry",
-            "The 30-day reminder stays on every plan",
+            `The reminder ${BASIC_WHEN.en} stays on every plan`,
             "Never miss a renewal again",
         ],
         trust: TRUST,
@@ -146,11 +148,11 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
     },
     token_topup: {
         headline: "Continue your AI analyses",
-        body: "You have reached your plan's monthly analysis limit. The limit renews every month.",
+        body: "You have reached your plan's monthly analysis limit. The limit starts again on the 1st of each month.",
         primaryCta: "See the plans",
         secondaryCta: "Not now",
         benefits: [
-            "The limit renews every month",
+            "The limit starts again on the 1st of each month",
             "Your policies stay saved",
             "See which plan fits the volume of your documents",
         ],

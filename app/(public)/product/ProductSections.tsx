@@ -157,7 +157,7 @@ export function ProductSections({ language }: { language: Language }) {
                             {[
                                 t("Συγκεντρώνουμε τα βασικά στοιχεία του ασφαλιστηρίου", "We bring together the key details in your policy"),
                                 t("Πιθανές κοινές καλύψεις σε κάθε πλάνο· επιπλέον έλεγχοι με το Family", "Possible overlapping cover on every plan; additional checks with Family"),
-                                t("Υπενθύμιση πριν λήξει κάτι· πιο νωρίς με το Plus", "A reminder before something runs out; earlier with Plus"),
+                                t("Υπενθύμιση πριν λήξει κάτι· πιο νωρίς στα Plus και Family", "A reminder before something runs out; earlier on Plus and Family"),
                                 // `agentCollaboration` is false on free AND on
                                 // Starter, true only on pro — the plan displayed
                                 // as Family. /pricing's own comparison

@@ -8,3 +8,5 @@ export const F = () => <p>Your remaining tokens</p>
 export const G = "Αγοράστε πιστώσεις για να συνεχίσετε"
 export const H = () => <p>Διαθέσιμες πιστώσεις</p>
 export const I = "Credit Balance: 20 credits"
+export const J = "Το όριο ανανεώνεται κάθε μήνα"
+export const K = "The limit renews every month"

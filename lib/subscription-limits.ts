@@ -3,6 +3,7 @@
  * Backward-compatible wrappers over centralized entitlements.
  */
 
+import { LADDER_RANGE } from "@/lib/renewals/reminder-copy"
 import { db as prisma } from "@/lib/db"
 import {
     ENTITLEMENT_LIMITS,
@@ -116,8 +117,8 @@ export function getUpgradeMessage(reason: string, language: "el" | "en" = "el") 
             en: "This feature is not included in your plan. See the plans to find which one includes it.",
         },
         notifications_disabled: {
-            el: "Οι υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν είναι διαθέσιμες στα πλάνα Plus και Family.",
-            en: "Renewal reminders from 90 to 3 days ahead are available on the Plus and Family plans.",
+            el: `Οι υπενθυμίσεις ανανέωσης ${LADDER_RANGE.el} είναι διαθέσιμες στα πλάνα Plus και Family.`,
+            en: `Renewal reminders ${LADDER_RANGE.en} are available on the Plus and Family plans.`,
         },
     }
 

@@ -21,8 +21,8 @@ const TYPED_SAVING = [
     /\d+\s+μήνες\s+αντί\s+για\s+12/i,
     /\d+\s+months\s+instead\s+of\s+12/i,
     /annualSavingsMonths/, // a stored month count is the same defect as a typed one
-    /Εξοικονομ(είτε|ήστε)\s+~?\d+\s*€/i, // a typed euro saving
-    /Save\s+~?€\s?\d+/i,
+    /Εξοικονομ(είτε|ήστε)\s+(περίπου\s+)?~?\d+\s*€/i, // a typed euro saving
+    /Save\s+(about\s+)?~?€\s?\d+/i,
     />\s*-\s?\d+\s?%\s*</, // a typed percentage chip on an annual toggle
     /annualSavings\s*:\s*\{\s*el:\s*"Έκπτωση"/, // an unconditional «Έκπτωση» chip
     /με έκπτωση (σε σχέση με|έναντι)[^"'`\n]{0,20}μηνια/i, // an unconditional discount statement beside live prices

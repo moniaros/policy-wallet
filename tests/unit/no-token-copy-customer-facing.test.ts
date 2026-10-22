@@ -83,7 +83,27 @@ export function tokenStrings(src: string, path = ''): string[] {
     return [...quoted, ...jsx].filter((t) => !ALLOW_FRAGMENTS.some((a) => a.file.test(path) && a.fragment.test(t)))
 }
 
+// The monthly limit starts again on the 1st of the server's calendar month (billingMonth(),
+// lib/token-tracking.ts:66-69), not on the subscription renewal date: «ανανεώνεται»/"renews" would
+// read as the billing cycle. PW-C02-D17.
+const RESET_WORD = /(όριο|limit)[^.\n]{0,60}(ανανεώνεται|renews|resets with your (plan|subscription))/i
+export function resetClaims(src: string): string[] {
+    return tokenStringsAll(src).filter((t) => RESET_WORD.test(t))
+}
+function tokenStringsAll(src: string): string[] {
+    const code = stripComments(src)
+    return (code.match(TOKEN_STRING) ?? []).map((s) => s.slice(1, -1)).filter((t) => !/[{};=]/.test(t.replace(/\$\{[^}]*\}/g, ' ')))
+}
+
 describe('no customer-facing string names tokens (H-027)', () => {
+    it('the monthly limit reset is never described as a renewal', () => {
+        const files = ROOTS.flatMap((r) => walk(r)).filter((f) => !EXCLUDED.some((re) => re.test(f)))
+        const bad = files.flatMap((f) => resetClaims(readFileSync(f, 'utf-8')).map((s) => `${f}: ${s.slice(0, 100)}`))
+        expect(bad).toEqual([])
+        const probe = readFileSync('tests/fixtures/guard-probes/token-copy.ts.txt', 'utf-8')
+        expect(resetClaims(probe).length).toBeGreaterThanOrEqual(2)
+    })
+
     it('customer surfaces never say "tokens"', () => {
         const files = ROOTS.flatMap((r) => walk(r)).filter(
             (f) => !EXCLUDED.some((re) => re.test(f)) && !ALLOW.some(([re]) => re.test(f)),

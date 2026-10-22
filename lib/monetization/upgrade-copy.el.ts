@@ -4,6 +4,8 @@
  * upgrade-copy.en.ts (keep keys in sync — parity-tested).
  */
 
+import { BASIC_WHEN, LADDER_LIST, LADDER_RANGE } from "@/lib/renewals/reminder-copy"
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import type { FeatureKey } from "./feature-gates"
 
 export interface UpgradeTriggerCopy {
@@ -17,7 +19,7 @@ export interface UpgradeTriggerCopy {
     successCta: string
 }
 
-const TRUST = "Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή · Χωρίς κρυφές χρεώσεις"
+const TRUST = `Ασφαλής πληρωμή με Stripe · ${CANCEL_ANYTIME.el} · Χωρίς κρυφές χρεώσεις`
 
 export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
     policy_upload_limit: {
@@ -131,13 +133,13 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
     },
     advanced_renewal_reminders: {
         headline: "Περισσότερες υπενθυμίσεις ανανέωσης",
-        body: "Σε όλα τα πλάνα λαμβάνετε μία υπενθύμιση 30 ημέρες πριν τη λήξη. Με το Plus λαμβάνετε υπενθυμίσεις από 90 έως 3 ημέρες πριν.",
+        body: `Σε όλα τα πλάνα λαμβάνετε μία υπενθύμιση ${BASIC_WHEN.el}. Στα Plus και Family λαμβάνετε υπενθυμίσεις ${LADDER_RANGE.el}.`,
         primaryCta: "Δείτε το Plus",
         secondaryCta: "Όχι τώρα",
         benefits: [
-            "Υπενθυμίσεις στις 90, 60, 30, 15, 7 και 3 ημέρες πριν τη λήξη",
+            `Υπενθυμίσεις ${LADDER_LIST.el}`,
             "Email πριν από κάθε λήξη",
-            "Η υπενθύμιση 30 ημέρες πριν παραμένει σε όλα τα πλάνα",
+            `Η υπενθύμιση ${BASIC_WHEN.el} παραμένει σε όλα τα πλάνα`,
             "Ποτέ ξανά χαμένη ανανέωση",
         ],
         trust: TRUST,
@@ -161,11 +163,11 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
     },
     token_topup: {
         headline: "Συνεχίστε τις αναλύσεις AI",
-        body: "Έχετε φτάσει το μηνιαίο όριο ανάλυσης του πλάνου σας. Το όριο ανανεώνεται κάθε μήνα.",
+        body: "Έχετε φτάσει το μηνιαίο όριο ανάλυσης του πλάνου σας. Το όριο ξαναρχίζει την 1η κάθε μήνα.",
         primaryCta: "Δείτε τα πλάνα",
         secondaryCta: "Όχι τώρα",
         benefits: [
-            "Το όριο ανανεώνεται κάθε μήνα",
+            "Το όριο ξαναρχίζει την 1η κάθε μήνα",
             "Τα ασφαλιστήριά σας μένουν αποθηκευμένα",
             "Δείτε ποιο πλάνο ταιριάζει στον όγκο των εγγράφων σας",
         ],

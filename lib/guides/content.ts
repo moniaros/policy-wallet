@@ -11,6 +11,7 @@
  * - Factual claims that depend on legislation point readers to the official
  *   source (AADE, EAEE, Bank of Greece) instead of asserting volatile details.
  */
+import { BASIC_WHEN, LADDER_FROM } from "@/lib/renewals/reminder-copy"
 import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 export type LocalizedString = { el: string; en: string }
@@ -1895,8 +1896,8 @@ export const guides: Guide[] = [
                         en: "See the explicit exclusions in your document; with Family also review findings from checks, such as differences between amounts. If two policies have similar cover, ask how they work together; it is not automatically double payment for the same result.",
                     },
                     {
-                        el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, και — με το πλάνο Family — ερωτήσεις στην AI για ένα συγκεκριμένο ασφαλιστήριο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",
-                        en: "Beyond that: renewal reminders from 90 days before expiry on paid plans, and — on the Family plan — AI questions about a specific policy, secure sharing with an advisor that you can revoke at any time, and report export. PolicyWallet does not sell insurance and takes no commission: it is neither an insurance undertaking nor an intermediary.",
+                        el: `Από εκεί και πέρα: υπενθυμίσεις ανανέωσης ${LADDER_FROM.el} τη λήξη στα πλάνα Plus και Family, και — με το πλάνο Family — ερωτήσεις στην AI για ένα συγκεκριμένο ασφαλιστήριο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.`,
+                        en: `Beyond that: renewal reminders ${LADDER_FROM.en} of expiry on Plus and Family, and — on the Family plan — AI questions about a specific policy, secure sharing with an advisor that you can revoke at any time, and report export. PolicyWallet does not sell insurance and takes no commission: it is neither an insurance undertaking nor an intermediary.`,
                     },
                 ],
             },
@@ -2195,8 +2196,8 @@ export const guides: Guide[] = [
                         en: "The combined annual cost of every policy together — usually the first surprise.",
                     },
                     {
-                        el: "Τις ημερομηνίες λήξης και ανανέωσης, με υπενθυμίσεις από τις 90 ημέρες πριν στα πληρωμένα πλάνα.",
-                        en: "Expiry and renewal dates, with reminders from 90 days out on paid plans.",
+                        el: `Τις ημερομηνίες λήξης και ανανέωσης, με υπενθυμίσεις ${LADDER_FROM.el} στα Plus και Family.`,
+                        en: `Expiry and renewal dates, with reminders ${LADDER_FROM.en} on Plus and Family.`,
                     },
                     {
                         el: "Τι άλλαξε ανάμεσα σε δύο εκδόσεις του ίδιου ασφαλιστηρίου, ώστε μια αύξηση ασφαλίστρου να συγκρίνεται με το τι πήρατε επιπλέον.",
@@ -2396,8 +2397,8 @@ export const guides: Guide[] = [
                         en: "You upload the PDF or a photo of each policy, from any insurer, and the AI reads it. Instead of one more file in a folder, you get plain-language answers on what is covered, what is excluded, what the limits and deductibles are, and which dates matter.",
                     },
                     {
-                        el: "Με το Family, βλέπετε ευρήματα προς έλεγχο, κάνετε ερωτήσεις για τα έγγραφα και μοιράζεστε στοιχεία με ασφαλιστή. Η υπενθύμιση ανανέωσης 30 ημέρες πριν ισχύει σε όλα τα πλάνα· οι υπενθυμίσεις από 90 ημέρες πριν προσφέρονται από το Plus. Δείτε τις ακριβείς δυνατότητες κάθε πλάνου στη σελίδα τιμών.",
-                        en: "With Family, you can review findings, ask questions about documents and share information with an adviser. The 30-day renewal reminder applies on every plan; reminders from 90 days ahead are available from Plus. See each plan's exact features on the pricing page.",
+                        el: `Με το Family, βλέπετε ευρήματα προς έλεγχο, κάνετε ερωτήσεις για τα έγγραφα και μοιράζεστε στοιχεία με ασφαλιστή. Η υπενθύμιση ανανέωσης ${BASIC_WHEN.el} ισχύει σε όλα τα πλάνα· οι υπενθυμίσεις ${LADDER_FROM.el} προσφέρονται στα Plus και Family. Δείτε τις ακριβείς δυνατότητες κάθε πλάνου στη σελίδα τιμών.`,
+                        en: `With Family, you can review findings, ask questions about documents and share information with an adviser. The renewal reminder ${BASIC_WHEN.en} applies on every plan; reminders ${LADDER_FROM.en} are available on Plus and Family. See each plan's exact features on the pricing page.`,
                     },
                 ],
             },

@@ -19,12 +19,12 @@ export function annualSavingEur(monthlyEur: number, annualEur: number): number {
     return Math.max(0, Math.round(monthlyEur * 12 - annualEur))
 }
 
-/** «Εξοικονομείτε ~21 € τον χρόνο» — null when annual saves nothing. */
+/** «Εξοικονομείτε περίπου 21 € τον χρόνο» — null when annual saves nothing. «~» is reserved for a chip that needs it at 320px; none uses this label. */
 export function annualSavingsLabel(monthlyEur: number, annualEur: number): Bilingual | null {
     const saved = annualSavingEur(monthlyEur, annualEur)
     if (saved <= 0) return null
     return {
-        el: `Εξοικονομείτε ~${formatPlanPrice(saved, "el")} τον χρόνο`,
-        en: `Save ~${formatPlanPrice(saved, "en")} a year`,
+        el: `Εξοικονομείτε περίπου ${formatPlanPrice(saved, "el")} τον χρόνο`,
+        en: `Save about ${formatPlanPrice(saved, "en")} a year`,
     }
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import { presentationCopy } from "@/lib/i18n/presentation"
 import "@/components/landing/product-stage.css"
 import React, { useEffect, useState } from "react"
@@ -110,8 +111,8 @@ export default function PricingPage({
             en: "Yearly billing",
         },
         cancelAnytime: {
-            el: "Ακύρωση ανανέωσης όποτε θέλετε",
-            en: "Cancel renewal at any time",
+            el: CANCEL_ANYTIME.el,
+            en: CANCEL_ANYTIME.en,
         },
         noHiddenFees: {
             el: "Καμία κρυφή χρέωση",

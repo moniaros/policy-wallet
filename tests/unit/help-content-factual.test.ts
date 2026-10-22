@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
+import { LADDER_LIST } from '@/lib/renewals/reminder-copy'
 import { DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 
 /**
@@ -48,7 +49,11 @@ describe('help center states only facts the product actually implements', () => 
 
     it('states the real renewal-reminder ladder, not the invented 30/14/3', () => {
         expect(HELP).not.toMatch(/30, 14,? (and|και) 3/)
-        expect(HELP).toMatch(/90, 60, 30, 15, 7 (and|και) 3/)
+        // The ladder is COMPOSED from the scheduler's constants (reminder-copy.ts), never typed.
+        expect(HELP).toContain('${LADDER_LIST.en}')
+        expect(HELP).toContain('${LADDER_LIST.el}')
+        expect(LADDER_LIST.en).toMatch(/90, 60, 30, 15, 7 and 3/)
+        expect(LADDER_LIST.el).toMatch(/90, 60, 30, 15, 7 και 3/)
     })
 
     it('does not promise a 10–30 second analysis (it queues; takes minutes)', () => {

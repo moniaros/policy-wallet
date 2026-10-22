@@ -6,8 +6,9 @@
  * ONLY inside the deferred `after()` of the agent upload, so the upload modal
  * had already said «Η ανάλυση εκτελείται στο παρασκήνιο» when the gate
  * refused — and on the free agent tier it refused every time: a document run
- * estimates at ~211k tokens (token-budget-estimator × safety buffer) while the
- * `agent_free` monthly budget is 150,000, so the gate blocks at zero usage.
+ * estimates at 142,800 tokens plus 1,200 per active rule of the branch, i.e. up to ~151,200
+ * (token-budget-estimator × 1.2 safety buffer) while the `agent_free` monthly budget is
+ * 150,000, so the gate blocks at zero usage for the branches with 8 rules (home, renters).
  *
  * The action now runs the SAME estimate and the SAME gate before it answers,
  * and the orchestrator estimates through the same function, so the number the

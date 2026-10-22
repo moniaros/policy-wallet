@@ -4,6 +4,8 @@
  * Following PolicyWallet branding guidelines
  */
 
+import { BASIC_REMINDER_LABEL, LADDER_LABEL } from '@/lib/renewals/reminder-copy'
+import { CANCEL_ANYTIME } from '@/lib/marketing/cancellation-statement'
 import { annualSavingsLabel } from '@/lib/pricing/annual-savings'
 import { DEFAULT_PLAN_FACTS } from '@/lib/pricing/plan-defaults'
 
@@ -115,12 +117,12 @@ export const subscriptionCopy = {
         // Every plan gets one reminder email 30 days ahead; the 90 → 3 day ladder is
         // Plus and Family (lib/renewals/milestones.ts, renewal.service.ts).
         reminderEmail30: {
-            el: 'Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)',
-            en: 'Renewal reminder 30 days ahead (email)'
+            el: BASIC_REMINDER_LABEL.el,
+            en: BASIC_REMINDER_LABEL.en
         },
         reminderLadder: {
-            el: 'Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)',
-            en: 'Renewal reminders from 90 to 3 days ahead (email)'
+            el: LADDER_LABEL.el,
+            en: LADDER_LABEL.en
         },
     },
 
@@ -329,8 +331,8 @@ export const subscriptionCopy = {
             en: 'Secure payment with Stripe'
         },
         cancelAnytime: {
-            el: 'Ακύρωση ανά πάσα στιγμή',
-            en: 'Cancel anytime'
+            el: CANCEL_ANYTIME.el,
+            en: CANCEL_ANYTIME.en
         },
         noHiddenFees: {
             el: 'Χωρίς κρυφές χρεώσεις',

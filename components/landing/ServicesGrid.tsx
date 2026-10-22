@@ -1,4 +1,5 @@
 // No "use client": purely static markup, server-rendered on the landing.
+import { BASIC_WHEN } from "@/lib/renewals/reminder-copy"
 import { FolderOpen, ScanSearch, Bell, MessageCircle, Users } from "lucide-react"
 
 interface ServicesGridProps {
@@ -44,8 +45,8 @@ const services = [
         titleEn: "When does it run out?",
         // Only promises what the product can do from documents: expiry
         // reminders and re-analysis findings — not price-change feeds.
-        descEl: "Σας ειδοποιούμε με email πριν λήξει κάτι — 30 ημέρες πριν σε όλα τα πλάνα, νωρίτερα με το Plus — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
-        descEn: "We email you before something runs out — 30 days ahead on every plan, earlier with Plus — and when we find something new in your documents, with Family.",
+        descEl: `Σας ειδοποιούμε με email πριν λήξει κάτι — μία υπενθύμιση ${BASIC_WHEN.el} σε όλα τα πλάνα, περισσότερες στα Plus και Family — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.`,
+        descEn: `We email you before something runs out — one reminder ${BASIC_WHEN.en} on every plan, more on Plus and Family — and when we find something new in your documents, with Family.`,
         benefitEl: "Έχετε τις ημερομηνίες μπροστά σας",
         benefitEn: "Keep track of the dates",
         wide: false,

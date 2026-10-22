@@ -1,6 +1,7 @@
 import type { ClaimKey } from "@/lib/marketing/plan-claims"
 import type { CheckoutBlockReason } from "@/lib/pricing/stripe-mode"
 import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
+import { BASIC_REMINDER_LABEL, LADDER_LABEL } from "@/lib/renewals/reminder-copy"
 import { annualSavingsLabel } from "@/lib/pricing/annual-savings"
 import { DEFAULT_PLAN_FACTS } from "@/lib/pricing/plan-defaults"
 
@@ -143,7 +144,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { claim: "renewalDate", label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
                     // Free DOES get the 30-day email (renewal.service.ts). This
                     // line said ✗ «Υπενθυμίσεις ανανέωσης» until 2026-10-21.
-                    { claim: "renewalEmail30", label: { el: "Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)", en: "Renewal reminder 30 days ahead (email)" }, included: true },
+                    { claim: "renewalEmail30", label: BASIC_REMINDER_LABEL, included: true },
                 ],
             },
             {
@@ -166,7 +167,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { claim: "policies", label: { el: "Έως 10 ασφαλιστήρια", en: "Up to 10 policies" }, included: true, highlight: true },
                     { claim: "basicSummary", label: { el: "Βασική σύνοψη ασφαλιστηρίου", en: "Basic policy summary" }, included: true },
                     { claim: "duplicateDetection", label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
-                    { claim: "renewalLadder", label: { el: "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)", en: "Renewal reminders from 90 to 3 days ahead (email)" }, included: true },
+                    { claim: "renewalLadder", label: LADDER_LABEL, included: true },
                 ],
             },
             {
@@ -193,7 +194,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { claim: "interactiveQA", label: { el: "Ερωτήσεις στην τεχνητή νοημοσύνη", en: "Interactive AI Q&A" }, included: true },
                     { claim: "gapDetection", label: { el: "Εντοπισμός κενών κάλυψης", en: "Coverage-gap detection" }, included: true },
                     { claim: "duplicateDetection", label: { el: "Εντοπισμός διπλών καλύψεων", en: "Duplicate-cover detection" }, included: true },
-                    { claim: "renewalLadder", label: { el: "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)", en: "Renewal reminders from 90 to 3 days ahead (email)" }, included: true },
+                    { claim: "renewalLadder", label: LADDER_LABEL, included: true },
                     { claim: "reportExport", label: { el: "Εξαγωγή αναφοράς", en: "Report export" }, included: true },
                 ],
             },
@@ -256,12 +257,12 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 // Split in two (PW-CONTENT-02): every plan gets the 30-day email,
                 // the 90→3-day ladder is Plus and Family. One row said ✗ for Free.
                 claim: "renewalEmail30",
-                name: { el: "Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)", en: "Renewal reminder 30 days ahead (email)" },
+                name: BASIC_REMINDER_LABEL,
                 values: { free: true, plus: true, pro: true },
             },
             {
                 claim: "renewalLadder",
-                name: { el: "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)", en: "Renewal reminders from 90 to 3 days ahead (email)" },
+                name: LADDER_LABEL,
                 values: { free: false, plus: true, pro: true },
             },
             {

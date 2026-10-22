@@ -1081,8 +1081,8 @@ export class PolicyService extends BaseService {
             // own language, and never sees the internal code.
             const reasonCopy: Record<string, { el: string; en: string }> = {
                 TOKEN_LIMIT_BLOCKED: {
-                    el: `Η ανάλυση ${subject.el} δεν ξεκίνησε επειδή εξαντλήθηκε το μηνιαίο όριο ανάλυσης. Το όριο ανανεώνεται κάθε μήνα· δοκιμάστε ξανά τότε — το έγγραφό σας είναι αποθηκευμένο.`,
-                    en: `Analysis ${subject.en} did not start because the monthly analysis limit was reached. The limit renews every month; try again then — your document is saved.`,
+                    el: `Η ανάλυση ${subject.el} δεν ξεκίνησε επειδή εξαντλήθηκε το μηνιαίο όριο ανάλυσης. Το όριο ξαναρχίζει την 1η κάθε μήνα· δοκιμάστε ξανά τότε — το έγγραφό σας είναι αποθηκευμένο.`,
+                    en: `Analysis ${subject.en} did not start because the monthly analysis limit was reached. The limit starts again on the 1st of each month; try again then — your document is saved.`,
                 },
                 AI_CONSENT_REQUIRED: {
                     el: `Η ανάλυση ${subject.el} χρειάζεται τη συγκατάθεσή σας για επεξεργασία με τεχνητή νοημοσύνη. Δώστε τη συγκατάθεση από τις ρυθμίσεις και δοκιμάστε ξανά — το έγγραφό σας είναι αποθηκευμένο.`,

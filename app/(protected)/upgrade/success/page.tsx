@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import Link from "next/link"
 import { CheckCircle2, ShieldCheck } from "lucide-react"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -38,8 +39,8 @@ const COPY = {
     cta: { el: "Συνέχεια", en: "Continue" },
     ctaHome: { el: "Μετάβαση στο πορτοφόλι", en: "Go to wallet" },
     trust: {
-        el: "Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή",
-        en: "Secure payment with Stripe · Cancel anytime",
+        el: `Ασφαλής πληρωμή με Stripe · ${CANCEL_ANYTIME.el}`,
+        en: `Secure payment with Stripe · ${CANCEL_ANYTIME.en}`,
     },
     tokensTitle: { el: "Η αγορά ολοκληρώθηκε", en: "Purchase complete" },
     tokensBody: {

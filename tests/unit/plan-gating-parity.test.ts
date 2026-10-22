@@ -135,6 +135,7 @@ describe('the pricing page states the enforced truth — gap gate, duplicate non
  */
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { BASIC_REMINDER_LABEL, LADDER_FROM } from '@/lib/renewals/reminder-copy'
 import { planClaim, UNSTATED, isAgentClaim, type ClaimKey, type ClaimValue } from '@/lib/marketing/plan-claims'
 import type { AgentTier, PlanTier } from '@/types/subscription-entitlements'
 
@@ -176,10 +177,12 @@ const KEYWORDS: Record<ClaimKey, RegExp> = {
  * (a false line tagged with one of them stays true). So each may carry ONLY its own label, anchored:
  * relabel a Free-card line «Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν» as `renewalDate` and it fails.
  */
+const escapeRe = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const EXACT_LABELS: Partial<Record<ClaimKey, RegExp>> = {
     basicSummary: /^(βασικη συνοψη ασφαλιστηριου|basic policy summary)$/,
     duplicateDetection: /^(εντοπισμος διπλων καλυψεων|duplicate-cover detection)$/,
-    renewalEmail30: /^(υπενθυμιση ανανεωσης 30 ημερες πριν \(email\)|renewal reminder 30 days ahead \(email\))$/,
+    // The Free reminder label is COMPOSED from BASIC_MILESTONES (reminder-copy.ts) and is the only wording allowed.
+    renewalEmail30: new RegExp(`^(${escapeRe(plain(BASIC_REMINDER_LABEL.el))}|${escapeRe(plain(BASIC_REMINDER_LABEL.en))})$`),
     renewalDate: /^(ημερομηνια ανανεωσης|renewal date)$/,
     exclusions: /^(εμφανιση εξαιρεσεων|exclusions shown)$/,
     multiInsurerInsights: /^(ανεφικτο|unavailable)$/, // no implementation: no line may carry it
@@ -342,8 +345,12 @@ describe('PW-CONTENT-02 review I6 — the reminder cadence in copy equals RENEWA
     })
     it('the homepage step states the first rung', () => {
         const src = readSrc('lib/landing/content.ts', 'utf-8')
-        expect(src).toMatch(new RegExp(`από ${max} ημέρες`))
-        expect(src).toMatch(new RegExp(`from ${max} days`))
+        // Composed from the scheduler constants, never typed (PW-C02-D16): the source references
+        // LADDER_FROM, whose text carries the first rung.
+        expect(src).toContain('${LADDER_FROM.el}')
+        expect(src).toContain('${LADDER_FROM.en}')
+        expect(LADDER_FROM.el).toMatch(new RegExp(`από ${max} ημέρες`))
+        expect(LADDER_FROM.en).toMatch(new RegExp(`from ${max} days`))
     })
 })
 

@@ -1,4 +1,5 @@
 import type { LandingContentModel } from "@/types/landing-content"
+import { LADDER_FROM } from "@/lib/renewals/reminder-copy"
 import { siteConfig } from "@/lib/seo/site"
 import { productCategories } from "@/lib/product/catalog"
 import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
@@ -83,8 +84,8 @@ export const landingContent: LandingContentModel = {
                 id: "step-monitor",
                 title: { el: "Παρακολουθείτε τις ημερομηνίες", en: "Keep track of dates" },
                 description: {
-                    el: "Δείτε πότε λήγουν τα ασφαλιστήριά σας και πάρτε υπενθύμιση πριν λήξουν· με το Plus, από 90 ημέρες πριν. Όταν ανεβάζετε την ανανέωση, βλέπετε τι άλλαξε.",
-                    en: "See when your policies expire and get a reminder before they do; with Plus, from 90 days ahead. When you upload a renewal, you see what changed.",
+                    el: `Δείτε πότε λήγουν τα ασφαλιστήριά σας και πάρτε υπενθύμιση πριν λήξουν· στα Plus και Family, ${LADDER_FROM.el}. Όταν ανεβάζετε την ανανέωση, βλέπετε τι άλλαξε.`,
+                    en: `See when your policies expire and get a reminder before they do; on Plus and Family, ${LADDER_FROM.en}. When you upload a renewal, you see what changed.`,
                 },
                 emphasis: { el: "βλέπετε τι άλλαξε", en: "see what changed" },
             },

@@ -1,3 +1,4 @@
+import { BASIC_WHEN, LADDER_LIST } from "@/lib/renewals/reminder-copy"
 import { DEFAULT_ENTITLEMENT_LIMITS } from "@/lib/pricing/plan-defaults"
 
 export interface ArticleSection {
@@ -138,7 +139,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     heading: 'Notification types',
                     text: 'We send notifications for critical events to keep you protected.',
                     list: [
-                        'Renewal reminders — 30 days before expiry on the free plan; at 90, 60, 30, 15, 7 and 3 days on paid plans',
+                        `Renewal reminders — one email ${BASIC_WHEN.en} on the free plan; ${LADDER_LIST.en} on paid plans`,
                         'AI Analysis results'
                     ]
                 },
@@ -195,17 +196,13 @@ export const helpArticles: Record<string, Record<string, Article>> = {
             category: 'Billing & Subscriptions',
             sections: [
                 {
-                    heading: 'Access Billing Settings',
-                    text: 'Go to "Account" -> "Billing". Here you will see your current plan and registered card.',
+                    heading: 'Open the billing page',
+                    text: 'Go to Settings -> Plan -> "Open billing page". The button appears once you have made a payment. It opens Stripe\'s secure billing page.',
                 },
                 {
-                    heading: 'Add New Card',
-                    text: 'Click "Add Payment Method". Enter your new card details. We support Visa, Mastercard, and American Express. Your card data is encrypted and handled by Stripe; strictly speaking, we never see your full card number.',
+                    heading: 'Update your card there',
+                    text: 'Card details are entered on Stripe\'s page, not in PolicyWallet; we never see your full card number. What you can change on that page depends on how Stripe\'s billing page is set up for the account.',
                 },
-                {
-                    heading: 'Set as Default',
-                    text: 'Once added, click the three dots next to your new card and select "Set as Default". Your next invoice will be charged to this card.',
-                }
             ]
         }
     },
@@ -328,7 +325,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     heading: 'Τύποι Ειδοποιήσεων',
                     text: 'Στέλνουμε ειδοποιήσεις για κρίσιμα γεγονότα για να σας κρατάμε προστατευμένους.',
                     list: [
-                        'Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15, 7 και 3 ημέρες στα πληρωμένα πλάνα',
+                        `Υπενθυμίσεις ανανέωσης — ένα email ${BASIC_WHEN.el} στο δωρεάν πλάνο· ${LADDER_LIST.el} στα πληρωμένα πλάνα`,
                         'Αποτελέσματα Ανάλυσης AI'
                     ]
                 },
@@ -377,16 +374,12 @@ export const helpArticles: Record<string, Record<string, Article>> = {
             category: 'Χρεώσεις & Συνδρομές',
             sections: [
                 {
-                    heading: 'Πρόσβαση στις Ρυθμίσεις Χρέωσης',
-                    text: 'Μεταβείτε στο "Λογαριασμός" -> "Χρέωση". Εδώ θα δείτε το τρέχον πλάνο σας και την καταχωρημένη κάρτα.',
+                    heading: 'Ανοίξτε τη σελίδα χρέωσης',
+                    text: 'Μεταβείτε στις Ρυθμίσεις -> Πλάνο -> "Άνοιγμα σελίδας χρέωσης". Το κουμπί εμφανίζεται μόλις κάνετε την πρώτη πληρωμή. Ανοίγει την ασφαλή σελίδα χρέωσης της Stripe.',
                 },
                 {
-                    heading: 'Προσθήκη Νέας Κάρτας',
-                    text: 'Κάντε κλικ στο "Προσθήκη Μεθόδου Πληρωμής". Εισάγετε τα στοιχεία της νέας σας κάρτας. Υποστηρίζουμε Visa, Mastercard και American Express. Τα δεδομένα της κάρτας σας κρυπτογραφούνται και διαχειρίζονται από τη Stripe.',
-                },
-                {
-                    heading: 'Ορισμός ως Προεπιλογή',
-                    text: 'Μόλις προστεθεί, κάντε κλικ στις τρεις τελείες δίπλα στη νέα σας κάρτα και επιλέξτε "Ορισμός ως Προεπιλογή". Το επόμενο τιμολόγιό σας θα χρεωθεί σε αυτήν την κάρτα.',
+                    heading: 'Ενημερώστε την κάρτα εκεί',
+                    text: 'Τα στοιχεία της κάρτας εισάγονται στη σελίδα της Stripe, όχι στο PolicyWallet· δεν βλέπουμε ποτέ ολόκληρο τον αριθμό της κάρτας σας. Τι μπορείτε να αλλάξετε εκεί εξαρτάται από τη ρύθμιση της σελίδας χρέωσης της Stripe για τον λογαριασμό.',
                 }
             ]
         }

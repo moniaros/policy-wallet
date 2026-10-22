@@ -52,7 +52,7 @@ describe("Marketing interactions", () => {
         expect(screen.getByText(/An example showing/)).toBeVisible()
         // The reminder is on every plan (30 days ahead); only the longer ladder is Plus.
         // This line used to pin «from the Plus plan», which was false for Free.
-        expect(screen.getByText(/30 days ahead on every plan, earlier with Plus/)).toBeVisible()
+        expect(screen.getByText(/one reminder once \d+ days or fewer remain on every plan, more on Plus and Family/)).toBeVisible()
         expect(screen.queryByText(/from the Plus plan/)).toBeNull()
         expect(track).toHaveBeenCalledWith("marketing_preview_select", { route: "/en/product", locale: "en", control: "step_3" })
     })

@@ -1443,3 +1443,18 @@ The owner read production `plans` on 2026-10-22. `tests/fixtures/production-plan
 
 ## PW-C02-D14 — Queued, not fixed here
 Recorded in QUEUE.md: boat-liability rule vs ν. 4926/2022 (H-024 residue); `/api/v1/policies/share` entitlement bypass (PW-ENTITLE-01 item 2, for the security-reviewer); preview deployments on the staging Supabase project (blocks the PW-ASSET-01 build); new series PW-CLAIMREG-01; referral-credits copy; the token top-up endpoint left without a UI.
+
+
+# PW-CONTENT-02 — owner round 4 (2026-10-22, Eli)
+
+## PW-C02-D15 — Cancel claims carry their consequence; no downgrade is offered (closes H-030 for copy)
+Cancelling works in-app and ends at the END of the paid period (`cancelSubscription` → `cancel_at_period_end`, `app/(protected)/account/actions.ts:92-135`; `stripe-lifecycle.ts:200-220`); downgrade does not exist. Every «cancel any time» claim now comes from `lib/marketing/cancellation-statement.ts` («Ακύρωση όποτε θέλετε· η πρόσβαση συνεχίζεται έως το τέλος της περιόδου που έχετε πληρώσει») and a guard fails on one without its consequence (`cancel-claims-state-access.test.ts`, red first: 6 files, `evidence/d15-cancel-claims-guard-red.txt`). Downgrade and plan-switch claims: the guard finds none (the earlier ones were removed on 2026-10-22). QUEUE: self-serve downgrade; payment-method update without a billing portal.
+
+## PW-C02-D16 — Reminder offsets are composed from the scheduler's constants; the conditional rows are rewritten and held for re-approval
+Every reminder offset claim reads `RENEWAL_MILESTONES` / `BASIC_MILESTONES` through `lib/renewals/reminder-copy.ts`; `reminder-offsets-from-scheduler.test.ts` fails on a typed rung (red first: 12 files, `evidence/d16-reminder-offsets-guard-red.txt`). Proof and the parts not provable from the repo are in HALTS H-034. Rewritten because they were imprecise or incomplete: Free gets one email once the policy is within 30 days (not «30 ημέρες πριν» exactly); the ladder is Plus **and Family**. C-10, C-20, C-21, R3-1, R3-4 stay `pending re-approval`.
+
+## PW-C02-D17 — Token budget reset wording; token reservation arithmetic for policyholder plans
+The monthly limit starts again on the 1st of the SERVER'S calendar month (`billingMonth()`, `lib/token-tracking.ts:66-69`; not the subscription period; about 02:00–03:00 Athens on a UTC server). R4-3 says «ξαναρχίζει την 1η κάθε μήνα»; a guard bans «ανανεώνεται»/"renews" beside a limit. Arithmetic (H-033): no SOLD Free or Plus capability is refused by the token gate — they never reach it (`canRunDeepAnalysis` false) and upload-time extraction is not token-gated while `PREVENTION_PERSONALIZATION_ENABLED=0` — so no GA-blocking halt was opened for «Δωρεάν για 3 ασφαλιστήρια». Family clears the gate on every branch at zero usage and fits 9–10 first-time runs a month at the reservation. Agent Free is the failing plan (H-027). **Condition:** switching `PREVENTION_PERSONALIZATION_ENABLED` to 1 in production would make Free's 150,000 budget bind the basic path (about one scan a month) — GA-blocking; keep it 0 until budgets are resized (GO checklist).
+
+## PW-C02-D18 — COPY.md round 4 dispositions
+Approved: C-11b, C-38, R2-4, R2-6, R3-2, R3-3, R3-5, R3-6, R3-8, R3-10, C-36, C-50, C-57, R2-2, R2-3, R3-7, R3-9, R4-5, R4-6. Approved with amendment: R2-5 («κανονισμός (ΕΚ) 810/2009, άρθρο 15 παρ. 3»), R4-2 («περίπου 21 €» / «περίπου 29 €»; no chip uses the label). Held for H-025: the commission sentence of C-37. Conditional (rewritten, pending your re-approval): C-10, C-20, C-21, R3-1, R3-4, R4-3. New this round: R5-1..R5-8.

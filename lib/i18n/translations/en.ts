@@ -1326,7 +1326,7 @@ export const en: TranslationKeys = {
             noActiveAgent: 'No active advisor found.',
             limitReached: 'You have reached your usage limit for this action.',
             upgradeRequired: 'The full AI analysis is available on the Family plan. Upgrade to continue.',
-            tokenLimit: 'You have reached your monthly analysis limit. The limit renews every month.',
+            tokenLimit: 'You have reached your monthly analysis limit. The limit starts again on the 1st of each month.',
             aiUnavailable: 'AI service is currently unavailable. Please try again later.',
             analysisFailed: 'Analysis failed. Please retry.',
             shareFailed: 'Failed to share policy.',
@@ -1368,7 +1368,7 @@ export const en: TranslationKeys = {
             // upload is kept in every one of these cases — the reason is
             // something they can act on, not a technical failure.
             blockedTokenLimit: 'Not started: your AI allowance is used up',
-            blockedTokenLimitHint: 'Your document is saved. The monthly analysis limit renews every month; run the analysis again then.',
+            blockedTokenLimitHint: 'Your document is saved. The monthly analysis limit starts again on the 1st of each month; run the analysis again then.',
             blockedConsent: 'Not started: AI consent is missing',
             blockedConsentHint: 'Your document is saved. Grant consent for AI processing and try again.',
             blockedNotPermitted: 'You do not have permission to analyse this policy',
@@ -2556,7 +2556,7 @@ export const en: TranslationKeys = {
         errors: {
             agentUpgradeRequired: 'Re-running the analysis requires a paid advisor plan',
             agentUpgradeRequiredHint: 'Manual AI re-analysis is available on the Starter, Pro and Agency plans. Automatic analysis at upload keeps working as before.',
-            tokenLimit: 'Analysis stopped because the monthly analysis limit was reached. The limit renews every month.',
+            tokenLimit: 'Analysis stopped because the monthly analysis limit was reached. The limit starts again on the 1st of each month.',
             extractionEmpty: 'The document was read but carries no policy details — no insurer, no policy number, no period of cover. Check you uploaded the right file.',
             timeout: 'Analysis took longer than expected. Please retry in a moment.',
             schema: 'We hit a response parsing issue and attempted recovery. Please retry.',

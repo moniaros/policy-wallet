@@ -1,4 +1,5 @@
 import { Bell, Sparkles, Upload } from "lucide-react"
+import { BASIC_WHEN } from "@/lib/renewals/reminder-copy"
 import { PUBLIC_COUNTS } from "@/lib/marketing/public-counts"
 import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
@@ -32,8 +33,8 @@ export const PRODUCT_STEPS = [
         icon: Bell,
         titleEl: "Σας κρατάμε ενήμερους",
         titleEn: "We keep you in the loop",
-        descEl: "Σας ειδοποιούμε με email πριν λήξει κάτι — 30 ημέρες πριν σε όλα τα πλάνα, νωρίτερα με το Plus — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
-        descEn: "We email you before something runs out — 30 days ahead on every plan, earlier with Plus — and when we find something new in your documents, with Family."
+        descEl: `Σας ειδοποιούμε με email πριν λήξει κάτι — μία υπενθύμιση ${BASIC_WHEN.el} σε όλα τα πλάνα, περισσότερες στα Plus και Family — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.`,
+        descEn: `We email you before something runs out — one reminder ${BASIC_WHEN.en} on every plan, more on Plus and Family — and when we find something new in your documents, with Family.`
     },
 ] as const
 

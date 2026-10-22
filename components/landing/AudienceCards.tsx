@@ -127,8 +127,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
         // Every plan gets one reminder email 30 days ahead; the longer ladder is
         // Plus and Family — the benefit says so instead of attributing it to Plus.
         t(
-            "Υπενθύμιση πριν λήξουν τα ασφαλιστήριά σας· νωρίτερα με το Plus",
-            "A reminder before your policies expire; earlier with Plus",
+            "Υπενθύμιση πριν λήξουν τα ασφαλιστήριά σας· νωρίτερα στα Plus και Family",
+            "A reminder before your policies expire; earlier on Plus and Family",
         ),
         // Gap detection is a Family feature — same honesty rule.
         t(

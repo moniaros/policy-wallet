@@ -105,7 +105,7 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         priorityQueue: false,
         savingsReportExport: false,
     },
-    // "Plus" (displayed) = €39/yr (€4.99/mo). Ten policies, full analysis.
+    // "Plus" (displayed) = €39/yr (€4.99/mo). Ten policies, no full analysis (that is Family).
     // (Code key stays `plus`; the display name moved from "Starter" to "Plus".)
     plus: {
         policies: 10,

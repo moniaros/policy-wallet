@@ -1,0 +1,53 @@
+(node:64030) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:64032) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/cancel-claims-state-access.test.ts (3 tests | 1 failed) 80ms
+     × no customer surface states a cancel claim without its consequence, or offers a downgrade 78ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/cancel-claims-state-access.test.ts > cancel claims say what cancelling does; no downgrade is offered (H-030) > no customer surface states a cancel claim without its consequence, or offers a downgrade
+AssertionError: expected [ …(15) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "app/(protected)/agent/pricing/AgentPricingClient.tsx: Paid plans are monthly subscriptions that auto-renew. Cancel anytime from your account.",
++   "app/(protected)/agent/pricing/AgentPricingClient.tsx: Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από",
++   "app/(protected)/upgrade/success/page.tsx: Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή",
++   "app/(protected)/upgrade/success/page.tsx: Secure payment with Stripe · Cancel anytime",
++   "app/(public)/pricing/PricingPageClient.tsx: Ακύρωση ανανέωσης όποτε θέλετε",
++   "app/(public)/pricing/PricingPageClient.tsx: Cancel renewal at any time",
++   "components/landing/LoBPageShell.tsx: ${AGENT_FUNNEL_PLANS.starter.displayName} ${formatPlanPrice(AGENT_FUNNEL_PLANS.starter.monthlyEur, \"",
++   "components/landing/LoBPageShell.tsx: ${AGENT_FUNNEL_PLANS.starter.displayName} at ${formatPlanPrice(AGENT_FUNNEL_PLANS.starter.monthlyEur",
++   "components/landing/LoBPageShell.tsx: ${FUNNEL_PLANS.starter.displayName} ${formatPlanPrice(FUNNEL_PLANS.starter.monthlyEur, \"el\")}/μήνα, ",
++   "components/landing/LoBPageShell.tsx: ${FUNNEL_PLANS.starter.displayName} at ${formatPlanPrice(FUNNEL_PLANS.starter.monthlyEur, \"en\")}/mon",
++   "lib/marketing/cancellation-statement.ts: Ακύρωση όποτε θέλετε· ${CANCEL_CONSEQUENCE.el}",
++   "lib/monetization/upgrade-copy.el.ts: Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή · Χωρίς κρυφές χρεώσεις",
++   "lib/monetization/upgrade-copy.en.ts: Secure payment with Stripe · Cancel anytime · No hidden fees",
++   "lib/subscription-copy.ts: Ακύρωση ανά πάσα στιγμή",
++   "lib/subscription-copy.ts: Cancel anytime",
++ ]
+
+ ❯ tests/unit/cancel-claims-state-access.test.ts:53:21
+     51|         expect(files.length).toBeGreaterThan(500)
+     52|         const bad = files.flatMap((f) => cancelViolations(readFileSync…
+     53|         expect(bad).toEqual([])
+       |                     ^
+     54|     })
+     55|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  19:20:20
+   Duration  660ms (transform 24ms, setup 134ms, import 9ms, tests 80ms, environment 370ms)
+
