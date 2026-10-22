@@ -20,15 +20,22 @@ const EXCLUDED = [
     /^app\/api\//,
     /^lib\/admin\//,
     /^lib\/ai\//, // prompts to the model, never rendered
-    /^lib\/services\//,
     /^lib\/legal\//, // reviewed legal text, separate guard
     /^app\/auth\//, // auth tokens (verify-email, reset, handover): a different word for a different thing
     /^lib\/auth\//,
     /^app\/api-docs\//, // developer documentation of endpoint paths
     /^lib\/ingestion\//, // internal metrics
+    /^app\/\(public\)\/styleguide\//, // design tokens: a developer page, a different word
+    /^lib\/services\/(ai|analysis)\//, // provider error matching, run failure messages stored for staff
+    /^lib\/services\/push\.service\.ts$/, // OAuth/device push tokens
+]
+// Fragments allowed in otherwise-guarded files, each with the reason (queue item named).
+const ALLOW_FRAGMENTS: Array<[RegExp, string]> = [
+    [/Credit Balance|Credits do not expire|you earn credits|πιστώσεις|Υπόλοιπο πιστώσεων/i, 'dead referral copy: components/account/Referrals.tsx is not mounted (QUEUE REFERRAL-CREDITS-COPY)'],
 ]
 // Reason-annotated exceptions: [path, why].
 const ALLOW: Array<[RegExp, string]> = [
+    [/^lib\/notifications\/registry\.ts$/, 'admin-granted balance notifications («Προστέθηκαν credits»); a grant is not a token meter; decide with TOKEN-TOPUP-UI-REMOVED'],
     [/^lib\/token-/, 'internal metering module; strings are log/error text for staff'],
     [/^lib\/billing\/token-packages\.ts$/, 'internal package catalogue, no UI string'],
     [/^lib\/billing\.ts$/, 'Stripe-side product name of the token top-up; listed in HALTS.md (H-029) for the owner'],
@@ -53,11 +60,20 @@ function stripComments(src: string): string {
     return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1')
 }
 
+// The internal unit and the money that used to buy it: a customer reads neither.
+const WORD = /\btokens?\b|\bcredits?\b|πιστώσε/i
+
 export function tokenStrings(src: string): string[] {
+    const code = stripComments(src)
+    // Quoted literals (template interpolations are removed first, so `Used ${n} tokens` is read as text).
     // A rendered sentence has no code punctuation in it; a mis-paired quote span does.
-    return (stripComments(src).match(TOKEN_STRING) ?? []).filter(
-        (s) => /\btokens?\b/i.test(s) && !/[(){};=]|\$\{/.test(s.slice(1, -1)) && !ALLOW_STRINGS.has(s),
-    )
+    const quoted = (code.match(TOKEN_STRING) ?? []).filter((s) => {
+        const text = s.slice(1, -1).replace(/\$\{[^}]*\}/g, ' ')
+        return WORD.test(text) && !/[(){};=]/.test(text) && !ALLOW_STRINGS.has(s)
+    })
+    // JSX text nodes: <p>Your remaining tokens</p>
+    const jsx = [...code.matchAll(/>([^<>{}\n]*[A-Za-zΑ-Ωα-ω][^<>{}\n]*)</g)].map((m) => m[1]).filter((t) => WORD.test(t))
+    return [...quoted, ...jsx].filter((t) => !ALLOW_FRAGMENTS.some(([re]) => re.test(t)))
 }
 
 describe('no customer-facing string names tokens (H-027)', () => {
@@ -72,7 +88,7 @@ describe('no customer-facing string names tokens (H-027)', () => {
 
     it('probe: the pattern turns red on token copy', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/token-copy.ts.txt', 'utf-8')
-        expect(tokenStrings(probe).length).toBeGreaterThanOrEqual(3)
+        expect(tokenStrings(probe).length).toBeGreaterThanOrEqual(6)
     })
 
     it('the token meter component is not mounted on a customer surface', () => {

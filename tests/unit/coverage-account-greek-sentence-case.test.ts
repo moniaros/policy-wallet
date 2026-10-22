@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs'
  */
 const GU = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΆΈΉΊΌΎΏ'
 const RESTARTS = ['.', '!', '?', ':', '·', '|', '—', '–', '&', ',', ';']
-const PROPER = new Set(['Tokens', 'Token', 'PolicyWallet', 'AI', 'PDF', 'Πορτοφόλι', 'Πορτοφολιού'])
+const PROPER = new Set(['PolicyWallet', 'AI', 'PDF', 'Πορτοφόλι', 'Πορτοφολιού'])
 
 const FILES = [
     'components/coverage/RecommendationCards.tsx',

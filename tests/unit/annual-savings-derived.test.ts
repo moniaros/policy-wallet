@@ -20,6 +20,9 @@ const TYPED_SAVING = [
     /Save\s+\d+\s+months/i,
     /\d+\s+μήνες\s+αντί\s+για\s+12/i,
     /\d+\s+months\s+instead\s+of\s+12/i,
+    /annualSavingsMonths/, // a stored month count is the same defect as a typed one
+    /Εξοικονομ(είτε|ήστε)\s+~?\d+\s*€/i, // a typed euro saving
+    /Save\s+~?€\s?\d+/i,
 ]
 
 function walk(dir: string, out: string[] = []): string[] {

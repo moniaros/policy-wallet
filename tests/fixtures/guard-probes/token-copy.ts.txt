@@ -2,3 +2,6 @@
 export const A = { el: "Χρήση tokens AI", en: "AI Token Usage" }
 export const B = "Your AI token limit has been reached. Upgrade or buy credits to continue."
 export const C = `Μηνιαία tokens που ανανεώνονται αυτόματα`
+export const D = `Used ${n} tokens this month`
+export const E = "Buy credits to continue"
+export const F = () => <p>Your remaining tokens</p>

@@ -19,9 +19,9 @@ const EXEMPT: Record<string, string> = {
     'app/api/v1/billing/checkout/route.ts': 'server route: the sentence is set on the Stripe session in lib/billing.ts (asserted below)',
     'app/(protected)/account/actions.ts': 'server action definition, no rendering',
     'app/(public)/pricing/PricingPageClient.tsx': 'posts the checkout for the cards; PricingCard renders the sentence (asserted below)',
-    'app/(protected)/agent/pricing/AgentPricingClient.tsx': 'agent plans carry no trial (trial_days 0 on every agent row)',
+    'app/(protected)/agent/pricing/AgentPricingClient.tsx': 'agent plans carry no trial: DEFAULT_PLAN_FACTS has trialDays 0 for every agent row (asserted below)',
     'app/(protected)/upgrade/page.tsx': 'renders PricingComparison, which discloses (asserted below)',
-    'app/api/stripe/checkout/route.ts': 'deprecated route with no caller; it grants the trial only to a first subscription',
+    'app/api/stripe/checkout/route.ts': 'no UI caller, but reachable by a direct POST: it creates a trial session WITHOUT the hosted-page sentence; it grants the trial only to a first subscription (PW-ENTITLE-01 item 1)',
     'app/api-docs/page.tsx': 'developer documentation of the endpoint path, sells nothing',
     'components/settings/sections/PlanSection.tsx': 'annual switch of an EXISTING subscriber; the re-trial it triggers is PW-ENTITLE-01 item 1',
 }
@@ -35,8 +35,14 @@ function walk(dir: string, out: string[] = []): string[] {
     return out
 }
 
+/** A mention in a comment is not a disclosure. */
+function stripComments(src: string): string {
+    return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1')
+}
+
 export function sellsWithoutDisclosure(path: string, src: string): boolean {
-    return STARTS_CHECKOUT.test(src) && !DISCLOSES.test(src) && !(path in EXEMPT)
+    const code = stripComments(src)
+    return STARTS_CHECKOUT.test(code) && !DISCLOSES.test(code) && !(path in EXEMPT)
 }
 
 describe('every surface that sells Family discloses the trial (PW-C02-D10)', () => {
@@ -45,6 +51,17 @@ describe('every surface that sells Family discloses the trial (PW-C02-D10)', () 
     it('every checkout caller discloses the trial or is exempt with a reason', () => {
         const offenders = files.filter((f) => sellsWithoutDisclosure(f, readFileSync(f, 'utf-8')))
         expect(offenders).toEqual([])
+    })
+
+    it('every agent plan has trialDays 0, so the agent pricing page has nothing to disclose', () => {
+        const agents = DEFAULT_PLAN_FACTS.filter((p) => p.planType === 'agent')
+        expect(agents.length).toBe(4)
+        for (const a of agents) expect(a.trialDays, a.tierKey).toBe(0)
+    })
+
+    it('a mention in a comment does not count as a disclosure', () => {
+        const commentOnly = '// the parent renders trialDisclosure\nfetch("/api/v1/billing/checkout")'
+        expect(sellsWithoutDisclosure('x.tsx', commentOnly)).toBe(true)
     })
 
     it('the exemptions still exist (no stale entries)', () => {

@@ -150,9 +150,9 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         primaryCta: "See the plans",
         secondaryCta: "Not now",
         benefits: [
-            "A larger monthly analysis limit on higher plans",
             "The limit renews every month",
             "Your policies stay saved",
+            "See which plan fits the volume of your documents",
         ],
         trust: TRUST,
         successMessage: "Upgrade complete. You can continue the analysis.",

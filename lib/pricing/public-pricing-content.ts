@@ -2,6 +2,11 @@ import type { ClaimKey } from "@/lib/marketing/plan-claims"
 import type { CheckoutBlockReason } from "@/lib/pricing/stripe-mode"
 import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 import { annualSavingsLabel } from "@/lib/pricing/annual-savings"
+import { DEFAULT_PLAN_FACTS } from "@/lib/pricing/plan-defaults"
+
+// Template prices come from the catalog defaults (the view model overrides them with the live rows).
+const PLUS_FACTS = DEFAULT_PLAN_FACTS.find((p) => p.tierKey === "plus")!
+const FAMILY_FACTS = DEFAULT_PLAN_FACTS.find((p) => p.tierKey === "pro")!
 
 export type PricingAudience = "policyholder" | "agent"
 export type BillingPeriod = "monthly" | "annual"
@@ -147,13 +152,13 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 description: { el: "Για όλα τα δικά σας ασφαλιστήρια", en: "For everything in your own name" },
                 pricing: {
                     monthly: {
-                        value: 4.99,
+                        value: PLUS_FACTS.monthlyEur,
                         period: { el: "/μήνα", en: "/month" },
                     },
                     annual: {
-                        value: 39,
+                        value: PLUS_FACTS.annualEur!,
                         period: { el: "/έτος", en: "/year" },
-                        savings: annualSavingsLabel(4.99, 39)!,
+                        savings: annualSavingsLabel(PLUS_FACTS.monthlyEur, PLUS_FACTS.annualEur!)!,
                     },
                 },
                 features: [
@@ -172,13 +177,13 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 isHighlighted: true,
                 pricing: {
                     monthly: {
-                        value: 8.99,
+                        value: FAMILY_FACTS.monthlyEur,
                         period: { el: "/μήνα", en: "/month" },
                     },
                     annual: {
-                        value: 79,
+                        value: FAMILY_FACTS.annualEur!,
                         period: { el: "/έτος", en: "/year" },
-                        savings: annualSavingsLabel(8.99, 79)!,
+                        savings: annualSavingsLabel(FAMILY_FACTS.monthlyEur, FAMILY_FACTS.annualEur!)!,
                     },
                 },
                 features: [

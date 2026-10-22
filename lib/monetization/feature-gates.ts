@@ -189,19 +189,16 @@ export interface PlanPricing {
     monthlyEur: number
     annualEur: number
     /** Months effectively free when paying annually. */
-    annualSavingsMonths: number
     trialDays?: number
 }
 
-// Code key `plus` = displayed "Starter" (€2.99); code key `pro` = displayed
-// "Plus" (€7.99, the recommended AI tier). See PlanBadge / public pricing for
-// the display labels.
+// Code key `plus` = displayed "Plus" (€4.99); code key `pro` = displayed "Family" (€8.99, the
+// recommended tier). See PlanBadge / public pricing for the display labels.
 export const PLAN_PRICING: Record<Exclude<PlanTier, "free">, PlanPricing> = {
-    // Pricing v2: annual-first. €39/yr vs €4.99/mo is ~4 months free, and
-    // €79/yr vs €8.99/mo is ~3 — so annualSavingsMonths is computed, not
-    // asserted, by round(12 - annual / monthly).
-    plus: { planId: "ph-plus", monthlyEur: 4.99, annualEur: 39, annualSavingsMonths: 4 },
-    pro: { planId: "ph-pro", monthlyEur: 8.99, annualEur: 79, annualSavingsMonths: 3, trialDays: 14 },
+    // Pricing v2: annual-first. The saving is never stored here: it is derived from these two
+    // prices by lib/pricing/annual-savings.ts (a typed month count was false by up to a month).
+    plus: { planId: "ph-plus", monthlyEur: 4.99, annualEur: 39 },
+    pro: { planId: "ph-pro", monthlyEur: 8.99, annualEur: 79, trialDays: 14 },
 }
 
 const TIER_RANK: Record<PlanTier, number> = { free: 0, plus: 1, pro: 2 }

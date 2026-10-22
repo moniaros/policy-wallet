@@ -6,6 +6,7 @@ import { Check, X, Star, Shield, Zap } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 import { usePlanFacts } from '@/components/monetization/PlanFactsProvider'
 import { trialDisclosure } from '@/lib/pricing/trial-disclosure'
+import { annualSavingsLabel } from '@/lib/pricing/annual-savings'
 import { formatEur } from '@/lib/pricing/pricing-view-model'
 import { DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -88,7 +89,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             ...copy.tiers.plus,
             price: bothLangs(formatEur(starterFacts.monthlyEur)),
             annual: copy.tiers.plus.annual
-                ? { ...copy.tiers.plus.annual, price: bothLangs(formatEur(starterFacts.annualEur)) }
+                ? { ...copy.tiers.plus.annual, price: bothLangs(formatEur(starterFacts.annualEur)), savings: annualSavingsLabel(starterFacts.monthlyEur, starterFacts.annualEur) ?? copy.tiers.plus.annual.savings }
                 : undefined,
             icon: Zap,
             features: [
@@ -105,7 +106,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             ...copy.tiers.pro,
             price: bothLangs(formatEur(plusFacts.monthlyEur)),
             annual: copy.tiers.pro.annual
-                ? { ...copy.tiers.pro.annual, price: bothLangs(formatEur(plusFacts.annualEur)) }
+                ? { ...copy.tiers.pro.annual, price: bothLangs(formatEur(plusFacts.annualEur)), savings: annualSavingsLabel(plusFacts.monthlyEur, plusFacts.annualEur) ?? copy.tiers.pro.annual.savings }
                 : undefined,
             icon: Star,
             // The highlighted tier must be the one that actually carries the

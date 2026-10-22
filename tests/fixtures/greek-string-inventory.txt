@@ -20,7 +20,7 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 4273
-# inline entries: 4998 across 243 files
+# inline entries: 4996 across 242 files
 # ternary entries: 286 across 45 files
 # call entries: 1082 across 82 files
 
@@ -7979,7 +7979,6 @@ inline	lib/prevention/catalogue.ts	'Χώρος για λίγη κίνηση'
 inline	lib/prevention/reminders.ts	'Ζητήσατε μια υπενθύμιση. Δείτε την επιλογή σας στην ενότητα Πρόληψη & παροχές.'
 inline	lib/prevention/reminders.ts	'Το μικρό βήμα που επιλέξατε'
 inline	lib/pricing/annual-savings.ts	`Εξοικονομείτε ~${formatPlanPrice(saved, "el")} τον χρόνο`
-inline	lib/pricing/pricing-view-model.ts	`Εξοικονομείτε ~${formatPlanPrice(saved, "el")}`
 inline	lib/pricing/public-pricing-content.ts	"/έτος"
 inline	lib/pricing/public-pricing-content.ts	"/έτος"
 inline	lib/pricing/public-pricing-content.ts	"/μήνα"
@@ -8882,7 +8881,7 @@ inline	lib/services/policy.service.ts	'Η ανάλυση ολοκληρώθηκ�
 inline	lib/services/policy.service.ts	'Στο έγγραφο που ανεβάσατε δεν βρήκαμε στοιχεία ασφαλιστηρίου — ούτε ασφαλιστική εταιρεία, ούτε αριθμό, ούτε περίοδο κάλυψης. Ελέγξτε αν είναι το σωστό αρχείο· μπορείτε να ανεβάσετε άλλο. Το έγγραφό σας είναι αποθηκευμένο.'
 inline	lib/services/policy.service.ts	'Το έγγραφο που ανεβάσατε δεν μπόρεσε να αναλυθεί, οπότε δεν αποθηκεύτηκε. Δοκιμάστε ξανά με καθαρότερο αντίγραφο.'
 inline	lib/services/policy.service.ts	`Δεν έχετε δικαίωμα να εκτελέσετε ανάλυση ${subject.el}. Ζητήστε δικαίωμα επεξεργασίας από τον κάτοχο του ασφαλιστηρίου.`
-inline	lib/services/policy.service.ts	`Η ανάλυση ${subject.el} δεν ξεκίνησε επειδή εξαντλήθηκε το διαθέσιμο όριο AI. Αναβαθμίστε το πρόγραμμά σας ή αγοράστε credits και δοκιμάστε ξανά — το έγγραφό σας είναι αποθηκευμένο.`
+inline	lib/services/policy.service.ts	`Η ανάλυση ${subject.el} δεν ξεκίνησε επειδή εξαντλήθηκε το μηνιαίο όριο ανάλυσης. Το όριο ανανεώνεται κάθε μήνα· δοκιμάστε ξανά τότε — το έγγραφό σας είναι αποθηκευμένο.`
 inline	lib/services/policy.service.ts	`Η ανάλυση ${subject.el} δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.`
 inline	lib/services/policy.service.ts	`Η ανάλυση ${subject.el} χρειάζεται τη συγκατάθεσή σας για επεξεργασία με τεχνητή νοημοσύνη. Δώστε τη συγκατάθεση από τις ρυθμίσεις και δοκιμάστε ξανά — το έγγραφό σας είναι αποθηκευμένο.`
 inline	lib/services/policy.service.ts	`Η νέα μεταφόρτωση ενσωματώθηκε στο υπάρχον ασφαλιστήριο ${currentPolicy.policyNumber}.`
@@ -9220,7 +9219,6 @@ inline	lib/subscription-copy.ts	'Ναι, μπορείτε να αναβαθμί�
 inline	lib/subscription-copy.ts	'Ξεκινήστε Family'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Plus'
 inline	lib/subscription-copy.ts	'Ξεκινήστε Δωρεάν'
-inline	lib/subscription-copy.ts	'Ξεκινήστε δωρεάν δοκιμή {days} ημερών'
 inline	lib/subscription-copy.ts	'Ξεκινήστε δωρεάν και αναβαθμίστε όποτε είστε έτοιμοι'
 inline	lib/subscription-copy.ts	'Οι πληρωμές γίνονται εξ ολοκλήρου μέσα στο Stripe, πιστοποιημένο κατά PCI DSS Level 1. Τα στοιχεία της κάρτας σας δεν περνούν ποτέ από τους δικούς μας διακομιστές και δεν τα αποθηκεύουμε.'
 inline	lib/subscription-copy.ts	'ΠΕΡΙΜΕΝΕΤΕ...'

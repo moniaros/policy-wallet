@@ -62,8 +62,8 @@ describe('buildPublicPricingContent', () => {
         const built = buildPublicPricingContent(catalog, CAN_CHARGE)
         const pro = built.policyholder.plans.find((p) => p.checkoutPlanId === 'ph-pro')!
         // 8.99×12 − 89 = 18.88 → ~€19
-        expect(pro.pricing.annual?.savings.en).toBe('Save ~€19')
-        expect(pro.pricing.annual?.savings.el).toMatch(/~19\s€/)
+        expect(pro.pricing.annual?.savings.en).toBe('Save ~€19 a year')
+        expect(pro.pricing.annual?.savings.el).toMatch(/~19\s€ τον χρόνο/)
     })
 
     it('unchanged prices keep the template savings prose verbatim', () => {

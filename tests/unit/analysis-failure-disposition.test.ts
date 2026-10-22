@@ -145,7 +145,7 @@ describe('INFORM — the run never started', () => {
         expect(stamped.acordData.processingError.retryable).toBe(true)
 
         const [sent] = messages()
-        expect(sent.message.el).toContain('όριο AI')
+        expect(sent.message.el).toContain('όριο ανάλυσης')
         expect(sent.message.el).toContain('αποθηκευμένο')
         // No internal code and no raw provider text leaking through. ("credits"
         // and "AI" are the product's established Greek-UI terms — see

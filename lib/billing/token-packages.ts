@@ -4,7 +4,8 @@
  * Prices are set against the blended provider cost of ~€2.38 per 1M tokens on
  * the Gemini 2.5 Pro path (≈€1.4/M after Flash routing of language steps) to
  * hold a ≥40% floor margin — see docs/planning/TOKEN_ECONOMICS_2026-07.md.
- * Consumed by app/api/v1/tokens/purchase (authoritative) and the account UI.
+ * Consumed by app/api/v1/tokens/purchase (authoritative). The account UI that sold these was
+ * removed in PW-CONTENT-02 (PW-C02-D12); the endpoint's fate is the QUEUE item TOKEN-TOPUP-UI-REMOVED.
  * Agent top-ups are priced separately in AGENT_PRICING
  * (lib/subscription-entitlements.ts).
  */

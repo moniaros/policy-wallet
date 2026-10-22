@@ -5,6 +5,11 @@
  */
 
 import { annualSavingsLabel } from '@/lib/pricing/annual-savings'
+import { DEFAULT_PLAN_FACTS } from '@/lib/pricing/plan-defaults'
+
+// The render fallback for the saving: derived from the catalog defaults, never typed.
+const factsOf = (tier: 'plus' | 'pro') => DEFAULT_PLAN_FACTS.find((p) => p.tierKey === tier)!
+const savingOf = (tier: 'plus' | 'pro') => annualSavingsLabel(factsOf(tier).monthlyEur, factsOf(tier).annualEur!)!
 
 export const subscriptionCopy = {
     // Pricing Tiers
@@ -31,7 +36,7 @@ export const subscriptionCopy = {
             annual: {
                 price: { el: '€39', en: '€39' },
                 period: { el: '/έτος', en: '/year' },
-                savings: annualSavingsLabel(4.99, 39)!,
+                savings: savingOf('plus'),
             },
         },
         pro: {
@@ -47,7 +52,7 @@ export const subscriptionCopy = {
             annual: {
                 price: { el: '€79', en: '€79' },
                 period: { el: '/έτος', en: '/year' },
-                savings: annualSavingsLabel(8.99, 79)!,
+                savings: savingOf('pro'),
             },
         },
     },
@@ -130,7 +135,6 @@ export const subscriptionCopy = {
         // `{days}` is the plan row's `trial_days` (what createCheckoutSession passes to Stripe), never a literal.
         badge: { el: '{days} ΗΜΕΡΕΣ ΔΩΡΕΑΝ', en: '{days}-DAY FREE TRIAL' },
         cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ {days} ΗΜΕΡΩΝ', en: 'START {days}-DAY FREE TRIAL' },
-        startCta: { el: 'Ξεκινήστε δωρεάν δοκιμή {days} ημερών', en: 'Start {days}-Day Free Trial' },
     },
 
     // Call-to-Action Buttons

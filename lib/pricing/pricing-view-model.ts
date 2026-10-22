@@ -14,6 +14,7 @@
  */
 
 import type { CatalogPlan } from "@/lib/pricing/plan-catalog"
+import { annualSavingsLabel } from "@/lib/pricing/annual-savings"
 import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
 import { publicCheckoutAvailability, type CheckoutAvailability } from "@/lib/pricing/stripe-mode"
 import {
@@ -36,9 +37,7 @@ const PLAN_ID_BY_TEMPLATE_KEY: Record<string, string> = {
 }
 
 function computedSavings(cat: CatalogPlan): LocalizedText | null {
-    const saved = Math.round(cat.monthlyEur * 12 - cat.effectiveAnnualEur)
-    if (saved <= 0) return null
-    return { el: `Εξοικονομείτε ~${formatPlanPrice(saved, "el")}`, en: `Save ~${formatPlanPrice(saved, "en")}` }
+    return annualSavingsLabel(cat.monthlyEur, cat.effectiveAnnualEur)
 }
 
 /**

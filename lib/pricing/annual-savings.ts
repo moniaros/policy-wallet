@@ -8,7 +8,7 @@
  * difference between twelve monthly payments and the annual price, formatted from
  * the numbers, so an admin price change cannot leave a stale promise behind.
  *
- * Guard: tests/unit/plan-gating-parity.test.ts (annual-savings arm).
+ * Guard: tests/unit/annual-savings-derived.test.ts.
  */
 import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
 

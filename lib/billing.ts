@@ -119,7 +119,7 @@ export async function createCheckoutSession(
         // (PW-C02-D10). Length and price are the row's, the same values the session charges.
         custom_text: (() => {
             const d = trialDisclosure(trialDays ?? 0, periodPrice, isAnnual ? "annual" : "monthly")
-            return d ? { submit: { message: `${d.el}\n${d.en}` } } : undefined
+            return d ? { submit: { message: `${d.el} ${d.en}` } } : undefined
         })(),
         // Promotion codes are a B2B-only lever (ENDOFSUMMER26 and its
         // successors). Enabling the field on B2C too would put a "have a
