@@ -22,7 +22,7 @@ const EXCLUDED: Array<[RegExp, string]> = [
 ]
 
 // The CLASS: any promise to tell the customer something before a date (reminder, alert, notify, email).
-const REMIND = /υπενθυμ|υπενθύμ|remind|ειδοποι|ενημερώσ|θα λάβετε|alert|notif|let you know|email you|we email|we will email|στέλνουμε email|email πριν/i
+const REMIND = /υπενθυμ|υπενθύμ|remind|ειδοποι|ειδοποί|ενημέρωσ|ενημερώσ|θα λάβετε|alert|notif|let you know|email you|we email|we will email|στέλνουμε email|email πριν/i
 const RUNG = /(?<![\d.,])(90|60|30|15|7|3)(?![\d.,])/
 const LITERAL = /(["'`])(?:(?!\1)[^\n\\]|\\.)*[ \t](?:(?!\1)[^\n\\]|\\.)*\1/g
 
@@ -60,7 +60,7 @@ describe('reminder offsets are composed from the scheduler constants (PW-C02-D16
     it('probe: every probe line is flagged on its own', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/reminder-offset-typed.ts.txt', 'utf-8')
         const lines = probe.split('\n').filter((l) => l.startsWith('export const'))
-        expect(lines.length).toBe(8)
+        expect(lines.length).toBe(13)
         for (const line of lines) expect(typedOffsets(line).length, line).toBeGreaterThanOrEqual(1)
     })
 

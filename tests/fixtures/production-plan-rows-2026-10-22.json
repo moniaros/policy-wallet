@@ -1,5 +1,5 @@
 {
-  "_source": "Production plans table, read by the owner (Eli) on 2026-10-22 and pasted into the PW-CONTENT-02 round-3 brief. Authoritative. null = unlimited. Re-read production and update this file when a plan row changes.",
+  "_source": "Production plans table, read by the owner (Eli) on 2026-10-22 and pasted into the PW-CONTENT-02 round-3 brief. Authoritative EXCEPT the agent monthlyTokenBudget values, which the owner set in /admin/plans in round 5 and which were typed here to match the code defaults (see _agent_budgets_note): re-read production and confirm. null = unlimited.",
   "policyholder": {
     "free": {
       "display": "Free",

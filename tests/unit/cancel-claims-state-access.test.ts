@@ -21,9 +21,11 @@ const EXCLUDED = [
 ]
 
 // The CLASS: a cancel/stop verb or noun within a few words of a time qualifier, in either language.
-const CANCEL_CLAIM = /(ακ[υύ]ρ\S*|σταματάτε|διακόψ\S*|cancel\w*)[^.\n]{0,40}(όποτε|οποτεδήποτε|ανά πάσα στιγμή|any ?time|at any time|whenever)/i
+const CANCEL_CLAIM = /(ακ[υύ]ρ\S*|σταματάτε|cancel\w*)[^.\n]{0,40}(όποτε|οποτεδήποτε|ανά πάσα στιγμή|any ?time|at any time|whenever)/i
+// «διακόψετε τη συνδρομή όποτε θέλετε»: stopping something else (an access grant, a notification) is not this claim.
+const STOP_SUBSCRIPTION = /διακ[οό][πψ]\S*[^.\n]{0,30}(συνδρομ|ανανέωσ|πλάν|πρόγραμμ)[^.\n]{0,40}(όποτε|οποτεδήποτε|ανά πάσα στιγμή)/i
 const CONSEQUENCE = /έως το τέλος|μέχρι το τέλος|τέλος της τρέχουσας περιόδου|until the end|to the end of|end of the current billing period/i
-const DOWNGRADE_CLAIM = /υποβαθμίσετε|υποβάθμιση (πλάνου|προγράμματος|συνδρομής)|υποβάθμι\S*[^.\n]{0,25}(πλάν|πρόγραμμ)|downgrad\w*|(αλλάξετε|αλλαγή) (το )?(πλάνο|πρόγραμμα)|change (your )?plan|switch plans?|switch to a (smaller|cheaper|lower)|αλλάξετε (το )?πλάνο|μετάβαση σε μικρότερο πλάνο|move (down )?to a (smaller|cheaper|lower) plan/i
+const DOWNGRADE_CLAIM = /υποβαθμίσετε|υποβάθμιση (πλάνου|προγράμματος|συνδρομής)|υποβάθμι\S*[^.\n]{0,25}(πλάν|πρόγραμμ)|downgrad\w*|αλλάξετε (το )?(πλάνο|πρόγραμμα)|change (your )?plan|switch plans?|switch to a (smaller|cheaper|lower)|αλλάξετε (το )?πλάνο|μετάβαση σε μικρότερο πλάνο|move (down )?to a (smaller|cheaper|lower) plan/i
 
 const LITERAL = /(["'`])(?:(?!\1)[^\n\\]|\\.)*[ \t](?:(?!\1)[^\n\\]|\\.)*\1/g
 
@@ -50,7 +52,7 @@ function sentences(src: string): string[] {
 }
 
 export function cancelViolations(src: string): string[] {
-    return sentences(src).filter((t) => (CANCEL_CLAIM.test(t) && !CONSEQUENCE.test(t)) || DOWNGRADE_CLAIM.test(t))
+    return sentences(src).filter((t) => ((CANCEL_CLAIM.test(t) || STOP_SUBSCRIPTION.test(t)) && !CONSEQUENCE.test(t)) || DOWNGRADE_CLAIM.test(t))
 }
 
 describe('cancel claims say what cancelling does; no downgrade is offered (H-030)', () => {
@@ -64,7 +66,7 @@ describe('cancel claims say what cancelling does; no downgrade is offered (H-030
     it('probe: every probe line is flagged on its own', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/cancel-claim.ts.txt', 'utf-8')
         const lines = probe.split('\n').filter((l) => l.startsWith('export const'))
-        expect(lines.length).toBe(8)
+        expect(lines.length).toBe(13)
         for (const line of lines) expect(cancelViolations(line).length, line).toBeGreaterThanOrEqual(1)
     })
 

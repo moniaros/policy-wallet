@@ -6,7 +6,7 @@ Merging into `NEW-UI` runs CI, then `.github/workflows/deploy.yml` ships to Verc
 ## Gate — must be closed before the merge button
 Who acts is in brackets.
 
-- [ ] **H-027 closed** [Eli]: run `docs/series/PW-CONTENT-02/evidence/h027-token-per-analysis-prod.sql` (read-only) on production; resize `monthlyTokenBudget` in /admin/plans so `analyses_at_p95` ≥ the published 5 / 50 / 150 / 400 for each agent plan (Agent Free's 150,000 budget cannot allow 5 runs at a ~150k-token estimate). Then update `tests/fixtures/production-plan-rows-2026-10-22.json` if any row changed. **Catalogue coupling:** plan-row edits publish to the live pricing page within ~30 min (ISR); do this after the deploy lands or confirm no price/limit shown changes.
+- [ ] **H-027 closed** [Eli]: agent budgets are resolved in config (see "Manual items added in round 5" below: 850,000 / 8,400,000 / 25,000,000 / 67,000,000). Still open: run `docs/series/PW-CONTENT-02/evidence/h027-token-per-analysis-prod.sql` (read-only) on production and size the FAMILY `monthlyTokenBudget` from `analyses_at_p95`. **Catalogue coupling:** plan-row edits publish to the live pricing page within ~30 min (ISR).
 - [ ] **H-025 closed** [Eli]: confirm or reword every public "no commission / subscription-only revenue" claim (file:line list in `docs/transformation/HALTS.md` H-025). Nothing was changed by this series.
 - [ ] **H-021** is closed (production rows read 2026-10-22, 9/9 equal). Re-read production and refresh `tests/fixtures/production-plan-rows-2026-10-22.json` if any plan row changed since.
 - [ ] **COPY.md fully signed off** [Eli]: every `pending re-approval` and `eli` row in COPY.md (round 5 table at its end); reply by key; flip to `approved` in `COPY.md`.
@@ -26,7 +26,8 @@ Who acts is in brackets.
 - [ ] **Brevo:** `BREVO_API_KEY` present in production, sender domain authenticated (SPF/DKIM), the IP-allowlist 401 (Sentry POLICYWALLET-3) closed; **renewal cron enabled with run history** (`/api/v1/jobs/renewal-check`, `job_runs`/`notification_events` rows, `JobSchedule` and `automation.paused` not pausing it).
 - [ ] **`PREVENTION_PERSONALIZATION_ENABLED=0` in production** (at 1, Free's 150,000 budget binds the basic path).
 - [ ] **Agent budgets set in /admin/plans** to agent_free 850,000 · agent_starter 8,400,000 · agent_pro 25,000,000 · agency 67,000,000 (rule: budget ≥ published count × 151,200; `tests/unit/budget-reaches-published-count.test.ts`; update `tests/fixtures/production-plan-rows-2026-10-22.json` after the save). Family waits for the H-027 query.
-- [ ] **Terms §5 for agents:** approve `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md` (then the edit + a `LEGAL_CONTENT_VERSION` bump) — nothing applied yet.
+- [ ] **`AGENT_INDEPENDENT_VERIFICATION` is 0 in production** (or the budgets are re-sized): at 1, every agent deep run also reserves 102,000 and records a second extraction's actual tokens (`policy-analysis-orchestrator.service.ts:1602-1612`, `independent-verification.ts:51-52`), so Agent Free honours about 3 runs, not 5. `AGENT_VERIFICATION_PROVIDER=openai` is pre-filled in `.env.example:180`.
+- [ ] **Terms §5 for agents:** approve `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md` (then the edit + a bump of `LEGAL_CONTENT_VERSION` AND the four `LEGAL_DOC_META` versions, `lib/legal/legal-content.ts:58-61`, which the legal pages display) — nothing applied yet.
 
 ## Pre-deploy
 - [ ] CI green on the PR: `audit:api-auth`, `lint`, `lint:i18n-changed`, `lint:utf8`, `type-check`, unit tests, production build (run locally on `a5d673d7`: guardrails pass, unit suite green).

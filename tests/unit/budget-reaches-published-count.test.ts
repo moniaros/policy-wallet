@@ -8,15 +8,16 @@ import type { AgentTier } from '@/types/subscription-entitlements'
 /**
  * H-027 rule (owner, 2026-10-22): the PUBLISHED analysis count is the cap; `monthlyTokenBudget` is a
  * safety rail that must never bind before it. A run is admitted iff used + reservation <= budget
- * (lib/token-tracking.ts:398) and every admitted run holds its reservation until it finishes, so N runs
- * in flight at once need N × R. Therefore for each agent plan:
+ * (lib/token-tracking.ts:398). createRun checks the whole-run estimate R without reserving; each step
+ * then reserves its own slice (<= 102,000) and replaces it with actual usage. N × R is therefore a
+ * conservative bound at the ESTIMATE; recorded actuals are what the p95 SQL measures (H-027). Therefore for each agent plan:
  *     monthlyTokenBudget  >=  aiAnalysesPerMonth × R_max
  * where R_max is the largest per-run reservation over every branch of the authored gap catalogue
  * (estimatePolicyAnalysisTokenBudget — the estimator the gate itself uses). The owner sets the
  * production budgets as N × 151,200 + ~10 % (151,200 = R for an 8-rule branch).
  * Family is excluded: its budget waits for the owner's production query.
  */
-const TIERS: AgentTier[] = ['agent_free', 'agent_starter', 'agent_pro', 'agency']
+const TIERS = Object.keys(DEFAULT_AGENT_ENTITLEMENT_LIMITS) as AgentTier[]
 
 function maxReservation(): number {
     const counts = new Map<string, number>()
@@ -34,6 +35,7 @@ describe('an agent plan\'s token budget never binds before its published analysi
 
     it.each(TIERS)('%s: budget >= published count × R_max (all runs reserving concurrently)', (tier) => {
         const l = DEFAULT_AGENT_ENTITLEMENT_LIMITS[tier]
+        expect(l.aiAnalysesPerMonth, `${tier} must publish a finite count`).toBeTypeOf('number')
         const need = (l.aiAnalysesPerMonth as number) * R
         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth} × ${R} = ${need}`).toBeGreaterThanOrEqual(need)
     })
