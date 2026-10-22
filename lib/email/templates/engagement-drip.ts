@@ -24,8 +24,8 @@ export function getWelcomeEmail(language: 'el' | 'en', name?: string): { subject
         <p><strong>${isGreek ? 'Τα πρώτα βήματα:' : 'Your first steps:'}</strong></p>
         <ul>
             <li>${isGreek ? '📎 Ανεβάστε το πρώτο ασφαλιστήριο (PDF ή φωτογραφία)' : '📎 Upload your first policy (PDF or photo)'}</li>
-            <li>${isGreek ? '🤖 Η AI θα αναλύσει αυτόματα την κάλυψή σας' : '🤖 AI will automatically analyze your coverage'}</li>
-            <li>${isGreek ? '🔍 Δείτε κενά κάλυψης και ευκαιρίες εξοικονόμησης' : '🔍 Discover coverage gaps and savings opportunities'}</li>
+            <li>${isGreek ? '🤖 Θα διαβάσουμε το έγγραφο και θα εξάγουμε τις καλύψεις, τα ποσά και τις ημερομηνίες' : '🤖 We will read the document and extract the covers, amounts and dates'}</li>
+            <li>${isGreek ? '🔍 Δείτε τι αναφέρει το ασφαλιστήριο, σε απλά λόγια' : '🔍 See what your policy says, in plain words'}</li>
         </ul>
         <a href="${APP_URL}/wallet/add" class="button">${isGreek ? 'Ανεβάστε το πρώτο σας ασφαλιστήριο' : 'Upload Your First Policy'}</a>
         <p style="color: #6B7280; font-size: 14px;">${isGreek
@@ -55,8 +55,8 @@ export function getDay3Email(language: 'el' | 'en', name?: string): { subject: s
         <h2>${isGreek ? 'Ένα βήμα σας χωρίζει!' : 'You\'re one step away!'}</h2>
         <p>${hello}</p>
         <p>${isGreek
-            ? 'Παρατηρήσαμε ότι δεν έχετε ανεβάσει ακόμα κάποιο ασφαλιστήριο. Η AI ανάλυσή μας μπορεί να εντοπίσει κενά κάλυψης και ευκαιρίες εξοικονόμησης σε δευτερόλεπτα.'
-            : 'We noticed you haven\'t uploaded a policy yet. Our AI analysis can identify coverage gaps and savings opportunities in seconds.'
+            ? 'Παρατηρήσαμε ότι δεν έχετε ανεβάσει ακόμα κάποιο ασφαλιστήριο. Ανεβάστε ένα και θα σας δείξουμε τι αναφέρει: καλύψεις, ποσά και ημερομηνίες.'
+            : 'We noticed you haven\'t uploaded a policy yet. Upload one and we will show you what it says: covers, amounts and dates.'
         }</p>
         <p><strong>${isGreek ? 'Πώς λειτουργεί:' : 'How it works:'}</strong></p>
         <ul>

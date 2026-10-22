@@ -22,8 +22,10 @@ describe('help center states only facts the product actually implements', () => 
         const limit = DEFAULT_ENTITLEMENT_LIMITS.free.policies
         expect(limit, 'the free tier must enforce a finite policy count').toBeTypeOf('number')
 
-        expect(HELP).toContain(`The free plan includes ${limit} policies`)
-        expect(HELP).toContain(`Το δωρεάν πλάνο περιλαμβάνει ${limit} ασφαλιστήρια`)
+        // The help text READS the count from the entitlement source (PW-CONTENT-02), so the
+        // assertion is that it does — a typed number cannot pass this.
+        expect(HELP).toContain('The free plan includes ${DEFAULT_ENTITLEMENT_LIMITS.free.policies} policies')
+        expect(HELP).toContain('Το δωρεάν πλάνο περιλαμβάνει ${DEFAULT_ENTITLEMENT_LIMITS.free.policies} ασφαλιστήρια')
 
         // No other count may appear in the same sentence.
         for (const wrong of [1, 2, 3, 5, 10, 25].filter((n) => n !== limit)) {

@@ -94,7 +94,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                             <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg flex justify-between border border-rose-100 dark:border-rose-800/40">
                                 <div>
                                     <p className="font-medium text-rose-900 dark:text-rose-200 text-sm flex items-center gap-2">
-                                        <ShieldAlert className="w-4 h-4" /> {t("Λείπει κάλυψη", "Missing cover")}
+                                        <ShieldAlert className="w-4 h-4" /> {t("Δεν αναφέρεται στο δείγμα", "Not listed in the sample")}
                                     </p>
                                     <p className="text-xs text-rose-700 dark:text-rose-200 mt-1">{t("- Μόνιμη αναπηρία", "- Permanent disability")}</p>
                                 </div>

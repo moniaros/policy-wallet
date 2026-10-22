@@ -5,3 +5,10 @@ export const probe = {
     og: "We tell you where you are covered. An independent risk check.",
     headline: "Σας λέμε αν είστε καλυμμένοι.",
 }
+export const probe2 = [
+    "Λείπει κάλυψη πλημμύρας",
+    "We found a gap",
+    "Το σπίτι σας δεν καλύπτεται για πλημμύρα.",
+    "A personal risk analysis platform",
+    "Ελέγχουμε την προστασία σας",
+]

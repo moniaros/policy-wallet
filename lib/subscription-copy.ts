@@ -267,8 +267,8 @@ export const subscriptionCopy = {
                 en: 'What happens if I cancel?'
             },
             answer: {
-                el: 'Θα διατηρήσετε πρόσβαση μέχρι το τέλος της τρέχουσας περιόδου χρέωσης. Τα δεδομένα σας θα διατηρηθούν για 30 ημέρες.',
-                en: 'You\'ll keep access until the end of your current billing period. Your data will be retained for 30 days.'
+                el: 'Θα διατηρήσετε πρόσβαση μέχρι το τέλος της τρέχουσας περιόδου χρέωσης.',
+                en: 'You\'ll keep access until the end of your current billing period.'
             },
         },
         {

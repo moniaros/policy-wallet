@@ -184,3 +184,22 @@ Wording the owner dictated is `approved`; wording I drafted is `eli` (not review
 | R2-5 | /product/travel FAQ (`lob-faqs.ts`) | «Τουλάχιστον 30.000 € … Είναι απαίτηση της αίτησης για τη βίζα.» | «Για την αίτηση βίζας Σένγκεν, η ελάχιστη ταξιδιωτική ιατρική κάλυψη είναι 30.000 € (κανονισμός ΕΚ 810/2009, άρθρο 15).» Source: Regulation (EC) 810/2009, Art. 15(3), CLAIMS C18 | **eli** (scope kept to the visa application, per the instruction) |
 | R2-6 | /account usage row | «Αναλύσεις ασφαλιστηρίων: Απεριόριστες» / «Το δωρεάν πρόγραμμα δεν περιλαμβάνει αναλύσεις AI.» | the count used this month (never «unlimited»); the budget card and its «εξαντληθεί … μέχρι τον επόμενο μήνα» line only where the processing budget binds (Family) | **eli** |
 | R2-7 | /agent/pricing lists | «5 AI αναλύσεις/μήνα» (Free), «200» (Pro), «25M tokens/μήνα» (Agency) | Free line removed; Pro «150 AI αναλύσεις/μήνα»; token line removed; fallback prices 29 / 79 / 199 | **ok** (numbers from `planClaim`) |
+
+---
+
+## Round 3 — strings changed by the fresh-review loop (passes 1–6, 2026-10-22)
+
+Not reviewed by `greek-copy-reviewer`; all are drafted by me and wait for Eli (`eli`) unless noted. They only REMOVE a false claim or replace it with what the code does. Grouped by surface.
+
+| Id | Surface | Change | Status |
+|---|---|---|---|
+| R3-1 | /product steps, guides, glossary, home diagram, AudienceCards, ServicesGrid | «από το πλάνο Plus» / «Υπενθυμίσεις με Plus» removed from reminder lines; /product step now «30 ημέρες πριν σε όλα τα πλάνα, νωρίτερα με το Plus» | **eli** |
+| R3-2 | /upgrade comparison (`subscription-copy.ts`, `PricingComparison.tsx`) | «Απεριόριστα ασφαλιστήρια», «Ψηφιακό πορτοφόλι», «Ειδοποιήσεις email ✗» replaced by the real caps (3/10/25) and the two reminder rows; FAQ «δεδομένα … 30 ημέρες» removed | **eli** |
+| R3-3 | upgrade copy (`upgrade-copy.*`) | Q&A «στο πλάνο Family»; reminders upsell now states one reminder on every plan, the ladder with Plus; the non-existent «Λίστα ελέγχου πριν την ανανέωση», «Απόφυγε διπλές καλύψεις», priority-queue bullets removed | **eli** |
+| R3-4 | help centre (`help-content.ts`) | premium-features article: full analysis = Family; «Υποστήριξη» = email on every plan; ladder includes 3 days; caps read from the entitlement source | **eli** |
+| R3-5 | /account, /agent/pricing | monthly-cap sentence and «Απεριόριστες» removed; Pro «150», no token line, no «Branded emails»/«Portfolio gap view»/«Basic CRM»/priority queue | **eli** |
+| R3-6 | boat copy (`boat.ts`, risk catalogue, life events, /product/boat heading) | «υποχρεωτική» legal claim replaced by «καλύπτει ζημιές σε τρίτους» | **eli** |
+| R3-7 | engagement + churn emails | gap/savings promises replaced by «τι αναφέρει το ασφαλιστήριο: καλύψεις, ποσά, ημερομηνίες» | **eli** |
+| R3-8 | /solutions/agents | branded reports named «από το Agent Pro» | **eli** |
+| R3-9 | demo cards (/product/life, /product/property, PolicyWalletWidget) | «Λείπει κάλυψη…» / «Βρήκαμε ένα κενό» → «Δεν αναφέρεται στο δείγμα» / «Για έλεγχο» | **eli** |
+| R3-10 | API/limit messages, bundles | «Plus and Pro» / «paid plans» for Family capabilities → «πλάνο Family»; «Essential or Professional» (plans that do not exist) removed | **eli** |

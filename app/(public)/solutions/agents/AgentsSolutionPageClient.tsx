@@ -121,8 +121,9 @@ export default function AgentSolutionsPage() {
                                 </h3>
                                 <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                     {t(
-                                        "Δώστε στον πελάτη μια καθαρή αναφορά με τα δικά σας στοιχεία, έτοιμη για εκτύπωση.",
-                                        "Hand your client a clear report carrying your own details, ready to print."
+                                        // Branded reports are Agent Pro and Agency (`brandedReport`; the route answers 403 below Pro).
+                                        "Δώστε στον πελάτη μια καθαρή αναφορά με τα δικά σας στοιχεία, έτοιμη για εκτύπωση — από το Agent Pro.",
+                                        "Hand your client a clear report carrying your own details, ready to print — from Agent Pro."
                                     )}
                                 </p>
                             </div>
@@ -164,7 +165,7 @@ export default function AgentSolutionsPage() {
                                 {t("Δίνετε την αναφορά", "You hand over the report")}
                             </h3>
                             <p className="text-body text-[#475569] dark:text-slate-300">
-                                {t("Καθαρή αναφορά με το όνομά σας, έτοιμη να τη δώσετε στον πελάτη.", "A clear report with your name on it, ready to hand to your client.")}
+                                {t("Καθαρή αναφορά με το όνομά σας, έτοιμη να τη δώσετε στον πελάτη (από το Agent Pro).", "A clear report with your name on it, ready to hand to your client (from Agent Pro).")}
                             </p>
                         </div>
                     </div>

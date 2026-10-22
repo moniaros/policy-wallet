@@ -49,8 +49,8 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
         {
             Icon: Home,
             name: t("Σπίτι", "Home"),
-            note: t("Λείπει κάλυψη πλημμύρας", "Flood cover is missing"),
-            status: t("Κενό", "Gap"),
+            note: t("Η πλημμύρα δεν αναφέρεται στο ασφαλιστήριο", "Flood is not listed in the policy"),
+            status: t("Για έλεγχο", "To check"),
             type: "gap" as const,
         },
         {
@@ -187,12 +187,12 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                             <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" />
                             <div className="min-w-0 flex-1">
                                 <p className="text-caption font-semibold text-status-warning">
-                                    {t("Βρήκαμε ένα κενό", "We found a gap")}
+                                    {t("Για έλεγχο", "To check")}
                                 </p>
                                 <p className="text-micro leading-snug text-status-warning">
                                     {t(
-                                        "Το σπίτι σας δεν καλύπτεται για πλημμύρα.",
-                                        "Your home is not covered for flooding.",
+                                        "Το ασφαλιστήριο δεν αναφέρει κάλυψη πλημμύρας. Ρωτήστε τον ασφαλιστή σας.",
+                                        "The policy does not list flood cover. Ask your insurance adviser.",
                                     )}
                                 </p>
                             </div>

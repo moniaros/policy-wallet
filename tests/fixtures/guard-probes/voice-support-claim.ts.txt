@@ -13,3 +13,8 @@ export const probe2 = {
     call: "Call us any time",
     expert: "Contact Expert",
 }
+export const probe3 = {
+    h1: "Απαντάμε 09:00–18:00 κάθε εργάσιμη.",
+    h2: "We answer between 9:00 and 18:00 on working days.",
+    p1: "Τηλέφωνο υποστήριξης: 210 123 4567",
+}

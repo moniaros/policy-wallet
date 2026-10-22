@@ -257,5 +257,9 @@
   "inline:app/(public)/contact/ContactPageClient.tsx::Υποστήριξη",
   "inline:lib/subscription-copy.ts::Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)",
   "inline:lib/subscription-copy.ts::Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)",
-  "call:components/landing/PolicyWalletWidget.tsx::Τα ασφαλιστήριά σας με μια ματιά"
+  "call:components/landing/PolicyWalletWidget.tsx::Τα ασφαλιστήριά σας με μια ματιά",
+  "ternary:lib/email/templates/engagement-drip.ts::🔍 Δείτε τι αναφέρει το ασφαλιστήριο, σε απλά λόγια",
+  "ternary:lib/email/templates/engagement-drip.ts::🤖 Θα διαβάσουμε το έγγραφο και θα εξάγουμε τις καλύψεις, τα ποσά και τις ημερομηνίες",
+  "call:app/(public)/product/life/PageClient.tsx::Δεν αναφέρεται στο δείγμα",
+  "call:components/landing/PolicyWalletWidget.tsx::Για έλεγχο"
 ]

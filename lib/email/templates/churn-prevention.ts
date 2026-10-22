@@ -209,8 +209,8 @@ export function getChurnDay60Email(data: ChurnPreventionEmailData): { subject: s
         <h2>${isGreek ? 'Δεν έχετε ελέγξει τα ασφαλιστήριά σας εδώ και 2 μήνες' : "You haven't checked your policies in 2 months"}</h2>
         <p>${hello}</p>
         <p>${isGreek
-            ? 'Δεν έχετε ελέγξει τα ασφαλιστήρια σας εδώ και 2 μήνες. Ανανεώσεις, κενά κάλυψης, και μηνύματα από τον σύμβουλό σας μπορεί να περιμένουν.'
-            : "You haven't checked your policies in 2 months. Renewals, coverage gaps, and advisor messages may be waiting."
+            ? 'Δεν έχετε ελέγξει τα ασφαλιστήρια σας εδώ και 2 μήνες. Οι ημερομηνίες ανανέωσης των ασφαλιστηρίων σας μπορεί να πλησιάζουν.'
+            : "You haven't checked your policies in 2 months. Your policies' renewal dates may be coming up."
         }</p>
 
         <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Ελέγξτε τώρα' : 'Check now'}</a>

@@ -1,3 +1,4 @@
+import { DEFAULT_ENTITLEMENT_LIMITS } from "@/lib/pricing/plan-defaults"
 
 export interface ArticleSection {
     heading?: string;
@@ -96,7 +97,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'More Policy Storage',
-                    text: 'The free plan includes 3 policies with a basic summary. Plus allows up to 10 and Family up to 25 — including past/expired policies for historical review.',
+                    text: `The free plan includes ${DEFAULT_ENTITLEMENT_LIMITS.free.policies} policies with a basic summary. Plus allows up to ${DEFAULT_ENTITLEMENT_LIMITS.plus.policies} and Family up to ${DEFAULT_ENTITLEMENT_LIMITS.pro.policies} — including past/expired policies for historical review.`,
                 },
                 {
                     heading: 'Support',
@@ -288,7 +289,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Περισσότερος χώρος ασφαλιστηρίων',
-                    text: 'Το δωρεάν πλάνο περιλαμβάνει 3 ασφαλιστήρια με βασική σύνοψη. Το Plus επιτρέπει έως 10 και το Family έως 25 — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο.',
+                    text: `Το δωρεάν πλάνο περιλαμβάνει ${DEFAULT_ENTITLEMENT_LIMITS.free.policies} ασφαλιστήρια με βασική σύνοψη. Το Plus επιτρέπει έως ${DEFAULT_ENTITLEMENT_LIMITS.plus.policies} και το Family έως ${DEFAULT_ENTITLEMENT_LIMITS.pro.policies} — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο.`,
                 },
                 {
                     heading: 'Υποστήριξη',

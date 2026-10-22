@@ -433,5 +433,25 @@
     "locator": "inline:lib/subscription-limits.ts",
     "text": "Οι υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν",
     "reason": "PW-CONTENT-02 review: «Οι ειδοποιήσεις email είναι διαθέσιμες σε επί πληρωμή πλάνα» was false for Free (it gets the 30-day email); the line now names the rung range and the two plans that have it."
+  },
+  {
+    "locator": "call:app/(public)/product/property/PageClient.tsx",
+    "text": "Η πλημμύρα δεν αναφέρεται στο δείγμα",
+    "reason": "PW-CONTENT-02 review: replaces the demo verdict «Λείπει κάλυψη πλημμύρας»; names the sample so it cannot read as a claim about the visitor's home."
+  },
+  {
+    "locator": "call:app/(public)/solutions/agents/AgentsSolutionPageClient.tsx",
+    "text": "Δώστε στον πελάτη μια καθαρή αναφορά με τα δικά σας στοιχεία",
+    "reason": "PW-CONTENT-02 review C1: branded reports are Agent Pro and Agency; the line must name the plan the way the reminders line does."
+  },
+  {
+    "locator": "call:app/(public)/solutions/agents/AgentsSolutionPageClient.tsx",
+    "text": "Καθαρή αναφορά με το όνομά σας, έτοιμη να τη δώσετε στον πελ",
+    "reason": "PW-CONTENT-02 review C1: same plan attribution on step 3."
+  },
+  {
+    "locator": "call:components/landing/PolicyWalletWidget.tsx",
+    "text": "Το ασφαλιστήριο δεν αναφέρει κάλυψη πλημμύρας",
+    "reason": "PW-CONTENT-02 review: the demo verdict «Το σπίτι σας δεν καλύπτεται για πλημμύρα.» becomes a document reading with the adviser question (component is unmounted; queued for deletion)."
   }
 ]

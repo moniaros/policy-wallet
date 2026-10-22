@@ -104,7 +104,7 @@ export const CTA_REASSURANCE_SHORT = { el: "…", en: "…" }
  */
 // The free count is read from the entitlement source, so a typed «έως 3» / «τρία» / "up to three" is found whatever the wording.
 const FREE_N = DEFAULT_ENTITLEMENT_LIMITS.free.policies
-const HAND_TYPED_LIMIT = new RegExp(`Δωρεάν για \\d+ ασφαλιστήρι|Free for \\d+ polic|(?:έως|για|up to|for|με)\\s+(?:${FREE_N}|τρία|τρεις|three)\\s+(?:ασφαλιστήρι|polic)|(?:${FREE_N}|τρία|three)\\s+(?:δωρεάν|free)\\s+(?:ασφαλιστήρι|polic)|μηνια[ίι]ο όριο (?:επεξεργασίας|χρήσης)|monthly usage allowance|μηνια[ίι]ο όριο επεξεργασίας|όρι[αο] επεξεργασίας|monthly (processing )?(allowance|limit)|processing (limits?|allowances?)`, "i")
+const HAND_TYPED_LIMIT = new RegExp(`Δωρεάν για \\d+ ασφαλιστήρι|Free for \\d+ polic|(?:έως|για|up to|for|με)\\s+(?:${FREE_N}|τρία|τρεις|three)\\s+(?:ασφαλιστήρι|polic)|(?:${FREE_N}|τρία|three)\\s+(?:δωρεάν|free)\\s+(?:ασφαλιστήρι|polic)|(?:includes|περιλαμβάνει|holds|χωρά)\\s+(?:${FREE_N}|τρία|three)\\s+(?:ασφαλιστήρι|polic)|μηνια[ίι]ο όριο (?:επεξεργασίας|χρήσης)|monthly usage allowance|μηνια[ίι]ο όριο επεξεργασίας|όρι[αο] επεξεργασίας|monthly (processing )?(allowance|limit)|processing (limits?|allowances?)`, "i")
 const stripComments = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, "")).replace(/^[ \t]*\/\/.*$/gm, "")
 
 describe("the free-plan limit is typed once, in lib/marketing/limit-statement.ts", () => {

@@ -22,3 +22,6 @@ collab: 'Η συνεργασία με τον σύμβουλό σας είναι 
 paidPlansProbe1: "AI questions about your policies are included in the paid plans.",
 paidPlansProbe2: "AI analysis requires a paid plan; the free trial analysis has been used",
 boatProbe: "Third-party liability cover is compulsory for recreational craft in Greece",
+reattr1: "AI questions about your policies are included with Plus.",
+reattr2: "Οι ερωτήσεις AI περιλαμβάνονται με το Plus.",
+reattr3: "Η εξαγωγή αναφοράς είναι διαθέσιμη στο Plus.",
