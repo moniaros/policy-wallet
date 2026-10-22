@@ -145,16 +145,20 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
 // ── Agent entitlement fallbacks ──────────────────────────────────────
 
 export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits> = {
-    // A free agent tier funded at 500,000 tokens was drawing 3.3× what the
-    // free consumer gets and 83% of what a PAYING €39/yr consumer gets. The
-    // free tier's job is to demonstrate the product, not to underwrite a book
-    // of business for nothing — so it now sits on ph-free's basis (150,000)
-    // with its five analyses.
+    // AGENT BUDGETS (H-027, owner 2026-10-22): the PUBLISHED analysis count is the cap and the
+    // token budget is a safety rail that must never bind before it. A run is admitted iff
+    // used + reservation <= budget and holds its reservation while it runs, so N concurrent runs
+    // need N × R_max, R_max = 151,200 (the 8-rule branch; token-budget-estimator.ts):
+    //   agent_free 5 → 756,000 → 850,000 · agent_starter 50 → 7,560,000 → 8,400,000
+    //   agent_pro 150 → 22,680,000 → 25,000,000 · agency 400 → 60,480,000 → 67,000,000   (+~10 %)
+    // tests/unit/budget-reaches-published-count.test.ts enforces budget >= count × R_max.
+    // (Earlier: a 500,000-token free agent drew 3.3× a free consumer; the free tier's job is to
+    // demonstrate the product — its five analyses are now funded, not just promised.)
     agent_free: {
         maxCustomers: 10,
         maxPoliciesPerCustomer: 5,
         aiAnalysesPerMonth: 5,
-        monthlyTokenBudget: 150_000,
+        monthlyTokenBudget: 850_000,
         collaborationThreads: true,
         questionnaireTemplates: 0,
         brandedPortal: false,
@@ -180,7 +184,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         maxCustomers: 100,
         maxPoliciesPerCustomer: 20,
         aiAnalysesPerMonth: 50,
-        monthlyTokenBudget: 1_600_000,
+        monthlyTokenBudget: 8_400_000,
         collaborationThreads: true,
         questionnaireTemplates: 5,
         brandedPortal: true,
@@ -206,7 +210,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         maxCustomers: 500,
         maxPoliciesPerCustomer: null,
         aiAnalysesPerMonth: 150,
-        monthlyTokenBudget: 4_500_000,
+        monthlyTokenBudget: 25_000_000,
         collaborationThreads: true,
         questionnaireTemplates: null,
         brandedPortal: true,
@@ -232,7 +236,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         maxCustomers: null,
         maxPoliciesPerCustomer: null,
         aiAnalysesPerMonth: 400,
-        monthlyTokenBudget: 12_000_000,
+        monthlyTokenBudget: 67_000_000,
         collaborationThreads: true,
         questionnaireTemplates: null,
         brandedPortal: true,

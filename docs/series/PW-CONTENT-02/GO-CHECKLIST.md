@@ -20,6 +20,14 @@ Who acts is in brackets.
 - [ ] **Keep `PREVENTION_PERSONALIZATION_ENABLED=0`** in production until budgets are resized: at 1, Free's 150,000 budget binds the basic path (about one scan a month) — GA-blocking (H-033).
 - [ ] Re-approve the pending COPY rows: C-10, C-20, C-21, R3-1, R3-4, R4-3 and R5-1..R5-8; C-37's commission sentence stays held with H-025.
 
+### Manual items added in round 5 [Eli]
+- [ ] **Stripe live portal configured:** cancel at period end **ON**, payment-method update **ON**, plan switching **OFF** (the public copy promises cancel and a payment-method path and no plan switching; QUEUE STRIPE-PORTAL-PLAN-SWITCHING).
+- [ ] **Stripe trial-ending reminder email on.**
+- [ ] **Brevo:** `BREVO_API_KEY` present in production, sender domain authenticated (SPF/DKIM), the IP-allowlist 401 (Sentry POLICYWALLET-3) closed; **renewal cron enabled with run history** (`/api/v1/jobs/renewal-check`, `job_runs`/`notification_events` rows, `JobSchedule` and `automation.paused` not pausing it).
+- [ ] **`PREVENTION_PERSONALIZATION_ENABLED=0` in production** (at 1, Free's 150,000 budget binds the basic path).
+- [ ] **Agent budgets set in /admin/plans** to agent_free 850,000 · agent_starter 8,400,000 · agent_pro 25,000,000 · agency 67,000,000 (rule: budget ≥ published count × 151,200; `tests/unit/budget-reaches-published-count.test.ts`; update `tests/fixtures/production-plan-rows-2026-10-22.json` after the save). Family waits for the H-027 query.
+- [ ] **Terms §5 for agents:** approve `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md` (then the edit + a `LEGAL_CONTENT_VERSION` bump) — nothing applied yet.
+
 ## Pre-deploy
 - [ ] CI green on the PR: `audit:api-auth`, `lint`, `lint:i18n-changed`, `lint:utf8`, `type-check`, unit tests, production build (run locally on `a5d673d7`: guardrails pass, unit suite green).
 - [ ] No migration, no `prisma migrate`, no plan-row SQL in this release (verify `git diff NEW-UI --stat -- prisma/` is empty).

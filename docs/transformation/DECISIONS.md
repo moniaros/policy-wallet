@@ -1458,3 +1458,12 @@ The monthly limit starts again on the 1st of the SERVER'S calendar month (`billi
 
 ## PW-C02-D18 — COPY.md round 4 dispositions
 Approved: C-11b, C-38, R2-4, R2-6, R3-2, R3-3, R3-5, R3-6, R3-8, R3-10, C-36, C-50, C-57, R2-2, R2-3, R3-7, R3-9, R4-5, R4-6. Approved with amendment: R2-5 («κανονισμός (ΕΚ) 810/2009, άρθρο 15 παρ. 3»), R4-2 («περίπου 21 €» / «περίπου 29 €»; no chip uses the label). Held for H-025: the commission sentence of C-37. Conditional (rewritten, pending your re-approval): C-10, C-20, C-21, R3-1, R3-4, R4-3. New this round: R5-1..R5-8.
+
+
+# PW-CONTENT-02 — owner round 5 (2026-10-22, Eli)
+
+## PW-C02-D19 — H-027 rule: the published count is the cap; the token budget is a safety rail that never binds first
+Agent budgets (set by the owner in /admin/plans; code defaults aligned in `lib/pricing/plan-defaults.ts`): agent_free 850,000 · agent_starter 8,400,000 · agent_pro 25,000,000 · agency 67,000,000 = published count × 151,200 + ~10 %. Arithmetic: a run is admitted iff `used + R ≤ budget` (`lib/token-tracking.ts:398`) and holds R while it runs, so N concurrent runs need N × R_max; R_max = 151,200 (8-rule branch; the estimator the gate uses, over the authored catalogue). 5 × 151,200 = 756,000 ≤ 850,000; 50 × = 7,560,000 ≤ 8,400,000; 150 × = 22,680,000 ≤ 25,000,000; 400 × = 60,480,000 ≤ 67,000,000. Guard `tests/unit/budget-reaches-published-count.test.ts` (red first: 4 plans below the rule, `evidence/h027-budget-rule-guard-red.txt`) also pins the defaults to the owner-set values. The headroom assumes ≤ 8 active rules per branch: a branch that gains a rule raises R by 1,200 and the guard fails first. Family waits for the owner's SQL. H-027 stays OPEN for Family and for confirming the production rows were saved.
+
+## PW-C02-D20 — Terms §5 for agents: cancel by email — DRAFTED, NOT APPLIED
+Owner decision: agent subscriptions are cancelled by email to info@policywallet.gr, effective at the end of the paid period. Old and new text, and what a version bump triggers, are in `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md`; `lib/legal/legal-content.ts` is untouched until the owner has seen it. In-app agent cancel control queued (AGENT-CANCEL-PATH).
