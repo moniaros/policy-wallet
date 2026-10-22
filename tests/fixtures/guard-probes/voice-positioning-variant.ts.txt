@@ -19,3 +19,9 @@ export const probe3 = [
     "See exactly what your policy excludes and where your gaps are.",
     "Your risk picture changed",
 ]
+export const probe6 = [
+    "Δείτε πού είστε εκτεθειμένοι",
+    "We check whether you are protected",
+    "Αξιολόγηση της προστασίας σας",
+    "Πλατφόρμα ανάλυσης κινδύνου",
+]

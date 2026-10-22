@@ -125,8 +125,9 @@ export const subscriptionCopy = {
 
     // Free-trial affordances
     trial: {
-        badge: { el: '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ · ΝΕΟΙ ΣΥΝΔΡΟΜΗΤΕΣ', en: '14-DAY FREE TRIAL · NEW SUBSCRIBERS' },
-        cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ (ΝΕΟΙ ΣΥΝΔΡΟΜΗΤΕΣ)', en: 'START 14-DAY FREE TRIAL (NEW SUBSCRIBERS)' },
+        // `{days}` is the plan row's `trial_days` (what createCheckoutSession passes to Stripe), never a literal.
+        badge: { el: '{days} ΗΜΕΡΕΣ ΔΩΡΕΑΝ', en: '{days}-DAY FREE TRIAL' },
+        cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ {days} ΗΜΕΡΩΝ', en: 'START {days}-DAY FREE TRIAL' },
         startCta: { el: 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών', en: 'Start 14-Day Free Trial' },
     },
 

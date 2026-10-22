@@ -339,9 +339,9 @@ describe('PW-CONTENT-02 positioning lint — one line, no protection-verdict var
         ]
         expect(bad, `positioning-variant hits (metric M-P) = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
     })
-    it('probe — the retired variants turn it red (14 lines)', () => {
+    it('probe — the retired variants turn it red (18 lines)', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/voice-positioning-variant.ts.txt', 'utf-8')
-        expect(positioningOffenders('probe', code(probe)).length).toBe(14)
+        expect(positioningOffenders('probe', code(probe)).length).toBe(18)
     })
 })
 
@@ -380,9 +380,9 @@ describe('PW-CONTENT-02 support lint — email only, no phone, chat, hours or «
         ]
         expect(bad, `support claims PolicyWallet does not offer = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
     })
-    it('probe — each line of the probe turns it red (15 lines)', () => {
+    it('probe — each line of the probe turns it red (19 lines)', () => {
         const probe = readFileSync('tests/fixtures/guard-probes/voice-support-claim.ts.txt', 'utf-8')
-        expect(supportOffenders('probe', code(probe)).length).toBe(15)
+        expect(supportOffenders('probe', code(probe)).length).toBe(19)
     })
 })
 

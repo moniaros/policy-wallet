@@ -455,18 +455,18 @@
     "reason": "PW-CONTENT-02 review: the demo verdict «Το σπίτι σας δεν καλύπτεται για πλημμύρα.» becomes a document reading with the adviser question (component is unmounted; queued for deletion)."
   },
   {
-    "locator": "inline:lib/subscription-copy.ts",
-    "text": "ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ (ΝΕΟΙ ΣΥΝΔΡΟΜΗΤΕΣ)",
-    "reason": "PW-CONTENT-02 review pass 7: checkout grants the 14-day trial only to a first-time subscriber (`hasPriorSubscription === 0`, api/stripe/checkout/route.ts), so the button must say so; the qualifier is the claim."
-  },
-  {
-    "locator": "inline:lib/subscription-copy.ts",
-    "text": "14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ · ΝΕΟΙ ΣΥΝΔΡΟΜΗΤΕΣ",
-    "reason": "PW-CONTENT-02 review pass 7: the badge states the trial's real condition (first-time subscribers only)."
-  },
-  {
     "locator": "call:components/landing/AgentWidgets.tsx",
     "text": "Κατοικία — ο σεισμός δεν αναφέρεται στο δείγμα",
     "reason": "PW-CONTENT-02 review pass 7: replaces the demo verdict «λείπει σεισμική κάλυψη» with a reading of a SAMPLE document (it must not read as a claim about a real client's home)."
+  },
+  {
+    "locator": "inline:lib/subscription-copy.ts",
+    "text": "{days} ΗΜΕΡΕΣ ΔΩΡΕΑΝ",
+    "reason": "PW-CONTENT-02 review pass 8: the trial length is read from the plan row (`trial_days`, what checkout passes to Stripe) instead of a typed 14; `{days}` is a 6-character placeholder replaced by 1-2 digits at render, so the rendered string is not longer."
+  },
+  {
+    "locator": "inline:lib/subscription-copy.ts",
+    "text": "ΔΩΡΕΑΝ ΔΟΚΙΜΗ {days} ΗΜΕΡΩΝ",
+    "reason": "PW-CONTENT-02 review pass 8: the trial length is read from the plan row (`trial_days`, what checkout passes to Stripe) instead of a typed 14; `{days}` is a 6-character placeholder replaced by 1-2 digits at render, so the rendered string is not longer."
   }
 ]

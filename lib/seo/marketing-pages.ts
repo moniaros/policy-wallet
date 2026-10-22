@@ -165,7 +165,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         breadcrumb: "Επικοινωνία",
         en: {
             title: "Contact us: support and partnerships",
-            description: `Send us a message about support, pricing or partnerships. Support is by email, at ${siteConfig.contactEmail}. We will be happy to help you with anything.`,
+            description: `Send us a message about support, pricing or partnerships, in Greek or English. Support is by email, at ${siteConfig.contactEmail}. We will be happy to help.`,
             breadcrumb: "Contact",
         },
     },

@@ -44,6 +44,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
     const { tierPricing, freePolicyLimit, plusPolicyLimit } = usePlanFacts()
     const starterFacts = tierPricing('plus')
     const plusFacts = tierPricing('pro')
+    const proTrialDays = plusFacts.trialDays
     // The Family ceiling comes from the same entitlement source as the other two (it said ∞).
     const proPolicyLimit = DEFAULT_ENTITLEMENT_LIMITS.pro.policies
     const asCount = (limit: number | null) => (limit == null ? '∞' : String(limit))
@@ -207,9 +208,9 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                 : 'bg-muted/40 border-border hover:border-primary/40'
                                 }`}
                         >
-                            {tier.id === 'ph-pro' && (
+                            {tier.id === 'ph-pro' && proTrialDays > 0 && (
                                 <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-kicker font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
-                                    {copy.trial.badge[language]}
+                                    {copy.trial.badge[language].replace('{days}', String(proTrialDays))}
                                 </div>
                             )}
 
@@ -283,8 +284,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         ? copy.cta.basePlan[language]
                                         : loadingPlanId === tier.id
                                             ? copy.cta.processing[language]
-                                            : (tier.id === 'ph-pro'
-                                                ? copy.trial.cta[language]
+                                            : (tier.id === 'ph-pro' && proTrialDays > 0
+                                                ? copy.trial.cta[language].replace('{days}', String(proTrialDays))
                                                 : copy.cta.upgrade[language])}
                             </button>
                         </motion.div>

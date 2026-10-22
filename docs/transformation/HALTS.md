@@ -1120,3 +1120,13 @@ date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 3) · blocks: no
 ## H-024 residue (2026-10-22) — the boat-liability claim inside the in-app domain model
 
 The unsourced sentence «Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα» is removed from every PUBLIC surface and from the policyholder-facing boat copy found by the reviews (`lib/insurance/content/boat.ts`, `risk-catalog.ts` explanation and detail, `life-events/registry.ts`). It still underlies the in-app **domain model**, which treats a marine third-party-liability policy as "the compulsory cover": `lib/insurance/taxonomy.ts:172-179` (a code comment cites ν. 4926/2022 and ΓΚΛ 20), `lib/insurance/content/boat-tpl.ts:44,87`, `risk-catalog.ts:84,791`, `lib/needs/questions.ts:182`, `translations` `why:` strings (`el.ts:2227`, `en.ts:2201`). Rewording those is a product/legal decision about how the engine frames boat cover, not a copy fix: **Ask:** cite the article of ν. 4926/2022 from the official text (then the model can stay and the public sentence can return, worded to its actual scope), or tell me to neutralise the remaining strings.
+
+## H-028 — The LIVE checkout grants the free trial to every checkout, including lapsed subscribers · OPEN (owner decision)
+
+date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 8) · blocks: nothing in the build
+
+`createCheckoutSession` (`lib/billing.ts:90-116`) passes `subscription_data.trial_period_days` whenever the plan row has `trial_days > 0`, with no check that the customer ever subscribed before. The only checkout route that tested `hasPriorSubscription` (`app/api/stripe/checkout/route.ts:52,79`) is deprecated and has no callers. So a Family subscriber who lapses can start another 14-day trial. (An earlier edit of mine wrote «ΝΕΟΙ ΣΥΝΔΡΟΜΗΤΕΣ» on the `/upgrade` badge from that deprecated route; it was wrong and has been reverted: the badge now states the plan row's `trial_days` for everyone, which is what the live code does.)
+**Ask:** is repeated trial intended? If not, the fix is a prior-subscription check in `createCheckoutSession` (a billing change, outside this series), after which the badge should say «νέοι συνδρομητές».
+
+## H-027 addendum (2026-10-22, pass 8)
+B2C in-app copy that names the AI token budget, besides the `TokenUsageCard`: `lib/monetization/upgrade-copy.{el,en}.ts` `token_topup` («Εξαντλήθηκαν τα AI tokens του μήνα», «Μηνιαία tokens που ανανεώνονται αυτόματα»), `lib/i18n/translations/el.ts` (~1335, 1377, 2594: «όριο AI tokens», «αγοράστε credits»), `app/api/v1/tokens/purchase/route.ts`. Reached from `AnalysisCard` on `TOKEN_LIMIT_BLOCKED`. They are one feature with the meter and its top-up; hiding or rewording them is the same owner decision as H-027.
