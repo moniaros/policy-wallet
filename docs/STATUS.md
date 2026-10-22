@@ -1,7 +1,7 @@
 # Status
 
 ## Current phase
-PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, PR #410 (draft) into `NEW-UI` — 22 October 2026. **NO-GO, not merged:** merging deploys to production. Non-production preview of `7ee1478c`: https://policy-wallet-pl2c5zco2-moniaros-projects.vercel.app (SSO-gated; which Supabase project it reaches is unverified — treat as PRODUCTION).
+PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, PR #410 (draft) into `NEW-UI` — 22 October 2026. **NO-GO, not merged:** merging deploys to production. Non-production preview of `24e8fd43`: https://policy-wallet-qm2seq76t-moniaros-projects.vercel.app (SSO-gated; which Supabase project it reaches is unverified — treat as PRODUCTION).
 
 ## Done
 - Public claims equal enforced code and now equal the **production plan rows** (H-021 closed: `plan-defaults-match-production-rows.test.ts`, 9/9). Agent caps published 5 / 50 / 150 / 400.
@@ -9,6 +9,7 @@ PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-cus
 - Reviews: passes 1–9 on the whole branch; round 3 on the unreviewed deltas: CRITICAL 1 (Agent Free «5», owner-gated H-027) → fixed everything else → CRITICAL 1 (typed savings fallback, fixed) → CRITICAL 0 on `362337d7`. The last commit `7ee1478c` (two sentences neutralised, guard probes) had no review. 705 test files / 7,936 tests, lint, i18n, utf8, types, migrations pass.
 
 ## In progress / Blocked (merge blockers, owner)
+- Round 5 (2026-10-22): agent budgets set to the published-count rule; Terms §5 for agents DRAFTED not applied (`docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md`); re-approval table at the end of `COPY.md`; GO checklist has the manual Stripe/Brevo/cron/flag/budget items.
 - **H-027**: Agent Free's 150,000-token budget cannot honour the published «5»; run `docs/series/PW-CONTENT-02/evidence/h027-token-per-analysis-prod.sql` on production and resize budgets.
 - **H-025**: confirm the public no-commission claims. **COPY.md**: 28 `eli` rows. Stripe trial-ending reminder email; live-mode cancel path (portal config). Checklist: `docs/series/PW-CONTENT-02/GO-CHECKLIST.md`.
 
